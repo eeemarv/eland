@@ -65,8 +65,6 @@ function get_contacttype($id){
 	global $db;
 	$query = "SELECT * FROM type_contact ";
 	$query .= "WHERE id=".$id;
-	$result = mysql_query($query) or die ("select lukt niet");
-	$contacttype = mysql_fetch_array($result, MYSQL_ASSOC);
 	$contacttype = $db->GetRow($query);
 	return $contacttype;
 }
