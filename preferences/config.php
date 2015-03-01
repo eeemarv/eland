@@ -65,7 +65,7 @@ function show_prefs($prefs){
 		echo "<a href='#' onclick=\"javascript:window.open('$myurl','config','width=600,height=700,scrollbars=yes,toolbar=no,location=no,menubar=no')\">$mysetting</a>";
                 echo "</td>";
 
-		if($value["default"] == 1){
+		if($value["default"] == 't'){
 			echo "<td nowrap valign='top' bgcolor='red'>";
 		} else {
 			echo "<td nowrap valign='top'>";
