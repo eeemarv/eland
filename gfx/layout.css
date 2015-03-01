@@ -1,0 +1,86 @@
+/****************  PAGE LAYOUT  ****************/
+
+body { 
+ background-color: #adaac8;
+ font-family: sans-serif;
+}
+
+#pagewrap {
+ background-color: #ddd;
+}
+
+#wrapper {
+ margin: 20px;
+ margin-top: 10px;
+ background-color: #fff;
+ min-width: 800px;
+}
+
+#header {
+ padding:10px;
+ background-color: #120044;
+}
+
+#logo {
+ padding: 0px;
+ height: 65px;
+ background-image: url('kop.png');
+ background-repeat: no-repeat;
+}
+
+#groupname {
+ color: white;
+ font-family: monospace;
+ font-weight: bold;
+ font-size: 25px;
+ position: absolute;
+ top: 35px;
+ left: 250px;
+}
+
+#iewarn {
+ color: red;
+ font-family: monospace;
+ font-weight: bold;
+ position: absolute;
+ top: 70px;
+ right: 50px;
+}
+
+#main {
+}
+
+#menu {
+ width:180px;
+ float: left;
+ padding:10px;
+ background-color: #c1c3e3 ;
+}
+
+#content {
+ margin-left:200px;
+ padding:20px;
+}
+
+.clearer {
+ clear:both;
+}
+
+#footer {
+ background-color: #8687a7;
+ padding:5px;
+ height: 15px;
+ font-size: 10px;
+}
+
+#footerleft {
+ float: left;
+ width: 200px;
+}
+
+#footerright {
+ margin-left: 200px;
+ text-align: right;
+}
+
+/****************  END PAGE LAYOUT  ****************/

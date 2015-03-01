@@ -1,0 +1,134 @@
+<?php
+ob_start();
+$rootpath = "";
+require_once($rootpath."includes/inc_default.php");
+require_once($rootpath."includes/inc_adoconnection.php");
+session_start();
+$s_id = $_SESSION["id"];
+$s_name = $_SESSION["name"];
+$s_letscode = $_SESSION["letscode"];
+$s_accountrole = $_SESSION["accountrole"];
+
+
+if(isset($s_id)){
+	show_ptitle();
+	$userrows = get_all_users($user_orderby);
+ 	show_all_users($userrows);
+	//show_legend();
+	
+}else{
+	redirect_login($rootpath);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////////F U N C T I E S //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+
+function show_ptitle(){
+	#echo "<h1>Lets Contactlijst ";
+	#echo date("d-m-Y");
+	#echo " </h1>";
+	header("Content-disposition: attachment; filename=marva-memberlist".date("Y-m-d").".csv");
+	header("Content-Type: application/force-download");
+	header("Content-Transfer-Encoding: binary");
+	header("Pragma: no-cache");
+	header("Expires: 0");
+}
+
+
+function show_legend(){
+echo "Status 1: OK<br>";
+echo "Status 2: Uitstapper<br>";
+echo "Status 3: Instapper";
+echo "Status 4: Secretariaat";
+}
+
+
+function redirect_login($rootpath){
+	header("Location: ".$rootpath."login.php");
+}
+
+
+
+function get_contacts($userid){
+	global $db;
+	$query = "SELECT * FROM contact ";
+	$query .= " WHERE id_user =".$userid;
+	$contactrows = $db->GetArray($query);
+	return $contactrows;
+}
+			
+function get_all_users($user_orderby){
+	global $db;
+	$query = "SELECT * FROM users ";
+	$query .= "WHERE status <> 0  ";
+	$query .= "ORDER BY users.letscode ";
+	
+	$userrows = $db->GetArray($query);
+	return $userrows;
+}
+
+
+
+function show_all_users($userrows){
+	echo '"Status","Letscode","Naam","Tel","gsm","Postcode","Mail","Stand"';
+	echo "\r\n";
+	foreach($userrows as $key => $value){
+	 	echo '"';
+		echo $value["status"];
+		echo '","';
+			//echo "status is 2";
+		//}elseif($value["status"] == 3){
+			//echo "status is 3";
+		//}
+		
+		echo $value["letscode"];
+		echo '","';
+		echo $value["name"];
+		echo '","';
+		$userid = $value["id"];
+		$contactrows = get_contacts($userid);
+			
+			foreach($contactrows as $key2 => $value2){
+				if ($value2["id_type_contact"] == 1){
+					echo  $value2["value"];
+					
+				break;
+				}
+			}
+		echo '","';
+			foreach($contactrows as $key2 => $value2){
+				if ($value2["id_type_contact"] == 2){
+					echo $value2["value"];
+					break;
+				}
+			}
+		echo '","';
+		echo $value["postcode"];
+		echo '","';
+		foreach($contactrows as $key2 => $value2){
+				if ($value2["id_type_contact"] == 3){
+					echo $value2["value"];
+					
+					break;
+				}
+		}
+		echo '","';
+		
+		
+		$balance = $value["saldo"];
+		echo $balance;
+	
+		echo '"';
+		echo "\r\n";
+		
+	}
+
+}
+
+
+?>
+

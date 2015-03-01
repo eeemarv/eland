@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TinyBox - JavaScript Popup Script</title>
+<link rel="stylesheet" href="style.css" />
+<script type="text/javascript" src="tinybox.js"></script>
+</head>
+<body>
+<div id="testdiv">
+	<h1>TinyBox JavaScript Popup Script</h1>
+	<h2>For complete details visit <a href="http://www.leigeber.com/2009/05/javascript-popup-box/">leigeber.com</a>.</h2>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac mi. Integer egestas est ut eros interdum lobortis. Sed tincidunt, nunc id molestie rhoncus, neque libero rhoncus erat, nec dignissim quam neque eget velit. Maecenas enim. Nullam auctor sem vel odio. Etiam a velit. In hac habitasse platea dictumst. Aliquam ullamcorper risus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque quis mi eget nunc dignissim porta. Cras semper, urna vulputate posuere adipiscing, leo nibh tristique felis, at tempus tortor libero vel sapien. Sed consectetur. Nunc vitae eros ut justo iaculis tincidunt. Nullam ante tellus, sodales mattis, auctor vitae, hendrerit vel, turpis. Pellentesque non metus.</p>
+	<div class="button" id="testclick1"><strong>Advanced Features</strong> - <em>click here</em></div>
+	<p>In vel metus. Pellentesque euismod metus in nisl. Morbi luctus lorem ac est. Mauris pellentesque sapien quis est. Donec felis. Aliquam felis tortor, gravida at, viverra et, euismod ut, nisi. Sed varius nisi condimentum eros. Curabitur elit neque, rutrum feugiat, venenatis quis, hendrerit id, lacus. Nullam dui. Vivamus at erat vel lacus rhoncus ullamcorper. Nam nulla. Aenean et ipsum. Fusce convallis lorem sed velit. Morbi ante justo, rutrum in, molestie quis, cursus sed, est. Mauris eget sem. Etiam mattis. Quisque ornare tincidunt ligula. Suspendisse nunc. Integer aliquam vestibulum nulla.</p>
+	<div class="button" id="testclick2"><strong>Image</strong> - <em>click here</em></div>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac mi. Integer egestas est ut eros interdum lobortis. Sed tincidunt, nunc id molestie rhoncus, neque libero rhoncus erat, nec dignissim quam neque eget velit. Maecenas enim. Nullam auctor sem vel odio. Etiam a velit. In hac habitasse platea dictumst. Aliquam ullamcorper risus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque quis mi eget nunc dignissim porta. Cras semper, urna vulputate posuere adipiscing, leo nibh tristique felis, at tempus tortor libero vel sapien. Sed consectetur. Nunc vitae eros ut justo iaculis tincidunt. Nullam ante tellus, sodales mattis, auctor vitae, hendrerit vel, turpis. Pellentesque non metus.</p>
+	<div class="button" id="testclick3"><strong>Auto-Hide</strong> - <em>click here</em></div>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec odio elit, vulputate vel, malesuada non, dapibus ac, nulla. Maecenas ante. Nulla tristique justo vitae lectus. Morbi at mauris at justo pretium volutpat. Proin molestie sodales mi. Maecenas varius nunc nec nulla. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor. Nunc volutpat augue id turpis. Proin non nisi eget ipsum cursus egestas. Donec semper. Nam scelerisque augue suscipit lorem. In libero diam, faucibus at, bibendum sit amet, pulvinar vitae, dolor. Aliquam id ligula. Mauris mollis mattis neque. Cras odio nisl, rhoncus nec, rhoncus eget, pellentesque eu, lectus. Pellentesque aliquet fringilla erat. Duis tincidunt.</p>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec odio elit, vulputate vel, malesuada non, dapibus ac, nulla. Maecenas ante. Nulla tristique justo vitae lectus. Morbi at mauris at justo pretium volutpat. Proin molestie sodales mi. Maecenas varius nunc nec nulla. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor. Nunc volutpat augue id turpis. Proin non nisi eget ipsum cursus egestas. Donec semper. Nam scelerisque augue suscipit lorem. In libero diam, faucibus at, bibendum sit amet, pulvinar vitae, dolor. Aliquam id ligula. Mauris mollis mattis neque. Cras odio nisl, rhoncus nec, rhoncus eget, pellentesque eu, lectus. Pellentesque aliquet fringilla erat. Duis tincidunt.</p>
+	<p>In vel metus. Pellentesque euismod metus in nisl. Morbi luctus lorem ac est. Mauris pellentesque sapien quis est. Donec felis. Aliquam felis tortor, gravida at, viverra et, euismod ut, nisi. Sed varius nisi condimentum eros. Curabitur elit neque, rutrum feugiat, venenatis quis, hendrerit id, lacus. Nullam dui. Vivamus at erat vel lacus rhoncus ullamcorper. Nam nulla. Aenean et ipsum. Fusce convallis lorem sed velit. Morbi ante justo, rutrum in, molestie quis, cursus sed, est. Mauris eget sem. Etiam mattis. Quisque ornare tincidunt ligula. Suspendisse nunc. Integer aliquam vestibulum nulla.</p>
+</div>
+
+<script type="text/javascript">
+	T$('testclick1').onclick = function(){TINY.box.show('advanced.html',1,300,150,1)}
+	var content2 = "<img src='images/rhino.jpg' width='298' height='373' alt='' />";
+	T$('testclick2').onclick = function(){TINY.box.show(content2,0,0,0,1)}
+	var content3 = "This will disappear in 3 seconds.";
+	T$('testclick3').onclick = function(){TINY.box.show(content3,0,0,0,0,3)}
+</script>
+
+</body>
+</html>

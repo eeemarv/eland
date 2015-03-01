@@ -1,0 +1,295 @@
+	a, a:link, a:active 
+	{
+	color: blue;
+	text-decoration: none;
+	}
+	
+	a:hover
+	{
+	color: blue;
+	text-decoration: underline;
+	}
+
+	td.mheader
+	{
+        background-color: #120044;
+	color: white;
+	font-size: 13px;
+	font-weight: bold;
+	margin: 0px;
+        padding: 5px;
+        border-right: 0px dashed #d4d0c8;
+        }
+	
+	div.search
+	{
+	font-size: 13px;
+	margin-top: 20px;
+	}
+	
+	div.search form
+	{
+	padding: 0px;
+	margin: 0px;
+	}
+	
+	input.submit
+	{
+	font-size: 10px;
+	}
+
+	div.serveroutput
+	{
+	padding: 5px;
+	background-color: #fff6d0;
+	font-style: italic; 
+	}
+
+	div.iewarn
+	{
+	position: absolute;
+	float: right;
+	color: red;
+        font-size: 11px;
+        font-weight: bold;
+        }
+
+	div.box
+	{
+	background-color: #fdea9c;
+        border-collapse:collapse;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 13px;
+        border: 2px dashed #ffce0a;
+	}
+
+	div.hidden
+	{
+	display: none;
+	}
+	
+	#transformdiv
+	{
+	background-color: #fdea9c;
+        border-collapse:collapse;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 12px;
+        border: 2px dashed #ffce0a;
+	}
+
+	body {
+	font-size: 12px;
+	}
+
+	/***************************KOLOM 1: NAVIGATIE **********************************************************/
+	
+	td.nav
+	{
+	padding-top: 30px;
+	padding-bottom: 30px;
+	font: bold 16px Helvetica, Verdana, Arial, sans-serif;
+	color: #120044;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-right: 1px dashed #9974ff;
+	background-color: #c1c3e3;
+	}
+	
+	/* Titeltje navigatieblokken */
+	div.nav span.nav
+	{
+	padding-left: 40px;
+	text-decoration: none;
+	}
+	
+
+	
+	/***************************KOLOM 2: CONTENT **********************************************************/
+	
+	td.news div
+	{
+	background-color: #ffefd5;
+	background-color: #F5FBE1;
+	padding: 3px;
+	border: 1px dashed #9974ff;
+	}
+
+	
+	div.border_b
+	{
+	padding-bottom: 10px;
+	border-bottom: 1px dashed #9974ff;
+	}
+	
+	h1 
+	{
+	font-size: 25px;
+	font-family: sans-serif;
+	color: #120044;
+	
+	}
+	
+	/* Zoekmachine */
+	div.zoek
+	{
+	text-align: right;
+	}
+		
+	/* Data tabel */
+	table.data 
+	{
+	border-collapse:collapse;
+	margin-top: 30px;
+	min-width: 400px;
+	margin-bottom: 30px;
+	font-size: 15px;
+	border: 1px solid #7579d9;
+	}
+	
+	table.data td
+	{
+	padding: 2px;
+	font-size: 13px;
+	border-top: 0px solid #cccccc;
+	}
+
+	table.selectbox        {
+        background-color: #fdea9c;
+        border-collapse:collapse;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 15px;
+        border: 2px dashed #ffce0a;
+        }
+
+        table.selectbox td
+        {
+        padding: 2px;
+        font-size: 13px;
+        border-top: 0px solid #cccccc;
+        }
+
+
+	table.msgview
+	{
+	background-color: #c1c3e3;
+	min-width: 400px;
+	border-collapse:collapse;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 15px;
+        border: 2px dashed #35375c;
+        }
+
+	table.msgview td
+	{
+	padding: 2px;
+        font-size: 13px;
+        border-top: 0px solid #cccccc;
+        }
+
+	table.memberview
+        {
+        background-color: #c1c3e3;
+        border-collapse:collapse;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 15px;
+        }
+
+        table.memberview td
+        {
+        padding: 2px;
+        font-size: 13px;
+        border-top: 0px solid #cccccc;
+        }
+
+
+	tr.msgviewheader
+	{
+	background-color:  #35375c;
+	color: #fff;
+	}
+
+	tr.memberheader        {
+        background-color:  #35375c;
+	color: #fff;
+        }
+
+	tr.header
+	{
+	color: #ffffff;
+	background-color: #7b82ff;
+	}
+	
+	table.data tr.header td a
+	{
+	color: #ddf;
+	}
+
+	
+	tr.even_row
+	{
+	background-color: #cfd1ff;
+	}
+	
+	tr.uneven_row
+	{
+	background-color: #ffffff;
+	}
+	
+	table.data td.border_r
+	{
+	border-collapse:collapse;
+	border-right: 1px solid #DCF2F8;
+	}
+	
+	table.data td.data_header
+	{
+	padding: 2px;
+	font-size: 16px;
+	color: #ffffff;
+	font-weight: bold;
+	border: 0px solid #7579d9;
+	}
+	
+	/***************************Mootools CSS**********************************************************/
+
+	#log_res {
+	width: 80%;
+	}
+ 
+	div.ajax-loading {
+	padding: 10px 0;
+	background: url('/gfx/spinner.gif') no-repeat;
+	}
+
+	div.logok {
+	border-radius: 10px;
+	padding: 10px;
+	background-color: #4dff4d; 
+	}
+
+	div.logfail {
+	border-radius: 10px;
+	padding: 10px;
+	background-color: #ff2222;
+	}
+
+        div.errormsg {
+	font-style: italic;
+        font-weight:bold;
+        font-size: 10px;
+	color: white;
+        }
+	
+	div.msg {
+	font-style: italic;
+        font-weight:bold;
+        font-size: 10px;
+        color: black;
+        }
+
+

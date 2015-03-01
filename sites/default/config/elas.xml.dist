@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<elasconfig>
+	<dbdriver></dbdriver>
+	<dbhost></dbhost>
+	<dbname></dbname>
+	<dbuser></dbuser>
+	<dbpass></dbpass>
+        <sessionname>elas</sessionname>
+        <timezone>Europe/Brussels</timezone>
+        <hosting>0</hosting>
+</elasconfig>
+

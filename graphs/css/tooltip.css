@@ -1,0 +1,14 @@
+div.tooltip {
+  background-color: #3D6199;
+  color: White;
+  position: absolute;
+  left: -20px;
+  top: -40px;
+  z-index: 1000000;
+  width: 250px;
+  border-radius: 5px;
+}
+
+div.tooltip p {
+  margin: 10px;
+}

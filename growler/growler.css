@@ -1,0 +1,46 @@
+/* For the container */
+.GrowlContainer {
+	width: 298;
+	position: fixed;
+	top: 0;
+	right: 0;
+	font-size: 10pt;
+}
+
+/* for the Modern Growler, implements CSS3 properties */
+.GrowlerModern {
+	background: rgba(0, 0, 0, 0.7);
+	
+	height: 73px;
+	width: 298px;
+	padding: 10px;
+	
+	margin: 10px;
+	position: relative;
+	top: 10;
+	right: 10;
+	
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	
+	-webkit-box-shadow: 2px 2px 12px #777777;
+	-moz-box-shadow: 2px 2px 12px #777777;
+	
+	color: #fafafa;
+}
+
+/* for the Classic Growler, good old CSS2 */
+.GrowlerClassic {
+	background: url('growl.png') no-repeat;
+	
+	height: 53px;
+	width: 278px;
+	padding: 10px;
+	
+	margin: 10px;
+	position: relative;
+	top: 10;
+	right: 10;
+	
+	color: #fafafa;
+}   

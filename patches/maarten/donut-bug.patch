@@ -1,0 +1,13 @@
+=== modified file 'graphs/js/user_transactions.js'
+--- graphs/js/user_transactions.js	2013-07-15 15:15:59 +0000
++++ graphs/js/user_transactions.js	2014-04-02 19:55:10 +0000
+@@ -53,7 +53,7 @@
+ 				this[sliceIndex].in += (transaction.out) ? 0 : 1;
+ 				this[sliceIndex].out += (transaction.out) ? 1 : 0;
+ 				this[sliceIndex].amountIn += (transaction.out) ? 0 : transaction.amount;
+-				this[sliceIndex].amountOut += (transaction.out) ? 1 : transaction.amount;
++				this[sliceIndex].amountOut += (transaction.out) ? transaction.amount : 0;
+ 				this[sliceIndex].transIndexes.push();
+ 				this[sliceIndex].userIndex = transaction.userIndex;
+ 			}			
+

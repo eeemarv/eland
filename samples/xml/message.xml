@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<elasmessage>
+        <id></id>
+	<cdate></cdate>
+	<mdate></mdate>
+	<validity></validity>
+	<category>
+		<catid></catid>
+		<catname></catname>
+	</category>
+	<owner>
+		<ownerid></ownerid>
+		<contact>
+		</contact>
+	</owner>
+	<content></content>
+	<description></description>
+	<type></type>
+	<units></units>
+	<localcurrency></localcurrency>
+	<letshours><letshours>
+</elasmessage>
+

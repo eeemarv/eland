@@ -1,0 +1,18 @@
+--- help.php.old	2009-04-15 04:27:12.000000000 -0700
++++ help.php	2009-04-15 04:37:35.000000000 -0700
+@@ -15,9 +15,13 @@
+ $s_accountrole = $_SESSION["accountrole"];
+ 
+ 
+-echo "<h1>eLAS Help</h1>";
++echo "<table border='0' width='100%'><tr><td><h1>eLAS Help</h1>";
+ echo "<p>klik <a href='".$rootpath."index.php'>hier</a> om terug te gaan naar het eLAS menu</p>";
+-echo "<br>";
++echo "</td><td align='right'>";
++echo "<script language='JavaScript' type='text/javascript' src='https://babble.vsbnet.homelinux.net/webchat/jivelive.jsp'></script>";
++echo "<script>showChatButton('elassupport@workgroup.babble.vsbnet.homelinux.net');</script><br>";
++echo "<small>Klik voor een live chatsessie om je verder te helpen</small>";
++echo "</td></tr></table>";
+ 
+ if(isset($s_id)){
+ 	$user = get_user_maildetails($s_id);

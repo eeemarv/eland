@@ -1,0 +1,8 @@
+{
+    "require": {
+	"pimple/pimple": "v1.0.1",
+	"predis/predis": "v0.8.5"
+    }
+}
+
+

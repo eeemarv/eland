@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<elas>
+	<contractstart></contractstart>
+	<contractend></contractend>
+	<paymenttype></paymenttype>
+	<contractperiod></contractperiod>
+	<cost></cost>
+	<graceperiod></graceperiod>
+	<onsitecontact></onsitecontact>
+	<onsiteemail></onsiteemail>
+	<locked></locked>
+	<history>
+                <renewal>
+                	<renewaldate></renewaldate>
+                	<renewalperiod></renewalperiod>
+		</renewal>
+	</history>
+</elas>
