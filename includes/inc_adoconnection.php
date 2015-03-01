@@ -2,7 +2,7 @@
 
 require_once('adodb/adodb-errorpear.inc.php');
 require_once("adodb/adodb.inc.php");
-require_once($rootpath."includes/inc_config.php");
+// require_once($rootpath."includes/inc_config.php");
 
 //$db_dsn=$xmlconfig->dbdriver ."://" . $xmlconfig->dbuser .":" .$xmlconfig->dbpass . "@" .$xmlconfig->dbhost . "/" .$xmlconfig->dbname;
 
