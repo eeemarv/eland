@@ -10,11 +10,23 @@ require_once($rootpath."vendor/autoload.php");
 
 //override the include path, so we pick up the contrib directory first
 ini_set('include_path',$rootpath.'contrib/includes:'.ini_get('include_path'));  
-#echo ini_get('include_path');
+
 //require_once($rootpath."includes/inc_config.php");
+
+$baseurl = $_SERVER['HTTP_HOST'];
+
+// Get rid of missing rootpath errors
+if(!isset($rootpath)){
+	$rootpath = "";
+}
+
 require_once($rootpath."includes/inc_eventlog.php");
 
-session_name($configuration["system"]["sessionname"]);
+//create a session name on domain stripped from chars (attention! domains must differ in alphanumeric chars)
+
+$session_name = preg_replace('/[^A-Za-z0-9]/', '', $baseurl);
+
+session_name($session_name);
 session_start();
 
 // Set the version here
