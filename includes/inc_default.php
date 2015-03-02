@@ -61,8 +61,8 @@ if(!empty($xmlconfig->debug)) {
 	$elasdebug = 0;
 }
 
-// Set the timezeone to value in configuration
-date_default_timezone_set($configuration["system"]["timezone"]);
+// Hardcode timezone to Europe/Brussels (read from config removed)
+date_default_timezone_set('Europe/Brussels');
 
 // Provide transient notifications
 function setstatus($status,$flag=0){
