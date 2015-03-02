@@ -2,7 +2,8 @@
     "require": {
 	"pimple/pimple": "v1.0.1",
 	"predis/predis": "v0.8.5",
-	"knplabs/gaufrette": "0.1.*"
+	"knplabs/gaufrette": "0.1.*",
+	"aws/aws-sdk-php": "2.7.*@dev"
     }
 }
 
