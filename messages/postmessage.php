@@ -111,17 +111,14 @@ function update_msg($id, $posted_list){
     if(!empty($posted_list["validity"])){
     	$posted_list["validity"] = $posted_list["vtime"];
     } else {
-	unset($posted_list["validity"]);
+		unset($posted_list["validity"]);
     }
     $posted_list["mdate"] = date("Y-m-d H:i:s");
-    if(empty($posted_list["amount"])){
-	$query = "UPDATE messages SET MDATE='" .$posted_list["mdate"] ."', ID_CATEGORY=" .$posted_list["id_category"] .", ID_USER=" .$posted_list["id_user"] . ", CONTENT='" .$posted_list["content"] . "', \"Description\"='" .$posted_list["description"] . "', AMOUNT=NULL, UNITS='" .$posted_list["units"] ."', MSG_TYPE=" .$posted_list["msg_type"] .", UUID='" .$posted_list["uuid"] ."' WHERE id=" .$id;	
-    } else {
-	$query = "UPDATE messages SET MDATE='" .$posted_list["mdate"] ."', ID_CATEGORY=" .$posted_list["id_category"] .", ID_USER=" .$posted_list["id_user"] . ", CONTENT='" .$posted_list["content"] . "', \"Description\"='" .$posted_list["description"] . "', AMOUNT=" .$posted_list["amount"] . ", UNITS='" .$posted_list["units"] ."', MSG_TYPE=" .$posted_list["msg_type"] .", UUID='" .$posted_list["uuid"] ."' WHERE id=" .$id;
-    }
-    //print $query;
-    $result = $db->Execute($query);
-    return $result;
+
+    $posted_list['\"Description\"'] = $posted_list['description'];
+    unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
+
+    return $db->AutoExecute('messages', $posted_list, 'UPDATE', 'id = ' . $id);
 }
 
 function insert_msg($posted_list){
