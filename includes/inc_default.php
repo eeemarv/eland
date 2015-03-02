@@ -36,16 +36,13 @@ $providerfile = $rootpath ."sites/provider.xml";
 $provider = simplexml_load_file($providerfile);
 
 // Connect to Redis
-if(!empty($provider->redishost)){
-	$redishost = $provider->redishost;
+
+$redis_url = getenv('REDISTOGO_URL');
+
+if(!empty($redis_url)){
 	Predis\Autoloader::register();
 	try {
-	    $redis = new Predis\Client();
-	    $redis = new Predis\Client(array(
-        	"scheme" => "tcp",
-	        "host" => "$redishost",
-	        "port" => 6379));
-	   //echo "Connected to Redis host";
+	    $redis = new Predis\Client($redis_url);
 	}
 	catch (Exception $e) {
 	    echo "Couldn't connected to Redis";
@@ -55,11 +52,7 @@ if(!empty($provider->redishost)){
 
 
 // Debug eLAS, enable extra logging
-if(!empty($xmlconfig->debug)) {
-	$elasdebug = $xmlconfig->debug;
-} else {
-	$elasdebug = 0;
-}
+$elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
 
 // Hardcode timezone to Europe/Brussels (read from config removed)
 date_default_timezone_set('Europe/Brussels');
