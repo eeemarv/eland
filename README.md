@@ -19,3 +19,9 @@ DATABASE_URL : default database
 
 
 ELAS_DEBUG
+
+
+Session name
+-----
+The session name is based on the domain stripped from non-alphanumeric chars. Take care it's unique for each domain.
+
