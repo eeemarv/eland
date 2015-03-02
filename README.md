@@ -19,7 +19,7 @@ DATABASE_URL : default database
 
 
 ELAS_DEBUG
-
+DB_DEBUG
 
 Session name
 -----

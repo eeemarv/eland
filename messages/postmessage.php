@@ -21,14 +21,14 @@ $validity = $_POST["validity"];
 //echo $validity;
 $vtime = count_validity($validity);
 $posted_list = array();
-$posted_list["validity"] = $_POST["validity"];
+$posted_list["validity"] = (int) $_POST["validity"];
 $posted_list["vtime"] = $vtime;
 $posted_list["content"] = pg_escape_string($_POST["content"]);
 $posted_list["description"] = pg_escape_string($_POST["description"]);
-$posted_list["msg_type"] = $_POST["msg_type"];
-$posted_list["id_user"] = $_POST["id_user"];
-$posted_list["id_category"] = $_POST["id_category"];
-$posted_list["amount"] = $_POST["amount"];
+$posted_list["msg_type"] = (int) $_POST["msg_type"];
+$posted_list["id_user"] = (int) $_POST["id_user"];
+$posted_list["id_category"] = (int) $_POST["id_category"];
+$posted_list["amount"] = (int) $_POST["amount"];
 $posted_list["units"] = pg_escape_string($_POST["units"]);
 //$posted_list["announce"] = $_POST["announce"];
 $msgid = $_POST["id"];
@@ -45,7 +45,7 @@ if (empty($errors)){
 	switch ($mode){
 	        case "new":
 			$result = insert_msg($posted_list);
-                        if($result == TRUE) {
+                        if($result) {
                                 echo "<font color='green'><strong>OK</font> - Vraag/Aanbod is opgeslagen";
 								setstatus("Vraag/Aanbod is opgeslagen",0);
                                 echo "<script type='text/javascript'>self.close();</script>";
@@ -58,7 +58,7 @@ if (empty($errors)){
 		case "edit":
 			if($posted_list["id_user"] == $s_id || $s_accountrole == 'admin'){
 				$result = update_msg($msgid, $posted_list);
-				if($result == TRUE) {
+				if($result) {
 					echo "<font color='green'><strong>OK</font> - Vraag/Aanbod $msgid aangepast";
 					setstatus("Vraag/Aanbod $msgid aangepast",0);
 					echo "<script type='text/javascript'>self.close();</script>";
@@ -125,20 +125,12 @@ function update_msg($id, $posted_list){
 }
 
 function insert_msg($posted_list){
-        global $db;
+    global $db;
 	$posted_list["cdate"] = date("Y-m-d H:i:s");
-        $posted_list["validity"] = $posted_list["vtime"];
-	if(empty($posted_list["amount"]) || $posted_list["amount"] ==0 ){
-		$query = "INSERT INTO messages ( CDATE, VALIDITY, ID_CATEGORY, ID_USER, CONTENT, \"Description\", UNITS, MSG_TYPE, UUID ) VALUES ('" .$posted_list["cdate"] ."', '" .$posted_list["validity"] ."', " .$posted_list["id_category"] .", " .$posted_list["id_user"] . ", '" .$posted_list["content"] . "', '" .$posted_list["description"] ."', '" .$posted_list["units"] ."', " .$posted_list["msg_type"] .", '" .$posted_list["uuid"] ."')";
-	} else {
-		$query = "INSERT INTO messages ( CDATE, VALIDITY, ID_CATEGORY, ID_USER, CONTENT, \"Description\", AMOUNT, UNITS, MSG_TYPE, UUID ) VALUES ('" .$posted_list["cdate"] ."', '" .$posted_list["validity"] ."', " .$posted_list["id_category"] .", " .$posted_list["id_user"] . ", '" .$posted_list["content"] . "', '" .$posted_list["description"] ."', " .$posted_list["amount"] .", '" .$posted_list["units"] ."', " .$posted_list["msg_type"] .", '" .$posted_list["uuid"] ."')";
-	}
-	//print $query;
-        $result = $db->Execute($query);
-	return $result;
+    $posted_list["validity"] = $posted_list["vtime"];
+    $posted_list['\"Description\"'] = $posted_list['description'];
+    unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
+
+    return $db->AutoExecute('messages', $posted_list, 'INSERT');
 }
-
-
-
-?>
 

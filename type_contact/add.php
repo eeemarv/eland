@@ -52,7 +52,7 @@ function redirect_overview(){
 
 function insert_contacttype($posted_list){
 	global $db;
-    $result = $db->AutoExecute("type_contact", $posted_list, 'INSERT');
+    $db->AutoExecute("type_contact", $posted_list, 'INSERT');
 }
 
 function validate_input($posted_list){
