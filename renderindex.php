@@ -81,10 +81,13 @@ if(isset($s_id)){
  		show_all_newsitems($newsitems);
 	}	
 
+/*  postgres error: LIKE is wrong operator for date type
 	$birthdays = get_all_birthdays();
 	if($birthdays){
 		show_all_birthdays($birthdays);
 	}	
+*/
+
 
 	$newusers = get_all_newusers();
 	if($newusers){
