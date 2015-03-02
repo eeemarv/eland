@@ -8,3 +8,14 @@ Checklist
 ---------
 
 Cron
+
+
+Environment Vars
+------
+
+REDISTOGO_URL
+DATABASE_URL : default database
+
+
+
+ELAS_DEBUG

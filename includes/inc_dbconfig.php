@@ -35,11 +35,6 @@ function readconfigfromdb($searchkey){
 		return $list['value'];
 	}
     }
-		
-    #$query = "SELECT value FROM config ";
-    #$query .= "WHERE setting = '" .$key ."'";
-    #$setting = $db->GetRow($query);
-    #return $setting["value"];
 }
 
 function readredistoglobal(){
@@ -63,7 +58,11 @@ function loadredisfromdb(){
 	global $xmlconfig;
 	global $dbconfig;
 	global $dbparameters;
-	
+
+	if (empty($redis)){
+		return;
+	}
+
 	$rediskey = $xmlconfig->sessionname . "::config";
 	$query = "SELECT * FROM config";
 	$mydbconfig = serialize($db->GetArray($query));
