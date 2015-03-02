@@ -54,7 +54,13 @@ $redis_url = getenv('REDISTOGO_URL');
 if(!empty($redis_url)){
 	Predis\Autoloader::register();
 	try {
-	    $redis = new Predis\Client($redis_url);
+		$redispars = parse_url($redis_url);
+	    $redis = new Predis\Client($redispars);
+
+
+
+
+	    
 	}
 	catch (Exception $e) {
 	    echo "Couldn't connected to Redis";
