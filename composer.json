@@ -1,7 +1,8 @@
 {
     "require": {
 	"pimple/pimple": "v1.0.1",
-	"predis/predis": "v0.8.5"
+	"predis/predis": "v0.8.5",
+	"knplabs/gaufrette": "0.1.*"
     }
 }
 
