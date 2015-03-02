@@ -26,7 +26,7 @@ if (isset($s_id)){
 	show_contact();
 	show_contactadd();
 
-	show_subs();
+//	show_subs();
 	show_subform();
 	show_unsubform();
 	
