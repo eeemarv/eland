@@ -14,8 +14,10 @@ Environment Vars
 ------
 
 REDISTOGO_URL
-DATABASE_URL : default database
+MANDRILL_USERNAME
+MANDRILL_PASSWORD
 
+DATABASE_URL : default database
 
 
 ELAS_DEBUG
@@ -23,5 +25,6 @@ DB_DEBUG
 
 Session name
 -----
-The session name is based on the domain stripped from non-alphanumeric chars. Take care it's unique for each domain.
+The session name is based on the domain stripped from non-alphanumeric chars.
+Take care it's unique for each domain!
 

@@ -80,11 +80,15 @@ function message_list_announce($uuid) {
 	}
 }
 
-function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent,$receipt=0){
+function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 	global $elasversion;
 	// return 0 on success, 1 on failure
 	
-	$transport = Swift_SendmailTransport::newInstance();
+	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 465, 'ssl');
+
+	$transport->setUsername('MANDRILL_USERNAME');
+	$transport->setPassword('MANDRILL_PASSWORD');
+
 	$mailer = Swift_Mailer::newInstance($transport);
 	
 	if(readconfigfromdb("mailenabled") == 1){
@@ -97,12 +101,7 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent,$receipt=0){
 		} else {
 			$message = Swift_Message::newInstance();
 			$message->setSubject("$mailsubject");
-
-			//$headers = "X-Mailer: eLAS v" .$elasversion ." mail API\n";
-			//if($receipt == 1){
-				//$headers .= "Disposition-Notification-To: <" .$mailfrom .">\n";
-			//}
-			//$headers .= "From: $mailfrom\n";
+			
 			try {
 				$message->setFrom("$mailfrom");
 			}
@@ -140,8 +139,6 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent,$receipt=0){
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
-			//$numSent = $mailer->send($message)
-		
 			$status = 1;
 			try {
 				$mailer->send($message);
