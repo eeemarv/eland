@@ -13,7 +13,7 @@ $db = NewADOConnection(getenv('DATABASE_URL'));
 
 $db->SetFetchMode(ADODB_FETCH_ASSOC);
 
-if(1 || getenv('DB_DEBUG')){
+if(getenv('ELAS_DB_DEBUG')){
 	$db->debug = true;
 }
 

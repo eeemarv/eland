@@ -7,22 +7,23 @@ Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 Checklist
 ---------
 
-Cron
+Cron 
 
 
 Environment Vars
 ------
 
-REDISTOGO_URL
-MANDRILL_USERNAME
+REDISTOGO_URL: addon redistogo
+
+MANDRILL_USERNAME: addon mandrill
 MANDRILL_PASSWORD
 
-DATABASE_URL : default database
+DATABASE_URL: default database (postgres)
 
 
-ELAS_TIMEZONE (defaults to 'Europe/Brussels')
+ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 ELAS_DEBUG
-DB_DEBUG
+ELAS_DB_DEBUG
 
 Session name
 -----
