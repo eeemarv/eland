@@ -13,17 +13,16 @@ Cron
 Environment Vars
 ------
 
-REDISTOGO_URL: addon redistogo
+* REDISTOGO_URL: addon redistogo (redis server)
 
-MANDRILL_USERNAME: addon mandrill
-MANDRILL_PASSWORD
+* MANDRILL_USERNAME: addon mandrill (smtp server)
+* MANDRILL_PASSWORD
 
-DATABASE_URL: default database (postgres)
+* DATABASE_URL: default database (postgres)
 
-
-ELAS_TIMEZONE: defaults to 'Europe/Brussels'
-ELAS_DEBUG
-ELAS_DB_DEBUG
+* ELAS_TIMEZONE: defaults to 'Europe/Brussels'
+* ELAS_DEBUG
+* ELAS_DB_DEBUG
 
 Session name
 -----
