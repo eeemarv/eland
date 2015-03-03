@@ -8,33 +8,10 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_header.php");
 require_once($rootpath."includes/inc_nav.php");
 require_once($rootpath."includes/inc_tokens.php");
-require_once($rootpath."includes/inc_hosting.php");
 
 //require_once($rootpath."contrib/includes/lightopenid/openid.php");
 
-// Check the hosting contract from json if hosted
-if($configuration["hosting"]["enabled"] == 1){
-	$contract = get_contract();
-	$enddate = strtotime($contract["end"]);
-	$graceperiod = $contract["graceperiod"];
-	$now = time();
-
-	switch($enddate){
-		case (($enddate + ($graceperiod * 24 * 60 * 60)) < $now):
-			//Het contract is vervallen en uit grace
-			//LOCK eLAS
-			$locked = 1;
-			log_event("","System", "eLAS is locked, logging in is disabled");
-			break;
-		case (($enddate + ($graceperiod * 24 * 60 * 60)) > $now):
-			//Het contract is niet vervallen of uit grace
-			//extra unLOCK eLAS
-			$locked = 0;
-			break;
-	}
-} else {
-	$locked = 0;
-}
+$locked = 0;
 
 // Include the moologin javascript code
 echo "<script type='text/javascript' src='$rootpath/js/moologin.js'></script>";

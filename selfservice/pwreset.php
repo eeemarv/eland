@@ -6,7 +6,6 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_header.php");
 require_once($rootpath."includes/inc_nav.php");
 require_once($rootpath."includes/inc_tokens.php");
-require_once($rootpath."includes/inc_hosting.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
 require_once($rootpath."includes/inc_mailfunctions.php");

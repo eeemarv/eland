@@ -8,7 +8,7 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_header.php");
 require_once($rootpath."includes/inc_nav.php");
 require_once($rootpath."includes/inc_tokens.php");
-require_once($rootpath."includes/inc_hosting.php");
+
 
 echo "<h1>Lidmaatschap aanvragen</h1>";
 
