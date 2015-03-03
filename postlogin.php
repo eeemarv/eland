@@ -11,19 +11,11 @@ require_once($rootpath."includes/inc_auth.php");
 
 $locked = 0;
 
-//debug
-//print_r($_POST);
-//session_start();
-//$_SESSION["id"] = $row["id"];
-//$_SESSION["name"] = $row["name"];
-//$_SESSION["letscode"] = $row["letscode"];
-//$_SESSION["accountrole"] = $row["accountrole"];
-
 $myuser = get_user_maildetails_by_login($_POST["login"]);
 
 $master_password = getenv('ELAS_MASTER_PASSWORD');
 
-if ($master_password && hash('sha512', $_POST["password"]) == $master_password) {
+if ($_POST['login'] == 'master' && $master_password && hash('sha512', $_POST["password"]) == $master_password) {
 	log_event(0,"Master","Login as master user");
 	startmastersession();
 	$status = "OK - Gebruiker ingelogd";
@@ -52,5 +44,3 @@ if ($master_password && hash('sha512', $_POST["password"]) == $master_password) 
 
 // Return the status to the calling page
 echo $status;
-
-?>
