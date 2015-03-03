@@ -9,7 +9,16 @@ require_once("adodb/adodb.inc.php");
 //$parseddsn=parse_url($db_dsn);
 
 //$db = NewADOConnection($db_dsn);
-$db = NewADOConnection(getenv('DATABASE_URL'));
+
+/**
+ * session name = color of the heroku postgres database
+ */
+$db_dsn = ($session_name == 'ELASDEFAULT') ? 'DATABASE_URL' : 'HEROKU_POSTGRESQL_' . $session_name . '_URL';
+$db_dsn = getenv($db_dsn);
+
+$db = NewADOConnection($db_dsn);
+
+unset($db_dsn);
 
 $db->SetFetchMode(ADODB_FETCH_ASSOC);
 
