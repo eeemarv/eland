@@ -29,6 +29,9 @@ Hyphens in <domain> are replaced by triple underscore ___
     To link e-example.com to a session set environment variable
     ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=<session_name>
 
+    set environment variable:
+        `heroku config:set ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=PURPLE`
+
 The session name is also:
   * the color name of the database!
   * prefix of the image files: <session name>_U_<ID>.JPG for profile images, <session_name>_M_<ID>.JPG for message images.
