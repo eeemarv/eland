@@ -95,7 +95,7 @@ function show_all_users($userrows,$configuration){
 			echo "<td nowrap valign='top' ><strong>";
 			echo $value["letscode"];
 			echo "</strong></font>";
-		}elseif(check_timestamp($value["adate"],$configuration["system"]["newuserdays"]) == 1){
+		}elseif(check_timestamp($value["adate"],readconfigfromdb("newuserdays")) == 1){
 			echo "<td nowrap valign='top'><em>";
 			echo $value["letscode"];
 			echo "</em></font>";
@@ -111,7 +111,7 @@ function show_all_users($userrows,$configuration){
 			echo "<td nowrap valign='top' ><strong>";
 			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
 			echo "</strong></font>";
-		}elseif(check_timestamp($value["adate"],$configuration["system"]["newuserdays"]) == 1){
+		}elseif(check_timestamp($value["adate"],readconfigfromdb("newuserdays")) == 1){
 			echo "<td nowrap valign='top'><em>";
 			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
 			echo "</em></font>";

@@ -46,7 +46,7 @@ if(isset($_POST["zend"])){
 
 }else{
 		// no mail for demo site or when it not configured
-      if ($configuration["mail"]["enabled"] !== "1" ){
+      if (readconfigfromdb("mailenabled") !== "1" ){
          Echo "E-mail functies zijn uitgeschakeld door de beheerder, je kan dit formulier niet gebruiken";
       	return 0;
       } else {
@@ -162,7 +162,7 @@ function helpmail($posted_list,$rootpath){
 
 	$mailfrom .= "From: " .trim($posted_list['email']);
 	$mailto = "support@taurix.net";
-	$systemtag = $configuration["system"]["systemtag"];
+	$systemtag = readconfigfromdb("systemtag");
 
 	$mailsubject = $systemtag ." - " .$posted_list['subject'];
 

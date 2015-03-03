@@ -287,7 +287,7 @@ function show_active_users($active_userrows,$configuration){
                         echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
 			echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
                         echo "</strong></font>";
-                }elseif(check_timestamp($value["adate"],$configuration["system"]["newuserdays"]) == 1){
+                }elseif(check_timestamp($value["adate"],readconfigfromdb("newuserdays")) == 1){
                         echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
                         echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
                         echo "</strong></font>";

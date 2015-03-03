@@ -57,13 +57,7 @@ function validate_input($posted_list,$configuration){
 	if (empty($posted_list["pw1"]) || (trim($posted_list["pw1"]) == "")){
 		$errorlist["pw1"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}
-	//$pwscore = Password_Strength($posted_list["pw1"]);
-        //$pwreqscore = $configuration["system"]["pwscore"];
-        //if ($pwscore < $pwreqscore){
-        //        $errorlist["pw1"] = "<font color='#F56DB5'>Paswoord is te zwak (score $pwscore/$pwreqscore)</font>";
-        //}
 
-	
 	if (empty($posted_list["pw2"]) || (trim($posted_list["pw2"]) == "")){
 		$errorlist["pw2"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}

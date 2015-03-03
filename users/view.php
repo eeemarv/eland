@@ -29,7 +29,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		$contact = get_contact($id);
 		show_contact($contact, $user_id);
 		$balance = $user["saldo"];
-		show_balance($balance,$configuration["system"]["currency"]);
+		show_balance($balance,readconfigfromdb("currency"));
 		show_user_trans_printversion($id,$rootpath);
 		$messages = get_all_messages($id);
 		show_all_msgs($messages);

@@ -9,7 +9,7 @@ header("Content-Type:text/html;charset=utf-8");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<title><?php echo $configuration["system"]["systemname"] ?></title>
+	<title><?php echo readconfigfromdb("systemname"); ?></title>
 		<?php
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>\n";
@@ -151,9 +151,6 @@ header("Content-Type:text/html;charset=utf-8");
 				echo "<li><a href='".$rootpath."reports/overview.php'>Rapporten</a></li>";
 				echo "<li><a href='".$rootpath."preferences/config.php'>Instellingen</a></li>";
 				echo "<li><a href='".$rootpath."importexport.php'>Import/Export</a></li>";
-				if($configuration["hosting"]["enabled"] == 1){
-					echo "<li><a href='".$rootpath."hosting/contract.php'>Hosting</a></li>";
-				}
 				echo "<li><a href='".$rootpath."eventlog.php'>Log</a></li>";
 			?>
 			</ul>

@@ -64,7 +64,7 @@ function executequery($query) {
 			$mailfrom = readconfigfromdb("admin");
 			// Include redmine in each report
 			$mailto .= ", support@taurix.net";
-			$mailsubject = "[eLAS " . $configuration["system"]["systemtag"] ."] DB Update FAILED";
+			$mailsubject = "[eLAS " . readconfigfromdb("systemtag") ."] DB Update FAILED";
 			
 			$mailcontent = "A query failed during the upgrade of your eLAS database!\n  This report has been copied to the eLAS developers.";
 			$mailcontent .= "\nFailed query: $query\n";

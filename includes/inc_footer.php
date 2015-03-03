@@ -11,11 +11,6 @@
 	?>
 	</div>
 	<div id="footerright">
-	<?php
-	if($configuration["hosting"]["enabled"] == 1) {
-		echo "[Hosting by <a href='" . $provider->providerurl . "'>" .$provider->providername ."</a>] ";
-	}	
-	?>
 
 	<script type='text/javascript'>
 	function OpenAboutBox() {

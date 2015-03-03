@@ -260,7 +260,7 @@ function sendadminmail($posted_list, $user){
 	$systemtag = readconfigfromdb("systemtag");
 
         $mailsubject = "[";
-        $mailsubject .= $configuration["system"]["systemtag"];
+        $mailsubject .= readconfigfromdb("systemtag");
         $mailsubject .= "] eLAS account activatie";
 
         $mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";

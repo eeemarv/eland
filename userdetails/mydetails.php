@@ -33,7 +33,7 @@ if (isset($s_id)){
 	show_oids();
 	show_oidform();
 	$balance = $user["saldo"];
-	show_balance($balance, $user, $configuration["system"]["currency"]);
+	show_balance($balance, $user, readconfigfromdb("currency"));
 }else{
 	redirect_login($rootpath);
 }

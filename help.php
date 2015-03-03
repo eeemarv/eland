@@ -40,7 +40,7 @@ if(isset($_POST["zend"])){
 
 }else{
 		// no mail for demo site or when it not configured
-      if ($configuration["mail"]["enabled"] !== "1" ){
+      if (readconfigfromdb("mailenabled") !== "1" ){
          Echo "E-mail functies zijn uitgeschakeld door de beheerder, je kan dit formulier niet gebruiken";
       	return 0;
       } else {
@@ -173,14 +173,14 @@ function helpmail($posted_list,$rootpath){
 	global $elasversion;
 
 	$mailfrom .= "From: " .trim($posted_list['email']);
-        if (!empty($configuration["mail"]["support"])){
-		$mailto .= trim($configuration["mail"]["support"])."\r\n";
+        if (!empty(readconfigfromdb("support"]))){
+		$mailto .= trim(readconfigfromdb("support"))."\r\n";
         }else { 
 		 Echo "No support adress set in config, not sending";
 		 return 0;
 	}
 
-	$mailsubject = $configuration["system"]["systemtag"] ." - " .$posted_list['subject'];
+	$mailsubject = readconfigfromdb("systemtag") ." - " .$posted_list['subject'];
 
         $mailcontent  = "-- via de eLAS website werd hetvolgende probleem gemeld --\r\n";
 	$mailcontent .= "E-mail: {$posted_list['email']}\r\n";

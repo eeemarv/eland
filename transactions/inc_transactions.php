@@ -10,13 +10,13 @@ function mail_transaction($posted_list, $timestamp){
 
 
 // no mail for demo site or when it not configured
-	if ($configuration["mail"]["enabled"] !== "1" ){
+	if (readconfigfromdb("mailenabled") !== "1" ){
 	    error_log("Mail is not enabled");
 	return 0;
 	}
 
-	if (!empty($configuration["mail"]["from_address_transactions"])){
-		$mailfrom .= "From: ".trim($configuration["mail"]["from_address_transactions"])."\r\n";
+	if (!empty(readconfigfromdb("from_address_transactions"))){
+		$mailfrom .= "From: ".trim(readconfigfromdb("from_address_transactions"))."\r\n";
 	}else { error_log("No from_address_transaction");return 0;}
 
 	$userfrom=get_user_maildetails($posted_list["id_from"]);
@@ -29,7 +29,7 @@ function mail_transaction($posted_list, $timestamp){
 		$mailto .= ",". $userto["emailaddress"];
 	}    
 
-	$mailsubject .= "[eLAS-".$configuration["system"]["systemtag"]."] " . $posted_list["amount"] . " " .$configuration["system"]["currency"];
+	$mailsubject .= "[eLAS-".readconfigfromdb("systemtag")."] " . $posted_list["amount"] . " " .readconfigfromdb("currency");
 	$mailsubject .= " van " . $userfrom["name"] . " (".trim($posted_list["letscode_from"]).")";
 	$mailsubject .= " aan " . $userto["name"] . " (".trim($posted_list["letscode_to"]).")";
 	$mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
@@ -73,13 +73,13 @@ function mail_deleted_transaction($transaction,$reason){
 	$currentuser = get_user_maildetails($s_id);
 
 	// no mail for demo site or when it not configured
-        if ($configuration["mail"]["enabled"] !== "1" ){
+        if (readconfigfromdb("mailenabled") !== "1" ){
             error_log("Mail is not enabled");
         return 0;
         }
 
-        if (!empty($configuration["mail"]["from_address_transactions"])){
-                $mailfrom .= "From: ".trim($configuration["mail"]["from_address_transactions"])."\r\n";
+        if (!empty(readconfigfromdb("from_address_transactions"))){
+                $mailfrom .= "From: ".trim(readconfigfromdb("from_address_transactions"))."\r\n";
         }else { error_log("No from_address_transaction");return 0;}
 
         $userfrom=get_user_maildetails($transaction["id_from"]);
@@ -93,11 +93,11 @@ function mail_deleted_transaction($transaction,$reason){
         }
 
 	# Include the administrator in the to field
-	if (!empty($configuration["mail"]["admin"])){
-                $mailto .= ",". $configuration["mail"]["admin"];
+	if (!empty(readconfigfromdb("admin"))){
+                $mailto .= ",". readconfigfromdb("admin");
 	}
 
-        $mailsubject .= "[eLAS-".$configuration["system"]["systemtag"]."] " . "Transactie verwijderd";
+        $mailsubject .= "[eLAS-".readconfigfromdb("systemtag")."] " . "Transactie verwijderd";
         $mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 	$mailcontent .= "Onderstaande transactie werd door " .$currentuser["name"] ."(" .$currentuser["emailaddress"] .") verwijderd om deze reden:\r\n";
 	$mailcontent .= $reason ."\r\n";

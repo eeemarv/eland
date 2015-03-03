@@ -35,5 +35,4 @@ function getadoerror(){
 }
 
 require_once($rootpath."includes/inc_dbconfig.php");
-require_once($rootpath."includes/inc_legacyconfig.php");
-?>
+

@@ -9,7 +9,7 @@ header("Content-Type:text/html;charset=utf-8");
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
 <html>
 <head>
-	<title><?php echo $configuration["system"]["systemname"] ?></title>
+	<title><?php echo readconfigfromdb("systemname"); ?></title>
 		<?php
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/legacy.css'>";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>";

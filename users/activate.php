@@ -58,20 +58,20 @@ function redirect_overview(){
 
 function sendadminmail($posted_list, $user){
         global $configuration;
-        if (!empty($configuration["mail"]["admin"])){
-                $mailfrom .= trim($configuration["mail"]["from_address"]);
-                $mailto .= trim($configuration["mail"]["admin"])."\r\n";
+        if (!empty(readconfigfromdb("admin"))){
+                $mailfrom .= trim(readconfigfromdb("from_address"));
+                $mailto .= trim(readconfigfromdb("admin"))."\r\n";
         }else {
                  Echo "No admin adress set in config, not sending";
                  return 0;
         }
 
         $mailsubject = "[";
-        $mailsubject .= $configuration["system"]["systemtag"];
+        $mailsubject .= readconfigfromdb("systemtag");
         $mailsubject .= "] eLAS account activatie";
 
         $mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";
-        $mailcontent .= $configuration["system"]["systemtag"];
+        $mailcontent .= readconfigfromdb("systemtag");
         $mailcontent .= " ***\r\n\n";
 	$mailcontent .= "De account ";
 	$mailcontent .= $user["login"];
@@ -122,7 +122,7 @@ function validate_input($posted_list,$configuration){
 		$errorlist["pw1"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}
         $pwscore = Password_Strength($posted_list["pw1"]);
-        $pwreqscore = $configuration["system"]["pwscore"];
+        $pwreqscore = readconfigfromdb("pwscore");
         if ($pwscore < $pwreqscore){
                 $errorlist["pw1"] = "<font color='#F56DB5'>Paswoord is te zwak (score $pwscore/$pwreqscore)</font>";
         }
