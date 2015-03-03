@@ -29,7 +29,7 @@ function startsession($user){
 }
 
 function startmastersession() {
-	global $provider;
+
 	session_start();
 	$_SESSION["id"] = 0;
 	$_SESSION["name"] = "master";

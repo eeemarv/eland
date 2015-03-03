@@ -6,7 +6,7 @@ function get_elaslog() {
 	global $provider;
 	global $baseurl;
 	
-	$logurl = $provider->logurl;
+//	$logurl = $provider->logurl;
 	
 	$url = "$logurl/site?tag=" . readconfigfromdb("systemtag");
 	
@@ -37,7 +37,6 @@ function log_event($id,$type,$event){
 	global $elasdebug;
 	global $dirbase;
 	global $rootpath;
-	global $provider;
 	
 	$ip = $_SERVER['REMOTE_ADDR'];
  

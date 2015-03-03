@@ -6,17 +6,19 @@ $dbparameters = array();
 if(!empty($redis)){
 	//echo "Fetching config from redis";
 	$rediskey = $session_name . "::config";
+
 	if($redis->exists($rediskey)){
-		//loadredisfromdb();
 		readredistoglobal();
 	} else {
 		loadredisfromdb();
 		readredistoglobal();
 	}
 } else {
-	// Read values from database
+
 	$query = "SELECT * FROM config";
 	$dbconfig = $db->GetArray($query);
+
+	
 	
 	$query = "SELECT * FROM parameters";
 	$dbparameters = $db->GetArray($query);
@@ -28,13 +30,14 @@ function readconfigfromdb($searchkey){
     global $db;
     global $dbconfig;
 
-	//var_dump($dbconfig);
+    return $dbconfig[$searchkey];
+/*
     foreach ($dbconfig as $key => $list) {
-	//echo "<br />" .$list['setting'] ." - " .$list['value'];
-	if($list['setting'] == $searchkey) {
-		return $list['value'];
-	}
-    }
+		
+		if($list['setting'] == $searchkey) {
+			return $list['value'];
+		}
+    } */
 }
 
 function readredistoglobal(){
@@ -90,6 +93,4 @@ function readparameter($searchkey){
 			return $list['value'];
 		}
     }
-}	
-
-?>
+}

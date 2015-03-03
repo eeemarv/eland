@@ -142,7 +142,7 @@ echo "\nCron run finished\n";
 ////////////////////////////////////////////////////////////////////////////
 
 function publish_mailinglists(){
-	global $provider;
+
 	global $configuration;
 	global $db;
 	global $baseurl;
@@ -184,7 +184,7 @@ function create_paths() {
 function mailq_run(){
 	# FIXME Replace this code with direct connection to AMQ
 	# Process mails in the queue and hand them of to a droid
-	global $provider;
+
 	global $configuration;
 	global $db;
 	global $baseurl;

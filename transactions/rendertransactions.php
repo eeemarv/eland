@@ -14,7 +14,7 @@ $s_accountrole = $_SESSION["accountrole"];
 $trans_orderby = $_GET["trans_orderby"];
 $asc = $_GET["asc"];
 
-$trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'date';
+$trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
 if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
@@ -48,8 +48,8 @@ function show_all_transactions($transactions, $trans_orderby, $asc){
 		'indicator' => '');
 
 	$tableheader_ary = array(
-		'date'	=> array_merge($asc_preset_ary, array(
-			'lang' => 'Transactiedatum')),
+		'cdate'	=> array_merge($asc_preset_ary, array(
+			'lang' => 'Tijdstip')),
 		'fromusername' => array_merge($asc_preset_ary, array(
 			'lang' => 'Van')),
 		'tousername' => array_merge($asc_preset_ary, array(
@@ -81,7 +81,7 @@ function show_all_transactions($transactions, $trans_orderby, $asc){
 	        	echo "<tr class='even_row'>";
 		}
 		echo "<td nowrap valign='top'>";
-		echo $value["datum"];
+		echo $value["cdatum"];
 		echo "</td>";
 		echo "<td nowrap valign='top'>";
 		if(!empty($value["real_from"])){

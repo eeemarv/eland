@@ -62,9 +62,8 @@ $schemaversion=$elas->schemaversion;
 $soapversion = 1200;
 $restversion = 1;
 
-// Load provider data  if hosting is enabled
-$providerfile = $rootpath ."sites/provider.xml";
-$provider = simplexml_load_file($providerfile);
+// provider file not loaded anymore.
+
 
 // Connect to Redis
 
@@ -96,7 +95,7 @@ date_default_timezone_set($elas_timezone);
 
 // Provide transient notifications
 function setstatus($status,$flag=0){
-	global $provider;
+
 	global $xmlconfig;		
 	global $_SESSION;
 	
