@@ -1,5 +1,11 @@
 <?php
 ob_start();
+
+// 
+defined('__DIR__') or define('__DIR__', dirname(__FILE__));
+chdir(__DIR__);
+
+
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
@@ -16,8 +22,7 @@ require_once($rootpath."includes/inc_news.php");
 session_start();
 
 header('Content-type: text/plain');
-//global $elas;
-global $xmlconfig;
+
 global $db;
 
 # Upgrade the DB first if required
@@ -395,6 +400,3 @@ function automail_saldo(){
 	//Timestamp this run
 	write_timestamp("saldo");
 }
-
-
-?>
