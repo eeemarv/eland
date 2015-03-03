@@ -156,18 +156,6 @@ header("Content-Type:text/html;charset=utf-8");
 			</ul>
 		</div>	
 
-		<div class='nav'>
-                        <ul class='vertmenu'>
-                        <?php
-                                if($s_accountrole == "admin"){
-                                        $myurl = $rootpath."bugreport.php";
-                                        echo "<li><a href='#' onclick=\"javascript:window.open('$myurl','bug','width=700,height=640,scrollbars=no,toolbar=no,location=no,menubar=no')\">Bug rapporteren</a></li>";
-                                }
-                        ?>
-                        </ul>
-               </div>
-
-		
 	<?php
 		}
 	}elseif($ptitle == "login"){

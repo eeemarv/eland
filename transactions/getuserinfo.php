@@ -38,10 +38,3 @@ if (!$err) {
 	}
 }
 
-
-
-//debug
-//print_r($_GET);
-//$user = get_user_by_letscode($letscode);
-//echo $user["fullname"];
-?>
