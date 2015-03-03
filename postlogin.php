@@ -10,29 +10,8 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_hosting.php");
 require_once($rootpath."includes/inc_auth.php");
 
-// Check the hosting contract from json if hosted
-if($configuration["hosting"]["enabled"] == 1){
-	$contract = get_contract();
-	$enddate = strtotime($contract["end"]);
-	$graceperiod = $contract["graceperiod"];
-	$now = time();
+$locked = 0;
 
-	switch($enddate){
-		case (($enddate + ($graceperiod * 24 * 60 * 60)) < $now):
-			//Het contract is vervallen en uit grace
-			//LOCK eLAS
-			$locked = 1;
-			log_event("","System", "eLAS is locked, logging in is disabled");
-			break;
-		case (($enddate + ($graceperiod * 24 * 60 * 60)) > $now):
-			//Het contract is niet vervallen of uit grace
-			//extra unLOCK eLAS
-			$locked = 0;
-			break;
-	}
-} else {
-	$locked = 0;
-}
 //debug
 //print_r($_POST);
 //session_start();
@@ -43,7 +22,9 @@ if($configuration["hosting"]["enabled"] == 1){
 
 $myuser = get_user_maildetails_by_login($_POST["login"]);
 
-if ($xmlconfig->hosting == 1 && $_POST["login"] == "master" && hash('sha512', $_POST["password"]) == $provider->masterpassword) {
+$master_password = getenv('ELAS_MASTER_PASSWORD');
+
+if ($master_password && hash('sha512', $_POST["password"]) == $master_password) {
 	log_event(0,"Master","Login as master user");
 	startmastersession();
 	$status = "OK - Gebruiker ingelogd";

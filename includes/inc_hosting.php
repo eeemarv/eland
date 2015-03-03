@@ -87,10 +87,7 @@ function check_contract(){
         $now = time();
         if($configuration["hosting"]["enabled"] == 1){
 			$contract = get_contract();
-                //print_r($contractxml);
-                //echo $contractxml->contractend;
                 $testdate = strtotime($contract['end']);
-                //echo "Now: $now - Testdate: $testdate";
                 if($now < $testdate){
                         $return = 1;
                 } else {
@@ -125,25 +122,3 @@ function check_contractgrace(){
         return $return;
 }
 
-function check_hostinglock(){
-	// DEPRECATED
-	global $configuration;
-    global $baseurl;
-	global $dirbase;
-        $now = time();
-        if($configuration["hosting"]["enabled"] == 1){
-                $contractxml = simplexml_load_file("sites/$dirbase/hosting.xml");
-                //print_r($contractxml);
-                //echo $contractxml->contractend;
-		if($contractxml->locked == 1){
-                        $return = 1;
-                } else {
-                        $return = 0;
-                }
-        } else {
-                $return = 0;
-        }
-        return $return;
-}
-
-?>

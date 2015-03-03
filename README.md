@@ -42,6 +42,7 @@ The session name is also:
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
 * ELAS_DB_DEBUG
+* ELAS_MASTER_PASSWORD: sha512 encoded password for master (role admin) 
 
 Session name
 -----

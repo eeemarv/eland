@@ -11,7 +11,7 @@ require_once($rootpath."includes/inc_dbconfig.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_saldofunctions.php");
-require_once($rootpath."includes/inc_hosting.php");
+
 require_once($rootpath."includes/inc_news.php");
 session_start();
 
@@ -112,11 +112,6 @@ if(check_timestamp("processqueue", $frequency) == 1){
 	write_timestamp("processqueue");
 }
 
-// Check if the hosting contract expired
-//$frequency = 5;
-//if(check_timestamp("check_hosting", $frequency) == 1){
-//        check_hosting();
-//}
 
 // Publish news items that were approved
 $frequency = 30;
@@ -138,7 +133,6 @@ if(check_timestamp("publish_mailinglists", $frequency) == 1 && readconfigfromdb(
 
 echo "Refreshing Redis config \n\n";
 loadredisfromdb();
-//var_dump($dbconfig);
 
 // END
 echo "\nCron run finished\n";
@@ -164,11 +158,6 @@ function process_amqmessages(){
 	global $configuration;
 	
 	echo "Running Process AMQ messages...\n";
-	//echo "Hosting is " .$configuration["hosting"]["enabled"] . "\n";
-	//if ($configuration["hosting"]["enabled"]	== 1){
-	//	echo "  Getting hosting AMQ updates...\n";
-	//	amq_processhosting();
-	//}
 	echo "  Getting other AMQ messages...\n";
 	amq_processincoming();
 	write_timestamp("process_ampmessages");
@@ -256,41 +245,6 @@ function mailq_run(){
 	echo "\n";
 
 	write_timestamp("mailq_run");
-}
-
-function check_hosting(){
-	global $configuration;
-	global $db;
-	//TODO Add check if this instance has certain features like mailing lists and enable/disable them
-	if($configuration["hosting"]["enabled"] == 1){
-		// From 2.4.32 notifications will no longer be sent by eLAS but by ESM
-		echo "Running check_contract\n";
-		//$provider = get_provider();
-		$contract = get_contract();
-		//print_r($contract);
-		$enddate = strtotime($contract["end"]);
-		$graceperiod = $contract["graceperiod"];
-		$now = time();
-
-		switch($enddate){
-			case (($enddate + ($graceperiod * 24 * 60 * 60)) < $now):
-				//Het contract is vervallen en uit grace
-				//LOCK eLAS
-				$query = "UPDATE parameters SET value = 1 WHERE parameter = 'lockout'";
-				$db->Execute($query);
-				log_event("","System","eLAS LOCKED, contract expired and over grace period");
-				break;
-			case (($enddate + ($graceperiod * 24 * 60 * 60)) > $now):
-				//Het contract is niet vervallen of uit grace
-				//extra unLOCK eLAS
-				$query = "UPDATE parameters SET value = 0 WHERE parameter = 'lockout'";
-				$db->Execute($query);
-				log_event("","System","eLAS UNLOCKED, contract valid or within grace period");
-				break;
-		}
-		//sendemail($from,$mailto,$subject,$content)
-	}
-	write_timestamp("check_hosting");
 }
 
 function cat_update_count() {

@@ -22,7 +22,7 @@ $ptitle="home1";
 // get the initial includes
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_hosting.php");
+
 
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
@@ -50,12 +50,7 @@ if(isset($s_id)){
 		}
 
 		echo "<tr><td>";
-		if(check_contract() == 0){
-			echo "<font color='red'>";
-                        echo "Het hosting contract van deze installatie is vervallen, controleer het hosting contract onder het beheerdersmenu > <a href='hosting/contract.php'>hosting</a>";
-		echo "</font>";
-                }
-                echo "</td></tr>";
+        echo "</td></tr>";
 		//Check for an internal interlets account with valid soap connection
 		$interletsstatus = checkinterlets();
 		if($interletsstatus  != ""){

@@ -5,7 +5,7 @@ $dbparameters = array();
 
 if(!empty($redis)){
 	//echo "Fetching config from redis";
-	$rediskey = $xmlconfig->sessionname . "::config";
+	$rediskey = $session_name . "::config";
 	if($redis->exists($rediskey)){
 		//loadredisfromdb();
 		readredistoglobal();
@@ -43,12 +43,12 @@ function readredistoglobal(){
 	global $dbconfig;
 	global $dbparameters;
 	
-	$rediskey = $xmlconfig->sessionname . "::config";
+	$rediskey = $session_name . "::config";
 	$result = $redis->get($rediskey);
 	//echo $result;
 	$dbconfig = unserialize($result);
 	
-	$rediskey = $xmlconfig->sessionname . "::parameters";
+	$rediskey = $session_name . "::parameters";
 	$dbparameters = unserialize($redis->get($rediskey));
 }
 
@@ -63,13 +63,13 @@ function loadredisfromdb(){
 		return;
 	}
 
-	$rediskey = $xmlconfig->sessionname . "::config";
+	$rediskey = $session_name . "::config";
 	$query = "SELECT * FROM config";
 	$mydbconfig = serialize($db->GetArray($query));
 	$redis->set($rediskey, $mydbconfig);
 	$redis->expire($rediskey, 1800);
 	
-	$rediskey = $xmlconfig->sessionname . "::parameters";
+	$rediskey = $session_name . "::parameters";
 	$query = "SELECT * FROM parameters";
 	$mydbparameters = serialize($db->GetArray($query));
 	$redis->set($rediskey, $mydbparameters);
