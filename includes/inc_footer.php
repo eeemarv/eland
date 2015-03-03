@@ -1,6 +1,13 @@
   </div>
   <div class="clearer"></div>
  </div>
+ 
+ <?php
+if ($s_accountrole == 'admin'){
+	echo '<div><p><b>Support mailinglijst</b> Inschrijven: support-elas-heroku-subscribe@lists.riseup.net Berichten posten:  support-elas-heroku@lists.riseup.net</p></div>';
+}
+ ?>
+ 
  <div id="footer">
 	<div id="footerleft">
 	<?php
@@ -24,8 +31,7 @@
 	</div>
 </div>
 
-<?php
-echo "<!-- Generated on " .gethostname() . " -->";
-?>
+
+
 </body>
 </html>
