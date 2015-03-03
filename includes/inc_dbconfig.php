@@ -85,3 +85,73 @@ function readparameter($key)
 
 	return $value;
 }
+
+/**
+ * (not used)
+ */
+function readuser($id, $refresh = false)
+{
+    global $db, $session_name, $redis;
+    static $cache;
+
+	if (!$refresh)
+	{
+		if (isset($cache[$id]))
+		{
+			return $cache[$id];
+		}
+
+		$redis_key = $session_name . '_user_' . $id;
+
+		if ($redis->exists($redis_key))
+		{
+			return $cache[$id] = json_decode($redis->get($redis_key));
+		}
+	}
+
+	$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
+
+	if (isset($user))
+	{
+		$redis->set($redis_key, json_encode($user));
+		$redis->expire($rediskey, 7200);
+		$cache[$id] = $user;
+	}
+
+	return $user;
+}
+
+/**
+ * (not used)
+ */
+function readusercontacts($user_id, $refresh = false)
+{
+    global $db, $session_name, $redis;
+    static $cache;
+
+	if (!$refresh)
+	{
+		if (isset($cache[$user_id]))
+		{
+			return $cache[$user_id];
+		}
+
+		$redis_key = $session_name . '_user_contacts_' . $user_id;
+
+		if ($redis->exists($redis_key))
+		{
+			return $cache[$user_id] = json_decode($redis->get($redis_key));
+		}
+	}
+
+	$contacts = $db->GetRow('SELECT * FROM contact WHERE id_user = ' . $user_id);
+
+	if (isset($contacts))
+	{
+		$redis->set($redis_key, json_encode($contacts));
+		$redis->expire($rediskey, 7200);
+		$cache[$user_id] = $contacts;
+	}
+
+	return $user;
+}
