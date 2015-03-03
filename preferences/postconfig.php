@@ -25,7 +25,7 @@ if ($s_accountrole == "admin"){
 		}
 		echo "</strong></font>";
 	} else {
-		if(save_setting($posted_list, $mysetting) == true){
+		if(writeconfig($mysetting, $posted_list["value"]) == true){
 			echo "<font color='green'><strong>OK</font> - Instelling opgeslagen</strong>";
 		} else {
 			echo "<font color='red'><strong>Fout bij het opslaan</strong></font>";
@@ -46,22 +46,3 @@ function validate_input($posted_list){
 
 	return $errorlist;
 }
-
-function save_setting($posted_list,$setting){
-        global $db;
-	$query = "UPDATE config SET \"default\"='0', value='"; 
-	$query .= $posted_list["value"];
-	$query .= "' WHERE setting='";
-	$query .= $setting;
-	$query .= "'";
-        $result = $db->Execute($query);
-        if($result == true){
-				loadredisfromdb();
-                setstatus('Instelling gewijzigd',0);
-        } else {
-                setstatus('Instelling niet gewijzigd',0);
-        }
-        return $result;
-}
-
-?>

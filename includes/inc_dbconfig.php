@@ -1,98 +1,87 @@
 <?php
 
-$dbconfig = array();
-$dbparameters = array();
+/*
+ *
+ */
+ 
+function readconfigfromdb($key){
+    global $db, $session_name, $redis;
+    static $cache;
 
-if(!empty($redis)){
-	//echo "Fetching config from redis";
-	$rediskey = $session_name . "::config";
-
-	if($redis->exists($rediskey)){
-		readredistoglobal();
-	} else {
-		loadredisfromdb();
-		readredistoglobal();
-	}
-} else {
-
-	$query = "SELECT * FROM config";
-	$dbconfig = $db->GetArray($query);
-
-	
-	
-	$query = "SELECT * FROM parameters";
-	$dbparameters = $db->GetArray($query);
-}
-
-
-// Fetch configuration keys from the database
-function readconfigfromdb($searchkey){
-    global $db;
-    global $dbconfig;
-
- //   return $dbconfig[$searchkey];
-
-    foreach ($dbconfig as $key => $list) {
-		
-		if($list['setting'] == $searchkey) {
-			return $list['value'];
-		}
-    } 
-}
-
-function readredistoglobal(){
-	global $redis;
-	global $xmlconfig;
-	global $dbconfig;
-	global $dbparameters;
-	global $session_name;
-	
-	$rediskey = $session_name . "::config";
-	$result = $redis->get($rediskey);
-	//echo $result;
-	$dbconfig = unserialize($result);
-	
-	$rediskey = $session_name . "::parameters";
-	$dbparameters = unserialize($redis->get($rediskey));
-}
-
-function loadredisfromdb(){
-	global $db;
-	global $redis;
-	global $xmlconfig;
-	global $dbconfig;
-	global $dbparameters;
-	global $session_name;
-
-	if (empty($redis)){
-		return;
+	if (isset($cache[$key]))
+	{
+		return $cache[$key];
 	}
 
-	$rediskey = $session_name . "::config";
-	$query = "SELECT * FROM config";
-	$mydbconfig = serialize($db->GetArray($query));
-	$redis->set($rediskey, $mydbconfig);
-	$redis->expire($rediskey, 1800);
+	$redis_key = $session_name . '_config_' . $key;
+
+	if ($redis->exists($redis_key))
+	{
+		return $cache[$key] = $redis->get($redis_key);
+	}
+
+	$value = $db->GetOne('SELECT value FROM config WHERE setting = \'' . $key . '\'');
+
+	if (isset($value))
+	{
+		$redis->set($redis_key, $value);
+		$redis->expire($rediskey, 7200);
+		$cache[$key] = $value;
+	}
+
+	return $value;
+}
+
+
+/**
+ *
+ */
+function writeconfig($key, $value)
+{
+	global $db, $redis, $session_name;
 	
-	$rediskey = $session_name . "::parameters";
-	$query = "SELECT * FROM parameters";
-	$mydbparameters = serialize($db->GetArray($query));
-	$redis->set($rediskey, $mydbparameters);
-	$redis->expire($rediskey, 1800);
+	$query = "UPDATE config SET value = '" . $value . "' WHERE setting = '" . $key . "'";
+	$result = $db->Execute($query);
+	if (!$result)
+	{
+		return false;
+	}
+
+	$redis_key = $session_name . '_config_' . $key;
+	$redis->set($redis_key, $value);
+	$redis->expire($rediskey, 7200);
+
+	return true;
 }
 
-function writeconfig($setting,$value){
-	global $db;
-	$query = "UPDATE config SET value ='" . $value . "' WHERE setting = '" . $setting . "'";
-	$db->Execute($query);
-	loadredisfromdb();
-}
+/**
+ *
+ */
+function readparameter($key)
+{
+    global $db, $session_name, $redis;
+    static $cache;
 
-function readparameter($searchkey){
-	global $dbparameters;
-	foreach ($dbparameters as $key => $list) {
-		if($list['parameter'] == $searchkey) {
-			return $list['value'];
-		}
-    }
+	if (isset($cache[$key]))
+	{
+		return $cache[$key];
+	}
+
+	$redis_key = $session_name . '_parameters_' . $key;
+
+	if ($redis->exists($redis_key))
+	{
+		return $cache[$key] = $redis->get($redis_key);
+	}
+
+	$value = $db->GetOne('SELECT value FROM parameters WHERE parameter = \'' . $key . '\'');
+
+	if (isset($value))
+	{
+		$redis->set($redis_key, $value);
+		$redis->expire($rediskey, 1800);
+		$cache[$key] = $value;
+	}
+
+	return $value;
 }
