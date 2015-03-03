@@ -7,8 +7,9 @@ Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 Checklist
 ---------
 
-Cron 
-
+#####Cron 
+    heroku addons:add scheduler
+    set every 10 min.  `$ php cron/cron.php`
 
 Environment Vars
 ------
@@ -22,18 +23,18 @@ Environment Vars
 
 * ELAS_DOMAIN_SESSION_<domain>: session name by domain (must be the color name of the database!)
 
-Dots in <domain> are replaced by double underscore __
-Hyphens in <domain> are replaced by triple underscore ___
+    `Dots in <domain> are replaced by double underscore __`
+    `Hyphens in <domain> are replaced by triple underscore ___`
 
     example:
-    To link e-example.com to a session set environment variable
+    e-example.com 
     ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=<session_name>
 
     set environment variable:
         `heroku config:set ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=PURPLE`
 
 The session name is also:
-  * the color name of the database!
+  * the color name of the database.
   * prefix of the image files: <session name>_U_<ID>.JPG for profile images, <session_name>_M_<ID>.JPG for message images.
   * prefix of the keys in Redis.
 
@@ -44,8 +45,4 @@ The session name is also:
 * ELAS_DB_DEBUG
 * ELAS_MASTER_PASSWORD: sha512 encoded password for master (role admin) 
 
-Session name
------
-The session name is based on the domain stripped from non-alphanumeric chars.
-Take care it's unique for each domain!
 
