@@ -55,12 +55,8 @@ if(!empty($redis_url)){
 	Predis\Autoloader::register();
 	try {
 		$redispars = parse_url($redis_url);
-	    $redis = new Predis\Client($redispars);
+	    $redis = new Predis\Client($redis_url);
 
-
-
-
-	    
 	}
 	catch (Exception $e) {
 	    echo "Couldn't connected to Redis";
@@ -72,8 +68,10 @@ if(!empty($redis_url)){
 // Debug eLAS, enable extra logging
 $elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
 
-// Hardcode timezone to Europe/Brussels (read from config removed)
-date_default_timezone_set('Europe/Brussels');
+// default timezone to Europe/Brussels (read from config removed)
+$elas_timezone = getenv('ELAS_TIMEZONE');
+$elas_timezone = ($elas_timezone) ? $elas_timezone : 'Europe/Brussels';
+date_default_timezone_set($elas_timezone);
 
 // Provide transient notifications
 function setstatus($status,$flag=0){
@@ -93,5 +91,3 @@ function make_timestamp($timestring){
         $timestamp = mktime(0,0,0,$month, $day, $year);
         return $timestamp;
 }
-
-?>

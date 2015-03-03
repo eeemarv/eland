@@ -20,6 +20,7 @@ MANDRILL_PASSWORD
 DATABASE_URL : default database
 
 
+ELAS_TIMEZONE (defaults to 'Europe/Brussels')
 ELAS_DEBUG
 DB_DEBUG
 
