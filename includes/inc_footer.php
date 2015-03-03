@@ -29,14 +29,6 @@
 	</div>
 </div>
 
-<!-- Include Piwik tracking code -->
-<?php
-if($configuration["hosting"]["enabled"] == 1) {
-	require_once($rootpath."includes/inc_piwik.php");
-}
-?>
-
-
 <?php
 echo "<!-- Generated on " .gethostname() . " -->";
 ?>

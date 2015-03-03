@@ -86,10 +86,9 @@ function writeconfig($setting,$value){
 function readparameter($searchkey){
 	global $dbparameters;
 	foreach ($dbparameters as $key => $list) {
-	#echo "<br />" .$list['setting'] ." - " .$list['value'];
-	if($list['parameter'] == $searchkey) {
-		return $list['value'];
-	}
+		if($list['parameter'] == $searchkey) {
+			return $list['value'];
+		}
     }
 }	
 
