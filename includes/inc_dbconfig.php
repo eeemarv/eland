@@ -30,14 +30,14 @@ function readconfigfromdb($searchkey){
     global $db;
     global $dbconfig;
 
-    return $dbconfig[$searchkey];
-/*
+ //   return $dbconfig[$searchkey];
+
     foreach ($dbconfig as $key => $list) {
 		
 		if($list['setting'] == $searchkey) {
 			return $list['value'];
 		}
-    } */
+    } 
 }
 
 function readredistoglobal(){
@@ -45,6 +45,7 @@ function readredistoglobal(){
 	global $xmlconfig;
 	global $dbconfig;
 	global $dbparameters;
+	global $session_name;
 	
 	$rediskey = $session_name . "::config";
 	$result = $redis->get($rediskey);
@@ -61,6 +62,7 @@ function loadredisfromdb(){
 	global $xmlconfig;
 	global $dbconfig;
 	global $dbparameters;
+	global $session_name;
 
 	if (empty($redis)){
 		return;
