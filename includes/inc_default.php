@@ -1,5 +1,4 @@
 <?php
-//require 'vendor/autoload.php';
 
 # Get rid of missing rootpath errors
 if(!isset($rootpath)){
@@ -64,26 +63,8 @@ $restversion = 1;
 
 // provider file not loaded anymore.
 
-
 // Connect to Redis
-
-$redis_url = getenv('REDISTOGO_URL');
-
-if(!empty($redis_url)){
-	Predis\Autoloader::register();
-	try {
-		$redis_con = parse_url($redis_url);
-		$redis_con['password'] = $redis_con['pass'];
-		$redis_con['scheme'] = 'tcp';
-	    $redis = new Predis\Client($redis_con);
-
-	}
-	catch (Exception $e) {
-	    echo "Couldn't connected to Redis: ";
-	    echo $e->getMessage();
-	}
-}
-
+require_once $rootpath . 'includes/inc_redis.php';
 
 // Debug eLAS, enable extra logging
 $elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
@@ -96,12 +77,11 @@ date_default_timezone_set($elas_timezone);
 // Provide transient notifications
 function setstatus($status,$flag=0){
 
-	global $xmlconfig;		
+	global $xmlconfig;
 	global $_SESSION;
 	
 	$s_id = $_SESSION["id"];
 }
-
 
 // Make timestamps for SQL statements
 function make_timestamp($timestring){

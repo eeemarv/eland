@@ -7,18 +7,28 @@ chdir(__DIR__);
 
 
 $rootpath = "../";
+/**
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_amq.php");
+**/
+require_once $rootpath . 'includes/inc_redis.php';
 require_once($rootpath."cron/inc_cron.php");
 require_once($rootpath."cron/inc_upgrade.php");
+
+/**
 require_once($rootpath."cron/inc_stats.php");
+**/
+
+
 require_once($rootpath."includes/inc_dbconfig.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_saldofunctions.php");
 
 require_once($rootpath."includes/inc_news.php");
+
+
 session_start();
 
 header('Content-type: text/plain');
@@ -48,19 +58,25 @@ log_event("","DB","Upgraded database from schema version $dbversion to $donevers
 echo " *** eLAS v" .$elas->version . "(" .$elas->branch .")" ." build #" . $elas->build ." Cron system running [" .readconfigfromdb("systemtag") ."] ***\n\n";
 
 
-
+/*
 // Check and create required paths
 $frequency = 10;
 if(check_timestamp("create_paths", $frequency) == 1) {
 	create_paths();
-}
+}*/
 
 // Check for incoming messages on the AMQ
 //FIXME set frequency to 5
+/*
+
 $frequency = 0;
 if(check_timestamp("process_ampmessages", $frequency) == 1) {
 	process_amqmessages();
 }
+
+
+*/
+
 
 // Auto mail saldo on request
 $frequency = readconfigfromdb("saldofreqdays") * 1440;
@@ -80,17 +96,22 @@ if(check_timestamp("user_exp_msgs", $frequency) == 1 && readconfigfromdb("msgexp
 	check_user_exp_msgs();
 }
 
+/*
 // Clean up expired messages after the grace period
 $frequency = 1440;  
 if(check_timestamp("cleanup_messages", $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1){
         cleanup_messages();
 }
+*
+*/
 
 // Update counts for each message category
 $frequency = 60;
 if(check_timestamp("cat_update_count", $frequency) == 1) {
         cat_update_count();
 }
+
+
 
 // Update the cached saldo
 $frequency = 60;
@@ -130,14 +151,14 @@ if(check_timestamp("update_stats", $frequency) == 1){
 	update_stats();
 }
 
+
+/*
 $frequency = 60;
 if(check_timestamp("publish_mailinglists", $frequency) == 1 && readconfigfromdb("mailinglists_enabled") == 1){
 	publish_mailinglists();
 }
 
-
-echo "Refreshing Redis config \n\n";
-loadredisfromdb();
+*/
 
 // END
 echo "\nCron run finished\n";
@@ -236,7 +257,7 @@ function mailq_run(){
 		}
 		$json = json_encode($message);
 				
-		$mystatus = elasmail_queue($json);
+		$mystatus = elasmail_queue($json);  // non-existing function!
 		if($mystatus == 1){
 			$query = "UPDATE mailq SET  sent = 1 WHERE msgid = '" . $message["id"] ."'";
 			$db->Execute($query);
