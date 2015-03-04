@@ -25,7 +25,7 @@ function readconfigfromdb($key){
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($rediskey, 7200);
+		$redis->expire($rediskey, 3600);
 		$cache[$key] = $value;
 	}
 
@@ -49,7 +49,7 @@ function writeconfig($key, $value)
 
 	$redis_key = $session_name . '_config_' . $key;
 	$redis->set($redis_key, $value);
-	$redis->expire($rediskey, 7200);
+	$redis->expire($rediskey, 3600);
 
 	return true;
 }
@@ -87,7 +87,7 @@ function readparameter($key)
 }
 
 /**
- * (not used)
+ * 
  */
 function readuser($id, $refresh = false)
 {
@@ -100,21 +100,21 @@ function readuser($id, $refresh = false)
 		{
 			return $cache[$id];
 		}
-
+/*
 		$redis_key = $session_name . '_user_' . $id;
 
 		if ($redis->exists($redis_key))
 		{
-			return $cache[$id] = json_decode($redis->get($redis_key));
-		}
+			return $cache[$id] = unserialize($redis->get($redis_key));
+		} */
 	}
 
 	$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
 
 	if (isset($user))
 	{
-		$redis->set($redis_key, json_encode($user));
-		$redis->expire($rediskey, 7200);
+//		$redis->set($redis_key, serialize($user));
+//		$redis->expire($rediskey, 3600);
 		$cache[$id] = $user;
 	}
 
@@ -140,7 +140,7 @@ function readusercontacts($user_id, $refresh = false)
 
 		if ($redis->exists($redis_key))
 		{
-			return $cache[$user_id] = json_decode($redis->get($redis_key));
+			return $cache[$user_id] = unserialize($redis->get($redis_key));
 		}
 	}
 
@@ -148,8 +148,8 @@ function readusercontacts($user_id, $refresh = false)
 
 	if (isset($contacts))
 	{
-		$redis->set($redis_key, json_encode($contacts));
-		$redis->expire($rediskey, 7200);
+		$redis->set($redis_key, serialize($contacts));
+		$redis->expire($rediskey, 3600);
 		$cache[$user_id] = $contacts;
 	}
 

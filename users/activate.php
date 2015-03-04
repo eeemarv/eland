@@ -101,6 +101,7 @@ function update_user($id, $posted_list){
     global $db;
     $posted_list["mdate"] = date("Y-m-d H:i:s");
     $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
+    readuser($id, true);
     return $result;
 }
 

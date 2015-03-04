@@ -10,7 +10,7 @@ $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
 if (isset($s_id)){
-	$user = get_user($s_id);
+	$user = readuser($s_id);
 	show_user($user);
 }else{
 	redirect_login($rootpath);
@@ -71,13 +71,3 @@ function show_user($user){
         echo "</td>";
         echo "</table>";
 }
-
-function get_user($s_id){
-	global $db;
-	$query = "SELECT * FROM users ";
-	$query .= "WHERE id=".$s_id;
-	$user = $db->GetRow($query);
-	return $user;
-}
-
-?>

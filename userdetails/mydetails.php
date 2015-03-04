@@ -18,7 +18,7 @@ echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js
 
 if (isset($s_id)){
 	show_ptitle();
-	$user = get_user($s_id);
+	$user = readuser($s_id);
 	show_user();
 	show_editlink();
 	show_sendform();
@@ -318,13 +318,7 @@ function show_user(){
         echo "<script type='text/javascript'>showsmallloader('userdiv');loaduser('$url');</script>";
 }
 
-function get_user($s_id){
-	global $db;
-	$query = "SELECT * FROM users ";
-	$query .= "WHERE id=".$s_id;
-	$user = $db->GetRow($query);
-	return $user;
-}
+
 
 function get_contact($s_id){
 	global $db;

@@ -58,6 +58,8 @@ function update_user($id, $rootpath){
 	$msg = "Removed picture " .$myuser['PictureFile'];
 	log_event($id,"Pict",$msg);
 	echo "Foto verwijderd.";
+
+	readuser($id, true);	
 }
 
 function delete_file($rootpath, $file){
@@ -78,10 +80,7 @@ function show_form($user){
 }
 
 function get_user($id){
-   global $db;
-	$query = "SELECT * FROM users WHERE id=".$id;
-	$user = $db->GetRow($query);
-	return $user;
+   return readuser($id);
 }
 
 function redirect_view(){

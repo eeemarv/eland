@@ -138,6 +138,7 @@ function update_user($id, $posted_list){
     global $db;
     $posted_list["mdate"] = date("Y-m-d H:i:s");
     $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
+    readuser($id, true);
     return $result;
 }
 
@@ -146,6 +147,7 @@ function set_pw($id, $posted_list){
         //$posted_list["password"]= 
 	$posted_list["adate"] = date("Y-m-d H:i:s");
 	$result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
+	readuser($id, true);
         return $result;
 }
 

@@ -16,7 +16,7 @@ if(isset($s_id)){
 	if (isset($_GET["id"])){
 		$id = $_GET["id"];
 		show_ptitle();
-		$user = get_user($id);
+		$user = readuser($id);
 		show_user($user);
 		$contact = get_contact($id);
 		show_contact($contact);
@@ -122,13 +122,6 @@ function show_user($user){
 	echo "</table>";
 }
 
-function get_user($id){
-	global $db;
-	$query = "SELECT * FROM users ";
-	$query .= "WHERE id=".$id;
-	$user = $db->GetRow($query);
-	return $user;
-}
 
 function get_messages($id){
 	global $db;

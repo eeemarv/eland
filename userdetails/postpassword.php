@@ -28,6 +28,7 @@ if (isset($s_id)){
 		} else {
 			echo "Fout bij het opslaan";
 		}
+		readuser($s_id, true);
 	}
 }
 

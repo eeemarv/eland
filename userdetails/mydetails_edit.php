@@ -191,10 +191,7 @@ function show_form($user, $error_list){
 }
 
 function get_user($id){
-   global $db;
-	$query = "SELECT * FROM users WHERE id=".$id;
-	$user = $db->GetRow($query);
-	return $user;
+	return readuser($id, true);
 }
 
 function redirect_view(){
@@ -205,8 +202,5 @@ function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_smallfooter.php");
-?>
 
 

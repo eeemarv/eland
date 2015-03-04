@@ -40,19 +40,13 @@ if (isset($s_id)){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-//function get_user($s_id){
-//	global $db;
-//	$query = "SELECT * FROM users WHERE id = ".$s_id."";
-//	$user = $db->GetRow($query);
-//	return $user;
-//}
 
 function show_form($list_users){
 	global $s_accountrole;
 	global $s_letscode;
 	$date = date("Y-m-d");
 	
-	$user = get_user($s_id);
+	$user = readuser($s_id);
 	$list_users = get_users($s_id);
 
 	echo "<script type='text/javascript' src='/js/posttransaction.js'></script>";

@@ -85,11 +85,7 @@ function get_contacttype($abbrev){
 }
 
 function get_user($id){
-        global $db;
-        $query = "SELECT * FROM users ";
-        $query .= "WHERE id=".$id;
-        $user = $db->GetRow($query);
-        return $user;
+		return readuser($id);
 } 
 
 function get_user_by_letscode($letscode){
@@ -135,8 +131,7 @@ function get_userid_by_openid($openid){
 
 function get_user_maildetails($userid){
         global $db;
-        $query = "SELECT * FROM users WHERE id = $userid";
-        $user = $db->GetRow($query);
+		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
         $contacts = $db->GetRow($query);
         $user["emailaddress"] = $contacts["value"];
@@ -156,8 +151,7 @@ function get_user_maildetails_by_login($login){
 
 function get_user_mailaddresses($userid){
         global $db;
-        $query = "SELECT * FROM users WHERE id = $userid";
-        $user = $db->GetRow($query);
+		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
         $array= $db->GetArray($query);
 		foreach ($array as $key => $value){
@@ -168,8 +162,7 @@ function get_user_mailaddresses($userid){
 
 function get_user_mailarray($userid){
         global $db;
-        $query = "SELECT * FROM users WHERE id = $userid";
-        $user = $db->GetRow($query);
+		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
         $array= $db->GetArray($query);
         return $array;
@@ -186,8 +179,6 @@ function get_users(){
 
 function get_user_letscode($id){
         global $db;
-        $query = "SELECT letscode FROM users WHERE users.id = $id";
-        $result = $db->GetRow($query);
-        return $result["letscode"];
+        $user = readuser($id);
+        return $user['letscode'];
 }
-?>

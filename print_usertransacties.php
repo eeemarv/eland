@@ -122,11 +122,7 @@ function show_ptitle($id, $user){
 
 
 function getuser($id){
-	global $db;
-	$q = "SELECT * FROM users WHERE id=$id";
-	$user = $db->GetRow($q);
-	return $user;
-	
+	return readuser($id);	
 }
 
 function redirect_useroverview($rootpath){
@@ -138,10 +134,4 @@ function redirect_useroverview($rootpath){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-
-
-//include($rootpath."includes/inc_sidebar.php");
-//include($rootpath."includes/inc_footer.php");
-?>
-
 

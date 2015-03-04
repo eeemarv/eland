@@ -138,6 +138,8 @@ function dbinsert($userid, $file, $rootpath) {
 	// Redirect
 	setstatus("Foto toegevoegd", 0);
 
+	readuser($userid, true);
+
 	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");	
 	header("Location:  mydetails.php");
         //echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
