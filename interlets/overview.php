@@ -14,7 +14,6 @@ $s_accountrole = $_SESSION["accountrole"];
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
-
 if(isset($s_id) && ($s_accountrole == "admin")){
 	showlinks($rootpath);
 	show_ptitle1();
@@ -29,7 +28,6 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-
 function showlinks($rootpath){
 	global $s_id;
         echo "<table width='100%' border=0><tr><td>";
@@ -43,7 +41,7 @@ function showlinks($rootpath){
         echo "</div>";
         echo "</td></tr></table>";
 }
-	
+
 function show_outputdiv(){
 	echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
 	echo "<script type=\"text/javascript\">loadurl('rendergroups.php');</script>";
@@ -95,7 +93,7 @@ function show_groups($groups){
 	}
 	echo "</tr>";
 	echo "</table>";
-		
+
 }
 
 function getgroups(){

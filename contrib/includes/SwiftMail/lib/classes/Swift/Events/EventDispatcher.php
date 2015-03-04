@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Interface for the EventDispatcher which handles the event dispatching layer.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 interface Swift_Events_EventDispatcher
 {
-  
+
   /**
    * Create a new SendEvent for $source and $message.
    * @param Swift_Transport $source
@@ -26,7 +25,7 @@ interface Swift_Events_EventDispatcher
    */
   public function createSendEvent(Swift_Transport $source,
     Swift_Mime_Message $message);
-  
+
   /**
    * Create a new CommandEvent for $source and $command.
    * @param Swift_Transport $source
@@ -36,7 +35,7 @@ interface Swift_Events_EventDispatcher
    */
   public function createCommandEvent(Swift_Transport $source,
     $command, $successCodes = array());
-  
+
   /**
    * Create a new ResponseEvent for $source and $response.
    * @param Swift_Transport $source
@@ -46,14 +45,14 @@ interface Swift_Events_EventDispatcher
    */
   public function createResponseEvent(Swift_Transport $source,
     $response, $valid);
-  
+
   /**
    * Create a new TransportChangeEvent for $source.
    * @param Swift_Transport $source
    * @return Swift_Events_TransportChangeEvent
    */
   public function createTransportChangeEvent(Swift_Transport $source);
-  
+
   /**
    * Create a new TransportExceptionEvent for $source.
    * @param Swift_Transport $source
@@ -62,18 +61,18 @@ interface Swift_Events_EventDispatcher
    */
   public function createTransportExceptionEvent(Swift_Transport $source,
     Swift_TransportException $ex);
-  
+
   /**
    * Bind an event listener to this dispatcher.
    * @param Swift_Events_EventListener $listener
    */
   public function bindEventListener(Swift_Events_EventListener $listener);
-  
+
   /**
    * Dispatch the given Event to all suitable listeners.
    * @param Swift_Events_EventObject $evt
    * @param string $target method
    */
   public function dispatchEvent(Swift_Events_EventObject $evt, $target);
-  
+
 }

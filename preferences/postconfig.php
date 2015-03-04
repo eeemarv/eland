@@ -16,7 +16,7 @@ if ($s_accountrole == "admin"){
 	$mysetting = $_POST["setting"];
 	$posted_list["value"] = $_POST["value"];
 	//$errorlist = validate_input($posted_list);
-			
+
 	if (!empty($errorlist)){
 		echo "<font color='red'><strong>Fout: ";
 		foreach($errorlist as $key => $value){
@@ -32,7 +32,6 @@ if ($s_accountrole == "admin"){
 		}
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////

@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
@@ -39,7 +39,7 @@ if(isset($s_id)) {
 			echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
 			setstatus("Fout: foto niet toegevoegd",1);
 		}
-	
+
 	} else {
 		show_form($msgid);
 	}
@@ -100,7 +100,7 @@ function resizepic($file,$tmpfile,$rootpath, $msgid){
 	$newwidth=800;
 	$newheight=($height/$width)*$newwidth;
 	$tmp=imagecreatetruecolor($newwidth,$newheight);
-	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height); 
+	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
         $ts = time();
         $uploadfile =  $rootpath ."sites/$dirbase/msgpictures/" .$msgid ."_" .$ts ."." .$ext;
 	//$uploadfile =  $rootpath ."userpictures/" .$msgid ."_" .$file;
@@ -116,7 +116,7 @@ function resizepic($file,$tmpfile,$rootpath, $msgid){
 		imagedestroy($tmp);
 	}
 }
-	
+
 function dbinsert($msgid, $file, $rootpath) {
 	global $db;
 	global $_SESSION;
@@ -130,7 +130,7 @@ function dbinsert($msgid, $file, $rootpath) {
 	// Redirect
 	setstatus("Foto toegevoegd", 0);
 
-	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");	
+	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
         echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 }
 

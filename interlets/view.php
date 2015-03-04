@@ -15,7 +15,7 @@ include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id)){
-	
+
 	if (isset($_GET["id"])){
 		$id = $_GET["id"];
 		$group = get_letsgroup($id);
@@ -28,8 +28,8 @@ if(isset($s_id)){
 
 		echo "<td valign='top' width='300'>";
 		show_status($id);
-                echo "</td>";	
-	
+                echo "</td>";
+
 		echo "</tr>";
 		echo "</table>";
 		show_legend();
@@ -168,4 +168,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

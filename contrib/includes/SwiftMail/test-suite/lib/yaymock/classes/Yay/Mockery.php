@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/MockGenerator.php';
 //require 'Yay/SimpleInvocation.php';
 //require 'Yay/SimpleDescription.php';
@@ -34,28 +34,28 @@
  */
 class Yay_Mockery implements Yay_InvocationHandler
 {
-  
+
   /**
    * The Expectation stack which is being checked.
    * @var array
    * @access private
    */
   private $_expectations = array();
-  
+
   /**
    * Invocations which are not expected by any Expectations get caught here.
    * @var array
    * @access private
    */
   private $_unexpectedInvocations = array();
-  
+
   /**
    * A mock class generator.
    * @var Yay_MockGenerator
    * @access private
    */
   private $_generator;
-  
+
   /**
    * Create a new Mockery.
    */
@@ -63,7 +63,7 @@ class Yay_Mockery implements Yay_InvocationHandler
   {
     $this->_generator = Yay_MockGenerator::getInstance();
   }
-  
+
   /**
    * Create a MockObject matching $typeHint.
    * If the $typeHint is an interface the Mock will implement the interface
@@ -81,7 +81,7 @@ class Yay_Mockery implements Yay_InvocationHandler
     $reflector = new ReflectionClass($className);
     return $reflector->newInstance($this);
   }
-  
+
   /**
    * Specify an Expectation (or Expectations) to check.
    * @param Yay_ExpectationProvider $provider
@@ -93,7 +93,7 @@ class Yay_Mockery implements Yay_InvocationHandler
       $this->_expectations[] = $expectation;
     }
   }
-  
+
   /**
    * Get a state machine named $name.
    * @param string $name
@@ -103,7 +103,7 @@ class Yay_Mockery implements Yay_InvocationHandler
   {
     return new Yay_StateMachine($name);
   }
-  
+
   /**
    * Create a new Sequence named $name.
    * @param string $name
@@ -113,7 +113,7 @@ class Yay_Mockery implements Yay_InvocationHandler
   {
     return new Yay_SimpleSequence($name);
   }
-  
+
   /**
    * Used by YayMock internally (ignore this method!).
    */
@@ -139,7 +139,7 @@ class Yay_Mockery implements Yay_InvocationHandler
     }
     return $ret;
   }
-  
+
   /**
    * Assert that all Expectations are satisfied.
    * Throws an Exception of type Yay_NotSatisfiedException if any Expecations
@@ -179,5 +179,5 @@ class Yay_Mockery implements Yay_InvocationHandler
         );
     }
   }
-  
+
 }

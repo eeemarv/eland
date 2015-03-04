@@ -8,12 +8,12 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
 
   private $_factory;
   private $_prefix = 'Swift_CharacterReader_';
-  
+
   public function setUp()
   {
     $this->_factory = new Swift_CharacterReaderFactory_SimpleCharacterReaderFactory();
   }
-  
+
   public function testCreatingUtf8Reader()
   {
     foreach (array('utf8', 'utf-8', 'UTF-8', 'UTF8') as $utf8)
@@ -22,7 +22,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertIsA($reader, $this->_prefix . 'Utf8Reader');
     }
   }
-  
+
   public function testCreatingIso8859XReaders()
   {
     $charsets = array();
@@ -36,7 +36,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
         $charsets[] = strtoupper($body) . '8859-' . $number;
       }
     }
-    
+
     foreach ($charsets as $charset)
     {
       $reader = $this->_factory->getReaderFor($charset);
@@ -44,7 +44,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingWindows125XReaders()
   {
     $charsets = array();
@@ -55,7 +55,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $charsets[] = 'WINDOWS-125' . $number;
       $charsets[] = 'WINDOWS125' . $number;
     }
-    
+
     foreach ($charsets as $charset)
     {
       $reader = $this->_factory->getReaderFor($charset);
@@ -63,7 +63,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingCodePageReaders()
   {
     $charsets = array();
@@ -74,7 +74,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $charsets[] = 'CP-125' . $number;
       $charsets[] = 'CP125' . $number;
     }
-    
+
     foreach (array(437, 737, 850, 855, 857, 858, 860,
       861, 863, 865, 866, 869) as $number)
     {
@@ -83,7 +83,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $charsets[] = 'CP-' . $number;
       $charsets[] = 'CP' . $number;
     }
-    
+
     foreach ($charsets as $charset)
     {
       $reader = $this->_factory->getReaderFor($charset);
@@ -91,7 +91,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingAnsiReader()
   {
     foreach (array('ansi', 'ANSI') as $ansi)
@@ -101,7 +101,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingMacintoshReader()
   {
     foreach (array('macintosh', 'MACINTOSH') as $mac)
@@ -111,7 +111,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingKOIReaders()
   {
     $charsets = array();
@@ -122,7 +122,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $charsets[] = 'KOI-' . $end;
       $charsets[] = 'KOI' . $end;
     }
-    
+
     foreach ($charsets as $charset)
     {
       $reader = $this->_factory->getReaderFor($charset);
@@ -130,7 +130,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingIsciiReaders()
   {
     foreach (array('iscii', 'ISCII', 'viscii', 'VISCII') as $charset)
@@ -140,7 +140,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingMIKReader()
   {
     foreach (array('mik', 'MIK') as $charset)
@@ -150,7 +150,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingCorkReader()
   {
     foreach (array('cork', 'CORK', 't1', 'T1') as $charset)
@@ -160,7 +160,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(1, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingUcs2Reader()
   {
     foreach (array('ucs-2', 'UCS-2', 'ucs2', 'UCS2') as $charset)
@@ -170,7 +170,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(2, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingUtf16Reader()
   {
     foreach (array('utf-16', 'UTF-16', 'utf16', 'UTF16') as $charset)
@@ -180,7 +180,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(2, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingUcs4Reader()
   {
     foreach (array('ucs-4', 'UCS-4', 'ucs4', 'UCS4') as $charset)
@@ -190,7 +190,7 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(4, $reader->getInitialByteSize());
     }
   }
-  
+
   public function testCreatingUtf32Reader()
   {
     foreach (array('utf-32', 'UTF-32', 'utf32', 'UTF32') as $charset)
@@ -200,5 +200,5 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactoryAcceptanceTest
       $this->assertEqual(4, $reader->getInitialByteSize());
     }
   }
-  
+
 }

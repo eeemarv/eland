@@ -37,12 +37,11 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 
 function show_closebutton(){
-        echo "<table border=0 width='100%'><tr><td align='right'><form id='closeform'>";         
+        echo "<table border=0 width='100%'><tr><td align='right'><form id='closeform'>";
 	echo "<input type='button' id='close' value='Sluiten' onclick='self.close(); window.opener.location.reload();'>";
 
         echo "<form></td></tr></table>";
 }
-
 
 function show_serveroutputdiv(){
         echo "<div id='serveroutput' class='serveroutput'>";
@@ -75,7 +74,6 @@ function writecontrol($key,$value){
         echo "<script type=\"text/javascript\">document.getElementById('" .$key ."').value = \"" .$value ."\";</script>";
 }
 
-
 function get_newsitem($id){
     global $db;
                 $query = "SELECT * , ";
@@ -99,22 +97,21 @@ function show_form(){
 	echo "</td>\n</tr>\n\n";
 	echo "<tr>\n<td width='10%' valign='top' align='right'>Locatie</td><td>";
 	echo "<input type='text' name='location' id='location' size='50'>";
-	
+
 	echo "</td></tr>\n\n<tr>\n<td></td>\n<td>";
 
 	echo "</td>\n</tr>\n\n";
-
 
 	echo "<tr>\n<td valign='top' align='right'>Titel </td>\n<td>";
 	echo "<input type='text' name='headline' id='headline' size='50'>";
 	echo "</td></tr>\n\n<tr>\n<td></td>\n<td>";
 	echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Nieuwsbericht </td>\n";
-	echo "<td>"; 
+	echo "<td>";
 	echo "<textarea name='newsitem' id='newsitem' cols='60' rows='15' >";
 	echo "</textarea></td>\n</tr>\n\n<tr><td></td>\n<td>";
-	
+
 	echo "</td>\n</tr>\n\n";
 	echo "<tr><td>Niet vervallen</td><td><input type=checkbox name='sticky' id='sticky'></td>";
 	echo "<tr><td colspan='2' align='right'>";

@@ -67,11 +67,11 @@ function show_transaction($transaction){
 	echo "</tr><tr>";
         echo "<td width='150'>Omschrijving</td>";
         echo "<td>". $transaction["description"]."</td>";
-	
+
 	echo "</tr>";
 	echo "</table></div>";
 
-	if($s_accountrole == "admin"){	
+	if($s_accountrole == "admin"){
 		echo "<div class='border_b'>";
 		echo "|<a href='delete.php?id=".$transaction["transid"]."'> Verwijderen</a> |";
 		echo "</div>";
@@ -89,4 +89,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

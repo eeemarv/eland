@@ -6,7 +6,7 @@ require_once 'Swift/StreamFilters/StringReplacementFilterFactory.php';
 class Swift_StreamFilters_StringReplacementFilterFactoryTest
   extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testInstancesOfStringReplacementFilterAreCreated()
   {
     $factory = $this->_createFactory();
@@ -14,7 +14,7 @@ class Swift_StreamFilters_StringReplacementFilterFactoryTest
       'Swift_StreamFilters_StringReplacementFilter'
       );
   }
-  
+
   public function testSameInstancesAreCached()
   {
     $factory = $this->_createFactory();
@@ -22,7 +22,7 @@ class Swift_StreamFilters_StringReplacementFilterFactoryTest
     $filter2 = $factory->createFilter('a', 'b');
     $this->assertSame($filter1, $filter2, '%s: Instances should be cached');
   }
-  
+
   public function testDifferingInstancesAreNotCached()
   {
     $factory = $this->_createFactory();
@@ -32,13 +32,12 @@ class Swift_StreamFilters_StringReplacementFilterFactoryTest
       '%s: Differing instances should not be cached'
       );
   }
-  
+
   // -- Creation methods
-  
+
   private function _createFactory()
   {
     return new Swift_StreamFilters_StringReplacementFilterFactory();
   }
-  
-}
 
+}

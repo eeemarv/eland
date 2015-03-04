@@ -48,29 +48,29 @@ Growler.createWindow = function(css) {
 	});
 }
 
-/* 
+/*
  * Growler.Base, the mother of all growling
  */
 
 Growler.Base = new Class({
 	Implements: [Options, Events],
-	
+
 	options: {
 		timeOut: 5000,
 		containerCss: 'GrowlContainer'
 	},
 	container: null,
-	
+
 	initialize: function(options) {
 		if(options)
 			this.setOptions(options);
-		
+
 		this.container = new Element('div', {
 			'class': this.options.containerCss
 		});
 		$(document.body).grab(this.container);
 	},
-	
+
 	listen: function(style, msg, el, evt) {
 		if($(el)) {
 			$(el).addEvent(evt, function() {
@@ -80,7 +80,7 @@ Growler.Base = new Class({
 			throw 'invalid element id';
 		}
 	},
-	
+
 	spawn: function(msg, style) {
 		var win = Growler.createWindow(style);
 		win.set('text', msg);
@@ -95,43 +95,43 @@ Growler.Base = new Class({
 	}
 });
 
-/* 
+/*
  * Growler.Classic uses a png/gif file as background image, thus making size + style quite static
  * This is a fallback Growler that will only be instantiated if the client is using IE
  */
 
 Growler.Classic = new Class({
 	Extends: Growler.Base,
-	
+
 	options: {
 		cssStyle: 'GrowlerClassic'
 	},
-	
+
 	listen: function(el, evt, msg) {
 		this.parent(this.options.cssStyle, msg, el, evt);
 	},
-	
+
 	notify: function(msg) {
 		this.spawn(msg, this.options.cssStyle);
 	}
 });
 
-/* 
+/*
  * Growler.Modern is a fully customizable html5 / css3 implementation of Growl.
- * Compatibility: Safari 5, Firefox 3.*, Chrome 
+ * Compatibility: Safari 5, Firefox 3.*, Chrome
  */
 
 Growler.Modern = new Class({
 	Extends: Growler.Base,
-	
+
 	options: {
 		cssStyle: 'GrowlerModern'
 	},
-	
+
 	listen: function(el, evt, msg) {
 		this.parent(this.options.cssStyle, msg, el, evt);
 	},
-	
+
 	notify: function(msg) {
 		this.spawn(msg, this.options.cssStyle);
 	}

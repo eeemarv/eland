@@ -44,7 +44,7 @@ echo "<th valign='top'>Commentaar</th>";
 echo "<th valign='top'>Publiek</th>";
 echo "<th valign='top'></th>";
 echo "</tr>";
-	
+
 	foreach($contact as $key => $value){
 		echo "<tr valign='top'  nowrap><td>".htmlspecialchars($value["abbrev"],ENT_QUOTES)." </td>";
 		echo "<td valign='top' nowrap>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";

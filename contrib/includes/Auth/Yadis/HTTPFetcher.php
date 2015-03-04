@@ -19,7 +19,7 @@
 require_once "Auth/OpenID.php";
 
 define('Auth_OpenID_FETCHER_MAX_RESPONSE_KB', 1024);
-define('Auth_OpenID_USER_AGENT', 
+define('Auth_OpenID_USER_AGENT',
        'php-openid/'.Auth_OpenID_VERSION.' (php/'.phpversion().')');
 
 class Auth_Yadis_HTTPResponse {
@@ -171,4 +171,3 @@ class Auth_Yadis_HTTPFetcher {
         trigger_error("not implemented", E_USER_ERROR);
     }
 }
-

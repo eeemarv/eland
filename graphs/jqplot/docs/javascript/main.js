@@ -1,7 +1,6 @@
 // This file is part of Natural Docs, which is Copyright (C) 2003-2008 Greg Valure
 // Natural Docs is licensed under the GPL
 
-
 //
 //  Browser Styles
 // ____________________________________________________________________________
@@ -59,11 +58,9 @@ else if (agt.indexOf("gecko") != -1)
         {  browserVer = "Firefox2";  }
     }
 
-
 //
 //  Support Functions
 // ____________________________________________________________________________
-
 
 function GetXPosition(item)
     {
@@ -81,7 +78,6 @@ function GetXPosition(item)
     return position;
     };
 
-
 function GetYPosition(item)
     {
     var position = 0;
@@ -97,7 +93,6 @@ function GetYPosition(item)
 
     return position;
     };
-
 
 function MoveToPosition(item, x, y)
     {
@@ -115,11 +110,9 @@ function MoveToPosition(item, x, y)
         };
     };
 
-
 //
 //  Menu
 // ____________________________________________________________________________
-
 
 function ToggleMenu(id)
     {
@@ -157,11 +150,9 @@ function HideAllBut(ids, max)
         };
     }
 
-
 //
 //  Tooltips
 // ____________________________________________________________________________
-
 
 var tooltipTimer = 0;
 
@@ -201,7 +192,6 @@ function ReallyShowTip(tooltipID, linkID, docX, docY)
         var left = GetXPosition(link);
         var top = GetYPosition(link);
         top += link.offsetHeight;
-
 
         // The fallback method is to use the mouse X and Y relative to the document.  We use a separate if and test if its a number
         // in case some browser snuck through the above if statement but didn't support everything.
@@ -256,11 +246,9 @@ function HideTip(tooltipID)
         {  tooltip.style.visibility = "hidden";  }
     }
 
-
 //
 //  Blockquote fix for IE
 // ____________________________________________________________________________
-
 
 function NDOnLoad()
     {
@@ -276,7 +264,6 @@ function NDOnLoad()
         };
     };
 
-
 var resizeTimer = 0;
 
 function NDOnResize()
@@ -286,7 +273,6 @@ function NDOnResize()
 
     resizeTimer = setTimeout(NDDoResize, 250);
     };
-
 
 function NDDoResize()
     {
@@ -313,8 +299,6 @@ function NDDoResize()
     resizeTimer = 0;
     }
 
-
-
 /* ________________________________________________________________________________________________________
 
     Class: SearchPanel
@@ -331,12 +315,10 @@ function NDDoResize()
     ________________________________________________________________________________________________________
 */
 
-
 function SearchPanel(name, mode, resultsPath)
     {
     if (!name || !mode || !resultsPath)
         {  alert("Incorrect parameters to SearchPanel.");  };
-
 
     // Group: Variables
     // ________________________________________________________________________
@@ -398,12 +380,8 @@ function SearchPanel(name, mode, resultsPath)
     */
     this.deactivateTimeoutLength = 200;
 
-
-
-
     // Group: DOM Elements
     // ________________________________________________________________________
-
 
     // Function: DOMSearchField
     this.DOMSearchField = function()
@@ -425,12 +403,8 @@ function SearchPanel(name, mode, resultsPath)
     this.DOMSearchPanel = function()
         {  return document.getElementById("MSearchPanel");  };
 
-
-
-
     // Group: Event Handlers
     // ________________________________________________________________________
-
 
     /*
         Function: OnSearchFieldFocus
@@ -440,7 +414,6 @@ function SearchPanel(name, mode, resultsPath)
         {
         this.Activate(isActive);
         };
-
 
     /*
         Function: OnSearchFieldChange
@@ -471,7 +444,6 @@ function SearchPanel(name, mode, resultsPath)
             };
         };
 
-
     /*
         Function: OnSearchTypeFocus
         Called when focus is added or removed from the search type.
@@ -480,7 +452,6 @@ function SearchPanel(name, mode, resultsPath)
         {
         this.Activate(isActive);
         };
-
 
     /*
         Function: OnSearchTypeChange
@@ -496,11 +467,8 @@ function SearchPanel(name, mode, resultsPath)
             };
         };
 
-
-
     // Group: Action Functions
     // ________________________________________________________________________
-
 
     /*
         Function: CloseResultsWindow
@@ -511,7 +479,6 @@ function SearchPanel(name, mode, resultsPath)
         this.DOMPopupSearchResultsWindow().style.display = "none";
         this.Activate(false, true);
         };
-
 
     /*
         Function: Search
@@ -557,7 +524,6 @@ function SearchPanel(name, mode, resultsPath)
         else if (this.mode == "FramedHTML")
             {  resultsFrame = window.top.frames['Content'];  };
 
-
         if (resultsPage != this.lastResultsPage ||
 
             // Bug in IE.  If everything becomes hidden in a run, none of them will be able to be reshown in the next for some
@@ -585,7 +551,6 @@ function SearchPanel(name, mode, resultsPath)
                 {  resultsFrame.location.href = resultsPageWithSearch;  };
             };
 
-
         var domPopupSearchResultsWindow = this.DOMPopupSearchResultsWindow();
 
         if (this.mode == "HTML" && domPopupSearchResultsWindow.style.display != "block")
@@ -599,17 +564,13 @@ function SearchPanel(name, mode, resultsPath)
             domPopupSearchResultsWindow.style.display = 'block';
             };
 
-
         this.lastSearchValue = searchValue;
         this.lastResultsPage = resultsPage;
         };
 
-
-
     // Group: Activation Functions
     // Functions that handle whether the entire panel is active or not.
     // ________________________________________________________________________
-
 
     /*
         Function: Activate
@@ -650,7 +611,6 @@ function SearchPanel(name, mode, resultsPath)
             };
         };
 
-
     /*
         Function: InactivateAfterTimeout
 
@@ -671,9 +631,6 @@ function SearchPanel(name, mode, resultsPath)
         };
     };
 
-
-
-
 /* ________________________________________________________________________________________________________
 
    Class: SearchResults
@@ -682,7 +639,6 @@ function SearchPanel(name, mode, resultsPath)
    The class that handles everything on the search results page.
    _________________________________________________________________________________________________________
 */
-
 
 function SearchResults(name, mode)
     {
@@ -697,7 +653,6 @@ function SearchResults(name, mode)
         The number of matches from the last run of <Search()>.
     */
     this.lastMatchCount = 0;
-
 
     /*
         Function: Toggle
@@ -739,7 +694,6 @@ function SearchResults(name, mode)
                 };
             };
         };
-
 
     /*
         Function: Search
@@ -833,4 +787,3 @@ function SearchResults(name, mode)
         return true;
         };
     };
-

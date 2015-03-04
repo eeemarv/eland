@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Action.php';
 
 /**
@@ -25,14 +25,14 @@
  */
 class Yay_Actions_ReturnValueAction implements Yay_Action
 {
-  
+
   /**
    * The value to return.
    * @var mixed
    * @access private
    */
   private $_value;
-  
+
   /**
    * Create a new ReturnValueAction for $value.
    * @param mixed $value
@@ -41,7 +41,7 @@ class Yay_Actions_ReturnValueAction implements Yay_Action
   {
     $this->_value = $value;
   }
-  
+
   /**
    * Mimmick the method Invocation and return a value.
    * @param Yay_Invocation $invocation
@@ -52,7 +52,7 @@ class Yay_Actions_ReturnValueAction implements Yay_Action
     $value = $this->_value;
     return $value;
   }
-  
+
   /**
    * Describe this Expectation to $description.
    * @param Yay_Description $description
@@ -61,7 +61,7 @@ class Yay_Actions_ReturnValueAction implements Yay_Action
   {
     $description->appendText(sprintf(' Returns %s;', $this->_describeValue('%s [%s]')));
   }
-  
+
   private function _describeValue($format)
   {
     $description = '';
@@ -96,5 +96,5 @@ class Yay_Actions_ReturnValueAction implements Yay_Action
     }
     return $description;
   }
-  
+
 }

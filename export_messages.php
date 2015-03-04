@@ -9,8 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
-
 if(isset($s_id) && ($s_accountrole == "admin")){
 
 	show_ptitle();
@@ -20,24 +18,20 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
-
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-
 function show_all_msgs($messagerows){
-	
+
 	echo '"id","V/A","Wat","Wie","Letscode","Categorie","Gecreeerd op","Aangepast op","Geldig tot"';
 	echo "\r\n";
 foreach($messagerows as $key => $value){
-		
+
 		echo '"';
 		echo $value["id"];
 		echo '","';
@@ -64,10 +58,6 @@ echo '","';
 		echo "\r\n";
 	}
 }
-
-
-
-
 
 function get_all_msgs(){
 	global $db;
@@ -101,8 +91,4 @@ function show_ptitle(){
 	header("Expires: 0");
 }
 
-
-
-
 ?>
-

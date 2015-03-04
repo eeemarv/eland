@@ -36,7 +36,7 @@ function show_listing(){
 	echo "<br><a href='balance.php'>Saldo op datum</a>";
 	echo "<br><a href='messages.php'>Lijst Vraag & Aanbod per categorie</a>";
 }
-	
+
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>

@@ -12,7 +12,7 @@ function makenewsPOSTRequest(url, parameters) {
          //http_request.overrideMimeType('text/xml');
          http_request.overrideMimeType('text/html');
       }
-   
+
    http_request.onreadystatechange = alertnewsContents;
    http_request.open('POST', url, true);
    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -26,7 +26,7 @@ function alertnewsContents() {
       if (http_request.status == 200) {
          //alert(http_request.responseText);
          result = http_request.responseText;
-         document.getElementById('serveroutput').innerHTML = result; 
+         document.getElementById('serveroutput').innerHTML = result;
          resultRegExp = /OK/;
          if(result.match(resultRegExp)){
                 document.getElementById('zend').disabled = true;
@@ -38,7 +38,7 @@ function alertnewsContents() {
       }
    }
 }
-   
+
 function getnews(obj) {
    var poststr = "itemdate=" + encodeURIComponent( document.getElementById("itemdate").value ) +
 		 "&location=" + encodeURIComponent( document.getElementById("location").value ) +
@@ -49,4 +49,3 @@ function getnews(obj) {
 		 "&newsitem=" + encodeURIComponent( document.getElementById("newsitem").value );
    makenewsPOSTRequest('/news/postnews.php', poststr);
 }
-

@@ -8,10 +8,9 @@
  The acceptance tests are run by default when "All Tests" are run with the
  testing suite, however, without configuration options here only the unit tests
  will be run and the acceptance tests will be skipped.
- 
+
  You can fill out only the parts you know and leave the other bits.
  */
-
 
 /*
  Defines: The path to a writable directory (a temporary dir).

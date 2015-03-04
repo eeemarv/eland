@@ -29,7 +29,7 @@ if (isset($s_id)){
 //	show_subs();
 	show_subform();
 	show_unsubform();
-	
+
 	show_oids();
 	show_oidform();
 	$balance = $user["saldo"];
@@ -49,11 +49,11 @@ function show_sendform() {
 	if(readconfigfromdb("mailinglists_enabled") == 1) {
 		global $s_id;
 		$lists = get_my_open_mailinglists($s_id);
-	
+
 		echo "<div id='mlformdiv' class='hidden'>";
 		echo "<form action='". $rootpath ."/resources/mailmessage/new' id='msgform' method='post'>";
 		echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-    
+
 		// Topic
 		echo "<tr><td valign='top' align='right'>Aan lijst</td>";
 		echo "<td valign='top'>";
@@ -64,8 +64,7 @@ function show_sendform() {
 		echo "</select>";
 		echo "</td>";
 		echo "</tr>";
-    
-   
+
 		// Moderatormail
 		echo "<tr><td valign='top' align='right'>Onderwerp</td>";
 		echo "<td valign='top'>";
@@ -78,7 +77,7 @@ function show_sendform() {
 		echo "<textarea class='ckeditor' id='msgbody' name='msgbody' cols='80' rows='15'></textarea>";
 		echo "</td>";
 		echo "</tr>";
-    
+
 		echo "<tr><td colspan='2' align='right'>";
 		echo "<input type='submit' id='zend' value='Verzenden' name='zend'>";
 		echo "</td><td>&nbsp;</td></tr>";
@@ -113,10 +112,10 @@ function show_oidform() {
 
 function show_subform(){
 		global $s_id;
-		
+
 		if(readconfigfromdb("mailinglists_enabled") == 1) {
 			$lists = get_availablelists($s_id);
-		
+
 			echo "<div id='subformdiv' class='hidden'>";
 			echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
 			echo "<tr><td>";
@@ -142,7 +141,7 @@ function show_subform(){
 function show_unsubform(){
 		global $s_id;
 		$lists = get_my_open_mailinglists($s_id);
-		
+
 		if(readconfigfromdb("mailinglists_enabled") == 1) {
 			echo "<div id='unsubformdiv' class='hidden'>";
 			echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
@@ -173,7 +172,7 @@ function show_subs(){
 	echo "<script type='text/javascript'>showsmallloader('subsdiv');loadsubs('$url');</script>";
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<ul class='hormenu'>";
-	
+
 	echo "<li><a id='showsubform' href='#'>Abonnement toevoegen</a></li>";
 	echo "<li><a id='showunsubform' href='#'>Abonnement opzeggen</a></li>";
 	echo "</ul>";
@@ -200,7 +199,6 @@ function get_type_contacts(){
 	return $typecontactrow;
 }
 
-
 function show_contactadd(){
 	global $rootpath;
 	global $s_id;
@@ -220,11 +218,11 @@ function show_contactadd(){
                 echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
         }
         echo "</select>\n</td>\n";
-        
+
         echo "</tr>\n\n<tr>\n<td></td>\n<td>";
         echo "</td>\n";
         echo "</tr>\n\n";
-        
+
         echo "<tr>\n";
         echo "<td valign='top' align='right'>Waarde</td>\n";
         echo "<td>";
@@ -233,7 +231,7 @@ function show_contactadd(){
         echo "</tr>\n\n<tr>\n<td></td>\n<td>";
         echo "</td>\n";
         echo "</tr>\n\n";
-        
+
         echo "<tr>\n";
         echo "<td valign='top' align='right'>Commentaar</td>\n";
         echo "<td>";
@@ -253,7 +251,6 @@ function show_contactadd(){
         echo "</tr>\n\n<tr>\n<td></td>\n<td>";
         echo "</td>\n";
         echo "</tr>\n\n";
-
 
         echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
         echo "</td>\n</tr>\n\n";
@@ -284,7 +281,6 @@ function show_pwform(){
 
 }
 
-
 function show_editlink(){
 	global $s_id;
 	echo "<table width='100%' border=0><tr><td>";
@@ -300,7 +296,7 @@ function show_editlink(){
 	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";a
 	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" ."/userdetails/upload_picture.php" ."'); } </script>";
     echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
-	
+
 	//$myurl="remove_picture.php?id=" .$s_id;
 	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto verwijderen</a></li>";
 	echo "<script type='text/javascript'>function RemovePic() {  OpenTBox('" ."/userdetails/remove_picture.php?id=" .$s_id ."'); } </script>";
@@ -317,8 +313,6 @@ function show_user(){
         echo "<div id='userdiv'></div>";
         echo "<script type='text/javascript'>showsmallloader('userdiv');loaduser('$url');</script>";
 }
-
-
 
 function get_contact($s_id){
 	global $db;

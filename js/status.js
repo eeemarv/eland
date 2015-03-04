@@ -15,7 +15,7 @@ window.addEvent('domready', function() {
     	    onFailure: function(){
     		}
 	});
-	
+
 	var StatusLoop = function() {
 		//jsnotify('looping');
 		statusreq.send();
@@ -25,4 +25,3 @@ window.addEvent('domready', function() {
 	statusreq.send();
 
 });
-

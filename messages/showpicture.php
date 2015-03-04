@@ -27,7 +27,6 @@ if(isset($s_id)) {
 	show_footer();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -60,7 +59,6 @@ function show_closebutton(){
         echo "<input type='button' id='close' value='Sluiten' onclick='self.close(); window.opener.location.reload();'>";
         echo "<form></td></tr></table>";
 }
-
 
 function show_picture($file){
 	global $baseurl;

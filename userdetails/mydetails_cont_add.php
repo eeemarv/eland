@@ -19,7 +19,7 @@ if (isset($s_id)){
 		$posted_list["id_type_contact"] = $_POST["id_type_contact"];
 		$posted_list["value"] = $_POST["value"];
 		$posted_list["comments"] = $_POST["comments"];
-		
+
 		if (trim($_POST["flag_public"]) == 1){
 				$posted_list["flag_public"] = 1;
 		}else{
@@ -29,14 +29,14 @@ if (isset($s_id)){
 		$error_list = validate_input($posted_list);
 		if(!empty($error_list)){
 			$typecontactrow = get_type_contacts();
-			show_form($typecontactrow, $error_list, $posted_list);	
+			show_form($typecontactrow, $error_list, $posted_list);
 		}else{
 			add_contact($s_id, $posted_list);
 		}
 	}else{
 		$typecontactrow = get_type_contacts();
 		show_form($typecontactrow, $error_list, $posted_list);
-	}	
+	}
 	show_serveroutputdiv();
 	show_closebutton();
 
@@ -100,14 +100,14 @@ function show_form($typecontactrow, $error_list, $posted_list){
 		echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
 	}
 	echo "</select>\n</td>\n";
-	
+
 	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
 	if(isset($error_list["id_type_contact"])){
 		echo $error_list["id_type_contact"];
 	}
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
+
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'>Waarde</td>\n";
 	echo "<td>";
@@ -123,7 +123,7 @@ function show_form($typecontactrow, $error_list, $posted_list){
 	}
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
+
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'>Commentaar</td>\n";
 	echo "<td>";
@@ -135,7 +135,6 @@ function show_form($typecontactrow, $error_list, $posted_list){
 	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
 
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'></td>\n";
@@ -147,7 +146,6 @@ function show_form($typecontactrow, $error_list, $posted_list){
 	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
 	echo "</td>\n";
 	echo "</tr>\n\n";
-
 
 	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
 	echo "</td>\n</tr>\n\n";

@@ -12,7 +12,6 @@ $s_accountrole = $_SESSION["accountrole"];
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
-
 if(isset($s_id) && ($s_accountrole == "admin")){
 	$id = $_GET["id"];
 	if(empty($id)){
@@ -88,7 +87,7 @@ function show_newsitem($newsitem){
 	//echo $newsitem["date"];
 	//echo "</td>";
 	echo "<td valign='top' nowrap>";
-		if(trim($newsitem["idate"]) != "00/00/00"){ 
+		if(trim($newsitem["idate"]) != "00/00/00"){
 			echo $newsitem["idate"];
 	}
 	echo "</td>";

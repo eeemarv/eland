@@ -10,13 +10,13 @@ class Swift_Plugins_Reporters_HtmlReporterTest
 
   private $_html;
   private $_message;
-  
+
   public function setUp()
   {
     $this->_html = new Swift_Plugins_Reporters_HtmlReporter();
     $this->_message = $this->_mock('Swift_Mime_Message');
   }
-  
+
   public function testReportingPass()
   {
     ob_start();
@@ -24,11 +24,11 @@ class Swift_Plugins_Reporters_HtmlReporterTest
       Swift_Plugins_Reporter::RESULT_PASS
       );
     $html = ob_get_clean();
-    
+
     $this->assertPattern('~ok|pass~i', $html, '%s: Reporter should indicate pass');
     $this->assertPattern('~foo@bar\.tld~', $html, '%s: Reporter should show address');
   }
-  
+
   public function testReportingFail()
   {
     ob_start();
@@ -36,11 +36,11 @@ class Swift_Plugins_Reporters_HtmlReporterTest
       Swift_Plugins_Reporter::RESULT_FAIL
       );
     $html = ob_get_clean();
-    
+
     $this->assertPattern('~fail~i', $html, '%s: Reporter should indicate fail');
     $this->assertPattern('~zip@button~', $html, '%s: Reporter should show address');
   }
-  
+
   public function testMultipleReports()
   {
     ob_start();
@@ -51,11 +51,11 @@ class Swift_Plugins_Reporters_HtmlReporterTest
       Swift_Plugins_Reporter::RESULT_FAIL
       );
     $html = ob_get_clean();
-    
+
     $this->assertPattern('~ok|pass~i', $html, '%s: Reporter should indicate pass');
     $this->assertPattern('~foo@bar\.tld~', $html, '%s: Reporter should show address');
     $this->assertPattern('~fail~i', $html, '%s: Reporter should indicate fail');
     $this->assertPattern('~zip@button~', $html, '%s: Reporter should show address');
   }
-  
+
 }

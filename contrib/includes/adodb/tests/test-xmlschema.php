@@ -13,7 +13,7 @@ $db->Connect( 'localhost', 'root', '', 'test' ) || die('fail connect1');
 // To create a schema object and build the query array.
 $schema = new adoSchema( $db );
 
-// To upgrade an existing schema object, use the following 
+// To upgrade an existing schema object, use the following
 // To upgrade an existing database to the provided schema,
 // uncomment the following line:
 #$schema->upgradeSchema();
@@ -31,8 +31,6 @@ print "</pre>\n";
 // Finally, clean up after the XML parser
 // (PHP won't do this for you!)
 //$schema->Destroy();
-
-
 
 print "<b>SQL to build xmlschema-mssql.xml</b>:\n<pre>";
 

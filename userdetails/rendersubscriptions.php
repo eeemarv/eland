@@ -20,7 +20,6 @@ if (isset($s_id)){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-
 function get_subs($s_id){
 	global $db;
 	$query = "SELECT * FROM listsubscriptions ";
@@ -37,7 +36,7 @@ function show_subs($subs){
 	//echo "<tr>";
 	//echo "<th valign='top'>OpenID</th>";
 	//echo "</tr>";
-	
+
 	foreach($subs as $key => $value){
 		//echo $value["openid"];
 		echo "<tr valign='top'  nowrap>";

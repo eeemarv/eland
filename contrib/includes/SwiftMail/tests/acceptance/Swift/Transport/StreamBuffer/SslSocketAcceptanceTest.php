@@ -17,13 +17,13 @@ class Swift_Transport_StreamBuffer_SslSocketAcceptanceTest
       'SWIFT_SSL_HOST in tests/acceptance.conf.php if you wish to run this test)'
       );
   }
-  
+
   protected function _initializeBuffer()
   {
     $parts = explode(':', SWIFT_SSL_HOST);
     $host = $parts[0];
     $port = isset($parts[1]) ? $parts[1] : 25;
-    
+
     $this->_buffer->initialize(array(
       'type' => Swift_Transport_IoBuffer::TYPE_SOCKET,
       'host' => $host,
@@ -33,5 +33,5 @@ class Swift_Transport_StreamBuffer_SslSocketAcceptanceTest
       'timeout' => 15
       ));
   }
-  
+
 }

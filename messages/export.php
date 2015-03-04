@@ -9,17 +9,17 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id)){
 	show_ptitle();
-	$cats = get_all_cats();	
+	$cats = get_all_cats();
 	reset($cats);
 	foreach($cats as $key => $value){
 		$catid=$value["id"];
-		echo "<hr>";		
+		echo "<hr>";
 		if ($value["id_parent"] == 0){
 			echo "<br>" . htmlspecialchars($value["fullname"],ENT_QUOTES)."<br>\n";
 		}else{
@@ -68,13 +68,6 @@ $strlength = strlen($content);
     }
 }
 
-
-
-
-
-
-
-
 function show_all_msgs_in_cat($messagerows){
 	$prev_content = "";
 	foreach($messagerows as $msgkey => $msgvalue){
@@ -87,12 +80,9 @@ function show_all_msgs_in_cat($messagerows){
 			echo $content;
 			echo " (".trim($msgvalue["letscode"]).")";
 			$prev_content = $content;
-		}		
+		}
 	}
 }
-
-
-
 
 function get_all_msgs_in_cat($cat_id,$msg_type){
 	$messagerows = array();
@@ -115,8 +105,6 @@ function get_all_cats(){
 	$cats = $db->GetArray($query);
 	return $cats;
 }
-
-
 
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");

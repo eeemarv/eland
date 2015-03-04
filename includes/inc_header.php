@@ -14,25 +14,24 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/floatingcolumns.css'>\n";			
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/floatingcolumns.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
-			
 
 			//ajax.js contains eLAS custom ajax fucntions that are being migrated to MooTools
 			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
-			
+
 			echo "<script type='text/javascript' src='/js/mootools-core.js'></script>\n";
 			echo "<script type='text/javascript' src='/js/mootools-more.js'></script>\n";
 			echo "<script type='text/javascript' src='/growler/growler.js'></script>\n";
 			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
-		
+
 			// Decomissioning status script	FIXME
 			// echo "<script type='text/javascript' src='/js/status.js'></script>\n";
-			
+
 			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>\n";
 
-			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />\n"; 
+			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />\n";
 			echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />\n";
 		?>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -62,14 +61,13 @@ header("Content-Type:text/html;charset=utf-8");
  <div id="main">
   <div id="menu">
 	<?php
-	
-		
+
 		if(isset($s_id)){
 			if($s_accountrole == "user" || "admin"){
 	?>
 			<div class='nav'>
 		 	<ul class="vertmenu">
-			<?php 
+			<?php
 				$name = readconfigfromdb("systemname");
 				//echo "<li><a href='".$rootpath."index.php'>Startscherm</a></li>";
 				echo "<li><a href='".$rootpath."index.php'>$name</a></li>";
@@ -80,12 +78,11 @@ header("Content-Type:text/html;charset=utf-8");
 			?>
 			</ul>
 		</div>
-		 
-		 
+
 		<div class='nav'>
 			<!-- <span class='nav'>Algemeen</span><br> -->
 			<ul class="vertmenu">
-			<?php 
+			<?php
 				echo "<li><a href='".$rootpath."searchcat.php'>Vraag & Aanbod</a></li>";
 				echo "<li><a href='".$rootpath."memberlist.php'>Contactlijst</a></li>";
 				if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
@@ -96,12 +93,12 @@ header("Content-Type:text/html;charset=utf-8");
 					echo "<li><a href='".$rootpath."interlets/userview.php'>Interlets</a></li>";
 				}
 			?>
-			</ul>	
+			</ul>
 		</div>
 		<div class='nav'>
 			<!--<span class='nav'>Persoonlijk</span><br>-->
 			<ul class="vertmenu">
-			<?php 
+			<?php
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
 					echo "<li><a href='".$rootpath."userdetails/mydetails.php'>Mijn gegevens</a></li>";
  					echo "<li><a href='".$rootpath."userdetails/mymsg_overview.php'>";
@@ -130,15 +127,14 @@ header("Content-Type:text/html;charset=utf-8");
 			</ul>
                </div>
 
-		
 	<?php
 	}
 	if($s_accountrole == "admin"){
-	?>	
+	?>
 		<div class='nav'>
 			<!--<span class='nav'>Beheer</span><br>-->
 			<ul class='vertmenu'>
-			<?php 
+			<?php
 				echo "<li><a href='".$rootpath."users/overview.php?user_orderby=letscode'>Gebruikers</a></li>";
 				echo "<li><a href='".$rootpath."categories/overview.php'>Categorien</a></li>";
 				echo "<li><a href='".$rootpath."interlets/overview.php'>LETS Groepen</a></li>";
@@ -154,7 +150,7 @@ header("Content-Type:text/html;charset=utf-8");
 				echo "<li><a href='".$rootpath."eventlog.php'>Log</a></li>";
 			?>
 			</ul>
-		</div>	
+		</div>
 
 	<?php
 		}

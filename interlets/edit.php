@@ -4,7 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-	
+
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
@@ -71,7 +71,6 @@ function show_serveroutputdiv(){
         echo "<div id='serveroutput' class='serveroutput'>";
         echo "</div>";
 }
-
 
 function show_ptitle(){
 	global $mode;
@@ -160,13 +159,13 @@ function show_form(){
 	echo "</td>\n<td valign='top'>";
         echo "<input type='text' name='presharedkey' id='presharedkey' size='30'>";
         echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
-	
+
 	echo "<tr>\n<td colspan='2' align='right' valign='top'>";
 	echo "<input type='submit' name='zend' id='zend' value='Opslaan'>";
 	echo "</td>\n</tr>\n\n</table>\n\n";
 	echo "</form>";
 
-	//echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='activateform' id='activateform'>";	
+	//echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='activateform' id='activateform'>";
 	//echo "<input type='submit' name='activate' id='activate' value='Activeren'>";
 	//echo "</form>";
 	//echo "</p></div>";

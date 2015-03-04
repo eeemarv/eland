@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Does real time reporting of pass/fail for each recipient.
  * @package Swift
@@ -18,14 +17,14 @@
 class Swift_Plugins_ReporterPlugin
   implements Swift_Events_SendListener
 {
-  
+
   /**
    * The reporter backend which takes notifications.
    * @var Swift_Plugin_Reporter
    * @access private
    */
   private $_reporter;
-  
+
   /**
    * Create a new ReporterPlugin using $reporter.
    * @param Swift_Plugins_Reporter $reporter
@@ -34,14 +33,14 @@ class Swift_Plugins_ReporterPlugin
   {
     $this->_reporter = $reporter;
   }
-  
+
   /**
    * Not used.
    */
   public function beforeSendPerformed(Swift_Events_SendEvent $evt)
   {
   }
-  
+
   /**
    * Invoked immediately after the Message is sent.
    * @param Swift_Events_SendEvent $evt
@@ -75,5 +74,5 @@ class Swift_Plugins_ReporterPlugin
         );
     }
   }
-  
+
 }

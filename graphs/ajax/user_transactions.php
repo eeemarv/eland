@@ -13,7 +13,7 @@ $user_id = $req->get('user_id');
 
 if (!$user_id){
 	exit;
-}	
+}
 
 $user = $db->GetRow('SELECT saldo FROM users WHERE id = '.$user_id);
 
@@ -35,7 +35,7 @@ $query .= 'AND (users.id = transactions.id_to OR users.id = transactions.id_from
 $query .= 'AND users.id <> '.$user_id.' ';
 $query .= 'AND transactions.date >= \''.$begin_date.'\' ';
 $query .= 'AND transactions.date <= \''.$end_date.'\' ';
-$query .= 'ORDER BY transactions.date DESC'; 
+$query .= 'ORDER BY transactions.date DESC';
 $trans = $db->GetArray($query);
 
 $begin_date = strtotime($begin_date);
@@ -44,11 +44,11 @@ $end_date = strtotime($end_date);
 $transactions = $users = $_users = array();
 
 foreach ($trans as $t){
-	$date = strtotime($t['date']);	
+	$date = strtotime($t['date']);
 	$out = ($t['id_from'] == $user_id) ? true : false;
-	$mul = ($out) ? 1 : -1; 
-	$balance += $t['amount'] * $mul; 
-	
+	$mul = ($out) ? 1 : -1;
+	$balance += $t['amount'] * $mul;
+
 	$name = $t['name'];
 	$real = ($t['real_from']) ? $t['real_from'] : null;
 	$real = ($t['real_to']) ? $t['real_to'] : null;
@@ -59,7 +59,7 @@ foreach ($trans as $t){
 	} else {
 		$code = $t['letscode'];
 	}
-	
+
 	$transactions[] = array(
 		'amount' => (int) $t['amount'],
 		'date' => $date,
@@ -67,13 +67,13 @@ foreach ($trans as $t){
 		'desc' => strip_tags($t['description']),
 		'out' => $out,
 		);
-		
+
 	$_users[(string) $code] = array(
 		'name' => strip_tags($name),
 		'linkable' => ($real || $t['status'] == 0) ? 0 : 1,
 		'id' => $t['id'],
 		);
-	
+
 }
 
 foreach ($_users as $code => $ary){
@@ -96,8 +96,4 @@ echo json_encode(array(
 	'end' => $end_date,
 	));
 
-
-
-	
 ?>
-

@@ -10,7 +10,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 #include($rootpath."includes/inc_header.php");
 #include($rootpath."includes/inc_nav.php");
 
@@ -22,7 +22,7 @@ $user_prefix = $_GET["prefix"];
 if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle($user_date);
         $users = get_users($user_prefix);
-	
+
 	show_user_balance($users,$user_date);
 }else{
 	redirect_login($rootpath);

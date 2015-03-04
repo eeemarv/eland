@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Matcher.php';
 
 /**
@@ -25,21 +25,21 @@
  */
 class Yay_Matchers_IdenticalMatcher implements Yay_Matcher
 {
-  
+
   /**
    * The expected value.
    * @var mixed
    * @access protected
    */
   protected $_expected;
-  
+
   /**
    * The expected return value.
    * @var boolean
    * @access protected
    */
   protected $_result;
-  
+
   /**
    * Create a new IdenticalMatcher expecting $expected.
    * @param mixed $expected
@@ -50,7 +50,7 @@ class Yay_Matchers_IdenticalMatcher implements Yay_Matcher
     $this->_expected = $expected;
     $this->_result = $result;
   }
-  
+
   /**
    * Compare $value with the expected value and return true if it matches in
    * type and in value.
@@ -62,7 +62,7 @@ class Yay_Matchers_IdenticalMatcher implements Yay_Matcher
     $return = (($this->_expected === $value) && ($value === $this->_expected));
     return (($this->_result && $return) || (!$this->_result && !$return));
   }
-  
+
   /**
    * Returns true if the argument doesn't need to be present.
    * @return boolean
@@ -71,7 +71,7 @@ class Yay_Matchers_IdenticalMatcher implements Yay_Matcher
   {
     return false;
   }
-  
+
   /**
    * Writes the match description as a string following $format.
    * $format is a sprintf() string with %s, $s as $matcherName, $value respectively.
@@ -112,5 +112,5 @@ class Yay_Matchers_IdenticalMatcher implements Yay_Matcher
     }
     return $description;
   }
-  
+
 }

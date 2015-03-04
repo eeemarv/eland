@@ -48,7 +48,7 @@ function show_form($id){
 	echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
 	echo "<input type='submit' value='Verwijderen' name='zend'>";
 	echo "</form></p></div>";
-	
+
 }
 
 function ask_confirmation($contacttype){
@@ -76,7 +76,7 @@ function show_contacttype($contacttype){
 	echo "<td valign='top'><strong>Naam</strong></td>";
 	echo "<td valign='top'><strong>Afkorting</strong></td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td valign='top' nowrap>";
 	echo htmlspecialchars($contacttype["name"],ENT_QUOTES);

@@ -58,11 +58,9 @@ if(isset($s_id) && $accountrole != "guest" && $accountrole != "interlets"){
         show_closebutton();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function show_ptitle($mode){
 	if($mode == "new"){
@@ -104,7 +102,6 @@ function show_serveroutputdiv(){
         echo "</div>";
 }
 
-
 function validate_input($posted_list){
 	global $db;
 	$error_list = array();
@@ -117,18 +114,18 @@ function validate_input($posted_list){
 		if( $number == 0 ){
 			$error_list["id_category"]="<font color='#F56DB5'>Categorie <strong>bestaat niet!</strong></font>";
 	}
-	
+
 	$query = "SELECT * FROM users ";
 	$query .= " WHERE id = '".$_POST["id_user"]."'" ;
 	$query .= " AND status <> '0'" ;
 	$rs = $db->Execute($query);
     $number2 = $rs->recordcount();
-	
+
 	if( $number2 == 0 ){
 		$error_list["id_user"]="<font color='#F56DB5'>Gebruiker <strong>bestaat niet!</strong></font>";
 	}
 	return $error_list;
-	
+
 }
 
 function count_validity($validity){
@@ -137,7 +134,6 @@ function count_validity($validity){
         $vtime =  date("Y-m-d H:i:s",$valtime);
         return $vtime;
 }
-
 
 function update_msg($id, $posted_list){
     global $db;
@@ -173,7 +169,7 @@ function show_form(){
 	echo "<option value='0' >Vraag</option>";
 	echo "</select>\n";
 	echo "</td>\n</tr>\n\n<tr><td></td>\n<td></td>\n</tr>\n\n";
-	
+
 	echo "<tr><td valign='top' align='right'>Wat </td>\n<td>";
 	echo "<textarea name='content' id='content' rows='2' cols='50'>";
 	echo "</textarea>";
@@ -187,7 +183,7 @@ function show_form(){
         echo "</td>\n</tr>\n\n";
 
 	// Who selection is only for admins
-	if($accountrole == "admin"){	
+	if($accountrole == "admin"){
 		echo "<tr>\n<td align='right'>";
 		echo "Wie";
 		echo "</td>\n<td>";
@@ -203,7 +199,7 @@ function show_form(){
 	} else {
 		echo "<input type='hidden' name='id_user' id='id_user' size='8'>";
 	}
-	
+
 	echo "<tr>\n<td align='right'>";
 	echo "Categorie ";
 	echo "</td>\n<td>";
@@ -211,12 +207,12 @@ function show_form(){
 	foreach($cat_list as $value3){
 		echo "<option value='".$value3["id"]."' >";
 		 echo htmlspecialchars($value3["fullname"],ENT_QUOTES);
-		 echo "</option>\n"; 
+		 echo "</option>\n";
 	}
-				
+
 	echo "</select>\n";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
-	
+
 	echo "</td>\n\n</tr>\n\n";
 
 	echo "<tr>\n<td valign='top' align='right'>Geldigheid </td>\n";
@@ -239,7 +235,7 @@ function show_form(){
     echo "<input type='text' name='units' id='units'> (uur, stuk, ...)\n";
     echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
     echo "</td>\n</tr>\n";
-        
+
     //echo "<tr><td valign='top' align='right'>Versturen naar mailinglists</td><td><input type=checkbox name='announce' id='announce' CHECKED></td>";
 
 	echo "<tr>\n<td colspan='2' align='right'>";
@@ -254,7 +250,7 @@ function get_user(){
 	$query = "SELECT * FROM users ";
 	$query .= " WHERE status <> 0 order by letscode";
  	$user_list = $db->GetArray($query);
-	return $user_list; 
+	return $user_list;
 }
 
 function get_cat(){
@@ -275,4 +271,3 @@ function get_msg($id){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_smallfooter.php");
 ?>
-

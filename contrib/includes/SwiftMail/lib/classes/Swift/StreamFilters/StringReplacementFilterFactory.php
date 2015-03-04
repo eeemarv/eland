@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Creates filters for replacing needles in a string buffer.
  * @package Swift
@@ -17,10 +16,10 @@
 class Swift_StreamFilters_StringReplacementFilterFactory
   implements Swift_ReplacementFilterFactory
 {
-  
+
   /** Lazy-loaded filters */
   private $_filters = array();
-  
+
   /**
    * Create a new StreamFilter to replace $search with $replace in a string.
    * @param string $search
@@ -35,17 +34,17 @@ class Swift_StreamFilters_StringReplacementFilterFactory
       {
         $this->_filters[$search] = array();
       }
-      
+
       if (!isset($this->_filters[$search][$replace]))
       {
         $this->_filters[$search][$replace] = array();
       }
-      
+
       $this->_filters[$search][$replace]
         = new Swift_StreamFilters_StringReplacementFilter($search, $replace);
     }
-    
+
     return $this->_filters[$search][$replace];
   }
-  
+
 }

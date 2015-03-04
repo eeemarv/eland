@@ -56,7 +56,7 @@ function show_user($user){
                 echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
                 echo "<tr><td width='50%' valign='top'>ELAS World Wide ID (EWWID):  </td>";
                 echo "<td width='50%' valign='top'>".$user["login"]. "@" .$baseurl ."</td></tr>";
-   
+
                 echo "<tr><td valign='top'>Hobbies/interesses: </td>";
                 echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
                 echo "<tr><td valign='top'>Commentaar: </td>";
@@ -65,7 +65,7 @@ function show_user($user){
 		if($user["cron_saldo"] == 1){
 			echo "<td valign='top'>Aan</td>";
 		} else {
-			echo "<td valign='top'>Uit</td>"; 
+			echo "<td valign='top'>Uit</td>";
 		}
                 echo "</table>";
         echo "</td>";

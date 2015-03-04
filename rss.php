@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ob_start();
 $rootpath = "./";
 // get the initial includes
@@ -31,12 +31,11 @@ switch($feed){
                 break;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////F U N C T I E S ////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-function messagefeed(){	
+function messagefeed(){
 	global $rootpath;
 	global $baseurl;
 	$now = date("D, d M Y H:i:s T");
@@ -73,13 +72,13 @@ function messagefeed(){
         	        	    <link>".htmlentities($mylink)."</link>
 			    	<description>". $mydesc ."</description>
 	                	</item>\n";
-		}	
+		}
 	}
 
 		$output .= "</channel></rss>";
 		header("Content-Type: application/rss+xml");
 		echo $output;
-}    
+}
 
 function newsfeed(){
 	global $rootpath;

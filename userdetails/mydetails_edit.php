@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
@@ -20,7 +19,7 @@ if(isset($s_id)){
 	if(isset($id)){
 		if(isset($_POST["zend"])){
 			$posted_list = array();
-			
+
 			$posted_list["ostatus_id"] = $_POST["ostatus_id"];
 			$posted_list["postcode"] = $_POST["postcode"];
 			$posted_list["birthday"] = $_POST["birthday"];
@@ -35,7 +34,7 @@ if(isset($s_id)){
 			$posted_list["hobbies"] = $_POST["hobbies"];
 			$posted_list["id"] = $_GET["id"];
 			$error_list = validate_input($posted_list);
-		
+
 			if (!empty($error_list)){
 				$user = get_user($id);
 				show_user($user);
@@ -43,7 +42,7 @@ if(isset($s_id)){
 			}else{
 				update_user($id, $posted_list);
 				setstatus("Profiel aangepast", 0);
-				echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload();</script>"; 
+				echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload();</script>";
 
 			}
 		}else{
@@ -51,7 +50,7 @@ if(isset($s_id)){
 			show_user($user);
 			show_form($user, $error_list);
 		}
-	}else{ 
+	}else{
 		echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload();</script>";
 	}
 }else{
@@ -76,25 +75,23 @@ function show_ptitle(){
 function validate_input($posted_list){
 global $db;
 	$error_list = array();
-	
+
 	//login may not be empty
 	if (empty($posted_list["login"]) || (trim($posted_list["login"]) == "")){
 		$error_list["login"] = "<font color='#F56DB5'>Vul <strong>login</strong> in!</font>";
 	}
 
-
-
 	//login may not exist, exept while editing your own record!
 	$query = "SELECT * FROM users ";
 	$query .= "WHERE login = '".$posted_list["login"]."' ";
 	$query .= "AND id <> '".$posted_list["id"]."' ";
-	
+
 	$rs = $db->Execute($query);
     $number = $rs->recordcount();
 	if ($number !== 0){
 		$error_list["login"]="<font color='#F56DB5'>Login bestaat al!</font>";
 	}
-	
+
 	return $error_list;
 }
 
@@ -108,18 +105,18 @@ function show_form($user, $error_list){
 	echo "<div class='border_b'>";
 	echo "<form action='mydetails_edit.php?id=".$user["id"]."' method='POST'>";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Chatter ID</td>\n<td>";
 	echo "<input  type='text' name='ostatus_id' size='40' ";
 	echo " value='";
-	echo $user["ostatus_id"];  
+	echo $user["ostatus_id"];
 	echo "'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Postcode</td>\n<td>";
 	echo "<input  type='text' name='postcode' size='40' ";
 	echo " value='";
-	echo $user["postcode"];  
+	echo $user["postcode"];
 	echo "'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
 	if (isset($error_list["postcode"])){
@@ -140,11 +137,10 @@ function show_form($user, $error_list){
 	}
 	echo "</td>\n</tr>\n\n";
 
-
 	echo "<tr>\n<td valign='top' align='right'>Login:</td>\n<td>";
 	echo "<input  type='text' name='login' size='40' ";
 	echo " value='";
-	echo htmlspecialchars($user["login"],ENT_QUOTES);  
+	echo htmlspecialchars($user["login"],ENT_QUOTES);
 	echo "' >";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
 	if (isset($error_list["login"])){
@@ -154,14 +150,14 @@ function show_form($user, $error_list){
 
 	echo "<tr>\n<td valign='top' align='right'>Hobbies/interesses:</td>\n<td>";
 	echo "<textarea name='hobbies' cols='40' rows='2' >";
-	echo htmlspecialchars($user["hobbies"],ENT_QUOTES); 
-	echo "</textarea>"; 
+	echo htmlspecialchars($user["hobbies"],ENT_QUOTES);
+	echo "</textarea>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
 	echo "</td>\n</tr>\n\n";
 	echo "<tr>\n<td valign='top' align='right'>Commentaar:</td>\n<td>";
 	echo "<input type='text' name='comments' size='60' ";
 	echo " value='" ;
-	echo htmlspecialchars($user["comments"],ENT_QUOTES);  
+	echo htmlspecialchars($user["comments"],ENT_QUOTES);
 	echo "'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
 	echo "</td>\n</tr>\n\n";
@@ -201,6 +197,3 @@ function redirect_view(){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-
-
-

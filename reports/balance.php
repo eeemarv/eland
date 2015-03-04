@@ -10,7 +10,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -32,7 +32,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 
         $user_date = $posted_list["date"];
 	$users = get_filtered_users($posted_list["prefix"]);
-	
+
 	echo "<table border=0 width='100%'>";
 	echo "<tr>";
 	echo "<td valign='top' align='left'>";
@@ -82,7 +82,6 @@ function show_csvversion($rootpath,$user_date,$user_prefix){
         echo "CSV Export</a>";
 }
 
-
 function show_userselect($list_users,$posted_list){
         echo "<form method='POST' action='balance.php'>";
         echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
@@ -113,7 +112,6 @@ function show_userselect($list_users,$posted_list){
         echo "</select>\n";
 	echo "</td></tr>\n\n";
 
-	
 	echo "</table>\n";
         echo "</form>";
 }

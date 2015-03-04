@@ -8,13 +8,13 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 //include($rootpath."includes/inc_header.php");
 //include($rootpath."includes/inc_nav.php");
 
 show_ptitle();
 show_body();
-	
+
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
@@ -41,12 +41,12 @@ function show_body(){
     echo "Bernard Butaye (LETS Antwerpen Stad): XML V/A export<br>";
     echo "Ivo van den Maagdenberg (LETS Antwerpen Stad): Bugfixes and code<br>";
 	echo "</p>";
-	
+
 	echo "<P>eLAS gebruikt volgend externe componenten:<small>";
 	echo "<ul>";
 	echo "<li><a href='http://mootools.net'>MooTools</a> AJAX framework onder de MIT public license</li>";
  	echo "<li><a href='http://mootools.net/forge/p/growler'>Growler</a> notifier</li>";
-	echo "<li><a href='http://adodb.sourceforge.net'>AdoDB</a> libraries onder de LGPL om te connecteren met de database</li>"; 
+	echo "<li><a href='http://adodb.sourceforge.net'>AdoDB</a> libraries onder de LGPL om te connecteren met de database</li>";
 	echo "<li><a href='http://sourceforge.net/projects/nusoap/'>NuSOAP</a> onder de LGPL voor web services</li>";
 	echo "<li><a href='http://www.scriptiny.com/2011/03/javascript-modal-windows'>Tinybox</a> onder de Creative Commons</li>";
 	echo "<li><a href='http://code.google.com/p/lightopenid>Google lightopenid</a> onder de MIT licentie</li>";
@@ -54,7 +54,7 @@ function show_body(){
 	echo "<li><a href='http://jodreports.sourceforge.net/'>Jooreports</a> onder de LGPL voor rapportgeneratie.</li>";
 	echo "<li><a href='http://swiftmailer.org'>Swiftmailer</a> onder de LGPL</li>";
 	echo "<li><a href='http://ckeditor.com'>CKEditor</a> under the LGPL</li>";
-	echo "</ul></small>"; 
+	echo "</ul></small>";
 	echo "</P>";
 
 	echo "<p><small>Build from branch: " . $elas->branch .", revision: " .$elas->revision .", build: " .$elas->build;
@@ -74,5 +74,3 @@ function schema_check(){
 //include($rootpath."includes/inc_sidebar.php");
 //include($rootpath."includes/inc_footer.php");
 ?>
-
-

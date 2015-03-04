@@ -34,7 +34,7 @@ function show_ptitle(){
 function show_listing(){
 	echo "<p><a href='eventlog.php'>Event log</a></p>";
 }
-	
+
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>

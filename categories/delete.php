@@ -75,7 +75,7 @@ function show_cat($cat){
 	echo "<td valign='top'><strong>Hoofdcategorie</strong></td>";
 	echo "<td valign='top'><strong>Naam</strong></td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td valign='top' nowrap>";
 	if ($cat["id_parent"] == 0){
@@ -87,7 +87,7 @@ function show_cat($cat){
 		echo $parent["name"];
 	}
 	echo "</td>";
-	
+
 	echo "<td valign='top' nowrap>";
 	echo htmlspecialchars($cat["name"],ENT_QUOTES);
 	echo "</td>";

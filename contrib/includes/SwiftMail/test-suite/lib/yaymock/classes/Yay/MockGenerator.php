@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 /**
  * Generates the code for a Mock object.
  * This lives as a singleton for a few reasons.
@@ -24,37 +24,37 @@
  */
 class Yay_MockGenerator
 {
-  
+
   /** The name of the Mock object interface */
   const MOCK_INTERFACE = 'Yay_MockObject';
-  
+
   /** Prefixed to types to create a Mock name */
   const MOCK_PREFIX = 'Yay_MockObjects_';
-  
+
   /** Singleton instance */
   private static $_instance = null;
-  
+
   /**
    * The path a template which draws a Mock.
    * @var string
    * @access private
    */
   private $_template;
-  
+
   /**
    * A map of mocked type hints to their concrete class names.
    * @var array
    * @access private
    */
   private $_mocked = array();
-  
+
   /**
    * Constructor cannot be used.
    */
   private function __construct()
   {
   }
-  
+
   /**
    * Get a singleton instance of this MockGenerator.
    * @return Yay_MockGenerator
@@ -67,7 +67,7 @@ class Yay_MockGenerator
     }
     return self::$_instance;
   }
-  
+
   /**
    * Set the path to a template which can draw a mock class.
    * @param string $path
@@ -76,7 +76,7 @@ class Yay_MockGenerator
   {
     $this->_template = $path;
   }
-  
+
   /**
    * Produce class code for a MockObject of $typeHint and return its concrete name.
    * @param string $typeHint
@@ -90,7 +90,7 @@ class Yay_MockGenerator
     }
     return $className;
   }
-  
+
   /**
    * Use a fixed naming scheme to make a mock class name from $typeHint.
    * @param string $typeHint
@@ -100,7 +100,7 @@ class Yay_MockGenerator
   {
     return self::MOCK_PREFIX . $typeHint;
   }
-  
+
   /**
    * Remove any adjustments that were made to an original type hint.
    * @param string $typeHint
@@ -115,9 +115,9 @@ class Yay_MockGenerator
     }
     return $typeHint;
   }
-  
+
   // -- Private methods
-  
+
   /**
    * Try to lookup a mocked concrete class name for $typeHint.
    * @param string $typeHint
@@ -131,7 +131,7 @@ class Yay_MockGenerator
       return $this->_mocked[$typeHint];
     }
   }
-  
+
   /**
    * Produce the mock object code and return its name.
    * @param string $typeHint
@@ -147,15 +147,15 @@ class Yay_MockGenerator
       'interfaces' => $this->_getInterfaces($reflector),
       'methods' => $this->_getMethods($reflector)
       );
-    
+
     extract($mockData);
     $code = include($this->_template);
     eval($code);
-    
+
     $this->_mocked[$typeHint] = $mockData['className'];
     return $mockData['className'];
   }
-  
+
   /**
    * Get all known interfaces for $reflector.
    * @param ReflectionClass $reflector
@@ -184,7 +184,7 @@ class Yay_MockGenerator
     }
     return $interfaces;
   }
-  
+
   /**
    * Get the superclass this mock object needs to extend.
    * @param ReflectionClass $reflector
@@ -203,7 +203,7 @@ class Yay_MockGenerator
     }
     return $superclass;
   }
-  
+
   /**
    * Get all methods from $reflector.
    * @param ReflectionClass $reflector
@@ -233,7 +233,7 @@ class Yay_MockGenerator
     }
     return $methods;
   }
-  
+
   /**
    * Get all parameters for $method.
    * @param ReflectionMethod $method
@@ -262,7 +262,7 @@ class Yay_MockGenerator
     }
     return $parameters;
   }
-  
+
   /**
    * Determine if the reflector for the given class is safe to extend.
    * @param ReflectionClass $reflector
@@ -319,5 +319,5 @@ class Yay_MockGenerator
     }
     return $canExtend;
   }
-  
+
 }

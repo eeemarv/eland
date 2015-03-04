@@ -11,28 +11,28 @@ require_once 'Sweety/Reporter.php';
  */
 abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
 {
- 
+
  /**
   * The reporter used for showing progress.
   * @var Sweety_Reporter
   * @access private
   */
  private $_reporter;
- 
+
   /**
    * TestLocator strategies.
    * @var Sweety_TestLocator[]
    * @access private
    */
   private $_testLocators = array();
-   
+
   /**
    * Regular expression for classes which should be ignored.
    * @var string
    * @access private
    */
   private $_ignoredClassRegex = '/^$/D';
-  
+
   /**
    * Set the reporter used for showing results.
    * @param Sweety_Reporter $reporter
@@ -41,7 +41,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $this->_reporter = $reporter;
   }
-  
+
   /**
    * Get the reporter used for showing results.
    * @return Sweety_Reporter
@@ -50,7 +50,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     return $this->_reporter;
   }
-  
+
   /**
    * Register a test locator instance.
    * @param Sweety_TestLocator $locator
@@ -59,7 +59,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $this->_testLocators[] = $locator;
   }
-  
+
   /**
    * Set the regular expression used to filter out certain class names.
    * @param string $ignoredClassRegex
@@ -68,7 +68,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $this->_ignoredClassRegex = $ignoredClassRegex;
   }
-  
+
   /**
    * Get the filtering regular expression for ignoring certain classes.
    * @return string
@@ -77,7 +77,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     return $this->_ignoredClassRegex;
   }
-   
+
   /**
    * Run a single test case with the given name, using the provided output format.
    * @param string $testName
@@ -93,7 +93,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
         break;
       }
     }
-    
+
     $testClass = new ReflectionClass($testName);
     if ($testClass->getConstructor())
     {
@@ -104,7 +104,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
         header("Pragma: no-cache");
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
       }
-      
+
       switch ($format)
       {
         case Sweety_Runner::REPORT_HTML:
@@ -125,10 +125,10 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       $test = $testClass->newInstance();
       return $test->run($reporter) ? 0 : 1;
     }
-    
+
     return 1;
   }
-  
+
   /**
    * Use strategies to find tests which are runnable.
    * @param string[] $dirs
@@ -143,7 +143,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
     }
     return $tests;
   }
-  
+
   /**
    * Parse an XML response from a test case an report to the reporter.
    * @param string $xml
@@ -156,7 +156,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
     {
       $reporter->start();
     }
-    
+
     $xml = str_replace("\0", '?', trim($xml));
     $xml = preg_replace('/[^\x01-\x7F]/e', 'sprintf("&#%d;", ord("$0"));', $xml); //Do something better?
     if (!empty($xml))
@@ -169,7 +169,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
         return;
       }
     }
-    
+
     $reporter->reportException(
       'Invalid XML response: ' .
       trim(strip_tags(
@@ -178,7 +178,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       $testCase
       );
   }
-  
+
   /**
    * Parse formatted test output.
    * @param SimpleXMLElement The node containing the output
@@ -190,7 +190,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $reporter->reportOutput((string)$formatted, $path);
   }
-  
+
   /**
    * Parse test output.
    * @param SimpleXMLElement The node containing the output
@@ -202,7 +202,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $reporter->reportOutput((string)$message, $path);
   }
-  
+
   /**
    * Parse a test failure.
    * @param SimpleXMLElement The node containing the fail
@@ -214,7 +214,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $reporter->reportFail((string)$failure, $path);
   }
-  
+
   /**
    * Parse an exception.
    * @param SimpleXMLElement The node containing the exception
@@ -226,7 +226,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $reporter->reportException((string)$exception, $path);
   }
-  
+
   /**
    * Parse a pass.
    * @param SimpleXMLElement The node containing this pass.
@@ -238,7 +238,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $reporter->reportPass((string)$pass, $path);
   }
-  
+
   /**
    * Parse a single test case.
    * @param SimpleXMLElement The node containing the test case
@@ -247,40 +247,40 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
    */
   private function _parseTestCase(SimpleXMLElement $testCase, $path = '',
     Sweety_Reporter $reporter)
-  { 
+  {
     foreach ($testCase->xpath('./test') as $testMethod)
     {
       $testMethodName = (string) $this->_firstNodeValue($testMethod->xpath('./name'));
-      
+
       foreach ($testMethod->xpath('./formatted') as $formatted)
       {
         $this->_parseFormatted(
           $formatted, $path . ' -> ' . $testMethodName, $reporter);
       }
-      
+
       foreach ($testMethod->xpath('./message') as $message)
       {
         $this->_parseMessage(
           $message, $path . ' -> ' . $testMethodName, $reporter);
       }
-      
+
       foreach ($testMethod->xpath('./fail') as $failure)
       {
         $this->_parseFailure(
           $failure, $path . ' -> ' . $testMethodName, $reporter);
       }
-      
+
       foreach ($testMethod->xpath('./exception') as $exception)
       {
         $this->_parseException(
           $exception, $path . ' -> ' . $testMethodName, $reporter);
       }
-      
+
       foreach ($testMethod->xpath('./pass') as $pass)
       {
         $this->_parsePass($pass, $path . ' -> ' . $testMethodName, $reporter);
       }
-      
+
       $stdout = trim((string) $testMethod);
       if ($stdout)
       {
@@ -288,7 +288,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       }
     }
   }
-  
+
   /**
    * Parse the results of all tests.
    * @param SimpleXMLElement The node containing the tests
@@ -300,9 +300,9 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
   {
     $groups = $document->xpath('./group');
     if (!empty($groups))
-    { 
+    {
       foreach ($groups as $group)
-      { 
+      {
         $groupName = (string) $this->_firstNodeValue($group->xpath('./name'));
         $this->_parseResults($group, $path . ' -> ' . $groupName, $reporter);
       }
@@ -315,7 +315,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       }
     }
   }
-  
+
   /**
    * Parse the entire SimpleTest XML document from a test case.
    * @param SimpleXMLElement $document to parse
@@ -334,7 +334,7 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       $reporter->reportSkip((string) $skip, $path);
     }
   }
-  
+
   protected function _sort($a, $b)
   {
     $apkg = preg_replace('/_[^_]+$/D', '', $a);
@@ -355,11 +355,11 @@ abstract class Sweety_Runner_AbstractTestRunner implements Sweety_Runner
       return ($apkg > $bpkg) ? 1 : -1;
     }
   }
-  
+
   private function _firstNodeValue($nodeSet)
   {
     $first = array_shift($nodeSet);
     return $first;
   }
-  
+
 }

@@ -49,4 +49,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

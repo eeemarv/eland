@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_apikeys.php"); 
+require_once($rootpath."includes/inc_apikeys.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 session_start();
@@ -55,7 +55,7 @@ function redirect_overview(){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-	
+
 function show_form(){
 	global $s_accountrole;
 	$mykey = generate_apikey();
@@ -70,13 +70,13 @@ function show_form(){
 	echo $mykey;
 	echo "' READONLY>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td align='right'>Type</td><td>";
 	echo "<select name='keytype' id='keytype'>";
 	echo "<option value='interlets' >Interlets</option>";
 	echo "</select>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td align='right'>Comment</td><td>";
 	echo "<input type='text' name='comment' id='comment' size='50'>";
 	echo "</td></tr>";

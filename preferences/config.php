@@ -35,7 +35,7 @@ function show_ptitle(){
 
 function show_preflisting(){
 	$offset = date("O");
-	echo "<p>Tijdzone: UTC$offset</p>"; 
+	echo "<p>Tijdzone: UTC$offset</p>";
 }
 
 function show_prefs($prefs){
@@ -89,7 +89,7 @@ function get_prefs(){
 	$prefs = $db->GetArray($query);
 	return $prefs;
 }
-	
+
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>

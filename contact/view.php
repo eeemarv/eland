@@ -61,7 +61,7 @@ function show_contact($contact){
 	echo "</td>";
 	echo "</tr>";
 	echo "</table></div>";
-		
+
 	echo "<div class='border_b'>";
 	echo "| <a href='edit.php?id=".$contact["cid"]."'>Aanpassen</a> |";
 	echo "<a href='delete.php?id=".$contact["cid"]."'> Verwijderen</a> |";
@@ -90,4 +90,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

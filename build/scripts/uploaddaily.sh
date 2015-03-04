@@ -11,7 +11,6 @@ cat release.xml | sed "s/<revision>/<revision>`echo $REVNO`/" > release.xml
 # Set the build number
 cat release.xml | sed "s/<build>/<build>`echo $BUILDNO`/" > release.xml
 
-
 echo "== Running eLAS deployer --"
 echo "Deploying build $BUILDNO for environment $ENV from $WORKSPACE at rev $REVNO"
 
@@ -43,7 +42,7 @@ case "$ENV" in
                 PORT=2222
                 TARGET=/data/vhosts/elastest
                 deploy $USER $HOST $PORT $WORKSPACE $TARGET $ENV
-                ;;      
+                ;;
 	prod)
 		echo "Deploying $VERSION to production"
                 USER=cideployer
@@ -53,4 +52,3 @@ case "$ENV" in
                 deploy $USER $HOST $PORT $WORKSPACE $TARGET $ENV
                 ;;
 esac
-

@@ -9,7 +9,7 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 $s_user_postcode = $_SESSION["user_postcode"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -85,5 +85,3 @@ function show_interletsgroups(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-
-

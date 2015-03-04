@@ -19,7 +19,7 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-	
+
 function show_ptitle(){
 	echo "<h1>Nieuws</h1>";
 }
@@ -48,7 +48,7 @@ function show_all_newsitems($newsitems, $s_accountrole){
 		//echo $value["date"];
 		//echo "</td>";
 	echo "<td nowrap valign='top'>";
-			if(trim($value["idate"]) != "00/00/00"){ 
+			if(trim($value["idate"]) != "00/00/00"){
 					echo $value["idate"];
 			}
 		echo "</td>";

@@ -19,7 +19,7 @@
 function get_mailinglists(){
         global $db;
         $query = "SELECT * FROM lists";
-        
+
         $lists = $db->GetArray($query);
         return $lists;
         #var_dump($lists);
@@ -29,7 +29,7 @@ function get_my_open_mailinglists($userid){
         global $db;
         $query = "SELECT * FROM lists WHERE auth = 'open' AND listname in (SELECT listname FROM listsubscriptions WHERE user_id = " .$userid  .")";
         #print $query;
-        
+
         $lists = $db->GetArray($query);
         return $lists;
         #var_dump($lists);

@@ -9,7 +9,7 @@ require_once 'Swift/Events/EventListener.php';
 abstract class Swift_Transport_AbstractSmtpEventSupportTest
   extends Swift_Transport_AbstractSmtpTest
 {
-  
+
   public function testRegisterPluginLoadsPluginInEventDispatcher()
   {
     $buf = $this->_getBuffer();
@@ -21,7 +21,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
       );
     $smtp->registerPlugin($listener);
   }
-  
+
   public function testSendingDispatchesBeforeSendEvent()
   {
     $buf = $this->_getBuffer();
@@ -42,7 +42,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(1, $smtp->send($message));
   }
-  
+
   public function testSendingDispatchesSendEvent()
   {
     $buf = $this->_getBuffer();
@@ -63,7 +63,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(1, $smtp->send($message));
   }
-  
+
   public function testSendEventCapturesFailures()
   {
     $buf = $this->_getBuffer();
@@ -88,7 +88,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(0, $smtp->send($message));
   }
-  
+
   public function testSendEventHasResultFailedIfAllFailures()
   {
     $buf = $this->_getBuffer();
@@ -113,7 +113,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(0, $smtp->send($message));
   }
-  
+
   public function testSendEventHasResultTentativeIfSomeFailures()
   {
     $buf = $this->_getBuffer();
@@ -140,7 +140,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(1, $smtp->send($message));
   }
-  
+
   public function testSendEventHasResultSuccessIfNoFailures()
   {
     $buf = $this->_getBuffer();
@@ -163,7 +163,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(2, $smtp->send($message));
   }
-  
+
   public function testCancellingEventBubbleBeforeSendStopsEvent()
   {
     $buf = $this->_getBuffer();
@@ -185,7 +185,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $this->assertEqual(0, $smtp->send($message));
   }
-  
+
   public function testStartingTransportDispatchesTransportChangeEvent()
   {
     $buf = $this->_getBuffer();
@@ -201,7 +201,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
   }
-  
+
   public function testStartingTransportDispatchesBeforeTransportChangeEvent()
   {
     $buf = $this->_getBuffer();
@@ -217,7 +217,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
   }
-  
+
   public function testCancellingBubbleBeforeTransportStartStopsEvent()
   {
     $buf = $this->_getBuffer();
@@ -233,12 +233,12 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
       );
     $this->_finishBuffer($buf);
     $smtp->start();
-    
+
     $this->assertFalse($smtp->isStarted(),
       '%s: Transport should not be started since event bubble was cancelled'
     );
   }
-  
+
   public function testStoppingTransportDispatchesTransportChangeEvent()
   {
     $buf = $this->_getBuffer();
@@ -255,7 +255,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $smtp->stop();
   }
-  
+
   public function testStoppingTransportDispatchesBeforeTransportChangeEvent()
   {
     $buf = $this->_getBuffer();
@@ -272,7 +272,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $smtp->start();
     $smtp->stop();
   }
-  
+
   public function testCancellingBubbleBeforeTransportStoppedStopsEvent()
   {
     $buf = $this->_getBuffer();
@@ -290,12 +290,12 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
     $smtp->stop();
-    
+
     $this->assertTrue($smtp->isStarted(),
       '%s: Transport should not be stopped since event bubble was cancelled'
     );
   }
-  
+
   public function testResponseEventsAreGenerated()
   {
     $buf = $this->_getBuffer();
@@ -311,7 +311,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
   }
-  
+
   public function testCommandEventsAreGenerated()
   {
     $buf = $this->_getBuffer();
@@ -327,7 +327,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
   }
-  
+
   public function testExceptionsCauseExceptionEvents()
   {
     $buf = $this->_getBuffer();
@@ -351,7 +351,7 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     {
     }
   }
-  
+
   public function testExceptionBubblesCanBeCancelled()
   {
     $buf = $this->_getBuffer();
@@ -369,9 +369,9 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
     $this->_finishBuffer($buf);
     $smtp->start();
   }
-  
+
   // -- Creation Methods
-  
+
   protected function _createEventDispatcher($stub = true)
   {
     return $stub
@@ -379,5 +379,5 @@ abstract class Swift_Transport_AbstractSmtpEventSupportTest
       : $this->_mock('Swift_Events_EventDispatcher')
       ;
   }
-  
+
 }

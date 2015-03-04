@@ -3,9 +3,9 @@ function loadurl(dest) {
 		onSuccess: function(html) {
 		},
 		onFailure: function() {
-			jsnotify('Request failed',0);	
+			jsnotify('Request failed',0);
 		}
-		
+
 		});
 	urlreq.send();
 }
@@ -17,7 +17,7 @@ function loadurlto(dest,target){
 		onFailure: function() {
 			jsnotify('Request failed',0);
 		}
-		
+
 		});
 	urltoreq.send();
 

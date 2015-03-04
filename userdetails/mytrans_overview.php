@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php"); 
+require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_transactions.php");
 
 session_start();
@@ -11,7 +11,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -21,10 +21,10 @@ if (isset($s_id)){
 		show_ptitle();
 		//$transactions = get_all_transactions($s_id);
 		//$unprocessed = get_interlets_transactions($s_id);
-		
+
 		echo $user["$minlimit"];
 		$balance = $user["saldo"];
-		
+
 		//show_form($list_users, $user, $balance,$s_letscode);
 		show_balance($balance, $user);
 		show_outputdiv();
@@ -35,17 +35,15 @@ if (isset($s_id)){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function show_form($list_users){
 	global $s_accountrole;
 	global $s_letscode;
 	$date = date("Y-m-d");
-	
+
 	$user = readuser($s_id);
 	$list_users = get_users($s_id);
 
@@ -104,7 +102,7 @@ function show_form($list_users){
 	echo "</td><td><div id='tooutputdiv'></div>";
 	echo "</td></tr><tr><td></td><td>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
 	echo "<input type='text' id='amount' name='amount' size='10' ";
 	echo ">";
@@ -112,7 +110,7 @@ function show_form($list_users){
 	echo "</td></tr>";
 	echo "<tr><td></td><td>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td valign='top' align='right'>Dienst</td><td>";
 	echo "<input type='text' name='description' id='description' size='40' MAXLENGTH='60' ";
 	echo ">";
@@ -128,8 +126,6 @@ function show_form($list_users){
 
 	echo "<script type='text/javascript'>document.getElementById('letscode_from').value = '$s_letscode';</script>";
 }
-
-
 
 function show_outputdiv(){
         echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
@@ -176,7 +172,7 @@ function show_all_transactions($transactions, $s_id){
 		echo "</td><td valign='top'>";
 		echo htmlspecialchars($value["toname"],ENT_QUOTES)." (".trim($value["tocode"]).")";
 		echo "</td>";
-				
+
 		if ($value["fromid"] == $s_id){
 		 		echo "<td valign='top'>";
 				echo "-".$value["amount"];
@@ -201,7 +197,7 @@ function show_addlink(){
 	echo "<div class='border_b'>| ";
 	echo "<a href='{$rootpath}transactions/add.php'>{$currency} uitschrijven</a> |</div>";
 }
-	
+
 function show_ptitle(){
 	echo "<h1>Mijn transacties</h1>";
 }

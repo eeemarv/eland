@@ -1,9 +1,9 @@
 window.addEvent('domready', function() {
 	var MyMsgFormDiv = new Fx.Slide('msgformdiv');
-	
+
 	//MyMLFormDiv.slideIn();
 	//$('mlformdiv').removeClass('hidden');
-	
+
 	$('msgform').addEvent('submit', function(e) {
 		e.stop();
 		var log = $('log_res').empty().addClass('ajax-loading');

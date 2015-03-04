@@ -18,7 +18,7 @@ class Swift_Tests_SwiftSmokeTestCase extends Swift_Tests_SwiftUnitTestCase
       '%s: Smoke tests are skipped if tests/smoke.conf.php is not editted'
       );
   }
-  
+
   protected function _getMailer()
   {
     switch (SWIFT_SMOKE_TRANSPORT_TYPE)
@@ -46,10 +46,10 @@ class Swift_Tests_SwiftSmokeTestCase extends Swift_Tests_SwiftUnitTestCase
     }
     return new Swift_Mailer($transport);
   }
-  
+
   protected function _visualCheck($url)
   {
     $this->dump('{image @ ' . $url . '}');
   }
-  
+
 }

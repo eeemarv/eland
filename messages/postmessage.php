@@ -41,7 +41,7 @@ if (empty($errors)){
 	#Build status message
 	$statusmessage = "";
 	//$fullurl = "http://" . $baseurl ."messages";
-	
+
 	switch ($mode){
 	        case "new":
 			$result = insert_msg($posted_list);
@@ -49,7 +49,7 @@ if (empty($errors)){
                                 echo "<font color='green'><strong>OK</font> - Vraag/Aanbod is opgeslagen";
 								setstatus("Vraag/Aanbod is opgeslagen",0);
                                 echo "<script type='text/javascript'>self.close();</script>";
-                                
+
                         } else {
                                 echo "<font color='red'><strong>Fout bij het opslaan van je V/A";
                                 setstatus("Vraag/Aanbod is NIET opgeslagen", 1);
@@ -80,7 +80,6 @@ if (empty($errors)){
 	echo "</strong></font>";
 }
 
-
 ///////////////// FUNCTIONS //////////////////
 function validate_input($posted_list,$mode){
         global $db;
@@ -104,7 +103,6 @@ function count_validity($validity){
         $vtime =  date("Y-m-d H:i:s",$valtime);
         return $vtime;
 }
-
 
 function update_msg($id, $posted_list){
     global $db;
@@ -130,4 +128,3 @@ function insert_msg($posted_list){
 
     return $db->AutoExecute('messages', $posted_list, 'INSERT');
 }
-

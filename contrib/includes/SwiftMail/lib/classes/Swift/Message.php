@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * The Message class for building emails.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_Message extends Swift_Mime_SimpleMessage
 {
-  
+
   /**
    * Create a new Message.
    * Details may be optionally passed into the constructor.
@@ -34,7 +33,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
       Swift_DependencyContainer::getInstance()
         ->createDependenciesFor('mime.message')
       );
-    
+
     if (!isset($charset))
     {
       $charset = Swift_DependencyContainer::getInstance()
@@ -48,7 +47,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
       $this->setContentType($contentType);
     }
   }
-  
+
   /**
    * Create a new Message.
    * @param string $subject
@@ -62,7 +61,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
   {
     return new self($subject, $body, $contentType, $charset);
   }
-  
+
   /**
    * Add a MimePart to this Message.
    * @param string|Swift_OutputByteStream $body
@@ -75,10 +74,10 @@ class Swift_Message extends Swift_Mime_SimpleMessage
       $body, $contentType, $charset
       ));
   }
-  
+
   public function __wakeup()
   {
     Swift_DependencyContainer::getInstance()->createDependenciesFor('mime.message');
   }
-  
+
 }

@@ -10,7 +10,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -38,7 +37,6 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 }else{
 	redirect_login($rootpath);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
@@ -103,7 +101,6 @@ function show_pwform($errorlist, $id){
 	echo "</form>";
 	echo "</div>";
 }
-
 
 function show_ptitle(){
 	echo "<h1>Paswoord veranderen</h1>";

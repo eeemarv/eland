@@ -25,13 +25,13 @@ if(isset($s_id) && ($s_accountrole == "user" || $s_accountrole == "admin")){
 	//echo "DEBUG: connecting as $nick";
 	$url = "<iframe src=\"http://webchat.freenode.net?nick=" .$nick . "&channels=letsbe\" width=\"700\" height=\"400\"></iframe>";
 	echo $url;
-	
+
 	echo "<p><small><i>";
 	echo "Deze chat laat je toe om met LETSers over heel Vlaanderen te chatten via het Freenode IRC netwerk<br>Je kan hier ook via een client op inloggen met de server irc.freenode.net, kanaal #letsbe<br>";
 	echo "Om misbruik op het netwerk te voorkomen vraagt het Freenode netwerk je om de CAPTCHA over te typen om spammers buiten te houden";
 	echo "<br>Sluit gewoon dit venster om uit te loggen op de chatroom.";
 	echo "</i></small></p>";
-	
+
 }else{
 	redirect_login($rootpath);
 }

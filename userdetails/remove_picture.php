@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
@@ -25,7 +24,7 @@ if(isset($s_id)){
 		}else{
 			show_form($id);
 		}
-	}else{ 
+	}else{
 		redirect_view();
 	}
 }else{
@@ -46,7 +45,7 @@ function update_user($id, $rootpath){
 	// First, grab the filename and delete the file after clearing the field
 	$q1 = "SELECT \"PictureFile\" FROM users WHERE id=" .$id;
 	$myuser = $db->GetRow($q1);
-	
+
 	// Clear the PictureFile field
 	$query = "UPDATE users SET \"PictureFile\" = NULL WHERE id=" .$id;
 	$db->Execute($query);
@@ -59,7 +58,7 @@ function update_user($id, $rootpath){
 	log_event($id,"Pict",$msg);
 	echo "Foto verwijderd.";
 
-	readuser($id, true);	
+	readuser($id, true);
 }
 
 function delete_file($rootpath, $file){
@@ -94,5 +93,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_smallfooter.php");
 ?>
-
-

@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 /**
 * For creating serializable abstractions of native PHP types.  This class
 * allows element name/namespace, XSD type, and XML attributes to be
@@ -100,8 +97,5 @@ class soapval extends nusoap_base {
 		return $this->value;
 	}
 }
-
-
-
 
 ?>

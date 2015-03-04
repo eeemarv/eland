@@ -6,13 +6,12 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_transactions.php");
 
-
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 if (isset($s_id)){
         if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
 		$transactions = get_all_user_transactions($s_id);
@@ -25,7 +24,6 @@ if (isset($s_id)){
 }else{
 	redirect_login($rootpath);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
@@ -64,12 +62,12 @@ function show_interletstransactions($interletsq,$s_id){
 	        	echo "<tr class='even_row'>";
 			}
 			echo "<td nowrap valign='top'>";
-                echo $value["date_created"];         
+                echo $value["date_created"];
                 echo "</td>";
 
 			echo "<td nowrap valign='top'>";
 		$user = get_user($value["id_from"]);
-                //echo $value["id_from"];         
+                //echo $value["id_from"];
 		echo $user["fullname"];
                 echo "</td>";
 
@@ -107,7 +105,6 @@ function show_interletstransactions($interletsq,$s_id){
 }
 }
 
-
 function show_all_transactions($transactions, $s_id){
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
@@ -140,7 +137,7 @@ function show_all_transactions($transactions, $s_id){
 			echo htmlspecialchars($value["toname"],ENT_QUOTES)." (".trim($value["tocode"]).")";
 		}
 		echo "</td>";
-				
+
 		if ($value["fromid"] == $s_id){
 		 		echo "<td valign='top'>";
 				echo "-".$value["amount"];
@@ -163,7 +160,7 @@ function show_addlink($currency){
 	echo "<div class='border_b'>| ";
 	echo "<a href='mytrans_add.php'>{$currency} uitschrijven</a> |</div>";
 }
-	
+
 function show_ptitle(){
 	echo "<h1>Mijn transacties</h1>";
 }

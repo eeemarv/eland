@@ -86,7 +86,7 @@ function get_contacttype($abbrev){
 
 function get_user($id){
 		return readuser($id);
-} 
+}
 
 function get_user_by_letscode($letscode){
 	global $db;

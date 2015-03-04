@@ -1,5 +1,5 @@
 <?php
-			
+
 function get_all_active_users($user_orderby,$prefix_filterby,$searchname,$sortfield){
 	global $db;
 	$query = "SELECT * FROM users ";

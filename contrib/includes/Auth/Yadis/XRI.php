@@ -93,7 +93,6 @@ function Auth_Yadis_iriToURI($iri)
     }
 }
 
-
 function Auth_Yadis_XRIAppendArgs($url, $args)
 {
     // Append some arguments to an HTTP query.  Yes, this is just like
@@ -230,5 +229,3 @@ function Auth_Yadis_getCanonicalID($iname, $xrds)
 
     return $canonicalID;
 }
-
-

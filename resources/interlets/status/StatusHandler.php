@@ -1,9 +1,9 @@
-<?php 
- 
+<?php
+
 /**
  * @uri /resources/interlets/status
  */
- 
+
 $rootpath="./";
 //$serverbase = $_SERVER['HTTP_HOST'];
 require_once($rootpath ."includes/inc_default.php");
@@ -14,7 +14,7 @@ class InterletsStatus extends Resource {
 	public static function get($request){
 		$response = new Response($request);
 		$response->addHeader('Content-type', 'text/plain');
-		
+
 		global $elasversion;
 		//if(check_apikey($apikey,"interlets") == 1){
 			if(readconfigfromdb("maintenance") == 1){
@@ -25,17 +25,17 @@ class InterletsStatus extends Resource {
 		//} else {
 			//return "APIKEYFAIL";
 		//}
-		
+
 		$response->body = $result;
 		return $response;
-		
+
 	}
-	
+
 	public function post($request, $apikey){
 		parse_str($request->data, $input);
 		$response = new Response($request);
 		$response->addHeader('Content-type', 'text/plain');
-		
+
 		global $elasversion;
 		if(check_apikey($apikey,"interlets") == 1){
 			if(readconfigfromdb("maintenance") == 1){
@@ -51,7 +51,7 @@ class InterletsStatus extends Resource {
 			return $response;
 		}
 	}
-		
+
 }
- 
+
 ?>

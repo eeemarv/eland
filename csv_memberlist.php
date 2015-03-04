@@ -22,7 +22,6 @@ if(isset($s_id)){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -49,7 +48,7 @@ function get_contacts($userid){
 
 function get_contact($userid,$contact_type_id){
         global $db;
-        $query = "SELECT * FROM contact WHERE id_user = " .$userid; 
+        $query = "SELECT * FROM contact WHERE id_user = " .$userid;
 	$query .= " AND id_type_contact = " .$contact_type_id;
 	//$query .= " AND contact.flag_public = 1";
         $contact = $db->GetRow($query);
@@ -90,13 +89,11 @@ function show_all_users($userrows){
 			 	echo $contact["value"];
 			 }
 			 echo "\"";
-			
+
 		}
 		echo "\n";
         }
 
 }
 
-
 ?>
-

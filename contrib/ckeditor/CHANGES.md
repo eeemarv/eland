@@ -402,7 +402,6 @@ Fixed Issues:
 * [#8893](http://dev.ckeditor.com/ticket/8893): Value of the [`pasteFromWordCleanupFile`](http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-pasteFromWordCleanupFile) configuration option is now taken from the instance configuration.
 * [#9693](http://dev.ckeditor.com/ticket/9693): Removed "Live Preview" checkbox from UI color picker.
 
-
 ## CKEditor 4.0
 
 The first stable release of the new CKEditor 4 code line.

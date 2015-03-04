@@ -8,7 +8,7 @@ require_once 'Swift/Tests/SwiftUnitTestCase.php';
 class Swift_DependencyContainerAcceptanceTest
   extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testNoLookupsFail()
   {
     $di = Swift_DependencyContainer::getInstance();
@@ -24,5 +24,5 @@ class Swift_DependencyContainerAcceptanceTest
       }
     }
   }
-  
+
 }

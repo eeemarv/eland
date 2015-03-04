@@ -3,7 +3,7 @@
  * Class to perform eLAS token manipulations
  *
  * This file is part of eLAS http://elas.vsbnet.be
- * 
+ *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
  *
  * eLAS is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ function generate_token($type){
 	$token = "elasv2" .md5(microtime());
 
 	$posted_list["token"] = $token;
-	$posted_list["validity"] = $testdate;	
+	$posted_list["validity"] = $testdate;
 	$posted_list["type"] = $type;
 
         if($db->AutoExecute("tokens", $posted_list, 'INSERT') == FALSE){

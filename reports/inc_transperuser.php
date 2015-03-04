@@ -2,7 +2,7 @@
 
 function get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_prefix){
         global $db;
-        
+
         if($user_userid == 'ALL') {
 	        $query = "SELECT *, ";
 	        $query .= " transactions.id AS transid, ";
@@ -19,7 +19,7 @@ function get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_pre
         	$query .= "')";
 		if($user_prefix != 'ALL') {
 			$query .= " AND (fromusers.letscode like '" .$user_prefix ."%'";
-			$query .= " OR tousers.letscode  like '" .$user_prefix ."%'"; 
+			$query .= " OR tousers.letscode  like '" .$user_prefix ."%'";
 			$query .= ")";
 		}
 	        $query .= " ORDER BY transactions.date";

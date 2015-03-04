@@ -50,7 +50,6 @@ body.ContentPage {
 .MGroup a:visited { color: #bfbfbf; margin-right: 10px }
 .MGroup a:active { color: #f58f07; margin-right: 10px }
 
-
 .MEntry a:link,
 .MEntry a:hover,
 .MEntry a:visited { color: #bfbfbf; margin-right: 0 }
@@ -84,7 +83,6 @@ body.ContentPage {
 #MainTopic h1.CTitle a {
   display: none;
 }
-
 
 #MainTopic div.CBody p:first-child {
   margin-top: 24px;
@@ -130,8 +128,6 @@ body.IndexPage {
   border: 0px;
 }
 
-
-
 div.nav {
     position:relative;
     top: 70px;
@@ -155,7 +151,7 @@ a.nav, a.nav:link {
     text-decoration: none;
   font-family: Tahoma, "Helvetica Neue", "Trebuchet MS", Verdana, Arial, sans-serif;
   font-size: 16px;
-  color: #aaaaaa; 
+  color: #aaaaaa;
   margin-right: 11px;
 }
 
@@ -170,5 +166,3 @@ a.nav:active {
     border: 0px;
   color: #E0771C;
 }
-
-

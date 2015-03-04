@@ -40,7 +40,7 @@ function get_contacts($userid){
 	$contactrows = $db->GetArray($query);
 	return $contactrows;
 }
-			
+
 function check_timestamp($cdate,$agelimit){
         // agelimit is the time after which it expired
         $now = time();
@@ -101,7 +101,7 @@ function show_all_users($userrows){
 		echo "<td nowrap  valign='top'>";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
-			
+
 			foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 1){
 					echo  $value2["value"];
@@ -126,7 +126,7 @@ function show_all_users($userrows){
 				}
 			}
 		echo "</td>\n";
-		
+
 		echo "<td nowrap valign='top' align='right'>";
 		$balance = $value["saldo"];
                 if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){
@@ -137,7 +137,7 @@ function show_all_users($userrows){
 
 		echo "</td>\n";
 		echo "</tr>\n\n";
-		
+
 	}
 	echo "</table></div>";
 }

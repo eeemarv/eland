@@ -4,7 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php"); 
+require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 session_start();
@@ -57,7 +57,7 @@ function redirect_overview(){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-	
+
 function show_form($setting){
 	global $s_accountrole;
 	$mysetting = get_setting($setting);

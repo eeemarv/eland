@@ -3,7 +3,7 @@
  * Class to perform eLAS token manipulations
  *
  * This file is part of eLAS http://elas.vsbnet.be
- * 
+ *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
  *
  * eLAS is free software; you can redistribute it and/or
@@ -26,8 +26,8 @@
 global $rootpath;
 
 function ostatus_queue($message, $url) {
-	global $db;	
-	
+	global $db;
+
 	// only queue if sharing is not disabled!
 	if(readconfigfromdb("share_enabled") == 1) {
 		$msg = substr($message, 0, 100);
@@ -45,7 +45,7 @@ function ostatus_post($message){
 		$identicapassword = readconfigfromdb("ostatus_password");
 		$group = "!" .readconfigfromdb("ostatus_group");
 		//echo "Posting to $url as $identicausername with password $identicapassword ";
-		
+
         // Set up and execute the curl process
         $curl_handle = curl_init();
         curl_setopt( $curl_handle, CURLOPT_URL, "$url/api/statuses/update.xml" );
@@ -56,7 +56,7 @@ function ostatus_post($message){
         curl_setopt( $curl_handle, CURLOPT_USERPWD, "$identicausername:$identicapassword" );
         $buffer = curl_exec( $curl_handle );
         curl_close( $curl_handle );
- 
+
         // check for success or failure
         if( empty( $buffer ) ) {
                 return false;
@@ -65,7 +65,7 @@ function ostatus_post($message){
                 return true;
                 $status = 1;
         }
- 
+
         return true;
 }
 
@@ -75,7 +75,7 @@ function shorturl ( $url ) {
         $timeout = 5;
         $shortenerurl = 'http://ur1.ca/';
         $articleurl = urlencode($url);
-        
+
         curl_setopt( $ch, CURLOPT_URL, $shortenerurl );
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "longurl=$articleurl" );
@@ -85,13 +85,12 @@ function shorturl ( $url ) {
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
         $rawshortlinkoutput = curl_exec( $ch );
         curl_close( $ch );
- 
+
         // extract the short url from the ur1.ca html output.  It's the link within the first <p> in the body.
         $shortlinkxml = @simplexml_load_string($rawshortlinkoutput);
         $shortlinkarray = $shortlinkxml->body->p[0]->a->attributes();
- 
+
         return strval($shortlinkarray['href']);
 }
-
 
 ?>

@@ -1,27 +1,25 @@
 /*
     2010-11-01 Chris Leonello
-    
+
     Slightly modified version of the original json2.js to put JSON
     functions under the $.jqplot namespace.
-    
+
     licensing and orignal comments follow:
-    
+
     http://www.JSON.org/json2.js
     2010-08-25
-    
+
     Public Domain.
 
     NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
     See http://www.JSON.org/js.html
 
-
     This code should be minified before deployment.
     See http://javascript.crockford.com/jsmin.html
 
     USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
     NOT CONTROL.
-
 
     This file creates a global JSON object containing two methods: stringify
     and parse.
@@ -96,7 +94,6 @@
             text = $.jqplot.JSON.stringify(['e', {pluribus: 'unum'}]);
             // text is '["e",{"pluribus":"unum"}]'
 
-
             text = $.jqplot.JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
             // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
 
@@ -105,7 +102,6 @@
                     'Date(' + this[key] + ')' : value;
             });
             // text is '["Date(---current time---)"]'
-
 
         $.jqplot.JSON.parse(text, reviver)
             This method parses a JSON text to produce an object or array.
@@ -148,7 +144,6 @@
                 return value;
             });
 
-
     This is a reference implementation. You are free to copy, modify, or
     redistribute.
 */
@@ -160,7 +155,7 @@
     if (!window.JSON) {
         $.jqplot.JSON = {};
     }
-    
+
     function f(n) {
         // Format integers to have at least two digits.
         return n < 10 ? '0' + n : n;
@@ -201,7 +196,6 @@
         },
         rep;
 
-
     function quote(string) {
 
 // If the string contains no control characters, no quote characters, and no
@@ -218,7 +212,6 @@
             }) + '"' :
             '"' + string + '"';
     }
-
 
     function str(key, holder) {
 
@@ -392,7 +385,6 @@
         };
     }
 
-
 // If the JSON object does not yet have a parse method, give it one.
 
     if (typeof $.jqplot.JSON.parse !== 'function') {
@@ -423,7 +415,6 @@
                 }
                 return reviver.call(holder, key, value);
             }
-
 
 // Parsing happens in four stages. In the first stage, we replace certain
 // Unicode characters with escape sequences. JavaScript handles many characters

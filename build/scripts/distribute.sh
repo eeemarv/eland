@@ -38,4 +38,3 @@ rsync -rlDvzd -e "ssh -p $PORT" --exclude=.bzr --exclude=revno --exclude=build -
 echo "Creating new symlink"
 ssh -p $PORT ${USER}@${HOST} "rm $LATEST"
 ssh -p $PORT ${USER}@${HOST} "ln -s $TARGET $LATEST"
-

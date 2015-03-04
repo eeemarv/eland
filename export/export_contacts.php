@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 #include($rootpath."includes/inc_header.php");
 #include($rootpath."includes/inc_nav.php");
 
@@ -49,12 +49,11 @@ function get_user($id){
         return $user;
 }
 
-
 function get_contacts(){
 	global $db;
 
         $query = "SELECT * FROM contact";
-	
+
 	$list_contacts = $db->GetArray($query);
 	return $list_contacts;
 }
@@ -83,7 +82,6 @@ function show_all_contacts($contacts){
                 echo "\r\n";
         }
 }
-
 
 #include($rootpath."includes/inc_sidebar.php");
 #include($rootpath."includes/inc_footer.php");

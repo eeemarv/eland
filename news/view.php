@@ -13,7 +13,7 @@ include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id)){
-	
+
 	if (isset($_GET["id"])){
 		$id = $_GET["id"];
 		$newsitem = get_newsitem($id);
@@ -50,7 +50,7 @@ function show_newsitem($newsitem, $s_accountrole){
 	echo "<small>";
 
 	echo "<strong>Agendadatum: ";
-	if(trim($newsitem["idate"]) != "00/00/00"){ 
+	if(trim($newsitem["idate"]) != "00/00/00"){
                         echo $newsitem["idate"];
         }
 	echo "<br>Locatie: " .$newsitem["location"];
@@ -62,7 +62,7 @@ function show_newsitem($newsitem, $s_accountrole){
 	echo nl2br(htmlspecialchars($newsitem["newsitem"],ENT_QUOTES));
 	echo "</p>";
 
-	echo "<p>";		
+	echo "<p>";
 	//echo "<div class='border_b'>";
 	//echo "| <a href='edit.php?mode=edit&id=".$newsitem["nid"]."'>Aanpassen</a> | ";
 	//echo "<a href='delete.php?id=".$newsitem["nid"]."'>Verwijderen</a> |";
@@ -70,11 +70,11 @@ function show_newsitem($newsitem, $s_accountrole){
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<div id='navcontainer'>";
 	echo "<ul class='hormenu'>";
-	if($s_accountrole == 'admin'){ 
+	if($s_accountrole == 'admin'){
 		$myurl= $rootpath ."news/edit.php?mode=edit&id=" .$newsitem["nid"];
 		echo "<li><a href='#' onclick=window.open('$myurl','news_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Aanpassen</a></li>";
 	}
-	if($s_accountrole == 'admin'){	
+	if($s_accountrole == 'admin'){
 		echo "<script type='text/javascript' src='/js/approvenews.js'></script>";
 		$nid = $newsitem["nid"];
         	echo "<li><a href='#' onclick='approve($nid)'>Goedkeuren</a></li>";
@@ -112,4 +112,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

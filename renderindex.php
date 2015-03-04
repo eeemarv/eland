@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ob_start();
 $rootpath = "./";
 $ptitle="home1";
@@ -23,12 +23,11 @@ $ptitle="home1";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 if(isset($s_id)){
 
 	if($s_accountrole == "admin"){
@@ -74,15 +73,14 @@ if(isset($s_id)){
 	$newsitems = get_all_newsitems();
 	if($newsitems){
  		show_all_newsitems($newsitems);
-	}	
+	}
 
 /*  postgres error: LIKE is wrong operator for date type
 	$birthdays = get_all_birthdays();
 	if($birthdays){
 		show_all_birthdays($birthdays);
-	}	
+	}
 */
-
 
 	$newusers = get_all_newusers();
 	if($newusers){
@@ -97,8 +95,6 @@ if(isset($s_id)){
 }else{
 	redirect_login($rootpath);
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////F U N C T I E S ////////////////////////////
@@ -134,7 +130,7 @@ function schema_check(){
         //echo $version;
         global $db;
 	$query = "SELECT * FROM parameters WHERE parameter= 'schemaversion'";
-	
+
         $result = $db->GetRow($query) ;
 	return $result["value"];
 }
@@ -154,7 +150,7 @@ function show_all_newusers($newusers){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-	
+
 		echo "<td valign='top'>";
 		echo trim($value["letscode"]);
 		echo " </td><td valign='top'>";
@@ -164,7 +160,7 @@ function show_all_newusers($newusers){
 		echo $value["postcode"];
 		echo " </td>";
 		echo "</tr>";
-		
+
 	}
 	echo "</table></div>";
 }
@@ -212,7 +208,7 @@ function get_all_newusers(){
 	$newusers = $db->GetArray($query);
 	return $newusers;
 }
-	
+
 function show_all_newsitems($newsitems){
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
@@ -226,9 +222,9 @@ function show_all_newsitems($newsitems){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-	
+
 		echo "<td valign='top' width='15%'>";
-		if(trim($value["idate"]) != "00/00/00"){ 
+		if(trim($value["idate"]) != "00/00/00"){
 				echo $value["idate"];
 		}
 		echo " </td>";
@@ -238,7 +234,7 @@ function show_all_newsitems($newsitems){
 		echo "</a>";
 		echo "</td></tr>";
 	}
-	
+
 	echo "</table>";
 }
 
@@ -259,7 +255,7 @@ $strlength = strlen($content);
 }
 
 function show_all_msgs($messagerows){
-	
+
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
 	echo "<td colspan='3'><strong>Laatste nieuwe Vraag & Aanbod</strong></td>";
@@ -302,8 +298,6 @@ function show_all_msgs($messagerows){
 	echo "</table></div>";
 }
 
-
-
 function get_all_newsitems(){
 	global $db;
 	$query = "SELECT *, ";
@@ -323,7 +317,7 @@ function get_all_newsitems(){
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
-	
+
 }
 
 function get_all_msgs(){

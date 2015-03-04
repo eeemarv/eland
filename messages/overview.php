@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -32,7 +32,6 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
@@ -58,7 +57,6 @@ function showlinks($rootpath){
         echo "</td></tr></table>";
 }
 
-
 function show_ptitle(){
 	echo "<h1>Overzicht Vraag & Aanbod</h1>";
 }
@@ -66,13 +64,12 @@ function show_ptitle(){
 function show_outputdiv($user_filterby, $msg_orderby){
         echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
         echo "<script type=\"text/javascript\">loadurl('renderoverview.php?user_filterby=";
-        echo $user_filterby;	
+        echo $user_filterby;
 	echo "&msg_orderby=";
 	echo $msg_orderby;
         echo "')</script>";
         echo "</div>";
 }
-
 
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");

@@ -18,11 +18,10 @@ if(isset($s_id)){
 	$userrows = get_all_active_users($user_orderby,$prefix_filterby);
  	show_all_users($userrows,$configuration);
 	show_legend();
-	
+
 }else{
 	redirect_login($rootpath);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
@@ -55,7 +54,7 @@ function get_contacts($userid){
 	$contactrows = $db->GetArray($query);
 	return $contactrows;
 }
-			
+
 function check_timestamp($cdate,$agelimit){
         // agelimit is the time after which it expired
         $now = time();
@@ -87,10 +86,9 @@ function show_all_users($userrows,$configuration){
 	echo "</tr>\n\n";
 	$rownumb=0;
 	foreach($userrows as $key => $value){
-	 	
-		
+
 		echo "<tr >\n";
-		
+
 		if($value["status"] == 2){
 			echo "<td nowrap valign='top' ><strong>";
 			echo $value["letscode"];
@@ -106,7 +104,6 @@ function show_all_users($userrows,$configuration){
 
 		echo "</td>\n";
 
-
 		if($value["status"] == 2){
 			echo "<td nowrap valign='top' ><strong>";
 			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
@@ -119,12 +116,12 @@ function show_all_users($userrows,$configuration){
 			echo "<td nowrap valign='top'>";
 			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
 		}
-		
+
 		echo "</td>\n";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
 		echo "<td valign='top'>";
-                        foreach($contactrows as $key2 => $value2){  
+                        foreach($contactrows as $key2 => $value2){
                                 if ($value2["id_type_contact"] == 4 && ($value2["flag_public"] == 1 || $s_accountrole == "admin")){
                                         echo  $value2["value"];
                                 break;
@@ -158,13 +155,11 @@ function show_all_users($userrows,$configuration){
 				}
 			}
 		echo "</td>\n";
-		
+
 		echo "</tr>\n\n";
-		
+
 	}
 	echo "</table></div>";
 }
 
-
 ?>
-

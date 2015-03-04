@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 #include($rootpath."includes/inc_header.php");
 #include($rootpath."includes/inc_nav.php");
 
@@ -49,12 +49,11 @@ function get_user($id){
         return $user;
 }
 
-
 function get_messages(){
 	global $db;
 
         $query = "SELECT * FROM messages WHERE validity > " .time();
-	
+
 	$list_contacts = $db->GetArray($query);
 	return $list_contacts;
 }
@@ -86,7 +85,6 @@ function show_all_messages($messages){
                 echo "\r\n";
         }
 }
-
 
 #include($rootpath."includes/inc_sidebar.php");
 #include($rootpath."includes/inc_footer.php");

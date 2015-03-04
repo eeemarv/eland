@@ -8,11 +8,11 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 if(isset($s_id)){
 	//geef alle hoofdcats
 	$maincats = select_maincats();
-	
+
 	$id_parent = show_maincats($maincats);
 	//geef alle subcats van deze hoofdcats
 	//select_subcats();
@@ -40,7 +40,7 @@ function show_maincats($maincats){
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 	foreach($maincats as $key => $value){
 		echo "<tr class='even_row'><td><strong>";
-		echo "<a href='searchcat_viewcat.php?id=".$value["id"]."'>"; 
+		echo "<a href='searchcat_viewcat.php?id=".$value["id"]."'>";
 		echo htmlspecialchars($value["name"],ENT_QUOTES);
 		echo "</a></strong></td></tr>\n ";
 		$id_parent = $value["id"];
@@ -55,14 +55,13 @@ function show_maincats($maincats){
 		    $columnnumber = 2;
 		    echo "</table></div>\n<div width='50%'>";
 				echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
-		}     	
+		}
 	}
 	echo "</table></div>";
 	echo "<div class='clearer'></div>";
 	echo "</div>";
-	
-}
 
+}
 
 function show_subcats($subcats){
 	foreach($subcats as $key => $value){
@@ -71,7 +70,6 @@ function show_subcats($subcats){
 		echo "(". $value["stat_msgs_wanted"]. " V, ". $value["stat_msgs_offers"]." A) \n ";
 	}
 }
-
 
 function select_subcats($id_parent){
 	global $db;
@@ -86,5 +84,3 @@ function redirect_login($rootpath){
 }
 
 ?>
-
-

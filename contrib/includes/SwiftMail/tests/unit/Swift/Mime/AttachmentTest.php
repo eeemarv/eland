@@ -8,7 +8,7 @@ require_once 'Swift/Mime/Grammar.php';
 
 class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
 {
-  
+
   public function testNestingLevelIsAttachment()
   {
     $attachment = $this->_createAttachment($this->_createHeaderSet(),
@@ -18,12 +18,12 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       Swift_Mime_MimeEntity::LEVEL_MIXED, $attachment->getNestingLevel()
       );
   }
-  
+
   public function testDispositionIsReturnedFromHeader()
   {
     /* -- RFC 2183, 2.1, 2.2.
      */
-    
+
     $disposition = $this->_createHeader('Content-Disposition', 'attachment');
     $attachment = $this->_createAttachment($this->_createHeaderSet(array(
       'Content-Disposition' => $disposition)),
@@ -31,7 +31,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $this->assertEqual('attachment', $attachment->getDisposition());
   }
-  
+
   public function testDispositionIsSetInHeader()
   {
     $disposition = $this->_createHeader('Content-Disposition', 'attachment',
@@ -47,7 +47,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setDisposition('inline');
   }
-  
+
   public function testDispositionIsAddedIfNonePresent()
   {
     $headers = $this->_createHeaderSet(array(), false);
@@ -60,7 +60,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setDisposition('inline');
   }
-  
+
   public function testDispositionIsAutoDefaultedToAttachment()
   {
     $headers = $this->_createHeaderSet(array(), false);
@@ -72,7 +72,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       $this->_createCache()
       );
   }
-  
+
   public function testDefaultContentTypeInitializedToOctetStream()
   {
     $cType = $this->_createHeader('Content-Type', '',
@@ -87,12 +87,12 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       $this->_createEncoder(), $this->_createCache()
       );
   }
-  
+
   public function testFilenameIsReturnedFromHeader()
   {
     /* -- RFC 2183, 2.3.
      */
-    
+
     $disposition = $this->_createHeader('Content-Disposition', 'attachment',
       array('filename'=>'foo.txt')
       );
@@ -102,7 +102,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $this->assertEqual('foo.txt', $attachment->getFilename());
   }
-  
+
   public function testFilenameIsSetInHeader()
   {
     $disposition = $this->_createHeader('Content-Disposition', 'attachment',
@@ -118,13 +118,13 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setFilename('bar.txt');
   }
-  
+
   public function testSettingFilenameSetsNameInContentType()
   {
     /*
      This is a legacy requirement which isn't covered by up-to-date RFCs.
      */
-    
+
     $cType = $this->_createHeader('Content-Type', 'text/plain',
       array(), false
       );
@@ -138,12 +138,12 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setFilename('bar.txt');
   }
-  
+
   public function testSizeIsReturnedFromHeader()
   {
     /* -- RFC 2183, 2.7.
      */
-    
+
     $disposition = $this->_createHeader('Content-Disposition', 'attachment',
       array('size'=>1234)
       );
@@ -153,7 +153,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $this->assertEqual(1234, $attachment->getSize());
   }
-  
+
   public function testSizeIsSetInHeader()
   {
     $disposition = $this->_createHeader('Content-Disposition', 'attachment',
@@ -169,7 +169,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setSize(12345);
   }
-  
+
   public function testFilnameCanBeReadFromFileStream()
   {
     $file = $this->_createFileStream('/bar/file.ext', '');
@@ -186,7 +186,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setFile($file);
   }
-  
+
   public function testContentTypeCanBeSetViaSetFile()
   {
     $file = $this->_createFileStream('/bar/file.ext', '');
@@ -209,7 +209,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setFile($file, 'text/html');
   }
-  
+
   public function XtestContentTypeCanBeLookedUpFromCommonListIfNotProvided()
   {
     $file = $this->_createFileStream('/bar/file.zip', '');
@@ -232,7 +232,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       );
     $attachment->setFile($file);
   }
-  
+
   public function testDataCanBeReadFromFile()
   {
     $file = $this->_createFileStream('/foo/file.ext', '<some data>');
@@ -242,7 +242,7 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
     $attachment->setFile($file);
     $this->assertEqual('<some data>', $attachment->getBody());
   }
-  
+
   public function testFluidInterface()
   {
     $attachment = $this->_createAttachment($this->_createHeaderSet(),
@@ -264,20 +264,20 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
       ->setFile($this->_createFileStream('foo.txt', ''))
       );
   }
-  
+
   // -- Private helpers
-  
+
   protected function _createEntity($headers, $encoder, $cache)
   {
     return $this->_createAttachment($headers, $encoder, $cache);
   }
-  
+
   protected function _createAttachment($headers, $encoder, $cache,
     $mimeTypes = array())
   {
     return new Swift_Mime_Attachment($headers, $encoder, $cache, new Swift_Mime_Grammar(), $mimeTypes);
   }
-  
+
   protected function _createFileStream($path, $data, $stub = true)
   {
     $file = $this->_mock('Swift_FileStream');
@@ -296,5 +296,5 @@ class Swift_Mime_AttachmentTest extends Swift_Mime_AbstractMimeEntityTest
     }
     return $file;
   }
-  
+
 }

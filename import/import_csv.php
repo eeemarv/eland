@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -17,13 +17,13 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	//show_form();
         if (isset($_POST["zend"])){
 		//echo $_FILES['csvfile']['name'];
-		//echo $_FILES['csvfile']['tmp_name'];  
+		//echo $_FILES['csvfile']['tmp_name'];
 		//print_r($_FILES);
 		$file = $_FILES['csvfile']['tmp_name'];
 		echo "Bestand doorgestuurd als $file<br>";
 		$table = $_POST["table"];
 		csv2db($file,$table);
-		
+
 	} else {
 		show_form();
 	}
@@ -72,9 +72,8 @@ function csv2db($file,$table){
 			processrecord($data,$num,$table);
 		}
 	}
-	fclose($handle); 
+	fclose($handle);
 
-	
 }
 
 function processrecord($data,$num,$table){
@@ -82,7 +81,7 @@ function processrecord($data,$num,$table){
 		//categories:
 		//messages: '"letscode","validity","id_category","content","msg_type"';
 		//transactions:
-	
+
 		echo "Processing record, column $c of $num<br>";
 
 		switch ($table) {
@@ -208,7 +207,6 @@ function processrecord($data,$num,$table){
 		}
 	}
 
-
 	// where to put it
 	switch ($table) {
         	case "users":
@@ -257,7 +255,7 @@ function dbinsert_transactions($transactions){
 function dbinsert_messages($messages){
         global $db;
         $userid = getuserid($messages["letscode"]);
-	
+
 	if(!empty($userid)){
                 $messages["id_user"] = $userid;
 
@@ -301,7 +299,7 @@ function dbinsert_contact($contact){
 function dbinsert_users($users){
         global $db;
 	// Add some defaults
-	
+
 	// Do some checks!
 	if(!empty($users["letscode"])){
 		// check for duplicated LETScodes
@@ -369,7 +367,7 @@ function checkuser($letscode){
         return $user["letscode"];
 }
 
-function checklogin($login){	
+function checklogin($login){
 	global $db;
 	echo "Checking for duplicate login name<br>";
         $query = "SELECT * ";

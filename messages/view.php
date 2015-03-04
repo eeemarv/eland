@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");   
+require_once($rootpath."includes/inc_userinfo.php");
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
@@ -57,7 +57,7 @@ if(isset($s_id)){
 
 		echo "</td>";
 		// end picture table
-	
+
 		// Show message
 		echo "<td valign='top'>";
 		show_msg($message,$balance);
@@ -70,13 +70,13 @@ if(isset($s_id)){
 
 		//Contact info goes here
                 echo "<td width='254' valign='top'>";
-		show_contact($message["id_user"]);	
+		show_contact($message["id_user"]);
 		echo "</td>";
 		//End contact info
 
 		//Response form
 		echo "<td>";
-		show_response_form($msgid, $usermail,$s_accountrole);	
+		show_response_form($msgid, $usermail,$s_accountrole);
 		echo "</td>";
 		//End response form
 
@@ -96,7 +96,6 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function show_editlinks($msgid){
         echo "<table width='100%' border=0><tr><td>";
@@ -180,7 +179,7 @@ function show_contact($id){
 	echo "<div id='contactinfo'></div>";
 	echo "<script type='text/javascript'>showsmallloader('contactinfo');loadurlto('rendercontact.php?id=$id', 'contactinfo')</script>";
 }
-	
+
 function show_msg($message,$balance){
 	global $baseurl;
 	global $msgid;
@@ -224,7 +223,7 @@ function show_msg($message,$balance){
 	echo "<tr class='even_row'><td valign='bottom'>";
 	if (!empty($message["amount"])){
 		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency ." per " .$message["units"];
-	} else { 
+	} else {
 		echo "Er werd geen (vraag)prijs ingegeven";
 	}
 	echo "</td></tr>";
@@ -238,7 +237,7 @@ function show_msg($message,$balance){
 
 	echo "</table>";
 
-} 
+}
 
 function show_user($user){
 	echo "<table cellspacing='0' cellpadding='0' border='0'>";
@@ -247,8 +246,6 @@ function show_user($user){
 	echo "<tr><td colspan='2'><p>&#160;</p></td></tr>";
 	echo "</table>";
 }
-
-
 
 function show_title($title){
 	echo "<h1>$title</h1>";

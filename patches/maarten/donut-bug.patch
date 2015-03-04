@@ -9,5 +9,4 @@
 +				this[sliceIndex].amountOut += (transaction.out) ? transaction.amount : 0;
  				this[sliceIndex].transIndexes.push();
  				this[sliceIndex].userIndex = transaction.userIndex;
- 			}			
-
+ 			}

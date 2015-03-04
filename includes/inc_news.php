@@ -3,7 +3,7 @@
  * Class to perform eLAS transactions
  *
  * This file is part of eLAS http://elas.vsbnet.be
- * 
+ *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
  *
  * eLAS is free software; you can redistribute it and/or
@@ -59,6 +59,5 @@ function mail_news($id){
 		amq_sendmail($value["listname"], $mailsubject, $mailcontent, 0);
 	}
 }
-
 
 ?>

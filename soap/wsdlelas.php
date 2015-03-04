@@ -25,7 +25,6 @@ $server->register('gettoken',                // method name
     'Get a login token'            // documentation
 );
 
-
 $server->register('userbyletscode',                // method name
     array('apikey' => 'xsd:string', 'letscode' => 'xsd:string'),        // input parameters
     array('return' => 'xsd:string'),      // output parameters
@@ -86,7 +85,6 @@ $server->register('dopayment',
    'Commit an interlets transaction'
 );
 
-
 function gettoken($apikey){
 	log_event("","debug","Token request");
 	if(check_apikey($apikey,"interlets") == 1){
@@ -108,7 +106,7 @@ function dopayment($apikey,$from,$real_from,$to,$description,$amount,$transid,$s
 	}
 
         if(check_apikey($apikey,"interlets") == 1){
-		if(readconfigfromdb("maintenance") == 1){ 
+		if(readconfigfromdb("maintenance") == 1){
 			log_event("","Soap","Transaction $transid deferred (offline)");
 			return "OFFLINE";
 		} else {
@@ -159,7 +157,7 @@ function dopayment($apikey,$from,$real_from,$to,$description,$amount,$transid,$s
 				mail_transaction($posted_list, $transid);
 			} else {
 				log_event("","Soap","Transaction $transid FAILED");
-				$result = "FAILED";	
+				$result = "FAILED";
 			}
 			return $result;
 		}

@@ -10,13 +10,13 @@ class Swift_Plugins_Reporters_HitReporterTest
 
   private $_hitReporter;
   private $_message;
-  
+
   public function setUp()
   {
     $this->_hitReporter = new Swift_Plugins_Reporters_HitReporter();
     $this->_message = $this->_mock('Swift_Mime_Message');
   }
-  
+
   public function testReportingFail()
   {
     $this->_hitReporter->notify($this->_message, 'foo@bar.tld',
@@ -26,7 +26,7 @@ class Swift_Plugins_Reporters_HitReporterTest
       $this->_hitReporter->getFailedRecipients()
       );
   }
-  
+
   public function testMultipleReports()
   {
     $this->_hitReporter->notify($this->_message, 'foo@bar.tld',
@@ -39,7 +39,7 @@ class Swift_Plugins_Reporters_HitReporterTest
       $this->_hitReporter->getFailedRecipients()
       );
   }
-  
+
   public function testReportingPassIsIgnored()
   {
     $this->_hitReporter->notify($this->_message, 'foo@bar.tld',
@@ -52,7 +52,7 @@ class Swift_Plugins_Reporters_HitReporterTest
       $this->_hitReporter->getFailedRecipients()
       );
   }
-  
+
   public function testBufferCanBeCleared()
   {
     $this->_hitReporter->notify($this->_message, 'foo@bar.tld',
@@ -67,5 +67,5 @@ class Swift_Plugins_Reporters_HitReporterTest
     $this->_hitReporter->clear();
     $this->assertEqual(array(), $this->_hitReporter->getFailedRecipients());
   }
-  
+
 }

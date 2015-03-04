@@ -12,7 +12,6 @@ $s_accountrole = $_SESSION["accountrole"];
 include($rootpath."includes/inc_header.php");
 echo "<script type='text/javascript' src='$rootpath/js/moonews.js'></script>";
 
-
 if(isset($s_id)){
 	show_ptitle();
 	if($s_accountrole == "user" || $s_accountrole == "admin"){
@@ -38,7 +37,7 @@ function show_addlink(){
         echo "</div>";
         echo "</td></tr></table>";
 }
-	
+
 function show_ptitle(){
 	echo "<h1>Nieuws</h1>";
 }

@@ -349,7 +349,7 @@ class SimpleSignatureMap {
     function isMatch($parameters) {
         return ($this->findFirstSlot($parameters) != null);
     }
-    
+
     /**
      *    Compares the incoming parameters with the
      *    internal expectation. Uses the incoming $test
@@ -393,7 +393,7 @@ class SimpleCallSchedule {
     private $wildcard = MOCK_ANYTHING;
     private $always;
     private $at;
-    
+
     /**
      *    Sets up an empty response schedule.
      *    Creates an empty call map.
@@ -402,7 +402,7 @@ class SimpleCallSchedule {
         $this->always = array();
         $this->at = array();
     }
-    
+
     /**
      *    Stores an action against a signature that
      *    will always fire unless masked by a time
@@ -420,7 +420,7 @@ class SimpleCallSchedule {
         }
         $this->always[$method]->add($args, $action);
     }
-    
+
     /**
      *    Stores an action against a signature that
      *    will fire at a specific time in the future.
@@ -442,7 +442,7 @@ class SimpleCallSchedule {
         }
         $this->at[$method][$step]->add($args, $action);
     }
-    
+
     /**
      *  Sets up an expectation on the argument list.
      *  @param string $method       Method to test.
@@ -457,7 +457,7 @@ class SimpleCallSchedule {
                 new ParametersExpectation($args, $message);
 
     }
-    
+
     /**
      *    Actually carry out the action stored previously,
      *    if the parameters match.
@@ -487,7 +487,7 @@ class SimpleCallSchedule {
         $null = null;
         return $null;
     }
-    
+
     /**
      *    Replaces wildcard matches with wildcard
      *    expectations in the argument list.
@@ -518,7 +518,7 @@ class SimpleCallSchedule {
  */
 class SimpleReturn {
     private $value;
-    
+
     /**
      *    Stashes it for later.
      *    @param mixed $value     You need to clone objects
@@ -529,7 +529,7 @@ class SimpleReturn {
     function __construct($value) {
         $this->value = $value;
     }
-    
+
     /**
      *    Returns the value stored earlier.
      *    @return mixed    Whatever was stashed.
@@ -548,7 +548,7 @@ class SimpleReturn {
  */
 class SimpleByReference {
     private $reference;
-    
+
     /**
      *    Stashes it for later.
      *    @param mixed $reference     Actual PHP4 style reference.
@@ -557,7 +557,7 @@ class SimpleByReference {
     function __construct(&$reference) {
         $this->reference = &$reference;
     }
-    
+
     /**
      *    Returns the reference stored earlier.
      *    @return mixed    Whatever was stashed.
@@ -576,7 +576,7 @@ class SimpleByReference {
  */
 class SimpleByValue {
     private $value;
-    
+
     /**
      *    Stashes it for later.
      *    @param mixed $value     You need to clone objects
@@ -587,7 +587,7 @@ class SimpleByValue {
     function __construct($value) {
         $this->value = $value;
     }
-    
+
     /**
      *    Returns the value stored earlier.
      *    @return mixed    Whatever was stashed.
@@ -607,7 +607,7 @@ class SimpleByValue {
  */
 class SimpleThrower {
     private $exception;
-    
+
     /**
      *    Stashes it for later.
      *    @param Exception $exception    The exception object to throw.
@@ -616,7 +616,7 @@ class SimpleThrower {
     function __construct($exception) {
         $this->exception = $exception;
     }
-    
+
     /**
      *    Throws the exceptins stashed earlier.
      *    @access public
@@ -635,7 +635,7 @@ class SimpleThrower {
 class SimpleErrorThrower {
     private $error;
     private $severity;
-    
+
     /**
      *    Stashes an error to throw later.
      *    @param string $error      Error message.
@@ -646,7 +646,7 @@ class SimpleErrorThrower {
         $this->error = $error;
         $this->severity = $severity;
     }
-    
+
     /**
      *    Triggers the stashed error.
      *    @access public
@@ -695,7 +695,7 @@ class SimpleMock {
         $this->expected_args_at = array();
         $this->getCurrentTestCase()->tell($this);
     }
-    
+
     /**
      *    Disables a name check when setting expectations.
      *    This hack is needed for the partial mocks.
@@ -1029,7 +1029,7 @@ class SimpleMock {
             $this->expect($method, $args, $message);
         }
     }
-    
+
     /**
      *    Sets up a trigger to throw an exception upon the
      *    method call.
@@ -1040,7 +1040,7 @@ class SimpleMock {
         $this->actions->register($method, $args,
                 new SimpleThrower($exception ? $exception : new Exception()));
     }
-    
+
     /**
      *    Sets up a trigger to throw an exception upon the
      *    method call.
@@ -1050,7 +1050,7 @@ class SimpleMock {
         $this->actions->registerAt($timing, $method, $args,
                 new SimpleThrower($exception ? $exception : new Exception()));
     }
-    
+
     /**
      *    Sets up a trigger to throw an error upon the
      *    method call.
@@ -1059,7 +1059,7 @@ class SimpleMock {
         $this->dieOnNoMethod($method, "error on");
         $this->actions->register($method, $args, new SimpleErrorThrower($error, $severity));
     }
-    
+
     /**
      *    Sets up a trigger to throw an error upon the
      *    method call.
@@ -1114,7 +1114,7 @@ class SimpleMock {
         $this->restoreEStrict($was);
         return $result;
     }
-    
+
     /**
      *    Finds the return value matching the incoming
      *    arguments. If there is no matching value found
@@ -1157,13 +1157,13 @@ class SimpleMock {
                     "Mock method [$method] -> %s");
         }
     }
-    
+
     private function disableEStrict() {
         $was = error_reporting();
         error_reporting($was & ~E_STRICT);
         return $was;
     }
-    
+
     private function restoreEStrict($was) {
         error_reporting($was);
     }
@@ -1278,7 +1278,7 @@ class MockGenerator {
         $code = $this->createClassCode($methods ? $methods : array());
         return eval("$code return \$code;");
     }
-    
+
     /**
      *    Subclasses a class and overrides every method with a mock one
      *    that can have return values and expectations set. Chains
@@ -1578,7 +1578,7 @@ class MockGenerator {
         $code .= "    }\n";
         return $code;
     }
-    
+
     /**
      *    Adds code for chaining the throw methods.
      *    @return string           Code for chains.

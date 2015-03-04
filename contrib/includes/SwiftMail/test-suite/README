@@ -11,7 +11,7 @@ making new HTTP requests.
 Sweety works with any vanilla version of SimpleTest since the XmlReporter was
 added.
 
-Tests can be run on command line, in an AJAX equipped web browser*, or in a 
+Tests can be run on command line, in an AJAX equipped web browser*, or in a
 web browser with javascript turned off.
 
  * Sweety has been tested with success in the following browsers:
@@ -20,7 +20,6 @@ web browser with javascript turned off.
    - Safari 3-beta
    - Internet Explorer 7
    - Opera 9
-
 
 Configuring Sweety:
 --------------------
@@ -39,11 +38,10 @@ If you have test cases in directories /webdev/tests/unit and
 
 define('SWEETY_TEST_PATH', '/webdev/tests/unit' . PATH_SEPARATOR .
   '/webdev/tests/integration');
-  
+
 If you want to run Sweety on the command line you'll need to specify the path
 to your PHP executable (typically /usr/bin/php).  Sweety needs to be able to
 fork new processes using this executable.
-
 
 What to do if your naming scheme doesn't use PEAR conventions:
 --------------------------------------------------------------
@@ -57,7 +55,7 @@ This is a two step process:
 
    Refer to the interface in lib/Sweety/TestLocator.php for guidance on what
    your TestLocator needs to include (just two methods for searching and including).
-   
+
 2) Add it to your config.php.
 
   Once you've written a new TestLocator which works for your naming scheme,
@@ -65,13 +63,11 @@ This is a two step process:
   include the class file somewhere inside the config.php.  If you use multiple class
   naming conventions, list your TestLocators as a comma separated string.
 
-
 Making tests appear in Sweety's interface:
 -------------------------------------------
 
 No really, you just edit the configuration and they'll show up if a TestLocator
 can find them ;)
-
 
 Running sweety on the command line:
 -----------------------------------
@@ -85,8 +81,6 @@ directory.
  -bash$  php run.php  #runs all tests
  -bash$  php run.php Name_Of_TestClass  #runs a single test case
  -bash$  php run.php Name_Of_TestClass  xml  #runs a single test case in XML
-
- 
 
 Runing Sweety with AJAX:
 -------------------------
@@ -127,7 +121,6 @@ click the "Run Tests" button, or click the individual test to refresh the result
 
 If you add a new test case you will need to refresh your browser window however.
 
-
 Running Sweety without JavaScript:
 ----------------------------------
 
@@ -156,4 +149,3 @@ You can run tests with SimpleTest's HtmlReporter by clicking the HTML icon
 too.
 
 Enjoy!
-

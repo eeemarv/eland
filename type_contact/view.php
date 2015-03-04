@@ -44,7 +44,7 @@ function show_contacttype($contacttype){
 	echo "<td valign='top'><strong>Naam</strong></td>";
 	echo "<td valign='top'><strong>Afkorting</strong></td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td valign='top' nowrap>";
 	echo htmlspecialchars($contacttype["name"],ENT_QUOTES);
@@ -54,7 +54,7 @@ function show_contacttype($contacttype){
 	echo "</td>";
 	echo "</tr>";
 	echo "</table></div>";
-		
+
 	echo "<div class='border_b'>";
 	echo "| <a href='edit.php?id=".$contacttype["id"]."'>Aanpassen</a> | ";
 	echo "<a href='delete.php?id=".$contacttype["id"]."'>Verwijderen</a> |";
@@ -76,4 +76,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

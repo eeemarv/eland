@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");   
+require_once($rootpath."includes/inc_userinfo.php");
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
@@ -36,7 +36,7 @@ if(isset($s_id)){
 
 		echo "</td>";
 		// end picture table
-	
+
 		// Show message
 		echo "<td valign='top'>";
 		show_msg($message,$balance);
@@ -49,13 +49,13 @@ if(isset($s_id)){
 
 		//Contact info goes here
                 echo "<td width='254' valign='top'>";
-		show_contact($contact);	
+		show_contact($contact);
 		echo "</td>";
 		//End contact info
 
 		//Response form
 		echo "<td>";
-		show_response_form($msgid, $usermail);	
+		show_response_form($msgid, $usermail);
 		echo "</td>";
 		//End response form
 
@@ -136,7 +136,7 @@ function show_contact($contact){
 	}
 	echo "</table>";
 }
-	
+
 function show_msg($message,$balance){
 	$currency = readconfigfromdb("currency");
 	echo "<table cellspacing='0' cellpadding='0' border='0' width='100%'>";
@@ -177,13 +177,13 @@ function show_msg($message,$balance){
 	echo "<tr class='even_row'><td>";
 	if (!empty($message["amount"])){
 		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency ." per " .$message["units"];
-	} else { 
+	} else {
 		echo "Er werd geen (vraag)prijs ingegeven";
 	}
 	echo "</td></tr>";
 
 	echo "</table>";
-} 
+}
 
 function show_user($user){
 	echo "<table cellspacing='0' cellpadding='0' border='0'>";
@@ -192,8 +192,6 @@ function show_user($user){
 	echo "<tr><td colspan='2'><p>&#160;</p></td></tr>";
 	echo "</table>";
 }
-
-
 
 function show_title($title){
 	echo "<h1>$title</h1>";

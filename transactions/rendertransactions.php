@@ -10,7 +10,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 $trans_orderby = $_GET["trans_orderby"];
 $asc = $_GET["asc"];
 
@@ -53,12 +53,12 @@ function show_all_transactions($transactions, $trans_orderby, $asc){
 		'fromusername' => array_merge($asc_preset_ary, array(
 			'lang' => 'Van')),
 		'tousername' => array_merge($asc_preset_ary, array(
-			'lang' => 'Aan')),	
+			'lang' => 'Aan')),
 		'amount' => array_merge($asc_preset_ary, array(
 			'lang' => 'Bedrag')),
 		'description' => array_merge($asc_preset_ary, array(
 			'lang' => 'Dienst')));
-	
+
 	$tableheader_ary[$trans_orderby]['asc'] = ($asc) ? 0 : 1;
 	$tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '&nbsp;&#9650;' : '&nbsp;&#9660;';
 
@@ -68,9 +68,9 @@ function show_all_transactions($transactions, $trans_orderby, $asc){
 
 	foreach ($tableheader_ary as $key_orderby => $data){
 		echo '<td valign="top"><strong><a href="alltrans.php?trans_orderby='.$key_orderby.'&asc='.$data['asc'].'">';
-		echo $data['lang'].$data['indicator'].'</a></strong></td>';	
+		echo $data['lang'].$data['indicator'].'</a></strong></td>';
 	}
-	
+
 	echo "</tr>";
 	$rownumb=0;
 	foreach($transactions as $key => $value){

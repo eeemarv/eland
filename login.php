@@ -55,7 +55,6 @@ if(!empty($_GET['url'])){
 	echo "<script type='text/javascript'>var redirecturl='index.php';</script>";
 }
 
-
 // Check if we are in maintenance mode
 if(readconfigfromdb("maintenance") == 1){
 	echo "<p><font color='red'><p><strong>eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen</strong></font></p>";
@@ -68,7 +67,7 @@ if($locked == 1){
 
 // Draw the login form division
 echo "<div id='formdiv'>";
-if(empty($token)){        
+if(empty($token)){
 	echo "<form id='loginform' name='loginform' action='$rootpath/postlogin.php' method='post'>";
 	echo "<table class='selectbox'><tr>";
 	echo "<td>Login</td>";
@@ -83,7 +82,7 @@ if(empty($token)){
 	echo "</table>";
 	echo "</form>";
 	echo "</div>";
-	
+
 	// Show the OpenID login box
 	echo "<div id='openiddiv'>";
 	echo "<form id='openidbox' name='openidbox' action='$rootpath/postopenid.php' method='post'>";
@@ -159,13 +158,12 @@ function startsession($user){
         log_event($user["id"],"Agent","$browser");
         insert_date_into_lastlogin($user["id"]);
         //setstatus($_SESSION["login"] ." " .$tr->get('logged_in','login'), 0);
-        
+
         // Debug notification queue
         //for ($i = 1; $i <= 10; $i++) {
 		//	setstatus("Notification $i");
 		//}
 }
-
 
 function insert_date_into_lastlogin($s_id){
         global $db;
@@ -177,4 +175,3 @@ function insert_date_into_lastlogin($s_id){
 //include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 $msg_orderby = $_GET["msg_orderby"];
 $user_filterby = $_GET["user_filterby"];
 
@@ -22,7 +22,6 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
@@ -88,7 +87,7 @@ function show_all_msgs($messagerows, $s_accountrole){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-		
+
 		echo "<td valign='top' nowrap>";
 		if($value["msg_type"]==0){
 			echo "V";
@@ -110,7 +109,7 @@ function show_all_msgs($messagerows, $s_accountrole){
                  if(strtotime($value["valdate"]) < time()) {
                         echo "</del>";
                 }
-		
+
 		echo "</a> ";
 		echo "</td>";
 
@@ -123,7 +122,6 @@ function show_all_msgs($messagerows, $s_accountrole){
                         echo "</b></font>";
                 }
                 echo "</td>";
-
 
 		echo "<td valign='top' nowrap>";
 		echo  htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
@@ -139,7 +137,6 @@ function show_all_msgs($messagerows, $s_accountrole){
 	}
 	echo "</table></div>";
 }
-
 
 function get_all_msgs($msg_orderby,$user_filterby){
 	$date = date('Y-m-d');

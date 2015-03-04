@@ -1929,16 +1929,16 @@
 					B:	this.getLAB().b
 				};
 			};
-			
+
 			this.getSpaces = function() {
 				return $.extend(true, {}, spaces);
 			};
-			
+
 			this.setSpaces = function(new_spaces) {
 				spaces = new_spaces;
 				return this;
 			};
-			
+
 			this.distance = function(color) {
 				var space	= 'lab',
 					getter	= 'get'+space.toUpperCase(),

@@ -1,4 +1,4 @@
-//  user_transactions.js 
+//  user_transactions.js
 
 $.noConflict();
 
@@ -6,18 +6,18 @@ jQuery(document).ready(function($){
 	$.ajax({
 		url: '/graphs/ajax/user_transactions.php',
 		dataType: 'json',
-		data: { user_id: user_id },  
+		data: { user_id: user_id },
 		success:function(data){
-			
+
 			var transactions = data.transactions;
 			var users = data.users;
-			
+
 			var graph = new Array();
-			var graphTrans = new Array();			
-			
+			var graphTrans = new Array();
+
 			var donut = new Array();
 			var donutData = new Array();
-			
+
 			users.getIndex = function(userCode){
 				for (var i = 0; i < this.length; i++){
 					if (userCode == this[i].code){
@@ -25,24 +25,24 @@ jQuery(document).ready(function($){
 					}
 				}
 				return null;
-			}			
-			
+			}
+
 			donut.add = function(transaction, users){
 				var userCode = users[transaction.userIndex].code;
 				for (i = 0; i < this.length; i++){
 					if (userCode == this[i][0]){
 						this[i][1]++;
 						return i;
-					}	
+					}
 				}
 				this.push([userCode, 1]);
 				return this.length - 1;
 			}
-			
+
 			donutData.add = function(transaction, sliceIndex){
 				if (sliceIndex == this.length){
 					this.push({
-						in:0, 
+						in:0,
 						out:0,
 						amountIn: 0,
 						amountOut: 0,
@@ -56,26 +56,26 @@ jQuery(document).ready(function($){
 				this[sliceIndex].amountOut += (transaction.out) ? transaction.amount : 0;
 				this[sliceIndex].transIndexes.push();
 				this[sliceIndex].userIndex = transaction.userIndex;
-			}			
+			}
 
 			var balance = Number(data.beginBalance);
 			var beginDate = Number(data.begin) * 1000;
 			var prevDate = beginDate;
-			graph.push([beginDate, balance]); 
+			graph.push([beginDate, balance]);
 			graphTrans.push([0, 0]);
-			
+
 			for (var u = 0; u < transactions.length; u++){
 				var tDate = Number(transactions[u].date * 1000);
 				var amount = Number(transactions[u].amount);
 				amount = (transactions[u].out) ? amount * -1 : amount;
-				
+
 				if (tDate > prevDate){
 					graph.push([tDate, balance]);
 					graphTrans.push([1, u]);
 					prevDate = tDate;
 				}
-				
-				balance += Number(amount); 
+
+				balance += Number(amount);
 				tDate = prevDate + 1;
 				graph.push([tDate, balance]);
 				graphTrans.push([1, u]);
@@ -84,13 +84,13 @@ jQuery(document).ready(function($){
 				sliceIndex = donut.add(transactions[u], users);
 				donutData.add(transactions[u], sliceIndex);
 			}
-			
-			var endDate = Number(data.end) * 1000; 
+
+			var endDate = Number(data.end) * 1000;
 			graph.push([endDate, balance]);
-			graphTrans.push([0, 0]);	
+			graphTrans.push([0, 0]);
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
-			$.jqplot('chartdiv1', graph, { 
+			$.jqplot('chartdiv1', graph, {
 				title: 'Laatste Jaar',
 				grid: {shadow: false},
 				cursor: {
@@ -103,16 +103,16 @@ jQuery(document).ready(function($){
 						numberTicks: data.ticks,
 						tickOptions:{
 							formatString: '%m',
-						}	
-					},	
+						}
+					},
 					yaxis: {
-						tickOptions:{ 
-							formatString: '%.0f', 
+						tickOptions:{
+							formatString: '%.0f',
 					        fontFamily: 'Georgia',
-							fontSize: '10pt',		
+							fontSize: '10pt',
 						},
 					},
-				},					
+				},
 				axesDefaults: {
 					pad: 1,
 				},
@@ -120,19 +120,19 @@ jQuery(document).ready(function($){
 					series1: 0,
 					series2: 1,
 					color: 'rgba(0, 0, 255, 0.1)',
-					baseSeries: 0, 
+					baseSeries: 0,
 					fill: true,
 				},
 				seriesDefaults: {
 					showMarker: false,
 					color: 'rgb(225, 225, 255)',
 					shadow: false,
-				},					
+				},
 				series: {
 					1: {color: 'rgb(0, 0, 127)'},
 				},
 			});
-			
+
 			$('#chartdiv1').bind('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, evData) {
 
 				if (!graphTrans[pointIndex][0] || seriesIndex != 1){
@@ -140,7 +140,7 @@ jQuery(document).ready(function($){
 				}
 
 				var transactionData = transactions[graphTrans[pointIndex][1]];
-				var transDate = new Date(transactionData.date * 1000);	
+				var transDate = new Date(transactionData.date * 1000);
 				var transDateString = transDate.getDate() + '-' + (Number(transDate.getMonth()) + 1) + '-' + transDate.getFullYear();
 
 				var transdiv = '<div class="tooltip"><p>';
@@ -154,7 +154,7 @@ jQuery(document).ready(function($){
 				$(this).append(transdiv);
 
 			});
-			
+
 			$('#chartdiv1').bind('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
 				$('div.tooltip').remove();
 			});
@@ -166,7 +166,7 @@ jQuery(document).ready(function($){
 			}
 
 			$.jqplot('chartdiv2', [donut] , {
-				title: 'Laatste Jaar',		
+				title: 'Laatste Jaar',
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
 				  seriesColors: seriesColors,
@@ -180,34 +180,34 @@ jQuery(document).ready(function($){
 					shadow:false,
 				  }
 				},
-	
-			});	
-			
+
+			});
+
 			$('#chartdiv2').bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
-								
+
 				if (user.linkable){
 					$(this).css('cursor', 'pointer');
-				}					
+				}
 				var dddiv = '<div class="tooltip"><p>'+user.code+' '+user.name;
 				dddiv += (dd.out) ? '<br/><strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
 				dddiv += (dd.in) ? '<br/><strong>+</strong> '+dd.in+' transacties, '+dd.amountIn+' '+data.currency : '';
-				dddiv += '</p></div>'; 
-				$(this).append(dddiv);				
+				dddiv += '</p></div>';
+				$(this).append(dddiv);
 			});
-			
+
 			$('#chartdiv2').bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
 				$('div.tooltip').remove();
 				$(this).css('cursor', 'default');
-			});			
-			
+			});
+
 			$('#chartdiv2').bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.linkable){
 					window.location.href = 'memberlist_view.php?id=' + user.id;
-				}		
-			});													
-		}	
+				}
+			});
+		}
 	});
 });

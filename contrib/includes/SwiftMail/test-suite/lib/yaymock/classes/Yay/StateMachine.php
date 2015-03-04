@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/State.php';
 //require 'Yay/SimpleState.php';
 //require 'Yay/StatePredicate.php';
@@ -28,21 +28,21 @@
  */
 class Yay_StateMachine implements Yay_States
 {
-  
+
   /**
    * The name of this state machine.
    * @var string
    * @access private
    */
   private $_name;
-  
+
   /**
    * The current state.
    * @var string
    * @access private
    */
   private $_state;
-  
+
   /**
    * Create a new State machine with $name.
    * @param string $name
@@ -51,7 +51,7 @@ class Yay_StateMachine implements Yay_States
   {
     $this->_name = $name;
   }
-  
+
   /**
    * Set the initial state of this state machine.
    * @param string $stateName
@@ -62,7 +62,7 @@ class Yay_StateMachine implements Yay_States
     $this->become($stateName);
     return $this;
   }
-  
+
   /**
    * Get the state which puts the state machine into the named state.
    * @param string $stateName
@@ -72,7 +72,7 @@ class Yay_StateMachine implements Yay_States
   {
     return new Yay_SimpleState($this, $stateName);
   }
-  
+
   /**
    * Get the predicate which indicates the state machine is NOT in the named state.
    * @param string $stateName
@@ -82,7 +82,7 @@ class Yay_StateMachine implements Yay_States
   {
     return new Yay_SimpleStatePredicate($this, $stateName, false);
   }
-  
+
   /**
    * Become the named state.
    * @param string $stateName
@@ -91,7 +91,7 @@ class Yay_StateMachine implements Yay_States
   {
     $this->_state = $stateName;
   }
-  
+
   /**
    * Get the name of the current state.
    * @return string
@@ -100,7 +100,7 @@ class Yay_StateMachine implements Yay_States
   {
     return $this->_state;
   }
-  
+
   /**
    * Write a description of this self describing object to Description.
    * @param Yay_Description $description
@@ -109,5 +109,5 @@ class Yay_StateMachine implements Yay_States
   {
     $description->appendText(sprintf(' %s', $this->_name));
   }
-  
+
 }

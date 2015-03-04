@@ -33,7 +33,7 @@ try {
     } elseif($openid->mode == 'cancel') {
         echo 'User has canceled authentication!';
     } else {
-        echo 'User ' . ($openid->validate() ? $openid->identity . ' has ' : 'has not ') . 
+        echo 'User ' . ($openid->validate() ? $openid->identity . ' has ' : 'has not ') .
 'logged in.';
     }
 } catch(ErrorException $e) {

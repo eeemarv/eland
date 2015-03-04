@@ -14,7 +14,7 @@ class Swift_Plugins_RedirectingPluginTest extends Swift_Tests_SwiftUnitTestCase
     $plugin->setRecipient('chris@example.com');
     $this->assertEqual('chris@example.com', $plugin->getRecipient());
   }
-  
+
   public function testPluginChangesRecipients()
   {
     $message = Swift_Message::newInstance()
@@ -34,26 +34,26 @@ class Swift_Plugins_RedirectingPluginTest extends Swift_Tests_SwiftUnitTestCase
       ))
       ->setBody('...')
     ;
-    
+
     $plugin = new Swift_Plugins_RedirectingPlugin('god@example.com');
-    
+
     $evt = $this->_createSendEvent($message);
-    
+
     $plugin->beforeSendPerformed($evt);
-    
+
     $this->assertEqual($message->getTo(), array('god@example.com' => ''));
     $this->assertEqual($message->getCc(), array());
     $this->assertEqual($message->getBcc(), array());
-    
+
     $plugin->sendPerformed($evt);
-    
+
     $this->assertEqual($message->getTo(), $to);
     $this->assertEqual($message->getCc(), $cc);
     $this->assertEqual($message->getBcc(), $bcc);
   }
-  
+
   // -- Creation Methods
-  
+
   private function _createSendEvent(Swift_Mime_Message $message)
   {
     $evt = $this->_mock('Swift_Events_SendEvent');

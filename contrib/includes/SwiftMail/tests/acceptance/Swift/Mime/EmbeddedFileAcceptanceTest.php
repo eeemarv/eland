@@ -20,7 +20,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
   private $_cache;
   private $_grammar;
   private $_headers;
-  
+
   public function setUp()
   {
     $this->_cache = new Swift_KeyCache_ArrayKeyCache(
@@ -28,7 +28,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       );
     $factory = new Swift_CharacterReaderFactory_SimpleCharacterReaderFactory();
     $this->_contentEncoder = new Swift_Mime_ContentEncoder_Base64ContentEncoder();
-    
+
     $headerEncoder = new Swift_Mime_HeaderEncoder_QpHeaderEncoder(
       new Swift_CharacterStream_ArrayCharacterStream($factory, 'utf-8')
       );
@@ -40,7 +40,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       new Swift_Mime_SimpleHeaderFactory($headerEncoder, $paramEncoder, $this->_grammar)
       );
   }
-  
+
   public function testContentIdIsSetInHeader()
   {
     $file = $this->_createEmbeddedFile();
@@ -54,7 +54,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   public function testDispositionIsSetInHeader()
   {
     $file = $this->_createEmbeddedFile();
@@ -69,7 +69,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   public function testFilenameIsSetInHeader()
   {
     $file = $this->_createEmbeddedFile();
@@ -84,7 +84,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   public function testSizeIsSetInHeader()
   {
     $file = $this->_createEmbeddedFile();
@@ -99,7 +99,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   public function testMultipleParametersInHeader()
   {
     $file = $this->_createEmbeddedFile();
@@ -115,7 +115,7 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   public function testEndToEnd()
   {
     $file = $this->_createEmbeddedFile();
@@ -134,9 +134,9 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       $file->toString()
       );
   }
-  
+
   // -- Private helpers
-  
+
   protected function _createEmbeddedFile()
   {
     $entity = new Swift_Mime_EmbeddedFile(
@@ -147,5 +147,5 @@ class Swift_Mime_EmbeddedFileAcceptanceTest extends UnitTestCase
       );
     return $entity;
   }
-  
+
 }

@@ -105,4 +105,3 @@ class Auth_OpenID_CryptUtil {
         return $str;
     }
 }
-

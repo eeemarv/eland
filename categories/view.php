@@ -45,7 +45,7 @@ function show_cat($cat){
 	echo "<td valign='top'><strong>Naam</strong></td>";
 	echo "</tr>";
 	echo "<tr>";
-	
+
 	echo "<td valign='top' nowrap>";
 	if ($cat["id_parent"] == 0){
 		echo "Ja";
@@ -56,18 +56,18 @@ function show_cat($cat){
 		echo $parent["name"];
 	}
 	echo "</td>";
-		
+
 	echo "<td valign='top' nowrap>";
 	echo htmlspecialchars($cat["name"],ENT_QUOTES);
 	echo "</td>";
 	echo "</tr>";
 	echo "</table></div>";
-		
+
 	echo "<div class='border_b'>";
 	echo "| <a href='edit.php?id=".$cat["id"]."'>Aanpassen</a> |";
 	echo "<a href='delete.php?id=".$cat["id"]."'>Verwijderen</a> |";
 	echo "</div>";
-	
+
 }
 
 function get_cat($id){
@@ -87,4 +87,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

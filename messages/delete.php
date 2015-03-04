@@ -71,7 +71,7 @@ function delete_msg($id,$rootpath){
 		//echo "unlinking $target";
 		unlink($target);
 	}
-		
+
 	$q1 = "DELETE FROM msgpictures WHERE msgid = ".$id ;
 	$result = $db->Execute($q1);
 	$q2 = "DELETE FROM messages WHERE id =".$id ;
@@ -82,7 +82,7 @@ function delete_msg($id,$rootpath){
 		setstatus("V/A verwijderen mislukt", 1);
 	}
 }
-	
+
 function get_msg($id){
     global $db;
 	$query = "SELECT *, ";
@@ -107,14 +107,14 @@ function show_msg($msg){
 	echo "<td valign='top' nowrap><strong>Geldig tot</strong></td>";
 	echo "<td valign='top' nowrap><strong>Categorie</strong></td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td valign='top' nowrap>";
 	 	if ($msg["msg_type"] == 0){
  		echo "V ";
 	}elseif($msg["msg_type"] == 1){
 		echo "A ";
-	} 
+	}
 	echo "</td>";
 	echo "<td valign='top'>";
 	echo nl2br(htmlspecialchars($msg["content"],ENT_QUOTES));

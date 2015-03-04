@@ -9,7 +9,7 @@ require_once 'Swift/Events/EventListener.php';
 class Swift_Transport_FailoverTransportTest
   extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testFirstTransportIsUsed()
   {
     $context = new Mockery();
@@ -31,18 +31,18 @@ class Swift_Transport_FailoverTransportTest
       -> never($t2)->send(any(), optional())
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $this->assertEqual(1, $transport->send($message1));
     $this->assertEqual(1, $transport->send($message2));
     $context->assertIsSatisfied();
   }
-  
+
   public function testMessageCanBeTriedOnNextTransportIfExceptionThrown()
   {
     $e = new Swift_TransportException('b0rken');
-    
+
     $context = new Mockery();
     $message = $context->mock('Swift_Mime_Message');
     $t1 = $context->mock('Swift_Transport');
@@ -62,13 +62,13 @@ class Swift_Transport_FailoverTransportTest
       -> one($t2)->send($message, optional()) -> returns(1) -> when($con2->is('on'))
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $this->assertEqual(1, $transport->send($message));
     $context->assertIsSatisfied();
   }
-  
+
   public function testZeroIsReturnedIfTransportReturnsZero()
   {
     $context = new Mockery();
@@ -83,17 +83,17 @@ class Swift_Transport_FailoverTransportTest
       -> one($t1)->send($message, optional()) -> returns(0) -> when($con->is('on'))
       -> ignoring($t1)
       );
-    
+
     $transport = $this->_getTransport(array($t1));
     $transport->start();
     $this->assertEqual(0, $transport->send($message));
     $context->assertIsSatisfied();
   }
-  
+
   public function testTransportsWhichThrowExceptionsAreNotRetried()
   {
     $e = new Swift_TransportException('maur b0rken');
-    
+
     $context = new Mockery();
     $message1 = $context->mock('Swift_Mime_Message');
     $message2 = $context->mock('Swift_Mime_Message');
@@ -125,7 +125,7 @@ class Swift_Transport_FailoverTransportTest
       -> one($t2)->send($message4, optional()) -> returns(1) -> when($con2->is('on'))
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $this->assertEqual(1, $transport->send($message1));
@@ -133,11 +133,11 @@ class Swift_Transport_FailoverTransportTest
     $this->assertEqual(1, $transport->send($message3));
     $this->assertEqual(1, $transport->send($message4));
   }
-  
+
   public function testExceptionIsThrownIfAllTransportsDie()
   {
     $e = new Swift_TransportException('b0rken');
-    
+
     $context = new Mockery();
     $message = $context->mock('Swift_Mime_Message');
     $t1 = $context->mock('Swift_Transport');
@@ -157,7 +157,7 @@ class Swift_Transport_FailoverTransportTest
       -> one($t2)->send($message, optional()) -> throws($e) -> when($con2->is('on'))
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     try
@@ -170,7 +170,7 @@ class Swift_Transport_FailoverTransportTest
     }
     $context->assertIsSatisfied();
   }
-  
+
   public function testStoppingTransportStopsAllDelegates()
   {
     $context = new Mockery();
@@ -186,17 +186,17 @@ class Swift_Transport_FailoverTransportTest
       -> one($t2)->stop() -> when($con2->is('on')) -> then($con2->is('off'))
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $transport->stop();
     $context->assertIsSatisfied();
   }
-  
+
   public function testTransportShowsAsNotStartedIfAllDelegatesDead()
   {
     $e = new Swift_TransportException('b0rken');
-    
+
     $context = new Mockery();
     $message = $context->mock('Swift_Mime_Message');
     $t1 = $context->mock('Swift_Transport');
@@ -216,7 +216,7 @@ class Swift_Transport_FailoverTransportTest
       -> one($t2)->send($message, optional()) -> throws($e) -> when($con2->is('on'))
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $this->assertTrue($transport->isStarted());
@@ -231,11 +231,11 @@ class Swift_Transport_FailoverTransportTest
     }
     $context->assertIsSatisfied();
   }
-  
+
   public function testRestartingTransportRestartsDeadDelegates()
   {
     $e = new Swift_TransportException('b0rken');
-    
+
     $context = new Mockery();
     $message1 = $context->mock('Swift_Mime_Message');
     $message2 = $context->mock('Swift_Mime_Message');
@@ -259,7 +259,7 @@ class Swift_Transport_FailoverTransportTest
       -> never($t2)->send($message2, optional())
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->start();
     $this->assertTrue($transport->isStarted());
@@ -278,11 +278,11 @@ class Swift_Transport_FailoverTransportTest
     $this->assertEqual(10, $transport->send($message2));
     $context->assertIsSatisfied();
   }
-  
+
   public function testFailureReferenceIsPassedToDelegates()
   {
     $failures = array();
-    
+
     $context = new Mockery();
     $message = $context->mock('Swift_Mime_Message');
     $t1 = $context->mock('Swift_Transport');
@@ -295,19 +295,19 @@ class Swift_Transport_FailoverTransportTest
       -> one($t1)->send($message, reference($failures)) -> returns(1) -> when($con->is('on'))
       -> ignoring($t1)
       );
-    
+
     $transport = $this->_getTransport(array($t1));
     $transport->start();
     $transport->send($message, $failures);
     $context->assertIsSatisfied();
   }
-  
+
   public function testRegisterPluginDelegatesToLoadedTransports()
   {
     $context = new Mockery();
-    
+
     $plugin = $this->_createPlugin($context);
-    
+
     $t1 = $context->mock('Swift_Transport');
     $t2 = $context->mock('Swift_Transport');
     $context->checking(Expectations::create()
@@ -316,30 +316,30 @@ class Swift_Transport_FailoverTransportTest
       -> ignoring($t1)
       -> ignoring($t2)
       );
-    
+
     $transport = $this->_getTransport(array($t1, $t2));
     $transport->registerPlugin($plugin);
-    
+
     $context->assertIsSatisfied();
   }
-  
+
   // -- Private helpers
-  
+
   private function _getTransport(array $transports)
   {
     $transport = new Swift_Transport_FailoverTransport();
     $transport->setTransports($transports);
     return $transport;
   }
-  
+
   private function _createPlugin($context)
   {
     return $context->mock('Swift_Events_EventListener');
   }
-  
+
   private function _createInnerTransport()
   {
     return $this->_mockery()->mock('Swift_Transport');
   }
-  
+
 }

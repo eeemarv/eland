@@ -12,11 +12,10 @@ $s_accountrole = $_SESSION["accountrole"];
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
-
 $id = $_GET["id"];
 if (isset($s_id)){
 	if(isset($id)){
-		
+
 		show_ptitle();
 		if(isset($_POST["zend"])){
 			$posted_list = array();
@@ -35,7 +34,7 @@ if (isset($s_id)){
 			if(!empty($error_list)){
 				$contact = get_contact($id);
 				$typecontactrow = get_type_contacts();
-				show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);	
+				show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
 			}else{
 				update_contact($posted_list);
 				redirect_mydetails_view();
@@ -48,7 +47,7 @@ if (isset($s_id)){
 			} else {
 				show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
 			}
-		}	
+		}
 	}else{
 		redirect_mydetails_view();
 	}
@@ -65,15 +64,13 @@ function update_contact($posted_list){
     $result = $db->AutoExecute("contact", $posted_list, 'UPDATE', 'id='.$posted_list["id"]);
 }
 
-
-
 function validate_input($posted_list,$s_id){
     global $db;
 	$error_list = array();
 	if (empty($posted_list["value"]) || (trim($posted_list["value"]) == "")){
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
-	
+
 	$query = " SELECT * FROM type_contact ";
 	$query .= " WHERE  id =  '".$posted_list["id_type_contact"]."'";
 	$rs = $db->Execute($query);
@@ -89,7 +86,6 @@ $error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaa
 	return $error_list;
 }
 
-
 function get_contact($id){
     global $db;
 	$query = "SELECT * FROM contact WHERE id=".$id;
@@ -101,7 +97,7 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 	echo "<div class='border_b'>";
 	echo "<form method='POST' action='mydetails_cont_edit.php?id=".$id."'>\n";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n\n";
-	
+
 	echo "<tr>\n<td valign='top'><input type='hidden' name='s_id' value='".$s_id."'></td>\n";
 	echo "<td></td>\n</tr>";
 
@@ -109,7 +105,7 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 	echo "<td valign='top' align='right'>Type </td>\n";
 	echo "<td>";
 	echo "<select name='id_type_contact'>\n";
-	
+
 	foreach($typecontactrow as $key => $value){
 		if($contact["id_type_contact"] == $value["id"]){
 			echo "<option value='".$value["id"]."' SELECTED>".$value["name"]."</option>\n";
@@ -124,7 +120,7 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 	}
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
+
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'>Waarde </td>\n";
 	echo "<td><input type='text' name='value' size='20' ";
@@ -140,7 +136,7 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 	}
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
+
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'>Commentaar </td>\n";
 	echo "<td><input type='text' name='comments' size='30' ";
@@ -153,17 +149,16 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 	echo "</tr>\n\n<tr>\n<td></td>\n<td></td>\n";
 	echo "</tr>\n\n";
 
-
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'></td>\n";
 	echo "<td>";
 	echo "<input type='checkbox' name='flag_public' ";
 	if (trim($posted_list["flag_public"]) == 1){
 		echo " CHECKED ";
-	} 
+	}
 if (trim($contact["flag_public"]) == 1){
 		echo " CHECKED ";
-	} 
+	}
 	echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
 
 	echo "</td>\n";
@@ -171,11 +166,9 @@ if (trim($contact["flag_public"]) == 1){
 	echo "</td>\n";
 	echo "</tr>\n\n";
 
-
 	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>\n</tr>\n\n";
 	echo "</table>\n\n</form></div>";
 }
-
 
 function show_ptitle(){
 	echo "<h1>Contact aanpassen</h1>";
@@ -196,9 +189,6 @@ function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-
-

@@ -9,23 +9,19 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 if(isset($s_id)){
 	show_ptitle();
 	$userrows = get_all_users($user_orderby);
  	show_all_users($userrows);
 	//show_legend();
-	
+
 }else{
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
-
 
 function show_ptitle(){
 	#echo "<h1>Lets Contactlijst ";
@@ -38,7 +34,6 @@ function show_ptitle(){
 	header("Expires: 0");
 }
 
-
 function show_legend(){
 echo "Status 1: OK<br>";
 echo "Status 2: Uitstapper<br>";
@@ -50,8 +45,6 @@ function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-
-
 function get_contacts($userid){
 	global $db;
 	$query = "SELECT * FROM contact ";
@@ -59,7 +52,7 @@ function get_contacts($userid){
 	$contactrows = $db->GetArray($query);
 	return $contactrows;
 }
-			
+
 function get_va($userid){
 	global $db;
 	$query = "SELECT count(*) FROM messages ";
@@ -73,12 +66,10 @@ function get_all_users($user_orderby){
 	$query = "SELECT * FROM users ";
 	$query .= "WHERE status <> 0  ";
 	$query .= "ORDER BY users.letscode ";
-	
+
 	$userrows = $db->GetArray($query);
 	return $userrows;
 }
-
-
 
 function show_all_users($userrows){
 	echo '"Status","Letscode","Naam","Tel","gsm","Postcode","Adres","Mail","Stand","fullname","lijn1","lijn2","VA"';
@@ -91,7 +82,7 @@ function show_all_users($userrows){
 		//}elseif($value["status"] == 3){
 			//echo "status is 3";
 		//}
-		
+
 		echo $value["letscode"];
 		echo '","';
 		echo $value["name"];
@@ -99,11 +90,11 @@ function show_all_users($userrows){
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
 		        reset($contactrows);
-			
+
 			foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 1){
 					echo  $value2["value"];
-					
+
 				break;
 				}
 			}
@@ -129,20 +120,19 @@ function show_all_users($userrows){
 		}
 		echo '","';
 		        reset($contactrows);
-		
+
 		foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 3){
 					echo $value2["value"];
-					
+
 					break;
 				}
 		}
 		echo '","';
-		
-		
+
 		$balance = $value["saldo"];
 		echo $balance;
-	
+
 		echo '","';
 		echo $value["fullname"];
 		echo '","';
@@ -154,11 +144,9 @@ function show_all_users($userrows){
 		echo $countva[0];
 		echo '"';
 		echo "\r\n";
-		
+
 	}
 
 }
 
-
 ?>
-

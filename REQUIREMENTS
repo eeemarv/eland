@@ -15,7 +15,7 @@ Supported and/or tested setup
 - PHP version 5.3 or later with:
   PHP-psql and PHP-pear
 - Postgres 9.1 or later
-- A functioning mailserver on the local machine (Postfix/Sendmail/Exim/...) 
+- A functioning mailserver on the local machine (Postfix/Sendmail/Exim/...)
 - RabbitMQ from http://www.rabbitmq.com/install-debian.html (Or any other AMQ enabled messaging queue)
 - AMQ Pecl install (to fix it on Ubuntu 12.04 follow: http://www.theprogrammer.co.za/wordpress/2012/08/installing-php-amqp-on-ubuntu-12-04-lts/)
   pecl install amqp
@@ -24,10 +24,9 @@ Supported and/or tested setup
 
 Unsupported configurations
 --------------------------
-eLAS will probably run on any OS that can run Apache/lighthttp.  
+eLAS will probably run on any OS that can run Apache/lighthttp.
 However configurations not listed above are not supported so specific bugs resulting from that configuration will be rejected.
 - WAMP (Windows with Apache, MySQL and PHP)
-
 
 Confirmed not to be working
 ---------------------------

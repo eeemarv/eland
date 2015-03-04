@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 ?><?php ob_start(); ?>
 
 class <?php echo $className; ?>
@@ -24,14 +24,14 @@ class <?php echo $className; ?>
  <?php foreach ($interfaces as $interface) echo $interface, ', '; ?>
  Yay_MockObject
 {
-  
+
  private $_yayInvocationHandler;
- 
+
  public function __construct(Yay_InvocationHandler $invocationHandler)
  {
   $this->_yayInvocationHandler = $invocationHandler;
  }
-  
+
  <?php foreach ($methods as $method): ?>
  <?php echo $method['access']; ?> <?php echo $method['modifiers']; ?> function <?php
  if ($method['returnReference']) echo '&'; ?><?php
@@ -58,7 +58,7 @@ class <?php echo $className; ?>
   return $value;
  }
  <?php endforeach; ?>
- 
+
  public function __clone()
  {
   $this->_yayInvocationHandler = null;

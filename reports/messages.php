@@ -10,7 +10,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -18,7 +18,7 @@ if(isset($s_id)){
         if (isset($_POST["zend"])){
                 $posted_list = array();
                 $posted_list["msg_type"] = $_POST["msg_type"];
-                $posted_list["id_category"] = $_POST["id_category"]; 
+                $posted_list["id_category"] = $_POST["id_category"];
 		$catname = get_cat_title($posted_list["id_category"]);
 		$posted_list["prefix"] = $_POST["prefix"];
 	} else {
@@ -41,17 +41,16 @@ if(isset($s_id)){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
 function show_ptitle($catname, $type){
 	if($type == 1){
-		$htype = "Aanbod"; 
+		$htype = "Aanbod";
 	} else {
 		$htype = "Vraag";
-	}	
+	}
 	echo "<h1>$htype voor $catname</h1>";
 }
 
@@ -64,7 +63,6 @@ function show_printversion($rootpath, $msg_type, $id_category){
         echo "<img src='".$rootpath."gfx/print.gif' border='0'> ";
         echo "Printversie</a>";
 }
-
 
 function get_cats(){
         global $db;
@@ -152,8 +150,6 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
         echo "</form>";
         echo "</p></div>";
 
-
-
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
@@ -174,7 +170,7 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-		
+
 		echo "<td valign='top'>";
 		if(strtotime($value["valdate"]) < time()) {
                         echo "<del>";
@@ -189,14 +185,13 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
                  if(strtotime($value["valdate"]) < time()) {
                         echo "</del>";
                 }
-		
+
 		echo "</a> ";
 		echo "</td>";
 
                 echo "<td valign='top' nowrap>";
                 echo  htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
                 echo "</td>";
-
 
 		echo "<td>";
                 if(strtotime($value["valdate"]) < time()) {
@@ -212,7 +207,6 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
 	}
 	echo "</table></div>";
 }
-
 
 function get_all_msgs($posted_list){
 	$date = date('Y-m-d');
@@ -242,7 +236,6 @@ function get_all_msgs($posted_list){
 	$messagerows = $db->GetArray($query);
 	return $messagerows;
 }
-
 
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");

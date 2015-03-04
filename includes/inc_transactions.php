@@ -3,7 +3,7 @@
  * Class to perform eLAS transactions
  *
  * This file is part of eLAS http://elas.vsbnet.be
- * 
+ *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
  *
  * eLAS is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ function sign_transaction($posted_list, $sharedsecret) {
 	$signamount = (float) $posted_list["amount"];
 	$signamount = $signamount * 100;
 	$signamount = round($signamount);
-	$tosign = $sharedsecret .$posted_list["transid"] .strtolower($posted_list["letscode_to"]) .$signamount; 
+	$tosign = $sharedsecret .$posted_list["transid"] .strtolower($posted_list["letscode_to"]) .$signamount;
 	$signature = sha1($tosign);
 	log_event("","debug","Signing $tosign: $signature");
 	return $signature;
@@ -62,10 +62,10 @@ function check_duplicate_transaction($transid){
 
 function insert_transaction($posted_list, $transid){
         global $db;
-	global $_SESSION; 
+	global $_SESSION;
 	$s_id = $_SESSION["id"];
 	if(empty($s_id)){
-		$posted_list["creator"] = 0; 
+		$posted_list["creator"] = 0;
 	} else {
 	        $posted_list["creator"] = $s_id;
 	}
@@ -80,7 +80,7 @@ function insert_transaction($posted_list, $transid){
 	} else {
 		$reason = $db->ErrorMsg();
 		log_event("","Trans", "Transaction $transid failed with error $reason");
-		setstatus("Fout: Transactie niet toegevoegd", 1); 
+		setstatus("Fout: Transactie niet toegevoegd", 1);
 		$transid = "";
 	}
 
@@ -146,7 +146,6 @@ function validate_inteletstransaction_input($posted_list){
         return $error_list;
 }
 
-
 function validate_transaction_input($posted_list){
 	global $db;
 	global $_SESSION;
@@ -182,14 +181,13 @@ function validate_transaction_input($posted_list){
         //userto must exist
 	$touser = get_user($posted_list["id_to"]);
         if(empty($touser) ){
-                $error_list["id_to"]="Gebruiker bestaat niet";        
+                $error_list["id_to"]="Gebruiker bestaat niet";
 	}
 
 	//userfrom and userto should not be the same
 	if($fromuser["letscode"] == $touser["letscode"]){
 		$error_list["id"]="Van en Aan zijn hetzelfde";
 	}
-
 
 	// Check maxlimit now we are at it
 	if(($touser["maxlimit"] != NULL && $touser["maxlimit"] != 0) && $touser["saldo"] > $touser["maxlimit"] && $s_accountrole != "admin"){
@@ -199,7 +197,7 @@ function validate_transaction_input($posted_list){
 	// Double check if the recipient is an active user
 	if(!($touser["status"] == 1 || $touser["status"] == 2)) {
 		$error_list["id_to"]="De bestemmeling is niet actief";
-	}	
+	}
 
         //From and to may not be identical
         //if ($posted_list["id_from"] == $posted_list["id_to"]){
@@ -242,14 +240,14 @@ function validate_interletsq($posted_list){
         //userto must exist
 	$touser = get_user($posted_list["id_to"]);
         if(empty($touser) ){
-                $error_list["id_to"]="Gebruiker bestaat niet";        
+                $error_list["id_to"]="Gebruiker bestaat niet";
 	}
 
 	//userfrom and userto should not be the same
 	if($fromuser["letscode"] == $touser["letscode"]){
 		$error_list["id"]="Van en Aan zijn hetzelfde";
 	}
-	
+
         //date may not be empty
         if (!isset($posted_list["date"])|| (trim($posted_list["date"] )=="")){
                 $error_list["date"]="Datum is niet ingevuld";
@@ -289,9 +287,9 @@ function mail_interlets_transaction($posted_list, $transid){
         } else {
                 $mailcontent .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
         }
-       
+
 	$mailcontent .= "Aan: \t\t". $posted_list["letscode_to"] ."\r\n";
-        
+
 	$mailcontent .= "Voor: \t\t".$posted_list["description"]."\r\n";
 	//calculate metacurrency
 	$currencyratio = readconfigfromdb("currencyratio");
@@ -311,7 +309,6 @@ function mail_interlets_transaction($posted_list, $transid){
         // log it
         log_event($s_id,"Mail","Transaction sent to $mailto");
 }
-
 
 function mail_transaction($posted_list, $transid){
 	session_start();
@@ -387,11 +384,10 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
                 $mailto .= ",". readconfigfromdb("admin");
         }
 
-
         //$mailcontent .= "Datum: \t\t$timestamp\r\n";
 	$mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 	$mailcontent .= "Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:\r\n";
-	$mailcontent .= "\r\n"; 
+	$mailcontent .= "\r\n";
 
 	switch ($result){
 		case "SIGFAIL":
@@ -425,12 +421,12 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 
 function queuetransaction($posted_list,$fromuser,$touser) {
 	global $db;
-	
+
 	// Send transaction to ETS if enabled
 	if(readconfigfromdb("ets_enabled") == 1) {
 		amq_publishtransaction($posted_list,$fromuser,$touser);
 	}
-	
+
 	$posted_list["retry_count"] = 0;
 	$posted_list["last_status"] = "NEW";
 	if($db->AutoExecute("interletsq", $posted_list, 'INSERT') == TRUE){
@@ -472,7 +468,7 @@ function get_all_user_transactions($s_id){
 	$query .= " WHERE (transactions.id_from =".$s_id." OR transactions.id_to =".$s_id.")";
 	$query .= " AND transactions.id_from = from_user.id ";
 	$query .= " AND transactions.id_to = to_user.id ORDER BY date DESC";
-	//print $query; 
+	//print $query;
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
@@ -492,8 +488,8 @@ function get_all_transactions($trans_orderby, $asc){
 	$query .= " AND transactions.id_from = fromusers.id";
 	$query .= " ORDER BY ".$query_orderby. " ";
 	$query .= ($asc) ? " ASC " : " DESC ";
-	$query .= " LIMIT 1000";  
-	//print $query; 
+	$query .= " LIMIT 1000";
+	//print $query;
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }

@@ -14,7 +14,7 @@ class Swift_Plugins_ReporterPluginTest extends Swift_Tests_SwiftUnitTestCase
     $message = $this->_createMessage();
     $evt = $this->_createSendEvent();
     $reporter = $this->_createReporter();
-    
+
     $this->_checking(Expectations::create()
       -> allowing($message)->getTo() -> returns(array('foo@bar.tld' => 'Foo'))
       -> allowing($evt)->getMessage() -> returns($message)
@@ -23,17 +23,17 @@ class Swift_Plugins_ReporterPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> ignoring($message)
       -> ignoring($evt)
       );
-    
+
     $plugin = new Swift_Plugins_ReporterPlugin($reporter);
     $plugin->sendPerformed($evt);
   }
-  
+
   public function testReportingFailedTo()
   {
     $message = $this->_createMessage();
     $evt = $this->_createSendEvent();
     $reporter = $this->_createReporter();
-    
+
     $this->_checking(Expectations::create()
       -> allowing($message)->getTo() -> returns(array(
         'foo@bar.tld' => 'Foo', 'zip@button' => 'Zip'
@@ -45,17 +45,17 @@ class Swift_Plugins_ReporterPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> ignoring($message)
       -> ignoring($evt)
       );
-    
+
     $plugin = new Swift_Plugins_ReporterPlugin($reporter);
     $plugin->sendPerformed($evt);
   }
-  
+
   public function testReportingFailedCc()
   {
     $message = $this->_createMessage();
     $evt = $this->_createSendEvent();
     $reporter = $this->_createReporter();
-    
+
     $this->_checking(Expectations::create()
       -> allowing($message)->getTo() -> returns(array(
         'foo@bar.tld' => 'Foo'
@@ -71,17 +71,17 @@ class Swift_Plugins_ReporterPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> ignoring($message)
       -> ignoring($evt)
       );
-    
+
     $plugin = new Swift_Plugins_ReporterPlugin($reporter);
     $plugin->sendPerformed($evt);
   }
-  
+
   public function testReportingFailedBcc()
   {
     $message = $this->_createMessage();
     $evt = $this->_createSendEvent();
     $reporter = $this->_createReporter();
-    
+
     $this->_checking(Expectations::create()
       -> allowing($message)->getTo() -> returns(array(
         'foo@bar.tld' => 'Foo'
@@ -97,26 +97,26 @@ class Swift_Plugins_ReporterPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> ignoring($message)
       -> ignoring($evt)
       );
-    
+
     $plugin = new Swift_Plugins_ReporterPlugin($reporter);
     $plugin->sendPerformed($evt);
   }
-  
+
   // -- Creation Methods
-  
+
   private function _createMessage()
   {
     return $this->_mock('Swift_Mime_Message');
   }
-  
+
   private function _createSendEvent()
   {
     return $this->_mock('Swift_Events_SendEvent');
   }
-  
+
   private function _createReporter()
   {
     return $this->_mock('Swift_Plugins_Reporter');
   }
-  
+
 }

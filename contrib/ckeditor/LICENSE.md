@@ -328,7 +328,6 @@ POSSIBILITY OF SUCH DAMAGES.
 
 END OF TERMS AND CONDITIONS
 
-
 Appendix B: The LGPL License
 ----------------------------
 
@@ -790,7 +789,6 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
 END OF TERMS AND CONDITIONS
-
 
 Appendix C: The MPL License
 ---------------------------

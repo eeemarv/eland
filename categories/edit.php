@@ -31,7 +31,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 			$cat = get_cat($id);
 			show_form($cat, $error_list);
 		}
-	}else{ 
+	}else{
 		redirect_overview();
 	}
 }else{
@@ -79,7 +79,7 @@ function show_form($cat, $error_list){
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 	echo "<tr><td valign='top' align='right'>Naam </td><td>";
 	echo "<input type='text' name='name' size='60' ";
-	echo "value='". $cat["name"]. "'>";  
+	echo "value='". $cat["name"]. "'>";
 	echo "</td><td>";
 	if (isset($error_list["name"])){
 		echo $error_list["name"];
@@ -111,4 +111,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

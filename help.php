@@ -14,7 +14,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 echo "<table border='0' width='100%'><tr><td><h1>eLAS Help</h1>";
 echo "</td><td align='right'>";
 echo "</td></tr></table>";
@@ -49,7 +48,6 @@ if(isset($_POST["zend"])){
 }
 
 echo "<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>";
-
 
 function show_form($id,$email,$error_list,$posted_list){
 	$browser = $_SERVER['HTTP_USER_AGENT'];
@@ -135,7 +133,7 @@ function validate_input($posted_list){
 	if(empty($posted_list["email"])){
 		$error_list["email"] = "<font color='red'> Vul een <strong>E-mail adres</strong> in</font>";
 	}
-	$checkedaddress = checkmailaddress($posted_list["email"]); 
+	$checkedaddress = checkmailaddress($posted_list["email"]);
 	if(empty($checkedaddress)) {
 			$error_list["email"] = "<font color='red'> Dit mailadres is niet gekend in eLAS</font>";
 	}
@@ -165,7 +163,6 @@ function get_user_maildetails($userid){
         return $user;
 }
 
-
 function helpmail($posted_list,$rootpath){
    	global $configuration;
 	global $elas;
@@ -174,7 +171,7 @@ function helpmail($posted_list,$rootpath){
 	$mailfrom .= "From: " .trim($posted_list['email']);
         if (!empty(readconfigfromdb("support"]))){
 		$mailto .= trim(readconfigfromdb("support"))."\r\n";
-        }else { 
+        }else {
 		 Echo "No support adress set in config, not sending";
 		 return 0;
 	}
@@ -201,4 +198,3 @@ function helpmail($posted_list,$rootpath){
 }
 
 ?>
-

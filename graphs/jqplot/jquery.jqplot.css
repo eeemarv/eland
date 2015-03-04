@@ -36,7 +36,6 @@
     white-space: pre;
 }
 
-
 .jqplot-xaxis-tick {
     top: 0px;
     /* initial position untill tick is drawn in proper place */
@@ -197,7 +196,6 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
 }
 
-
 .jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
@@ -218,7 +216,7 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
     z-index: 2;
 }
-      
+
 td.jqplot-cursor-legend-swatch {
     vertical-align: middle;
     text-align: center;

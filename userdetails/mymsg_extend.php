@@ -15,11 +15,10 @@ $validity = $_GET["validity"];
 if(isset($msgid)){
 	$posted_list["vtime"] = count_validity($validity);
 	update_msg($msgid, $posted_list, $s_id);
-	redirect_overview(); 
+	redirect_overview();
 }else{
 	redirect_overview();
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
@@ -40,9 +39,7 @@ function update_msg($id, $posted_list, $s_id){
     	$result = $db->AutoExecute("messages", $posted_list, 'UPDATE', "id=$id");
 }
 
-
 function redirect_overview(){
 	header("Location:  mymsg_overview.php");
 }
 ?>
-

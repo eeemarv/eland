@@ -13,7 +13,7 @@ interface Swift_Transport_EsmtpHandlerMixin extends Swift_Transport_EsmtpHandler
 class Swift_Transport_EsmtpTransport_ExtensionSupportTest
   extends Swift_Transport_EsmtpTransportTest
 {
-  
+
   public function testExtensionHandlersAreSortedAsNeeded()
   {
     $buf = $this->_getBuffer();
@@ -32,7 +32,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->setExtensionHandlers(array($ext1, $ext2));
     $this->assertEqual(array($ext2, $ext1), $smtp->getExtensionHandlers());
   }
-  
+
   public function testHandlersAreNotifiedOfParams()
   {
     $buf = $this->_getBuffer();
@@ -46,7 +46,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-ServerName.tld\r\n")
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-AUTH PLAIN LOGIN\r\n")
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250 SIZE=123456\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->setKeywordParams(array('PLAIN', 'LOGIN'))
       -> allowing($ext2)->getHandledKeyword() -> returns('SIZE')
@@ -58,7 +58,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->setExtensionHandlers(array($ext1, $ext2));
     $smtp->start();
   }
-  
+
   public function testSupportedExtensionHandlersAreRunAfterEhlo()
   {
     $buf = $this->_getBuffer();
@@ -73,7 +73,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-ServerName.tld\r\n")
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-AUTH PLAIN LOGIN\r\n")
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250 SIZE=123456\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->afterEhlo($smtp)
       -> allowing($ext2)->getHandledKeyword() -> returns('SIZE')
@@ -88,7 +88,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->setExtensionHandlers(array($ext1, $ext2, $ext3));
     $smtp->start();
   }
-  
+
   public function testExtensionsCanModifyMailFromParams()
   {
     $buf = $this->_getBuffer();
@@ -102,7 +102,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> allowing($message)->getFrom() -> returns(array('me@domain'=>'Me'))
       -> allowing($message)->getTo() -> returns(array('foo@bar'=>null))
       -> ignoring($message)
-      
+
       -> one($buf)->readLine(0) -> inSequence($s) -> returns("220 server.com foo\r\n")
       -> one($buf)->write(pattern('~^EHLO .*?\r\n$~D')) -> inSequence($s) -> returns(1)
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-ServerName.tld\r\n")
@@ -112,7 +112,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(2) -> inSequence($s) -> returns("250 OK\r\n")
       -> one($buf)->write("RCPT TO: <foo@bar>\r\n") -> inSequence($s) -> returns(3)
       -> one($buf)->readLine(3) -> inSequence($s) -> returns("250 OK\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->getMailParams() -> returns('FOO')
       -> allowing($ext1)->getPriorityOver('AUTH') -> returns(-1)
@@ -130,7 +130,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->start();
     $smtp->send($message);
   }
-  
+
   public function testExtensionsCanModifyRcptParams()
   {
     $buf = $this->_getBuffer();
@@ -144,7 +144,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> allowing($message)->getFrom() -> returns(array('me@domain'=>'Me'))
       -> allowing($message)->getTo() -> returns(array('foo@bar'=>null))
       -> ignoring($message)
-      
+
       -> one($buf)->readLine(0) -> inSequence($s) -> returns("220 server.com foo\r\n")
       -> one($buf)->write(pattern('~^EHLO .*?\r\n$~D')) -> inSequence($s) -> returns(1)
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-ServerName.tld\r\n")
@@ -154,7 +154,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(2) -> inSequence($s) -> returns("250 OK\r\n")
       -> one($buf)->write("RCPT TO: <foo@bar> FOO ZIP\r\n") -> inSequence($s) -> returns(3)
       -> one($buf)->readLine(3) -> inSequence($s) -> returns("250 OK\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->getRcptParams() -> returns('FOO')
       -> allowing($ext1)->getPriorityOver('AUTH') -> returns(-1)
@@ -172,7 +172,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->start();
     $smtp->send($message);
   }
-  
+
   public function testExtensionsAreNotifiedOnCommand()
   {
     $buf = $this->_getBuffer();
@@ -189,7 +189,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250 SIZE=123456\r\n")
       -> one($buf)->write("FOO\r\n") -> inSequence($s) -> returns(2)
       -> one($buf)->readLine(2) -> inSequence($s) -> returns("250 Cool\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->onCommand($smtp, "FOO\r\n", array(250, 251), optional())
       -> allowing($ext2)->getHandledKeyword() -> returns('SIZE')
@@ -205,7 +205,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->start();
     $smtp->executeCommand("FOO\r\n", array(250, 251));
   }
-  
+
   public function testChainOfCommandAlgorithmWhenNotifyingExtensions()
   {
     $buf = $this->_getBuffer();
@@ -221,7 +221,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250-AUTH PLAIN LOGIN\r\n")
       -> one($buf)->readLine(1) -> inSequence($s) -> returns("250 SIZE=123456\r\n")
       -> never($buf)->write("FOO\r\n")
-      
+
       -> allowing($ext1)->getHandledKeyword() -> returns('AUTH')
       -> one($ext1)->onCommand($smtp, "FOO\r\n", array(250, 251), optional()) -> calls(array($this, 'cbStopCommand'))
       -> allowing($ext2)->getHandledKeyword() -> returns('SIZE')
@@ -237,7 +237,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->start();
     $smtp->executeCommand("FOO\r\n", array(250, 251));
   }
-  
+
   public function cbStopCommand(Yay_Invocation $invocation)
   {
     $args =& $invocation->getArguments();
@@ -245,7 +245,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $stop = true;
     return "250 ok";
   }
-  
+
   public function testExtensionsCanExposeMixinMethods()
   {
     $buf = $this->_getBuffer();
@@ -266,7 +266,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $smtp->setUsername('mick');
     $smtp->setPassword('pass');
   }
-  
+
   public function testMixinMethodsBeginningWithSetAndNullReturnAreFluid()
   {
     $buf = $this->_getBuffer();
@@ -289,7 +289,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $ret = $smtp->setPassword('pass');
     $this->assertReference($smtp, $ret);
   }
-  
+
   public function testMixinSetterWhichReturnValuesAreNotFluid()
   {
     $buf = $this->_getBuffer();
@@ -310,5 +310,5 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
     $this->assertEqual('x', $smtp->setUsername('mick'));
     $this->assertEqual('x', $smtp->setPassword('pass'));
   }
-  
+
 }

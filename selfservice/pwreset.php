@@ -47,7 +47,7 @@ function show_form($error_list){
 	echo "</table>";
 	echo "<p><small>Let op, geef hier het e-mailadres in waarmee je in eLAS bent geregistreerd, anders kan het systeem je account niet terugvinden.</small></p>";
 	echo "</form>";
-	//echo "Indien je je emailadres niet meer weet klik dan <a href='#' onclick=\"javascript:window.open('$myurl','help','width=640,height=580,scrollbars=no,toolbar=no,location=no,menubar=no')\">hier</a>";	
+	//echo "Indien je je emailadres niet meer weet klik dan <a href='#' onclick=\"javascript:window.open('$myurl','help','width=640,height=580,scrollbars=no,toolbar=no,location=no,menubar=no')\">hier</a>";
 }
 
 function reset_password($email) {
@@ -75,4 +75,3 @@ function reset_password($email) {
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

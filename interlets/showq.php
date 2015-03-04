@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
@@ -37,7 +37,6 @@ function showrefresh(){
         echo "</div>";
         echo "</td></tr></table>";
 }
-
 
 function show_outputdiv(){
 	echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";

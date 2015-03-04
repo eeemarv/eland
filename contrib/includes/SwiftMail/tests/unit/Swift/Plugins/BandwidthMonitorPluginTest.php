@@ -10,72 +10,72 @@ require_once 'Swift/Mime/Message.php';
 class Swift_Plugins_BandwidthMonitorPluginTest
   extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function setUp()
   {
     $this->_monitor = new Swift_Plugins_BandwidthMonitorPlugin();
   }
-  
+
   public function testBytesOutIncreasesAccordingToMessageLength()
   {
     $message = $this->_createMessageWithByteCount(6);
     $evt = $this->_createSendEvent($message);
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesOut());
     $this->_monitor->sendPerformed($evt);
     $this->assertEqual(6, $this->_monitor->getBytesOut());
     $this->_monitor->sendPerformed($evt);
     $this->assertEqual(12, $this->_monitor->getBytesOut());
   }
-  
+
   public function testBytesOutIncreasesWhenCommandsSent()
   {
     $evt = $this->_createCommandEvent("RCPT TO: <foo@bar.com>\r\n");
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesOut());
     $this->_monitor->commandSent($evt);
     $this->assertEqual(24, $this->_monitor->getBytesOut());
     $this->_monitor->commandSent($evt);
     $this->assertEqual(48, $this->_monitor->getBytesOut());
   }
-  
+
   public function testBytesInIncreasesWhenResponsesReceived()
   {
     $evt = $this->_createResponseEvent("250 Ok\r\n");
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesIn());
     $this->_monitor->responseReceived($evt);
     $this->assertEqual(8, $this->_monitor->getBytesIn());
     $this->_monitor->responseReceived($evt);
     $this->assertEqual(16, $this->_monitor->getBytesIn());
   }
-  
+
   public function testCountersCanBeReset()
   {
     $evt = $this->_createResponseEvent("250 Ok\r\n");
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesIn());
     $this->_monitor->responseReceived($evt);
     $this->assertEqual(8, $this->_monitor->getBytesIn());
     $this->_monitor->responseReceived($evt);
     $this->assertEqual(16, $this->_monitor->getBytesIn());
-    
+
     $evt = $this->_createCommandEvent("RCPT TO: <foo@bar.com>\r\n");
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesOut());
     $this->_monitor->commandSent($evt);
     $this->assertEqual(24, $this->_monitor->getBytesOut());
     $this->_monitor->commandSent($evt);
     $this->assertEqual(48, $this->_monitor->getBytesOut());
-    
+
     $this->_monitor->reset();
-    
+
     $this->assertEqual(0, $this->_monitor->getBytesOut());
     $this->assertEqual(0, $this->_monitor->getBytesIn());
   }
-  
+
   // -- Creation Methods
-  
+
   private function _createSendEvent($message)
   {
     $evt = $this->_mock('Swift_Events_SendEvent');
@@ -84,7 +84,7 @@ class Swift_Plugins_BandwidthMonitorPluginTest
       );
     return $evt;
   }
-  
+
   private function _createCommandEvent($command)
   {
     $evt = $this->_mock('Swift_Events_CommandEvent');
@@ -93,7 +93,7 @@ class Swift_Plugins_BandwidthMonitorPluginTest
       );
     return $evt;
   }
-  
+
   private function _createResponseEvent($response)
   {
     $evt = $this->_mock('Swift_Events_ResponseEvent');
@@ -102,7 +102,7 @@ class Swift_Plugins_BandwidthMonitorPluginTest
       );
     return $evt;
   }
-  
+
   private function _createMessageWithByteCount($bytes)
   {
     $this->_bytes = $bytes;
@@ -112,7 +112,7 @@ class Swift_Plugins_BandwidthMonitorPluginTest
     );
     return $msg;
   }
-  
+
   private $_bytes = 0;
   public function _write($invocation)
   {
@@ -123,5 +123,5 @@ class Swift_Plugins_BandwidthMonitorPluginTest
       $is->write('x');
     }
   }
-  
+
 }

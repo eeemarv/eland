@@ -19,7 +19,6 @@ if ($DBMS == 'mysql') {
 } else
 	$db = NewADOConnection('oci8://scott:natsoft@/');
 
-
 $arr = $db->ServerInfo();
 echo "<h3>$db->dataProvider: {$arr['description']}</h3>";
 
@@ -29,24 +28,18 @@ adodb_pr($arr);
 ADOdb_Active_Record::SetDatabaseAdapter($db);
 if  (!$db)  die('failed');
 
-
-
-
 $rec = new ADODB_Active_Record('photos');
 
 $rec = new ADODB_Active_Record('products');
-
 
 adodb_pr($rec->getAttributeNames());
 
 echo "<hr>";
 
-
 $rec->load('productid=2');
 adodb_pr($rec);
 
 $db->debug=1;
-
 
 $rec->productname = 'Changie Chan'.rand();
 
@@ -55,7 +48,6 @@ $rec->update();
 
 $rec->productname = 'Changie Chan 99';
 $rec->replace();
-
 
 $rec2 = new ADODB_Active_Record('products');
 $rec->load('productid=3');

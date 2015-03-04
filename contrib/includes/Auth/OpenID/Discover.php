@@ -36,7 +36,6 @@ function Auth_OpenID_getOpenIDConsumerTypeURIs()
     return array(Auth_OpenID_RP_RETURN_TO_URL_TYPE);
 }
 
-
 /*
  * Provides a user-readable interpretation of a type uri.
  * Useful for error messages.
@@ -602,5 +601,3 @@ function Auth_OpenID_discover($uri, $fetcher)
 
     return $result;
 }
-
-

@@ -36,22 +36,22 @@ function show_mlform() {
     echo "<div id='mlformdiv' class='hidden'>";
     echo "<form action='". $rootpath ."/resources/mailinglist/newlistname' id='mlform' method='post'>";
     echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-    
+
     echo "<tr><td valign='top' align='right'>Lijst naam (kort, zonder spaties)</td>";
     echo "<td valign='top'>";
     echo "<input  type='text' id='listname' name='listname' size='25'>";
     echo "</td>";
     echo "</tr>";
-    
+
     echo "<tr><td valign='top' align='right'>Omschrijving</td>";
     echo "<td valign='top'>";
     echo "<input  type='text' id='description' name='description' size='120'>";
     echo "</td>";
     echo "</tr>";
-    
+
     // Type
     # All types should be internal from now on
-    
+
     // Topic
     echo "<tr><td valign='top' align='right'>Onderwerp</td>";
     echo "<td valign='top'>";
@@ -62,7 +62,7 @@ function show_mlform() {
     echo "</select>";
     echo "</td>";
     echo "</tr>";
-    
+
     // Auth
     echo "<tr><td valign='top' align='right'>Authorisatie</td>";
     echo "<td valign='top'>";
@@ -72,7 +72,7 @@ function show_mlform() {
     echo "</select>";
     echo "</td>";
     echo "</tr>";
-    
+
     // Moderation
     echo "<tr><td valign='top' align='right'>Moderatie</td>";
     echo "<td valign='top'>";
@@ -82,7 +82,7 @@ function show_mlform() {
     echo "</select>";
     echo "</td>";
     echo "</tr>";
-    
+
     // Moderatormail
     echo "<tr><td valign='top' align='right'>Mailadres moderator</td>";
     echo "<td valign='top'>";
@@ -90,9 +90,8 @@ function show_mlform() {
     echo "</td>";
     echo "</tr>";
 
-    
     // Subscribers
-    
+
     echo "<tr><td colspan='2' align='right'>";
     echo "<input type='submit' id='zend' value='Lijst toevoegen' name='zend'>";
     echo "</td><td>&nbsp;</td></tr>";
@@ -100,7 +99,6 @@ function show_mlform() {
     echo "</form>";
     echo "</div>";
 }
-
 
 function showlinks($rootpath){
 	global $s_id;
@@ -115,7 +113,7 @@ function showlinks($rootpath){
         echo "</div>";
         echo "</td></tr></table>";
 }
-	
+
 function show_outputdiv(){
 	echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
 	echo "<script type=\"text/javascript\">loadurl('rendergroups.php');</script>";
@@ -150,7 +148,7 @@ function show_lists($lists){
 	echo "</strong></td>";
 	echo "</tr>\n\n";
 	$rownumb=0;
-	
+
 	foreach($lists as $key => $value){
 		$rownumb=$rownumb+1;
 		echo "<tr";
@@ -167,7 +165,7 @@ function show_lists($lists){
 	}
 	echo "</tr>";
 	echo "</table>";
-		
+
 }
 
 include($rootpath."includes/inc_sidebar.php");

@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -46,7 +46,7 @@ function show_interletsgroups(){
 		//echo "<a href='" .$value["url"] ."'>" .$value["groupname"] ."</a>";a
 		echo "<a href='#' onclick=window.open('redirect.php?letsgroup=" .$value["id"] ."','interlets','location=no,menubar=no,scrollbars=yes')>" .$value["groupname"] ."</a>";
 		echo "</td></tr>";
-	}	
+	}
 
 	echo "</table>";
 
@@ -55,5 +55,3 @@ function show_interletsgroups(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-
-

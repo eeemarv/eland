@@ -45,7 +45,7 @@ function show_all_cats($cats){
 	echo "</tr>";
 	$rownumb=0;
 	foreach($cats as $key => $value){
-				
+
 		if ($value["id_parent"] == 0){
 			echo "<tr class='even_row'>";
 			echo "<td valign='top'><strong><a href='view.php?id=".$value["id"]."'>";
@@ -63,7 +63,6 @@ function show_all_cats($cats){
 	echo "</table></div>";
 }
 
-
 function get_all_cats(){
 	global $db;
 	$query = "SELECT *, cdate AS date FROM categories ";
@@ -71,7 +70,6 @@ function get_all_cats(){
 	$cats = $db->GetArray($query);
 	return $cats;
 }
-
 
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");

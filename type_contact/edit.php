@@ -29,7 +29,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 			echo "Posted protect value is " .$_POST["protect"];
 			$posted_list["id"] = $_GET["id"];
 			$error_list = validate_input($posted_list);
-	
+
 			if (!empty($error_list)){
 				show_form($posted_list, $error_list);
 			}else{
@@ -40,7 +40,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 			$contacttype = get_contacttype($id);
 			show_form($contacttype, $error_list);
 		}
-	}else{ 
+	}else{
 		redirect_overview();
 	}
 }else{
@@ -72,7 +72,7 @@ function update_contacttype($id, $posted_list){
 	$posted_list["mdate"] = date("Y-m-d H:i:s");
 	echo "Protect is " .$posted_list["protect"];
 	$result = $db->AutoExecute("type_contact", $posted_list, 'UPDATE', "id=$id");
-	
+
 }
 
 function show_form($contacttype, $error_list){
@@ -81,16 +81,16 @@ function show_form($contacttype, $error_list){
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 	echo "<tr><td valign='top' align='right'>Type contact </td><td>";
 	echo "<input type='text' name='name' size='40' ";
-	echo "value='". htmlspecialchars($contacttype["name"],ENT_QUOTES). "'>";  
+	echo "value='". htmlspecialchars($contacttype["name"],ENT_QUOTES). "'>";
 	echo "</td><td>";
 	if (isset($error_list["name"])){
 		echo $error_list["name"];
 	}
 	echo "</td></tr>";
-	
+
 	echo "<tr><td valign='top' align='right'>Afkorting </td><td>";
 	echo "<input type='text' name='abbrev' size='40' ";
-	echo "value='". htmlspecialchars($contacttype["abbrev"],ENT_QUOTES). "'>";  
+	echo "value='". htmlspecialchars($contacttype["abbrev"],ENT_QUOTES). "'>";
 	echo "</td><td></td></tr>";
 	echo "<tr><td valign='top' align='right'>Beschermd </td><td>";
 	if($contacttype["protect"] == 1) {
@@ -100,7 +100,7 @@ function show_form($contacttype, $error_list){
 	}
 
 	echo "</td><td></td></tr>";
-	
+
 	echo "<tr><td colspan='2' align='right'>";
 	echo "<input type='submit' value='Opslaan' name='zend'>";
 	echo "</td><td>&nbsp;</td></tr></table>";
@@ -122,4 +122,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

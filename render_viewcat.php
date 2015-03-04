@@ -8,7 +8,6 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
 
 if(isset($s_id)){
 	$id = $_GET["id"];
@@ -24,7 +23,7 @@ if(isset($s_id)){
 
 function chop_string($content, $maxsize){
 $strlength = strlen($content);
-	
+
 	if ($strlength >= $maxsize){
 		$spacechar = strpos($content," ", 50);
 		if($spacechar == 0){
@@ -55,13 +54,12 @@ function show_msgs($msgs, $id){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-		
+
 		if ($value["msg_type"] == 0){
 			echo "<td nowrap valign='top'>V</td>";
 		}elseif ($value["msg_type"] == 1){
 			echo "<td nowrap valign='top'>A</td>";
 		}
-
 
 		echo "<td valign='top' nowrap>";
 		echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
@@ -96,12 +94,11 @@ function show_msgs($msgs, $id){
                 echo "</td>";
 
 		echo "</tr>";
-	
+
 	}
 	echo "</table></div>";
-	
-}
 
+}
 
 function get_msgs($id){
 	global $db;
@@ -140,7 +137,6 @@ function show_ptitle($id){
 //	$row = mysql_fetch_array($result, MYSQL_ASSOC);
 	$row = $db->GetRow($query);
 	echo "<h1>". $row["fullname"]."</h1>";
-	
+
 }
 ?>
-

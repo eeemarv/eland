@@ -1,5 +1,5 @@
-<?php 
- 
+<?php
+
 /**
  * @uri /resources/mailinglist/message/{Msg}
  */
@@ -17,8 +17,8 @@ class MailMessage extends Resource {
 	//
 	function get($request, $Msg){
 		echo "GET message not implemented";
-	}	
-	
+	}
+
 	function post($request, $Msg){
 		global $db;
 		session_start();
@@ -26,9 +26,9 @@ class MailMessage extends Resource {
 		$s_name = $_SESSION["name"];
 		$s_letscode = $_SESSION["letscode"];
 		$s_accountrole = $_SESSION["accountrole"];
-		
+
 		$response = new Response($request);
-		
+
 		if($s_accountrole == 'admin' || $s_accountrole == 'user'){
 			$list = get_mailinglist($_POST['list']);
 			if($list['auth'] == 'closed' &&  $s_accountrole != 'admin') {
@@ -41,25 +41,25 @@ class MailMessage extends Resource {
 				} else {
 					$moderationflag = 1;
 				}
-				
+
 				if(amq_sendmail($_POST['list'], $_POST['msgsubject'], $_POST['msgbody'], $moderationflag) == 0) {
 					$response->code = Response::OK;
 					$response->body = "OK - Bericht verzonden";
-				} 
+				}
 					#$response->code = Response::OK;
 					#$response->body = "FOUT - Bericht kon niet worden verzonden"
-				
+
 			}
 		} else {
 			$response->code = Response::UNAUTHORIZED;
 			$response->body = "Onvoldoende rechten";
 		}
-		
+
 		#$response->code = Response::OK;
 		#$response->body = var_dump($_POST);
 		$response->addHeader('Content-type', 'text/plain');
  		return $response;
- 		
+
 	}
 }
 

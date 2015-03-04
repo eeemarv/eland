@@ -10,7 +10,6 @@
 
 Set tabs to 4 for best viewing.
 
-
 NOTE: This driver requires the Advantage PHP client libraries, which
       can be downloaded for free via:
       http://devzone.advantagedatabase.com/dz/content.aspx?key=20
@@ -43,7 +42,6 @@ if (!defined('ADODB_DIR')) die();
 /*--------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------*/
 
-
 class ADODB_ads extends ADOConnection {
   var $databaseType = "ads";
   var $fmt = "'m-d-Y'";
@@ -64,7 +62,6 @@ class ADODB_ads extends ADOConnection {
   var $_has_stupid_odbc_fetch_api_change = true;
   var $_lastAffectedRows = 0;
   var $uCaseTables = true; // for meta* functions, uppercase table names
-
 
   function ADODB_ads()
   {
@@ -134,7 +131,6 @@ class ADODB_ads extends ADOConnection {
     }
   }
 
-
         // returns true or false
         function CreateSequence( $seqname,$start=1)
   {
@@ -159,7 +155,6 @@ class ADODB_ads extends ADOConnection {
                 else
                         return true;
         }
-
 
   // returns the generated ID or false
         // checks if the table already exists, else creates the table and inserts a record into the table
@@ -187,9 +182,6 @@ class ADODB_ads extends ADOConnection {
 
         }
 
-
-
-
   function ErrorMsg()
   {
     if ($this->_haserrorfunctions) {
@@ -198,7 +190,6 @@ class ADODB_ads extends ADOConnection {
       return @ads_errormsg($this->_connectionID);
     } else return ADOConnection::ErrorMsg();
   }
-
 
   function ErrorNo()
   {
@@ -218,8 +209,6 @@ class ADODB_ads extends ADOConnection {
       return $e;
     } else return ADOConnection::ErrorNo();
   }
-
-
 
   function BeginTrans()
   {
@@ -250,7 +239,6 @@ class ADODB_ads extends ADOConnection {
     ads_autocommit($this->_connectionID,true);
     return $ret;
   }
-
 
   // Returns tables,Views or both on succesfull execution. Returns
         // tables by default on succesfull execustion.
@@ -326,7 +314,6 @@ See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/odbc/htm/od
 #define SQL_DATETIME    9
 #endif
 #define SQL_VARCHAR   12
-
 
 / One-parameter shortcuts for date/time data types /
 #if (ODBCVER >= 0x0300)
@@ -417,7 +404,6 @@ See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/odbc/htm/od
       $qid = ads_columns($this->_connectionID);#,'%','',strtoupper($table),'%');
       break;
 
-
     case 'db2':
             $colname = "%";
             $qid = ads_columns($this->_connectionID, "", $schema, $table, $colname);
@@ -503,7 +489,6 @@ See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/odbc/htm/od
                         return $arr;
                 }
         }
-
 
   function Prepare($sql)
   {
@@ -670,7 +655,6 @@ class ADORecordSet_ads extends ADORecordSet {
     //$this->ADORecordSet($id);
   }
 
-
   // returns the field object
   function &FetchField($fieldOffset = -1)
   {
@@ -700,7 +684,6 @@ class ADORecordSet_ads extends ADORecordSet {
 
      return $this->fields[$this->bind[strtoupper($colname)]];
   }
-
 
   function _initrs()
   {
@@ -743,7 +726,6 @@ class ADORecordSet_ads extends ADORecordSet {
 
     return $results;
   }
-
 
   function MoveNext()
   {

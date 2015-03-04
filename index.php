@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ob_start();
 $rootpath = "./";
 $ptitle="home1";
@@ -26,7 +26,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 echo "<script type='text/javascript' src='$rootpath/js/mooindex.js'></script>";
 
@@ -36,8 +36,6 @@ if(isset($s_id)){
 	//var_dump($_SESSION);
 	redirect_login($rootpath);
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////F U N C T I E S ////////////////////////////
@@ -51,7 +49,7 @@ function show_outputdiv(){
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
-	
+
 }
 
 include($rootpath."includes/inc_footer.php");

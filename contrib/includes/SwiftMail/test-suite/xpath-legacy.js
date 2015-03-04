@@ -12,7 +12,6 @@ if (!document.implementation
 
 var undefined = void(0);
 
-
 var defaultConfig = {
     targetFrame: undefined
 };
@@ -42,7 +41,6 @@ for (var n in defaultConfig) {
     if (!(n in config)) config[n] = defaultConfig[n]
 }
 
-
 var BinaryExpr;
 var FilterExpr;
 var FunctionCall;
@@ -66,34 +64,34 @@ var uai = new function() {
     var ua = navigator.userAgent;
 
     if (RegExp == undefined) {
-        if (ua.indexOf("Opera") >= 0) { 
-            this.opera = true; 
-        } else if (ua.indexOf("Netscape") >= 0) { 
-            this.netscape = true; 
-        } else if (ua.indexOf("Mozilla/") == 0) { 
-            this.mozilla = true; 
+        if (ua.indexOf("Opera") >= 0) {
+            this.opera = true;
+        } else if (ua.indexOf("Netscape") >= 0) {
+            this.netscape = true;
+        } else if (ua.indexOf("Mozilla/") == 0) {
+            this.mozilla = true;
         } else {
-            this.unknown = slide 
+            this.unknown = slide
         }
-        
-        if (ua.indexOf("Gecko/") >= 0) { 
-            this.gecko = true; 
+
+        if (ua.indexOf("Gecko/") >= 0) {
+            this.gecko = true;
         }
-        
-        if (ua.indexOf("Win") >= 0) { 
-            this.windows = true; 
-        } else if (ua.indexOf("Mac") >= 0) { 
-            this.mac = true; 
-        } else if (ua.indexOf("Linux") >= 0) { 
-            this.linux = true; 
-        } else if (ua.indexOf("BSD") >= 0) { 
-            this.bsd = true; 
-        } else if (ua.indexOf("SunOS") >= 0) { 
-            this.sunos = true; 
+
+        if (ua.indexOf("Win") >= 0) {
+            this.windows = true;
+        } else if (ua.indexOf("Mac") >= 0) {
+            this.mac = true;
+        } else if (ua.indexOf("Linux") >= 0) {
+            this.linux = true;
+        } else if (ua.indexOf("BSD") >= 0) {
+            this.bsd = true;
+        } else if (ua.indexOf("SunOS") >= 0) {
+            this.sunos = true;
         }
     }
-    else {  
-    
+    else {
+
         /* for Trident/Tasman */
         /*@cc_on
         @if (@_jscript)
@@ -145,9 +143,9 @@ var uai = new function() {
         /*@end @*/
 
         if (typeof(opera) == "object" && typeof(opera.version) == "function") {
-            this.opera = opera.version(); 
+            this.opera = opera.version();
             this['opera' + this.opera[0] + this.opera[2]] = true;
-            
+
         } else if (typeof(opera) == "object"
                 && (match = ua.match("Opera[/ ](\\d+\\.\\d+)"))) {
             this.opera = match[1];
@@ -193,7 +191,6 @@ var uai = new function() {
     }
 };
 
-
 /**
  * pseudo class: Lexer
  */
@@ -228,7 +225,6 @@ Lexer.prototype.empty = function() {
     return this.length <= this.index;
 };
 
-
 /**
  * class: Ctx
  */
@@ -237,7 +233,6 @@ var Ctx = function(node, position, last) {
     this.position = position || 1;
     this.last = last || 1;
 };
-
 
 /**
  * abstract class: BaseExpr
@@ -261,7 +256,6 @@ BaseExpr.prototype.bool = function(ctx) {
     if (exrs.isNodeSet) return exrs.bool();
     return !! exrs;
 };
-
 
 /**
  * abstract class: BaseExprHasPredicates
@@ -333,7 +327,6 @@ BaseExprHasPredicates.prototype.evaluatePredicates = function(nodeset, start) {
     return nodeset;
 };
 
-
 /**
  * class: BinaryExpr
  */
@@ -352,13 +345,13 @@ BinaryExpr = function(op, left, right, datatype) {
 
     // Optimize [@id="foo"] and [@name="bar"]
     if (this.op == '=') {
-        if (!right.needContextNode && !right.needContextPosition && 
+        if (!right.needContextNode && !right.needContextPosition &&
             right.datatype != 'nodeset' && right.datatype != 'void' && left.quickAttr) {
             this.quickAttr = true;
             this.attrName = left.attrName;
             this.attrValueExpr = right;
         }
-        else if (!left.needContextNode && !left.needContextPosition && 
+        else if (!left.needContextNode && !left.needContextPosition &&
             left.datatype != 'nodeset' && left.datatype != 'void' && right.quickAttr) {
             this.quickAttr = true;
             this.attrName = right.attrName;
@@ -411,7 +404,6 @@ BinaryExpr.compare = function(op, comp, left, right, ctx) {
     return comp(+left, +right);
 };
 
-
 BinaryExpr.ops = {
     'div': [6, function(left, right, ctx) {
         return left.number(ctx) / right.number(ctx);
@@ -459,7 +451,6 @@ BinaryExpr.ops = {
         return left.bool(ctx) || right.bool(ctx);
     }, 'boolean']
 };
-
 
 BinaryExpr.parse = function(lexer) {
     var op, precedence, info, expr, stack = [], index = lexer.index;
@@ -513,7 +504,6 @@ BinaryExpr.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: UnaryExpr
  */
@@ -555,7 +545,6 @@ UnaryExpr.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: UnionExpr
  */
@@ -567,7 +556,6 @@ UnionExpr = function() {
 };
 
 UnionExpr.ops = { '|': 1 };
-
 
 UnionExpr.parse = function(lexer) {
     var union, expr;
@@ -586,8 +574,6 @@ UnionExpr.parse = function(lexer) {
         }
         union.path(PathExpr.parse(lexer));
     }
-
-
 
     lexer.back();
     return union;
@@ -629,7 +615,6 @@ UnionExpr.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: PathExpr
  */
@@ -655,9 +640,9 @@ PathExpr.parse = function(lexer) {
         op = lexer.next();
         token = lexer.peek();
 
-        if (op == '/' && (lexer.empty() || 
-                (token != '.' && token != '..' && token != '@' && token != '*' && 
-                !token.match(/(?![0-9])[\w]/)))) { 
+        if (op == '/' && (lexer.empty() ||
+                (token != '.' && token != '..' && token != '@' && token != '*' &&
+                !token.match(/(?![0-9])[\w]/)))) {
             return FilterExpr.root();
         }
 
@@ -785,7 +770,6 @@ PathExpr.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: FilterExpr
  */
@@ -900,7 +884,6 @@ FilterExpr.prototype.show = function(indent) {
     return t;
 };
 
-
 if (!window.NodeUtil && window.defaultConfig)
     window.NodeUtil = null;
 
@@ -1013,7 +996,7 @@ NodeUtil = {
                         all = [all];
                     }
                 }
-    
+
                 while (node = all[i++]) {
                     if (NodeUtil.attrMatch(node, attrName, attrValue)) result.push(node);
                 }
@@ -1120,16 +1103,16 @@ NodeUtil = {
                 var i = 0;
                 if (attrName == 'id' || attrName == 'name') {
                     children = children[attrValue];
-    
+
                     if (!children) {
                         return nodeset;
                     }
-    
+
                     if (!children.length) {
                         children = [children];
                     }
                 }
-    
+
                 while (node = children[i++]) {
                     if (NodeUtil.attrMatch(node, attrName, attrValue)) result.push(node);
                 }
@@ -1175,7 +1158,6 @@ var AttributeWrapper = function(node, parent, sourceIndex) {
 };
 
 @*/
-
 
 /**
  * class: Step
@@ -1235,7 +1217,7 @@ Step.axises = {
             }
             else {
                 var attr = attrs.getNamedItem(test.name)
-                
+
 /*@cc_on @if (@_jscript)
                 if (attr && attr.nodeValue) {
                     attr = new AttributeWrapper(attr, node, sourceIndex);;
@@ -1370,11 +1352,11 @@ Step.parse = function(lexer) {
         }
         else {
             if (lexer.peek(1) == '::') {
-                
+
                 if (!lexer.peek().charAt(0).match(/(?![0-9])[\w]/)) {
                     throw Error('bad token: ' + lexer.next());
                 }
-        
+
                 axis = lexer.next();
                 lexer.next();
 
@@ -1389,7 +1371,7 @@ Step.parse = function(lexer) {
                 axis = 'child';
             }
         }
-    
+
         token = lexer.peek();
         if (!token.charAt(0).match(/(?![0-9])[\w]/)) {
             if (token == '*') {
@@ -1522,14 +1504,12 @@ Step.prototype.show = function(indent) {
     return t;
 };
 
-
-
 /**
  * NodeType
  */
 if (!window.NodeType && window.defaultConfig)
     window.NodeType = null;
-    
+
 NodeType = function(name, literal) {
     this.name = name;
     this.literal = literal;
@@ -1594,7 +1574,6 @@ NodeType.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * NodeType
  */
@@ -1632,17 +1611,15 @@ NameTest.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: VariableRefernce
  */
 if (!window.VariableReference && window.defaultConfig)
     window.VariableReference = null;
-    
+
 VariableReference = function(name) {
     this.name = name.substring(1);
 };
-
 
 VariableReference.parse = function(lexer) {
     var token = lexer.next();
@@ -1662,7 +1639,6 @@ VariableReference.prototype.show = function(indent) {
     t += indent + 'variable: ' + this.name + '\n';
     return t;
 };
-
 
 /**
  * class: Literal
@@ -1697,7 +1673,6 @@ Literal.prototype.show = function(indent) {
     return t;
 };
 
-
 /**
  * class: Number
  */
@@ -1707,7 +1682,6 @@ if (!window.Number && window.defaultConfig)
 Number = function(digit) {
     this.digit = +digit;
 };
-
 
 Number.parse = function(lexer) {
     return new Number(lexer.next());
@@ -1727,7 +1701,6 @@ Number.prototype.show = function(indent) {
     t += indent + 'number: ' + this.digit + '\n';
     return t;
 };
-
 
 /**
  * class: FunctionCall
@@ -2175,7 +2148,6 @@ FunctionCall.prototype.show = function(indent) {
     return t;
 };
 
-
 /*@cc_on @if (@_jscript)
 var NodeWrapper = function(node, sourceIndex, subIndex, attributeName) {
     this.node = node;
@@ -2200,7 +2172,7 @@ var NodeID = {
 
 if (!window.NodeSet && window.defaultConfig)
     window.NodeSet = null;
-    
+
 NodeSet = function() {
     this.length = 0;
     this.nodes = [];
@@ -2298,7 +2270,6 @@ NodeSet.prototype.sort = function() {
         });
     }
 };
-
 
 /*@cc_on @if (@_jscript)
 NodeSet.prototype.sourceOffset = 1;
@@ -2439,7 +2410,7 @@ NodeSet.prototype.del = function(index) {
     if (this.only) {
         delete this.only;
     }
-    else {  
+    else {
         var node = this.nodes.splice(index, 1)[0];
 
         if (this._first == node) {
@@ -2455,7 +2426,6 @@ NodeSet.prototype.del = function(index) {
 /*@end @*/
     }
 };
-
 
 NodeSet.prototype.delDescendant = function(elm, offset) {
     if (this.only) return;
@@ -2551,12 +2521,11 @@ NodeSet.prototype._add = function(node, reverse) {
 /*@end @*/
 
     this.length++;
-    if (reverse) 
+    if (reverse)
         this.nodes.unshift(node);
     else
         this.nodes.push(node);
 };
-
 
 NodeSet.prototype.unshift = function(node) {
     if (!this.length) {
@@ -2575,7 +2544,6 @@ NodeSet.prototype.unshift = function(node) {
 @*/
     return this._add(node, true);
 };
-
 
 NodeSet.prototype.push = function(node) {
     if (!this.length) {
@@ -2668,7 +2636,6 @@ NodeSet.prototype.iterator = function(reverse) {
     }
 };
 
-
 var install = function(win) {
 
     win = win || this;
@@ -2686,11 +2653,11 @@ var install = function(win) {
             throw Error('bad token: ' + lexer.next());
         }
     };
-    
+
     win.XPathExpression.prototype.evaluate = function(node, type) {
         return new XPathResult(this.expr.evaluate(new Ctx(node)), type);
     };
-    
+
     win.XPathResult = function (value, type) {
         if (type == 0) {
             switch (typeof value) {
@@ -2700,9 +2667,9 @@ var install = function(win) {
                 case 'number':  type ++; // 1
             }
         }
-    
+
         this.resultType = type;
-    
+
         switch (type) {
             case 1:
                 this.numberValue = value.isNodeSet ? value.number() : +value;
@@ -2724,10 +2691,10 @@ var install = function(win) {
                 return;
         }
     };
-    
+
     win.XPathResult.prototype.iterateNext = function() { return this.nodes[this.index++] };
     win.XPathResult.prototype.snapshotItem = function(i) { return this.nodes[i] };
-    
+
     win.XPathResult.ANY_TYPE = 0;
     win.XPathResult.NUMBER_TYPE = 1;
     win.XPathResult.STRING_TYPE = 2;
@@ -2738,12 +2705,11 @@ var install = function(win) {
     win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE = 7;
     win.XPathResult.ANY_UNORDERED_NODE_TYPE = 8;
     win.XPathResult.FIRST_ORDERED_NODE_TYPE = 9;
-    
-    
+
     win.document.createExpression = function(expr) {
         return new XPathExpression(expr, null);
     };
-    
+
     win.document.evaluate = function(expr, context, _, type) {
         return document.createExpression(expr, null).evaluate(context, type);
     };
@@ -2761,4 +2727,3 @@ install(win || window);
 })();
 
 // Thanks for reading this source code. We love JavaScript.
-

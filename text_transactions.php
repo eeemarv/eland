@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 $trans_orderby = $_GET["trans_orderby"];
 
 if(isset($s_id) && ($s_accountrole == "admin")){
@@ -21,23 +20,16 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
-
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-
-
-
-
 function show_all_transactions($transactions){
-	
+
 	echo '"Datum","Van","Aan","Bedrag","Dienst"';
 	echo "\r\n";
 	foreach($transactions as $key => $value){
@@ -56,7 +48,6 @@ function show_all_transactions($transactions){
 	}
 }
 
-
 function get_all_transactions($trans_orderby){
 	global $db;
 	$query = "SELECT *, ";
@@ -73,7 +64,7 @@ function get_all_transactions($trans_orderby){
 	}
 	else {
 		$query .= " ORDER BY transactions.date DESC";
-	}    
+	}
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
@@ -89,8 +80,4 @@ function show_ptitle(){
 	header("Expires: 0");
 }
 
-
-
-
 ?>
-

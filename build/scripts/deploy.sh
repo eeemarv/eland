@@ -56,17 +56,16 @@ case "$ENV" in
 		HOST=r2d2.internal.taurix.net
 		PORT=22
 		TARGET=/nfs/www/elastest
-		
+
 		deploy $USER $HOST $PORT $WORKSPACE $TARGET $ENV
-        ;;      
+        ;;
 	prod)
 		echo "Deploying $VERSION to production"
                 USER=sitedeployer
 				HOST=r2d2.internal.taurix.net
 				PORT=22
 				TARGET=/nfs/www/elas
-		
+
                 deploy $USER $HOST $PORT $WORKSPACE $TARGET $ENV
                 ;;
 esac
-

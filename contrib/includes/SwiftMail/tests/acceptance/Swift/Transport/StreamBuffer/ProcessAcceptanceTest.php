@@ -5,7 +5,7 @@ require_once 'Swift/Transport/StreamBuffer/AbstractStreamBufferAcceptanceTest.ph
 class Swift_Transport_StreamBuffer_ProcessAcceptanceTest
   extends Swift_Transport_StreamBuffer_AbstractStreamBufferAcceptanceTest
 {
-  
+
   public function skip()
   {
     $this->skipIf(!SWIFT_SENDMAIL_PATH,
@@ -13,7 +13,7 @@ class Swift_Transport_StreamBuffer_ProcessAcceptanceTest
       'SWIFT_SENDMAIL_PATH in tests/acceptance.conf.php if you wish to run this test)'
       );
   }
-  
+
   protected function _initializeBuffer()
   {
     $this->_buffer->initialize(array(
@@ -21,5 +21,5 @@ class Swift_Transport_StreamBuffer_ProcessAcceptanceTest
       'command' => SWIFT_SENDMAIL_PATH . ' -bs'
       ));
   }
-  
+
 }

@@ -129,7 +129,7 @@ class SimplePageBuilder extends SimpleSaxListener {
     function __construct() {
         parent::__construct();
     }
-    
+
     /**
      *    Frees up any references so as to allow the PHP garbage
      *    collection from unset() to work.
@@ -176,7 +176,7 @@ class SimplePageBuilder extends SimpleSaxListener {
     protected function createParser(&$listener) {
         return new SimpleHtmlSaxParser($listener);
     }
-    
+
     /**
      *    Start of element event. Opens a new tag.
      *    @param string $name         Element name.

@@ -16,7 +16,7 @@ if (isset($s_id)){
 	$posted_list["pw1"] = $_POST["pw1"];
 	$posted_list["pw2"] = $_POST["pw2"];
 	$errorlist = validate_input($posted_list);
-			
+
 	if (!empty($errorlist)){
 		echo "Fout: ";
 		foreach($errorlist as $key => $value){
@@ -31,7 +31,6 @@ if (isset($s_id)){
 		readuser($s_id, true);
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////

@@ -16,4 +16,3 @@ if(is_dir($rootpath."sites/$baseurl")){
 } else {
 	$dirbase = "default";
 }
-

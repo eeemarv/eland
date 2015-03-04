@@ -29,7 +29,7 @@ if ($_POST['login'] == 'master' && $master_password && hash('sha512', $_POST["pa
 			} else {
 				if($locked == 1){
 					$status = "Hostingcontract vervallen, logins zijn uitgeschakeld";
-				} else { 
+				} else {
 					startsession($myuser);
 					$status = "OK - Gebruiker ingelogd";
 				}

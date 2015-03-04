@@ -19,7 +19,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
   private $_cache;
   private $_grammar;
   private $_headers;
-  
+
   public function setUp()
   {
     $this->_cache = new Swift_KeyCache_ArrayKeyCache(
@@ -27,7 +27,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       );
     $factory = new Swift_CharacterReaderFactory_SimpleCharacterReaderFactory();
     $this->_contentEncoder = new Swift_Mime_ContentEncoder_Base64ContentEncoder();
-    
+
     $headerEncoder = new Swift_Mime_HeaderEncoder_QpHeaderEncoder(
       new Swift_CharacterStream_ArrayCharacterStream($factory, 'utf-8')
       );
@@ -39,7 +39,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       new Swift_Mime_SimpleHeaderFactory($headerEncoder, $paramEncoder, $this->_grammar)
       );
   }
-  
+
   public function testDispositionIsSetInHeader()
   {
     $attachment = $this->_createAttachment();
@@ -52,7 +52,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   public function testDispositionIsAttachmentByDefault()
   {
     $attachment = $this->_createAttachment();
@@ -64,7 +64,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   public function testFilenameIsSetInHeader()
   {
     $attachment = $this->_createAttachment();
@@ -77,7 +77,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   public function testSizeIsSetInHeader()
   {
     $attachment = $this->_createAttachment();
@@ -90,7 +90,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   public function testMultipleParametersInHeader()
   {
     $attachment = $this->_createAttachment();
@@ -104,7 +104,7 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   public function testEndToEnd()
   {
     $attachment = $this->_createAttachment();
@@ -121,9 +121,9 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       $attachment->toString()
       );
   }
-  
+
   // -- Private helpers
-  
+
   protected function _createAttachment()
   {
     $entity = new Swift_Mime_Attachment(
@@ -134,5 +134,5 @@ class Swift_Mime_AttachmentAcceptanceTest extends UnitTestCase
       );
     return $entity;
   }
-  
+
 }

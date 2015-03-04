@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -29,14 +28,13 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 					$posted_list["flag_public"] = 0;
 			}
 
-
 			$posted_list["comments"] = $_POST["comments"];
 			$uid = $_POST["uid"];
 			$error_list = validate_input($posted_list);
 			if(!empty($error_list)){
 				$contact = get_contact($cid);
 				$typecontactrow = get_type_contacts();
-				show_form($cid, $uid, $contact, $typecontactrow, $error_list, $posted_list);	
+				show_form($cid, $uid, $contact, $typecontactrow, $error_list, $posted_list);
 			}else{
 				update_contact($posted_list, $uid, $cid);
 				redirect_view($uid);
@@ -45,7 +43,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 			$contact = get_contact($cid);
 			$typecontactrow = get_type_contacts();
 			show_form($cid, $uid, $contact, $typecontactrow, $error_list, $posted_list);
-		}	
+		}
 	}else{
 		redirect_view();
 	}
@@ -69,14 +67,14 @@ function validate_input($posted_list){
 	if (empty($posted_list["value"]) || (trim($posted_list["value"]) == "")){
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
-	
+
 	$query =" SELECT * FROM type_contact ";
 	$query .=" WHERE  id = '".$posted_list["id_type_contact"]."' ";
 	$result = $db->GetArray($query);
 	if( count($result)  == 0 ){
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong> </font>";
 	}
-	
+
 	return $error_list;
 }
 
@@ -145,12 +143,11 @@ echo "<div class='border_b'>";
 	echo "<input type='checkbox' name='flag_public' ";
 	if (trim($posted_list["flag_public"]) == 1){
 		echo " CHECKED ";
-	} 
+	}
 if (trim($contact["flag_public"]) == 1){
 		echo " CHECKED ";
-	} 
+	}
 	echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
-
 
 	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Oplaan'>";
 	echo "</td>\n</tr>";
@@ -179,5 +176,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-
-

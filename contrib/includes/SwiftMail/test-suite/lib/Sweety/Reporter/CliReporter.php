@@ -10,27 +10,27 @@ require_once 'Sweety/Reporter/CliTestCaseReporter.php';
  */
 class Sweety_Reporter_CliReporter implements Sweety_Reporter
 {
-  
+
   /**
    * True if this repoter is running.
    * @var boolean
    * @access private
    */
   private $_started = false;
-  
+
   /**
    * The name to show this report as.
    * @var string
    * @access private
    */
   private $_name;
-  
+
   /**
    * Aggregate scores from tests run.
    * @var int[]
    */
   private $_aggregates = array();
-  
+
   /**
    * Creates a new CliReporter.
    */
@@ -45,7 +45,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
       'exceptions' => 0
       );
   }
-  
+
   /**
    * Used so test case reporters can notify this reporter when they've completed.
    * @param string $testCase
@@ -54,7 +54,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   {
     $this->_aggregates['run']++;
   }
-  
+
   /**
    * Get the reporter used to report on this specific test case.
    * @param string $testCase
@@ -63,11 +63,11 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   public function getReporterFor($testCase)
   {
     $this->_aggregates['cases']++;
-    
+
     $reporter = new Sweety_Reporter_CliTestCaseReporter($testCase, $this);
     return $reporter;
   }
-  
+
   /**
    * Returns true if start() has been invoked.
    * @return boolean
@@ -76,7 +76,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   {
     return $this->_started;
   }
-  
+
   /**
    * Start reporting.
    */
@@ -85,7 +85,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
     $this->_started = true;
     echo $this->_name . PHP_EOL;
   }
-  
+
   /**
    * Report a skipped test case.
    * @param string $message
@@ -101,7 +101,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
     }
     echo '    in: ' . $path . PHP_EOL;
   }
-  
+
   /**
    * Report a passing assertion.
    * @param string $message
@@ -111,7 +111,7 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   {
     $this->_aggregates['passes']++;
   }
-  
+
   /**
    * Report a failing assertion.
    * @param string $message
@@ -120,12 +120,12 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   public function reportFail($message, $path)
   {
     $this->_aggregates['fails']++;
-    
+
     echo "\033[31m" . $this->_aggregates['fails'] . ') ';
     echo $message . "\033[0m" . PHP_EOL;
     echo '    in: ' . $path . PHP_EOL;
   }
-  
+
   /**
    * Report an unexpected exception.
    * @param string $message
@@ -134,12 +134,12 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
   public function reportException($message, $path)
   {
     $this->_aggregates['exceptions']++;
-    
+
     echo "\033[31m\033[1mException" . $this->_aggregates['exceptions'] . "\033[0m!" . PHP_EOL;
     echo "\033[1m" . $message . "\033[0m" . PHP_EOL;
     echo '    in ' . $path . PHP_EOL;
   }
-  
+
   /**
    * Report output from something like a dump().
    * @param string $output
@@ -159,16 +159,16 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
       echo '--------------------' . PHP_EOL;
     }
   }
-  
+
   /**
    * End reporting.
    */
   public function finish()
   {
     $this->_started = false;
-    
+
     $incomplete = $this->_aggregates['cases'] - $this->_aggregates['run'];
-    
+
     if ($incomplete)
     {
       echo '**********************' . PHP_EOL;
@@ -178,10 +178,10 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
         'Try running the tests separately for more detail.' . PHP_EOL;
       echo '**********************' . PHP_EOL;
     }
-    
+
     $success = (!$this->_aggregates['fails'] && !$this->_aggregates['exceptions']
       && $this->_aggregates['cases'] == $this->_aggregates['run']);
-    
+
     if ($success)
     {
       echo "\033[32m\033[1mOK\033[0m" . PHP_EOL;
@@ -190,14 +190,14 @@ class Sweety_Reporter_CliReporter implements Sweety_Reporter
     {
       echo "\033[31m\033[1mFAILURES!!!\033[0m" . PHP_EOL;
     }
-    
+
     echo 'Test cases run: ';
     echo $this->_aggregates['run'] . '/' . $this->_aggregates['cases'] . ', ';
     echo 'Passes: ' . $this->_aggregates['passes'] . ', ';
     echo 'Failures: ' . $this->_aggregates['fails'] . ', ';
     echo 'Exceptions: '. $this->_aggregates['exceptions'] . PHP_EOL;
-    
+
     exit((int) !$success);
   }
-  
+
 }

@@ -1,13 +1,12 @@
 eLAS-Heroku
 =====
 
-Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku. 
-
+Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 
 Checklist
 ---------
 
-#####Cron 
+#####Cron
     heroku addons:add scheduler
     set every 10 min.  `$ php cron/cron.php`
 
@@ -19,7 +18,7 @@ Environment Vars
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
 
-* DATABASE_URL: default database (postgres) when no domain session name / database color is set. 
+* DATABASE_URL: default database (postgres) when no domain session name / database color is set.
 
 * ELAS_DOMAIN_SESSION_<domain>: session name by domain (must be the color name of the database!)
 
@@ -27,7 +26,7 @@ Environment Vars
     `Hyphens in <domain> are replaced by triple underscore ___`
 
     example:
-    e-example.com 
+    e-example.com
     ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=<session_name>
 
     set environment variable:
@@ -38,11 +37,7 @@ The session name is also:
   * prefix of the image files: <session name>_U_<ID>.JPG for profile images, <session_name>_M_<ID>.JPG for message images.
   * prefix of the keys in Redis.
 
-
-
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
 * ELAS_DB_DEBUG
-* ELAS_MASTER_PASSWORD: sha512 encoded password for master (role admin) 
-
-
+* ELAS_MASTER_PASSWORD: sha512 encoded password for master (role admin)

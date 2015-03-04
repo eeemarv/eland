@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 /**
 * Contains information for a SOAP fault.
 * Mainly used for returning faults from deployed functions
@@ -85,6 +82,5 @@ class nusoap_fault extends nusoap_base {
  */
 class soap_fault extends nusoap_fault {
 }
-
 
 ?>

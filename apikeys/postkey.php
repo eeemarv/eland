@@ -15,14 +15,13 @@ if ($s_accountrole == "admin"){
 	$posted_list["apikey"] = $_POST["apikey"];
 	$posted_list["comment"] = $_POST["comment"];
 	$posted_list["type"] = $_POST["type"];
-			
+
 	if(save_key($posted_list) == true){
 		echo "<font color='green'><strong>OK</font> - Apikey opgeslagen</strong>";
 	} else {
 		echo "<font color='red'><strong>Fout bij het opslaan</strong></font>";
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////

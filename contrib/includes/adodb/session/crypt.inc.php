@@ -62,7 +62,6 @@ class MD5Crypt{
 
 }
 
-
 class SHA1Crypt{
 		function keyED($txt,$encrypt_key)
 		{
@@ -106,8 +105,6 @@ class SHA1Crypt{
 
 		}
 
-
-
 		function Decrypt($txt,$key)
 		{
 
@@ -127,8 +124,6 @@ class SHA1Crypt{
 
 				return $tmp;
 		}
-
-
 
 		function RandPass()
 		{
@@ -151,8 +146,6 @@ class SHA1Crypt{
 				return $randomPassword;
 
 		}
-
-
 
 }
 ?>

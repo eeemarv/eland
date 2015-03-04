@@ -2,7 +2,7 @@ eLAS INSTALLATION instruction
 =============================
 
 1. NEW INSTALLATION
-------------------- 
+-------------------
 
 - Prepare your server with the dependencies in REQUIREMENTS
 - Download the latest tarball (.tar.gz) from the website (http://elas.vsbnet.be)
@@ -11,11 +11,11 @@ eLAS INSTALLATION instruction
 - If you are planning to use the multisite feature of eLAS, go to sites and copy default to the url of your site
 - In the 'config' subdirectory of sites/default or sites/<url>,  copy elas.xml.dist to elas.xml
 - Edit elas.xml to include your site settings including the connection settings to Postgres and the Timezone
-- Import the eLAS schema's into the database you created above 
+- Import the eLAS schema's into the database you created above
 - login as admin with password elas and CHANGE THE ADMIN PASSWORD
 - Modify the settings before running cron
 - Set up cron to pull <url>/cron/cron.php periodicly (between 15 and 60 minutes is good) with curl or wget
-- The required DB upgrades will run from cron. 
+- The required DB upgrades will run from cron.
 
 INSTALL eLAS components
 -----------------------

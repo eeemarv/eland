@@ -16,7 +16,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	show_addlink();
 	show_ptitle();
 	$contacts = get_all_contacts();
- 
+
 	show_all_contacts($contacts);
 }else{
 	redirect_login($rootpath);
@@ -57,13 +57,13 @@ function show_all_contacts($contacten){
 			}
 		echo "<td nowrap valign='top'>".htmlspecialchars($value["abbrev"],ENT_QUOTES)."</td>";
 		echo "<td nowrap valign='top'>".htmlspecialchars($value["uname"],ENT_QUOTES)."</td>";
-		
+
 		echo "<td valign='top' nowrap><a href='view.php?id=".$value["cid"]."'>";
 		echo htmlspecialchars($value["value"],ENT_QUOTES);
 		echo "</a></td>";
 		echo "<td valign='top'>".htmlspecialchars($value["ccomments"],ENT_QUOTES)."</td>";
 		echo "</tr>";
-		
+
 	}
 	echo "</table></div>";
 }

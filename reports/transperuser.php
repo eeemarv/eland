@@ -10,7 +10,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -39,7 +39,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
         $user_datefrom = $posted_list["datefrom"];
         $user_dateto = $posted_list["dateto"];
 	$user_prefix = $posted_list["prefix"];
-	
+
 	echo "<table border=0 width='100%'>";
 	echo "<tr>";
 	echo "<td valign='top' align='left'>";
@@ -97,7 +97,6 @@ function show_csvversion($rootpath,$user_userid,$user_datefrom,$user_dateto,$use
         echo "CSV Export</a>";
 }
 
-
 function show_userselect($list_users,$posted_list){
         echo "<form method='POST' action='transperuser.php'>";
         echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
@@ -134,13 +133,13 @@ function show_userselect($list_users,$posted_list){
         }
         echo "</select>\n";
 	echo "</td>\n";
-	
+
 	echo "<td>";
         echo "<input type='submit' name='zend' value='Filter'>";
         echo "</td>\n</tr>\n\n";
 
 	echo "<tr><td colspan=2><small><i>Filteren kan enkel op subgroep OF gebruiker, de combinatie is niet mogelijk</i></small></td></tr>\n\n";
-	
+
 	echo "<tr><td>Datum van (yyyy-mm-dd):</td>\n";
 	echo "<td>";
 	echo "<input type='text' name='datefrom' size='10'";

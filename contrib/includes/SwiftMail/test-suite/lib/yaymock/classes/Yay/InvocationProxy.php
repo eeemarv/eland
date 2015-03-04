@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/ExpectationProvider.php';
 //require 'Yay/InvocationRecorder.php';
 //require 'Yay/MockObject.php';
@@ -28,21 +28,21 @@
  */
 class Yay_InvocationProxy implements Yay_ExpectationProvider
 {
-  
+
   /**
    * The InvocationRecorder which is using this InvocationProxy.
    * @var Yay_InvocationRecorder
    * @access private
    */
   private $_recorder;
-  
+
   /**
    * The Mock object where Invocations are recorded from.
    * @var Yay_MockObject
    * @access private
    */
   private $_mock;
-  
+
   /**
    * Create a new InvocationProxy for $recorder and $mock.
    * @param Yay_InvocationRecorder $recorder
@@ -53,7 +53,7 @@ class Yay_InvocationProxy implements Yay_ExpectationProvider
     $this->_recorder = $recorder;
     $this->_mock = $mock;
   }
-  
+
   /**
    * Direct all invocations to the recorder.
    * @param string $method
@@ -77,7 +77,7 @@ class Yay_InvocationProxy implements Yay_ExpectationProvider
       throw new BadMethodCallException('Mock method ' . $method . ' does not exist');
     }
   }
-  
+
   /**
    * Returns the Expectation list.
    * @return array of Yay_Expectation
@@ -86,5 +86,5 @@ class Yay_InvocationProxy implements Yay_ExpectationProvider
   {
     return $this->__call(__FUNCTION__, array());
   }
-  
+
 }

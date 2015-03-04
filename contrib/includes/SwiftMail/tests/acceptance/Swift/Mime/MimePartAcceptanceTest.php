@@ -21,7 +21,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
   private $_cache;
   private $_grammar;
   private $_headers;
-  
+
   public function setUp()
   {
     $this->_cache = new Swift_KeyCache_ArrayKeyCache(
@@ -35,7 +35,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
         array(array(0x0A), array(0x0A), array(0x0D, 0x0A))
         )
       );
-    
+
     $headerEncoder = new Swift_Mime_HeaderEncoder_QpHeaderEncoder(
       new Swift_CharacterStream_ArrayCharacterStream($factory, 'utf-8')
       );
@@ -47,7 +47,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       new Swift_Mime_SimpleHeaderFactory($headerEncoder, $paramEncoder, $this->_grammar)
       );
   }
-  
+
   public function testCharsetIsSetInHeader()
   {
     $part = $this->_createMimePart();
@@ -62,7 +62,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       $part->toString()
       );
   }
-  
+
   public function testFormatIsSetInHeaders()
   {
     $part = $this->_createMimePart();
@@ -77,7 +77,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       $part->toString()
       );
   }
-  
+
   public function testDelSpIsSetInHeaders()
   {
     $part = $this->_createMimePart();
@@ -92,7 +92,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       $part->toString()
       );
   }
-  
+
   public function testAll3ParamsInHeaders()
   {
     $part = $this->_createMimePart();
@@ -109,7 +109,7 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       $part->toString()
       );
   }
-  
+
   public function testBodyIsCanonicalized()
   {
     $part = $this->_createMimePart();
@@ -127,9 +127,9 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       $part->toString()
       );
   }
-  
+
   // -- Private helpers
-  
+
   protected function _createMimePart()
   {
     $entity = new Swift_Mime_MimePart(
@@ -140,5 +140,5 @@ class Swift_Mime_MimePartAcceptanceTest extends UnitTestCase
       );
     return $entity;
   }
-  
+
 }

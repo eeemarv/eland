@@ -27,7 +27,7 @@ if (!$err) {
 	$err = $client->getError();
     	if (!$err) {
 		echo $result;
-	} 
+	}
 }
 
 //debug

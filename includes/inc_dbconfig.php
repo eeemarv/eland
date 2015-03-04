@@ -3,7 +3,7 @@
 /*
  *
  */
- 
+
 function readconfigfromdb($key){
     global $db, $session_name, $redis;
     static $cache;
@@ -32,14 +32,13 @@ function readconfigfromdb($key){
 	return $value;
 }
 
-
 /**
  *
  */
 function writeconfig($key, $value)
 {
 	global $db, $redis, $session_name;
-	
+
 	$query = "UPDATE config SET value = '" . $value . "' WHERE setting = '" . $key . "'";
 	$result = $db->Execute($query);
 	if (!$result)
@@ -87,7 +86,7 @@ function readparameter($key)
 }
 
 /**
- * 
+ *
  */
 function readuser($id, $refresh = false)
 {

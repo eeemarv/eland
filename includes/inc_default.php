@@ -8,7 +8,7 @@ if(!isset($rootpath)){
 require_once($rootpath."vendor/autoload.php");
 
 //override the include path, so we pick up the contrib directory first
-ini_set('include_path',$rootpath.'contrib/includes:'.ini_get('include_path'));  
+ini_set('include_path',$rootpath.'contrib/includes:'.ini_get('include_path'));
 
 //require_once($rootpath."includes/inc_config.php");
 
@@ -36,7 +36,7 @@ require_once($rootpath."includes/inc_eventlog.php");
  * + session name is prefix of keys in Redis.
  *
  */
- 
+
 $session_name = str_replace(':', '', $baseurl);
 $session_name = str_replace('.', '__', $session_name);
 $session_name = str_replace('-', '___', $session_name);
@@ -79,7 +79,7 @@ function setstatus($status,$flag=0){
 
 	global $xmlconfig;
 	global $_SESSION;
-	
+
 	$s_id = $_SESSION["id"];
 }
 

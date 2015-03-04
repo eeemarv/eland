@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * A MIME part, in a multipart message.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_MimePart extends Swift_Mime_MimePart
 {
-  
+
   /**
    * Create a new MimePart.
    * Details may be optionally passed into the constructor.
@@ -33,7 +32,7 @@ class Swift_MimePart extends Swift_Mime_MimePart
       Swift_DependencyContainer::getInstance()
         ->createDependenciesFor('mime.part')
       );
-    
+
     if (!isset($charset))
     {
       $charset = Swift_DependencyContainer::getInstance()
@@ -46,7 +45,7 @@ class Swift_MimePart extends Swift_Mime_MimePart
       $this->setContentType($contentType);
     }
   }
-  
+
   /**
    * Create a new MimePart.
    * @param string $body
@@ -59,5 +58,5 @@ class Swift_MimePart extends Swift_Mime_MimePart
   {
     return new self($body, $contentType, $charset);
   }
-  
+
 }

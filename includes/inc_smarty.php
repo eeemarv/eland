@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include($rootpath.'/includes/Smarty/libs/Smarty.class.php');
 $smarty = new Smarty;

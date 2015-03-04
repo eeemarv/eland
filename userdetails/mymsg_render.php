@@ -8,7 +8,6 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
 
 if (isset($s_id)){
 	if($s_accountrole == "user" || $s_accountrole == "admin"){
@@ -20,7 +19,6 @@ if (isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function chop_string($content, $maxsize){
 $strlength = strlen($content);
@@ -67,7 +65,7 @@ function show_all_msgs($messagerows){
                 }
 		echo "<a href='" .$rootpath ."messages/view.php?id=".$value["msgid"]."'>";
 		$content = htmlspecialchars($value["content"],ENT_QUOTES);
-		
+
 		echo chop_string($content, 50);
 		if(strlen($content)>50){
 			echo "...";
@@ -92,7 +90,7 @@ function show_all_msgs($messagerows){
 		echo "</td>";
 
 		echo "<td valign='top'><a href='mymsg_extend.php?id=".$value["msgid"]."&validity=12'>1 jaar</a> | <a href='mymsg_extend.php?id=".$value["msgid"]."&validity=60'>5 jaar</a>";
-		
+
 		echo "</tr>";
 	}
 	echo "</table>";

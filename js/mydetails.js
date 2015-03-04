@@ -32,7 +32,6 @@ function loaduser(url){
         userobj.send(null);
 }
 
-
 function loadoid(url){
         try {
         oidobj = window.XMLHttpRequest?new XMLHttpRequest(): new ActiveXObject("Microsoft.XMLHTTP");

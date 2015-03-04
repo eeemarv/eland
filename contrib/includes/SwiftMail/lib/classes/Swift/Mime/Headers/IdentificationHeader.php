@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * An ID MIME Header for something like Message-ID or Content-ID.
  * @package Swift
@@ -18,7 +17,7 @@
 class Swift_Mime_Headers_IdentificationHeader
   extends Swift_Mime_Headers_AbstractHeader
 {
-  
+
   /**
    * The IDs used in the value of this Header.
    * This may hold multiple IDs or just a single ID.
@@ -26,7 +25,7 @@ class Swift_Mime_Headers_IdentificationHeader
    * @access private
    */
   private $_ids = array();
-  
+
   /**
    * Creates a new IdentificationHeader with the given $name and $id.
    * @param string $name
@@ -37,7 +36,7 @@ class Swift_Mime_Headers_IdentificationHeader
     $this->setFieldName($name);
     parent::__construct($grammar);
   }
-  
+
   /**
    * Get the type of Header that this instance represents.
    * @return int
@@ -48,7 +47,7 @@ class Swift_Mime_Headers_IdentificationHeader
   {
     return self::TYPE_ID;
   }
-  
+
   /**
    * Set the model for the field body.
    * This method takes a string ID, or an array of IDs
@@ -59,7 +58,7 @@ class Swift_Mime_Headers_IdentificationHeader
   {
     $this->setId($model);
   }
-  
+
   /**
    * Get the model for the field body.
    * This method returns an array of IDs
@@ -69,7 +68,7 @@ class Swift_Mime_Headers_IdentificationHeader
   {
     return $this->getIds();
   }
-  
+
   /**
    * Set the ID used in the value of this header.
    * @param string $id
@@ -79,7 +78,7 @@ class Swift_Mime_Headers_IdentificationHeader
   {
     $this->setIds(array($id));
   }
-  
+
   /**
    * Get the ID used in the value of this Header.
    * If multiple IDs are set only the first is returned.
@@ -92,7 +91,7 @@ class Swift_Mime_Headers_IdentificationHeader
       return $this->_ids[0];
     }
   }
-  
+
   /**
    * Set a collection of IDs to use in the value of this Header.
    * @param string[] $ids
@@ -101,17 +100,17 @@ class Swift_Mime_Headers_IdentificationHeader
   public function setIds(array $ids)
   {
     $actualIds = array();
-    
+
     foreach ($ids as $id)
     {
       $this->_assertValidId($id);
       $actualIds[] = $id;
     }
-    
+
     $this->clearCachedValueIf($this->_ids != $actualIds);
     $this->_ids = $actualIds;
   }
-  
+
   /**
    * Get the list of IDs used in this Header.
    * @return string[]
@@ -120,7 +119,7 @@ class Swift_Mime_Headers_IdentificationHeader
   {
     return $this->_ids;
   }
-  
+
   /**
    * Get the string value of the body in this Header.
    * This is not necessarily RFC 2822 compliant since folding white space will
@@ -134,17 +133,17 @@ class Swift_Mime_Headers_IdentificationHeader
     if (!$this->getCachedValue())
     {
       $angleAddrs = array();
-    
+
       foreach ($this->_ids as $id)
       {
         $angleAddrs[] = '<' . $id . '>';
       }
-    
+
       $this->setCachedValue(implode(' ', $angleAddrs));
     }
     return $this->getCachedValue();
   }
-  
+
   /**
    * Throws an Exception if the id passed does not comply with RFC 2822.
    * @param string $id

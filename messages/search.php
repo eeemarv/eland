@@ -13,7 +13,6 @@ $s_user_postcode = $_SESSION["user_postcode"];
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
-
 if(isset($s_id)){
 	show_ptitle();
 	if(isset($_GET["distance"])) {
@@ -195,7 +194,7 @@ function show_form($q,$distance,$s_user_postcode){
 	}
 	echo ">";
 	echo "<input type='submit' name='zend' value='Zoeken'>";
-	
+
 	if(!empty($s_user_postcode) &&  filter_var($s_user_postcode, FILTER_VALIDATE_INT)) {
 		echo "<br><small><i>Maximum afstand (rond je postcode) : <input type='text' size='1' name='distance'";
 		if(!empty($distance)) {
@@ -213,5 +212,3 @@ function show_ptitle(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-
-

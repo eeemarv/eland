@@ -4,7 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php"); 
+require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 session_start();
@@ -26,7 +26,7 @@ if(isset($s_id)){
 
 	$user = get_user($s_id);
 	$balance = $user["saldo"];
-		 
+
 	show_forms();
 	show_help();
 	show_closebutton();
@@ -79,7 +79,7 @@ function show_forms(){
         echo "<tr><td align='right'>";
         echo "Letscode";
         echo "</td><td>";
-        echo "<input type='text' name='letscode' id='letscode' size='10' readonly>"; 
+        echo "<input type='text' name='letscode' id='letscode' size='10' readonly>";
         echo "</td></tr>";
 	echo "<tr><td align='right'>";
         echo "Naam";

@@ -10,41 +10,41 @@ require_once 'Sweety/Reporter/HtmlReporter.php';
  */
 class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
 {
-  
+
   /**
    * Template variables.
    * @var mixed[]
    */
   public $_tplVars;
-  
+
   /**
    * True if this reporter is running.
    * @var boolean
    * @access private
    */
   private $_started = false;
-  
+
   /**
    * The name of the test case being reported on.
    * @var string
    * @access private
    */
   private $_testCase;
-  
+
   /**
    * The parent reporter this was spawned from.
    * @var Sweety_Reporter_HtmlReporter
    * @access private
    */
   private $_parent;
-  
+
   /**
    * Aggregate totals for this test case.
    * @var int[]
    * @access private
    */
   private $_aggregates = array();
-  
+
   /**
    * Creates a new CliTestCaseReporter.
    * @param string $testCase
@@ -60,7 +60,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
       'exceptions' => 0
       );
   }
-  
+
   /**
    * Set template data.
    * @param mixed[]
@@ -69,7 +69,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
   {
     $this->_tplVars =& $vars;
   }
-  
+
   /**
    * Get the reporter used to report on this specific test case.
    * This method is stubbed only to return itself.
@@ -80,7 +80,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
   {
     return $this;
   }
-  
+
   /**
    * Returns true if start() has been invoked.
    * @return boolean
@@ -89,7 +89,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
   {
     return $this->_started;
   }
-  
+
   /**
    * Start reporting.
    */
@@ -98,7 +98,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
     $this->_started = true;
     $this->_tplVars['runTests'][$this->_testCase] = 'running';
   }
-  
+
   /**
    * Report a skipped test case.
    * @param string $message
@@ -108,7 +108,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
   {
     $this->_parent->reportSkip($message, $path);
   }
-  
+
   /**
    * Report a passing assertion.
    * @param string $message
@@ -119,7 +119,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
     $this->_aggregates['passes']++;
     $this->_parent->reportPass($message, $path);
   }
-  
+
   /**
    * Report a failing assertion.
    * @param string $message
@@ -130,7 +130,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
     $this->_aggregates['fails']++;
     $this->_parent->reportFail($message, $path);
   }
-  
+
   /**
    * Report an unexpected exception.
    * @param string $message
@@ -141,7 +141,7 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
     $this->_aggregates['exceptions']++;
     $this->_parent->reportException($message, $path);
   }
-  
+
   /**
    * Report output from something like a dump().
    * @param string $output
@@ -151,14 +151,14 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
   {
     $this->_parent->reportOutput($output, $path);
   }
-  
+
   /**
    * End reporting.
    */
   public function finish()
   {
     $this->_started = false;
-    
+
     if (!$this->_aggregates['fails'] && !$this->_aggregates['exceptions'])
     {
       $this->_tplVars['runTests'][$this->_testCase] = 'pass';
@@ -167,8 +167,8 @@ class Sweety_Reporter_HtmlTestCaseReporter implements Sweety_Reporter
     {
       $this->_tplVars['runTests'][$this->_testCase] = 'fail';
     }
-    
+
     $this->_parent->notifyEnded($this->_testCase);
   }
-  
+
 }

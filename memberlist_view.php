@@ -32,11 +32,10 @@ if(isset($s_id)){
 	redirect_login($rootpath);
 }
 
-
 echo <<<EOF
 	<link rel="stylesheet" type="text/css" href="graphs/jqplot/jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="graphs/css/tooltip.css" />
-	<script type="text/javascript">var user_id = {$id};</script>	
+	<script type="text/javascript">var user_id = {$id};</script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 	<script src="graphs/jqplot/jquery.jqplot.min.js"></script>
 	<script src="graphs/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
@@ -44,7 +43,7 @@ echo <<<EOF
 	<script src="graphs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
 	<script src="graphs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
 	<script src="graphs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>	
+	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>
 	<script src="graphs/js/user_transactions.js"></script>
 EOF;
 
@@ -105,14 +104,14 @@ function show_user($user){
 		echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
 		echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";
 	    echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
-	    
+
 	    echo "<tr><td width='50%' valign='top'>LETS Chatter ID:  </td>";
 	    $chatter_url = readconfigfromdb("ostatus_url");
         echo "<td width='50%' valign='top'>";
         echo "<a href='" . $chatter_url ."/" .$user["ostatus_id"] ."'>";
         echo $user["ostatus_id"];
         echo "</a></td></tr>";
-                
+
 		echo "<tr><td valign='top'>Hobbies/interesses: </td>";
 		echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
 		echo "<tr><td valign='top'>Commentaar: </td>";
@@ -121,7 +120,6 @@ function show_user($user){
 	echo "</td>";
 	echo "</table>";
 }
-
 
 function get_messages($id){
 	global $db;
@@ -145,7 +143,7 @@ function show_msg($msg){
  			echo "V: ";
 		}elseif($value["msg_type"] == 1){
 			echo "A: ";
-		} 
+		}
 		echo "</td>";
 		echo "<td valign='top'><a href='messages/view.php?id=".$value["id"]."'>".nl2br(htmlspecialchars($value["content"],ENT_QUOTES))."</a></td>";
 		echo "</tr>";
@@ -187,10 +185,8 @@ function show_contact($contact){
 	}
 	echo "<tr><td colspan='3'><p>&#160;</p></td></tr>";
 	echo "</table>";
-	
+
 }
-
-
 
 function redirect_memberlist(){
 	header("Location: memberlist.php");
@@ -199,4 +195,3 @@ function redirect_memberlist(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

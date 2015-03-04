@@ -6,21 +6,21 @@ require_once 'Swift/Mime/SimpleMessageAcceptanceTest.php';
 class Swift_MessageAcceptanceTest
   extends Swift_Mime_SimpleMessageAcceptanceTest
 {
-  
+
   public function testAddPartWrapper()
   {
     $message = $this->_createMessage();
     $message->setSubject('just a test subject');
     $message->setFrom(array(
       'chris.corbyn@swiftmailer.org' => 'Chris Corbyn'));
-    
+
     $id = $message->getId();
     $date = $message->getDate();
     $boundary = $message->getBoundary();
-    
+
     $message->addPart('foo', 'text/plain', 'iso-8859-1');
     $message->addPart('test <b>foo</b>', 'text/html', 'iso-8859-1');
-    
+
     $this->assertEqual(
       'Message-ID: <' . $id . '>' . "\r\n" .
       'Date: ' . date('r', $date) . "\r\n" .
@@ -46,14 +46,14 @@ class Swift_MessageAcceptanceTest
       $message->toString()
       );
   }
-  
+
   // -- Private helpers
-  
+
   protected function _createMessage()
   {
     Swift_DependencyContainer::getInstance()
       ->register('properties.charset')->asValue(null);
     return Swift_Message::newInstance();
   }
-  
+
 }

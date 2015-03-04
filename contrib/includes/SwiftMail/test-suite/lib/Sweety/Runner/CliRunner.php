@@ -9,21 +9,21 @@ require_once 'Sweety/Runner/AbstractTestRunner.php';
  */
 class Sweety_Runner_CliRunner extends Sweety_Runner_AbstractTestRunner
 {
-  
+
   /**
    * Directories to scan for test cases.
    * @var string[]
    * @access private
    */
   private $_dirs = array();
-  
+
   /**
    * The command to invoke when running test cases.
    * @var string
    * @access private
    */
   private $_command;
-  
+
   /**
    * Creates a new CliRunner scanning the given directories, using the given
    * command and having the given name.
@@ -36,7 +36,7 @@ class Sweety_Runner_CliRunner extends Sweety_Runner_AbstractTestRunner
     $this->_dirs = $dirs;
     $this->_command = $command;
   }
-  
+
   /**
    * Runs all test cases found under the given directories.
    * @param string[] $directories to scan for test cases
@@ -49,19 +49,19 @@ class Sweety_Runner_CliRunner extends Sweety_Runner_AbstractTestRunner
     {
       $dirs = $this->_dirs;
     }
-    
+
     $reporter = $this->getReporter();
-    
+
     if (!$reporter->isStarted())
     {
       $reporter->start();
     }
-    
+
     $tests = $this->findTests($dirs);
     usort($tests, array($this, '_sort'));
-    
+
     global $argv;
-    
+
     if (!empty($argv[1]))
     {
       if (substr($argv[1], 0, 1) == '!')
@@ -86,14 +86,14 @@ class Sweety_Runner_CliRunner extends Sweety_Runner_AbstractTestRunner
         }
       }
     }
-    
+
     $ret = $this->_runTestList($tests);
-    
+
     $reporter->finish();
-    
+
     return $ret;
   }
-  
+
   /**
    * Run all possible tests from the given list.
    * @param string[] $tests
@@ -102,27 +102,27 @@ class Sweety_Runner_CliRunner extends Sweety_Runner_AbstractTestRunner
   protected function _runTestList(array $tests)
   {
     foreach ($tests as $testCase)
-    {     
+    {
       if (preg_match($this->getIgnoredClassRegex(), $testCase))
       {
         continue;
       }
-      
+
       $command = $this->_command;
       $command .= ' ' . $testCase;
       $command .= ' ' . Sweety_Runner::REPORT_XML;
-      
+
       exec($command, $output, $status);
-      
+
       $xml = implode(PHP_EOL, $output);
-      
+
       $this->parseXml($xml, $testCase);
-      
+
       unset($status);
       unset($output);
     }
-    
+
     return 0;
   }
-  
+
 }

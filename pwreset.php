@@ -15,7 +15,6 @@ require_once($rootpath."includes/inc_mailfunctions.php");
 //$_SESSION["letscode"] = $row["letscode"];
 //$_SESSION["accountrole"] = $row["accountrole"];
 
-
 if(empty($_POST["email"])){
 	echo "Geef een mailadres op";
 	log_event($s_id,"System","Empty activation request");
@@ -24,7 +23,7 @@ if(empty($_POST["email"])){
 	// Search for the mailaddress in the contact table
 	global $db;
 	$query = "SELECT * FROM contact WHERE value = '" .$_POST["email"] ."'";
-	$contact = $db->GetRow($query); 
+	$contact = $db->GetRow($query);
 
 	if(!empty($contact["value"])){
 		$user = get_user_maildetails($contact["id_user"]);
@@ -41,6 +40,5 @@ if(empty($_POST["email"])){
 		echo "E-mail adress " .$_POST["email"] ." niet gevonden";
 	}
 }
-
 
 ?>

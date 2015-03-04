@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 if(isset($s_id) && ($s_accountrole == "admin")){
 		if (isset($_GET["id"])){
 				$id = $_GET["id"];
@@ -23,7 +22,6 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		}else{
 					redirect_useroverview();
 		}
-
 
 }else{
 	redirect_login($rootpath);
@@ -62,7 +60,7 @@ function get_all_transactions($user_id){
 	}
 	else {
 		$query .= " ORDER BY transactions.date DESC";
-	}    
+	}
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
@@ -102,11 +100,11 @@ function show_all_transactions($transactions, $user){
 		}else{
 			echo "+".$value["amount"];
 		}
-		
+
 		echo "</td><td valign='top'>";
 		//echo "<a href='".$rootpath."transactions/view.php?id=".$value["transid"]."'>";
 		echo htmlspecialchars($value["description"],ENT_QUOTES);
-		
+
 		echo "</td></tr>";
 	}
 	echo "</table></div>";
@@ -119,19 +117,14 @@ function show_ptitle($id, $user){
 	echo " </h1>";
 }
 
-
-
 function getuser($id){
-	return readuser($id);	
+	return readuser($id);
 }
 
 function redirect_useroverview($rootpath){
 	header("Location: ".$rootpath."users/overview.php");
 }
 
-
-
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-

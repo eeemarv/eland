@@ -76,7 +76,7 @@ function show_list($list){
 	echo "<td>Omschrijving</td>";
 	echo "<td>" .$list["description"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Type</td>";
 	echo "<td>" .$list["type"] ."</td>";
@@ -96,17 +96,17 @@ function show_list($list){
 	echo "<td>Moderatie</td>";
 	echo "<td>" .$list["moderation"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Moderatiemail</td>";
 	echo "<td>" .$list["moderatormail"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Ledenbron</td>";
 	echo "<td>" .$list["subscribers"] ."</td>";
-	echo "</tr>";	
-				
+	echo "</tr>";
+
 	echo "</table>";
 	echo "</div>";
 }
@@ -118,4 +118,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

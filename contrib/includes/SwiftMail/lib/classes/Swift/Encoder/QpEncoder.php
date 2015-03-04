@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Handles Quoted Printable (QP) Encoding in Swift Mailer.
  * Possibly the most accurate RFC 2045 QP implementation found in PHP.

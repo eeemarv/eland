@@ -23,18 +23,17 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		$posted_list["value"] = $_POST["value"];
 		$posted_list["comments"] = $_POST["comments"];
 		$uid = $_POST["uid"];
-		
+
 			if (trim($_POST["flag_public"]) == 1){
 					$posted_list["flag_public"] = 1;
 			}else{
 					$posted_list["flag_public"] = 0;
 			}
 
-
 		$error_list = validate_input($posted_list);
 		if(!empty($error_list)){
 			$typecontactrow = get_type_contacts();
-			show_form($typecontactrow, $error_list, $posted_list, $uid);	
+			show_form($typecontactrow, $error_list, $posted_list, $uid);
 		}else{
 			add_contact($posted_list, $uid);
 			redirect_view($uid);
@@ -42,7 +41,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	}else{
 		$typecontactrow = get_type_contacts();
 		show_form($typecontactrow, $error_list, $posted_list, $uid);
-	}	
+	}
 }else{
 	redirect_login($rootpath);
 }
@@ -127,16 +126,14 @@ function show_form($typecontactrow, $error_list, $posted_list, $uid){
 	echo "<input type='checkbox' name='flag_public' ";
 	if (trim($posted_list["flag_public"]) == 1){
 		echo " CHECKED ";
-	} 
+	}
 
 	echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
-
-
 
 	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
 	echo "</td>\n</tr>\n\n";
 	echo "</table>\n\n</form></div>";
-	
+
 }
 
 function redirect_view($uid){

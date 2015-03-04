@@ -1,22 +1,22 @@
-	a, a:link, a:active 
+	a, a:link, a:active
 	{
 	color: blue;
 	text-decoration: none;
 	}
-	
+
 	a:hover
 	{
 	color: blue;
 	text-decoration: underline;
 	}
-	
+
 	body
 	{
 	background-color: #adaac8;
 	font-family: verdana, arial, helvetica, sans-serif;
 	font-size: 15px;
 	}
-	
+
 	table.main
 	{
 	background-color: #ffffff;
@@ -42,25 +42,25 @@
 	font-size: 13px;
 	text-align: center;
 	}
-	
+
 	td.kop
 	{
 	background-color:  #120044;
 	border-right: 0px dashed #d4d0c8;
 	}
-	
+
 	div.search
 	{
 	font-size: 13px;
 	margin-top: 20px;
 	}
-	
+
 	div.search form
 	{
 	padding: 0px;
 	margin: 0px;
 	}
-	
+
 	input.submit
 	{
 	font-size: 10px;
@@ -77,7 +77,7 @@
 	{
 	padding: 5px;
 	background-color: #fff6d0;
-	font-style: italic; 
+	font-style: italic;
 	}
 
 	div.iewarn
@@ -103,7 +103,7 @@
 	{
 	display: none;
 	}
-	
+
 	#transformdiv
 	{
 	background-color: #fdea9c;
@@ -115,7 +115,7 @@
 	}
 
 	/***************************KOLOM 1: NAVIGATIE **********************************************************/
-	
+
 	td.nav
 	{
 	padding-top: 30px;
@@ -127,18 +127,16 @@
 	border-right: 1px dashed #9974ff;
 	background-color: #c1c3e3;
 	}
-	
+
 	/* Titeltje navigatieblokken */
 	div.nav span.nav
 	{
 	padding-left: 40px;
 	text-decoration: none;
 	}
-	
 
-	
 	/***************************KOLOM 2: CONTENT **********************************************************/
-	
+
 	td.news div
 	{
 	background-color: #ffefd5;
@@ -147,13 +145,12 @@
 	border: 1px dashed #9974ff;
 	}
 
-	
 	div.border_b
 	{
 	padding-bottom: 10px;
 	border-bottom: 1px dashed #9974ff;
 	}
-	
+
 	td.content
 	{
 	width: 85%;
@@ -163,23 +160,23 @@
 	padding-bottom: 40px;
 	font-size: 13px;
 	}
-	
-	h1 
+
+	h1
 	{
 	font-size: 25px;
 	font-family: arial, helvetica, sans-serif;
 	color: #120044;
-	
+
 	}
-	
+
 	/* Zoekmachine */
 	div.zoek
 	{
 	text-align: right;
 	}
-	
+
 	/* Data tabel */
-	table.data 
+	table.data
 	{
 	border-collapse:collapse;
 	margin-top: 30px;
@@ -187,7 +184,7 @@
 	font-size: 15px;
 	border: 1px solid #7579d9;
 	}
-	
+
 	table.data td
 	{
 	padding: 2px;
@@ -210,7 +207,6 @@
         font-size: 13px;
         border-top: 0px solid #cccccc;
         }
-
 
 	table.msgview
 	{
@@ -246,7 +242,6 @@
         border-top: 0px solid #cccccc;
         }
 
-
 	tr.msgviewheader
 	{
 	background-color:  #35375c;
@@ -264,23 +259,22 @@
 	background-color: #7b82ff;
 	}
 
-	
 	tr.even_row
 	{
 	background-color: #cfd1ff;
 	}
-	
+
 	tr.uneven_row
 	{
 	background-color: #ffffff;
 	}
-	
+
 	table.data td.border_r
 	{
 	border-collapse:collapse;
 	border-right: 1px solid #DCF2F8;
 	}
-	
+
 	table.data td.data_header
 	{
 	padding: 2px;
@@ -289,13 +283,13 @@
 	font-weight: bold;
 	border: 0px solid #7579d9;
 	}
-	
+
 	/***************************Mootools CSS**********************************************************/
 
 	#log_res {
 	width: 80%;
 	}
- 
+
 	div.ajax-loading {
 	padding: 10px 0;
 	background: url('/gfx/transspinner.gif') no-repeat;
@@ -307,12 +301,10 @@
         font-size: 10px;
 	color: white;
         }
-	
+
 	div.msg {
 	font-style: italic;
         font-weight:bold;
         font-size: 10px;
         color: black;
         }
-
-

@@ -1,4 +1,3 @@
-
 <?php
 ob_start();
 $rootpath = "../";
@@ -94,22 +93,22 @@ function show_msg($msg){
 	 	echo "V";
 	}elseif($msg["msg_type"] == 1){
 		echo "A";
-	} 
+	}
 	echo "</td>";
 	echo "<td valign='top' >";
 	echo nl2br(htmlspecialchars($msg["content"],ENT_QUOTES));
 	echo "</td>";
-		
+
 	echo "<td valign='top' >";
 	echo $msg["valdate"];
 	echo "</td>";
-	
+
 	echo "<td valign='top' >";
 	echo htmlspecialchars($msg["fullname"],ENT_QUOTES);
 	echo "</td>";
 	echo "</tr>";
 	echo "</table></div>";
-		
+
 }
 
 function redirect_overview(){

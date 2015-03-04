@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Generated when a response is received on a SMTP connection.
  * @package Swift
@@ -17,19 +16,19 @@
  */
 class Swift_Events_ResponseEvent extends Swift_Events_EventObject
 {
-  
+
   /**
    * The overall result.
    * @var boolean
    */
   private $_valid;
-  
+
   /**
    * The response received from the server.
    * @var string
    */
   private $_response;
-  
+
   /**
    * Create a new ResponseEvent for $source and $response.
    * @param Swift_Transport $source
@@ -42,7 +41,7 @@ class Swift_Events_ResponseEvent extends Swift_Events_EventObject
     $this->_response = $response;
     $this->_valid = $valid;
   }
-  
+
   /**
    * Get the response which was received from the server.
    * @return string
@@ -51,7 +50,7 @@ class Swift_Events_ResponseEvent extends Swift_Events_EventObject
   {
     return $this->_response;
   }
-  
+
   /**
    * Get the success status of this Event.
    * @return boolean
@@ -60,5 +59,5 @@ class Swift_Events_ResponseEvent extends Swift_Events_EventObject
   {
     return $this->_valid;
   }
-  
+
 }

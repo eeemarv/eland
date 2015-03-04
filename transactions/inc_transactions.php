@@ -8,7 +8,6 @@ function mail_transaction($posted_list, $timestamp){
 	session_start();
 	$s_id = $_SESSION["id"];
 
-
 // no mail for demo site or when it not configured
 	if (readconfigfromdb("mailenabled") !== "1" ){
 	    error_log("Mail is not enabled");
@@ -22,12 +21,12 @@ function mail_transaction($posted_list, $timestamp){
 	$userfrom=get_user_maildetails($posted_list["id_from"]);
 	if (!empty($userfrom["emailaddress"])){
 		$mailto .= ",".$userfrom["emailaddress"];
-	}    
+	}
 
 	$userto=get_user_maildetails($posted_list["id_to"]);
 	if (!empty($userto["emailaddress"])){
 		$mailto .= ",". $userto["emailaddress"];
-	}    
+	}
 
 	$mailsubject .= "[eLAS-".readconfigfromdb("systemtag")."] " . $posted_list["amount"] . " " .readconfigfromdb("currency");
 	$mailsubject .= " van " . $userfrom["name"] . " (".trim($posted_list["letscode_from"]).")";
@@ -60,14 +59,13 @@ function insert_transaction($posted_list){
                 log_event("","Trans", "Transaction failed");
                 setstatus("Fout: Transactie niet toegevoegd", 1);
         }
-	    
+
 }
 
 function mail_deleted_transaction($transaction,$reason){
         global $configuration;
         session_start();
         $s_id = $_SESSION["id"];
-
 
 	# Who did it
 	$currentuser = get_user_maildetails($s_id);
@@ -120,7 +118,7 @@ function get_user_maildetails($userid){
 	$query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
 	$contacts = $db->GetRow($query);
 	$user["emailaddress"] = $contacts["value"];
-	
+
 	return $user;
 
 }

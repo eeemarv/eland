@@ -1,9 +1,6 @@
 <?php
 
-
-
-
-class data_table{   // 
+class data_table{   //
 	private $data = array();
 	private $columns = array();
 	private $header = false;
@@ -14,19 +11,19 @@ class data_table{   //
 
 	public function __construct(){
 	}
-	
+
 	public function set_data($data = array()){
 		$this->data = $data;
 		return $this;
 	}
-	
+
 	public function set_input($req){
 		$this->req = $req;
 		return $this;
 	}
 
 	public function add_column($key, $options = array()){
-		$this->show_status = ($options['render'] == 'status') ? true : $this->show_status; 
+		$this->show_status = ($options['render'] == 'status') ? true : $this->show_status;
 		$this->header = ($options['title']) ? true : $this->header;
 		$this->footer = ($options['footer']) ? true : $this->footer;
 		$this->footer = ($options['footer_text']) ? true : $this->footer;
@@ -39,16 +36,16 @@ class data_table{   //
 		echo '<table class="data" cellpadding="0" cellspacing="0" border="1" width="99%">';
 		$this->render_header()->render_rows()->render_footer();
 		echo '</table>';
-		echo '<script type="text/javascript" src="'.$this->rootpath.'js/table_sum.js"></script>';		
+		echo '<script type="text/javascript" src="'.$this->rootpath.'js/table_sum.js"></script>';
 		return $this;
-	}	
+	}
 
 	private function render_header(){
 		if (!$this->header){
 			return $this;
 		}
 		echo '<tr class="header">';
-		foreach($this->columns as $val) { 
+		foreach($this->columns as $val) {
 			echo '<td valign="top"><strong>';
 			echo ($val['title']) ? $val['title'] : '&nbsp;';
 			echo '</strong></td>';
@@ -56,13 +53,13 @@ class data_table{   //
 		echo '</tr>';
 		return $this;
 	}
-	
+
 	private function render_footer(){
 		if (!$this->footer){
 			return $this;
-		}	
-		echo '<tr class="header">';			
-		foreach($this->columns as $val) { 
+		}
+		echo '<tr class="header">';
+		foreach($this->columns as $val) {
 			$text = ($val['footer_text']) ? $val['footer_text'] : '&nbsp;';
 			$text = ($val['footer'] == 'sum') ? $val['count'] : $text;
 			$bgcolor = ($val['input']) ? ' bgcolor="darkblue" id="table_total"' : '';
@@ -71,16 +68,16 @@ class data_table{   //
 		echo '</tr>';
 		return $this;
 	}
-	
+
 	private function render_rows(){
 		foreach ($this->data as $key => $row){
-			$un = ($key % 2) ? '' : 'un'; 
+			$un = ($key % 2) ? '' : 'un';
 			echo '<tr class="'.$un.'even_row">';
 			foreach ($this->columns as &$td){
 				if ($td['input']){
 					$this->req->set_output('td')->render($td['key'].'-'.$row[$td['input']]);
-					$td['count'] += ($td['footer'] == 'sum') ? $this->req->get($td['key'].'-'.$row[$td['input']]) : 0;					
-				} else {			
+					$td['count'] += ($td['footer'] == 'sum') ? $this->req->get($td['key'].'-'.$row[$td['input']]) : 0;
+				} else {
 					switch ($td['render']){
 						case 'status':
 							$bgcolor = ($row['status'] == 2) ? ' bgcolor="#f475b6"' : '';
@@ -89,29 +86,29 @@ class data_table{   //
 							$fontclose = ($bgcolor) ? '</font>' : '';
 							echo '<td valign="top"'.$bgcolor.'>'.$fontopen.'<strong>';
 							echo htmlspecialchars($row[$td['key']], ENT_QUOTES);
-							echo '</strong>'.$fontclose.'</td>';					
+							echo '</strong>'.$fontclose.'</td>';
 							break;
-						case 'limit': 
+						case 'limit':
 							$overlimit = ($row['saldo'] < $row['minlimit'] || ($row['maxlimit'] != null && $row['saldo'] > $row['maxlimit'])) ? true : false;
 							$fontopen = ($overlimit) ? '<font color="red">' : '';
-							$fontclose = ($overlimit) ? '</font>' : '';						
-							echo '<td valign="top">'.$fontopen.$row[$td['key']].$fontclose.'</td>';					
+							$fontclose = ($overlimit) ? '</font>' : '';
+							echo '<td valign="top">'.$fontopen.$row[$td['key']].$fontclose.'</td>';
 							break;
 						case 'admin':
-							$bgcolor = ($row['accountrole'] == 'admin') ? ' bgcolor="yellow"' : '';						
-							echo '<td valign="top"'.$bgcolor.'>'.$row[$td['key']].'</td>';					
+							$bgcolor = ($row['accountrole'] == 'admin') ? ' bgcolor="yellow"' : '';
+							echo '<td valign="top"'.$bgcolor.'>'.$row[$td['key']].'</td>';
 							break;
-						default: 
-							echo '<td>'.$row[$td['key']].'</td>';						
+						default:
+							echo '<td>'.$row[$td['key']].'</td>';
 							break;
 					}
-					$td['count'] += ($td['footer'] == 'sum') ? $row[$td['key']] : 0;					
-				}	
-			}	
+					$td['count'] += ($td['footer'] == 'sum') ? $row[$td['key']] : 0;
+				}
+			}
 			echo '</tr>';
 		}
 		return $this;
-	}		
+	}
 
 	private function check_newcomer($adate){
 		global $configuration;
@@ -124,11 +121,11 @@ class data_table{   //
 	private function render_status_legend(){
 		if (!$this->show_status){
 			return $this;
-		}	
+		}
 		echo '<table><tr><td bgcolor="#B9DC2E"><font color="white"><strong>Groen blokje:</strong></font></td><td>Instapper</td></tr>';
 		echo '<tr><td bgcolor="#f56db5"><font color="white"><strong>Rood blokje:</strong></font></td><td>Uitstapper</td></tr></table>';
 		return $this;
-	}	
+	}
 }
 
 ?>

@@ -1,4 +1,4 @@
-// Memory Leaks patch from http://explorercanvas.googlecode.com/svn/trunk/ 
+// Memory Leaks patch from http://explorercanvas.googlecode.com/svn/trunk/
 //  svn : r73
 // ------------------------------------------------------------------
 // Copyright 2006 Google Inc.
@@ -14,7 +14,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 
 // Known Issues:
 //
@@ -406,7 +405,6 @@ if (!document.createElement('canvas').getContext) {
     whitesmoke: '#F5F5F5',
     yellowgreen: '#9ACD32'
   };
-
 
   function getRgbHslContent(styleString) {
     var start = styleString.indexOf('(', 3);
@@ -950,7 +948,6 @@ if (!document.createElement('canvas').getContext) {
           break;
       }
 
-
       // TODO: Following is broken for curves due to
       //       move to proper paths.
 
@@ -1298,7 +1295,6 @@ if (!document.createElement('canvas').getContext) {
                 m[0][1].toFixed(3) + ',' + m[1][1].toFixed(3) + ',0,0';
 
     var skewOffset = mr(d.x / Z + 1 - m[0][0]) + ',' + mr(d.y / Z - 2 * m[1][0]);
-
 
     lineStr.push('<g_vml_:skew on="t" matrix="', skewM ,'" ',
                  ' offset="', skewOffset, '" origin="', left ,' 0" />',

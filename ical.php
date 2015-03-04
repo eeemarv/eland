@@ -14,18 +14,16 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ob_start();
 $rootpath = "./";
 // get the initial includes
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-
 feedheader();
 icalfeed();
 feedfooter();
-
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////F U N C T I E S ////////////////////////////
@@ -47,7 +45,7 @@ function feedheader(){
 function feedfooter(){
 	echo "END:VCALENDAR";
 }
-	
+
 function icalfeed(){
 	global $rootpath;
 	global $baseurl;
@@ -66,7 +64,7 @@ function icalfeed(){
                         //	    <description>". $mydesc ."</description>
 	                //        </item>";
 			echo "BEGIN:VEVENT\n";
-			//echo "\n--" .$value["itemdate"] ."--\n"; 
+			//echo "\n--" .$value["itemdate"] ."--\n";
 			echo "DTSTART;VALUE=DATE-TIME:" .date("Ymd\THi00", strtotime($value["itemdate"])) ."\n";
 			//echo "DTEND;VALUE=DATE-TIME:";
 			echo "UID:$mylink\n";

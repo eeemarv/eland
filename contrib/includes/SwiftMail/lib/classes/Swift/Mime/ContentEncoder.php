@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Interface for all Transfer Encoding schemes.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 interface Swift_Mime_ContentEncoder extends Swift_Encoder
 {
-  
+
   /**
    * Encode $in to $out.
    * @param Swift_OutputByteStream $os to read from
@@ -28,11 +27,11 @@ interface Swift_Mime_ContentEncoder extends Swift_Encoder
   public function encodeByteStream(
     Swift_OutputByteStream $os, Swift_InputByteStream $is, $firstLineOffset = 0,
     $maxLineLength = 0);
-  
+
   /**
    * Get the MIME name of this content encoding scheme.
    * @return string
    */
   public function getName();
-  
+
 }

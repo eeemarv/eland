@@ -1,10 +1,9 @@
 <?php
 ob_start();
 
-// 
+//
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
-
 
 $rootpath = "../";
 /**
@@ -20,14 +19,12 @@ require_once($rootpath."cron/inc_upgrade.php");
 require_once($rootpath."cron/inc_stats.php");
 **/
 
-
 require_once($rootpath."includes/inc_dbconfig.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_saldofunctions.php");
 
 require_once($rootpath."includes/inc_news.php");
-
 
 session_start();
 
@@ -36,7 +33,7 @@ header('Content-type: text/plain');
 global $db;
 
 # Upgrade the DB first if required
-			
+
 $query = "SELECT * FROM parameters WHERE parameter= 'schemaversion'";
 $qresult = $db->GetRow($query) ;
 $dbversion = $qresult["value"];
@@ -57,7 +54,6 @@ log_event("","DB","Upgraded database from schema version $dbversion to $donevers
 // echo "<p><small>Build from branch: " . $elas->branch .", revision: " .$elas->revision .", build: " .$elas->build;
 echo " *** eLAS v" .$elas->version . "(" .$elas->branch .")" ." build #" . $elas->build ." Cron system running [" .readconfigfromdb("systemtag") ."] ***\n\n";
 
-
 /*
 // Check and create required paths
 $frequency = 10;
@@ -74,9 +70,7 @@ if(check_timestamp("process_ampmessages", $frequency) == 1) {
 	process_amqmessages();
 }
 
-
 */
-
 
 // Auto mail saldo on request
 $frequency = readconfigfromdb("saldofreqdays") * 1440;
@@ -91,14 +85,14 @@ if(check_timestamp("admin_exp_msg", $frequency) == 1 && readconfigfromdb("adminm
 }
 
 // Check for and mail expired messages to the user
-$frequency = 1440;  
+$frequency = 1440;
 if(check_timestamp("user_exp_msgs", $frequency) == 1 && readconfigfromdb("msgexpwarnenabled") == 1){
 	check_user_exp_msgs();
 }
 
 /*
 // Clean up expired messages after the grace period
-$frequency = 1440;  
+$frequency = 1440;
 if(check_timestamp("cleanup_messages", $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1){
         cleanup_messages();
 }
@@ -111,8 +105,6 @@ if(check_timestamp("cat_update_count", $frequency) == 1) {
         cat_update_count();
 }
 
-
-
 // Update the cached saldo
 $frequency = 60;
 if(check_timestamp("saldo_update", $frequency) == 1) {
@@ -120,7 +112,7 @@ if(check_timestamp("saldo_update", $frequency) == 1) {
 }
 
 // Clean up expired news items
-$frequency = 1440;  
+$frequency = 1440;
 if(check_timestamp("cleanup_news", $frequency) == 1){
         cleanup_news();
 }
@@ -138,7 +130,6 @@ if(check_timestamp("processqueue", $frequency) == 1){
 	write_timestamp("processqueue");
 }
 
-
 // Publish news items that were approved
 $frequency = 30;
 if(check_timestamp("publish_news", $frequency) == 1){
@@ -150,7 +141,6 @@ $frequency = 720;
 if(check_timestamp("update_stats", $frequency) == 1){
 	update_stats();
 }
-
 
 /*
 $frequency = 60;
@@ -182,7 +172,7 @@ function publish_mailinglists(){
 
 function process_amqmessages(){
 	global $configuration;
-	
+
 	echo "Running Process AMQ messages...\n";
 	echo "  Getting other AMQ messages...\n";
 	amq_processincoming();
@@ -192,9 +182,9 @@ function process_amqmessages(){
 function create_paths() {
 	global $rootpath;
 	global $baseurl;
-	
+
 	echo "Running create_paths...\n";
-	
+
 	// Auto create the json directory
 	$dirname = "$rootpath/sites/$baseurl/json";
 	if (!file_exists($dirname)){
@@ -203,7 +193,7 @@ function create_paths() {
 		echo "    Creating .htaccess file for $dirname\n";
 		file_put_contents("$dirname/.htaccess", "Deny from all\n");
 	}
-	
+
 	write_timestamp("create_paths");
 }
 
@@ -214,18 +204,18 @@ function mailq_run(){
 	global $configuration;
 	global $db;
 	global $baseurl;
-	
+
 	$systemname = readconfigfromdb("systemname");
     $systemtag = readconfigfromdb("systemtag");
-    
+
 	echo "Running mailq_run...\n";
-	
-	$query = "SELECT * FROM mailq WHERE sent = 0"; 
+
+	$query = "SELECT * FROM mailq WHERE sent = 0";
 	$mails = $db->GetArray($query);
-			
+
 	foreach ($mails AS $key => $value){
 		echo "Processing message " .$value["msgid"] . " to list " .$value["listname"] . "\n";
-		
+
 		# Get all subscribers for that list
 		$query = "SELECT * FROM lists, listsubscriptions WHERE listsubscriptions.listname = lists.listname AND listsubscriptions.listname = '" .$value["listname"] . "'";
 		$subscribers = $db->GetArray($query);
@@ -242,21 +232,20 @@ function mailq_run(){
 		$message["body"] = "<html>\n" .$value["message"];
 		$message["body"] .= "\n\n<small>$footer</small></html>";
 		$message["body"] = nl2br($message["body"]);
-		
-		
+
 		foreach ($subscribers AS $subkey => $subvalue){
 			//echo "\nFound subsciberID: " . $subvalue["user_id"] . "\n";
 			$usermails =  get_user_mailarray($subvalue["user_id"]);
 			//var_dump($usermails);
-					
-			foreach($usermails as $mailkey => $mailvalue){			
+
+			foreach($usermails as $mailkey => $mailvalue){
 				array_push($message["to"], $mailvalue["value"]);
 			}
-			
+
 			//var_dump($message);
 		}
 		$json = json_encode($message);
-				
+
 		$mystatus = elasmail_queue($json);  // non-existing function!
 		if($mystatus == 1){
 			$query = "UPDATE mailq SET  sent = 1 WHERE msgid = '" . $message["id"] ."'";
@@ -288,12 +277,12 @@ function saldo_update(){
 	global $db;
 	echo "Running saldo_update ...";
 
-	$query = "SELECT * FROM users"; 
+	$query = "SELECT * FROM users";
 	$userrows = $db->GetArray($query);
 
 	foreach ($userrows AS $key => $value){
 		//echo $value["id"] ." ";
-		update_saldo($value["id"]);	
+		update_saldo($value["id"]);
 	}
 	echo "\n";
 	write_timestamp("saldo_update");
@@ -302,7 +291,7 @@ function saldo_update(){
 function publish_news(){
 	global $db;
 	global $baseurl;
-	
+
     echo "Running publish_news...\n";
 
     $query = "SELECT * FROM news WHERE approved = 1 AND published IS NULL OR published = 0;";
@@ -310,13 +299,13 @@ function publish_news(){
 
     foreach ($newsitems AS $key => $value){
 		mail_news($value["id"]);
-		
+
 		$q2 = "UPDATE news SET published=1 WHERE id=" .$value["id"];
 		$db->Execute($q2);
 	}
 	write_timestamp("publish_news");
 }
- 
+
 function cleanup_messages(){
 	// Fetch a list of all expired messages that are beyond the grace period and delete them
 	echo "Running cleanup_messages\n";
@@ -362,8 +351,8 @@ function check_user_exp_msgs(){
 	//Fetch a list of expired messages and warn the user again.
 	$warn_messages = get_expired_messages();
 	foreach ($warn_messages AS $key => $value){
-		//For each of these, we need to fetch the user's mailaddress and send him a mail. 
-		echo "Found phase 2 expired message " .$value["id"];              
+		//For each of these, we need to fetch the user's mailaddress and send him a mail.
+		echo "Found phase 2 expired message " .$value["id"];
 		$user = get_user_maildetails($value["id_user"]);
 		$username = $user["name"];
 
@@ -375,14 +364,13 @@ function check_user_exp_msgs(){
 		mark_expwarn($value["id"],2);
 	}
 
-	// Finally, clear all the old flags with a single SQL statement 
+	// Finally, clear all the old flags with a single SQL statement
 	// UPDATE messages SET exp_user_warn = 0 WHERE validity > now + 10
 	do_clear_msgflags();
 
 	// Write the timestamp
 	write_timestamp("user_exp_msgs");
 }
-
 
 function automail_admin_exp_msg(){
 	// Fetch a list of all expired messages and mail them to the admin
@@ -404,7 +392,6 @@ function automail_admin_exp_msg(){
 	write_timestamp("admin_exp_msg");
 }
 
-
 function automail_saldo(){
 	// Get all users that want their saldo auto-mailed.
 	echo "Running automail_saldo\n";
@@ -412,7 +399,7 @@ function automail_saldo(){
         $query = "SELECT users.id, users.name, users.saldo AS saldo, contact.value AS cvalue FROM users,contact,type_contact ";
 	$query .= "WHERE users.id = contact.id_user AND contact.id_type_contact = type_contact.id AND type_contact.abbrev = 'mail' AND users.status <> 0 AND users.cron_saldo = 1";
 	$users = $db->GetArray($query);
-	
+
 	foreach($users as $key => $value) {
 		$mybalance = $value["saldo"];
 		mail_balance($value["cvalue"], $mybalance);

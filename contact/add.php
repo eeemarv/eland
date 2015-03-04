@@ -14,7 +14,7 @@ include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle();
-	$list_type_contact = get_type_contact();	
+	$list_type_contact = get_type_contact();
 	$list_users = get_users();
 	if (isset($_POST["zend"])){
 		$posted_list = array();
@@ -22,11 +22,11 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		$posted_list["comments"] = $_POST["comments"];
 		$posted_list["value"] = $_POST["value"];
 		$posted_list["id_user"] = $_POST["id_user"];
-		
+
 		$error_list = validate_input($posted_list);
-				
+
 		if (!empty($error_list)){
-			show_form($error_list, $posted_list, $list_users, $list_type_contact);	
+			show_form($error_list, $posted_list, $list_users, $list_type_contact);
 		}else{
 			insert_contact($posted_list);
 			redirect_overview();
@@ -65,7 +65,7 @@ function validate_input($posted_list){
 	if (!isset($posted_list["value"])|| (trim($posted_list["value"])=="")){
 		$error_list["value"]="<font color='#F56DB5'>Vul <strong>Waarde</strong> in!</font>";
 	}
-	
+
 	//contacttype must exist
 	global $db;
 	$query =" SELECT * FROM type_contact ";
@@ -75,8 +75,8 @@ function validate_input($posted_list){
 	if( $number == 0 ){
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}
-	
-	//user must exist 
+
+	//user must exist
 	$query = "SELECT * FROM users ";
 	$query .= " WHERE id = '".$posted_list["id_user"]."'" ;
 	$query .= " AND status <> '0'" ;
@@ -85,8 +85,7 @@ function validate_input($posted_list){
 	if( $number2 == 0 ){
 		$error_list["id_user"]="<font color='#F56DB5'>Gebruiker <strong>bestaat niet!</strong></font>";
 	}
-	
-	
+
 	return $error_list;
 }
 
@@ -94,9 +93,9 @@ function show_form($error_list, $posted_list, $list_users, $list_type_contact){
 	echo "<div class='border_b'>";
 	echo "<form method='POST' action='add.php'>\n\n";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
-	
+
 	echo "<tr>\n<td  valign='top' align='right'>Type</td>\n";
-	echo "<td>"; 
+	echo "<td>";
 	echo "<select name='id_type_contact'>\n";
 	foreach($list_type_contact as $value){
 		if($posted_list["id_type_contact"] == $value["id"]){
@@ -113,7 +112,7 @@ function show_form($error_list, $posted_list, $list_users, $list_type_contact){
 		echo $error_list["id_type_contact"];
 	}
 	echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Gebruiker</td>\n<td>";
 	echo "<select name='id_user'>\n";
 	foreach($list_users as $value2){
@@ -131,23 +130,23 @@ function show_form($error_list, $posted_list, $list_users, $list_type_contact){
 		echo $error_list["id_user"];
 	}
 	echo "</td>\n</tr>";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Waarde</td>\n<td>";
 	echo "<input type='text' name='value' size='30' ";
 	if (isset($posted_list["value"])){
 		echo  "value ='".$posted_list["value"]."'>";
-	}		
+	}
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td>";
 	if(isset($error_list["value"])){
 		echo $error_list["value"];
 	}
 	echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td  valign='top' align='right'>Commentaar</td>\n<td>";
 	echo "<input type='text' name='comments' size='30' ";
 	if (isset($posted_list["comments"])){
 		echo  "value ='".$posted_list["comments"]."'>";
-	}		
+	}
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td></td>\n</tr>\n\n";
 	echo "<tr>\n<td colspan='2'>";
 	echo "<input type='submit' name='zend' value='OK'>";

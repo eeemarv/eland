@@ -1,6 +1,6 @@
 eLAS (3.1.17)
   * Fixed bug #1953, mails not send on message expiration
-  
+
 eLAS (3.1.16)
   * Merged Smallheader fix for bug #1786 from LM
 
@@ -12,10 +12,10 @@ eLAS (3.1.14)
 
 eLAS (3.1.13)
   * Fix for bug #1843, unable to add new interlets groups (duplicate key)
-  * Fix for bug #1832, no message on saving user with incorrect birthday format 
-  
+  * Fix for bug #1832, no message on saving user with incorrect birthday format
+
 eLAS (3.1.12)
-  * Correction on message authentication bug 
+  * Correction on message authentication bug
 
 eLAS (3.1.11)
   * Handle quotes in user fields
@@ -53,7 +53,7 @@ eLAS (3.1.2)
   * Removed checkcontract from cron
 
 eLAS (3.1.1)
-  * Read hosting contracts from Redis for speed 
+  * Read hosting contracts from Redis for speed
 
 eLAS (3.1)
   * Use Redis if set in the provider config for configuration and parameters
@@ -66,7 +66,7 @@ eLAS (3.0.2)
 eLAS (3.0.1)
   * Fixed bug #1773, cannot edit or delete contact information as admin
 
-eLAS (3.0) 
+eLAS (3.0)
   * Moved to Postgres as backend database
 
 eLAS (2.7)
@@ -110,7 +110,7 @@ eLAS (2.5.23)
   * Add preliminary support for elaslogger
 
 eLAS (2.5.22)
-  * Limit transactions on rendertransactions to 1000 
+  * Limit transactions on rendertransactions to 1000
 
 eLAS (2.5.21)
   * Additional fix for showing supportcredits
@@ -130,7 +130,7 @@ eLAS (2.5.17)
   * Small fixes to mass transaction functions
 
 eLAS (2.5.16)
-  * Fix for bug #1375, non admins can force transactions as another user 
+  * Fix for bug #1375, non admins can force transactions as another user
 
 eLAS (2.5.15)
   * Remove the delete option for users completely
@@ -139,7 +139,7 @@ eLAS (2.5.14)
   * Fixes for eventlog not showing
 
 eLAS (2.5.13)
-  * Show unprocessed interlets transactions for users 
+  * Show unprocessed interlets transactions for users
 
 eLAS (2.5.12)
   * Fix the show interletsq form by bypassing showq.php
@@ -161,7 +161,7 @@ eLAS (2.5.6)
   * Fixed check_contract to query esm (getting rid of hosting.xml)
 
 eLAS (2.5.5)
-  * Emergency fix for loading release.xml 
+  * Emergency fix for loading release.xml
 
 eLAS (2.5.4)
   * Fixed bug #1449, IRC breaks on logins with special chararcters
@@ -234,7 +234,7 @@ eLAS (2.4.19)
 eLAS (2.4.18)
   * Switched password hash to sha512
   * Upgrade existing tables to utf-8 encoding
-  * Explicitly set UTF-8 encoding in the http header 
+  * Explicitly set UTF-8 encoding in the http header
 
 eLAS (2.4.17)
   * Added SSL keys to users for future REST authentication
@@ -243,7 +243,7 @@ eLAS (2.4.17)
 eLAS (2.4.16)
   * Switched mail backend to swiftmailer
   * Updated about page
-  
+
 eLAS (2.4.15)
   * Fixed bug #321, input validation on interlets processing
 
@@ -441,11 +441,11 @@ eLAS (2.0.14)
 eLAS (2.0.13)
   * Setting the maxlimit to 0 clears it (impossible before)
   * Added V/A labels to messages RSS feed
-  * Fixed bug #571204, rss.php cannot handle empty feeds 
+  * Fixed bug #571204, rss.php cannot handle empty feeds
 
 eLAS (2.0.12)
   * Small fix to have message descriptions load again
-  * Fixed bug #585778, Message response mail sometimes uses the wrong owner 
+  * Fixed bug #585778, Message response mail sometimes uses the wrong owner
 
 eLAS (2.0.11)
   * Fixed bug #587994, Insufficient funds error when the balance is positive
@@ -488,7 +488,7 @@ eLAS (2.0.2)
   * Fixed bug #568837, users cannot be edited when they have no fullname
 
 eLAS (2.0.1)
-  * Fixed bug #568427, Editing own user data causes the contect to be reloaded in the popup window  
+  * Fixed bug #568427, Editing own user data causes the contect to be reloaded in the popup window
 
 eLAS (2.0)
   * Multisite support, run multiple seperated eLAS instances on one installation
@@ -500,7 +500,7 @@ eLAS (2.0)
   * AdoDB updated to 508a
   * Clean up licensing information
   * Added a REQUIREMENTS file
-  * Added installation documentation 
+  * Added installation documentation
   * Major code refactoring to reuse and verify as much functions as possible
   * Error handling for critical operations at the very least
   * Cache saldo with userinfo for speed
@@ -526,16 +526,16 @@ eLAS (1.4.2)
   * Fixed the new message report to select subgroups
 
 eLAS (1.4.1)
-  * Fixed Bug #360929, Expired message mail sent to the wrong user 
+  * Fixed Bug #360929, Expired message mail sent to the wrong user
 
 eLAS (1.4)
   * Handle message expiration (interface changes, cron jobs)
-  * Fixed Bug #303151 Make some contact-types protected (user can not delete them) 
-  * Number of messages in each category is stored in the db and updated by cron instead of 
+  * Fixed Bug #303151 Make some contact-types protected (user can not delete them)
+  * Number of messages in each category is stored in the db and updated by cron instead of
     realtime for performance and accuracy (Marva inherited bug)
   * For the address contact type, made the address a link to Google Maps
   * Fixed Bug #348462, do not show birthdays on the frontpage for inactive users
-  * Added a report function to get messages in a specific category  
+  * Added a report function to get messages in a specific category
 
 eLAS (1.3)
   * Cron system (lets eLAS run tasks on specified times)
@@ -544,4 +544,3 @@ eLAS (1.3)
   * Password strength can be required via config file
   * Instapper status is replaced by an automatic system controlled by config file
   * Added more logging
-  

@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -29,7 +29,6 @@ if (isset($s_id)){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-
 function show_addlink($rootpath){
         global $s_id;
         echo "<table width='100%' border=0><tr><td>";
@@ -44,7 +43,7 @@ function show_addlink($rootpath){
 	//echo "<div class='border_b'>| ";
 	//echo "<a href='mymsg_add.php'>Mijn Vraag & Aanbod toevoegen</a> |</div>";
 }
-	
+
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
@@ -53,7 +52,7 @@ function show_ptitle(){
 	echo "<h1>Mijn Vraag & Aanbod</h1>";
 }
 
-function show_msgdiv(){	
+function show_msgdiv(){
 	echo "<div id='msgdiv'></div>";
 	$url="mymsg_render.php";
 	echo "<script type='text/javascript'>showloader('msgdiv');loadurlto('$url','msgdiv')</script>";

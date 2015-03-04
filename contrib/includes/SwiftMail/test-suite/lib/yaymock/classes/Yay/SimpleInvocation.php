@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Invocation.php';
 //require 'Yay/MockGenerator.php';
 
@@ -26,28 +26,28 @@
  */
 class Yay_SimpleInvocation implements Yay_Invocation
 {
-  
+
   /**
    * The Object on which the Inovation occurred.
    * @var object
    * @access private
    */
   private $_object;
-  
+
   /**
    * The method name invoked.
    * @var string
    * @access private
    */
   private $_method;
-  
+
   /**
    * The arguments in the Invocation.
    * @var array
    * @access private
    */
   private $_arguments;
-  
+
   /**
    * Create a new SimpleInvocation with the given details.
    * @param object $object
@@ -67,7 +67,7 @@ class Yay_SimpleInvocation implements Yay_Invocation
     $this->_method = $method;
     $this->_arguments =& $arguments;
   }
-  
+
   /**
    * Get the object which this Invocation occured on.
    * @return object
@@ -76,7 +76,7 @@ class Yay_SimpleInvocation implements Yay_Invocation
   {
     return $this->_object;
   }
-  
+
   /**
    * Get the method name of the invoked method.
    * @return string
@@ -85,7 +85,7 @@ class Yay_SimpleInvocation implements Yay_Invocation
   {
     return $this->_method;
   }
-  
+
   /**
    * Get the argument list in the Invocation.
    * @return array
@@ -94,7 +94,7 @@ class Yay_SimpleInvocation implements Yay_Invocation
   {
     return $this->_arguments;
   }
-  
+
   /**
    * Describe this Invocation to $description.
    * @param Yay_Description $description
@@ -103,9 +103,9 @@ class Yay_SimpleInvocation implements Yay_Invocation
   {
     $description->appendText(sprintf(' of %s;', $this->_getInvocationSignature()));
   }
-  
+
   // -- Private methods
-  
+
   private function _getInvocationSignature()
   {
     $class = Yay_MockGenerator::getInstance()
@@ -125,7 +125,7 @@ class Yay_SimpleInvocation implements Yay_Invocation
     }
     return sprintf('%s::%s(%s)', $class, $this->_method, $params);
   }
-  
+
   private function _describeArgument($arg, $format)
   {
     $description = '';
@@ -159,5 +159,5 @@ class Yay_SimpleInvocation implements Yay_Invocation
     }
     return $description;
   }
-  
+
 }

@@ -4,14 +4,14 @@ require_once 'Sweety/TestLocator.php';
 
 class Sweety_TestLocator_PearStyleLocator implements Sweety_TestLocator
 {
-  
+
   private $_testCache = array();
-  
+
   public function getTests($dirs = array())
   {
     return $this->_findTestCases($dirs);
   }
-  
+
   public function includeTest($testCase)
   {
     $file = str_replace('_', '/', $testCase) . '.php';
@@ -23,14 +23,14 @@ class Sweety_TestLocator_PearStyleLocator implements Sweety_TestLocator
         return true;
       }
     }
-    
+
     return false;
   }
-  
+
   protected function _findTestCases($dirs = array(), $prepend = '')
   {
     $ret = array();
-    
+
     foreach ($dirs as $dir)
     {
       if (array_key_exists($dir, $this->_testCache))
@@ -38,9 +38,9 @@ class Sweety_TestLocator_PearStyleLocator implements Sweety_TestLocator
         $ret += $this->_testCache[$dir];
         continue;
       }
-      
+
       $this->_testCache[$dir] = array();
-      
+
       $handle = opendir($dir);
       while (false !== $file = readdir($handle))
       {
@@ -54,7 +54,7 @@ class Sweety_TestLocator_PearStyleLocator implements Sweety_TestLocator
           }
         }
         elseif (substr($file, -4) == '.php')
-        { 
+        {
           $className = $prepend . basename($file, '.php');
           $this->_testCache[$dir][] = $className;
           $ret[] = $className;
@@ -62,10 +62,10 @@ class Sweety_TestLocator_PearStyleLocator implements Sweety_TestLocator
       }
       closedir($handle);
     }
-    
+
     sort($ret);
-    
+
     return $ret;
   }
-  
+
 }

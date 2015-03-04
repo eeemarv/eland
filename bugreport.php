@@ -146,14 +146,13 @@ function checkmailaddress($email){
 function get_user_maildetails($userid){
         global $db;
         $user = readuser($userid);
-        
+
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
         $contacts = $db->GetRow($query);
         $user["emailaddress"] = $contacts["value"];
 
         return $user;
 }
-
 
 function helpmail($posted_list,$rootpath){
    	global $configuration;
@@ -185,4 +184,3 @@ function helpmail($posted_list,$rootpath){
 }
 
 ?>
-

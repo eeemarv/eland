@@ -9,19 +9,19 @@ require_once 'Sweety/Runner/AbstractTestRunner.php';
  */
 class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
 {
-  
+
   /**
    * The path to a valid template file.
    * @var string
    */
   private $_template;
-  
+
   /**
    * The name of the test suite.
    * @var string
    */
   private $_name;
-  
+
   /**
    * Creates a new HtmlRunner scanning the given directories.
    * @param string[] $dirs
@@ -34,7 +34,7 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
       $this->_template = $template;
       $this->_name = $name;
   }
-  
+
    /**
    * Runs all test cases found under the given directories.
    * @param string[] $directories to scan for test cases
@@ -47,12 +47,12 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
     header("Cache-Control: no-cache, must-revalidate");
     header("Pragma: no-cache");
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-      
+
     if (empty($dirs))
     {
       $dirs = $this->_dirs;
     }
-    
+
     $testCases = $this->findTests($dirs);
     foreach ($testCases as $k => $testCase)
     {
@@ -61,9 +61,9 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
         unset($testCases[$k]);
       }
     }
-    
+
     usort($testCases, array($this, '_sort'));
-    
+
     $vars = array(
       //String
       'testCases' => $testCases,
@@ -86,19 +86,19 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
       // pass | fail
       'result' => 'idle'
     );
-    
+
     if (isset($_REQUEST['runtests']))
     {
       $reporter = $this->getReporter();
       $reporter->setTemplateVars($vars);
-      
+
       if (!$reporter->isStarted())
       {
         $reporter->start();
       }
-      
+
       $this->_runTestList((array)$_REQUEST['runtests'], $reporter);
-      
+
       $reporter->finish();
     }
     else
@@ -108,10 +108,10 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
         $vars['runTests'][$testCase] = 'idle'; //Show all checked by default
       }
     }
-    
+
     $this->_render($vars);
   }
-  
+
   /**
    * Run tests in the given array using the REST API (kind of).
    * @param string[] $tests
@@ -121,28 +121,28 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
   protected function _runTestList(array $tests, Sweety_Reporter $reporter)
   {
     $protocol = !empty($_SERVER['HTTPS']) ? 'https://' : 'http://';
-    
+
     //Most likely a HTTP/1.0 server not supporting HOST header
     $server = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '127.0.0.1';
-    
+
     $path = '/';
     if (!empty($_SERVER['REQUEST_URI']))
     {
       $path = preg_replace('/\?.*$/sD', '', $_SERVER['REQUEST_URI']);
     }
-    
+
     $baseUrl = $protocol . $server . $path;
-    
+
     foreach ($tests as $testCase)
     {
       $url = $baseUrl . '?test=' . $testCase . '&format=xml';
       $xml = file_get_contents($url);
       $this->parseXml($xml, $testCase);
     }
-    
+
     return 0;
   }
-  
+
   /**
    * Renders the view for the suite.
    * @param string[] $templateVars
@@ -153,8 +153,8 @@ class Sweety_Runner_HtmlRunner extends Sweety_Runner_AbstractTestRunner
     {
       $$k = $v;
     }
-    
+
     require_once $this->_template;
   }
-  
+
 }

@@ -28,11 +28,11 @@ function amq_publishtransaction($posted_list,$fromuser,$touser){
 
 	$exchange = $provider->amqexchange;
 	$queue = "transactions";
-	
+
 	$cnn = new AMQPConnection();
     $cnn->setHost($provider->amqhost);
     $cnn->connect();
-     
+
     // Create a channel
     $ch = new AMQPChannel($cnn);
     // Declare a new exchange
@@ -41,28 +41,28 @@ function amq_publishtransaction($posted_list,$fromuser,$touser){
     $mex->setType('direct');
     $mex->setFlags(AMQP_DURABLE);
     $mex->declare();
-    
+
     // Create a new queue
     $mailq = new AMQPQueue($ch);
     $mailq->setName($queue);
     $mailq->setFlags(AMQP_DURABLE);
     $mailq->declare();
     $mailq->bind($exchange, $queue);
-    
+
     $params = array('delivery_mode' => 2);
 
 	$jsonarray = array();
 	$jsonarray['transid'] = $posted_list['transid'];
 	$jsonarray['wwid_from'] = $fromuser['login'] ."@" .$baseurl;
-	//$jsonarray['wwid_to'] = 
+	//$jsonarray['wwid_to'] =
 	$jsonarray['description'] = $posted_list['description'];
 	$jsonarray['date'] = $posted_list['date'];
 	$jsonarray['amount'] = $posted_list['amount'];
-	
+
 	$json = json_encode($jsonarray);
 	echo $json;
 	echo "\n";
-	
+
 	$mex->publish($json, $queue, AMQP_NOPARAM, $params);
 	$cnn->disconnect();
 
@@ -72,17 +72,17 @@ function amq_sendmail($listname, $subject, $body, $moderationflag) {
 	global $db;
 	global $provider;
 	global $_SESSION;
-	
+
 	$systemtag = readconfigfromdb("systemtag");
-	
+
 		//echo "DEBUG: Connecting to amqhost " .$provider->amqhost ."\n";
 	$exchange = $provider->amqexchange;
 	$queue = "emessenger.in";
-	
+
 	$cnn = new AMQPConnection();
     $cnn->setHost($provider->amqhost);
     $cnn->connect();
-     
+
     // Create a channel
     $ch = new AMQPChannel($cnn);
     // Declare a new exchange
@@ -91,16 +91,16 @@ function amq_sendmail($listname, $subject, $body, $moderationflag) {
     $mex->setType('direct');
     $mex->setFlags(AMQP_DURABLE);
     $mex->declare();
-    
+
     // Create a new queue
     $mailq = new AMQPQueue($ch);
     $mailq->setName($queue);
     $mailq->setFlags(AMQP_DURABLE);
     $mailq->declare();
     $mailq->bind($exchange, $queue);
-    
+
     $params = array('delivery_mode' => 2);
-	
+
 	#{"action":"listsync","mode":"bulk","systemtag":"letsdev","lists"
 	$jsonarray = array();
 	$jsonarray['action'] = 'elasmail';
@@ -111,10 +111,10 @@ function amq_sendmail($listname, $subject, $body, $moderationflag) {
 	$jsonarray['fullname'] = $_SESSION["fullname"];
 	$jsonarray['body'] = $body ."<p>&nbsp</p>";
 	$jsonarray['moderationflag'] = $moderationflag;
-	
+
 	$json = json_encode($jsonarray);
 	//print $json;
-	
+
 	if($mex->publish($json, $queue, AMQP_NOPARAM, $params) == true){
 		$cnn->disconnect();
 		return 0;
@@ -133,15 +133,15 @@ function amq_publishsubcribers(){
 	global $provider;
 	$systemtag = readconfigfromdb("systemtag");
 	#$json = "{ \"object\" : \"lists\" , \"action\" : \"delete\" , \"systemtag\" : \"test\"}";
-	
+
 	//echo "DEBUG: Connecting to amqhost " .$provider->amqhost ."\n";
 	$exchange = $provider->amqexchange;
 	$queue = "emessenger.in";
-	
+
 	$cnn = new AMQPConnection();
     $cnn->setHost($provider->amqhost);
     $cnn->connect();
-     
+
     // Create a channel
     $ch = new AMQPChannel($cnn);
     // Declare a new exchange
@@ -150,14 +150,14 @@ function amq_publishsubcribers(){
     $mex->setType('direct');
     $mex->setFlags(AMQP_DURABLE);
     $mex->declare();
-    
+
     // Create a new queue
     $mailq = new AMQPQueue($ch);
     $mailq->setName($queue);
     $mailq->setFlags(AMQP_DURABLE);
     $mailq->declare();
     $mailq->bind($exchange, $queue);
-    
+
     $params = array('delivery_mode' => 2);
 
 	$listquery = "SELECT * FROM lists WHERE type = 'internal'";
@@ -165,9 +165,9 @@ function amq_publishsubcribers(){
 	foreach($lists as $listkey => $listvalue){
 		$listname = $listvalue['listname'];
 		$subquery = "SELECT * FROM contact WHERE id_user IN (SELECT user_id FROM listsubscriptions WHERE listname = '" .$listvalue['listname'] ."') AND id_type_contact = 3";
-		
+
 		$subscribers = $db->GetArray($subquery);
-		
+
 		if(count($subscribers) > 0) {
 			$jsonarray = array();
 			$jsonarray['action'] = "subsync";
@@ -175,7 +175,7 @@ function amq_publishsubcribers(){
 			$jsonarray['systemtag'] = $systemtag;
 			$jsonarray['listname'] = $listname;
 			$subscriberarray = array();
-	
+
 			$loop = 0;
 			//var_dump($subscribers);
 			foreach($subscribers as $subkey => $subvalue) {
@@ -201,15 +201,15 @@ function amq_publishmailinglists() {
 	global $provider;
 	$systemtag = readconfigfromdb("systemtag");
 	#$json = "{ \"object\" : \"lists\" , \"action\" : \"delete\" , \"systemtag\" : \"test\"}";
-	
+
 	//echo "DEBUG: Connecting to amqhost " .$provider->amqhost ."\n";
 	$exchange = $provider->amqexchange;
 	$queue = "emessenger.in";
-	
+
 	$cnn = new AMQPConnection();
     $cnn->setHost($provider->amqhost);
     $cnn->connect();
-     
+
     // Create a channel
     $ch = new AMQPChannel($cnn);
     // Declare a new exchange
@@ -218,26 +218,26 @@ function amq_publishmailinglists() {
     $mex->setType('direct');
     $mex->setFlags(AMQP_DURABLE);
     $mex->declare();
-    
+
     // Create a new queue
     $mailq = new AMQPQueue($ch);
     $mailq->setName($queue);
     $mailq->setFlags(AMQP_DURABLE);
     $mailq->declare();
     $mailq->bind($exchange, $queue);
-    
+
     $params = array('delivery_mode' => 2);
-    
+
     $listquery = "SELECT * FROM lists WHERE type = 'internal'";
 	$lists = $db->GetArray($listquery);
 	$loop = 0;
-	
+
 	$jsonarray = array();
 	$jsonarray['action'] = "listsync";
 	$jsonarray['mode'] = "bulk";
 	$jsonarray['systemtag'] = $systemtag;
 	$listarray = array();
-	
+
 	foreach($lists as $key => $value){
 		$listarray['listname'] = $value['listname'];
 		$listarray['topic'] = $value['topic'];
@@ -250,23 +250,22 @@ function amq_publishmailinglists() {
 	}
 	$json = json_encode($jsonarray);
 	//echo $json;
-	 
+
 	$mex->publish($json, $queue, AMQP_NOPARAM, $params);
 	$cnn->disconnect();
 }
-
 
 function amq_processincoming(){
 	global $provider;
 	global $db;
 	$systemtag = readconfigfromdb("systemtag");
-	
+
 	//echo "Running amq_processincoming";
 	//echo "DEBUG: Connecting to amqhost " .$provider->amqhost ."\n";
 	$cnn = new AMQPConnection();
     $cnn->setHost($provider->amqhost);
     $cnn->connect();
-     
+
     // Create a channel
     $ch = new AMQPChannel($cnn);
     // Declare a new exchange
@@ -276,7 +275,7 @@ function amq_processincoming(){
     $ex->setType('direct');
     $ex->setFlags(AMQP_DURABLE);
     $ex->declare();
-    
+
     // Create a new queue
     $mq = new AMQPQueue($ch);
     $qn = $systemtag .".incoming";
@@ -285,7 +284,7 @@ function amq_processincoming(){
     $mq->setFlags(AMQP_DURABLE);
     $mq->declare();
     $mq->bind($systemtag, $systemtag. ".incoming");
-    
+
     #$msg = $q->consume();
     $msgcount = 0;
     while($message = $mq->get()) {

@@ -168,7 +168,6 @@ class Auth_OpenID_TrustRoot {
             $parts['port'] = false;
         }
 
-
         $parts['unparsed'] = $trust_root;
 
         return $parts;
@@ -210,7 +209,7 @@ class Auth_OpenID_TrustRoot {
         if ($parts['host'] == 'localhost') {
             return true;
         }
-        
+
         $host_parts = explode('.', $parts['host']);
         if ($parts['wildcard']) {
             // Remove the empty string from the beginning of the array
@@ -458,4 +457,3 @@ function Auth_OpenID_verifyReturnTo($realm_str, $return_to, $fetcher,
         return false;
     }
 }
-

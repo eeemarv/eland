@@ -40,7 +40,7 @@ function show_listing(){
 	echo "<hr>";
         echo "<p><a href='import/import_csv.php'>CSV bestand importeren</a>";
 }
-	
+
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>

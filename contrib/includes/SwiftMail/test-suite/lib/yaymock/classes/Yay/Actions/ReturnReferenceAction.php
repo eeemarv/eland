@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Action.php';
 
 /**
@@ -25,14 +25,14 @@
  */
 class Yay_Actions_ReturnReferenceAction implements Yay_Action
 {
-  
+
   /**
    * The reference to return.
    * @var mixed
    * @access private
    */
   private $_ref;
-  
+
   /**
    * Create a new ReturnReferenceAction for &$ref.
    * @param mixed $ref
@@ -41,7 +41,7 @@ class Yay_Actions_ReturnReferenceAction implements Yay_Action
   {
     $this->_ref =& $ref;
   }
-  
+
   /**
    * Mimmick the method Invocation and return the reference.
    * @param Yay_Invocation $invocation
@@ -51,7 +51,7 @@ class Yay_Actions_ReturnReferenceAction implements Yay_Action
   {
     return $this->_ref;
   }
-  
+
   /**
    * Describe this Expectation to $description.
    * @param Yay_Description $description
@@ -60,5 +60,5 @@ class Yay_Actions_ReturnReferenceAction implements Yay_Action
   {
     $description->appendText(' Returns a reference;');
   }
-  
+
 }

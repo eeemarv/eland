@@ -13,7 +13,7 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 ) 
+// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 )
 
 //debug
 //print_r($_POST);
@@ -59,4 +59,3 @@ function insert_group($posted_list){
 }
 
 ?>
-

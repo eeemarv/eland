@@ -26,15 +26,15 @@ function message_list_announce($uuid) {
 	global $db;
 	global $baseurl;
 	global $configuration;
-	
+
 	$query = "SELECT * FROM messages WHERE uuid = '" .$uuid ."'";
 	$message = $db->GetRow($query);
-	
+
 	$user = get_user_maildetails($message["id_user"]);
-	
+
 	$listquery = "SELECT * FROM lists WHERE topic = 'messages'";
 	$lists = $db->GetArray($listquery);
-	
+
 	foreach($lists as $key => $value){
 		//var_dump($value);
 		//exit(1);
@@ -45,25 +45,25 @@ function message_list_announce($uuid) {
 		} else {
 			$from = $user["emailaddress"];
 		}
-		
+
 		if($message["msg_type"] == 1) {
 			$subject = "Nieuw aanbod: ";
 		} else {
 			$subject = "Nieuwe vraag: ";
 		}
-		
+
 		$subject .= $message["content"];
 		$subject = htmlspecialchars($subject, ENT_QUOTES);
-		
+
 		$msg = "Beste LETSers\n\n" .$user["fullname"] . " heeft zonet een nieuw vraag/aanbod ingegeven in eLAS:\n\n";
 		$msg .= $message["Description"];
 		$msg .= "\n\nDit aanbod is geldig tot: " .$message["validity"] ."\n";
 		$msg .= "De vraagprijs is " .$message["amount"] ." " . readconfigfromdb("currency") ." per " .$message["units"] ."\n";
 		$directurl="http://" .$baseurl ."/login.php?redirectmsg=" .$message["id"];
 		$msg .= "\nBekijk het volledige zoekertje en eventuele foto's op " .$directurl ."\n";
-		
+
 		$msg = htmlspecialchars($msg, ENT_QUOTES);
-		
+
 		if(readconfigfromdb("mailinglists_enabled") == 1){
 			$query = "INSERT INTO mailq (msgid, listname, from, subject, message, sent) VALUES ('" .$msgid . "', '" .$value["listname"] ."', '" .$from ."', '" .$subject ."', '" .$msg ."', 0)";
 			$dbstatus = $db->Execute($query);
@@ -90,7 +90,7 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 	$transport->setPassword(getenv('MANDRILL_PASSWORD'));
 
 	$mailer = Swift_Mailer::newInstance($transport);
-	
+
 	if(readconfigfromdb("mailenabled") == 1){
 		if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent)){
 			$mailstatus = "Fout: mail niet verstuurd, ontbrekende velden";
@@ -101,7 +101,7 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 		} else {
 			$message = Swift_Message::newInstance();
 			$message->setSubject("$mailsubject");
-			
+
 			try {
 				$message->setFrom("$mailfrom");
 			}
@@ -112,11 +112,11 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
-				
+
 			//Filter off leading and trailing commas to avoid errors
 			$mailto = preg_replace('/^,/i', '', $mailto);
 			$mailto = preg_replace('/,$/i', '', $mailto);
-			
+
 			$toarray = explode(",", $mailto);
 			try {
 				$message->setTo($toarray);
@@ -128,7 +128,7 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
-			
+
 			try {
 				$message->setBody("$mailcontent");
 			}
@@ -142,7 +142,7 @@ function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
 			$status = 1;
 			try {
 				$mailer->send($message);
-			} 
+			}
 			catch (Exception $e) {
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";

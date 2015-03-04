@@ -32,7 +32,6 @@ body {
     background-color: #FFFFFF;
     }
 
-
 a:link,
 a:visited { color: #900000; text-decoration: none }
 a:hover { color: #900000; text-decoration: underline }
@@ -43,7 +42,6 @@ td {
 
 img { border: 0;  }
 
-
 /*
     Comment out this line to use web-style paragraphs (blank line between
     paragraphs, no indent) instead of print-style paragraphs (no blank line,
@@ -52,12 +50,10 @@ img { border: 0;  }
 p {
     text-indent: 5ex; margin: 0 }
 
-
 /*  Opera doesn't break with just wbr, but will if you add this.  */
 .Opera wbr:after {
 	content: "\00200B";
 	}
-
 
 /*  Blockquotes are used as containers for things that may need to scroll.  */
 blockquote {
@@ -65,7 +61,6 @@ blockquote {
     margin: 0;
     overflow: auto;
     }
-
 
 .Firefox1 blockquote {
     padding-bottom: .5em;
@@ -80,8 +75,6 @@ blockquote {
         width: auto;
         }
     }
-
-
 
 #Menu {
     font-size: 9pt;
@@ -100,7 +93,6 @@ blockquote {
     width: 27ex;
     }
 
-
     .MTitle {
         font-size: 16pt; font-weight: bold; font-variant: small-caps;
         text-align: center;
@@ -112,12 +104,10 @@ blockquote {
         font-size: 9pt; font-weight: normal; font-variant: normal;
         margin-top: 1ex; margin-bottom: 5px }
 
-
     .MEntry a:link,
     .MEntry a:hover,
     .MEntry a:visited { color: #606060; margin-right: 0 }
     .MEntry a:active { color: #A00000; margin-right: 0 }
-
 
     .MGroup {
         font-variant: small-caps; font-weight: bold;
@@ -131,7 +121,6 @@ blockquote {
     .MGroup a:hover,
     .MGroup a:visited { color: #545454; margin-right: 10px }
     .MGroup a:active { color: #A00000; margin-right: 10px }
-
 
     .MFile,
     .MText,
@@ -167,12 +156,10 @@ blockquote {
         -moz-border-radius-topleft: 10px;
         -moz-border-radius-bottomleft: 10px }
 
-
     #MSearchPanel {
         padding: 0px 6px;
         margin: .25em 0;
         }
-
 
     #MSearchField {
         font: italic 9pt Verdana, sans-serif;
@@ -235,7 +222,6 @@ blockquote {
         margin-left: -1px;
         }
 
-
     iframe#MSearchResults {
         width: 60ex;
         height: 15em;
@@ -265,9 +251,6 @@ blockquote {
         background-color: #F4F4F4;
         }
 
-
-
-
 #Content {
     padding-bottom: 15px;
     }
@@ -284,13 +267,10 @@ blockquote {
     margin-left: 27ex;
     }
 
-
-
     .CTopic {
         font-size: 10pt;
         margin-bottom: 3em;
         }
-
 
     .CTitle {
         font-size: 12pt; font-weight: bold;
@@ -323,7 +303,6 @@ blockquote {
 
     .CBody {
         margin-left: 15px; margin-right: 15px }
-
 
     .CToolTip {
         position: absolute; visibility: hidden;
@@ -375,7 +354,6 @@ blockquote {
             font-size: 10pt;  /*  For browsers that don't inherit correctly, like Opera 5.  */
             padding-bottom: .5em; padding-left: 5ex }
 
-
     .CTopic img {
         text-align: center;
         display: block;
@@ -397,10 +375,6 @@ blockquote {
     a.CImageLink:link,
     a.CImageLink:visited,
     a.CImageLink:hover { color: #808080 }
-
-
-
-
 
 .Prototype {
     font: 10pt "Courier New", Courier, monospace;
@@ -462,17 +436,12 @@ blockquote {
         white-space: nowrap;
         }
 
-
-
-
-
 .Summary {
     margin: 1.5em 5ex 0 5ex }
 
     .STitle {
         font-size: 12pt; font-weight: bold;
         margin-bottom: .5em }
-
 
     .SBorder {
         background-color: #FFFFF0;
@@ -489,7 +458,6 @@ blockquote {
     .Firefox .SBorder {
         -moz-border-radius: 20px }
 
-
     .STable {
         font-size: 9pt; width: 100% }
 
@@ -497,7 +465,6 @@ blockquote {
         width: 30% }
     .SDescription {
         width: 70% }
-
 
     .SMarked {
         background-color: #F8F8D8 }
@@ -520,7 +487,6 @@ blockquote {
 
     .SGroup .SEntry a { color: #800000 }
     .SGroup .SEntry a:active { color: #F00000 }
-
 
     .SMain td,
     .SClass td,
@@ -555,10 +521,6 @@ blockquote {
     .SDatabase .SEntry a:active,
     .SDatabaseTable .SEntry a:active,
     .SSection .SEntry a:active { color: #A00000 }
-
-
-
-
 
 .ClassHierarchy {
     margin: 0 15px 1em 15px }
@@ -599,10 +561,6 @@ blockquote {
         color: #800000;
         }
 
-
-
-
-
 #Index {
     background-color: #FFFFFF;
     }
@@ -621,7 +579,6 @@ blockquote {
     font-size: 9pt;  /* To make 27ex match the menu's 27ex. */
     margin-left: 27ex;
     }
-
 
     .IPageTitle {
         font-size: 20pt; font-weight: bold;
@@ -734,8 +691,6 @@ blockquote {
         display: none;
         }
 
-
-
 #Footer {
     font-size: 8pt;
     color: #989898;
@@ -764,4 +719,3 @@ blockquote {
     #Footer a:hover,
     #Footer a:visited { color: #989898 }
     #Footer a:active { color: #A00000 }
-

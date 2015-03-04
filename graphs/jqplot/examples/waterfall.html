@@ -9,11 +9,10 @@
     <link rel="stylesheet" type="text/css" href="examples.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
-  
+
     <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../excanvas.js"></script><![endif]-->
     <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    
-   
+
 </head>
 <body>
     <div id="header">
@@ -29,7 +28,6 @@
       <div class="colleft">
         <div class="col1" id="example-content">
 
-  
 <!-- Example scripts go here -->
 
   <style type="text/css" media="screen">
@@ -51,17 +49,14 @@
     <p>Waterfall chart using custom colors and "useNegativeColors" set to "false".</p>
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
 
-  
-
 <script class="code" type="text/javascript">$(document).ready(function(){
     var line1 = [14, 3, 4, -3, 5, 2, -3, -7];
     var ticks = ['2008', 'Apricots', 'Tomatoes', 'Potatoes', 'Rhubarb', 'Squash', 'Grapes', 'Peanuts', '2009'];
 
-
     var plot1 = $.jqplot('chart1', [line1], {
         title: 'Crop Yield Charnge, 2008 to 2009',
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall:true,
                 varyBarColor: true
@@ -73,7 +68,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -91,7 +86,6 @@
     });
 });</script>
 
-
 <script class="code" type="text/javascript">$(document).ready(function(){
 
     var line1 = [14, 3, 4, -3, 5, 2, -3, -7];
@@ -100,7 +94,7 @@
         title: 'Crop Yield Charnge, 2008 to 2009',
         seriesColors:['#333333', '#999999', '#3EA140', '#3EA140', '#3EA140', '#783F16', '#783F16', '#783F16', '#333333'],
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall:true,
                 varyBarColor: true,
@@ -113,7 +107,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -134,7 +128,6 @@
 <!-- End example scripts -->
 
 <!-- Don't touch this! -->
-
 
     <script class="include" type="text/javascript" src="../jquery.jqplot.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
@@ -217,6 +210,5 @@
     <script type="text/javascript" src="example.min.js"></script>
 
 </body>
-
 
 </html>

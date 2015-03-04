@@ -6,13 +6,13 @@ require_once 'Swift/StreamFilters/StringReplacementFilter.php';
 class Swift_StreamFilters_StringReplacementFilterTest
   extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testBasicReplacementsAreMade()
   {
     $filter = $this->_createFilter('foo', 'bar');
     $this->assertEqual('XbarYbarZ', $filter->filter('XfooYfooZ'));
   }
-  
+
   public function testShouldBufferReturnsTrueIfPartialMatchAtEndOfBuffer()
   {
     $filter = $this->_createFilter('foo', 'bar');
@@ -21,19 +21,19 @@ class Swift_StreamFilters_StringReplacementFilterTest
       '"f" could be from "foo"'
       );
   }
-  
+
   public function testFilterCanMakeMultipleReplacements()
   {
     $filter = $this->_createFilter(array('a', 'b'), 'foo');
     $this->assertEqual('XfooYfooZ', $filter->filter('XaYbZ'));
   }
-  
+
   public function testMultipleReplacementsCanBeDifferent()
   {
     $filter = $this->_createFilter(array('a', 'b'), array('foo', 'zip'));
     $this->assertEqual('XfooYzipZ', $filter->filter('XaYbZ'));
   }
-  
+
   public function testShouldBufferReturnsFalseIfPartialMatchNotAtEndOfString()
   {
     $filter = $this->_createFilter("\r\n", "\n");
@@ -41,7 +41,7 @@ class Swift_StreamFilters_StringReplacementFilterTest
       '%s: Filter should not buffer since x0Dx0A is the needle and is not at EOF'
       );
   }
-  
+
   public function testShouldBufferReturnsTrueIfAnyOfMultipleMatchesAtEndOfString()
   {
     $filter = $this->_createFilter(array('foo', 'zip'), 'bar');
@@ -50,13 +50,12 @@ class Swift_StreamFilters_StringReplacementFilterTest
       '"zi" could be from "zip"'
       );
   }
-  
+
   // -- Creation methods
-  
+
   private function _createFilter($search, $replace)
   {
     return new Swift_StreamFilters_StringReplacementFilter($search, $replace);
   }
-  
-}
 
+}

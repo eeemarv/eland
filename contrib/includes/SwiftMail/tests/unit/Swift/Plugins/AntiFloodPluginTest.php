@@ -8,7 +8,7 @@ require_once 'Swift/Plugins/Sleeper.php';
 
 class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testThresholdCanBeSetAndFetched()
   {
     $plugin = new Swift_Plugins_AntiFloodPlugin(10);
@@ -16,7 +16,7 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
     $plugin->setThreshold(100);
     $this->assertEqual(100, $plugin->getThreshold());
   }
-  
+
   public function testSleepTimeCanBeSetAndFetched()
   {
     $plugin = new Swift_Plugins_AntiFloodPlugin(10, 5);
@@ -24,7 +24,7 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
     $plugin->setSleepTime(1);
     $this->assertEqual(1, $plugin->getSleepTime());
   }
-  
+
   public function testPluginStopsConnectionAfterThreshold()
   {
     $transport = $this->_createTransport();
@@ -34,14 +34,14 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> one($transport)->stop()
       -> ignoring($transport)
       );
-    
+
     $plugin = new Swift_Plugins_AntiFloodPlugin(10);
     for ($i = 0; $i < 12; $i++)
     {
       $plugin->sendPerformed($evt);
     }
   }
-  
+
   public function testPluginCanStopAndStartMultipleTimes()
   {
     $transport = $this->_createTransport();
@@ -51,14 +51,14 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> exactly(5)->of($transport)->stop()
       -> ignoring($transport)
       );
-    
+
     $plugin = new Swift_Plugins_AntiFloodPlugin(2);
     for ($i = 0; $i < 11; $i++)
     {
       $plugin->sendPerformed($evt);
     }
   }
-  
+
   public function testPluginCanSleepDuringRestart()
   {
     $sleeper = $this->_createSleeper();
@@ -70,21 +70,21 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
       -> one($transport)->stop()
       -> ignoring($transport)
       );
-    
+
     $plugin = new Swift_Plugins_AntiFloodPlugin(99, 10, $sleeper);
     for ($i = 0; $i < 101; $i++)
     {
       $plugin->sendPerformed($evt);
     }
   }
-  
+
   // -- Creation Methods
-  
+
   private function _createTransport()
   {
     return $this->_mock('Swift_Transport');
   }
-  
+
   private function _createSendEvent($transport)
   {
     $evt = $this->_mock('Swift_Events_SendEvent');
@@ -94,10 +94,10 @@ class Swift_Plugins_AntiFloodPluginTest extends Swift_Tests_SwiftUnitTestCase
       );
     return $evt;
   }
-  
+
   private function _createSleeper()
   {
     return $this->_mock('Swift_Plugins_Sleeper');
   }
-  
+
 }

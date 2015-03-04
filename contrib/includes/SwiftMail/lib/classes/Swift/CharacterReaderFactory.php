@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * A factory for creating CharacterReaders.
  * @package Swift
@@ -24,5 +23,5 @@ interface Swift_CharacterReaderFactory
    * @return Swift_CharacterReader
    */
   public function getReaderFor($charset);
-  
+
 }

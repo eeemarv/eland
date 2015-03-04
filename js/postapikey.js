@@ -12,7 +12,7 @@ function makePOSTRequest(url, parameters) {
          //http_request.overrideMimeType('text/xml');
          http_request.overrideMimeType('text/html');
       }
-   
+
    http_request.onreadystatechange = alertContents;
    http_request.open('POST', url, true);
    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -25,21 +25,20 @@ function alertContents() {
    if (http_request.readyState == 4) {
       if (http_request.status == 200) {
          result = http_request.responseText;
-         document.getElementById('serveroutput').innerHTML = result; 
+         document.getElementById('serveroutput').innerHTML = result;
 	 resultRegExp = /OK/;
 	 if(result.match(resultRegExp)){
 		document.getElementById('zend').disabled = true;
-	 } 
+	 }
       } else {
          alert('Er was een fout bij het verwerken, probeer opnieuw');
       }
    }
 }
-   
+
 function get(obj) {
    var poststr = "apikey=" + encodeURIComponent( document.getElementById("apikey").value ) +
-		"&comment=" + encodeURIComponent( document.getElementById("comment").value ) + 
+		"&comment=" + encodeURIComponent( document.getElementById("comment").value ) +
 		"&type=" + encodeURIComponent( document.getElementById("keytype").value);
    makePOSTRequest('/apikeys/postkey.php', poststr);
 }
-

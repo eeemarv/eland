@@ -9,11 +9,10 @@
     <link rel="stylesheet" type="text/css" href="examples.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
-  
+
     <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../excanvas.js"></script><![endif]-->
     <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    
-   
+
 </head>
 <body>
     <div id="header">
@@ -29,7 +28,6 @@
       <div class="colleft">
         <div class="col1" id="example-content">
 
-  
 <!-- Example scripts go here -->
 
 <p>Rotated axis tick labels are possible through the "jqplot.canvasTextRenderer.min.js" and "jqplot.canvasAxisTickRenderer.min.js" plugins. Native canvas font rendering capabilities are used in supported browsers.  This includes most recent browsers (including IE 9).  In browsers which don't support native canvas font text, text is rendered in the Hershey font.</p>
@@ -38,15 +36,12 @@
 
 <pre class="code prettyprint brush: js"></pre>
 
-
-
 <p>For comparison, here is the same graph with the "fontFamily" and "fontSize" set.  If you have a supported browser, you should see a difference in label fonts.</p>
- 
+
 <div id="chart1b" style="height:300px; width:500px;"></div>
 
 <pre class="code prettyprint brush: js"></pre>
 
- 
 <p>The default positioning applies to either primary or secondary axes and accounts for label rotation to ensure that the labels point to the appropriate bar or tick position.</p>
 
 <p>Also note here the use of the "autoscale" option on the y axes.  Turning this option on will force the y axes to line up tick marks for consistend grid lines across the grid.</p>
@@ -55,18 +50,16 @@
 
 <pre class="code prettyprint brush: js"></pre>
 
-
 <p>You can override the default position by specifying a labelPosition of 'start', 'middle' or 'end'. The results probably are not as pleasing as the default 'auto' setting.</p>
 
 <div id="chart3" style="height:300px; width:500px;"></div>
 
 <pre class="code prettyprint brush: js"></pre>
 
-  
 <script class="code" type="text/javascript">
 $(document).ready(function(){
-  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15], 
-  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3], 
+  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15],
+  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3],
   ['Transcender/Spice Rack', 6], ['Hair Spray Danger Indicator', 18]];
 
   var plot1 = $.jqplot('chart1', [line1], {
@@ -88,11 +81,10 @@ $(document).ready(function(){
 });
 </script>
 
-
 <script class="code" type="text/javascript">
 $(document).ready(function(){
-  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15], 
-  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3], 
+  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15],
+  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3],
   ['Transcender/Spice Rack', 6], ['Hair Spray Danger Indicator', 18]];
   var plot1b = $.jqplot('chart1b', [line1], {
     title: 'Concern vs. Occurrance',
@@ -114,13 +106,12 @@ $(document).ready(function(){
 });
 </script>
 
-
 <script class="code" type="text/javascript">
 $(document).ready(function(){
-  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15], 
-  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3], 
+  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15],
+  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3],
   ['Transcender/Spice Rack', 6], ['Hair Spray Danger Indicator', 18]];
-  var line2 = [['Nickle', 28], ['Aluminum', 13], ['Xenon', 54], ['Silver', 47], 
+  var line2 = [['Nickle', 28], ['Aluminum', 13], ['Xenon', 54], ['Silver', 47],
   ['Sulfer', 16], ['Silicon', 14], ['Vanadium', 23]];
 
   var plot2 = $.jqplot('chart2', [line1, line2], {
@@ -151,8 +142,8 @@ $(document).ready(function(){
 
 <script class="code" type="text/javascript">
 $(document).ready(function(){
-  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15], 
-  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3], 
+  var line1 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp', 9], ['HDTV Receiver', 15],
+  ['8 Track Control Module', 12], [' Sludge Pump Fourier Modulator', 3],
   ['Transcender/Spice Rack', 6], ['Hair Spray Danger Indicator', 18]];
   var plot3 = $.jqplot('chart3', [line1], {
     title: 'Concern vs. Occurrance',
@@ -182,12 +173,9 @@ $(document).ready(function(){
 });
 </script>
 
-
-
 <!-- End example scripts -->
 
 <!-- Don't touch this! -->
-
 
     <script class="include" type="text/javascript" src="../jquery.jqplot.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
@@ -271,6 +259,5 @@ $(document).ready(function(){
     <script type="text/javascript" src="example.min.js"></script>
 
 </body>
-
 
 </html>

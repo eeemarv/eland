@@ -4,7 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php"); 
+require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 session_start();
@@ -26,7 +26,7 @@ if(isset($s_id)){
 
 	$user = get_user($s_id);
 	$balance = $user["saldo"];
-		 
+
 	$list_users = get_users($s_id);
 	show_balance($balance, $user);
 	show_form($list_users, $user, $balance,$s_letscode);
@@ -44,7 +44,7 @@ function show_balance($balance, $user){
 	$currency = readconfigfromdb("currency");
 	$minlimit = $user["minlimit"];
 
-	echo "<div id='baldiv'>";	
+	echo "<div id='baldiv'>";
 	echo "<p><strong>Huidige {$currency}stand: ".$balance."</strong> || ";
 	echo "<strong>Limiet minstand: ".$minlimit."</strong></p>";
 	echo "</div>";
@@ -54,7 +54,7 @@ function show_buttons(){
 	echo "<table border=0 width='100%'><tr><td align='left'>";
 	$myurl="userlookup.php";
 	echo "<form id='lookupform'><input type='button' id='lookup' value='LETSCode opzoeken' onclick=\"javascript:newwindow=window.open('$myurl','Lookup','width=600,height=500,scrollbars=yes,toolbar=no,location=no,menubar=no');\"></form>";
-	
+
 	//echo "<script type='text/javascript'>newwindow.document.getElementById('letsgroup').value='document.getElementById('letsgroup').value;</script>";
 	//echo "<script type='text/javascript'>tmp.write('Testing');</script>";
 	echo "</td><td align='right'>";
@@ -82,7 +82,7 @@ function redirect_overview(){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-	
+
 function show_form($list_users, $user, $balance, $letscode){
 	global $s_accountrole;
 	global $s_letscode;
@@ -145,7 +145,7 @@ function show_form($list_users, $user, $balance, $letscode){
 	echo "</td><td><div id='tooutputdiv'></div>";
 	echo "</td></tr><tr><td></td><td>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
 	echo "<input type='text' id='amount' name='amount' size='10' ";
 	echo ">";
@@ -153,7 +153,7 @@ function show_form($list_users, $user, $balance, $letscode){
 	echo "</td></tr>";
 	echo "<tr><td></td><td>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td valign='top' align='right'>Dienst</td><td>";
 	echo "<input type='text' name='description' id='description' size='40' MAXLENGTH='60' ";
 	echo ">";

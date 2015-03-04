@@ -21,11 +21,11 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		$posted_list["id_parent"] = $_POST["id_parent"];
 		$posted_list["leafnote"] = $_POST["leafnote"];
 		$error_list = validate_input($posted_list);
-				
+
 		if (!empty($error_list)){
 			//lege velden dus toon form met errorlijst en ook met reeds geposte waarden
-			
-			show_form($error_list, $posted_list, $list_cats);	
+
+			show_form($error_list, $posted_list, $list_cats);
 		}else{
 			//geen lege velden dus insert msg
 			insert_cat($posted_list, $s_id);
@@ -74,10 +74,8 @@ function insert_cat($posted_list, $s_id){
 		$posted_list["leafnote"] = 1;
 		$posted_list["cdate"] = date("Y-m-d H:i:s");
 		$result = $db->AutoExecute("categories", $posted_list, 'INSERT');
-	} 
+	}
 }
-
-	
 
 function validate_input($posted_list){
 	$error_list = array();
@@ -101,20 +99,20 @@ function show_form($error_list, $posted_list, $list_cats){
 	echo "<input type='text' name='name' size='30' ";
 	if (isset($posted_list["name"])){
 		echo  "value ='".$posted_list["name"]."'>";
-	}		
+	}
 	echo "</td><td>";
 	if(isset($error_list["name"])){
 		echo $error_list["name"];
 	}
 	echo "</td></tr>";
-		
+
 	echo "<tr><td valign='top' align='right'>Is dit een <br>hoofdcategorie? </td>";
 	echo "<td valign='top'>";
 	echo "<input type='radio' name='leafnote' value='0'> Ja ";
 	echo "<input type='radio' name='leafnote' value='1' checked=''> Nee ";
 	echo "</td><td>";
 	echo "</td></tr>";
-		
+
 	echo "<tr><td valign='top' align='right'>Indien niet, <br>kies hoofdcategorie</td>";
 	echo "<td valign='top'>";
 	echo "<select name='id_parent'>";
@@ -130,7 +128,7 @@ function show_form($error_list, $posted_list, $list_cats){
 	echo "</select>";
 	echo "</td><td>";
 	echo "</td></tr>";
-	
+
 	echo "<tr><td colspan='2' align='right'>";
 	echo "<input type='submit' name='zend' value='Toevoegen'>";
 	echo "</td><td>&nbsp;</td></tr></table>";

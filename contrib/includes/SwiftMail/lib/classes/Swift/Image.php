@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * An image, embedded in a multipart message.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_Image extends Swift_EmbeddedFile
 {
-  
+
   /**
    * Create a new EmbeddedFile.
    * Details may be optionally provided to the constructor.
@@ -30,7 +29,7 @@ class Swift_Image extends Swift_EmbeddedFile
   {
     parent::__construct($data, $filename, $contentType);
   }
-  
+
   /**
    * Create a new Image.
    * @param string|Swift_OutputByteStream $data
@@ -43,7 +42,7 @@ class Swift_Image extends Swift_EmbeddedFile
   {
     return new self($data, $filename, $contentType);
   }
-  
+
   /**
    * Create a new Image from a filesystem path.
    * @param string $path
@@ -56,5 +55,5 @@ class Swift_Image extends Swift_EmbeddedFile
       );
     return $image;
   }
-  
+
 }

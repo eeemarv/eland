@@ -13,7 +13,7 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 ) 
+// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 )
 
 //debug
 //print_r($_POST);
@@ -45,7 +45,6 @@ if(isset($_POST["date"])){
 	$posted_list["date"] = date("Y-m-d H:i:s");
 }
 $timestamp = make_timestamp($posted_list["date"]);
-
 
 //This script needs to do the actual transaction routing!!!
 $letsgroup = get_letsgroup($letsgroupid);
@@ -114,7 +113,7 @@ switch ($apimethod){
 			// Generate a transactionID
 			$settransid = generate_transid();
 			$posted_list["transid"] = $settransid;
-			$posted_list["letscode_to"] = $_POST["letscode_to"];	
+			$posted_list["letscode_to"] = $_POST["letscode_to"];
 			$posted_list["letsgroup_id"] = $letsgroupid;
 			$currencyratio = readconfigfromdb("currencyratio");
 			$posted_list["amount"] = $posted_list["amount"] / $currencyratio;
@@ -135,4 +134,3 @@ switch ($apimethod){
                 break;
 }
 ?>
-

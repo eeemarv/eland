@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * SendmailTransport for sending mail through a sendmail/postfix (etc..) binary.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_SendmailTransport extends Swift_Transport_SendmailTransport
 {
-  
+
   /**
    * Create a new SendmailTransport, optionally using $command for sending.
    * @param string $command
@@ -29,10 +28,10 @@ class Swift_SendmailTransport extends Swift_Transport_SendmailTransport
       Swift_DependencyContainer::getInstance()
         ->createDependenciesFor('transport.sendmail')
       );
-    
+
     $this->setCommand($command);
   }
-  
+
   /**
    * Create a new SendmailTransport instance.
    * @param string $command
@@ -42,5 +41,5 @@ class Swift_SendmailTransport extends Swift_Transport_SendmailTransport
   {
     return new self($command);
   }
-  
+
 }

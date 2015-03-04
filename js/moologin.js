@@ -18,7 +18,7 @@ window.addEvent('domready', function() {
 		//Empty the log and show the spinning indicator.
 		var log = $('log_res').empty().addClass('ajax-loading');
 		log.removeClass('logfail');
-		//Set the options of the form's Request handler. 
+		//Set the options of the form's Request handler.
 		//("this" refers to the $('myForm') element).
 		this.set('send', {onComplete: function(response) {
 			log.removeClass('ajax-loading');
@@ -61,7 +61,6 @@ window.addEvent('domready', function() {
 	$('openidbox').addEvent('submit', function(e) {
 			jsnotify('OpenID login',0);
 	});
-
 
 	$('showlostpasswordform').addEvent('click', function(e) {
 		e.stop();

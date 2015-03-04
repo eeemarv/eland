@@ -7,7 +7,7 @@ require_once 'Swift/Mime/Header.php';
 
 class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testAddMailboxHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -18,7 +18,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addMailboxHeader('From', array('person@domain'=>'Person'));
   }
-  
+
   public function testAddDateHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -29,7 +29,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addDateHeader('Date', 1234);
   }
-  
+
   public function testAddTextHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -40,7 +40,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addTextHeader('Subject', 'some text');
   }
-  
+
   public function testAddParameterizedHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -54,7 +54,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       array('charset'=>'utf-8')
       );
   }
-  
+
   public function testAddIdHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -65,7 +65,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addIdHeader('Message-ID', 'some@id');
   }
-  
+
   public function testAddPathHeaderDelegatesToFactory()
   {
     $factory = $this->_createFactory();
@@ -76,13 +76,13 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addPathHeader('Return-Path', 'some@path');
   }
-  
+
   public function testHasReturnsFalseWhenNoHeaders()
   {
     $set = $this->_createSet($this->_createFactory());
     $this->assertFalse($set->has('Some-Header'));
   }
-  
+
   public function testAddedMailboxHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -94,7 +94,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addMailboxHeader('From', array('person@domain'=>'Person'));
     $this->assertTrue($set->has('From'));
   }
-  
+
   public function testAddedDateHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -106,7 +106,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addDateHeader('Date', 1234);
     $this->assertTrue($set->has('Date'));
   }
-  
+
   public function testAddedTextHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -118,7 +118,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addTextHeader('Subject', 'some text');
     $this->assertTrue($set->has('Subject'));
   }
-  
+
   public function testAddedParameterizedHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -133,7 +133,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       );
     $this->assertTrue($set->has('Content-Type'));
   }
-  
+
   public function testAddedIdHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -145,7 +145,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertTrue($set->has('Message-ID'));
   }
-  
+
   public function testAddedPathHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -157,7 +157,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addPathHeader('Return-Path', 'some@path');
     $this->assertTrue($set->has('Return-Path'));
   }
-  
+
   public function testNewlySetHeaderIsSeenByHas()
   {
     $factory = $this->_createFactory();
@@ -166,7 +166,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->set($header);
     $this->assertTrue($set->has('X-Foo'));
   }
-  
+
   public function testHasCanAcceptOffset()
   {
     $factory = $this->_createFactory();
@@ -178,7 +178,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertTrue($set->has('Message-ID', 0));
   }
-  
+
   public function testHasWithIllegalOffsetReturnsFalse()
   {
     $factory = $this->_createFactory();
@@ -190,7 +190,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertFalse($set->has('Message-ID', 1));
   }
-  
+
   public function testHasCanDistinguishMultipleHeaders()
   {
     $factory = $this->_createFactory();
@@ -205,7 +205,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'other@id');
     $this->assertTrue($set->has('Message-ID', 1));
   }
-  
+
   public function testGetWithUnspecifiedOffset()
   {
     $header = $this->_createHeader('Message-ID');
@@ -218,7 +218,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertSame($header, $set->get('Message-ID'));
   }
-  
+
   public function testGetWithSpeiciedOffset()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -239,13 +239,13 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'more@id');
     $this->assertSame($header1, $set->get('Message-ID', 1));
   }
-  
+
   public function testGetReturnsNullIfHeaderNotSet()
   {
     $set = $this->_createSet($this->_createFactory());
     $this->assertNull($set->get('Message-ID', 99));
   }
-  
+
   public function testGetAllReturnsAllHeadersMatchingName()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -264,12 +264,12 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $set->addIdHeader('Message-ID', 'other@id');
     $set->addIdHeader('Message-ID', 'more@id');
-    
+
     $this->assertEqual(array($header0, $header1, $header2),
       $set->getAll('Message-ID')
       );
   }
-  
+
   public function testGetAllReturnsAllHeadersIfNoArguments()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -288,18 +288,18 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $set->addIdHeader('Subject', 'thing');
     $set->addIdHeader('To', 'person@example.org');
-    
+
     $this->assertEqual(array($header0, $header1, $header2),
       $set->getAll()
       );
   }
-  
+
   public function testGetAllReturnsEmptyArrayIfNoneSet()
   {
     $set = $this->_createSet($this->_createFactory());
     $this->assertEqual(array(), $set->getAll('Received'));
   }
-  
+
   public function testRemoveWithUnspecifiedOffset()
   {
     $header = $this->_createHeader('Message-ID');
@@ -313,7 +313,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->remove('Message-ID');
     $this->assertFalse($set->has('Message-ID'));
   }
-  
+
   public function testRemoveWithSpecifiedIndexRemovesHeader()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -331,7 +331,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->remove('Message-ID', 1);
     $this->assertFalse($set->has('Message-ID', 1));
   }
-  
+
   public function testRemoveWithSpecifiedIndexLeavesOtherHeaders()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -349,7 +349,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->remove('Message-ID', 1);
     $this->assertTrue($set->has('Message-ID', 0));
   }
-  
+
   public function testRemoveWithInvalidOffsetDoesNothing()
   {
     $header = $this->_createHeader('Message-ID');
@@ -363,7 +363,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->remove('Message-ID', 50);
     $this->assertTrue($set->has('Message-ID'));
   }
-  
+
   public function testRemoveAllRemovesAllHeadersWithName()
   {
     $header0 = $this->_createHeader('Message-ID');
@@ -382,7 +382,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $this->assertFalse($set->has('Message-ID', 0));
     $this->assertFalse($set->has('Message-ID', 1));
   }
-  
+
   public function testHasIsNotCaseSensitive()
   {
     $header = $this->_createHeader('Message-ID');
@@ -395,7 +395,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertTrue($set->has('message-id'));
   }
-  
+
   public function testGetIsNotCaseSensitive()
   {
     $header = $this->_createHeader('Message-ID');
@@ -408,7 +408,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertSame($header, $set->get('message-id'));
   }
-  
+
   public function testGetAllIsNotCaseSensitive()
   {
     $header = $this->_createHeader('Message-ID');
@@ -421,7 +421,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addIdHeader('Message-ID', 'some@id');
     $this->assertEqual(array($header), $set->getAll('message-id'));
   }
-  
+
   public function testRemoveIsNotCaseSensitive()
   {
     $header = $this->_createHeader('Message-ID');
@@ -435,7 +435,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->remove('message-id');
     $this->assertFalse($set->has('Message-ID'));
   }
-  
+
   public function testRemoveAllIsNotCaseSensitive()
   {
     $header = $this->_createHeader('Message-ID');
@@ -449,14 +449,14 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->removeAll('message-id');
     $this->assertFalse($set->has('Message-ID'));
   }
-  
+
   public function testNewInstance()
   {
     $set = $this->_createSet($this->_createFactory());
     $instance = $set->newInstance();
     $this->assertIsA($instance, 'Swift_Mime_HeaderSet');
   }
-  
+
   public function testToStringJoinsHeadersTogether()
   {
     $factory = $this->_createFactory();
@@ -475,7 +475,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       $set->toString()
       );
   }
-  
+
   public function testHeadersWithoutBodiesAreNotDisplayed()
   {
     $factory = $this->_createFactory();
@@ -493,7 +493,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       $set->toString()
       );
   }
-  
+
   public function testHeadersWithoutBodiesCanBeForcedToDisplay()
   {
     $factory = $this->_createFactory();
@@ -513,7 +513,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       $set->toString()
       );
   }
-  
+
   public function testHeaderSequencesCanBeSpecified()
   {
     $factory = $this->_createFactory();
@@ -529,9 +529,9 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addTextHeader('Third', 'three');
     $set->addTextHeader('First', 'one');
     $set->addTextHeader('Second', 'two');
-    
+
     $set->defineOrdering(array('First', 'Second', 'Third'));
-    
+
     $this->assertEqual(
       "First: one\r\n" .
       "Second: two\r\n" .
@@ -539,7 +539,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       $set->toString()
       );
   }
-  
+
   public function testUnsortedHeadersAppearAtEnd()
   {
     $factory = $this->_createFactory();
@@ -561,9 +561,9 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set->addTextHeader('Third', 'three');
     $set->addTextHeader('First', 'one');
     $set->addTextHeader('Second', 'two');
-    
+
     $set->defineOrdering(array('First', 'Second', 'Third'));
-    
+
     $this->assertEqual(
       "First: one\r\n" .
       "Second: two\r\n" .
@@ -573,7 +573,7 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       $set->toString()
       );
   }
-  
+
   public function testSettingCharsetNotifiesAlreadyExistingHeaders()
   {
     $subject = $this->_createHeader('Subject', 'some text');
@@ -591,10 +591,10 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addTextHeader('Subject', 'some text');
     $set->addTextHeader('X-Header', 'some text');
-    
+
     $set->setCharset('utf-8');
   }
-  
+
   public function testCharsetChangeNotifiesAlreadyExistingHeaders()
   {
     $subject = $this->_createHeader('Subject', 'some text');
@@ -612,10 +612,10 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
     $set = $this->_createSet($factory);
     $set->addTextHeader('Subject', 'some text');
     $set->addTextHeader('X-Header', 'some text');
-    
+
     $set->charsetChanged('utf-8');
   }
-  
+
   public function testCharsetChangeNotifiesFactory()
   {
     $factory = $this->_createFactory();
@@ -624,22 +624,22 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       -> ignoring($factory)
       );
     $set = $this->_createSet($factory);
-    
+
     $set->setCharset('utf-8');
   }
-  
+
   // -- Creation methods
-  
+
   private function _createSet($factory)
   {
     return new Swift_Mime_SimpleHeaderSet($factory);
   }
-  
+
   private function _createFactory()
   {
     return $this->_mock('Swift_Mime_HeaderFactory');
   }
-  
+
   private function _createHeader($name, $body = '')
   {
     $header = $this->_mock('Swift_Mime_Header');
@@ -650,5 +650,5 @@ class Swift_Mime_SimpleHeaderSetTest extends Swift_Tests_SwiftUnitTestCase
       );
     return $header;
   }
-  
+
 }

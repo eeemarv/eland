@@ -12,7 +12,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -47,7 +46,6 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -76,14 +74,14 @@ function sendadminmail($posted_list, $user){
 	$mailcontent .= "De account ";
 	$mailcontent .= $user["login"];
 	$mailcontent .= " werd geactiveerd met een nieuw passwoord.\n";
-	if (!empty($user["emailaddress"])){	
+	if (!empty($user["emailaddress"])){
 		$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
 		$mailcontent .= $user["emailaddress"];
 		$mailcontent .= ".\n\n";
 	} else {
 		$mailcontent .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
 	}
-		
+
 	$mailcontent .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 	$mailcontent .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
@@ -128,7 +126,6 @@ function validate_input($posted_list,$configuration){
                 $errorlist["pw1"] = "<font color='#F56DB5'>Paswoord is te zwak (score $pwscore/$pwreqscore)</font>";
         }
 
-	
 	if (empty($posted_list["pw2"]) || (trim($posted_list["pw2"]) == "")){
 		$errorlist["pw2"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}
@@ -187,7 +184,6 @@ function show_pwform($errorlist, $id, $user){
 	echo "</form>";
 	echo "</div>";
 }
-
 
 function show_ptitle(){
 	echo "<h1>Account activeren</h1>";

@@ -12,13 +12,13 @@ class Swift_Mailer_ArrayRecipientIteratorTest
     $it = new Swift_Mailer_ArrayRecipientIterator(array());
     $this->assertFalse($it->hasNext());
   }
-  
+
   public function testHasNextReturnsTrueIfItemsLeft()
   {
     $it = new Swift_Mailer_ArrayRecipientIterator(array('foo@bar' => 'Foo'));
     $this->assertTrue($it->hasNext());
   }
-  
+
   public function testReadingToEndOfListCausesHasNextToReturnFalse()
   {
     $it = new Swift_Mailer_ArrayRecipientIterator(array('foo@bar' => 'Foo'));
@@ -26,13 +26,13 @@ class Swift_Mailer_ArrayRecipientIteratorTest
     $it->nextRecipient();
     $this->assertFalse($it->hasNext());
   }
-  
+
   public function testReturnedValueHasPreservedKeyValuePair()
   {
     $it = new Swift_Mailer_ArrayRecipientIterator(array('foo@bar' => 'Foo'));
     $this->assertEqual(array('foo@bar' => 'Foo'), $it->nextRecipient());
   }
-  
+
   public function testIteratorMovesNextAfterEachIteration()
   {
     $it = new Swift_Mailer_ArrayRecipientIterator(array(
@@ -44,5 +44,5 @@ class Swift_Mailer_ArrayRecipientIteratorTest
     $this->assertEqual(array('zip@button' => 'Zip thing'), $it->nextRecipient());
     $this->assertEqual(array('test@test' => null), $it->nextRecipient());
   }
-  
+
 }

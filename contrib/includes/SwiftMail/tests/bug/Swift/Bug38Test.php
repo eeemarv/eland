@@ -4,11 +4,11 @@ require_once 'Swift/Tests/SwiftUnitTestCase.php';
 
 class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   private $_attFile;
   private $_attFileName;
   private $_attFileType;
-  
+
   public function setUp()
   {
     $this->_attFileName = 'data.txt';
@@ -16,7 +16,7 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     $this->_attFile = dirname(__FILE__) . '/../../_samples/files/data.txt';
     Swift_Preferences::getInstance()->setCharset('utf-8');
   }
-  
+
   public function testWritingMessageToByteStreamProducesCorrectStructure()
   {
     $message = new Swift_Message();
@@ -24,21 +24,21 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     $message->setTo('user@domain.tld');
     $message->setCc('other@domain.tld');
     $message->setFrom('user@domain.tld');
-    
+
     $image = new Swift_Image('<data>', 'image.gif', 'image/gif');
-    
+
     $cid = $message->embed($image);
     $message->setBody('HTML part', 'text/html');
-    
+
     $id = $message->getId();
     $date = preg_quote(date('r', $message->getDate()), '~');
     $boundary = $message->getBoundary();
     $imgId = $image->getId();
-    
+
     $stream = new Swift_ByteStream_ArrayByteStream();
-    
+
     $message->toByteStream($stream);
-    
+
     $this->assertPatternInStream(
       '~^' .
       'Message-ID: <' . $id . '>' . "\r\n" .
@@ -70,7 +70,7 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
       $stream
     );
   }
-  
+
   public function testWritingMessageToByteStreamTwiceProducesCorrectStructure()
   {
     $message = new Swift_Message();
@@ -78,17 +78,17 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     $message->setTo('user@domain.tld');
     $message->setCc('other@domain.tld');
     $message->setFrom('user@domain.tld');
-    
+
     $image = new Swift_Image('<data>', 'image.gif', 'image/gif');
-    
+
     $cid = $message->embed($image);
     $message->setBody('HTML part', 'text/html');
-    
+
     $id = $message->getId();
     $date = preg_quote(date('r', $message->getDate()), '~');
     $boundary = $message->getBoundary();
     $imgId = $image->getId();
-    
+
     $pattern = '~^' .
     'Message-ID: <' . $id . '>' . "\r\n" .
     'Date: ' . $date . "\r\n" .
@@ -117,17 +117,17 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     '--' . $boundary . '--' . "\r\n" .
     '$~D'
     ;
-    
+
     $streamA = new Swift_ByteStream_ArrayByteStream();
     $streamB = new Swift_ByteStream_ArrayByteStream();
-    
+
     $message->toByteStream($streamA);
     $message->toByteStream($streamB);
-    
+
     $this->assertPatternInStream($pattern, $streamA);
     $this->assertPatternInStream($pattern, $streamB);
   }
-  
+
   public function testWritingMessageToByteStreamTwiceUsingAFileAttachment()
   {
     $message = new Swift_Message();
@@ -135,20 +135,20 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     $message->setTo('user@domain.tld');
     $message->setCc('other@domain.tld');
     $message->setFrom('user@domain.tld');
-    
+
     $attachment = Swift_Attachment::fromPath($this->_attFile);
-    
+
     $message->attach($attachment);
-    
+
     $message->setBody('HTML part', 'text/html');
-    
+
     $id = $message->getId();
     $date = preg_quote(date('r', $message->getDate()), '~');
     $boundary = $message->getBoundary();
-    
+
     $streamA = new Swift_ByteStream_ArrayByteStream();
     $streamB = new Swift_ByteStream_ArrayByteStream();
-    
+
     $pattern = '~^' .
       'Message-ID: <' . $id . '>' . "\r\n" .
       'Date: ' . $date . "\r\n" .
@@ -176,16 +176,16 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
       '--' . $boundary . '--' . "\r\n" .
       '$~D'
       ;
-    
+
     $message->toByteStream($streamA);
     $message->toByteStream($streamB);
-    
+
     $this->assertPatternInStream($pattern, $streamA);
     $this->assertPatternInStream($pattern, $streamB);
   }
-  
+
   // -- Helpers
-  
+
   public function assertPatternInStream($pattern, $stream, $message = '%s')
   {
     $string = '';
@@ -195,5 +195,5 @@ class Swift_Bug38Test extends Swift_Tests_SwiftUnitTestCase
     }
     $this->assertPattern($pattern, $string, $message);
   }
-  
+
 }

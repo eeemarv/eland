@@ -53,12 +53,12 @@ if ($req->get('zend') && !$req->errors() && $to_user_id){
 	$duplicate = check_duplicate_transaction($transid);
 	if ($duplicate){
 		$notice .= '<p><font color="red"><strong>Een dubbele boeking van een transactie werd voorkomen</strong></font></p>';
-	} else {	
+	} else {
 		foreach($active_users as $user){
 			$amount = $req->get('amount-'.$user['id']);
 			if (!$amount || $to_user_id == $user['id']){
 				continue;
-			}	
+			}
 			$trans = array(
 				'id_to' => $to_user_id,
 				'id_from' => $user['id'],
@@ -69,7 +69,7 @@ if ($req->get('zend') && !$req->errors() && $to_user_id){
 			$notice_text = 'Transactie van gebruiker '.$user['fullname'].' ( '.$user['letscode'].' ) naar '.$to_user_fullname.' ( '.$letscode_to.' ) met bedrag '.$amount.' ';
 			if($checktransid == $transid){
 				mail_transaction($posted_list, $mytransid);
-				$notice .= '<p><font color="green"><strong>OK - '.$notice_text.'opgeslagen</strong></font></p>';			
+				$notice .= '<p><font color="green"><strong>OK - '.$notice_text.'opgeslagen</strong></font></p>';
 			} else {
 				$notice .= '<p><font color="red"><strong>'.$notice_text.'Mislukt</strong></font></p>';
 			}
@@ -77,9 +77,9 @@ if ($req->get('zend') && !$req->errors() && $to_user_id){
 		}
 	}
 	$req->set('letscode_to', '');
-	$req->set('description', ''); 	
+	$req->set('description', '');
 }
-	
+
 $fixed = $req->get('fixed');
 $percentage = $req->get('percentage');
 $percentage_base = $req->get('percentage_base');
@@ -87,16 +87,16 @@ $perc = 0;
 
 if ($req->get('fill_in') && ($fixed || $percentage)){
 	foreach ($active_users as $user){
-		if ($user['letscode'] == $req->get('letscode_to') 
-			|| (check_newcomer($user['adate']) && $req->get('no_newcomers')) 
+		if ($user['letscode'] == $req->get('letscode_to')
+			|| (check_newcomer($user['adate']) && $req->get('no_newcomers'))
 			|| ($user['status'] == 2 && $req->get('no_leavers'))
 			|| ($user['saldo'] < $user['minlimit'] && $req->get('no_min_limit'))){
-			$req->set('amount-'.$user['id'], 0);	
+			$req->set('amount-'.$user['id'], 0);
 		} else {
 			if ($percentage){
 				$perc = round(($user['saldo'] - $percentage_base)*$percentage/100);
 				$perc = ($perc > 0) ? $perc : 0;
-			}	
+			}
 			$req->set('amount-'.$user['id'], $fixed + $perc);
 		}
 	}
@@ -119,14 +119,13 @@ include($rootpath.'includes/inc_header.php');
 echo '<h2><font color="#8888FF"><b><i>[admin]</i></b></font></h2>';
 if ($notice) {
 	echo '<div style="background-color: #DDDDFF;padding: 10px;">'.$notice.'</div>';
-}	
+}
 
-show_ptitle1();	
+show_ptitle1();
 show_form($req, $data_table);
 
 include($rootpath.'includes/inc_footer.php');
 
-	
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -142,25 +141,25 @@ function show_form($req, $data_table){
 	$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
 	echo '</table>';
 	echo '<p><strong><i>Aan LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
-	echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';		
+	echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
 	echo '</div><br/>';
-	echo '<div id="transformdiv" style="padding:10px;">';	
-	$data_table->render();	
+	echo '<div id="transformdiv" style="padding:10px;">';
+	$data_table->render();
 	echo '<table cellspacing="0" cellpadding="5" border="0">';
 	$req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
 	echo '</table></div><table>';
 	$req->set_output('tr')->render('refresh');
-	echo '</table></form>';		
+	echo '</table></form>';
 }
 
 function get_active_users(){
 	global $db;
-	$query = 'SELECT id, fullname, letscode, accountrole, status, saldo, minlimit, maxlimit, adate  
-		FROM users 
-		WHERE status = 1 
-			OR status = 2 
-			OR status = 3 
-			OR status = 4 
+	$query = 'SELECT id, fullname, letscode, accountrole, status, saldo, minlimit, maxlimit, adate
+		FROM users
+		WHERE status = 1
+			OR status = 2
+			OR status = 3
+			OR status = 4
 		ORDER BY letscode';
 	$active_users = $db->GetArray($query);
 	return $active_users;
@@ -173,7 +172,5 @@ function check_newcomer($adate){
 	$timestamp = strtotime($adate);
 	return  ($limit < $timestamp) ? 1 : 0;
 }
-
-
 
 ?>

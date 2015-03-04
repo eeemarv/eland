@@ -15,11 +15,11 @@ session_start();
 echo "Running eLAS Interlets System\n\n";
 
 // Process the interlets Queue
-// Foreach entry, try to execute it, than remove if complete OR expired, leave on failures  
+// Foreach entry, try to execute it, than remove if complete OR expired, leave on failures
 
 global $db;
 
-$query = "SELECT * FROM interletsq"; 
+$query = "SELECT * FROM interletsq";
 $transactions = $db->GetArray($query);
 //         transid VARCHAR( 80 ) NOT NULL,
 //        date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,7 +43,7 @@ foreach ($transactions AS $key => $value){
 		$signature = $value['signature'];
 		$retry_until = $value['retry_until'];
 		$count = $value['retry_count'];
-		
+
                 echo "Processing transaction $transid\t";
 
 		// Lookup the letsgroup details from letsgroups
@@ -65,7 +65,7 @@ foreach ($transactions AS $key => $value){
 			$result = $client->call('dopayment', array('apikey' => "$myapikey", 'from' => "$from", 'real_from' => "$real_from", 'to' => "$letscode_to", 'description' => "$description", 'amount' => $amount, 'transid' => "$transid", 'signature' => "$signature"));
 			$err = $client->getError();
     			if (!$err) {
-				//return $result;	
+				//return $result;
 				// Process the result statusa
 				echo $result;
 				echo "\n";
@@ -125,7 +125,7 @@ foreach ($transactions AS $key => $value){
 				update_queue($transid,$count,"UNKNOWN");
 			}
 		}
-	
+
 }
 
 echo "\nDone processing.\n\n";
@@ -162,7 +162,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	$mysoapurl = $myletsgroup["elassoapurl"] ."/wsdlelas.php?wsdl";
 	$myapikey = $myletsgroup["remoteapikey"];
 	$client = new nusoap_client($mysoapurl, true);
-	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));	
+	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));
 	$err = $client->getError();
 	if (!$err) {
 		$posted_list["real_to"] = $result;
@@ -170,7 +170,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 
 	$posted_list["transid"] = $transid;
 	$posted_list["date"] = date("Y-m-d H:i:s");
-	
+
 	// Validate like a normal transaction
 	$error_list = validate_interletsq($posted_list);
 	if(!empty($error_list)){
@@ -182,7 +182,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	} else {
 		$mytransid = insert_transaction($posted_list, $transid);
 	}
-	
+
 	if($mytransid == $transid){
 		$result = "SUCCESS";
 		log_event("","Trans","Local commit of interlets transaction succeeded");
@@ -190,7 +190,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		mail_transaction($posted_list, $mytransid);
 		unqueue($transid);
 	} else {
-		$result = "FAILED";	
+		$result = "FAILED";
 		log_event("","Trans","Local commit of $transid failed");
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 		$systemtag = readconfigfromdb("systemtag");

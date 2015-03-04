@@ -5,7 +5,7 @@ require_once 'Swift/Tests/SwiftSmokeTestCase.php';
 
 class Swift_Smoke_BasicSmokeTest extends Swift_Tests_SwiftSmokeTestCase
 {
-  
+
   public function testBasicSending()
   {
     $mailer = $this->_getMailer();
@@ -22,5 +22,5 @@ class Swift_Smoke_BasicSmokeTest extends Swift_Tests_SwiftSmokeTestCase
       );
     $this->_visualCheck('http://swiftmailer.org/smoke/4.0.0/basic.jpg');
   }
-  
+
 }

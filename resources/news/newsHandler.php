@@ -1,5 +1,5 @@
-<?php 
- 
+<?php
+
 /**
  * @uri /resources/news/{Nid}
  */
@@ -15,8 +15,8 @@ class NewsItem extends Resource {
 	//
 	function get($request, $Nid){
 		echo "GET news not implemented";
-	}	
-	
+	}
+
 	function post($request, $Nid){
 		global $db;
 		session_start();
@@ -24,9 +24,9 @@ class NewsItem extends Resource {
 		$s_name = $_SESSION["name"];
 		$s_letscode = $_SESSION["letscode"];
 		$s_accountrole = $_SESSION["accountrole"];
-		
+
 		$response = new Response($request);
-		
+
 		if($s_accountrole == 'admin' || $s_accountrole == 'user'){
 			$list = get_mailinglist($_POST['list']);
 			if($list['auth'] == 'closed' &&  $s_accountrole != 'admin') {
@@ -39,25 +39,25 @@ class NewsItem extends Resource {
 				} else {
 					$moderationflag = 1;
 				}
-				
+
 				if(amq_sendmail($_POST['list'], $_POST['msgsubject'], $_POST['msgbody'], $moderationflag) == 0) {
 					$response->code = Response::OK;
 					$response->body = "OK - Bericht verzonden";
-				} 
+				}
 					#$response->code = Response::OK;
 					#$response->body = "FOUT - Bericht kon niet worden verzonden"
-				
+
 			}
 		} else {
 			$response->code = Response::UNAUTHORIZED;
 			$response->body = "Onvoldoende rechten";
 		}
-		
+
 		#$response->code = Response::OK;
 		#$response->body = var_dump($_POST);
 		$response->addHeader('Content-type', 'text/plain');
  		return $response;
- 		
+
 	}
 }
 

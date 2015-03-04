@@ -40,11 +40,11 @@ function show_ptitle($list){
 
 function show_sendform() {
 	$lists = get_mailinglists();
-	
+
     echo "<div id='msgformdiv'>";
     echo "<form action='". $rootpath ."/resources/mailinglist/message/new' id='msgform' method='post'>";
     echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-    
+
     // Topic
     echo "<tr><td valign='top' align='right'>Aan lijst</td>";
     echo "<td valign='top'>";
@@ -55,8 +55,7 @@ function show_sendform() {
     echo "</select>";
     echo "</td>";
     echo "</tr>";
-    
-   
+
     // Moderatormail
     echo "<tr><td valign='top' align='right'>Onderwerp</td>";
     echo "<td valign='top'>";
@@ -69,7 +68,7 @@ function show_sendform() {
     echo "<textarea class='ckeditor' id='msgbody' name='msgbody' cols='80' rows='15'></textarea>";
     echo "</td>";
     echo "</tr>";
-    
+
     echo "<tr><td colspan='2' align='right'>";
     echo "<input type='submit' id='zend' value='Verzenden' name='zend'>";
     echo "</td><td>&nbsp;</td></tr>";
@@ -97,7 +96,7 @@ function show_list($list){
 	echo "<td>Omschrijving</td>";
 	echo "<td>" .$list["description"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Type</td>";
 	echo "<td>" .$list["type"] ."</td>";
@@ -117,17 +116,17 @@ function show_list($list){
 	echo "<td>Moderatie</td>";
 	echo "<td>" .$list["moderation"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Moderatiemail</td>";
 	echo "<td>" .$list["moderatormail"] ."</td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td>Ledenbron</td>";
 	echo "<td>" .$list["subscribers"] ."</td>";
-	echo "</tr>";	
-				
+	echo "</tr>";
+
 	echo "</table>";
 	echo "</div>";
 }
@@ -139,4 +138,3 @@ function redirect_overview(){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

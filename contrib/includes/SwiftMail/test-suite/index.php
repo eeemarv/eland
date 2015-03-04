@@ -31,7 +31,7 @@ if (isset($_GET['test']))
 {
   $testName = $_GET['test'];
   $format = isset($_GET['format']) ? $_GET['format'] : Sweety_Runner::REPORT_HTML;
-  
+
   $runner->runTestCase($testName, $format);
 }
 else

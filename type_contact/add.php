@@ -19,9 +19,9 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		$posted_list["name"] = $_POST["name"];
 		$posted_list["abbrev"] = $_POST["abbrev"];
 		$error_list = validate_input($posted_list);
-				
+
 		if (!empty($error_list)){
-			show_form($error_list, $posted_list);	
+			show_form($error_list, $posted_list);
 		}else{
 			insert_contacttype($posted_list);
 			redirect_overview();
@@ -44,7 +44,6 @@ function redirect_login($rootpath){
 function show_ptitle(){
 	echo "<h1>Contacttype toevoegen</h1>";
 }
-
 
 function redirect_overview(){
 	header("Location: overview.php");
@@ -71,22 +70,22 @@ function show_form($error_list, $posted_list){
 	echo "<input type='text' name='name' size='30' ";
 	if (isset($posted_list["name"])){
 		echo  "value ='".$posted_list["name"]."'>";
-	}		
+	}
 	echo "</td><td>";
 	if(isset($error_list["name"])){
 		echo $error_list["name"];
 	}
 	echo "</td></tr>";
-		
+
 	echo "<tr><td valign='top' align='right'>Afkorting</td>";
-	echo "<td>"; 
+	echo "<td>";
 	echo "<input type='text' name='abbrev' size='30' ";
 	if (isset($posted_list["abbrev"])){
 		echo  "value ='".$posted_list["abbrev"]."'>";
-	}		
+	}
 	echo "</td><td>";
 	echo "</td></tr>";
-		
+
 	echo "<tr><td colspan='2' align='right'>";
 	echo "<input type='submit' name='zend' value='Toevoegen'>";
 	echo "</td><td>&nbsp;</td></tr></table>";

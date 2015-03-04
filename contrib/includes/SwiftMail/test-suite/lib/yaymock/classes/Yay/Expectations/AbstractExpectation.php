@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Mockery.php';
 //require 'Yay/Expectation.php';
 //require 'Yay/ExpectationProvider.php';
@@ -39,82 +39,82 @@
 abstract class Yay_Expectations_AbstractExpectation
   implements Yay_Expectation, Yay_InvocationRecorder
 {
-  
+
   /**
    * The object to expect Invocations from.
    * @var Yay_MockObject
    * @access private
    */
   private $_object;
-  
+
   /**
    * The method name to expect Invocations on.
    * @var string
    * @access private
    */
   private $_method;
-  
+
   /**
    * The argument Matchers.
    * @var array
    * @access private
    */
   private $_matchers = array();
-  
+
   /**
    * The Action to use if matched.
    * @var Yay_Action
    * @access private
    */
   private $_action;
-  
+
   /**
    * A state predicate to check for.
    * @var Yay_StatePredicate
    * @access private
    */
   private $_statePredicate;
-  
+
   /**
    * A state to effect if matched.
    * @var Yay_State
    * @access private
    */
   private $_state;
-  
+
   /**
    * The ID wanted to be valid in the Sequence.
    * @var int
    * @access private
    */
   private $_wantedSequenceId;
-  
+
   /**
    * The Sequence to check for validity (if any).
    * @var Yay_Sequence
    * @access private
    */
   private $_sequence;
-  
+
   /**
    * Invoked when the expectation matches so any counters can be incremented
    * for example.
    * @param Yay_Invocation $invocation
    */
   abstract public function notifyMatchedInvocation(Yay_Invocation $invocation);
-  
+
   /**
    * Describe the boundaries of how many invocations can occur.
    * @param Yay_Description $description
    */
   abstract public function describeBounds(Yay_Description $description);
-  
+
   /**
    * Describe the current status of this expectation.
    * @param Yay_Description $description
    */
   abstract public function describeSatisfaction(Yay_Description $description);
-  
+
   /**
    * Specify the MockObject which the Invocation will occur.
    * This method returns the mock object in record mode.
@@ -126,7 +126,7 @@ abstract class Yay_Expectations_AbstractExpectation
     $this->_object = $mock;
     return new Yay_InvocationProxy($this, $mock);
   }
-  
+
   /**
    * Notify the Expectation of an Invocation and check if it matches.
    * @param Yay_Invocation $invocation
@@ -142,7 +142,7 @@ abstract class Yay_Expectations_AbstractExpectation
       {
         $matches = $this->_statePredicate->isActive();
       }
-      
+
       if ($matches && isset($this->_method))
       {
         if ($this->_method == $invocation->getMethod())
@@ -177,7 +177,7 @@ abstract class Yay_Expectations_AbstractExpectation
           $matches = false;
         }
       }
-      
+
       if ($matches && isset($this->_sequence))
       {
         $matches = $this->_sequence->isInSequence($this->_wantedSequenceId);
@@ -187,15 +187,15 @@ abstract class Yay_Expectations_AbstractExpectation
     {
       $matches = false;
     }
-    
+
     if ($matches)
     {
       $this->notifyMatchedInvocation($invocation);
     }
-    
+
     return $matches;
   }
-  
+
   /**
    * Specify the Action to run if a match occurs.
    * @param Yay_Action $action
@@ -205,7 +205,7 @@ abstract class Yay_Expectations_AbstractExpectation
     $this->_action = $action;
     return $this;
   }
-  
+
   /**
    * Only be expected when in the given State predicate.
    * @param Yay_StatePredicate $predicate
@@ -215,7 +215,7 @@ abstract class Yay_Expectations_AbstractExpectation
     $this->_statePredicate = $predicate;
     return $this;
   }
-  
+
   /**
    * Activate the given $state if a match occurs.
    * @param Yay_State $state
@@ -225,7 +225,7 @@ abstract class Yay_Expectations_AbstractExpectation
     $this->_state = $state;
     return $this;
   }
-  
+
   /**
    * Constrain this expectation to be valid only if invoked in the given sequence.
    * @param Yay_Sequence $sequence
@@ -236,7 +236,7 @@ abstract class Yay_Expectations_AbstractExpectation
     $this->_sequence = $sequence;
     return $this;
   }
-  
+
   /**
    * Get the Action for the given Invocation.
    * This may have been specified by a will() clause.
@@ -251,7 +251,7 @@ abstract class Yay_Expectations_AbstractExpectation
     }
     return $this->_action;
   }
-  
+
   /**
    * Record any Invocations on the MockObject whilst it's in record mode.
    * @param Yay_Invocation $invocation
@@ -272,7 +272,7 @@ abstract class Yay_Expectations_AbstractExpectation
       }
     }
   }
-  
+
   /**
    * Returns the Expectations.
    * @return array of Yay_Expectation
@@ -281,7 +281,7 @@ abstract class Yay_Expectations_AbstractExpectation
   {
     return array($this);
   }
-  
+
   /**
    * Describe this Expectation to $description.
    * @param Yay_Description $description
@@ -289,31 +289,31 @@ abstract class Yay_Expectations_AbstractExpectation
   public function describeTo(Yay_Description $description)
   {
     $this->describeBounds($description);
-    
+
     $description->appendText(sprintf(' of %s;', $this->_getInvocationSignature()));
-    
+
     if (isset($this->_sequence))
     {
       $description->appendText(' in');
       $this->_sequence->describeTo($description);
     }
-    
+
     if (isset($this->_statePredicate))
     {
       $description->appendText(' when');
       $this->_statePredicate->describeTo($description);
     }
-    
+
     if (isset($this->_action))
     {
       $this->_action->describeTo($description);
     }
-    
+
     $this->describeSatisfaction($description);
   }
-  
+
   // -- Private methods
-  
+
   private function _getInvocationSignature()
   {
     $class = Yay_MockGenerator::getInstance()
@@ -341,5 +341,5 @@ abstract class Yay_Expectations_AbstractExpectation
     }
     return sprintf('%s::%s(%s)', $class, $method, $params);
   }
-  
+
 }

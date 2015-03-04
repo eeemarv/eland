@@ -17,4 +17,3 @@ function soapstatus(id){
         soapstatusobj.open("GET", url);
 	soapstatusobj.send(null);
 }
-

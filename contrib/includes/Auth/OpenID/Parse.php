@@ -215,7 +215,7 @@ class Auth_OpenID_Parse {
             return $str;
         }
     }
-    
+
     function match($regexp, $text, &$match)
     {
         if (!is_callable('mb_ereg_search_init')) {
@@ -374,4 +374,3 @@ function Auth_OpenID_legacy_discover($html_text, $server_rel,
         return array($delegate_url, $server_url);
     }
 }
-

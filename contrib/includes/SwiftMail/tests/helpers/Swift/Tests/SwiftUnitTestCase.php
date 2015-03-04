@@ -13,7 +13,7 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
 
   /** An instance of the Yay_Mockery class */
   private $_mockery;
-  
+
   /**
    * Decorates SimpleTest's implementation to auto-validate mock objects.
    */
@@ -28,9 +28,9 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
       $this->fail($e->getMessage());
     }
     $this->_mockery = null;
-    return parent::after($method); 
+    return parent::after($method);
   }
-  
+
   /**
    * Assert two binary strings are an exact match.
    * @param string $a
@@ -43,7 +43,7 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
   }
 
   // -- Protected methods
-  
+
   /**
    * Returns a singleton-per-test method for Yay_Mockery.
    * @return Yay_Mockery
@@ -66,7 +66,7 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
   {
     return $this->_mockery()->mock($class);
   }
-  
+
   /**
    * Add mock expectations.
    * @param Yay_Expectations $expectations
@@ -75,7 +75,7 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
   {
     return $this->_mockery()->checking($expectations);
   }
-  
+
   /**
    * Create a mock object which does nothing.
    * @param string $class
@@ -89,15 +89,15 @@ class Swift_Tests_SwiftUnitTestCase extends UnitTestCase
       );
     return $stub;
   }
-  
+
   protected function _states($machineName)
   {
     return $this->_mockery()->states($machineName);
   }
-  
+
   protected function _sequence($sequenceName)
   {
     return $this->_mockery()->sequence($sequenceName);
   }
-  
+
 }

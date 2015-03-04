@@ -1,8 +1,8 @@
 <?php
- 
+
 // load Tonic library
 require_once 'contrib/includes/tonic/tonic.php';
- 
+
 // load Task Handler
 //require_once 'resources/task/TaskHandler.php';
 //require_once 'resources/auth/auth.php';
@@ -17,13 +17,13 @@ require_once 'resources/user/subscription/subscriptionHandler.php';
 require_once 'resources/mailinglist/mailinglistHandler.php';
 require_once 'resources/mailmessage/messageHandler.php';
 require_once 'resources/news/newsHandler.php';
- 
+
 // handle request
 $request = new Request();
 try {
     $resource = $request->loadResource();
     $response = $resource->exec($request);
- 
+
 } catch (ResponseException $e) {
     switch ($e->getCode()) {
     case Response::UNAUTHORIZED:
@@ -35,5 +35,5 @@ try {
     }
 }
 $response->output();
- 
+
 ?>

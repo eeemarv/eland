@@ -63,7 +63,7 @@ if (!empty($errors)){
 			}
 			break;
 	}
-	
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -77,22 +77,22 @@ function insert_newsitem($posted_list){
 	}
 	global $db;
 	//$posted_list["cdate"] = date("Y-m-d H:i:s");
-	
+
 	$posted_list["id_user"] = (int)$posted_list["id_user"];
 	$posted_list["published"] = False;
-	
+
 	if($posted_list["sticky"] == true){
 		$posted_list["sticky"] = True;
 	} else {
 		$posted_list["sticky"] = False;
 	}
-	
+
 	if($posted_list["approved"] == 1){
 		$posted_list["approved"] = True;
 	} else {
 		$posted_list["approved"] = False;
 	}
-	
+
 	var_dump($posted_list);
 	$result = $db->AutoExecute("news", $posted_list, 'INSERT');
 	return $result;

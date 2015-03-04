@@ -35,7 +35,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	show_active_users($active_userrows, $configuration);
 	show_ptitle2();
 	$inactive_userrows = get_inactive_users($user_orderby);
-	
+
 show_inactive_legend();
 	show_inactive_users($inactive_userrows, $balance);
 
@@ -46,7 +46,6 @@ show_inactive_legend();
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function show_printversion(){
 	echo "<p><a href='../text_memberlist.php'>";
@@ -88,7 +87,7 @@ function show_inactive_legend(){
 	echo "</tr>";
 	echo "</table>";
 }
-	
+
 function check_timestamp($cdate,$agelimit){
         // agelimit is the time after which it expired
         $now = time();
@@ -114,7 +113,7 @@ function show_addlink($rootpath){
         echo "</div>";
         echo "</td></tr></table>";
 }
-	
+
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
@@ -161,8 +160,7 @@ function show_inactive_users($inactive_userrows){
 	        echo " class='even_row'";
 		}
 		echo ">\n";
-		
-		
+
 		if($value["status"] == 5){
 			echo "<td nowrap valign='top' bgcolor='orange'><font color='white'><strong>";
 		}elseif($value["status"] == 6){
@@ -190,17 +188,16 @@ function show_inactive_users($inactive_userrows){
 			echo "</strong></font>";
 		}
 		echo "</td>\n";
-		
+
 		echo "<td nowrap valign='top'>";
 		echo "<a href='view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a>";
 		echo "</td>\n";
-		
 
 //_____________________________________________
 		echo "<td nowrap  valign='top'>";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
-			
+
 			foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 1){
 					echo  $value2["value"];
@@ -236,7 +233,7 @@ function show_inactive_users($inactive_userrows){
 		}
 		echo "</tr>\n\n";
 	}
-	
+
 	echo "</table>\n</div>\n";
 }
 
@@ -277,12 +274,12 @@ function show_active_users($active_userrows,$configuration){
 		}else{
 	        echo " class='even_row'";
 		}
-		
+
 		if($value["status"] == 0){
 		echo " bgcolor='black' ";
 		}
 		echo ">\n";
-	
+
                 if($value["status"] == 2){
                         echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
 			echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
@@ -291,17 +288,16 @@ function show_active_users($active_userrows,$configuration){
                         echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
                         echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
                         echo "</strong></font>";
-                }else{  
+                }else{
                         echo "<td nowrap valign='top'>";
 			echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
                 }
-	
+
 		echo "</td>\n";
-		
+
 		echo "<td nowrap valign='top'>";
 		echo "<a href='$myurl'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a>";
 		echo "</td>\n";
-		
 
 		echo "<td nowrap valign='top'>";
 		echo $value["accountrole"];
@@ -311,7 +307,7 @@ function show_active_users($active_userrows,$configuration){
 		echo "<td nowrap  valign='top'>";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
-			
+
 			foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 1){
 					echo  $value2["value"];
@@ -340,7 +336,7 @@ function show_active_users($active_userrows,$configuration){
 			}
 		echo "</td>\n";
 		$balance = $value["saldo"];
-		if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){	
+		if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){
 			echo "<td align='right'><font color='red'>".$balance."</font></td>\n";
 		} else {
 			echo "<td align='right'>".$balance."</td>\n";
@@ -360,7 +356,6 @@ function get_active_users($user_orderby){
 	$active_userrows = $db->GetArray($query);
 	return $active_userrows;
 }
-
 
 function get_inactive_users($user_orderby){
 	global $db;

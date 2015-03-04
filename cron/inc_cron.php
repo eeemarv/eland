@@ -16,7 +16,6 @@ function update_stat_msgs($cat_id){
     	$row = $db->GetRow($query);
         $stat_wanted = $row["stat_msg_wanted"];
 
-
         //$query = "SELECT COUNT(*) AS stat_msg_offer FROM messages WHERE id_category = ".$cat_id ;
         //$query .= " AND msg_type = 1 ";
 	$query = "SELECT COUNT(*) AS stat_msg_offer";
@@ -52,7 +51,7 @@ function get_warn_messages($daysnotice) {
 	return $warn_messages;
 }
 
-function do_clear_msgflags(){ 
+function do_clear_msgflags(){
         global $db;
 	$now = time();
 	$daysnotice =  readconfigfromdb("msgexpwarningdays");
@@ -122,7 +121,7 @@ function mail_admin_expmsg($messages) {
 	} else {
 	   $mailto = $admin;
 	}
-	
+
 	$from_address_transactions = readconfigfromdb("from_address_transactions");
         if (!empty($from_address_transactions)){
                 $mailfrom .= "From: ".trim($from_address_transactions)."\r\n";
@@ -133,14 +132,14 @@ function mail_admin_expmsg($messages) {
 
 	$systemtag = readconfigfromdb("systemtag");
 	$mailsubject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
-	
+
 	$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
 
 	$mailcontent .= "ID\tUser\tMessage\n";
 	foreach($messages as $key => $value) {
 		$mailcontent .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
         }
-	
+
 	$mailcontent .=  "\n\n";
 
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
@@ -150,7 +149,7 @@ function mail_balance($mailaddr,$balance){
 	$from_address_transactions = readconfigfromdb("from_address_transactions");
         if (!empty($from_address_transactions)){
                 $mailfrom .= trim($from_address_transactions);
-        }else { 
+        }else {
 		echo "Mail from address is not set in configuration\n";
 		return 0;
 	}
@@ -158,7 +157,7 @@ function mail_balance($mailaddr,$balance){
 	$mailto = $mailaddr;
 
 	$systemtag = readconfigfromdb("systemtag");
-        $mailsubject .= "[eLAS-".$systemtag ."] - Saldo mail"; 
+        $mailsubject .= "[eLAS-".$systemtag ."] - Saldo mail";
 
         $mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 	$mailcontent .= "\nJe ontvangt deze mail omdat je de optie 'Mail saldo' in eLAS hebt geactiveerd,\nzet deze uit om deze mails niet meer te ontvangen.\n";
@@ -170,13 +169,11 @@ function mail_balance($mailaddr,$balance){
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 }
 
-
 function mark_expwarn($messageid,$value){
 	global $db;
 	$query = "UPDATE messages set exp_user_warn = '" .$value ."' WHERE id = " .$messageid;
 	$db->Execute($query);
 }
-
 
 function mail_user_expwarn($mailaddr,$subject,$content) {
 	$from_address_transactions = readconfigfromdb("from_address_transactions");
@@ -188,7 +185,7 @@ function mail_user_expwarn($mailaddr,$subject,$content) {
         }
 
         $mailto = $mailaddr;
-	
+
 	$systemtag = readconfigfromdb("systemtag");
         $mailsubject .= "[eLAS-".$systemtag ."] - " .$subject;
 
@@ -202,7 +199,6 @@ function mail_user_expwarn($mailaddr,$subject,$content) {
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 	log_event("","Mail","Message expiration mail sent to $mailto");
 }
-
 
 function check_timestamp($cronjob,$agelimit){
         // agelimit is the time after which to rerun the job in MINUTES
@@ -220,7 +216,7 @@ function check_timestamp($cronjob,$agelimit){
         }
 
 	//log the cronjob execution
-	
+
 }
 
 function write_timestamp($cronjob){
@@ -242,4 +238,3 @@ function write_timestamp($cronjob){
 }
 
 ?>
-

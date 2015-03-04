@@ -5,12 +5,12 @@ require_once 'Swift/Tests/SwiftSmokeTestCase.php';
 class Swift_Smoke_HtmlWithAttachmentSmokeTest
   extends Swift_Tests_SwiftSmokeTestCase
 {
-  
+
   public function setUp()
   {
     $this->_attFile = dirname(__FILE__) . '/../../../_samples/files/textfile.zip';
   }
-  
+
   public function testAttachmentSending()
   {
     $mailer = $this->_getMailer();
@@ -28,5 +28,5 @@ class Swift_Smoke_HtmlWithAttachmentSmokeTest
       );
     $this->_visualCheck('http://swiftmailer.org/smoke/4.0.0/attachment.jpg');
   }
-  
+
 }

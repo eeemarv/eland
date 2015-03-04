@@ -11,11 +11,11 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-include($rootpath."includes/inc_mailfunctions.php"); 
+include($rootpath."includes/inc_mailfunctions.php");
 
 if(isset($s_id)){
 	$msgid = $_POST["msgid"];
-	// msgid 
+	// msgid
         // reactie
         // cc
 	$message = get_msg($msgid);
@@ -30,7 +30,7 @@ if(isset($s_id)){
 ////////////////////////////////////////////////////////////////////////////
 
 function composemail($s_id,$message,$user,$reactie,$cc){
-	global $_POST;	
+	global $_POST;
 	$systemtag = readconfigfromdb("systemtag");
 	$user = get_user($message["id_user"]);
 	//echo "ID = " . $s_id;
@@ -55,7 +55,7 @@ function composemail($s_id,$message,$user,$reactie,$cc){
 
 	$mailcontent .= "* Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
 	$mailcontent .= "* Contactgegevens van ".$me["fullname"] .":\n";
-	
+
         foreach($contact as $key => $value){
 		$mailcontent .= "* " .$value["abbrev"] ."\t" .$value["value"] ."\n";
         }
@@ -64,7 +64,7 @@ function composemail($s_id,$message,$user,$reactie,$cc){
 	$mailstatus = sendemail($mailfrom,$mailto,$mailsubject,$mailcontent,1);
 	//echo "<strong>$mailstatus</strong>";
 	setstatus("$mailstatus",0);
-} 
+}
 
 function get_msg($msgid){
 	global $db;

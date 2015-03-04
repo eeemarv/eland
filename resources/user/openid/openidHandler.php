@@ -1,5 +1,5 @@
-<?php 
- 
+<?php
+
 /**
  * @uri /resources/user/{UserID}/openid
  */
@@ -19,12 +19,12 @@ class OpenID extends Resource {
 		$s_name = $_SESSION["name"];
 		$s_letscode = $_SESSION["letscode"];
 		$s_accountrole = $_SESSION["accountrole"];
-		
+
 		//echo "Fetching openid for user $UserID";
 		echo "Not implemented";
 
-	}	
-	
+	}
+
 	function post($request, $UserID){
 		global $db;
 		session_start();
@@ -32,12 +32,12 @@ class OpenID extends Resource {
 		$s_name = $_SESSION["name"];
 		$s_letscode = $_SESSION["letscode"];
 		$s_accountrole = $_SESSION["accountrole"];
-		
+
 		$openid = $_POST["openid"];
 		//echo "Writing openid $openid\n";
-		
+
 		$response = new Response($request);
-		
+
 		// Check if we are allowed to insert an openid for this user
 		// If so, check if the openid is already in use (anywhere)
 		// If not in use, save it
@@ -66,10 +66,10 @@ class OpenID extends Resource {
 			$response->code = Response::UNAUTHORIZED;
 			$response->body = "Onvoldoende rechten";
 		}
-		
+
 		$response->addHeader('Content-type', 'text/plain');
  		return $response;
-	}	
+	}
 }
 
 function checkoid($openid) {
@@ -82,5 +82,5 @@ function checkoid($openid) {
                 return 0;
         }
 }
- 
+
 ?>

@@ -24,4 +24,3 @@ function loaduser(element,target){
         userobj.open("GET", url);
 	userobj.send(null);
 }
-

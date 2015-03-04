@@ -20,7 +20,6 @@ if (isset($s_id)){
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-
 function get_oids($s_id){
 	global $db;
 	$query = "SELECT * FROM openid ";
@@ -37,7 +36,7 @@ function show_oids($oid){
 	//echo "<tr>";
 	//echo "<th valign='top'>OpenID</th>";
 	//echo "</tr>";
-	
+
 	foreach($oid as $key => $value){
 		//echo $value["openid"];
 		echo "<tr valign='top'  nowrap>";

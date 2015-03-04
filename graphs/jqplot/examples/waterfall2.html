@@ -9,11 +9,10 @@
     <link rel="stylesheet" type="text/css" href="examples.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
-  
+
     <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../excanvas.js"></script><![endif]-->
     <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    
-   
+
 </head>
 <body>
     <div id="header">
@@ -29,7 +28,6 @@
       <div class="colleft">
         <div class="col1" id="example-content">
 
-  
 <!-- Example scripts go here -->
 
   <style type="text/css" media="screen">
@@ -45,7 +43,6 @@
       }
   </style>
 
-
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
 
     <div id="chart1b" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
@@ -54,20 +51,16 @@
 
     <div id="chart1d" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
 
-
-  
-
 <script class="code" type="text/javascript">$(document).ready(function(){
     var line1 = [14, 4, 3, -23, 5, 2, -3, -7];
     var ticks = ['2008', 'Apricots', 'Tomatoes', 'Potatoes', 'Rhubarb', 'Squash', 'Grapes', 'Peanuts', '2009'];
-
 
     plot1 = $.jqplot('chart1', [line1], {
         title: 'Crop Yield Change, 2008 to 2009',
         seriesDefaults:{
             fill: true,
             fillToZero: true,
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall:true,
                 disableStack: true,
@@ -81,7 +74,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -99,11 +92,10 @@
     var line1 = [14, 4, 0, -23, 5, 0, -3, -7];
     var ticks = ['2008', 'Apricots', 'Tomatoes', 'Potatoes', 'Rhubarb', 'Squash', 'Grapes', 'Peanuts', '2009'];
 
-
     plot1b = $.jqplot('chart1b', [line1], {
         title: 'Crop Yield Change, 2008 to 2009',
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall:true,
                 varyBarColor: true
@@ -116,7 +108,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -134,11 +126,10 @@
     var line1 = [14, 0, 13, 0, -5, -9, 3, 7];
     var ticks = ['2008', 'Apricots', 'Tomatoes', 'Potatoes', 'Rhubarb', 'Squash', 'Grapes', 'Peanuts', '2009'];
 
-
     plot1c = $.jqplot('chart1c', [line1], {
         title: 'Crop Yield Change, 2008 to 2009',
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall:true,
                 varyBarColor: true
@@ -151,7 +142,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -169,11 +160,10 @@
     var line1 = [-14, 0, -13, 0, 5, 9, -3, -7];
     var ticks = ['2008', 'Apricots', 'Tomatoes', 'Potatoes', 'Rhubarb', 'Squash', 'Grapes', 'Peanuts', '2009'];
 
-
     plot1d = $.jqplot('chart1d', [line1], {
         title: 'Crop Yield Change, 2008 to 2009',
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer, 
+            renderer:$.jqplot.BarRenderer,
             rendererOptions:{
                 waterfall: true,
                 varyBarColor: true
@@ -186,7 +176,7 @@
         },
         axes:{
             xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer, 
+                renderer:$.jqplot.CategoryAxisRenderer,
                 ticks:ticks,
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
@@ -203,7 +193,6 @@
 <!-- End example scripts -->
 
 <!-- Don't touch this! -->
-
 
     <script class="include" type="text/javascript" src="../jquery.jqplot.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
@@ -286,6 +275,5 @@
     <script type="text/javascript" src="example.min.js"></script>
 
 </body>
-
 
 </html>

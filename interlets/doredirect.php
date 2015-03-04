@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php"); 
+require_once($rootpath."includes/inc_userinfo.php");
 // Pull in the NuSOAP code
 require_once($rootpath."soap/lib/nusoap.php");
 
@@ -19,7 +19,7 @@ if(isset($s_id)){
 	$letsgroup = get_letsgroup($groupid);
 	$mytoken = gettoken($letsgroup);
 	$myurl = $letsgroup["url"] ."/login.php?token=" . $mytoken;
-	//header("Location: $myurl");	
+	//header("Location: $myurl");
 	echo $myurl;
 }
 

@@ -21,14 +21,12 @@ header("Content-Type:text/html;charset=utf-8");
 
 <body>
 
-<div align='center'> 
+<div align='center'>
 <table id='maintable' cellspacing='0' cellpadding='0' border='0' width='95%' class='main'>
 	<tr>
 		<td valign='top' class='logo' colspan='2'>
-			
+
 		</td>
 	</tr>
-	
-	
+
 	<tr>
-	

@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
@@ -17,7 +17,7 @@ if(isset($s_id)) {
 	$sizelimit = 200;
         if (isset($_POST["zend"])){
 		//echo $_FILES['csvfile']['name'];
-		//echo $_FILES['csvfile']['tmp_name'];  
+		//echo $_FILES['csvfile']['tmp_name'];
 		//print_r($_FILES);
 		$tmpfile = $_FILES['picturefile']['tmp_name'];
 		$file = $_FILES['picturefile']['name'];
@@ -39,7 +39,7 @@ if(isset($s_id)) {
 			echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
 			setstatus("Fout: foto niet toegevoegd",1);
 		}
-	
+
 	} else {
 		show_form($sizelimit);
 	}
@@ -101,7 +101,7 @@ function resizepic($file,$tmpfile,$rootpath, $id){
 	$newwidth=300;
 	$newheight=($height/$width)*$newwidth;
 	$tmp=imagecreatetruecolor($newwidth,$newheight);
-	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height); 
+	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
 	//$uploadfile =  $rootpath ."userpictures/" .$id ."_" .$file;
 	$uploadfile =  $rootpath ."sites/$dirbase/userpictures/" .$id ."_" .$ts ."." .$ext;
         if(file_exists($uploadfile)){
@@ -116,7 +116,7 @@ function resizepic($file,$tmpfile,$rootpath, $id){
 		imagedestroy($tmp);
 	}
 }
-	
+
 function dbinsert($userid, $file, $rootpath) {
 	global $db;
 	global $_SESSION;
@@ -140,7 +140,7 @@ function dbinsert($userid, $file, $rootpath) {
 
 	readuser($userid, true);
 
-	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");	
+	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
 	header("Location:  mydetails.php");
         //echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 }
@@ -150,7 +150,6 @@ function delete_file($rootpath, $file){
         echo "Foto file $target wordt verwijderd...<br>";
         unlink($target);
 }
-
 
 function getuserid($letscode){
         global $db;

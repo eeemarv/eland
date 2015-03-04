@@ -4,7 +4,7 @@ require_once 'Swift/Tests/SwiftUnitTestCase.php';
 
 class Swift_Bug111Test extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function testUnstructuredHeaderSlashesShouldNotBeEscaped()
   {
     $complicated_header = array(
@@ -33,14 +33,14 @@ class Swift_Bug111Test extends Swift_Tests_SwiftUnitTestCase
       )
     );
     $json = json_encode($complicated_header);
-    
+
     $message = new Swift_Message();
     $headers = $message->getHeaders();
     $headers->addTextHeader('X-SMTPAPI', $json);
     $header = $headers->get('X-SMTPAPI');
-    
+
     $this->assertEqual('Swift_Mime_Headers_UnstructuredHeader', get_class($header));
     $this->assertEqual($json, $header->getFieldBody());
   }
-  
+
 }

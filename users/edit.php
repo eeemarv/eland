@@ -21,7 +21,7 @@ include($rootpath."includes/inc_content.php");
 //status 3: instapper
 //status 4: secretariaat
 //status 5: infopakket
-//status 6: infoavond 
+//status 6: infoavond
 //status 7: extern
 
 $mode = $_GET["mode"];
@@ -89,7 +89,6 @@ function show_serveroutputdiv(){
         echo "</div>";
 }
 
-
 function show_ptitle(){
 	global $mode;
 	echo "<h1>Gebruiker ";
@@ -109,7 +108,7 @@ function insert_user($posted_list){
 	global $db;
 	$posted_list["cdate"] = date("Y-m-d H:i:s");
 	$result = $db->AutoExecute("users", $posted_list, 'INSERT');
-	
+
 }
 
 function validate_input($posted_list){
@@ -128,9 +127,7 @@ function validate_input($posted_list){
 	if ($number2 !== 0){
 		$error_list["letscode"]="<font color='#F56DB5'>Letscode <strong>bestaat al</strong>!</font>";
 	}
-	
 
-	
 #	if (empty($posted_list["password1"]) || $posted_list["password1"]==""){
 #		$error_list["password1"]="<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 #	}elseif(empty($posted_list["password2"])|| $posted_list["password2"]==""){
@@ -138,7 +135,7 @@ function validate_input($posted_list){
 #	}elseif ($posted_list["password1"] !== $posted_list["password2"]){
 #$error_list["password3"] = "<font color='#F56DB5'><strong>Paswoorden zijn zijn</strong> <strong>niet identiek</strong>!</font>";
 #	}
-		
+
 #	if (empty($posted_list["login"])|| $posted_list["login"]==""){
 #		$error_list["login"]="<font color='#F56DB5'>Vul <strong>login</strong> in!</font>";
 #	}
@@ -147,12 +144,12 @@ function validate_input($posted_list){
 	    $query = "SELECT * FROM users WHERE login = '".$posted_list["login"]."'";
     	    $rs=$db->Execute($query);
 	    $number = $rs->recordcount();
-	
+
 	    if ($number !== 0){
 		$error_list["login"]="<font color='#F56DB5'>Login bestaat al!</font>";
 	    }
 	}
-	
+
 	//amount may not be empty
 	$var = trim($posted_list["minlimit"]);
 	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )=="")){
@@ -178,24 +175,24 @@ function show_form(){
 	echo "</td>\n<td valign='top'>";
 	echo "<input type='text' name='name' id='name' size='30'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
-	
+
 	echo "<tr><td align='right' valign='top'>";
 	echo "Volledige Naam (Voornaam en Achternaam)";
 	echo "</td>\n<td valign='top'>";
 	echo "<input type='text' name='fullname' id='fullname' size='30'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
-	
+
 	echo "<tr>\n<td valign='top'valign='top' align='right'>Letscode</td>\n";
 	echo "<td valign='top'><input type='text' name='letscode' id='letscode' size='10'>";
 	echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Postcode</td>\n";
 	echo "<td valign='top'><input type='text' name='postcode' id='postcode' size='6'>";
 	echo "</td>\n</tr>\n\n";
 
 	echo "<tr>\n<td valign='top' align='right'>Geboortedatum (jjjj-mm-dd)</td>\n";
 	echo "<td valign='top'><input type='text' name='birthday' id='birthday' size='10'></td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Hobbies/interesses:</td>\n<td valign='top'>";
 	echo "<textarea name='hobbies' id='hobbies' cols='40' rows='2'>";
 	echo "</textarea>";
@@ -205,7 +202,7 @@ function show_form(){
 	echo "<input type='text' name='comments' id='comments' size='60'>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td valign='top'>";
 	echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr>\n<td valign='top' align='right'>Login</td>\n<td valign='top'>";
 	echo "<input type='text' name='login' id='login' size='30'>";
 	echo "</td>\n</tr>\n\n";
@@ -231,14 +228,12 @@ function show_form(){
 	echo "</select>";
 	echo "</td>\n";
 	echo "</tr>\n\n";
-	
 
 	echo "<tr>\n<td valign='top' align='right'>Commentaar van de admin:</td>\n<td valign='top'>";
 	echo "<textarea name='admincomment' id='admincomment' cols='40' rows='2'>";
 	echo "</textarea>";
 	echo "</td>\n</tr>\n\n<tr><td valign='top'>";
 	echo "</td>\n</tr>\n\n";
-
 
 	echo "<tr>\n<td valign='top' align='right'>Limiet minstand</td>\n<td valign='top'>";
 	echo "<input type='text' name='minlimit' id='minlimit' size='30'>";
@@ -289,7 +284,7 @@ function show_form(){
 	echo "</td>\n</tr>\n\n</table>\n\n";
 	echo "</form>";
 
-	//echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='activateform' id='activateform'>";	
+	//echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='activateform' id='activateform'>";
 	//echo "<input type='submit' name='activate' id='activate' value='Activeren'>";
 	//echo "</form>";
 	//echo "</p></div>";

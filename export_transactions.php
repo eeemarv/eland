@@ -29,23 +29,16 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
-
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-
-
-
-
 function show_all_transactions($transactions){
-	
+
 	echo '"id","Creatiedatum","Transactiedatum","Van","Aan","Bedrag","Dienst","Ingebracht door"';
 	echo "\r\n";
 foreach($transactions as $key => $value){
@@ -70,7 +63,6 @@ echo '","';
 	}
 }
 
-
 function get_all_transactions($trans_orderby){
 	global $db;
 	$query = "SELECT *, ";
@@ -89,7 +81,7 @@ $query .= " AND transactions.creator = cusers.id";
 	}
 	else {
 		$query .= " ORDER BY transactions.date DESC";
-	}    
+	}
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
@@ -113,11 +105,10 @@ function get_all_transactions_by_userid($userid,$trans_orderby){
 	}
 	else {
 		$query .= " ORDER BY transactions.date DESC";
-	}    
+	}
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
-
 
 function show_ptitle(){
 #	echo "<h1>Transacties ";
@@ -141,8 +132,4 @@ function show_ptitle_with_id($userid){
 	header("Expires: 0");
 }
 
-
-
-
 ?>
-

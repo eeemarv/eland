@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * A KeyCache which streams to and from disk.
  * @package Swift
@@ -23,7 +22,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
 
   /** Signal to place pointer at end of file */
   const POSITION_END = 1;
-  
+
   /** Signal to leave pointer in whatever position it currently is */
   const POSITION_CURRENT = 2;
 
@@ -311,7 +310,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     }
     return $this->_keys[$nsKey][$itemKey];
   }
-  
+
   private function _freeHandle($nsKey, $itemKey)
   {
     $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_CURRENT);

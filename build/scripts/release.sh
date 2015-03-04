@@ -23,7 +23,6 @@ FILENAME=elas-${VERSION}.tar.gz
 if [ ! -f ${FILENAME} ]; then
     echo "<!-- Insert Piwik tracking code here -->" > $WORKSPACE/includes/inc_piwik.php
 	cd $WORKSPACE && tar --exclude='build' --exclude='.bzr' -czf /nas/code/public/elas/release/elas-${VERSION}.tar.gz *
-else 
+else
 	echo "File already exists for this release"
 fi
-

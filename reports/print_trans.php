@@ -8,7 +8,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 #include($rootpath."includes/inc_header.php");
 #include($rootpath."includes/inc_nav.php");
 
@@ -72,11 +72,11 @@ function show_userselect($list_users,$posted_list){
         }
         echo "</select>\n";
 	echo "</td>\n";
-	
+
 	echo "<td>";
         echo "<input type='submit' name='zend' value='OK'>";
         echo "</td>\n</tr>\n\n";
-	
+
 	echo "<tr><td>Datum van (yyyy-mm-dd):</td>\n";
 	echo "<td>";
 	echo "<input type='text' name='datefrom' size='10'";
@@ -116,7 +116,6 @@ function get_users(){
         $list_users = $db->GetArray($query);
         return $list_users;
 }
-
 
 function show_all_transactions($transactions){
 	echo "<div class='border_b'>";

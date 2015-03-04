@@ -42,4 +42,3 @@ function load(){
         usernameobj.open("GET", url);
 	usernameobj.send(null);
 }
-

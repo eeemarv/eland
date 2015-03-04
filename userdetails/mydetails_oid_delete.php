@@ -9,7 +9,6 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
@@ -21,14 +20,13 @@ if (isset($s_id)){
 	}else{
 		redirect_mydetails_view();
 	}
-	
+
 }else{
 	redirect_login($rootpath);
 }
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 function delete_oid($id){
 	global $db;
@@ -54,4 +52,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

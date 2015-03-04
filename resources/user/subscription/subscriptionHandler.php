@@ -1,5 +1,5 @@
-<?php 
- 
+<?php
+
 /**
  * @uri /resources/user/subscription/{Sub}
  */
@@ -17,8 +17,8 @@ class subscriptionHandler extends Resource {
 	//
 	function get($request, $Msg){
 		echo "GET subscription not implemented";
-	}	
-	
+	}
+
 	function post($request, $Msg){
 		global $db;
 		session_start();
@@ -26,10 +26,10 @@ class subscriptionHandler extends Resource {
 		$s_name = $_SESSION["name"];
 		$s_letscode = $_SESSION["letscode"];
 		$s_accountrole = $_SESSION["accountrole"];
-		
+
 		$response = new Response($request);
 	}
-		
+
 }
 
 ?>

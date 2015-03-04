@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Interface for all Encoder schemes.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 interface Swift_Encoder extends Swift_Mime_CharsetObserver
 {
-  
+
   /**
    * Encode a given string to produce an encoded string.
    * @param string $string
@@ -27,5 +26,5 @@ interface Swift_Encoder extends Swift_Mime_CharsetObserver
    */
   public function encodeString($string, $firstLineOffset = 0,
     $maxLineLength = 0);
-  
+
 }

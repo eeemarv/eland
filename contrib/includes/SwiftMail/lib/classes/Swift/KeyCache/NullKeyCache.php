@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * A null KeyCache that does not cache at all.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
 {
-  
+
   /**
    * Set a string into the cache under $itemKey for the namespace $nsKey.
    * @param string $nsKey
@@ -29,7 +28,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   public function setString($nsKey, $itemKey, $string, $mode)
   {
   }
-  
+
   /**
    * Set a ByteStream into the cache under $itemKey for the namespace $nsKey.
    * @param string $nsKey
@@ -42,7 +41,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
     $mode)
   {
   }
-  
+
   /**
    * Provides a ByteStream which when written to, writes data to $itemKey.
    * NOTE: The stream will always write in append mode.
@@ -54,7 +53,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
     Swift_InputByteStream $writeThrough = null)
   {
   }
-  
+
   /**
    * Get data back out of the cache as a string.
    * @param string $nsKey
@@ -64,7 +63,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   public function getString($nsKey, $itemKey)
   {
   }
-  
+
   /**
    * Get data back out of the cache as a ByteStream.
    * @param string $nsKey
@@ -74,7 +73,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   public function exportToByteStream($nsKey, $itemKey, Swift_InputByteStream $is)
   {
   }
-  
+
   /**
    * Check if the given $itemKey exists in the namespace $nsKey.
    * @param string $nsKey
@@ -85,7 +84,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   {
     return false;
   }
-  
+
   /**
    * Clear data for $itemKey in the namespace $nsKey if it exists.
    * @param string $nsKey
@@ -94,7 +93,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   public function clearKey($nsKey, $itemKey)
   {
   }
-  
+
   /**
    * Clear all data in the namespace $nsKey if it exists.
    * @param string $nsKey
@@ -102,5 +101,5 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
   public function clearAll($nsKey)
   {
   }
-  
+
 }

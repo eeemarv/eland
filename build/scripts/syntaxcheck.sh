@@ -8,5 +8,3 @@ for i in $(find ./ -type f -name '*.php' | grep -v "./contrib"); do
 		exit 1
 	fi
 done
-
-

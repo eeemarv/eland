@@ -13,7 +13,7 @@ $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
-// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 ) 
+// Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 )
 
 //debug
 //print_r($_POST);
@@ -69,9 +69,9 @@ if (empty($error_list)){
 				// $abbrev, $value, $id
 				$myuser = get_user_by_letscode($posted_list["letscode"]);
 				//$myuser = get_user_maildetails($tmpuser["id"]);
-				if(!empty($email)){	
+				if(!empty($email)){
 					$result1 = create_contact("mail", $email, $myuser["id"]);
-				} else {	
+				} else {
 					$result1 = TRUE;
 				}
 				if(!empty($address)){
@@ -93,7 +93,7 @@ if (empty($error_list)){
 					echo "<br><font color='green'><strong>OK</font> - Contactgegevens opgeslagen";
 				} else {
 					echo "<br><font color='red'><strong>Fout bij het opslaan van de contactgegevens";
-				}	
+				}
 				// Activate the user if activate is set
 				if($activate == "true"){
 					$mailuser = get_user_maildetails($myuser["id"]);
@@ -144,7 +144,7 @@ function update_user($id, $posted_list){
 
 function set_pw($id, $posted_list){
         global $db;
-        //$posted_list["password"]= 
+        //$posted_list["password"]=
 	$posted_list["adate"] = date("Y-m-d H:i:s");
 	$result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
 	readuser($id, true);
@@ -194,14 +194,14 @@ function validate_letscode($letscode, &$error_list){
 
 function validate_login($login, &$error_list){
 	global $db;
-	$query = "SELECT * FROM users WHERE login = '".$login."'"; 
+	$query = "SELECT * FROM users WHERE login = '".$login."'";
 	$rs=$db->Execute($query);
 	$number = $rs->recordcount();
 
 	if ($number !== 0){
 		$error_list["login"]="Login ".$login." bestaat al!";
 		//$user = get_user_maildetails($id);
-		//$email = $user["emailaddress"];	
+		//$email = $user["emailaddress"];
 		//$error_list["login"].=" <br>Suggestie: Het e-mail adres van deze gebruiker ";
 		//$error_list["login"].=" (".$email.")";
 		//$error_list["login"].=" is een geschikte kandidaat om als unieke login naam te dienen.";
@@ -235,7 +235,7 @@ function validate_input($posted_list,$email){
         }elseif(eregi('^-[0-9]+$', $var) == FALSE){
                 $error_list["minlimit"]="Minlimiet moet een negatief getal zijn";
         }
-        
+
         if(!empty($posted_list['birthday'])) {
 			if (!preg_match('#^(\d{4})-(\d{2})-(\d{2})$#', $posted_list['birthday'])) {
                 $error_list["birthday"]="Geef de geboortedatum in jjjj-mm-dd formaat op";
@@ -257,7 +257,7 @@ function validate_input($posted_list,$email){
 function sendadminmail($posted_list, $user){
         global $configuration;
 
-	$mailfrom = trim(readconfigfromdb("from_address"));	
+	$mailfrom = trim(readconfigfromdb("from_address"));
 	$mailto = trim(readconfigfromdb("admin"));
 	$systemtag = readconfigfromdb("systemtag");
 
@@ -283,9 +283,7 @@ function sendadminmail($posted_list, $user){
         $mailcontent .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-        
+
 }
 
-
 ?>
-

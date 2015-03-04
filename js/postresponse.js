@@ -12,7 +12,7 @@ function makePOSTRequest(url, parameters) {
          //http_request.overrideMimeType('text/xml');
          http_request.overrideMimeType('text/html');
       }
-   
+
    http_request.onreadystatechange = alertContents;
    http_request.open('POST', url, true);
    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -26,7 +26,7 @@ function alertContents() {
       if (http_request.status == 200) {
          //alert(http_request.responseText);
          result = http_request.responseText;
-         document.getElementById('responseformdiv').innerHTML = result; 
+         document.getElementById('responseformdiv').innerHTML = result;
          resultRegExp = /OK/;
          if(result.match(resultRegExp)){
                 document.getElementById('zend').disabled = true;
@@ -37,7 +37,7 @@ function alertContents() {
       }
    }
 }
-   
+
 function getresponse(obj) {
    var poststr = "msgid=" + encodeURIComponent( document.getElementById("myid").value ) +
 		 "&reactie=" + encodeURIComponent( document.getElementById("reactie").value ) +
@@ -45,4 +45,3 @@ function getresponse(obj) {
    document.getElementById('responseformdiv').innerHTML = "<img src='/gfx/ajax-smallloader.gif' ALT='loading'>";
    makePOSTRequest('/messages/respond.php', poststr);
 }
-

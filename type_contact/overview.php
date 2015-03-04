@@ -52,7 +52,7 @@ function show_all_contacttypes($contacttypes){
 		}else{
 	        	echo "<tr class='even_row'>";
 		}
-		
+
 		echo "<td valign='top'>";
 		echo "<a href='view.php?id=".$value["id"]."'>";
 		echo htmlspecialchars($value["name"],ENT_QUOTES);

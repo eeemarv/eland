@@ -18,12 +18,12 @@ if (isset($s_id)){
 	$errorlist = array();
 	show_ptitle();
 	if(isset($_POST["zend"])){
-		
+
 		$posted_list = array();
 		$posted_list["pw1"] = $_POST["pw1"];
 		$posted_list["pw2"] = $_POST["pw2"];
 		$errorlist = validate_input($posted_list,$configuration);
-			
+
 		if (!empty($errorlist)){
 			show_pwform($errorlist, $s_id);
 		}else{
@@ -35,7 +35,6 @@ if (isset($s_id)){
 		show_closebutton();
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////

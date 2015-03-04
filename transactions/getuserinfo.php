@@ -37,4 +37,3 @@ if (!$err) {
 		echo $result;
 	}
 }
-

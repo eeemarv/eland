@@ -4,34 +4,34 @@ require_once 'Swift/Tests/SwiftUnitTestCase.php';
 
 class Swift_Bug34Test extends Swift_Tests_SwiftUnitTestCase
 {
-  
+
   public function setUp()
   {
     Swift_Preferences::getInstance()->setCharset('utf-8');
   }
-  
+
   public function testEmbeddedFilesWithMultipartDataCreateMultipartRelatedContentAsAnAlternative()
   {
     $message = Swift_Message::newInstance();
     $message->setCharset('utf-8');
     $message->setSubject('test subject');
     $message->addPart('plain part', 'text/plain');
-    
+
     $image = Swift_Image::newInstance('<image data>', 'image.gif', 'image/gif');
     $cid = $message->embed($image);
-    
+
     $message->setBody('<img src="' . $cid . '" />', 'text/html');
-    
+
     $message->setTo(array('user@domain.tld' => 'User'));
-    
+
     $message->setFrom(array('other@domain.tld' => 'Other'));
     $message->setSender(array('other@domain.tld' => 'Other'));
-    
+
     $id = $message->getId();
     $date = preg_quote(date('r', $message->getDate()), '~');
     $boundary = $message->getBoundary();
     $cidVal = $image->getId();
-    
+
     $this->assertPattern(
     '~^' .
     'Sender: Other <other@domain.tld>' . "\r\n" .
@@ -75,5 +75,5 @@ class Swift_Bug34Test extends Swift_Tests_SwiftUnitTestCase
     $message->toString()
     );
   }
-  
+
 }

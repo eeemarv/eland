@@ -12,21 +12,20 @@ $s_accountrole = $_SESSION["accountrole"];
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
-
-//er is ingelogd	
+//er is ingelogd
 if(isset($s_id)){
 	//er is een id
 	if (isset($_GET["id"])){
 		$id = $_GET["id"];
-	
+
 		//haal msg
 		$message = get_msg($id);
-		
+
 		show_ptitle();
-		
+
 		//toon msg
 		show_msg($message, $s_accountrole);
-	
+
 	}else{
 		//Geen id, naar overview
 		redirect_overview();
@@ -54,14 +53,14 @@ function show_msg($message, $s_accountrole){
 	echo "<td valign='top' nowrap><strong>Categorie</strong></td>";
 	echo "<td valign='top' nowrap><strong>Geldig tot</strong></td>";
 	echo "</tr>";
-	
+
 	echo "<tr>";
 	echo "<td valign='top' nowrap>";
 	 	if ($message["msg_type"] == 0){
  		echo "V";
 	}elseif($message["msg_type"] == 1){
 		echo "A";
-	} 
+	}
 	echo "</td>";
 	echo "<td valign='top'>";
 	echo nl2br(htmlspecialchars($message["content"],ENT_QUOTES));
@@ -77,9 +76,7 @@ function show_msg($message, $s_accountrole){
 	echo "</td>";
 	echo "</tr>";
 	echo "</table></div>";
-	
-	
-	
+
 }
 
 function get_msg($id){
@@ -111,4 +108,3 @@ function redirect_login($rootpath){
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

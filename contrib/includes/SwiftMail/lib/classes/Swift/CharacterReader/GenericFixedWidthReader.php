@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * Provides fixed-width byte sizes for reading fixed-width character sets.
  * @package Swift
@@ -54,7 +53,7 @@ class Swift_CharacterReader_GenericFixedWidthReader
 
     return ($strlen - $ignored)/$this->_width;
   }
-  
+
   /**
    * Returns mapType
    * @int mapType

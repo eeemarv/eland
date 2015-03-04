@@ -65,7 +65,7 @@ function delete_group($id){
 		setstatus("letsgroup $id verwijderen mislukt", 1);
 	}
 }
-	
+
 function show_group($group){
 	echo "<div >";
 	echo "LETS Groep: " .$group["groupname"];

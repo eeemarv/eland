@@ -54,7 +54,7 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
         $mailcontent .= "\nPasswoord: ";
         $mailcontent .= $password;
         $mailcontent .= "\n-- --\n\n";
-        
+
 		$openids = get_openids($user["id"]);
        	$mailcontent .= "Of log in met een OpenID account (indien gelinked): \n";
 		foreach($openids as $value){
@@ -67,7 +67,6 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
         $mailcontent .= "\n\n";
         $mailcontent .= "Met vriendelijke groeten.\n\nDe eLAS Account robot\n";
 
-
         //echo "Bezig met het verzenden naar $mailto...\n";
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
         // log it
@@ -76,7 +75,6 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
 		$status = "OK - Een nieuw wachtwoord is verstuurd via email";
 		return $status;
 }
-
 
 function sendactivationmail($password, $user,$s_id){
 	global $baseurl;
@@ -117,14 +115,13 @@ function sendactivationmail($password, $user,$s_id){
         $mailcontent .= "\nPasswoord: ";
         $mailcontent .= $password;
         $mailcontent .= "\n-- --\n\n";
-        
+
         $openids = get_openids($user["id"]);
        	$mailcontent .= "Of log in met een OpenID account (indien gelinked): \n";
 		foreach($openids as $value){
 			$mailcontent .= " * " .$value["openid"] ."\n";
 		}
 		$mailcontent .= "\n";
-		
 
 	$mailcontent .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
 	$mailcontent .= " zelf bijwerken op het Internet.";
@@ -132,7 +129,7 @@ function sendactivationmail($password, $user,$s_id){
 
 	// INSERT INTO config ( category, setting, value, description, comment, default)
 	// VALUES ( 'systeem', 'systemmailinglist', 'mailinglistaddress@example.com', 'Mailinglist adress', NULL , '1');
-	//$systemmailinglist= readconfigfromdb("systemmailinglist"); 
+	//$systemmailinglist= readconfigfromdb("systemmailinglist");
 	//if ($systemmailinglist != FALSE) {
 		//$mailcontent .= "Als je dringend vraag of aanbod hebt stuur dan ";
 		//$mailcontent .= "een email naar $systemmailinglist. Voordat je mailt, ";
@@ -163,7 +160,7 @@ function get_openids($user_id){
 function update_password($id, $posted_list){
         global $db;
         global $s_id;
-        
+
         $posted_list["password"]=hash('sha512',$posted_list["pw1"]);
         $posted_list["mdate"] = date("Y-m-d H:i:s");
         $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
@@ -173,27 +170,27 @@ function update_password($id, $posted_list){
 	} else {
 		setstatus('Passwoord niet gewijzigd',0);
 	}
-	
+
 	log_event($s_id,"System","");
         return $result;
 }
 
 function generatePassword ($length = 10)
 {
-    srand((double)microtime()*1000000);  
+    srand((double)microtime()*1000000);
     $number = rand(0,9);
-      
-    $vowels = array("a", "e", "i", "o", "u");  
-    $cons = array("b", "c", "d", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "u", "v", "w", "tr", 
-    "cr", "br", "fr", "th", "dr", "ch", "ph", "wr", "st", "sp", "sw", "pr", "sl", "cl");  
-      
-    $num_vowels = count($vowels);  
-    $num_cons = count($cons);  
-      
-    for($i = 0; $i < $length; $i++){  
-        $password .= $cons[rand(0, $num_cons - 1)] . $vowels[rand(0, $num_vowels - 1)];  
-    }  
-      
+
+    $vowels = array("a", "e", "i", "o", "u");
+    $cons = array("b", "c", "d", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "u", "v", "w", "tr",
+    "cr", "br", "fr", "th", "dr", "ch", "ph", "wr", "st", "sp", "sw", "pr", "sl", "cl");
+
+    $num_vowels = count($vowels);
+    $num_cons = count($cons);
+
+    for($i = 0; $i < $length; $i++){
+        $password .= $cons[rand(0, $num_cons - 1)] . $vowels[rand(0, $num_vowels - 1)];
+    }
+
     $word = substr($password, 0, ($length - 1));
     return $word . $number;
 }
@@ -327,4 +324,4 @@ function Password_Strength($password, $username = null)
     return $strength;
 }
 
-?> 
+?>

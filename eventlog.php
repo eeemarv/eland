@@ -21,20 +21,20 @@ if(isset($_POST["search"])){
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle();
-	
+
 	show_searchform($searchstring);
-	
+
 	//FIXME Add check for file age, fetch from logserver if stale
 	$file = "$rootpath/sites/$baseurl/json/eventlog.json";
 	$now = time();
 	$filetime = filemtime($file);
-	if(($now - $filetime) >= 120){ 
+	if(($now - $filetime) >= 120){
 		get_elaslog();
 	}
-	
+
 	$file = "$rootpath/sites/$baseurl/json/eventlog.json";
 	$mylogs=json_decode(file_get_contents($file), true);
-	
+
 	show_logs($mylogs['logs'], $searchstring);
 }else{
 	redirect_login($rootpath);
@@ -78,19 +78,19 @@ function show_logs($logrows,$searchstring){
 	echo "<td>Event</td>\n";
 	echo "<td>IP address</a></td>\n";
 	echo "</tr>";
-	
+
 	foreach($logrows as $key => $value){
 		$printme = 0;
 		$searchstring = strtolower($searchstring);
 		if($searchstring == "") {
 			$printme = 1;
 		}
-		
+
 		if(preg_match("/$searchstring/", strtolower($value[3]))) {
 			$printme = 1;
 		}
-		
-		if($printme == 1) { 
+
+		if($printme == 1) {
 			echo "<tr>";
 			echo "<td>" .$value[0] ."</td>";
 			echo "<td nowrap>" .$value[1] ."</td>";
@@ -102,7 +102,7 @@ function show_logs($logrows,$searchstring){
 	}
 
 	echo "</table></div>";
-	
+
 	//echo "<p><a href='export/export_eventlog.php'>CSV export</a></p>
 }
 

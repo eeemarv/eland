@@ -5,7 +5,7 @@ window.addEvent('domready', function() {
 	var MySubFormDiv = new Fx.Slide('subformdiv');
 	var MyUnSubFormDiv = new Fx.Slide('unsubformdiv');
 	var MyMLFormDiv = new Fx.Slide('mlformdiv');
-	
+
 	MyContactFormDiv.slideIn();
 	$('contactformdiv').removeClass('hidden');
 
@@ -14,13 +14,13 @@ window.addEvent('domready', function() {
 
 	MyOIDFormDiv.slideIn();
 	$('oidformdiv').removeClass('hidden');
-	
+
 	MySubFormDiv.slideIn();
 	$('subformdiv').removeClass('hidden');
-	
+
 	MyUnSubFormDiv.slideIn();
 	$('unsubformdiv').removeClass('hidden');
-	
+
 	MyMLFormDiv.slideIn();
 	$('mlformdiv').removeClass('hidden');
 
@@ -95,7 +95,7 @@ window.addEvent('domready', function() {
 		//Send the form.
 		this.send();
 	});
-	
+
 	$('unsubform').addEvent('submit', function(e) {
 		e.stop();
 		var log = $('log_res').empty().addClass('ajax-loading');
@@ -120,7 +120,6 @@ window.addEvent('domready', function() {
 		this.send();
 	});
 
-
 	$('pwform').addEvent('submit', function(e) {
 		e.stop();
 		var log = $('log_res').empty().addClass('ajax-loading');
@@ -144,7 +143,7 @@ window.addEvent('domready', function() {
 		//Send the form.
 		this.send();
 	});
-	
+
 	$('msgform').addEvent('submit', function(e) {
 		e.stop();
 		var log = $('log_res').empty().addClass('ajax-loading');
@@ -184,17 +183,16 @@ window.addEvent('domready', function() {
 		e.stop();
 		MyPwFormDiv.toggle();
 	});
-	
+
 	$('showsubform').addEvent('click', function(e) {
 		e.stop();
 		MySubFormDiv.toggle();
 	});
-	
+
 	$('showunsubform').addEvent('click', function(e) {
 		e.stop();
 		MyUnSubFormDiv.toggle();
 	});
-
 
 	$('showoidform').addEvent('click', function(e) {
 		e.stop();

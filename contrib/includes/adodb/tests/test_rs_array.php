@@ -12,7 +12,6 @@ array ('Bill', '49')
 
 $typearr = array('C','I');
 
-
 $rs->InitArray($array,$typearr);
 
 while (!$rs->EOF) {
@@ -40,8 +39,6 @@ while (!$rs->EOF) {
 	print_r($rs->fields);echo "<br>";
 	$rs->MoveNext();
 }
-
-
 
 die();
 ?>

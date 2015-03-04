@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * A HTML output reporter for the Reporter plugin.
  * @package Swift
@@ -17,7 +16,7 @@
  */
 class Swift_Plugins_Reporters_HtmlReporter implements Swift_Plugins_Reporter
 {
-  
+
   /**
    * Notifies this ReportNotifier that $address failed or succeeded.
    * @param Swift_Mime_Message $message
@@ -41,5 +40,5 @@ class Swift_Plugins_Reporters_HtmlReporter implements Swift_Plugins_Reporter
       flush();
     }
   }
-  
+
 }

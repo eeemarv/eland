@@ -52,7 +52,7 @@ include_once(ADODB_DIR.'/drivers/adodb-mssql.inc.php');
 
 class ADODB_mssql_n extends ADODB_mssql {
 	var $databaseType = "mssql_n";
-	
+
 	function ADODB_mssqlpo()
 	{
 		ADODB_mssql::ADODB_mssql();
@@ -126,7 +126,6 @@ class ADODB_mssql_n extends ADODB_mssql {
                 $result = str_replace($literals, array_keys($literals), $result);
             }
         }
-
 
     /// Analyse literals to prepend the N char to them if their contents aren't numeric
         if (!empty($literals)) {

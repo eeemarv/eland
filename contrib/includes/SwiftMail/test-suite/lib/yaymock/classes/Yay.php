@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Expectations.php';
 //require 'Yay/Matchers/OptionalMatcher.php';
 //require 'Yay/Matchers/AnyMatcher.php';
@@ -36,16 +36,16 @@
  */
 class Yay
 {
-  
+
   /**
    * The classpath used for autoloading.
    * @var string
    * @access private
    */
   private static $CLASSPATH = '.';
-  
+
   // -- Expectations
-  
+
   /**
    * Create a new Expectations builder instance.
    * @return Yay_Expectations
@@ -54,9 +54,9 @@ class Yay
   {
     return new Yay_Expectations();
   }
-  
+
   // -- Matchers
-  
+
   /**
    * Create a new Optional matcher, optionally wrapping $value.
    * @param string $value, optional
@@ -66,7 +66,7 @@ class Yay
   {
     return new Yay_Matchers_OptionalMatcher($value);
   }
-  
+
   /**
    * Create a new Any matcher, optionally constrained to $type.
    * @param string $type, optional
@@ -76,7 +76,7 @@ class Yay
   {
     return new Yay_Matchers_AnyMatcher($type, true);
   }
-  
+
   /**
    * Create a negated Any matcher, optionally constrained to $type.
    * @param string $type, optional
@@ -86,7 +86,7 @@ class Yay
   {
     return new Yay_Matchers_AnyMatcher($type, false);
   }
-  
+
   /**
    * Create a new Identical matcher for $value.
    * @param mixed $value
@@ -96,7 +96,7 @@ class Yay
   {
     return new Yay_Matchers_IdenticalMatcher($value, true);
   }
-  
+
   /**
    * Create a negated Identical matcher for $value.
    * @param mixed $value
@@ -106,7 +106,7 @@ class Yay
   {
     return new Yay_Matchers_IdenticalMatcher($value, false);
   }
-  
+
   /**
    * Create a new Equal matcher for $value.
    * @param mixed $value
@@ -116,7 +116,7 @@ class Yay
   {
     return new Yay_Matchers_EqualMatcher($value, true);
   }
-  
+
   /**
    * Create a negated Equal matcher for $value.
    * @param mixed $value
@@ -126,7 +126,7 @@ class Yay
   {
     return new Yay_Matchers_EqualMatcher($value, false);
   }
-  
+
   /**
    * Create a new Pattern matcher for $pattern.
    * @param string $pattern
@@ -136,7 +136,7 @@ class Yay
   {
     return new Yay_Matchers_PatternMatcher($pattern, true);
   }
-  
+
   /**
    * Create a negated Pattern matcher for $pattern.
    * @param string $pattern
@@ -146,7 +146,7 @@ class Yay
   {
     return new Yay_Matchers_PatternMatcher($pattern, false);
   }
-  
+
   /**
    * Create a new Reference matcher for $ref.
    * @param mixed $ref
@@ -156,7 +156,7 @@ class Yay
   {
     return new Yay_Matchers_ReferenceMatcher($ref, true);
   }
-  
+
   /**
    * Create a negated Reference matcher for $ref.
    * @param mixed $ref
@@ -166,7 +166,7 @@ class Yay
   {
     return new Yay_Matchers_ReferenceMatcher($ref, false);
   }
-  
+
   /**
    * Create a new Bounds matcher for boundaries between $lower and $upper.
    * @param mixed $lower
@@ -177,7 +177,7 @@ class Yay
   {
     return new Yay_Matchers_BoundsMatcher($lower, $upper, true);
   }
-  
+
   /**
    * Create a negated Bounds matcher for boundaries outside $lower and $upper.
    * @param mixed $lower
@@ -188,9 +188,9 @@ class Yay
   {
     return new Yay_Matchers_BoundsMatcher($lower, $upper, false);
   }
-  
+
   // -- Actions
-  
+
   /**
    * Create a new ReturnValueAction with $value.
    * @param mixed $value
@@ -200,7 +200,7 @@ class Yay
   {
     return new Yay_Actions_ReturnValueAction($value);
   }
-  
+
   /**
    * Create a new ReturnReferenceAction with &$ref.
    * @param mixed $ref
@@ -210,7 +210,7 @@ class Yay
   {
     return new Yay_Actions_ReturnReferenceAction($ref);
   }
-  
+
   /**
    * Create a new ThrowAction with $e.
    * @param Exception $ref
@@ -220,7 +220,7 @@ class Yay
   {
     return new Yay_Actions_ThrowAction($e);
   }
-  
+
   /**
    * Create a new CallbackAction with $callback.
    * @param callback $callback
@@ -257,5 +257,5 @@ class Yay
       require_once $path;
     }
   }
-  
+
 }

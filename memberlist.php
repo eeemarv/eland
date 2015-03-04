@@ -12,7 +12,7 @@ $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php"); 
+include($rootpath."includes/inc_nav.php");
 
 echo "<script type='text/javascript' src='$rootpath/js/moomemberlist.js'></script>";
 
@@ -25,7 +25,7 @@ if(isset($s_id)){
 	// Show prefix selection
 	show_header($posted_list["prefix"],$rootpath);
 	show_outputdiv($posted_list["prefix"]);
-	
+
 }else{
 	redirect_login($rootpath);
 }
@@ -73,7 +73,7 @@ function show_header($prefix_filterby,$rootpath) {
     echo "<input type='text' name='searchname' size='25'>";
 	echo "</td>";
     echo "</tr>";
-        
+
     echo "<tr>\n<td>Sorteer:</td><td>\n";
     echo "<select name='sort'>\n";
     echo "<option value='letscode'>letscode</option>";
@@ -113,7 +113,6 @@ function get_contacts($userid){
 	$contactrows = $db->GetArray($query);
 	return $contactrows;
 }
-			
 
 function show_printversion($prefix_filterby){
 	echo "<a href='print_memberlist.php?prefix_filterby=" .$prefix_filterby . "'>";
@@ -188,7 +187,7 @@ function show_all_users($userrows){
 		echo "<td nowrap  valign='top'>";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
-			
+
 			foreach($contactrows as $key2 => $value2){
 				if ($value2["id_type_contact"] == 1){
 					echo  $value2["value"];
@@ -213,10 +212,10 @@ function show_all_users($userrows){
 				}
 			}
 		echo "</td>\n";
-		
+
 		echo "<td nowrap valign='top' align='right'>";
 		$balance = $value["saldo"];
-		if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){		
+		if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){
 			echo "<font color='red'> $balance </font>";
 		}else{
 			echo $balance;
@@ -224,7 +223,7 @@ function show_all_users($userrows){
 
 		echo "</td>\n";
 		echo "</tr>\n\n";
-		
+
 	}
 	echo "</table></div>";
 }

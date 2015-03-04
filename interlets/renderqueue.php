@@ -9,7 +9,7 @@ $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
 $s_letscode = $_SESSION["letscode"];
 $s_accountrole = $_SESSION["accountrole"];
-	
+
 if($s_accountrole == "admin"){
 	$interletsq = get_interletsq();
 	showq($interletsq);
@@ -55,12 +55,12 @@ function showq($interletsq){
 		echo "</td>";
 
 		echo "<td nowrap valign='top'>";
-                echo $value["date_created"];         
+                echo $value["date_created"];
                 echo "</td>";
 
 		echo "<td nowrap valign='top'>";
 		$user = get_user($value["id_from"]);
-                //echo $value["id_from"];         
+                //echo $value["id_from"];
 		echo $user["fullname"];
                 echo "</td>";
 
@@ -94,7 +94,6 @@ function showq($interletsq){
 	}
 	echo "</table></div>";
 }
-
 
 function get_interletsq(){
 	global $db;

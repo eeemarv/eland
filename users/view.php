@@ -23,7 +23,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		#	show_deletelink($id);
 		#}
 		show_activatelink($id);
-		    
+
 		show_user($user,$rootpath);
 		$user_id = $user["id"];
 		$contact = get_contact($id);
@@ -72,7 +72,7 @@ $strlength = strlen($content);
 }
 
 function show_all_msgs($messagerows){
-	
+
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
 	echo "<td colspan='2'><strong>Vraag & Aanbod</strong></td>";
@@ -147,7 +147,7 @@ function show_all_transactions($transactions, $user){
 		echo "</td><td valign='top'>";
 		echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
 		echo "</td>";
-		
+
 					if ($value["fromusername"] == $user["name"]){
 								echo "<td valign='top' nowrap>";
 		 						echo $value["amount"];
@@ -213,7 +213,7 @@ function show_ptitle(){
 function show_user($user,$rootpath){
 	global $baseurl;
 	global $dirbase;
-	
+
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 	echo "<tr class='even_row'><td colspan='2'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." (";
 	echo trim($user["letscode"]).")</strong></td></tr>";
@@ -238,13 +238,13 @@ function show_user($user,$rootpath){
 
 		echo "<tr><td>Geboortedatum: </td>";
 		echo "<td>".$user["birthday"]."</td></tr>";
-		
+
 		echo "<tr><td valign='top'>Hobbies/interesses: </td>";
 		echo "<td>".nl2br(htmlspecialchars($user["hobbies"],ENT_QUOTES))."</td></tr>";
-	
+
 		echo "<tr><td valign='top'>Commentaar: </td>";
 		echo "<td>".nl2br(htmlspecialchars($user["comments"],ENT_QUOTES))."</td></tr>";
-	
+
 		echo "<tr><td valign='top'>Login: </td>";
 		echo "<td>".htmlspecialchars($user["login"],ENT_QUOTES)."</td></tr>";
 		echo "<tr><td valign='top'>Datum aanmaak: </td>";
@@ -276,7 +276,7 @@ function show_user($user,$rootpath){
 
 		echo "<tr><td valign='top'>Commentaar van de admin: </td>";
 		echo "<td>".nl2br(htmlspecialchars($user["admincomment"],ENT_QUOTES))."</td></tr>";
-	
+
 		echo "<tr><td valign='top'>Limiet minstand:</td>";
 		echo "<td>".$user["minlimit"]."</td></tr>";
 
@@ -287,7 +287,7 @@ function show_user($user,$rootpath){
                         echo "<td valign='top'>Uit</td>";
                 }
 		echo "</tr>";
-		
+
 		echo "</table>";
 	echo "</td>";
 
@@ -311,7 +311,6 @@ function get_user($id){
 	return $user;
 }
 
-
 function get_contact($id){
 	global $db;
 	$query = "SELECT *, ";
@@ -321,7 +320,7 @@ function get_contact($id){
 	$query .= " WHERE users.id=".$id;
 	$query .= " AND contact.id_type_contact = type_contact.id ";
 	$query .= " AND users.id = contact.id_user ";
-	
+
 	$contact = $db->GetArray($query);
 	return $contact;
 }
@@ -329,7 +328,7 @@ function get_contact($id){
 function show_contact($contact, $user_id ){
 	echo "<div >";
 	echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
-	
+
 	echo "<tr class='even_row'>";
 	echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
 	echo "</tr>";
@@ -348,7 +347,7 @@ echo "</tr>";
 		echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
 		echo "<td valign='top'>";
 		if (trim($value["flag_public"]) == 1){
-				echo "Ja";	
+				echo "Ja";
 		}else{
 				echo "Nee";
 		}
@@ -398,13 +397,11 @@ function get_all_transactions($user_id){
 	}
 	else {
 		$query .= " ORDER BY transactions.date DESC";
-	}    
+	}
 	$transactions = $db->GetArray($query);
 	return $transactions;
 }
 
-
 include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>
-

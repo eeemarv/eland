@@ -5,7 +5,7 @@
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,9 +13,9 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
  */
- 
+
 //require 'Yay/Matchers/IdenticalMatcher.php';
 
 /**
@@ -25,7 +25,7 @@
  */
 class Yay_Matchers_EqualMatcher extends Yay_Matchers_IdenticalMatcher
 {
-  
+
   /**
    * Create a new EqualMatcher expecting $expected.
    * @param mixed $expected
@@ -35,7 +35,7 @@ class Yay_Matchers_EqualMatcher extends Yay_Matchers_IdenticalMatcher
   {
     parent::__construct($expected, $result);
   }
-  
+
   /**
    * Compare $value with the expected value and return true if it is equal.
    * @param mixed $value
@@ -46,5 +46,5 @@ class Yay_Matchers_EqualMatcher extends Yay_Matchers_IdenticalMatcher
     $return =  (($this->_expected == $value) && ($value == $this->_expected));
     return (($this->_result && $return) || (!$this->_result && !$return));
   }
-  
+
 }
