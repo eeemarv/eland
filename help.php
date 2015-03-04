@@ -169,7 +169,7 @@ function helpmail($posted_list,$rootpath){
 	global $elasversion;
 
 	$mailfrom .= "From: " .trim($posted_list['email']);
-        if (!empty(readconfigfromdb("support"]))){
+        if (!empty(readconfigfromdb("support"))){
 		$mailto .= trim(readconfigfromdb("support"))."\r\n";
         }else {
 		 Echo "No support adress set in config, not sending";
