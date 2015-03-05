@@ -82,6 +82,7 @@ function message_list_announce($uuid) {
 
 function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 	global $elasversion;
+
 	// return 0 on success, 1 on failure
 	// use Mandrill for transport
 	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 465, 'ssl');
@@ -164,5 +165,3 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 
 	return $mailstatus;
 }
-
-?>

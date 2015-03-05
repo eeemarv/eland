@@ -5,6 +5,7 @@
 	"knplabs/gaufrette": "0.1.*",
 	"aws/aws-sdk-php": "2.7.*@dev",
 	"adodb/adodb-php": "dev-master",
-	"swiftmailer/swiftmailer": "5.3.*@dev"
+	"swiftmailer/swiftmailer": "5.3.*@dev",
+	"monolog/monolog": "1.13.*@dev"
     }
 }

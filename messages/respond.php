@@ -15,32 +15,29 @@ include($rootpath."includes/inc_mailfunctions.php");
 
 if(isset($s_id)){
 	$msgid = $_POST["msgid"];
-	// msgid
-        // reactie
-        // cc
 	$message = get_msg($msgid);
 	$reactie = $_POST["reactie"];
 	$cc = $_POST["cc"];
 
-	composemail($s_id, $message, $contact, $reactie, $cc);
+	composemail($s_id, $message, $reactie, $cc);
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-function composemail($s_id, $message, $user, $reactie,$cc){
+function composemail($s_id, $message, $reactie, $cc){
 	global $_POST;
 	$systemtag = readconfigfromdb("systemtag");
 	$user = get_user($message["id_user"]);
-	//echo "ID = " . $s_id;
+
 	$me = get_user($s_id);
-	//echo "name = " . $me["name"];
+
 	$contact = get_contact($s_id);
 	$usermail = get_user_maildetails($message["id_user"]);
 	$my_mail = get_user_maildetails($s_id);
 
-        $mailsubject .= "[eLAS-".$systemtag ."] - Reactie op je V/A " .$message["content"];
+    $mailsubject = "[eLAS-".$systemtag ."] - Reactie op je V/A " .$message["content"];
 	$mailfrom = $my_mail["emailaddress"];
 
 	if($cc == "true"){
@@ -60,9 +57,8 @@ function composemail($s_id, $message, $user, $reactie,$cc){
 		$mailcontent .= "* " .$value["abbrev"] ."\t" .$value["value"] ."\n";
         }
 
-	//echo "$mailfrom,$mailto,$mailsubject,$mailcontent";
-	$mailstatus = sendemail($mailfrom,$mailto,$mailsubject,$mailcontent,1);
-	//echo "<strong>$mailstatus</strong>";
+	$mailstatus = sendemail($mailfrom, $mailto, $mailsubject, $mailcontent, 1);
+
 	setstatus("$mailstatus",0);
 }
 

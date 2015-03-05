@@ -1,4 +1,13 @@
 <?php
+require_once $rootpath . 'vendor/autoload.php';
+
+use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+
+
+
+
 
 //Download the elas log in json format
 function get_elaslog() {
@@ -30,12 +39,27 @@ function get_elaslog() {
 }
 
 //Write log entry
-function log_event($id,$type,$event){
-	global $configuration;
-    	global $db;
+function log_event($id, $type, $event){
+
 	global $elasdebug;
-	global $dirbase;
-	global $rootpath;
+	global $session_name;
+
+	// set the format
+	$output = "%message%";
+	$formatter = new LineFormatter($output);
+
+	// create a log channel to STDOUT
+	$log = new Logger($session_name);
+	$streamHandler = new StreamHandler('php://stdout', Logger::WARNING);
+	$streamHandler->setFormatter($formatter);
+	$log->pushHandler($streamHandler);
+
+	// test messages
+	$log->addWarning($type . ': ' . $event . ' user id:' . $id);
+
+/*
+
+
 
 	$ip = $_SERVER['REMOTE_ADDR'];
 
@@ -78,7 +102,7 @@ function log_event($id,$type,$event){
 		$jsonarray = array();
 		$jsonarray['source'] = "elas";
 		$jsonarray['systemtag'] = $systemtag;
-		//$jsonarray['userid'] = $id;
+		$jsonarray['userid'] = $id;
 		$jsonarray['type'] = $mytype;
 		$jsonarray['timestamp'] = $ts;
 		if(!empty($id) && $id != " "){
@@ -95,7 +119,7 @@ function log_event($id,$type,$event){
 			$mex->publish($json, $queue);
 		}
 
-	}
+	} */
 }
 
 ?>

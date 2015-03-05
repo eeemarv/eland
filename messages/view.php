@@ -119,20 +119,18 @@ function show_editlinks($msgid){
         echo "</td></tr></table>";
 }
 
-function show_response_form($msgid,$usermail,$s_accountrole){
+function show_response_form($msgid, $usermail, $s_accountrole){
 	echo "<div id='responseformdiv'>";
 	echo "<script type='text/javascript' src='/js/postresponse.js'></script>";
 	echo "<table border='0'>";
 	echo "<tr><td colspan='2'>";
 	echo "<form action=\"javascript:getresponse(document.getElementById('response'))\" id='response'>";
 	echo "<INPUT TYPE='hidden' id='myid' VALUE='" .$msgid ."'>";
-	//echo "<input type='text' id='myid' value='1'>";
-	echo "<TEXTAREA NAME='reactie' id='reactie' COLS=60 ROWS=6 ";
+	echo "<TEXTAREA NAME='reactie' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' ";
 	if(empty($usermail) || $s_accountrole == 'guest'){
 		echo "DISABLED";
 	}
-	echo ">Je reactie naar de aanbieder";
-	echo "</TEXTAREA>";
+	echo "></TEXTAREA>";
 	echo "</td></tr><tr><td>";
 	echo "<input type='checkbox' name='cc' id='cc' CHECKED value='1' >Stuur een kopie naar mijzelf";
 	echo "</td><td>";
