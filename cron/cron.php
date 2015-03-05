@@ -2,15 +2,27 @@
 ob_start();
 
 //
-defined('__DIR__') or define('__DIR__', dirname(__FILE__));
-chdir(__DIR__);
 
-$rootpath = "../";
 /**
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_amq.php");
 **/
+$r = "\r\n";
+
+$php_sapi_name = php_sapi_name();
+
+if ($php_sapi_name == 'cli')
+{
+	echo 'the cron should not run from the cli but from the http web server.' . $r;
+	exit;
+}
+
+defined('__DIR__') or define('__DIR__', dirname(__FILE__));
+chdir(__DIR__);
+
+$rootpath = "../";
+
 require_once $rootpath . 'includes/inc_redis.php';
 require_once($rootpath."cron/inc_cron.php");
 require_once($rootpath."cron/inc_upgrade.php");
@@ -19,18 +31,85 @@ require_once($rootpath."cron/inc_upgrade.php");
 require_once($rootpath."cron/inc_stats.php");
 **/
 
-require_once($rootpath."includes/inc_dbconfig.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_saldofunctions.php");
 
 require_once($rootpath."includes/inc_news.php");
 
-session_start();
+require_once $rootpath . 'includes/inc_eventlog.php';
+require_once $rootpath . 'includes/inc_dbconfig.php';
 
-header('Content-type: text/plain');
+header('Content-Type:text/plain');
 
-global $db;
+echo '*** Cron eLAS-Heroku ***' . $r . $r;
+echo 'version: ' . exec('git describe') . $r;
+echo 'php_sapi_name: ' . $php_sapi_name . $r;
+echo 'php version: ' . phpversion() . $r . $r;
+
+$sessions = $domains = $sessions_cron_timestamps = array();
+
+foreach ($_ENV as $key => $session_name)
+{
+	if (strpos($key, 'ELAS_DOMAIN_SESSION_') === 0
+		&  isset($_ENV['HEROKU_POSTGRESQL_' . $session_name . '_URL']))
+	{
+		$domain = str_replace('ELAS_DOMAIN_SESSION_', '', $key);
+
+		$sessions[$domain] = $session_name;
+
+		$domain = str_replace('___', '-', $domain);
+		$domain = str_replace('__', '.', $domain);
+		$domain = strtolower($domain);
+
+		$domains[$session_name] = $domain;
+
+		$sessions_cron_timestamps[$session_name] = (int) $redis->get($session_name . '_cron_timestamp');
+	}
+}
+
+unset($session_name, $domain);
+
+if (count($sessions))
+{
+	asort($sessions_cron_timestamps);
+	echo 'Session name (domain): last cron timestamp' . $r;
+	echo '-----------------------------------------' . $r;
+	foreach ($sessions_cron_timestamps as $session_n => $timestamp)
+	{
+		echo $session_name . ' (' . $domains[$session_n] . '): ' . $timestamp;
+		if (!isset($db_url))
+		{
+			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_name . '_URL'];
+			$session_name = $session_n;
+			echo ' (selected)';
+		}
+		echo $r;
+	}
+}
+else
+{
+	$db_url = getenv('DATABASE_URL');
+	echo '-- No installed domains found. Select default database --' . $r . $r;
+}
+
+$db = NewADOConnection($db_url);
+
+unset($db_url);
+
+$db->SetFetchMode(ADODB_FETCH_ASSOC);
+
+if(getenv('ELAS_DB_DEBUG')){
+	$db->debug = true;
+}
+
+function getadoerror(){
+	$e = ADODB_Pear_Error();
+        if(is_object($e)){
+                        return $e->message;
+        }
+	return FALSE;
+}
 
 # Upgrade the DB first if required
 
