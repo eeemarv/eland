@@ -99,8 +99,8 @@ function readuser($id, $refresh = false)
 		{
 			return $cache[$id];
 		}
-/*
-		$redis_key = $session_name . '_user_' . $id;
+
+/*		$redis_key = $session_name . '_user_' . $id;
 
 		if ($redis->exists($redis_key))
 		{

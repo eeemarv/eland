@@ -22,14 +22,14 @@ if(isset($s_id)){
 	$reactie = $_POST["reactie"];
 	$cc = $_POST["cc"];
 
-	composemail($s_id,$message,$contact,$reactie,$cc);
+	composemail($s_id, $message, $contact, $reactie, $cc);
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-function composemail($s_id,$message,$user,$reactie,$cc){
+function composemail($s_id, $message, $user, $reactie,$cc){
 	global $_POST;
 	$systemtag = readconfigfromdb("systemtag");
 	$user = get_user($message["id_user"]);

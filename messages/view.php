@@ -17,12 +17,15 @@ if(isset($s_id)){
 	$msgid = $_GET["id"];
 	if(isset($msgid)){
 		$message = get_msg($msgid);
+		$user = get_user($message['id_user']);
 		$title = $message["content"];
 
-		$contact = get_contact($message["id_user"]);
-		$mailuser = get_user_maildetails($message["id_user"]);
-		$usermail = $mailuser["emailaddress"];
-		$user = get_user($message["id_user"]);
+		$contact = get_contact($user['id']);
+
+		
+		$mailuser = get_user_maildetails($user['id']);
+		$usermail = $mailuser['emailaddress'];
+		
 		$balance = $user["saldo"];
 
 		echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
@@ -51,7 +54,7 @@ if(isset($s_id)){
 			$picturecounter += 1;
 		}
 		echo "</tr>";
-		//echo "<tr><td><img src='../msgpictures/nomsg.png' width='83'></td><td><img src='../msgpictures/nomsg.png' width='83'></td><td><img src='../msgpictures/nomsg.png' width='83'></td><td><img src='../msgpictures/nomsg.png' width='83'></td></tr>";
+		
 		echo "</td>";
 		echo "</table>";
 
@@ -60,7 +63,7 @@ if(isset($s_id)){
 
 		// Show message
 		echo "<td valign='top'>";
-		show_msg($message,$balance);
+		show_msg($message, $balance);
 		echo "</td>";
 		// End message
 
@@ -69,8 +72,8 @@ if(isset($s_id)){
 		echo "<tr>";
 
 		//Contact info goes here
-                echo "<td width='254' valign='top'>";
-		show_contact($message["id_user"]);
+        echo "<td width='254' valign='top'>";
+		show_contact($contact);
 		echo "</td>";
 		//End contact info
 
@@ -83,7 +86,7 @@ if(isset($s_id)){
                 echo "</tr>";
 		echo "</table>";
 
-		if($s_accountrole == "admin" || $s_id == $message["id_user"]){
+		if($s_accountrole == "admin" || $s_id == $user['id']){
 			show_editlinks($msgid);
 		}
 	}else{
@@ -148,9 +151,9 @@ function show_response_form($msgid,$usermail,$s_accountrole){
 
 function get_msg($msgid){
 	global $db;
-	$query = "SELECT * , ";
+	$query = "SELECT *, ";
 	$query .= " messages.cdate AS date, ";
-	$query .= " messages.validity AS valdate";
+	$query .= " messages.validity AS valdate ";
 	$query .= " FROM messages, users ";
 	$query .= " WHERE messages.id = ". $msgid;
 	$query .= " AND messages.id_user = users.id ";
@@ -175,10 +178,6 @@ function show_balance($balance,$currency){
 	echo "</td></tr></table>";
 }
 
-function show_contact($id){
-	echo "<div id='contactinfo'></div>";
-	echo "<script type='text/javascript'>showsmallloader('contactinfo');loadurlto('rendercontact.php?id=$id', 'contactinfo')</script>";
-}
 
 function show_msg($message,$balance){
 	global $baseurl;
@@ -207,17 +206,10 @@ function show_msg($message,$balance){
 	}
 	echo "</td></tr>";
 
-	//empty row
         echo "<tr><td>&nbsp</td></tr>";
 
 	echo "<tr><td>Geldig tot: " .$message["valdate"]."<tr><td>";
 
-	//DISABLE TAGS UNTIL WE HAVE SUPPORT FOR THEM
-        //echo "<tr class='even_row'><td>";
-	//echo "Tags: ";
-	//echo "</td></tr>";
-
-	//empty row
 	echo "<tr><td>&nbsp</td></tr>";
 
 	echo "<tr class='even_row'><td valign='bottom'>";
@@ -259,6 +251,23 @@ function redirect_searchcat_viewcat(){
 	header("Location: searchcat_viewcat.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
+function show_contact($contact){
+	echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
+	echo "<tr class='even_row'><td colspan='3'><p><strong>Contactinfo</strong></p></td></tr>";
+	foreach($contact as $key => $value){
+		echo "<tr><td>".$value["abbrev"].": </td>";
+                if($value["abbrev"] == "mail"){
+                        echo "<td><a href='mailto:".$value["value"]."'>".$value["value"]."</a></td>";
+                }elseif($value["abbrev"] == "adr"){
+                        echo "<td><a href='http://maps.google.be/maps?f=q&source=s_q&hl=nl&geocode=&q=".$value["value"]."' target='new'>".$value["value"]."</a></td>";
+                } else {
+                        echo "<td>".$value["value"]."</td>";
+                }
+		echo "<td></td>";
+		echo "</tr>";
+	}
+	echo "</table>";
+}
+
 include($rootpath."includes/inc_footer.php");
-?>
+

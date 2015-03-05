@@ -4,6 +4,7 @@
 	"predis/predis": "v0.8.5",
 	"knplabs/gaufrette": "0.1.*",
 	"aws/aws-sdk-php": "2.7.*@dev",
-	"adodb/adodb-php": "dev-master"
+	"adodb/adodb-php": "dev-master",
+	"swiftmailer/swiftmailer": "5.3.*@dev"
     }
 }

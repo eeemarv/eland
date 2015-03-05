@@ -22,7 +22,7 @@ if(getenv('ELAS_DB_DEBUG')){
 function getadoerror(){
 	$e = ADODB_Pear_Error();
         if(is_object($e)){
-                        return $e->message;
+           return $e->message;
         }
 	return FALSE;
 }

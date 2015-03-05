@@ -18,7 +18,7 @@
 /** Provided functions:
  * sendemail($mailfrom,$mailto,$mailsubject,$mailcontent)	Immediately send out an e-mail
 */
-require_once($rootpath."contrib/includes/SwiftMail/lib/swift_required.php");
+//require_once($rootpath."contrib/includes/SwiftMail/lib/swift_required.php"); -> autoload.
 //require_once($rootpath."includes/inc_userinfo.php");
 
 function message_list_announce($uuid) {
@@ -80,7 +80,7 @@ function message_list_announce($uuid) {
 	}
 }
 
-function sendemail($mailfrom,$mailto,$mailsubject,$mailcontent){
+function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 	global $elasversion;
 	// return 0 on success, 1 on failure
 	// use Mandrill for transport
