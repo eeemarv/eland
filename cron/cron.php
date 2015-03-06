@@ -27,6 +27,7 @@ require_once $rootpath . 'vendor/autoload.php';
 require_once $rootpath . 'includes/inc_redis.php';
 require_once $rootpath . 'includes/inc_setstatus.php';
 require_once $rootpath . 'includes/inc_timezone.php';
+require_once $rootpath . 'includes/inc_version.php';
 require_once $rootpath . 'cron/inc_cron.php';
 require_once $rootpath . 'cron/inc_upgrade.php';
 
@@ -106,53 +107,31 @@ if(getenv('ELAS_DB_DEBUG')){
 	$db->debug = true;
 }
 
-function getadoerror(){
-	$e = ADODB_Pear_Error();
-        if(is_object($e)){
-                        return $e->message;
-        }
-	return FALSE;
-}
+// Upgrade the DB first if required
 
-# Upgrade the DB first if required
-
-$query = "SELECT * FROM parameters WHERE parameter= 'schemaversion'";
-$qresult = $db->GetRow($query) ;
-$dbversion = $qresult["value"];
-$currentversion = $dbversion;
+$currentversion = $dbversion = $db->GetOne("SELECT * FROM parameters WHERE parameter = 'schemaversion'");
 $doneversion = $currentversion;
-echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n\n";
-while($currentversion < $schemaversion){
-	//echo "Doing upgrade #" .$currentversion ."\n\n";
-	$currentversion = $currentversion +1;
-	if(doupgrade($currentversion) == TRUE){
-		$doneversion = $currentversion;
+if ($current_version < $schemaversion)
+{
+	echo 'database already up to date' . $r;
+}
+else
+{
+	echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n\n";
+	while($currentversion < $schemaversion)
+	{
+		$currentversion++;
+		if(doupgrade($currentversion) == TRUE){
+			$doneversion = $currentversion;
+		}
 	}
-}
-echo "Upgraded database from schema version $dbversion to $doneversion\n\n";
-log_event("","DB","Upgraded database from schema version $dbversion to $doneversion");
-
-// PUT MAIN BODY HERE
-// echo "<p><small>Build from branch: " . $elas->branch .", revision: " .$elas->revision .", build: " .$elas->build;
-echo " *** eLAS v" .$elas->version . "(" .$elas->branch .")" ." build #" . $elas->build ." Cron system running [" .readconfigfromdb("systemtag") ."] ***\n\n";
-
-/*
-// Check and create required paths
-$frequency = 10;
-if(check_timestamp("create_paths", $frequency) == 1) {
-	create_paths();
-}*/
-
-// Check for incoming messages on the AMQ
-//FIXME set frequency to 5
-/*
-
-$frequency = 0;
-if(check_timestamp("process_ampmessages", $frequency) == 1) {
-	process_amqmessages();
+	echo "Upgraded database from schema version $dbversion to $doneversion\n\n";
+	log_event("","DB","Upgraded database from schema version $dbversion to $doneversion");	
 }
 
-*/
+//
+
+echo " Cron system running [" .readconfigfromdb("systemtag") ."] ***\n\n";
 
 // Auto mail saldo on request
 $frequency = readconfigfromdb("saldofreqdays") * 1440;
@@ -218,19 +197,15 @@ if(check_timestamp("publish_news", $frequency) == 1){
 	publish_news();
 }
 
-// Update the stats table
+// Update the stats table   Count total users / total transactions -> move this to Redis.
+/**  
 $frequency = 720;
 if(check_timestamp("update_stats", $frequency) == 1){
 	update_stats();
 }
+*
+**/
 
-/*
-$frequency = 60;
-if(check_timestamp("publish_mailinglists", $frequency) == 1 && readconfigfromdb("mailinglists_enabled") == 1){
-	publish_mailinglists();
-}
-
-*/
 
 // END
 echo "\nCron run finished\n";

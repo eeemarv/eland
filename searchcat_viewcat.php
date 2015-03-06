@@ -119,7 +119,6 @@ function get_msgs($id){
 	$query .= " OR categories.id_parent = ".$id .")";
 	$query .= " ORDER BY messages.msg_type DESC,users.letscode";
 	$msgs = $db->GetArray($query);
-	// echo getadoerror();
 	return $msgs;
 }
 
