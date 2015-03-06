@@ -133,4 +133,13 @@ switch ($apimethod){
 		}
                 break;
 }
-?>
+
+// Make timestamps for SQL statements
+function make_timestamp($timestring){
+        $month = substr($timestring,3,2);
+        $day = substr($timestring, 0,2);
+        $year = substr($timestring,6,4 );
+        $timestamp = mktime(0,0,0,$month, $day, $year);
+        return $timestamp;
+}
+

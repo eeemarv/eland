@@ -23,9 +23,12 @@ chdir(__DIR__);
 
 $rootpath = "../";
 
+require_once $rootpath . 'vendor/autoload.php';
 require_once $rootpath . 'includes/inc_redis.php';
-require_once($rootpath."cron/inc_cron.php");
-require_once($rootpath."cron/inc_upgrade.php");
+require_once $rootpath . 'includes/inc_setstatus.php';
+require_once $rootpath . 'includes/inc_timezone.php';
+require_once $rootpath . 'cron/inc_cron.php';
+require_once $rootpath . 'cron/inc_upgrade.php';
 
 /**
 require_once($rootpath."cron/inc_stats.php");
@@ -43,7 +46,7 @@ require_once $rootpath . 'includes/inc_dbconfig.php';
 header('Content-Type:text/plain');
 
 echo '*** Cron eLAS-Heroku ***' . $r . $r;
-echo 'version: ' . exec('git describe') . $r;
+// echo 'version: ' . exec('git describe') . $r; (no git available)
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r . $r;
 
