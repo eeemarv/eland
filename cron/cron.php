@@ -81,10 +81,10 @@ if (count($sessions))
 	echo '-----------------------------------------' . $r;
 	foreach ($sessions_cron_timestamps as $session_n => $timestamp)
 	{
-		echo $session_name . ' (' . $domains[$session_n] . '): ' . $timestamp;
+		echo $session_n . ' (' . $domains[$session_n] . '): ' . $timestamp;
 		if (!isset($db_url))
 		{
-			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_name . '_URL'];
+			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_n . '_URL'];
 			$session_name = $session_n;
 			echo ' (selected)';
 		}
@@ -94,8 +94,27 @@ if (count($sessions))
 else
 {
 	$db_url = getenv('DATABASE_URL');
-	echo '-- No installed domains found. Select default database --' . $r . $r;
+
+	if (!isset($db_url))
+	{
+		echo 'No database configured. Exit cron.' . $r;
+		Exit;
+	}
+
+	foreach ($_ENV as $env => $value)
+	{
+		if ($db_url == $value && strpos('HEROKU_POSTGRESQL_', $env) === 0)
+		{
+			$session_name = str_replace('HEROKU_POSTGRESQL_', '', $env);
+			$session_name = str_replace('_URL', '', $session_name);
+			break;
+		}
+	}
+
+	echo '-- No installed domains found. Select default database (' . $session_name . ') --';
 }
+
+echo $r . $r;
 
 $db = NewADOConnection($db_url);
 
@@ -113,7 +132,7 @@ $currentversion = $dbversion = $db->GetOne("SELECT * FROM parameters WHERE param
 $doneversion = $currentversion;
 if ($current_version < $schemaversion)
 {
-	echo 'database already up to date' . $r;
+	echo '-- Database already up to date -- ' . $r;
 }
 else
 {
@@ -129,70 +148,82 @@ else
 	log_event("","DB","Upgraded database from schema version $dbversion to $doneversion");	
 }
 
-//
+echo $r;
 
-echo " Cron system running [" .readconfigfromdb("systemtag") ."] ***\n\n";
+echo "*** Cron system running [" . $session_name . ' ' . $domains[$session_name] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
+
+$lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 
 // Auto mail saldo on request
 $frequency = readconfigfromdb("saldofreqdays") * 1440;
-if(check_timestamp("saldo", $frequency) == 1) {
+if(check_timestamp($lastrun_ary['saldo'], $frequency) == 1)
+{
 	automail_saldo();
 }
 
 // Auto mail messages that have expired to the admin
 $frequency = readconfigfromdb("adminmsgexpfreqdays") * 1440;
-if(check_timestamp("admin_exp_msg", $frequency) == 1 && readconfigfromdb("adminmsgexp") == 1){
+if(check_timestamp($lastrun_ary['admin_exp_msg'], $frequency) == 1 && readconfigfromdb("adminmsgexp") == 1)
+{
 	automail_admin_exp_msg();
 }
 
 // Check for and mail expired messages to the user
 $frequency = 1440;
-if(check_timestamp("user_exp_msgs", $frequency) == 1 && readconfigfromdb("msgexpwarnenabled") == 1){
+if(check_timestamp($lastrun_ary['user_exp_msgs'], $frequency) == 1 && readconfigfromdb("msgexpwarnenabled") == 1)
+{
 	check_user_exp_msgs();
 }
 
 
 // Clean up expired messages after the grace period
 $frequency = 1440;
-if(check_timestamp("cleanup_messages", $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1){
-        cleanup_messages();
+if(check_timestamp($lastrun_ary['cleanup_messages'], $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1)
+{
+	cleanup_messages();
 }
 
 
 // Update counts for each message category
 $frequency = 60;
-if(check_timestamp("cat_update_count", $frequency) == 1) {
-        cat_update_count();
+if(check_timestamp($lastrun_ary['cat_update_count'], $frequency) == 1)
+{
+	cat_update_count();
 }
 
 // Update the cached saldo
 $frequency = 60;
-if(check_timestamp("saldo_update", $frequency) == 1) {
+if(check_timestamp($lastrun_ary['saldo_update'], $frequency) == 1)
+{
 	saldo_update();
 }
 
 // Clean up expired news items
 $frequency = 1440;
-if(check_timestamp("cleanup_news", $frequency) == 1){
+if(check_timestamp($lastrun_ary['cleanup_news'], $frequency) == 1)
+{
         cleanup_news();
 }
 
 // Clean up expired tokens
 $frequency = 1440;
-if(check_timestamp("cleanup_tokens", $frequency) == 1){
+if(check_timestamp($lastrun_ary['cleanup_tokens'], $frequency) == 1)
+{
         cleanup_tokens();
 }
 
 // RUN the ILPQ
 $frequency = 5;
-if(check_timestamp("processqueue", $frequency) == 1){
+if(check_timestamp($lastrun_ary['processqueue'], $frequency) == 1)
+{
 	require_once("$rootpath/interlets/processqueue.php");
 	write_timestamp("processqueue");
 }
 
 // Publish news items that were approved
 $frequency = 30;
-if(check_timestamp("publish_news", $frequency) == 1){
+if(check_timestamp($lastrun_ary['publish_news'], $frequency) == 1)
+{
 	publish_news();
 }
 
@@ -205,8 +236,10 @@ if(check_timestamp("update_stats", $frequency) == 1){
 *
 **/
 
-
 // END
+
+$redis->set($session_name . '_cron_timestamp', time());
+
 echo "\nCron run finished\n";
 
 ////////////////////////////////////////////////////////////////////////////
@@ -350,13 +383,13 @@ function publish_news(){
 
     echo "Running publish_news...\n";
 
-    $query = "SELECT * FROM news WHERE approved = 1 AND published IS NULL OR published = 0;";
+    $query = 'SELECT * FROM news WHERE approved = true AND published IS NULL OR published = false;';
 	$newsitems = $db->GetArray($query);
 
     foreach ($newsitems AS $key => $value){
 		mail_news($value["id"]);
 
-		$q2 = "UPDATE news SET published=1 WHERE id=" .$value["id"];
+		$q2 = "UPDATE news SET published = true WHERE id=" . $value["id"];
 		$db->Execute($q2);
 	}
 	write_timestamp("publish_news");
@@ -436,13 +469,6 @@ function automail_admin_exp_msg(){
 	$query = "SELECT users.name AS username, messages.content AS message, messages.id AS mid, messages.validity AS validity FROM messages,users WHERE users.status <> 0 AND messages.id_user = users.id AND validity <= '" .$today ."'";
 	$messages = $db->GetArray($query);
 
-	//foreach($messages as $key => $value) {
-	//	echo $value["mid"];
-	//	echo $value["username"];
-	//	echo $value["message"];
-	//	echo $value["validity"];
-	//	echo "\n";
-	//}
 	mail_admin_expmsg($messages);
 
 	write_timestamp("admin_exp_msg");
@@ -452,8 +478,15 @@ function automail_saldo(){
 	// Get all users that want their saldo auto-mailed.
 	echo "Running automail_saldo\n";
 	global $db;
-        $query = "SELECT users.id, users.name, users.saldo AS saldo, contact.value AS cvalue FROM users,contact,type_contact ";
-	$query .= "WHERE users.id = contact.id_user AND contact.id_type_contact = type_contact.id AND type_contact.abbrev = 'mail' AND users.status <> 0 AND users.cron_saldo = 1";
+        $query = 'SELECT users.id,
+			users.name, users.saldo AS saldo,
+			contact.value AS cvalue FROM users,
+			contact, type_contact 
+		WHERE users.id = contact.id_user
+			AND contact.id_type_contact = type_contact.id
+			AND type_contact.abbrev = \'mail\'
+			AND users.status <> 0
+			AND users.cron_saldo = 1';
 	$users = $db->GetArray($query);
 
 	foreach($users as $key => $value) {

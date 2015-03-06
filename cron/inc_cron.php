@@ -200,23 +200,17 @@ function mail_user_expwarn($mailaddr,$subject,$content) {
 	log_event("","Mail","Message expiration mail sent to $mailto");
 }
 
-function check_timestamp($cronjob,$agelimit){
+function check_timestamp($lastrun, $agelimit){
         // agelimit is the time after which to rerun the job in MINUTES
-        global $db;
-        $query = "SELECT lastrun FROM cron WHERE cronjob = '" .$cronjob ."'";
-        $job = $db->GetRow($query);
         $now = time();
         $limit = $now - ($agelimit * 60);
-        $timestamp = strtotime($job["lastrun"]);
+        $timestamp = strtotime($lastrun);
 
         if($limit > $timestamp) {
-                return 1;
+			return 1;
         } else {
-                return 0;
+            return 0;
         }
-
-	//log the cronjob execution
-
 }
 
 function write_timestamp($cronjob){

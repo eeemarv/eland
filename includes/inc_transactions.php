@@ -420,18 +420,22 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 }
 
 function queuetransaction($posted_list,$fromuser,$touser) {
-	global $db;
+	global $db, $redis, $session_name;
 
 	// Send transaction to ETS if enabled
-	if(readconfigfromdb("ets_enabled") == 1) {
+	/*if(readconfigfromdb("ets_enabled") == 1) {
 		amq_publishtransaction($posted_list,$fromuser,$touser);
-	}
+	}*/
 
 	$posted_list["retry_count"] = 0;
 	$posted_list["last_status"] = "NEW";
 	if($db->AutoExecute("interletsq", $posted_list, 'INSERT') == TRUE){
                 setstatus("Transactie in wachtrij", 0);
 		$transid = $posted_list["transid"];
+			if (!$redis->get($session_name . '_interletsq'))
+			{
+				$redis->set($session_name . '_interletsq', time());
+			}
         } else {
                 setstatus("Fout: Transactie niet opgeslagen", 1);
                 $transid = "";
