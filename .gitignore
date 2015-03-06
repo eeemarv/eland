@@ -4,3 +4,4 @@ update-rsync.sh
 sites/default/config/elas.xml
 testdeploy.sh
 /vendor/*
+composer.phar

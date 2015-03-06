@@ -85,8 +85,7 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 
 	// return 0 on success, 1 on failure
 	// use Mandrill for transport
-	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 465, 'ssl');
-
+	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 587);
 	$transport->setUsername(getenv('MANDRILL_USERNAME'));
 	$transport->setPassword(getenv('MANDRILL_PASSWORD'));
 
