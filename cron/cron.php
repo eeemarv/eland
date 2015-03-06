@@ -151,14 +151,13 @@ if(check_timestamp("user_exp_msgs", $frequency) == 1 && readconfigfromdb("msgexp
 	check_user_exp_msgs();
 }
 
-/*
+
 // Clean up expired messages after the grace period
 $frequency = 1440;
 if(check_timestamp("cleanup_messages", $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1){
         cleanup_messages();
 }
-*
-*/
+
 
 // Update counts for each message category
 $frequency = 60;

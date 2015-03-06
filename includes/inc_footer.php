@@ -4,7 +4,9 @@
 
  <?php
 if ($s_accountrole == 'admin'){
-	echo '<div><p><b>Support mailinglijst</b> Inschrijven: support-elas-heroku-subscribe@lists.riseup.net Berichten posten:  support-elas-heroku@lists.riseup.net</p></div>';
+	echo '<div><p><b>Support mailinglijst</b>';
+	echo '<ul><li>Inschrijven: support-elas-heroku-subscribe@lists.riseup.net</li>';
+	echo '<li>Berichten posten:  support-elas-heroku@lists.riseup.net</li></ul></p></div>';
 }
  ?>
 
