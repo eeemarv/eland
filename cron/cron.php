@@ -85,7 +85,7 @@ if (count($sessions))
 
 	if (count($session_interletsqs))
 	{
-		$session_interletsq_min = array_keys($session_interletsqs, min($session_interletsqs));
+		list($session_interletsq_min) = array_keys($session_interletsqs, min($session_interletsqs));
 	}
 
 	echo 'Session name (domain): last cron timestamp : interletsqueue timestamp' . $r;
