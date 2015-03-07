@@ -15,9 +15,9 @@
  *
  */
 
-if (!$session_name)
+if (!isset($session_name))
 {
-	$session_name = str_replace(':', '', $baseurl);
+	$session_name = str_replace(':', '', $_SERVER['HTTP_HOST']);
 	$session_name = str_replace('.', '__', $session_name);
 	$session_name = str_replace('-', '___', $session_name);
 	$session_name = strtoupper($session_name);

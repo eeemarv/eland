@@ -130,15 +130,16 @@ header("Content-Type:text/html;charset=utf-8");
 				echo "<li><a href='".$rootpath."categories/overview.php'>Categorien</a></li>";
 				echo "<li><a href='".$rootpath."interlets/overview.php'>LETS Groepen</a></li>";
 				echo "<li><a href='".$rootpath."apikeys/overview.php'>Apikeys</a></li>";
-				if(readconfigfromdb("mailinglists_enabled") == 1) {
+/*				if(readconfigfromdb("mailinglists_enabled") == 1) {
 					echo "<li><a href='".$rootpath."lists/overview.php'>Mailinglists</a></li>";
-				}
+				} */
 				echo "<li><a href='".$rootpath."type_contact/overview.php'>Contacttypes</a></li>";
 				echo "<li><a href='".$rootpath."messages/overview.php'>Vraag & Aanbod</a></li>";
 				echo "<li><a href='".$rootpath."reports/overview.php'>Rapporten</a></li>";
 				echo "<li><a href='".$rootpath."preferences/config.php'>Instellingen</a></li>";
 				echo "<li><a href='".$rootpath."importexport.php'>Import/Export</a></li>";
 				echo "<li><a href='".$rootpath."eventlog.php'>Log</a></li>";
+				echo "<li><a href='".$rootpath."transactions/many_to_one.php'>Massa-Transactie</a></li>";
 			?>
 			</ul>
 		</div>

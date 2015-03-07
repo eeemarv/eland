@@ -6,7 +6,7 @@ require_once($rootpath.'includes/inc_default.php');
 require_once($rootpath.'includes/inc_adoconnection.php');
 require_once($rootpath.'includes/inc_request.php');
 
-$req = new request('guest');
+$req = new request('user');
 $req->add('days', 365, 'get');
 $req->add('user_id', 0, 'get');
 $user_id = $req->get('user_id');
@@ -95,5 +95,3 @@ echo json_encode(array(
 	'begin' => $begin_date,
 	'end' => $end_date,
 	));
-
-?>

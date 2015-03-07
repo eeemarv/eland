@@ -1,6 +1,6 @@
 <?php
 
-class request {  
+class request {  //
 	private $s_id;
 	private $s_name;
 	private $s_letscode;
@@ -26,7 +26,7 @@ class request {
 		$s_letscode = $this->s_letscode = $_SESSION['letscode'];
 		$s_accountrole = $this->s_accountrole = $_SESSION['accountrole'];
 
-		if (!$security_level || (!in_array($security_level, array('admin', 'user', 'guest', 'anonymous')))){
+		if (!$security_level || (!in_array($security_level, array('admin', 'user', 'anonymous')))){
 			exit;
 		}
 		if ($security_level != 'anonymous' && (!$this->s_id || !$this->s_accountrole || !$this->s_name)){
