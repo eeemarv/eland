@@ -6,7 +6,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 // Pull in the NuSOAP code
-require_once($rootpath."soap/lib/nusoap.php");
+// require_once($rootpath."soap/lib/nusoap.php");
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];

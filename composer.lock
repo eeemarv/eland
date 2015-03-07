@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f31f98769f2f624801684dcdb1c5cec1",
+    "hash": "bd2576ba97024aff903e8f8fde2957c2",
     "packages": [
         {
             "name": "adodb/adodb-php",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "4c1d4e29a6e7ff2ff8a68d3940241e42ae83152e"
+                "reference": "978761e90809e32d9886671bdf51d78f1efcb8e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/4c1d4e29a6e7ff2ff8a68d3940241e42ae83152e",
-                "reference": "4c1d4e29a6e7ff2ff8a68d3940241e42ae83152e",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/978761e90809e32d9886671bdf51d78f1efcb8e7",
+                "reference": "978761e90809e32d9886671bdf51d78f1efcb8e7",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2015-03-04 16:53:20"
+            "time": "2015-03-05 22:29:26"
         },
         {
             "name": "aws/aws-sdk-php",
@@ -58,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "9dc3bb6dd6e16a7ed2f6fab73c2ee385145e26c0"
+                "reference": "add9b2adda5e87e6e2f8ca562aece1f8de93e2c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9dc3bb6dd6e16a7ed2f6fab73c2ee385145e26c0",
-                "reference": "9dc3bb6dd6e16a7ed2f6fab73c2ee385145e26c0",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/add9b2adda5e87e6e2f8ca562aece1f8de93e2c1",
+                "reference": "add9b2adda5e87e6e2f8ca562aece1f8de93e2c1",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,44 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-03-05 00:07:56"
+            "time": "2015-03-07 01:24:20"
+        },
+        {
+            "name": "fergusean/nusoap",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fergusean/nusoap.git",
+                "reference": "463c772ae805aed7f396d89e6dce1dc0ce4c038b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fergusean/nusoap/zipball/463c772ae805aed7f396d89e6dce1dc0ce4c038b",
+                "reference": "463c772ae805aed7f396d89e6dce1dc0ce4c038b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPLv2"
+            ],
+            "authors": [
+                {
+                    "name": "Dietrich Ayala",
+                    "homepage": "http://sourceforge.net/u/dietricha/profile/"
+                },
+                {
+                    "name": "Scott Nichol",
+                    "homepage": "http://sourceforge.net/u/snichol/profile/"
+                }
+            ],
+            "description": "NuSOAP re-packaged for Packagist/Composer",
+            "time": "2014-05-19 03:44:33"
         },
         {
             "name": "guzzle/guzzle",
@@ -615,7 +652,8 @@
         "aws/aws-sdk-php": 20,
         "adodb/adodb-php": 20,
         "swiftmailer/swiftmailer": 20,
-        "monolog/monolog": 20
+        "monolog/monolog": 20,
+        "fergusean/nusoap": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
