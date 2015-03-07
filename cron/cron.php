@@ -14,7 +14,7 @@ $php_sapi_name = php_sapi_name();
 
 if ($php_sapi_name == 'cli')
 {
-	echo 'the cron should not run from the cli but from the http web server.' . $r;
+	echo 'The cron should not run from the cli but from the http web server.' . $r;
 	exit;
 }
 
@@ -47,11 +47,11 @@ require_once $rootpath . 'includes/inc_dbconfig.php';
 header('Content-Type:text/plain');
 
 echo '*** Cron eLAS-Heroku ***' . $r . $r;
-// echo 'version: ' . exec('git describe') . $r; (no git available)
+// echo 'version: ' . exec('git describe') . $r; (git not available)
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r . $r;
 
-$sessions = $domains = $sessions_cron_timestamps = array();
+$sessions = $domains = $session_cron_timestamps = $session_interletsqs = $table = array();
 
 foreach ($_ENV as $key => $session_name)
 {
@@ -68,7 +68,12 @@ foreach ($_ENV as $key => $session_name)
 
 		$domains[$session_name] = $domain;
 
-		$sessions_cron_timestamps[$session_name] = (int) $redis->get($session_name . '_cron_timestamp');
+		$session_cron_timestamps[$session_name] = (int) $redis->get($session_name . '_cron_timestamp');
+		
+		if ($interletsq = (int) $redis->get($session_name . '_interletsq'))
+		{
+			$session_interletsqs[$session_name] = $interletsq;
+		}
 	}
 }
 
@@ -76,13 +81,22 @@ unset($session_name, $domain);
 
 if (count($sessions))
 {
-	asort($sessions_cron_timestamps);
-	echo 'Session name (domain): last cron timestamp' . $r;
-	echo '-----------------------------------------' . $r;
-	foreach ($sessions_cron_timestamps as $session_n => $timestamp)
+	asort($session_cron_timestamps);
+
+	if (count($session_interletsqs))
 	{
-		echo $session_n . ' (' . $domains[$session_n] . '): ' . $timestamp;
-		if (!isset($db_url))
+		$session_interletsq_min = array_keys($session_interletsqs, min($session_interletsqs));
+	}
+
+	echo 'Session name (domain): last cron timestamp : interletsqueue timestamp' . $r;
+	echo '---------------------------------------------------------------------' . $r;
+	foreach ($session_cron_timestamps as $session_n => $timestamp)
+	{
+		echo $session_n . ' (' . $domains[$session_n] . '): ' . $timestamp . ' : ';
+		echo ($session_interletsqs[$session_n]) ? $session_interletsqs[$session_n] : 0;
+
+		if ((!isset($db_url) && !isset($session_interletsq_min))
+			|| isset($session_interletsq_min) && $session_interletsq_min == $session_n)
 		{
 			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_n . '_URL'];
 			$session_name = $session_n;
@@ -238,6 +252,7 @@ if(check_timestamp("update_stats", $frequency) == 1){
 
 // END
 
+$redis->set($session_name . '_interletsq', '');
 $redis->set($session_name . '_cron_timestamp', time());
 
 echo "\nCron run finished\n";

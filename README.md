@@ -8,7 +8,11 @@ Checklist
 
 #####Cron
     heroku addons:add scheduler
-    set every 10 min.  `$ php cron/cron.php`
+    set every 10 min.  `$ php -r "echo file_get_contents('http://yourdomain.com/cron/cron.php');"`
+    Only one cronjob is needed for all installed domains (as opposed to eLAS). Just choose one domain or the Heroku app URL.
+
+#####Domain
+    Configure your domain with a CNAME to the Heroku app URL.
 
 Environment Vars
 ------

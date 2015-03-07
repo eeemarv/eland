@@ -124,12 +124,16 @@ switch ($apimethod){
 			// Queue the transaction for later handling
 			$mytransid = queuetransaction($posted_list,$fromuser,$touser);
 			if($mytransid == $settransid){
-                                echo "<font color='green'><strong>OK</font> - Interletstransactie wacht op verwerking</strong>";
+				echo "<font color='green'><strong>OK</font> - Interletstransactie wacht op verwerking</strong>";
 				setstatus("Transactie in verwerking", 0);
-                        } else {
-                                echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
+				if (!$redis->get($ession_name . '_interletsq'))
+				{
+					$redis->set($session_name . '_interletsq', time());
+				}
+			} else {
+				echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
 				setstatus("Gefaalde transactie", 1);
-                        }
+            }
 		}
                 break;
 }
