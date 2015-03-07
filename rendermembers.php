@@ -3,7 +3,7 @@ ob_start();
 $rootpath = "";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."inc_memberlist.php");
+//require_once($rootpath."inc_memberlist.php");
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
@@ -18,7 +18,23 @@ $sortfield = $_POST["sort"];
 //var_dump($_POST);
 
 if(isset($s_id)){
-	$userrows = get_all_active_users($user_orderby,$posted_list["prefix"],$searchname,$sortfield);
+
+	$query = 'SELECT * FROM users u
+			WHERE (status = 1 OR status =2 OR status = 3) 
+			AND u.accountrole <> \'guest\' ';
+	if ($prefix_filterby <> 'ALL'){
+		 $query .= 'AND u.letscode like \'' . $prefix_filterby .'%\' ';
+	}
+	if(!empty($searchname)){
+		$query .= 'AND (LOWER(u.fullname) like \'%' .strtolower($searchname) . '%\'
+			OR LOWER(u.name) like \'%' .strtolower($searchname) . '\'%) ';
+	}
+	if(!empty($sortfield)){
+		$query .= ' ORDER BY u.' . $sortfield;
+	}
+
+	$userrows = $db->GetArray($query);
+
  	show_all_users($userrows);
 }else{
 	redirect_login($rootpath);
