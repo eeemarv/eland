@@ -47,7 +47,6 @@ echo <<<EOF
 	<script src="graphs/js/user_transactions.js"></script>
 EOF;
 
-//	<script src="graphs/jqplot/plugins/jqplot.pointLabels.min.js"></script>
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -192,6 +191,5 @@ function redirect_memberlist(){
 	header("Location: memberlist.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
 ?>

@@ -104,9 +104,9 @@ function dopayment($apikey,$from,$real_from,$to,$description,$amount,$transid,$s
 		return "DUPLICATE";
 	}
 
-        if(check_apikey($apikey,"interlets") == 1){
+        if(check_apikey($apikey, "interlets") == 1){
 		if(readconfigfromdb("maintenance") == 1){
-			log_event("","Soap","Transaction $transid deferred (offline)");
+			log_event("", "Soap", "Transaction $transid deferred (offline)");
 			return "OFFLINE";
 		} else {
 			$posted_list["transid"] = $transid;

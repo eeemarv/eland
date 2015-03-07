@@ -57,10 +57,16 @@ foreach ($transactions AS $key => $value){
 		$client = new nusoap_client($mysoapurl, true);
 		$err = $client->getError();
 		if (!$err) {
-			//dopayment($apikey,$from,$to,$description,$amount,$transid,$signature)
-			//$result = $client->call('dopayment', array('apikey' => $myapikey));
-			//$result = $client->call('dopayment', array('apikey' => '4d0cc469c28158dbaabe4dd672c911728042d9db', 'from' => 'LT000', 'to' => 'T00', 'description' => 'test interlets', 'amount' => 5, 'transid' => '4e1243bd22c66e76c2ba9eddc1f91394e57f9f83', 'signature' => 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'));
-			$result = $client->call('dopayment', array('apikey' => "$myapikey", 'from' => "$from", 'real_from' => "$real_from", 'to' => "$letscode_to", 'description' => "$description", 'amount' => $amount, 'transid' => "$transid", 'signature' => "$signature"));
+			$result = $client->call('dopayment', array(
+				'apikey' => $myapikey,
+				'from' => $from,
+				'real_from' => $real_from,
+				'to' => $letscode_to,
+				'description' => $description,
+				'amount' => $amount,
+				'transid' => $transid,
+				'signature' => $signature
+			));
 			$err = $client->getError();
     			if (!$err) {
 				//return $result;
@@ -107,13 +113,6 @@ foreach ($transactions AS $key => $value){
 						//Evaluate the date and pop the transaction if needed, handling the error.
 						echo "Default handling";
 						update_queue($transid,$count,"DEFAULT");
-						// Disable message expiration but warn an admin in case of trouble.
-						//if(strtotime($value["retry_until"]) < time()){
-							// Send error reporta
-							//echo "EXPIRED";
-							//echo "\n";
-							//unqueue($transid);
-						//}
 				}
 			} else {
 				if(strtotime($value["retry_until"]) < time()){
