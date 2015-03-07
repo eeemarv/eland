@@ -1,12 +1,7 @@
 <?php
-// Fix IE's utter and complete brokenness!!!
-header('X-UA-Compatible: IE=EmulateIE8');
-
-// Make sure we serve UTF-8
 header("Content-Type:text/html;charset=utf-8");
 ?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 	<title><?php echo readconfigfromdb("systemname"); ?></title>
@@ -25,10 +20,6 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<script type='text/javascript' src='/js/mootools-more.js'></script>\n";
 			echo "<script type='text/javascript' src='/growler/growler.js'></script>\n";
 			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
-
-			// Decomissioning status script	FIXME
-			// echo "<script type='text/javascript' src='/js/status.js'></script>\n";
-
 			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>\n";
 
 			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />\n";
@@ -40,7 +31,7 @@ header("Content-Type:text/html;charset=utf-8");
 
 <script type='text/javascript'>
 		var Growl = new Growler.init();
-		//Growl.notify('Testing 123');
+		// Growl.notify('Testing 123');
 </script>
 
 <script type='text/javascript'>
