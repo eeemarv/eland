@@ -4,7 +4,7 @@ $rootpath = "";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."inc_memberlist.php");
+
 session_start();
 $s_id = $_SESSION["id"];
 $s_name = $_SESSION["name"];
