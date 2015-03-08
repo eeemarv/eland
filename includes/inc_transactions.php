@@ -462,40 +462,4 @@ function get_transaction($id){
 	return $transaction;
 }
 
-function get_all_user_transactions($s_id){
-	global $db;
-	$query = "SELECT *,  ";
-	$query .= "from_user.name AS fromname, from_user.id AS fromid, from_user.letscode AS fromcode,  ";
-	$query .= "from_user.minlimit AS fromminlimit,  ";
-	$query .= "to_user.name AS toname, to_user.id AS toid, to_user.letscode AS tocode,  ";
-	$query .= " transactions.date AS datum ";
-	$query .= " FROM transactions, users AS from_user, users AS to_user ";
-	$query .= " WHERE (transactions.id_from =".$s_id." OR transactions.id_to =".$s_id.")";
-	$query .= " AND transactions.id_from = from_user.id ";
-	$query .= " AND transactions.id_to = to_user.id ORDER BY date DESC";
-	//print $query;
-	$transactions = $db->GetArray($query);
-	return $transactions;
-}
 
-function get_all_transactions($trans_orderby, $asc){
-	global $db;
-	$query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 'transactions.'.$trans_orderby;
-	$query = "SELECT *, ";
-	$query .= " transactions.id AS transid, ";
-	$query .= " fromusers.id AS userid, ";
-	$query .= " fromusers.name AS fromusername, tousers.name AS tousername, ";
-	$query .= " fromusers.letscode AS fromletscode, tousers.letscode AS toletscode, ";
-	$query .= " transactions.date AS datum, ";
-	$query .= " transactions.cdate AS cdatum ";
-	$query .= " FROM transactions, users  AS fromusers, users AS tousers";
-	$query .= " WHERE transactions.id_to = tousers.id";
-	$query .= " AND transactions.id_from = fromusers.id";
-	$query .= " ORDER BY ".$query_orderby. " ";
-	$query .= ($asc) ? " ASC " : " DESC ";
-	$query .= " LIMIT 1000";
-	//print $query;
-	$transactions = $db->GetArray($query);
-	return $transactions;
-}
-?>

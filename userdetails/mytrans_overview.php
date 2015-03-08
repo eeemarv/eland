@@ -1,154 +1,109 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_transactions.php");
-
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 if (isset($s_id)){
         if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
 		$user = get_user($s_id);
-		show_ptitle();
-		//$transactions = get_all_transactions($s_id);
-		//$unprocessed = get_interlets_transactions($s_id);
-
+		echo "<h1>Mijn transacties</h1>";
+		
 		echo $user["$minlimit"];
 		$balance = $user["saldo"];
-
-		//show_form($list_users, $user, $balance,$s_letscode);
 		show_balance($balance, $user);
-		show_outputdiv();
-	}else{
-		redirect_login($rootpath);
+
+	$interletsq = $db->GetArray('SELECT * FROM interletsq WHERE id_from = ' .$s_id);
+
+	if(!empty($interletsq)){
+			echo "<h2>Interlets transacties in verwerking</h2>";
+			echo "<div class='border_b'>";
+			echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
+			echo "<tr class='header'>";
+			//echo "<td valign='top'>TransID</td>";
+			echo "<td valign='top'>Datum</td>";
+			echo "<td valign='top'>Van</td>";
+			echo "<td valign='top'>Groep</td>";
+			echo "<td valign='top'>Aan</td>";
+			echo "<td valign='top'>Waarde</td>";
+			echo "<td valign='top'>Omschrijving</td>";
+			echo "<td valign='top'>Pogingen</td>";
+			echo "<td valign='top'>Status</td>";
+			echo "</tr>";
+
+			$rownumb=0;
+			foreach($interletsq as $key => $value){
+				$rownumb=$rownumb+1;
+				if($rownumb % 2 == 1){
+					echo "<tr class='uneven_row'>";
+				}else{
+					echo "<tr class='even_row'>";
+				}
+				echo "<td nowrap valign='top'>";
+					echo $value["date_created"];
+					echo "</td>";
+
+				echo "<td nowrap valign='top'>";
+			$user = get_user($value["id_from"]);
+					//echo $value["id_from"];
+			echo $user["fullname"];
+					echo "</td>";
+
+					echo "<td nowrap valign='top'>";
+			$group = get_letsgroup($value["letsgroup_id"]);
+			echo $group["shortname"];
+					//echo $value["letsgroup_id"];
+					echo "</td>";
+
+			echo "<td nowrap valign='top'>";
+					echo $value["letscode_to"];
+					echo "</td>";
+
+					echo "<td nowrap valign='top'>";
+					$ratio = readconfigfromdb("currencyratio");
+					$realvalue = $value["amount"] * $ratio;
+					echo $realvalue;
+					echo "</td>";
+
+					echo "<td nowrap valign='top'>";
+					echo $value["description"];
+					echo "</td>";
+
+					echo "<td nowrap valign='top'>";
+					echo $value["retry_count"];
+					echo "</td>";
+
+			echo "<td nowrap valign='top'>";
+					echo $value["last_status"];
+					echo "</td>";
+
+			echo "</tr>";
+		}
+		echo "</table></div>";
 	}
-}else{
-	redirect_login($rootpath);
-}
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+	//my transactions
 
-function show_form($list_users){
-	global $s_accountrole;
-	global $s_letscode;
-	$date = date("Y-m-d");
+	$query = 'SELECT t.*, 
+			fu.name AS fromname,
+			fu.id AS fromid,
+			fu.letscode AS fromcode,
+			fu.minlimit AS fromminlimit,
+			tu.name AS toname,
+			tu.id AS toid,
+			tu.letscode AS tocode,
+			t.date AS datum
+		FROM transactions t, users fu, users tu
+		WHERE (t.id_from =' . $s_id . ' OR t.id_to = '. $s_id. ')
+			AND t.id_from = fu.id
+			AND t.id_to = tu.id ORDER BY date DESC';
+	$transactions =  $db->GetArray($query);
 
-	$user = readuser($s_id);
-	$list_users = get_users($s_id);
-
-	echo "<script type='text/javascript' src='/js/posttransaction.js'></script>";
-	echo "<script type='text/javascript' src='/js/userinfo.js'></script>";
-	$currency = readconfigfromdb("currency");
-	echo "<div id='transformdiv'>";
-	echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('transform'));\" name='transform' id='transform'>";
-		echo "<table cellspacing='0' cellpadding='0' border='0'>";
-	echo "<tr><td align='right'>";
-	echo "Van";
-	echo "</td><td>";
-	//echo "<input name='letscode_from' id='letscode_from' ";
-	echo "<select name='letscode_from' id='letscode_from' accesskey='2'\n";
-	if($s_accountrole != "admin") {
-                echo " DISABLED";
-	}
-	echo " onchange=\"javascript:document.getElementById('baldiv').innerHTML = ''\">";
-	foreach ($list_users as $value){
-		echo "<option value='".$value["letscode"]."' >";
-		echo htmlspecialchars($value["fullname"],ENT_QUOTES) ." (" .$value["letscode"] .")";
-		echo "</option>\n";
-	}
-	echo "</select>\n";
-
-	echo "</td><td width='150'><div id='fromoutputdiv'></div>";
-	echo "</td></tr>";
-
-	echo "<tr><td valign='top' align='right'>Datum</td><td>";
-        echo "<input type='text' name='date' id='date' size='18' value='" .$date ."'";
-	if($s_accountrole != "admin") {
-                echo " DISABLED";
-        }
-        echo ">";
-        echo "</td><td>";
-        echo "</td></tr><tr><td></td><td>";
-        echo "</td></tr>";
-
-	echo "<tr><td align='right'>";
-        echo "Aan LETS groep";
-        echo "</td><td>";
-        echo "<select name='letgroup' id='letsgroup' onchange=\"document.getElementById('letscode_to').value='';\">\n";
-	$letsgroups = get_letsgroups();
-	foreach($letsgroups as $key => $value){
-		$id = $value["id"];
-		$name = $value["groupname"];
-		echo "<option value='$id'>$name</option>";
-	}
-	echo "</select>";
-	echo "</td><td>";
-	echo "</td></tr><tr><td></td><td>";
-	echo "<tr><td align='right'>";
-	echo "Aan LETSCode";
-	echo "</td><td>";
-	echo "<input type='text' name='letscode_to' id='letscode_to' size='10' onchange=\"javascript:showsmallloader('tooutputdiv');loaduser('letscode_to','tooutputdiv')\">";
-	echo "</td><td><div id='tooutputdiv'></div>";
-	echo "</td></tr><tr><td></td><td>";
-	echo "</td></tr>";
-
-	echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
-	echo "<input type='text' id='amount' name='amount' size='10' ";
-	echo ">";
-	echo "</td><td>";
-	echo "</td></tr>";
-	echo "<tr><td></td><td>";
-	echo "</td></tr>";
-
-	echo "<tr><td valign='top' align='right'>Dienst</td><td>";
-	echo "<input type='text' name='description' id='description' size='40' MAXLENGTH='60' ";
-	echo ">";
-	echo "</td><td>";
-	echo "</td></tr><tr><td></td><td>";
-	echo "</td></tr>";
-	echo "<tr><td colspan='3' align='right'>";
-	echo "<input type='submit' name='zend' id='zend' value='Overschrijven'>";
-	echo "</td></tr></table>";
-	echo "</form>";
-	echo "<script type='text/javascript'>loaduser('letscode_from','fromoutputdiv')</script>";
-	echo "</div>";
-
-	echo "<script type='text/javascript'>document.getElementById('letscode_from').value = '$s_letscode';</script>";
-}
-
-function show_outputdiv(){
-        echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
-        echo "<script type=\"text/javascript\">loadurl('mytrans_render.php')</script>";
-        echo "</div>";
-}
-
-function show_balance($balance, $user){
-	$currency = readconfigfromdb("currency");
-	$minlimit = $user["minlimit"];
-	if ($balance < $minlimit ){
-		echo "<strong><font color='red'>Je hebt de limiet minstand bereikt.<br>";
-		echo " Je kunt geen {$currency} uitschrijven!</font></strong>";
-	}
-	if($user["maxlimit"] != NULL && $balance > $user["maxlimit"]){
-		echo "<strong><font color='red'>Je hebt de limiet maxstand bereikt.<br>";
-                echo " Je kunt geen {$currency} meer ontvangen</font></strong>";
-        }
-	echo "<p><strong>Huidige {$currency}stand: ".$balance."</strong></br>";
-	echo "Limiet minstand: ".$minlimit."</p>";
-}
-
-function show_all_transactions($transactions, $s_id){
+	// show transactions
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
@@ -167,10 +122,26 @@ function show_all_transactions($transactions, $s_id){
 		}
 		echo "<td valign='top'>";
 		echo $value["datum"];
-		echo "</td><td valign='top'>";
-		echo htmlspecialchars($value["fromname"],ENT_QUOTES)." (".trim($value["fromcode"]).")";
-		echo "</td><td valign='top'>";
-		echo htmlspecialchars($value["toname"],ENT_QUOTES)." (".trim($value["tocode"]).")";
+		echo '</td><td valign="top"';
+		echo ($value['fromid'] == $s_id) ? ' class="me"' : '';
+		echo '>';		
+		if(!empty($value["real_from"])){
+			echo htmlspecialchars($value["real_from"],ENT_QUOTES);
+		} else {
+			echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['fromid'] . '">';
+			echo htmlspecialchars($value["fromname"],ENT_QUOTES)." (".trim($value["fromcode"]).")";
+			echo '</a>';
+		}
+		echo '</td><td valign="top"';
+		echo ($value['toid'] == $s_id) ? ' class="me"' : '';
+		echo '>';
+		if(!empty($value["real_to"])){
+			echo htmlspecialchars($value["real_to"],ENT_QUOTES);
+		} else {
+			echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['toid'] . '">';
+			echo htmlspecialchars($value["toname"],ENT_QUOTES)." (".trim($value["tocode"]).")";
+			echo '</a>';
+		}
 		echo "</td>";
 
 		if ($value["fromid"] == $s_id){
@@ -188,24 +159,37 @@ function show_all_transactions($transactions, $s_id){
 		echo htmlspecialchars($value["description"],ENT_QUOTES);
 		echo "</td></tr>";
 	}
-	echo "</table></div>";
+	echo "</table></div>";	
+
+	}else{
+		redirect_login($rootpath);
+	}
+}else{
+	redirect_login($rootpath);
 }
 
-function show_addlink(){
-	global $rootpath;
+////////////////////////////////////////////////////////////////////////////
+
+function show_balance($balance, $user){
 	$currency = readconfigfromdb("currency");
-	echo "<div class='border_b'>| ";
-	echo "<a href='{$rootpath}transactions/add.php'>{$currency} uitschrijven</a> |</div>";
+	$minlimit = $user["minlimit"];
+	if ($balance < $minlimit ){
+		echo "<strong><font color='red'>Je hebt de limiet minstand bereikt.<br>";
+		echo " Je kunt geen {$currency} uitschrijven!</font></strong>";
+	}
+	if($user["maxlimit"] != NULL && $balance > $user["maxlimit"]){
+		echo "<strong><font color='red'>Je hebt de limiet maxstand bereikt.<br>";
+                echo " Je kunt geen {$currency} meer ontvangen</font></strong>";
+        }
+	echo "<p><strong>Huidige {$currency}stand: ".$balance."</strong></br>";
+	echo "Limiet minstand: ".$minlimit."</p>";
 }
 
-function show_ptitle(){
-	echo "<h1>Mijn transacties</h1>";
-}
+
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
+
 include($rootpath."includes/inc_footer.php");
-?>
