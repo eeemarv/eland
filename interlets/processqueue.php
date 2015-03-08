@@ -7,8 +7,6 @@ require_once($rootpath."includes/inc_dbconfig.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_transactions.php");
 
-session_start();
-
 // PUT MAIN BODY HERE
 echo "Running eLAS Interlets System\n\n";
 
@@ -203,5 +201,3 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	echo "\n";
 	return $result;
 }
-
-?>

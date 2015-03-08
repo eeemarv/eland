@@ -137,7 +137,7 @@ class request {  //
 			echo ($parameter[$val] && $val != 'label') ? ' '.$val.'="'.$parameter[$val].'"' : '';
 		}
 		echo '/>';
-		echo ($parameter['error']) ? '<strong><font color="red">'.$parameter['error'].'</font></strong>' : '';
+		echo (isset($parameter['error'])) ? '<strong><font color="red">'.$parameter['error'].'</font></strong>' : '';
 		echo '</td>';
 		return $this;
 	}

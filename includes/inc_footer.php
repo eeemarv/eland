@@ -6,7 +6,9 @@
 if ($s_accountrole == 'admin'){
 	echo '<div><p><b>Support mailinglijst</b>';
 	echo '<ul><li>Inschrijven: support-elas-heroku-subscribe@lists.riseup.net</li>';
-	echo '<li>Berichten posten:  support-elas-heroku@lists.riseup.net</li></ul></p></div>';
+	echo '<li>Berichten posten:  support-elas-heroku@lists.riseup.net</li></ul></p>';
+	echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/elas-heroku/issues">Github issue tracker</a>.</b> (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>
+	</div>';
 }
  ?>
 
