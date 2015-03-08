@@ -13,7 +13,7 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
 
-			//ajax.js contains eLAS custom ajax fucntions that are being migrated to MooTools
+			//ajax.js contains eLAS custom ajax functions that are being migrated to MooTools
 			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
 
 			echo "<script type='text/javascript' src='/js/mootools-core.js'></script>\n";
@@ -44,7 +44,7 @@ header("Content-Type:text/html;charset=utf-8");
  <div id="header">
   <div id="logo"></div><div id="groupname">
   <?php
-	$name = readconfigfromdb("systemname");
+	$name = readconfigfromdb('systemname');
 	echo $name;
   ?>
   </div>
@@ -60,7 +60,6 @@ header("Content-Type:text/html;charset=utf-8");
 		 	<ul class="vertmenu">
 			<?php
 				$name = readconfigfromdb("systemname");
-				//echo "<li><a href='".$rootpath."index.php'>Startscherm</a></li>";
 				echo "<li><a href='".$rootpath."index.php'>$name</a></li>";
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
 					$myurl = $rootpath."ircchat.php";
@@ -76,7 +75,7 @@ header("Content-Type:text/html;charset=utf-8");
 			<?php
 				echo "<li><a href='".$rootpath."searchcat.php'>Vraag & Aanbod</a></li>";
 				echo "<li><a href='".$rootpath."memberlist.php'>Contactlijst</a></li>";
-				if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
+				if($s_accountrole == "user" || $s_accountrole == "admin"){
 					echo "<li><a href='".$rootpath."transactions/alltrans.php'>Transacties</a></li>";
 				}
 				echo "<li><a href='".$rootpath."news.php'>Nieuws</a></li>";
@@ -100,8 +99,7 @@ header("Content-Type:text/html;charset=utf-8");
 					echo "Mijn transacties</a></li>";
 				}
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
-					$myurl = $rootpath."transactions/add.php";
-					echo "<li><a href='#' onclick=\"javascript:window.open('$myurl','Transactie','width=600,height=700,scrollbars=yes,toolbar=no,location=no,menubar=no')\">Nieuwe transactie</a></li>";
+					echo "<li><a href='".$rootpath."transactions/add.php'>Nieuwe transactie</a></li>";
                                 }
 
 			?>

@@ -41,5 +41,35 @@ if (!isset($session_name))
 	}
 
 	session_name($session_name);
-	session_start();
 }
+
+session_start();
+
+$s_id = $_SESSION['id'];
+$s_name = $_SESSION['name'];
+$s_letscode = $_SESSION['letscode'];
+$s_accountrole = $_SESSION['accountrole'];
+
+/*
+if (!$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous')))){
+	header(' ', true, 500);
+//	include '500.html';
+	exit;
+}
+
+if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name)){
+	header('Location: ../login.php?location=' . urlencode($_SERVER['REQUEST_URI']));
+	exit;
+}
+
+if ((!$allow_anonymous_post && $s_accountrole == 'anonymous' && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($s_accountrole == 'guest' && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($role == 'admin' && $s_accountrole != 'admin')
+	|| ($role == 'user' && !in_array($s_accountrole, array('admin', 'user')))
+	|| ($role == 'guest' && !in_array($s_accountrole, array('admin', 'user', 'guest')))){
+	header('HTTP/1.1 403 Unauthorized', true, 403);
+//	include '403.html';
+	exit;
+}
+*/
+

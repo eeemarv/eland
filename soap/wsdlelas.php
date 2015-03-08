@@ -96,7 +96,7 @@ function gettoken($apikey){
 	return $token;
 }
 
-function dopayment($apikey,$from,$real_from,$to,$description,$amount,$transid,$signature){
+function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature){
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 	log_event("","debug","Transaction request");
 	if(check_duplicate_transaction($transid) == 1) {

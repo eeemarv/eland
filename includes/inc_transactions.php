@@ -110,14 +110,15 @@ function validate_inteletstransaction_input($posted_list){
         $var = trim($posted_list["amount"]);
         if (!isset($posted_list["amount"])|| (trim($posted_list["amount"] )=="")){
                 $error_list["amount"]="Bedrag is niet ingevuld";
-        //amount amy only contain  numbers between 0 en 9
-        }elseif(eregi('^[0-9]+$', $var) == FALSE){
+        } elseif ($posted_list['amount'] == '0'){
+			$error_list['amount'] = 'Bedrag kan niet nul zijn.';
+		} elseif (!ctype_digit($posted_list['amount'])){
                 $error_list["amount"]="Bedrag is geen geldig getal";
         }
 
         //Amount may not be over the limit
         $user = get_user($posted_list["id_from"]);
-        if(($user["saldo"] - $posted_list["amount"]) < $user["minlimit"] && $_SESSION["accountrole"] != "admin"){
+        if (($user["saldo"] - $posted_list["amount"]) < $user["minlimit"] && $_SESSION["accountrole"] != "admin"){
                 $error_list["amount"]="Je beschikbaar saldo laat deze transactie niet toe";
         }
 
