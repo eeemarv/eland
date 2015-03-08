@@ -1,32 +1,27 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id)){
-	$id = $_GET["id"];
-	if(isset($id)){
-		show_ptitle($id);
-		$msgs = get_msgs($id);
-		show_outputdiv($msgs, $id);
-	}else{
-		redirect_searchcat();
-	}
-}else{
-	redirect_login($rootpath);
+if (!isset($s_id)){
+	header("Location: ".$rootpath."login.php");
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
+if (!isset($_GET["id"])){
+	header("Location: searchcat.php");
+}
+
+$id = $_GET["id"];
+
+show_ptitle($id);
+$msgs = get_msgs($id);
+show_outputdiv($msgs, $id);
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 function show_outputdiv($msgs, $catid){
@@ -42,7 +37,7 @@ function show_outputdiv($msgs, $catid){
 	echo "</tr>";
 	$rownumb=0;
 	foreach ($msgs as $key => $value){
-	$rownumb=$rownumb+1;
+		$rownumb++;
 		if($rownumb % 2 == 1){
 			echo "<tr class='uneven_row'>";
 		}else{
@@ -56,8 +51,9 @@ function show_outputdiv($msgs, $catid){
 		}
 
 		echo "<td valign='top' nowrap>";
+		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'] . '">';
 		echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
-		echo "</td>";
+		echo "</a></td>";
 
 		echo "<td valign='top'>";
 		echo "<a href='messages/view.php?id=".$value["mid"]."&cat=".$id."'>";
@@ -87,13 +83,6 @@ function show_outputdiv($msgs, $catid){
         echo "</div>";
 }
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function redirect_searchcat(){
-	header("Location: searchcat.php");
-}
 function show_ptitle($id){
 	global $db;
 	$query = "SELECT fullname FROM categories WHERE id=". $id;
@@ -104,22 +93,21 @@ function show_ptitle($id){
 
 function get_msgs($id){
 	global $db;
-	$query = "SELECT *, ";
-	$query .= " messages.id AS mid , ";
-	$query .= " messages.validity AS valdate, ";
-	$query .= " categories.fullname AS catname, ";
-	$query .= " users.name AS username, ";
-	$query .= " categories.id_parent AS parent_id ";
-	$query .= " FROM messages, users, categories ";
-	$query .= " WHERE ";
-	$query .= " messages.id_category = categories.id";
-	$query .= " AND messages.id_user = users.id ";
-	$query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
-	$query .= " AND (messages.id_category = ".$id ;
-	$query .= " OR categories.id_parent = ".$id .")";
-	$query .= " ORDER BY messages.msg_type DESC,users.letscode";
-	$msgs = $db->GetArray($query);
-	return $msgs;
+	$query = 'SELECT *, 
+					m.id AS mid , 
+					m.validity AS valdate, 
+					c.fullname AS catname,
+					u.name AS username,
+					u.id AS userid,
+					c.id_parent AS parent_id
+				FROM messages m, users u, categories c
+				WHERE m.id_category = c.id
+					AND m.id_user = u.id
+					AND (u.status = 1 OR u.status = 2 OR u.status = 3) 
+					AND (m.id_category = ' . $id . '
+						OR c.id_parent = ' .$id . ')
+				ORDER BY m.msg_type DESC, u.letscode';
+	return $db->GetArray($query);
 }
 
 include($rootpath."includes/inc_footer.php");

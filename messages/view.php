@@ -1,99 +1,94 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'geust';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id)){
-	$msgid = $_GET["id"];
-	if(isset($msgid)){
-		$message = get_msg($msgid);
-		$user = get_user($message['id_user']);
-		$title = $message["content"];
+if(!isset($s_id)){
+	header("Location: ".$rootpath."login.php");
+}
 
-		$contact = get_contact($user['id']);
+$msgid = $_GET["id"];
+if(!isset($msgid)){
+	header('Location: ' . $rootpath . 'searchcat_viewcat.php');
+}
 
-		
-		$mailuser = get_user_maildetails($user['id']);
-		$usermail = $mailuser['emailaddress'];
-		
-		$balance = $user["saldo"];
+$message = get_msg($msgid);
+$user = get_user($message['id_user']);
+$title = $message["content"];
 
-		echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
-		echo "<table class='data' border='1' width='95%'>";
-		echo "<tr>";
+$contact = get_contact($user['id']);
 
-		// The picture table is nested
-		echo "<td valign='top'>";
 
-		$msgpictures = get_msgpictures($msgid);
-		echo "<table class='data' border='1'>";
-		echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='200'></img></td></tr>";
-		echo "<tr>";
-		$picturecounter = 1;
-		foreach($msgpictures as $key => $value){
-			$file = $value["PictureFile"];
-			$url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
-			echo "<td>";
-			if($picturecounter == 1) {
-				 echo "<script type='text/javascript'>loadpic('$url')</script>";
-			}
-			if ($picturecounter <= 4) {
-				$picurl="showpicture.php?id=" .$value["id"];
-				echo "<img src='/sites/" .$dirbase ."/msgpictures/$file' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl','Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no')></td>";
-			}
-			$picturecounter += 1;
-		}
-		echo "</tr>";
-		
-		echo "</td>";
-		echo "</table>";
+$mailuser = get_user_maildetails($user['id']);
+$usermail = $mailuser['emailaddress'];
 
-		echo "</td>";
-		// end picture table
+$balance = $user["saldo"];
 
-		// Show message
-		echo "<td valign='top'>";
-		show_msg($message, $balance);
-		echo "</td>";
-		// End message
+echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
+echo "<table class='data' border='1' width='95%'>";
+echo "<tr>";
 
-		echo "</tr>";
+// The picture table is nested
+echo "<td valign='top'>";
 
-		echo "<tr>";
-
-		//Contact info goes here
-        echo "<td width='254' valign='top'>";
-		show_contact($contact);
-		echo "</td>";
-		//End contact info
-
-		//Response form
-		echo "<td>";
-		show_response_form($msgid, $usermail,$s_accountrole);
-		echo "</td>";
-		//End response form
-
-                echo "</tr>";
-		echo "</table>";
-
-		if($s_accountrole == "admin" || $s_id == $user['id']){
-			show_editlinks($msgid);
-		}
-	}else{
-		redirect_searchcat_viewcat();
+$msgpictures = get_msgpictures($msgid);
+echo "<table class='data' border='1'>";
+echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='200'></img></td></tr>";
+echo "<tr>";
+$picturecounter = 1;
+foreach($msgpictures as $key => $value){
+	$file = $value["PictureFile"];
+	$url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
+	echo "<td>";
+	if($picturecounter == 1) {
+		 echo "<script type='text/javascript'>loadpic('$url')</script>";
 	}
-}else{
-	redirect_login($rootpath);
+	if ($picturecounter <= 4) {
+		$picurl="showpicture.php?id=" .$value["id"];
+		echo "<img src='/sites/" .$dirbase ."/msgpictures/$file' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl','Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no')></td>";
+	}
+	$picturecounter += 1;
+}
+echo "</tr>";
+
+echo "</td>";
+echo "</table>";
+
+echo "</td>";
+// end picture table
+
+// Show message
+echo "<td valign='top'>";
+show_msg($message, $balance);
+echo "</td>";
+// End message
+
+echo "</tr>";
+
+echo "<tr>";
+
+//Contact info goes here
+echo "<td width='254' valign='top'>";
+show_contact($contact);
+echo "</td>";
+//End contact info
+
+//Response form
+echo "<td>";
+show_response_form($msgid, $usermail,$s_accountrole);
+echo "</td>";
+//End response form
+
+		echo "</tr>";
+echo "</table>";
+
+if($s_accountrole == "admin" || $s_id == $user['id']){
+	show_editlinks($msgid);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -149,12 +144,12 @@ function show_response_form($msgid, $usermail, $s_accountrole){
 
 function get_msg($msgid){
 	global $db;
-	$query = "SELECT *, ";
-	$query .= " messages.cdate AS date, ";
-	$query .= " messages.validity AS valdate ";
-	$query .= " FROM messages, users ";
-	$query .= " WHERE messages.id = ". $msgid;
-	$query .= " AND messages.id_user = users.id ";
+	$query = 'SELECT *, 
+			m.cdate AS date, 
+			m.validity AS valdate
+		FROM messages m, users u 
+		WHERE m.id = ' . $msgid . '
+			AND m.id_user = u.id';
 	$message = $db->GetRow($query);
 	return $message;
 }
@@ -239,14 +234,6 @@ function show_user($user){
 
 function show_title($title){
 	echo "<h1>$title</h1>";
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function redirect_searchcat_viewcat(){
-	header("Location: searchcat_viewcat.php");
 }
 
 function show_contact($contact){
