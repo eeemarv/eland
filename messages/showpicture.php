@@ -4,15 +4,6 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
-//include($rootpath."includes/inc_smallheader.php");
-//include($rootpath."includes/inc_content.php");
-
 $id = $_GET["id"];
 
 if(isset($s_id)) {
@@ -27,8 +18,6 @@ if(isset($s_id)) {
 	show_footer();
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 function show_header(){
@@ -87,5 +76,3 @@ function get_msg($msgid){
         $message = $db->GetRow($query);
         return $message;
 }
-
-?>

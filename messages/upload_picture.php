@@ -3,49 +3,69 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
 
 $msgid = $_GET["msgid"];
 
-if(isset($s_id)) {
-	show_ptitle();
-	$sizelimit = 3000;
-        if (isset($_POST["zend"])){
-		$tmpfile = $_FILES['picturefile']['tmp_name'];
-		$file = $_FILES['picturefile']['name'];
-		#echo "Bestand doorgestuurd als $file<br>";
-		$table = $_POST["table"];
-		$file_size=$_FILES['picturefile']['size'];
-		// Check the file type first
-		$ext = pathinfo($file, PATHINFO_EXTENSION);
-		//echo "Extension is $ext";
-		if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
-			if($file_size > ($sizelimit * 1024)) {
-				//Resize the image first
-	                        echo "Je foto is te groot, bezig met verkleinen...<br>";
-				resizepic($file,$tmpfile,$rootpath, $msgid);
-			} else {
-				//echo "Foto voor Message " .$msgid;
-				place_picture($file,$tmpfile,$rootpath, $msgid);
-			}
-		} else {
-			echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
-			setstatus("Fout: foto niet toegevoegd",1);
-		}
-
-	} else {
-		show_form($msgid);
-	}
-}else{
-	redirect_login($rootpath);
+if(!isset($s_id)) {
+	header("Location: ".$rootpath."login.php");
 }
+
+$s3 = Aws\S3\S3Client::factory(array(
+	'signature' => 'v4',
+	'region'=>'eu-central-1',
+));
+$bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
+
+show_ptitle();
+$sizelimit = 3000;
+if (isset($_POST["zend"])){
+	$tmpfile = $_FILES['picturefile']['tmp_name'];
+	$file = $_FILES['picturefile']['name'];
+
+	$file_size=$_FILES['picturefile']['size'];
+	
+	$ext = pathinfo($file, PATHINFO_EXTENSION);
+	if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
+
+    try {
+		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.' . $ext;
+        $upload = $s3->upload($bucket, $filename,
+			fopen($_FILES['picturefile']['tmp_name'], 'rb'), 'public-read');
+		$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
+		$db->Execute($query);
+		log_event($userid,"Pict","Message-Picture $file uploaded");
+
+		setstatus("Foto toegevoegd", 0);
+
+      //  echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
+		echo '<p>Upload <a href="' . htmlspecialchars($upload->get('ObjectURL')) . '">succes</a> :)</p>';
+		
+	}
+	catch(Exception $e)
+	{ 
+        echo '<p>Upload error :(</p>';
+        log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+	} 
+		/*
+		if($file_size > ($sizelimit * 1024)) {
+			//Resize the image first
+						echo "Je foto is te groot, bezig met verkleinen...<br>";
+			resizepic($file, $tmpfile, $rootpath, $msgid);
+		} else {
+			//echo "Foto voor Message " .$msgid;
+			place_picture($file, $tmpfile, $rootpath, $msgid);
+		} */
+	} else {
+		echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
+		setstatus("Fout: foto niet toegevoegd",1);
+	}
+		
+} else {
+	show_form($msgid);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
@@ -69,7 +89,7 @@ function show_form($msgid){
 	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn";
 }
 
-function place_picture($file,$tmpfile,$rootpath,$msgid){
+function place_picture($file, $tmpfile, $rootpath, $msgid){
 	global $baseurl;
 	global $dirbase;
 	$ext = pathinfo($file, PATHINFO_EXTENSION);
@@ -85,12 +105,12 @@ function place_picture($file,$tmpfile,$rootpath,$msgid){
 		} else {
 			echo "Foto opgeladen, wordt toegevoegd aan je profiel...<br>";
 			$target = $msgid ."_" .$ts ."." .$ext;
-			dbinsert($msgid, $target,$rootpath);
+			dbinsert($msgid, $target, $rootpath);
 		}
 	}
 }
 
-function resizepic($file,$tmpfile,$rootpath, $msgid){
+function resizepic($file, $tmpfile, $rootpath, $msgid){
 	global $baseurl;
 	global $dirbase;
         $ext = pathinfo($file, PATHINFO_EXTENSION);
@@ -117,23 +137,6 @@ function resizepic($file,$tmpfile,$rootpath, $msgid){
 	}
 }
 
-function dbinsert($msgid, $file, $rootpath) {
-	global $db;
-	global $_SESSION;
-	// Save the old filename for cleanup
 
-        //$query = "UPDATE users SET PictureFile = '" .$file ."' WHERE id=" .$userid;
-	$query = "INSERT INTO msgpictures (msgid, \"PictureFile\") VALUES ('$msgid','$file')";
-	$db->Execute($query);
-	log_event($userid,"Pict","Message-Picture $file uploaded");
 
-	// Redirect
-	setstatus("Foto toegevoegd", 0);
-
-	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
-        echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-}
-
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_smallfooter.php");
-?>
