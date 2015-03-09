@@ -1,46 +1,52 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
-//include($rootpath."includes/inc_smallheader.php");
-//include($rootpath."includes/inc_content.php");
-
 $id = $_POST["id"];
 
-if(isset($s_id)) {
-	//echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
-	$picture = get_picture($id);
-	$msg = get_msg($picture["msgid"]);
-	if($msg["id_user"] == $s_id || $s_accountrole == "admin"){
-		if(delete_record($id) == TRUE){
-			delete_file($picture["PictureFile"]);
-			echo "<font color='green'><strong>OK</font> - Foto $id verwijderd</strong></font>";
-		} else {
-			echo "<font color='red'><strong>Fout bij het verwijderen van foto $id</strong></font>";
-		}
+if(!isset($s_id)) {
+
+}
+
+$picture = get_picture($id);
+$msg = get_msg($picture["msgid"]);
+if($msg["id_user"] == $s_id || $s_accountrole == "admin"){
+	if(delete_record($id) == TRUE){
+		delete_file($picture["PictureFile"]);
+		echo "<font color='green'><strong>OK</font> - Foto $id verwijderd</strong></font>";
 	} else {
-		echo "<font color='red'><strong>Fout: Geen rechten op deze foto</strong></font>";
+		echo "<font color='red'><strong>Fout bij het verwijderen van foto $id</strong></font>";
 	}
+} else {
+	echo "<font color='red'><strong>Fout: Geen rechten op deze foto</strong></font>";
 }
 
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
 
 function delete_file($file){
+	/*
 	global $rootpath;
 	global $baseurl;
 	global $dirbase;
+	
 	$target =  $rootpath ."sites/$dirbase/msgpictures/".$file;
-	unlink($target);
+	unlink($target); */
+
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=>'eu-central-1',
+	));
+
+	$result = $s3->deleteObject(array(
+		'Bucket' => getenv('S3_BUCKET'),
+		'Key'    => $file,
+	));
+
+//	echo $result;
 }
 
 function delete_record($id){

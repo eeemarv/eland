@@ -22,18 +22,18 @@ if ($s_accountrole == 'admin'){
 	?>
 	</div>
 	<div id="footerright">
-
-	<script type='text/javascript'>
-	function OpenAboutBox() {
-		TINY.box.show({url:'about.php', fixed:false,width:0})
-	}
-	</script>
-
-	<?php
-	echo "<a href='javascript: OpenAboutBox();'>eLAS v" .$elasversion ."</a>";
-	?>
+	<a href="https://github.com/eeemarv/elas-heroku ">eLAS-Heroku</a>
 	</div>
 </div>
+
+
+
+
+<?php
+if (isset($includejs)) {
+	echo $includejs;
+}
+?>
 
 </body>
 </html>

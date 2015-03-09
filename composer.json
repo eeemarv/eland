@@ -2,11 +2,27 @@
     "require": {
 		"pimple/pimple": "v1.0.1",
 		"predis/predis": "v0.8.5",
-		"knplabs/gaufrette": "0.1.*",
 		"aws/aws-sdk-php": "2.7.*@dev",
-		"adodb/adodb-php": "dev-master",
+		"adodb/adodb-php": "5.19",
 		"swiftmailer/swiftmailer": "5.3.*@dev",
 		"monolog/monolog": "1.13.*@dev",
-		"fergusean/nusoap": "dev-master"
-    }
+		"fergusean/nusoap": "0.9.5",
+		"moxiecode/plupload": "~2.1",
+		"jqplot/jqplot": "1.0.8",
+		"components/jquery": "~2.1",
+		"components/jqueryui": "~1.11"
+	},
+	"repositories": [
+		{
+			"type": "package",
+			"package": {
+				"name": "jqplot/jqplot",
+				"version": "1.0.8",
+				"dist": {
+					"url": "https://bitbucket.org/cleonello/jqplot/downloads/jquery.jqplot.1.0.8r1250.zip",
+					"type": "zip"            
+				}
+			}
+		}            
+    ]  
 }

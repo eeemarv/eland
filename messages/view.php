@@ -43,14 +43,15 @@ echo "<tr>";
 $picturecounter = 1;
 foreach($msgpictures as $key => $value){
 	$file = $value["PictureFile"];
-	$url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
+//  $url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
+	$url = 'https://' . getenv('S3_BUCKET') . '.s3.eu-central-1.amazonaws.com/'. $file;
 	echo "<td>";
 	if($picturecounter == 1) {
 		 echo "<script type='text/javascript'>loadpic('$url')</script>";
 	}
 	if ($picturecounter <= 4) {
-		$picurl="showpicture.php?id=" .$value["id"];
-		echo "<img src='/sites/" .$dirbase ."/msgpictures/$file' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl','Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no')></td>";
+		$picurl = "showpicture.php?id=" . $value["id"];
+		echo "<img src='" . $url . "' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl','Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no') style='cursor:pointer;'></td>";
 	}
 	$picturecounter += 1;
 }
@@ -91,8 +92,6 @@ if($s_accountrole == "admin" || $s_id == $user['id']){
 	show_editlinks($msgid);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 function show_editlinks($msgid){
@@ -172,7 +171,7 @@ function show_balance($balance,$currency){
 }
 
 
-function show_msg($message,$balance){
+function show_msg($message, $balance){
 	global $baseurl;
 	global $msgid;
 	$currency = readconfigfromdb("currency");

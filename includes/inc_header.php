@@ -22,6 +22,10 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
 			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>\n";
 
+			if (isset ($includecss)){
+				echo $includecss;
+			}
+
 			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />\n";
 			echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />\n";
 		?>

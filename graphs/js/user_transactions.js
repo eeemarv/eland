@@ -159,12 +159,6 @@ jQuery(document).ready(function($){
 				$('div.tooltip').remove();
 			});
 
-			var seriesColors = ['rgb(225, 225, 255)', 'rgb(127, 127, 255)', 'rgb(190, 190, 255)'];
-			var seriesColorsLength = seriesColors.length;
-			for(i = 3; i < donut.length; i++) {     // color styling is not circling as documented // styling for eLAS-blue
-				seriesColors.push(seriesColors[i%seriesColorsLength]);
-			}
-
 			$.jqplot('chartdiv2', [donut] , {
 				title: 'Laatste Jaar',
 				grid: {borderWidth: 0, shadow: false},

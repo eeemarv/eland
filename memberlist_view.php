@@ -1,54 +1,35 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+$includecss = '<link rel="stylesheet" type="text/css" href="graphs/jqplot/jquery.jqplot.min.css" />
+	<link rel="stylesheet" type="text/css" href="graphs/css/tooltip.css" />';
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id)){
-	if (isset($_GET["id"])){
-		$id = $_GET["id"];
-		show_ptitle();
-		$user = readuser($id);
-		show_user($user);
-		$contact = get_contact($id);
-		show_contact($contact);
-		$balance = $user["saldo"];
-		$currency = readconfigfromdb("currency");
-		show_balance($balance,$currency);
-		$msg = get_messages($id);
-		show_msg($msg);
-	}else{
-		redirect_memberlist();
-	}
-}else{
-	redirect_login($rootpath);
+if(!isset($s_id)){
+	header("Location: ".$rootpath."login.php");
 }
 
-echo <<<EOF
-	<link rel="stylesheet" type="text/css" href="graphs/jqplot/jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="graphs/css/tooltip.css" />
-	<script type="text/javascript">var user_id = {$id};</script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-	<script src="graphs/jqplot/jquery.jqplot.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.cursor.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>
-	<script src="graphs/js/user_transactions.js"></script>
-EOF;
+if (!isset($_GET["id"])){
+	header("Location: memberlist.php");
+}
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
+$id = $_GET["id"];
+echo "<h1>Contactlijst</h1>";
+$user = readuser($id);
+show_user($user);
+$contact = get_contact($id);
+show_contact($contact);
+$balance = $user["saldo"];
+$currency = readconfigfromdb("currency");
+show_balance($balance,$currency);
+$msg = get_messages($id);
+show_msg($msg);
+
 ////////////////////////////////////////////////////////////////////////////
 
 function show_balance($balance,$currency){
@@ -59,14 +40,6 @@ function show_balance($balance,$currency){
 	echo "<strong>".$balance."</strong>";
 	echo "</td><td><div id='chartdiv1' style='height:200px;width:300px;'></div></td>";
 	echo "<td><div id='chartdiv2' style='height:200px;width:200px;'></div></td></tr></table>";
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle(){
-	echo "<h1>Contactlijst</h1>";
 }
 
 function show_user($user){
@@ -187,9 +160,17 @@ function show_contact($contact){
 
 }
 
-function redirect_memberlist(){
-	header("Location: memberlist.php");
-}
+$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script src="graphs/jqplot/jquery.jqplot.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.cursor.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>
+	<script src="graphs/js/user_transactions.js"></script>'
 
 include($rootpath."includes/inc_footer.php");
-?>
+
+
