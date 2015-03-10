@@ -15,7 +15,7 @@ $picture = get_picture($id);
 $msg = get_msg($picture["msgid"]);
 if($msg["id_user"] == $s_id || $s_accountrole == "admin"){
 	if(delete_record($id) == TRUE){
-		delete_file($picture["PictureFile"]);
+		delete_file($session_name . '_m_' . $picture["PictureFile"]);
 		echo "<font color='green'><strong>OK</font> - Foto $id verwijderd</strong></font>";
 	} else {
 		echo "<font color='red'><strong>Fout bij het verwijderen van foto $id</strong></font>";

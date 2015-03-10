@@ -92,7 +92,7 @@ function do_auto_cleanup_inactive_messages(){
 	global $db;
 	$query = "SELECT * FROM users WHERE status = 0";
 	$users = $db->GetArray($query);
-
+	
 	foreach ($users AS $key => $value){
 		$q2 = "DELETE FROM messages WHERE id_user = " .$value["id"];
 		$db->Execute($q2);
@@ -230,5 +230,3 @@ function write_timestamp($cronjob){
 	//Write completion to eventlog
 	log_event(" ","Cron","Cronjob $cronjob finished");
 }
-
-?>

@@ -4,10 +4,7 @@ require_once $rootpath . 'vendor/autoload.php';
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
-
-
-
-
+use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 //Download the elas log in json format
 function get_elaslog() {
@@ -44,23 +41,30 @@ function log_event($id, $type, $event){
 	global $elasdebug;
 	global $session_name;
 
+//find domain from session / real domain
+
+	$domain = array_search($session_name, $_ENV);
+	$domain = str_replace('ELAS_DOMAIN_SESSION_', '', $domain);
+	$domain = str_replace('___', '-', $domain);
+	$domain = str_replace('__', '.', $domain);
+	$domain = strtolower($domain);
+	$domain = $domain . ' / ' . $_SERVER['HTTP_HOST'];
+
 	// set the format
-	$output = "%message%";
-	$formatter = new LineFormatter($output);
+//	$output = "%message%";
+//	$formatter = new LineFormatter($output);
+	$formatter = new ColoredLineFormatter();
 
 	// create a log channel to STDOUT
 	$log = new Logger($session_name);
-	$streamHandler = new StreamHandler('php://stdout', Logger::WARNING);
+	$streamHandler = new StreamHandler('php://stdout', Logger::NOTICE);
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	// test messages
-	$log->addWarning($type . ': ' . $event . ' user id:' . $id);
+	// messages
+	$log->addNotice('eLAS-Heroku: ' . $session_name . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
 
 /*
-
-
-
 	$ip = $_SERVER['REMOTE_ADDR'];
 
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -121,5 +125,3 @@ function log_event($id, $type, $event){
 
 	} */
 }
-
-?>

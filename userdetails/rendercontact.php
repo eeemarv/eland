@@ -3,11 +3,6 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 if (isset($s_id)){
 	$contact = get_contact();
@@ -17,8 +12,7 @@ if (isset($s_id)){
 }
 
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
 function get_contact(){
 	global $s_id;
 	global $db;
@@ -35,7 +29,7 @@ function get_contact(){
 
 function show_contact($contact){
 	echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
-	//echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
+
 echo "<tr class='even_row'><td colspan='5'><p><strong>Contactinfo</strong></p></td></tr>";
 	echo "<tr>";
 	echo "<th valign='top'>Type</th>";
@@ -64,4 +58,3 @@ echo "</tr>";
 	}
 	echo "</table>";
 }
-?>

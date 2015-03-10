@@ -1,73 +1,108 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
-include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
+//include($rootpath."includes/inc_smallheader.php");
 
-if(isset($s_id)) {
-	show_ptitle();
-	$sizelimit = 200;
-        if (isset($_POST["zend"])){
-		//echo $_FILES['csvfile']['name'];
-		//echo $_FILES['csvfile']['tmp_name'];
-		//print_r($_FILES);
-		$tmpfile = $_FILES['picturefile']['tmp_name'];
-		$file = $_FILES['picturefile']['name'];
-		#echo "Bestand doorgestuurd als $file<br>";
-		$table = $_POST["table"];
-		$file_size=$_FILES['picturefile']['size'];
-		// Check the file type first
-		$ext = pathinfo($file, PATHINFO_EXTENSION);
-		//echo "Extension is $ext";
-		if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
-			if($file_size > ($sizelimit * 1024)) {
-				//Resize the image first
-	                        echo "Je foto is te groot, bezig met verkleinen...<br>";
-				resizepic($file,$tmpfile,$rootpath, $s_id);
-			} else {
-				place_picture($file,$tmpfile,$rootpath, $s_id);
-			}
-		} else {
-			echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
-			setstatus("Fout: foto niet toegevoegd",1);
+if(!isset($s_id)) {
+	exit;
+}
+
+if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
+{
+	exit;
+}
+
+$sizelimit = 200;
+
+if (!isset($_POST["zend"])){
+	echo "<h1>Foto aan profiel toevoegen</h1>";
+	show_form($sizelimit);	
+}
+else
+{
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=>'eu-central-1',
+	));
+	$bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
+		
+	$tmpfile = $_FILES['picturefile']['tmp_name'];
+	$file = $_FILES['picturefile']['name'];
+	$file_size=$_FILES['picturefile']['size'];
+
+	$ext = pathinfo($file, PATHINFO_EXTENSION);
+
+	if(!($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"))
+	{
+		echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
+		setstatus("Fout: foto niet toegevoegd",1);
+	}
+	else
+	{	// FIX ME (move to client side)
+		if($file_size > ($sizelimit * 1024))
+		{
+			$src = imagecreatefromjpeg($tmpfile);
+			list($width,$height)=getimagesize($tmpfile);
+			$newwidth=300;
+			$newheight=($height/$width)*$newwidth;
+			$tmp=imagecreatetruecolor($newwidth,$newheight);
+			imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+			imagejpeg($tmp,$tmpfile,100);
+			imagedestroy($src);
+			imagedestroy($tmp);
 		}
 
-	} else {
-		show_form($sizelimit);
+		try {
+			$filename = $session_name . '_u_' . $s_id . '_' . sha1(time()) . '.' . $ext;
+
+			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
+
+			$old = $db->GetOne('SELECT "PictureFile" FROM users WHERE id=' . $s_id);
+
+			$query = 'UPDATE users SET "PictureFile" =  \'' . $filename . '\' WHERE id = ' . $s_id;
+			$db->Execute($query);
+
+			log_event($s_id, "Pict", "Picture $filename uploaded");
+
+			if(!empty($old)){
+				$result = $s3->deleteObject(array(
+					'Bucket' => getenv('S3_BUCKET'),
+					'Key'    => $old,
+				));
+				log_event($s_id, "Pict", "Removing old picture file " . $old);
+			}
+
+			readuser($s_id, true);
+			
+			setstatus("Foto toegevoegd", 0);
+
+			//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
+			header("Location:  mydetails.php");
+			exit;
+		}
+		catch(Exception $e)
+		{ 
+			echo '<p>Upload error :(</p>';
+			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+		}
 	}
-	//$posted_list = array();
-}else{
-	echo "<script type=\"text/javascript\">self.close();</script>";
 }
+
 
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle(){
-	echo "<h1>Foto aan profiel toevoegen</h1>";
-}
 
 function show_form($sizelimit){
 	echo "<form action='upload_picture.php' enctype='multipart/form-data' method='POST'>\n";
-        echo "<input name='picturefile' type='file' />\n";
-	echo "<input type='submit' name='zend' value='Versturen' />\n";
-
+    echo "<input name='picturefile' type='file'/>\n";
+	echo "<input type='submit' name='zend' value='Versturen'/>\n";
 	echo "</form>\n";
-
-	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn";
+	echo '<p>LET OP: Je foto moet in het jpeg (jpg) formaat en mag maximaal ' . $sizelimit . 'kB groot zijn </p>';
+	echo '<p>&nbsp;</p>';
 }
 
 function place_picture($file,$tmpfile,$rootpath,$id){
@@ -121,10 +156,10 @@ function dbinsert($userid, $file, $rootpath) {
 	global $db;
 	global $_SESSION;
 	// Save the old filename for cleanup
-        $q1 = "SELECT PictureFile FROM users WHERE id=" .$userid;
+        $q1 = 'SELECT \'PictureFile\' FROM users WHERE id=' .$userid;
         $myuser = $db->GetRow($q1);
 
-        $query = "UPDATE users SET \"PictureFile\" = '" .$file ."' WHERE id=" .$userid;
+        $query = 'UPDATE users SET \'PictureFile\' = ' .$file . ' WHERE id=' .$userid;
 	$db->Execute($query);
 	log_event($userid,"Pict","Picture $file uploaded");
 
@@ -158,6 +193,4 @@ function getuserid($letscode){
 	return $user["id"];
 }
 
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_smallfooter.php");
-?>
+//include($rootpath."includes/inc_smallfooter.php");

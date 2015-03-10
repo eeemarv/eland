@@ -5,11 +5,18 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_smallheader.php");
+include($rootpath."includes/inc_content.php");
 
 $msgid = $_GET["msgid"];
 
 if(!isset($s_id)) {
 	header("Location: ".$rootpath."login.php");
+	exit;
+}
+
+if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
+{
+	exit;
 }
 
 $s3 = Aws\S3\S3Client::factory(array(
@@ -18,7 +25,6 @@ $s3 = Aws\S3\S3Client::factory(array(
 ));
 $bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
 
-show_ptitle();
 $sizelimit = 3000;
 if (isset($_POST["zend"])){
 	$tmpfile = $_FILES['picturefile']['tmp_name'];
@@ -31,8 +37,8 @@ if (isset($_POST["zend"])){
 
     try {
 		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.' . $ext;
-        $upload = $s3->upload($bucket, $filename,
-			fopen($_FILES['picturefile']['tmp_name'], 'rb'), 'public-read');
+		
+        $upload = $s3->upload($bucket, $filename, fopen($file, 'rb'), 'public-read');
 		$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
 		$db->Execute($query);
 		log_event($userid,"Pict","Message-Picture $file uploaded");
@@ -63,19 +69,11 @@ if (isset($_POST["zend"])){
 	}
 		
 } else {
+	echo "<h1>Foto aan V/A toevoegen</h1>";
 	show_form($msgid);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle(){
-	echo "<h1>Foto aan V/A toevoegen</h1>";
-}
 
 function show_form($msgid){
 	echo "<form action='upload_picture.php?msgid=$msgid' enctype='multipart/form-data' method='POST'>\n";

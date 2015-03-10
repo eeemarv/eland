@@ -43,9 +43,7 @@ function show_balance($balance,$currency){
 }
 
 function show_user($user){
-	global $baseurl;
-	global $dirbase;
-	global $rootpath;
+
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 	echo "<tr class='even_row'>";
 
@@ -59,36 +57,36 @@ function show_user($user){
 	// End header
 
 	// Wrap arround another table to show user picture
-	echo "<td width='170' align='left'>";
+	echo "<td width='270' align='left'>";
 	if($user["PictureFile"] == NULL) {
-		echo "<img src='" .$rootpath ."gfx/nouser.png' width='150'></img>";
+		echo "<img src='" .$rootpath ."gfx/nouser.png' width='250'></img>";
 	} else {
-        	echo "<img src='" .$rootpath ."sites/$dirbase/userpictures/" .$user["PictureFile"] ."' width='150'></img>";
+        	echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 	}
 	echo "</td>";
 
 	// inline table
 	echo "<td>";
-		echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
-		echo "<tr><td width='50%' valign='top'>Naam: </td>";
-		echo "<td width='50%' valign='top'>".$user["fullname"]."</td></tr>";
-		echo "<tr><td width='50%' valign='top'>Postcode: </td>";
-		echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
-		echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";
-	    echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
+	echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
+	echo "<tr><td width='50%' valign='top'>Naam: </td>";
+	echo "<td width='50%' valign='top'>".$user["fullname"]."</td></tr>";
+	echo "<tr><td width='50%' valign='top'>Postcode: </td>";
+	echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
+	echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";
+	echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
 
-	    echo "<tr><td width='50%' valign='top'>LETS Chatter ID:  </td>";
-	    $chatter_url = readconfigfromdb("ostatus_url");
-        echo "<td width='50%' valign='top'>";
-        echo "<a href='" . $chatter_url ."/" .$user["ostatus_id"] ."'>";
-        echo $user["ostatus_id"];
-        echo "</a></td></tr>";
+	echo "<tr><td width='50%' valign='top'>LETS Chatter ID:  </td>";
+	$chatter_url = readconfigfromdb("ostatus_url");
+	echo "<td width='50%' valign='top'>";
+	echo "<a href='" . $chatter_url ."/" .$user["ostatus_id"] ."'>";
+	echo $user["ostatus_id"];
+	echo "</a></td></tr>";
 
-		echo "<tr><td valign='top'>Hobbies/interesses: </td>";
-		echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
-		echo "<tr><td valign='top'>Commentaar: </td>";
-		echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
-		echo "</table>";
+	echo "<tr><td valign='top'>Hobbies/interesses: </td>";
+	echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
+	echo "<tr><td valign='top'>Commentaar: </td>";
+	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
+	echo "</table>";
 	echo "</td>";
 	echo "</table>";
 }
@@ -169,7 +167,7 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="graphs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
 	<script src="graphs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
 	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>
-	<script src="graphs/js/user_transactions.js"></script>'
+	<script src="graphs/js/user_transactions.js"></script>';
 
 include($rootpath."includes/inc_footer.php");
 

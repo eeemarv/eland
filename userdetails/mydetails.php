@@ -1,51 +1,55 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_mailinglists.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-echo "<script type='text/javascript' src='$rootpath/js/moomydetails.js'></script>";
-echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
+//echo "<script type='text/javascript' src='$rootpath/js/moomydetails.js'></script>";
+// echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
 
-if (isset($s_id)){
-	show_ptitle();
-	$user = readuser($s_id);
-	show_user();
-	show_editlink();
-	show_sendform();
-	show_pwform();
-	show_contact();
-	show_contactadd();
-
-//	show_subs();
-	show_subform();
-	show_unsubform();
-
-	show_oids();
-	show_oidform();
-	$balance = $user["saldo"];
-	show_balance($balance, $user, readconfigfromdb("currency"));
-}else{
-	redirect_login($rootpath);
+if (!isset($s_id))
+{
+	header("Location: " . $rootpath . "login.php");
+	exit;
 }
 
+if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
+{
+	exit;
+}
+
+show_ptitle();
+$user = readuser($s_id);
+show_user($user);
+show_editlink();
+show_sendform();
+show_pwform();
+show_contact();
+show_contactadd();
+
+//	show_subs();
+show_subform();
+show_unsubform();
+
+show_oids();
+show_oidform();
+$balance = $user["saldo"];
+show_balance($balance, $user, readconfigfromdb("currency"));
+
+
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
 function show_changepwlink($s_id){
 	echo "<p>| <a href='mydetails_pw.php?id=" .$s_id. "'>Paswoord veranderen</a> |</p>";
 }
 
 function show_sendform() {
+	global $rootpath;
+	
 	if(readconfigfromdb("mailinglists_enabled") == 1) {
 		global $s_id;
 		$lists = get_my_open_mailinglists($s_id);
@@ -93,80 +97,82 @@ function show_sendform() {
 }
 
 function show_oidform() {
-	global $s_id;
-        echo "<div id='oidformdiv' class='hidden'>";
-        echo "<form action='". $rootpath ."/resources/user/$s_id/openid' id='oidform' method='post'>";
-        echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-        echo "<tr><td valign='top' align='right'>OpenID</td>";
-        echo "<td valign='top'>";
-        echo "<input  type='text' id='openid' name='openid' size='30'>";
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr><td colspan='2' align='right'>";
-        echo "<input type='submit' id='zend' value='OpenID toevoegen' name='zend'>";
-        echo "</td><td>&nbsp;</td></tr>";
-        echo "</table>";
-        echo "</form>";
-        echo "</div>";
+	global $s_id, $rootpath;
+	echo "<div id='oidformdiv' class='hidden'>";
+	echo "<form action='". $rootpath ."/resources/user/$s_id/openid' id='oidform' method='post'>";
+	echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
+	echo "<tr><td valign='top' align='right'>OpenID</td>";
+	echo "<td valign='top'>";
+	echo "<input  type='text' id='openid' name='openid' size='30'>";
+	echo "</td>";
+	echo "</tr>";
+	echo "<tr><td colspan='2' align='right'>";
+	echo "<input type='submit' id='zend' value='OpenID toevoegen' name='zend'>";
+	echo "</td><td>&nbsp;</td></tr>";
+	echo "</table>";
+	echo "</form>";
+	echo "</div>";
 }
 
 function show_subform(){
-		global $s_id;
+	global $s_id, $rootpath;
 
-		if(readconfigfromdb("mailinglists_enabled") == 1) {
-			$lists = get_availablelists($s_id);
+	if(readconfigfromdb("mailinglists_enabled") == 1) {
+		$lists = get_availablelists($s_id);
 
-			echo "<div id='subformdiv' class='hidden'>";
-			echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-			echo "<tr><td>";
-			echo "<form action='". $rootpath ."/resources/user/subscription/new' id='subform' method='post'>";
-			echo "<select>";
-			foreach($lists as $key => $value){
-				echo "<option value='" .$value['listname'] ."'>" .$value['listname'] ."</option>";
-			}
-			echo "</select>";
-			echo "<input type='submit' value='Abonneren'>";
-			echo "</form>";
-			echo "</td></tr>";
-			echo "</table>";
-			echo "</div>";
-		} else {
-			echo "<div id='subformdiv' class='hidden'>";
-			echo "<form action='". $rootpath ."/resources/user/subscription/new' id='subform' method='post'>";
-			echo "Mailinglists zijn uitgeschakeld in de instellingen van deze installatie";
-			echo "</form></div>";
+		echo "<div id='subformdiv' class='hidden'>";
+		echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
+		echo "<tr><td>";
+		echo "<form action='". $rootpath ."/resources/user/subscription/new' id='subform' method='post'>";
+		echo "<select>";
+		foreach($lists as $key => $value){
+			echo "<option value='" .$value['listname'] ."'>" .$value['listname'] ."</option>";
 		}
+		echo "</select>";
+		echo "<input type='submit' value='Abonneren'>";
+		echo "</form>";
+		echo "</td></tr>";
+		echo "</table>";
+		echo "</div>";
+	} else {
+		echo "<div id='subformdiv' class='hidden'>";
+		echo "<form action='". $rootpath ."/resources/user/subscription/new' id='subform' method='post'>";
+		echo "Mailinglists zijn uitgeschakeld in de instellingen van deze installatie";
+		echo "</form></div>";
+	}
 }
 
 function show_unsubform(){
-		global $s_id;
-		$lists = get_my_open_mailinglists($s_id);
+	global $s_id, $rootpath;
+	
+	$lists = get_my_open_mailinglists($s_id);
 
-		if(readconfigfromdb("mailinglists_enabled") == 1) {
-			echo "<div id='unsubformdiv' class='hidden'>";
-			echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-			echo "<tr><td>";
-			echo "<form action='". $rootpath ."/resources/user/subscription/' id='unsubform' method='post'>";
-			echo "<select>";
-			foreach($lists as $key => $value){
-				echo "<option value='" .$value['listname'] ."'>" .$value['listname'] ."</option>";
-			}
-			echo "</select>";
-			echo "<input type='submit' value='Uitschrijven'>";
-			echo "</form>";
-			echo "</td></tr>";
-			echo "</table>";
-			echo "</div>";
-		} else {
-			echo "<div id='unsubformdiv' class='hidden'>";
-			echo "<form action='". $rootpath ."/resources/user/subscription/' id='unsubform' method='post'>";
-			echo "Mailinglists zijn uitgeschakeld in de instellingen van deze installatie";
-			echo "</form></div>";
+	if(readconfigfromdb("mailinglists_enabled") == 1) {
+		echo "<div id='unsubformdiv' class='hidden'>";
+		echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
+		echo "<tr><td>";
+		echo "<form action='". $rootpath ."/resources/user/subscription/' id='unsubform' method='post'>";
+		echo "<select>";
+		foreach($lists as $key => $value){
+			echo "<option value='" .$value['listname'] ."'>" .$value['listname'] ."</option>";
 		}
+		echo "</select>";
+		echo "<input type='submit' value='Uitschrijven'>";
+		echo "</form>";
+		echo "</td></tr>";
+		echo "</table>";
+		echo "</div>";
+	} else {
+		echo "<div id='unsubformdiv' class='hidden'>";
+		echo "<form action='". $rootpath ."/resources/user/subscription/' id='unsubform' method='post'>";
+		echo "Mailinglists zijn uitgeschakeld in de instellingen van deze installatie";
+		echo "</form></div>";
+	}
 }
 
 function show_subs(){
 	global $rootpath;
+	
 	$url = "rendersubscriptions.php";
 	echo "<div id='subsdiv'></div>";
 	echo "<script type='text/javascript'>showsmallloader('subsdiv');loadsubs('$url');</script>";
@@ -181,6 +187,7 @@ function show_subs(){
 
 function show_oids(){
 	global $rootpath;
+	
 	$url = "renderoid.php";
 	echo "<div id='oiddiv'></div>";
 	echo "<script type='text/javascript'>showsmallloader('oiddiv');loadoid('$url');</script>";
@@ -194,71 +201,68 @@ function show_oids(){
 function get_type_contacts(){
 	global $db;
 	$query = "SELECT * FROM type_contact";
-	#$result = mysql_query($query) or die("select type_contact lukt niet");
-	$typecontactrow = $db->GetArray($query);
-	return $typecontactrow;
+	return $db->GetArray($query);
 }
 
 function show_contactadd(){
 	global $rootpath;
 	global $s_id;
 	echo "<div id='contactformdiv' class='hidden'>";
-        //echo "<form method='POST' id='contactform' action='$rootpath/userdetails/postcontact.php'>\n";
 	echo "<form action='". $rootpath ."/userdetails/postcontact.php' id='contactform' method='post'>";
 	echo "<input type='hidden' name='contactmode' value='new'>";
 	echo "<input type='hidden' name='id_user' value='" .$s_id ."'>";
 	echo "<input type='hidden' name='contactid' value=''>";
 	echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>\n\n";
-        echo "<tr>\n";
-        echo "<td valign='top' align='right'>Type</td>\n";
-        echo "<td>";
-        echo "<select name='id_type_contact'>\n";
+	echo "<tr>\n";
+	echo "<td valign='top' align='right'>Type</td>\n";
+	echo "<td>";
+	echo "<select name='id_type_contact'>\n";
 	$typecontactrow = get_type_contacts();
-        foreach($typecontactrow as $key => $value){
-                echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
-        }
-        echo "</select>\n</td>\n";
+	foreach($typecontactrow as $key => $value){
+			echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
+	}
+	echo "</select>\n</td>\n";
 
-        echo "</tr>\n\n<tr>\n<td></td>\n<td>";
-        echo "</td>\n";
-        echo "</tr>\n\n";
-
-        echo "<tr>\n";
-        echo "<td valign='top' align='right'>Waarde</td>\n";
-        echo "<td>";
-        echo "<input type='text' name='value' size='80'>";
-        echo "</td>\n";
-        echo "</tr>\n\n<tr>\n<td></td>\n<td>";
-        echo "</td>\n";
-        echo "</tr>\n\n";
-
-        echo "<tr>\n";
-        echo "<td valign='top' align='right'>Commentaar</td>\n";
-        echo "<td>";
-        echo "<input type='text' name='comments' size='50' ";
-        echo "</td>\n";
-        echo "</tr>\n\n<tr>\n<td></td>\n<td>";
-        echo "</td>\n";
-        echo "</tr>\n\n";
+	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+	echo "</td>\n";
+	echo "</tr>\n\n";
 
 	echo "<tr>\n";
-        echo "<td valign='top' align='right'></td>\n";
-        echo "<td>";
-        echo "<input type='checkbox' name='flag_public' CHECKED";
-        echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
+	echo "<td valign='top' align='right'>Waarde</td>\n";
+	echo "<td>";
+	echo "<input type='text' name='value' size='80'>";
+	echo "</td>\n";
+	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+	echo "</td>\n";
+	echo "</tr>\n\n";
 
-        echo "</td>\n";
-        echo "</tr>\n\n<tr>\n<td></td>\n<td>";
-        echo "</td>\n";
-        echo "</tr>\n\n";
+	echo "<tr>\n";
+	echo "<td valign='top' align='right'>Commentaar</td>\n";
+	echo "<td>";
+	echo "<input type='text' name='comments' size='50' ";
+	echo "</td>\n";
+	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+	echo "</td>\n";
+	echo "</tr>\n\n";
 
-        echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
-        echo "</td>\n</tr>\n\n";
-        echo "</table></form></div>";
+	echo "<tr>\n";
+	echo "<td valign='top' align='right'></td>\n";
+	echo "<td>";
+	echo "<input type='checkbox' name='flag_public' CHECKED";
+	echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
+
+	echo "</td>\n";
+	echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+	echo "</td>\n";
+	echo "</tr>\n\n";
+
+	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
+	echo "</td>\n</tr>\n\n";
+	echo "</table></form></div>";
 }
 
 function show_pwform(){
-        global $s_id;
+        global $s_id, $rootpath;
         echo "<div id='pwformdiv' class='hidden'>";
 	echo "<form action='". $rootpath ."/userdetails/postpassword.php' id='pwform' method='post'>";
         echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
@@ -307,11 +311,53 @@ function show_editlink(){
 	echo "</td></tr></table>";
 }
 
-function show_user(){
+function show_user($user){
 	global $rootpath;
-        $url = "render_user.php";
-        echo "<div id='userdiv'></div>";
-        echo "<script type='text/javascript'>showsmallloader('userdiv');loaduser('$url');</script>";
+
+	echo "<table class='memberview' cellpadding='0' cellspacing='0' border='0' width='99%'>";
+	echo "<tr class='memberheader'>";
+
+	// Show header block
+	echo "<td colspan='2' valign='top'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." (";
+	echo trim($user["letscode"])." )";
+	if($user["status"] == 2){
+		echo " <font color='#F56DB5'>Uitstapper </font>";
+	}
+	echo "</strong></td></tr>";
+	// End header
+
+	// Wrap arround another table to show user picture
+	echo "<td width='170' align='left'>";
+	if(!isset($user["PictureFile"])) {
+		echo "<img src='" .$rootpath ."gfx/nouser.png' width='250'></img>";
+	} else {
+		echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/'. $user['PictureFile'] .'" width="250"></img>';
+	}
+	echo "</td>";
+
+	// inline table
+	echo "<td>";
+	echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
+	echo "<tr><td width='50%' valign='top'>Naam: </td>";
+	echo "<td width='50%' valign='top'>".$user["fullname"]."</td></tr>";
+	echo "<tr><td width='50%' valign='top'>Postcode: </td>";
+	echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
+	echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";
+	echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
+
+	echo "<tr><td valign='top'>Hobbies/interesses: </td>";
+	echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
+	echo "<tr><td valign='top'>Commentaar: </td>";
+	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
+	echo "<tr><td valign='top'>Saldo Mail: </td>";
+	if($user["cron_saldo"] == 1){
+		echo "<td valign='top'>Aan</td>";
+	} else {
+		echo "<td valign='top'>Uit</td>";
+	}
+	echo "</table>";
+	echo "</td>";
+	echo "</table>";
 }
 
 function get_contact($s_id){
@@ -377,9 +423,4 @@ function get_lists(){
 	return $lists;
 }
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

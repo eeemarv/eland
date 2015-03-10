@@ -1,16 +1,11 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailinglists.php");
-
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
@@ -24,10 +19,8 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 }
 
 echo "<script type='text/javascript' src='$rootpath/js/moomlmsg.js'></script>";
-echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
+// echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 function redirect_login($rootpath){
@@ -135,6 +128,5 @@ function redirect_overview(){
 	header("Location: overview.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
+
 include($rootpath."includes/inc_footer.php");
-?>

@@ -166,6 +166,13 @@ echo $r;
 
 echo "*** Cron system running [" . $session_name . ' ' . $domains[$session_name] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
+/*
+$s3 = Aws\S3\S3Client::factory(array(
+	'signature'	=> 'v4',
+	'region'	=> 'eu-central-1',
+));
+*/
+
 $lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 
 // Auto mail saldo on request
@@ -195,7 +202,60 @@ $frequency = 1440;
 if(check_timestamp($lastrun_ary['cleanup_messages'], $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1)
 {
 	cleanup_messages();
+
+	// remove orphaned images.
+	$query = 'SELECT mp.id, mp.\'Picturefile\'
+		FROM msgpictures mp
+		LEFT JOIN messages m ON mp.msgid = m.id
+		WHERE m.id IS NULL';
+	$orphan_images = $db->GetAssoc($query);
+
+	if (count($orphan_images))
+	{
+		foreach ($orphan_images as $id => $file)
+		{
+			$result = $s3->deleteObject(array(
+				'Bucket' => getenv('S3_BUCKET'),
+				'Key'    => $file,
+			));
+
+			echo $result . $r;
+			
+			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
+		}
+	}
 }
+
+/*
+// cleanup orphaned profile & message images by reading the S3 bucket every 30 days
+if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 2592000)
+{
+	echo 'Run cleanup profile images' . $r;
+
+	// get all objects
+	$objects = $s3->getIterator('ListObjects', array(
+		'Bucket' => getenv('S3_BUCKET')
+	));
+
+	foreach ($objects as $file)
+	{
+		list($sess, $type, $type_id, $hash) = explode('_', $file);
+		
+		if ($sess != $session_name)
+		{
+			continue;
+		}
+
+		if ($type == 'm')
+		{
+		* // not good
+			//$db->getOne('SELECT 1 FROM msgpictures WHERE \'Picturefile\' = ' . $file);
+		}
+	}
+
+	$redit->set($session_name . 'cleanup_profile_images_timestamp', time());
+}
+*/
 
 
 // Update counts for each message category
