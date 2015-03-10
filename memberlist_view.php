@@ -5,8 +5,8 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-$includecss = '<link rel="stylesheet" type="text/css" href="graphs/jqplot/jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="graphs/css/tooltip.css" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="vendor/jqplot/jqplot/jquery.jqplot.min.css" />
+	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
 
 include($rootpath."includes/inc_header.php");
 
@@ -48,7 +48,7 @@ function show_user($user){
 	echo "<tr class='even_row'>";
 
 	// Show header block
-	echo "<td colspan='2' valign='top'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." (";
+	echo "<td colspan='2' valign='top'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." ( ";
 	echo trim($user["letscode"])." )";
 	if($user["status"] == 2){
 		echo " <font color='#F56DB5'>Uitstapper </font>";
@@ -160,14 +160,14 @@ function show_contact($contact){
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-	<script src="graphs/jqplot/jquery.jqplot.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.cursor.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-	<script src="graphs/jqplot/plugins/jqplot.highlighter.min.js"></script>
-	<script src="graphs/js/user_transactions.js"></script>';
+	<script src="vendor/jqplot/jqplot/jquery.jqplot.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.cursor.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="vendor/jqplot/jqplot/plugins/jqplot.highlighter.min.js"></script>
+	<script src="js/plot_user_transactions.js"></script>';
 
 include($rootpath."includes/inc_footer.php");
 

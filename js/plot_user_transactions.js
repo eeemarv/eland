@@ -1,10 +1,8 @@
-//  user_transactions.js
-
 $.noConflict();
 
-jQuery(document).ready(function($){
+;jQuery(document).ready(function($){
 	$.ajax({
-		url: '/graphs/ajax/user_transactions.php',
+		url: '/plot_user_transactions.php',
 		dataType: 'json',
 		data: { user_id: user_id },
 		success:function(data){
