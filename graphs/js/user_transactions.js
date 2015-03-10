@@ -163,7 +163,6 @@ jQuery(document).ready(function($){
 				title: 'Laatste Jaar',
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
-				  seriesColors: seriesColors,
 				  renderer:$.jqplot.DonutRenderer,
 				  rendererOptions:{
 					padding: 0,
