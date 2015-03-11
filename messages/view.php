@@ -10,11 +10,13 @@ include($rootpath."includes/inc_header.php");
 
 if(!isset($s_id)){
 	header("Location: ".$rootpath."login.php");
+	exit;
 }
 
 $msgid = $_GET["id"];
 if(!isset($msgid)){
 	header('Location: ' . $rootpath . 'searchcat_viewcat.php');
+	exit;
 }
 
 $message = get_msg($msgid);
@@ -38,20 +40,20 @@ echo "<td valign='top'>";
 
 $msgpictures = get_msgpictures($msgid);
 echo "<table class='data' border='1'>";
-echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='200'></img></td></tr>";
+echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='300'></img></td></tr>";
 echo "<tr>";
 $picturecounter = 1;
 foreach($msgpictures as $key => $value){
 	$file = $value["PictureFile"];
 //  $url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
-	$url = 'https://' . getenv('S3_BUCKET') . '.s3.eu-central-1.amazonaws.com/'. $file;
+	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
 	echo "<td>";
 	if($picturecounter == 1) {
 		 echo "<script type='text/javascript'>loadpic('$url')</script>";
 	}
 	if ($picturecounter <= 4) {
 		$picurl = "showpicture.php?id=" . $value["id"];
-		echo "<img src='" . $url . "' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl','Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no') style='cursor:pointer;'></td>";
+		echo "<img src='" . $url . "' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl', 'Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no') style='cursor:pointer;'></td>";
 	}
 	$picturecounter += 1;
 }
@@ -94,14 +96,18 @@ if($s_accountrole == "admin" || $s_id == $user['id']){
 
 ////////////////////////////////////////////////////////////////////////////
 
-function show_editlinks($msgid){
-        echo "<table width='100%' border=0><tr><td>";
-        echo "<div id='navcontainer'>";
-        echo "<ul class='hormenu'>";
-        $myurl="edit.php?mode=edit&id=$msgid";
-        echo "<li><a href='#' onclick=window.open('$myurl','message_edit','width=640,height=800,scrollbars=yes,toolbar=no,location=no,menubar=no')>Aanpassen</a></li>";
-	$myurl="upload_picture.php?msgid=$msgid";
-        echo "<li><a href='#' onclick=window.open('$myurl','upload_picture','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";
+function show_editlinks($msgid)
+{
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	$myurl="edit.php?mode=edit&id=$msgid";
+	echo "<li><a href='#' onclick=window.open('$myurl','message_edit','width=640,height=800,scrollbars=yes,toolbar=no,location=no,menubar=no')>Aanpassen</a></li>";
+	$myurl = "upload_picture.php?msgid=$msgid";
+	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
+    echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
+	
+//    echo "<li><a href='#' onclick=window.open('$myurl','upload_picture','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";
 	$myurl="delete.php?id=$msgid";
 	echo "<li><a href='#' onclick=window.open('$myurl','message_delete','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Verwijderen</a></li>";
 	//if(readconfigfromdb("share_enabled") == 1){

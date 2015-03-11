@@ -4,18 +4,17 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
-
 $msgid = $_GET["msgid"];
 
-if(!isset($s_id)) {
-	header("Location: ".$rootpath."login.php");
+if(!isset($s_id))
+{
+	echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 	exit;
 }
 
 if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
 {
+	echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 	exit;
 }
 
@@ -33,21 +32,24 @@ if (isset($_POST["zend"])){
 	$file_size=$_FILES['picturefile']['size'];
 	
 	$ext = pathinfo($file, PATHINFO_EXTENSION);
+
+// to do : check size.
+
 	if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
 
     try {
 		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.' . $ext;
 		
-        $upload = $s3->upload($bucket, $filename, fopen($file, 'rb'), 'public-read');
+        $upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
+        
 		$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
 		$db->Execute($query);
-		log_event($userid,"Pict","Message-Picture $file uploaded");
+		log_event($s_id, "Pict", "Message-Picture $file uploaded");
 
 		setstatus("Foto toegevoegd", 0);
 
 		echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 		echo '<p>Upload <a href="' . htmlspecialchars($upload->get('ObjectURL')) . '">succes</a> :)</p>';
-		
 	}
 	catch(Exception $e)
 	{ 
@@ -67,8 +69,12 @@ if (isset($_POST["zend"])){
 		echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
 		setstatus("Fout: foto niet toegevoegd",1);
 	}
-		
-} else {
+
+	header('Location: ' . $rootpath . 'messages/view.php?id=' . $msgid);
+	exit;
+}
+else
+{
 	echo "<h1>Foto aan V/A toevoegen</h1>";
 	show_form($msgid);
 }
@@ -76,13 +82,12 @@ if (isset($_POST["zend"])){
 ////////////////////////////////////////////////////////////////////////////
 
 function show_form($msgid){
-	echo "<form action='upload_picture.php?msgid=$msgid' enctype='multipart/form-data' method='POST'>\n";
-        echo "<input name='picturefile' type='file' />\n";
+	echo '<form action="upload_picture.php?msgid=' . $msgid . '" enctype="multipart/form-data" method="POST">' . "\n";
+	echo "<input name='picturefile' type='file' />\n";
 	echo "<input type='submit' name='zend' value='Versturen' />\n";
-
 	echo "</form>\n";
-
 	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn";
+	echo '<p>&nbsp;</p>';
 }
 
 function place_picture($file, $tmpfile, $rootpath, $msgid){
@@ -133,6 +138,3 @@ function resizepic($file, $tmpfile, $rootpath, $msgid){
 	}
 }
 
-
-
-include($rootpath."includes/inc_smallfooter.php");

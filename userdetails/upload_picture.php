@@ -5,9 +5,8 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-//include($rootpath."includes/inc_smallheader.php");
-
-if(!isset($s_id)) {
+if(!isset($s_id))
+{
 	exit;
 }
 
@@ -45,6 +44,7 @@ else
 	{	// FIX ME (move to client side)
 		if($file_size > ($sizelimit * 1024))
 		{
+			
 			$src = imagecreatefromjpeg($tmpfile);
 			list($width,$height)=getimagesize($tmpfile);
 			$newwidth=300;

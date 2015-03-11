@@ -53,7 +53,7 @@ function show_picture($file){
 	global $baseurl;
 	global $dirbase, $session_name;
 	echo "<div id='picdiv'>";
-//	$url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
+
 	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
 	echo "<img src='" .$url ."' width='640'>";
 	echo "</div>";
