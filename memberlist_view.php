@@ -131,7 +131,7 @@ function get_contact($id){
 	$query .= " WHERE users.id=".$id;
 	$query .= " AND contact.id_type_contact = type_contact.id ";
 	$query .= " AND users.id = contact.id_user ";
-$query .= " AND contact.flag_public = 1";
+	$query .= " AND contact.flag_public = 1";
 	$contact = $db->GetArray($query);
 	return $contact;
 }
@@ -170,5 +170,3 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="js/plot_user_transactions.js"></script>';
 
 include($rootpath."includes/inc_footer.php");
-
-
