@@ -20,16 +20,23 @@ if(!isset($msgid)){
 }
 
 $message = get_msg($msgid);
-$user = get_user($message['id_user']);
+$user = readuser($message['id_user']);
 $title = $message["content"];
 
 $contact = get_contact($user['id']);
-
 
 $mailuser = get_user_maildetails($user['id']);
 $usermail = $mailuser['emailaddress'];
 
 $balance = $user["saldo"];
+
+echo "<table width='100%' border=0><tr><td>";
+echo "<div id='navcontainer'>";
+echo "<ul class='hormenu'>";
+echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
+echo "</ul>";
+echo "</div>";
+echo "</td></tr></table>";
 
 echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
 echo "<table class='data' border='1' width='95%'>";
@@ -39,6 +46,7 @@ echo "<tr>";
 echo "<td valign='top'>";
 
 $msgpictures = get_msgpictures($msgid);
+
 echo "<table class='data' border='1'>";
 echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='300'></img></td></tr>";
 echo "<tr>";
@@ -198,7 +206,7 @@ function show_msg($message, $balance){
 	echo "</td></tr>";
 	echo "<tr><td>";
 	if (!empty($message["Description"])){
-		echo nl2br(htmlspecialchars($message["Description"],ENT_QUOTES));
+		echo nl2br(htmlspecialchars($message['"Description"'],ENT_QUOTES));
 	} else {
 		echo "<i>Er werd geen omschrijving ingegeven</i>";
 	}

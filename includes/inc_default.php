@@ -24,3 +24,6 @@ require_once $rootpath . 'includes/inc_redis.php';
 require_once $rootpath . 'includes/inc_setstatus.php';
 require_once $rootpath . 'includes/inc_timezone.php';
 require_once $rootpath . 'includes/inc_version.php';
+require_once $rootpath . 'includes/inc_alert.php';
+
+$alert = new alert();

@@ -12,6 +12,7 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/floatingcolumns.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>\n";
 
 			//ajax.js contains eLAS custom ajax functions that are being migrated to MooTools
 			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
@@ -159,4 +160,12 @@ header("Content-Type:text/html;charset=utf-8");
 	?>
   </div>
   <div id="content">
-  <div id='log'><div id='log_res'></div></div>
+  <div id='log'><div id='log_res'>
+
+<?php
+	echo '<div>';
+	$alert->render();
+	echo '</div>';
+?>
+
+  </div></div>

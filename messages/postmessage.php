@@ -6,14 +6,8 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 if(!isset($s_id)){
-        exit;
+	exit;
 }
 
 $mode = $_POST["mode"];
@@ -43,18 +37,17 @@ if (empty($errors)){
 	//$fullurl = "http://" . $baseurl ."messages";
 
 	switch ($mode){
-	        case "new":
-			$result = insert_msg($posted_list);
-                        if($result) {
-                                echo "<font color='green'><strong>OK</font> - Vraag/Aanbod is opgeslagen";
-								setstatus("Vraag/Aanbod is opgeslagen",0);
-                                echo "<script type='text/javascript'>self.close();</script>";
-
-                        } else {
-                                echo "<font color='red'><strong>Fout bij het opslaan van je V/A";
-                                setstatus("Vraag/Aanbod is NIET opgeslagen", 1);
-                        }
-                        break;
+		case "new":
+		$result = insert_msg($posted_list);
+			if($result) {
+				echo "<font color='green'><strong>OK</font> - Vraag/Aanbod is opgeslagen";
+				setstatus("Vraag/Aanbod is opgeslagen",0);
+				echo "<script type='text/javascript'>self.close();</script>";
+			} else {
+				echo "<font color='red'><strong>Fout bij het opslaan van je V/A";
+				setstatus("Vraag/Aanbod is NIET opgeslagen", 1);
+			}
+			break;
 		case "edit":
 			if($posted_list["id_user"] == $s_id || $s_accountrole == 'admin'){
 				$result = update_msg($msgid, $posted_list);
@@ -82,19 +75,19 @@ if (empty($errors)){
 
 ///////////////// FUNCTIONS //////////////////
 function validate_input($posted_list,$mode){
-        global $db;
-        $error_list = array();
-        if (empty($posted_list["content"]) || (trim($posted_list["content"]) == "")){
-                $error_list["content"] = "Wat is niet ingevuld";
-        }
+	global $db;
+	$error_list = array();
+	if (empty($posted_list["content"]) || (trim($posted_list["content"]) == "")){
+			$error_list["content"] = "Wat is niet ingevuld";
+	}
 	if(!($posted_list["vtime"] > date("Y-m-d H:i:s")) && $mode == "new" ){
 		$error_list["validity"] = "Geldigheid is niet correct of niet ingevuld";
 	}
 	if (empty($posted_list["id_category"])){
 		$error_list["id_category"] = "Categorie is leeg";
-        }
+	}
 
-        return $error_list;
+	return $error_list;
 }
 
 function count_validity($validity){
@@ -113,7 +106,7 @@ function update_msg($id, $posted_list){
     }
     $posted_list["mdate"] = date("Y-m-d H:i:s");
 
-    $posted_list['\"Description\"'] = $posted_list['description'];
+    $posted_list['"Description"'] = $posted_list['description'];
     unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
 
     return $db->AutoExecute('messages', $posted_list, 'UPDATE', 'id = ' . $id);
@@ -123,7 +116,7 @@ function insert_msg($posted_list){
     global $db;
 	$posted_list["cdate"] = date("Y-m-d H:i:s");
     $posted_list["validity"] = $posted_list["vtime"];
-    $posted_list['\"Description\"'] = $posted_list['description'];
+    $posted_list['"Description"'] = $posted_list['description'];
     unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
 
     return $db->AutoExecute('messages', $posted_list, 'INSERT');
