@@ -1,24 +1,17 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	showlinks($rootpath);
 	show_ptitle1();
-	$groups = get_letsgroups();
-	show_groups($groups);
+	show_groups();
 	show_comment();
 }else{
 	redirect_login($rootpath);
@@ -62,7 +55,7 @@ function show_ptitle1(){
 	echo "<h1>Overzicht LETS groepen</h1>";
 }
 
-function show_groups($groups){
+function show_groups(){
 	echo "<div class='border_b'><table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
 	echo "<td valign='top'><strong>";
@@ -77,8 +70,8 @@ function show_groups($groups){
 	echo "</tr>\n\n";
 	$rownumb=0;
 	$groups = getgroups();
-	foreach($groups as $key => $value){
-		$rownumb=$rownumb+1;
+	foreach($groups as $value){
+		$rownumb++;
 		echo "<tr";
 		if($rownumb % 2 == 1){
 			echo " class='uneven_row'";
@@ -103,6 +96,5 @@ function getgroups(){
         return $groups;
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
+

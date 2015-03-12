@@ -16,6 +16,14 @@ if (!($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole ==
 	header("Location: ".$rootpath."login.php");
 }
 
+echo "<table width='100%' border=0><tr><td>";
+echo "<div id='navcontainer'>";
+echo "<ul class='hormenu'>";
+echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
+echo "</ul>";
+echo "</div>";
+echo "</td></tr></table>";
+
 echo "<h1>Overzicht transacties</h1>";
 
 $query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;

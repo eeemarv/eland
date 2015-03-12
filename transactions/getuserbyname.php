@@ -18,7 +18,8 @@ if(!isset($s_id)){
 $name = $_GET["name"];
 
 if(empty($_GET["letsgroup"])){
-	$letsgroup = readconfigfromdb("myinterletsid");
+//	$letsgroup = readconfigfromdb("myinterletsid"); doesn't exist necessarily
+	$letsgroup = $db->GetOne('SELECT id FROM letsgroups WHERE apimethod = \'internal\'');
 } else {
 	$letsgroup= $_GET["letsgroup"];
 }

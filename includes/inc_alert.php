@@ -33,7 +33,7 @@ class alert
 
 	function render()
 	{
-		if (!($_SESSION['alert'] && count($_SESSION['alert'])))
+		if (!(isset($_SESSION['alert']) && is_array($_SESSION['alert']) && count($_SESSION['alert'])))
 		{
 			return;
 		}

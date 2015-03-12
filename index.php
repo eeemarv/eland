@@ -325,6 +325,7 @@ function get_all_msgs(){
 			m.content,
 			u.id AS uid,
 			u.name AS username,
+			u.letscode,
 			m.cdate AS date
 		FROM messages m, users u
 		WHERE m.id_user = u.id

@@ -1,28 +1,24 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 if(!isset($s_id)){
-        exit;
+	exit;
 }
 
 $letscode= $_GET["letscode"];
 if(empty($_GET["letsgroup"])){
-	$letsgroup = readconfigfromdb("myinterletsid");
+//	$letsgroup = readconfigfromdb("myinterletsid"); doesn't exist necessarily
+	$letsgroup = $db->GetOne('SELECT id FROM letsgroups WHERE apimethod = \'internal\'');
 } else {
 	$letsgroup= $_GET["letsgroup"];
 }
 
-$myletsgroup=get_letsgroup($letsgroup);
+$myletsgroup = get_letsgroup($letsgroup);
 
 $mysoapurl = $myletsgroup["elassoapurl"] ."/wsdlelas.php?wsdl";
 $myapikey = $myletsgroup["remoteapikey"];

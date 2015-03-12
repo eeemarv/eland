@@ -6,12 +6,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 // Pull in the NuSOAP code
-// require_once($rootpath."soap/lib/nusoap.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+// require_once($rootpath."soap/lib/nusoap.php"); -> autoloaded now
 
 // Array ( [letsgroup] => LETS Test [letscode_to] => 1 [letscode_from] => 1 [amount] => 2 [minlimit] => -500 [balance] => -540 [description] => 3 )
 
@@ -19,7 +14,7 @@ $s_accountrole = $_SESSION["accountrole"];
 //print_r($_POST);
 
 if(!isset($s_id)){
-        exit;
+	exit;
 }
 
 $posted_list["description"] = $_POST["description"];
@@ -63,13 +58,15 @@ switch ($apimethod){
 			$settransid = generate_transid();
 			$mytransid = insert_transaction($posted_list, $settransid);
 			if($mytransid == $settransid){
-				echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
+				//echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
 				mail_transaction($posted_list, $mytransid);
-				setstatus("Transactie opgeslagen", 0);
+				$alert->add_success("Transactie opgeslagen");
 			} else {
-				echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-				setstatus("Gefaalde transactie", 1);
+				//echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
+				$alert->add_error("Gefaalde transactie");
 			}
+			header('Location: ' . $rootpath . 'transactions/alltrans.php');
+			exit;
 		}
 		break;
 	case "mail":
@@ -91,13 +88,15 @@ switch ($apimethod){
                 } else {
 			$mytransid = insert_transaction($posted_list, $settransid);
 			if($mytransid == $settransid){
-                                echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
+				//echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
 				mail_interlets_transaction($posted_list, $mytransid);
-				setstatus("Transactie opgeslagen", 0);
-                        } else {
-                                echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-				setstatus("Gefaalde transactie", 1);
-                        }
+				$alert->add_success("Transactie opgeslagen");
+			} else {
+				// echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
+				$alert->add_error("Gefaalde transactie");
+			}
+			header('Location: ' . $rootpath . 'transactions/alltrans.php');
+			exit;
 		}
 		break;
 	case "elassoap":
@@ -124,16 +123,17 @@ switch ($apimethod){
 			// Queue the transaction for later handling
 			$mytransid = queuetransaction($posted_list,$fromuser,$touser);
 			if($mytransid == $settransid){
-				echo "<font color='green'><strong>OK</font> - Interletstransactie wacht op verwerking</strong>";
-				setstatus("Transactie in verwerking", 0);
+				//echo "<font color='green'><strong>OK</font> - Interletstransactie wacht op verwerking</strong>";
+				$alert->add_success("Interlets transactie in verwerking");
 				if (!$redis->get($session_name . '_interletsq'))
 				{
 					$redis->set($session_name . '_interletsq', time());
 				}
 			} else {
-				echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-				setstatus("Gefaalde transactie", 1);
+				//echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
+				$alert->add_error("Gefaalde transactie", 1);
             }
+            header('Location: ' . $rootpath . 'transactions/alltrans.php');
 		}
                 break;
 }

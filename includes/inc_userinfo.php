@@ -50,10 +50,10 @@ function get_letsgroup($id){
 }
 
 function get_prefixes(){
-        global $db;
-        $query = "SELECT * FROM letsgroups WHERE apimethod ='internal' AND prefix IS NOT NULL";
-        $list_prefixes = $db->GetArray($query);
-        return $list_prefixes;
+	global $db;
+	$query = "SELECT * FROM letsgroups WHERE apimethod ='internal' AND prefix IS NOT NULL";
+	$list_prefixes = $db->GetArray($query);
+	return $list_prefixes;
 }
 
 function get_contact_by_email($email){
@@ -172,7 +172,6 @@ function get_users(){
         global $db;
         $query = "SELECT * FROM users WHERE (users.status = 1 or users.status=2 or users.status = 3 or users.status = 4 )";
         $query .= " and users.accountrole <> 'guest' order by letscode";
-
         $list_users = $db->GetArray($query);
         return $list_users;
 }

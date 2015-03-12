@@ -9,13 +9,22 @@ require_once($rootpath."includes/inc_userinfo.php");
 include($rootpath."includes/inc_header.php");
 
 if (isset($s_id)){
-        if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
-		$user = get_user($s_id);
-		echo "<h1>Mijn transacties</h1>";
-		
-		echo $user["$minlimit"];
-		$balance = $user["saldo"];
-		show_balance($balance, $user);
+	if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
+	$user = get_user($s_id);
+	
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
+	echo "</ul>";
+	echo "</div>";
+	echo "</td></tr></table>";
+
+	echo "<h1>Mijn transacties</h1>";
+
+	echo $user["$minlimit"];
+	$balance = $user["saldo"];
+	show_balance($balance, $user);
 
 	$interletsq = $db->GetArray('SELECT * FROM interletsq WHERE id_from = ' .$s_id);
 
