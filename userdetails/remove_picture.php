@@ -11,7 +11,7 @@ if(isset($s_id)){
 		if(isset($_POST["zend"])){
 			update_user($id,$rootpath);
 			//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-			setstatus("Foto verwijderd",0);
+			$alert->add_success("Foto verwijderd.");
 			header("Location:  mydetails.php");
 		}else{
 			echo "<h1>Foto verwijderen</h1>";
@@ -51,7 +51,6 @@ function update_user($id, $rootpath){
 	}
 	$msg = "Removed picture " .$file;
 	log_event($id, "Pict",$msg);
-	echo "Foto verwijderd.";
 
 	readuser($id, true);
 }

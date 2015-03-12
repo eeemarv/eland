@@ -1,17 +1,11 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-$s_user_postcode = $_SESSION["user_postcode"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id)){
 	show_ptitle();
@@ -48,8 +42,6 @@ if(isset($s_id)){
 }
 
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
 function chop_string($content, $maxsize){
 	$strlength = strlen($content);
@@ -82,7 +74,7 @@ function show_resultnavigation($start, $limit, $aantal, $q){
 }
 
 function show_results($zoekresultaten){
-	$rootpath;
+	global $rootpath;
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
@@ -115,8 +107,9 @@ function show_results($zoekresultaten){
 		}
 		echo "</a></td>";
 		echo "</td><td valign='top' nowrap>";
+		echo '<a href="'.$rootpath.'memberlist_view.php?id=' . $value['id_user'] . '">';
 		echo htmlspecialchars($value["name"],ENT_QUOTES) ." (". trim($value["letscode"]).")";
-		echo "</td></tr>";
+		echo "</a></td></tr>";
 	}
 	echo "</table></div>";
 }
@@ -141,17 +134,17 @@ function search_db($q,$distance,$user_postcode){
 	$geo = (!empty($user_postcode) && !empty($distance) && filter_var($distance, FILTER_VALIDATE_INT));
 
 	$query = "SELECT *, ";
-	$query .= "messages.id AS mid ";
+	$query .= "m.id AS mid ";
 	if($geo) {
-		$query .= " FROM messages, users, city_distance d ";
+		$query .= " FROM messages m, users u, city_distance d ";
 	} else {
-		$query .= " FROM messages, users ";
+		$query .= " FROM messages m, users u ";
 	}
 	$query .= " WHERE LOWER(content) LIKE '%$q%' ";
-	$query .= " AND messages.id_user = users.id ";
-	$query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
+	$query .= " AND m.id_user = u.id ";
+	$query .= " AND (u.status = 1 OR u.status = 2 OR u.status = 3) ";
 	if($geo) {
-		$query .= " AND (users.postcode = d.code_to) ";
+		$query .= " AND (u.postcode = d.code_to) ";
 		$query .= " AND d.code_from = '$user_postcode' ";
 		$query .= " AND d.distance < $distance ";
 	}
@@ -209,6 +202,5 @@ function show_ptitle(){
 	echo "<h1>Zoek op trefwoord</h1>";
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
+

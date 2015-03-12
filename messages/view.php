@@ -95,7 +95,7 @@ show_response_form($msgid, $usermail,$s_accountrole);
 echo "</td>";
 //End response form
 
-		echo "</tr>";
+echo "</tr>";
 echo "</table>";
 
 if($s_accountrole == "admin" || $s_id == $user['id']){
@@ -106,11 +106,11 @@ if($s_accountrole == "admin" || $s_id == $user['id']){
 
 function show_editlinks($msgid)
 {
+	global $rootpath;
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<div id='navcontainer'>";
 	echo "<ul class='hormenu'>";
-	$myurl="edit.php?mode=edit&id=$msgid";
-	echo "<li><a href='#' onclick=window.open('$myurl','message_edit','width=640,height=800,scrollbars=yes,toolbar=no,location=no,menubar=no')>Aanpassen</a></li>";
+	echo '<li><a href="' . $rootpath . 'messages/edit.php?id=' . $msgid . '&mode=edit">Aanpassen</a></li>';
 	$myurl = "upload_picture.php?msgid=$msgid";
 	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
     echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
@@ -123,8 +123,8 @@ function show_editlinks($msgid)
     //    	echo "<li><a href='#' onclick=window.open('$myurl','message_send','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Delen</a></li>";
 	//}
 	echo "</ul>";
-        echo "</div>";
-        echo "</td></tr></table>";
+	echo "</div>";
+	echo "</td></tr></table>";
 }
 
 function show_response_form($msgid, $usermail, $s_accountrole){
@@ -206,7 +206,7 @@ function show_msg($message, $balance){
 	echo "</td></tr>";
 	echo "<tr><td>";
 	if (!empty($message["Description"])){
-		echo nl2br(htmlspecialchars($message['"Description"'],ENT_QUOTES));
+		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
 	} else {
 		echo "<i>Er werd geen omschrijving ingegeven</i>";
 	}
@@ -220,7 +220,8 @@ function show_msg($message, $balance){
 
 	echo "<tr class='even_row'><td valign='bottom'>";
 	if (!empty($message["amount"])){
-		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency ." per " .$message["units"];
+		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency;
+		echo ($message['units']) ? ' per ' . $message['units'] : '';
 	} else {
 		echo "Er werd geen (vraag)prijs ingegeven";
 	}
@@ -254,13 +255,13 @@ function show_contact($contact){
 	echo "<tr class='even_row'><td colspan='3'><p><strong>Contactinfo</strong></p></td></tr>";
 	foreach($contact as $key => $value){
 		echo "<tr><td>".$value["abbrev"].": </td>";
-                if($value["abbrev"] == "mail"){
-                        echo "<td><a href='mailto:".$value["value"]."'>".$value["value"]."</a></td>";
-                }elseif($value["abbrev"] == "adr"){
-                        echo "<td><a href='http://maps.google.be/maps?f=q&source=s_q&hl=nl&geocode=&q=".$value["value"]."' target='new'>".$value["value"]."</a></td>";
-                } else {
-                        echo "<td>".$value["value"]."</td>";
-                }
+			if($value["abbrev"] == "mail"){
+					echo "<td><a href='mailto:".$value["value"]."'>".$value["value"]."</a></td>";
+			}elseif($value["abbrev"] == "adr"){
+					echo "<td><a href='http://maps.google.be/maps?f=q&source=s_q&hl=nl&geocode=&q=".$value["value"]."' target='new'>".$value["value"]."</a></td>";
+			} else {
+					echo "<td>".$value["value"]."</td>";
+			}
 		echo "<td></td>";
 		echo "</tr>";
 	}

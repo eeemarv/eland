@@ -37,8 +37,9 @@ else
 
 	if(!($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"))
 	{
-		echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
-		setstatus("Fout: foto niet toegevoegd",1);
+		$alert->add_error('Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
+		header("Location:  mydetails.php");
+		exit;
 	}
 	else
 	{	// FIX ME (move to client side)
@@ -78,7 +79,7 @@ else
 
 			readuser($s_id, true);
 			
-			setstatus("Foto toegevoegd", 0);
+			$alert->add_success('Foto toegevoegd.');
 
 			//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
 			header("Location:  mydetails.php");

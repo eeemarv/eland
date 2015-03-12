@@ -14,11 +14,11 @@ $mode = $_GET["mode"];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-	$validity = $_POST["validity"];
+	$validity = (int) $_POST["validity"];
 	$vtime = count_validity($validity);
 	$msg = array(
 		'validity'		=> (int) $_POST["validity"],
-		'vtime'			=> (int) $vtime,
+		'vtime'			=> $vtime,
 		'content'		=> pg_escape_string($_POST["content"]),
 		'description'	=> pg_escape_string($_POST["description"]),
 		'msg_type'		=> (int) $_POST["msg_type"],
@@ -41,8 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	{
 		if ($mode == 'new')
 		{
-			insert_msg($msg);
-			if ($id = $db->Insert_ID())
+			if ($id = insert_msg($msg))
 			{
 				$alert->add_success('Vraag/aanbod toegevoegd.');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
@@ -71,12 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 else if ($mode == 'edit' && $id)
 {
 	$msg = get_msg($id);
+	$msg['description'] = $msg['Description'];
+	unset($msg['Description']);
+	$msg['validity'] = reverse_count_validity($msg['validity']);
 }
 else if ($mode == 'new')
 {
 	$msg = array(
 		'validity'		=> '2',
-		'vtime'			=> (int) $vtime,
 		'content'		=> '',
 		'description'	=> '',
 		'msg_type'		=> 1,
@@ -240,12 +241,18 @@ function validate_input($msg){
 
 }
 
-function count_validity($validity){
-        $valtime = time() + ($validity*30*24*60*60);
 
-        $vtime =  date("Y-m-d H:i:s",$valtime);
-        return $vtime;
+function count_validity($months){
+	$valtime = time() + ($months * 30 * 24 * 60 * 60);
+	$vtime =  date("Y-m-d H:i:s", $valtime);
+	return $vtime;
 }
+
+function reverse_count_validity($vtime){
+	return round((strtotime($vtime) - time()) / (30 * 24 * 60 * 60));
+}
+
+
 
 function update_msg($id, $posted_list){
     global $db;
@@ -256,20 +263,50 @@ function update_msg($id, $posted_list){
     }
     $posted_list["mdate"] = date("Y-m-d H:i:s");
 
-    $posted_list['"Description"'] = $posted_list['description'];
-    unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
+ 	$query_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? ' ' : ', amount = ' . $posted_list['amount'] . ' ';
 
-    return $db->AutoExecute('messages', $posted_list, 'UPDATE', 'id = ' . $id);
+
+	$query = "UPDATE messages SET
+			mdate = '" .$posted_list["mdate"] ."',
+			validity = '" .$posted_list["validity"] ."',
+			id_category = " .$posted_list["id_category"] .",
+			id_user = " .$posted_list["id_user"] . ",
+			content = '" .$posted_list["content"] . "',
+			\"Description\" = '" .$posted_list["description"] ."',
+			units = '" .$posted_list["units"] ."',
+			msg_type = " . $posted_list["msg_type"] . " " .
+			$query_amount .
+		"WHERE id = " . $id;
+	return $db->Execute($query);
 }
 
 function insert_msg($posted_list){
     global $db;
 	$posted_list["cdate"] = date("Y-m-d H:i:s");
     $posted_list["validity"] = $posted_list["vtime"];
-    $posted_list['"Description"'] = $posted_list['description'];
-    unset($posted_list['uuid'], $posted_list['vtime'], $posted_list['description']);
+    
+ 	$column_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? '' : ', amount';
+ 	$value_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? '' : ', ' . $posted_list['amount'];
 
-    return $db->AutoExecute('messages', $posted_list, 'INSERT');
+	$query = "INSERT INTO messages (
+		cdate,
+		validity,
+		id_category,
+		id_user,
+		content,
+		\"Description\",
+		units,
+		msg_type" . $column_amount . " )
+		VALUES ('" .$posted_list["cdate"] ."',
+		'" .$posted_list["validity"] ."',
+		" .$posted_list["id_category"] .",
+		" .$posted_list["id_user"] . ",
+		'" .$posted_list["content"] . "',
+		'" .$posted_list["description"] ."',
+		'" .$posted_list["units"] ."',
+		" .$posted_list["msg_type"] . $value_amount . ")";
+
+		return ($db->Execute($query)) ? $db->insert_ID() : false;
 }
 
 function get_users(){
