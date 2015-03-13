@@ -21,6 +21,7 @@
 //require_once($rootpath."contrib/includes/SwiftMail/lib/swift_required.php"); -> autoload.
 //require_once($rootpath."includes/inc_userinfo.php");
 
+/*
 function message_list_announce($uuid) {
 	# FIXME Replace this with direct publishing to AMQ
 	global $db;
@@ -79,19 +80,19 @@ function message_list_announce($uuid) {
 		}
 	}
 }
+*/
 
 function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 	global $elasversion;
-
+	
 	// return 0 on success, 1 on failure
 	// use Mandrill for transport
 	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 587);
 	$transport->setUsername(getenv('MANDRILL_USERNAME'));
 	$transport->setPassword(getenv('MANDRILL_PASSWORD'));
-
 	$mailer = Swift_Mailer::newInstance($transport);
 
-	if(readconfigfromdb("mailenabled") == 1){
+	if(readconfigfromdb('mailenabled')){
 		if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent)){
 			$mailstatus = "Fout: mail niet verstuurd, ontbrekende velden";
 			setstatus($mailstatus, 1);
@@ -100,12 +101,14 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			log_event("", "mail", $logline);
 		} else {
 			$message = Swift_Message::newInstance();
-			$message->setSubject("$mailsubject");
+			$message->setSubject($mailsubject);
 
-			try {
-				$message->setFrom("$mailfrom");
+			try
+			{
+				$message->setFrom($mailfrom);
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
 				setstatus($mailstatus, 1);
@@ -118,10 +121,13 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			$mailto = preg_replace('/,$/i', '', $mailto);
 
 			$toarray = explode(",", $mailto);
-			try {
+			
+			try
+			{
 				$message->setTo($toarray);
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
 				setstatus($mailstatus, 1);
@@ -129,8 +135,9 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 				$status = 0;
 			}
 
-			try {
-				$message->setBody("$mailcontent");
+			try
+			{
+				$message->setBody($mailcontent);
 			}
 			catch (Exception $e) {
 				$emess = $e->getMessage();
@@ -140,7 +147,8 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 				$status = 0;
 			}
 			$status = 1;
-			try {
+			try
+			{
 				$mailer->send($message);
 			}
 			catch (Exception $e) {
@@ -164,3 +172,4 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 
 	return $mailstatus;
 }
+

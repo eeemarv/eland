@@ -4,14 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	if (isset($_GET["id"])){
@@ -43,8 +36,6 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 function show_user_trans_printversion($id, $rootpath){
@@ -148,17 +139,17 @@ function show_all_transactions($transactions, $user){
 		echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
 		echo "</td>";
 
-					if ($value["fromusername"] == $user["name"]){
-								echo "<td valign='top' nowrap>";
-		 						echo $value["amount"];
-								echo "</td>";
-								echo "<td></td>";
-					}else{
-								echo "<td></td>";
-								echo "<td valign='top' nowrap>";
-								echo "+".$value["amount"];
-								echo "</td>";
-				}
+		if ($value["fromusername"] == $user["name"]){
+			echo "<td valign='top' nowrap>";
+			echo $value["amount"];
+			echo "</td>";
+			echo "<td></td>";
+		}else{
+			echo "<td></td>";
+			echo "<td valign='top' nowrap>";
+			echo "+".$value["amount"];
+			echo "</td>";
+		}
 		echo "<td valign='top'>";
 		echo "<a href='".$rootpath."transactions/view.php?id=".$value["transid"]."'>";
 		echo htmlspecialchars($value["description"],ENT_QUOTES);

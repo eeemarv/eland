@@ -99,7 +99,7 @@ function show_results($zoekresultaten){
 		}
 		echo "</td>";
 		echo "<td valign='top'>";
-		echo "<a href='$rootpath/messages/view.php?id=".$value["mid"]."'>";
+		echo '<a href="' . $rootpath . 'messages/view.php?id=' . $value["mid"] . '">';
 		$content = htmlspecialchars($value["content"],ENT_QUOTES);
 		echo chop_string($content, 50);
 		if(strlen($content)>50){

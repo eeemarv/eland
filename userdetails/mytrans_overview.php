@@ -69,26 +69,26 @@ if (isset($s_id)){
 					echo "</td>";
 
 			echo "<td nowrap valign='top'>";
-					echo $value["letscode_to"];
-					echo "</td>";
-
-					echo "<td nowrap valign='top'>";
-					$ratio = readconfigfromdb("currencyratio");
-					$realvalue = $value["amount"] * $ratio;
-					echo $realvalue;
-					echo "</td>";
-
-					echo "<td nowrap valign='top'>";
-					echo $value["description"];
-					echo "</td>";
-
-					echo "<td nowrap valign='top'>";
-					echo $value["retry_count"];
-					echo "</td>";
+			echo $value["letscode_to"];
+			echo "</td>";
 
 			echo "<td nowrap valign='top'>";
-					echo $value["last_status"];
-					echo "</td>";
+			$ratio = readconfigfromdb("currencyratio");
+			$realvalue = $value["amount"] * $ratio;
+			echo $realvalue;
+			echo "</td>";
+
+			echo "<td nowrap valign='top'>";
+			echo $value["description"];
+			echo "</td>";
+
+			echo "<td nowrap valign='top'>";
+			echo $value["retry_count"];
+			echo "</td>";
+
+			echo "<td nowrap valign='top'>";
+			echo $value["last_status"];
+			echo "</td>";
 
 			echo "</tr>";
 		}
