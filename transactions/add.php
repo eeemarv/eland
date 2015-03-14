@@ -216,22 +216,22 @@ echo "</td></tr><tr><td></td><td>";
 echo "<tr><td align='right'>";
 echo "Aan LETSCode";
 echo "</td><td>";
-echo "<input type='text' name='letscode_to' id='letscode_to' size='10' onchange=\"javascript:showsmallloader('tooutputdiv');loaduser('letscode_to','tooutputdiv')\">";
+echo '<input type="text" name="letscode_to" id="letscode_to" value="' . $posted_list['letscode_to'] . '" size="10" onchange="javascript:showsmallloader(\'tooutputdiv\');loaduser(\'letscode_to\', \'tooutputdiv\');">';
 echo "</td><td><div id='tooutputdiv'></div>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
 echo "<input type='text' id='amount' name='amount' size='10' ";
-echo ">";
+echo 'value="' . (($posted_list['amount']) ? $postec_list['amount'] : '') . '">';
 echo "</td><td>";
 echo "</td></tr>";
 echo "<tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Dienst</td><td>";
-echo "<input type='text' name='description' id='description' size='40' MAXLENGTH='60' ";
-echo ">";
+echo '<input type="text" name="description" id="description" size="40" maxlength="60" ';
+echo 'value="' . $posted_list['description'] . '">';
 echo "</td><td>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";

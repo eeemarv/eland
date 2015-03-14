@@ -61,15 +61,14 @@ function check_duplicate_transaction($transid){
 }
 
 function insert_transaction($posted_list, $transid){
-        global $db;
-	global $_SESSION;
-	$s_id = $_SESSION["id"];
+    global $db, $s_id;
+
 	if(empty($s_id)){
 		$posted_list["creator"] = 0;
 	} else {
 	        $posted_list["creator"] = $s_id;
 	}
-        $posted_list["cdate"] = date("Y-m-d H:i:s");
+    $posted_list["cdate"] = date("Y-m-d H:i:s");
 	$posted_list["transid"] = $transid;
 	if($db->AutoExecute("transactions", $posted_list, 'INSERT') == TRUE){
 		setstatus("Transactie toegevoegd", 0);
@@ -225,10 +224,15 @@ function validate_interletsq($posted_list){
         if (!isset($posted_list["description"])|| (trim($posted_list["description"] )=="")){
         $error_list["description"]="Dienst is niet ingevuld";
         }
-
+/*
+		if (!ctype_digit($posted_list['amount'])
+		{
+			$error_list['amount'] = 'Bedrag moet uit cijfers bestaan';
+		}
+*/
         //amount may not be empty
         $var = trim($posted_list["amount"]);
-        if (!isset($posted_list["amount"])|| (trim($posted_list["amount"] )=="")){
+        if (!isset($posted_list["amount"]) || (trim($posted_list["amount"] ) == "" || !$posted_list['amount'])){
                 $error_list["amount"]="Bedrag is niet ingevuld";
         }
 
