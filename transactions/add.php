@@ -194,13 +194,15 @@ echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Datum</td><td>";
 	echo "<input type='text' name='date' id='date' size='18' value='" .$date ."'";
+	
 if($s_accountrole != "admin") {
 			echo " DISABLED";
-	}
-	echo ">";
-	echo "</td><td>";
-	echo "</td></tr><tr><td></td><td>";
-	echo "</td></tr>";
+}
+
+echo ">";
+echo "</td><td>";
+echo "</td></tr><tr><td></td><td>";
+echo "</td></tr>";
 
 echo "<tr><td align='right'>";
 echo "Aan LETS groep";
@@ -248,7 +250,6 @@ echo "<script type='text/javascript'>document.getElementById('letscode_from').va
 // echo "<div id='serveroutput' class='serveroutput'>";
 // echo "</div>";
 
-
 echo "<table border=0 width='100%'><tr><td align='left'>";
 $myurl="userlookup.php";
 echo "<form id='lookupform'><input type='button' id='lookup' value='LETSCode opzoeken' onclick=\"javascript:newwindow=window.open('$myurl','Lookup','width=600,height=500,scrollbars=yes,toolbar=no,location=no,menubar=no');\"></form>";
@@ -266,11 +267,11 @@ function show_notify(){
 
 // Make timestamps for SQL statements
 function make_timestamp($timestring){
-        $month = substr($timestring, 3, 2);
-        $day = substr($timestring, 0, 2);
-        $year = substr($timestring, 6, 4);
-        $timestamp = mktime(0, 0, 0, $month, $day, $year);
-        return $timestamp;
+	$month = substr($timestring, 3, 2);
+	$day = substr($timestring, 0, 2);
+	$year = substr($timestring, 6, 4);
+	$timestamp = mktime(0, 0, 0, $month, $day, $year);
+	return $timestamp;
 }
 
 function render_selector_options($option_ary, $selected)

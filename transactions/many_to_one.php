@@ -46,13 +46,18 @@ foreach($active_users as $user){
 	}
 }
 
-if ($req->get('zend') && !$req->errors() && $to_user_id){
-	$notice = '';
+if ($req->get('zend') && $req->errors())
+{
+	$alert->add_error('Eén of meerdere velden in het formulier zijn niet correct ingevuld (zie onder).');
+	$form_errors = true;
+}
+
+if ($req->get('zend') && !(isset($form_errors)) && $to_user_id){
 	$description = $req->get('description');
 	$transid = $req->get('transid');
 	$duplicate = check_duplicate_transaction($transid);
 	if ($duplicate){
-		$notice .= '<p><font color="red"><strong>Een dubbele boeking van een transactie werd voorkomen</strong></font></p>';
+		$alert->add_error('Een dubbele boeking van een transactie werd voorkomen.');
 	} else {
 		foreach($active_users as $user){
 			$amount = $req->get('amount-'.$user['id']);
@@ -68,10 +73,16 @@ if ($req->get('zend') && !$req->errors() && $to_user_id){
 			$checktransid = insert_transaction($trans, $transid);
 			$notice_text = 'Transactie van gebruiker '.$user['fullname'].' ( '.$user['letscode'].' ) naar '.$to_user_fullname.' ( '.$letscode_to.' ) met bedrag '.$amount.' ';
 			if($checktransid == $transid){
-				mail_transaction($posted_list, $mytransid);
-				$notice .= '<p><font color="green"><strong>OK - '.$notice_text.'opgeslagen</strong></font></p>';
+				$posted_list = array(
+					'id_to'			=> $to_user_id,
+					'id_from'		=> $user['id'],
+					'description'	=> $description,
+					'amount'		=> $amount,
+				);
+				mail_transaction($posted_list, $transid);
+				$alert->add_success($notice_text . ' opgeslagen');
 			} else {
-				$notice .= '<p><font color="red"><strong>'.$notice_text.'Mislukt</strong></font></p>';
+				$alert->add_error($notice_text . ' mislukt');
 			}
 			$transid = generate_transid();
 		}
@@ -117,40 +128,30 @@ $data_table->set_data($active_users)->set_input($req)
 include($rootpath.'includes/inc_header.php');
 
 echo '<h2><font color="#8888FF"><b><i>[admin]</i></b></font></h2>';
-if ($notice) {
-	echo '<div style="background-color: #DDDDFF;padding: 10px;">'.$notice.'</div>';
-}
 
-show_ptitle1();
+echo '<h1>Massa-Transactie. "Veel naar Eén".</h1><p>bvb. voor leden-bijdrage.</p>';
+
+echo '<form method="post"><div style="background-color:#ffdddd; padding:10px;">';
+echo '<p><strong>Een vast bedrag en/of percentage invullen voor alle rekeningen.</strong></p>';
+echo '<table  cellspacing="5" cellpadding="0" border="0">';
+$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
+echo '</table>';
+echo '<p><strong><i>Aan LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
+echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
+echo '</div><br/>';
+echo '<div id="transformdiv" style="padding:10px;">';
+$data_table->render();
+echo '<table cellspacing="0" cellpadding="5" border="0">';
+$req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
+echo '</table></div><table>';
+$req->set_output('tr')->render('refresh');
+echo '</table></form>';
+
 show_form($req, $data_table);
 
 include($rootpath.'includes/inc_footer.php');
 
 ////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function show_ptitle1(){
-	echo '<h1>Massa-Transactie. "Veel naar Eén".</h1><p>bvb. voor leden-bijdrage.</p>';
-}
-
-function show_form($req, $data_table){
-	echo '<form method="post"><div style="background-color:#ffdddd; padding:10px;">';
-	echo '<p><strong>Een vast bedrag en/of percentage invullen voor alle rekeningen.</strong></p>';
-	echo '<table  cellspacing="5" cellpadding="0" border="0">';
-	$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
-	echo '</table>';
-	echo '<p><strong><i>Aan LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
-	echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
-	echo '</div><br/>';
-	echo '<div id="transformdiv" style="padding:10px;">';
-	$data_table->render();
-	echo '<table cellspacing="0" cellpadding="5" border="0">';
-	$req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
-	echo '</table></div><table>';
-	$req->set_output('tr')->render('refresh');
-	echo '</table></form>';
-}
 
 function get_active_users(){
 	global $db;
@@ -168,9 +169,7 @@ function get_active_users(){
 function check_newcomer($adate){
 	global $configuration;
 	$now = time();
-	$limit = $now - ($configuration['system']['newuserdays'] * 60 * 60 * 24);
+	$limit = $now - (readconfigfromdb('newuserdays') * 60 * 60 * 24);
 	$timestamp = strtotime($adate);
 	return  ($limit < $timestamp) ? 1 : 0;
 }
-
-?>

@@ -30,7 +30,7 @@ global $rootpath;
 require_once($rootpath."includes/inc_saldofunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
-require_once($rootpath."includes/inc_amq.php");
+// require_once($rootpath."includes/inc_amq.php");
 
 function generate_transid(){
 	global $baseurl;
@@ -316,8 +316,7 @@ function mail_interlets_transaction($posted_list, $transid){
 }
 
 function mail_transaction($posted_list, $transid){
-	session_start();
-	$s_id = $_SESSION["id"];
+	global $s_id;
 
 	$mailfrom = readconfigfromdb("from_address_transactions");
 
