@@ -95,9 +95,6 @@ $messagerows = get_all_msgs();
 			show_all_msgs($messagerows);
 }
 
-echo "<div id='output'>";
-echo "</div>";
-
 include($rootpath."includes/inc_footer.php");
 
 //////////////////////////////////////////
@@ -296,7 +293,7 @@ function show_all_msgs($messagerows){
 		echo "</a></td>";
 		echo "</tr>"; 
 	}
-	echo "</table></div>";
+	echo "</table>";
 }
 
 function get_all_newsitems(){
@@ -332,7 +329,6 @@ function get_all_msgs(){
 			AND (u.status = 1 OR u.status = 2 OR u.status = 3)
 		ORDER BY m.cdate DESC
 		LIMIT 100';
-	$messagerows = $db->GetArray($query);
-	return $messagerows;
+	return $db->GetArray($query);
 }
 

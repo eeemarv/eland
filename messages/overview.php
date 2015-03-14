@@ -39,7 +39,7 @@ function showlinks($rootpath){
 	echo "<div id='navcontainer'>";
 	echo "<ul class='hormenu'>";
 	echo "<li><a href='edit.php?mode=new'>Vraag & Aanbod toevoegen</a></li>";
-	$myurl = $rootpath. 'export_messages.php"'
+	$myurl = $rootpath. 'export_messages.php"';
 	echo "<li><a href='#' onclick=window.open('$myurl','msgexport','width=1200,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Export</a></li>";
 	echo "</ul>";
 	echo "</div>";
