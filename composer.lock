@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "77b878e0db40f22ee6cbdbf47f1b2900",
+    "hash": "5597b4466c31d744111d855a63d99228",
     "packages": [
         {
             "name": "adodb/adodb-php",
@@ -58,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "add9b2adda5e87e6e2f8ca562aece1f8de93e2c1"
+                "reference": "7c97f11ca46c47209e597ebab6e74e164cdf6216"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/add9b2adda5e87e6e2f8ca562aece1f8de93e2c1",
-                "reference": "add9b2adda5e87e6e2f8ca562aece1f8de93e2c1",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7c97f11ca46c47209e597ebab6e74e164cdf6216",
+                "reference": "7c97f11ca46c47209e597ebab6e74e164cdf6216",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-03-07 01:24:20"
+            "time": "2015-03-12 19:51:58"
         },
         {
             "name": "bramus/ansi-php",
@@ -467,6 +467,49 @@
                 "shasum": null
             },
             "type": "library"
+        },
+        {
+            "name": "mandrill/mandrill",
+            "version": "1.0.54",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/mailchimp/mandrill-api-php.git",
+                "reference": "9f336b08ea148c80db3b694f3dc737cd4f414e19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/mailchimp/mandrill-api-php/get/9f336b08ea148c80db3b694f3dc737cd4f414e19.zip",
+                "reference": "9f336b08ea148c80db3b694f3dc737cd4f414e19",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Mandrill": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Mandrill Devs",
+                    "email": "community@mandrill.com",
+                    "homepage": "http://mandrill.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "API client library for the Mandrill email as a service platform",
+            "homepage": "https://bitbucket.org/mailchimp/mandrill-api-php",
+            "keywords": [
+                "api",
+                "email"
+            ],
+            "time": "2014-10-16 21:08:20"
         },
         {
             "name": "monolog/monolog",
