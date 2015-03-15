@@ -3,6 +3,7 @@ eLAS-Heroku
 
 Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 
+
 Checklist
 ---------
 
@@ -39,24 +40,34 @@ Environment Vars
 
 * DATABASE_URL: default database (postgres) when no domain session name / database color is set.
 
-* ELAS_DOMAIN_SESSION_<domain>: session name by domain (must be the color name of the database!)
+* ELAS_DOMAIN_SESSION_domain: session name by domain (must be the color name of the database!)
 
     `Dots in <domain> are replaced by double underscore __`
     `Hyphens in <domain> are replaced by triple underscore ___`
 
     example:
-    e-example.com
-    ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=<session_name>
-
     set environment variable:
         `heroku config:set ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=PURPLE`
 
 The session name is also:
   * the color name of the database.
-  * 
+  * prefix of the files in S3 cloud storage
   * prefix of the keys in Redis.
 
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
 * ELAS_DB_DEBUG
 * ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' (role admin) -> access to all lets groups.
+
+
+Steps moving a group from eLAS to eLAS-Heroku
+----------
+
+* Set your domain in DNS with CNAME to the domain of the Heroku app.
+* Accept the domain in Heroku. 
+* Copy the image files from folders msgpictures and userpictures to your bucket in S3 without the directory path.
+* Create a postgres database.
+* Import the data in the database from a pg_dump
+* Set the domain variable ELAS_DOMAIN_SESSION_domain=colorname-of-the-database
+
+The images files will automatically be renamed the first time the cronjob is running.
