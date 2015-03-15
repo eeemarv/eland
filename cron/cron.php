@@ -69,7 +69,7 @@ foreach ($_ENV as $key => $session_name)
 		$domains[$session_name] = $domain;
 
 		$session_cron_timestamps[$session_name] = (int) $redis->get($session_name . '_cron_timestamp');
-		
+
 		if ($interletsq = (int) $redis->get($session_name . '_interletsq'))
 		{
 			$session_interletsqs[$session_name] = $interletsq;
@@ -89,7 +89,7 @@ if (count($sessions))
 	}
 
 	echo 'Session name (domain): last cron timestamp : interletsqueue timestamp' . $r;
-	echo '---------------------------------------------------------------------' . $r;
+	echo '----------------------------------------------------------------------' . $r;
 	foreach ($session_cron_timestamps as $session_n => $timestamp)
 	{
 		echo $session_n . ' (' . $domains[$session_n] . '): ' . $timestamp . ' : ';
@@ -166,11 +166,124 @@ echo $r;
 
 echo "*** Cron system running [" . $session_name . ' ' . $domains[$session_name] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
+// sync the image files  // (to do -- not in cron -- delete orphaned files in bucket)
+if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
+{
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+	));
+
+	echo 'Sync the image files.' . $r;
+
+	$user_images = $db->GetAssoc('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+
+	foreach($user_images as $user_id => $filename)
+	{
+		list($f_session_name) = explode('_', $filename);
+
+		if(!$s3->doesObjectExist(getenv('S3_BUCKET'), $filename))
+		{
+			$db->Execute('UPDATE users SET "PictureFile" = NULL WHERE id = ' . $user_id);
+			echo '1 profile image not present, deleted in database. ' . $r;
+			log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not available: deleted from database. Deleted filename : ' . $filename);
+		}
+		else if ($f_session_name != $session_name)
+		{
+			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.' . $ext = pathinfo($filename, PATHINFO_EXTENSION);
+			$result = $s3->copyObject(array(
+				'Bucket'		=> getenv('S3_BUCKET'),
+				'CopySource'	=> $filename,
+				'Key'			=> $new_filename,
+			));
+
+			if ($result && $result instanceof \Guzzle\Service\Resource\Model)
+			{
+				$db->Execute('UPDATE users SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $user_id);
+				echo '1 profile image renamed' . $r;
+				log_event($s_id, 'cron', 'Profile image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+
+				$s3->deleteObject(array(
+					'Bucket'	=> getenv('S3_BUCKET'),
+					'Key'		=> $filename,
+				));
+			}
+		}
+	}
+
+	$message_images = $db->GetArray('SELECT id, msgid, "PictureFile" FROM msgpictures');
+
+	foreach($message_images as $image)
+	{
+		$filename = $image['PictureFile'];
+		$msg_id = $image['msgid'];
+		$id = $image['id'];
+
+		list($f_session_name) = explode('_', $filename);
+
+		if(!$s3->doesObjectExist(getenv('S3_BUCKET'), $filename))
+		{
+			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
+			echo '1 message image not present, deleted in database. ' . $r;
+			log_event ($s_id, 'cron', 'Image file of message ' . $msg_id . ' was not available: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
+		}
+		else if ($f_session_name != $session_name)
+		{
+			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.' . $ext = pathinfo($filename, PATHINFO_EXTENSION);
+			$result = $s3->copyObject(array(
+				'Bucket'		=> getenv('S3_BUCKET'),
+				'CopySource'	=> $filename,
+				'Key'			=> $new_filename,
+			));
+
+			if ($result && $result instanceof \Guzzle\Service\Resource\Model)
+			{
+				$db->Execute('UPDATE msgpictures SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $id);
+				echo '1 profile image renamed' . $r;
+				log_event($s_id, 'cron', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+
+				$s3->deleteObject(array(
+					'Bucket'	=> getenv('S3_BUCKET'),
+					'Key'		=> $filename,
+				));
+			}
+		}
+	}
+
+	echo 'Sync images files ready.' . $r;
+}
+
 /*
-$s3 = Aws\S3\S3Client::factory(array(
-	'signature'	=> 'v4',
-	'region'	=> 'eu-central-1',
-));
+// cleanup orphaned profile & message images by reading the S3 bucket every 30 days
+*
+* --> NOT IN CRON
+if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 2592000)
+{
+	echo 'Run cleanup profile images' . $r;
+
+	// get all objects
+	$objects = $s3->getIterator('ListObjects', array(
+		'Bucket' => getenv('S3_BUCKET')
+	));
+
+	foreach ($objects as $file)
+	{
+		list($sess, $type, $type_id, $hash) = explode('_', $file);
+		
+		if ($sess != $session_name)
+		{
+			continue;
+		}
+
+		if ($type == 'm')
+		{
+		* // not good
+			//$db->getOne('SELECT 1 FROM msgpictures WHERE \'Picturefile\' = ' . $file);
+		}
+	}
+
+	$redit->set($session_name . 'cleanup_profile_images_timestamp', time());
+}
 */
 
 $lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
@@ -225,37 +338,6 @@ if(check_timestamp($lastrun_ary['cleanup_messages'], $frequency) == 1 && readcon
 		}
 	}
 }
-
-/*
-// cleanup orphaned profile & message images by reading the S3 bucket every 30 days
-if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 2592000)
-{
-	echo 'Run cleanup profile images' . $r;
-
-	// get all objects
-	$objects = $s3->getIterator('ListObjects', array(
-		'Bucket' => getenv('S3_BUCKET')
-	));
-
-	foreach ($objects as $file)
-	{
-		list($sess, $type, $type_id, $hash) = explode('_', $file);
-		
-		if ($sess != $session_name)
-		{
-			continue;
-		}
-
-		if ($type == 'm')
-		{
-		* // not good
-			//$db->getOne('SELECT 1 FROM msgpictures WHERE \'Picturefile\' = ' . $file);
-		}
-	}
-
-	$redit->set($session_name . 'cleanup_profile_images_timestamp', time());
-}
-*/
 
 
 // Update counts for each message category
