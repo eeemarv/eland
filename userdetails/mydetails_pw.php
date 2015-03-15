@@ -22,20 +22,20 @@ if(isset($_POST["zend"])){
 	{
 		if (update_password($s_id, $posted_list))
 		{
-			$alert->add_success('Paswoord opgeslagen');
+			$alert->success('Paswoord opgeslagen');
 			header('Location: '.$rootpath.'userdetails/mydetails.php');
 			exit;
 		}
 		else
 		{
-			$alert->add_error('Fout, paswoord niet opgeslagen.');
+			$alert->error('Fout, paswoord niet opgeslagen.');
 		}
 	}
 	else
 	{
 		foreach ($errorlist as $error)
 		{
-			$alert->add_error($error);
+			$alert->error($error);
 		}
 	}
 }
@@ -61,7 +61,7 @@ echo "<td valign='top'>";
 echo '<input  type="test" name="pw2" size="30" value="' . $pw2 . '" >';
 echo "</td>";
 echo "</tr>";
-echo "<tr><td colspan='2' align='right'>";
+echo "<tr><td></td><td>";
 echo "<input type='submit' id='zend' value='Passwoord wijzigen' name='zend'>";
 echo "</td><td>&nbsp;</td></tr>";
 echo "</table>";

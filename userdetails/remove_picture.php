@@ -11,7 +11,7 @@ if(isset($s_id)){
 		if(isset($_POST["zend"])){
 			update_user($id,$rootpath);
 			//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-			$alert->add_success("Foto verwijderd.");
+			$alert->success("Foto verwijderd.");
 			header("Location:  mydetails.php");
 		}else{
 			echo "<h1>Foto verwijderen</h1>";

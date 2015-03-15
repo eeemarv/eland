@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	{
 		foreach ($errors as $error)
 		{
-			$alert->add_error($error);
+			$alert->error($error);
 		}
 	}
 	else 
@@ -43,26 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
 			if ($id = insert_msg($msg))
 			{
-				$alert->add_success('Vraag/aanbod toegevoegd.');
+				$alert->success('Vraag/aanbod toegevoegd.');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
 				exit;				
 			}
 			else
 			{
-				$alert->add_error('Fout bij het opslaan van vraag/aanbod');
+				$alert->error('Fout bij het opslaan van vraag/aanbod');
 			}
 		}
 		else 
 		{
 			if (update_msg($id, $msg))
 			{
-				$alert->add_success('Vraag/aanbod aangepast');
+				$alert->success('Vraag/aanbod aangepast');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
 				exit;				
 			}
 			else
 			{
-				$alert->add_error('Fout bij het opslaan van aanpassing vraag/aanbod.');
+				$alert->error('Fout bij het opslaan van aanpassing vraag/aanbod.');
 			}
 		}
 	}

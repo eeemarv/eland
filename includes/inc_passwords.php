@@ -158,12 +158,15 @@ function get_openids($user_id){
 }
 
 function update_password($id, $posted_list){
-        global $db;
-        global $s_id;
+	global $db;
+	global $s_id;
 
-        $posted_list["password"]=hash('sha512',$posted_list["pw1"]);
-        $posted_list["mdate"] = date("Y-m-d H:i:s");
-        $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
+	$posted_list["password"]=hash('sha512',$posted_list["pw1"]);
+	$posted_list["mdate"] = date("Y-m-d H:i:s");
+	$result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
+	
+	readuser($id, true);
+	
 	if($result == true){
 		log_event($s_id,"Password","Password for userID $id changed by ID $s_id");
 		setstatus('Passwoord gewijzigd',0);

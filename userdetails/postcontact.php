@@ -1,13 +1,9 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 if (isset($s_id)){
 	if(add_contact($_POST) == true){
@@ -16,9 +12,8 @@ if (isset($s_id)){
 		echo "Fout, contact niet opgeslagen";
 	}
 }
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
+//////////////////
 
 function validate_input($posted_list){
   	global $db;
@@ -42,5 +37,3 @@ function add_contact($posted_list){
 	$result = $db->AutoExecute("contact", $posted_list, 'INSERT');
 	return $result;
 }
-
-?>

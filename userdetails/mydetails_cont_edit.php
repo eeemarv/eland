@@ -33,10 +33,10 @@ if(isset($_POST["zend"])){
 	$posted_list["id_user"] = $posted_list["s_id"];
 	$error_list = validate_input($posted_list,$s_id);
 	if(!empty($error_list)){
-		$alert->add_error('Eén of meerdere velden zijn niet correct ingevuld.');
+		$alert->error('Eén of meerdere velden zijn niet correct ingevuld.');
 	}else{
 		update_contact($posted_list);
-		$alert->add_success('Contact aangepast.');
+		$alert->success('Contact aangepast.');
 		redirect_mydetails_view();
 		exit;
 	}

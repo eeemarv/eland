@@ -48,7 +48,7 @@ foreach($active_users as $user){
 
 if ($req->get('zend') && $req->errors())
 {
-	$alert->add_error('Eén of meerdere velden in het formulier zijn niet correct ingevuld (zie onder).');
+	$alert->error('Eén of meerdere velden in het formulier zijn niet correct ingevuld (zie onder).');
 	$form_errors = true;
 }
 
@@ -57,7 +57,7 @@ if ($req->get('zend') && !(isset($form_errors)) && $to_user_id){
 	$transid = $req->get('transid');
 	$duplicate = check_duplicate_transaction($transid);
 	if ($duplicate){
-		$alert->add_error('Een dubbele boeking van een transactie werd voorkomen.');
+		$alert->error('Een dubbele boeking van een transactie werd voorkomen.');
 	} else {
 		foreach($active_users as $user){
 			$amount = $req->get('amount-'.$user['id']);
@@ -80,9 +80,9 @@ if ($req->get('zend') && !(isset($form_errors)) && $to_user_id){
 					'amount'		=> $amount,
 				);
 				mail_transaction($posted_list, $transid);
-				$alert->add_success($notice_text . ' opgeslagen');
+				$alert->success($notice_text . ' opgeslagen');
 			} else {
-				$alert->add_error($notice_text . ' mislukt');
+				$alert->error($notice_text . ' mislukt');
 			}
 			$transid = generate_transid();
 		}
@@ -151,7 +151,7 @@ show_form($req, $data_table);
 
 include($rootpath.'includes/inc_footer.php');
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////
 
 function get_active_users(){
 	global $db;
@@ -159,8 +159,6 @@ function get_active_users(){
 		FROM users
 		WHERE status = 1
 			OR status = 2
-			OR status = 3
-			OR status = 4
 		ORDER BY letscode';
 	$active_users = $db->GetArray($query);
 	return $active_users;

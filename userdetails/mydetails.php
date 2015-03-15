@@ -293,18 +293,12 @@ function show_editlink(){
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<div id='navcontainer'>";
 	echo "<ul class='hormenu'>";
-	//$myurl="mydetails_edit.php?id=" .$s_id;
-	$myurl="mydetails_edit.php";
-	echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Gegevens aanpassen</a></li>";
+	echo '<li><a href="mydetails_edit.php">Gegevens aanpassen</a></li>';
 	echo "<li><a href='mydetails_pw.php' id='showpwform'>Passwoord wijzigen</a></li>";
 
-	//$myurl="upload_picture.php";
-	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";a
 	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" ."/userdetails/upload_picture.php" ."'); } </script>";
     echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
 
-	//$myurl="remove_picture.php?id=" .$s_id;
-	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto verwijderen</a></li>";
 	echo "<script type='text/javascript'>function RemovePic() {  OpenTBox('" ."/userdetails/remove_picture.php?id=" .$s_id ."'); } </script>";
 	echo "<li><a href='javascript: RemovePic();'>Foto verwijderen</a></li>";
 	//echo "<li><a id='showmsgform' href='#'>Mail versturen</a></li>";
@@ -352,7 +346,7 @@ function show_user($user){
 	echo "<tr><td valign='top'>Commentaar: </td>";
 	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
 	echo "<tr><td valign='top'>Saldo Mail: </td>";
-	if($user["cron_saldo"] == 1){
+	if($user["cron_saldo"] == 't'){
 		echo "<td valign='top'>Aan</td>";
 	} else {
 		echo "<td valign='top'>Uit</td>";

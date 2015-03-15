@@ -93,6 +93,8 @@ function readuser($id, $refresh = false)
     global $db, $session_name, $redis;
     static $cache;
 
+	$redis_key = $session_name . '_user_' . $id;	
+
 	if (!$refresh)
 	{
 		if (isset($cache[$id]))
@@ -100,20 +102,18 @@ function readuser($id, $refresh = false)
 			return $cache[$id];
 		}
 
-/*		$redis_key = $session_name . '_user_' . $id;
-
 		if ($redis->exists($redis_key))
 		{
 			return $cache[$id] = unserialize($redis->get($redis_key));
-		} */
+		} 
 	}
 
 	$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
 
 	if (isset($user))
 	{
-//		$redis->set($redis_key, serialize($user));
-//		$redis->expire($rediskey, 3600);
+		$redis->set($redis_key, serialize($user));
+		$redis->expire($redis_key, 7200);
 		$cache[$id] = $user;
 	}
 
@@ -121,7 +121,7 @@ function readuser($id, $refresh = false)
 }
 
 /**
- * (not used)
+ * (not used yet)
  */
 function readusercontacts($user_id, $refresh = false)
 {

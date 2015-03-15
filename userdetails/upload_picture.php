@@ -37,7 +37,7 @@ else
 
 	if(!($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"))
 	{
-		$alert->add_error('Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
+		$alert->error('Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
 		header("Location:  mydetails.php");
 		exit;
 	}
@@ -67,6 +67,8 @@ else
 			$query = 'UPDATE users SET "PictureFile" =  \'' . $filename . '\' WHERE id = ' . $s_id;
 			$db->Execute($query);
 
+			readuser($s_id, true);
+
 			log_event($s_id, "Pict", "Picture $filename uploaded");
 
 			if(!empty($old)){
@@ -77,9 +79,7 @@ else
 				log_event($s_id, "Pict", "Removing old picture file " . $old);
 			}
 
-			readuser($s_id, true);
-			
-			$alert->add_success('Foto toegevoegd.');
+			$alert->success('Foto toegevoegd.');
 
 			//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
 			header("Location:  mydetails.php");

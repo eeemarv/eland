@@ -11,22 +11,22 @@ class alert
 		$_SESSION['alert'][] = array($type, $string);
 	}
 
-	function add_error($string)
+	function error($string)
 	{
 		$this->add('error', $string);
 	}
 
-	function add_success($string)
+	function success($string)
 	{
 		$this->add('success', $string);
 	}
 
-	function add_notice($string)
+	function notice($string)
 	{
 		$this->add('notice', $string);
 	}
 
-	function add_warning($string)
+	function warning($string)
 	{
 		$this->add('warning', $string);
 	}

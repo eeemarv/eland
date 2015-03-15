@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
 	if($s_accountrole <> "admin" && $s_letscode <> $_POST["letscode_from"]) {
 		# Intercept attempt to do unauthorized transaction, FIXME Cleanup handling
-		$alert->add_error( "Transactie niet toegestaan");
+		$alert->error( "Transactie niet toegestaan");
 		header('Location: ' . $rootpath . 'transactions/alltrans.php');
 		exit;
 	}
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	//This script needs to do the actual transaction routing!!!
 	$letsgroup = get_letsgroup($letsgroupid);
 	if (!isset($letsgroup)){
-		$alert->add_error('Letsgroep niet gevonden.');
+		$alert->error('Letsgroep niet gevonden.');
 	}
 	$apimethod = $letsgroup["apimethod"];
 	switch ($apimethod){
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			if(!empty($errors)){
 
 				foreach($errors as $value){
-					$alert->add_error($value);
+					$alert->error($value);
 				}
 
 			} else {
@@ -65,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 				if($mytransid == $settransid){
 					//echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
 					mail_transaction($posted_list, $mytransid);
-					$alert->add_success("Transactie opgeslagen");
+					$alert->success("Transactie opgeslagen");
 				} else {
 					//echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-					$alert->add_error("Gefaalde transactie");
+					$alert->error("Gefaalde transactie");
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 					if(!empty($errors)){
 						
 						foreach($errors as $value){
-							$alert->add_error($value);
+							$alert->error($value);
 						}
 
 					} else {
@@ -94,10 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 				if($mytransid == $settransid){
 					//echo "<font color='green'><strong>OK</font> - Transactie opgeslagen</strong></font>";
 					mail_interlets_transaction($posted_list, $mytransid);
-					$alert->add_success("Transactie opgeslagen");
+					$alert->success("Transactie opgeslagen");
 				} else {
 					// echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-					$alert->add_error("Gefaalde transactie");
+					$alert->error("Gefaalde transactie");
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			if(!empty($errors)){
 
 					foreach($errors as $value){
-						$alert->add_error($value);
+						$alert->error($value);
 					}
 
 				} else {
@@ -127,14 +127,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 				$mytransid = queuetransaction($posted_list,$fromuser,$touser);
 				if($mytransid == $settransid){
 					//echo "<font color='green'><strong>OK</font> - Interletstransactie wacht op verwerking</strong>";
-					$alert->add_success("Interlets transactie in verwerking");
+					$alert->success("Interlets transactie in verwerking");
 					if (!$redis->get($session_name . '_interletsq'))
 					{
 						$redis->set($session_name . '_interletsq', time());
 					}
 				} else {
 					//echo "<font color='red'><strong>Er was een fout bij het invoeren van de transactie</strong></font>";
-					$alert->add_error("Gefaalde transactie", 1);
+					$alert->error("Gefaalde transactie", 1);
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
