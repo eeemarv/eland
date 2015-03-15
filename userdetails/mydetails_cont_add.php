@@ -3,49 +3,44 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
-include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
-
-if (isset($s_id)){
-	show_ptitle();
-	if(isset($_POST["zend"])){
-		$posted_list = array();
-		$posted_list["id_type_contact"] = $_POST["id_type_contact"];
-		$posted_list["value"] = $_POST["value"];
-		$posted_list["comments"] = $_POST["comments"];
-
-		if (trim($_POST["flag_public"]) == 1){
-				$posted_list["flag_public"] = 1;
-		}else{
-				$posted_list["flag_public"] = 0;
-		}
-
-		$error_list = validate_input($posted_list);
-		if(!empty($error_list)){
-			$typecontactrow = get_type_contacts();
-			show_form($typecontactrow, $error_list, $posted_list);
-		}else{
-			add_contact($s_id, $posted_list);
-		}
-	}else{
-		$typecontactrow = get_type_contacts();
-		show_form($typecontactrow, $error_list, $posted_list);
-	}
-	show_serveroutputdiv();
-	show_closebutton();
-
-}else{
-	redirect_login($rootpath);
+if (!isset($s_id)){s
+	header("Location: ".$rootpath."login.php");
+	exit;
 }
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
+if(isset($_POST["zend"]))
+{
+	$posted_list = array();
+	$posted_list["id_type_contact"] = $_POST["id_type_contact"];
+	$posted_list["value"] = $_POST["value"];
+	$posted_list["comments"] = $_POST["comments"];
+
+	if (trim($_POST["flag_public"]) == 1){
+			$posted_list["flag_public"] = 1;
+	}else{
+			$posted_list["flag_public"] = 0;
+	}
+
+	$error_list = validate_input($posted_list);
+
+	
+	if(empty($error_list)){
+		add_contact($s_id, $posted_list);
+	}
+}
+
+include $rootpath . 'includes/inc_header.php';
+echo "<h1>Contact toevoegen</h1>";
+
+$typecontactrow = get_type_contacts();
+show_form($typecontactrow, $error_list, $posted_list);
+
+show_serveroutputdiv();
+show_closebutton();
+
+
+////////////////////////
 
 function show_closebutton(){
 	$url = "rendercontact.php";
@@ -74,10 +69,6 @@ function validate_input($posted_list){
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}
 	return $error_list;
-}
-
-function show_ptitle(){
-	echo "<h1>Contact toevoegen</h1>";
 }
 
 function get_type_contacts(){
@@ -162,10 +153,4 @@ function redirect_mydetails_view(){
 	header("Location:  mydetails.php");
 }
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_smallfooter.php");
-?>
+include($rootpath."includes/inc_footer.php");

@@ -1,62 +1,59 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
-include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 $id = $_GET["id"];
-if (isset($s_id)){
-	if(isset($id)){
 
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			$posted_list = array();
-			$posted_list["id_type_contact"] = $_POST["id_type_contact"];
-			$posted_list["value"] = $_POST["value"];
-			if (trim($_POST["flag_public"]) == 1){
-					$posted_list["flag_public"] = 1;
-			}else{
-					$posted_list["flag_public"] = 0;
-			}
-			$posted_list["comments"] = $_POST["comments"];
-			$posted_list["id"] = $_GET["id"];
-			$posted_list["s_id"] = $_POST["s_id"];
-			$posted_list["id_user"] = $posted_list["s_id"];
-			$error_list = validate_input($posted_list,$s_id);
-			if(!empty($error_list)){
-				$contact = get_contact($id);
-				$typecontactrow = get_type_contacts();
-				show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
-			}else{
-				update_contact($posted_list);
-				redirect_mydetails_view();
-			}
-		}else{
-			$contact = get_contact($id);
-			$typecontactrow = get_type_contacts();
-			if($contact["id_user"] != $s_id){
-				echo "UNAUTHORIZED";
-			} else {
-				show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
-			}
-		}
-	}else{
-		redirect_mydetails_view();
-	}
-}else{
+if (!isset($s_id)){
 	redirect_login($rootpath);
+	exit;
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
+if(!isset($id)){
+	redirect_mydetails_view();
+	exit;
+}
+
+show_ptitle();
+if(isset($_POST["zend"])){
+	$posted_list = array();
+	$posted_list["id_type_contact"] = $_POST["id_type_contact"];
+	$posted_list["value"] = $_POST["value"];
+	if (trim($_POST["flag_public"]) == 1){
+			$posted_list["flag_public"] = 1;
+	}else{
+			$posted_list["flag_public"] = 0;
+	}
+	$posted_list["comments"] = $_POST["comments"];
+	$posted_list["id"] = $_GET["id"];
+	$posted_list["s_id"] = $_POST["s_id"];
+	$posted_list["id_user"] = $posted_list["s_id"];
+	$error_list = validate_input($posted_list,$s_id);
+	if(!empty($error_list)){
+		$alert->add_error('Eén of meerdere velden zijn niet correct ingevuld.');
+	}else{
+		update_contact($posted_list);
+		$alert->add_success('Contact aangepast.');
+		redirect_mydetails_view();
+		exit;
+	}
+}
+
+$contact = get_contact($id);
+$typecontactrow = get_type_contacts();
+if($contact["id_user"] != $s_id){
+	echo "UNAUTHORIZED";
+	exit;
+}
+
+include $rootpath . 'includes/inc_header.php';
+show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
+include $rootpath . 'includes/inc_footer.php';
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 function update_contact($posted_list){
@@ -189,6 +186,3 @@ function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>

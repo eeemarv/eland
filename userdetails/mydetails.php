@@ -6,8 +6,6 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_mailinglists.php");
 
-include($rootpath."includes/inc_header.php");
-
 //echo "<script type='text/javascript' src='$rootpath/js/moomydetails.js'></script>";
 // echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
 
@@ -22,11 +20,15 @@ if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
 	exit;
 }
 
-show_ptitle();
+include($rootpath."includes/inc_header.php");
+
+echo "<h1>Mijn gegevens</h1>";
+echo "<script type='text/javascript' src='" .$rootpath ."js/mydetails.js'></script>";
+
 $user = readuser($s_id);
 show_user($user);
 show_editlink();
-show_sendform();
+//show_sendform();
 show_pwform();
 show_contact();
 show_contactadd();
@@ -262,26 +264,27 @@ function show_contactadd(){
 }
 
 function show_pwform(){
-        global $s_id, $rootpath;
-        echo "<div id='pwformdiv' class='hidden'>";
+	global $s_id, $rootpath;
+	
+	echo "<div id='pwformdiv' class='hidden'>";
 	echo "<form action='". $rootpath ."/userdetails/postpassword.php' id='pwform' method='post'>";
-        echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-        echo "<tr><td valign='top' align='right'>Paswoord</td>";
-        echo "<td valign='top'>";
-        echo "<input  type='text' id='pw1' name='pw1' size='30'>";
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr><td valign='top' align='right'>Herhaal paswoord</td>";
-        echo "<td valign='top'>";
-        echo "<input  type='test' id='pw2' name='pw2' size='30'>";
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr><td colspan='2' align='right'>";
-        echo "<input type='submit' id='zend' value='Passwoord wijzigen' name='zend'>";
-        echo "</td><td>&nbsp;</td></tr>";
-        echo "</table>";
-        echo "</form>";
-        echo "</div>";
+	echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
+	echo "<tr><td valign='top' align='right'>Paswoord</td>";
+	echo "<td valign='top'>";
+	echo "<input  type='text' id='pw1' name='pw1' size='30'>";
+	echo "</td>";
+	echo "</tr>";
+	echo "<tr><td valign='top' align='right'>Herhaal paswoord</td>";
+	echo "<td valign='top'>";
+	echo "<input  type='test' id='pw2' name='pw2' size='30'>";
+	echo "</td>";
+	echo "</tr>";
+	echo "<tr><td colspan='2' align='right'>";
+	echo "<input type='submit' id='zend' value='Passwoord wijzigen' name='zend'>";
+	echo "</td><td>&nbsp;</td></tr>";
+	echo "</table>";
+	echo "</form>";
+	echo "</div>";
 
 }
 
@@ -293,8 +296,7 @@ function show_editlink(){
 	//$myurl="mydetails_edit.php?id=" .$s_id;
 	$myurl="mydetails_edit.php";
 	echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Gegevens aanpassen</a></li>";
-	$myurl="mydetails_pw.php";
-	echo "<li><a href='#' id='showpwform'>Passwoord wijzigen</a></li>";
+	echo "<li><a href='mydetails_pw.php' id='showpwform'>Passwoord wijzigen</a></li>";
 
 	//$myurl="upload_picture.php";
 	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";a
@@ -305,7 +307,7 @@ function show_editlink(){
 	//echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto verwijderen</a></li>";
 	echo "<script type='text/javascript'>function RemovePic() {  OpenTBox('" ."/userdetails/remove_picture.php?id=" .$s_id ."'); } </script>";
 	echo "<li><a href='javascript: RemovePic();'>Foto verwijderen</a></li>";
-	echo "<li><a id='showmsgform' href='#'>Mail versturen</a></li>";
+	//echo "<li><a id='showmsgform' href='#'>Mail versturen</a></li>";
 	echo "</ul>";
 	echo "</div>";
 	echo "</td></tr></table>";
@@ -389,9 +391,9 @@ function show_balance($balance, $user, $currency){
 	echo $user["minlimit"];
 	echo "</td></tr>";
 	echo "<td width='50%'>Limiet maxstand: </td>";
-        echo "<td width='50%'>";
-        echo $user["maxlimit"];
-        echo "</td></tr>";
+	echo "<td width='50%'>";
+	echo $user["maxlimit"];
+	echo "</td></tr>";
 
 	echo "</table>";
 }
@@ -409,11 +411,7 @@ function show_contact(){
 	echo "</td></tr></table>";
 }
 
-function show_ptitle(){
-	global $rootpath;
-        echo "<h1>Mijn gegevens</h1>";
-	echo "<script type='text/javascript' src='" .$rootpath ."js/mydetails.js'></script>";
-}
+
 
 function get_lists(){
 	global $db;
