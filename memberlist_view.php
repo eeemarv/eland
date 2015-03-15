@@ -43,7 +43,8 @@ function show_balance($balance,$currency){
 }
 
 function show_user($user){
-
+	global $rootpath;
+	
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 	echo "<tr class='even_row'>";
 

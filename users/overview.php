@@ -228,7 +228,7 @@ function show_inactive_users($inactive_userrows){
 		echo "</tr>\n\n";
 	}
 
-	echo "</table>\n</div>\n";
+	echo "</table>";
 }
 
 //SHOW ACTIVE USERS

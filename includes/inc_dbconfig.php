@@ -25,7 +25,7 @@ function readconfigfromdb($key){
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($rediskey, 3600);
+		$redis->expire($redis_key, 28800);
 		$cache[$key] = $value;
 	}
 

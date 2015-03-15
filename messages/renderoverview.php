@@ -1,26 +1,20 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 $msg_orderby = $_GET["msg_orderby"];
 $user_filterby = $_GET["user_filterby"];
 
 if(isset($s_id)){
-	$messagerows = get_all_msgs($msg_orderby,$user_filterby);
+	$messagerows = get_all_msgs($msg_orderby, $user_filterby);
 	 show_all_msgs($messagerows, $s_accountrole);
 }else{
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 function redirect_login($rootpath){
@@ -53,12 +47,14 @@ $strlength = strlen($content);
 
 function show_all_msgs($messagerows, $s_accountrole){
 
+	global $rootpath;
+
 	echo "<br>Filter: ";
-        echo "<a href='overview.php?user_filterby=all'>Alle</a>";
-        echo " - ";
-        echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
-        echo " - ";
-        echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
+	echo "<a href='overview.php?user_filterby=all'>Alle</a>";
+	echo " - ";
+	echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
+	echo " - ";
+	echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
 
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
@@ -124,7 +120,9 @@ function show_all_msgs($messagerows, $s_accountrole){
                 echo "</td>";
 
 		echo "<td valign='top' nowrap>";
+		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'].'">';
 		echo  htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
+		echo '</a>';
 		echo "</td>";
 		echo "<td valign='top'>";
 		echo htmlspecialchars($value["fullname"],ENT_QUOTES);

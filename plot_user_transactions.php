@@ -26,16 +26,16 @@ $balance = (int) $user['saldo'];
 $begin_date = date('Y-m-d H:i:s', time() - (86400 * $req->get('days')));
 $end_date = date('Y-m-d H:i:s');
 
-$query = 'SELECT transactions.amount, transactions.id_from, transactions.id_to, ';
-$query .= 'transactions.real_from, transactions.real_to, transactions.date, transactions.description, ';
-$query .= 'users.id, users.name, users.letscode, users.accountrole, users.status ';
-$query .= 'FROM transactions, users ';
-$query .= 'WHERE (transactions.id_to = '.$user_id.' OR transactions.id_from = '.$user_id.') ';
-$query .= 'AND (users.id = transactions.id_to OR users.id = transactions.id_from) ';
-$query .= 'AND users.id <> '.$user_id.' ';
-$query .= 'AND transactions.date >= \''.$begin_date.'\' ';
-$query .= 'AND transactions.date <= \''.$end_date.'\' ';
-$query .= 'ORDER BY transactions.date DESC';
+$query = 'SELECT t.amount, t.id_from, t.id_to, 
+		t.real_from, t.real_to, t.date, t.description, 
+		u.id, u.name, u.letscode, u.accountrole, u.status 
+	FROM transactions t, users u
+	WHERE (t.id_to = ' . $user_id . ' OR t.id_from = ' . $user_id . ') 
+		AND (u.id = t.id_to OR u.id = t.id_from) 
+		AND u.id <> ' . $user_id . ' 
+		AND t.date >= \'' . $begin_date . '\' 
+		AND t.date <= \'' . $end_date . '\' 
+	ORDER BY t.date DESC';
 $trans = $db->GetArray($query);
 
 $begin_date = strtotime($begin_date);
@@ -94,4 +94,4 @@ echo json_encode(array(
 	'beginBalance' => $balance,
 	'begin' => $begin_date,
 	'end' => $end_date,
-	));
+));
