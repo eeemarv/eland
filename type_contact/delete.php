@@ -1,48 +1,47 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
-include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
-
-if(isset($s_id) && ($s_accountrole == "admin")){
-	$id = $_GET["id"];
-	if(empty($id)){
-		redirect_overview($contacttype);
-	}else{
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			delete_contacttype($id);
-			redirect_overview();
-		}else{
-			$contacttype = get_contacttype($id);
-			show_contacttype($contacttype);
-			ask_confirmation($contacttype);
-			show_form($id);
-		}
-	}
-}else{
-	redirect_login($rootpath);
-}
-
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function redirect_login($rootpath){
+if(!(isset($s_id) && ($s_accountrole == "admin"))){
 	header("Location: ".$rootpath."login.php");
+	exit;
 }
 
-function show_ptitle(){
-	echo "<h1>Contacttype verwijderen</h1>";
+$id = $_GET["id"];
+if(empty($id)){
+	header('Location: ' . $rootpath . 'type_contact/overview.php');
+	exit;
 }
+
+$contacttype = get_contacttype($id);
+
+if (in_array($contacttype['abbrev'], array('mail', 'tel', 'gsm', 'adr')))
+{
+	$alert->warning('Beschermd contact type.');
+	header('Location: ' . $rootpath . 'type_contact/overview.php');
+	exit;
+}
+
+if(isset($_POST["zend"])){
+	delete_contacttype($id);
+	$alert->success('Contact type verwijderd.');
+	header('Location: ' . $rootpath . 'type_contact/overview.php');
+	exit;
+}
+
+include($rootpath."includes/inc_header.php");	
+echo "<h1>Contacttype verwijderen</h1>";
+show_contacttype($contacttype);
+ask_confirmation($contacttype);
+show_form($id);
+include($rootpath."includes/inc_footer.php");	
+
+
+////////////////
+
 
 function show_form($id){
 	echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
@@ -87,11 +86,3 @@ function show_contacttype($contacttype){
 	echo "</tr>";
 	echo "</table></div>";
 }
-
-function redirect_overview(){
-	header("Location: overview.php");
-}
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>

@@ -4,7 +4,7 @@ $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if (!isset($s_id)){s
+if (!isset($s_id)){
 	header("Location: ".$rootpath."login.php");
 	exit;
 }
@@ -16,10 +16,10 @@ if(isset($_POST["zend"]))
 	$posted_list["value"] = $_POST["value"];
 	$posted_list["comments"] = $_POST["comments"];
 
-	if (trim($_POST["flag_public"]) == 1){
-			$posted_list["flag_public"] = 1;
+	if (trim($_POST["flag_public"]) == 'on'){
+			$posted_list["flag_public"] = 't';
 	}else{
-			$posted_list["flag_public"] = 0;
+			$posted_list["flag_public"] = 'f';
 	}
 
 	$error_list = validate_input($posted_list);
@@ -34,25 +34,72 @@ include $rootpath . 'includes/inc_header.php';
 echo "<h1>Contact toevoegen</h1>";
 
 $typecontactrow = get_type_contacts();
-show_form($typecontactrow, $error_list, $posted_list);
 
-show_serveroutputdiv();
-show_closebutton();
+echo "<div class='border_b'>\n";
+echo "<form method='POST' action='mydetails_cont_add.php'>\n";
+echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n\n";
+echo "<tr>\n";
+echo "<td valign='top' align='right'>Type</td>\n";
+echo "<td>";
+echo "<select name='id_type_contact'>\n";
+foreach($typecontactrow as $key => $value){
+	echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
+}
+echo "</select>\n</td>\n";
 
+echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+if(isset($error_list["id_type_contact"])){
+	echo $error_list["id_type_contact"];
+}
+echo "</td>\n";
+echo "</tr>\n\n";
+
+echo "<tr>\n";
+echo "<td valign='top' align='right'>Waarde</td>\n";
+echo "<td>";
+echo "<input type='text' name='value' size='20' ";
+if (isset($posted_list["value"])){
+	echo " value='".$posted_list["value"]."' ";
+}
+echo ">";
+echo "</td>\n";
+echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+if(isset($error_list["value"])){
+	echo $error_list["value"];
+}
+echo "</td>\n";
+echo "</tr>\n\n";
+
+echo "<tr>\n";
+echo "<td valign='top' align='right'>Commentaar</td>\n";
+echo "<td>";
+echo "<input type='text' name='comments' size='50' ";
+if (isset($posted_list["comments"])){
+	echo " value='".$posted_list["comments"]."' ";
+}
+echo "</td>\n";
+echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+echo "</td>\n";
+echo "</tr>\n\n";
+
+echo "<tr>\n";
+echo "<td valign='top' align='right'></td>\n";
+echo "<td>";
+echo "<input type='checkbox' name='flag_public' CHECKED";
+echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
+
+echo "</td>\n";
+echo "</tr>\n\n<tr>\n<td></td>\n<td>";
+echo "</td>\n";
+echo "</tr>\n\n";
+
+echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>";
+echo "</td>\n</tr>\n\n";
+echo "</table></form></div>";
+
+include($rootpath."includes/inc_footer.php");
 
 ////////////////////////
-
-function show_closebutton(){
-	$url = "rendercontact.php";
-        echo "<table border=0 width='100%'><tr><td align='right'><form id='closeform'>";
-        echo "<input type='button' id='close' value='Sluiten' onclick=\"javascript:window.opener.loadcontact('$url');self.close()\">";
-        echo "<form></td></tr></table>";
-}
-
-function show_serveroutputdiv(){
-        echo "<div id='serveroutput' class='serveroutput'>";
-        echo "</div>";
-}
 
 function validate_input($posted_list){
   	global $db;
@@ -73,10 +120,7 @@ function validate_input($posted_list){
 
 function get_type_contacts(){
     global $db;
-		$query = "SELECT * FROM type_contact ";
-		$result = mysql_query($query) or die("select type_contact lukt niet");
-    $typecontactrow = $db->GetArray($query);
-		return $typecontactrow;
+	return $db->GetArray('SELECT * FROM type_contact');
 }
 
 function show_form($typecontactrow, $error_list, $posted_list){
@@ -148,9 +192,3 @@ function add_contact($s_id, $posted_list){
     $posted_list["id_user"] = $s_id;
     $result = $db->AutoExecute("contact", $posted_list, 'INSERT');
 }
-
-function redirect_mydetails_view(){
-	header("Location:  mydetails.php");
-}
-
-include($rootpath."includes/inc_footer.php");

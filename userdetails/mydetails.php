@@ -31,11 +31,11 @@ show_editlink();
 //show_sendform();
 show_pwform();
 show_contact();
-show_contactadd();
+//show_contactadd();
 
 //	show_subs();
-show_subform();
-show_unsubform();
+// show_subform();
+// show_unsubform();
 
 show_oids();
 show_oidform();
@@ -399,8 +399,7 @@ function show_contact(){
 	echo "<script type='text/javascript'>showsmallloader('contactdiv');loadcontact('$url');</script>";
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<ul class='hormenu'>";
-	$myurl="mydetails_cont_add.php";
-        echo "<li><a id='showcontactform' href='#'>Contact toevoegen</a></li>";
+    echo "<li><a href='mydetails_cont_add.php'>Contact toevoegen</a></li>";
 	echo "</ul>";
 	echo "</td></tr></table>";
 }

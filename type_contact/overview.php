@@ -1,41 +1,27 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+if(!(isset($s_id) && ($s_accountrole == "admin"))){
+	header("Location: ".$rootpath."login.php");
+	exit;
+}
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_addlink();
-	show_ptitle();
-	$contacttypes = get_all_contacttypes();
- 	show_all_contacttypes($contacttypes);
-}else{
-	redirect_login($rootpath);
-}
+echo "<div class='border_b'>| <a href='add.php'>Contacttype toevoegen</a> |</div>";
+echo "<h1>Overzicht contacttypes</h1>";
+$contacttypes = get_all_contacttypes();
+show_all_contacttypes($contacttypes);
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+include($rootpath."includes/inc_footer.php");
 
-function show_addlink(){
-	echo "<div class='border_b'>| <a href='add.php'>Contacttype toevoegen</a> |</div>";
-}
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
+//////////////////
 
-function show_ptitle(){
-	echo "<h1>Overzicht contacttypes</h1>";
-}
 
 function show_all_contacttypes($contacttypes){
 	echo "<div class='border_b'>";
@@ -57,6 +43,7 @@ function show_all_contacttypes($contacttypes){
 		echo "<a href='view.php?id=".$value["id"]."'>";
 		echo htmlspecialchars($value["name"],ENT_QUOTES);
 		echo "</a>";
+		echo (in_array($value['abbrev'], array('mail', 'gsm', 'tel', 'adr'))) ? '*': '';
 		echo "</td><td>";
 		if(!empty($value["abbrev"])){
 			echo htmlspecialchars($value["abbrev"],ENT_QUOTES);
@@ -64,6 +51,7 @@ function show_all_contacttypes($contacttypes){
 		echo "</td></tr>";
 	}
 	echo "</table></div>";
+	echo '<p>* Beschermd contact type: kan niet aangepast worden.</p>';
 }
 
 function get_all_contacttypes(){
@@ -72,7 +60,3 @@ function get_all_contacttypes(){
 	$contacttypes = $db->GetArray($query);
 	return $contacttypes;
 }
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>
