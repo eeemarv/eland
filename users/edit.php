@@ -1,19 +1,13 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
-//include($rootpath."includes/inc_preferences.php");
 
 //status 0: inactief
 //status 1: letser
@@ -47,9 +41,9 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	echo "<script type=\"text/javascript\">self.close();</script>";
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+include($rootpath."includes/inc_smallfooter.php");
+
+//////////////////
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
@@ -127,18 +121,6 @@ function validate_input($posted_list){
 	if ($number2 !== 0){
 		$error_list["letscode"]="<font color='#F56DB5'>Letscode <strong>bestaat al</strong>!</font>";
 	}
-
-#	if (empty($posted_list["password1"]) || $posted_list["password1"]==""){
-#		$error_list["password1"]="<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
-#	}elseif(empty($posted_list["password2"])|| $posted_list["password2"]==""){
-#		$error_list["password2"]="<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
-#	}elseif ($posted_list["password1"] !== $posted_list["password2"]){
-#$error_list["password3"] = "<font color='#F56DB5'><strong>Paswoorden zijn zijn</strong> <strong>niet identiek</strong>!</font>";
-#	}
-
-#	if (empty($posted_list["login"])|| $posted_list["login"]==""){
-#		$error_list["login"]="<font color='#F56DB5'>Vul <strong>login</strong> in!</font>";
-#	}
 
 	if (!empty($posted_list["login"])){
 	    $query = "SELECT * FROM users WHERE login = '".$posted_list["login"]."'";
@@ -289,7 +271,3 @@ function show_form(){
 	//echo "</form>";
 	//echo "</p></div>";
 }
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_smallfooter.php");
-?>

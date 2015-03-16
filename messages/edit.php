@@ -4,6 +4,7 @@ $rootpath = "../";
 $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
+require_once($rootpath."includes/inc_form.php");
 
 if (!isset($s_id) || $s_accountrole == "guest" || $s_accountrole == "interlets"){
 	header('Location: ' . $rootpath . 'login.php');
@@ -180,17 +181,9 @@ if($mode == "edit"){
 
 */
 
-////////////////////////////////////////////////////////////////////////////
+include($rootpath."includes/inc_footer.php");
 
-function render_selector_options($option_ary, $selected)
-{
-	foreach ($option_ary as $key => $value)
-	{
-		echo '<option value="' . $key . '"';
-		echo ($key == $selected) ? ' selected="selected"' : '';
-		echo '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
-	}
-}
+////////////////////////////////////////////////////////////////////////////
 
 // FIXME: Geldigheid wordt niet geladen....
 /*
@@ -334,5 +327,3 @@ function get_msg($id){
 	$query .= " FROM messages WHERE id=" .$id ;
 	return $db->GetRow($query);
 }
-
-include($rootpath."includes/inc_footer.php");

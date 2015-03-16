@@ -7,6 +7,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
+require_once($rootpath."includes/inc_form.php");
 
 if (!$s_id || !($s_accountrole == 'user' || $s_accountrole == 'admin'))
 {
@@ -274,15 +275,7 @@ function make_timestamp($timestring){
 	return $timestamp;
 }
 
-function render_selector_options($option_ary, $selected)
-{
-	foreach ($option_ary as $key => $value)
-	{
-		echo '<option value="' . $key . '"';
-		echo ($key == $selected) ? ' selected="selected"' : '';
-		echo '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
-	}
-}
+
 
 
 
