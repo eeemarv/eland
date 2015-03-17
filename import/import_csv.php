@@ -1,16 +1,15 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
+
+// disabled because too dangerous (and not working correctly anyway).
+header('Location: ' . $rootpath . 'index.php');
+exit;
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle();
@@ -32,9 +31,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+//////////////////////
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
@@ -376,6 +373,4 @@ function checklogin($login){
         return $user["login"];
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
