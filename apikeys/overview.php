@@ -1,55 +1,32 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_apikeys.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	showlinks($rootpath);
-	show_ptitle1();
-	$apikeys= get_apikeys();
-	show_keys($apikeys);
-}else{
-	redirect_login($rootpath);
-}
+echo "<table width='100%' border=0><tr><td>";
+echo "<div id='navcontainer'>";
+echo "<ul class='hormenu'>";
+echo "<li><a href='add.php'>Apikey toevoegen</a></li>";
+echo "</div>";
+echo "</td></tr></table>";
+echo "<h1>Overzicht API Keys</h1>";
+$apikeys= get_apikeys();
+show_keys($apikeys);
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+include($rootpath."includes/inc_footer.php");
+
+
+/////////////////
+
 
 function showlinks($rootpath){
 	global $s_id;
-        echo "<table width='100%' border=0><tr><td>";
-        echo "<div id='navcontainer'>";
-        echo "<ul class='hormenu'>";
-        $myurl="add.php";
-        echo "<li><a href='#' onclick=window.open('$myurl','addkey','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Apikey toevoegen</a></li>";
-        echo "</div>";
-        echo "</td></tr></table>";
-}
 
-function show_outputdiv(){
-	echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
-	echo "<script type=\"text/javascript\">loadurl('rendergroups.php');</script>";
-	echo "</div>";
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle1(){
-	echo "<h1>Overzicht API Keys</h1>";
 }
 
 function show_keys($apikeys){
@@ -91,15 +68,10 @@ function show_keys($apikeys){
 		echo "<td>" .$value['type'] ."</td>";
 		echo "<td>" .$value['comment'] ."</td>";
 		echo "<td> | ";
-		$myurl = "delete.php?id=" .$value['id'];
-		echo "<a href='#' onclick=window.open('$myurl','deletekey','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>";
+		echo '<a href="delete.php?id=' .$value['id'] . '">';
 		echo "Verwijderen |</a></td>";
 	}
 	echo "</tr>";
 	echo "</table>";
 
 }
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>
