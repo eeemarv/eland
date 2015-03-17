@@ -7,14 +7,6 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
-//debug
-//print_r($_POST);
-//session_start();
-//$_SESSION["id"] = $row["id"];
-//$_SESSION["name"] = $row["name"];
-//$_SESSION["letscode"] = $row["letscode"];
-//$_SESSION["accountrole"] = $row["accountrole"];
-
 if(empty($_POST["email"])){
 	echo "Geef een mailadres op";
 	log_event($s_id,"System","Empty activation request");
@@ -41,4 +33,3 @@ if(empty($_POST["email"])){
 	}
 }
 
-?>

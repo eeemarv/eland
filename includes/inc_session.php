@@ -50,10 +50,10 @@ $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
 
-/*
+
 if (!$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous')))){
 	header(' ', true, 500);
-//	include '500.html';
+	include '500.html';
 	exit;
 }
 
@@ -68,8 +68,7 @@ if ((!$allow_anonymous_post && $s_accountrole == 'anonymous' && $_SERVER['REQUES
 	|| ($role == 'user' && !in_array($s_accountrole, array('admin', 'user')))
 	|| ($role == 'guest' && !in_array($s_accountrole, array('admin', 'user', 'guest')))){
 	header('HTTP/1.1 403 Unauthorized', true, 403);
-//	include '403.html';
+	include '403.html';
 	exit;
 }
-*/
 

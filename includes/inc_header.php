@@ -46,7 +46,9 @@ header("Content-Type:text/html;charset=utf-8");
 </script>
 
 <div id="wrapper">
- <div id="header">
+<?php
+ echo '<div id="header" onclick="window.location=\'' . $rootpath . 'index.php\'">'
+?>
   <div id="logo"></div><div id="groupname">
   <?php
 	$name = readconfigfromdb('systemname');
@@ -149,7 +151,7 @@ header("Content-Type:text/html;charset=utf-8");
 
 	<?php
 		}
-	}elseif($ptitle == "login"){
+	}elseif($role == 'anonymous'){
 		echo "<ul class='vertmenu'>";
 		echo "<li><a href='#' id='showlostpasswordform'>Login/Passwoord vergeten</a></li>";
 		//echo "<li><a href='#' id='showguestloginform'>" .$tr->get('guestlogin','nav') ."</a></li>";

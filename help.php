@@ -2,17 +2,11 @@
 ob_start();
 //$ptitle="login";
 $rootpath = "./";
+$role = 'anonymous';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_smallheader.php");
-require_once($rootpath."includes/inc_content.php");
 
-session_start();
-global $_SESSION;
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+require_once($rootpath."includes/inc_header.php");
 
 echo "<table border='0' width='100%'><tr><td><h1>eLAS Help</h1>";
 echo "</td><td align='right'>";
@@ -23,7 +17,7 @@ if(isset($s_id)){
 }
 
 if(isset($_POST["zend"])){
-        $posted_list = array();
+        $posted_list = array(); 
 	$posted_list["login"] = mysql_escape_string($_POST["login"]);
 	$posted_list["email"] = mysql_escape_string($_POST["email"]);
 	$posted_list["subject"] = mysql_escape_string($_POST["subject"]);
@@ -48,6 +42,8 @@ if(isset($_POST["zend"])){
 }
 
 echo "<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>";
+
+include $rootpath . 'includes/inc_footer.php';
 
 function show_form($id,$email,$error_list,$posted_list){
 	$browser = $_SERVER['HTTP_USER_AGENT'];
@@ -117,12 +113,11 @@ function show_form($id,$email,$error_list,$posted_list){
                         echo $error_list["omschrijving"];
 	}
 	echo "</td></tr>";
-        echo "<tr><td colspan='2' align='right'>";
+	echo "<tr><td></td><td>";
 
-	echo "<input type='button' name='cancel' value='Annuleren' onclick=\"javascript:self.close();\">";
-        echo "<input type='submit' name='zend' value='Verzenden'>";
-        echo "</td><td>&nbsp;</td></tr></table>";
-        echo "</form>";
+	echo "<input type='submit' name='zend' value='Verzenden'>";
+	echo "</td><td>&nbsp;</td></tr></table>";
+	echo "</form>";
 }
 
 function validate_input($posted_list){
@@ -191,10 +186,9 @@ function helpmail($posted_list,$rootpath){
 	$mailcontent .= "Webserver: " .gethostname() ."\r\n";
 
 	echo "Bezig met het verzenden naar $mailto ...\n";
+	// sendemail
         mail($mailto,$mailsubject,$mailcontent,$mailfrom);
 	echo "OK\n";
 	setstatus("Support mail verstuurd", 0);
 	echo "<script type=\"text/javascript\">self.close();</script>";
 }
-
-?>

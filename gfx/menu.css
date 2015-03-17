@@ -54,3 +54,11 @@ border-right: 1px solid #fff;
 ul.hormenu li a:hover {
 background-color: #8a8dd0;
 }
+
+
+/**/
+
+#header {
+	cursor: pointer;
+}
+
