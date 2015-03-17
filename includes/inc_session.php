@@ -51,9 +51,9 @@ $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
 
 
-if (!$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous')))){
-	header(' ', true, 500);
-	include '500.html';
+if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous')))){
+	http_response_code(500);
+	include $rootpath . '500.html';
 	exit;
 }
 
@@ -62,13 +62,13 @@ if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name)){
 	exit;
 }
 
-if ((!$allow_anonymous_post && $s_accountrole == 'anonymous' && $_SERVER['REQUEST_METHOD'] != 'GET')
+if ((!isset($allow_anonymous_post) && $s_accountrole == 'anonymous' && $_SERVER['REQUEST_METHOD'] != 'GET')
 	|| ($s_accountrole == 'guest' && $_SERVER['REQUEST_METHOD'] != 'GET')
 	|| ($role == 'admin' && $s_accountrole != 'admin')
 	|| ($role == 'user' && !in_array($s_accountrole, array('admin', 'user')))
 	|| ($role == 'guest' && !in_array($s_accountrole, array('admin', 'user', 'guest')))){
-	header('HTTP/1.1 403 Unauthorized', true, 403);
-	include '403.html';
+	http_response_code(403);
+	include $rootpath . '403.html';
 	exit;
 }
 
