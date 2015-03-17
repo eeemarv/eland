@@ -1,45 +1,42 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+if (!isset($s_id)){
+	header("Location: ".$rootpath."login.php");
+	exit;
+}
+
+$id = $_GET["id"];
+if(empty($id)){
+	header("Location:  mymsg_overview.php");
+	exit;
+}
+
+if(isset($_POST["zend"])){
+	if ($db->Execute('DELETE FROM messages WHERE id = ' . $id . ' AND id_user = ' . $s_id))
+	{
+		$alert->success('Vraag/aanbod verwijderd.');
+		redirect_overview();
+		exit;
+	}
+
+	$alert->error('Vraag/aanbod verwijderen mislukt.');
+}
+
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
+echo "<h1>Mijn Vraag & Aanbod verwijderen</h1>";
+$msg = get_msg($id);
+show_msg($msg);
+ask_confirmation($msg);
 
-if (isset($s_id)){
-	$id = $_GET["id"];
-	if(empty($id)){
-		redirect_overview($msg);
-	}else{
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			$msg = get_msg($id);
-			delete_msg($id);
-			redirect_overview();
-		}else{
-			$msg = get_msg($id);
-			show_msg($msg);
-			ask_confirmation($msg);
-			show_form($id);
-		}
-	}
-}else{
-	redirect_login($rootpath);
-}
+include($rootpath."includes/inc_footer.php");
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function show_ptitle(){
-	echo "<h1>Mijn Vraag & Aanbod verwijderen</h1>";
-}
+////////////////////////
 
 function show_form($id){
 	echo "<div class='border_b'>";
@@ -58,11 +55,6 @@ function ask_confirmation($msg){
 	echo " moet verwijderd worden?</strong></p></font></div>";
 }
 
-function delete_msg($id){
-	global $db;
-	$query = "DELETE FROM messages WHERE id =".$id ;
-	$result = $db->Execute($query);
-}
 
 function get_msg($id){
    	global $db;
@@ -110,14 +102,3 @@ function show_msg($msg){
 	echo "</table></div>";
 
 }
-
-function redirect_overview(){
-	header("Location:  mymsg_overview.php");
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>

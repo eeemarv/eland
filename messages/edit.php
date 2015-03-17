@@ -109,7 +109,7 @@ echo "<tr>\n<td align='right'>";
 echo "V/A ";
 echo "</td><td>";
 echo "<select name='msg_type'>";
-render_selector_options(array('1' => 'Aanbod', '0' => 'Vraag'), $msg['msg_type']);
+render_select_options(array('1' => 'Aanbod', '0' => 'Vraag'), $msg['msg_type']);
 echo "</select>";
 echo "</td></tr>";
 
@@ -131,7 +131,7 @@ if($s_accountrole == "admin"){
 	echo "Wie";
 	echo "</td><td>";
 	echo "<select name='id_user'>\n";
-	render_selector_options($user_list, $msg['id_user']);
+	render_select_options($user_list, $msg['id_user']);
 	echo "</select>\n";
 	echo "</td>\n</tr>\n\n<tr><td></td>\n<td>";
 	echo "</td>\n</tr>\n\n";
@@ -145,7 +145,7 @@ echo "</td>\n<td>";
 echo "<select name='id_category'>\n";
 
 $cat_list = get_cats();
-render_selector_options($cat_list, $msg['id_category']);
+render_select_options($cat_list, $msg['id_category']);
 
 echo "</select>\n";
 echo "</td>\n</tr>";

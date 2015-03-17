@@ -4,10 +4,7 @@ $rootpath = "../";
 $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_mailinglists.php");
-
-//echo "<script type='text/javascript' src='$rootpath/js/moomydetails.js'></script>";
-// echo "<script type='text/javascript' src='$rootpath/contrib/ckeditor/ckeditor.js'></script>";
+// require_once($rootpath."includes/inc_mailinglists.php");
 
 if (!isset($s_id))
 {
@@ -29,8 +26,18 @@ $user = readuser($s_id);
 show_user($user);
 show_editlink();
 //show_sendform();
-show_pwform();
-show_contact();
+// show_pwform();
+
+$url = "rendercontact.php";
+echo "<div id='contactdiv'></div>";
+
+echo "<script type='text/javascript'>showsmallloader('contactdiv');loadcontact('$url');</script>";
+echo "<table width='100%' border=0><tr><td>";
+echo "<ul class='hormenu'>";
+echo "<li><a href='mydetails_cont_add.php'>Contact toevoegen</a></li>";
+echo "</ul>";
+echo "</td></tr></table>";
+
 //show_contactadd();
 
 //	show_subs();
@@ -42,6 +49,7 @@ show_oidform();
 $balance = $user["saldo"];
 show_balance($balance, $user, readconfigfromdb("currency"));
 
+include($rootpath."includes/inc_footer.php");
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -221,7 +229,7 @@ function show_contactadd(){
 	echo "<select name='id_type_contact'>\n";
 	$typecontactrow = get_type_contacts();
 	foreach($typecontactrow as $key => $value){
-			echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
+		echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
 	}
 	echo "</select>\n</td>\n";
 
@@ -396,6 +404,7 @@ function show_contact(){
 	global $rootpath;
 	$url = "rendercontact.php";
 	echo "<div id='contactdiv'></div>";
+	
 	echo "<script type='text/javascript'>showsmallloader('contactdiv');loadcontact('$url');</script>";
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<ul class='hormenu'>";
@@ -404,8 +413,6 @@ function show_contact(){
 	echo "</td></tr></table>";
 }
 
-
-
 function get_lists(){
 	global $db;
 	$query = "SELECT * FROM lists WHERE auth = 'open'";
@@ -413,5 +420,3 @@ function get_lists(){
 	//var_dump($lists);
 	return $lists;
 }
-
-include($rootpath."includes/inc_footer.php");

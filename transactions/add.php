@@ -187,7 +187,7 @@ $list_users = $db->GetAssoc('SELECT letscode, fullname
 	WHERE status IN (1, 2)
 		AND accountrole NOT IN (\'guest\', \'interlets\')
 	ORDER BY letscode');
-render_selector_options($list_users, $posted_list['letscode']);
+render_select_options($list_users, $posted_list['letscode']);
 echo "</select>\n";
 
 echo "</td><td width='150'><div id='fromoutputdiv'></div>";
@@ -211,7 +211,7 @@ echo "</td><td>";
 echo "<select name='letsgroup' id='letsgroup' onchange=\"document.getElementById('letscode_to').value='';\">\n";
 
 $letsgroups = $db->getAssoc('SELECT id, groupname FROM letsgroups');
-render_selector_options($letsgroups, $posted_list['letsgroup']);
+render_select_options($letsgroups, $posted_list['letsgroup']);
 
 echo "</select>";
 echo "</td><td>";

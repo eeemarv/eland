@@ -3,6 +3,7 @@ ob_start();
 $rootpath = "../";
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
+require_once($rootpath."includes/inc_form.php");
 
 if (!isset($s_id)){
 	header("Location: ".$rootpath."login.php");
@@ -24,16 +25,20 @@ if(isset($_POST["zend"]))
 
 	$error_list = validate_input($posted_list);
 
-	
 	if(empty($error_list)){
 		add_contact($s_id, $posted_list);
+		$alert->success('Contact toegevoegd.');
+		header('Location: mydetails.php');
+		exit;
 	}
+
+	$alert->error('Contact niet toegevoegd.');
 }
 
 include $rootpath . 'includes/inc_header.php';
 echo "<h1>Contact toevoegen</h1>";
 
-$typecontactrow = get_type_contacts();
+$typecontacts = $db->GetAssoc('SELECT id, name FROM type_contact');
 
 echo "<div class='border_b'>\n";
 echo "<form method='POST' action='mydetails_cont_add.php'>\n";
@@ -42,9 +47,7 @@ echo "<tr>\n";
 echo "<td valign='top' align='right'>Type</td>\n";
 echo "<td>";
 echo "<select name='id_type_contact'>\n";
-foreach($typecontactrow as $key => $value){
-	echo "<option value='".$value["id"]."'>".$value["name"]."</option>\n";
-}
+render_select_options($typecontacts, $posted_list['id_type_contact']);
 echo "</select>\n</td>\n";
 
 echo "</tr>\n\n<tr>\n<td></td>\n<td>";
@@ -118,10 +121,6 @@ function validate_input($posted_list){
 	return $error_list;
 }
 
-function get_type_contacts(){
-    global $db;
-	return $db->GetArray('SELECT * FROM type_contact');
-}
 
 function show_form($typecontactrow, $error_list, $posted_list){
 	echo "<div class='border_b'>\n";

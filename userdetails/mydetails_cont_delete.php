@@ -1,29 +1,36 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
-if (isset($s_id)){
-	if(isset($_GET["id"])){
-		$id = $_GET["id"];
-		if(validate_request($id) == 1) {
-			delete_contact($id);
-			$alert->add_success('Contact verwijderd.');
-			redirect_mydetails_view();
-			exit;
-		} else {
-			show_error();
-		}
-	}else{
-		redirect_mydetails_view();
-	}
-
-}else{
-	redirect_login($rootpath);
+if (!isset($s_id)){
+	header("Location: ".$rootpath."login.php");
+	exit;
 }
+
+if(!isset($_GET["id"]))
+{
+	header("Location:  mydetails.php");
+	exit;
+}
+
+$id = $_GET["id"];
+
+if(validate_request($id) == 1)
+{
+	delete_contact($id);
+	$alert->success('Contact verwijderd.');
+	header("Location:  mydetails.php");
+	exit;
+}
+
+$alert->error('Contact niet verwijderd.');
+include($rootpath."includes/inc_header.php");
+show_error();
+include($rootpath."includes/inc_footer.php");
+
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -72,15 +79,3 @@ function delete_contact($id){
 	$query = "DELETE FROM contact WHERE id =".$id ;
 	$result = $db->Execute($query);
 }
-
-function redirect_mydetails_view(){
-	header("Location:  mydetails.php");
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_footer.php");
-?>
