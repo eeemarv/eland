@@ -1,13 +1,10 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
 $user_userid = $_GET["userid"];
 $user_datefrom = $_GET["datefrom"];
 $user_dateto = $_GET["dateto"];
@@ -20,9 +17,7 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
@@ -108,5 +103,3 @@ function show_all_users($users){
 				echo "\r\n";
         }
 }
-
-?>
