@@ -212,8 +212,13 @@ function sendemail_mandrill_simple($from, $to, $subject, $content)
 			'to' => $to_mandrill,
 		);
 
+		
+
 		$mandrill->messages->send($message, true);
-		log_event($s_id, 'mail', 'mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . implode(', ' . $to));
+
+		$to = (is_array($to)) ? implode(', ', $to) : $to;
+		
+		log_event($s_id, 'mail', 'mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
 	}
 	catch (Mandrill_Error $e)
 	{
@@ -223,4 +228,6 @@ function sendemail_mandrill_simple($from, $to, $subject, $content)
 		// throw $e;
 		return 'Mail niet verzonden. Fout in mail service.';
 	}
+
+	return false;
 }
