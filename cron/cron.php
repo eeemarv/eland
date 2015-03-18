@@ -190,7 +190,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 		}
 		else if ($f_session_name != $session_name)
 		{
-			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.' . $ext = pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
 				'CopySource'	=> $filename,
@@ -201,7 +201,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 			{
 				$db->Execute('UPDATE users SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $user_id);
 				echo '1 profile image renamed' . $r;
-				log_event($s_id, 'cron', 'Profile image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+				log_event($s_id, 'cron', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
 				$s3->deleteObject(array(
 					'Bucket'	=> getenv('S3_BUCKET'),
@@ -229,7 +229,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 		}
 		else if ($f_session_name != $session_name)
 		{
-			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.' . $ext = pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
 				'CopySource'	=> $filename,
