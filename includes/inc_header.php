@@ -115,6 +115,7 @@ header("Content-Type:text/html;charset=utf-8");
 			<ul class='vertmenu'>
 			<?php
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
+
 					echo '<li><a href="' . $rootpath . 'help.php">Probleem melden</a></li>';
 				}
 			?>

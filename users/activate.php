@@ -8,8 +8,6 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_passwords.php");
 
-include($rootpath."includes/inc_header.php");
-
 if (!isset($_GET["id"])){
 	header('Location: overview.php');
 	exit;
@@ -17,27 +15,32 @@ if (!isset($_GET["id"])){
 
 $id = $_GET["id"];
 $user = get_user_maildetails($id);
-show_ptitle();
+
 if(isset($_POST["zend"])){
 	$posted_list = array();
 	$posted_list["pw1"] = $_POST["pw1"];
 	$posted_list["pw2"] = $_POST["pw2"];
 	$posted_list["adate"] = date("Y-m-d H:i:s");
 	$errorlist = validate_input($posted_list,$configuration);
-	if (!empty($errorlist)){
-		show_pwform($errorlist, $id, $user);
-	}else{
+	if (empty($errorlist)){
 		sendactivationmail($posted_list["pw1"], $user, $s_id);
 		sendadminmail($posted_list, $user);
 		update_password($id, $posted_list);
 		set_adate($id);
-		saydone($posted_list, $user, $s_id);
-		//redirect_view($id);
+
+		$userlogin = $user["login"];
+		log_event($s_id,"Act","Account $userlogin activated");
+		$alert->success("Account $userlogin geactiveerd", 0);
+		header('Location: view.php?id=' . $id);
+		exit;
 	}
-}else{
-	show_pwform($errorlist, $id, $user);
+
+	$alert->error('Fout in formulier. Activatie emails niet verzonden.');
 }
 
+include($rootpath."includes/inc_header.php");
+echo "<h1>Account activeren</h1>";
+show_pwform($errorlist, $id, $user);
 
 ////////////////
 
@@ -47,7 +50,7 @@ function sendadminmail($posted_list, $user){
                 $mailfrom .= trim(readconfigfromdb("from_address"));
                 $mailto .= trim(readconfigfromdb("admin"))."\r\n";
         }else {
-                 Echo "No admin adress set in config, not sending";
+                 $alert->error("No admin adress set in config, not sending");
                  return 0;
         }
 
@@ -88,18 +91,6 @@ function update_user($id, $posted_list){
     $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
     readuser($id, true);
     return $result;
-}
-
-function saydone($posted_list, $user, $s_id){
-	global $_SESSION;
-	//log it
-	$userlogin = $user["login"];
-	log_event($s_id,"Act","Account $userlogin activated");
-	setstatus("Account $userlogin geactiveerd", 0);
-}
-
-function redirect_view($id){
-	header("Location: view.php?id=".$id."");
 }
 
 function validate_input($posted_list,$configuration){
@@ -170,13 +161,6 @@ function show_pwform($errorlist, $id, $user){
 	echo "</table>";
 	echo "</form>";
 	echo "</div>";
-}
-
-function show_ptitle(){
-	echo "<h1>Account activeren</h1>";
-}
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
 }
 
 include($rootpath."includes/inc_footer.php");

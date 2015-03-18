@@ -5,6 +5,7 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
+require_once($rootpath."includes/inc_form.php");
 
 include($rootpath."includes/inc_header.php");
 
@@ -16,9 +17,7 @@ $posted_list["prefix"] = $prefix;
 $searchname = $_POST["searchname"];
 $sort = $_POST["sort"];
 
-if(!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-}
+$sort = ($sort) ? $sort : 'letscode';
 
 echo "<h1>Contactlijst</h1>";
 
@@ -37,6 +36,8 @@ $list_prefixes = get_prefixes();
 foreach ($list_prefixes as $key => $value){
 	echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";
 }
+
+//render_select_options($prefixes, $value['prefix']);
 echo "</select>\n";
 echo "</td>\n";
 echo "</tr>";
@@ -77,7 +78,7 @@ show_csvversion($prefix_filterby,$rootpath);
 echo "</td></tr></table>";
 
 $query = 'SELECT * FROM users u
-		WHERE (status = 1 OR status =2 OR status = 3) 
+		WHERE status IN (1, 2, 3) 
 		AND u.accountrole <> \'guest\' ';
 if ($prefix_filterby <> 'ALL'){
 	 $query .= 'AND u.letscode like \'' . $prefix_filterby .'%\' ';
@@ -91,6 +92,21 @@ if(!empty($sort)){
 }
 
 $userrows = $db->GetArray($query);
+
+$query = 'SELECT tc.abbrev, c.id_user, c.value
+	FROM contact c, type_contact tc, users u
+	WHERE tc.id = c.id_type_contact
+		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')
+		AND u.id = c.id_user
+		AND u.status IN (1, 2, 3)';
+$c_ary = $db->GetArray($query);
+
+$contacts = array();
+
+foreach ($c_ary as $c)
+{
+	$contacts[$c['id_user']][$c['abbrev']] = $c['value'];
+}
 
 //show table
 echo "<div class='border_b'><table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>\n";
@@ -136,32 +152,14 @@ foreach($userrows as $key => $value){
 	echo "<td valign='top'>";
 	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>\n";
 	echo "<td nowrap  valign='top'>";
-	$userid = $value["id"];
-	$contactrows = get_contacts($userid);
-
-		foreach($contactrows as $key2 => $value2){
-			if ($value2["id_type_contact"] == 1){
-				echo  $value2["value"];
-			break;
-			}
-		}
+	echo $contacts[$value['id']]['tel'];
 	echo "</td>\n";
 	echo "<td nowrap valign='top'>";
-		foreach($contactrows as $key2 => $value2){
-			if ($value2["id_type_contact"] == 2){
-				echo $value2["value"];
-				break;
-			}
-		}
+	echo $contacts[$value['id']]['gsm'];
 	echo "</td>\n";
 	echo "<td nowrap valign='top'>".$value["postcode"]."</td>\n";
 	echo "<td nowrap valign='top'>";
-		foreach($contactrows as $key2 => $value2){
-			if ($value2["id_type_contact"] == 3){
-				echo "<a href='mailto:".$value2["value"]."'>".$value2["value"]."</a>";
-				break;
-			}
-		}
+	echo $contacts[$value['id']]['mail'];
 	echo "</td>\n";
 
 	echo "<td nowrap valign='top' align='right'>";

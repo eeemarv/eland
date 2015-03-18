@@ -129,10 +129,10 @@ return $error_list;
 
 function show_form(){
 	global $mode;
-	echo "<script type='text/javascript' src='/js/postuser.js'></script>";
+
 	echo "<div class='border_b'><p>";
-	//echo "<form method='POST' action='add.php'>";
-	echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='userform' id='userform'>";
+
+	echo '<form method="post">';
 	echo "<input type='hidden' name='mode' id='mode' size='4' value='new'>";
 	echo "<input type='hidden' name='id' id='id' size='4'>";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
@@ -245,7 +245,7 @@ function show_form(){
 	}
 
 	echo "<tr><td></td><td>";
-	//echo "<input type='submit' name='activate' id='activate' value='Activeren'>";
+
 	echo "<input type='submit' name='zend' id='zend' value='Opslaan'>";
 	echo "</td>\n</tr>\n\n</table>\n\n";
 	echo "</form>";

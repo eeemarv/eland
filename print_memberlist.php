@@ -1,31 +1,26 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."inc_memberlist.php");
-
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 $prefix_filterby = $_GET["prefix_filterby"];
 
-if(isset($s_id)){
-	show_ptitle();
-	$userrows = get_all_active_users($user_orderby,$prefix_filterby);
- 	show_all_users($userrows,$configuration);
-	show_legend();
+show_ptitle();
 
-}else{
-	redirect_login($rootpath);
-}
+$q = 'SELECT id, letscode, fullname, postcode, saldo
+	FROM users
+	WHERE status IN (1, 2, 3, 4)
+		AND accountrole <> \'guest\'';
+$q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like \'' . $prefix_filterby . '%\'' : '';
+$userrows = $db->GetArray($q);
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+show_all_users($userrows,$configuration);
+show_legend();
+
+
+///////////
 
 function show_legend(){
 echo "<table border='0'>";

@@ -1,17 +1,11 @@
 <?php
 ob_start();
 $rootpath = "../";
-$role = 'geust';
+$role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-
-include($rootpath."includes/inc_header.php");
-
-if(!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
+require_once($rootpath."includes/inc_mailfunctions.php");
 
 $msgid = $_GET["id"];
 if(!isset($msgid)){
@@ -29,6 +23,60 @@ $mailuser = get_user_maildetails($user['id']);
 $usermail = $mailuser['emailaddress'];
 
 $balance = $user["saldo"];
+
+if ($_POST['zend'])
+{
+	$content = $_POST["content"];
+	$cc = $_POST["cc"];
+
+	$systemtag = readconfigfromdb("systemtag");
+
+	$me = readuser($s_id);
+
+	$my_contact = get_contact($s_id);
+	$my_mail = get_user_maildetails($s_id);
+	$mailfrom = $my_mail['emailaddress'];
+
+    $mailsubject = "[eLAS-".$systemtag ."] - Reactie op je V/A " .$message["content"];
+
+	if($cc){
+		$mailto =  $mailuser["emailaddress"] ."," .$my_mail["emailaddress"];
+	} else {
+		$mailto =  $mailuser["emailaddress"];
+	}
+
+	$mailcontent = "Beste " .$user["fullname"] ."\r\n\n";
+	$mailcontent .= "-- " .$me["fullname"] ." heeft een reactie op je vraag/aanbod verstuurd via eLAS --\r\n\n";
+	$mailcontent .= "$content\n\n";
+
+	$mailcontent .= "* Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
+	$mailcontent .= "* Contactgegevens van ".$me["fullname"] .":\n";
+
+	foreach($my_contact as $key => $value){
+		$mailcontent .= "* " .$value["abbrev"] ."\t" .$value["value"] ."\n";
+	}
+
+	if ($content)
+	{
+		$mailstatus = sendemail($mailfrom, $mailto, $mailsubject, $mailcontent, 1);
+
+		if ($mailstatus)
+		{
+			$alert->error($mailstatus);
+		}
+		else
+		{
+			$alert->success('Mail verzonden.');
+			$content = '';
+		}
+	}
+	else
+	{
+		$alert->error('Fout: leeg bericht. Mail niet verzonden.');
+	}
+}
+
+include($rootpath."includes/inc_header.php");
 
 echo "<table width='100%' border=0><tr><td>";
 echo "<div id='navcontainer'>";
@@ -91,7 +139,34 @@ echo "</td>";
 
 //Response form
 echo "<td>";
-show_response_form($msgid, $usermail,$s_accountrole);
+
+// response form
+echo "<div id='responseformdiv'>";
+echo "<table border='0'>";
+echo "<tr><td colspan='2'>";
+echo "<form method='post'>";
+echo "<INPUT TYPE='hidden' id='myid' VALUE='" .$msgid ."'>";
+echo "<TEXTAREA NAME='content' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' ";
+if(empty($usermail) || $s_accountrole == 'guest'){
+	echo "DISABLED";
+}
+echo ">" . $content . "</TEXTAREA>";
+echo "</td></tr><tr><td>";
+echo "<input type='checkbox' name='cc' id='cc'";
+echo ($cc) ? ' checked="checked"' : '';
+echo " value='1' >Stuur een kopie naar mijzelf";
+echo "</td><td>";
+echo "<input type='submit' name='zend' id='zend' value='Versturen'";
+if(empty($usermail) || $s_accountrole == 'guest'){
+			echo "DISABLED";
+	}
+echo ">";
+echo "</form>";
+echo "</td></tr>";
+echo "</table>";
+//echo "</form>";
+echo "</div>";
+
 echo "</td>";
 //End response form
 
@@ -128,30 +203,7 @@ function show_editlinks($msgid)
 }
 
 function show_response_form($msgid, $usermail, $s_accountrole){
-	echo "<div id='responseformdiv'>";
-	echo "<script type='text/javascript' src='/js/postresponse.js'></script>";
-	echo "<table border='0'>";
-	echo "<tr><td colspan='2'>";
-	echo "<form action=\"javascript:getresponse(document.getElementById('response'))\" id='response'>";
-	echo "<INPUT TYPE='hidden' id='myid' VALUE='" .$msgid ."'>";
-	echo "<TEXTAREA NAME='reactie' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' ";
-	if(empty($usermail) || $s_accountrole == 'guest'){
-		echo "DISABLED";
-	}
-	echo "></TEXTAREA>";
-	echo "</td></tr><tr><td>";
-	echo "<input type='checkbox' name='cc' id='cc' CHECKED value='1' >Stuur een kopie naar mijzelf";
-	echo "</td><td>";
-	echo "<input type='submit' name='zend' id='zend' value='Versturen'";
-	if(empty($usermail) || $s_accountrole == 'guest'){
-                echo "DISABLED";
-        }
-	echo ">";
-	echo "</form>";
-	echo "</td></tr>";
-	echo "</table>";
-	//echo "</form>";
-	echo "</div>";
+
 
 }
 

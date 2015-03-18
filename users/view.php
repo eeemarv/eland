@@ -16,8 +16,8 @@ include($rootpath."includes/inc_header.php");
 
 echo "<h1>Gebruiker</h1>";
 
-echo "<p>| <a href='editpw.php?id=" .$s_id. "'>Paswoord veranderen</a> |";
-echo " <a href='activate.php?id=" .$s_id. "'>Activeren</a> |";
+echo "<p>| <a href='editpw.php?id=" .$id. "'>Paswoord veranderen</a> |";
+echo " <a href='activate.php?id=" .$id. "'>Activeren</a> |";
 //	echo " <a href='delete.php?id=" .$s_id. "'>Delete</a> |";
 
 echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
@@ -187,6 +187,7 @@ echo "<td valign='top'><strong>";
 echo "Dienst";
 echo "</strong></td></tr>";
 $rownumb=0;
+
 foreach($transactions as $key => $value){
 	$rownumb=$rownumb+1;
 	if($rownumb % 2 == 1){
@@ -196,11 +197,13 @@ foreach($transactions as $key => $value){
 	}
 	echo "<td nowrap valign='top'>";
 	echo $value["datum"];
-	echo "</td><td valign='top'>";
+	echo '</td><td' . (($value['id_from'] == $id) ? ' class="me"' : '') . '>';
+	echo '<a href="view.php?id=' . $value['id_from'] . '">';
 	echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
-	echo "</td><td valign='top'>";
+	echo '</a></td><td' . (($value['id_to'] == $id) ? ' class="me"' : '') . '>';
+	echo '<a href="view.php?id=' . $value['id_to'] . '">';
 	echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
-	echo "</td>";
+	echo "</a></td>";
 
 	if ($value["fromusername"] == $user["name"]){
 		echo "<td valign='top' nowrap>";

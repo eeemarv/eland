@@ -9,19 +9,12 @@ $user_userid = $_GET["userid"];
 $user_datefrom = $_GET["datefrom"];
 $user_dateto = $_GET["dateto"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle();
-	$messages=get_messages();
-	show_all_messages($messages);
-}else{
-	redirect_login($rootpath);
-}
+show_ptitle();
+$messages=get_messages();
+show_all_messages($messages);
 
 ////////////////
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
 
 function show_ptitle(){
         header("Content-disposition: attachment; filename=elas-messages-".date("Y-m-d").".csv");
