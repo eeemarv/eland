@@ -1,76 +1,61 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+$cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
+
+$child_count_ary = array();
+
+foreach ($cats as $cat)
+{
+	$child_count_ary[$cat['id_parent']]++;
+}
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
+echo "<div class='border_b'>| <a href='add.php'>Categorie toevoegen</a> |</div>";
+echo "<h1>Overzicht categorie&#235;n</h1>";
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_addlink();
-	show_ptitle();
-	$cats = get_all_cats();
- 	show_all_cats($cats);
-}else{
-	redirect_login($rootpath);
-}
+echo "<div class='border_b'>";
+echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
+echo "<tr class='header'>";
+echo "<td><strong>Categorie</strong></td>";
+echo '<td>Vraag</td>';
+echo '<td>Aanbod</td>';
+echo '<td>Aanpassen</td>';
+echo '<td>Verwijderen</td>';
+echo "</tr>";
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////F U N C T I E S ////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+foreach($cats as $value){
 
-function show_addlink(){
-	echo "<div class='border_b'>| <a href='add.php'>Categorie toevoegen</a> |</div>";
-}
-
-function redirect_login($rootpath){
- 	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle(){
-	echo "<h1>Overzicht categorie&#235;n</h1>";
-}
-
-function show_all_cats($cats){
-	echo "<div class='border_b'>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td><strong>Categorie</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach($cats as $key => $value){
-
-		if ($value["id_parent"] == 0){
-			echo "<tr class='even_row'>";
-			echo "<td valign='top'><strong><a href='view.php?id=".$value["id"]."'>";
-			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
-			echo "</a></strong></td>";
-			echo "</tr>";
-		}else{
-			echo "<tr class='uneven_row'>";
-			echo "<td valign='top'><a href='view.php?id=".$value["id"]."'>";
-			echo htmlspecialchars($value["fullname"],ENT_QUOTES);
-			echo "</a></td>";
-			echo "<tr>";
-		}
+	if ($value["id_parent"] == 0)
+	{
+		echo "<tr class='even_row'>";
+		echo "<td valign='top'><strong><a href='edit.php?id=".$value["id"]."'>";
+		echo htmlspecialchars($value["fullname"],ENT_QUOTES);
+		echo "</a></strong></td>";
 	}
-	echo "</table></div>";
-}
+	else
+	{
+		echo "<tr class='uneven_row'>";
+		echo "<td valign='top'><a href='edit.php?id=".$value["id"]."'>";
+		echo htmlspecialchars($value["fullname"],ENT_QUOTES);
+		echo "</a></td>";
+	}
 
-function get_all_cats(){
-	global $db;
-	$query = "SELECT *, cdate AS date FROM categories ";
-	$query .= "ORDER BY fullname ";
-	$cats = $db->GetArray($query);
-	return $cats;
+	echo '<td>' . (($v = $value['stat_msgs_wanted']) ? $v : '') . '</td>';
+	echo '<td>' . (($v = $value['stat_msgs_offers']) ? $v : '') . '</td>';
+	$child_count = $value['stat_msgs_wanted'] + $value['stat_msgs_offers'];
+	$child_count += $child_count_ary[$value['id']];
+	echo '<td><a href="edit.php?id=' . $value['id'] . '">Aanpassen</a></td>';
+	echo '<td>' . (($child_count) ? '' : '<a href="delete.php?id=' . $value['id'] . '">Verwijderen</a>') . '</td>';
+	echo "</tr>";
 }
+echo "</table></div>";
 
-include($rootpath."includes/inc_sidebar.php");
+echo '<p>Categoriën met berichten of hoofdcategoriën met subcategoriën kan je niet verwijderen.</p>';
+
 include($rootpath."includes/inc_footer.php");
-?>
+

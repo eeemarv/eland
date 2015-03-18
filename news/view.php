@@ -7,10 +7,6 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_header.php");
 
-if(!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-}
-
 if (!isset($_GET["id"])){
 		header("Location: overview.php");
 }

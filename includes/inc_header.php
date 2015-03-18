@@ -69,8 +69,7 @@ header("Content-Type:text/html;charset=utf-8");
 				$name = readconfigfromdb("systemname");
 				echo "<li><a href='".$rootpath."index.php'>$name</a></li>";
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
-					$myurl = $rootpath."ircchat.php";
-					echo "<li><a href='#' onclick=\"javascript:window.open('$myurl','chatbox','width=800,height=600,scrollbars=yes,toolbar=no,location=no,menubar=no')\">Chatbox #letsbe</a></li>";
+					echo "<li><a href='" . $rootpath . "ircchat.php' >Chatbox #letsbe</a></li>";
 				}
 			?>
 			</ul>
