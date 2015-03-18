@@ -6,8 +6,9 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
+require_once($rootpath."includes/inc_form.php");
 
-include($rootpath."includes/inc_smallheader.php");
+include($rootpath."includes/inc_header.php");
 
 //status 0: inactief
 //status 1: letser
@@ -21,27 +22,21 @@ include($rootpath."includes/inc_smallheader.php");
 $mode = $_GET["mode"];
 $id = $_GET["id"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle();
-	show_form();
-	if($mode == "edit"){
-		//Load the current values
-		loadvalues($id);
-		writecontrol("mode", "edit");
-	} else {
-		writecontrol("mode", "new");
-		writecontrol("status", 1);
-		writecontrol("accountrole", "user");
-		writecontrol("minlimit", readconfigfromdb("minlimit"));
-		writecontrol("maxlimit", readconfigfromdb("maxlimit"));
-	}
-	show_serveroutputdiv();
-        show_closebutton();
-}else{
-	echo "<script type=\"text/javascript\">self.close();</script>";
+show_ptitle();
+show_form();
+if($mode == "edit"){
+	//Load the current values
+	loadvalues($id);
+	writecontrol("mode", "edit");
+} else {
+	writecontrol("mode", "new");
+	writecontrol("status", 1);
+	writecontrol("accountrole", "user");
+	writecontrol("minlimit", readconfigfromdb("minlimit"));
+	writecontrol("maxlimit", readconfigfromdb("maxlimit"));
 }
 
-include($rootpath."includes/inc_smallfooter.php");
+include($rootpath."includes/inc_footer.php");
 
 //////////////////
 
@@ -70,17 +65,6 @@ function loadvalues($userid){
 
 function writecontrol($key,$value){
 	echo "<script type=\"text/javascript\">document.getElementById('" .$key ."').value = '" .$value ."';</script>";
-}
-
-function show_closebutton(){
-        echo "<table border=0 width='100%'><tr><td align='right'><form id='closeform'>";
-        echo "<input type='button' id='close' value='Sluiten' onclick='self.close(); window.opener.location.reload();'>";
-        echo "<form></td></tr></table>";
-}
-
-function show_serveroutputdiv(){
-        echo "<div id='serveroutput' class='serveroutput'>";
-        echo "</div>";
 }
 
 function show_ptitle(){
@@ -228,17 +212,17 @@ function show_form(){
         echo "</tr>\n\n";
 
 	echo "<tr>\n<td valign='top' align='right'>Preshared key<br><small><i>Interlets veld</i></small></td>\n<td valign='top'>";
-        echo "<input type='text' name='presharedkey' id='presharedkey' size='70'>";
+        echo "<input type='text' name='presharedkey' id='presharedkey' size='50'>";
         echo "</td>\n</tr>\n\n<tr>\n<td></td>";
         echo "</tr>\n\n";
 
 	if($mode == "new"){
 		echo "<tr>\n<td valign='top' align='right'>E-mail</td>\n<td valign='top'>";
-        	echo "<input type='text' name='email' id='email' size='50'>";
+        	echo "<input type='email' name='email' id='email' size='50'>";
         	echo "</td>\n</tr>";
 
 		echo "<tr>\n<td valign='top' align='right'>Adres</td>\n<td valign='top'>";
-        	echo "<input type='text' name='address' id='address' size='70'>";
+        	echo "<input type='text' name='address' id='address' size='50'>";
         	echo "</td>\n</tr>";
 
 		echo "<tr>\n<td valign='top' align='right'>Tel</td>\n<td valign='top'>";
@@ -260,14 +244,9 @@ function show_form(){
                 echo "<INPUT TYPE='hidden' NAME='activate' id='activate'>";
 	}
 
-	echo "<tr>\n<td colspan='2' align='right' valign='top'>";
+	echo "<tr><td></td><td>";
 	//echo "<input type='submit' name='activate' id='activate' value='Activeren'>";
 	echo "<input type='submit' name='zend' id='zend' value='Opslaan'>";
 	echo "</td>\n</tr>\n\n</table>\n\n";
 	echo "</form>";
-
-	//echo "<form action=\"javascript:showloader('serveroutput'); get(document.getElementById('userform'));\" name='activateform' id='activateform'>";
-	//echo "<input type='submit' name='activate' id='activate' value='Activeren'>";
-	//echo "</form>";
-	//echo "</p></div>";
 }

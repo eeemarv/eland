@@ -1,58 +1,45 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_passwords.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	if (isset($_GET["id"])){
-		$id = $_GET["id"];
-		$user = get_user_maildetails($id);
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			$posted_list = array();
-			$posted_list["pw1"] = $_POST["pw1"];
-			$posted_list["pw2"] = $_POST["pw2"];
-			$posted_list["adate"] = date("Y-m-d H:i:s");
-			$errorlist = validate_input($posted_list,$configuration);
-			if (!empty($errorlist)){
-				show_pwform($errorlist, $id, $user);
-			}else{
-				sendactivationmail($posted_list["pw1"], $user, $s_id);
-				sendadminmail($posted_list, $user);
-				update_password($id, $posted_list);
-				set_adate($id);
-				saydone($posted_list, $user, $s_id);
-				//redirect_view($id);
-			}
-		}else{
-			show_pwform($errorlist, $id, $user);
-		}
+if (!isset($_GET["id"])){
+	header('Location: overview.php');
+	exit;
+}
+
+$id = $_GET["id"];
+$user = get_user_maildetails($id);
+show_ptitle();
+if(isset($_POST["zend"])){
+	$posted_list = array();
+	$posted_list["pw1"] = $_POST["pw1"];
+	$posted_list["pw2"] = $_POST["pw2"];
+	$posted_list["adate"] = date("Y-m-d H:i:s");
+	$errorlist = validate_input($posted_list,$configuration);
+	if (!empty($errorlist)){
+		show_pwform($errorlist, $id, $user);
 	}else{
-		//redirect_overview();
+		sendactivationmail($posted_list["pw1"], $user, $s_id);
+		sendadminmail($posted_list, $user);
+		update_password($id, $posted_list);
+		set_adate($id);
+		saydone($posted_list, $user, $s_id);
+		//redirect_view($id);
 	}
 }else{
-	redirect_login($rootpath);
+	show_pwform($errorlist, $id, $user);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
-function redirect_overview(){
-	header("Location: overview.php");
-}
+////////////////
 
 function sendadminmail($posted_list, $user){
         global $configuration;
@@ -148,7 +135,7 @@ function show_pwform($errorlist, $id, $user){
 	echo "<td valign='top'>";
 	echo $user["emailaddress"];
 	echo "</td></tr>";
-	echo "<tr><td valign='top' align='right'>Paswoord</td>";
+	echo "<tr><td>Paswoord</td>";
 	echo "<td valign='top'>";
 	echo "<input  type='text' name='pw1' size='30' value='";
 	echo $pw;
@@ -177,7 +164,7 @@ function show_pwform($errorlist, $id, $user){
 			echo $errorlist["pw3"];
 		}
 	echo "</td></tr>";
-	echo "<tr><td colspan='2' align='right'>";
+	echo "<tr><td></td><td>";
 	echo "<input type='submit' value='Activeren' name='zend'>";
 	echo "</td><td>&nbsp;</td></tr>";
 	echo "</table>";
@@ -191,6 +178,6 @@ function show_ptitle(){
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");
 }
-include($rootpath."includes/inc_sidebar.php");
+
 include($rootpath."includes/inc_footer.php");
-?>
+

@@ -1,29 +1,21 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
 $groupid = $_GET["letsgroup"];
 
-if(isset($s_id)){
-	$letsgroup = get_letsgroup($groupid);
-	$mytoken = gettoken($letsgroup);
-	$myurl = $letsgroup["url"] ."/login.php?token=" . $mytoken;
-	//header("Location: $myurl");
-	echo $myurl;
-}
+$letsgroup = get_letsgroup($groupid);
+$mytoken = gettoken($letsgroup);
+$myurl = $letsgroup["url"] ."/login.php?token=" . $mytoken;
+//header("Location: $myurl");
+echo $myurl;
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////
 
 function gettoken($myletsgroup){
 	$mysoapurl = $myletsgroup["elassoapurl"] ."/wsdlelas.php?wsdl";

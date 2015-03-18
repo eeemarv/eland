@@ -5,6 +5,7 @@ $rootpath = "./";
 $role = 'anonymous';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
+require_once($rootpath."includes/inc_mailfunctions.php");
 
 require_once($rootpath."includes/inc_header.php");
 
@@ -159,13 +160,12 @@ function get_user_maildetails($userid){
 }
 
 function helpmail($posted_list,$rootpath){
-   	global $configuration;
-	global $elas;
-	global $elasversion;
 
-	$mailfrom .= "From: " .trim($posted_list['email']);
+	global $alert;
+
+	$mailfrom = trim($posted_list['email']);
         if (!empty(readconfigfromdb("support"))){
-		$mailto .= trim(readconfigfromdb("support"))."\r\n";
+		$mailto = trim(readconfigfromdb("support"))."\r\n";
         }else {
 		 Echo "No support adress set in config, not sending";
 		 return 0;
@@ -173,7 +173,7 @@ function helpmail($posted_list,$rootpath){
 
 	$mailsubject = readconfigfromdb("systemtag") ." - " .$posted_list['subject'];
 
-        $mailcontent  = "-- via de eLAS website werd hetvolgende probleem gemeld --\r\n";
+        $mailcontent  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
 	$mailcontent .= "E-mail: {$posted_list['email']}\r\n";
 	$mailcontent .= "Login:  {$posted_list['login']}\r\n";
 	$mailcontent .= "Omschrijving:\r\n";
@@ -182,13 +182,13 @@ function helpmail($posted_list,$rootpath){
 	$mailcontent .= "User Agent:\r\n";
         $mailcontent .= "{$posted_list['browser']}\r\n";
 	$mailcontent .= "\r\n";
-	$mailcontent .= "eLAS versie: " .$elas->version ."-" .$elas->branch ."-r" .$elas->revision ."\r\n";
+//	$mailcontent .= "eLAS versie: " .$elas->version ."-" .$elas->branch ."-r" .$elas->revision ."\r\n";
 	$mailcontent .= "Webserver: " .gethostname() ."\r\n";
 
 	echo "Bezig met het verzenden naar $mailto ...\n";
 	// sendemail
-        mail($mailto,$mailsubject,$mailcontent,$mailfrom);
+        sendemail($mailfrom, $mailto, $mailsubject, $mailcontent);
 	echo "OK\n";
-	setstatus("Support mail verstuurd", 0);
-	echo "<script type=\"text/javascript\">self.close();</script>";
+	$alert->success("Support mail verstuurd");
+	header('Location: index.php');
 }

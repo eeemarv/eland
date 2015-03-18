@@ -254,6 +254,8 @@ $strlength = strlen($content);
 
 function show_all_msgs($messagerows){
 
+	global $rootpath;
+
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
 	echo "<td colspan='3'><strong>Laatste nieuwe Vraag & Aanbod</strong></td>";
@@ -320,6 +322,7 @@ function get_all_msgs(){
 	$query = 'SELECT m.id AS msgid,
 			m.validity AS valdate,
 			m.content,
+			m.msg_type,
 			u.id AS uid,
 			u.name AS username,
 			u.letscode,

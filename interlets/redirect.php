@@ -1,38 +1,34 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 $groupid = $_GET["letsgroup"];
 
 include($rootpath."includes/inc_smallheader.php");
 include($rootpath."includes/inc_content.php");
 
-if(isset($s_id)){
-	$letsgroup = get_letsgroup($groupid);
-        if($s_accountrole == "user" || $s_accountrole == "admin"){
- 		show_ptitle($letsgroup["groupname"]);
-		if($letsgroup["apimethod"] == 'elassoap'){
-			show_outputdiv($groupid);
-		} else {
-			echo "<b>Deze groep draait geen eLAS, kan geen connectie maken</b>";
-		}
-        } else {
-                echo "<script type=\"text/javascript\">self.close();</script>";
-        }
-
-	show_closebutton();
-}else{
+if(!isset($s_id)){
 	echo "<script type=\"text/javascript\">self.close();</script>";
 }
+
+$letsgroup = get_letsgroup($groupid);
+	if($s_accountrole == "user" || $s_accountrole == "admin"){
+	show_ptitle($letsgroup["groupname"]);
+	if($letsgroup["apimethod"] == 'elassoap'){
+		show_outputdiv($groupid);
+	} else {
+		echo "<b>Deze groep draait geen eLAS, kan geen connectie maken</b>";
+	}
+	} else {
+			echo "<script type=\"text/javascript\">self.close();</script>";
+	}
+
+show_closebutton();
+
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////

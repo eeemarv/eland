@@ -1,13 +1,9 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 if (isset($_GET["userid"])) {
     $userid=$_GET["userid"];
@@ -15,19 +11,15 @@ if (isset($_GET["userid"])) {
 
 $trans_orderby = $_GET["trans_orderby"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-
-	if (isset($userid)){
-	    show_ptitle_with_id($userid);
-	    $transactions = get_all_transactions_by_userid($userid,$trans_orderby);
-	} else {
-	    show_ptitle();
-	    $transactions = get_all_transactions($trans_orderby);
-	}
-	show_all_transactions($transactions);
-}else{
-	redirect_login($rootpath);
+if (isset($userid)){
+	show_ptitle_with_id($userid);
+	$transactions = get_all_transactions_by_userid($userid,$trans_orderby);
+} else {
+	show_ptitle();
+	$transactions = get_all_transactions($trans_orderby);
 }
+show_all_transactions($transactions);
+
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
