@@ -30,6 +30,22 @@ if ($_POST['zend'])
 			if ($db->AutoExecute('news', $news, 'INSERT'))
 			{
 				$alert->success('Nieuwsbericht opgeslagen.');
+		 		if($s_accountrole != "admin"){
+					// Send a notice to ask for approval
+					$mailfrom = readconfigfromdb("from_address");
+					$mailto = readconfigfromdb("newsadmin");
+					$systemtag = readconfigfromdb("systemtag");
+					$mailsubject = "[eLAS-".$systemtag."] Nieuwsbericht wacht op goedkeuring";
+					$mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+					$mailcontent .= "\nEen lid gaf een nieuwsbericht met titel [";
+					$mailcontent .= $news["headline"];
+					$mailcontent .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder op eLAS en ga naar nieuws om het bericht goed te keuren.\n";
+					sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+					echo "<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>";
+					$alert->success("Nieuwsbericht wacht op goedkeuring van een beheerder");
+					header('Location: overview.php');
+					exit;
+				}
 				header('Location: view.php?id=' . $db->insert_ID());
 				exit;
 			}
@@ -43,22 +59,6 @@ if ($_POST['zend'])
 			if($db->AutoExecute('news', $news, 'UPDATE', 'id = ' . $id))
 			{
 				$alert->success('Nieuwsbericht aangepast.');
-		 		if($s_accountrole != "admin"){
-		        		// Send a notice to ask for approval
-                			$mailfrom = readconfigfromdb("from_address");
-	                		$mailto = readconfigfromdb("newsadmin");
-					$systemtag = readconfigfromdb("systemtag");
-					$mailsubject = "[eLAS-".$systemtag."] Nieuwsbericht wacht op goedkeuring";
-					$mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
-					$mailcontent .= "\nEen lid gaf een nieuwsbericht met titel [";
-					$mailcontent .= $posted_list["headline"];
-					$mailcontent .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder op eLAS en ga naar nieuws om het bericht goed te keuren.\n";
-					sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-					echo "<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>";
-					$alert->success("Nieuwsbericht wacht op goedkeuring van een beheerder");
-					header('Location: overview.php');
-				}
-
 				header('Location: view.php?id=' . $id);
 				exit;
 			}
@@ -74,7 +74,7 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		$alert->error('Fout in formulier: ' . explode(' | ', $errors));
+		$alert->error('Fout in formulier: ' . implode(' | ', $errors));
 	}
 }
 else

@@ -9,7 +9,6 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/floatingcolumns.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>\n";

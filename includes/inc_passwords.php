@@ -76,21 +76,15 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
 		return $status;
 }
 
-function sendactivationmail($password, $user,$s_id){
-	global $baseurl;
+function sendactivationmail($password, $user){
+	global $baseurl, $s_id;
 	$mailfrom = readconfigfromdb("from_address");
 
-        if (!empty($user["emailaddress"])){
-                $mailto = $user["emailaddress"];
+        if (!empty($user["mail"])){
+            $mailto = $user["mail"];
         } else {
-                echo "<p><b>Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!</b></p>";
-                //echo "<p><pre>-- Account gegevens --\nLogin: ";
-                //echo $user["login"];
-                //echo "\nPasswoord: ";
-                //echo $posted_list["pw1"];
-                //echo "\n-- --\n\n";
-                //echo "</pre></p>";
-                return 0;
+			$alert->warning("Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!");
+			return 0;
         }
 
 	$systemtag = readconfigfromdb("systemtag");
@@ -126,17 +120,7 @@ function sendactivationmail($password, $user,$s_id){
 	$mailcontent .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
 	$mailcontent .= " zelf bijwerken op het Internet.";
         $mailcontent .= "\n\n";
-
-	// INSERT INTO config ( category, setting, value, description, comment, default)
-	// VALUES ( 'systeem', 'systemmailinglist', 'mailinglistaddress@example.com', 'Mailinglist adress', NULL , '1');
-	//$systemmailinglist= readconfigfromdb("systemmailinglist");
-	//if ($systemmailinglist != FALSE) {
-		//$mailcontent .= "Als je dringend vraag of aanbod hebt stuur dan ";
-		//$mailcontent .= "een email naar $systemmailinglist. Voordat je mailt, ";
-		//$mailcontent .= "graag eerst even kijken of je via eLAS iemand kan vinden ";
-		//$mailcontent .= "die aan je vraag of aanbod zou kunnen voldoen... \n\n";
-	//}
-
+        
 		$mailcontent .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
 		$mailcontent .= readconfigfromdb("support");
 		$mailcontent .= "\n\n";

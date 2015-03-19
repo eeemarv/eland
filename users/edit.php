@@ -7,8 +7,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
 require_once($rootpath."includes/inc_form.php");
-
-include($rootpath."includes/inc_header.php");
+require_once($rootpath."includes/inc_mailfunctions.php");
 
 //status 0: inactief
 //status 1: letser
@@ -21,73 +20,264 @@ include($rootpath."includes/inc_header.php");
 
 $mode = $_GET["mode"];
 $id = $_GET["id"];
+$user = $contact = array();
 
-show_ptitle();
-show_form();
-if($mode == "edit"){
-	//Load the current values
-	loadvalues($id);
-	writecontrol("mode", "edit");
-} else {
-	writecontrol("mode", "new");
-	writecontrol("status", 1);
-	writecontrol("accountrole", "user");
-	writecontrol("minlimit", readconfigfromdb("minlimit"));
-	writecontrol("maxlimit", readconfigfromdb("maxlimit"));
+if ($_POST['zend'])
+{
+	$user = array(
+		'name'			=> pg_escape_string($_POST['name']),
+		'fullname'		=> pg_escape_string($_POST['fullname']),
+		'letscode'		=> pg_escape_string($_POST['letscode']),
+		'postcode'		=> pg_escape_string($_POST['postcode']),
+		'birthday'		=> $_POST['birthday'],
+		'hobbies'		=> pg_escape_string($_POST['hobbies']),
+		'comments'		=> pg_escape_string($_POST['comments']),
+		'login'			=> pg_escape_string($_POST['login']),
+		'accountrole'	=> pg_escape_string($_POST['accountrole']),
+		'admincomment'	=> pg_escape_string($_POST['admincomment']),
+		'minlimit'		=> $_POST['minlimit'],
+		'maxlimit'		=> $_POST['maxlimit'],
+		'presharedkey'	=> pg_escape_string($_POST['presharedkey']),
+		'lang'			=> 'nl',
+	);
+	$contact = array(
+		'mail'			=> pg_escape_string($_POST['mail']),
+		'tel'			=> pg_escape_string($_POST['tel']),
+		'gsm'			=> pg_escape_string($_POST['gsm']),
+		'addr'			=> pg_escape_string($_POST['addr']),
+	);
+	$activate = $_POST['activate'];
+	
+	$errors = validate_input($user);
+
+	if (!$contact['mail'] || !filter_var($contact['mail'], FILTER_VALIDATE_EMAIL))
+	{
+		$errors['mail'] = 'Geen geldig email adres.';
+	}
+
+	if (!count($errors))
+	{
+		if ($mode == 'new')
+		{
+			$user['creator'] = $s_id;
+			$user['cdate'] = date('Y-m-d H:i:s');
+
+			if ($activate)
+			{
+				$password = generatePassword(); 
+				$user['password'] = hash('sha512', $password);
+			}
+
+			if ($db->AutoExecute('users', $user, 'INSERT'))
+			{
+				$alert->success('Gebruiker opgeslagen.');
+
+				$id = $db->insert_ID();
+
+				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
+
+				foreach ($contact as $key => $value)
+				{
+					if (!$value)
+					{
+						continue;
+					}
+					
+					$insert = array(
+						'value'		=> $value,
+						'id_type_contact'	=> $contact_types[$key],
+						'id_user'			=> $id,
+					);
+					$db->AutoExecute('contact', $insert, 'INSERT');
+				}
+
+				// Activate the user if activate is set
+				if($activate && !empty($contact['mail']))
+				{
+					$user['mail'] = $contact['mail'];
+					sendactivationmail($password, $user);
+					sendadminmail($user);
+					$alert->success("OK - Activatiemail verstuurd");
+				}
+				else
+				{
+					$alert->warning('Geen activatiemail verstuurd.');
+				}
+				header('Location: view.php?id=' . $id);
+				exit;
+			}
+			else
+			{
+				$alert->error('Gebruiker niet opgeslagen.');
+			}
+		}
+		else if ($id)
+		{
+			$user['mdate'] = date('Y-m-d H:i:s');
+			if($db->AutoExecute('users', $user, 'UPDATE', 'id = ' . $id))
+			{
+				$alert->success('Gebruiker aangepast.');
+				header('Location: view.php?id=' . $id);
+				exit;
+			}
+			else
+			{
+				$alert->error('Gebruiker niet aangepast.');
+			}
+		}
+		else
+		{
+			$alert->error('Update niet mogelijk zonder id.');
+		}
+	}
+	else
+	{
+		$alert->error('Fout in formulier: ' . implode(' | ', $errors));
+	}
 }
+else
+{
+	if ($mode == 'update')
+	{
+		$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
+		$contact = $db->GetAssoc('SELECT tc.abbrev, c.value
+			FROM type_contact tc, contact c
+			WHERE tc.id = c.id_type_contact
+				AND c.id_user = ' . $id);
+	}
+	else
+	{
+		$user = array(
+			'minlimit'		=> readconfigfromdb('minlimit'),
+			'maxlimit'		=> readconfigfromdb('maxlimit'),
+			'accountrole'	=> 'user',
+			'status'		=> '1',
+		);
+	}
+}
+
+
+
+include($rootpath."includes/inc_header.php");
+echo '<h1>Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'wijzigen') . '</h1>';
+echo "<div class='border_b'><p>";
+
+echo '<form method="post">';
+echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+echo "<tr><td align='right' >";
+echo "Naam";
+echo "</td><td >";
+echo '<input type="text" name="name" value="' . $user['name'] . '" size="30">';
+echo "</td></tr>";
+
+echo "<tr><td align='right'>";
+echo "Volledige Naam (Voornaam en Achternaam)";
+echo "</td><td >";
+echo "<input type='text' name='fullname' size='30' value='" . $user['fullname'] . "'>";
+echo "</td></tr><tr><td ></td></tr>";
+
+echo "<tr><td align='right'>Letscode</td>";
+echo "<td ><input type='text' name='letscode' value='" . $user['letscode'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Postcode</td>";
+echo "<td ><input type='text' name='postcode' value='" . $user['postcode'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Geboortedatum (jjjj-mm-dd)</td>";
+echo "<td ><input type='text' name='birthday' value='" . $user['birthday'] . "' size='30'></td></tr>";
+
+echo "<tr><td  align='right'>Hobbies/interesses:</td><td >";
+echo "<textarea name='hobbies' cols='60' rows='4'>";
+echo $user['hobbies'];
+echo "</textarea>";
+echo "</td></tr><tr><td></td><td >";
+echo "</td></tr>";
+echo "<tr><td align='right'>Commentaar</td><td >";
+echo "<input type='text' name='comments' value='" . $user['comments'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Login</td><td >";
+echo "<input type='text' name='login' value='" . $user['login'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Rechten</td>";
+echo "<td >";
+$role_ary = array(
+	'admin'		=> 'Admin',
+	'user'		=> 'User',
+	'guest'		=> 'Guest',
+	'interlets'	=> 'Interlets',
+);
+echo "<select name='accountrole' id='accountrole'>";
+render_select_options($role_ary, $user['accountrole']);
+echo "</select>";
+echo "</td></tr>";
+echo "<tr><td  align='right'>Status</td>";
+echo "<td >";
+echo '<select name="status">';
+$status_ary = array(
+	0	=> 'Gedesactiveerd',
+	1	=> 'Actief',
+	2	=> 'Uitstapper',	
+	5	=> 'Infopakket',
+	6	=> 'Infoavond',
+	7	=> 'Extern',
+);
+render_select_options($status_ary, $user['status']);
+echo "</select>";
+echo "</td>";
+echo "</tr>";
+
+echo "<tr><td align='right'>Commentaar van de admin:</td><td >";
+echo "<textarea name='admincomment' cols='60' rows='4'>";
+echo $user['admincomment'];
+echo "</textarea>";
+echo "</td></tr><tr><td >";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Limiet minstand</td><td >";
+echo "<input type='text' name='minlimit' value='" . $user['minlimit'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td align='right'>Limiet maxstand</td><td >";
+echo "<input type='text' name='maxlimit' value='" . $user['maxlimit'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td  align='right'>Preshared key<br><small><i>Interlets veld</i></small></td><td >";
+echo "<input type='text' name='presharedkey' value='" . $user['presharedkey'] . "' size='30'>";
+echo "</td></tr><tr><td></td>";
+echo "</tr>";
+
+echo "<tr><td  align='right'>E-mail</td><td >";
+echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td  align='right'>Adres</td><td >";
+echo "<input type='text' name='addr' value='" . $contact['addr'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td  align='right'>Tel</td><td >";
+echo "<input type='text' name='tel' value='" . $contact['tel'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td  align='right'>GSM</td><td >";
+echo "<input type='text' name='gsm' value='" . $contact['gsm'] . "' size='30'>";
+echo "</td></tr>";
+
+echo "<tr><td  align='right'>Activeren?</td><td >";
+echo "<input type='checkbox' name='activate'";
+echo ($mode == 'new') ? " checked='checked'" : '';
+echo ">";
+echo "</td></tr>";
+
+echo "<tr><td></td><td>";
+echo "<input type='submit' name='zend' value='Opslaan'>";
+echo "</td></tr></table>";
+echo "</form>";
 
 include($rootpath."includes/inc_footer.php");
 
-//////////////////
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function loadvalues($userid){
-	$user = get_user($userid);
-	writecontrol("id", $user["id"]);
-	writecontrol("name", $user["name"]);
-	writecontrol("fullname", $user["fullname"]);
-	writecontrol("letscode", $user["letscode"]);
-	writecontrol("postcode", $user["postcode"]);
-	writecontrol("birthday", $user["birthday"]);
-	writecontrol("hobbies", $user["hobbies"]);
-	writecontrol("comments", $user["comments"]);
-	writecontrol("login", $user["login"]);
-	writecontrol("accountrole", $user["accountrole"]);
-	writecontrol("status", $user["status"]);
-	writecontrol("admincomment", $user["admincomment"]);
-	writecontrol("minlimit", $user["minlimit"]);
-	writecontrol("maxlimit", $user["maxlimit"]);
-	writecontrol("presharedkey", $user["presharedkey"]);
-}
-
-function writecontrol($key,$value){
-	echo "<script type=\"text/javascript\">document.getElementById('" .$key ."').value = '" .$value ."';</script>";
-}
-
-function show_ptitle(){
-	global $mode;
-	echo "<h1>Gebruiker ";
-	if($mode == "new") {
-		echo "toevoegen";
-	} else {
-		echo "wijzigen";
-	}
-	echo "</h1>";
-}
-
-function redirect_overview(){
-	header("Location: overview.php");
-}
-
-function insert_user($posted_list){
-	global $db;
-	$posted_list["cdate"] = date("Y-m-d H:i:s");
-	$result = $db->AutoExecute("users", $posted_list, 'INSERT');
-
-}
 
 function validate_input($posted_list){
 	$error_list = array();
@@ -103,7 +293,7 @@ function validate_input($posted_list){
 	$number2 = $rs->recordcount();
 
 	if ($number2 !== 0){
-		$error_list["letscode"]="<font color='#F56DB5'>Letscode <strong>bestaat al</strong>!</font>";
+		$error_list["letscode"]="Letscode bestaat al!";
 	}
 
 	if (!empty($posted_list["login"])){
@@ -112,141 +302,48 @@ function validate_input($posted_list){
 	    $number = $rs->recordcount();
 
 	    if ($number !== 0){
-		$error_list["login"]="<font color='#F56DB5'>Login bestaat al!</font>";
+		$error_list["login"]="Login bestaat al!";
 	    }
 	}
 
 	//amount may not be empty
 	$var = trim($posted_list["minlimit"]);
 	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )=="")){
-		$error_list["minlimit"]="<font color='#F56DB5'>Vul <strong>bedrag</strong> in!</font>";
+		$error_list["minlimit"]="Vul bedrag in!";
 	//amount amy only contain  numbers between 0 en 9
 	}elseif(eregi('^-[0-9]+$', $var) == FALSE){
-		$error_list["minlimit"]="<font color='#F56DB5'>Bedrag moet een <strong>negatief getal</strong> zijn!</font>";
+		$error_list["minlimit"]="Bedrag moet een negatief getal,zijn!";
 	}
-return $error_list;
+	return $error_list;
 }
 
-function show_form(){
-	global $mode;
+function sendadminmail($user)
+{
+	$mailfrom = trim(readconfigfromdb("from_address"));
+	$mailto = trim(readconfigfromdb("admin"));
+	$systemtag = readconfigfromdb("systemtag");
 
-	echo "<div class='border_b'><p>";
+	$mailsubject = "[";
+	$mailsubject .= readconfigfromdb("systemtag");
+	$mailsubject .= "] eLAS account activatie";
 
-	echo '<form method="post">';
-	echo "<input type='hidden' name='mode' id='mode' size='4' value='new'>";
-	echo "<input type='hidden' name='id' id='id' size='4'>";
-	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
-	echo "<tr><td align='right' valign='top'>";
-	echo "Naam";
-	echo "</td>\n<td valign='top'>";
-	echo "<input type='text' name='name' id='name' size='30'>";
-	echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
-
-	echo "<tr><td align='right' valign='top'>";
-	echo "Volledige Naam (Voornaam en Achternaam)";
-	echo "</td>\n<td valign='top'>";
-	echo "<input type='text' name='fullname' id='fullname' size='30'>";
-	echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
-
-	echo "<tr>\n<td valign='top'valign='top' align='right'>Letscode</td>\n";
-	echo "<td valign='top'><input type='text' name='letscode' id='letscode' size='10'>";
-	echo "</td>\n</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Postcode</td>\n";
-	echo "<td valign='top'><input type='text' name='postcode' id='postcode' size='6'>";
-	echo "</td>\n</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Geboortedatum (jjjj-mm-dd)</td>\n";
-	echo "<td valign='top'><input type='text' name='birthday' id='birthday' size='10'></td>\n</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Hobbies/interesses:</td>\n<td valign='top'>";
-	echo "<textarea name='hobbies' id='hobbies' cols='40' rows='2'>";
-	echo "</textarea>";
-	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td valign='top'>";
-	echo "</td>\n</tr>\n\n";
-	echo "<tr>\n<td valign='top' align='right'>Commentaar</td>\n<td valign='top'>";
-	echo "<input type='text' name='comments' id='comments' size='60'>";
-	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td valign='top'>";
-	echo "</td>\n</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Login</td>\n<td valign='top'>";
-	echo "<input type='text' name='login' id='login' size='30'>";
-	echo "</td>\n</tr>\n\n";
-
-	echo "<tr><td valign='top' align='right'>Rechten</td>\n";
-	echo "<td valign='top'>\n";
-	echo "<select name='accountrole' id='accountrole'>";
-	echo "<option value='admin' >Admin</option>";
-	echo "<option value='user' >User</option>";
-        echo "<option value='guest' >Guest</option>";
-	echo "<option value='interlets' >Interlets</option>";
-	echo "</select>";
-	echo "</td>\n</tr>\n\n<tr>\n<td></td></tr>\n\n";
-	echo "<tr>\n<td valign='top' align='right'>Status</td>\n";
-	echo "<td valign='top'>";
-	echo "<select name='status' id='status'>";
-	echo "<option value='0'>Gedesactiveerd</option>";
-	echo "<option value='1'>Actief</option>";
-	echo "<option value='5'>Infopakket</option>";
-	echo "<option value='6'>Infoavond</option>";
-	echo "<option value='2'>Uitstapper</option>";
-	echo "<option value='7'>Extern</option>";
-	echo "</select>";
-	echo "</td>\n";
-	echo "</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Commentaar van de admin:</td>\n<td valign='top'>";
-	echo "<textarea name='admincomment' id='admincomment' cols='40' rows='2'>";
-	echo "</textarea>";
-	echo "</td>\n</tr>\n\n<tr><td valign='top'>";
-	echo "</td>\n</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Limiet minstand</td>\n<td valign='top'>";
-	echo "<input type='text' name='minlimit' id='minlimit' size='30'>";
-	echo "</td>\n</tr>\n\n<tr>\n<td></td>";
-	echo "</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Limiet maxstand</td>\n<td valign='top'>";
-        echo "<input type='text' name='maxlimit' id='maxlimit' size='30'>";
-        echo "</td>\n</tr>\n\n<tr>\n<td></td>";
-        echo "</tr>\n\n";
-
-	echo "<tr>\n<td valign='top' align='right'>Preshared key<br><small><i>Interlets veld</i></small></td>\n<td valign='top'>";
-        echo "<input type='text' name='presharedkey' id='presharedkey' size='50'>";
-        echo "</td>\n</tr>\n\n<tr>\n<td></td>";
-        echo "</tr>\n\n";
-
-	if($mode == "new"){
-		echo "<tr>\n<td valign='top' align='right'>E-mail</td>\n<td valign='top'>";
-        	echo "<input type='email' name='email' id='email' size='50'>";
-        	echo "</td>\n</tr>";
-
-		echo "<tr>\n<td valign='top' align='right'>Adres</td>\n<td valign='top'>";
-        	echo "<input type='text' name='address' id='address' size='50'>";
-        	echo "</td>\n</tr>";
-
-		echo "<tr>\n<td valign='top' align='right'>Tel</td>\n<td valign='top'>";
-        	echo "<input type='text' name='telephone' id='telephone' size='20'>";
-        	echo "</td>\n</tr>";
-
-		echo "<tr>\n<td valign='top' align='right'>GSM</td>\n<td valign='top'>";
-        	echo "<input type='text' name='gsm' id='gsm' size='20'>";
-        	echo "</td>\n</tr>";
-
-		echo "<tr>\n<td valign='top' align='right'>Activeren?</td>\n<td valign='top'>";
-		echo "<INPUT TYPE=CHECKBOX NAME='activate' id='activate' CHECKED>";
-		echo "</td>\n</tr>";
+	$mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$mailcontent .= $systemtag;
+	$mailcontent .= " ***\r\n\n";
+	$mailcontent .= "De account ";
+	$mailcontent .= $user["login"];
+	$mailcontent .= ' ( ' . $user['letscode'] . ' ) ';
+	$mailcontent .= " werd geactiveerd met een nieuw passwoord.\n";
+	if (!empty($user["mail"])){
+			$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
+			$mailcontent .= $user["mail"];
+			$mailcontent .= ".\n\n";
 	} else {
-                echo "<input type='hidden' name='email' id='email' size='50'>";
-                echo "<input type='hidden' name='address' id='address' size='70'>";
-                echo "<input type='hidden' name='telephone' id='telephone' size='20'>";
-                echo "<input type='hidden' name='gsm' id='gsm' size='20'>";
-                echo "<INPUT TYPE='hidden' NAME='activate' id='activate'>";
+			$mailcontent .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
 	}
 
-	echo "<tr><td></td><td>";
+	$mailcontent .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
+	$mailcontent .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
-	echo "<input type='submit' name='zend' id='zend' value='Opslaan'>";
-	echo "</td>\n</tr>\n\n</table>\n\n";
-	echo "</form>";
+	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 }

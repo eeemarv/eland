@@ -1,38 +1,22 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role='admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_transactions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+include($rootpath."includes/inc_header.php");
 
-include($rootpath."includes/inc_smallheader.php");
-#include($rootpath."includes/inc_nav.php");
-include($rootpath."includes/inc_content.php");
 $my_setting = $_GET["setting"];
 
-if(isset($s_id)){
-        if(!$s_accountrole == "admin"){
-                redirect_login($rootpath);
-        }
-	show_ptitle($my_setting);
-	show_form($my_setting);
-	show_serveroutputdiv();
-	show_closebutton();
-}else{
-	redirect_login($rootpath);
-}
+show_ptitle($my_setting);
+show_form($my_setting);
+show_serveroutputdiv();
+show_closebutton();
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
 function show_closebutton(){
 	echo "<table border=0 width='100%'><tr><td align='right'><form id='closeform'>";

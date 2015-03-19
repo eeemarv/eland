@@ -35,7 +35,7 @@ function show_all_contacttypes($contacttypes){
 	$rownumb=0;
 	foreach($contacttypes as $value){
 
-		$protected = (in_array($value['abbrev'], array('mail', 'gsm', 'tel', 'adr'))) ? true : false;
+		$protected = (in_array($value['abbrev'], array('mail', 'gsm', 'tel', 'adr', 'web'))) ? true : false;
 	 	$rownumb=$rownumb+1;
 		if($rownumb % 2 == 1){
 			echo "<tr class='uneven_row'>";

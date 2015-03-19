@@ -17,7 +17,7 @@ if(!isset($id)){
 
 $contacttype = get_contacttype($id);
 
-if (in_array($contacttype['abbrev'], array('mail', 'tel', 'gsm', 'adr')))
+if (in_array($contacttype['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
 	$alert->warning('Beschermd contact type.');
 	header("Location: overview.php");
