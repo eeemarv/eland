@@ -84,7 +84,7 @@ header("Content-Type:text/html;charset=utf-8");
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
 					echo "<li><a href='".$rootpath."transactions/alltrans.php'>Transacties</a></li>";
 				}
-				echo "<li><a href='".$rootpath."news.php'>Nieuws</a></li>";
+				echo "<li><a href='".$rootpath."news/overview.php'>Nieuws</a></li>";
 				if($s_accountrole == "user" || $s_accountrole == "admin"){
 					echo "<li><a href='".$rootpath."interlets/userview.php'>Interlets</a></li>";
 				}

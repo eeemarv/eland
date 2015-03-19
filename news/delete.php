@@ -1,108 +1,73 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
-include($rootpath."includes/inc_smallheader.php");
-include($rootpath."includes/inc_content.php");
+include($rootpath."includes/inc_header.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	$id = $_GET["id"];
-	if(empty($id)){
-		echo "<script type=\"text/javascript\">self.close();</script>";
-	}else{
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			delete_newsitem($id);
-			echo "<script type=\"text/javascript\">self.close(); window.opener.location='/'</script>";
-		}else{
-			$newsitem = get_newsitem($id);
-			show_newsitem($newsitem);
-			ask_confirmation($newsitem);
-			show_form($id);
-		}
+$id = $_GET["id"];
+if(empty($id)){
+	header('Location: overview.php');
+	exit;
+}
+
+if(isset($_POST["zend"])){
+	if($db->Execute("DELETE FROM news WHERE id =".$id))
+	{
+		$alert->success('Nieuwsbericht verwijderd.');
+		header('Location: overview.php');
+		exit;
 	}
-} else {
-	echo "<script type=\"text/javascript\">self.close(); window.opener.location='/'</script>";
+	$alert->error('Nieuwsbericht niet verwijderd.');
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+$query = 'SELECT n.*, u.name, u.letscode
+	FROM news n, users u  
+	WHERE n.id=' . $id . '
+	AND n.id_user = u.id';
+$news = $db->GetRow($query);
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
+echo "<h1>Nieuwsbericht verwijderen?</h1>";
+
+echo '<h2>' . $news['headline'] . '</h2>';
+
+echo "<div >";
+echo "<strong>Agendadatum: ";
+list($itemdate) = explode(' ', $news['itemdate']);
+if(trim($itemdate) != "00/00/00"){
+	echo $itemdate;
 }
+echo "<br>Locatie: " .$news["location"];
+echo "</strong>";
+echo "<br><i>Ingegeven door : ";
+echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $news['id_user'] . '">';
+echo htmlspecialchars($news["name"],ENT_QUOTES)." (".trim($news["letscode"]).")";
+echo "</a></i>";
+echo ($news['approved'] == 't') ? '<br><i>Goedgekeurd.</i>' : '<br><i>Nog niet goedgekeurd.</i>';
+echo ($news['sticky'] == 't') ? '<br><i>Behoud na datum.</i>' : '<br><i>Wordt verwijderd na datum.</i>';
 
-function show_ptitle(){
-	echo "<h1>Nieuwsbericht verwijderen</h1>";
-}
+echo "<p>";
+echo nl2br(htmlspecialchars($news["newsitem"],ENT_QUOTES));
+echo "</p>";
 
-function show_form($id){
-	echo "<div align='right'><p><form action='delete.php?id=".$id."' method='POST'>";
-	echo "<input type='submit' value='Verwijderen' name='zend'>";
-	echo "</form></p>";
-	echo "</div>";
-}
+echo "<p>";
+echo "<table width='100%' border=0><tr><td>";
+echo "<div id='navcontainer'>";
+echo "</div>";
+echo "</td></tr></table>";
 
-function ask_confirmation($newsitem){
-	echo "<p><font color='red'><strong>Ben je zeker dat dit nieuwsbericht";
-	echo " moet verwijderd worden?</strong></font></p>";
-}
+echo "</p>";
+echo "</div>";
 
-function delete_newsitem($id){
-    global $db;
-	$query = "DELETE FROM news WHERE id =".$id ;
-	$result = $db->Execute($query);
-}
+echo "<p><font color='red'><strong>Ben je zeker dat dit nieuwsbericht";
+echo " moet verwijderd worden?</strong></font></p>";
 
-function get_newsitem($id){
-    global $db;
-	$query = "SELECT *, ";
-	$query .= " news.cdate AS date, ";
-	$query .= " news.itemdate AS idate ";
-	$query .= " FROM news, users ";
-	$query .= " WHERE news.id=" .$id;
-	$query .= " AND news.id_user = users.id";
-	$newsitem = $db->GetRow($query);
-	return $newsitem;
-}
 
-function show_newsitem($newsitem){
-	echo "<div >";
-	echo "<table cellpadding='0' cellspacing='0' border='1' class='data' width='99%'>";
-	echo "<tr class='header'>";
-	//echo "<td valign='top'><strong>Toegevoegd op</strong></td>";
-	echo "<td valign='top'><strong>Agendadatum</strong></td>";
-	echo "<td valign='top'><strong>Nieuwsbericht</strong></td>";
-	echo "</tr>";
-	echo "<tr>";
-	//echo "<td valign='top' nowrap>";
-	//echo $newsitem["date"];
-	//echo "</td>";
-	echo "<td valign='top' nowrap>";
-		if(trim($newsitem["idate"]) != "00/00/00"){
-			echo $newsitem["idate"];
-	}
-	echo "</td>";
-	echo "<td><strong>" .htmlspecialchars($newsitem["headline"],ENT_QUOTES)."</strong><br>";
-	echo nl2br(htmlspecialchars($newsitem["newsitem"],ENT_QUOTES))."<br><br>";
-	echo htmlspecialchars($newsitem["name"],ENT_QUOTES)." (".trim($newsitem["letscode"]).")";
-	echo "</td>";
-	echo "</tr>";
-	echo "</table></div>";
-}
+echo "<div><p><form method='POST'>";
+echo "<input type='submit' value='Verwijderen' name='zend'>";
+echo "</form></p>";
+echo "</div>";
 
-function redirect_overview(){
-	header("Location: overview.php");
-}
-
-include($rootpath."includes/inc_sidebar.php");
-include($rootpath."includes/inc_smallfooter.php");
-?>
+include($rootpath."includes/inc_footer.php");
