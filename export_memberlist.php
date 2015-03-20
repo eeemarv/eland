@@ -1,13 +1,9 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 if(isset($s_id)){
 	show_ptitle();
@@ -19,14 +15,9 @@ if(isset($s_id)){
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+/////////////////
 
 function show_ptitle(){
-	#echo "<h1>Lets Contactlijst ";
-	#echo date("d-m-Y");
-	#echo " </h1>";
 	header("Content-disposition: attachment; filename=marva-memberlist".date("Y-m-d").".csv");
 	header("Content-Type: application/force-download");
 	header("Content-Transfer-Encoding: binary");

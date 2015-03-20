@@ -5,7 +5,7 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-$includecss = '<link rel="stylesheet" type="text/css" href="vendor/jqplot/jqplot/jquery.jqplot.min.css" />
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
 
 include($rootpath."includes/inc_header.php");
@@ -168,6 +168,6 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jqplot . 'jqplot.canvasTextRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'jqplot.canvasAxisTickRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'jqplot.highlighter.min.js"></script>
-	<script src="js/plot_user_transactions.js"></script>';
+	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
 include($rootpath."includes/inc_footer.php");

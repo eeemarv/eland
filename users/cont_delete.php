@@ -1,51 +1,42 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+$cid = $_GET["cid"];
+$uid = $_GET["uid"];
+
+if ($_POST['zend'])
+{
+	if ($db->Execute("DELETE FROM contact WHERE id =".$cid))
+	{
+		$alert->success('Contact verwijderd.');
+	}
+	else
+	{
+		$alert->error('Contact niet verwijderd.');
+	}
+	header("Location: view.php?id=$uid");
+	exit;	
+}
+
+$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.name, u.letscode
+	FROM type_contact tc, contact c, users u
+	WHERE c.id_type_contact = tc.id
+		AND c.id_user = u.id
+		AND c.id = ' . $cid);
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	$cid = $_GET["cid"];
-	$uid = $_GET["uid"];
-	if(isset($cid)){
-		delete_contact($cid);
-		redirect_view($uid);
-	}else{
-		redirect_overview();
-	}
-}else{
-	redirect_login($rootpath);
-}
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+echo '<h1>Contact verwijderen?</h1>';
+echo '<p>Type: ' . $contact['abbrev'] . '</p>';
+echo '<p>Waarde: ' . $contact['value'] . '</p>';
+echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
+echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
+echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
+echo '<form method="post"><input type="submit" value="Verwijder" name="zend"></form>';
 
-function delete_contact($cid){
-	global $db;
-	$query = "DELETE FROM contact WHERE id =".$cid ;
-	$result = $db->Execute($query);
-}
-
-function redirect_view($uid){
-	header("Location: view.php?id=$uid");
-}
-
-function redirect_overview(){
-	header("Location: overview.php");
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
+

@@ -77,7 +77,7 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
 }
 
 function sendactivationmail($password, $user){
-	global $baseurl, $s_id;
+	global $baseurl, $s_id, $alert;
 	$mailfrom = readconfigfromdb("from_address");
 
         if (!empty($user["mail"])){

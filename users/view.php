@@ -99,12 +99,10 @@ echo "</td>";
 
 echo "<tr><td colspan='2'>&#160;</td></tr>";
 echo "<tr><td colspan='2'>";
-//echo "| <a href='edit.php?mode=edit&id=" .$user["id"]. "'>Aanpassen</a> | ";
-$myurl="edit.php?mode=edit&id=". $user["id"];
-echo "| <a href='#' onclick=window.open('$myurl','details_edit','width=800,height=800,scrollbars=yes,toolbar=no,location=no,menubar=no')>Aanpassen</a> | ";
+
+echo '| <a href="edit.php?mode=edit&id=' . $user["id"] . '" >Aanpassen</a> | ';
 echo "</td></tr>";
 echo "</table>";
-
 
 $contact = get_contact($id);
 show_contact($contact, $user_id);
@@ -307,7 +305,7 @@ echo "</tr>";
 	}
 	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
 	echo "<tr><td colspan='5'>| ";
-	echo "<a href='cont_add.php?uid=".$user_id."'>";
+	echo "<a href='cont_add.php?uid=" . $value['id_user'] . "'>";
 	echo "Contact toevoegen</a> ";
 	echo "|</td></tr>";
 	echo "</table></div>";

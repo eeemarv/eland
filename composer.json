@@ -7,16 +7,6 @@
 		"monolog/monolog": "1.13.*@dev",
 		"bramus/monolog-colored-line-formatter": "2.0.*",
 		"fergusean/nusoap": "0.9.5",
-		"moxiecode/plupload": "~2.1",
 		"mandrill/mandrill": "~1.0"
-	},
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "http:\/\/www.phpclasses.org\/"
-		},
-		{
-			"packagist": false
-		}
-    ]  
+	}
 }
