@@ -73,6 +73,7 @@ if ($_POST['zend'])
 				$alert->success('Gebruiker opgeslagen.');
 
 				$id = $db->insert_ID();
+				readuser($id, true);
 
 				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
 

@@ -16,6 +16,13 @@ if (!isset($_GET["id"])){
 $id = $_GET["id"];
 $user = get_user_maildetails($id);
 
+$user = $db->GetRow('SELECT u.*, c.value as mail
+	FROM users u, contact c, type_contact tc
+	WHERE u.id = c.id_user
+		AND c.id_type_contact = tc.id
+		AND tc.abbrev = \'mail\'
+		AND u.id = ' . $id);
+
 if(isset($_POST["zend"])){
 	$posted_list = array();
 	$posted_list["pw1"] = $_POST["pw1"];
@@ -41,6 +48,7 @@ if(isset($_POST["zend"])){
 include($rootpath."includes/inc_header.php");
 echo "<h1>Account activeren</h1>";
 show_pwform($errorlist, $id, $user);
+include($rootpath."includes/inc_footer.php");
 
 ////////////////
 
@@ -124,7 +132,7 @@ function show_pwform($errorlist, $id, $user){
 	echo "</td></tr>";
 	echo "<tr><td valign='top' align='right'>E-mail</td>";
 	echo "<td valign='top'>";
-	echo $user["emailaddress"];
+	echo $user["mail"];
 	echo "</td></tr>";
 	echo "<tr><td>Paswoord</td>";
 	echo "<td valign='top'>";
@@ -163,5 +171,4 @@ function show_pwform($errorlist, $id, $user){
 	echo "</div>";
 }
 
-include($rootpath."includes/inc_footer.php");
 
