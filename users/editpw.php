@@ -15,14 +15,14 @@ $id = $_GET["id"];
 
 if(isset($_POST["zend"])){
 	$pw = array();
-	$pw["pw1"] = $_POST["pw1"];
-	$pw["pw2"] = $_POST["pw2"];
-	$errorlist = validate_input($pw,$configuration);
+	$pw["pw1"] = pg_escape_string($_POST["pw1"]);
+	$pw["pw2"] = pg_escape_string($_POST["pw2"]);
+	$errorlist = validate_input($pw);
 	if (empty($errorlist))
 	{
-		$posted_list["password"]=hash('sha512',$posted_list["pw1"]);
-		$posted_list["mdate"] = date("Y-m-d H:i:s");
-		if ($db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id"))
+		$update["password"]=hash('sha512', $pw["pw1"]);
+		$update["mdate"] = date("Y-m-d H:i:s");
+		if ($db->AutoExecute("users", $update, 'UPDATE', "id=$id"))
 		{
 			readuser($id, true);
 			$alert->success('Paswoord opgeslagen.');
@@ -39,7 +39,7 @@ include($rootpath."includes/inc_header.php");
 echo "<h1>Paswoord veranderen</h1>";
 echo '<p>Gebruiker: ' . $user['name'] . ' ( ' . $user['letscode'] . ' )</p>';
 echo "<div class='border_b'>";
-echo "<form action='editpw.php?id=".$id."' method='POST'>";
+echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Paswoord</td>";
 echo "<td valign='top'>";
@@ -77,7 +77,7 @@ include($rootpath."includes/inc_footer.php");
 
 ///////////////
 
-function validate_input($pw,$configuration){
+function validate_input($pw){
 	$errorlist = array();
 	if (empty($pw["pw1"]) || (trim($pw["pw1"]) == "")){
 		$errorlist["pw1"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";

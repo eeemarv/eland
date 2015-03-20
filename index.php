@@ -223,7 +223,8 @@ function show_all_newsitems($newsitems){
 
 		echo "<td valign='top' width='15%'>";
 		if(trim($value["idate"]) != "00/00/00"){
-				echo $value["idate"];
+			list($date) = explode(' ', $value['idate']); 
+			echo $date;
 		}
 		echo " </td>";
 		echo "<td valign='top'>";

@@ -25,7 +25,6 @@ function startsession($user){
 	log_event($user["id"],"Login","User " .$user["login"] ." logged in");
 	log_event($user["id"],"Agent","$browser");
 	insert_date_into_lastlogin($user["id"]);
-	setstatus($_SESSION["login"] ." ingelogd");
 }
 
 function startmastersession() {

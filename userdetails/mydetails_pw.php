@@ -1,94 +1,83 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_passwords.php");
 
-if (!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-}
-
-$errorlist = array();
-
 if(isset($_POST["zend"])){
-
-	$posted_list = array();
-	$pw1 = $posted_list["pw1"] = $_POST["pw1"];
-	$pw2 = $posted_list["pw2"] = $_POST["pw2"];
-	$errorlist = validate_input($posted_list,$configuration);
-
+	$pw = array();
+	$pw["pw1"] = trim(pg_escape_string($_POST["pw1"]));
+	$pw["pw2"] = trim(pg_escape_string($_POST["pw2"]));
+	$errorlist = validate_input($pw);
 	if (empty($errorlist))
 	{
-		if (update_password($s_id, $posted_list))
+		$update["password"] = hash('sha512', $pw["pw1"]);
+		$update["mdate"] = date("Y-m-d H:i:s");
+		if ($db->AutoExecute("users", $update, 'UPDATE', "id=$s_id"))
 		{
-			$alert->success('Paswoord opgeslagen');
-			header('Location: '.$rootpath.'userdetails/mydetails.php');
+			readuser($id, true);
+			$alert->success('Paswoord opgeslagen.');
+			header('Location: mydetails.php');
 			exit;
 		}
-		else
-		{
-			$alert->error('Fout, paswoord niet opgeslagen.');
-		}
 	}
-	else
-	{
-		foreach ($errorlist as $error)
-		{
-			$alert->error($error);
-		}
-	}
-}
-else
-{
-	$pw1 = $pw2 = generatePassword(9); 
+	$alert->error('Paswoord niet opgeslagen.');
 }
 
-include $rootpath."includes/inc_header.php";
-
+include($rootpath."includes/inc_header.php");
 echo "<h1>Paswoord veranderen</h1>";
-
 echo "<div class='border_b'>";
-echo '<form method="post">';
+echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Paswoord</td>";
 echo "<td valign='top'>";
-echo '<input  type="text" name="pw1" size="30" value="' . $pw1 . '" >';
+echo "<input  type='password' name='pw1' size='30' value='" . $pw['pw1'] . "' >";
+echo "</td>";
+echo "<td>";
+	if (isset($errorlist["pw1"])){
+		echo $errorlist["pw1"];
+	}
 echo "</td>";
 echo "</tr>";
 echo "<tr><td valign='top' align='right'>Herhaal paswoord</td>";
 echo "<td valign='top'>";
-echo '<input  type="test" name="pw2" size="30" value="' . $pw2 . '" >';
+echo "<input  type='password' name='pw2' size='30' value='".$pw['pw2'] . "' >";
+echo "</td>";
+echo "<td>";
+	if (isset($errorlist["pw2"])){
+		echo $errorlist["pw2"];
+	}
 echo "</td>";
 echo "</tr>";
+echo "<tr><td colspan='3'>";
+	if (isset($errorlist["pw3"])){
+		echo $errorlist["pw3"];
+	}
+echo "</td></tr>";
 echo "<tr><td></td><td>";
-echo "<input type='submit' id='zend' value='Passwoord wijzigen' name='zend'>";
+echo "<input type='submit' value='paswoord wijzigen' name='zend'>";
 echo "</td><td>&nbsp;</td></tr>";
 echo "</table>";
 echo "</form>";
 echo "</div>";
-
 include($rootpath."includes/inc_footer.php");
 
-///////////////////////////////
 
+///////////////
 
-function validate_input($posted_list){
+function validate_input($pw){
 	$errorlist = array();
-	if (empty($posted_list["pw1"]) || (trim($posted_list["pw1"]) == "")){
-		$errorlist["pw1"] = "Passwoord 1 is niet ingevuld";
+	if (empty($pw["pw1"]) || (trim($pw["pw1"]) == "")){
+		$errorlist["pw1"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}
 
-	$pwscore = Password_Strength($posted_list["pw1"]);
-	$pwreqscore = readconfigfromdb("pwscore");
-	if ($pwscore < $pwreqscore){
-		$errorlist["pw1"] = "Paswoord is te zwak (score $pwscore/$pwreqscore), kies een passwoord dat lang genoeg is (8 tekens) en gebruik hoofdletters, cijfers en eventueel een leesteken";
+	if (empty($pw["pw2"]) || (trim($pw["pw2"]) == "")){
+		$errorlist["pw2"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
 	}
-	if (empty($posted_list["pw2"]) || (trim($posted_list["pw2"]) == "")){
-		$errorlist["pw2"] = "Passwoord 2 is niet ingevuld";
-	}
-	if ($posted_list["pw1"] !== $posted_list["pw2"]){
-		$errorlist["pw3"] = "De 2 passwoorden zijn niet hetzelfde";
+	if ($pw["pw1"] !== $pw["pw2"]){
+	$errorlist["pw3"] = "<font color='#F56DB5'><strong>Paswoorden zijn niet identiek</strong>!</font>";
 	}
 	return $errorlist;
 }

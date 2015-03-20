@@ -29,7 +29,7 @@ function generate_token($type){
 	global $db;
 	$targetdate = time() + (10 * 60);
 	$testdate = date('Y-m-d H:i:s', $targetdate);
-	$token = "elasv2" .md5(microtime());
+	$token = "elasv2" . md5(microtime());
 
 	$posted_list["token"] = $token;
 	$posted_list["validity"] = $testdate;
@@ -42,20 +42,11 @@ function generate_token($type){
 	return $token;
 }
 
-function verify_token($token,$type){
+function verify_token($token, $type)
+{
 	global $db;
 	$testdate = date('Y-m-d H:i:s', time());
-	$query = "SELECT * FROM tokens WHERE token = '" .$token ."' AND validity > '" .$testdate ."' AND type = '" .$type ."'";
-	//print $query;
-	// AND validity > '" .$testdate ."'";
+	$query = "SELECT token FROM tokens WHERE token = '" .$token ."' AND validity > '" .$testdate ."' AND type = '" .$type ."'";
 
-	$mytoken = $db->GetRow($query);
-	//print "Mytoken = " .$mytoken["token"] ." - incoming token = " . $token;
-	if($mytoken["token"] == $token){
-		return 0;
-	} else {
-		return 1;
-	}
+	return ($db->GetOne($query) == $token) ? true : false;
 }
-
-?>

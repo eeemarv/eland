@@ -156,7 +156,6 @@ function show_contact($contact){
 	}
 	echo "<tr><td colspan='3'><p>&#160;</p></td></tr>";
 	echo "</table>";
-
 }
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>

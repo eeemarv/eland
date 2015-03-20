@@ -1,13 +1,6 @@
 <?php
 ob_start();
 
-//
-
-/**
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_amq.php");
-**/
 $r = "\r\n";
 
 $php_sapi_name = php_sapi_name();

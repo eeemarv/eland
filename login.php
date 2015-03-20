@@ -8,9 +8,8 @@ $allow_anonymous_post = true;
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_header.php");
-require_once($rootpath."includes/inc_nav.php");
 require_once($rootpath."includes/inc_tokens.php");
+require_once($rootpath."includes/inc_auth.php");
 
 //require_once($rootpath."contrib/includes/lightopenid/openid.php");
 
@@ -20,8 +19,12 @@ $locked = 0;
 echo "<script type='text/javascript' src='$rootpath/js/moologin.js'></script>";
 
 $token = $_GET["token"];
-$redirectmsg = $_GET["redirectmsg"];
 $openid = $_GET['openid_identity'];
+$location = $_GET['location'];
+$location = ($location) ? urldecode($location) : 'index.php';
+$location = ($location == 'login.php') ? 'index.php' : $location;
+$location = ($location == 'logout.php') ? 'index.php' : $location;
+$error_location = 'login.php?location=' . urlencode($location);
 
 // Intercept old direct links and rewrite them
 if(!empty($redirectmsg)){
@@ -30,7 +33,7 @@ if(!empty($redirectmsg)){
 
 // Verify the token first and redirect to index if it is valid
 if(!empty($token)){
-	if(verify_token($token,"guestlogin") == 0){
+	if(verify_token($token, "guestlogin")){
         session_start();
         $_SESSION["id"] = 0;
         $_SESSION["name"] = "letsguest";
@@ -39,53 +42,121 @@ if(!empty($token)){
 		$_SESSION["type"] = "interlets";
 		$_SESSION["status"] = array();
 		log_event($_SESSION["id"],"Login","Guest login using token succeeded");
-		setstatus($_SESSION["name"] ." ingelogd");
-		echo "<script type='text/javascript'>self.location='index.php';</script>";
+		$alert->success($_SESSION["name"] ." ingelogd");
+		header('Location: ' . $location);
+		exit;
 	} else {
-		echo "<b><font color='red'>Interlets login is mislukt</font></b>";
+		$alert->error("Interlets login is mislukt.");
 		log_event("","LogFail", "Token login failed ($token)");
 
 	}
+}
+
+if ($_POST['zend'])
+{
+	$login = trim($_POST['login']);
+	$password = trim($_POST['password']);
+
+	if (!($login && $password))
+	{
+		$alert->error('Login gefaald. Vul login en paswoord in.');
+		header('Location: ' . $error_location);
+		exit;
+	}
+
+	$master_password = getenv('ELAS_MASTER_PASSWORD');
+
+	if ($login == 'master' && hash('sha512', $password) == $master_password)
+	{
+		log_event(0,"Master","Login as master user");
+		startmastersession();
+		$alert->success("OK - Gebruiker ingelogd");
+		header('Location: ' . $location);
+		exit;
+	}
+
+	$user = $db->GetRow('SELECT * FROM users WHERE login = \'' . $login . '\'');
+	if (!$user)
+	{
+		$alert->error('Login gefaald. Onbekende gebruiker.');
+		header('Location: ' . $error_location);
+		exit;
+	}
+
+	$sha512 = hash('sha512', $password);
+	$sha1 = sha1($password);
+	$md5 = md5($password);
+	
+	if (in_array($user['password'], array($sha512, $sha1, $md5)))
+	{
+		if ($user['password'] != $sha512)
+		{
+			$db->Execute('UPDATE users SET password = \'' . hash('sha512', $password) . '\' WHERE id = ' . $user['id']);
+		}
+
+		if ($user['status'] == 0)
+		{
+			$alert->error('Account is gedesactiveerd.');
+			header('Location; ' . $error_location);
+			exit;
+		}
+
+		if(readconfigfromdb("maintenance") == 1 && $user["accountrole"] != "admin")
+		{
+			$alert->error("eLAS is in onderhoud, probeer later opnieuw");
+			header('Location: ' . $error_location);
+			exit;
+		}
+
+		startsession($user);
+		$alert->success('Ok Gebruiker ingelogd.');
+		header('Location: ' . $location);
+		exit;
+	}
+
+	$alert->error('Login gefaald.');
 }
 
 // OPENID login code goes here
 
 //echo "<h1>" . $tr->get('login', 'login') ."</h1>";
 
-if(!empty($_GET['url'])){
+if(!empty($_GET['url']))
+{
 	echo "<script type='text/javascript'>var redirecturl='" .$_GET['url'] ."';</script>";
 } else {
 	echo "<script type='text/javascript'>var redirecturl='index.php';</script>";
 }
 
 // Check if we are in maintenance mode
-if(readconfigfromdb("maintenance") == 1){
-	echo "<p><font color='red'><p><strong>eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen</strong></font></p>";
+if(readconfigfromdb("maintenance") == 1)
+{
+	$alert->warning('eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }
 
-// Check if we are locked
-if($locked == 1){
-	echo "<p><font color='red'><p><strong>Het hostingcontract van deze installatie is verlopen, de site is inactief</strong></font></p>";
-}
+require_once($rootpath."includes/inc_header.php");
 
 // Draw the login form division
-echo "<div id='formdiv'>";
-if(empty($token)){
-	echo "<form id='loginform' name='loginform' action='$rootpath/postlogin.php' method='post'>";
+ 
+if(empty($token))
+{
+	echo "<div id='formdiv'>";
+	echo "<form  method='post'>";
 	echo "<table class='selectbox'><tr>";
 	echo "<td>Login</td>";
-	echo "<td><input type='text' name='login' size='30'></td>";
+	echo "<td><input type='text' name='login' size='30' value='" . $login . "'></td>";
 	echo "</tr><tr>";
 	echo "<td>Paswoord</td>";
 	echo "<td><input type='password' name='password' size='30'></td>";
 	echo "</tr>";
 	echo "<tr><td colspan='2' align='right'>";
-	echo "<input type='submit' id='submitter' value='Inloggen'>";
+	echo "<input type='submit' value='Inloggen' name='zend'>";
 	echo "</td></tr>";
 	echo "</table>";
 	echo "</form>";
 	echo "</div>";
-
+	
+/*
 	// Show the OpenID login box
 	echo "<div id='openiddiv'>";
 	echo "<form id='openidbox' name='openidbox' action='$rootpath/postopenid.php' method='post'>";
@@ -122,59 +193,9 @@ if(empty($token)){
         echo "<form id='guestloginform' name='guestloginform' action='' method='post'>";
 	echo "</form>";
         echo "</div>";
+        */
 
 }
 
-/////////////////////////// FUNCTIONS ///////////////////////////////
-
-function show_buttons(){
-        global $s_id;
-	global $tr;
-
-        echo "<table border='0' width='100%'><tr><td width='100%'></td><td nowrap>";
-        echo "<div id='navcontainer'>";
-        echo "<ul class='hormenu'>";
-        $myurl="mydetails_edit.php?id=" .$s_id;
-        echo "<li><a href='#' onclick=window.open('$myurl','details_edit','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>" .$tr->get('login_problems','login') ."</a></li>";
-        echo "</ul>";
-        echo "</div>";
-        echo "</td></tr></table>";
-}
-
-function startsession($user){
-        session_start();
-        $_SESSION["id"] = $user["id"];
-        $_SESSION["name"] = $user["name"];
-        $_SESSION["fullname"] = $user["fullname"];
-        $_SESSION["login"] = $user["login"];
-        $_SESSION["letscode"] = $user["letscode"];
-        $_SESSION["accountrole"] = $user["accountrole"];
-        $_SESSION["userstatus"] = $user["status"];
-        $_SESSION["email"] = $user["emailaddress"];
-	$_SESSION["lang"] = $user["lang"];
-	$_SESSION["user_postcode"] = $user["postcode"];
-        $_SESSION["type"] = "local";
-        $_SESSION["status"] = array();
-
-        $browser = $_SERVER['HTTP_USER_AGENT'];
-        log_event($user["id"],"Login","User " .$user["login"] ." logged in");
-        log_event($user["id"],"Agent","$browser");
-        insert_date_into_lastlogin($user["id"]);
-        //setstatus($_SESSION["login"] ." " .$tr->get('logged_in','login'), 0);
-
-        // Debug notification queue
-        //for ($i = 1; $i <= 10; $i++) {
-		//	setstatus("Notification $i");
-		//}
-}
-
-function insert_date_into_lastlogin($s_id){
-        global $db;
-        $posted_list["lastlogin"] = date("Y-m-d H:i:s");
-        $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$s_id");
-
-}
-
-//include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
+

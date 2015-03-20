@@ -202,10 +202,6 @@ function show_editlinks($msgid)
 	echo "</td></tr></table>";
 }
 
-function show_response_form($msgid, $usermail, $s_accountrole){
-
-
-}
 
 function get_msg($msgid){
 	global $db;
@@ -277,13 +273,6 @@ function show_msg($message, $balance){
 	} else {
 		echo "Er werd geen (vraag)prijs ingegeven";
 	}
-	echo "</td></tr>";
-
-	//Direct URL
-	echo "<tr class='even_row'><td>";
-	$directurl="http://" .$baseurl ."/login.php?redirectmsg=" .$msgid;
-	echo "Directe link: <a href='" .$directurl ."'>" .$directurl ."</a>";
-	echo "<br><i><small>Deze link brengt leden van je groep rechtstreeks bij dit V/A</small></i>";
 	echo "</td></tr>";
 
 	echo "</table>";

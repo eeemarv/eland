@@ -19,21 +19,14 @@ if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
 include($rootpath."includes/inc_header.php");
 
 echo "<h1>Mijn gegevens</h1>";
-echo "<script type='text/javascript' src='" .$rootpath ."js/mydetails.js'></script>";
+// echo "<script type='text/javascript' src='" .$rootpath ."js/mydetails.js'></script>";
 
 $user = readuser($s_id);
 show_user($user);
 show_editlink();
 
-$url = "rendercontact.php";
-echo "<div id='contactdiv'></div>";
-
-echo "<script type='text/javascript'>showsmallloader('contactdiv');loadcontact('$url');</script>";
-echo "<table width='100%' border=0><tr><td>";
-echo "<ul class='hormenu'>";
-echo "<li><a href='mydetails_cont_add.php'>Contact toevoegen</a></li>";
-echo "</ul>";
-echo "</td></tr></table>";
+$contact = get_contact($s_id);
+show_contact($contact, $s_id);
 
 show_oids();
 show_oidform();
@@ -153,18 +146,6 @@ function show_user($user){
 	echo "</table>";
 }
 
-function get_contact($s_id){
-	global $db;
-	$query = "SELECT *, ";
-	$query .= " contact.id AS cid, users.id AS uid, type_contact.id AS tcid, ";
-	$query .= " type_contact.name AS tcname, users.name AS uname ";
-	$query .= " FROM users, type_contact, contact ";
-	$query .= " WHERE users.id=".$s_id;
-	$query .= " AND contact.id_type_contact = type_contact.id ";
-	$query .= " AND users.id = contact.id_user ";
-	$contact = $db->GetArray($query);
-	return $contact;
-}
 
 function show_balance($balance, $user, $currency){
 	echo "<div class='border_b'>";
@@ -189,15 +170,59 @@ function show_balance($balance, $user, $currency){
 	echo "</table>";
 }
 
-function show_contact(){
-	global $rootpath;
-	$url = "rendercontact.php";
-	echo "<div id='contactdiv'></div>";
-	
-	echo "<script type='text/javascript'>showsmallloader('contactdiv');loadcontact('$url');</script>";
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<ul class='hormenu'>";
-    echo "<li><a href='mydetails_cont_add.php'>Contact toevoegen</a></li>";
-	echo "</ul>";
-	echo "</td></tr></table>";
+function get_contact($id){
+	global $db;
+	$query = "SELECT *, ";
+	$query .= " contact.id AS cid, users.id AS uid, type_contact.id AS tcid, ";
+	$query .= " type_contact.name AS tcname, users.name AS uname ";
+	$query .= " FROM users, type_contact, contact ";
+	$query .= " WHERE users.id=".$id;
+	$query .= " AND contact.id_type_contact = type_contact.id ";
+	$query .= " AND users.id = contact.id_user ";
+
+	$contact = $db->GetArray($query);
+	return $contact;
+}
+
+function show_contact($contact, $user_id){
+	echo "<div >";
+	echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
+
+	echo "<tr class='even_row'>";
+	echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
+	echo "</tr>";
+echo "<tr>";
+echo "<th valign='top'>Type</th>";
+echo "<th valign='top'>Waarde</th>";
+echo "<th valign='top'>Commentaar</th>";
+echo "<th valign='top'>Publiek</th>";
+echo "<th valign='top'></th>";
+echo "</tr>";
+
+	foreach($contact as $key => $value){
+		echo "<tr>";
+		echo "<td valign='top'>".$value["abbrev"].": </td>";
+		echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
+		echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
+		echo "<td valign='top'>";
+		if (trim($value["flag_public"]) == 1){
+				echo "Ja";
+		}else{
+				echo "Nee";
+		}
+		echo "</td>";
+		echo "<td valign='top' nowrap>|";
+		echo "<a href='mydetails_cont_edit.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+		echo " aanpassen </a> |";
+		echo "<a href='mydetails_cont_delete.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+		echo "verwijderen </a>|";
+		echo "</td>";
+		echo "</tr>";
+	}
+	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
+	echo "<tr><td colspan='5'>| ";
+	echo "<a href='mydetails_cont_add.php?uid=" . $value['id_user'] . "'>";
+	echo "Contact toevoegen</a> ";
+	echo "|</td></tr>";
+	echo "</table></div>";
 }

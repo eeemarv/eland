@@ -48,7 +48,8 @@ foreach($newsitems as $value)
 
 	echo "<td nowrap valign='top'>";
 	if(trim($value["itemdate"]) != "00/00/00"){
-		echo $value["itemdate"];
+		list($date) = explode(' ', $value['itemdate']);
+		echo $date;
 	}
 	echo "</td>";
 	echo "<td valign='top'>";
