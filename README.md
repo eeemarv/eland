@@ -42,10 +42,10 @@ Environment Vars
 
 * ELAS_DOMAIN_SESSION_domain: session name by domain (must be the color name of the database!)
 
-    `Dots in <domain> are replaced by double underscore __`
-    `Hyphens in <domain> are replaced by triple underscore ___`
+    `Dots in domain are replaced by double underscore __`
+    `Hyphens in domain are replaced by triple underscore ___`
 
-    example:
+    e-example.com
     set environment variable:
         `heroku config:set ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=PURPLE`
 
@@ -58,6 +58,9 @@ The session name is also:
 * ELAS_DEBUG
 * ELAS_DB_DEBUG
 * ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' (role admin) -> access to all lets groups.
+
+* ELAS_CDN_JQPLOT: cdn for the jqplot library, defaults to `https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/`
+* ELAS_CDN_JQUERY: cdn for jquery, defaults to `https://code.jquery.com/jquery-2.1.3.min.js`
 
 
 Steps moving a group from eLAS to eLAS-Heroku

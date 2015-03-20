@@ -17,6 +17,9 @@ if(!isset($rootpath)){
 	$rootpath = "";
 }
 
+$cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: 'https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
+$cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: 'https://code.jquery.com/jquery-2.1.3.min.js';
+
 require_once $rootpath . 'vendor/autoload.php';
 require_once $rootpath . 'includes/inc_eventlog.php';
 require_once $rootpath . 'includes/inc_session.php'; 

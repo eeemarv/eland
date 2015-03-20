@@ -1,6 +1,5 @@
 {
     "require": {
-		"pimple/pimple": "v1.0.1",
 		"predis/predis": "v0.8.5",
 		"aws/aws-sdk-php": "2.7.*@dev",
 		"adodb/adodb-php": "5.19",
@@ -9,22 +8,15 @@
 		"bramus/monolog-colored-line-formatter": "2.0.*",
 		"fergusean/nusoap": "0.9.5",
 		"moxiecode/plupload": "~2.1",
-		"jqplot/jqplot": "1.0.8",
-		"components/jquery": "~2.1",
-		"components/jqueryui": "~1.11",
 		"mandrill/mandrill": "~1.0"
 	},
 	"repositories": [
 		{
-			"type": "package",
-			"package": {
-				"name": "jqplot/jqplot",
-				"version": "1.0.8",
-				"dist": {
-					"url": "https://bitbucket.org/cleonello/jqplot/downloads/jquery.jqplot.1.0.8r1250.zip",
-					"type": "zip"            
-				}
-			}
-		}            
+			"type": "composer",
+			"url": "http:\/\/www.phpclasses.org\/"
+		},
+		{
+			"packagist": false
+		}
     ]  
 }
