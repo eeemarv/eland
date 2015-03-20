@@ -39,9 +39,7 @@ function writeconfig($key, $value)
 {
 	global $db, $redis, $session_name;
 
-	$query = "UPDATE config SET value = '" . $value . "' WHERE setting = '" . $key . "'";
-	$result = $db->Execute($query);
-	if (!$result)
+	if (!$db->Execute('UPDATE config SET value = \'' . $value . '\', "default" = \'f\' WHERE setting = \'' . $key . '\''))
 	{
 		return false;
 	}
