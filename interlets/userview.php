@@ -11,16 +11,18 @@ if ($letsgroup_id)
 {
 	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
 
+	$err_group = $letsgroup['groupname'] . ': ';
+
 	if($letsgroup["apimethod"] == 'elassoap')
 	{
-		$soapurl = ($letsgroup['elassoapurl']) ?: $letsgroup['url'] . '/soap';
+		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
 		$soapurl = $soapurl ."/wsdlelas.php?wsdl";
 		$apikey = $letsgroup["remoteapikey"];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if ($err)
 		{
-			$alert->error('Kan geen verbinding maken.');
+			$alert->error($err_group . 'Kan geen verbinding maken.');
 		}
 		else
 		{
@@ -28,7 +30,7 @@ if ($letsgroup_id)
 			$err = $client->getError();
 			if ($err)
 			{
-				$alert->error('Kan geen token krijgen.');
+				$alert->error($err_group . 'Kan geen token krijgen.');
 			}
 			else
 			{
@@ -38,7 +40,7 @@ if ($letsgroup_id)
 	}
 	else
 	{
-		$alert->error('Deze groep draait geen eLAS-soap, kan geen connectie maken');
+		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
 	}
 }
 
