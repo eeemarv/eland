@@ -1,57 +1,60 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+
+$letsgroup_id = $_GET['letsgroup_id'];
+
+if ($letsgroup_id)
+{
+	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
+
+	if($letsgroup["apimethod"] == 'elassoap')
+	{
+		$soapurl = ($letsgroup['elassoapurl']) ?: $letsgroup['url'] . '/soap';
+		$soapurl = $soapurl ."/wsdlelas.php?wsdl";
+		$apikey = $letsgroup["remoteapikey"];
+		$client = new nusoap_client($soapurl, true);
+		$err = $client->getError();
+		if ($err)
+		{
+			$alert->error('Kan geen verbinding maken.');
+		}
+		else
+		{
+			$token = $client->call('gettoken', array('apikey' => $apikey));
+			$err = $client->getError();
+			if ($err)
+			{
+				$alert->error('Kan geen token krijgen.');
+			}
+			else
+			{
+				echo '<script>window.open("' . $letsgroup['url'] . '/login.php?token=' . $token . '");</script>';
+			}
+		}
+	}
+	else
+	{
+		$alert->error('Deze groep draait geen eLAS-soap, kan geen connectie maken');
+	}
+}
+
+$letsgroups = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod <> \'internal\'');
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id)){
-	if($s_accountrole == 'user' || $s_accountrole == 'admin'){
-		show_grouptitle();
-		show_interletsgroups();
-	} else {
-		redirect_login($rootpath);
-	}
-}else{
-	redirect_login($rootpath);
+echo "<h1>Andere interlets groepen raadplegen</h1>";
+echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
+
+foreach($letsgroups as $key => $value){
+	echo "<tr><td nowrap>";
+	echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
+	echo "</td></tr>";
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+echo "</table>";
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_grouptitle(){
-	echo "<h1>Andere (interlets) groepen raadplegen</h1>";
-}
-
-function show_interletsgroups(){
-	global $db;
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
-	$query = "SELECT * FROM letsgroups WHERE apimethod <> 'internal'";
-	$letsgroups = $db->Execute($query);
-	foreach($letsgroups as $key => $value){
-		echo "<tr><td nowrap>";
-		//a href='#' onclick=window.open('$myurl','addgroup','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Groep toevoegen</a>
-		//echo "<a href='" .$value["url"] ."'>" .$value["groupname"] ."</a>";a
-		echo "<a href='#' onclick=window.open('redirect.php?letsgroup=" .$value["id"] ."','interlets','location=no,menubar=no,scrollbars=yes')>" .$value["groupname"] ."</a>";
-		echo "</td></tr>";
-	}
-
-	echo "</table>";
-
-}
-
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

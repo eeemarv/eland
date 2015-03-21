@@ -19,6 +19,8 @@ if(!isset($rootpath)){
 
 $cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: 'https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: 'https://code.jquery.com/jquery-2.1.3.min.js';
+$cdn_jquery = (getenv('ELAS_CDN_JQUERYUI')) ?: 'https://code.jquery.com/ui/1.11.4/jquery-ui.min.js';
+$cdn_typeahead = (getenv('ELAS_CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js';
 
 require_once $rootpath . 'vendor/autoload.php';
 require_once $rootpath . 'includes/inc_eventlog.php';
