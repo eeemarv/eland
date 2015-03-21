@@ -151,10 +151,9 @@ header("Content-Type:text/html;charset=utf-8");
 		}
 	}elseif($role == 'anonymous'){
 		echo "<ul class='vertmenu'>";
-		echo "<li><a href='#' id='showlostpasswordform'>Login/Passwoord vergeten</a></li>";
-		//echo "<li><a href='#' id='showguestloginform'>" .$tr->get('guestlogin','nav') ."</a></li>";
-		$myurl = $rootpath."help.php";
-		echo "<li><a href='$myurl'>Help</a></li>";
+		echo '<li><a href="' . $rootpath . 'login.php">Login</a></li>';		
+		echo '<li><a href="' . $rootpath . 'pwreset.php">Login of Paswoord vergeten</a></li>';
+		echo '<li><a href="' . $rootpath . 'help.php">Help</a></li>';
 		echo "</ul>";
 	}
 	?>

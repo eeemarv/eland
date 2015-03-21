@@ -48,7 +48,6 @@ if(!empty($token)){
 	} else {
 		$alert->error("Interlets login is mislukt.");
 		log_event("","LogFail", "Token login failed ($token)");
-
 	}
 }
 
@@ -137,6 +136,8 @@ if(readconfigfromdb("maintenance") == 1)
 require_once($rootpath."includes/inc_header.php");
 
 // Draw the login form division
+
+echo '<h1>Login</h1>';
  
 if(empty($token))
 {

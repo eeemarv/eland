@@ -9,15 +9,9 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_form.php");
 
-if (!$s_id || !($s_accountrole == 'user' || $s_accountrole == 'admin'))
-{
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
 $posted_list = array();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+if ($_POST['zend'])
 {
 	$posted_list["description"] = $_POST["description"];
 	$fromuser = get_user_by_letscode($_POST["letscode_from"]);
@@ -219,13 +213,13 @@ echo "</td></tr><tr><td></td><td>";
 echo "<tr><td align='right'>";
 echo "Aan LETSCode";
 echo "</td><td>";
-echo '<input type="text" name="letscode_to" id="letscode_to" value="' . $posted_list['letscode_to'] . '" size="10" onchange="javascript:showsmallloader(\'tooutputdiv\');loaduser(\'letscode_to\', \'tooutputdiv\');">';
+echo '<input type="text" name="letscode_to" value="' . $posted_list['letscode_to'] . '" size="10" onchange="javascript:showsmallloader(\'tooutputdiv\');loaduser(\'letscode_to\', \'tooutputdiv\');">';
 echo "</td><td><div id='tooutputdiv'></div>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
-echo "<input type='text' id='amount' name='amount' size='10' ";
+echo "<input type='number' min='1' name='amount' size='10' ";
 echo 'value="' . (($posted_list['amount']) ? $postec_list['amount'] : '') . '">';
 echo "</td><td>";
 echo "</td></tr>";

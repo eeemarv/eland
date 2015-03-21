@@ -28,8 +28,8 @@ show_editlink();
 $contact = get_contact($s_id);
 show_contact($contact, $s_id);
 
-show_oids();
-show_oidform();
+//show_oids();
+//show_oidform();
 $balance = $user["saldo"];
 show_balance($balance, $user, readconfigfromdb("currency"));
 

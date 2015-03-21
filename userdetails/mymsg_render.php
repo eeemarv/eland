@@ -5,12 +5,8 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if (isset($s_id)){
-	if($s_accountrole == "user" || $s_accountrole == "admin"){
-	        $messagerows = get_all_msgs($s_id);
-                show_all_msgs($messagerows);
-        }
-}
+$messagerows = get_all_msgs($s_id);
+show_all_msgs($messagerows);
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////////F U N C T I E S //////////////////////////////
