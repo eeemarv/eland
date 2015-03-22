@@ -13,6 +13,12 @@ require_once($rootpath."includes/inc_auth.php");
 
 //require_once($rootpath."contrib/includes/lightopenid/openid.php");
 
+if ($s_id)
+{
+	header('Location: index.php');
+	exit;
+}
+
 $locked = 0;
 
 // Include the moologin javascript code

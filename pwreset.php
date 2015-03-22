@@ -9,6 +9,12 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_passwords.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
+if ($s_id)
+{
+	header('Location: index.php');
+	exit;
+}
+
 $user_id = $_GET['u'];
 $token = $_GET['token'];
 
@@ -77,7 +83,7 @@ if ($_POST['zend'])
 
 			if ($user_id)
 			{
-				$token = hash('sha512', $user_id . $session_name . time() . $email);
+				$token = substr(hash('sha512', $user_id . $session_name . time() . $email), 0, 10);
 				$key = $session_name . '_pwreset_token_' . $user_id;
 				$redis->set($key, $token);
 				$redis->expire($key, 3600);

@@ -161,12 +161,12 @@ function show_contact($contact){
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.donutRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.cursor.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.dateAxisRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.canvasTextRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.canvasAxisTickRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'jqplot.highlighter.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
 include($rootpath."includes/inc_footer.php");
