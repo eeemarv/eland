@@ -47,8 +47,23 @@ if ($_POST['zend'])
 		'addr'			=> pg_escape_string($_POST['addr']),
 	);
 	$activate = $_POST['activate'];
-	
-	$errors = validate_input($user);
+
+	if ($mode == 'new')
+	{
+		$errors = validate_input($user);
+	}
+	else
+	{
+		if ($db->GetOne('SELECT c.value
+			FROM contact c, type_contact tc
+			WHERE c.id_user <> ' . $id . '
+				AND c.id_type_contact = tc.id
+				AND tc.abbrev = \'mail\'
+				AND c.value = \'' . $contact['mail']))
+		{
+			$error['mail'] = 'Het email adres is al in gebruik.';
+		}
+	}
 
 	if (!$contact['mail'] || !filter_var($contact['mail'], FILTER_VALIDATE_EMAIL))
 	{
@@ -118,6 +133,46 @@ if ($_POST['zend'])
 			if($db->AutoExecute('users', $user, 'UPDATE', 'id = ' . $id))
 			{
 				$alert->success('Gebruiker aangepast.');
+
+				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
+				$stored_contacts = $db->GetAssoc('SELECT tc.abbrev, c.value
+					FROM type_contact tc, contact c
+					WHERE tc.id = c.id_type_contact
+						AND c.id_user = ' . $id);
+
+				foreach ($contact as $key => $value)
+				{
+					if (!$value)
+					{
+						if ($stored_contacts[$key] && $key != 'mail')
+						{
+							$db->Execute('DELETE FROM contact
+								WHERE id_user = ' . $id . '
+									AND id_type_contact = ' . $contact_types[$key]);
+						}
+						continue;
+					}
+
+					if ($stored_contacts[$key] == $value)
+					{
+						continue;
+					}
+
+					if (!$stored_contacts[$key])
+					{
+						$insert = array(
+							'value'		=> $value,
+							'id_type_contact'	=> $contact_types[$key],
+							'id_user'			=> $id,
+						);
+						$db->AutoExecute('contact', $data, 'INSERT');
+						continue;
+					}
+
+					$db->AutoExecute('contact', array('value' => $value), 'UPDATE',
+						'id_user = ' . $id . ' AND id_type_contact = \'' . $contact_types[$key] . '\'');
+				}
+
 				header('Location: view.php?id=' . $id);
 				exit;
 			}
@@ -138,7 +193,7 @@ if ($_POST['zend'])
 }
 else
 {
-	if ($mode == 'update')
+	if ($mode == 'edit')
 	{
 		$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
 		$contact = $db->GetAssoc('SELECT tc.abbrev, c.value
@@ -199,7 +254,7 @@ echo "<input type='text' name='comments' value='" . $user['comments'] . "' size=
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Login</td><td >";
-echo "<input type='text' name='login' value='" . $user['login'] . "' size='30' required>";
+echo "<input type='text' name='login' value='" . $user['login'] . "' size='30'>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Rechten</td>";
@@ -266,11 +321,14 @@ echo "<tr><td  align='right'>GSM</td><td >";
 echo "<input type='text' name='gsm' value='" . $contact['gsm'] . "' size='30'>";
 echo "</td></tr>";
 
-echo "<tr><td  align='right'>Activeren?</td><td >";
-echo "<input type='checkbox' name='activate'";
-echo ($mode == 'new') ? " checked='checked'" : '';
-echo ">";
-echo "</td></tr>";
+if ($mode == 'new')
+{
+	echo "<tr><td  align='right'>Activeren?</td><td >";
+	echo "<input type='checkbox' name='activate' ";
+	echo "checked='checked'";
+	echo ">";
+	echo "</td></tr>";
+}
 
 echo "<tr><td></td><td>";
 echo "<input type='submit' name='zend' value='Opslaan'>";
