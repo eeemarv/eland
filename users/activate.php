@@ -138,7 +138,7 @@ function show_pwform($errorlist, $id, $user){
 	echo "<td valign='top'>";
 	echo "<input  type='text' name='pw1' size='30' value='";
 	echo $pw;
-	echo "'>";
+	echo "' required>";
 	echo "</td>";
 	echo "<td>";
 		if (isset($errorlist["pw1"])){
@@ -150,7 +150,7 @@ function show_pwform($errorlist, $id, $user){
 	echo "<td valign='top'>";
 	echo "<input  type='text' name='pw2' size='30' value='";
         echo $pw;
-        echo "'>";
+        echo "' required>";
 	echo "</td>";
 	echo "<td>";
 		if (isset($errorlist["pw2"])){

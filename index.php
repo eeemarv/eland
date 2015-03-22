@@ -17,7 +17,6 @@
 
 ob_start();
 $rootpath = "./";
-$ptitle="home1";
 $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
@@ -50,16 +49,6 @@ if($s_accountrole == "admin"){
 	if($interletsstatus  != ""){
 		echo "<tr><td>$interletsstatus</td></tr>";
 	}
-	echo "</table>";
-}
-
-if($s_accountrole == "guest"){
-	$mygroup = readconfigfromdb("systemname");
-	echo "<table class='data' width='99%'><tr class='header'><td><strong>Interlets login<strong></td></tr>";
-	echo "<tr><td>";
-	echo "Welkom bij de eLAS installatie van $mygroup.";
-	echo "<br>Je bent ingelogd als LETS-gast, je kan informatie raadplegen maar niets wijzigen of transacties invoeren.  Als guest kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS";
-	echo "</td></tr>";
 	echo "</table>";
 }
 

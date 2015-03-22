@@ -59,7 +59,7 @@ echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td align='right' valign='top'>";
 echo "Groepnaam";
 echo "</td><td valign='top'>";
-echo "<input type='text' name='groupname' value='" . $group['groupname'] . "' size='30'>";
+echo "<input type='text' name='groupname' value='" . $group['groupname'] . "' size='30' required>";
 echo "</td></tr><tr><td valign='top'></td></tr>";
 
 echo "<tr><td align='right' valign='top'>";
@@ -107,13 +107,13 @@ echo "</td></tr><tr><td valign='top'></td></tr>";
 echo "<tr><td align='right' valign='top'>";
 echo "URL";
 echo "</td>\n<td valign='top'>";
-echo "<input type='text' name='url' value='" . $group['url'] . "' size='30'>";
+echo "<input type='url' name='url' value='" . $group['url'] . "' size='30'>";
 echo "</td></tr><tr><td valign='top'></td></tr>";
 
 echo "<tr><td align='right' valign='top'>";
 echo "SOAP URL<br><small><i>(voor eLAS, de URL met /soap erachter)</i></small>";
 echo "</td>\n<td valign='top'>";
-echo "<input type='text' name='elassoapurl' value='" . $group['elassoapurl'] . "' size='30'>";
+echo "<input type='url' name='elassoapurl' value='" . $group['elassoapurl'] . "' size='30'>";
 echo "</td></tr><tr><td valign='top'></td></tr>";
 
 echo "<tr><td align='right' valign='top'>";

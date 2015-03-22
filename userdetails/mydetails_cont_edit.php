@@ -120,7 +120,7 @@ function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_l
 
 	echo "<tr>\n";
 	echo "<td valign='top' align='right'>Waarde </td>\n";
-	echo "<td><input type='text' name='value' size='20' ";
+	echo "<td><input type='text' name='value' size='20' required";
 	if (isset($posted_list["value"])){
 		echo " value='".$posted_list["value"]."' ";
 	}else{

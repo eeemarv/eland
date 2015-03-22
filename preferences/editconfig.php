@@ -41,7 +41,7 @@ echo "</td><td>";
 echo "<input type='text' name='setting' value='". $setting . "' READONLY>";
 echo '</td></tr>';
 echo '<tr><td>Waarde</td><td>';
-echo "<input type='text' name='value' size='40' value='" . $config["value"] . "'>";
+echo "<input type='text' name='value' size='40' value='" . $config["value"] . "' required>";
 echo "</td></tr>";
 echo "<tr><td align='right'>";
 echo "Omschrijving";

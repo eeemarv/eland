@@ -68,7 +68,7 @@ echo "</td>";
 echo "</tr>";
 echo "<tr>";
 echo "<td valign='top' align='right'>Waarde </td>";
-echo "<td><input type='text' name='value' size='30' ";
+echo "<td><input type='text' name='value' size='30' required ";
 
 echo " value='".htmlspecialchars($contact["value"],ENT_QUOTES)."' ";
 

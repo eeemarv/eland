@@ -168,17 +168,17 @@ echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td align='right' >";
 echo "Naam";
 echo "</td><td >";
-echo '<input type="text" name="name" value="' . $user['name'] . '" size="30">';
+echo '<input type="text" name="name" value="' . $user['name'] . '" size="30" required>';
 echo "</td></tr>";
 
 echo "<tr><td align='right'>";
 echo "Volledige Naam (Voornaam en Achternaam)";
 echo "</td><td >";
-echo "<input type='text' name='fullname' size='30' value='" . $user['fullname'] . "'>";
+echo "<input type='text' name='fullname' size='30' value='" . $user['fullname'] . "' required>";
 echo "</td></tr><tr><td ></td></tr>";
 
 echo "<tr><td align='right'>Letscode</td>";
-echo "<td ><input type='text' name='letscode' value='" . $user['letscode'] . "' size='30'>";
+echo "<td ><input type='text' name='letscode' value='" . $user['letscode'] . "' size='30' required>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Postcode</td>";
@@ -199,7 +199,7 @@ echo "<input type='text' name='comments' value='" . $user['comments'] . "' size=
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Login</td><td >";
-echo "<input type='text' name='login' value='" . $user['login'] . "' size='30'>";
+echo "<input type='text' name='login' value='" . $user['login'] . "' size='30' required>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Rechten</td>";
@@ -238,11 +238,11 @@ echo "</td></tr><tr><td >";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Limiet minstand</td><td >";
-echo "<input type='text' name='minlimit' value='" . $user['minlimit'] . "' size='30'>";
+echo "<input type='number' name='minlimit' value='" . $user['minlimit'] . "' size='30' required>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Limiet maxstand</td><td >";
-echo "<input type='text' name='maxlimit' value='" . $user['maxlimit'] . "' size='30'>";
+echo "<input type='number' name='maxlimit' value='" . $user['maxlimit'] . "' size='30' required>";
 echo "</td></tr>";
 
 echo "<tr><td  align='right'>Preshared key<br><small><i>Interlets veld</i></small></td><td >";
@@ -251,7 +251,7 @@ echo "</td></tr><tr><td></td>";
 echo "</tr>";
 
 echo "<tr><td  align='right'>E-mail</td><td >";
-echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30'>";
+echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30' required>";
 echo "</td></tr>";
 
 echo "<tr><td  align='right'>Adres</td><td >";

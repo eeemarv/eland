@@ -114,7 +114,7 @@ echo "</select>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Wat </td><td>";
-echo '<input type="text" name="content" size="30" value="' . $msg['content'] . '">';
+echo '<input type="text" name="content" size="30" value="' . $msg['content'] . '" required>';
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Omschrijving </td><td>";

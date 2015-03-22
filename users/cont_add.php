@@ -62,7 +62,7 @@ echo "</td>";
 echo "</tr>";
 echo "<tr>";
 echo "<td valign='top'  align='right'>Waarde</td>";
-echo "<td valign='top' ><input type='text' name='value' size='30' ";
+echo "<td valign='top' ><input type='text' name='value' size='30' required ";
 if (isset($contact["value"])){
 	echo " value='".$contact["value"]."' ";
 }

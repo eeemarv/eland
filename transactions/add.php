@@ -213,14 +213,14 @@ echo "</td></tr><tr><td></td><td>";
 echo "<tr><td align='right'>";
 echo "Aan LETSCode";
 echo "</td><td>";
-echo '<input type="text" name="letscode_to" value="' . $posted_list['letscode_to'] . '" size="10" onchange="javascript:showsmallloader(\'tooutputdiv\');loaduser(\'letscode_to\', \'tooutputdiv\');">';
+echo '<input type="text" name="letscode_to" value="' . $posted_list['letscode_to'] . '" size="10" onchange="javascript:showsmallloader(\'tooutputdiv\');loaduser(\'letscode_to\', \'tooutputdiv\');" required>';
 echo "</td><td><div id='tooutputdiv'></div>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Aantal {$currency}</td><td>";
 echo "<input type='number' min='1' name='amount' size='10' ";
-echo 'value="' . (($posted_list['amount']) ? $postec_list['amount'] : '') . '">';
+echo 'value="' . (($posted_list['amount']) ? $postec_list['amount'] : '') . '" required>';
 echo "</td><td>";
 echo "</td></tr>";
 echo "<tr><td></td><td>";
@@ -228,7 +228,7 @@ echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Dienst</td><td>";
 echo '<input type="text" name="description" id="description" size="40" maxlength="60" ';
-echo 'value="' . $posted_list['description'] . '">';
+echo 'value="' . $posted_list['description'] . '" required>';
 echo "</td><td>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";

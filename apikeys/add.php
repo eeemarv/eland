@@ -33,7 +33,7 @@ echo "Apikey";
 echo "</td><td>";
 echo "<input type='text' name='apikey' id='apikey' size='40' value='";
 echo $mykey;
-echo "' READONLY>";
+echo "' READONLY required>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Type</td><td>";

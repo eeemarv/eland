@@ -43,7 +43,7 @@ echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Paswoord</td>";
 echo "<td valign='top'>";
-echo "<input  type='password' name='pw1' size='30' value='" . $pw['pw1'] . "' >";
+echo "<input  type='password' name='pw1' size='30' value='" . $pw['pw1'] . "' required>";
 echo "</td>";
 echo "<td>";
 	if (isset($errorlist["pw1"])){
@@ -53,7 +53,7 @@ echo "</td>";
 echo "</tr>";
 echo "<tr><td valign='top' align='right'>Herhaal paswoord</td>";
 echo "<td valign='top'>";
-echo "<input  type='password' name='pw2' size='30' value='".$pw['pw2'] . "' >";
+echo "<input  type='password' name='pw2' size='30' value='".$pw['pw2'] . "' required>";
 echo "</td>";
 echo "<td>";
 	if (isset($errorlist["pw2"])){

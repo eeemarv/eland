@@ -1,55 +1,40 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle();
-	$id = $_GET["id"];
-	if(isset($id)){
-		$list_users = get_users();
-		$list_type_contact = get_type_contact();
-		if(isset($_POST["zend"])){
-			$posted_list = array();
-			$posted_list["id_type_contact"] = trim($_POST["id_type_contact"]);
-			$posted_list["comments"] = $_POST["comments"];
-			$posted_list["value"] = trim($_POST["value"]);
-			$posted_list["id_user"] = $_POST["id_user"];
-			$posted_list["id"] = $_GET["id"];
-			$error_list = validate_input($posted_list);
+show_ptitle();
+$id = $_GET["id"];
+if(isset($id)){
+	$list_users = get_users();
+	$list_type_contact = get_type_contact();
+	if(isset($_POST["zend"])){
+		$posted_list = array();
+		$posted_list["id_type_contact"] = trim($_POST["id_type_contact"]);
+		$posted_list["comments"] = $_POST["comments"];
+		$posted_list["value"] = trim($_POST["value"]);
+		$posted_list["id_user"] = $_POST["id_user"];
+		$posted_list["id"] = $_GET["id"];
+		$error_list = validate_input($posted_list);
 
-			if (!empty($error_list)){
-				show_form($posted_list, $error_list, $list_users, $list_type_contact);
-			}else{
-				update_contact($id, $posted_list);
-				redirect_overview();
-			}
+		if (!empty($error_list)){
+			show_form($posted_list, $error_list, $list_users, $list_type_contact);
 		}else{
-			$contact = get_contact($id);
-			show_form($contact, $error_list, $list_users, $list_type_contact);
+			update_contact($id, $posted_list);
+			redirect_overview();
 		}
 	}else{
-		redirect_overview();
+		$contact = get_contact($id);
+		show_form($contact, $error_list, $list_users, $list_type_contact);
 	}
 }else{
-	redirect_login($rootpath);
+	redirect_overview();
 }
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////F U N C T I E S ////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
 
 function show_ptitle(){
 	echo "<h1>Contact aanpassen</h1>";
@@ -135,7 +120,7 @@ function show_form($contact, $error_list, $list_users, $list_type_contact){
 
 	echo "<tr>\n<td valign='top' align='right'>Waarde</td>\n<td>";
 	echo "<input type='text' name='value' size='40' ";
-	echo "value='". htmlspecialchars($contact["value"],ENT_QUOTES). "'>";
+	echo "value='". htmlspecialchars($contact["value"],ENT_QUOTES). "' required>";
 	echo "</td>\n</tr>\n\n<tr>\n<td></td>\n<td valign='top'>";
 	if (isset($error_list["value"])){
 		echo $error_list["value"];
@@ -182,6 +167,4 @@ function redirect_overview(){
 	header("Location: overview.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

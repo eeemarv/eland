@@ -21,7 +21,7 @@ $sort = ($sort) ? $sort : 'letscode';
 echo "<h1>Contactlijst</h1>";
 
 echo "<table width='100%' border=0><tr><td>";
-echo "<form method='POST' id='memberselect'>";
+echo "<form method='POST'>";
 
 echo "<table  class='selectbox'>\n";
 

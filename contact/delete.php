@@ -1,43 +1,26 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	$id = $_GET["id"];
-	if(empty($id)){
-		redirect_overview($contact);
-	}else{
-		show_ptitle();
-		if(isset($_POST["zend"])){
-			delete_contact($id);
-			redirect_overview();
-		}else{
-			$contact = get_contact($id);
-			show_contact($contact);
-			ask_confirmation($contact);
-			show_form($id);
-		}
-	}
+$id = $_GET["id"];
+if(empty($id)){
+	redirect_overview($contact);
 }else{
-	redirect_login($rootpath);
-}
-
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////F U N C T I E S ////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
+	show_ptitle();
+	if(isset($_POST["zend"])){
+		delete_contact($id);
+		redirect_overview();
+	}else{
+		$contact = get_contact($id);
+		show_contact($contact);
+		ask_confirmation($contact);
+		show_form($id);
+	}
 }
 
 function show_ptitle(){
@@ -107,6 +90,4 @@ function redirect_overview(){
 	header("Location: overview.php");
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

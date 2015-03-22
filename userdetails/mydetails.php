@@ -48,7 +48,7 @@ function show_oidform() {
 	echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
 	echo "<tr><td valign='top' align='right'>OpenID</td>";
 	echo "<td valign='top'>";
-	echo "<input  type='text' id='openid' name='openid' size='30'>";
+	echo "<input  type='text' id='openid' name='openid' size='30' required>";
 	echo "</td>";
 	echo "</tr>";
 	echo "<tr><td colspan='2' align='right'>";

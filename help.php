@@ -72,7 +72,7 @@ echo "<tr><td>";
 echo "E-mail adres<br><small><i>(Dit adres moet in eLAS geregistreerd staan)</i></small>";
 echo "</td><td>";
 
-echo "<input type='text' name='email' size='30' value='" .$posted_list["email"] ."'>";
+echo "<input type='email' name='email' size='30' value='" .$posted_list["email"] ."' required>";
 
 echo "</td><td>";
 if(!empty($error_list["email"])){
@@ -84,7 +84,7 @@ echo "<tr><td>";
 echo "Onderwerp<br><small><i>(verplicht, bv. Inloggen lukt niet)</i></small><br>";
 echo "</td><td>";
 
-echo "<input type='text' name='subject' size='60' value='" .$posted_list["subject"] ."'>";
+echo "<input type='text' name='subject' size='60' value='" .$posted_list["subject"] ."' required>";
 
 echo "</td><td>";
 if(!empty($error_list["subject"])){
@@ -96,7 +96,7 @@ echo "<tr><td>";
 echo "Omschrijving van je probleem:<br>";
 echo "</td><td>";
 
-echo "<TEXTAREA NAME='description' COLS=60 ROWS=6>" .$posted_list["description"] ."</TEXTAREA>";
+echo "<TEXTAREA NAME='description' COLS=60 ROWS=6 required>" .$posted_list["description"] ."</TEXTAREA>";
 
 echo "</td></tr>";
 echo "<tr><td>";

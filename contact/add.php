@@ -1,18 +1,12 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle();
 	$list_type_contact = get_type_contact();
 	$list_users = get_users();
@@ -35,16 +29,9 @@ if(isset($s_id) && ($s_accountrole == "admin")){
 		show_form($error_list, $posted_list, $list_users, $list_type_contact);
 	}
 
-}else{
-	redirect_login($rootpath);
-}
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////F U N C T I E S ////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
+//////////////
+
 
 function show_ptitle(){
 	echo "<h1>Nieuw contact ingeven</h1>";
@@ -170,6 +157,4 @@ global $db;
 	return $list_type_contact;
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

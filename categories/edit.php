@@ -76,7 +76,7 @@ echo "<form action='edit.php?id=".$cat["id"]."' method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Naam </td><td>";
 echo "<input type='text' name='name' size='60' ";
-echo "value='". $cat["name"] . "'>";
+echo "value='". $cat["name"] . "' required>";
 echo "</td><td>";
 if (isset($error_list["name"])){
 	echo $error_list["name"];

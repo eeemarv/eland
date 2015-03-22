@@ -1,6 +1,7 @@
 <?php
 ob_start();
 $rootpath = '../';
+$role = 'admin';
 require_once($rootpath.'includes/inc_default.php');
 require_once($rootpath.'includes/inc_adoconnection.php');
 
@@ -32,7 +33,11 @@ $req->add('fixed', 0, 'post', array('type' => 'text', 'size' => 3, 'maxlength' =
 	->add('transid', generate_transid(), 'post', array('type' => 'hidden'))
 	->add('refresh', '', 'post', array('type' => 'submit', 'label' => 'Ververs pagina'));
 
-$active_users = get_active_users();
+$query = 'SELECT id, fullname, letscode, accountrole, status, saldo, minlimit, maxlimit, adate
+	FROM users
+	WHERE status IN (1, 2, 3, 4)
+	ORDER BY letscode';
+$active_users = $db->GetArray($query);
 
 $letscode_from = $req->get('letscode_from');
 $from_user_id = null;
@@ -120,51 +125,33 @@ if ($notice) {
 	echo '<div style="background-color: #DDDDFF;padding: 10px;">'.$notice.'</div>';
 }
 
-show_ptitle1();
-show_form($req, $data_table);
+echo '<h1>Massa-Transactie. "Eén naar Veel". </h1>';
+
+echo '<form method="post">';
+echo '<div id="transformdiv" style="padding:10px;"><table cellspacing="5" cellpadding="0" border="0">';
+$req->set_output('tr')->render(array('letscode_from', 'description'));
+echo '</table><br/>';
+$data_table->render();
+echo '<table cellspacing="5" cellpadding="0" border="0">';
+$req->set_output('tr')->render(array('confirm_password', 'zend', 'transid'));
+echo '</table></div>';
+echo '<div style="background-color:#ffdddd; padding: 10px;">';
+echo '<p><strong>Een vast bedrag en/of percentage invullen voor alle rekeningen.</strong></p>';
+echo '<table  cellspacing="5" cellpadding="0" border="0">';
+$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_max_limit', 'fill_in', 'transid'));
+echo '</table>';
+echo '<p><strong><i>Van LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
+echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
+echo '</div><br/><table>';
+$req->set_output('tr')->render('refresh');
+echo '</table></form>';
 
 include($rootpath.'includes/inc_footer.php');
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function show_ptitle1(){
-	echo '<h1>Massa-Transactie. "Eén naar Veel". </h1>';
-}
-
-function show_form($req, $data_table){
-	echo '<form method="post">';
-	echo '<div id="transformdiv" style="padding:10px;"><table cellspacing="5" cellpadding="0" border="0">';
-	$req->set_output('tr')->render(array('letscode_from', 'description'));
-	echo '</table><br/>';
-	$data_table->render();
-	echo '<table cellspacing="5" cellpadding="0" border="0">';
-	$req->set_output('tr')->render(array('confirm_password', 'zend', 'transid'));
-	echo '</table></div>';
-	echo '<div style="background-color:#ffdddd; padding: 10px;">';
-	echo '<p><strong>Een vast bedrag en/of percentage invullen voor alle rekeningen.</strong></p>';
-	echo '<table  cellspacing="5" cellpadding="0" border="0">';
-	$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_max_limit', 'fill_in', 'transid'));
-	echo '</table>';
-	echo '<p><strong><i>Van LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
-	echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
-	echo '</div><br/><table>';
-	$req->set_output('tr')->render('refresh');
-	echo '</table></form>';
-}
 
 function get_active_users(){
 	global $db;
-	$query = 'SELECT id, fullname, letscode, accountrole, status, saldo, minlimit, maxlimit, adate
-		FROM users
-		WHERE status = 1
-			OR status = 2
-			OR status = 3
-			OR status = 4
-		ORDER BY letscode';
-	$active_users = $db->GetArray($query);
-	return $active_users;
+
 }
 
 function check_newcomer($adate){

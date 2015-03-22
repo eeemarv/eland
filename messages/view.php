@@ -146,9 +146,9 @@ echo "<table border='0'>";
 echo "<tr><td colspan='2'>";
 echo "<form method='post'>";
 echo "<INPUT TYPE='hidden' id='myid' VALUE='" .$msgid ."'>";
-echo "<TEXTAREA NAME='content' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' ";
+echo "<TEXTAREA NAME='content' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' required";
 if(empty($usermail) || $s_accountrole == 'guest'){
-	echo "DISABLED";
+	echo " DISABLED";
 }
 echo ">" . $content . "</TEXTAREA>";
 echo "</td></tr><tr><td>";

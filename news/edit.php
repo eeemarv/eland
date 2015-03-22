@@ -100,8 +100,8 @@ echo "<div class='border_b'><p>";
 echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>";
 echo "<form method='post'>";
 echo "<tr><td width='10%' valign='top' align='right'>Agendadatum: <i>wanneer gaat dit door?</i></td><td>";
-echo "<input type='text' name='itemdate' size='50' ";
-echo  "value ='". $news['itemdate'] ."'>";
+echo "<input type='date' name='itemdate' size='50' ";
+echo  "value ='". $news['itemdate'] ."' required>";
 
 
 echo "</td></tr>";
@@ -113,13 +113,13 @@ echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Titel </td><td>";
-echo "<input type='text' name='headline' size='50' value='" . $news['headline'] . "'>";
+echo "<input type='text' name='headline' size='50' value='" . $news['headline'] . "' required>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Nieuwsbericht </td>";
 echo "<td>";
-echo "<textarea name='newsitem' cols='60' rows='15' >";
+echo "<textarea name='newsitem' cols='60' rows='15' required>";
 echo $news['newsitem'];
 echo "</textarea></td></tr><tr><td></td><td>";
 

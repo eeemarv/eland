@@ -19,11 +19,6 @@ if ($s_id)
 	exit;
 }
 
-$locked = 0;
-
-// Include the moologin javascript code
-echo "<script type='text/javascript' src='$rootpath/js/moologin.js'></script>";
-
 $token = $_GET["token"];
 $openid = $_GET['openid_identity'];
 $location = $_GET['location'];
@@ -151,10 +146,10 @@ if(empty($token))
 	echo "<form  method='post'>";
 	echo "<table class='selectbox'><tr>";
 	echo "<td>Login</td>";
-	echo "<td><input type='text' name='login' size='30' value='" . $login . "'></td>";
+	echo "<td><input type='text' name='login' size='30' value='" . $login . "' required></td>";
 	echo "</tr><tr>";
 	echo "<td>Paswoord</td>";
-	echo "<td><input type='password' name='password' size='30'></td>";
+	echo "<td><input type='password' name='password' size='30' required></td>";
 	echo "</tr>";
 	echo "<tr><td colspan='2' align='right'>";
 	echo "<input type='submit' value='Inloggen' name='zend'>";

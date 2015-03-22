@@ -60,7 +60,7 @@ echo "</tr>\n\n";
 echo "<tr>\n";
 echo "<td valign='top' align='right'>Waarde</td>\n";
 echo "<td>";
-echo "<input type='text' name='value' size='20' ";
+echo "<input type='text' name='value' size='20' required ";
 if (isset($posted_list["value"])){
 	echo " value='".$posted_list["value"]."' ";
 }

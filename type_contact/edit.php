@@ -80,7 +80,7 @@ function show_form($contacttype, $error_list){
 	echo "<form action='edit.php?id=".$contacttype["id"]."' method='POST'>";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 	echo "<tr><td valign='top' align='right'>Type contact </td><td>";
-	echo "<input type='text' name='name' size='40' ";
+	echo "<input type='text' name='name' size='40' required ";
 	echo "value='". htmlspecialchars($contacttype["name"],ENT_QUOTES). "'>";
 	echo "</td><td>";
 	if (isset($error_list["name"])){
@@ -89,7 +89,7 @@ function show_form($contacttype, $error_list){
 	echo "</td></tr>";
 
 	echo "<tr><td valign='top' align='right'>Afkorting </td><td>";
-	echo "<input type='text' name='abbrev' size='40' ";
+	echo "<input type='text' name='abbrev' size='40' required ";
 	echo "value='". htmlspecialchars($contacttype["abbrev"],ENT_QUOTES). "'>";
 	echo "</td><td></td></tr>";
 /*	echo "<tr><td valign='top' align='right'>Beschermd </td><td>";

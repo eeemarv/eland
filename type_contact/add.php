@@ -35,11 +35,11 @@ echo "<div class='border_b'><p>";
 echo "<form method='POST' action='add.php'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Contacttype </td><td>";
-echo "<input type='text' name='name' size='30' ";
+echo "<input type='text' name='name' size='30' required ";
 if (isset($posted_list["name"])){
-	echo  "value ='".$posted_list["name"]."'>";
+	echo  "value ='".$posted_list["name"]."'";
 }
-echo "</td><td>";
+echo "></td><td>";
 if(isset($error_list["name"])){
 	echo $error_list["name"];
 }
@@ -47,7 +47,7 @@ echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Afkorting</td>";
 echo "<td>";
-echo "<input type='text' name='abbrev' size='30' ";
+echo "<input type='text' name='abbrev' size='30' required ";
 if (isset($posted_list["abbrev"])){
 	echo  "value ='".$posted_list["abbrev"]."'>";
 }

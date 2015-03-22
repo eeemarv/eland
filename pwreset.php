@@ -51,7 +51,7 @@ if ($token & $user_id)
 	echo "<form method='post'>";
 	echo "<table class='selectbox' border='0'><tr>";
 	echo "<td>Nieuw paswoord</td>";
-	echo "<td><input type='text' name='password' size='30' value='" . $password . "'></td>";
+	echo "<td><input type='text' name='password' size='30' value='" . $password . "' required></td>";
 	echo "</tr>";
 	echo "<tr><td></td><td>";
 	echo "<input type='submit' name='zend' value='Reset paswoord'>";
@@ -126,7 +126,7 @@ echo ' Als je alleen je login vergeten bent, hoef je de link niet te gebruiken.<
 echo "<form method='post'>";
 echo "<table class='selectbox' border='0'><tr>";
 echo "<td>E-mail adres</td>";
-echo "<td><input type='email' name='email' size='30' value='" . $email . "'></td>";
+echo "<td><input type='email' name='email' size='30' value='" . $email . "' required></td>";
 echo "</tr>";
 echo "<tr><td></td><td>";
 echo "<input type='submit' name='zend' value='Reset paswoord'>";
