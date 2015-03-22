@@ -1,14 +1,9 @@
 <?php
 
-class request {  //
-	private $s_id;
-	private $s_name;
-	private $s_letscode;
-	private $s_accountrole;
-	private $rootpath = '../';
-
+class request
+{  
 	private $parameters = array();
-	private $render_keys = array('type', 'value', 'size', 'maxlength', 'style', 'label', 'checked', 'onchange', 'onkeyup', 'autocomplete');
+	private $render_keys = array('type', 'value', 'size', 'maxlength', 'style', 'label', 'checked', 'onchange', 'onkeyup', 'autocomplete', 'min');
 	private $validation_keys = array('not_empty', 'match');
 
 	private $output = 'tr';
@@ -17,25 +12,7 @@ class request {  //
 		'empty' => 'Gelieve in te vullen',
 		'mismatch' => 'Ongeldige waarde!');
 
-	public function __construct($security_level = null){
-
-		global $s_id, $s_name, $s_letscode, $s_accountrole; //
-		session_start();
-		$s_id = $this->s_id = $_SESSION['id'];
-		$s_name = $this->s_name = $_SESSION['name'];
-		$s_letscode = $this->s_letscode = $_SESSION['letscode'];
-		$s_accountrole = $this->s_accountrole = $_SESSION['accountrole'];
-
-		if (!$security_level || (!in_array($security_level, array('admin', 'user', 'anonymous')))){
-			exit;
-		}
-		if ($security_level != 'anonymous' && (!$this->s_id || !$this->s_accountrole || !$this->s_name)){
-			header('Location: '.$this->rootpath.'login.php');
-		}
-		if ($security_level == 'admin' && $this->s_accountrole != 'admin'){
-			header('Location: '.$this->rootpath.'index.php');
-		}
-		return $this;
+	public function __construct(){
 	}
 
 	public function get_label($name){
@@ -174,8 +151,8 @@ class request {  //
 	}
 
 	private function confirm_password($confirm_password){
-        global $db;
-        $query = 'SELECT password FROM users WHERE id = '.$this->s_id;
+        global $db, $s_id;
+        $query = 'SELECT password FROM users WHERE id = '.$s_id;
         $row = $db->GetRow($query);
         $pass = ($row['password'] == hash('sha512', $confirm_password) || $row['password'] == md5($confirm_password) || $row['password'] == sha1($confirm_password)) ? true : false;
 		return	$pass;

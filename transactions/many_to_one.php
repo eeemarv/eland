@@ -2,6 +2,7 @@
 ob_start();
 
 $rootpath = '../';
+$role = 'admin';
 require_once($rootpath.'includes/inc_default.php');
 require_once($rootpath.'includes/inc_adoconnection.php');
 
@@ -18,10 +19,12 @@ require_once($rootpath.'includes/inc_data_table.php');
 //status 6: stapin
 //status 7: extern
 
-$req = new request('admin');
-$req->add('fixed', 0, 'post', array('type' => 'text', 'size' => 4, 'maxlength' => 4, 'label' => 'Vast bedrag'), array('match' => 'positive'))
-	->add('percentage', 0, 'post', array('type' => 'text', 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage'))
-	->add('percentage_base', 0, 'post', array('type' => 'text', 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage saldo-basis'))
+$req = new request();
+$req->add('fixed', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4, 'maxlength' => 4, 'label' => 'Vast bedrag'), array('match' => 'positive'))
+	->add('percentage', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage op saldo'))
+	->add('percentage_base', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Basis voor percentage op saldo'))
+	->add('percentage_transactions', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage op uitgeschreven transacties'))
+	->add('percentage_transactions_days', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Periode in dagen voor het percentage op uitgeschreven transacties.'))
 	->add('fill_in', '', 'post', array('type' => 'submit', 'label' => 'Vul in'))
 	->add('no_newcomers', '', 'post', array('type' => 'checkbox', 'label' => 'Geen instappers.'), array())
 	->add('no_leavers', '', 'post', array('type' => 'checkbox', 'label' => 'Geen uitstappers.'), array())
@@ -33,13 +36,18 @@ $req->add('fixed', 0, 'post', array('type' => 'text', 'size' => 4, 'maxlength' =
 	->add('transid', generate_transid(), 'post', array('type' => 'hidden'))
 	->add('refresh', '', 'post', array('type' => 'submit', 'label' => 'Ververs pagina'));
 
-$active_users = get_active_users();
+$active_users = $db->GetArray(
+	'SELECT id, fullname, letscode,
+		accountrole, status, saldo, minlimit, maxlimit, adate
+	FROM users
+	WHERE status IN (1, 2)
+	ORDER BY letscode');
 
 $letscode_to = $req->get('letscode_to');
 $to_user_id = null;
 
 foreach($active_users as $user){
-	$req->add('amount-'.$user['id'], 0, 'post', array('type' => 'text', 'size' => 3, 'maxlength' => 3, 'onkeyup' => 'recalc_table_sum(this);'), array('match' => 'positive'));
+	$req->add('amount-'.$user['id'], 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 3, 'maxlength' => 3, 'onkeyup' => 'recalc_table_sum(this);'), array('match' => 'positive'));
 	if ($letscode_to && $user['letscode'] == $letscode_to){
 		$to_user_id = $user['id'];
 		$to_user_fullname = $user['fullname'];
@@ -96,19 +104,41 @@ $percentage = $req->get('percentage');
 $percentage_base = $req->get('percentage_base');
 $perc = 0;
 
-if ($req->get('fill_in') && ($fixed || $percentage)){
-	foreach ($active_users as $user){
+$percentage_transactions = $req->get('percentage_transactions');
+$percentage_transactions_days = $req->get('percentage_transactions_days');
+
+if ($percentage_transactions && $percentage_transactions_days)
+{
+	$refdate = date('Y-m-d H:i:s', time() - (86400 * $percentage_transactions_days));
+	$user_trans = $db->GetAssoc('SELECT tr.id_from, SUM(tr.amount) 
+		FROM transactions tr, users u
+		WHERE tr.cdate > \'' . $refdate . '\'
+			AND u.id = tr.id_from
+			AND u.status IN (1, 2)
+		GROUP BY tr.id_from');
+	var_dump($user_trans);
+}
+
+if ($req->get('fill_in') && ($fixed || $percentage || $user_trans)){
+	foreach ($active_users as $user)
+	{
 		if ($user['letscode'] == $req->get('letscode_to')
 			|| (check_newcomer($user['adate']) && $req->get('no_newcomers'))
 			|| ($user['status'] == 2 && $req->get('no_leavers'))
-			|| ($user['saldo'] < $user['minlimit'] && $req->get('no_min_limit'))){
+			|| ($user['saldo'] < $user['minlimit'] && $req->get('no_min_limit')))
+		{
 			$req->set('amount-'.$user['id'], 0);
-		} else {
-			if ($percentage){
+		}
+		else
+		{
+			if ($percentage)
+			{
 				$perc = round(($user['saldo'] - $percentage_base)*$percentage/100);
 				$perc = ($perc > 0) ? $perc : 0;
 			}
-			$req->set('amount-'.$user['id'], $fixed + $perc);
+			$perc_trans = (isset($user_trans[$user['id']])) ? round($user_trans[$user['id']] * $percentage_transactions / 100) : 0;
+			$amount = $fixed + $perc + $perc_trans;
+			$req->set('amount-'.$user['id'], $amount);
 		}
 	}
 }
@@ -132,13 +162,24 @@ echo '<h2><font color="#8888FF"><b><i>[admin]</i></b></font></h2>';
 echo '<h1>Massa-Transactie. "Veel naar Eén".</h1><p>bvb. voor leden-bijdrage.</p>';
 
 echo '<form method="post"><div style="background-color:#ffdddd; padding:10px;">';
-echo '<p><strong>Een vast bedrag en/of percentage invullen voor alle rekeningen.</strong></p>';
+echo '<h2>Invul-hulp</h2>';
+echo '<p>Met deze invul hulp kan je snel alle bedragen van de massa-transactie invullen. ';
+echo 'De eigenlijke massa-transactie doe je met het gele formulier onderaan. Daar zie ook de ';
+echo 'feitelijk bedragen die zullen worden overgeschreven en waar je de bedragen alvorens nog individueel ';
+echo 'kan aanpassen.</p>';
 echo '<table  cellspacing="5" cellpadding="0" border="0">';
-$req->set_output('tr')->render(array('fixed', 'percentage', 'percentage_base', 'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
+$req->set_output('tr')->render(array(
+	'fixed', 'percentage', 'percentage_base',
+	'percentage_transactions', 'percentage_transactions_days',
+	'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
 echo '</table>';
 echo '<p><strong><i>Aan LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
-echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo invullen</i></strong> Als een percentage wordt ingevuld, worden de bedragen berekend t.o.v. percentage saldo basis.</p>';
-echo '</div><br/>';
+echo '<p>Deze mogelijkheden zijn combineerbaar:';
+echo '<ul><li><strong>Vast bedrag</strong></li>';
+echo '<li><strong>Percentage op saldo</strong> (Het percentage kan ook negatief zijn.) ';
+echo 'De basis zal gewoonlijk nul zijn, maar er het is ook mogelijk een percentage te berekenen t.o.v. een ander bedrag.</li>';
+echo '<li><strong>Percentage op uitgeschreven transacties</strong> Percentage en aantal dagen dienen beide ingevuld te zijn indien men deze optie wil gebruiken.</li>';
+echo '</ul></div></form>';
 echo '<div id="transformdiv" style="padding:10px;">';
 $data_table->render();
 echo '<table cellspacing="0" cellpadding="5" border="0">';
@@ -151,18 +192,6 @@ show_form($req, $data_table);
 
 include($rootpath.'includes/inc_footer.php');
 
-///////////////////////////////////
-
-function get_active_users(){
-	global $db;
-	$query = 'SELECT id, fullname, letscode, accountrole, status, saldo, minlimit, maxlimit, adate
-		FROM users
-		WHERE status = 1
-			OR status = 2
-		ORDER BY letscode';
-	$active_users = $db->GetArray($query);
-	return $active_users;
-}
 
 function check_newcomer($adate){
 	global $configuration;
