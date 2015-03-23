@@ -10,7 +10,22 @@ if (!isset($_GET["id"])){
 }
 
 $id = $_GET["id"];
+
 $user = $db->GetRow('SELECT *, cdate AS date, lastlogin AS logdate FROM users WHERE id='.$id);
+
+$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
+	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
+
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
+	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
 
 include($rootpath."includes/inc_header.php");
 
@@ -112,10 +127,9 @@ $currency = readconfigfromdb("currency");
 echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 echo "<tr><td>&#160;</td></tr>";
 echo "<tr class='even_row'>";
-echo "<td><strong>{$currency}stand</strong></td></tr>";
-echo "<tr><td>";
-echo $balance;
-echo "</td></tr></table>";
+echo '<td colspan="2"><strong>' . $currency .'stand: ' . $balance .'</strong></td></tr>';
+echo "<tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
+echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
 
 echo "<div class='border_b'>";
 echo "<a href='../print_usertransacties.php?id=".$id."'>Print transactielijst</a> ";

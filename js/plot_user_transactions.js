@@ -89,7 +89,6 @@ $.noConflict();
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
 			$.jqplot('chartdiv1', graph, {
-				title: 'Laatste Jaar',
 				grid: {shadow: false},
 				cursor: {
 					show: true,
@@ -158,7 +157,6 @@ $.noConflict();
 			});
 
 			$.jqplot('chartdiv2', [donut] , {
-				title: 'Laatste Jaar',
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
 				  renderer:$.jqplot.DonutRenderer,

@@ -16,6 +16,20 @@ if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
 	exit;
 }
 
+$includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';</script>
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
+	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
+
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
+	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
+
 include($rootpath."includes/inc_header.php");
 
 echo "<h1>Mijn gegevens</h1>";
@@ -166,8 +180,10 @@ function show_balance($balance, $user, $currency){
 	echo "<td width='50%'>";
 	echo $user["maxlimit"];
 	echo "</td></tr>";
-
 	echo "</table>";
+	echo "<table  cellpadding='0' cellspacing='0' border='0'  width='99%'>";
+	echo "<tr></tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
+	echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
 }
 
 function get_contact($id){

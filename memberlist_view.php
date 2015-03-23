@@ -5,11 +5,6 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
-
-include($rootpath."includes/inc_header.php");
-
 if(!isset($s_id)){
 	header("Location: ".$rootpath."login.php");
 }
@@ -31,6 +26,11 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
+	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
+
+include($rootpath."includes/inc_header.php");
+
 echo "<h1>Contactlijst</h1>";
 $user = readuser($id);
 show_user($user);
@@ -47,11 +47,10 @@ show_msg($msg);
 function show_balance($balance,$currency){
 	echo "<table  cellpadding='0' cellspacing='0' border='0'  width='99%'>";
 	echo "<tr class='even_row'>";
-	echo "<td><strong>{$currency}stand</strong></td><td></td><td><strong>Transactie-Interacties</strong></td></tr>";
-	echo "<tr><td>";
-	echo "<strong>".$balance."</strong>";
-	echo "</td><td><div id='chartdiv1' style='height:200px;width:300px;'></div></td>";
-	echo "<td><div id='chartdiv2' style='height:200px;width:200px;'></div></td></tr></table>";
+	echo '<td><strong>' . $currency . 'stand: ' . $balance . '</strong></td>';
+	echo '<td>Interacties voorbije jaar</td></tr>';
+	echo "<tr></tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
+	echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
 }
 
 function show_user($user){
