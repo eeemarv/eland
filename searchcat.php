@@ -13,6 +13,18 @@ if(!isset($s_id)){
 $q = $_GET['q'];
 
 include($rootpath."includes/inc_header.php");
+
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
+	echo "</ul>";
+	echo "</div>";
+	echo "</td></tr></table>";
+}
+
 echo "<h1>Vraag & Aanbod</h1>";
 
 echo "<form method='get' action='$rootpath/messages/search.php'>";

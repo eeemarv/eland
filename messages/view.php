@@ -78,13 +78,16 @@ if ($_POST['zend'])
 
 include($rootpath."includes/inc_header.php");
 
-echo "<table width='100%' border=0><tr><td>";
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
-echo "</ul>";
-echo "</div>";
-echo "</td></tr></table>";
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
+	echo "</ul>";
+	echo "</div>";
+	echo "</td></tr></table>";
+}
 
 echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
 echo "<table class='data' border='1' width='95%'>";
@@ -189,14 +192,8 @@ function show_editlinks($msgid)
 	$myurl = "upload_picture.php?msgid=$msgid";
 	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
     echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
-	
-//    echo "<li><a href='#' onclick=window.open('$myurl','upload_picture','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Foto toevoegen</a></li>";
-	$myurl="delete.php?id=$msgid";
-	echo "<li><a href='#' onclick=window.open('$myurl','message_delete','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Verwijderen</a></li>";
-	//if(readconfigfromdb("share_enabled") == 1){
-	//	$myurl="share.php?id=$msgid";
-    //    	echo "<li><a href='#' onclick=window.open('$myurl','message_send','width=640,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Delen</a></li>";
-	//}
+	$myurl="";
+	echo '<li><a href="' . $rootpath . 'messages/delete.php?id=' . $msgid . '">Verwijderen</a></li>';
 	echo "</ul>";
 	echo "</div>";
 	echo "</td></tr></table>";
@@ -233,9 +230,10 @@ function show_balance($balance,$currency){
 }
 
 
-function show_msg($message, $balance){
-	global $baseurl;
-	global $msgid;
+function show_msg($message, $balance)
+{
+	global $baseurl, $msgid, $rootpath;
+
 	$currency = readconfigfromdb("currency");
 	echo "<table cellspacing='0' cellpadding='0' border='0' width='100%'>";
 	echo "<tr class='even_row'><td>";
@@ -249,8 +247,9 @@ function show_msg($message, $balance){
 	//echo htmlspecialchars($message["name"],ENT_QUOTES)." (" .trim($message["letscode"])."): ".$message["content"];
 	echo htmlspecialchars($message["content"]);
 	echo "</font></strong><br>";
-	echo htmlspecialchars($message["fullname"],ENT_QUOTES) ." - " .trim($message["letscode"]);
-	echo "<i> (stand: " .$balance ." " .$currency .")</i>";
+	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
+	echo htmlspecialchars($message["fullname"],ENT_QUOTES) ."  " .trim($message["letscode"]);
+	echo "</a><i> Saldo-stand: " .$balance ." " .$currency ."</i>";
 	echo "</td></tr>";
 	echo "<tr><td>";
 	if (!empty($message["Description"])){

@@ -7,11 +7,6 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_header.php");
 
-if (!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
 if (!isset($_GET["id"])){
 	header("Location: searchcat.php");
 	exit;
@@ -19,78 +14,80 @@ if (!isset($_GET["id"])){
 
 $id = $_GET["id"];
 
-show_ptitle($id);
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new&catid=' . $id . '">Vraag/Aanbod toevoegen</a></li>';
+	echo "</ul>";
+	echo "</div>";
+	echo "</td></tr></table>";
+}
+
+$query = "SELECT fullname FROM categories WHERE id=". $id;
+$row = $db->GetRow($query);
+echo "<h1>". $row["fullname"]."</h1>";
+
 $msgs = get_msgs($id);
-show_outputdiv($msgs, $id);
 
 
-////////////////////////////////////////////////////////////////////////////
+echo "<div id='output'>";
+echo "<div class='border_b'>";
+echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
+echo "<tr class='header'>";
+echo "<td><strong nowrap>V/A</strong></td>";
 
-function show_outputdiv($msgs, $catid){
-    echo "<div id='output'>";
-	echo "<div class='border_b'>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td><strong nowrap>V/A</strong></td>";
-
-	echo "<td><strong nowrap>Wat</strong></td>";
-	echo "<td><strong nowrap>Wie</strong></td>";
-	echo "<td><strong nowrap>Geldig tot</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach ($msgs as $key => $value){
-		$rownumb++;
-		if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-		}else{
-	        echo "<tr class='even_row'>";
-		}
-
-		if ($value["msg_type"] == 0){
-			echo "<td nowrap valign='top'>V</td>";
-		}elseif ($value["msg_type"] == 1){
-			echo "<td nowrap valign='top'>A</td>";
-		}
-
-		echo "<td valign='top'>";
-		echo "<a href='messages/view.php?id=".$value["mid"]."&cat=".$id."'>";
-		if(strtotime($value["valdate"]) < time()) {
-			echo "<del>";
-		}
-		$content = nl2br(htmlspecialchars($value["content"],ENT_QUOTES));
-		echo $content;
-		if(strtotime($value["valdate"]) < time()) {
-			echo "</del>";
-		}
-		echo "</a></td>";
-
-		echo "<td valign='top' nowrap>";
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'] . '">';
-		echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
-		echo "</a></td>";
-
-		echo "<td>";
-                if(strtotime($value["valdate"]) < time()) {
-                        echo "<font color='red'><b>";
-                }
-                echo $value["valdate"];
-                if(strtotime($value["valdate"]) < time()) {
-                        echo "</b></font>";
-                }
-                echo "</td>";
-		echo "</tr>";
+echo "<td><strong nowrap>Wat</strong></td>";
+echo "<td><strong nowrap>Wie</strong></td>";
+echo "<td><strong nowrap>Geldig tot</strong></td>";
+echo "</tr>";
+$rownumb=0;
+foreach ($msgs as $key => $value){
+	$rownumb++;
+	if($rownumb % 2 == 1){
+		echo "<tr class='uneven_row'>";
+	}else{
+		echo "<tr class='even_row'>";
 	}
-	echo "</table></div>";
-        echo "</div>";
-}
 
-function show_ptitle($id){
-	global $db;
-	$query = "SELECT fullname FROM categories WHERE id=". $id;
-	$row = $db->GetRow($query);
-	echo "<h1>". $row["fullname"]."</h1>";
+	if ($value["msg_type"] == 0){
+		echo "<td nowrap valign='top'>V</td>";
+	}elseif ($value["msg_type"] == 1){
+		echo "<td nowrap valign='top'>A</td>";
+	}
 
+	echo "<td valign='top'>";
+	echo "<a href='messages/view.php?id=".$value["mid"]."&cat=".$id."'>";
+	if(strtotime($value["valdate"]) < time()) {
+		echo "<del>";
+	}
+	$content = nl2br(htmlspecialchars($value["content"],ENT_QUOTES));
+	echo $content;
+	if(strtotime($value["valdate"]) < time()) {
+		echo "</del>";
+	}
+	echo "</a></td>";
+
+	echo "<td valign='top' nowrap>";
+	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'] . '">';
+	echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
+	echo "</a></td>";
+
+	echo "<td>";
+			if(strtotime($value["valdate"]) < time()) {
+					echo "<font color='red'><b>";
+			}
+			echo $value["valdate"];
+			if(strtotime($value["valdate"]) < time()) {
+					echo "</b></font>";
+			}
+			echo "</td>";
+	echo "</tr>";
 }
+echo "</table></div>";
+echo "</div>";
+
 
 function get_msgs($id){
 	global $db;

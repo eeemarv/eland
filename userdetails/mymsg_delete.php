@@ -5,11 +5,6 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if (!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
 $id = $_GET["id"];
 if(empty($id)){
 	header("Location:  mymsg_overview.php");
@@ -20,7 +15,7 @@ if(isset($_POST["zend"])){
 	if ($db->Execute('DELETE FROM messages WHERE id = ' . $id . ' AND id_user = ' . $s_id))
 	{
 		$alert->success('Vraag/aanbod verwijderd.');
-		redirect_overview();
+		header("Location:  mymsg_overview.php");
 		exit;
 	}
 

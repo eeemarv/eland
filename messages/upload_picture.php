@@ -7,25 +7,14 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $msgid = $_GET["msgid"];
 
-if(!isset($s_id))
-{
-	echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-	exit;
-}
-
-if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
-{
-	echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-	exit;
-}
-
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
 	'region'	=>'eu-central-1',
 ));
 $bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
 
-$sizelimit = 3000;
+$sizelimit = 200;
+
 if (isset($_POST["zend"])){
 	$tmpfile = $_FILES['picturefile']['tmp_name'];
 	$file = $_FILES['picturefile']['name'];
@@ -34,7 +23,13 @@ if (isset($_POST["zend"])){
 	
 	$ext = pathinfo($file, PATHINFO_EXTENSION);
 
-// to do : check size.
+	if ($file_size > $sizelimit * 1024)
+	{
+		$alert->error('Het bestand is te groot. De maximum grootte is 200kB.');
+		header('Location:  ' . $rootpath . 'messages/view.php?id=' . $msgid);
+		exit;
+	}
+
 
 	if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
 
@@ -67,18 +62,16 @@ if (isset($_POST["zend"])){
 			place_picture($file, $tmpfile, $rootpath, $msgid);
 		} */
 	} else {
-		echo "<font color='red'>Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd</font>";
-		setstatus("Fout: foto niet toegevoegd",1);
+		$alert->error("Het bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.");
 	}
 
 	header('Location: ' . $rootpath . 'messages/view.php?id=' . $msgid);
 	exit;
 }
-else
-{
-	echo "<h1>Foto aan V/A toevoegen</h1>";
-	show_form($msgid);
-}
+
+echo "<h1>Foto aan V/A toevoegen</h1>";
+show_form($msgid);
+
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -87,8 +80,8 @@ function show_form($msgid){
 	echo "<input name='picturefile' type='file' required>\n";
 	echo "<input type='submit' name='zend' value='Versturen' />\n";
 	echo "</form>\n";
-	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn";
-	echo '<p>&nbsp;</p>';
+	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn en mag maximaal 200kB groot zijn.";
+	echo '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>';
 }
 
 function place_picture($file, $tmpfile, $rootpath, $msgid){

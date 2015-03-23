@@ -46,7 +46,7 @@ function writeconfig($key, $value)
 
 	$redis_key = $session_name . '_config_' . $key;
 	$redis->set($redis_key, $value);
-	$redis->expire($rediskey, 3600);
+	$redis->expire($redis_key, 28800);
 
 	return true;
 }
@@ -76,7 +76,7 @@ function readparameter($key)
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($rediskey, 1800);
+		$redis->expire($redis_key, 28800);
 		$cache[$key] = $value;
 	}
 
@@ -146,7 +146,7 @@ function readusercontacts($user_id, $refresh = false)
 	if (isset($contacts))
 	{
 		$redis->set($redis_key, serialize($contacts));
-		$redis->expire($rediskey, 3600);
+		$redis->expire($redis_key, 7200);
 		$cache[$user_id] = $contacts;
 	}
 

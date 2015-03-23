@@ -13,17 +13,16 @@ $asc = $_GET["asc"];
 $trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
-if (!($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets")){
-	header("Location: ".$rootpath."login.php");
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	echo "<table width='100%' border=0><tr><td>";
+	echo "<div id='navcontainer'>";
+	echo "<ul class='hormenu'>";
+	echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
+	echo "</ul>";
+	echo "</div>";
+	echo "</td></tr></table>";
 }
-
-echo "<table width='100%' border=0><tr><td>";
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
-echo "</ul>";
-echo "</div>";
-echo "</td></tr></table>";
 
 echo "<h1>Overzicht transacties</h1>";
 

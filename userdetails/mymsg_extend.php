@@ -10,11 +10,17 @@ $validity = $_GET["validity"];
 
 if(isset($msgid)){
 	$posted_list["vtime"] = count_validity($validity);
-	update_msg($msgid, $posted_list, $s_id);
-	redirect_overview();
-}else{
-	redirect_overview();
+	if (update_msg($msgid, $posted_list, $s_id))
+	{
+		$alert->success('Vraag of aanbod is verlengd.');
+	}
+	else
+	{
+		$alert->error('Vraag of aanbod is niet verlengd.');
+	}
 }
+header("Location:  mymsg_overview.php");
+exit;
 
 //////////////////
 
@@ -29,11 +35,7 @@ function update_msg($id, $posted_list, $s_id){
 	$posted_list["validity"] = $posted_list["vtime"];
 	$posted_list["mdate"] = date("Y-m-d H:i:s");
 	$posted_list["id_user"] = $s_id;
-	echo "Message ID: $id";
-    	$result = $db->AutoExecute("messages", $posted_list, 'UPDATE', "id=$id");
+	//echo "Message ID: $id";
+    return $db->AutoExecute("messages", $posted_list, 'UPDATE', "id=$id");
 }
 
-function redirect_overview(){
-	header("Location:  mymsg_overview.php");
-}
-?>

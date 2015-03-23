@@ -5,16 +5,6 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(!isset($s_id))
-{
-	exit;
-}
-
-if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
-{
-	exit;
-}
-
 $sizelimit = 200;
 
 if (!isset($_POST["zend"])){
@@ -37,12 +27,20 @@ else
 
 	if(!($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"))
 	{
-		$alert->error('Bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
+		$alert->error('Het bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
 		header("Location:  mydetails.php");
 		exit;
 	}
 	else
-	{	// FIX ME (move to client side)
+	{
+		if ($file_size > $sizelimit * 1024)
+		{
+			$alert->error('Het bestand is te groot. De maximum grootte is 200kB.');
+			header("Location:  mydetails.php");
+			exit;
+		}
+/*
+		// FIX ME (move to client side)
 		if($file_size > ($sizelimit * 1024))
 		{
 			
@@ -55,7 +53,7 @@ else
 			imagejpeg($tmp,$tmpfile,100);
 			imagedestroy($src);
 			imagedestroy($tmp);
-		}
+		} */
 
 		try {
 			$filename = $session_name . '_u_' . $s_id . '_' . sha1(time()) . '.' . $ext;
@@ -103,7 +101,7 @@ function show_form($sizelimit){
 	echo "<input type='submit' name='zend' value='Versturen'/>\n";
 	echo "</form>\n";
 	echo '<p>LET OP: Je foto moet in het jpeg (jpg) formaat en mag maximaal ' . $sizelimit . 'kB groot zijn </p>';
-	echo '<p>&nbsp;</p>';
+	echo '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>';
 }
 
 function place_picture($file,$tmpfile,$rootpath,$id){

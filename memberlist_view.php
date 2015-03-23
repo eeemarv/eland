@@ -8,17 +8,6 @@ require_once($rootpath."includes/inc_adoconnection.php");
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
 
-$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
-	<script src="' . $cdn_jquery . '"></script>
-	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
-	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
-
 include($rootpath."includes/inc_header.php");
 
 if(!isset($s_id)){
@@ -30,6 +19,18 @@ if (!isset($_GET["id"])){
 }
 
 $id = $_GET["id"];
+
+$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
+	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
+
 echo "<h1>Contactlijst</h1>";
 $user = readuser($id);
 show_user($user);

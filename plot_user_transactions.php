@@ -2,22 +2,25 @@
 ob_start();
 
 $rootpath = '';
+$role = 'guest';
 require_once($rootpath.'includes/inc_default.php');
 require_once($rootpath.'includes/inc_adoconnection.php');
 require_once($rootpath.'includes/inc_request.php');
 
-$req = new request('user');
+$req = new request();
 $req->add('days', 365, 'get');
 $req->add('user_id', 0, 'get');
 $user_id = $req->get('user_id');
 
-if (!$user_id){
+if (!$user_id)
+{
 	exit;
 }
 
 $user = $db->GetRow('SELECT saldo FROM users WHERE id = '.$user_id);
 
-if (!$user){
+if (!$user)
+{
 	exit;
 }
 
@@ -85,6 +88,8 @@ unset($_users);
 
 $transactions = array_reverse($transactions);
 
+ob_end_clean();
+
 echo json_encode(array(
 	'user_id' => $user_id,
 	'ticks' => ($req->get('days') == 365) ? 12 : 4,
@@ -95,3 +100,5 @@ echo json_encode(array(
 	'begin' => $begin_date,
 	'end' => $end_date,
 ));
+
+

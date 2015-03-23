@@ -6,14 +6,10 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_form.php");
 
-if (!isset($s_id) || $s_accountrole == "guest" || $s_accountrole == "interlets"){
-	header('Location: ' . $rootpath . 'login.php');
-}
-
 $id = (isset($_GET["id"])) ? $_GET['id'] : 0;
 $mode = $_GET["mode"];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+if ($_POST['zend'])
 {
 	$validity = (int) $_POST["validity"];
 	$vtime = count_validity($validity);
@@ -142,8 +138,9 @@ if($s_accountrole == "admin"){
 echo "<tr><td align='right'>";
 echo "Categorie ";
 echo "</td>\n<td>";
-echo "<select name='id_category'>\n";
+echo "<select name='id_category' required>\n";
 
+echo '<option></option>';
 $cat_list = get_cats();
 render_select_options($cat_list, $msg['id_category']);
 
@@ -153,13 +150,13 @@ echo "</td>\n</tr>";
 echo "<tr>\n<td valign='top' align='right'>Geldigheid </td>\n";
 
 echo "<td>";
-echo '<input type="text" name="validity" size="4" value="' . $msg['validity'] . '"> maanden';
+echo '<input type="number" name="validity" size="4" value="' . $msg['validity'] . '" required> maanden';
 echo "</td>\n</tr>\n";
 
 $currency = readconfigfromdb("currency");
 echo "<tr><td valign='top' align='right'>Prijs </td>";
 echo "<td>";
-echo '<input type="text" name="amount" size="8" value="' . $msg['amount'] . '">' . $currency;
+echo '<input type="number" name="amount" size="8" value="' . $msg['amount'] . '">' . $currency;
 echo "</td>\n</tr>\n";
 
 echo "<tr>\n<td valign='top' align='right'>Per </td>\n";
@@ -172,45 +169,17 @@ echo "</td></tr>\n\n</table>\n\n";
 echo "</form>";
 echo "</p></div>";
 
-/*
-if($mode == "edit"){
-	loadvalues($id);
-} else {
-	writecontrol("mode", "new");
-	writecontrol("id_user", $s_id);
-
-*/
 
 include($rootpath."includes/inc_footer.php");
 
-////////////////////////////////////////////////////////////////////////////
-
-// FIXME: Geldigheid wordt niet geladen....
-/*
-function loadvalues($msgid){
-	$msg = get_msg($msgid);
-	writecontrol("mode", "edit");
-	writecontrol("id" , $msg["id"]);
-	writecontrol("msg_type", $msg["msg_type"]);
-	writecontrol("id_user", $msg["id_user"]);
-	$category = $msg["id_category"];
-	writecontrol("id_category", $category);
-	writecontrol("content", $msg["content"]);
-	writecontrol("description", $msg["Description"]);
-	writecontrol("amount", $msg["amount"]);
-	writecontrol("units", $msg["units"]);
-}
-
-function writecontrol($key,$value){
-	$value = str_replace("\n", '\n', $value);
-	$value = str_replace('"',"'",$value);
-	echo "<script type=\"text/javascript\">document.getElementById('" .$key ."').value = \"" .$value ."\";</script>";
-}
-*/
 
 function validate_input($msg){
 	global $db;
 	$error_list = array();
+	if (!$msg['id_category'])
+	{
+		$error['id_category'] = 'Geieve een categorie te selecteren.';
+	}
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
 		$error_list["content"] = "<font color='#F56DB5'>Vul <strong>inhoud</strong> in!</font>";
 		$query =" SELECT * FROM categories ";
