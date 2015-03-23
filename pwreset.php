@@ -87,7 +87,7 @@ if ($_POST['zend'])
 				$key = $session_name . '_pwreset_token_' . $user_id;
 				$redis->set($key, $token);
 				$redis->expire($key, 3600);
-				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
+				$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
 				$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'? "https://" : "http://";
 				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/pwreset.php?token=' . $token . '&u=' . $user_id;
