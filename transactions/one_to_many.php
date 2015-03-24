@@ -60,7 +60,8 @@ if ($req->get('zend') && !$req->errors() && $from_user_id){
 	} else {
 		foreach($active_users as $user){
 			$amount = $req->get('amount-'.$user['id']);
-			if (!$amount || $from_user_id == $user['id']){
+			if (!$amount || $from_user_id == $user['id'])
+			{
 				continue;
 			}
 			$trans = array(
@@ -68,14 +69,18 @@ if ($req->get('zend') && !$req->errors() && $from_user_id){
 				'id_to' => $user['id'],
 				'amount' => $amount,
 				'description' => $description,
-				'date' => date('Y-m-d H:i:s'));
-			$checktransid = insert_transaction($trans, $transid);
+				'date' => date('Y-m-d H:i:s'),
+				'transid'	=> $transid,
+			);
 			$notice_text = 'Transactie van gebruiker '.$from_user_fullname.' ( '.$letscode_from.' ) naar '.$user['fullname'].' ( '.$user['letscode'].' ) met bedrag '.$amount.' ';
-			if($checktransid == $transid){
-				mail_transaction($posted_list, $mytransid);
-				$notice .= '<p><font color="green"><strong>OK - '.$notice_text.'opgeslagen</strong></font></p>';
-			} else {
-				$notice .= '<p><font color="red"><strong>'.$notice_text.'Mislukt</strong></font></p>';
+			if(insert_transaction($trans, $transid))
+			{
+				mail_transaction($posted_list);
+				$alert->success('OK - '.$notice_text. 'opgeslagen');
+			}
+			else
+			{
+				$alert->error($notice_text.'mislukt.');
 			}
 			$transid = generate_transid();
 		}

@@ -60,34 +60,33 @@ if ($req->get('zend') && $req->errors())
 	$form_errors = true;
 }
 
-if ($req->get('zend') && !(isset($form_errors)) && $to_user_id){
+if ($req->get('zend') && !(isset($form_errors)) && $to_user_id)
+{
 	$description = $req->get('description');
 	$transid = $req->get('transid');
-	$duplicate = check_duplicate_transaction($transid);
-	if ($duplicate){
+
+	if (check_duplicate_transaction($transid))
+	{
 		$alert->error('Een dubbele boeking van een transactie werd voorkomen.');
 	} else {
 		foreach($active_users as $user){
 			$amount = $req->get('amount-'.$user['id']);
-			if (!$amount || $to_user_id == $user['id']){
+			if (!$amount || $to_user_id == $user['id'])
+			{
 				continue;
 			}
 			$trans = array(
-				'id_to' => $to_user_id,
-				'id_from' => $user['id'],
-				'amount' => $amount,
-				'description' => $description,
-				'date' => date('Y-m-d H:i:s'));
-			$checktransid = insert_transaction($trans, $transid);
+				'id_to' 		=> $to_user_id,
+				'id_from' 		=> $user['id'],
+				'amount' 		=> $amount,
+				'description' 	=> $description,
+				'date' 			=> date('Y-m-d H:i:s'),
+				'transid'		=> $transid,
+			);
 			$notice_text = 'Transactie van gebruiker '.$user['fullname'].' ( '.$user['letscode'].' ) naar '.$to_user_fullname.' ( '.$letscode_to.' ) met bedrag '.$amount.' ';
-			if($checktransid == $transid){
-				$posted_list = array(
-					'id_to'			=> $to_user_id,
-					'id_from'		=> $user['id'],
-					'description'	=> $description,
-					'amount'		=> $amount,
-				);
-				mail_transaction($posted_list, $transid);
+			if(insert_transaction($trans))
+			{
+				mail_transaction($trans);
 				$alert->success($notice_text . ' opgeslagen');
 			} else {
 				$alert->error($notice_text . ' mislukt');

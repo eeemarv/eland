@@ -90,3 +90,8 @@ table td.me a
 {
 	color: green;
 }
+
+input[type="number"]
+{
+	text-align: right;
+}

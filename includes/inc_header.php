@@ -9,17 +9,17 @@ header("Content-Type:text/html;charset=utf-8");
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
+//			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
 			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>\n";
 
 			//ajax.js contains eLAS custom ajax functions that are being migrated to MooTools
-			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
+//			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
 
-			echo "<script type='text/javascript' src='/js/mootools-core.js'></script>\n";
-			echo "<script type='text/javascript' src='/js/mootools-more.js'></script>\n";
-			echo "<script type='text/javascript' src='/growler/growler.js'></script>\n";
-			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
+//			echo "<script type='text/javascript' src='/js/mootools-core.js'></script>\n";
+//			echo "<script type='text/javascript' src='/js/mootools-more.js'></script>\n";
+//			echo "<script type='text/javascript' src='/growler/growler.js'></script>\n";
+//			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
 			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>\n";
 
 			if (isset ($includecss)){
@@ -33,10 +33,12 @@ header("Content-Type:text/html;charset=utf-8");
 </head>
 <body>
 
+<!--
 <script type='text/javascript'>
 		var Growl = new Growler.init();
 		// Growl.notify('Testing 123');
 </script>
+-->
 
 <script type='text/javascript'>
 	function OpenTBox(url){

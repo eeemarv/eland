@@ -174,10 +174,10 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		var_dump($posted_list);
 		echo "\n";
 	} else {
-		$mytransid = insert_transaction($posted_list, $transid);
+		$r = insert_transaction($posted_list);
 	}
 
-	if($mytransid == $transid){
+	if($r){
 		$result = "SUCCESS";
 		log_event("","Trans","Local commit of interlets transaction succeeded");
 		$posted_list["amount"] = round($posted_list["amount"]);

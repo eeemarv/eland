@@ -90,6 +90,14 @@ else
 	}
 }
 
+$includejs = '
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_jqueryui . '"></script>
+	<script src="' . $cdn_jqueryui_i18n . '"></script>
+	<script src="' . $rootpath . 'js/news_edit.js"></script>';
+
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqueryui_css . '" />';
+
 include($rootpath."includes/inc_header.php");
 
 echo '<h1>Nieuwsbericht ';
@@ -100,20 +108,19 @@ echo "<div class='border_b'><p>";
 echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>";
 echo "<form method='post'>";
 echo "<tr><td width='10%' valign='top' align='right'>Agendadatum: <i>wanneer gaat dit door?</i></td><td>";
-echo "<input type='date' name='itemdate' size='50' ";
-echo  "value ='". $news['itemdate'] ."' required>";
-
+echo "<input type='date' name='itemdate' size='10' id='itemdate'";
+echo  " value ='". $news['itemdate'] ."' required>";
 
 echo "</td></tr>";
 echo "<tr><td width='10%' valign='top' align='right'>Locatie</td><td>";
-echo "<input type='text' name='location' size='50' value='" . $news['location'] . "'>";
+echo "<input type='text' name='location' size='40' value='" . $news['location'] . "'>";
 
 echo "</td></tr><tr><td></td><td>";
 
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Titel </td><td>";
-echo "<input type='text' name='headline' size='50' value='" . $news['headline'] . "' required>";
+echo "<input type='text' name='headline' size='40' value='" . $news['headline'] . "' required>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 

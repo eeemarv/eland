@@ -212,7 +212,13 @@ else
 	}
 }
 
+$includejs = '
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>
+	<script src="' . $rootpath . 'js/users_edit.js"></script>';
 
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 include($rootpath."includes/inc_header.php");
 echo '<h1>Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'wijzigen') . '</h1>';
@@ -241,7 +247,13 @@ echo "<td ><input type='text' name='postcode' value='" . $user['postcode'] . "' 
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Geboortedatum (jjjj-mm-dd)</td>";
-echo "<td ><input type='text' name='birthday' value='" . $user['birthday'] . "' size='30'></td></tr>";
+echo "<td ><div></div><input type='text' name='birthday' value='" . $user['birthday'] . "' ";
+echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+echo 'data-date-default-view="2" ';
+echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-start-view="2" ';
+echo "size='10'></div></td></tr>";
 
 echo "<tr><td  align='right'>Hobbies/interesses:</td><td >";
 echo "<textarea name='hobbies' cols='60' rows='4'>";
