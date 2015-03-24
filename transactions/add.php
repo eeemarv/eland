@@ -141,12 +141,14 @@ else
 
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
-	<script src="' . $cdn_jqueryui . '"></script>
-	<script src="' . $cdn_jqueryui_i18n . '"></script>
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/transactions_add.js"></script>';
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqueryui_css . '" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
+
+//$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqueryui_css . '" />';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -196,15 +198,19 @@ echo "</select>\n";
 
 echo '<input type="text" name="letscode_from" size="40" value="' . $transaction['letscode_from'] . '" ';
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
-echo 'required>';
-
+echo 'required id="letscode_from">';
 
 echo "</td><td width='150'><div id='fromoutputdiv'></div>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Datum</td><td>";
-echo "<input type='text' name='date' id='date' size='18' value='" .$date ."'";
-echo ($s_accountrole == "admin") ? '' : ' disabled="disabled"';
+echo "<input type='text' name='date' size='10' value='" .$date ."' ";
+echo ($s_accountrole == "admin") ? '' : ' disabled="disabled" ';
+echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-enable-on-readonly="false" ';
 echo ">";
 echo "</td><td>";
 

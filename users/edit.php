@@ -215,8 +215,7 @@ else
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
-	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $rootpath . 'js/users_edit.js"></script>';
+	<script src="' . $cdn_datepicker_nl . '"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
@@ -253,6 +252,9 @@ echo 'data-date-default-view="2" ';
 echo 'data-date-end-date="' . date('Y-m-d') . '" ';
 echo 'data-date-language="nl" ';
 echo 'data-date-start-view="2" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-immediate-updates="true" ';
 echo "size='10'></div></td></tr>";
 
 echo "<tr><td  align='right'>Hobbies/interesses:</td><td >";

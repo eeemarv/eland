@@ -19,11 +19,8 @@ if(!isset($rootpath)){
 
 $cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
-$cdn_jqueryui = (getenv('ELAS_CDN_JQUERYUI')) ?: '//code.jquery.com/ui/1.11.4/jquery-ui.min.js';
-$cdn_jqueryui_i18n = (getenv('ELAS_CDN_JQUERYUI_I18N')) ?: '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/i18n/jquery-ui-i18n.min.js';
-$cdn_jqueryui_css = (getenv('ELAS_CDN_JQUERYUI_CSS')) ?: '//code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.css';
 $cdn_typeahead = (getenv('ELAS_CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js';
-$cdn_datepicker_css = (getenv('ELAS_CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker3.standalone.min.css';
+$cdn_datepicker_css = (getenv('ELAS_CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
 $cdn_datepicker = (getenv('ELAS_CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
 $cdn_datepicker_nl = (getenv('ELAS_CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 

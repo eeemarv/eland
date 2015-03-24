@@ -92,11 +92,10 @@ else
 
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
-	<script src="' . $cdn_jqueryui . '"></script>
-	<script src="' . $cdn_jqueryui_i18n . '"></script>
-	<script src="' . $rootpath . 'js/news_edit.js"></script>';
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>';
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqueryui_css . '" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 include($rootpath."includes/inc_header.php");
 
@@ -108,7 +107,11 @@ echo "<div class='border_b'><p>";
 echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>";
 echo "<form method='post'>";
 echo "<tr><td width='10%' valign='top' align='right'>Agendadatum: <i>wanneer gaat dit door?</i></td><td>";
-echo "<input type='date' name='itemdate' size='10' id='itemdate'";
+echo "<input type='date' name='itemdate' size='10' ";
+echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
 echo  " value ='". $news['itemdate'] ."' required>";
 
 echo "</td></tr>";
