@@ -55,21 +55,34 @@ var users = new Bloodhound({
 
 users.initialize();
 
-$('document').ready(function(){
-	$('#letscode_from').typeahead({
-		highLight: true
-	},
-	{
-		displayKey: function(user){ 
-			return user.value;
-			},
-		source: users.ttAdapter(),
-		templates: {
-			suggestion: Handlebars.compile('<p class="{{class}}">{{ value }}</p>')
-		}
-	}) 
-	users.clearPrefetchCache();
+
+$('#letscode_from').typeahead({
+	highLight: true
+},
+{
+	displayKey: function(user){ 
+		return user.value;
+		},
+	source: users.ttAdapter(),
+/*	templates: {
+		suggestion: Handlebars.compile('<p class="{{class}}">{{ value }}</p>')
+	} */
 });
+
+$('#letscode_to').typeahead({
+	highLight: true
+},
+{
+	displayKey: function(user){ 
+		return user.value;
+		},
+	source: users.ttAdapter(),
+/*	templates: {
+		suggestion: Handlebars.compile('<p class="{{class}}">{{ value }}</p>')
+	} */
+});
+
+users.clearPrefetchCache();
 
 
 	

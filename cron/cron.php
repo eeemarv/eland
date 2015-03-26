@@ -159,6 +159,143 @@ echo $r;
 
 echo "*** Cron system running [" . $session_name . ' ' . $domains[$session_name] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
+// begin typeahaed update (when interletsq is empty) for one group
+
+if (!isset($session_interletsq_min))
+{
+
+	$letsgroups = $db->GetArray('SELECT *
+		FROM letsgroups
+		WHERE apimethod = \'elassoap\'
+			AND remoteapikey IS NOT NULL');
+
+	$letsgroups_typeahead_update = (json_decode($redis->get('letsgroups_typeahead_update'), true)) ?: array();
+
+	$unvalid_apikeys = (json_decode($redis->get($session_name . '_typeahead_unvalid_apikeys'), true)) ?: array();
+
+	$failed_connections = (json_decode($redis->get($session_name . '_typeahead_failed_connections'), true)) ?: array();
+
+	$now = time();
+
+	foreach ($letsgroups as $letsgroup)
+	{
+		if ($unvalid_apikeys[$letsgroup['remoteapikey']])
+		{
+			continue;
+		}
+
+		if ($failed_connections[$letsgroup['url']])
+		{
+			continue;
+		}
+
+		if (!$letsgroups_typeahead_update[$letsgroup['url']])
+		{
+			break;
+		}
+
+		if ($letsgroups_typeahead_update[$letsgroup['url']] < $now - 21600)	// 6 hours 
+		{
+			break;
+		}
+
+		unset($letsgroup);
+	}
+
+	if (isset($letsgroup))
+	{
+		$err_group = $letsgroup['groupname'] . ': ';
+
+		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
+		$soapurl = $soapurl ."/wsdlelas.php?wsdl";
+		$apikey = $letsgroup["remoteapikey"];
+		$client = new nusoap_client($soapurl, true);
+		$err = $client->getError();
+		if ($err)
+		{
+			echo $err_group . 'Kan geen verbinding maken.' . $r;
+			
+			$failed_connections[$letsgroup['url']] = 1;
+			$redis->set($session_name . '_typeahead_failed_connections', $failed_connections);
+			$redis->expire($session_name . '_typeahead_failed_connections', 43200);  // 12 hours
+		}
+		else
+		{
+			$token = $client->call('gettoken', array('apikey' => $apikey));
+			$err = $client->getError();
+			if ($err)
+			{
+				echo $err_group . 'Kan geen token krijgen.' . $r;
+
+				$unvalid_apikeys[$letsgroup['remoteapikey']] = 1;
+				$redis->set($session_name . '_typeahead_unvalid_apikeys', $unvalid_apikeys);
+				$redis->expire($session_name . '_typeahead_unvalid_apikeys',86400);  // 24 hours
+			}
+		}
+
+		$client = new Goutte\Client();
+
+		$crawler = $client->request('GET', $letsgroup['url'] . '/login.php?token=' . $token);
+		$crawler = $client->request('GET', $letsgroup['url'] . '/rendermembers.php');
+
+		$users = array();
+
+		$crawler->filter('table > tr')->first()->nextAll()->each(function ($node) use (&$users)
+		{
+			$user = array();
+
+			$td = $node->filter('td')->first();
+			$bgcolor = $td->attr('bgcolor');
+			$postcode = $td->siblings()->eq(3)->text();
+
+			$user['c'] = $td->text();
+			$user['n'] = $td->nextAll()->text();
+
+			if ($bgcolor)
+			{
+				$user['s'] = (strtolower(substr($bgcolor, 1, 1)) > 'c') ? 2 : 3;
+			}
+
+			if ($postcode)
+			{
+				$user['p'] = $postcode;
+			}
+
+			$users[] = $user;
+		});
+
+		$redis->set('letsgroup_' . $letsgroup['url'] . '_typeahead', json_encode($users));
+		$redis->expire('letsgroup_' . $letsgroup['url'] . '_typeahead', 86400);
+
+		$letsgroups_typeahead_update[$letsgroup['url']] = $now;
+
+		$redis->set('letsgroups_typeahead_update', json_encode($letsgroups_typeahead_update));
+		$redis->expire('letsgroups_typeahead_update', 86400);
+
+		echo '----------------------------------------------------' . $r;
+		echo 'letsgroups_typeahead_update ' . "\n";
+		echo 'letsgroup_' . $letsgroup['url'] . '_users_typeahead' . $r;
+		echo 'user count: ' . count($users) . "\n";
+		echo '----------------------------------------------------' . $r;
+		echo 'end Cron ' . "\n";
+
+		$redis->set($session_name . '_cron_timestamp', time());
+
+		exit;
+	}
+	else
+	{
+		echo '-- no letsgroup typeahead update needed -- ' . $r;
+	}
+}
+else
+{
+	echo '-- priority to no letsgroup typeahead updated --' . $r;
+}
+
+/// end typeahead update
+
+
 // sync the image files  // (to do -- not in cron -- delete orphaned files in bucket)
 if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 {
@@ -243,13 +380,15 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 		}
 	}
 
-	echo 'Sync images files ready.' . $r;
+	echo 'Sync image files ready.' . $r;
 }
+
+// end sync images
 
 /*
 // cleanup orphaned profile & message images by reading the S3 bucket every 30 days
 *
-* --> NOT IN CRON
+* --> NOT IN CRON // move to command line
 if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 2592000)
 {
 	echo 'Run cleanup profile images' . $r;
@@ -275,7 +414,7 @@ if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 
 		}
 	}
 
-	$redit->set($session_name . 'cleanup_profile_images_timestamp', time());
+	$redis->set($session_name . 'cleanup_profile_images_timestamp', time());
 }
 */
 
@@ -387,14 +526,15 @@ if(check_timestamp("update_stats", $frequency) == 1){
 
 // END
 
+
 $redis->set($session_name . '_interletsq', '');
 $redis->set($session_name . '_cron_timestamp', time());
 
 echo "\nCron run finished\n";
+exit;
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+////////////////////
+
 
 function publish_mailinglists(){
 

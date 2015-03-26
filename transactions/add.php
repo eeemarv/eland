@@ -108,6 +108,9 @@ if ($_POST['zend'])
 				break;
 		}
 	}
+
+	$transaction['letscode_to'] = $_POST['letscode_to'];
+	$transaction['letscode_from'] = $_POST['letscode_from'];
 }
 else
 {
@@ -180,22 +183,6 @@ echo "<tr>";
 echo "<td align='right'>Van LETScode</td>";
 echo "<td>";
 
-/*
-echo "<select name='letscode_from' accesskey='2' id='letscode_from' \n";
-if($s_accountrole != "admin") {
-	echo " DISABLED";
-}
-echo " onchange=\"javascript:document.getElementById('baldiv').innerHTML = ''\">";
-
-$list_users = $db->GetAssoc('SELECT letscode, fullname
-	FROM users
-	WHERE status IN (1, 2)
-		AND accountrole NOT IN (\'guest\', \'interlets\')
-	ORDER BY letscode');
-render_select_options($list_users, $transaction['letscode_from']);
-echo "</select>\n";
-*/
-
 echo '<input type="text" name="letscode_from" size="40" value="' . $transaction['letscode_from'] . '" ';
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
 echo 'required id="letscode_from">';
@@ -227,11 +214,14 @@ render_select_options($letsgroups, $transaction['letsgroup']);
 
 echo "</select>";
 echo "</td><td>";
-echo "</td></tr><tr><td></td><td>";
+echo "</td></tr>";
+
+echo "<tr><td></td><td>";
 echo "<tr><td align='right'>";
 echo "Aan LETScode";
 echo "</td><td>";
-echo '<input type="text" name="letscode_to" value="' . $transaction['letscode_to'] . '" size="40" required>';
+echo '<input type="text" name="letscode_to" id="letscode_to" ';
+echo 'value="' . $transaction['letscode_to'] . '" size="40" required>';
 echo "</td><td><div id='tooutputdiv'></div>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
@@ -255,20 +245,6 @@ echo "<input type='submit' name='zend' id='zend' value='Overschrijven'>";
 echo "</td></tr></table>";
 echo "</form>";
 echo "</div>";
-
-
-////////// output div
-// echo "<div id='serveroutput' class='serveroutput'>";
-// echo "</div>";
-
-/*
-echo "<table border=0 width='100%'><tr><td align='left'>";
-$myurl="userlookup.php";
-echo "<form id='lookupform'><input type='button' id='lookup' value='LETSCode opzoeken' onclick=\"javascript:newwindow=window.open('$myurl','Lookup','width=600,height=500,scrollbars=yes,toolbar=no,location=no,menubar=no');\"></form>";
-
-echo "</td><td align='right'>";
-echo "</td></tr></table>";
-*/
 
 include($rootpath."includes/inc_footer.php");
 
@@ -300,7 +276,7 @@ function validate_input($transaction, $fromuser, $touser)
 	{
 		$errors["amount"]="Bedrag is niet ingevuld";
 	}
-	else if (eregi('^[0-9]+$', $var) == FALSE)
+	else if (eregi('^[0-9]+$', $transaction['amount']) == FALSE)
 	{
 		$errors["amount"]="Bedrag is geen geldig getal";
 	}

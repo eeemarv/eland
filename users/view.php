@@ -127,7 +127,7 @@ $currency = readconfigfromdb("currency");
 echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 echo "<tr><td>&#160;</td></tr>";
 echo "<tr class='even_row'>";
-echo '<td colspan="2"><strong>' . $currency .'stand: ' . $balance .'</strong></td></tr>';
+echo '<td><strong>' . $currency .'stand: ' . $balance .'</strong></td><td>Interacties voorbije jaar</td></tr>';
 echo "<tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
 echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
 
