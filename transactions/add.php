@@ -11,18 +11,18 @@ require_once($rootpath."includes/inc_form.php");
 
 $transaction = array();
 
-if ($_POST['zend'])
+if (isset($_POST['zend']))
 {
 	$transaction["description"] = pg_escape_string($_POST["description"]);
 	list($letscode_from) = explode(' ', pg_escape_string($_POST['letscode_from']));
 	list($letscode_to) = explode(' ', pg_escape_string($_POST['letscode_to']));
 	$transaction['amount'] = pg_escape_string($_POST['amount']);
 	$transaction['date'] = ($_POST['date']) ? pg_escape_string($_POST['date']) : $transaction["date"] = date("Y-m-d H:i:s");
-	$letsgroupid = $_POST['letsgroup'];
+	$letsgroup_id = $_POST['letsgroup_id'];
 
 	$timestamp = make_timestamp($transaction["date"]);
 
-	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroupid);
+	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
 
 	if (!isset($letsgroup))
 	{
@@ -40,7 +40,7 @@ if ($_POST['zend'])
 
 	$transaction['transid'] = generate_transid();
 
-	$errors = validate_input($transaction, $fromuser, $touser);
+	$errors = validate_input($transaction, $fromuser, $touser, $letsgroup);
 
 	if(!empty($errors))
 	{
@@ -77,7 +77,7 @@ if ($_POST['zend'])
 			case "elassoap":
 
 				$transaction["letscode_to"] = $letscode_to;
-				$transaction["letsgroup_id"] = $letsgroupid;
+				$transaction["letsgroup_id"] = $letsgroup_id;
 				$currencyratio = readconfigfromdb("currencyratio");
 				$transaction["amount"] = $transaction["amount"] / $currencyratio;
 				$transaction["amount"] = (float) $transaction["amount"];
@@ -85,8 +85,8 @@ if ($_POST['zend'])
 				$transaction["signature"] = sign_transaction($transaction, $letsgroup["presharedkey"]);
 				$transaction["retry_until"] = time() + (60*60*24*4);
 				// Queue the transaction for later handling
-				$mytransid = queuetransaction($transaction, $fromuser, $touser);
-				if($mytransid == $transid)
+				$transid = queuetransaction($transaction, $fromuser, $touser);
+				if($transaction['transid'] == $transid)
 				{
 					$alert->success("Interlets transactie in verwerking");
 					if (!$redis->get($session_name . '_interletsq'))
@@ -96,7 +96,7 @@ if ($_POST['zend'])
 				}
 				else
 				{
-					$alert->error("Gefaalde transactie", 1);
+					$alert->error("Gefaalde transactie");
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
@@ -114,8 +114,8 @@ if ($_POST['zend'])
 }
 else
 {
-	$mid = $_GET['mid'];
-	$uid = $_GET['uid'];
+	$mid = ($_GET['mid']) ?: false;
+	$uid = ($_GET['uid']) ?: false;
 
 	$transaction = array(
 		'date'			=> date('Y-m-d'),
@@ -140,6 +140,24 @@ else
 		$transaction = $db->GetRow('SELECT letscode as letscode_to, fullname FROM users WHERE id = ' . $uid);
 		$transaction['letscode_to'] .= ' ' . $transaction['fullname'];
 	}
+
+	$letsgroup_ary = $db->GetArray('SELECT id, prefix
+		FROM letsgroups
+		WHERE apimethod = \'internal\'
+		ORDER BY prefix asc');
+
+	foreach ($letsgroup_ary as $letsgroup)
+	{
+		if (!$letsgroup['prefix'])
+		{
+			break;
+		}
+
+		if (strpos(strtolower($s_letscode), strtolower($letsgroup['prefix'])) === 0)
+		{
+			break;
+		}
+	}
 }
 
 $includejs = '
@@ -150,8 +168,6 @@ $includejs = '
 	<script src="' . $rootpath . 'js/transactions_add.js"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
-
-//$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqueryui_css . '" />';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -183,7 +199,7 @@ echo "<tr>";
 echo "<td align='right'>Van LETScode</td>";
 echo "<td>";
 
-echo '<input type="text" name="letscode_from" size="40" value="' . $transaction['letscode_from'] . '" ';
+echo '<input type="text" name="letscode_from" size="30" value="' . $transaction['letscode_from'] . '" ';
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
 echo 'required id="letscode_from">';
 
@@ -207,10 +223,11 @@ echo "</td></tr>";
 echo "<tr><td align='right'>";
 echo "Aan LETS groep";
 echo "</td><td>";
-echo "<select name='letsgroup' id='letsgroup' onchange=\"document.getElementById('letscode_to').value='';\">\n";
-
 $letsgroups = $db->getAssoc('SELECT id, groupname FROM letsgroups');
-render_select_options($letsgroups, $transaction['letsgroup']);
+
+echo "<select name='letsgroup_id' id='letsgroup_id' onchange=\"document.getElementById('letscode_to').value='';\">\n";
+
+render_select_options($letsgroups, $letsgroup['id']);
 
 echo "</select>";
 echo "</td><td>";
@@ -221,7 +238,7 @@ echo "<tr><td align='right'>";
 echo "Aan LETScode";
 echo "</td><td>";
 echo '<input type="text" name="letscode_to" id="letscode_to" ';
-echo 'value="' . $transaction['letscode_to'] . '" size="40" required>';
+echo 'value="' . $transaction['letscode_to'] . '" size="30" required>';
 echo "</td><td><div id='tooutputdiv'></div>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
@@ -235,7 +252,7 @@ echo "<tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td valign='top' align='right'>Dienst</td><td>";
-echo '<input type="text" name="description" id="description" size="40" maxlength="60" ';
+echo '<input type="text" name="description" id="description" size="30" maxlength="60" ';
 echo 'value="' . $transaction['description'] . '" required>';
 echo "</td><td>";
 echo "</td></tr><tr><td></td><td>";
@@ -261,7 +278,7 @@ function make_timestamp($timestring)
 	return mktime(0, 0, 0, trim($month), trim($day), trim($year));
 }
 
-function validate_input($transaction, $fromuser, $touser)
+function validate_input($transaction, $fromuser, $touser, $letsgroup)
 {
 	global $s_accountrole;
 
@@ -308,7 +325,8 @@ function validate_input($transaction, $fromuser, $touser)
 		$errors["id_to"] = "De bestemmeling heeft zijn maximum limiet bereikt";
 	}
 
-	if(!($touser["status"] == 1 || $touser["status"] == 2))
+
+	if($letsgroup['apimethod'] == 'internal' && !($touser["status"] == '1' || $touser["status"] == '2'))
 	{
 		$errors["id_to"]="De bestemmeling is niet actief";
 	}

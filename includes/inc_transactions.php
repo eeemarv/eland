@@ -319,7 +319,6 @@ function queuetransaction($posted_list,$fromuser,$touser)
 	$posted_list["last_status"] = "NEW";
 	if ($db->AutoExecute("interletsq", $posted_list, 'INSERT'))
 	{
-		setstatus("Transactie in wachtrij", 0);
 		$transid = $posted_list["transid"];
 		if (!$redis->get($session_name . '_interletsq'))
 		{
@@ -328,7 +327,6 @@ function queuetransaction($posted_list,$fromuser,$touser)
 	}
 	else
 	{
-			setstatus("Fout: Transactie niet opgeslagen", 1);
 			$transid = "";
 	}
 

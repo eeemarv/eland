@@ -187,8 +187,6 @@ echo '</table></div><table>';
 $req->set_output('tr')->render('refresh');
 echo '</table></form>';
 
-show_form($req, $data_table);
-
 include($rootpath.'includes/inc_footer.php');
 
 

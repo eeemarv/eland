@@ -80,8 +80,8 @@ class data_table{   //
 				} else {
 					switch ($td['render']){
 						case 'status':
-							$bgcolor = ($row['status'] == 2) ? ' bgcolor="#f475b6"' : '';
-							$bgcolor = ($this->check_newcomer($row['adate'])) ? ' bgcolor="#B9DC2E"' : $bgcolor;
+							$bgcolor = ($this->check_newcomer($row['adate'])) ? ' bgcolor="#B9DC2E"' : '';
+							$bgcolor = ($row['status'] == 2) ? ' bgcolor="#f475b6"' : $bgcolor;
 							$fontopen = ($bgcolor) ? '<font color="white">' : '';
 							$fontclose = ($bgcolor) ? '</font>' : '';
 							echo '<td valign="top"'.$bgcolor.'>'.$fontopen.'<strong>';
@@ -113,7 +113,7 @@ class data_table{   //
 	private function check_newcomer($adate){
 		global $configuration;
 		$now = time();
-		$limit = $now - ($configuration['system']['newuserdays'] * 60 * 60 * 24);
+		$limit = $now - (readconfigfromdb('newuserdays') * 60 * 60 * 24);
 		$timestamp = strtotime($adate);
 		return  ($limit < $timestamp) ? 1 : 0;
 	}

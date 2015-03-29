@@ -87,14 +87,12 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 
 	if (!readconfigfromdb('mailenabled'))
 	{
-		setstatus($mailstatus, 1);
 		log_event("", "mail", "Mail $mailsubject not sent, mail functions are disabled");
 		return "Mail functies zijn uitgeschakeld";
 	}
 
 	if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent))
 	{
-		setstatus($mailstatus, 1);
 		$logline = "Mail $mailsubject not sent, missing fields\n";
 		$logline .= "From: $mailfrom\nTo: $mailto\nSubject: $mailsubject\nContent: $mailcontent";
 		log_event("", "mail", $logline);
@@ -122,7 +120,6 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 	if(readconfigfromdb('mailenabled')){
 		if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent)){
 			$mailstatus = "Fout: mail niet verstuurd, ontbrekende velden";
-			setstatus($mailstatus, 1);
 			$logline = "Mail $mailsubject not sent, missing fields\n";
 			$logline .= "From: $mailfrom\nTo: $mailto\nSubject: $mailsubject\nContent: $mailcontent";
 			log_event("", "mail", $logline);
@@ -138,7 +135,6 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			{
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				setstatus($mailstatus, 1);
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
@@ -151,7 +147,6 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			{
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				setstatus($mailstatus, 1);
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
@@ -163,7 +158,6 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			catch (Exception $e) {
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				setstatus($mailstatus, 1);
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
@@ -175,19 +169,16 @@ function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
 			catch (Exception $e) {
 				$emess = $e->getMessage();
 				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				setstatus($mailstatus, 1);
 				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
 				$status = 0;
 			}
 			if($status == 1) {
 				$mailstatus = "OK - Mail verstuurd";
-				setstatus($mailstatus, 0);
 				log_event("", "mail", "Mail $mailsubject sent to $mailto");
 			}
 		}
 	} else {
 		$mailstatus = "Mail functies zijn uitgeschakeld";
-		setstatus($mailstatus, 1);
 		log_event("", "mail", "Mail $mailsubject not sent, mail functions are disabled");
 	}
 
@@ -211,13 +202,11 @@ function sendemail_mandrill_simple($from, $to, $subject, $content)
 			'from_email' => $from,
 			'to' => $to_mandrill,
 		);
-
 		
-
 		$mandrill->messages->send($message, true);
 
 		$to = (is_array($to)) ? implode(', ', $to) : $to;
-		
+
 		log_event($s_id, 'mail', 'mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
 	}
 	catch (Mandrill_Error $e)

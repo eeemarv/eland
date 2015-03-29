@@ -47,7 +47,7 @@ show_msg($msg);
 function show_balance($balance,$currency){
 	echo "<table  cellpadding='0' cellspacing='0' border='0'  width='99%'>";
 	echo "<tr class='even_row'>";
-	echo '<td><strong>' . $currency . 'stand: ' . $balance . '</strong></td>';
+	echo '<td><strong>Saldo: ' . $balance . ' ' . $currency . '</strong></td>';
 	echo '<td>Interacties voorbije jaar</td></tr>';
 	echo "<tr></tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
 	echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";

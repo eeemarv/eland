@@ -34,6 +34,7 @@ if ($_POST['zend'])
 		'comments'		=> pg_escape_string($_POST['comments']),
 		'login'			=> pg_escape_string($_POST['login']),
 		'accountrole'	=> pg_escape_string($_POST['accountrole']),
+		'status'		=> $_POST['status'],
 		'admincomment'	=> pg_escape_string($_POST['admincomment']),
 		'minlimit'		=> $_POST['minlimit'],
 		'maxlimit'		=> $_POST['maxlimit'],
@@ -108,7 +109,9 @@ if ($_POST['zend'])
 				}
 
 				// Activate the user if activate is set
-				if($activate && !empty($contact['mail']))
+				$mailenabled = readconfigfromdb('mailenabled');
+
+				if($activate && !empty($contact['mail']) && $mailenabled)
 				{
 					$user['mail'] = $contact['mail'];
 					sendactivationmail($password, $user);
@@ -121,6 +124,11 @@ if ($_POST['zend'])
 				}
 				header('Location: view.php?id=' . $id);
 				exit;
+
+				if (!$mailenabled)
+				{
+					$alert->warning('Mailfuncties zijn uitgeschakeld.');
+				}
 			}
 			else
 			{
