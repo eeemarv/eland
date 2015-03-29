@@ -306,13 +306,28 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 
 	echo 'Sync the image files.' . $r;
 
+	$possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
+
 	$user_images = $db->GetAssoc('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
 
 	foreach($user_images as $user_id => $filename)
 	{
 		list($f_session_name) = explode('_', $filename);
 
-		if(!$s3->doesObjectExist(getenv('S3_BUCKET'), $filename))
+		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
+
+		$found = false;
+
+		foreach ($possible_extensions as $extension)
+		{
+			if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
+			{
+				$found = true;
+				break;
+			}
+		}
+
+		if (!$found)
 		{
 			$db->Execute('UPDATE users SET "PictureFile" = NULL WHERE id = ' . $user_id);
 			echo '1 profile image not present, deleted in database. ' . $r;
@@ -320,10 +335,10 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 		}
 		else if ($f_session_name != $session_name)
 		{
-			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';  // pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
-				'CopySource'	=> $filename,
+				'CopySource'	=> $filename_no_ext . '.' . $extension,
 				'Key'			=> $new_filename,
 			));
 
@@ -351,7 +366,20 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 
 		list($f_session_name) = explode('_', $filename);
 
-		if(!$s3->doesObjectExist(getenv('S3_BUCKET'), $filename))
+		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
+
+		$found = false;
+
+		foreach ($possible_extensions as $extension)
+		{
+			if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
+			{
+				$found = true;
+				break;
+			}
+		}
+
+		if (!$found)
 		{
 			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
 			echo '1 message image not present, deleted in database. ' . $r;
@@ -359,7 +387,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 		}
 		else if ($f_session_name != $session_name)
 		{
-			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg'; // . pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
 				'CopySource'	=> $filename,

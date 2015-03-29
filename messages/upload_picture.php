@@ -21,7 +21,7 @@ if (isset($_POST["zend"])){
 
 	$file_size=$_FILES['picturefile']['size'];
 	
-	$ext = pathinfo($file, PATHINFO_EXTENSION);
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
 	if ($file_size > $sizelimit * 1024)
 	{
@@ -31,10 +31,10 @@ if (isset($_POST["zend"])){
 	}
 
 
-	if($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"){
+	if($ext == "jpeg" || $ext == "jpg"){
 
     try {
-		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.' . $ext;
+		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
 		
         $upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
         

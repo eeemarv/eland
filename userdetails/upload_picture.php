@@ -23,9 +23,9 @@ else
 	$file = $_FILES['picturefile']['name'];
 	$file_size=$_FILES['picturefile']['size'];
 
-	$ext = pathinfo($file, PATHINFO_EXTENSION);
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-	if(!($ext == "jpeg" || $ext == "JPEG" || $ext == "jpg" || $ext == "JPG"))
+	if(!($ext == "jpeg" || $ext == "jpg"))
 	{
 		$alert->error('Het bestand is niet in jpeg (jpg) formaat, je foto werd niet toegevoegd.');
 		header("Location:  mydetails.php");
@@ -56,7 +56,7 @@ else
 		} */
 
 		try {
-			$filename = $session_name . '_u_' . $s_id . '_' . sha1(time()) . '.' . $ext;
+			$filename = $session_name . '_u_' . $s_id . '_' . sha1(time()) . '.jpg';
 
 			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
 
