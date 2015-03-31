@@ -14,8 +14,9 @@ Checklist
 
 #####Domain
     Configure your domain with a CNAME to the Heroku app URL.
-    set a config var for each domain to a database.
-    heroku config:set ELAS_DOMAIN_SESSION_EXAMPLE__COM=RED
+    set a config var for each domain to the name of the schema in the database
+    heroku config:set ELAS_SCHEMA_EXAMPLE__COM=examplecom
+    (a good choice for a schema name is the `systemtag` or `letscode` of the letsgroup.
 
 #####AWS S3
     Create a file bucket (in your region) on Amazon S3 and put the config in environment vars.
@@ -38,16 +39,18 @@ Environment Vars
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
 
-* DATABASE_URL: default database (postgres) when no domain session name / database color is set.
+* DATABASE_URL: postgres url
 
-* ELAS_DOMAIN_SESSION_domain: session name by domain (must be the color name of the database!)
+* ELAS_SCHEMA_domain: couples a domain to a schema 
 
     `Dots in domain are replaced by double underscore __`
     `Hyphens in domain are replaced by triple underscore ___`
 
-    e-example.com
+    i.e couple e-example.com to schema `eexample`
     set environment variable:
-        `heroku config:set ELAS_DOMAIN_SESSION_E___EXAMPLE__COM=PURPLE`
+        `heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample`
+
+    Also add the domain to Heroku with `heroku domains:add e.example.com`
 
 The session name is also:
   * the color name of the database.
@@ -67,10 +70,10 @@ Steps moving a group from eLAS to eLAS-Heroku
 ----------
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
-* Accept the domain in Heroku. 
+* Add the domain in Heroku with command `heroku domains:add my-domain.com`
 * Copy the image files from folders msgpictures and userpictures to your bucket in S3 without the directory path.
 * Create a postgres database.
 * Import the data in the database from a pg_dump
-* Set the domain variable ELAS_DOMAIN_SESSION_domain=colorname-of-the-database
+* Set the domain variable ELAS_SCHEMA_domain=schema
 
 The images files will automatically be renamed the first time the cronjob is running.

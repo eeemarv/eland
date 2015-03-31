@@ -13,7 +13,8 @@ ini_set('include_path',$rootpath.'contrib/includes:'.ini_get('include_path'));
 $baseurl = $_SERVER['HTTP_HOST'];
 
 // Get rid of missing rootpath errors
-if(!isset($rootpath)){
+if(!isset($rootpath))
+{
 	$rootpath = "";
 }
 

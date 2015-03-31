@@ -2,13 +2,12 @@
 
 require_once $rootpath . 'vendor/autoload.php';
 
-// session name = color of the heroku postgres database
+$db = NewADOConnection(getenv('DATABASE_URL'));
 
-$db_dsn = getenv('HEROKU_POSTGRESQL_' . $session_name . '_URL');
-
-$db = NewADOConnection($db_dsn);
-
-unset($db_dsn);
+if (isset($session_name) && $session_name)
+{
+	$db->Execute('set schema ' . $session_name);
+}
 
 $db->SetFetchMode(ADODB_FETCH_ASSOC);
 
