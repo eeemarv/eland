@@ -4,10 +4,7 @@ require_once $rootpath . 'vendor/autoload.php';
 
 $db = NewADOConnection(getenv('DATABASE_URL'));
 
-if (isset($session_name) && $session_name)
-{
-	$db->Execute('set schema ' . $session_name);
-}
+$db->Execute('set search_path to ' . (($session_name) ?: 'public'));
 
 $db->SetFetchMode(ADODB_FETCH_ASSOC);
 

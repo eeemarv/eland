@@ -295,7 +295,7 @@ else
 
 /// end typeahead update
 
-
+/*
 // sync the image files  // (to do -- not in cron -- delete orphaned files in bucket)
 if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 {
@@ -412,7 +412,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 }
 
 // end sync images
-
+*/
 /*
 // cleanup orphaned profile & message images by reading the S3 bucket every 30 days
 *
