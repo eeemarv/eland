@@ -52,28 +52,51 @@ Environment Vars
 
     Also add the domain to Heroku with `heroku domains:add e.example.com`
 
-The session name is also:
-  * the color name of the database.
+The schema name is also:
+  * the name of the session
   * prefix of the files in S3 cloud storage
   * prefix of the keys in Redis.
+
+By convention the schema is named after de so called system tag or letscode of the letsgroup.
 
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
 * ELAS_DB_DEBUG
 * ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' (role admin) -> access to all lets groups.
 
-* ELAS_CDN_JQPLOT: cdn for the jqplot library, defaults to `https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/`
-* ELAS_CDN_JQUERY: cdn for jquery, defaults to `https://code.jquery.com/jquery-2.1.3.min.js`
+CDN / defaults:
+--
+* ELAS_CDN_JQPLOT: `//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/`
+* ELAS_CDN_JQUERY: `//code.jquery.com/jquery-2.1.3.min.js`
+* ELAS_CDN_TYPEAHEAD: `//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js`
+* ELAS_CDN_DATEPICKER_CSS: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css`
+* ELAS_CDN_DATEPICKER: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js`
+* ELAS_CDN_DATEPICKER_NL: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js`
 
 
-Steps moving a group from eLAS to eLAS-Heroku
+Migrating a group from eLAS to eLAS-Heroku
 ----------
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
-* Add the domain in Heroku with command `heroku domains:add my-domain.com`
+* Add the domain in Heroku with command `heroku domains:add my-domain.com` (note that wildcards can be set on heroku.  `heroku domains:add *.example.com` will add all subdomains of example.com
 * Copy the image files from folders msgpictures and userpictures to your bucket in S3 without the directory path.
-* Create a postgres database.
-* Import the data in the database from a pg_dump
-* Set the domain variable ELAS_SCHEMA_domain=schema
+* To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`.
+In eLAS-Heroku all letsgroups are stored as schemas in one database.
+You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).
+    $> \i myletsgroupdumpfile.sql
+The tables of the imported letsgroup are now in the default schema named public.
+You can truncate the city_distance table which is not used anymore and which is very big. (More than a 1M rows.)
+    $> TRUNCATE TABLE city_distance;
+Rename then the public schema to the letsgroup code
+    $> ALTER SCHEMA public RENAME TO abc;
+This way of importing letsgroups leaves the already present letsgroups data untouched. This can not be done with the Heroku tools.
+Now there is no public schema anymore. this is no problem, but you need schema public to be present when you import the next letsgroup.
+    $> CREATE SCHEMA public;
+To see all tables from all schema's:
+    $> \dt *.*
+
+* Match a domain to a schema with config variable ELAS_SCHEMA_domain=schema
+In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
+yphen must be converted to a triple underscore.
 
 The images files will automatically be renamed the first time the cronjob is running.

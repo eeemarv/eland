@@ -40,7 +40,7 @@ require_once $rootpath . 'includes/inc_dbconfig.php';
 header('Content-Type:text/plain');
 
 echo '*** Cron eLAS-Heroku ***' . $r . $r;
-// echo 'version: ' . exec('git describe') . $r; (git not available)
+
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r . $r;
 
