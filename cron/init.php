@@ -15,7 +15,7 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $rootpath = "../";
-$role = 'anonymous';
+$role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 require_once $rootpath . 'cron/inc_upgrade.php';
@@ -90,7 +90,8 @@ foreach($user_images as $user_id => $filename)
 
 	foreach ($possible_extensions as $extension)
 	{
-		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
+		$filename_bucket = $filename_no_ext . '.' . $extension;
+		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_bucket))
 		{
 			$found = true;
 			break;
@@ -108,8 +109,9 @@ foreach($user_images as $user_id => $filename)
 		$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 		$result = $s3->copyObject(array(
 			'Bucket'		=> getenv('S3_BUCKET'),
-			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename,
+			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
+			'ACL'			=> 'public-read',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
@@ -120,7 +122,7 @@ foreach($user_images as $user_id => $filename)
 
 			$s3->deleteObject(array(
 				'Bucket'	=> getenv('S3_BUCKET'),
-				'Key'		=> $filename,
+				'Key'		=> $filename_bucket,
 			));
 		}
 	}
@@ -142,7 +144,8 @@ foreach($message_images as $image)
 
 	foreach ($possible_extensions as $extension)
 	{
-		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
+		$filename_bucket = $filename_no_ext . '.' . $extension;
+		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_bucket))
 		{
 			$found = true;
 			break;
@@ -160,8 +163,9 @@ foreach($message_images as $image)
 		$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
 		$result = $s3->copyObject(array(
 			'Bucket'		=> getenv('S3_BUCKET'),
-			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename,
+			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
+			'ACL'			=> 'public-read',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
@@ -172,7 +176,7 @@ foreach($message_images as $image)
 
 			$s3->deleteObject(array(
 				'Bucket'	=> getenv('S3_BUCKET'),
-				'Key'		=> $filename,
+				'Key'		=> $filename_bucket,
 			));
 		}
 	}
