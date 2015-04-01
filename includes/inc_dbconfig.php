@@ -50,21 +50,24 @@ function writeconfig($key, $value)
 /**
  *
  */
-function readparameter($key)
+function readparameter($key, $refresh = false)
 {
     global $db, $schema, $redis;
     static $cache;
 
-	if (isset($cache[$key]))
+	if (!$refresh)
 	{
-		return $cache[$key];
-	}
+		if (isset($cache[$key]))
+		{
+			return $cache[$key];
+		}
 
-	$redis_key = $schema . '_parameters_' . $key;
+		$redis_key = $schema . '_parameters_' . $key;
 
-	if ($redis->exists($redis_key))
-	{
-		return $cache[$key] = $redis->get($redis_key);
+		if ($redis->exists($redis_key))
+		{
+			return $cache[$key] = $redis->get($redis_key);
+		}
 	}
 
 	$value = $db->GetOne('SELECT value FROM parameters WHERE parameter = \'' . $key . '\'');

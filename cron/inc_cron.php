@@ -6,38 +6,38 @@ function update_stat_msgs($cat_id){
         //$query = "SELECT COUNT(*) AS stat_msg_wanted FROM messages WHERE id_category = ".$cat_id ;
         //$query .= " AND msg_type = 0 ";
 	$query = "SELECT COUNT(*) AS stat_msg_wanted";
-        $query .= " FROM messages, users ";
-        $query .= " WHERE ";
+	$query .= " FROM messages, users ";
+	$query .= " WHERE ";
 	$query .= " id_category = ".$cat_id ;
-        $query .= " AND messages.id_user = users.id ";
-        $query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
+	$query .= " AND messages.id_user = users.id ";
+	$query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
 	$query .= " AND msg_type = 0 ";
 
-    	$row = $db->GetRow($query);
-        $stat_wanted = $row["stat_msg_wanted"];
+	$row = $db->GetRow($query);
+	$stat_wanted = $row["stat_msg_wanted"];
 
-        //$query = "SELECT COUNT(*) AS stat_msg_offer FROM messages WHERE id_category = ".$cat_id ;
-        //$query .= " AND msg_type = 1 ";
+	//$query = "SELECT COUNT(*) AS stat_msg_offer FROM messages WHERE id_category = ".$cat_id ;
+	//$query .= " AND msg_type = 1 ";
 	$query = "SELECT COUNT(*) AS stat_msg_offer";
-        $query .= " FROM messages, users ";
-        $query .= " WHERE ";
+	$query .= " FROM messages, users ";
+	$query .= " WHERE ";
 	$query .= " id_category = ".$cat_id ;
-        $query .= " AND messages.id_user = users.id ";
-        $query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
-        $query .= " AND msg_type = 1 ";
-        $row = $db->GetRow($query);
-        $stat_offer = $row["stat_msg_offer"];
+	$query .= " AND messages.id_user = users.id ";
+	$query .= " AND (users.status = 1 OR users.status = 2 OR users.status = 3) ";
+	$query .= " AND msg_type = 1 ";
+	$row = $db->GetRow($query);
+	$stat_offer = $row["stat_msg_offer"];
 
-        $posted_list["stat_msgs_wanted"] = $stat_wanted;
-        $posted_list["stat_msgs_offers"] = $stat_offer;
-        $result = $db->AutoExecute("categories", $posted_list, 'UPDATE', "id=$cat_id");
+	$posted_list["stat_msgs_wanted"] = $stat_wanted;
+	$posted_list["stat_msgs_offers"] = $stat_offer;
+	$result = $db->AutoExecute("categories", $posted_list, 'UPDATE', "id=$cat_id");
 }
 
 function get_cat(){
-        global $db;
-        $query = "SELECT * FROM categories WHERE leafnote=1 order by fullname";
-        $cat_list = $db->GetArray($query);
-        return $cat_list;
+	global $db;
+	$query = "SELECT * FROM categories WHERE leafnote=1 order by fullname";
+	$cat_list = $db->GetArray($query);
+	return $cat_list;
 }
 
 function get_warn_messages($daysnotice) {
@@ -106,7 +106,8 @@ function do_cleanup_news() {
 	$db->Execute($query);
 }
 
-function do_cleanup_tokens(){
+function do_cleanup_tokens()
+{
 	global $db;
         $now = date('Y-m-d H:i:s', time());
 	$query = "DELETE FROM tokens WHERE validity < '" .$now ."'";
@@ -145,11 +146,20 @@ function mail_admin_expmsg($messages) {
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 }
 
-function mail_balance($mailaddr,$balance){
+function mark_expwarn($messageid,$value)
+{
+	global $db;
+	$query = "UPDATE messages set exp_user_warn = '" .$value ."' WHERE id = " .$messageid;
+	$db->Execute($query);
+}
+
+function mail_user_expwarn($mailaddr,$subject,$content)
+{
 	$from_address_transactions = readconfigfromdb("from_address_transactions");
-        if (!empty($from_address_transactions)){
-                $mailfrom .= trim($from_address_transactions);
-        }else {
+	if (!empty($from_address_transactions))
+	{
+		$mailfrom .= trim($from_address_transactions);
+	}else {
 		echo "Mail from address is not set in configuration\n";
 		return 0;
 	}
@@ -157,75 +167,47 @@ function mail_balance($mailaddr,$balance){
 	$mailto = $mailaddr;
 
 	$systemtag = readconfigfromdb("systemtag");
-        $mailsubject .= "[eLAS-".$systemtag ."] - Saldo mail";
+	$mailsubject .= "[eLAS-".$systemtag ."] - " .$subject;
 
-        $mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
-	$mailcontent .= "\nJe ontvangt deze mail omdat je de optie 'Mail saldo' in eLAS hebt geactiveerd,\nzet deze uit om deze mails niet meer te ontvangen.\n";
-
-	$currency = readconfigfromdb("currency");
-	$mailcontent .= "\nJe huidig LETS saldo is " .$balance ." " .$currency ."\n";
-
-	$mailcontent .= "\nDe eLAS MailSaldo Robot\n";
-        sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-}
-
-function mark_expwarn($messageid,$value){
-	global $db;
-	$query = "UPDATE messages set exp_user_warn = '" .$value ."' WHERE id = " .$messageid;
-	$db->Execute($query);
-}
-
-function mail_user_expwarn($mailaddr,$subject,$content) {
-	$from_address_transactions = readconfigfromdb("from_address_transactions");
-        if (!empty($from_address_transactions)){
-                $mailfrom .= trim($from_address_transactions);
-        }else {
-                echo "Mail from address is not set in configuration\n";
-                return 0;
-        }
-
-        $mailto = $mailaddr;
-
-	$systemtag = readconfigfromdb("systemtag");
-        $mailsubject .= "[eLAS-".$systemtag ."] - " .$subject;
-
-        $mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
-        $mailcontent .= "$content\n\n";
+	$mailcontent .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+	$mailcontent .= "$content\n\n";
 
 	$mailcontent .= "Als je nog vragen of problemen hebt, kan je terecht op ";
-        $mailcontent .= readconfigfromdb("support");
+	$mailcontent .= readconfigfromdb("support");
 
-        $mailcontent .= "\n\nDe eLAS Robot\n";
-        sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+	$mailcontent .= "\n\nDe eLAS Robot\n";
+	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 	log_event("","Mail","Message expiration mail sent to $mailto");
 }
 
-function check_timestamp($lastrun, $agelimit){
-        // agelimit is the time after which to rerun the job in MINUTES
-        $now = time();
-        $limit = $now - ($agelimit * 60);
-        $timestamp = strtotime($lastrun);
+function check_timestamp($lastrun, $agelimit)
+{
+	// agelimit is the time after which to rerun the job in MINUTES
+	$now = time();
+	$limit = $now - ($agelimit * 60);
+	$timestamp = strtotime($lastrun);
 
-        if($limit > $timestamp) {
-			return 1;
-        } else {
-            return 0;
-        }
+	if($limit > $timestamp) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
-function write_timestamp($cronjob){
-        global $db;
-        $query = "SELECT cronjob FROM cron WHERE cronjob = '" .$cronjob ."'";
-        $job = $db->GetRow($query);
-        $ts = date("Y-m-d H:i:s");
+function write_timestamp($cronjob)
+{
+	global $db;
+	$query = "SELECT cronjob FROM cron WHERE cronjob = '" .$cronjob ."'";
+	$job = $db->GetRow($query);
+	$ts = date("Y-m-d H:i:s");
 
-        if($job["cronjob"] != $cronjob){
-                $qins = "INSERT INTO cron(cronjob) VALUES ('" .$cronjob ."')";
-                $db->execute($qins);
-        } else {
-                $qupd = "UPDATE cron SET lastrun = '" .$ts ."' WHERE cronjob = '" .$cronjob ."'";
-                $db->Execute($qupd);
-        }
+	if($job["cronjob"] != $cronjob){
+			$qins = "INSERT INTO cron(cronjob) VALUES ('" .$cronjob ."')";
+			$db->execute($qins);
+	} else {
+			$qupd = "UPDATE cron SET lastrun = '" .$ts ."' WHERE cronjob = '" .$cronjob ."'";
+			$db->Execute($qupd);
+	}
 
 	//Write completion to eventlog
 	log_event(" ","Cron","Cronjob $cronjob finished");

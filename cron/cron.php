@@ -38,7 +38,7 @@ echo '*** Cron eLAS-Heroku ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
-$sessions = $domains = $session_cron_timestamps = $session_interletsqs = $table = array();
+$schemas = $domains = $schema_cron_timestamps = $schema_interletsqs = $table = array();
 
 foreach ($_ENV as $key => $schema)
 {
@@ -46,7 +46,7 @@ foreach ($_ENV as $key => $schema)
 	{
 		$domain = str_replace('ELAS_SCHEMA_', '', $key);
 
-		$sessions[$domain] = $schema;
+		$schemas[$domain] = $schema;
 
 		$domain = str_replace('___', '-', $domain);
 		$domain = str_replace('__', '.', $domain);
@@ -54,38 +54,39 @@ foreach ($_ENV as $key => $schema)
 
 		$domains[$schema] = $domain;
 
-		$session_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
+		$schema_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
 
 		if ($interletsq = (int) $redis->get($schema . '_interletsq'))
 		{
-			$session_interletsqs[$schema] = $interletsq;
+			$schema_interletsqs[$schema] = $interletsq;
 		}
 	}
 }
 
 unset($schema, $domain);
 
-if (count($sessions))
+if (count($schemas))
 {
-	asort($session_cron_timestamps);
+	asort($schema_cron_timestamps);
 
-	if (count($session_interletsqs))
+	if (count($schema_interletsqs))
 	{
-		list($session_interletsq_min) = array_keys($session_interletsqs, min($session_interletsqs));
+		list($schema_interletsq_min) = array_keys($schema_interletsqs, min($schema_interletsqs));
 	}
 
-	echo 'Session name (domain): last cron timestamp : interletsqueue timestamp' . $r;
-	echo '----------------------------------------------------------------------' . $r;
-	foreach ($session_cron_timestamps as $session_n => $timestamp)
+	echo 'Schema (domain): last cron timestamp : interletsqueue timestamp' . $r;
+	echo '---------------------------------------------------------------' . $r;
+	foreach ($schema_cron_timestamps as $schema_n => $timestamp)
 	{
-		echo $session_n . ' (' . $domains[$session_n] . '): ' . $timestamp . ' : ';
-		echo ($session_interletsqs[$session_n]) ? $session_interletsqs[$session_n] : 0;
+		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $timestamp . ' : ';
+		echo ($schema_interletsqs[$schema_n]) ? $schema_interletsqs[$schema_n] : 0;
 
-		if ((!isset($db_url) && !isset($session_interletsq_min))
-			|| isset($session_interletsq_min) && $session_interletsq_min == $session_n)
+		if ((!isset($selected) && !isset($schema_interletsq_min))
+			|| (isset($schema_interletsq_min) && $schema_interletsq_min == $schema_n))
 		{
-			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_n . '_URL'];
-			$schema = $session_n;
+			$schema = $schema_n;
+			$db->Execute('SET search_path TO ' . $schema);
+			$selected = true;
 			echo ' (selected)';
 		}
 		echo $r;
@@ -93,87 +94,15 @@ if (count($sessions))
 }
 else
 {
-	$db_url = getenv('DATABASE_URL');
-
-	if (!isset($db_url))
-	{
-		echo 'No database configured. Exit cron.' . $r;
-		Exit;
-	}
-
-	foreach ($_ENV as $env => $value)
-	{
-		if ($db_url == $value && strpos('HEROKU_POSTGRESQL_', $env) === 0)
-		{
-			$schema = str_replace('HEROKU_POSTGRESQL_', '', $env);
-			$schema = str_replace('_URL', '', $schema);
-			break;
-		}
-	}
-
-	echo '-- No installed domains found. Select default database (' . $schema . ') --';
+	echo '-- No installed domains found. --' . $r;
+	exit;
 }
-
-echo $r . $r;
-
-$db = NewADOConnection($db_url);
-
-unset($db_url);
-
-$db->SetFetchMode(ADODB_FETCH_ASSOC);
-
-if(getenv('ELAS_DB_DEBUG')){
-	$db->debug = true;
-}
-
-// Upgrade the DB first if required
-
-$currentversion = $dbversion = $db->GetOne("SELECT * FROM parameters WHERE parameter = 'schemaversion'");
-$doneversion = $currentversion;
-if ($current_version < $schemaversion)
-{
-	echo '-- Database already up to date -- ' . $r;
-}
-else
-{
-	echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n";
-	while($currentversion < $schemaversion)
-	{
-		$currentversion++;
-		if(doupgrade($currentversion))
-		{
-			$doneversion = $currentversion;
-		}
-	}
-	echo "Upgraded database from schema version $dbversion to $doneversion\n";
-	log_event("","DB","Upgraded database from schema version $dbversion to $doneversion");	
-}
-
-//
-
-if (!$db->GetOne('SELECT setting FROM config WHERE setting = \'forcesaldomail\''))
-{
-	$forcesaldomail = array(
-		'category'		=> 'mail',
-		'setting'		=> 'forcesaldomail',
-		'value'			=> '0',
-		'description'	=> 'Gebruikers kunnen saldo mail met laatste vraag en aanbod niet uitzetten; iedereen ontvangt de saldo mail.' ,
-		'comment'		=> '',
-		'default'		=> 'f',
-	);
-
-	if ($db->AutoExecute('config', $forcesaldomail, 'INSERT'))
-	{
-		echo 'Inserted forcesaldomail config variable. ' . $r;
-	}
-}
-
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
 // begin typeahaed update (when interletsq is empty) for one group
 
-if (!isset($session_interletsq_min))
+if (!isset($schema_interletsq_min))
 {
 
 	$letsgroups = $db->GetArray('SELECT *
@@ -302,189 +231,33 @@ if (!isset($session_interletsq_min))
 }
 else
 {
-	echo '-- priority to no letsgroup typeahead updated --' . $r;
+	echo '-- priority to interletsq, no letsgroup typeahead updated --' . $r;
 }
 
 /// end typeahead update
 
-/*
-// sync the image files  // (to do -- not in cron -- delete orphaned files in bucket)
-if ((int) $redis->get($schema . '_file_sync') < time() - 24 * 3600 * 30)
-{
-	$s3 = Aws\S3\S3Client::factory(array(
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-	));
-
-	echo 'Sync the image files.' . $r;
-
-	$possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
-
-	$user_images = $db->GetAssoc('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
-
-	foreach($user_images as $user_id => $filename)
-	{
-		list($f_session_name) = explode('_', $filename);
-
-		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
-
-		$found = false;
-
-		foreach ($possible_extensions as $extension)
-		{
-			if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
-			{
-				$found = true;
-				break;
-			}
-		}
-
-		if (!$found)
-		{
-			$db->Execute('UPDATE users SET "PictureFile" = NULL WHERE id = ' . $user_id);
-			echo '1 profile image not present, deleted in database. ' . $r;
-			log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not available: deleted from database. Deleted filename : ' . $filename);
-		}
-		else if ($f_session_name != $schema)
-		{
-			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';  // pathinfo($filename, PATHINFO_EXTENSION);
-			$result = $s3->copyObject(array(
-				'Bucket'		=> getenv('S3_BUCKET'),
-				'CopySource'	=> $filename_no_ext . '.' . $extension,
-				'Key'			=> $new_filename,
-			));
-
-			if ($result && $result instanceof \Guzzle\Service\Resource\Model)
-			{
-				$db->Execute('UPDATE users SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $user_id);
-				echo '1 profile image renamed' . $r;
-				log_event($s_id, 'cron', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
-
-				$s3->deleteObject(array(
-					'Bucket'	=> getenv('S3_BUCKET'),
-					'Key'		=> $filename,
-				));
-			}
-		}
-	}
-
-	$message_images = $db->GetArray('SELECT id, msgid, "PictureFile" FROM msgpictures');
-
-	foreach($message_images as $image)
-	{
-		$filename = $image['PictureFile'];
-		$msg_id = $image['msgid'];
-		$id = $image['id'];
-
-		list($f_session_name) = explode('_', $filename);
-
-		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
-
-		$found = false;
-
-		foreach ($possible_extensions as $extension)
-		{
-			if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_no_ext . '.' . $extension))
-			{
-				$found = true;
-				break;
-			}
-		}
-
-		if (!$found)
-		{
-			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
-			echo '1 message image not present, deleted in database. ' . $r;
-			log_event ($s_id, 'cron', 'Image file of message ' . $msg_id . ' was not available: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
-		}
-		else if ($f_session_name != $schema)
-		{
-			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg'; // . pathinfo($filename, PATHINFO_EXTENSION);
-			$result = $s3->copyObject(array(
-				'Bucket'		=> getenv('S3_BUCKET'),
-				'CopySource'	=> $filename,
-				'Key'			=> $new_filename,
-			));
-
-			if ($result && $result instanceof \Guzzle\Service\Resource\Model)
-			{
-				$db->Execute('UPDATE msgpictures SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $id);
-				echo '1 profile image renamed' . $r;
-				log_event($s_id, 'cron', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
-
-				$s3->deleteObject(array(
-					'Bucket'	=> getenv('S3_BUCKET'),
-					'Key'		=> $filename,
-				));
-			}
-		}
-	}
-
-	echo 'Sync image files ready.' . $r;
-}
-
-// end sync images
-*/
-/*
-// cleanup orphaned profile & message images by reading the S3 bucket every 30 days
-*
-* --> NOT IN CRON // move to command line
-if ($redis->get($schema . '_cleanup_profile_images_timestamp') < time() - 2592000)
-{
-	echo 'Run cleanup profile images' . $r;
-
-	// get all objects
-	$objects = $s3->getIterator('ListObjects', array(
-		'Bucket' => getenv('S3_BUCKET')
-	));
-
-	foreach ($objects as $file)
-	{
-		list($sess, $type, $type_id, $hash) = explode('_', $file);
-		
-		if ($sess != $schema)
-		{
-			continue;
-		}
-
-		if ($type == 'm')
-		{
-		* // not good
-			//$db->getOne('SELECT 1 FROM msgpictures WHERE \'Picturefile\' = ' . $file);
-		}
-	}
-
-	$redis->set($schema . 'cleanup_profile_images_timestamp', time());
-}
-*/
-
 $lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 
-// Auto mail saldo on request
-$frequency = readconfigfromdb("saldofreqdays") * 1440;
-if(check_timestamp($lastrun_ary['saldo'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['saldo'], readconfigfromdb("saldofreqdays") * 1440))
 {
 	automail_saldo();
 }
 
 // Auto mail messages that have expired to the admin
-$frequency = readconfigfromdb("adminmsgexpfreqdays") * 1440;
-if(check_timestamp($lastrun_ary['admin_exp_msg'], $frequency) == 1 && readconfigfromdb("adminmsgexp") == 1)
+if(check_timestamp($lastrun_ary['admin_exp_msg'], readconfigfromdb("adminmsgexpfreqdays") * 1440) && readconfigfromdb("adminmsgexp"))
 {
 	automail_admin_exp_msg();
 }
 
 // Check for and mail expired messages to the user
-$frequency = 1440;
-if(check_timestamp($lastrun_ary['user_exp_msgs'], $frequency) == 1 && readconfigfromdb("msgexpwarnenabled") == 1)
+if(check_timestamp($lastrun_ary['user_exp_msgs'], 1440) && readconfigfromdb("msgexpwarnenabled"))
 {
 	check_user_exp_msgs();
 }
 
 
 // Clean up expired messages after the grace period
-$frequency = 1440;
-if(check_timestamp($lastrun_ary['cleanup_messages'], $frequency) == 1 && readconfigfromdb("msgcleanupenabled") == 1)
+if(check_timestamp($lastrun_ary['cleanup_messages'], 1440) && readconfigfromdb("msgcleanupenabled"))
 {
 	cleanup_messages();
 
@@ -513,42 +286,37 @@ if(check_timestamp($lastrun_ary['cleanup_messages'], $frequency) == 1 && readcon
 
 
 // Update counts for each message category
-$frequency = 60;
-if(check_timestamp($lastrun_ary['cat_update_count'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['cat_update_count'], 60))
 {
 	cat_update_count();
 }
 
 // Update the cached saldo
-$frequency = 60;
-if(check_timestamp($lastrun_ary['saldo_update'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['saldo_update'], 60))
 {
 	saldo_update();
 }
 
 // Clean up expired news items
-$frequency = 1440;
-if(check_timestamp($lastrun_ary['cleanup_news'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['cleanup_news'], 1440))
 {
-        cleanup_news();
+	cleanup_news();
 }
 
 // Clean up expired tokens
-$frequency = 1440;
-if(check_timestamp($lastrun_ary['cleanup_tokens'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['cleanup_tokens'], 60))
 {
-        cleanup_tokens();
+	cleanup_tokens();
 }
 
-// RUN the ILPQ
-$frequency = 5;
-if(check_timestamp($lastrun_ary['processqueue'], $frequency) == 1)
+// interletsq
+if(check_timestamp($lastrun_ary['processqueue'], 5))
 {
-	require_once("$rootpath/interlets/processqueue.php");
-	write_timestamp("processqueue");
+	require_once $rootpath . 'interlets/processqueue.php';
+	write_timestamp('processqueue');
 }
 
-if(check_timestamp($lastrun_ary['publish_news'], 30) == 1)
+if(check_timestamp($lastrun_ary['publish_news'], 30))
 {
 	publish_news();
 }
@@ -561,113 +329,8 @@ exit;
 
 ////////////////////
 
-
-function publish_mailinglists(){
-
-	global $configuration;
-	global $db;
-	global $baseurl;
-	echo "Running publish mailinglists to emessenger\n";
-	echo "  lists\n";
-	amq_publishmailinglists();
-	echo "  subscribers\n";
-	amq_publishsubcribers();
-	write_timestamp("publish_mailinglists");
-}
-
-function process_amqmessages(){
-	global $configuration;
-
-	echo "Running Process AMQ messages...\n";
-	echo "  Getting other AMQ messages...\n";
-	amq_processincoming();
-	write_timestamp("process_ampmessages");
-}
-
-function create_paths() {
-	global $rootpath;
-	global $baseurl;
-
-	echo "Running create_paths...\n";
-
-	// Auto create the json directory
-	$dirname = "$rootpath/sites/$baseurl/json";
-	if (!file_exists($dirname)){
-		echo "    Creating directory $dirname\n";
-		mkdir("$dirname", 0770);
-		echo "    Creating .htaccess file for $dirname\n";
-		file_put_contents("$dirname/.htaccess", "Deny from all\n");
-	}
-
-	write_timestamp("create_paths");
-}
-
-function mailq_run(){
-	# FIXME Replace this code with direct connection to AMQ
-	# Process mails in the queue and hand them of to a droid
-
-	global $configuration;
-	global $db;
-	global $baseurl;
-
-	$systemname = readconfigfromdb("systemname");
-    $systemtag = readconfigfromdb("systemtag");
-
-	echo "Running mailq_run...\n";
-
-	$query = "SELECT * FROM mailq WHERE sent = 0";
-	$mails = $db->GetArray($query);
-
-	foreach ($mails AS $key => $value){
-		echo "Processing message " .$value["msgid"] . " to list " .$value["listname"] . "\n";
-
-		# Get all subscribers for that list
-		$query = "SELECT * FROM lists, listsubscriptions WHERE listsubscriptions.listname = lists.listname AND listsubscriptions.listname = '" .$value["listname"] . "'";
-		$subscribers = $db->GetArray($query);
-
-		$footer = "--\nJe krijgt deze mail via de lijst '" .$value["listname"] ."' op de eLAS installatie van " .$systemname .".\nJe kan je mailinstellingen en abonnementen wijzigen in je eLAS profiel op http://" .$baseurl .".";
-		// Set maildroid format version
-		$message["mformat"] = "1";
-		$message["id"] = $value["msgid"];
-		$message["contenttype"] = "text/html";
-		$message["charset"] = "utf-8";
-		$message["from"] = $value["from"];
-		$message["to"] = array();
-		$message["subject"] = "[eLAS-$systemtag " . $value["listname"] ."] " .$value["subject"];
-		$message["body"] = "<html>\n" .$value["message"];
-		$message["body"] .= "\n\n<small>$footer</small></html>";
-		$message["body"] = nl2br($message["body"]);
-
-		foreach ($subscribers AS $subkey => $subvalue){
-			//echo "\nFound subsciberID: " . $subvalue["user_id"] . "\n";
-			$usermails =  get_user_mailarray($subvalue["user_id"]);
-			//var_dump($usermails);
-
-			foreach($usermails as $mailkey => $mailvalue){
-				array_push($message["to"], $mailvalue["value"]);
-			}
-
-			//var_dump($message);
-		}
-		$json = json_encode($message);
-
-		$mystatus = elasmail_queue($json);  // non-existing function!
-		if($mystatus == 1){
-			$query = "UPDATE mailq SET  sent = 1 WHERE msgid = '" . $message["id"] ."'";
-			$db->Execute($query);
-			$mid = $message["id"];
-			log_event("","Mail","Queued $mid to ESM");
-		} else {
-			echo "Failed to AMQ queue message " . $message["id"] ."\n";
-			log_event("","Mail","Failed to queue $mid to eLAS Mailer");
-		}
-	}
-	echo "\n";
-
-	write_timestamp("mailq_run");
-}
-
-function cat_update_count() {
+function cat_update_count()
+{
 	echo "Running cat_update_count\n";
         $catlist = get_cat();
         foreach ($catlist AS $key => $value){
@@ -678,7 +341,8 @@ function cat_update_count() {
 	write_timestamp("cat_update_count");
 }
 
-function saldo_update(){
+function saldo_update()
+{
 	global $db;
 	echo "Running saldo_update ...";
 
@@ -693,7 +357,8 @@ function saldo_update(){
 	write_timestamp("saldo_update");
 }
 
-function publish_news(){
+function publish_news()
+{
 	global $db;
 	global $baseurl;
 
@@ -800,22 +465,48 @@ function automail_saldo()
 	// Get all users that want their saldo auto-mailed.
 	echo "Running automail_saldo\n";
 	global $db;
-        $query = 'SELECT users.id,
-			users.name, users.saldo AS saldo,
-			contact.value AS cvalue FROM users,
-			contact, type_contact 
-		WHERE users.id = contact.id_user
-			AND contact.id_type_contact = type_contact.id
-			AND type_contact.abbrev = \'mail\'
-			AND users.status <> 0
-			AND users.cron_saldo = 1';
+	$query = 'SELECT users.id,
+		users.name, users.saldo AS saldo,
+		contact.value AS cvalue FROM users,
+		contact, type_contact 
+	WHERE users.id = contact.id_user
+		AND contact.id_type_contact = type_contact.id
+		AND type_contact.abbrev = \'mail\'
+		AND users.status <> 0';
+	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND users.cron_saldo = 1';
 	$users = $db->GetArray($query);
 
-	foreach($users as $key => $value) {
-		$mybalance = $value["saldo"];
+	foreach($users as $key => $value)
+	{
+		$balance = $value["saldo"];
 		mail_balance($value["cvalue"], $mybalance);
 	}
 
+	$from_address_transactions = readconfigfromdb("from_address_transactions");
+	if (!empty($from_address_transactions))
+	{
+		$mailfrom .= trim($from_address_transactions);
+	}
+	else
+	{
+		echo "Mail from address is not set in configuration\n";
+		return 0;
+	}
+
+    $subject = "[eLAS-". readconfigfromdb("systemtag") ."] - Saldo en laatste vraag en aanbod.";
+
+    $content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+    if (!readconfigfromdb('forcesaldomail'))
+    {
+		$content .= "Je ontvangt deze mail omdat je de optie 'Mail saldo' in eLAS hebt geactiveerd,\n zet deze uit om deze mails niet meer te ontvangen.\n";
+	}
+
+	$currency = readconfigfromdb("currency");
+	$mailcontent .= "\nJe huidig LETS saldo is " .$balance ." " .$currency ."\n";
+
+	$mailcontent .= "\nDe eLAS MailSaldo Robot\n";
+	sendemail($mailfrom, $value['cvalue'], $subject, $mailcontent);
+	
 	//Timestamp this run
 	write_timestamp("saldo");
 }
