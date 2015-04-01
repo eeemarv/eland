@@ -57,7 +57,7 @@ The schema name is also:
   * prefix of the files in S3 cloud storage
   * prefix of the keys in Redis.
 
-By convention the schema is named after de so called system tag or letscode of the letsgroup.
+By convention the schema is named after the so called system tag or letscode of the letsgroup.
 
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
@@ -79,7 +79,6 @@ Migrating a group from eLAS to eLAS-Heroku
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command `heroku domains:add my-domain.com` (note that wildcards can be set on heroku.  `heroku domains:add *.example.com` will add all subdomains of example.com
-* Copy the image files from folders msgpictures and userpictures to your bucket in S3 without the directory path.
 * To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`.
 In eLAS-Heroku all letsgroups are stored as schemas in one database.
 You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).
@@ -99,4 +98,9 @@ To see all tables from all schema's:
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
 yphen must be converted to a triple underscore.
 
-The images files will automatically be renamed the first time the cronjob is running.
+* Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG). 
+Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
+* Go with a browser to your website to path /cron/init.php The image files get renamed with a new hash and orphaned files will be cleaned up.
+The files get prefixed with the schema name and the user or message id. All extensions become jpg.
+    i.e   abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
+          abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg
