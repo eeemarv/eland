@@ -313,16 +313,16 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 
 function queuetransaction($posted_list,$fromuser,$touser)
 {
-	global $db, $redis, $session_name;
+	global $db, $redis, $schema;
 
 	$posted_list["retry_count"] = 0;
 	$posted_list["last_status"] = "NEW";
 	if ($db->AutoExecute("interletsq", $posted_list, 'INSERT'))
 	{
 		$transid = $posted_list["transid"];
-		if (!$redis->get($session_name . '_interletsq'))
+		if (!$redis->get($schema . '_interletsq'))
 		{
-			$redis->set($session_name . '_interletsq', time());
+			$redis->set($schema . '_interletsq', time());
 		}
 	}
 	else

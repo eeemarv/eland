@@ -15,18 +15,14 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $rootpath = "../";
+$role = 'anonymous';
+require_once($rootpath."includes/inc_default.php");
+require_once($rootpath."includes/inc_adoconnection.php");
 
-require_once $rootpath . 'vendor/autoload.php';
-require_once $rootpath . 'includes/inc_redis.php';
-require_once $rootpath . 'includes/inc_setstatus.php';
-require_once $rootpath . 'includes/inc_timezone.php';
-require_once $rootpath . 'includes/inc_version.php';
 require_once $rootpath . 'cron/inc_cron.php';
 require_once $rootpath . 'cron/inc_upgrade.php';
 
-/**
-require_once($rootpath."cron/inc_stats.php");
-**/
+// require_once($rootpath."cron/inc_stats.php");
 
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
@@ -35,42 +31,39 @@ require_once($rootpath."includes/inc_saldofunctions.php");
 require_once($rootpath."includes/inc_news.php");
 
 require_once $rootpath . 'includes/inc_eventlog.php';
-require_once $rootpath . 'includes/inc_dbconfig.php';
 
 header('Content-Type:text/plain');
-
-echo '*** Cron eLAS-Heroku ***' . $r . $r;
+echo '*** Cron eLAS-Heroku ***' . $r;
 
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
-echo 'php version: ' . phpversion() . $r . $r;
+echo 'php version: ' . phpversion() . $r;
 
 $sessions = $domains = $session_cron_timestamps = $session_interletsqs = $table = array();
 
-foreach ($_ENV as $key => $session_name)
+foreach ($_ENV as $key => $schema)
 {
-	if (strpos($key, 'ELAS_DOMAIN_SESSION_') === 0
-		&  isset($_ENV['HEROKU_POSTGRESQL_' . $session_name . '_URL']))
+	if (strpos($key, 'ELAS_SCHEMA_') === 0)
 	{
-		$domain = str_replace('ELAS_DOMAIN_SESSION_', '', $key);
+		$domain = str_replace('ELAS_SCHEMA_', '', $key);
 
-		$sessions[$domain] = $session_name;
+		$sessions[$domain] = $schema;
 
 		$domain = str_replace('___', '-', $domain);
 		$domain = str_replace('__', '.', $domain);
 		$domain = strtolower($domain);
 
-		$domains[$session_name] = $domain;
+		$domains[$schema] = $domain;
 
-		$session_cron_timestamps[$session_name] = (int) $redis->get($session_name . '_cron_timestamp');
+		$session_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
 
-		if ($interletsq = (int) $redis->get($session_name . '_interletsq'))
+		if ($interletsq = (int) $redis->get($schema . '_interletsq'))
 		{
-			$session_interletsqs[$session_name] = $interletsq;
+			$session_interletsqs[$schema] = $interletsq;
 		}
 	}
 }
 
-unset($session_name, $domain);
+unset($schema, $domain);
 
 if (count($sessions))
 {
@@ -92,7 +85,7 @@ if (count($sessions))
 			|| isset($session_interletsq_min) && $session_interletsq_min == $session_n)
 		{
 			$db_url = $_ENV['HEROKU_POSTGRESQL_' . $session_n . '_URL'];
-			$session_name = $session_n;
+			$schema = $session_n;
 			echo ' (selected)';
 		}
 		echo $r;
@@ -112,13 +105,13 @@ else
 	{
 		if ($db_url == $value && strpos('HEROKU_POSTGRESQL_', $env) === 0)
 		{
-			$session_name = str_replace('HEROKU_POSTGRESQL_', '', $env);
-			$session_name = str_replace('_URL', '', $session_name);
+			$schema = str_replace('HEROKU_POSTGRESQL_', '', $env);
+			$schema = str_replace('_URL', '', $schema);
 			break;
 		}
 	}
 
-	echo '-- No installed domains found. Select default database (' . $session_name . ') --';
+	echo '-- No installed domains found. Select default database (' . $schema . ') --';
 }
 
 echo $r . $r;
@@ -157,7 +150,7 @@ else
 
 echo $r;
 
-echo "*** Cron system running [" . $session_name . ' ' . $domains[$session_name] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
+echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
 // begin typeahaed update (when interletsq is empty) for one group
 
@@ -171,9 +164,9 @@ if (!isset($session_interletsq_min))
 
 	$letsgroups_typeahead_update = (json_decode($redis->get('letsgroups_typeahead_update'), true)) ?: array();
 
-	$unvalid_apikeys = (json_decode($redis->get($session_name . '_typeahead_unvalid_apikeys'), true)) ?: array();
+	$unvalid_apikeys = (json_decode($redis->get($schema . '_typeahead_unvalid_apikeys'), true)) ?: array();
 
-	$failed_connections = (json_decode($redis->get($session_name . '_typeahead_failed_connections'), true)) ?: array();
+	$failed_connections = (json_decode($redis->get($schema . '_typeahead_failed_connections'), true)) ?: array();
 
 	$now = time();
 
@@ -216,8 +209,8 @@ if (!isset($session_interletsq_min))
 			echo $err_group . 'Kan geen verbinding maken.' . $r;
 			
 			$failed_connections[$letsgroup['url']] = 1;
-			$redis->set($session_name . '_typeahead_failed_connections', $failed_connections);
-			$redis->expire($session_name . '_typeahead_failed_connections', 43200);  // 12 hours
+			$redis->set($schema . '_typeahead_failed_connections', $failed_connections);
+			$redis->expire($schema . '_typeahead_failed_connections', 43200);  // 12 hours
 		}
 		else
 		{
@@ -228,8 +221,8 @@ if (!isset($session_interletsq_min))
 				echo $err_group . 'Kan geen token krijgen.' . $r;
 
 				$unvalid_apikeys[$letsgroup['remoteapikey']] = 1;
-				$redis->set($session_name . '_typeahead_unvalid_apikeys', $unvalid_apikeys);
-				$redis->expire($session_name . '_typeahead_unvalid_apikeys',86400);  // 24 hours
+				$redis->set($schema . '_typeahead_unvalid_apikeys', $unvalid_apikeys);
+				$redis->expire($schema . '_typeahead_unvalid_apikeys',86400);  // 24 hours
 			}
 		}
 
@@ -279,7 +272,7 @@ if (!isset($session_interletsq_min))
 		echo '----------------------------------------------------' . $r;
 		echo 'end Cron ' . "\n";
 
-		$redis->set($session_name . '_cron_timestamp', time());
+		$redis->set($schema . '_cron_timestamp', time());
 
 		exit;
 	}
@@ -297,7 +290,7 @@ else
 
 /*
 // sync the image files  // (to do -- not in cron -- delete orphaned files in bucket)
-if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
+if ((int) $redis->get($schema . '_file_sync') < time() - 24 * 3600 * 30)
 {
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
@@ -333,9 +326,9 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 			echo '1 profile image not present, deleted in database. ' . $r;
 			log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not available: deleted from database. Deleted filename : ' . $filename);
 		}
-		else if ($f_session_name != $session_name)
+		else if ($f_session_name != $schema)
 		{
-			$new_filename = $session_name . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';  // pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';  // pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
 				'CopySource'	=> $filename_no_ext . '.' . $extension,
@@ -385,9 +378,9 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 			echo '1 message image not present, deleted in database. ' . $r;
 			log_event ($s_id, 'cron', 'Image file of message ' . $msg_id . ' was not available: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
-		else if ($f_session_name != $session_name)
+		else if ($f_session_name != $schema)
 		{
-			$new_filename = $session_name . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg'; // . pathinfo($filename, PATHINFO_EXTENSION);
+			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg'; // . pathinfo($filename, PATHINFO_EXTENSION);
 			$result = $s3->copyObject(array(
 				'Bucket'		=> getenv('S3_BUCKET'),
 				'CopySource'	=> $filename,
@@ -417,7 +410,7 @@ if ((int) $redis->get($session_name . '_file_sync') < time() - 24 * 3600 * 30)
 // cleanup orphaned profile & message images by reading the S3 bucket every 30 days
 *
 * --> NOT IN CRON // move to command line
-if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 2592000)
+if ($redis->get($schema . '_cleanup_profile_images_timestamp') < time() - 2592000)
 {
 	echo 'Run cleanup profile images' . $r;
 
@@ -430,7 +423,7 @@ if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 
 	{
 		list($sess, $type, $type_id, $hash) = explode('_', $file);
 		
-		if ($sess != $session_name)
+		if ($sess != $schema)
 		{
 			continue;
 		}
@@ -442,7 +435,7 @@ if ($redis->get($session_name . '_cleanup_profile_images_timestamp') < time() - 
 		}
 	}
 
-	$redis->set($session_name . 'cleanup_profile_images_timestamp', time());
+	$redis->set($schema . 'cleanup_profile_images_timestamp', time());
 }
 */
 
@@ -555,8 +548,8 @@ if(check_timestamp("update_stats", $frequency) == 1){
 // END
 
 
-$redis->set($session_name . '_interletsq', '');
-$redis->set($session_name . '_cron_timestamp', time());
+$redis->set($schema . '_interletsq', '');
+$redis->set($schema . '_cron_timestamp', time());
 
 echo "\nCron run finished\n";
 exit;

@@ -39,11 +39,11 @@ function get_elaslog() {
 function log_event($id, $type, $event){
 
 	global $elasdebug;
-	global $session_name;
+	global $schema;
 
 //find domain from session / real domain
 
-	$domain = array_search($session_name, $_ENV);
+	$domain = array_search($schema, $_ENV);
 	$domain = str_replace('ELAS_DOMAIN_SESSION_', '', $domain);
 	$domain = str_replace('___', '-', $domain);
 	$domain = str_replace('__', '.', $domain);
@@ -56,13 +56,13 @@ function log_event($id, $type, $event){
 	$formatter = new ColoredLineFormatter();
 
 	// create a log channel to STDOUT
-	$log = new Logger($session_name);
+	$log = new Logger($schema);
 	$streamHandler = new StreamHandler('php://stdout', Logger::NOTICE);
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
 	// messages
-	$log->addNotice('eLAS-Heroku: ' . $session_name . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
+	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
 
 /*
 	$ip = $_SERVER['REMOTE_ADDR'];

@@ -6,6 +6,7 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
 $letsgroup_id = $_GET['letsgroup_id'];
+$location = $_GET['location'];
 
 if ($letsgroup_id)
 {
@@ -34,7 +35,7 @@ if ($letsgroup_id)
 			}
 			else
 			{
-				echo '<script>window.open("' . $letsgroup['url'] . '/login.php?token=' . $token . '");</script>';
+				echo '<script>window.open("' . $letsgroup['url'] . '/login.php?token=' . $token . '&location=' . $location . '");</script>';
 			}
 		}
 	}

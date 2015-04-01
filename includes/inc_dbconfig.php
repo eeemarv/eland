@@ -1,11 +1,7 @@
 <?php
 
-/*
- *
- */
-
 function readconfigfromdb($key){
-    global $db, $session_name, $redis;
+    global $db, $schema, $redis;
     static $cache;
 
 	if (isset($cache[$key]))
@@ -13,7 +9,7 @@ function readconfigfromdb($key){
 		return $cache[$key];
 	}
 
-	$redis_key = $session_name . '_config_' . $key;
+	$redis_key = $schema . '_config_' . $key;
 
 	if ($redis->exists($redis_key))
 	{
@@ -25,7 +21,7 @@ function readconfigfromdb($key){
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 28800);
+		$redis->expire($redis_key, 7200);
 		$cache[$key] = $value;
 	}
 
@@ -37,16 +33,16 @@ function readconfigfromdb($key){
  */
 function writeconfig($key, $value)
 {
-	global $db, $redis, $session_name;
+	global $db, $redis, $schema;
 
 	if (!$db->Execute('UPDATE config SET value = \'' . $value . '\', "default" = \'f\' WHERE setting = \'' . $key . '\''))
 	{
 		return false;
 	}
 
-	$redis_key = $session_name . '_config_' . $key;
+	$redis_key = $schema . '_config_' . $key;
 	$redis->set($redis_key, $value);
-	$redis->expire($redis_key, 28800);
+	$redis->expire($redis_key, 7200);
 
 	return true;
 }
@@ -56,7 +52,7 @@ function writeconfig($key, $value)
  */
 function readparameter($key)
 {
-    global $db, $session_name, $redis;
+    global $db, $schema, $redis;
     static $cache;
 
 	if (isset($cache[$key]))
@@ -64,7 +60,7 @@ function readparameter($key)
 		return $cache[$key];
 	}
 
-	$redis_key = $session_name . '_parameters_' . $key;
+	$redis_key = $schema . '_parameters_' . $key;
 
 	if ($redis->exists($redis_key))
 	{
@@ -88,10 +84,10 @@ function readparameter($key)
  */
 function readuser($id, $refresh = false)
 {
-    global $db, $session_name, $redis;
+    global $db, $schema, $redis;
     static $cache;
 
-	$redis_key = $session_name . '_user_' . $id;	
+	$redis_key = $schema . '_user_' . $id;	
 
 	if (!$refresh)
 	{
@@ -113,41 +109,6 @@ function readuser($id, $refresh = false)
 		$redis->set($redis_key, serialize($user));
 		$redis->expire($redis_key, 7200);
 		$cache[$id] = $user;
-	}
-
-	return $user;
-}
-
-/**
- * (not used yet)
- */
-function readusercontacts($user_id, $refresh = false)
-{
-    global $db, $session_name, $redis;
-    static $cache;
-
-	if (!$refresh)
-	{
-		if (isset($cache[$user_id]))
-		{
-			return $cache[$user_id];
-		}
-
-		$redis_key = $session_name . '_user_contacts_' . $user_id;
-
-		if ($redis->exists($redis_key))
-		{
-			return $cache[$user_id] = unserialize($redis->get($redis_key));
-		}
-	}
-
-	$contacts = $db->GetRow('SELECT * FROM contact WHERE id_user = ' . $user_id);
-
-	if (isset($contacts))
-	{
-		$redis->set($redis_key, serialize($contacts));
-		$redis->expire($redis_key, 7200);
-		$cache[$user_id] = $contacts;
 	}
 
 	return $user;

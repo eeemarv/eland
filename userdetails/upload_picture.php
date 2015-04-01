@@ -56,7 +56,7 @@ else
 		} */
 
 		try {
-			$filename = $session_name . '_u_' . $s_id . '_' . sha1(time()) . '.jpg';
+			$filename = $schema . '_u_' . $s_id . '_' . sha1(time()) . '.jpg';
 
 			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
 

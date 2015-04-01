@@ -68,22 +68,12 @@ if($s_accountrole != 'guest'){
 	echo "<h1>Andere (interlets) groepen raadplegen</h1>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
-	foreach($letsgroups as $key => $value){
+	foreach($letsgroups as $key => $value)
+	{
 		echo "<tr><td nowrap>";
-		echo "<a href='#' onclick=window.open('interlets/redirect.php?letsgroup=" .$value["id"] ."','interlets','location=no,menubar=no,scrollbars=yes')>" .$value["groupname"] ."</a>";
+		echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
 		echo "</td></tr>";
 	}
 	echo "</table>";
 }
 include($rootpath."includes/inc_footer.php");
-
-///////////////////
-
-
-function show_outputdiv(){
-        echo "<div id='output'><img src='/gfx/ajax-loader.gif' ALT='loading'>";
-        echo "<script type=\"text/javascript\">loadurl('rendersearchcat.php')</script>";
-        echo "</div>";
-}
-
-

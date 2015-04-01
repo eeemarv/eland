@@ -7,20 +7,22 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $id = $_POST["id"];
 
-if(!isset($s_id)) {
-
-}
-
 $picture = get_picture($id);
 $msg = get_msg($picture["msgid"]);
-if($msg["id_user"] == $s_id || $s_accountrole == "admin"){
-	if(delete_record($id) == TRUE){
-		delete_file($session_name . '_m_' . $picture["PictureFile"]);
+if($msg["id_user"] == $s_id || $s_accountrole == "admin")
+{
+	if(delete_record($id) == TRUE)
+	{
+		delete_file($schema . '_m_' . $picture["PictureFile"]);
 		echo "<font color='green'><strong>OK</font> - Foto $id verwijderd</strong></font>";
-	} else {
+	}
+	else
+	{
 		echo "<font color='red'><strong>Fout bij het verwijderen van foto $id</strong></font>";
 	}
-} else {
+}
+else
+{
 	echo "<font color='red'><strong>Fout: Geen rechten op deze foto</strong></font>";
 }
 

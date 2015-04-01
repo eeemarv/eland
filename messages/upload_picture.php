@@ -34,7 +34,7 @@ if (isset($_POST["zend"])){
 	if($ext == "jpeg" || $ext == "jpg"){
 
     try {
-		$filename = $session_name . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
+		$filename = $schema . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
 		
         $upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
         

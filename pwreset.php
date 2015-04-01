@@ -26,7 +26,7 @@ if ($token & $user_id)
 
 		if (!(Password_Strength($password) < readconfigfromdb('pwscore')))
 		{
-			$key = $session_name . '_pwreset_token_' . $user_id;
+			$key = $schema . '_pwreset_token_' . $user_id;
 			if ($redis->get($key) == $token)
 			{
 				$db->Execute('UPDATE users SET password = \'' . hash('sha512', $password) . '\' WHERE id = ' . $user_id);
@@ -83,8 +83,8 @@ if ($_POST['zend'])
 
 			if ($user_id)
 			{
-				$token = substr(hash('sha512', $user_id . $session_name . time() . $email), 0, 10);
-				$key = $session_name . '_pwreset_token_' . $user_id;
+				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 10);
+				$key = $schema . '_pwreset_token_' . $user_id;
 				$redis->set($key, $token);
 				$redis->expire($key, 3600);
 				$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] Paswoord reset link.';

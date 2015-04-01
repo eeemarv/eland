@@ -49,17 +49,16 @@ function show_closebutton(){
         echo "<form></td></tr></table>";
 }
 
-function show_picture($file){
-	global $baseurl;
-	global $dirbase, $session_name;
+function show_picture($file)
+{
 	echo "<div id='picdiv'>";
-
 	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
 	echo "<img src='" .$url ."' width='640'>";
 	echo "</div>";
 }
 
-function get_picture($id){
+function get_picture($id)
+{
         global $db;
         $query = "SELECT * FROM msgpictures WHERE id = " .$id;
         $picture = $db->GetRow($query);
