@@ -136,19 +136,38 @@ if ($current_version < $schemaversion)
 }
 else
 {
-	echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n\n";
+	echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n";
 	while($currentversion < $schemaversion)
 	{
 		$currentversion++;
-		if(doupgrade($currentversion) == TRUE){
+		if(doupgrade($currentversion))
+		{
 			$doneversion = $currentversion;
 		}
 	}
-	echo "Upgraded database from schema version $dbversion to $doneversion\n\n";
+	echo "Upgraded database from schema version $dbversion to $doneversion\n";
 	log_event("","DB","Upgraded database from schema version $dbversion to $doneversion");	
 }
 
-echo $r;
+//
+
+if (!$db->GetOne('SELECT setting FROM config WHERE setting = \'forcesaldomail\''))
+{
+	$forcesaldomail = array(
+		'category'		=> 'mail',
+		'setting'		=> 'forcesaldomail',
+		'value'			=> '0',
+		'description'	=> 'Gebruikers kunnen saldo mail met laatste vraag en aanbod niet uitzetten; iedereen ontvangt de saldo mail.' ,
+		'comment'		=> '',
+		'default'		=> 'f',
+	);
+
+	if ($db->AutoExecute('config', $forcesaldomail, 'INSERT'))
+	{
+		echo 'Inserted forcesaldomail config variable. ' . $r;
+	}
+}
+
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
 
@@ -529,24 +548,10 @@ if(check_timestamp($lastrun_ary['processqueue'], $frequency) == 1)
 	write_timestamp("processqueue");
 }
 
-// Publish news items that were approved
-$frequency = 30;
-if(check_timestamp($lastrun_ary['publish_news'], $frequency) == 1)
+if(check_timestamp($lastrun_ary['publish_news'], 30) == 1)
 {
 	publish_news();
 }
-
-// Update the stats table   Count total users / total transactions -> move this to Redis.
-/**  
-$frequency = 720;
-if(check_timestamp("update_stats", $frequency) == 1){
-	update_stats();
-}
-*
-**/
-
-// END
-
 
 $redis->set($schema . '_interletsq', '');
 $redis->set($schema . '_cron_timestamp', time());
@@ -706,7 +711,8 @@ function publish_news(){
 	write_timestamp("publish_news");
 }
 
-function cleanup_messages(){
+function cleanup_messages()
+{
 	// Fetch a list of all expired messages that are beyond the grace period and delete them
 	echo "Running cleanup_messages\n";
 	do_auto_cleanup_messages();
@@ -714,19 +720,22 @@ function cleanup_messages(){
 	write_timestamp("cleanup_messages");
 }
 
-function cleanup_tokens(){
+function cleanup_tokens()
+{
 	echo "Running cleanup_tokens\n";
 	do_cleanup_tokens();
 	write_timestamp("cleanup_tokens");
 }
 
-function cleanup_news() {
+function cleanup_news()
+{
 	echo "Running cleanup_news\n";
 	do_cleanup_news();
 	write_timestamp("cleanup_news");
 }
 
-function check_user_exp_msgs(){
+function check_user_exp_msgs()
+{
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	echo "Running check_user_exp_msgs\n";
 	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
@@ -772,7 +781,8 @@ function check_user_exp_msgs(){
 	write_timestamp("user_exp_msgs");
 }
 
-function automail_admin_exp_msg(){
+function automail_admin_exp_msg()
+{
 	// Fetch a list of all expired messages and mail them to the admin
 	echo "Running automail_admin_exp_msg\n";
 	global $db;
@@ -785,7 +795,8 @@ function automail_admin_exp_msg(){
 	write_timestamp("admin_exp_msg");
 }
 
-function automail_saldo(){
+function automail_saldo()
+{
 	// Get all users that want their saldo auto-mailed.
 	echo "Running automail_saldo\n";
 	global $db;

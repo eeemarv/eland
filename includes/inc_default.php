@@ -25,7 +25,6 @@ $cdn_datepicker_css = (getenv('ELAS_CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare
 $cdn_datepicker = (getenv('ELAS_CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
 $cdn_datepicker_nl = (getenv('ELAS_CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
-
 require_once $rootpath . 'vendor/autoload.php';
 require_once $rootpath . 'includes/inc_eventlog.php';
 require_once $rootpath . 'includes/inc_session.php'; 

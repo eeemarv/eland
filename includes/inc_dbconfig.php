@@ -113,3 +113,37 @@ function readuser($id, $refresh = false)
 
 	return $user;
 }
+
+/*
+function readtotaltransactions($refresh = false)
+{
+	global $db, $redis;
+    static $cache;
+
+	$redis_key = $schema . '_total_transactions';	
+
+	if (!$refresh)
+	{
+		if (isset($cache))
+		{
+			return $cache;
+		}
+
+		if ($redis->exists($redis_key))
+		{
+			return $cache = (int) $redis->get($redis_key);
+		} 
+	}
+
+	$total_transactions = $db->GetOne('SELECT COUNT(id) FROM transactions');
+
+	if (isset($total_transactions))
+	{
+		$redis->set($redis_key, $total_transactions);
+		$redis->expire($redis_key, 7200);
+		$cache = $total_transactions;
+	}
+
+	return $total_transactions;
+}
+*/

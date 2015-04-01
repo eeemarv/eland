@@ -8,7 +8,8 @@ function doupgrade($version){
 	$ran = 0;
 	//log_event("","DB","Running DB upgrade $version");
 
-	switch($version){
+	switch($version)
+	{
 		case 30000:
 			$ran = 1;
             break;
@@ -34,15 +35,18 @@ function doupgrade($version){
 		case 31003:
 			// FIXME: We need to repeat 2205 and 2206 to fix imported transactions after those updates
 			break;
-}
+	}
 
 	// Finay, update the schema version
-	if($ran == 1){
+	if($ran == 1)
+	{
 		echo "Executed upgrade version $version\n";
 		$query = "UPDATE parameters SET value = $version WHERE parameter = 'schemaversion'";
 		executequery($query);
 		return TRUE;
-	} else {
+	}
+	else
+	{
 		return FALSE;
 	}
 }
@@ -85,11 +89,10 @@ function executequery($query) {
 	return $result;
 }
 
-function generate_oldtransid(){
+function generate_oldtransid()
+{
         global $baseurl;
         global $s_id;
         $genid = "E1" .sha1($s_id .microtime()) .$_SESSION["id"] ."@" . $baseurl;
         return $genid;
 }
-
-?>
