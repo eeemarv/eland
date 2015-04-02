@@ -38,28 +38,35 @@ echo '*** Cron eLAS-Heroku ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
+// select in which schema to perform updates
 $schemas = $domains = $schema_cron_timestamps = $schema_interletsqs = $table = array();
+
+$schemas_db = ($db->GetArray('select schema_name from information_schema.schemata')) ?: array();
+$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas);
+$schemas_db = array_fill_keys($schemas, true);
 
 foreach ($_ENV as $key => $schema)
 {
-	if (strpos($key, 'ELAS_SCHEMA_') === 0)
+	if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema]))
 	{
-		$domain = str_replace('ELAS_SCHEMA_', '', $key);
+		continue;
+	}
+	
+	$domain = str_replace('ELAS_SCHEMA_', '', $key);
 
-		$schemas[$domain] = $schema;
+	$schemas[$domain] = $schema;
 
-		$domain = str_replace('___', '-', $domain);
-		$domain = str_replace('__', '.', $domain);
-		$domain = strtolower($domain);
+	$domain = str_replace('___', '-', $domain);
+	$domain = str_replace('__', '.', $domain);
+	$domain = strtolower($domain);
 
-		$domains[$schema] = $domain;
+	$domains[$schema] = $domain;
 
-		$schema_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
+	$schema_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
 
-		if ($interletsq = (int) $redis->get($schema . '_interletsq'))
-		{
-			$schema_interletsqs[$schema] = $interletsq;
-		}
+	if ($interletsq = (int) $redis->get($schema . '_interletsq'))
+	{
+		$schema_interletsqs[$schema] = $interletsq;
 	}
 }
 
@@ -110,32 +117,17 @@ if (!isset($schema_interletsq_min))
 		WHERE apimethod = \'elassoap\'
 			AND remoteapikey IS NOT NULL');
 
-	$letsgroups_typeahead_update = (json_decode($redis->get('letsgroups_typeahead_update'), true)) ?: array();
-
-	$unvalid_apikeys = (json_decode($redis->get($schema . '_typeahead_unvalid_apikeys'), true)) ?: array();
-
-	$failed_connections = (json_decode($redis->get($schema . '_typeahead_failed_connections'), true)) ?: array();
-
 	$now = time();
 
 	foreach ($letsgroups as $letsgroup)
 	{
-		if ($unvalid_apikeys[$letsgroup['remoteapikey']])
+		if ($redis->get($schema . '_typeahead_failed_' . $letsgroup['remoteapikey'])
+			|| $redis->get($schema . '_typeahead_failed_' . $letsgroup['url']))
 		{
 			continue;
 		}
 
-		if ($failed_connections[$letsgroup['url']])
-		{
-			continue;
-		}
-
-		if (!$letsgroups_typeahead_update[$letsgroup['url']])
-		{
-			break;
-		}
-
-		if ($letsgroups_typeahead_update[$letsgroup['url']] < $now - 21600)	// 6 hours 
+		if (!$redis->get($letsgroup['url'] . '_typeahead_updated'))
 		{
 			break;
 		}
@@ -155,10 +147,10 @@ if (!isset($schema_interletsq_min))
 		if ($err)
 		{
 			echo $err_group . 'Kan geen verbinding maken.' . $r;
-			
-			$failed_connections[$letsgroup['url']] = 1;
-			$redis->set($schema . '_typeahead_failed_connections', $failed_connections);
-			$redis->expire($schema . '_typeahead_failed_connections', 43200);  // 12 hours
+
+			$redis_key = $schema . '_typeahead_failed_' . $letsgroup['url'];
+			$redis->set($redis_key, '1');
+			$redis->expire($redis_key, 43200);  // 12 hours
 		}
 		else
 		{
@@ -169,8 +161,9 @@ if (!isset($schema_interletsq_min))
 				echo $err_group . 'Kan geen token krijgen.' . $r;
 
 				$unvalid_apikeys[$letsgroup['remoteapikey']] = 1;
-				$redis->set($schema . '_typeahead_unvalid_apikeys', $unvalid_apikeys);
-				$redis->expire($schema . '_typeahead_unvalid_apikeys',86400);  // 24 hours
+				$redis_key = $schema . '_typeahead_failed_' . $letsgroup['remoteapikey'];
+				$redis->set($redis_key, '1');
+				$redis->expire($redis_key, 43200);  // 12 hours
 			}
 		}
 
@@ -205,13 +198,13 @@ if (!isset($schema_interletsq_min))
 			$users[] = $user;
 		});
 
-		$redis->set('letsgroup_' . $letsgroup['url'] . '_typeahead', json_encode($users));
-		$redis->expire('letsgroup_' . $letsgroup['url'] . '_typeahead', 86400);
+		$redis_key = $letsgroup['url'] . '_typeahead_data';
+		$redis->set($redis_key, json_encode($users));
+		$redis->expire($redis_key, 86400);		// 1 day
 
-		$letsgroups_typeahead_update[$letsgroup['url']] = $now;
-
-		$redis->set('letsgroups_typeahead_update', json_encode($letsgroups_typeahead_update));
-		$redis->expire('letsgroups_typeahead_update', 86400);
+		$redis_key = $letsgroup['url'] . '_typeahead_updated';
+		$redis->set($redis_key, json_encode($letsgroups_typeahead_update));
+		$redis->expire($redis_key, 21600);		// 6 hours
 
 		echo '----------------------------------------------------' . $r;
 		echo 'letsgroups_typeahead_update ' . "\n";

@@ -7,17 +7,12 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $id = $_GET["id"];
 
-if (!isset($s_id)){
-	redirect_login($rootpath);
-	exit;
-}
-
-if(!isset($id)){
+if(!isset($id))
+{
 	redirect_mydetails_view();
 	exit;
 }
 
-show_ptitle();
 if(isset($_POST["zend"])){
 	$posted_list = array();
 	$posted_list["id_type_contact"] = $_POST["id_type_contact"];
@@ -31,35 +26,38 @@ if(isset($_POST["zend"])){
 	$posted_list["id"] = $_GET["id"];
 	$posted_list["s_id"] = $_POST["s_id"];
 	$posted_list["id_user"] = $posted_list["s_id"];
+	
 	$error_list = validate_input($posted_list,$s_id);
-	if(!empty($error_list)){
-		$alert->error('Eén of meerdere velden zijn niet correct ingevuld.');
-	}else{
-		update_contact($posted_list);
+	if(empty($error_list))
+	{
+		$result = $db->AutoExecute("contact", $posted_list, 'UPDATE', 'id='.$posted_list["id"]);
 		$alert->success('Contact aangepast.');
 		redirect_mydetails_view();
 		exit;
 	}
+	else
+	{
+		$alert->error('Eén of meerdere velden zijn niet correct ingevuld.');
+	}
 }
 
-$contact = get_contact($id);
+$contact = $db->GetRow("SELECT * FROM contact WHERE id=" . $id);
+
 $typecontactrow = get_type_contacts();
-if($contact["id_user"] != $s_id){
+if($contact["id_user"] != $s_id)
+{
 	echo "UNAUTHORIZED";
 	exit;
 }
 
 include $rootpath . 'includes/inc_header.php';
+echo "<h1>Contact aanpassen</h1>";
 show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
 include $rootpath . 'includes/inc_footer.php';
 
 
 ////////////////////////////////////////////////////////////////////////////
 
-function update_contact($posted_list){
-	global $db;
-    $result = $db->AutoExecute("contact", $posted_list, 'UPDATE', 'id='.$posted_list["id"]);
-}
 
 function validate_input($posted_list,$s_id){
     global $db;
@@ -81,13 +79,6 @@ $error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaa
 	}
 
 	return $error_list;
-}
-
-function get_contact($id){
-    global $db;
-	$query = "SELECT * FROM contact WHERE id=".$id;
-	$contact = $db->GetRow($query);
-	return $contact;
 }
 
 function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list){
@@ -167,10 +158,6 @@ if (trim($contact["flag_public"]) == 1){
 	echo "</table>\n\n</form></div>";
 }
 
-function show_ptitle(){
-	echo "<h1>Contact aanpassen</h1>";
-}
-
 function redirect_mydetails_view(){
 	header("Location:  mydetails.php");
 }
@@ -180,9 +167,5 @@ function get_type_contacts(){
 	$query = "SELECT * FROM type_contact ";
 	$typecontactrow = $db->GetArray($query);
 	return $typecontactrow;
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
 }
 

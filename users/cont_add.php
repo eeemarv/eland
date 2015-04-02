@@ -9,17 +9,13 @@ require_once($rootpath."includes/inc_form.php");
 
 $uid = $_GET["uid"];
 
-if(isset($_POST["zend"])){
+if(isset($_POST["zend"]))
+{
 	$contact = array();
 	$contact["id_type_contact"] = $_POST["id_type_contact"];
 	$contact["value"] = $_POST["value"];
 	$contact["comments"] = $_POST["comments"];
-
-	if (trim($_POST["flag_public"]) == 1){
-			$contact["flag_public"] = 1;
-	}else{
-			$contact["flag_public"] = 0;
-	}
+	$contact["flag_public"] = ($_POST["flag_public"]) ? 1 : 0;
 	$contact['id_user'] = $uid;
 
 	$error_list = validate_input($contact);
@@ -55,7 +51,8 @@ render_select_options($contact_types, $contact['id_type_contact']);
 echo "</select>";
 echo "</td></tr><tr><td></td>";
 echo "<td>";
-if(isset($error_list["id_type_contact"])){
+if(isset($error_list["id_type_contact"]))
+{
 	echo $error_list["id_type_contact"];
 }
 echo "</td>";
@@ -63,12 +60,14 @@ echo "</tr>";
 echo "<tr>";
 echo "<td valign='top'  align='right'>Waarde</td>";
 echo "<td valign='top' ><input type='text' name='value' size='30' required ";
-if (isset($contact["value"])){
+if (isset($contact["value"]))
+{
 	echo " value='".$contact["value"]."' ";
 }
 echo "></td></tr><tr><td></td>";
 echo "<td valign='top'>";
-if(isset($error_list["value"])){
+if(isset($error_list["value"]))
+{
 	echo $error_list["value"];
 }
 echo "</td>";
@@ -88,8 +87,9 @@ echo "<tr>";
 echo "<td valign='top' align='right'></td>";
 echo "<td>";
 echo "<input type='checkbox' name='flag_public' ";
-if (trim($contact["flag_public"]) == 1){
-	echo " CHECKED ";
+if ($contact["flag_public"])
+{
+	echo ' checked="checked" ';
 }
 
 echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
@@ -106,17 +106,19 @@ include($rootpath."includes/inc_footer.php");
 
 ////////////////////
 
-function validate_input($contact){
+function validate_input($contact)
+{
+	global $db;
+
 	$error_list = array();
-	if (empty($contact["value"]) || (trim($contact["value"]) == "")){
+
+	if (empty($contact["value"]) || (trim($contact["value"]) == ""))
+	{
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
-	global $db;
-	$query =" SELECT * FROM type_contact ";
-	$query .=" WHERE  id = '".$contact["id_type_contact"]."' ";
-	$rs = $db->Execute($query);
-    $number = $rs->recordcount();
-	if( $number == 0 ){
+
+	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE  id = ' .$contact["id_type_contact"])))
+	{
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}
 	return $error_list;

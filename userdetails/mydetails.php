@@ -221,23 +221,19 @@ echo "</tr>";
 		echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
 		echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
 		echo "<td valign='top'>";
-		if (trim($value["flag_public"]) == 1){
-				echo "Ja";
-		}else{
-				echo "Nee";
-		}
+		echo ($value["flag_public"]) ? "Ja" : "Nee";
 		echo "</td>";
 		echo "<td valign='top' nowrap>|";
-		echo "<a href='mydetails_cont_edit.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+		echo '<a href="mydetails_cont_edit.php?id='.$value["id"].'">';
 		echo " aanpassen </a> |";
-		echo "<a href='mydetails_cont_delete.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+		echo '<a href="mydetails_cont_delete.php?id='.$value["id"].'">';
 		echo "verwijderen </a>|";
 		echo "</td>";
 		echo "</tr>";
 	}
 	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
 	echo "<tr><td colspan='5'>| ";
-	echo "<a href='mydetails_cont_add.php?uid=" . $value['id_user'] . "'>";
+	echo "<a href='mydetails_cont_add.php'>";
 	echo "Contact toevoegen</a> ";
 	echo "|</td></tr>";
 	echo "</table></div>";

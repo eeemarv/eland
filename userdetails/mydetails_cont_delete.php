@@ -5,77 +5,75 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if (!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
-if(!isset($_GET["id"]))
+if (!isset($_GET['id']))
 {
-	header("Location:  mydetails.php");
+	$alert->error('Geen id');
+	header('Location: ' . $rootpath . 'userdetails/mydetails.php');
 	exit;
 }
 
 $id = $_GET["id"];
 
-if(validate_request($id) == 1)
+if (!validate_request($id))
 {
-	delete_contact($id);
-	$alert->success('Contact verwijderd.');
-	header("Location:  mydetails.php");
+	$alert->error('De instellingen van eLAS laten je niet toe deze informatie te verwijderen. Als je niet wil dat andere leden deze gegevens zien kan je de optie \'publiek\' uitschakelen.');
+	header('Location: ' . $rootpath . 'userdetails/mydetails.php');
 	exit;
 }
 
-$alert->error('Contact niet verwijderd.');
+
+if ($_POST['zend'])
+{
+	if ($db->Execute("DELETE FROM contact WHERE id =".$id))
+	{
+		$alert->success('Contact verwijderd.');
+	}
+	else
+	{
+		$alert->error('Contact niet verwijderd.');
+	}
+	header('Location: ' . $rootpath . 'userdetails/mydetails.php');
+	exit;
+}
+
+$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.name, u.letscode
+	FROM type_contact tc, contact c, users u
+	WHERE c.id_type_contact = tc.id
+		AND c.id_user = u.id
+		AND c.id = ' . $id);
+
 include($rootpath."includes/inc_header.php");
-show_error();
+
+echo '<h1>Contact verwijderen?</h1>';
+echo '<p>Type: ' . $contact['abbrev'] . '</p>';
+echo '<p>Waarde: ' . $contact['value'] . '</p>';
+echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
+echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
+echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
+echo '<form method="post"><input type="submit" value="Verwijder" name="zend"></form>';
+
 include($rootpath."includes/inc_footer.php");
 
+/////////////////////////
 
-////////////////////////////////////////////////////////////////////////////
+function validate_request($id)
+{
+	global $db;
 
+	$row = $db->GetRow('SELECT tc.*, c.id_user
+		FROM type_contact tc, contact c
+		WHERE tc.id = c.id_type_contact
+			AND c.id = ' . $id);
 
-function validate_request($id){
-	$contact = get_contact($id);
-	$contact_type = get_contact_type($contact["id_type_contact"]);
-	$type_count = get_type_count($contact["id_user"],$contact["id_type_contact"]);
-
-	if($contact_type["protect"] == 1 && $type_count < 2) {
-		return 0;
-	} else {
-		return 1;
+	if (!$row['protect'] && $row['abbrev'] != 'mail')
+	{
+		return true;
 	}
-}
 
-function get_type_count($userid,$typeid) {
-	global $db;
-        $query = "SELECT COUNT(id) AS count FROM contact WHERE id_user = $userid AND id_type_contact = $typeid";
-	$count =  $db->GetRow($query);
-	return $count["count"];
-}
+	$count = $db->GetOne('SELECT COUNT(*)
+		FROM contact
+		WHERE id_type_contact = ' . $row['id'] . '
+			AND id_user = ' . $row['id_user']);
 
-function get_contact($id) {
-	global $db;
-	$query = "SELECT * FROM contact WHERE id = " .$id;
-	$contact = $db->GetRow($query);
-	return $contact;
-}
-
-function get_contact_type($typeid){
-        global $db;
-        $query = "SELECT * FROM type_contact WHERE id = " .$typeid;
-        $contact_type = $db->GetRow($query);
-	return $contact_type;
-}
-
-function show_error() {
-	echo "<P><font color='red'><strong>De instellingen van eLAS laten je niet toe deze informatie te verwijderen.</strong></font></P>";
-	echo "<P>Als je niet wil dat andere leden deze gegevens zien kan je de optie 'publiek' uitschakelen</P>";
-	echo "<P><a href='mydetails.php'>Terug naar het overzicht</P>";
-}
-
-function delete_contact($id){
-	global $db;
-	$query = "DELETE FROM contact WHERE id =".$id ;
-	$result = $db->Execute($query);
+	return ($count >= 2) ? true : false;
 }

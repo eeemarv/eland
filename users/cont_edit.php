@@ -9,7 +9,8 @@ require_once($rootpath."includes/inc_form.php");
 $uid = $_GET["uid"];
 $cid = $_GET["cid"];
 
-if(!isset($cid)){
+if(!isset($cid))
+{
 	header("Location: view.php?id=$uid");	
 }
 
@@ -17,15 +18,10 @@ if(isset($_POST["zend"])){
 	$contact = array();
 	$contact["id_type_contact"] = $_POST["id_type_contact"];
 	$contact["value"] = $_POST["value"];
-
-	if (trim($_POST["flag_public"]) == 1){
-			$contact["flag_public"] = 1;
-	}else{
-			$contact["flag_public"] = 0;
-	}
-
+	$contact["flag_public"] = ($_POST["flag_public"]) ? 1 : 0;
 	$contact["comments"] = $_POST["comments"];
 	$error_list = validate_input($contact);
+	
 	if(empty($error_list)){
 		if ($db->AutoExecute("contact", $contact, 'UPDATE', "id=$cid"))
 		{

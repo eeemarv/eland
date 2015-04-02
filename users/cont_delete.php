@@ -19,7 +19,7 @@ if ($_POST['zend'])
 		$alert->error('Contact niet verwijderd.');
 	}
 	header("Location: view.php?id=$uid");
-	exit;	
+	exit;
 }
 
 $contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.name, u.letscode

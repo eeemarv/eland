@@ -121,8 +121,7 @@ if ($_POST['zend'])
 require_once($rootpath."includes/inc_header.php");
 
 echo "<h1>Login of paswoord vergeten</h1>";
-echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox.';
-echo ' Als je alleen je login vergeten bent, hoef je de link niet te gebruiken.</p>';
+echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
 echo "<form method='post'>";
 echo "<table class='selectbox' border='0'><tr>";
 echo "<td>E-mail adres</td>";
