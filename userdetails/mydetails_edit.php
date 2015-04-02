@@ -5,8 +5,6 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 $user = readuser($s_id);
 
 if(isset($_POST["zend"])){
@@ -48,6 +46,15 @@ if(isset($_POST["zend"])){
 	$user = array_merge($user, $posted_list);
 }
 
+$includejs = '
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>';
+
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" >';
+
+include($rootpath."includes/inc_header.php");
+
 echo "<h1>Mijn gegevens aanpassen</h1>";
 
 echo "<table cellpadding='0' cellspacing='0' border='0'>";
@@ -56,7 +63,7 @@ echo $user["letscode"]."</strong></td></tr>";
 echo "</table>";
 
 echo "<div class='border_b'>";
-echo "<form action='mydetails_edit.php?id=".$user["id"]."' method='POST'>";
+echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 
 echo "<tr><td valign='top' align='right'>Chatter ID</td><td>";
@@ -81,14 +88,19 @@ echo "<tr><td valign='top' align='right'>Verjaardag (jjjj-mm-dd):</td><td>";
 echo "<input name='birthday' size='10'";
 echo " value='" ;
 echo $user["birthday"];
-echo "' >";
-echo "</td></tr><tr><td></td><td>";
-
-echo "</td></tr><tr><td></td><td>";
-if (isset($error_list["adress"])){
-	echo $error_list["adress"];
-}
+echo "' ";
+echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+echo 'data-date-default-view="2" ';
+echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-start-view="2" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-immediate-updates="true" ';
+echo ">";
 echo "</td></tr>";
+
+echo "<tr><td></td><td>";
 
 echo "<tr><td valign='top' align='right'>Login:</td><td>";
 echo "<input  type='text' name='login' size='40' ";

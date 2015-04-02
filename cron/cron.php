@@ -47,7 +47,7 @@ $schemas_db = array_fill_keys($schemas, true);
 
 foreach ($_ENV as $key => $schema)
 {
-	if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema]))
+	if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema])))
 	{
 		continue;
 	}
@@ -193,22 +193,30 @@ if (!isset($schema_interletsq_min))
 			if ($postcode)
 			{
 				$user['p'] = $postcode;
-			}
+			} 
 
 			$users[] = $user;
 		});
 
-		$redis_key = $letsgroup['url'] . '_typeahead_data';
-		$redis->set($redis_key, json_encode($users));
-		$redis->expire($redis_key, 86400);		// 1 day
+		$redis_data_key = $letsgroup['url'] . '_typeahead_data';
+		$data_string = json_encode($users);
+		
+		if ($data_string != $redis->get($redis_data_key))
+		{
+			$redis_thumbprint_key = $letsgroup['url'] . '_typeahead_thumbprint';
+			$redis->set($redis_thumbprint_key, time());
+			$redis->expire($redis_thumbprint_key, 5184000);	// 60 days
+			$redis->set($redis_data_key, $data_string);
+		}
+		$redis->expire($redis_data_key, 86400);		// 1 day
 
-		$redis_key = $letsgroup['url'] . '_typeahead_updated';
-		$redis->set($redis_key, json_encode($letsgroups_typeahead_update));
-		$redis->expire($redis_key, 21600);		// 6 hours
+		$redis_refresh_key = $letsgroup['url'] . '_typeahead_updated';
+		$redis->set($redis_refresh_key, '1');
+		$redis->expire($redis_refresh_key, 21600);		// 6 hours
 
 		echo '----------------------------------------------------' . $r;
-		echo 'letsgroups_typeahead_update ' . "\n";
-		echo 'letsgroup_' . $letsgroup['url'] . '_users_typeahead' . $r;
+		echo $redis_data_key . $r;
+		echo $redis_refresh_key . $r;
 		echo 'user count: ' . count($users) . "\n";
 		echo '----------------------------------------------------' . $r;
 		echo 'end Cron ' . "\n";

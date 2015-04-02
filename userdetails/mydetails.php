@@ -111,7 +111,8 @@ function show_editlink(){
 	echo "</td></tr></table>";
 }
 
-function show_user($user){
+function show_user($user)
+{
 	global $rootpath;
 
 	echo "<table class='memberview' cellpadding='0' cellspacing='0' border='0' width='99%'>";

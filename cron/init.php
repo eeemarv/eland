@@ -59,7 +59,7 @@ if (!$db->GetOne('SELECT setting FROM config WHERE setting = \'forcesaldomail\''
 		'value'			=> '0',
 		'description'	=> 'Gebruikers kunnen saldo mail met laatste vraag en aanbod niet uitzetten; iedereen ontvangt de saldo mail.' ,
 		'comment'		=> '',
-		'"default"'		=> 'f',
+		'"default"'		=> 't',
 	);
 
 	if ($db->AutoExecute('config', $forcesaldomail, 'INSERT'))

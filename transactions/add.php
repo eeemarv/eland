@@ -223,11 +223,17 @@ echo "</td></tr>";
 echo "<tr><td align='right'>";
 echo "Aan LETS groep";
 echo "</td><td>";
-$letsgroups = $db->getAssoc('SELECT id, groupname FROM letsgroups');
+$letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
-echo "<select name='letsgroup_id' id='letsgroup_id' onchange=\"document.getElementById('letscode_to').value='';\">\n";
+echo "<select name='letsgroup_id' id='letsgroup_id'>";
 
-render_select_options($letsgroups, $letsgroup['id']);
+foreach ($letsgroups as $value)
+{
+	echo '<option value="' . $value['id'] . '" ';
+	echo 'data-thumbprint="' . $redis->get($value['url'] . '_typeahead_thumbprint') . '"';
+	echo ($value['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
+	echo '>' . htmlspecialchars($value['groupname'], ENT_QUOTES) . '</option>';
+}
 
 echo "</select>";
 echo "</td><td>";
