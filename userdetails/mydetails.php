@@ -149,11 +149,11 @@ function show_user($user){
 	echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
 	echo "<tr><td valign='top'>Commentaar: </td>";
 	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
-	echo "<tr><td valign='top'>Saldo Mail: </td>";
-	if($user["cron_saldo"] == 't'){
-		echo "<td valign='top'>Aan</td>";
-	} else {
-		echo "<td valign='top'>Uit</td>";
+	if (!readconfigfromdb('forcesaldomail'))
+	{
+		echo "<tr><td valign='top'>Saldo Mail: </td><td valign='top'>";
+		echo ($user["cron_saldo"] == 't') ? "Aan" : "Uit";
+		echo '</td></tr>';
 	}
 	echo "</table>";
 	echo "</td>";

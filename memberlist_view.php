@@ -152,13 +152,23 @@ function show_contact($contact){
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 	echo "<tr ><td colspan='3'><p>&#160;</p></td></tr>";
 	echo "<tr class='even_row'><td colspan='3'><p><strong>Contactinfo</strong></p></td></tr>";
-	foreach($contact as $key => $value){
+	foreach($contact as $key => $value)
+	{
 		echo "<tr><td>".$value["name"].": </td>";
-		if($value["abbrev"] == "mail"){
+		if ($value["abbrev"] == "mail")
+		{
 			echo "<td><a href='mailto:".$value["value"]."'>".$value["value"]."</a></td>";
-		}elseif($value["abbrev"] == "adr"){
+		}
+		else if ($value["abbrev"] == "adr")
+		{
 			echo "<td><a href='http://maps.google.be/maps?f=q&source=s_q&hl=nl&geocode=&q=".$value["value"]."' target='new'>".$value["value"]."</a></td>";
-		} else {
+		}
+		else if ($value['abbrev'] == 'web')
+		{
+			echo '<td><a href="' . $value['value'] . '">' . $value['value'] . '</a></td>';
+		}
+		else
+		{
 			echo "<td>".$value["value"]."</td>";
 		}
 
