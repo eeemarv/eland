@@ -53,11 +53,8 @@ function mail_news($id){
 
 	$q2 = "SELECT * from lists where topic = 'news'";
 	$lists = $db->Execute($q2);
-	//var_dump($lists);
 
 	foreach($lists as $key => $value){
 		amq_sendmail($value["listname"], $mailsubject, $mailcontent, 0);
 	}
 }
-
-?>

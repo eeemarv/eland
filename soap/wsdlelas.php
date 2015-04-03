@@ -121,12 +121,9 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			$posted_list["description"] = $description;
 
 			$fromuser = get_user_by_letscode($from);
-			$mylog = "Looking up Interlets user $from";
-			log_event("","debug", "$mylog");
+			log_event("","debug", "Looking up Interlets user $from");
 
-			$sfrom = serialize($fromuser);
-			$mylog = "Found Interlets fromuser $sfrom";
-			log_event("","debug", "$mylog");
+			log_event("","debug", 'Found Interlets fromuser ' . serialize($fromuser));
 
 			$posted_list["id_from"] = $fromuser["id"];
 			$posted_list["real_from"] = $real_from;
@@ -138,14 +135,14 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			if(empty($fromuser["letscode"]) || $fromuser["accountrole"] != 'interlets')
 			{
 				log_event("","Soap","Transaction $transid, unknown FROM user");
-                                return "NOUSER";
+				return "NOUSER";
 			}
 
 			// Stop already if the user doesn't exist
 			if(empty($touser["letscode"]) || ($touser["status"] != 1 && $touser["status"] != 2))
 			{
 				log_event("","Soap","Transaction $transid, unknown or invalid TO user");
-                                return "NOUSER";
+				return "NOUSER";
 			}
 
 			// Check the signature first

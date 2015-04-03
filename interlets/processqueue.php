@@ -14,8 +14,7 @@ echo "Running eLAS Interlets System\n\n";
 
 global $db;
 
-$query = "SELECT * FROM interletsq";
-$transactions = $db->GetArray($query);
+$transactions = $db->GetArray('SELECT * FROM interletsq');
 //         transid VARCHAR( 80 ) NOT NULL,
 //        date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 //        id_from INT( 11 ) NOT NULL,
@@ -32,14 +31,14 @@ foreach ($transactions AS $key => $value){
 		$transid = $value['transid'];
 		$letsgroup_id = $value['letsgroup_id'];
 		$id_from = $value['id_from'];
-		$letscode_to = $value['letscode_to'];
+		$letscode_to = trim($value['letscode_to']);
 		$amount = $value['amount'];
 		$description = $value['description'];
 		$signature = $value['signature'];
 		$retry_until = $value['retry_until'];
 		$count = $value['retry_count'];
 
-                echo "Processing transaction $transid\t";
+		echo "Processing transaction $transid\t";
 
 		// Lookup the letsgroup details from letsgroups
 		$myletsgroup = get_letsgroup($letsgroup_id);
@@ -47,11 +46,12 @@ foreach ($transactions AS $key => $value){
 		$myuser = get_user($value['id_from']);
 		$real_from = $myuser["fullname"] ."(" .$myuser["letscode"] .")";
 
+		$soapurl = ($myletsgroup['elassoapurl']) ?: $myletsgroup['url'] . '/soap/wsdlelas.php?wsdl';
+
 		// Make the SOAP connection, send our API key and the transaction details
-		$mysoapurl = $myletsgroup["elassoapurl"] ."/wsdlelas.php?wsdl";
 		$myapikey = $myletsgroup["remoteapikey"];
 		$from = $myletsgroup["myremoteletscode"];
-		$client = new nusoap_client($mysoapurl, true);
+		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if (!$err) {
 			$result = $client->call('dopayment', array(
@@ -73,9 +73,10 @@ foreach ($transactions AS $key => $value){
 				switch ($result){
 					case "SUCCESS":
 						//Commit locally
-						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED"){
-                                                        update_queue($transid,$count,"LOCALFAIL");
-                                                }
+						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED")
+						{
+							update_queue($transid,$count,"LOCALFAIL");
+						}
 						break;
 					case "OFFLINE":
 						//Do nothing
@@ -101,7 +102,7 @@ foreach ($transactions AS $key => $value){
 					case "NOUSER":
 						//Handle the error and remove transaction
 						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result, 0);
-                                                unqueue($transid);
+						unqueue($transid);
 						break;
 					case "APIKEYFAIL":
 						update_queue($transid,$count,$result);
@@ -126,21 +127,24 @@ echo "\nDone processing.\n\n";
 
 ////////////////// FUNCTIONS ///////////////////////////
 
-function unqueue($transid){
+function unqueue($transid)
+{
 	global $db;
 	$query = "DELETE FROM interletsq WHERE transid = '" .$transid ."'";
 	log_event("","Trans","Removing $transid from queue");
 	$db->Execute($query);
 }
 
-function update_queue($transid,$count,$result){
+function update_queue($transid,$count,$result)
+{
 	global $db;
 	$count = $count + 1;
-        $query = "UPDATE interletsq SET retry_count = $count, last_status = '" .$result ."' WHERE transid = '" .$transid ."'";
+	$query = "UPDATE interletsq SET retry_count = $count, last_status = '" .$result ."' WHERE transid = '" .$transid ."'";
 	$db->Execute($query);
 }
 
-function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to){
+function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to)
+{
 	//FIXME Add data validation and clear error message for bug #321
 	//FIXME output debug info when elasdebug = 1
 	echo "Local commiting $transid\t\t";
@@ -158,7 +162,8 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	$client = new nusoap_client($mysoapurl, true);
 	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));
 	$err = $client->getError();
-	if (!$err) {
+	if (!$err)
+	{
 		$posted_list["real_to"] = $result;
 	}
 

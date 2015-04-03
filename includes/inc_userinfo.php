@@ -90,10 +90,7 @@ function get_user($id){
 
 function get_user_by_letscode($letscode){
 	global $db;
-        $query = "SELECT * FROM users ";
-        $query .= "WHERE letscode = '" .$letscode ."'";//."' AND status <> 0";
-        $user = $db->GetRow($query);
-        return $user;
+    return $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $letscode . '\'');
 }
 
 function get_user_by_login($login){

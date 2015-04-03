@@ -260,9 +260,7 @@ function get_numberoftransactions($user_id){
 	$query_min = "SELECT count(*) ";
 	$query_min .= " FROM transactions ";
 	$query_min .= " WHERE id_from = ".$user_id ." or id_to = ".$user_id ;
-	$numberoftrans = $db->GetRow($query_min);
-	//var_dump($numberoftrans);
-	return $numberoftrans["count(*)"];
+	return $db->GetOne($query_min);
 }
 
 
@@ -277,7 +275,6 @@ function get_contact($id){
 	$query .= " WHERE users.id=".$id;
 	$query .= " AND contact.id_type_contact = type_contact.id ";
 	$query .= " AND users.id = contact.id_user ";
-
 	$contact = $db->GetArray($query);
 	return $contact;
 }
@@ -289,13 +286,13 @@ function show_contact($contact, $user_id ){
 	echo "<tr class='even_row'>";
 	echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
 	echo "</tr>";
-echo "<tr>";
-echo "<th valign='top'>Type</th>";
-echo "<th valign='top'>Waarde</th>";
-echo "<th valign='top'>Commentaar</th>";
-echo "<th valign='top'>Publiek</th>";
-echo "<th valign='top'></th>";
-echo "</tr>";
+	echo "<tr>";
+	echo "<th valign='top'>Type</th>";
+	echo "<th valign='top'>Waarde</th>";
+	echo "<th valign='top'>Commentaar</th>";
+	echo "<th valign='top'>Publiek</th>";
+	echo "<th valign='top'></th>";
+	echo "</tr>";
 
 	foreach($contact as $key => $value){
 		echo "<tr>";

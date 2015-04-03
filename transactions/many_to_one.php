@@ -115,7 +115,6 @@ if ($percentage_transactions && $percentage_transactions_days)
 			AND u.id = tr.id_from
 			AND u.status IN (1, 2)
 		GROUP BY tr.id_from');
-	var_dump($user_trans);
 }
 
 if ($req->get('fill_in') && ($fixed || $percentage || $user_trans)){
