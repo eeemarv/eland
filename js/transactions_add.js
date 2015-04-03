@@ -38,7 +38,7 @@ $('#letscode_from').typeahead({
 	templates: {
 		suggestion: function(data) {
 			return '<p class="' + data.class + '"><strong>' + data.letscode +
-				'</strong> ' + data.name + '<span style="float:right;"><i>' + data.postcode + '</i></span></p>';
+				'</strong> ' + data.name + '</p>';
 		}
 	}
 });
@@ -57,7 +57,7 @@ $('#letscode_to').typeahead({
 	templates: {
 		suggestion: function(data) {
 			return '<p class="' + data.class + '"><strong>' + data.letscode +
-				'</strong> ' + data.name + '<span style="float:right;"><i>' + data.postcode + '</i></span></p>';
+				'</strong> ' + data.name + '</p>';
 		}
 	}
 }); 
