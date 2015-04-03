@@ -140,24 +140,29 @@ else
 		$transaction = $db->GetRow('SELECT letscode as letscode_to, fullname FROM users WHERE id = ' . $uid);
 		$transaction['letscode_to'] .= ' ' . $transaction['fullname'];
 	}
+}
 
-	$letsgroup_ary = $db->GetArray('SELECT id, prefix
-		FROM letsgroups
-		WHERE apimethod = \'internal\'
-		ORDER BY prefix asc');
+$internal_letsgroup_prefixes = $db->GetAssoc('SELECT id, prefix
+	FROM letsgroups
+	WHERE apimethod = \'internal\'
+	ORDER BY prefix asc');
 
-	foreach ($letsgroup_ary as $letsgroup)
+foreach ($internal_letsgroup_prefixes as $letsgroup_id => $letsgroup_prefix)
+{
+	if (!$letsgroup_prefix)
 	{
-		if (!$letsgroup['prefix'])
-		{
-			break;
-		}
-
-		if (strpos(strtolower($s_letscode), strtolower($letsgroup['prefix'])) === 0)
-		{
-			break;
-		}
+		break;
 	}
+
+	if (strpos(strtolower($s_letscode), strtolower($letsgroup_prefix) === 0))
+	{
+		break;
+	}
+}
+
+if (!isset($_POST['zend']))
+{
+	$letsgroup['id'] = $letsgroup_id;
 }
 
 $includejs = '
@@ -229,9 +234,11 @@ echo "<select name='letsgroup_id' id='letsgroup_id'>";
 
 foreach ($letsgroups as $value)
 {
+	$thumbprint = (getenv('ELAS_DEBUG')) ? time() : $redis->get($value['url'] . '_typeahead_thumbprint');
 	echo '<option value="' . $value['id'] . '" ';
-	echo 'data-thumbprint="' . $redis->get($value['url'] . '_typeahead_thumbprint') . '"';
+	echo 'data-thumbprint="' . $thumbprint . '"';
 	echo ($value['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
+	echo ($value['id'] == $letsgroup_id) ? ' data-this-letsgroup="1"' : '';
 	echo '>' . htmlspecialchars($value['groupname'], ENT_QUOTES) . '</option>';
 }
 

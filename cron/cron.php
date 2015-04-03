@@ -42,8 +42,8 @@ echo 'php version: ' . phpversion() . $r;
 $schemas = $domains = $schema_cron_timestamps = $schema_interletsqs = $table = array();
 
 $schemas_db = ($db->GetArray('select schema_name from information_schema.schemata')) ?: array();
-$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas);
-$schemas_db = array_fill_keys($schemas, true);
+$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+$schemas_db = array_fill_keys($schemas_db, true);
 
 foreach ($_ENV as $key => $schema)
 {
