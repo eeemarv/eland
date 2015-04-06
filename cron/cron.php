@@ -263,7 +263,7 @@ if(check_timestamp($lastrun_ary['cleanup_messages'], 1440) && readconfigfromdb("
 	cleanup_messages();
 
 	// remove orphaned images.
-	$query = 'SELECT mp.id, mp.\'Picturefile\'
+	$query = 'SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
 		LEFT JOIN messages m ON mp.msgid = m.id
 		WHERE m.id IS NULL';
@@ -284,7 +284,6 @@ if(check_timestamp($lastrun_ary['cleanup_messages'], 1440) && readconfigfromdb("
 		}
 	}
 }
-
 
 // Update counts for each message category
 if(check_timestamp($lastrun_ary['cat_update_count'], 60))
@@ -453,7 +452,11 @@ function automail_admin_exp_msg()
 	echo "Running automail_admin_exp_msg\n";
 	global $db;
 	$today = date("Y-m-d");
-	$query = "SELECT users.name AS username, messages.content AS message, messages.id AS mid, messages.validity AS validity FROM messages,users WHERE users.status <> 0 AND messages.id_user = users.id AND validity <= '" .$today ."'";
+	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
+		FROM messages m, users u
+		WHERE users.status <> 0
+			AND m.id_user = u.id
+			AND validity <= '" .$today ."'";
 	$messages = $db->GetArray($query);
 
 	mail_admin_expmsg($messages);
@@ -463,42 +466,64 @@ function automail_admin_exp_msg()
 
 function automail_saldo()
 {
+	return // disable for development now
+	$mandrill = new Mandrill();
+
 	// Get all users that want their saldo auto-mailed.
 	echo "Running automail_saldo\n";
 	global $db;
-	$query = 'SELECT users.id,
-		users.name, users.saldo AS saldo,
-		contact.value AS cvalue FROM users,
-		contact, type_contact 
-	WHERE users.id = contact.id_user
-		AND contact.id_type_contact = type_contact.id
-		AND type_contact.abbrev = \'mail\'
-		AND users.status <> 0';
+	$query = 'SELECT u.id,
+			u.name, u.saldo,
+			c.value
+		FROM users u, contact c, type_contact tc
+		WHERE u.id = c.id_user
+			AND c.id_type_contact = tc.id
+			AND tc.abbrev = \'mail\'
+			AND u.status in (1, 2)';
 	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND users.cron_saldo = 1';
 	$users = $db->GetArray($query);
 
+/*
 	foreach($users as $key => $value)
 	{
 		$balance = $value["saldo"];
 		mail_balance($value["cvalue"], $mybalance);
 	}
+*/
+	$r = "\n\r";
+	$t = 'Saldo';
+	$u = '-----';
+	$text .= $t . $r . $u . $r;
+	$html .= '<h1>' . $t . '</h1>';
+	$t = 'Je huidige saldo bedraagt |BALANCE| ' . readconfigfromdb('currency');
+	$text .= $t . $r;
+	$html .= '<p>' . $t . '</p>';
+	$t ='Recent LETS vraag en aanbod';
+	$u ='---------------------------';
+	$text .= $t . $r . $u . $r;
+	$html .= '<h1>' . $t . '</h1>';
+	$t = 'Deze mail bevat LETS vraag en aanbod dat in de afgelopen ' . $days .
+		' dagen in eLAS is geplaatst. Contactgegevens kan je zien door de naam van
+		de persoon met je muis aan te wijzen.
+		Klik op de persoon om te e-mailen. Een kaart of routebeschrijving krijg je
+		door op (?) te klikken. Klik op (+) om een bericht te bekijken op eLAS.
+		Neem <a href="mailto:' . readconfigfromdb('support') .
+		'">contact</a> op met ons als je problemen ervaart.';
+	$text .= $t . $r;
+	$html .= '<p>' . $t . '</p>';
 
-	$from_address_transactions = readconfigfromdb("from_address_transactions");
-	if (!empty($from_address_transactions))
+
+	$from = readconfigfromdb("from_address_transactions");
+	if (empty($from))
 	{
-		$mailfrom .= trim($from_address_transactions);
-	}
-	else
-	{
-		echo "Mail from address is not set in configuration\n";
+		echo "Mail from_address_transactions is not set in configuration\n";
 		return 0;
 	}
 
-    $subject = "[eLAS-". readconfigfromdb("systemtag") ."] - Saldo en laatste vraag en aanbod.";
-
-    $content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
-    if (!readconfigfromdb('forcesaldomail'))
-    {
+	$
+	$content = "Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub\r\n";
+	if (!readconfigfromdb('forcesaldomail'))
+	{
 		$content .= "Je ontvangt deze mail omdat je de optie 'Mail saldo' in eLAS hebt geactiveerd,\n zet deze uit om deze mails niet meer te ontvangen.\n";
 	}
 
@@ -507,7 +532,31 @@ function automail_saldo()
 
 	$mailcontent .= "\nDe eLAS MailSaldo Robot\n";
 	sendemail($mailfrom, $value['cvalue'], $subject, $mailcontent);
-	
+
+	$message = array(
+		'subject'		=> '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.',
+		'text'			=> $text,
+		'html'			=> $html,
+		'from_email'	=> $from,
+		'to'			=> $to,
+	);
+
+	try
+	{
+		$mandrill = new Mandrill(); 
+		$mandrill->messages->send($message, true);
+	}
+	catch (Mandrill_Error $e)
+	{
+		// Mandrill errors are thrown as exceptions
+		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
+		return;
+	}
+
+	$to = (is_array($to)) ? implode(', ', $to) : $to;
+
+	log_event($s_id, 'mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
+
 	//Timestamp this run
 	write_timestamp("saldo");
 }

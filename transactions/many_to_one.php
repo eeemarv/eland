@@ -117,11 +117,14 @@ if ($percentage_transactions && $percentage_transactions_days)
 		GROUP BY tr.id_from');
 }
 
-if ($req->get('fill_in') && ($fixed || $percentage || $user_trans)){
+if ($req->get('fill_in') && ($fixed || $percentage || $user_trans))
+{
+	$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 	foreach ($active_users as $user)
 	{
 		if ($user['letscode'] == $req->get('letscode_to')
-			|| (check_newcomer($user['adate']) && $req->get('no_newcomers'))
+			|| ($newusertreshold < strtotime($user['adate'])
+				&& $req->get('no_newcomers'))
 			|| ($user['status'] == 2 && $req->get('no_leavers'))
 			|| ($user['saldo'] < $user['minlimit'] && $req->get('no_min_limit')))
 		{
@@ -147,8 +150,8 @@ $req->set('confirm_password', '');
 $data_table = new data_table();
 $data_table->set_data($active_users)->set_input($req)
 	->add_column('letscode', array('title' => 'Van LetsCode', 'render' => 'status'))
-	->add_column('fullname', array('title' => 'Naam', 'render' => 'admin'))
-	->add_column('accountrole', array('title' => 'Rol', 'footer_text' => 'TOTAAL', 'render' => 'admin'))
+	->add_column('fullname', array('title' => 'Naam'))
+	->add_column('accountrole', array('title' => 'Rol', 'footer_text' => 'TOTAAL'))
 	->add_column('saldo', array('title' => 'Saldo', 'footer' => 'sum', 'render' => 'limit'))
 	->add_column('amount', array('title' => 'Bedrag', 'input' => 'id', 'footer' => 'sum'))
 	->add_column('minlimit', array('title' => 'Min.Limiet'));
@@ -163,8 +166,8 @@ echo '<form method="post"><div style="background-color:#ffdddd; padding:10px;">'
 echo '<h2>Invul-hulp</h2>';
 echo '<p>Met deze invul hulp kan je snel alle bedragen van de massa-transactie invullen. ';
 echo 'De eigenlijke massa-transactie doe je met het gele formulier onderaan. Daar zie ook de ';
-echo 'feitelijk bedragen die zullen worden overgeschreven en waar je de bedragen alvorens nog individueel ';
-echo 'kan aanpassen.</p>';
+echo 'feitelijk bedragen die zullen worden overgeschreven. Je kan daar de bedragen alvorens nog individueel ';
+echo 'aanpassen.</p>';
 echo '<table  cellspacing="5" cellpadding="0" border="0">';
 $req->set_output('tr')->render(array(
 	'fixed', 'percentage', 'percentage_base',
@@ -189,10 +192,7 @@ echo '</table></form>';
 include($rootpath.'includes/inc_footer.php');
 
 
-function check_newcomer($adate){
-	global $configuration;
-	$now = time();
-	$limit = $now - (readconfigfromdb('newuserdays') * 60 * 60 * 24);
-	$timestamp = strtotime($adate);
-	return  ($limit < $timestamp) ? 1 : 0;
+function check_newcomer($adate)
+{
+	return  (time() - (readconfigfromdb('newuserdays') * 86400) < strtotime($adate)) ? true : false;
 }

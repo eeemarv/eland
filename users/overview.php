@@ -16,7 +16,6 @@ include($rootpath."includes/inc_header.php");
 //status 6: stapin
 //status 7: extern
 
-
 $orderby = ($_GET["orderby"]) ? $_GET['orderby'] : 'letscode';
 $query = "SELECT * FROM users WHERE status IN (1, 2, 3, 4)
 	ORDER BY ".$orderby;
@@ -61,7 +60,7 @@ echo "</tr></table>";
 echo "<div class='border_b'><table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 echo "<tr class='header'>";
 echo "<td valign='top'><strong>";
-echo "<a href='overview.php?user_orderby=letscode'>Nr.</a>";
+echo "<a href='overview.php?user_orderby=letscode'>Code</a>";
 echo "</strong></td>";
 echo "<td valign='top'><strong>";
 echo "<a href='overview.php?user_orderby=fullname'>Naam</a>";
@@ -84,26 +83,36 @@ echo "Stand";
 echo "</strong></td>";
 echo "</tr>\n\n";
 $rownumb=0;
-foreach($active_users as $value){
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+foreach($active_users as $value)
+{
 	$myurl = "view.php?id=".$value["id"];
 	$rownumb++;
 	echo "<tr";
-	if($rownumb % 2 == 1){
+	if($rownumb % 2)
+	{
 		echo " class='uneven_row'";
-	}else{
+	}
+	else
+	{
 		echo " class='even_row'";
 	}
 	echo ">";
 
-	if($value["status"] == 2){
+	if($value["status"] == 2)
+	{
 		echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
 		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
 		echo "</strong></font>";
-	}elseif(check_timestamp($value["adate"],readconfigfromdb("newuserdays")) == 1){
+	}
+	else if ($newusertreshold < strtotime($value['adate']))
+	{
 		echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
 		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
 		echo "</strong></font>";
-	}else{
+	}
+	else
+	{
 		echo "<td nowrap valign='top'>";
 		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
 	}
@@ -131,9 +140,12 @@ foreach($active_users as $value){
 	echo "<a href='mailto:".$contacts[$value['id']]['mail']."'>".$contacts[$value['id']]['mail']."</a>";
 	echo "</td>\n";
 	$balance = $value["saldo"];
-	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){
+	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"]))
+	{
 		echo "<td align='right'><font color='red'>".$balance."</font></td>\n";
-	} else {
+	}
+	else
+	{
 		echo "<td align='right'>".$balance."</td>\n";
 	}
 	echo "</tr>\n\n";
@@ -194,13 +206,16 @@ echo "Stand";
 echo "</strong></td>";
 echo "</tr>\n\n";
 $rownumb = 0;
-foreach($inactive_users as $key => $value){
-
+foreach($inactive_users as $key => $value)
+{
 	$rownumb++;
 	echo "<tr";
-	if($rownumb % 2 == 1){
+	if($rownumb % 2 == 1)
+	{
 		echo " class='uneven_row'";
-	}else{
+	}
+	else
+	{
 		echo " class='even_row'";
 	}
 	echo ">\n";
@@ -228,9 +243,12 @@ foreach($inactive_users as $key => $value){
 	echo $contacts[$value['id']]['mail'];
 	echo "</td>";
 	$balance = $value["saldo"];
-	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $value["maxlimit"] != 0 && $balance > $value["maxlimit"])){
+	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $value["maxlimit"] != 0 && $balance > $value["maxlimit"]))
+	{
 		echo "<td align='right'><font color='red'>".$balance."</font></td>\n";
-	} else {
+	}
+	else
+	{
 		echo "<td align='right'>".$balance."</td>";
 	}
 	echo "</tr>";
@@ -239,17 +257,3 @@ foreach($inactive_users as $key => $value){
 echo "</table>";
 
 include($rootpath."includes/inc_footer.php");
-
-function check_timestamp($cdate,$agelimit){
-        // agelimit is the time after which it expired
-        $now = time();
-        // age should be converted to seconds
-        $limit = $now - ($agelimit * 60 * 60 * 24);
-        $timestamp = strtotime($cdate);
-
-        if($limit < $timestamp) {
-                return 1;
-        } else {
-                return 0;
-        }
-}

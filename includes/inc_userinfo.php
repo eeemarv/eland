@@ -79,21 +79,23 @@ function get_contact($user){
 
 function get_contacttype($abbrev){
 	global $db;
-        $query = "SELECT * FROM type_contact WHERE abbrev = '" .$abbrev ."'";
+	$query = "SELECT * FROM type_contact WHERE abbrev = '" .$abbrev ."'";
 	$contacttype = $db->GetRow($query);
-        return $contacttype;
+	return $contacttype;
 }
 
 function get_user($id){
 		return readuser($id);
 }
 
-function get_user_by_letscode($letscode){
+function get_user_by_letscode($letscode)
+{
 	global $db;
     return $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $letscode . '\'');
 }
 
-function get_user_by_login($login){
+function get_user_by_login($login)
+{
 	global $db;
         $query = "SELECT * FROM users ";
         $query .= "WHERE login = '" .$login ."'";
@@ -101,7 +103,8 @@ function get_user_by_login($login){
         return $user;
 }
 
-function get_user_by_name($name){
+function get_user_by_name($name)
+{
 	global $db;
         $query = "SELECT * FROM users ";
         $query .= "WHERE (LOWER(fullname)) LIKE '%" .strtolower($name) ."%'";
@@ -109,7 +112,8 @@ function get_user_by_name($name){
         return $user;
 }
 
-function get_user_by_openid($openid){
+function get_user_by_openid($openid)
+{
 	global $db;
     $query = "SELECT * FROM openid";
     $query .= " WHERE openid = '" .$openid ."'";
@@ -118,7 +122,8 @@ function get_user_by_openid($openid){
 	return $user;
 }
 
-function get_userid_by_openid($openid){
+function get_userid_by_openid($openid)
+{
 	global $db;
         $query = "SELECT * FROM openid";
         $query .= " WHERE openid = '" .$openid ."'";
@@ -126,7 +131,8 @@ function get_userid_by_openid($openid){
 	return $openid_row["user_id"];
 }
 
-function get_user_maildetails($userid){
+function get_user_maildetails($userid)
+{
         global $db;
 		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
@@ -135,7 +141,8 @@ function get_user_maildetails($userid){
         return $user;
 }
 
-function get_user_maildetails_by_login($login){
+function get_user_maildetails_by_login($login)
+{
         global $db;
 		$user = get_user_by_login($login);
 		$userid = $user["id"];
@@ -146,7 +153,8 @@ function get_user_maildetails_by_login($login){
 		//print_r $user;
 }
 
-function get_user_mailaddresses($userid){
+function get_user_mailaddresses($userid)
+{
         global $db;
 		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
@@ -157,7 +165,8 @@ function get_user_mailaddresses($userid){
 		return $userto;
 }
 
-function get_user_mailarray($userid){
+function get_user_mailarray($userid)
+{
         global $db;
 		$user = readuser($userid);
         $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
@@ -165,7 +174,8 @@ function get_user_mailarray($userid){
         return $array;
 }
 
-function get_users(){
+function get_users()
+{
         global $db;
         $query = "SELECT * FROM users WHERE (users.status = 1 or users.status=2 or users.status = 3 or users.status = 4 )";
         $query .= " and users.accountrole <> 'guest' order by letscode";
@@ -173,8 +183,8 @@ function get_users(){
         return $list_users;
 }
 
-function get_user_letscode($id){
-        global $db;
+function get_user_letscode($id)
+{
         $user = readuser($id);
         return $user['letscode'];
 }

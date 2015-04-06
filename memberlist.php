@@ -9,8 +9,6 @@ require_once($rootpath."includes/inc_form.php");
 
 include($rootpath."includes/inc_header.php");
 
-//echo "<script type='text/javascript' src='$rootpath/js/moomemberlist.js'></script>";
-
 $prefix = ($_POST["prefix"]) ?: 'ALL';
 $posted_list["prefix"] = $prefix;
 $searchname = $_POST["searchname"];
@@ -46,11 +44,12 @@ echo "</tr>";
 
 echo "<tr>\n<td>Sorteer:</td><td>\n";
 echo "<select name='sort'>\n";
-echo $sort_options = array(
+$sort_options = array(
 	'letscode' => 'letscode',
 	'fullname' => 'naam',
 	'postcode' => 'postcode',
-	'saldo' => 'saldo');
+	'saldo' => 'saldo',
+);
 render_select_options($sort_options, $sort);
 echo "</select>\n";
 echo "</td>\n";
@@ -80,14 +79,17 @@ echo "</td></tr></table>";
 $query = 'SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
 		AND u.accountrole <> \'guest\' ';
-if ($prefix_filterby <> 'ALL'){
+if ($prefix_filterby <> 'ALL')
+{
 	 $query .= 'AND u.letscode like \'' . $prefix_filterby .'%\' ';
 }
-if(!empty($searchname)){
+if(!empty($searchname))
+{
 	$query .= 'AND (LOWER(u.fullname) like \'%' .strtolower($searchname) . '%\'
 		OR LOWER(u.name) like \'%' .strtolower($searchname) . '%\') ';
 }
-if(!empty($sort)){
+if(!empty($sort))
+{
 	$query .= ' ORDER BY u.' . $sort;
 }
 
@@ -125,11 +127,13 @@ echo "</strong></td>\n";
 echo "<td><strong>Mail</strong></td>\n";
 echo "<td><strong>Saldo</strong></td>\n";
 echo "</tr>\n\n";
-$newuserdays = readconfigfromdb("newuserdays");
-$rownumb=0;
-foreach($userrows as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+$rownumb = 0;
+foreach($userrows as $key => $value)
+{
+	$rownumb++;
+	if($rownumb % 2)
+	{
 		echo "<tr class='uneven_row'>\n";
 	}
 	else
@@ -137,16 +141,17 @@ foreach($userrows as $key => $value){
 			echo "<tr class='even_row'>\n";
 	}
 
-	if($value["status"] == 2){
+	if($value["status"] == 2)
+	{
 		echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
 		echo $value["letscode"];
 		echo "</strong></font>";
 	}
-	else if((time() - ($newuserdays * 60 * 60 * 24)) < strtotime($value['cdate']))
+	else if($newusertreshold < strtotime($value['adate']))
 	{
 		echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
 		echo $value["letscode"];
-					echo "</strong></font>";
+		echo "</strong></font>";
 	}
 	else
 	{
@@ -170,9 +175,12 @@ foreach($userrows as $key => $value){
 
 	echo "<td nowrap valign='top' align='right'>";
 	$balance = $value["saldo"];
-			if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"])){
+	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"]))
+	{
 		echo "<font color='red'> $balance </font>";
-	}else{
+	}
+	else
+	{
 		echo $balance;
 	}
 
@@ -182,4 +190,16 @@ foreach($userrows as $key => $value){
 }
 echo "</table></div>";
 
-include($rootpath."includes/inc_footer.php");
+// active legend
+echo "<table>";
+echo "<tr>";
+echo "<td bgcolor='#B9DC2E'><font color='white'>";
+echo "<strong>Groen blokje:</strong></font></td><td> Instapper<br>";
+echo "</tr>";
+echo "<tr>";
+echo "<td bgcolor='#f56db5'><font color='white'>";
+echo "<strong>Rood blokje:</strong></font></td><td>Uitstapper<br>";
+echo "</tr>";
+echo "</tr></table>";
+
+include $rootpath . 'includes/inc_footer.php';

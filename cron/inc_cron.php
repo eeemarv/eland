@@ -1,10 +1,10 @@
 <?php
 // Functions required by the cron script
 
-function update_stat_msgs($cat_id){
+function update_stat_msgs($cat_id)
+{
 	global $db;
-        //$query = "SELECT COUNT(*) AS stat_msg_wanted FROM messages WHERE id_category = ".$cat_id ;
-        //$query .= " AND msg_type = 0 ";
+
 	$query = "SELECT COUNT(*) AS stat_msg_wanted";
 	$query .= " FROM messages, users ";
 	$query .= " WHERE ";
@@ -16,8 +16,6 @@ function update_stat_msgs($cat_id){
 	$row = $db->GetRow($query);
 	$stat_wanted = $row["stat_msg_wanted"];
 
-	//$query = "SELECT COUNT(*) AS stat_msg_offer FROM messages WHERE id_category = ".$cat_id ;
-	//$query .= " AND msg_type = 1 ";
 	$query = "SELECT COUNT(*) AS stat_msg_offer";
 	$query .= " FROM messages, users ";
 	$query .= " WHERE ";
@@ -33,45 +31,50 @@ function update_stat_msgs($cat_id){
 	$result = $db->AutoExecute("categories", $posted_list, 'UPDATE', "id=$cat_id");
 }
 
-function get_cat(){
+function get_cat()
+{
 	global $db;
 	$query = "SELECT * FROM categories WHERE leafnote=1 order by fullname";
 	$cat_list = $db->GetArray($query);
 	return $cat_list;
 }
 
-function get_warn_messages($daysnotice) {
+function get_warn_messages($daysnotice)
+{
 	global $db;
 	$now = time();
 	$testdate = $now + ($daysnotice * 60 * 60 * 24);
 	$testdate = date('Y-m-d', $testdate);
-	$query = "SELECT * FROM messages WHERE exp_user_warn = 0 AND validity < '" .$testdate ."'";
+	$query = "SELECT * FROM messages WHERE exp_user_warn = 'f' AND validity < '" .$testdate ."'";
 	echo $query;
 	$warn_messages  = $db->GetArray($query);
 	return $warn_messages;
 }
 
-function do_clear_msgflags(){
+function do_clear_msgflags()
+{
         global $db;
 	$now = time();
 	$daysnotice =  readconfigfromdb("msgexpwarningdays");
 	$testdate = $now + ($daysnotice * 60 * 60 * 24);
         $testdate = date('Y-m-d', $testdate);
-	$query = "UPDATE messages SET exp_user_warn = 0 WHERE validity > '" .$testdate ."'";
+	$query = "UPDATE messages SET exp_user_warn = 'f' WHERE validity > '" .$testdate ."'";
 	$db->Execute($query);
 }
 
-function get_expired_messages() {
+function get_expired_messages()
+{
 	global $db;
 	$now = time();
 	$testdate = date('Y-m-d', $now);
-	$query = "SELECT * FROM messages WHERE exp_user_warn = 1 AND validity < '" .$testdate ."'";
+	$query = "SELECT * FROM messages WHERE exp_user_warn = 't' AND validity < '" .$testdate ."'";
 	echo $query;
 	$expired_messages  = $db->GetArray($query);
 	return $expired_messages;
 }
 
-function do_auto_cleanup_messages(){
+function do_auto_cleanup_messages()
+{
         global $db;
         $now = time();
         $daysnotice =  readconfigfromdb("msgexpcleanupdays");
@@ -88,7 +91,8 @@ function do_auto_cleanup_messages(){
         }
 }
 
-function do_auto_cleanup_inactive_messages(){
+function do_auto_cleanup_inactive_messages()
+{
 	global $db;
 	$query = "SELECT * FROM users WHERE status = 0";
 	$users = $db->GetArray($query);
@@ -99,7 +103,8 @@ function do_auto_cleanup_inactive_messages(){
 	}
 }
 
-function do_cleanup_news() {
+function do_cleanup_news()
+{
     global $db;
     $now = date('Y-m-d', time());
 	$query = "DELETE FROM news WHERE itemdate < '" .$now ."' AND sticky <> 1";
@@ -146,9 +151,10 @@ function mail_admin_expmsg($messages) {
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 }
 
-function mark_expwarn($messageid,$value)
+function mark_expwarn($messageid, $value)
 {
 	global $db;
+	$value = ($value) ? 't' : 'f';
 	$query = "UPDATE messages set exp_user_warn = '" .$value ."' WHERE id = " .$messageid;
 	$db->Execute($query);
 }
