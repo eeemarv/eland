@@ -43,14 +43,15 @@ function processqueue()
 			$real_from = $myuser["fullname"] ."(" .$myuser["letscode"] .")";
 
 			$soapurl = ($myletsgroup['elassoapurl']) ?: $myletsgroup['url'] . '/soap';
-			$soapurl = '/wsdlelas.php?wsdl';
+			$soapurl .= '/wsdlelas.php?wsdl';
 
 			// Make the SOAP connection, send our API key and the transaction details
 			$myapikey = $myletsgroup["remoteapikey"];
 			$from = $myletsgroup["myremoteletscode"];
 			$client = new nusoap_client($soapurl, true);
 			$err = $client->getError();
-			if (!$err) {
+			if (!$err)
+			{
 				$result = $client->call('dopayment', array(
 					'apikey' => $myapikey,
 					'from' => $from,
@@ -62,12 +63,14 @@ function processqueue()
 					'signature' => $signature
 				));
 				$err = $client->getError();
-					if (!$err) {
+				if (!$err)
+				{
 					//return $result;
 					// Process the result statusa
 					echo $result;
 					echo "\n";
-					switch ($result){
+					switch ($result)
+					{
 						case "SUCCESS":
 							//Commit locally
 							if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED")
@@ -109,12 +112,15 @@ function processqueue()
 							echo "Default handling";
 							update_queue($transid,$count,"DEFAULT");
 					}
-				} else {
-					if(strtotime($value["retry_until"]) < time()){
+				}
+				else
+				{
+					if(strtotime($value["retry_until"]) < time())
+					{
 						echo "EXPIRED";
 						echo "\n";
 					}
-					update_queue($transid,$count,"UNKNOWN");
+					update_queue($transid, $count, "UNKNOWN");
 				}
 			}
 
