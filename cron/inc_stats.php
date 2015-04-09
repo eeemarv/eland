@@ -1,6 +1,7 @@
 <?php
 
-function update_stats() {
+function update_stats()
+{
 	global $db;
 	echo "Running update_stats\n";
 
@@ -15,11 +16,10 @@ function update_stats() {
 	$alltrans = $db->Execute($query);
 	$transcount = $alltrans->RecordCount();
 	save_stat("totaltransactions", $transcount);
-
-	write_timestamp("update_stats");
 }
 
-function save_stat($key,$value) {
+function save_stat($key,$value)
+{
 	global $db;
 
 	$query = "UPDATE stats SET value = $value WHERE key = '" .$key ."'";
@@ -31,5 +31,3 @@ function save_stat($key,$value) {
 		log_event("","Cron","Updated stat $key");
 	}
 }
-
-?>

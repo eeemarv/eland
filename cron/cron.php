@@ -1,7 +1,8 @@
 <?php
 ob_start();
 
-$r = "\r\n";
+$r = "\n";
+$now = gmdate('Y-m-d H:i:s');
 
 $php_sapi_name = php_sapi_name();
 
@@ -21,6 +22,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 require_once $rootpath . 'cron/inc_cron.php';
 require_once $rootpath . 'cron/inc_upgrade.php';
+require_once $rootpath . 'cron/inc_processqueue.php';
 
 // require_once($rootpath."cron/inc_stats.php");
 
@@ -31,6 +33,11 @@ require_once($rootpath."includes/inc_saldofunctions.php");
 require_once($rootpath."includes/inc_news.php");
 
 require_once $rootpath . 'includes/inc_eventlog.php';
+
+$s3 = Aws\S3\S3Client::factory(array(
+	'signature'	=> 'v4',
+	'region'	=>'eu-central-1',
+));
 
 header('Content-Type:text/plain');
 echo '*** Cron eLAS-Heroku ***' . $r;
@@ -116,8 +123,6 @@ if (!isset($schema_interletsq_min))
 		FROM letsgroups
 		WHERE apimethod = \'elassoap\'
 			AND remoteapikey IS NOT NULL');
-
-	$now = time();
 
 	foreach ($letsgroups as $letsgroup)
 	{
@@ -239,234 +244,12 @@ else
 
 $lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 
-if(check_timestamp($lastrun_ary['saldo'], readconfigfromdb("saldofreqdays") * 1440))
+run_cronjob('processqueue');
+
+run_cronjob('saldo', 86400 * readconfigfromdb("saldofreqdays"));
+
+function saldo()
 {
-	automail_saldo();
-}
-
-// Auto mail messages that have expired to the admin
-if(check_timestamp($lastrun_ary['admin_exp_msg'], readconfigfromdb("adminmsgexpfreqdays") * 1440) && readconfigfromdb("adminmsgexp"))
-{
-	automail_admin_exp_msg();
-}
-
-// Check for and mail expired messages to the user
-if(check_timestamp($lastrun_ary['user_exp_msgs'], 1440) && readconfigfromdb("msgexpwarnenabled"))
-{
-	check_user_exp_msgs();
-}
-
-
-// Clean up expired messages after the grace period
-if(check_timestamp($lastrun_ary['cleanup_messages'], 1440) && readconfigfromdb("msgcleanupenabled"))
-{
-	cleanup_messages();
-
-	// remove orphaned images.
-	$query = 'SELECT mp.id, mp."PictureFile"
-		FROM msgpictures mp
-		LEFT JOIN messages m ON mp.msgid = m.id
-		WHERE m.id IS NULL';
-	$orphan_images = $db->GetAssoc($query);
-
-	if (count($orphan_images))
-	{
-		foreach ($orphan_images as $id => $file)
-		{
-			$result = $s3->deleteObject(array(
-				'Bucket' => getenv('S3_BUCKET'),
-				'Key'    => $file,
-			));
-
-			echo $result . $r;
-			
-			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
-		}
-	}
-}
-
-// Update counts for each message category
-if(check_timestamp($lastrun_ary['cat_update_count'], 60))
-{
-	cat_update_count();
-}
-
-// Update the cached saldo
-if(check_timestamp($lastrun_ary['saldo_update'], 60))
-{
-	saldo_update();
-}
-
-// Clean up expired news items
-if(check_timestamp($lastrun_ary['cleanup_news'], 1440))
-{
-	cleanup_news();
-}
-
-// Clean up expired tokens
-if(check_timestamp($lastrun_ary['cleanup_tokens'], 60))
-{
-	cleanup_tokens();
-}
-
-// interletsq
-if(check_timestamp($lastrun_ary['processqueue'], 5))
-{
-	require_once $rootpath . 'interlets/processqueue.php';
-	write_timestamp('processqueue');
-}
-
-if(check_timestamp($lastrun_ary['publish_news'], 30))
-{
-	publish_news();
-}
-
-$redis->set($schema . '_interletsq', '');
-$redis->set($schema . '_cron_timestamp', time());
-
-echo "\nCron run finished\n";
-exit;
-
-////////////////////
-
-function cat_update_count()
-{
-	echo "Running cat_update_count\n";
-        $catlist = get_cat();
-        foreach ($catlist AS $key => $value){
-                $cat_id = $value["id"];
-                update_stat_msgs($cat_id);
-        }
-
-	write_timestamp("cat_update_count");
-}
-
-function saldo_update()
-{
-	global $db;
-	echo "Running saldo_update ...";
-
-	$query = "SELECT * FROM users";
-	$userrows = $db->GetArray($query);
-
-	foreach ($userrows AS $key => $value){
-		//echo $value["id"] ." ";
-		update_saldo($value["id"]);
-	}
-	echo "\n";
-	write_timestamp("saldo_update");
-}
-
-function publish_news()
-{
-	global $db;
-	global $baseurl;
-
-    echo "Running publish_news...\n";
-
-    $query = 'SELECT * FROM news WHERE approved = true AND published IS NULL OR published = false;';
-	$newsitems = $db->GetArray($query);
-
-    foreach ($newsitems AS $key => $value){
-		mail_news($value["id"]);
-
-		$q2 = "UPDATE news SET published = true WHERE id=" . $value["id"];
-		$db->Execute($q2);
-	}
-	write_timestamp("publish_news");
-}
-
-function cleanup_messages()
-{
-	// Fetch a list of all expired messages that are beyond the grace period and delete them
-	echo "Running cleanup_messages\n";
-	do_auto_cleanup_messages();
-	do_auto_cleanup_inactive_messages();
-	write_timestamp("cleanup_messages");
-}
-
-function cleanup_tokens()
-{
-	echo "Running cleanup_tokens\n";
-	do_cleanup_tokens();
-	write_timestamp("cleanup_tokens");
-}
-
-function cleanup_news()
-{
-	echo "Running cleanup_news\n";
-	do_cleanup_news();
-	write_timestamp("cleanup_news");
-}
-
-function check_user_exp_msgs()
-{
-	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
-	echo "Running check_user_exp_msgs\n";
-	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
-	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
-	$warn_messages = get_warn_messages($msgexpwarningdays);
-	foreach ($warn_messages AS $key => $value){
-		//For each of these, we need to fetch the user's mailaddress and send him a mail.
-		echo "Found new expired message " .$value["id"];
-		$user = get_user_maildetails($value["id_user"]);
-		$username = $user["name"];
-
-		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
-		$content .= " in eLAS gaat over " .$msgexpwarningdays;
-		$content .= " dagen vervallen.  Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen.";
-		$content .= "\n\nAls je niets doet verdwijnt dit V/A $msgcleanupdays na de vervaldag uit je lijst.";
-		$mailaddr = $user["emailaddress"];
-		$subject = "Je V/A in eLAS gaat vervallen";
-		mail_user_expwarn($mailaddr,$subject,$content);
-		mark_expwarn($value["id"],1);
-	}
-
-	//Fetch a list of expired messages and warn the user again.
-	$warn_messages = get_expired_messages();
-	foreach ($warn_messages AS $key => $value){
-		//For each of these, we need to fetch the user's mailaddress and send him a mail.
-		echo "Found phase 2 expired message " .$value["id"];
-		$user = get_user_maildetails($value["id_user"]);
-		$username = $user["name"];
-
-		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
-		$content .= " in eLAS is vervallen. Als je het niet verlengt wordt het $msgcleanupdays na de vervaldag automatisch verwijderd.";
-		$mailaddr = $user["emailaddress"];
-		$subject = "Je V/A in eLAS is vervallen";
-		mail_user_expwarn($mailaddr,$subject,$content);
-		mark_expwarn($value["id"],2);
-	}
-
-	// Finally, clear all the old flags with a single SQL statement
-	// UPDATE messages SET exp_user_warn = 0 WHERE validity > now + 10
-	do_clear_msgflags();
-
-	// Write the timestamp
-	write_timestamp("user_exp_msgs");
-}
-
-function automail_admin_exp_msg()
-{
-	// Fetch a list of all expired messages and mail them to the admin
-	echo "Running automail_admin_exp_msg\n";
-	global $db;
-	$today = date("Y-m-d");
-	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
-		FROM messages m, users u
-		WHERE users.status <> 0
-			AND m.id_user = u.id
-			AND validity <= '" .$today ."'";
-	$messages = $db->GetArray($query);
-
-	mail_admin_expmsg($messages);
-
-	write_timestamp("admin_exp_msg");
-}
-
-function automail_saldo()
-{
-	return // disable for development now
 	$mandrill = new Mandrill();
 
 	// Get all users that want their saldo auto-mailed.
@@ -480,7 +263,7 @@ function automail_saldo()
 			AND c.id_type_contact = tc.id
 			AND tc.abbrev = \'mail\'
 			AND u.status in (1, 2)';
-	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND users.cron_saldo = 1';
+	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND u.cron_saldo = \'t\'';
 	$users = $db->GetArray($query);
 
 /*
@@ -490,6 +273,11 @@ function automail_saldo()
 		mail_balance($value["cvalue"], $mybalance);
 	}
 */
+
+	$messages = $db->GetArray('SELECT m.id, m.content, m.description
+		FROM messages m
+		WHERE m.cdate => ' .  date('Y-m-d H:i:S', time() - readconfigfromdb('saldofreqdays') * 86400));
+
 	$r = "\n\r";
 	$t = 'Saldo';
 	$u = '-----';
@@ -502,7 +290,7 @@ function automail_saldo()
 	$u ='---------------------------';
 	$text .= $t . $r . $u . $r;
 	$html .= '<h1>' . $t . '</h1>';
-	$t = 'Deze mail bevat LETS vraag en aanbod dat in de afgelopen ' . $days .
+	$t = 'Deze mail bevat LETS vraag en aanbod dat in de afgelopen ' . readconfigfromdb('saldofreqdays') .
 		' dagen in eLAS is geplaatst. Contactgegevens kan je zien door de naam van
 		de persoon met je muis aan te wijzen.
 		Klik op de persoon om te e-mailen. Een kaart of routebeschrijving krijg je
@@ -520,7 +308,7 @@ function automail_saldo()
 		return 0;
 	}
 
-	$
+
 	$content = "Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub\r\n";
 	if (!readconfigfromdb('forcesaldomail'))
 	{
@@ -556,7 +344,285 @@ function automail_saldo()
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
 	log_event($s_id, 'mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
+}
 
-	//Timestamp this run
-	write_timestamp("saldo");
+run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), readconfigfromdb("adminmsgexp"));
+
+function admin_exp_msg()
+{
+	// Fetch a list of all expired messages and mail them to the admin
+	echo "Running automail_admin_exp_msg\n";
+	global $db;
+	$today = date("Y-m-d");
+	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
+		FROM messages m, users u
+		WHERE users.status <> 0
+			AND m.id_user = u.id
+			AND validity <= '" .$today ."'";
+	$messages = $db->GetArray($query);
+
+	$admin = readconfigfromdb("admin");
+	if (empty($admin))
+	{
+		echo "No admin E-mail address specified in config\n";
+		return false;
+	}
+	else
+	{
+	   $mailto = $admin;
+	}
+
+	$from_address_transactions = readconfigfromdb("from_address_transactions");
+
+	if (!empty($from_address_transactions))
+	{
+		$mailfrom .= "From: ".trim($from_address_transactions)."\r\n";
+	}
+	else
+	{
+		echo "Mail from address is not set in configuration\n";
+		return 0;
+	}
+
+	$systemtag = readconfigfromdb("systemtag");
+	$mailsubject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
+
+	$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+	$mailcontent .= "ID\tUser\tMessage\n";
+	
+	foreach($messages as $key => $value)
+	{
+		$mailcontent .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
+	}
+
+	$mailcontent .=  "\n\n";
+
+	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+
+	return true;
+}
+
+run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
+
+function user_exp_msgs()
+{
+	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
+	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
+	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
+	$warn_messages = get_warn_messages($msgexpwarningdays);
+	
+	foreach ($warn_messages AS $key => $value)
+	{
+		//For each of these, we need to fetch the user's mailaddress and send him a mail.
+		echo "Found new expired message " .$value["id"];
+		$user = get_user_maildetails($value["id_user"]);
+		$username = $user["name"];
+
+		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
+		$content .= " in eLAS gaat over " .$msgexpwarningdays;
+		$content .= " dagen vervallen.  Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen.";
+		$content .= "\n\nAls je niets doet verdwijnt dit V/A $msgcleanupdays na de vervaldag uit je lijst.";
+		$mailaddr = $user["emailaddress"];
+		$subject = "Je V/A in eLAS gaat vervallen";
+		mail_user_expwarn($mailaddr,$subject,$content);
+		mark_expwarn($value["id"],1);
+	}
+
+	//Fetch a list of expired messages and warn the user again.
+	$warn_messages = get_expired_messages();
+	
+	foreach ($warn_messages AS $key => $value)
+	{
+		//For each of these, we need to fetch the user's mailaddress and send him a mail.
+		echo "Found phase 2 expired message " .$value["id"];
+		$user = get_user_maildetails($value["id_user"]);
+		$username = $user["name"];
+
+		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
+		$content .= " in eLAS is vervallen. Als je het niet verlengt wordt het $msgcleanupdays na de vervaldag automatisch verwijderd.";
+		$mailaddr = $user["emailaddress"];
+		$subject = "Je V/A in eLAS is vervallen";
+		mail_user_expwarn($mailaddr,$subject,$content);
+		mark_expwarn($value["id"],2);
+	}
+
+	// Finally, clear all the old flags with a single SQL statement
+	// UPDATE messages SET exp_user_warn = 0 WHERE validity > now + 10
+
+	$testdate = gmdate('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
+	$query = "UPDATE messages SET exp_user_warn = 'f' WHERE validity > '" .$testdate ."'";
+	$db->Execute($query);
+
+	return true;
+}
+
+run_cronjob('cleanup_messages', 86400);
+
+function cleanup_messages()
+{
+	do_auto_cleanup_messages();
+	do_auto_cleanup_inactive_messages();
+	
+	// remove orphaned images.
+	$query = 'SELECT mp.id, mp."PictureFile"
+		FROM msgpictures mp
+		LEFT JOIN messages m ON mp.msgid = m.id
+		WHERE m.id IS NULL';
+	$orphan_images = $db->GetAssoc($query);
+
+	if (count($orphan_images))
+	{
+		foreach ($orphan_images as $id => $file)
+		{
+			$result = $s3->deleteObject(array(
+				'Bucket' => getenv('S3_BUCKET'),
+				'Key'    => $file,
+			));
+
+			echo $result . $r;
+			
+			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
+		}
+	}
+}
+
+run_cronjob('cat_update_count', 3600);
+
+// Update counts for each category
+function cat_update_count()
+{
+	global $db;
+	
+	$offer_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+		FROM messages m, users u
+		WHERE  m.id_user = u.id
+			AND u.status IN (1, 2, 3)
+			AND msg_type = 1
+		GROUP BY m.id_category');
+		
+	$want_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+		FROM messages m, users u
+		WHERE  m.id_user = u.id
+			AND u.status IN (1, 2, 3)
+			AND msg_type = 0
+		GROUP BY m.id_category');
+		
+	$all_cat = $db->GetArray('SELECT id, stat_msgs_offers, stat_msgs_wanted
+		FROM categories
+		WHERE id_parent IS NOT NULL');
+
+	foreach ($all_cat as $val)
+	{
+		$offers = $val['stat_msgs_offers'];
+		$wants = $val['stat_msgs_wanted'];
+		$id = $val['id'];
+
+		if ($want_count[$id] == $wants && $offer_count[$id] == $offers)
+		{
+			continue;
+		}
+
+		$stats = array(
+			'stat_msgs_offers'	=> ($offer_count[$id]) ?: 0,
+			'stat_msgs_wanted'	=> ($want_count[$id]) ?: 0,
+		);
+		
+		$db->AutoExecute('categories', $stats, 'UPDATE', 'id = ' . $id);
+	}
+
+	return true;
+}
+
+run_cronjob('saldo_update', 3600);
+
+function saldo_update()
+{
+	global $db;
+	$query = "SELECT * FROM users";
+	$userrows = $db->GetArray($query);
+
+	foreach ($userrows AS $key => $value){
+		//echo $value["id"] ." ";
+		update_saldo($value["id"]);
+	}
+	echo "\n";
+
+	return true;
+}
+
+run_cronjob('cleanup_news', 86400);
+
+function cleanup_news()
+{
+    global $db, $now;
+	return ($db->Execute("DELETE FROM news WHERE itemdate < '" .$now ."' AND sticky = 'f'")) ? true : false;
+}
+
+run_cronjob('cleanup_tokens', 3600);
+
+function cleanup_tokens()
+{
+	global $db, $now;
+	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
+}
+
+run_cronjob('publish_news', 1800);
+
+function publish_news()
+{
+	global $db;
+
+    $query = 'SELECT id FROM news WHERE approved = \'t\' AND published IS NULL OR published = \'f\'';
+	$newsitems = $db->GetAssoc($query);
+
+    foreach ($newsitems AS $key => $value){
+		mail_news($value["id"]);
+
+		$q2 = "UPDATE news SET published = \'t\' WHERE id = " . $value["id"];
+		$db->Execute($q2);
+	}
+
+	return true;
+}
+
+$redis->set($schema . '_interletsq', '');
+$redis->set($schema . '_cron_timestamp', time());
+
+echo "*** Cron run finished ***\n";
+exit;
+
+////////////////////
+
+function run_cronjob($name, $interval = 300, $enabled = null)
+{
+	global $db;
+	static $lastrun_ary;
+
+	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
+	{
+		$lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
+	}
+
+	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))
+	{
+		echo 'Cronjob: ' . $name . ' not running.' . "\n\r";
+		return;
+	}
+
+	echo 'Running ' . $name . "\n";
+
+	$updated = call_user_func($name);
+
+	if (isset($lastrun_ary[$name]))
+	{
+		$db->Execute('update cron set lastrun = \'' . gmdate('Y-m-d H:i:s') . '\' where cronjob = \'' . $name . '\'');
+	}
+	else
+	{
+		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . gmdate('Y-m-d H:i:s') . '\')');
+	}
+	log_event(' ', 'Cron', 'Cronjob ' . $name . ' finished.');
+	echo 'Cronjob ' . $name . ' finished.' . "\n\r";
+
+	return $updated;
 }

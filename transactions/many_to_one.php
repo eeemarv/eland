@@ -33,8 +33,7 @@ $req->add('fixed', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4,
 	->add('description', '', 'post', array('type' => 'text', 'size' => 40, 'maxlength' => 60, 'autocomplete' => 'off', 'label' => 'Omschrijving'), array('not_empty' => true))
 	->add('confirm_password', '', 'post', array('type' => 'password', 'size' => 10, 'maxlength' => 20, 'autocomplete' => 'off', 'label' => 'Paswoord (extra veiligheid)'), array('not_empty' => true, 'match' => 'password'))
 	->add('zend', '', 'post', array('type' => 'submit', 'label' => 'Voer alle transacties uit.'))
-	->add('transid', generate_transid(), 'post', array('type' => 'hidden'))
-	->add('refresh', '', 'post', array('type' => 'submit', 'label' => 'Ververs pagina'));
+	->add('transid', generate_transid(), 'post', array('type' => 'hidden'));
 
 $active_users = $db->GetArray(
 	'SELECT id, fullname, letscode,
@@ -185,12 +184,9 @@ echo '<div id="transformdiv" style="padding:10px;">';
 $data_table->render();
 echo '<table cellspacing="0" cellpadding="5" border="0">';
 $req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
-echo '</table></div><table>';
-$req->set_output('tr')->render('refresh');
-echo '</table></form>';
+echo '</table></div>';
 
 include($rootpath.'includes/inc_footer.php');
-
 
 function check_newcomer($adate)
 {

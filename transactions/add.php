@@ -121,7 +121,7 @@ else
 		'date'			=> date('Y-m-d'),
 		'letscode_from'	=> $s_letscode . ' ' . $s_name,
 		'letscode_to'	=> '',
-		'amount'		=> '1',
+		'amount'		=> '',
 		'description'	=> '',
 	);
 
