@@ -402,13 +402,14 @@ function admin_exp_msg()
 	return true;
 }
 
-run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
+// run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
 
 function user_exp_msgs()
 {
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
 	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
+	
 	$warn_messages = get_warn_messages($msgexpwarningdays);
 	
 	foreach ($warn_messages AS $key => $value)
@@ -429,7 +430,8 @@ function user_exp_msgs()
 	}
 
 	//Fetch a list of expired messages and warn the user again.
-	$warn_messages = get_expired_messages();
+
+	$warn_messages  = $db->GetArray('SELECT * FROM messages WHERE exp_user_warn = \'f\' AND validity < \'' . $now . '\'');
 	
 	foreach ($warn_messages AS $key => $value)
 	{
@@ -439,11 +441,12 @@ function user_exp_msgs()
 		$username = $user["name"];
 
 		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
-		$content .= " in eLAS is vervallen. Als je het niet verlengt wordt het $msgcleanupdays na de vervaldag automatisch verwijderd.";
+		$content .= ' in eLAS is vervallen. Als je het niet verlengt wordt het ';
+		$content .= $msgcleanupdays . ' dagen na de vervaldag automatisch verwijderd.';
 		$mailaddr = $user["emailaddress"];
 		$subject = "Je V/A in eLAS is vervallen";
 		mail_user_expwarn($mailaddr,$subject,$content);
-		mark_expwarn($value["id"],2);
+		$db->Execute('UPDATE messages set exp_user_warn = \'t\' WHERE id = ' .$value['id']);
 	}
 
 	// Finally, clear all the old flags with a single SQL statement

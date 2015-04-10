@@ -13,17 +13,6 @@ function get_warn_messages($daysnotice)
 	return $warn_messages;
 }
 
-function get_expired_messages()
-{
-	global $db;
-	$now = time();
-	$testdate = date('Y-m-d', $now);
-	$query = "SELECT * FROM messages WHERE exp_user_warn = 't' AND validity < '" .$testdate ."'";
-	echo $query;
-	$expired_messages  = $db->GetArray($query);
-	return $expired_messages;
-}
-
 function do_auto_cleanup_messages()
 {
         global $db;
@@ -52,14 +41,6 @@ function do_auto_cleanup_inactive_messages()
 		$q2 = "DELETE FROM messages WHERE id_user = " .$value["id"];
 		$db->Execute($q2);
 	}
-}
-
-function mark_expwarn($messageid, $value)
-{
-	global $db;
-	$value = ($value) ? 't' : 'f';
-	$query = "UPDATE messages set exp_user_warn = '" .$value ."' WHERE id = " .$messageid;
-	$db->Execute($query);
 }
 
 function mail_user_expwarn($mailaddr,$subject,$content)

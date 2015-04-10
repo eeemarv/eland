@@ -175,34 +175,40 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 
 	// Validate like a normal transaction
 	$error_list = validate_interletsq($posted_list);
-	if(!empty($error_list)){
+	if(!empty($error_list))
+	{
 		echo "\nVALIDATION ERRORS\n";
 		var_dump($error_list);
 		echo "\Tried to commit:\n";
 		var_dump($posted_list);
 		echo "\n";
-	} else {
+	}
+	else
+	{
 		$r = insert_transaction($posted_list);
 	}
 
-	if($r){
+	if($r)
+	{
 		$result = "SUCCESS";
 		log_event("","Trans","Local commit of interlets transaction succeeded");
 		$posted_list["amount"] = round($posted_list["amount"]);
 		mail_transaction($posted_list, $mytransid);
 		unqueue($transid);
-	} else {
+	}
+	else
+	{
 		$result = "FAILED";
 		log_event("","Trans","Local commit of $transid failed");
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 		$systemtag = readconfigfromdb("systemtag");
-                $mailsubject .= "[eLAS-".$systemtag."] " . "Interlets FAILURE!";
-                $from = readconfigfromdb("from_address_transactions");
-                $to = readconfigfromdb("admin");
+		$mailsubject .= "[eLAS-".$systemtag."] " . "Interlets FAILURE!";
+		$from = readconfigfromdb("from_address_transactions");
+		$to = readconfigfromdb("admin");
 
-                $mailcontent = "WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!";
+		$mailcontent = "WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!";
 
-                sendemail($from,$to,$mailsubject,$mailcontent);
+		sendemail($from,$to,$mailsubject,$mailcontent);
 	}
 	echo $result;
 	echo "\n";
