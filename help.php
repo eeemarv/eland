@@ -84,7 +84,7 @@ echo "<tr><td>";
 echo "Onderwerp<br><small><i>(verplicht, bv. Inloggen lukt niet)</i></small><br>";
 echo "</td><td>";
 
-echo "<input type='text' name='subject' size='60' value='" .$posted_list["subject"] ."' required>";
+echo "<input type='text' name='subject' size='30' value='" .$posted_list["subject"] ."' required>";
 
 echo "</td><td>";
 if(!empty($error_list["subject"])){

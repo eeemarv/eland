@@ -24,6 +24,7 @@ if ($_POST['zend'])
 		if ($mode == 'new')
 		{
 			$news['approved'] = ($s_accountrole == 'admin') ? 't' : 'f';
+			$news['published'] = ($s_accountrole == 'admin') ? 't' : 'f';
 			$news['id_user'] = $s_id;
 			$news['cdate'] = date('Y-m-d H:i:s');
 			

@@ -1,48 +1,6 @@
 <?php
 // Functions required by the cron script
 
-function get_warn_messages($daysnotice)
-{
-	global $db;
-	$now = time();
-	$testdate = $now + ($daysnotice * 60 * 60 * 24);
-	$testdate = date('Y-m-d', $testdate);
-	$query = "SELECT * FROM messages WHERE exp_user_warn = 'f' AND validity < '" .$testdate ."'";
-	echo $query;
-	$warn_messages  = $db->GetArray($query);
-	return $warn_messages;
-}
-
-function do_auto_cleanup_messages()
-{
-        global $db;
-        $now = time();
-        $daysnotice =  readconfigfromdb("msgexpcleanupdays");
-        $testdate = $now - ($daysnotice * 60 * 60 * 24);
-        $testdate = date('Y-m-d', $testdate);
-        $query = "SELECT * FROM messages WHERE validity < '" .$testdate ."'";
-        $messages = $db->GetArray($query);
-
-        foreach ($messages AS $key => $value){
-		$mid = $value["id"];
-		log_event("","Cron","Expired MessageID $mid deleted");
-                $query = "DELETE FROM messages WHERE id = " .$mid;
-                $db->Execute($query);
-        }
-}
-
-function do_auto_cleanup_inactive_messages()
-{
-	global $db;
-	$query = "SELECT * FROM users WHERE status = 0";
-	$users = $db->GetArray($query);
-	
-	foreach ($users AS $key => $value){
-		$q2 = "DELETE FROM messages WHERE id_user = " .$value["id"];
-		$db->Execute($q2);
-	}
-}
-
 function mail_user_expwarn($mailaddr,$subject,$content)
 {
 	$from_address_transactions = readconfigfromdb("from_address_transactions");

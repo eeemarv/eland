@@ -28,7 +28,6 @@ require_once $rootpath . 'cron/inc_processqueue.php';
 
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_saldofunctions.php");
 
 require_once($rootpath."includes/inc_news.php");
 
@@ -351,14 +350,13 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), re
 function admin_exp_msg()
 {
 	// Fetch a list of all expired messages and mail them to the admin
-	echo "Running automail_admin_exp_msg\n";
-	global $db;
-	$today = date("Y-m-d");
+	global $db, $now;
+	
 	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
 		FROM messages m, users u
 		WHERE users.status <> 0
 			AND m.id_user = u.id
-			AND validity <= '" .$today ."'";
+			AND validity <= '" .$now ."'";
 	$messages = $db->GetArray($query);
 
 	$admin = readconfigfromdb("admin");
@@ -402,15 +400,22 @@ function admin_exp_msg()
 	return true;
 }
 
-// run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
+run_cronjob('user_exp_msgs', 300, readconfigfromdb("msgexpwarnenabled"));
 
 function user_exp_msgs()
 {
+	global $db, $now;
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
 	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
-	
-	$warn_messages = get_warn_messages($msgexpwarningdays);
+
+	$testdate = date('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
+	$warn_messages  = $db->GetArray("SELECT *
+		FROM messages
+			WHERE exp_user_warn = 'f'
+				AND validity < '" .$testdate ."'");
+
+	// $warn_messages = get_warn_messages($msgexpwarningdays);
 	
 	foreach ($warn_messages AS $key => $value)
 	{
@@ -459,13 +464,59 @@ function user_exp_msgs()
 	return true;
 }
 
-run_cronjob('cleanup_messages', 86400);
+run_cronjob('cleanup_messages', 300);
 
 function cleanup_messages()
 {
-	do_auto_cleanup_messages();
-	do_auto_cleanup_inactive_messages();
+	global $db, $now;
 	
+	$msgs = '';
+	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
+	$rs = $db->Execute("SELECT id, content FROM messages WHERE validity < '" .$testdate ."'");
+	while ($row = $rs->FetchRow())
+	{
+		$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
+	}
+	$msgs = trim($msgs, '\n\r\t ,;:');
+
+	if ($msgs)
+	{
+		log_event('','Cron','Expired and deleted Messages ' . $msgs);
+
+		$db->Execute('DELETE FROM messages WHERE validity < \'' . $testdate . '\'');
+	}
+
+	$users = '';
+	$ids = array();
+	$query = "SELECT id, letscode, name FROM users WHERE status = 0";
+	$rs = $db->Execute($query);
+	while ($row = $rs->FetchRow())
+	{
+		$ids[] = $row['id'];
+		$users .= '(id: ' . $row['id'] . ') ' . $row['letscode'] . ' ' . $row['name'] . ', ';
+	}
+	$users = trim($users, '\n\r\t ,;:');
+
+	if (count($ids))
+	{
+		log_event('','Cron','Cleanup messages from users: ' . $users);
+		echo 'Cleanup messages from users: ' . $users;
+
+		if (count($ids) == 1)
+		{
+			$db->Execute('delete from messages where id_user = ' . $ids[0]);
+		}
+		else if (count($ids) > 1)
+		{
+			$db->Execute('delete from messages where id_user in ('. implode(', ' . $ids) . ')');
+		}
+	}
+	
+	foreach ($users AS $key => $value){
+		$q2 = "DELETE FROM messages WHERE id_user = " .$value["id"];
+		$db->Execute($q2);
+	}
+
 	// remove orphaned images.
 	$query = 'SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
@@ -483,7 +534,7 @@ function cleanup_messages()
 			));
 
 			echo $result . $r;
-			
+
 			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
 		}
 	}
@@ -520,6 +571,9 @@ function cat_update_count()
 		$wants = $val['stat_msgs_wanted'];
 		$id = $val['id'];
 
+		$want_count[$id] = (isset($want_count[$id])) ? $want_count[$id] : 0;
+		$offer_count[$id] = (isset($offer_count[$id])) ? $offer_count[$id] : 0;
+
 		if ($want_count[$id] == $wants && $offer_count[$id] == $offers)
 		{
 			continue;
@@ -536,19 +590,38 @@ function cat_update_count()
 	return true;
 }
 
-run_cronjob('saldo_update', 3600);
+run_cronjob('saldo_update', 300);
 
 function saldo_update()
 {
 	global $db;
-	$query = "SELECT * FROM users";
-	$userrows = $db->GetArray($query);
 
-	foreach ($userrows AS $key => $value){
-		//echo $value["id"] ." ";
-		update_saldo($value["id"]);
+	$user_balances = $db->GetAssoc('select id, saldo from users');
+
+	$min = $db->GetAssoc('select id_from, sum(amount)
+		from transactions
+		group by id_from');
+	$plus = $db->GetAssoc('select id_to, sum(amount)
+		from transactions
+		group by id_to');
+
+	foreach ($user_balances as $id => $balance)
+	{
+		$plus[$id] = (isset($plus[$id])) ? $plus[$id] : 0;
+		$min[$id] = (isset($min[$id])) ? $min[$id] : 0;
+
+		$calculated = $plus[$id] - $min[$id];
+
+		if ($balance == $calculated)
+		{
+			continue;
+		}
+
+		$db->Execute('update users set saldo = ' . $calculated . ' where id = ' . $id);
+		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated . "\n";
+		echo $m;
+		log_event('', 'Cron' , $m);
 	}
-	echo "\n";
 
 	return true;
 }
@@ -569,6 +642,7 @@ function cleanup_tokens()
 	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
 }
 
+/*
 run_cronjob('publish_news', 1800);
 
 function publish_news()
@@ -587,6 +661,7 @@ function publish_news()
 
 	return true;
 }
+*/
 
 $redis->set($schema . '_interletsq', '');
 $redis->set($schema . '_cron_timestamp', time());

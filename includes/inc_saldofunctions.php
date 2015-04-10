@@ -49,4 +49,3 @@ function update_saldo($userid){
 	}
 }
 
-?>
