@@ -1,30 +1,15 @@
 <?php
 ob_start();
 $rootpath = "";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
+show_ptitle();
+$messagerows = get_all_msgs();
+show_all_msgs($messagerows);
 
-	show_ptitle();
-	$messagerows = get_all_msgs();
-	show_all_msgs($messagerows);
-}else{
-	redirect_login($rootpath);
-}
-
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
+///////////
 
 function show_all_msgs($messagerows){
 
@@ -35,9 +20,12 @@ foreach($messagerows as $key => $value){
 		echo '"';
 		echo $value["id"];
 		echo '","';
-		if($value["msg_type"]==0){
+		if($value["msg_type"]==0)
+		{
 			echo "V";
-		}elseif ($value["msg_type"]==1){
+		}
+		else if ($value["msg_type"]==1)
+		{
 			echo "A";
 		}
 		echo '","';

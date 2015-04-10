@@ -55,10 +55,9 @@ if ($account_user_admin)
 	echo "<ul class='hormenu'>";
 	echo "<li><a href='edit.php?mode=new'>Vraag & Aanbod toevoegen</a></li>";
 	if ($s_accountrole == "admin")
-	{	
-		$myurl = $rootpath. 'export_messages.php"';
-		echo "<li><a href='#' onclick=window.open('$myurl','msgexport','width=1200,height=480,scrollbars=yes,toolbar=no,location=no,menubar=no')>Export</a></li>";
-	}	
+	{
+		echo '<li><a href="' . $rootpath. 'export_messages.php">Export</a></li>';
+	}
 	echo "</ul>";
 	echo "</div>";
 	echo "</td></tr></table>";
