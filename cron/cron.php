@@ -472,7 +472,9 @@ function cleanup_messages()
 	
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
-	$rs = $db->Execute("SELECT id, content FROM messages WHERE validity < '" .$testdate ."'");
+	$rs = $db->Execute("SELECT id, content, id_category, msg_type
+		FROM messages
+		WHERE validity < '" .$testdate ."'");
 	while ($row = $rs->FetchRow())
 	{
 		$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
@@ -487,7 +489,7 @@ function cleanup_messages()
 	}
 
 	$users = '';
-	$ids = array();
+	$ids = array(); /////////////////////////////////////////////////// !!!!
 	$query = "SELECT id, letscode, name FROM users WHERE status = 0";
 	$rs = $db->Execute($query);
 	while ($row = $rs->FetchRow())
@@ -590,7 +592,7 @@ function cat_update_count()
 	return true;
 }
 
-run_cronjob('saldo_update', 300);
+run_cronjob('saldo_update', 86400); 
 
 function saldo_update()
 {
@@ -641,27 +643,6 @@ function cleanup_tokens()
 	global $db, $now;
 	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
 }
-
-/*
-run_cronjob('publish_news', 1800);
-
-function publish_news()
-{
-	global $db;
-
-    $query = 'SELECT id FROM news WHERE approved = \'t\' AND published IS NULL OR published = \'f\'';
-	$newsitems = $db->GetAssoc($query);
-
-    foreach ($newsitems AS $key => $value){
-		mail_news($value["id"]);
-
-		$q2 = "UPDATE news SET published = \'t\' WHERE id = " . $value["id"];
-		$db->Execute($q2);
-	}
-
-	return true;
-}
-*/
 
 $redis->set($schema . '_interletsq', '');
 $redis->set($schema . '_cron_timestamp', time());

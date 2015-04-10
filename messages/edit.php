@@ -19,7 +19,7 @@ if ($_POST['zend'])
 		'content'		=> pg_escape_string($_POST["content"]),
 		'description'	=> pg_escape_string($_POST["description"]),
 		'msg_type'		=> (int) $_POST["msg_type"],
-		'id_user'		=> (int) $_POST["id_user"],
+		'id_user'		=> ($s_accountrole == 'admin') ? (int) $_POST["id_user"] : $s_id,
 		'id_category'	=> (int) $_POST["id_category"],
 		'amount'		=> (int) $_POST["amount"],
 		'units'			=> pg_escape_string($_POST["units"]),
@@ -87,9 +87,12 @@ else if ($mode == 'new')
 
 include($rootpath."includes/inc_header.php");
 
-if($mode == "new"){
+if($mode == "new")
+{
 	echo "<h1>Nieuw Vraag & Aanbod toevoegen</h1>";
-} else {
+}
+else
+{
 	echo "<h1>Vraag & Aanbod aanpassen</h1>";
 }
 
@@ -104,7 +107,7 @@ echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 echo "<tr>\n<td align='right'>";
 echo "V/A ";
 echo "</td><td>";
-echo "<select name='msg_type'>";
+echo "<select name='msg_type' required>";
 render_select_options(array('1' => 'Aanbod', '0' => 'Vraag'), $msg['msg_type']);
 echo "</select>";
 echo "</td></tr>";
@@ -131,8 +134,6 @@ if($s_accountrole == "admin"){
 	echo "</select>\n";
 	echo "</td>\n</tr>\n\n<tr><td></td>\n<td>";
 	echo "</td>\n</tr>\n\n";
-} else {
-	echo "<input type='hidden' name='id_user' size='8'>";
 }
 
 echo "<tr><td align='right'>";
@@ -173,7 +174,8 @@ echo "</p></div>";
 include($rootpath."includes/inc_footer.php");
 
 
-function validate_input($msg){
+function validate_input($msg)
+{
 	global $db;
 	$error_list = array();
 	if (!$msg['id_category'])
@@ -181,13 +183,16 @@ function validate_input($msg){
 		$error['id_category'] = 'Geieve een categorie te selecteren.';
 	}
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
+	{
 		$error_list["content"] = "<font color='#F56DB5'>Vul <strong>inhoud</strong> in!</font>";
 		$query =" SELECT * FROM categories ";
 		$query .=" WHERE  id = '".$msg["id_category"]."' ";
 		$rs = $db->Execute($query);
     	$number = $rs->recordcount();
-		if( $number == 0 ){
+		if( $number == 0 )
+		{
 			$error_list["id_category"]="<font color='#F56DB5'>Categorie <strong>bestaat niet!</strong></font>";
+		}
 	}
 
 	$query = "SELECT * FROM users ";
@@ -196,7 +201,8 @@ function validate_input($msg){
 	$rs = $db->Execute($query);
     $number2 = $rs->recordcount();
 
-	if( $number2 == 0 ){
+	if( $number2 == 0 )
+	{
 		$error_list["id_user"]="<font color='#F56DB5'>Gebruiker <strong>bestaat niet!</strong></font>";
 	}
 	return $error_list;
@@ -204,7 +210,8 @@ function validate_input($msg){
 }
 
 
-function count_validity($months){
+function count_validity($months)
+{
 	$valtime = time() + ($months * 30 * 24 * 60 * 60);
 	$vtime =  date("Y-m-d H:i:s", $valtime);
 	return $vtime;
@@ -216,11 +223,15 @@ function reverse_count_validity($vtime){
 
 
 
-function update_msg($id, $posted_list){
+function update_msg($id, $posted_list)
+{
     global $db;
-    if(!empty($posted_list["validity"])){
+    if(!empty($posted_list["validity"]))
+    {
     	$posted_list["validity"] = $posted_list["vtime"];
-    } else {
+    }
+    else
+    {
 		unset($posted_list["validity"]);
     }
     $posted_list["mdate"] = date("Y-m-d H:i:s");
@@ -271,7 +282,8 @@ function insert_msg($posted_list){
 		return ($db->Execute($query)) ? $db->insert_ID() : false;
 }
 
-function get_users(){
+function get_users()
+{
     global $db;
     $user_ary = array();
 	$query = "SELECT id, name, letscode FROM users ";
@@ -284,13 +296,15 @@ function get_users(){
 	return $user_ary;
 }
 
-function get_cats(){
+function get_cats()
+{
 	global $db;
 	$query = "SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname";
 	return $db->GetAssoc($query);
 }
 
-function get_msg($id){
+function get_msg($id)
+{
 	global $db;
 	$query = "SELECT * , messages.validity AS valdate ";
 	$query .= " FROM messages WHERE id=" .$id ;
