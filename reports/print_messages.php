@@ -1,44 +1,28 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
-//include($rootpath."includes/inc_header.php");
-//include($rootpath."includes/inc_nav.php");
 
 $msg_type = $_GET["msg_type"];
 $id_category = $_GET["id_category"];
 
-if(isset($s_id)){
-	$catname = get_cat_title($id_category);
-	show_ptitle($catname, $msg_type);
-	$messagerows = get_all_msgs($msg_type, $id_category);
-	show_all_msgs($messagerows, $s_accountrole);
-}else{
-	redirect_login($rootpath);
-}
+$catname = get_cat_title($id_category);
+show_ptitle($catname, $msg_type);
+$messagerows = get_all_msgs($msg_type, $id_category);
+show_all_msgs($messagerows, $s_accountrole);
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle($catname, $type){
-        if($type == 1){
-                $htype = "Aanbod";
-        } else {
-                $htype = "Vraag";
-        }
-        echo "<h1>$htype voor $catname</h1>";
+function show_ptitle($catname, $type)
+{
+	if($type == 1){
+			$htype = "Aanbod";
+	} else {
+			$htype = "Vraag";
+	}
+	echo "<h1>$htype voor $catname</h1>";
 }
 
 function get_cats(){

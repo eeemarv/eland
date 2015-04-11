@@ -1,98 +1,95 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+$includejs = '
+	<script src="' . $cdn_jquery . '"></script>
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>
+	<script src="' . $cdn_typeahead . '"></script>';
+	
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 include("inc_balance.php");
 
-#$trans_orderby = $_GET["trans_orderby"];
-#$user_userid = $_GET["user_userid"];
+echo "<h1>Saldo op datum</h1>";
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle();
-	$posted_list = array();
-        if (isset($_POST["zend"])){
-		$posted_list["date"] = $_POST["date"];
-		$posted_list["prefix"] = $_POST["prefix"];
-	} else {
-		$localdate = date("Y-m-d");
-		$posted_list["date"] = $localdate;
-	}
+$posted_list = array();
 
-        $user_date = $posted_list["date"];
-	$users = get_filtered_users($posted_list["prefix"]);
-
-	echo "<table border=0 width='100%'>";
-	echo "<tr>";
-	echo "<td valign='top' align='left'>";
-	show_userselect($list_users,$posted_list);
-	echo "</td>";
-	echo "<td valign='top' align='right'>";
-	show_printversion($rootpath,$user_date,$posted_list["prefix"]);
-	echo "<br>";
-	show_csvversion($rootpath,$user_date,$posted_list["prefix"]);
-	echo "</td>";
-	echo "</tr>";
-	echo "</table>";
-
-	show_user_balance($users,$user_date,$user_prefix);
-
-}else{
-	redirect_login($rootpath);
+if (isset($_GET["zend"]))
+{
+	$posted_list["date"] = $_GET["date"];
+	$posted_list["prefix"] = $_GET["prefix"];
+}
+else
+{
+	$localdate = date("Y-m-d");
+	$posted_list["date"] = $localdate;
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+$user_date = $posted_list["date"];
+$users = get_filtered_users($posted_list["prefix"]);
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
+echo "<table border=0 width='100%'>";
+echo "<tr>";
+echo "<td valign='top' align='left'>";
+show_userselect($list_users,$posted_list);
+echo "</td>";
+echo "<td valign='top' align='right'>";
+show_printversion($rootpath,$user_date,$posted_list["prefix"]);
+echo "<br>";
+show_csvversion($rootpath,$user_date,$posted_list["prefix"]);
+echo "</td>";
+echo "</tr>";
+echo "</table>";
 
-function show_ptitle(){
-	echo "<h1>Saldo op datum</h1>";
-}
+show_user_balance($users,$user_date,$user_prefix);
 
-function show_printversion($rootpath,$user_date,$user_prefix){
-        echo "<a href='print_balance.php?date=";
+/////////////
+
+function show_printversion($rootpath,$user_date,$user_prefix)
+{
+	echo "<a href='print_balance.php?date=";
 	echo $user_date;
 	echo "&prefix=" .$user_prefix;
-	echo "' target='new'>";
-        echo "<img src='".$rootpath."gfx/print.gif' border='0'> ";
-        echo "Printversie</a>";
+	echo "'>";
+	echo "<img src='".$rootpath."gfx/print.gif' border='0'> ";
+	echo "Printversie</a>";
 }
 
-function show_csvversion($rootpath,$user_date,$user_prefix){
-        echo "<a href='csv_balance.php?date=";
-        echo $user_date;
+function show_csvversion($rootpath,$user_date,$user_prefix)
+{
+	echo "<a href='csv_balance.php?date=";
+	echo $user_date;
 	echo "&prefix=" .$user_prefix;
-        echo "' target='new'>";
-        echo "<img src='".$rootpath."gfx/csv.jpg' border='0'> ";
-        echo "CSV Export</a>";
+	echo "'>";
+	echo "<img src='".$rootpath."gfx/csv.jpg' border='0'> ";
+	echo "CSV Export</a>";
 }
 
 function show_userselect($list_users,$posted_list){
-        echo "<form method='POST' action='balance.php'>";
-        echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
+	echo "<form method='GET'>";
+	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
 	echo "<tr><td>Datum afsluiting (yyyy-mm-dd):   </td>\n";
 	echo "<td>";
-	echo "<input type='text' name='date' size='10'";
-	if (isset($posted_list["date"])){
-                echo " value ='".$posted_list["date"]."' ";
-        }
-        echo ">";
+	echo "<input type='text' name='date' size='10' ";
+	if (isset($posted_list["date"]))
+	{
+		echo " value ='".$posted_list["date"]."' ";
+	}
+	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-date-language="nl" ';
+	echo 'data-date-today-highlight="true" ';
+	echo 'data-date-autoclose="true" ';
+	echo 'data-date-enable-on-readonly="false" ';        
+    echo ">";
 	echo "</td>";
 
 	echo "<td>";
@@ -116,6 +113,4 @@ function show_userselect($list_users,$posted_list){
         echo "</form>";
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

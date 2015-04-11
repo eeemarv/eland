@@ -1,16 +1,9 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
-
-#include($rootpath."includes/inc_header.php");
-#include($rootpath."includes/inc_nav.php");
 
 include("inc_transperuser.php");
 
@@ -19,44 +12,30 @@ $user_datefrom = $_GET["datefrom"];
 $user_dateto = $_GET["dateto"];
 $user_prefix = $_GET["prefix"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle($user_userid,$user_datefrom,$user_dateto);
-	$transactions = get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_prefix);
-	show_all_transactions($transactions);
-}else{
-	redirect_login($rootpath);
+echo "<h1>Transactierapport</h1>";
+if($user_userid == 'ALL') {
+	$user['name'] = "Alle gebruikers";
+	$user['letscode'] = "Alle";
+} else {
+	$user = get_user($user_userid);
 }
+echo "<p>Gebruiker: ";
+echo $user['name'];
+echo " (";
+echo $user['letscode'];
+echo ")";
+echo "<br>";
+echo "Datum van $user_datefrom tot $user_dateto</p>";
+$transactions = get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_prefix);
+show_all_transactions($transactions);
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-function show_ptitle($user_userid,$user_datefrom,$user_dateto){
-	echo "<h1>Transactierapport</h1>";
-	if($user_userid == 'ALL') {
-		$user['name'] = "Alle gebruikers";
-		$user['letscode'] = "Alle";
-	} else {
-		$user = get_user($user_userid);
-	}
-	echo "<p>Gebruiker: ";
-	echo $user['name'];
-	echo " (";
-	echo $user['letscode'];
-	echo ")";
-	echo "<br>";
-	echo "Datum van $user_datefrom tot $user_dateto</p>";
-}
+/////////
 
 function show_userselect($list_users,$posted_list){
-        echo "<form method='POST' action='transperuser.php'>";
-        echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
+	echo "<form method='POST' action='transperuser.php'>";
+	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
-        echo "<tr>\n<td>";
+	echo "<tr>\n<td>";
 	echo "Selecteer gebruiker:";
 	echo "</td><td>\n";
 	echo "<select name='userid'>\n";

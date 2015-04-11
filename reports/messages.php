@@ -1,54 +1,45 @@
 <?php
 ob_start();
 $rootpath = "../";
+$role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
-
-session_start();
-$s_id = $_SESSION["id"];
-$s_name = $_SESSION["name"];
-$s_letscode = $_SESSION["letscode"];
-$s_accountrole = $_SESSION["accountrole"];
+require_once($rootpath."includes/inc_form.php");
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
-if(isset($s_id)){
-        if (isset($_POST["zend"])){
-                $posted_list = array();
-                $posted_list["msg_type"] = $_POST["msg_type"];
-                $posted_list["id_category"] = $_POST["id_category"];
-		$catname = get_cat_title($posted_list["id_category"]);
-		$posted_list["prefix"] = $_POST["prefix"];
-	} else {
-		$posted_list["msg_type"] = 0;
-		$posted_list["id_category"] = 0;
-		$catname = "";
-	}
-
-	show_ptitle($catname, $posted_list["msg_type"]);
-	$messagerows = get_all_msgs($posted_list);
-	$cat_list = get_cats();
-	show_all_msgs($messagerows, $s_accountrole, $cat_list);
-
-        show_printversion($rootpath,$posted_list["msg_type"], $posted_list["id_category"]);
-}else{
-	redirect_login($rootpath);
+if (isset($_GET["zend"]))
+{
+	$posted_list = array();
+	$posted_list["msg_type"] = $_GET["msg_type"];
+	$posted_list["id_category"] = $_GET["id_category"];
+	$catname = get_cat_title($posted_list["id_category"]);
+	$posted_list["prefix"] = $_GET["prefix"];
+}
+else
+{
+	$posted_list["msg_type"] = 0;
+	$posted_list["id_category"] = 0;
+	$catname = "";
 }
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+show_ptitle($catname, $posted_list["msg_type"]);
+$messagerows = get_all_msgs($posted_list);
+$cat_list = get_cats();
+show_all_msgs($messagerows, $s_accountrole, $cat_list);
 
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
+show_printversion($rootpath,$posted_list["msg_type"], $posted_list["id_category"]);
+
+////////////////
 
 function show_ptitle($catname, $type){
-	if($type == 1){
+	if($type == 1)
+	{
 		$htype = "Aanbod";
-	} else {
+	}
+	else
+	{
 		$htype = "Vraag";
 	}
 	echo "<h1>$htype voor $catname</h1>";
@@ -59,16 +50,16 @@ function show_printversion($rootpath, $msg_type, $id_category){
         echo $msg_type;
         echo "&id_category=";
         echo $id_category;
-        echo "' target='new'>";
+        echo "'>";
         echo "<img src='".$rootpath."gfx/print.gif' border='0'> ";
         echo "Printversie</a>";
 }
 
 function get_cats(){
-        global $db;
-        $query = "SELECT * FROM categories WHERE leafnote = 1 ORDER BY fullname";
-        $list_cats = $db->GetArray($query);
-        return $list_cats;
+	global $db;
+	$query = "SELECT * FROM categories WHERE leafnote = 1 ORDER BY fullname";
+	$list_cats = $db->GetArray($query);
+	return $list_cats;
 }
 
 function get_cat_title($cat_id){
@@ -93,45 +84,50 @@ $strlength = strlen($content);
     }
 }
 
-function show_all_msgs($messagerows, $s_accountrole, $cat_list){
+function show_all_msgs($messagerows, $s_accountrole, $cat_list)
+{
+	global $posted_list;
 	//Selection form
         echo "<div class='border_b'>";
-        echo "<form method='POST' action='messages.php'>\n";
-        echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n\n";
-        echo "<tr>\n<td valign='top' align='right'>V/A </td>\n";
+        echo "<form method='GET'>";
+        echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+        echo "<tr><td valign='top' align='right'>V/A </td>";
         echo "<td>";
-        echo "<select name='msg_type'>\n";
+        echo "<select name='msg_type'>";
         if($posted_list["msg_type"] == 0 ){
-                echo "<option value='0' SELECTED >Vraag</option>\n";
+                echo "<option value='0' SELECTED >Vraag</option>";
         }else{
-                echo "<option value='0' >Vraag</option>\n";
+                echo "<option value='0' >Vraag</option>";
         }
         if($posted_list["msg_type"] == 1 ){
-                echo "<option value='1' SELECTED >Aanbod</option>\n";
+                echo "<option value='1' SELECTED >Aanbod</option>";
         }else{
-                echo "<option value='1' >Aanbod</option>\n";
+                echo "<option value='1' >Aanbod</option>";
         }
-        echo "</select>\n";
-	echo "</td>\n</tr>\n\n";
+        echo "</select>";
+	echo "</td></tr>";
 
 	#Add subgroup selection
-        echo "<tr>\n<td>";
+        echo "<tr><td>";
         echo "Subgroep:";
-        echo "</td><td>\n";
-        echo "<select name='prefix'>\n";
+        echo "</td><td>";
+        echo "<select name='prefix'>";
 
 	echo "<option value='ALL'>ALLE</option>";
 	$list_prefixes = get_prefixes();
-	foreach ($list_prefixes as $key => $value){
-		echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";
+	
+	foreach ($list_prefixes as $key => $value){ 
+		echo "<option value='" .$value["prefix"] ."'";
+		echo ($posted_list['prefix'] == $value['prefix']) ? ' selected="selected"' : '';
+		echo ">" .$value["shortname"] ."</option>";
 	}
-        echo "</select>\n";
-	echo "</td>\n</tr>\n\n";
+        echo "</select>";
+	echo "</td></tr>";
 
-	echo "<tr>\n<td align='right'>";
+	echo "<tr><td align='right'>";
         echo "Categorie";
-        echo "</td>\n<td>";
-        echo "<select name='id_category'>\n";
+        echo "</td><td>";
+        echo "<select name='id_category'>";
         foreach ($cat_list as $value2){
                 if ($posted_list["id_category"] == $value2["id"]){
                         echo "<option value='".$value2["id"]."' SELECTED>";
@@ -139,14 +135,14 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
                         echo "<option value='".$value2["id"]."' >";
                 }
                 echo htmlspecialchars($value2["fullname"],ENT_QUOTES);
-                echo "</option>\n";
+                echo "</option>";
         }
-        echo "</select>\n";
-	echo "</td>\n</tr>\n\n";
+        echo "</select>";
+	echo "</td></tr>";
 
-        echo "<tr>\n<td colspan='2' align='right'>";
+        echo "<tr><td colspan='2' align='right'>";
         echo "<input type='submit' name='zend' value='Zoeken'>";
-        echo "</td>\n</tr>\n</table>\n";
+        echo "</td></tr></table>";
         echo "</form>";
         echo "</p></div>";
 
@@ -156,14 +152,15 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list){
 	echo "<td ><strong>";
 	echo "<a href='overview.php?msg_orderby=content'>Wat</a>";
 	echo "</strong></td>";
-        echo "<td ><strong>";
-        echo "<a href='overview.php?msg_orderby=letscode'>Wie</a>";
-        echo "</strong></td>";
+	echo "<td ><strong>";
+	echo "<a href='overview.php?msg_orderby=letscode'>Wie</a>";
+	echo "</strong></td>";
 	echo "<td ><strong>Geldig tot";
 	echo "</strong></td>";
 	echo "</tr>";
 	$rownumb=0;
-	foreach($messagerows as $key => $value){
+	foreach($messagerows as $key => $value)
+	{
 		$rownumb=$rownumb+1;
 		if($rownumb % 2 == 1){
 			echo "<tr class='uneven_row'>";
@@ -237,6 +234,4 @@ function get_all_msgs($posted_list){
 	return $messagerows;
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>
