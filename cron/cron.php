@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-$r = "\n";
+$r = "<br>";
 $now = gmdate('Y-m-d H:i:s');
 
 $php_sapi_name = php_sapi_name();
@@ -14,6 +14,10 @@ if ($php_sapi_name == 'cli')
 
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
+
+$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
+$base_url = $http . $_SERVER["SERVER_NAME"] . $port;
 
 $rootpath = "../";
 $role = 'anonymous';
@@ -38,7 +42,7 @@ $s3 = Aws\S3\S3Client::factory(array(
 	'region'	=>'eu-central-1',
 ));
 
-header('Content-Type:text/plain');
+header('Content-Type:text/html');
 echo '*** Cron eLAS-Heroku ***' . $r;
 
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
@@ -111,7 +115,7 @@ else
 	exit;
 }
 
-echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***\n\n";
+echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
 // begin typeahaed update (when interletsq is empty) for one group
 
@@ -245,14 +249,13 @@ $lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 
 run_cronjob('processqueue');
 
-run_cronjob('saldo', 86400 * readconfigfromdb("saldofreqdays"));
+run_cronjob('saldo', 20 /*  readconfigfromdb("saldofreqdays") */);
 
 function saldo()
 {
 	$mandrill = new Mandrill();
 
 	// Get all users that want their saldo auto-mailed.
-	echo "Running automail_saldo\n";
 	global $db;
 	$query = 'SELECT u.id,
 			u.name, u.saldo,
@@ -273,11 +276,12 @@ function saldo()
 	}
 */
 
-	$messages = $db->GetArray('SELECT m.id, m.content, m.description
+	$messages = $db->GetArray('SELECT m.id, m.content, m."Description"
 		FROM messages m
-		WHERE m.cdate => ' .  date('Y-m-d H:i:S', time() - readconfigfromdb('saldofreqdays') * 86400));
+		WHERE m.cdate >= \'' .  date('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400) . '\'');
 
-	$r = "\n\r";
+	$r = "\n";
+
 	$t = 'Saldo';
 	$u = '-----';
 	$text .= $t . $r . $u . $r;
@@ -307,8 +311,7 @@ function saldo()
 		return 0;
 	}
 
-
-	$content = "Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub\r\n";
+	$content = "Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub" . $r;
 	if (!readconfigfromdb('forcesaldomail'))
 	{
 		$content .= "Je ontvangt deze mail omdat je de optie 'Mail saldo' in eLAS hebt geactiveerd,\n zet deze uit om deze mails niet meer te ontvangen.\n";
@@ -350,7 +353,7 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), re
 function admin_exp_msg()
 {
 	// Fetch a list of all expired messages and mail them to the admin
-	global $db, $now;
+	global $db, $now, $r;
 	
 	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
 		FROM messages m, users u
@@ -362,7 +365,7 @@ function admin_exp_msg()
 	$admin = readconfigfromdb("admin");
 	if (empty($admin))
 	{
-		echo "No admin E-mail address specified in config\n";
+		echo "No admin E-mail address specified in config" . $r;
 		return false;
 	}
 	else
@@ -374,18 +377,18 @@ function admin_exp_msg()
 
 	if (!empty($from_address_transactions))
 	{
-		$mailfrom .= "From: ".trim($from_address_transactions)."\r\n";
+		$mailfrom .= "From: ".trim($from_address_transactions);
 	}
 	else
 	{
-		echo "Mail from address is not set in configuration\n";
+		echo "Mail from address is not set in configuration" . $r;
 		return 0;
 	}
 
 	$systemtag = readconfigfromdb("systemtag");
 	$mailsubject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
 
-	$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+	$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --" . $r;
 	$mailcontent .= "ID\tUser\tMessage\n";
 	
 	foreach($messages as $key => $value)
@@ -393,7 +396,7 @@ function admin_exp_msg()
 		$mailcontent .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
 	}
 
-	$mailcontent .=  "\n\n";
+	$mailcontent .=  $r;
 
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 
@@ -409,7 +412,7 @@ function user_exp_msgs()
 	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
 	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
 
-	$testdate = date('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
+	$testdate = gmdate('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
 	$warn_messages  = $db->GetArray("SELECT *
 		FROM messages
 			WHERE exp_user_warn = 'f'
@@ -448,6 +451,7 @@ function user_exp_msgs()
 		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
 		$content .= ' in eLAS is vervallen. Als je het niet verlengt wordt het ';
 		$content .= $msgcleanupdays . ' dagen na de vervaldag automatisch verwijderd.';
+
 		$mailaddr = $user["emailaddress"];
 		$subject = "Je V/A in eLAS is vervallen";
 		mail_user_expwarn($mailaddr,$subject,$content);
@@ -464,7 +468,7 @@ function user_exp_msgs()
 	return true;
 }
 
-run_cronjob('cleanup_messages', 300);
+run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
@@ -489,9 +493,12 @@ function cleanup_messages()
 	}
 
 	$users = '';
-	$ids = array(); /////////////////////////////////////////////////// !!!!
-	$query = "SELECT id, letscode, name FROM users WHERE status = 0";
-	$rs = $db->Execute($query);
+	$ids = array();
+	$rs = $db->Execute("SELECT u.id, u.letscode, u.name
+		FROM users u, messages m
+		WHERE u.status = 0
+			AND m.id_user = u.id");
+
 	while ($row = $rs->FetchRow())
 	{
 		$ids[] = $row['id'];
@@ -510,21 +517,15 @@ function cleanup_messages()
 		}
 		else if (count($ids) > 1)
 		{
-			$db->Execute('delete from messages where id_user in ('. implode(', ' . $ids) . ')');
+			$db->Execute('delete from messages where id_user in ('. implode(', ', $ids) . ')');
 		}
-	}
-	
-	foreach ($users AS $key => $value){
-		$q2 = "DELETE FROM messages WHERE id_user = " .$value["id"];
-		$db->Execute($q2);
 	}
 
 	// remove orphaned images.
-	$query = 'SELECT mp.id, mp."PictureFile"
+	$orphan_images = $db->GetAssoc('SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
 		LEFT JOIN messages m ON mp.msgid = m.id
-		WHERE m.id IS NULL';
-	$orphan_images = $db->GetAssoc($query);
+		WHERE m.id IS NULL');
 
 	if (count($orphan_images))
 	{
@@ -596,7 +597,7 @@ run_cronjob('saldo_update', 86400);
 
 function saldo_update()
 {
-	global $db;
+	global $db, $r;
 
 	$user_balances = $db->GetAssoc('select id, saldo from users');
 
@@ -620,8 +621,8 @@ function saldo_update()
 		}
 
 		$db->Execute('update users set saldo = ' . $calculated . ' where id = ' . $id);
-		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated . "\n";
-		echo $m;
+		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
+		echo $m . $r;
 		log_event('', 'Cron' , $m);
 	}
 
@@ -647,14 +648,14 @@ function cleanup_tokens()
 $redis->set($schema . '_interletsq', '');
 $redis->set($schema . '_cron_timestamp', time());
 
-echo "*** Cron run finished ***\n";
+echo "*** Cron run finished ***" . $r;
 exit;
 
 ////////////////////
 
 function run_cronjob($name, $interval = 300, $enabled = null)
 {
-	global $db;
+	global $db, $r, $now;
 	static $lastrun_ary;
 
 	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
@@ -664,7 +665,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))
 	{
-		echo 'Cronjob: ' . $name . ' not running.' . "\n\r";
+		echo 'Cronjob: ' . $name . ' not running.' . $r;
 		return;
 	}
 
@@ -678,10 +679,10 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 	}
 	else
 	{
-		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . gmdate('Y-m-d H:i:s') . '\')');
+		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . $now . '\')');
 	}
 	log_event(' ', 'Cron', 'Cronjob ' . $name . ' finished.');
-	echo 'Cronjob ' . $name . ' finished.' . "\n\r";
+	echo 'Cronjob ' . $name . ' finished.' . $r;
 
 	return $updated;
 }

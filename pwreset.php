@@ -5,7 +5,6 @@ $role = 'anonymous';
 $allow_anonymous_post = true;
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
-//require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_passwords.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
@@ -26,8 +25,7 @@ if ($token & $user_id)
 
 		if (!(Password_Strength($password) < readconfigfromdb('pwscore')))
 		{
-			$key = $schema . '_pwreset_token_' . $user_id;
-			if ($redis->get($key) == $token)
+			if ($db->GetOne('select token from tokens where token = \'' . $token . '_' . $user_id . '\' and validity > \'' . gmdate('Y-m-d H:i:s') . '\' and type = \'pwreset\''))
 			{
 				$db->Execute('UPDATE users SET password = \'' . hash('sha512', $password) . '\' WHERE id = ' . $user_id);
 				readuser($user_id, true);
@@ -84,16 +82,15 @@ if ($_POST['zend'])
 			if ($user_id)
 			{
 				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 10);
-				$key = $schema . '_pwreset_token_' . $user_id;
-				$redis->set($key, $token);
-				$redis->expire($key, 3600);
+				$validity = gmdate('Y-m-d H:i:s', time() + 3600);
+				$db->Execute('INSERT INTO tokens (token, validity, type)
+					values (\'' . $token . '_' . $user_id . '\', \'' . $validity . '\', \'pwreset\')');
 				$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
 				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/pwreset.php?token=' . $token . '&u=' . $user_id;
-				$message = "Link om je paswoord te resetten :  \n
-					" . $url . "\n
-					Let op: deze link is slechts 1 uur geldig.\n
+				$message = "Link om je paswoord te resetten :\n" . $url . "\n
+					Let op: deze link blijft slechts 1 uur geldig.\n
 					Je login is: ". $login;
 				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet deze link blijft slechts één uur geldig.');
