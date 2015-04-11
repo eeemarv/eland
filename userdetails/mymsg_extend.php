@@ -35,6 +35,7 @@ function update_msg($id, $posted_list, $s_id){
 	$posted_list["validity"] = $posted_list["vtime"];
 	$posted_list["mdate"] = date("Y-m-d H:i:s");
 	$posted_list["id_user"] = $s_id;
+	$posted_list['exp_user_warn'] = 'f';
 	//echo "Message ID: $id";
     return $db->AutoExecute("messages", $posted_list, 'UPDATE', "id=$id");
 }

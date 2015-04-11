@@ -17,9 +17,9 @@
 
 if (!isset($schema))
 {
-	$schema = str_replace(':', '', $_SERVER['HTTP_HOST']);
-	$schema = str_replace('.', '__', $schema);
+	$schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
 	$schema = str_replace('-', '___', $schema);
+	$schema = str_replace(':', '____', $schema);
 	$schema = strtoupper($schema);
 	$schema = getenv('ELAS_SCHEMA_' . $schema);
 }

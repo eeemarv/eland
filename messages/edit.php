@@ -212,16 +212,15 @@ function validate_input($msg)
 
 function count_validity($months)
 {
-	$valtime = time() + ($months * 30 * 24 * 60 * 60);
-	$vtime =  date("Y-m-d H:i:s", $valtime);
+	$valtime = time() + ($months * 30 * 86400);
+	$vtime =  gmdate("Y-m-d H:i:s", $valtime);
 	return $vtime;
 }
 
-function reverse_count_validity($vtime){
-	return round((strtotime($vtime) - time()) / (30 * 24 * 60 * 60));
+function reverse_count_validity($vtime)
+{
+	return round((strtotime($vtime) - time()) / (30 * 86400));
 }
-
-
 
 function update_msg($id, $posted_list)
 {
@@ -234,7 +233,7 @@ function update_msg($id, $posted_list)
     {
 		unset($posted_list["validity"]);
     }
-    $posted_list["mdate"] = date("Y-m-d H:i:s");
+    $posted_list["mdate"] = gmdate("Y-m-d H:i:s");
 
  	$query_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? ' ' : ', amount = ' . $posted_list['amount'] . ' ';
 
@@ -255,7 +254,7 @@ function update_msg($id, $posted_list)
 
 function insert_msg($posted_list){
     global $db;
-	$posted_list["cdate"] = date("Y-m-d H:i:s");
+	$posted_list["cdate"] = gmdate("Y-m-d H:i:s");
     $posted_list["validity"] = $posted_list["vtime"];
     
  	$column_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? '' : ', amount';

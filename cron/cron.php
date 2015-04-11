@@ -16,19 +16,13 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-$base_url = $http . $_SERVER["SERVER_NAME"] . $port;
-
 $rootpath = "../";
 $role = 'anonymous';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-require_once $rootpath . 'cron/inc_cron.php';
 require_once $rootpath . 'cron/inc_upgrade.php';
 require_once $rootpath . 'cron/inc_processqueue.php';
-
-// require_once($rootpath."cron/inc_stats.php");
 
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
@@ -66,6 +60,7 @@ foreach ($_ENV as $key => $schema)
 
 	$schemas[$domain] = $schema;
 
+	$domain = str_replace('____', ':', $domain);
 	$domain = str_replace('___', '-', $domain);
 	$domain = str_replace('__', '.', $domain);
 	$domain = strtolower($domain);
@@ -116,6 +111,8 @@ else
 }
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
+
+$base_url = $http . $domains[$schema];
 
 // begin typeahaed update (when interletsq is empty) for one group
 
@@ -407,63 +404,63 @@ run_cronjob('user_exp_msgs', 300, readconfigfromdb("msgexpwarnenabled"));
 
 function user_exp_msgs()
 {
-	global $db, $now;
+	global $db, $now, $base_url;
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
-	$msgexpwarningdays = readconfigfromdb("msgexpwarningdays");
 	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
-
-	$testdate = gmdate('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
-	$warn_messages  = $db->GetArray("SELECT *
-		FROM messages
-			WHERE exp_user_warn = 'f'
-				AND validity < '" .$testdate ."'");
+	$warn_messages  = $db->GetArray("SELECT m.*
+		FROM messages m
+			WHERE m.exp_user_warn = 'f'
+				AND m.validity < '" .$now ."'");
 
 	// $warn_messages = get_warn_messages($msgexpwarningdays);
 	
 	foreach ($warn_messages AS $key => $value)
 	{
-		//For each of these, we need to fetch the user's mailaddress and send him a mail.
+		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
 		echo "Found new expired message " .$value["id"];
 		$user = get_user_maildetails($value["id_user"]);
 		$username = $user["name"];
+		$extend_url = $base_url . '/userdetails/mymsg_extend.php?id=' . $value['id'] . '&validity=';
+		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
+		$content = "Beste $username\n\nJe " . $va . ' ' . $value["content"];
+		$content .= " in eLAS is vervallen en zal over " . $msgcleanupdays . ' dagen verwijderd worden. ';
+		$content .= "Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen. ";
+		$content .= "\n Verlengen met één maand: " . $extend_url . "1 \n";
+		$content .= "\n Verlengen met één jaar: " . $extend_url . "12 \n";
+		$content .= "\n Verlengen met vijf jaar: " . $extend_url . "60 \n";
 
-		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
-		$content .= " in eLAS gaat over " .$msgexpwarningdays;
-		$content .= " dagen vervallen.  Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen.";
-		$content .= "\n\nAls je niets doet verdwijnt dit V/A $msgcleanupdays na de vervaldag uit je lijst.";
-		$mailaddr = $user["emailaddress"];
-		$subject = "Je V/A in eLAS gaat vervallen";
-		mail_user_expwarn($mailaddr,$subject,$content);
-		mark_expwarn($value["id"],1);
-	}
+		$mailto = $user["emailaddress"];
 
-	//Fetch a list of expired messages and warn the user again.
+		$subject = 'Je ' . $va . ' in eLAS is vervallen.';
 
-	$warn_messages  = $db->GetArray('SELECT * FROM messages WHERE exp_user_warn = \'f\' AND validity < \'' . $now . '\'');
-	
-	foreach ($warn_messages AS $key => $value)
-	{
-		//For each of these, we need to fetch the user's mailaddress and send him a mail.
-		echo "Found phase 2 expired message " .$value["id"];
-		$user = get_user_maildetails($value["id_user"]);
-		$username = $user["name"];
+		$from_address_transactions = readconfigfromdb("from_address_transactions");
 
-		$content = "Beste $username\n\nJe vraag of aanbod '" .$value["content"] ."'";
-		$content .= ' in eLAS is vervallen. Als je het niet verlengt wordt het ';
-		$content .= $msgcleanupdays . ' dagen na de vervaldag automatisch verwijderd.';
+		if (!empty($from_address_transactions))
+		{
+			$mailfrom = trim($from_address_transactions);
+		}
+		else
+		{
+			echo "Mail from address is not set in configuration\n";
+			return;
+		}
 
-		$mailaddr = $user["emailaddress"];
-		$subject = "Je V/A in eLAS is vervallen";
-		mail_user_expwarn($mailaddr,$subject,$content);
+		$systemtag = readconfigfromdb("systemtag");
+		$subject = "[eLAS-".$systemtag ."] - " . $subject;
+
+		$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+		$mailcontent .= "$content\n\n";
+
+		$mailcontent .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
+		$mailcontent .= readconfigfromdb("support");
+
+		$mailcontent .= "\n\nDe eLAS Robot\n";
+		sendemail($mailfrom, $mailto, $subject, $mailcontent);
+		log_event("","Mail","Message expiration mail sent to $mailto");
 		$db->Execute('UPDATE messages set exp_user_warn = \'t\' WHERE id = ' .$value['id']);
 	}
 
-	// Finally, clear all the old flags with a single SQL statement
-	// UPDATE messages SET exp_user_warn = 0 WHERE validity > now + 10
-
-	$testdate = gmdate('Y-m-d H:i:s', time() + ($msgexpwarningdays * 86400));
-	$query = "UPDATE messages SET exp_user_warn = 'f' WHERE validity > '" .$testdate ."'";
-	$db->Execute($query);
+	//no double warn in eLAS-Heroku.
 
 	return true;
 }
@@ -665,11 +662,11 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))
 	{
-		echo 'Cronjob: ' . $name . ' not running.' . $r;
+		echo '+++ Cronjob: ' . $name . ' not running. +++' . $r;
 		return;
 	}
 
-	echo 'Running ' . $name . "\n";
+	echo '+++ Running ' . $name . ' +++' . $r;
 
 	$updated = call_user_func($name);
 
@@ -682,7 +679,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . $now . '\')');
 	}
 	log_event(' ', 'Cron', 'Cronjob ' . $name . ' finished.');
-	echo 'Cronjob ' . $name . ' finished.' . $r;
+	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
 
 	return $updated;
 }
