@@ -472,7 +472,7 @@ run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
-	global $db, $now;
+	global $db, $now, $s3;
 	
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
