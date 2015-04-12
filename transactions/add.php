@@ -89,10 +89,6 @@ if (isset($_POST['zend']))
 				if($transaction['transid'] == $transid)
 				{
 					$alert->success("Interlets transactie in verwerking");
-					if (!$redis->get($schema . '_interletsq'))
-					{
-						$redis->set($schema . '_interletsq', time());
-					}
 				}
 				else
 				{

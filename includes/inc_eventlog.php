@@ -44,7 +44,8 @@ function log_event($id, $type, $event){
 //find domain from session / real domain
 
 	$domain = array_search($schema, $_ENV);
-	$domain = str_replace('ELAS_DOMAIN_SESSION_', '', $domain);
+	$domain = str_replace('ELAS_SCHEMA_', '', $domain);
+	$domain = str_replace('____', ':', $domain);
 	$domain = str_replace('___', '-', $domain);
 	$domain = str_replace('__', '.', $domain);
 	$domain = strtolower($domain);

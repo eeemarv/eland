@@ -3,7 +3,6 @@ eLAS-Heroku
 
 Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 
-
 Checklist
 ---------
 
@@ -45,12 +44,14 @@ Environment Vars
 
     `Dots in domain are replaced by double underscore __`
     `Hyphens in domain are replaced by triple underscore ___`
+    `Colons in domain are replaced by quadruple underscore ____`
 
-    i.e couple e-example.com to schema `eexample`
-    set environment variable:
+    i.e couple e-example.com with schema `eexample`
         `heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample`
-
-    Also add the domain to Heroku with `heroku domains:add e.example.com`
+         Also add the domain to Heroku with `heroku domains:add e.example.com`
+                
+    i.e localhost:40000 on php development server
+        `ELAS_SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000`
 
 The schema name is also:
   * the name of the session
@@ -98,7 +99,7 @@ Meta command list all tables from all schemas:
 
 * Match a domain to a schema with config variable `ELAS_SCHEMA_domain=schema`
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
-yphen must be converted to a triple underscore.
+yphen must be converted to a triple underscore and a colon (for defining port number) with quadruple underscore.
 
 * Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG). 
 Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).

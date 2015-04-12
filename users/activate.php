@@ -62,7 +62,7 @@ function sendadminmail($posted_list, $user){
                  return 0;
         }
 
-        $mailsubject = "[";
+        $mailsubject = "[eLAS-";
         $mailsubject .= readconfigfromdb("systemtag");
         $mailsubject .= "] eLAS account activatie";
 
@@ -72,7 +72,8 @@ function sendadminmail($posted_list, $user){
 	$mailcontent .= "De account ";
 	$mailcontent .= $user["login"];
 	$mailcontent .= " werd geactiveerd met een nieuw passwoord.\n";
-	if (!empty($user["emailaddress"])){
+	if (!empty($user["emailaddress"]))
+	{
 		$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
 		$mailcontent .= $user["emailaddress"];
 		$mailcontent .= ".\n\n";

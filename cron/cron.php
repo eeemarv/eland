@@ -43,7 +43,7 @@ echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
 // select in which schema to perform updates
-$schemas = $domains = $schema_cron_timestamps = $schema_interletsqs = $table = array();
+$schemas = $domains = $schema_lastrun_ary = $schema_interletsq_ary = array();
 
 $schemas_db = ($db->GetArray('select schema_name from information_schema.schemata')) ?: array();
 $schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
@@ -55,7 +55,7 @@ foreach ($_ENV as $key => $schema)
 	{
 		continue;
 	}
-	
+
 	$domain = str_replace('ELAS_SCHEMA_', '', $key);
 
 	$schemas[$domain] = $schema;
@@ -67,11 +67,12 @@ foreach ($_ENV as $key => $schema)
 
 	$domains[$schema] = $domain;
 
-	$schema_cron_timestamps[$schema] = (int) $redis->get($schema . '_cron_timestamp');
+	$lastrun = $db->GetOne('select max(lastrun) from ' . $schema . '.cron');
+	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
 
-	if ($interletsq = (int) $redis->get($schema . '_interletsq'))
+	if ($date_interletsq = $db->GetOne('select min(date_created) from '. $schema . '.interletsq'))
 	{
-		$schema_interletsqs[$schema] = $interletsq;
+		$schema_interletsq_ary[$schema] = $date_interletsq;
 	}
 }
 
@@ -79,27 +80,27 @@ unset($schema, $domain);
 
 if (count($schemas))
 {
-	asort($schema_cron_timestamps);
+	asort($schema_lastrun_ary);
 
-	if (count($schema_interletsqs))
+	if (count($schema_interletsq_ary))
 	{
-		list($schema_interletsq_min) = array_keys($schema_interletsqs, min($schema_interletsqs));
+		list($schema_interletsq_min) = array_keys($schema_interletsq_ary, min($schema_interletsq_ary));
 	}
 
 	echo 'Schema (domain): last cron timestamp : interletsqueue timestamp' . $r;
 	echo '---------------------------------------------------------------' . $r;
-	foreach ($schema_cron_timestamps as $schema_n => $timestamp)
+	foreach ($schema_lastrun_ary as $schema_n => $time)
 	{
-		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $timestamp . ' : ';
-		echo ($schema_interletsqs[$schema_n]) ? $schema_interletsqs[$schema_n] : 0;
+		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $time;
+		echo ($schema_interletsq_ary[$schema_n]) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
 
 		if ((!isset($selected) && !isset($schema_interletsq_min))
 			|| (isset($schema_interletsq_min) && $schema_interletsq_min == $schema_n))
 		{
 			$schema = $schema_n;
+			echo ' (selected)';			
 			$db->Execute('SET search_path TO ' . $schema);
 			$selected = true;
-			echo ' (selected)';
 		}
 		echo $r;
 	}
@@ -238,13 +239,9 @@ if (!isset($schema_interletsq_min))
 else
 {
 	echo '-- priority to interletsq, no letsgroup typeahead updated --' . $r;
+	
+	run_cronjob('processqueue');
 }
-
-/// end typeahead update
-
-$lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
-
-run_cronjob('processqueue');
 
 run_cronjob('saldo', 20 /*  readconfigfromdb("saldofreqdays") */);
 
@@ -350,7 +347,7 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), re
 function admin_exp_msg()
 {
 	// Fetch a list of all expired messages and mail them to the admin
-	global $db, $now, $r;
+	global $db, $now, $r, $base_url;
 	
 	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
 		FROM messages m, users u
@@ -391,6 +388,7 @@ function admin_exp_msg()
 	foreach($messages as $key => $value)
 	{
 		$mailcontent .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
+		$mailcontent .= $base_url . '\messages\view?id=' . $value['mid'] . " \n";
 	}
 
 	$mailcontent .=  $r;
@@ -400,7 +398,7 @@ function admin_exp_msg()
 	return true;
 }
 
-run_cronjob('user_exp_msgs', 300, readconfigfromdb("msgexpwarnenabled"));
+run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
 
 function user_exp_msgs()
 {
@@ -428,6 +426,7 @@ function user_exp_msgs()
 		$content .= "\n Verlengen met één maand: " . $extend_url . "1 \n";
 		$content .= "\n Verlengen met één jaar: " . $extend_url . "12 \n";
 		$content .= "\n Verlengen met vijf jaar: " . $extend_url . "60 \n";
+		$content .= "\n Nieuw vraag of aanbod ingeven: " . $base_url . "/messages/edit.php?mode=new \n";
 
 		$mailto = $user["emailaddress"];
 
@@ -641,9 +640,6 @@ function cleanup_tokens()
 	global $db, $now;
 	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
 }
-
-$redis->set($schema . '_interletsq', '');
-$redis->set($schema . '_cron_timestamp', time());
 
 echo "*** Cron run finished ***" . $r;
 exit;
