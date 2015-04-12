@@ -33,7 +33,7 @@ require_once $rootpath . 'includes/inc_eventlog.php';
 
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
-	'region'	=>'eu-central-1',
+	'region'	=> 'eu-central-1',
 ));
 
 header('Content-Type:text/html');
@@ -70,7 +70,9 @@ foreach ($_ENV as $key => $schema)
 	$lastrun = $db->GetOne('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
 
-	if ($date_interletsq = $db->GetOne('select min(date_created) from '. $schema . '.interletsq'))
+	if ($date_interletsq = $db->GetOne('select min(date_created)
+		from '. $schema . '.interletsq
+		where last_status = \'NEW\''))
 	{
 		$schema_interletsq_ary[$schema] = $date_interletsq;
 	}
@@ -92,7 +94,7 @@ if (count($schemas))
 	foreach ($schema_lastrun_ary as $schema_n => $time)
 	{
 		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $time;
-		echo ($schema_interletsq_ary[$schema_n]) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
+		echo (isset($schema_interletsq_ary[$schema_n])) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
 
 		if ((!isset($selected) && !isset($schema_interletsq_min))
 			|| (isset($schema_interletsq_min) && $schema_interletsq_min == $schema_n))
@@ -243,10 +245,12 @@ else
 	run_cronjob('processqueue');
 }
 
-run_cronjob('saldo', 20 /*  readconfigfromdb("saldofreqdays") */);
+run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
 
 function saldo()
 {
+
+	return; // disable for now
 	$mandrill = new Mandrill();
 
 	// Get all users that want their saldo auto-mailed.
