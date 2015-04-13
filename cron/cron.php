@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-$r = "<br>";
+$r = "<br>\n\r";
 $now = gmdate('Y-m-d H:i:s');
 
 $php_sapi_name = php_sapi_name();
@@ -245,13 +245,11 @@ else
 	run_cronjob('processqueue');
 }
 
-run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
+run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"), readconfigfromdb('mailenabled'));
 
 function saldo()
 {
-
 	return; // disable for now
-	$mandrill = new Mandrill();
 
 	// Get all users that want their saldo auto-mailed.
 	global $db;
@@ -460,8 +458,9 @@ function user_exp_msgs()
 		$mailcontent .= "\n\nDe eLAS Robot\n";
 		sendemail($mailfrom, $mailto, $subject, $mailcontent);
 		log_event("","Mail","Message expiration mail sent to $mailto");
-		$db->Execute('UPDATE messages set exp_user_warn = \'t\' WHERE id = ' .$value['id']);
 	}
+
+	$db->Execute('UPDATE messages set exp_user_warn = \'t\' WHERE validity < \'' . $now . '\'');
 
 	//no double warn in eLAS-Heroku.
 
@@ -536,20 +535,12 @@ function cleanup_messages()
 				'Key'    => $file,
 			));
 
-			echo $result . $r;
-
 			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
 		}
 	}
-}
 
-run_cronjob('cat_update_count', 3600);
+	// update counts for each category
 
-// Update counts for each category
-function cat_update_count()
-{
-	global $db;
-	
 	$offer_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
 		FROM messages m, users u
 		WHERE  m.id_user = u.id

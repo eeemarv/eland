@@ -20,7 +20,7 @@ $msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname
 		AND m.id_category = ct.id
 		AND m.id_user = u.id');
 
-if ($role == 'user' && $s_id != $msq['id_user'])
+if ($role == 'user' && $s_id != $msg['id_user'])
 {
 	header('Location: ' . $rootpath . 'overview.php');
 	exit;
@@ -30,26 +30,30 @@ if(isset($_POST["zend"]))
 {
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
-		'region'	=>'eu-central-1',
+		'region'	=> 'eu-central-1',
 	));
 
 	$pictures = $db->Execute("SELECT * FROM msgpictures WHERE msgid = ".$id);
 	foreach($pictures as $value)
 	{
-		$result = $s3->deleteObject(array(
+		$s3->deleteObject(array(
 			'Bucket' => getenv('S3_BUCKET'),
 			'Key'    => $value['PictureFile'],
 		));
 	}
 
-	if ($result)
-	{
-		$result = $db->Execute("DELETE FROM msgpictures WHERE msgid = ".$id );
-	}
+	$db->Execute("DELETE FROM msgpictures WHERE msgid = ".$id );
+
+	$result = $db->Execute("DELETE FROM messages WHERE id =".$id );
 
 	if ($result)
 	{
-		$result = $db->Execute("DELETE FROM messages WHERE id =".$id );
+		$column = 'stat_msgs_';
+		$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
+
+		$db->Execute('update categories
+			set ' . $column . ' = ' . $column . ' - 1
+			where id = ' . $msg['id_category']);
 	}
 
 	if ($result)

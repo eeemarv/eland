@@ -237,6 +237,7 @@ function update_msg($id, $posted_list)
 
  	$query_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? ' ' : ', amount = ' . $posted_list['amount'] . ' ';
 
+	$msg = $db->GetRow('select * from messages where id = ' . $id);
 
 	$query = "UPDATE messages SET
 			mdate = '" .$posted_list["mdate"] ."',
@@ -249,7 +250,26 @@ function update_msg($id, $posted_list)
 			msg_type = " . $posted_list["msg_type"] . " " .
 			$query_amount .
 		"WHERE id = " . $id;
-	return $db->Execute($query);
+	$result = $db->Execute($query);
+
+	if ($msg['msg_type'] != $posted_list['msg_type'] || $msg['id_category'] != $posted_list['id_category'])
+	{
+		$column = 'stat_msgs_';
+		$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
+
+		$db->Execute('update categories
+			set ' . $column . ' = ' . $column . ' - 1
+			where id = ' . $msg['id_category']);
+
+		$column = 'stat_msgs_';
+		$column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
+
+		$db->Execute('update categories
+			set ' . $column . ' = ' . $column . ' + 1
+			where id = ' . $posted_list['id_category']);
+	}
+
+	return $result;
 }
 
 function insert_msg($posted_list){
@@ -278,7 +298,17 @@ function insert_msg($posted_list){
 		'" .$posted_list["units"] ."',
 		" .$posted_list["msg_type"] . $value_amount . ")";
 
-		return ($db->Execute($query)) ? $db->insert_ID() : false;
+		$insert_id = ($db->Execute($query)) ? $db->insert_ID() : false;
+
+		if ($insert_id)
+		{
+			$stat_column = 'stat_msgs_';
+			$stat_column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
+
+			$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1');
+		}
+
+		return $insert_id;
 }
 
 function get_users()

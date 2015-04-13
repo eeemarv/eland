@@ -32,14 +32,16 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 // require_once($rootpath."includes/inc_amq.php");
 
-function generate_transid(){
+function generate_transid()
+{
 	global $baseurl;
 	global $s_id;
 	$genid = sha1($s_id .microtime()) .$_SESSION["id"] ."@" . $baseurl;
 	return $genid;
 }
 
-function sign_transaction($posted_list, $sharedsecret) {
+function sign_transaction($posted_list, $sharedsecret)
+{
 	$signamount = (float) $posted_list["amount"];
 	$signamount = $signamount * 100;
 	$signamount = round($signamount);
@@ -49,7 +51,8 @@ function sign_transaction($posted_list, $sharedsecret) {
 	return $signature;
 }
 
-function check_duplicate_transaction($transid){
+function check_duplicate_transaction($transid)
+{
 	global $db;
 	$query = "SELECT * FROM transactions WHERE transid = '" .$transid ."'";
 	$result = $db->GetArray($query);
@@ -67,7 +70,8 @@ function insert_transaction($posted_list)
 	$posted_list["creator"] = (empty($s_id)) ? 0 : $s_id;
     $posted_list["cdate"] = date("Y-m-d H:i:s");
 
-	if($db->AutoExecute("transactions", $posted_list, 'INSERT')){
+	if($db->AutoExecute("transactions", $posted_list, 'INSERT'))
+	{
 
 		log_event("","Trans", "Transaction $transid saved");
 
@@ -82,7 +86,8 @@ function insert_transaction($posted_list)
 	return false;
 }
 
-function get_transaction_by_id($transid){
+function get_transaction_by_id($transid)
+{
 	global $db;
 	$query = "SELECT * FROM transactions WHERE transid = '" .$transid ."'";
 	$transaction = $db->GetRow($query);
@@ -90,7 +95,8 @@ function get_transaction_by_id($transid){
 
 }
 
-function validate_interletsq($posted_list){
+function validate_interletsq($posted_list)
+{
 	global $db;
 	global $_SESSION;
 	$s_accountrole = $_SESSION["accountrole"];
