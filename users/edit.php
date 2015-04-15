@@ -39,6 +39,7 @@ if ($_POST['zend'])
 		'minlimit'		=> $_POST['minlimit'],
 		'maxlimit'		=> $_POST['maxlimit'],
 		'presharedkey'	=> pg_escape_string($_POST['presharedkey']),
+		'cron_saldo'	=> ($_POST['cron_saldo']) ? 't' : 'f',
 		'lang'			=> 'nl',
 	);
 	$contact = array(
@@ -328,6 +329,14 @@ echo "<tr><td  align='right'>Preshared key<br><small><i>Interlets veld</i></smal
 echo "<input type='text' name='presharedkey' value='" . $user['presharedkey'] . "' size='30'>";
 echo "</td></tr><tr><td></td>";
 echo "</tr>";
+
+echo "<tr><td  align='right'>Saldo mail met recent vraag en aanbod</td><td >";
+echo "<input type='checkbox' name='cron_saldo'";
+echo ($user['cron_saldo'] == 't') ? ' checked="checked"' : '';
+echo ">";
+echo "</td></tr><tr><td></td>";
+echo "</tr>";
+
 
 echo "<tr><td  align='right'>E-mail</td><td >";
 echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30' required>";

@@ -252,8 +252,6 @@ function saldo($lastrun)
 {
 	global $db, $base_url;
 
-	return; // disable for now
-
 	if (!readconfigfromdb('mailenabled'))
 	{
 		echo 'Mail functions are not enabled. ' . "\n";

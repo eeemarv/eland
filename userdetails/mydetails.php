@@ -152,7 +152,7 @@ function show_user($user)
 	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
 	if (!readconfigfromdb('forcesaldomail'))
 	{
-		echo "<tr><td valign='top'>Saldo Mail: </td><td valign='top'>";
+		echo "<tr><td valign='top'>Saldo mail met recent vraag en aanbod: </td><td valign='top'>";
 		echo ($user["cron_saldo"] == 't') ? "Aan" : "Uit";
 		echo '</td></tr>';
 	}

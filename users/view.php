@@ -101,12 +101,15 @@ echo "<td>".nl2br(htmlspecialchars($user["admincomment"],ENT_QUOTES))."</td></tr
 echo "<tr><td valign='top'>Limiet minstand:</td>";
 echo "<td>".$user["minlimit"]."</td></tr>";
 
-echo "<tr><td valign='top'>Saldo mail:  </td>";
-if($user["cron_saldo"] == 1){
-				echo "<td valign='top'>Aan</td>";
-		} else {
-				echo "<td valign='top'>Uit</td>";
-		}
+echo "<tr><td valign='top'>Saldo mail met recent vraag en aanbod:  </td>";
+if($user["cron_saldo"] == 't')
+{
+	echo "<td valign='top'>Aan</td>";
+}
+else
+{
+	echo "<td valign='top'>Uit</td>";
+}
 echo "</tr>";
 
 echo "</table>";

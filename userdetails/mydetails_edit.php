@@ -136,7 +136,7 @@ if ($user["cron_saldo"] == 't')
 	echo ' checked="checked"';
 }
 echo ">";
-echo " Mail mij periodiek mijn saldo door";
+echo " Mail mij periodiek mijn saldo en recent vraag en aanbod";
 echo "</td></tr><tr><td></td><td></td></tr>";
 
 echo "<tr><td></td><td>";
