@@ -45,7 +45,7 @@ if ($_POST['zend'])
 		'mail'			=> pg_escape_string($_POST['mail']),
 		'tel'			=> pg_escape_string($_POST['tel']),
 		'gsm'			=> pg_escape_string($_POST['gsm']),
-		'addr'			=> pg_escape_string($_POST['addr']),
+		'adr'			=> pg_escape_string($_POST['adr']),
 	);
 	$activate = $_POST['activate'];
 
@@ -60,7 +60,7 @@ if ($_POST['zend'])
 			WHERE c.id_user <> ' . $id . '
 				AND c.id_type_contact = tc.id
 				AND tc.abbrev = \'mail\'
-				AND c.value = \'' . $contact['mail']))
+				AND c.value = \'' . $contact['mail'] . '\''))
 		{
 			$error['mail'] = 'Het email adres is al in gebruik.';
 		}
@@ -99,12 +99,13 @@ if ($_POST['zend'])
 					{
 						continue;
 					}
-					
+
 					$insert = array(
 						'value'		=> $value,
 						'id_type_contact'	=> $contact_types[$key],
 						'id_user'			=> $id,
 					);
+					
 					$db->AutoExecute('contact', $insert, 'INSERT');
 				}
 
@@ -143,6 +144,7 @@ if ($_POST['zend'])
 				$alert->success('Gebruiker aangepast.');
 
 				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
+				
 				$stored_contacts = $db->GetAssoc('SELECT tc.abbrev, c.value
 					FROM type_contact tc, contact c
 					WHERE tc.id = c.id_type_contact
@@ -169,16 +171,16 @@ if ($_POST['zend'])
 					if (!$stored_contacts[$key])
 					{
 						$insert = array(
-							'value'		=> $value,
-							'id_type_contact'	=> $contact_types[$key],
+							'id_type_contact'	=> $contact_types[$key],						
+							'value'				=> $value,
 							'id_user'			=> $id,
 						);
-						$db->AutoExecute('contact', $data, 'INSERT');
+						$db->AutoExecute('contact', $insert, 'INSERT');
 						continue;
 					}
 
 					$db->AutoExecute('contact', array('value' => $value), 'UPDATE',
-						'id_user = ' . $id . ' AND id_type_contact = \'' . $contact_types[$key] . '\'');
+						'id_user = ' . $id . ' AND id_type_contact = ' . $contact_types[$key]);
 				}
 
 				header('Location: view.php?id=' . $id);
@@ -332,7 +334,7 @@ echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30'
 echo "</td></tr>";
 
 echo "<tr><td  align='right'>Adres</td><td >";
-echo "<input type='text' name='addr' value='" . $contact['addr'] . "' size='30'>";
+echo "<input type='text' name='adr' value='" . $contact['adr'] . "' size='30'>";
 echo "</td></tr>";
 
 echo "<tr><td  align='right'>Tel</td><td >";
@@ -359,13 +361,15 @@ echo "</form>";
 
 include($rootpath."includes/inc_footer.php");
 
-
-function validate_input($posted_list){
+function validate_input($posted_list)
+{
+	global $db;	
 	$error_list = array();
-	if (!isset($posted_list["name"])|| $posted_list["name"]==""){
+	if (!isset($posted_list["name"])|| $posted_list["name"]=="")
+	{
 		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
 	}
-	global $db;
+
 	$query = "SELECT * FROM users ";
 	$query .= "WHERE TRIM(letscode)  <> '' ";
 	$query .= "AND TRIM(letscode) = '".$posted_list["letscode"]."'";
@@ -373,26 +377,31 @@ function validate_input($posted_list){
 	$rs=$db->Execute($query);
 	$number2 = $rs->recordcount();
 
-	if ($number2 !== 0){
+	if ($number2 !== 0)
+	{
 		$error_list["letscode"]="Letscode bestaat al!";
 	}
 
-	if (!empty($posted_list["login"])){
+	if (!empty($posted_list["login"]))
+	{
 	    $query = "SELECT * FROM users WHERE login = '".$posted_list["login"]."'";
     	    $rs=$db->Execute($query);
 	    $number = $rs->recordcount();
 
-	    if ($number !== 0){
-		$error_list["login"]="Login bestaat al!";
+	    if ($number !== 0)
+	    {
+			$error_list["login"]="Login bestaat al!";
 	    }
 	}
 
 	//amount may not be empty
 	$var = trim($posted_list["minlimit"]);
-	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )=="")){
+	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )==""))
+	{
 		$error_list["minlimit"]="Vul bedrag in!";
 	//amount amy only contain  numbers between 0 en 9
-	}elseif(eregi('^-[0-9]+$', $var) == FALSE){
+	}elseif(eregi('^-[0-9]+$', $var) == FALSE)
+	{
 		$error_list["minlimit"]="Bedrag moet een negatief getal,zijn!";
 	}
 	return $error_list;

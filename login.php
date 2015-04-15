@@ -20,6 +20,7 @@ if ($s_id)
 }
 
 $token = $_GET["token"];
+$login = $_GET["login"];
 $openid = $_GET['openid_identity'];
 $location = $_GET['location'];
 $location = ($location) ? urldecode($location) : 'index.php';

@@ -196,8 +196,8 @@ function validate_input($msg)
 	}
 
 	$query = "SELECT * FROM users ";
-	$query .= " WHERE id = '".$_POST["id_user"]."'" ;
-	$query .= " AND status <> '0'" ;
+	$query .= " WHERE id = ". $msg['id_user'];
+	$query .= " AND status <> 0" ;
 	$rs = $db->Execute($query);
     $number2 = $rs->recordcount();
 

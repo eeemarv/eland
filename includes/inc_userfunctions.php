@@ -28,5 +28,3 @@ function add_contact($posted_list, $uid){
 		setstatus("Contact niet toegevoegd", 1);
 	}
 }
-
-?>

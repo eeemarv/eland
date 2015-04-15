@@ -117,12 +117,10 @@ function validate_input($contact)
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
 
-	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE  id = ' .$contact["id_type_contact"])))
+	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE  id = ' .$contact["id_type_contact"]))
 	{
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}
 	return $error_list;
 }
-
-
 

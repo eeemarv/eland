@@ -110,12 +110,14 @@ function sendactivationmail($password, $user){
         $mailcontent .= $password;
         $mailcontent .= "\n-- --\n\n";
 
-        $openids = get_openids($user["id"]);
+ /*
+		$openids = get_openids($user["id"]);
        	$mailcontent .= "Of log in met een OpenID account (indien gelinked): \n";
 		foreach($openids as $value){
 			$mailcontent .= " * " .$value["openid"] ."\n";
 		}
 		$mailcontent .= "\n";
+*/
 
 	$mailcontent .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
 	$mailcontent .= " zelf bijwerken op het Internet.";

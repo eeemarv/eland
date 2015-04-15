@@ -1,7 +1,7 @@
 <?php
 ob_start();
 $rootpath = "../";
-$role = 'admin';
+$role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
@@ -22,6 +22,7 @@ $msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname
 
 if ($role == 'user' && $s_id != $msg['id_user'])
 {
+	$alert->warning('Je hebt onvoldoende rechten om het vraag of aanbod te verwijderen.');
 	header('Location: ' . $rootpath . 'overview.php');
 	exit;
 }	
