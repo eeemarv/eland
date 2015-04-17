@@ -219,6 +219,7 @@ else
 			'maxlimit'		=> readconfigfromdb('maxlimit'),
 			'accountrole'	=> 'user',
 			'status'		=> '1',
+			'cron_saldo'	=> 't',
 		);
 	}
 }

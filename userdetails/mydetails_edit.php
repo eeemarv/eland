@@ -129,7 +129,7 @@ echo "</td></tr>";
 
 echo "<tr";
 echo (readconfigfromdb('forcesaldomail')) ? ' hidden' : '';
-echo "><td valign='top' align='right'>Mail saldo: </td><td>";
+echo "><td valign='top' align='right'>Saldo mail: </td><td>";
 echo "<input type='checkbox' name='cron_saldo' value='1' ";
 if ($user["cron_saldo"] == 't')
 {

@@ -23,6 +23,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 require_once $rootpath . 'cron/inc_upgrade.php';
 require_once $rootpath . 'cron/inc_processqueue.php';
+require_once $rootpath . 'cron/inc_saldo_mail.php';
 
 require_once($rootpath."includes/inc_mailfunctions.php");
 require_once($rootpath."includes/inc_userinfo.php");
@@ -225,7 +226,7 @@ if (!isset($schema_interletsq_min))
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;
 		echo $redis_refresh_key . $r;
-		echo 'user count: ' . count($users) . "\n";
+		echo 'user count: ' . count($users) . $r;
 		echo '----------------------------------------------------' . $r;
 		echo 'end Cron ' . "\n";
 
@@ -245,238 +246,7 @@ else
 	run_cronjob('processqueue');
 }
 
-//run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
-run_cronjob('saldo', 20);
-
-function saldo($lastrun)
-{
-	global $db, $base_url;
-
-	if (!readconfigfromdb('mailenabled'))
-	{
-		echo 'Mail functions are not enabled. ' . "\n";
-		return true;
-	}
-	
-	$from = readconfigfromdb("from_address_transactions");
-	if (empty($from))
-	{
-		echo 'Mail from_address_transactions is not set in configuration' . "\n";
-		return true;
-	}
-
-	$to = $merge_vars = $msgs = array();
-
-	$addr = $db->GetAssoc('select u.id, c.value
-		from users u, contact c, type_contact tc
-		where u.status in (1, 2)
-			and u.id = c.id_user
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'adr\'');
-
-	$mailaddr = $db->GetAssoc('select u.id, c.value
-		from users u, contact c, type_contact tc
-		where u.status in (1, 2)
-			and u.id = c.id_user
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'');
-
-	// Get all users that want their saldo auto-mailed.
-
-	$query = 'SELECT u.id,
-			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.fullname, u.letscode, u.login
-		FROM users u
-		WHERE u.status in (1, 2)';
-	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND u.cron_saldo = \'t\'';
-	$rs = $db->Execute($query);
-
-	while ($user = $rs->FetchRow())
-	{
-		$to[] = array(
-			'email'	=> $mailaddr[$user['id']],
-			'name'	=> $user['name'],
-		);
-		$merge_vars[] = array(
-			'rcpt'	=> $mailaddr[$user['id']],
-			'vars'	=> array(
-				array(
-					'name'		=> 'NAME',
-					'content'	=> $user['name'],
-				),
-				array(
-					'name'		=> 'BALANCE',
-					'content'	=> $user['saldo'],
-				),
-				array(
-					'name'		=> 'LETSCODE',
-					'content'	=> $user['letscode'],
-				),
-				array(
-					'name'		=> 'FULLNAME',
-					'content'	=> $user['fullname'],
-				),
-				array(
-					'name'		=> 'ID',
-					'content'	=> $user['id'],
-				),
-				array(
-					'name'		=> 'STATUS',
-					'content'	=> ($user['status'] == 2) ? 'uitstapper' : 'actief',
-				),
-				array(
-					'name'		=> 'MINLIMIT',
-					'content'	=> $user['minlimit'],
-				),
-				array(
-					'name'		=> 'MAXLIMIT',
-					'content'	=> $user['maxlimit'],
-				),
-				array(
-					'name'		=> 'LOGIN',
-					'content'	=> $user['login'],
-				),
-				array(
-					'name'		=> 'GOOGLEADDR',
-					'content'	=> str_replace(' ', '+', $addr[$user['id']]),
-				),
-			),
-		);
-	}
-
-	$r = "\r\n";
-	$currency = readconfigfromdb('currency');
-	$support = readconfigfromdb('support');
-	$msg_url = $base_url . '/messages/view.php?id=';
-	$user_url = $base_url . '/memberlist_view.php?id=';
-	$login_url = $base_url . '/login.php?login=';
-/*
-m.cdate >= \'' . $lastrun . '\'
-			AND */
-	$image_count_ary = $db->GetAssoc('select m.id, count(p.id)
-		from msgpictures p, messages m
-		where p.msgid = m.id
-		group by m.id');
-
-	$rs = $db->Execute('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
-		u.fullname, u.letscode
-		FROM messages m, users u
-		WHERE m.id_user = u.id
-			AND u.status IN (1, 2)
-		ORDER BY m.cdate DESC');
-
-	while ($msg = $rs->FetchRow())
-	{
-		$va = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
-
-		$image_count = ($image_count_ary[$msg['id']]) ? (($image_count_ary[$msg['id']] > 1) ? $image_count_ary[$msg['id']] . ' afbeeldingen' : '1 afbeelding') : 'Geen afbeeldingen';
-
-		$mailto = $mail[$msg['id_user']];
-		$google_maps = 'https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]);
-
-		$msgs[] = array(
-			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
-				'Ingegeven door: ' . $msg['fullname'] . ' (' . $msg['letscode'] . ') ' . $r . $user_url . $msg['id_user'] . $r . $r,
-			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
-				$image_count . ')<br>' . $msg['Description'] . '<br>Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
-				$msg['fullname'] . ' (' . $msg['letscode'] . ')</a><br><a href="mailto:' . $mailto .
-				'">[email]</a><a href="' . $google_maps . '">[route]</a> ' .
-				'</li>',
-		);
-
-		var_dump($msg);
-	}
-
-	$t = 'Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.';
-	$text = $t . $r . $r;
-	$html = $t . '<br><br>';
-	
-	$t = 'Beste *|FULLNAME|* (*|LETSCODE|*),';
-	$text .= $t . $r . $r;
-	$html .= '<p>' . $t . '</p>';
-	
-	$t = 'Je huidig saldo bedraagt *|BALANCE|* ' . $currency;
-	$text .= $t . $r;
-	$html .= '<p>' . $t . '</p>';
-	
-	$t = 'Minimum limiet: *|MINLIMIT|* ' . $currency . ', Maximum limiet: *|MAXLIMIT|* ' . $currency;
-	$text .= $t . $r;
-	$html .= '<p>' . $t . '</p>';
-	
-	$t = 'Status: *|STATUS|*';
-	$text .= $t . $r;
-	$html .= '<p>' . $t . '</p>';
-	
-	$t = 'Login: *|LOGIN|* ' . $login_url . '*|LOGIN|*';
-	$text .= $t . $r . $r;
-	$html .= '<p>' . $t . '</p>';
-	
-	$t ='Recent LETS vraag en aanbod';
-	$u ='---------------------------';
-	$text .= $t . $r . $u . $r;
-	$html .= '<h1>' . $t . '</h1>';
-	
-	if (count($msgs))
-	{
-		$t = 'Deze lijst bevat LETS vraag en aanbod dat de afgelopen ' . readconfigfromdb('saldofreqdays') .
-			' dagen in eLAS is geplaatst.';
-	}
-	else
-	{
-		$t = 'Er werd geen nieuw vraag of aanbod in eLAS geplaatst afgelopen ' .
-			readconfigfromdb('saldofreqdays') . ' dagen.';
-	}
-
-	$text .= $t . $r . $r;
-	$html .= '<p>' . $t . '</p><br>';
-	$html .= '<ul>';
-
-	foreach($msgs as $msg)
-	{
-		$text .= $msg['text'];
-		$html .= $msg['html'];
-	}
-
-	$html .= '</ul>';
-
-	$text .= $r . $r;
-	$html .= '<br><br>';
-
-	$t = 'Support';
-	$u = '-------';
-
-	$text .= $t . $r . $u . $r . 'Als je een probleem ervaart, kan je mailen naar ' . $support . $r . $r;
-	$html .= '<h1>' . $t .'</h1><p>Neem <a href="mailto:' . $support .
-		'">contact</a> op met ons als je een probleem ervaart.</p><br>';
-	$html .= '<ul>';
-
-	$message = array(
-		'subject'		=> '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.',
-		'text'			=> $text,
-		'html'			=> $html,
-		'from_email'	=> $from,
-		'to'			=> $to,
-		'merge_vars'	=> $merge_vars,
-	);
-
-	try
-	{
-		$mandrill = new Mandrill();
-		$mandrill->messages->send($message, true);
-	}
-	catch (Mandrill_Error $e)
-	{
-		// Mandrill errors are thrown as exceptions
-		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		return;
-	}
-
-	$to = (is_array($to)) ? implode(', ', $to) : $to;
-
-	log_event('', 'mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
-
-	return true;
-}
+run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), readconfigfromdb("adminmsgexp"));
 
@@ -793,7 +563,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	echo '+++ Running ' . $name . ' +++' . $r;
 
-	$updated = call_user_func($name, $lastrun_ary[$name]);
+	$updated = call_user_func($name);
 
 	if (isset($lastrun_ary[$name]))
 	{
