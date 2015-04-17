@@ -168,7 +168,7 @@ function saldo()
 				'Ingegeven door: ' . $row['fullname'] . ' (' . $row['letscode'] . ')' . $r .
 				$row['newsitem'] . $r . $r,
 				
- 			'html'	=> '<li><a href="' . $news_url . $row['id'] . '>' . $row['headline'] . '</a><br>' .
+ 			'html'	=> '<li><a href="' . $news_url . $row['id'] . '">' . $row['headline'] . '</a><br>' .
 				$location_html .
 				'Datum: <b>' . $itemdate . '</b>' .
 				'Ingegeven door: <a href="' . $user_url . $row['id_user'] . '">' .
