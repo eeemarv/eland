@@ -81,7 +81,7 @@ function show_user($user){
 	echo "<td>";
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
 	echo "<tr><td width='50%' valign='top'>Naam: </td>";
-	echo "<td width='50%' valign='top'>".$user["fullname"]."</td></tr>";
+	echo "<td width='50%' valign='top'>". htmlspecialchars($user["fullname"], ENT_QUOTES) ."</td></tr>";
 	echo "<tr><td width='50%' valign='top'>Postcode: </td>";
 	echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
 	echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";

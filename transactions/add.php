@@ -13,11 +13,11 @@ $transaction = array();
 
 if (isset($_POST['zend']))
 {
-	$transaction["description"] = pg_escape_string($_POST["description"]);
-	list($letscode_from) = explode(' ', pg_escape_string($_POST['letscode_from']));
-	list($letscode_to) = explode(' ', pg_escape_string($_POST['letscode_to']));
-	$transaction['amount'] = pg_escape_string($_POST['amount']);
-	$transaction['date'] = ($_POST['date']) ? pg_escape_string($_POST['date']) : $transaction["date"] = date("Y-m-d H:i:s");
+	$transaction["description"] = $_POST["description"];
+	list($letscode_from) = explode(' ', $_POST['letscode_from']);
+	list($letscode_to) = explode(' ', $_POST['letscode_to']);
+	$transaction['amount'] = $_POST['amount'];
+	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : $transaction["date"] = date("Y-m-d H:i:s");
 	$letsgroup_id = $_POST['letsgroup_id'];
 
 	$timestamp = make_timestamp($transaction["date"]);
@@ -341,7 +341,7 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 	}
 
 	//date may not be empty
-	if (!isset($transaction["date"])|| (trim($transaction["date"] )==""))
+	if (!isset($transaction["date"]) || (trim($transaction["date"] )==""))
 	{
 		$errors["date"]="Datum is niet ingevuld";
 	}

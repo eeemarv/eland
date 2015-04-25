@@ -160,10 +160,8 @@ class request
 
 	private function existing_letscode($letscode){
 		global $db;
-        $query = "SELECT id FROM users WHERE letscode = '" .pg_escape_string($letscode)."'";
+        $query = "SELECT id FROM users WHERE letscode = '" . $letscode . "'";
         $row = $db->GetRow($query);
 		return	($row['id']) ? true : false;
 	}
 }
-
-?>

@@ -11,7 +11,7 @@ if (!isset($_GET["id"])){
 
 $id = $_GET["id"];
 
-$user = $db->GetRow('SELECT *, cdate AS date, lastlogin AS logdate FROM users WHERE id='.$id);
+$user = $db->GetRow('SELECT *, cdate AS date, lastlogin AS logdate FROM users WHERE id = '.$id);
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jquery . '"></script>

@@ -15,8 +15,8 @@ $id = $_GET["id"];
 
 if(isset($_POST["zend"])){
 	$pw = array();
-	$pw["pw1"] = pg_escape_string($_POST["pw1"]);
-	$pw["pw2"] = pg_escape_string($_POST["pw2"]);
+	$pw["pw1"] = trim($_POST["pw1"]);
+	$pw["pw2"] = trim($_POST["pw2"]);
 	$errorlist = validate_input($pw);
 	if (empty($errorlist))
 	{

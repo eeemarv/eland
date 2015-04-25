@@ -16,13 +16,13 @@ if ($_POST['zend'])
 	$msg = array(
 		'validity'		=> (int) $_POST["validity"],
 		'vtime'			=> $vtime,
-		'content'		=> pg_escape_string($_POST["content"]),
-		'description'	=> pg_escape_string($_POST["description"]),
+		'content'		=> $_POST["content"],
+		'description'	=> $_POST["description"],
 		'msg_type'		=> (int) $_POST["msg_type"],
 		'id_user'		=> ($s_accountrole == 'admin') ? (int) $_POST["id_user"] : $s_id,
 		'id_category'	=> (int) $_POST["id_category"],
 		'amount'		=> (int) $_POST["amount"],
-		'units'			=> pg_escape_string($_POST["units"]),
+		'units'			=> $_POST["units"],
 	);
 
 	$errors= validate_input($msg, $mode);
@@ -84,6 +84,8 @@ else if ($mode == 'new')
 		'units'			=> '',
 	);
 }
+
+array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
 include($rootpath."includes/inc_header.php");
 

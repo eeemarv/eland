@@ -25,28 +25,28 @@ $user = $contact = array();
 if ($_POST['zend'])
 {
 	$user = array(
-		'name'			=> pg_escape_string($_POST['name']),
-		'fullname'		=> pg_escape_string($_POST['fullname']),
-		'letscode'		=> pg_escape_string($_POST['letscode']),
-		'postcode'		=> pg_escape_string($_POST['postcode']),
+		'name'			=> $_POST['name'],
+		'fullname'		=> $_POST['fullname'],
+		'letscode'		=> $_POST['letscode'],
+		'postcode'		=> $_POST['postcode'],
 		'birthday'		=> $_POST['birthday'],
-		'hobbies'		=> pg_escape_string($_POST['hobbies']),
-		'comments'		=> pg_escape_string($_POST['comments']),
-		'login'			=> pg_escape_string($_POST['login']),
-		'accountrole'	=> pg_escape_string($_POST['accountrole']),
+		'hobbies'		=> $_POST['hobbies'],
+		'comments'		=> $_POST['comments'],
+		'login'			=> $_POST['login'],
+		'accountrole'	=> $_POST['accountrole'],
 		'status'		=> $_POST['status'],
-		'admincomment'	=> pg_escape_string($_POST['admincomment']),
+		'admincomment'	=> $_POST['admincomment'],
 		'minlimit'		=> $_POST['minlimit'],
 		'maxlimit'		=> $_POST['maxlimit'],
-		'presharedkey'	=> pg_escape_string($_POST['presharedkey']),
+		'presharedkey'	=> $_POST['presharedkey'],
 		'cron_saldo'	=> ($_POST['cron_saldo']) ? 't' : 'f',
 		'lang'			=> 'nl',
 	);
 	$contact = array(
-		'mail'			=> pg_escape_string($_POST['mail']),
-		'tel'			=> pg_escape_string($_POST['tel']),
-		'gsm'			=> pg_escape_string($_POST['gsm']),
-		'adr'			=> pg_escape_string($_POST['adr']),
+		'mail'			=> $_POST['mail'],
+		'tel'			=> $_POST['tel'],
+		'gsm'			=> $_POST['gsm'],
+		'adr'			=> $_POST['adr'],
 	);
 	$activate = $_POST['activate'];
 
@@ -224,6 +224,9 @@ else
 	}
 }
 
+array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
+array_walk($contact, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
+
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
@@ -246,11 +249,11 @@ echo "</td></tr>";
 echo "<tr><td align='right'>";
 echo "Volledige Naam (Voornaam en Achternaam)";
 echo "</td><td >";
-echo "<input type='text' name='fullname' size='30' value='" . $user['fullname'] . "' required>";
+echo '<input type="text" name="fullname" size="30" value="' . $user['fullname'] . '" required>';
 echo "</td></tr><tr><td ></td></tr>";
 
 echo "<tr><td align='right'>Letscode</td>";
-echo "<td ><input type='text' name='letscode' value='" . $user['letscode'] . "' size='30' required>";
+echo '<td ><input type="text" name="letscode" value="' . $user['letscode'] . '" size="30" required>';
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Postcode</td>";
@@ -280,7 +283,7 @@ echo "<input type='text' name='comments' value='" . $user['comments'] . "' size=
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Login</td><td >";
-echo "<input type='text' name='login' value='" . $user['login'] . "' size='30'>";
+echo '<input type="text" name="login" value="' . $user['login'] . '" size="30">';
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Rechten</td>";
