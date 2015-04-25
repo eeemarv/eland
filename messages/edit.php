@@ -237,22 +237,19 @@ function update_msg($id, $posted_list)
     }
     $posted_list["mdate"] = gmdate("Y-m-d H:i:s");
 
- 	$query_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? ' ' : ', amount = ' . $posted_list['amount'] . ' ';
+	$description = $posted_list['description'];
 
-	$msg = $db->GetRow('select * from messages where id = ' . $id);
+	unset($posted_list['vtime'], $posted_list['description']);
 
-	$query = "UPDATE messages SET
-			mdate = '" .$posted_list["mdate"] ."',
-			validity = '" .$posted_list["validity"] ."',
-			id_category = " .$posted_list["id_category"] .",
-			id_user = " .$posted_list["id_user"] . ",
-			content = '" .$posted_list["content"] . "',
-			\"Description\" = '" .$posted_list["description"] ."',
-			units = '" .$posted_list["units"] ."',
-			msg_type = " . $posted_list["msg_type"] . " " .
-			$query_amount .
-		"WHERE id = " . $id;
-	$result = $db->Execute($query);
+	if (empty($posted_list['amount']))
+	{
+		unset($posted_list['amount']);
+	}
+
+	$result = $db->AutoExecute('messages', $posted_list, 'UPDATE', 'id = ' . $id);
+
+	// Description could not be inserted with AutoExecute because the column is mixed case.
+	$db->Execute('update messages set "Description" = \'' . pg_escape_string($description) . '\' where id = ' . $id);
 
 	if ($msg['msg_type'] != $posted_list['msg_type'] || $msg['id_category'] != $posted_list['id_category'])
 	{
@@ -278,39 +275,32 @@ function insert_msg($posted_list){
     global $db;
 	$posted_list["cdate"] = gmdate("Y-m-d H:i:s");
     $posted_list["validity"] = $posted_list["vtime"];
-    
- 	$column_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? '' : ', amount';
- 	$value_amount = (empty($posted_list["amount"]) || $posted_list["amount"] == 0 ) ? '' : ', ' . $posted_list['amount'];
 
-	$query = "INSERT INTO messages (
-		cdate,
-		validity,
-		id_category,
-		id_user,
-		content,
-		\"Description\",
-		units,
-		msg_type" . $column_amount . " )
-		VALUES ('" .$posted_list["cdate"] ."',
-		'" .$posted_list["validity"] ."',
-		" .$posted_list["id_category"] .",
-		" .$posted_list["id_user"] . ",
-		'" .$posted_list["content"] . "',
-		'" .$posted_list["description"] ."',
-		'" .$posted_list["units"] ."',
-		" .$posted_list["msg_type"] . $value_amount . ")";
+	$description = $posted_list['description'];
 
-		$insert_id = ($db->Execute($query)) ? $db->insert_ID() : false;
+	unset($posted_list['vtime'], $posted_list['description']);
 
-		if ($insert_id)
-		{
-			$stat_column = 'stat_msgs_';
-			$stat_column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
+	if (empty($posted_list['amount']))
+	{
+		unset($posted_list['amount']);
+	}
 
-			$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1');
-		}
+	if ($db->AutoExecute('messages', $posted_list, 'INSERT'))
+	{
+		$id = $db->insert_ID();
 
-		return $insert_id;
+		$stat_column = 'stat_msgs_';
+		$stat_column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
+
+		$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1');
+
+		// Description could not be inserted with AutoExecute because the column is mixed case.
+		$db->Execute('update messages set "Description" = \'' . pg_escape_string($description) . '\' where id = ' . $id);
+
+		return $id;
+	}
+
+	return false;
 }
 
 function get_users()
