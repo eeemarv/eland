@@ -78,7 +78,7 @@ CDN / defaults:
 Migrating a group from eLAS 3.1 to eLAS-Heroku
 ----------
 
-For eLAS 2.6 see /doc/migrate-eLAS-2.6.md 
+For eLAS 2.6 see /doc/migrate-eLAS-2.6.md
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command `heroku domains:add my-domain.com` (note that wildcards can be set on heroku.  `heroku domains:add *.example.com` will add all subdomains of example.com
