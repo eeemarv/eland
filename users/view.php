@@ -29,6 +29,14 @@ $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'j
 
 include($rootpath."includes/inc_header.php");
 
+echo "<table width='100%' border=0><tr><td>";
+echo "<div id='navcontainer'>";
+echo "<ul class='hormenu'>";
+echo '<li><a href="edit.php?mode=new">Toevoegen</a></li>';
+echo "</ul>";
+echo "</div>";
+echo "</td></tr></table>";
+
 echo "<h1>Gebruiker</h1>";
 
 echo "<p>| <a href='editpw.php?id=" .$id. "'>Paswoord veranderen</a> |";

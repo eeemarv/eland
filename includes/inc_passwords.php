@@ -89,7 +89,7 @@ function sendactivationmail($password, $user){
 
 	$systemtag = readconfigfromdb("systemtag");
         $systemletsname = readconfigfromdb("systemname");
-        $mailsubject = "[";
+        $mailsubject = "[eLAS-";
         $mailsubject .= $systemtag;
         $mailsubject .= "] eLAS account activatie voor $systemletsname";
 
@@ -101,23 +101,14 @@ function sendactivationmail($password, $user){
         $mailcontent .= "\n\n";
 
         $mailcontent .= "Welkom bij Letsgroep $systemletsname";
-		$mailcontent .= ". Surf naar $systemtag via http://$baseurl" ;
+		$mailcontent .= '. Surf naar http://' . $baseurl;
         $mailcontent .= " en meld je aan met onderstaande gegevens.\n";
         $mailcontent .= "\n-- Account gegevens --\n";
         $mailcontent .= "Login: ";
-        $mailcontent .= $user["login"];
+        $mailcontent .= $user["login"]; 
         $mailcontent .= "\nPasswoord: ";
         $mailcontent .= $password;
         $mailcontent .= "\n-- --\n\n";
-
- /*
-		$openids = get_openids($user["id"]);
-       	$mailcontent .= "Of log in met een OpenID account (indien gelinked): \n";
-		foreach($openids as $value){
-			$mailcontent .= " * " .$value["openid"] ."\n";
-		}
-		$mailcontent .= "\n";
-*/
 
 	$mailcontent .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
 	$mailcontent .= " zelf bijwerken op het Internet.";

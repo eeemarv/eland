@@ -42,17 +42,41 @@ if ($_POST['zend'])
 		'cron_saldo'	=> ($_POST['cron_saldo']) ? 't' : 'f',
 		'lang'			=> 'nl',
 	);
-	$contact = array(
-		'mail'			=> $_POST['mail'],
-		'tel'			=> $_POST['tel'],
-		'gsm'			=> $_POST['gsm'],
-		'adr'			=> $_POST['adr'],
-	);
+
+	$contact = $_POST['contact'];
 	$activate = $_POST['activate'];
 
-	if ($mode == 'new')
+	foreach ($contact as $c)
 	{
-		$errors = validate_input($user);
+		if ($c['abbrev'] == 'mail' && $c['main_mail'])
+		{
+			$mail = $c['value'];
+			break;
+		}
+	}
+
+	if (!isset($mail))
+	{
+		$errors['mail'] = 'Geen mail adres ingevuld.';
+	}
+	else if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+	{
+		$errors['mail'] = 'Geen geldig email adres.';
+	}
+	else if ($mode == 'new')
+	{
+		if ($db->GetOne('select c.value
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c.value = \'' . $mail . '\''))
+		{
+			$errors['mail'] = 'Het mailadres is al in gebruik.';
+		}
+		else
+		{
+			$errors = validate_input($user);
+		}
 	}
 	else
 	{
@@ -61,23 +85,24 @@ if ($_POST['zend'])
 			WHERE c.id_user <> ' . $id . '
 				AND c.id_type_contact = tc.id
 				AND tc.abbrev = \'mail\'
-				AND c.value = \'' . $contact['mail'] . '\''))
+				AND c.value = \'' . $mail . '\''))
 		{
-			$error['mail'] = 'Het email adres is al in gebruik.';
+			$errors['mail'] = 'Het email adres is al in gebruik.';
 		}
-	}
-
-	if (!$contact['mail'] || !filter_var($contact['mail'], FILTER_VALIDATE_EMAIL))
-	{
-		$errors['mail'] = 'Geen geldig email adres.';
 	}
 
 	if (!count($errors))
 	{
+		$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
+
 		if ($mode == 'new')
 		{
 			$user['creator'] = $s_id;
 			$user['cdate'] = date('Y-m-d H:i:s');
+			if ($user['activate'] || $user['status'] == 1)
+			{
+				$user["adate"] = date("Y-m-d H:i:s");
+			}
 
 			if ($activate)
 			{
@@ -92,18 +117,17 @@ if ($_POST['zend'])
 				$id = $db->insert_ID();
 				readuser($id, true);
 
-				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
-
-				foreach ($contact as $key => $value)
+				foreach ($contact as $value)
 				{
-					if (!$value)
+					if (!$value['value'])
 					{
 						continue;
 					}
 
 					$insert = array(
-						'value'		=> $value,
-						'id_type_contact'	=> $contact_types[$key],
+						'value'				=> $value['value'],
+						'flag_public'		=> ($value['flag_public']) ? 1 : 0,
+						'id_type_contact'	=> $contact_types[$value['abbrev']],
 						'id_user'			=> $id,
 					);
 					
@@ -113,9 +137,9 @@ if ($_POST['zend'])
 				// Activate the user if activate is set
 				$mailenabled = readconfigfromdb('mailenabled');
 
-				if($activate && !empty($contact['mail']) && $mailenabled)
+				if($activate && !empty($mail) && $mailenabled)
 				{
-					$user['mail'] = $contact['mail'];
+					$user['mail'] = $mail;
 					sendactivationmail($password, $user);
 					sendadminmail($user);
 					$alert->success("OK - Activatiemail verstuurd");
@@ -144,44 +168,53 @@ if ($_POST['zend'])
 			{
 				$alert->success('Gebruiker aangepast.');
 
-				$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
-				
-				$stored_contacts = $db->GetAssoc('SELECT tc.abbrev, c.value
+				$stored_contacts = $db->GetAssoc('SELECT c.id, tc.abbrev, c.value, c.flag_public
 					FROM type_contact tc, contact c
 					WHERE tc.id = c.id_type_contact
 						AND c.id_user = ' . $id);
 
-				foreach ($contact as $key => $value)
+				foreach ($contact as $value)
 				{
-					if (!$value)
+					$stored_contact = $stored_contacts[$value['id']];
+
+					$value['flag_public'] = ($value['flag_public']) ? 1 : 0;
+
+					if (!$value['value'])
 					{
-						if ($stored_contacts[$key] && $key != 'mail')
+						if ($stored_contact && !$value['main_mail'])
 						{
 							$db->Execute('DELETE FROM contact
 								WHERE id_user = ' . $id . '
-									AND id_type_contact = ' . $contact_types[$key]);
+									AND id = ' . $value['id']);
 						}
 						continue;
 					}
 
-					if ($stored_contacts[$key] == $value)
+					if ($stored_contact['abbrev'] == $value['abbrev']
+						&& $stored_contact['value'] == $value['value']
+						&& $stored_contact['flag_public'] == $value['flag_public'])
 					{
 						continue;
 					}
 
-					if (!$stored_contacts[$key])
+					if (!isset($stored_contact))
 					{
 						$insert = array(
-							'id_type_contact'	=> $contact_types[$key],						
-							'value'				=> $value,
+							'id_type_contact'	=> $contact_types[$value['abbrev']],						
+							'value'				=> $value['value'],
+							'flag_public'		=> ($value['flag_public']) ? 1 : 0,
 							'id_user'			=> $id,
 						);
 						$db->AutoExecute('contact', $insert, 'INSERT');
 						continue;
 					}
 
-					$db->AutoExecute('contact', array('value' => $value), 'UPDATE',
-						'id_user = ' . $id . ' AND id_type_contact = ' . $contact_types[$key]);
+					$contact_update = $value;
+					unset($contact_update['id'], $contact_update['abbrev'],
+						$contact_update['name'], $contact_update['main_mail']);
+
+					$db->AutoExecute('contact', $contact_update, 'UPDATE',
+						'id = ' . $value['id'] . ' AND id_user = ' . $id);
 				}
 
 				header('Location: view.php?id=' . $id);
@@ -204,13 +237,37 @@ if ($_POST['zend'])
 }
 else
 {
+	$contact = $db->GetArray('select name, abbrev, \'\' as value, 0 as flag_public, 0 as id
+		from type_contact
+		where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
+
 	if ($mode == 'edit')
 	{
+		$contact_keys = array();
+
+		foreach ($contact as $key => $c)
+		{
+			$contact_keys[$c['abbrev']] = $key;
+		}
+
 		$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
-		$contact = $db->GetAssoc('SELECT tc.abbrev, c.value
+
+		$rs = $db->Execute('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
 			FROM type_contact tc, contact c
 			WHERE tc.id = c.id_type_contact
 				AND c.id_user = ' . $id);
+
+		while ($row = $rs->FetchRow())
+		{
+			if (isset($contact_keys[$row['abbrev']]))
+			{
+				$contact[$contact_keys[$row['abbrev']]] = $row;				
+				unset($contact_keys[$row['abbrev']]);
+				continue;
+			}
+
+			$contact[] = $row;
+		}
 	}
 	else
 	{
@@ -225,7 +282,7 @@ else
 }
 
 array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
-array_walk($contact, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
+array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
@@ -341,22 +398,34 @@ echo ">";
 echo "</td></tr><tr><td></td>";
 echo "</tr>";
 
+echo '<tr class="contact"><td colspan="2"><h2>Contacten</h2></td></tr>';
 
-echo "<tr><td  align='right'>E-mail</td><td >";
-echo "<input type='email' name='mail' value='" . $contact['mail'] . "' size='30' required>";
-echo "</td></tr>";
+$already_one_mail_input = false;
 
-echo "<tr><td  align='right'>Adres</td><td >";
-echo "<input type='text' name='adr' value='" . $contact['adr'] . "' size='30'>";
-echo "</td></tr>";
+foreach ($contact as $key => $c)
+{
+	echo '<tr class="contact"><td  align="right">' . $c['name'] . '</td><td >';
+	echo '<input name="contact[' . $key . '][value]" value="' . $c['value'] . '" size="30"';
+	echo ($c['abbrev'] == 'mail' && !$already_one_mail_input) ? ' required="required"' : '';
+	echo ($c['abbrev'] == 'mail') ? ' type="email"' : ' type="text"';
+	echo '>';
+	echo '</td></tr>';
 
-echo "<tr><td  align='right'>Tel</td><td >";
-echo "<input type='text' name='tel' value='" . $contact['tel'] . "' size='30'>";
-echo "</td></tr>";
+	echo '<tr class="contact"><td  align="right"></td><td>';
+	echo '<input type="checkbox" name="contact[' . $key . '][flag_public]" value="1"';
+	echo  ($c['flag_public']) ? ' checked="checked"' : '';
+	echo '>zichtbaar</td></tr>';
 
-echo "<tr><td  align='right'>GSM</td><td >";
-echo "<input type='text' name='gsm' value='" . $contact['gsm'] . "' size='30'>";
-echo "</td></tr>";
+	if ($c['abbrev'] == 'mail' && !$already_one_mail_input)
+	{
+		echo '<input type="hidden" name="contact['. $key . '][main_mail]" value="1">';
+	}
+	echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
+	echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
+	echo '<input type="hidden" name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
+
+	$already_one_mail_input = ($c['abbrev'] == 'mail') ? true : $already_one_mail_input;
+}
 
 if ($mode == 'new')
 {
@@ -413,10 +482,14 @@ function validate_input($posted_list)
 	{
 		$error_list["minlimit"]="Vul bedrag in!";
 	//amount amy only contain  numbers between 0 en 9
-	}elseif(eregi('^-[0-9]+$', $var) == FALSE)
+	}
+/*	allow positive minlimit
+ *
+ * else if(eregi('^-[0-9]+$', $var) == FALSE)
 	{
 		$error_list["minlimit"]="Bedrag moet een negatief getal,zijn!";
 	}
+	*/
 	return $error_list;
 }
 
@@ -426,7 +499,7 @@ function sendadminmail($user)
 	$mailto = trim(readconfigfromdb("admin"));
 	$systemtag = readconfigfromdb("systemtag");
 
-	$mailsubject = "[";
+	$mailsubject = "[eLAS-";
 	$mailsubject .= readconfigfromdb("systemtag");
 	$mailsubject .= "] eLAS account activatie";
 

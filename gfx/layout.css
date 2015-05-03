@@ -91,6 +91,11 @@ table td.me a
 	color: green;
 }
 
+table tr.contact
+{
+	background-color: #ffd;
+}
+
 input[type="number"]
 {
 	text-align: right;
