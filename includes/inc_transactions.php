@@ -17,14 +17,6 @@
  * GNU General Public License for more details.
 */
 
-/** Provided functions:
- * insert_transaction($posted_list)
- * get_transaction_by_id($transid)
- * validate_transaction_input($posted_list)
- * mail_transaction($posted_list)
- * generate_transid()
-*/
-
 // Enable logging
 global $rootpath;
 require_once($rootpath."includes/inc_saldofunctions.php");
@@ -73,7 +65,8 @@ function insert_transaction($posted_list)
 	if($db->AutoExecute("transactions", $posted_list, 'INSERT'))
 	{
 
-		log_event("","Trans", "Transaction $transid saved");
+		log_event($s_id, "Trans", 'Transaction ' . $posted_list['transid'] . ' saved: ' .
+			$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
 
 		update_saldo($posted_list["id_from"]);
 		update_saldo($posted_list["id_to"]);
@@ -81,7 +74,7 @@ function insert_transaction($posted_list)
 	}
 
 	$reason = $db->ErrorMsg();
-	log_event("","Trans", "Transaction $transid failed with error $reason");
+	log_event($s_id, "Trans", "Transaction $transid failed with error $reason");
 
 	return false;
 }

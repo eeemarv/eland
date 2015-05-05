@@ -412,7 +412,7 @@ function saldo()
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
-	log_event('', 'mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
+	log_event('', 'Mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
 
 	return true;
 }
