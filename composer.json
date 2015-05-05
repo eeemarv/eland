@@ -8,6 +8,7 @@
 		"bramus/monolog-colored-line-formatter": "2.0.*",
 		"fergusean/nusoap": "0.9.5",
 		"mandrill/mandrill": "~1.0",
-		"fabpot/goutte": "~2.0"
+		"fabpot/goutte": "~2.0",
+		"ext-mongo": "*"
 	}
 }

@@ -66,7 +66,7 @@ switch($letsgroup['apimethod'])
 			$active_users[] = $user;
 		}
 
-		$active_users = json_encode($active_users);  // to do: cache in redis;
+		$active_users = json_encode($active_users);
 
 		header('Content-type: application/json');
 		echo $active_users;

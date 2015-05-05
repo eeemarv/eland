@@ -27,6 +27,9 @@ Create a file bucket (in your region) on Amazon S3 and put the config in environ
 #####Mandrill
     heroku addons:add mandrill
 
+#####Mongolab (logs are stored in mongodb)
+    heroku addons:add mongolab
+
 Environment Vars
 ------
 * AWS_ACCESS_KEY
@@ -37,6 +40,8 @@ Environment Vars
 
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
+
+* MONGOLAB_URI (mongodb)
 
 * DATABASE_URL: postgres url
 

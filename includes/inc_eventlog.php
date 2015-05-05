@@ -1,10 +1,13 @@
 <?php
 require_once $rootpath . 'vendor/autoload.php';
+require_once $rootpath . 'includes/inc_elas_heroku_log.php';
 
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
+
+$elas_log = new elas_heroku_log($schema);
 
 //Download the elas log in json format
 function get_elaslog() {
@@ -38,8 +41,9 @@ function get_elaslog() {
 //Write log entry
 function log_event($id, $type, $event){
 
-	global $elasdebug;
-	global $schema;
+	global $elasdebug, $schema, $elas_log;
+
+	$type = strtolower($type);
 
 //find domain from session / real domain
 
@@ -51,9 +55,7 @@ function log_event($id, $type, $event){
 	$domain = strtolower($domain);
 	$domain = $domain . ' / ' . $_SERVER['HTTP_HOST'];
 
-	// set the format
-//	$output = "%message%";
-//	$formatter = new LineFormatter($output);
+	// formatter
 	$formatter = new ColoredLineFormatter();
 
 	// create a log channel to STDOUT
@@ -64,6 +66,8 @@ function log_event($id, $type, $event){
 
 	// messages
 	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
+
+	$elas_log->insert($id, $type, $event);
 
 /*
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -110,7 +114,8 @@ function log_event($id, $type, $event){
 		$jsonarray['userid'] = $id;
 		$jsonarray['type'] = $mytype;
 		$jsonarray['timestamp'] = $ts;
-		if(!empty($id) && $id != " "){
+		if(!empty($id) && $id != " ")
+		{
 			$jsonarray['event'] = $event . " (" .$id .")";
 		} else {
 			$jsonarray['event'] = $event;

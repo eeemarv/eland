@@ -62,12 +62,9 @@ $('#letscode_to').typeahead({
 	}
 }); 
 
-//.clearPrefetchCache();
-
 $('#letsgroup_id').change(function(){
 	$('#letscode_to').typeahead('val', '');
 	selected_to_users = $('#letsgroup_id option:selected').data('users');
 	selected_to_users.initialize();
-//	$("#letscode_to").data('typeahead').source = selected_to_users.ttAdapter();
 	$('#letscode_to').data('ttTypeahead').dropdown.datasets[0].source = selected_to_users.ttAdapter(); 
 });
