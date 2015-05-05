@@ -6,39 +6,24 @@ header("Content-Type:text/html;charset=utf-8");
 <head>
 	<title><?php echo readconfigfromdb("systemname"); ?></title>
 		<?php
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>\n";
-//			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."growler/growler.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>\n";
-			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>\n";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>";
+			echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>";
 
-			//ajax.js contains eLAS custom ajax functions that are being migrated to MooTools
-//			echo "<script type='text/javascript' src='/js/ajax.js'></script>\n";
-
-//			echo "<script type='text/javascript' src='/js/mootools-core.js'></script>\n";
-//			echo "<script type='text/javascript' src='/js/mootools-more.js'></script>\n";
-//			echo "<script type='text/javascript' src='/growler/growler.js'></script>\n";
-//			echo "<script type='text/javascript' src='/js/notify.js'></script>\n";
-			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>\n";
+			echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>";
 
 			if (isset ($includecss)){
 				echo $includecss;
 			}
 
-			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />\n";
-			echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />\n";
+			echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />";
+			echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />";
 		?>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-
-<!--
-<script type='text/javascript'>
-		var Growl = new Growler.init();
-		// Growl.notify('Testing 123');
-</script>
--->
 
 <script type='text/javascript'>
 	function OpenTBox(url){
@@ -143,7 +128,7 @@ header("Content-Type:text/html;charset=utf-8");
 				echo "<li><a href='".$rootpath."reports/overview.php'>Rapporten</a></li>";
 				echo "<li><a href='".$rootpath."preferences/config.php'>Instellingen</a></li>";
 				echo "<li><a href='".$rootpath."importexport.php'>Import/Export</a></li>";
-				echo "<li><a href='".$rootpath."eventlog.php'>Log</a></li>";
+				echo "<li><a href='".$rootpath."eventlog.php'>Logs</a></li>";
 				echo "<li><a href='".$rootpath."transactions/many_to_one.php'>Massa-Transactie</a></li>";
 			?>
 			</ul>
@@ -151,7 +136,9 @@ header("Content-Type:text/html;charset=utf-8");
 
 	<?php
 		}
-	}elseif($role == 'anonymous'){
+	}
+	else if ($role == 'anonymous')
+	{
 		echo "<ul class='vertmenu'>";
 		echo '<li><a href="' . $rootpath . 'login.php">Login</a></li>';		
 		echo '<li><a href="' . $rootpath . 'pwreset.php">Login of Paswoord vergeten</a></li>';

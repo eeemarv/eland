@@ -20,7 +20,7 @@ $includejs = '
 
 include($rootpath."includes/inc_header.php");
 
-echo "<h1>Event log</h1>";
+echo "<h1>Logs</h1>";
 
 echo "<form method='get'>";
 echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";

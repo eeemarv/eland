@@ -116,6 +116,8 @@ else
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
+$elas_log->set_schema($schema);
+
 $base_url = $http . $domains[$schema];
 
 // begin typeahaed update (when interletsq is empty) for one group
@@ -223,10 +225,14 @@ if (!isset($schema_interletsq_min))
 		$redis->set($redis_refresh_key, '1');
 		$redis->expire($redis_refresh_key, 21600);		// 6 hours
 
+		$user_count = count($users);
+
+		log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $letsgroup['groupname']);
+
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;
 		echo $redis_refresh_key . $r;
-		echo 'user count: ' . count($users) . $r;
+		echo 'user count: ' . $user_count . $r;
 		echo '----------------------------------------------------' . $r;
 		echo 'end Cron ' . "\n";
 

@@ -90,6 +90,11 @@ function readuser($id, $refresh = false)
     global $db, $schema, $redis;
     static $cache;
 
+	if (!$id)
+	{
+		return array();
+	}
+
 	$redis_key = $schema . '_user_' . $id;	
 
 	if (!$refresh)
