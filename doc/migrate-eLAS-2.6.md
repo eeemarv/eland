@@ -62,6 +62,11 @@ alter table users change locked locked varchar(1);
 update users set locked = 'f' where locked = '0';
 update users set locked = 't' where locked = '1';
 
+alter table type_contact change protect protect varchar(1);
+update type_contact set protect = 'f' where protect = '0';
+update type_contact set protect = 't' where protect = '1';
+
+
 shell> mysqldump -u root -p --no-create-info --skip-triggers --no-create-db --compact --compatible=postgresql --default-character-set=utf8 --result-file=mysql.sql newgroup
 
 --------------
@@ -93,6 +98,27 @@ psql> \i structure.sql
 import data
 
 psql> \i data.sql
+
+restore sequence
+
+psql>
+
+SELECT setval('transactions_id_seq', COALESCE((SELECT MAX(id)+1 FROM transactions), 1), false);
+SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
+SELECT setval('messages_id_seq', COALESCE((SELECT MAX(id)+1 FROM messages), 1), false);
+SELECT setval('msgpictures_id_seq', COALESCE((SELECT MAX(id)+1 FROM msgpictures), 1), false);
+SELECT setval('apikeys_id_seq', COALESCE((SELECT MAX(id)+1 FROM apikeys), 1), false);
+SELECT setval('categories_id_seq', COALESCE((SELECT MAX(id)+1 FROM categories), 1), false);
+SELECT setval('contact_id_seq', COALESCE((SELECT MAX(id)+1 FROM contact), 1), false);
+SELECT setval('letsgroups_id_seq', COALESCE((SELECT MAX(id)+1 FROM letsgroups), 1), false);
+SELECT setval('news_id_seq', COALESCE((SELECT MAX(id)+1 FROM news), 1), false);
+SELECT setval('openid_id_seq', COALESCE((SELECT MAX(id)+1 FROM openid), 1), false);
+SELECT setval('ostatus_queue_id_seq', COALESCE((SELECT MAX(id)+1 FROM ostatus_queue), 1), false);
+SELECT setval('regions_id_seq', COALESCE((SELECT MAX(id)+1 FROM regions), 1), false);
+SELECT setval('tokens_id_seq', COALESCE((SELECT MAX(id)+1 FROM tokens), 1), false);
+SELECT setval('type_contact_id_seq', COALESCE((SELECT MAX(id)+1 FROM type_contact), 1), false);
+SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
+
 
 rename the public schema
 
