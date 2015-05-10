@@ -41,8 +41,8 @@ function saldo()
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.fullname, u.letscode, u.login
 		FROM users u
-		WHERE u.status in (1, 2)';
-	$query .= (readconfigfromdb('forcesaldomail')) ? '' : ' AND u.cron_saldo = \'t\'';
+		WHERE u.status in (1, 2)
+		AND u.cron_saldo = \'t\'';
 	$rs = $db->Execute($query);
 
 	while ($user = $rs->FetchRow())
@@ -381,13 +381,10 @@ function saldo()
 	$html .= '<h1>' . $t .'</h1><p>Neem <a href="mailto:' . $support .
 		'">contact</a> op met ons als je een probleem ervaart.</p>';
 
-	if (!readconfigfromdb('forcesaldomail'))
-	{
-		$t = 'Je ontvangt deze mail omdat de optie \'Saldo mail met recent vraag en aanbod\' aangevinkt staat ';
-		$t .= 'in je instellingen. ';
-		$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $mydetails_url;
-		$html .= '<p>' . $t . 'Klik <a href="' . $mydetails_url . '">hier</a> om aan te passen</p>';
-	}
+	$t = 'Je ontvangt deze mail omdat de optie \'Saldo mail met recent vraag en aanbod\' aangevinkt staat ';
+	$t .= 'in je instellingen. ';
+	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $mydetails_url;
+	$html .= '<p>' . $t . 'Klik <a href="' . $mydetails_url . '">hier</a> om aan te passen</p>';
 
 	$message = array(
 		'subject'		=> '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.',
@@ -405,7 +402,6 @@ function saldo()
 	}
 	catch (Mandrill_Error $e)
 	{
-		// Mandrill errors are thrown as exceptions
 		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
 		return;
 	}

@@ -50,23 +50,6 @@ else
 	log_event("","DB","Upgraded database from schema version $dbversion to $currentversion");	
 }
 
-// eLAS Heroku: add config var forcesaldomail.
-if (!$db->GetOne('SELECT setting FROM config WHERE setting = \'forcesaldomail\''))
-{
-	$forcesaldomail = array(
-		'category'		=> 'mail',
-		'setting'		=> 'forcesaldomail',
-		'value'			=> '0',
-		'description'	=> 'Gebruikers kunnen saldo mail met laatste vraag en aanbod niet uitzetten; iedereen ontvangt de saldo mail.' ,
-		'comment'		=> '',
-		'"default"'		=> 'f',
-	);
-
-	if ($db->AutoExecute('config', $forcesaldomail, 'INSERT'))
-	{
-		echo 'Inserted forcesaldomail config variable. ' . $r;
-	}
-}
 
 // sync the image files  
 $s3 = Aws\S3\S3Client::factory(array(

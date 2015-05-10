@@ -127,9 +127,7 @@ echo "'>";
 echo "</td></tr><tr><td></td><td>";
 echo "</td></tr>";
 
-echo "<tr";
-echo (readconfigfromdb('forcesaldomail')) ? ' hidden' : '';
-echo "><td valign='top' align='right'>Saldo mail: </td><td>";
+echo "<tr><td valign='top' align='right'>Saldo mail: </td><td>";
 echo "<input type='checkbox' name='cron_saldo' value='1' ";
 if ($user["cron_saldo"] == 't')
 {
