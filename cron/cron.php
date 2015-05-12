@@ -546,6 +546,15 @@ function cleanup_tokens()
 	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
 }
 
+run_cronjob('cleanup_logs', 86400);
+
+function cleanup_logs()
+{
+	global $elas_log;
+	$elas_log->cleanup();
+	return true;
+}
+
 echo "*** Cron run finished ***" . $r;
 exit;
 
@@ -579,7 +588,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 	{
 		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . $now . '\')');
 	}
-	log_event(' ', 'Cron', 'Cronjob ' . $name . ' finished.');
+	log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
 
 	return $updated;

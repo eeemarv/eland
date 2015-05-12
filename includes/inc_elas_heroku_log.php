@@ -54,6 +54,15 @@ class elas_heroku_log
 		return $this->logs->find($find)->sort(array('timestamp' => -1))->limit(200);
 	}
 
+	public function cleanup()
+	{
+		$this->connect();
+		// cleanup logs older than 30 days.
+		$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
+		$this->logs->remove(array('timestamp' => array('$lt' => $treshold)));
+		return $this;
+	}
+
 	private function connect()
 	{
 		if (is_object($this->logs))
