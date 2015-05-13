@@ -17,7 +17,7 @@ function saldo()
 		return true;
 	}
 
-	$to = $merge_vars = $msgs = $news = $new_users = $leaving_users = $transactions = array();
+	$to = $merge_vars = $msgs = $news = $new_users = $leaving_users = $transactions = $to_mail = array();
 
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 
 
@@ -51,6 +51,9 @@ function saldo()
 			'email'	=> $mailaddr[$user['id']],
 			'name'	=> $user['name'],
 		);
+
+		$to_mail[] = $mailaddr[$user['id']];
+
 		$merge_vars[] = array(
 			'rcpt'	=> $mailaddr[$user['id']],
 			'vars'	=> array(
@@ -408,7 +411,7 @@ function saldo()
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
-	log_event('', 'Mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
+	log_event('', 'Mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_mail);
 
 	return true;
 }
