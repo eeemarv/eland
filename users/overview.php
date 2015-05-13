@@ -122,10 +122,10 @@ foreach($active_users as $value)
 
 	echo "</td>\n";
 
-	$fullname = ($value['fullname']) ?: '<i>* leeg *</i>';
+	$fullname = ($value['fullname']) ? htmlspecialchars($value['fullname'], ENT_QUOTES) : '<i>* leeg *</i>';
 
 	echo "<td nowrap valign='top'>";
-	echo "<a href='$myurl'>".htmlspecialchars($fullname, ENT_QUOTES)."</a>";
+	echo "<a href='$myurl'>". $fullname ."</a>";
 	echo "</td>\n";
 
 	echo "<td nowrap valign='top'>";
