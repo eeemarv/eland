@@ -100,25 +100,29 @@ foreach($active_users as $value)
 	}
 	echo ">";
 
+	$letscode = ($value['letscode']) ?: '<i>* leeg *</i>';
+
 	if($value["status"] == 2)
 	{
 		echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
-		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
+		echo "<a href='$myurl'>" . $letscode ."</a>";
 		echo "</strong></font>";
 	}
 	else if ($newusertreshold < strtotime($value['adate']))
 	{
 		echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
-		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
+		echo "<a href='$myurl'>" . $letscode ."</a>";
 		echo "</strong></font>";
 	}
 	else
 	{
 		echo "<td nowrap valign='top'>";
-		echo "<a href='$myurl'>" .$value["letscode"] ."</a>";
+		echo "<a href='$myurl'>" . $letscode ."</a>";
 	}
 
 	echo "</td>\n";
+
+	$fullname = ($value['fullname']) ?: '<i>* leeg *</i>';
 
 	echo "<td nowrap valign='top'>";
 	echo "<a href='$myurl'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a>";
