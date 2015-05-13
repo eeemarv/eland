@@ -8,7 +8,8 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 $msgid = $_GET["id"];
-if(!isset($msgid)){
+if(!isset($msgid))
+{
 	header('Location: ' . $rootpath . 'searchcat_viewcat.php');
 	exit;
 }
@@ -107,10 +108,12 @@ foreach($msgpictures as $key => $value){
 //  $url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
 	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
 	echo "<td>";
-	if($picturecounter == 1) {
+	if($picturecounter == 1)
+	{
 		 echo "<script type='text/javascript'>loadpic('$url')</script>";
 	}
-	if ($picturecounter <= 4) {
+	if ($picturecounter <= 4)
+	{
 		$picurl = "showpicture.php?id=" . $value["id"];
 		echo "<img src='" . $url . "' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl', 'Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no') style='cursor:pointer;'></td>";
 	}
@@ -261,6 +264,7 @@ function show_msg($message, $balance)
 
         echo "<tr><td>&nbsp</td></tr>";
 
+	echo "<tr><td>Aangemaakt op: " .$message["date"]."<tr><td>";
 	echo "<tr><td>Geldig tot: " .$message["valdate"]."<tr><td>";
 
 	echo "<tr><td>&nbsp</td></tr>";

@@ -7,39 +7,39 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_header.php");
 
-if(isset($s_id)){
-	show_ptitle();
-	if(isset($_GET["distance"])) {
-		$distance = $_GET["distance"];
-	}
-
-	if(isset($_GET["q"])){
-		$q = $_GET["q"];
-
-		show_form($q,$distance,$s_user_postcode);
-
-		$start = 0;
-		$limit = 5;
-		if(isset($_GET["start"])){
-			$start = $_GET["start"];
-		}
-		if(isset($_GET["limit"])){
-			$limit = $_GET["limit"];
-		}
-
-		$zoekresultaten = search_db($q,$distance,$s_user_postcode);
-		$aantal = get_number_results($q,$distance,$s_user_postcode);
-
-		$id_user = show_results($zoekresultaten);
-		echo "</div>";
-
-	}else{
-		show_form($q,$distance,$s_user_postcode);
-	}
-
-}else{
-	redirect_login($rootpath);
+show_ptitle();
+if(isset($_GET["distance"]))
+{
+	$distance = $_GET["distance"];
 }
+
+if(isset($_GET["q"]))
+{
+	$q = $_GET["q"];
+
+	show_form($q,$distance,$s_user_postcode);
+
+	$start = 0;
+	$limit = 5;
+	if(isset($_GET["start"])){
+		$start = $_GET["start"];
+	}
+	if(isset($_GET["limit"])){
+		$limit = $_GET["limit"];
+	}
+
+	$zoekresultaten = search_db($q,$distance,$s_user_postcode);
+	$aantal = get_number_results($q,$distance,$s_user_postcode);
+
+	$id_user = show_results($zoekresultaten);
+	echo "</div>";
+
+}
+else
+{
+	show_form($q,$distance,$s_user_postcode);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 

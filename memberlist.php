@@ -9,17 +9,17 @@ require_once($rootpath."includes/inc_form.php");
 
 include($rootpath."includes/inc_header.php");
 
-$prefix = ($_POST["prefix"]) ?: 'ALL';
+$prefix = ($_GET["prefix"]) ?: 'ALL';
 $posted_list["prefix"] = $prefix;
-$searchname = $_POST["searchname"];
-$sort = $_POST["sort"];
+$searchname = $_GET["searchname"];
+$sort = $_GET["sort"];
 
 $sort = ($sort) ? $sort : 'letscode';
 
 echo "<h1>Contactlijst</h1>";
 
 echo "<table width='100%' border=0><tr><td>";
-echo "<form method='POST'>";
+echo "<form method='GET'>";
 
 echo "<table  class='selectbox'>\n";
 
