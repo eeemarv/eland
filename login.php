@@ -143,61 +143,24 @@ echo '<h1>Login</h1>';
  
 if(empty($token))
 {
-	echo "<div id='formdiv'>";
-	echo "<form  method='post'>";
-	echo "<table class='selectbox'><tr>";
-	echo "<td>Login</td>";
-	echo "<td><input type='text' name='login' size='30' value='" . $login . "' required></td>";
-	echo "</tr><tr>";
-	echo "<td>Paswoord</td>";
-	echo "<td><input type='password' name='password' size='30' required></td>";
-	echo "</tr>";
-	echo "<tr><td colspan='2' align='right'>";
-	echo "<input type='submit' value='Inloggen' name='zend'>";
-	echo "</td></tr>";
-	echo "</table>";
+	echo '<form method="post" class="form-horizontal">';
+	echo '<div class="form-group">';
+    echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="text" class="form-control" id="login" name="login" ';
+    echo 'value="' . $login . '" required>';
+    echo '</div>';
+	echo '</div>';
+	echo '<div class="form-group">';
+    echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="password" class="form-control" id="password" name="password" ';
+    echo 'value="" required>';
+    echo '</div>';
+	echo '</div>';
+	echo '<input type="submit" class="btn btn-default" value="Inloggen" name="zend">';
 	echo "</form>";
-	echo "</div>";
-	
-/*
-	// Show the OpenID login box
-	echo "<div id='openiddiv'>";
-	echo "<form id='openidbox' name='openidbox' action='$rootpath/postopenid.php' method='post'>";
-    echo "<table class='selectbox'><tr>";
-    echo "<td><img src='$rootpath/gfx/openid.png'>OpenID</td>";
-	echo "<td><input type='text' name='openid' size='50'></td>";
-	echo "<input type='hidden' name='targeturl' value='" .$_GET['url'] ."'>";
-	echo "<td><input type='submit' id='openidsubmitter' value=' OpenID inloggen'></td>";
-    echo "</tr>";
-    echo "<tr><td></td><td align='right'><small><i><a href='http://www.letsplaza.net/content/openid'>Wat is OpenID?</a></i></small></td></tr>";
-	echo "</table>";
-    echo "</form>";
-    echo "</div>";
-
-	// Focus the login field
-	echo "<script type='text/javascript'>document.loginform.login.focus();</script>";
-
-	// Draw the hidden password reset form
-	echo "<div id='pwresetdiv' class='hidden'>";
-	echo "<form id='pwresetform' name='pwresetform' action='$rootpath/pwreset.php' method='post'>";
-        echo "<table class='selectbox' border='0'><tr>";
-        echo "<td>E-mal adres</td>";
-        echo "<td><input type='text' name='email' size='30'></td>";
-        echo "</tr>";
-	echo "<tr><td colspan='2' align='right'>";
-        echo "<input type='submit' id='resetter' value='Reset paswoord'>";
-        echo "</td></tr>";
-	echo "</table>";
-        echo "</form>";
-        echo "</div>";
-
-	// Draw the hidden guest login form
-	echo "<div id='guestlogindiv' class='hidden'>";
-        echo "<form id='guestloginform' name='guestloginform' action='' method='post'>";
-	echo "</form>";
-        echo "</div>";
-        */
-
+	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord en/of login vergeten.</a>';
 }
 
 include($rootpath."includes/inc_footer.php");

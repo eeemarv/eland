@@ -89,9 +89,9 @@ if ($_POST['zend'])
 				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/pwreset.php?token=' . $token . '&u=' . $user_id;
-				$message = "Link om je paswoord te resetten :\n" . $url . "\n
-					Let op: deze link blijft slechts 1 uur geldig.\n
-					Je login is: ". $login;
+				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
+				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
+				$message .= "Je login is: ". $login;
 				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet deze link blijft slechts één uur geldig.');
 				log_event($s_id,"System","Paswoord reset link verstuurd naar " . $email);
@@ -119,15 +119,15 @@ require_once($rootpath."includes/inc_header.php");
 
 echo "<h1>Login of paswoord vergeten</h1>";
 echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
-echo "<form method='post'>";
-echo "<table class='selectbox' border='0'><tr>";
-echo "<td>E-mail adres</td>";
-echo "<td><input type='email' name='email' size='30' value='" . $email . "' required></td>";
-echo "</tr>";
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' value='Reset paswoord'>";
-echo "</td></tr>";
-echo "</table>";
+echo '<form method="post" class="form-horizontal">';
+echo '<div class="form-group">';
+echo '<label for="email" class="col-sm-2 control-label">Email</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="email" class="form-control" id="email" name="email" ';
+echo 'value="' . $email . '" required>';
+echo '</div>';
+echo '</div>';
+echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
 echo "</form>";
 
 require_once($rootpath."includes/inc_footer.php");
