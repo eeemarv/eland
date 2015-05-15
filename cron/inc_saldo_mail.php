@@ -47,6 +47,11 @@ function saldo()
 
 	while ($user = $rs->FetchRow())
 	{
+		if (!$mailaddr[$user['id']])
+		{
+			continue;
+		}
+		
 		$to[] = array(
 			'email'	=> $mailaddr[$user['id']],
 			'name'	=> $user['name'],

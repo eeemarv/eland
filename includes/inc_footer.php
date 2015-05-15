@@ -1,6 +1,5 @@
 <?php
 echo '</div>';
-//echo '<div class="clearer"></div>';
 echo '</div>';
 echo '</div>';
 
@@ -10,9 +9,6 @@ if ($s_accountrole == 'admin')
 	echo '<div class="container-fluid">';
 	echo '<div class="row">';
 	echo '<div class="col-xs-12 bg-info">';
-//	echo '<p><b>Support mailinglijst</b>';
-//	echo '<ul><li>Inschrijven: support-elas-heroku-subscribe@lists.riseup.net</li>';
-//	echo '<li>Berichten posten:  support-elas-heroku@lists.riseup.net</li></ul></p>';
 	echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/elas-heroku/issues">Github issue tracker</a>.</b> (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>';
 	echo '</div></div></div>';
 }
@@ -31,8 +27,6 @@ if ($s_accountrole == 'admin')
 	<a href="https://github.com/eeemarv/elas-heroku ">eLAS-Heroku</a>
 	</div>
 </div>**/
-
-
 
 echo '<div class="clearfix"></div>';
 echo '<div class="container-fluid">';
