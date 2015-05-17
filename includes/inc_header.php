@@ -15,6 +15,7 @@ echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.
 
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '">';
+echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css">';
 
 echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>";
