@@ -20,6 +20,7 @@ if(!isset($rootpath))
 
 $cdn_bootstrap_css = (getenv('ELAS_CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
 $cdn_bootstrap_js = (getenv('ELAS_CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
+$cdn_fontawesome = (getenv('ELAS_CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css';
 
 $cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';

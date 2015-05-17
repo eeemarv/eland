@@ -7,8 +7,6 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_form.php");
 
-include($rootpath."includes/inc_header.php");
-
 $prefix = ($_GET["prefix"]) ?: 'ALL';
 $posted_list["prefix"] = $prefix;
 $searchname = $_GET["searchname"];
@@ -16,65 +14,60 @@ $sort = $_GET["sort"];
 
 $sort = ($sort) ? $sort : 'letscode';
 
-echo "<h1>Contactlijst</h1>";
-
-echo "<table width='100%' border=0><tr><td>";
-echo "<form method='GET'>";
-
-echo "<table  class='selectbox'>\n";
-
-echo "<tr>\n<td>";
-echo "Groep:";
-echo "</td><td>\n";
-echo "<select name='prefix'>\n";
-
 $query = "SELECT prefix, shortname FROM letsgroups WHERE apimethod ='internal' AND prefix IS NOT NULL";
 $prefixes = $db->GetAssoc($query);
 $prefixes['ALL'] = 'ALLE';
+
+include($rootpath."includes/inc_header.php");
+
+echo '<div class="pull-right hidden-xs">';
+echo '<a href="print_memberlist.php?prefix_filterby=' .$prefix_filterby . '">';
+echo '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
+echo '<a href="' . $rootpath . 'csv_memberlist.php?prefix_filterby=' . $prefix_filterby;
+echo '" target="new">';
+echo '<i class="fa fa-file"></i>';
+echo '&nbsp;csv</a>';
+echo '</div>';
+
+echo '<h1>Contactlijst</h1>';
+
+echo '<form method="GET" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="prefix" class="col-sm-2 control-label">Groep</label>';
+echo '<div class="col-sm-10">';
+echo '<select class="form-control" id="prefix" name="prefix">'; 
 render_select_options($prefixes, $prefix);
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "</select>\n";
-echo "</td>\n";
-echo "</tr>";
+echo '<div class="form-group">';
+echo '<label for="searchname" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" name="searchname" value="' . $searchname . '" id="searchname" class="form-control">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td>Naam:</td><td>\n";
-echo "<input type='text' name='searchname' value='" . $searchname . "' size='25'>";
-echo "</td>";
-echo "</tr>";
-
-echo "<tr>\n<td>Sorteer:</td><td>\n";
-echo "<select name='sort'>\n";
 $sort_options = array(
 	'letscode' => 'letscode',
 	'fullname' => 'naam',
 	'postcode' => 'postcode',
 	'saldo' => 'saldo',
 );
+
+echo '<div class="form-group">';
+echo '<label for="sort" class="col-sm-2 control-label">Sorteer</label>';
+echo '<div class="col-sm-10">';
+echo '<select class="form-control" id="sort" name="sort">'; 
 render_select_options($sort_options, $sort);
-echo "</select>\n";
-echo "</td>\n";
-echo "</tr>";
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' colspan=2>";
-echo "<input type='submit' name='zend' value='Weergeven'>";
-echo "</td>";
-echo "</tr>";
-echo "</table>";
-echo "</form>";
+echo '<input type="submit" name="zend" value="Weergeven" class="btn btn-default">';
 
-//rendermembers
-echo "<td align='right'>";
-
-echo "<a href='print_memberlist.php?prefix_filterby=" .$prefix_filterby . "'>";
-echo "<img src='".$rootpath."gfx/print.gif' border='0'> ";
-echo "Printversie</a>";
-
-echo "<a href='csv_memberlist.php?prefix_filterby=" .$prefix_filterby;
-echo "' target='new'>";
-echo "<img src='".$rootpath."gfx/csv.jpg' border='0'> ";
-echo "CSV Export</a>";
-        
-echo "</td></tr></table>";
+echo '</form>';
 
 $query = 'SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
@@ -111,35 +104,26 @@ foreach ($c_ary as $c)
 }
 
 //show table
-echo "<div class='border_b'><table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>\n";
-echo "<tr class='header'>\n";
-echo "<td><strong>";
-echo "Code";
-echo "</strong></td>\n";
-echo "<td><strong>";
-echo "Naam";
-echo "</strong></td>\n";
-echo "<td><strong>Tel</strong></td>\n";
-echo "<td><strong>gsm</strong></td>\n";
-echo "<td><strong>";
-echo "Postc";
-echo "</strong></td>\n";
-echo "<td><strong>Mail</strong></td>\n";
-echo "<td><strong>Saldo</strong></td>\n";
-echo "</tr>\n\n";
+echo '<div class="table-responsive">';
+echo '<table class="table table-bordered table-striped table-hover">';
+echo '<thead>';
+echo '<tr>';
+echo '<th>Code</th>';
+echo '<th>Naam</th>';
+echo '<th>Tel</th>';
+echo '<th>gsm</th>';
+echo '<th>Postc</th>';
+echo '<th>Mail</th>';
+echo '<th>Saldo</th>';
+echo '</tr>';
+echo '</thead>';
+echo '<tbody>';
+
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-$rownumb = 0;
+
 foreach($userrows as $key => $value)
 {
-	$rownumb++;
-	if($rownumb % 2)
-	{
-		echo "<tr class='uneven_row'>\n";
-	}
-	else
-	{
-			echo "<tr class='even_row'>\n";
-	}
+	echo '<tr>';
 
 	if($value["status"] == 2)
 	{
@@ -159,19 +143,19 @@ foreach($userrows as $key => $value)
 		echo $value["letscode"];
 	}
 
-	echo"</td>\n";
+	echo"</td>";
 	echo "<td valign='top'>";
-	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>\n";
+	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>";
 	echo "<td nowrap  valign='top'>";
 	echo $contacts[$value['id']]['tel'];
-	echo "</td>\n";
+	echo "</td>";
 	echo "<td nowrap valign='top'>";
 	echo $contacts[$value['id']]['gsm'];
-	echo "</td>\n";
-	echo "<td nowrap valign='top'>".$value["postcode"]."</td>\n";
+	echo "</td>";
+	echo "<td nowrap valign='top'>".$value["postcode"]."</td>";
 	echo "<td nowrap valign='top'>";
 	echo $contacts[$value['id']]['mail'];
-	echo "</td>\n";
+	echo "</td>";
 
 	echo "<td nowrap valign='top' align='right'>";
 	$balance = $value["saldo"];
@@ -184,14 +168,16 @@ foreach($userrows as $key => $value)
 		echo $balance;
 	}
 
-	echo "</td>\n";
-	echo "</tr>\n\n";
+	echo "</td>";
+	echo "</tr>";
 
 }
-echo "</table></div>";
+echo '</tbody>';
+echo '</table>';
+echo '</div>';
 
 // active legend
-echo "<table>";
+echo '<table class="table">';
 echo "<tr>";
 echo "<td bgcolor='#B9DC2E'><font color='white'>";
 echo "<strong>Groen blokje:</strong></font></td><td> Instapper<br>";

@@ -28,7 +28,7 @@ if ($activate || $deactivate)
 
 			if ($db->Execute('update users set cron_saldo = \'' . $bool . '\' where status in (1, 2)'))
 			{
-				$msg = 'De saldo mail met recent vraag en aanbod is ge' . $de . 'activeerd voor alle activieve gebruikers.';
+				$msg = 'De saldo mail met recent vraag en aanbod is ge' . $de . 'activeerd voor alle actieve gebruikers.';
 				$alert->success($msg);
 				log_event($s_id, 'update', $msg);
 				header('Location: ' . $rootpath . 'users/overview.php');

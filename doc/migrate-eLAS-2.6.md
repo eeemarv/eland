@@ -18,6 +18,10 @@ mysql> truncate table tokens;
 mysql> truncate table eventlog;
 mysql>
 
+truncate table city_distance;
+truncate table tokens;
+truncate table eventlog;
+
 alter table config change `default` `default` varchar(1);
 update config set `default` = 'f' where `default` = '0';
 update config set `default` = 't' where `default` = '1';

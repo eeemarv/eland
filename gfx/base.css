@@ -3,58 +3,103 @@ body,html,.row-offcanvas
   height:100%;
 }
 
-body {
+body
+{
   padding-top: 50px;
 }
 
-#sidebar {
+#sidebar
+{
   width: inherit;
-  min-width: 220px;
-  max-width: 220px;
-  background-color:#c1c3e3;
+  min-width: 180px;
+  max-width: 180px;
+  background-color: #c1c3e3;
   float: left;
-  height:100%;
-  position:relative;
-  overflow-y:auto;
-  overflow-x:hidden;
+  height: 100%;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-#main {
-  height:100%;
-  overflow:auto;
+#sidebar ul{
+    top: 0;
+    width: 220px;
+    margin: 5px 0 0 0;
+    padding: 0;
+    list-style: none;
+    background-color: #120044;
 }
 
-/**/
+#sidebar ul.admin {
+	background-color: #440012;
+}
 
-@media screen and (max-width: 768px) {
-  .row-offcanvas {
+#sidebar ul li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+#sidebar ul li a {
+    display: block;
+    text-decoration: none;
+    color: #bbb;
+}
+
+#sidebar ul li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+#sidebar ul li a:active,
+#sidebar ul li a:focus {
+    text-decoration: none;
+}
+
+#main
+{
+	height: 100%;
+	overflow: auto;
+}
+
+#main div.col-md-12
+{
+	padding-bottom: 50px;
+}
+
+#main div.button-offcanvas
+{
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 768px)
+{
+  .row-offcanvas
+  {
     position: relative;
     -webkit-transition: all 0.25s ease-out;
     -moz-transition: all 0.25s ease-out;
     transition: all 0.25s ease-out;
-    width:calc(100% + 220px);
+    width: calc(100% + 180px);
   }
     
   .row-offcanvas-left
   {
-    left: -220px;
+    left: -180px;
   }
 
-  .row-offcanvas-left.active {
+  .row-offcanvas-left.active
+  {
     left: 0;
   }
 
-  .sidebar-offcanvas {
+  .sidebar-offcanvas
+  {
     position: absolute;
     top: 0;
   }
 }
 
-.nav-tabs.nav-stacked.nav-condensed > li > a
-{
-   padding-top: 4px; 
-   padding-bottom: 4px; 
-}
 
 /**/
 
@@ -78,9 +123,11 @@ form
 {
 	background-color: #fdea9c;
 	padding: 10px;
+	border-radius: 8px;
 }
 
-.footer {
+.footer
+{
 	text-align: center;
 	padding: 20px 0 20px 0;
 	margin: 0 -15px 0 -15px;

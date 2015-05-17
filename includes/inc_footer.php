@@ -31,13 +31,23 @@ if ($s_accountrole == 'admin')
 echo '<div class="clearfix"></div>';
 echo '<div class="container-fluid">';
 echo '<footer class="footer">';
-echo '<p><a href="https://github.com/eeemarv/elas-heroku">eLAS-Heroku ';			
-echo '</a></p></footer>';
+echo '<p><a href="https://github.com/eeemarv/elas-heroku">eLAS-Heroku ';
+echo '</a>&nbsp;<i class="fa fa-github"></i></p></footer>';
 echo '</div>'; 
 
 echo '<script src="' . $cdn_jquery . '"></script>';
 echo '<script src="' . $cdn_bootstrap_js . '"></script>';
 echo '<script src="' . $rootpath . 'js/base.js"></script>';
+?>
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+<?php
+
 
 if (isset($includejs))
 {
