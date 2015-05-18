@@ -16,7 +16,7 @@ include($rootpath."includes/inc_header.php");
 
 if (in_array($s_accountrole, array('admin', 'user')))
 {
-	echo "<table width='100%' border=0><tr><td>";
+	echo "<table><tr><td>";
 	echo "<div id='navcontainer'>";
 	echo "<ul class='hormenu'>";
 	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
@@ -37,23 +37,24 @@ echo "</form>";
 
 $cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td><strong>Categorie</strong></td>";
-echo '<td>Vraag</td>';
-echo '<td>Aanbod</td>';
-echo "</tr>";
+echo '<div class="table-responsive">';
+echo '<table class="table table-striped table-hover table-bordered footable">';
+echo '<thead><tr>';
+echo '<th>Categorie</td>';
+echo '<th data-hide="phone" data-ignore="highlight">Vraag</td>';
+echo '<th data-hide="phone" data-ignore="highlight">Aanbod</td>';
+echo "</tr></thead>";
+
+echo '<tbody>';
 
 foreach($cats as $value){
 
-	$row_class =  ($value["id_parent"]) ? 'uneven_row' : 'even_row';
-
-	echo "<tr class='" . $row_class . "'>";
-	echo "<td valign='top'>";
+	echo '<tr>';
+	echo '<td>';
 	echo ($value['id_parent']) ? '' : '<strong>';
 	echo "<a href='searchcat_viewcat.php?id=".$value["id"]."'>";
-	echo htmlspecialchars($value["fullname"],ENT_QUOTES);
+	echo ($value['id_parent']) ? '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : '';
+	echo htmlspecialchars($value['name'],ENT_QUOTES);
 	echo "</a>";
 	echo ($value['id_parent']) ? '' : '</strong>';
 	echo "</td>";
@@ -62,6 +63,7 @@ foreach($cats as $value){
 	echo '<td>' . (($v = $value['stat_msgs_offers']) ? $v : '') . '</td>';
 	echo "</tr>";
 }
+echo '</tbody>';
 echo "</table></div>";
 
 if($s_accountrole != 'guest'){

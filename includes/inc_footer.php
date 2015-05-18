@@ -39,16 +39,6 @@ echo '<script src="' . $cdn_jquery . '"></script>';
 echo '<script src="' . $cdn_bootstrap_js . '"></script>';
 echo '<script src="' . $cdn_footable_js . '"></script>';
 echo '<script src="' . $rootpath . 'js/base.js"></script>';
-?>
-    <!-- Menu Toggle Script -->
-    <script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-    </script>
-<?php
-
 
 if (isset($includejs))
 {

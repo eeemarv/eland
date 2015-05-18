@@ -105,16 +105,16 @@ foreach ($c_ary as $c)
 
 //show table
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover">';
+echo '<table class="table table-bordered table-striped table-hover footable">';
 echo '<thead>';
 echo '<tr>';
 echo '<th>Code</th>';
 echo '<th>Naam</th>';
-echo '<th>Tel</th>';
-echo '<th>gsm</th>';
-echo '<th>Postc</th>';
-echo '<th>Mail</th>';
-echo '<th>Saldo</th>';
+echo '<th data-hide="phone, tablet">Tel</th>';
+echo '<th data-hide="phone, tablet">gsm</th>';
+echo '<th data-hide="phone, tablet">Postc</th>';
+echo '<th data-hide="phone, tablet">Mail</th>';
+echo '<th data-hide="phone">Saldo</th>';
 echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
