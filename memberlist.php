@@ -147,30 +147,19 @@ foreach($userrows as $key => $value)
 	echo"</td>";
 	echo "<td valign='top'>";
 	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>";
-	echo "<td nowrap  valign='top'>";
-<<<<<<< HEAD
-	echo $contacts[$value['id']]['tel'];
-	echo "</td>";
-	echo "<td nowrap valign='top'>";
-	echo $contacts[$value['id']]['gsm'];
-	echo "</td>";
-	echo "<td nowrap valign='top'>".$value["postcode"]."</td>";
-	echo "<td nowrap valign='top'>";
-	echo $contacts[$value['id']]['mail'];
-	echo "</td>";
-=======
+	echo "<td>";
+
 	echo render_contacts($contacts[$value['id']]['tel']);
 	echo "</td>\n";
-	echo "<td nowrap valign='top'>";
+	echo "<td>";
 	echo render_contacts($contacts[$value['id']]['gsm']);
 	echo "</td>\n";
-	echo "<td nowrap valign='top'>".$value["postcode"]."</td>\n";
-	echo "<td nowrap valign='top'>";
+	echo "<td>".$value["postcode"]."</td>\n";
+	echo "<td>";
 	echo render_contacts($contacts[$value['id']]['mail'], 'mail');
 	echo "</td>\n";
->>>>>>> master
 
-	echo "<td nowrap valign='top' align='right'>";
+	echo "<td align='right'>";
 	$balance = $value["saldo"];
 	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"]))
 	{
