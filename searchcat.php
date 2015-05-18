@@ -38,7 +38,7 @@ echo "</form>";
 $cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-hover table-bordered footable">';
+echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
 echo '<thead><tr>';
 echo '<th>Categorie</td>';
 echo '<th data-hide="phone" data-ignore="highlight">Vraag</td>';
@@ -47,16 +47,15 @@ echo "</tr></thead>";
 
 echo '<tbody>';
 
-foreach($cats as $value){
-
-	echo '<tr>';
+foreach($cats as $value)
+{
+	$class = ($value['id_parent']) ? '' : ' class="info"';
+	echo '<tr' . $class . '>';
 	echo '<td>';
-	echo ($value['id_parent']) ? '' : '<strong>';
-	echo "<a href='searchcat_viewcat.php?id=".$value["id"]."'>";
 	echo ($value['id_parent']) ? '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : '';
+	echo "<a href='searchcat_viewcat.php?id=".$value["id"]."'>";
 	echo htmlspecialchars($value['name'],ENT_QUOTES);
 	echo "</a>";
-	echo ($value['id_parent']) ? '' : '</strong>';
 	echo "</td>";
 
 	echo '<td>' . (($v = $value['stat_msgs_wanted']) ? $v : '') . '</td>';

@@ -15,33 +15,36 @@ foreach ($cats as $cat)
 }
 
 include($rootpath."includes/inc_header.php");
-echo "<div class='border_b'>| <a href='add.php'>Categorie toevoegen</a> |</div>";
+echo "<div>| <a href='add.php'>Categorie toevoegen</a> |</div>";
 echo "<h1>Overzicht categorie&#235;n</h1>";
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td><strong>Categorie</strong></td>";
-echo '<td>Vraag</td>';
-echo '<td>Aanbod</td>';
-echo '<td>Aanpassen</td>';
-echo '<td>Verwijderen</td>';
-echo "</tr>";
+echo '<div class="table-responsive">';
+echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
+echo '<tr>';
+echo '<thead>';
+echo '<th>Categorie</th>';
+echo '<th data-hide="phone, tablet">Vraag</th>';
+echo '<th data-hide="phone, tablet">Aanbod</th>';
+echo '<th data-hide="phone">Aanpassen</th>';
+echo '<th data-hide="phone">Verwijderen</th>';
+echo '</tr></thead>';
 
 foreach($cats as $value){
 
-	if ($value["id_parent"] == 0)
+	if (!$value["id_parent"])
 	{
-		echo "<tr class='even_row'>";
-		echo "<td valign='top'><strong><a href='edit.php?id=".$value["id"]."'>";
-		echo htmlspecialchars($value["fullname"],ENT_QUOTES);
+		echo '<tr class="info">';
+		echo "<td><strong><a href='edit.php?id=".$value["id"]."'>";
+		echo htmlspecialchars($value["name"],ENT_QUOTES);
 		echo "</a></strong></td>";
 	}
 	else
 	{
-		echo "<tr class='uneven_row'>";
-		echo "<td valign='top'><a href='edit.php?id=".$value["id"]."'>";
-		echo htmlspecialchars($value["fullname"],ENT_QUOTES);
+		echo '<tr>';
+		echo '<td>';
+		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		echo '<a href="edit.php?id=' . $value['id'] . '">';
+		echo htmlspecialchars($value["name"],ENT_QUOTES);
 		echo "</a></td>";
 	}
 
