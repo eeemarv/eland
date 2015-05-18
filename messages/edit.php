@@ -55,7 +55,7 @@ if ($_POST['zend'])
 			{
 				$alert->success('Vraag/aanbod aangepast');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
-				exit;				
+				exit;
 			}
 			else
 			{

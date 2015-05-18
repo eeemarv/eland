@@ -117,7 +117,7 @@ header("Content-Type:text/html;charset=utf-8");
 			<ul class='vertmenu'>
 			<?php
 				echo "<li><a href='".$rootpath."users/overview.php?user_orderby=letscode'>Gebruikers</a></li>";
-				echo "<li><a href='".$rootpath."categories/overview.php'>Categorien</a></li>";
+				echo "<li><a href='".$rootpath."categories/overview.php'>Categorieën</a></li>";
 				echo "<li><a href='".$rootpath."interlets/overview.php'>LETS Groepen</a></li>";
 				echo "<li><a href='".$rootpath."apikeys/overview.php'>Apikeys</a></li>";
 /*				if(readconfigfromdb("mailinglists_enabled") == 1) {
