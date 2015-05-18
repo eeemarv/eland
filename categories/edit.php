@@ -13,7 +13,7 @@ if (!$_GET["id"])
 
 $id = $_GET['id'];
 
-$cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
+$cats = $db->GetAssoc('SELECT id, * FROM categories ORDER BY fullname');
 
 $child_count_ary = array();
 
