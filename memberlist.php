@@ -93,14 +93,15 @@ $query = 'SELECT tc.abbrev, c.id_user, c.value
 	WHERE tc.id = c.id_type_contact
 		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')
 		AND u.id = c.id_user
-		AND u.status IN (1, 2, 3)';
+		AND u.status IN (1, 2, 3)
+		AND c.flag_public = 1';
 $c_ary = $db->GetArray($query);
 
 $contacts = array();
 
 foreach ($c_ary as $c)
 {
-	$contacts[$c['id_user']][$c['abbrev']] = $c['value'];
+	$contacts[$c['id_user']][$c['abbrev']][] = $c['value'];
 }
 
 //show table
@@ -147,6 +148,7 @@ foreach($userrows as $key => $value)
 	echo "<td valign='top'>";
 	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>";
 	echo "<td nowrap  valign='top'>";
+<<<<<<< HEAD
 	echo $contacts[$value['id']]['tel'];
 	echo "</td>";
 	echo "<td nowrap valign='top'>";
@@ -156,6 +158,17 @@ foreach($userrows as $key => $value)
 	echo "<td nowrap valign='top'>";
 	echo $contacts[$value['id']]['mail'];
 	echo "</td>";
+=======
+	echo render_contacts($contacts[$value['id']]['tel']);
+	echo "</td>\n";
+	echo "<td nowrap valign='top'>";
+	echo render_contacts($contacts[$value['id']]['gsm']);
+	echo "</td>\n";
+	echo "<td nowrap valign='top'>".$value["postcode"]."</td>\n";
+	echo "<td nowrap valign='top'>";
+	echo render_contacts($contacts[$value['id']]['mail'], 'mail');
+	echo "</td>\n";
+>>>>>>> master
 
 	echo "<td nowrap valign='top' align='right'>";
 	$balance = $value["saldo"];
@@ -189,3 +202,29 @@ echo "</tr>";
 echo "</tr></table>";
 
 include $rootpath . 'includes/inc_footer.php';
+
+function render_contacts($contacts, $abbrev = null)
+{
+	if (count($contacts))
+	{
+		end($contacts);
+		$end = key($contacts);
+
+		$f = ($abbrev == 'mail') ? '<a href="mailto:%1$s">%1$s</a>' : '%1$s';
+
+		foreach ($contacts as $key => $contact)
+		{
+			echo sprintf($f, htmlspecialchars($contact, ENT_QUOTES));
+
+			if ($key == $end)
+			{
+				break;
+			}
+			echo '<br>';
+		}
+	}
+	else
+	{
+		echo '&nbsp;';
+	}
+}

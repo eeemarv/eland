@@ -55,7 +55,7 @@ if ($_POST['zend'])
 			{
 				$alert->success('Vraag/aanbod aangepast');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
-				exit;				
+				exit;
 			}
 			else
 			{
@@ -292,7 +292,7 @@ function insert_msg($posted_list){
 		$stat_column = 'stat_msgs_';
 		$stat_column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
 
-		$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1');
+		$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ' . $posted_list['id_category']);
 
 		// Description could not be inserted with AutoExecute because the column is mixed case.
 		$db->Execute('update messages set "Description" = \'' . pg_escape_string($description) . '\' where id = ' . $id);
