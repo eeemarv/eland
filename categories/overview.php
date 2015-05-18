@@ -55,7 +55,7 @@ foreach($cats as $value){
 }
 echo "</table></div>";
 
-echo '<p>Categoriën met berichten of hoofdcategoriën met subcategoriën kan je niet verwijderen.</p>';
+echo '<p>Categoriën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
 
 include($rootpath."includes/inc_footer.php");
 

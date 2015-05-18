@@ -10,7 +10,6 @@ require_once($rootpath."includes/inc_form.php");
 $prefix = ($_GET["prefix"]) ?: 'ALL';
 $posted_list["prefix"] = $prefix;
 $searchname = $_GET["searchname"];
-$sort = $_GET["sort"];
 
 $sort = ($sort) ? $sort : 'letscode';
 
@@ -49,22 +48,6 @@ echo '<input type="text" name="searchname" value="' . $searchname . '" id="searc
 echo '</div>';
 echo '</div>';
 
-$sort_options = array(
-	'letscode' => 'letscode',
-	'fullname' => 'naam',
-	'postcode' => 'postcode',
-	'saldo' => 'saldo',
-);
-
-echo '<div class="form-group">';
-echo '<label for="sort" class="col-sm-2 control-label">Sorteer</label>';
-echo '<div class="col-sm-10">';
-echo '<select class="form-control" id="sort" name="sort">'; 
-render_select_options($sort_options, $sort);
-echo '</select>';
-echo '</div>';
-echo '</div>';
-
 echo '<input type="submit" name="zend" value="Weergeven" class="btn btn-default">';
 
 echo '</form>';
@@ -80,10 +63,6 @@ if(!empty($searchname))
 {
 	$query .= 'AND (LOWER(u.fullname) like \'%' .strtolower($searchname) . '%\'
 		OR LOWER(u.name) like \'%' .strtolower($searchname) . '%\') ';
-}
-if(!empty($sort))
-{
-	$query .= ' ORDER BY u.' . $sort;
 }
 
 $userrows = $db->GetArray($query);
@@ -109,12 +88,12 @@ echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable">';
 echo '<thead>';
 echo '<tr>';
-echo '<th>Code</th>';
+echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
-echo '<th data-hide="phone, tablet">Tel</th>';
-echo '<th data-hide="phone, tablet">gsm</th>';
-echo '<th data-hide="phone, tablet">Postc</th>';
-echo '<th data-hide="phone, tablet">Mail</th>';
+echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
+echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
+echo '<th data-hide="phone">Postc</th>';
+echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
 echo '<th data-hide="phone">Saldo</th>';
 echo '</tr>';
 echo '</thead>';
@@ -122,42 +101,33 @@ echo '<tbody>';
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-foreach($userrows as $key => $value)
+foreach($userrows as $value)
 {
-	echo '<tr>';
+	$id = $value['id'];
 
-	if($value["status"] == 2)
-	{
-		echo "<td nowrap valign='top' bgcolor='#f475b6'><font color='white' ><strong>";
-		echo $value["letscode"];
-		echo "</strong></font>";
-	}
-	else if($newusertreshold < strtotime($value['adate']))
-	{
-		echo "<td nowrap valign='top' bgcolor='#B9DC2E'><font color='white'><strong>";
-		echo $value["letscode"];
-		echo "</strong></font>";
-	}
-	else
-	{
-		echo "<td nowrap valign='top'>";
-		echo $value["letscode"];
-	}
+	$class = ($newusertreshold < strtotime($value['adate'])) ? ' class="success"' : '';
+	$class = ($value["status"] == 2) ? ' class="danger"' : $class;
 
-	echo"</td>";
-	echo "<td valign='top'>";
-	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>";
-	echo "<td>";
+	echo '<tr' . $class . '>';
 
+	echo '<td>';
+	echo '<a href="memberlist_view.php?id=' .$id .'">';
+
+	echo $value['letscode'];
+
+	echo '</td></a>';
+	echo '<td>';
+	echo '<a href="memberlist_view.php?id=' .$id .'">'.htmlspecialchars($value['fullname'],ENT_QUOTES).'</a></td>';
+	echo '<td>';
 	echo render_contacts($contacts[$value['id']]['tel']);
-	echo "</td>\n";
+	echo "</td>";
 	echo "<td>";
 	echo render_contacts($contacts[$value['id']]['gsm']);
-	echo "</td>\n";
-	echo "<td>".$value["postcode"]."</td>\n";
+	echo "</td>";
+	echo "<td>".$value["postcode"]."</td>";
 	echo "<td>";
 	echo render_contacts($contacts[$value['id']]['mail'], 'mail');
-	echo "</td>\n";
+	echo "</td>";
 
 	echo "<td align='right'>";
 	$balance = $value["saldo"];
@@ -179,6 +149,7 @@ echo '</table>';
 echo '</div>';
 
 // active legend
+/*
 echo '<table class="table">';
 echo "<tr>";
 echo "<td bgcolor='#B9DC2E'><font color='white'>";
@@ -189,6 +160,7 @@ echo "<td bgcolor='#f56db5'><font color='white'>";
 echo "<strong>Rood blokje:</strong></font></td><td>Uitstapper<br>";
 echo "</tr>";
 echo "</tr></table>";
+*/
 
 include $rootpath . 'includes/inc_footer.php';
 

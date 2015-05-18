@@ -23,7 +23,8 @@ $cdn_bootstrap_js = (getenv('ELAS_CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.
 $cdn_fontawesome = (getenv('ELAS_CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css';
 
 $cdn_footable_js = (getenv('ELAS_CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.js';
-$cdn_footable_css = (getenv('ELAS_CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/css/footable.core.min.css';
+$cdn_footable_sort_js = (getenv('ELAS_CDN_FOOTABLE_SORT_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.sort.js';
+$cdn_footable_css = (getenv('ELAS_CDN_FOOTABLE_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/css/footable.core.min.css';
 
 $cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';

@@ -1,14 +1,14 @@
 <?php
-header("Content-Type:text/html;charset=utf-8");
+//header("Content-Type:text/html;charset=utf-8");
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
 echo '<title>' . readconfigfromdb("systemname") .'</title>';
-
-echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/main.css'>";
+/*
+echo "<link type='text/css' rel='stylesheet' href='" . $rootpath. "gfx/main.css'>";
 
 echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>";
-echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>";
+echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>"; */
 echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>";
 
 // echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>";

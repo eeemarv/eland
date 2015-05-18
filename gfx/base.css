@@ -134,24 +134,3 @@ form
 	border-top: 1px solid #e5e5e5;
 	background-color: #f5f5f5; 
 }
-
-/* ----- footable ----------------------- */
-
-.footable.breakpoint > tbody > tr > td > span.footable-toggle:before {
-content: "+";
-}
-.footable.breakpoint > tbody > tr.footable-detail-show > td > span.footable-toggle:before {
-content: "-";
-}
-.footable.breakpoint > tbody > tr > td > span.footable-toggle {
-display: inline-block;
-speak: none;
-font-style: normal;
-font-weight: bold;
-font-variant: normal;
-text-transform: none;
--webkit-font-smoothing: antialiased;
-padding-right: 5px;
-font-size: 20px;
-color: #888888;
-}

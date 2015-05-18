@@ -50,14 +50,23 @@ $letsgroups = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod <> \'inter
 include($rootpath."includes/inc_header.php");
 
 echo "<h1>Andere interlets groepen raadplegen</h1>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 
-foreach($letsgroups as $key => $value){
-	echo "<tr><td nowrap>";
-	echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
-	echo "</td></tr>";
+
+if (count($letsgroups))
+{
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-striped table-bordered table-hover">';
+	foreach ($letsgroups as $key => $value)
+	{
+		echo '<tr><td>';
+		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
+		echo "</td></tr>";
+	}
+	echo '</table></div>';
 }
-
-echo "</table>";
+else
+{
+	echo '<p>Er zijn geen verbindingen met andere letsgroepen.</p>';
+}
 
 include($rootpath."includes/inc_footer.php");
