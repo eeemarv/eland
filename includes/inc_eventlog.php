@@ -9,6 +9,15 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 $elas_log = new elas_heroku_log($schema);
 
+register_shutdown_function('elas_log_flush');
+
+function elas_log_flush()
+{
+	global $elas_log;
+
+	$elas_log->flush();
+}
+
 //Download the elas log in json format
 function get_elaslog() {
 	global $rootpath;

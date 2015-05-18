@@ -7,10 +7,12 @@ class elas_heroku_log
 {
 	private $logs;
 	private $schema;
+	private $insert_items;
 
 	public function __construct($schema)
 	{
 		$this->schema = $schema;
+		$this->insert_items = array();
 	}
 
 	public function set_schema($schema)
@@ -42,8 +44,29 @@ class elas_heroku_log
 			'event'		=> $event,
 		);
 
+		$this->insert_items[] = $item;
+		/*
 		$this->connect();
 		$this->logs->insert($item);
+		*/
+		return $this;
+	}
+
+	public function flush()
+	{
+		if (!count($this->insert_items))
+		{
+			return;
+		}
+
+		$this->connect();
+		
+		foreach ($this->insert_items as $item)
+		{
+			$this->logs->insert($item);
+		}
+
+		$this->insert_items = array();
 
 		return $this;
 	}
