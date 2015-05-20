@@ -144,6 +144,7 @@ echo '<h1>Login</h1>';
 if(empty($token))
 {
 	echo '<form method="post" class="form-horizontal">';
+
 	echo '<div class="form-group">';
     echo '<label for="login" class="col-sm-2 control-label">Login</label>';
     echo '<div class="col-sm-10">';
@@ -151,6 +152,7 @@ if(empty($token))
     echo 'value="' . $login . '" required>';
     echo '</div>';
 	echo '</div>';
+
 	echo '<div class="form-group">';
     echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
     echo '<div class="col-sm-10">';
@@ -158,7 +160,9 @@ if(empty($token))
     echo 'value="" required>';
     echo '</div>';
 	echo '</div>';
+
 	echo '<input type="submit" class="btn btn-default" value="Inloggen" name="zend">';
+
 	echo "</form>";
 	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord en/of login vergeten.</a>';
 }

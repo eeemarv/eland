@@ -87,6 +87,7 @@ foreach ($c_ary as $c)
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable">';
 echo '<thead>';
+
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
@@ -96,6 +97,7 @@ echo '<th data-hide="phone">Postc</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
 echo '<th data-hide="phone">Saldo</th>';
 echo '</tr>';
+
 echo '</thead>';
 echo '<tbody>';
 

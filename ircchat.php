@@ -13,8 +13,10 @@ $tag = readconfigfromdb("systemtag");
 $name = strtolower(preg_replace('/\s+/', '', $s_login));
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
 $nick = $name ."_" . $tag;
-$url = "<iframe src=\"http://webchat.freenode.net?nick=" .$nick . "&channels=letsbe\"></iframe>";
-echo $url;
+
+echo '<div class"responsive-embed embed-responsive-4by3">';
+echo '<iframe class="embed-responsive-item" src="http://webchat.freenode.net?nick=' .$nick . '&channels=letsbe\"></iframe>';
+echo '</div>';
 
 echo "<p><small><i>";
 echo "Deze chat laat je toe om met LETSers over heel Vlaanderen te chatten via het Freenode IRC netwerk<br>Je kan hier ook via een client op inloggen met de server irc.freenode.net, kanaal #letsbe<br>";

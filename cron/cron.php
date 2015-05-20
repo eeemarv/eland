@@ -223,9 +223,13 @@ if (!isset($schema_interletsq_min))
 
 		$redis_refresh_key = $letsgroup['url'] . '_typeahead_updated';
 		$redis->set($redis_refresh_key, '1');
-		$redis->expire($redis_refresh_key, 21600);		// 6 hours
+		$redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 		$user_count = count($users);
+
+		$redis_user_count_key = $letsgroup['url'] . '_active_user_count';
+		$redis->set($redis_user_count_key, $user_count);
+		$redis->expire($redis_user_count_key, 86400); // 1 day
 
 		log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $letsgroup['groupname']);
 

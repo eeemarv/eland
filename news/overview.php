@@ -27,36 +27,36 @@ if($s_accountrole == "user" || $s_accountrole == "admin"){
 
 echo "<h1>Nieuws</h1>";
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
+echo '<div class="table-responsive">';
+echo '<table class="table table-striped table-hover table-bordered footable">';
 
-echo "<td nowrap width='20%'><strong>Agendadatum</strong></td>";
-echo "<td nowrap><strong>Titel</strong></td>";
-echo ($s_accountrole == 'admin') ? '<td>Goedgekeurd</td>' : '';
+echo '<thead>';
+echo '<tr>';
+echo "<th>Titel</th>";
+echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
+echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
 echo "</tr>";
-$rownumb = 0;
-foreach($newsitems as $value)
-{
-	$rownumb++;
-	if($rownumb % 2 == 1)
-	{
-		echo "<tr class='uneven_row'>";
-	}else{
-		echo "<tr class='even_row'>";
-	}
+echo '</thead>';
 
-	echo "<td nowrap valign='top'>";
-	if(trim($value["itemdate"]) != "00/00/00"){
-		list($date) = explode(' ', $value['itemdate']);
-		echo $date;
-	}
-	echo "</td>";
-	echo "<td valign='top'>";
+echo '<tbody>';
+foreach ($newsitems as $value)
+{
+	echo '<tr>';
+
+	echo "<td>";
 	echo "<a href='view.php?id=".$value["id"]."'>";
 	echo htmlspecialchars($value["headline"],ENT_QUOTES);
 	echo "</a>";
 	echo "</td>";
+
+	echo '<td>';
+	if(trim($value["itemdate"]) != "00/00/00")
+	{
+		list($date) = explode(' ', $value['itemdate']);
+		echo $date;
+	}
+	echo "</td>";
+
 	if ($s_accountrole == 'admin')
 	{
 		echo '<td>';
@@ -65,6 +65,7 @@ foreach($newsitems as $value)
 	}
 	echo "</tr>";
 }
+echo '</tbody>';
 echo "</table></div>";
 
 include($rootpath."includes/inc_footer.php");

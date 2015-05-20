@@ -8,6 +8,7 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
 $msgid = $_GET["id"];
+
 if(!isset($msgid))
 {
 	header('Location: ' . $rootpath . 'searchcat_viewcat.php');
@@ -15,6 +16,7 @@ if(!isset($msgid))
 }
 
 $message = get_msg($msgid);
+
 $user = readuser($message['id_user']);
 $title = $message["content"];
 
@@ -77,7 +79,13 @@ if ($_POST['zend'])
 	}
 }
 
-include($rootpath."includes/inc_header.php");
+$msgpictures = get_msgpictures($msgid);
+$currency = readconfigfromdb("currency");
+
+$includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
+	<script src="' . $rootpath . 'js/msg_view.js"></script>';
+
+include $rootpath."includes/inc_header.php";
 
 if (in_array($s_accountrole, array('admin', 'user')))
 {
@@ -90,46 +98,93 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	echo "</td></tr></table>";
 }
 
-echo "<script type='text/javascript' src='". $rootpath ."js/msgpicture.js'></script>";
-echo "<table class='data' border='1' width='95%'>";
-echo "<tr>";
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<h1>';
+echo ($message['msg_type']) ? 'Aanbod' : 'Vraag';
+echo ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
+echo '</h1>';
+echo '</div>';
+echo '</div>';
 
-// The picture table is nested
-echo "<td valign='top'>";
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+if (count($msgpictures))
+{
+	echo '<div id="slider1_container" style="display: none; position: relative; margin: 0 auto; width: 980px; height: 380px; overflow: hidden;">';
+	echo '<div u="slides" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 600px; height: 400px;">';
 
-$msgpictures = get_msgpictures($msgid);
-
-echo "<table class='data' border='1'>";
-echo "<tr><td colspan='4' align='center'><img id='mainimg' src='" .$rootpath ."gfx/nomsg.png' width='300'></img></td></tr>";
-echo "<tr>";
-$picturecounter = 1;
-foreach($msgpictures as $key => $value){
-	$file = $value["PictureFile"];
-//  $url = $rootpath ."/sites/" .$dirbase ."/msgpictures/" .$file;
-	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
-	echo "<td>";
-	if($picturecounter == 1)
+	foreach ($msgpictures as $key => $value)
 	{
-		 echo "<script type='text/javascript'>loadpic('$url')</script>";
+		$file = $value["PictureFile"];
+		$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
+		echo '<div><img u="image" src="' . $url . '" /></div>';
 	}
-	if ($picturecounter <= 4)
-	{
-		$picurl = "showpicture.php?id=" . $value["id"];
-		echo "<img src='" . $url . "' width='50' onmouseover=loadpic('$url') onclick=window.open('$picurl', 'Foto','width=800,height=600,scrollbars=yes,toolbar=no,location=no') style='cursor:pointer;'></td>";
-	}
-	$picturecounter += 1;
+	echo '</div>';
+	echo '</div>';
 }
-echo "</tr>";
+else
+{
+	$av = ($message['msg_type']) ? 'deze vraag' : 'dit aanbod';
+	echo '<p>Er zijn geen afbeeldingen voor ' . $av . '</p>';
+}
+echo '</div></div>';
 
-echo "</td>";
-echo "</table>";
+echo '<div class="row">';
+echo '<div class="col-xs-12>';
 
-echo "</td>";
-// end picture table
+echo '<div class="panel">';
+echo 'Omschrijving';
+echo '</div>';
 
-// Show message
-echo "<td valign='top'>";
-show_msg($message, $balance);
+echo '<dl class="dl-horizontal">';
+echo '<dt>Van gebruiker: ';
+echo '</dt>';
+echo '<dd>';
+echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
+echo htmlspecialchars($message["fullname"],ENT_QUOTES) ."  " .trim($message["letscode"]);
+echo '</a>';
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl class="dl-horizontal">';
+echo '<dt>Saldo stand: ';
+echo '</dt>';
+echo '<dd>';
+echo $balance . ' ' .$currency;
+echo '</dd>';
+echo '</dl>';
+
+
+
+	if (!empty($message["Description"])){
+		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
+	} else {
+		echo "<i>Er werd geen omschrijving ingegeven</i>";
+	}
+	echo "</td></tr>";
+
+        echo "<tr><td>&nbsp</td></tr>";
+
+	echo "<tr><td>Aangemaakt op: " .$message["date"]."<tr><td>";
+	echo "<tr><td>Geldig tot: " .$message["valdate"]."<tr><td>";
+
+	echo "<tr><td>&nbsp</td></tr>";
+
+	echo "<tr class='even_row'><td valign='bottom'>";
+	if (!empty($message["amount"])){
+		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency;
+		echo ($message['units']) ? ' per ' . $message['units'] : '';
+	} else {
+		echo "Er werd geen (vraag)prijs ingegeven";
+	}
+
+
+echo '</div>';
+echo '</div>';
+
+
+
 echo "</td>";
 // End message
 
@@ -153,19 +208,21 @@ echo "<tr><td colspan='2'>";
 echo "<form method='post'>";
 echo "<INPUT TYPE='hidden' id='myid' VALUE='" .$msgid ."'>";
 echo "<TEXTAREA NAME='content' id='reactie' COLS='60' ROWS='6' placeholder='Je reactie naar de aanbieder' required";
-if(empty($usermail) || $s_accountrole == 'guest'){
+if(empty($usermail) || $s_accountrole == 'guest')
+{
 	echo " DISABLED";
 }
 echo ">" . $content . "</TEXTAREA>";
 echo "</td></tr><tr><td>";
 echo "<input type='checkbox' name='cc' id='cc'";
-echo ($cc) ? ' checked="checked"' : '';
+echo (isset($cc)) ? ' checked="checked"' : '';
 echo " value='1' >Stuur een kopie naar mijzelf";
 echo "</td><td>";
 echo "<input type='submit' name='zend' id='zend' value='Versturen'";
-if(empty($usermail) || $s_accountrole == 'guest'){
-			echo "DISABLED";
-	}
+if(empty($usermail) || $s_accountrole == 'guest')
+{
+	echo "DISABLED";
+}
 echo ">";
 echo "</form>";
 echo "</td></tr>";
@@ -203,7 +260,8 @@ function show_editlinks($msgid)
 }
 
 
-function get_msg($msgid){
+function get_msg($msgid)
+{
 	global $db;
 	$query = 'SELECT *, 
 			m.cdate AS date, 
@@ -211,18 +269,17 @@ function get_msg($msgid){
 		FROM messages m, users u 
 		WHERE m.id = ' . $msgid . '
 			AND m.id_user = u.id';
-	$message = $db->GetRow($query);
-	return $message;
+	return $db->GetRow($query);
 }
 
-function get_msgpictures($id){
+function get_msgpictures($id)
+{
 	global $db;
-	$query = "SELECT * FROM msgpictures WHERE msgid = " .$id;
-	$msgpictures = $db->GetArray($query);
-        return $msgpictures;
+    return $db->GetArray("SELECT * FROM msgpictures WHERE msgid = " .$id);
 }
 
-function show_balance($balance,$currency){
+function show_balance($balance,$currency)
+{
 	echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
 	echo "<tr class='even_row'><td>";
 	echo "<strong>{$currency}stand</strong></td></tr>";
@@ -233,54 +290,6 @@ function show_balance($balance,$currency){
 }
 
 
-function show_msg($message, $balance)
-{
-	global $baseurl, $msgid, $rootpath;
-
-	$currency = readconfigfromdb("currency");
-	echo "<table cellspacing='0' cellpadding='0' border='0' width='100%'>";
-	echo "<tr class='even_row'><td>";
-	echo "<p><strong><font size='+1'><i>";
-	if($message["msg_type"]==0){
-		echo "Vraag:  ";
-	}elseif($message["msg_type"]==1){
-		echo "Aanbod: ";
-	}
-	echo "</i>";
-	//echo htmlspecialchars($message["name"],ENT_QUOTES)." (" .trim($message["letscode"])."): ".$message["content"];
-	echo htmlspecialchars($message["content"]);
-	echo "</font></strong><br>";
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
-	echo htmlspecialchars($message["fullname"],ENT_QUOTES) ."  " .trim($message["letscode"]);
-	echo "</a><i> Saldo-stand: " .$balance ." " .$currency ."</i>";
-	echo "</td></tr>";
-	echo "<tr><td>";
-	if (!empty($message["Description"])){
-		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
-	} else {
-		echo "<i>Er werd geen omschrijving ingegeven</i>";
-	}
-	echo "</td></tr>";
-
-        echo "<tr><td>&nbsp</td></tr>";
-
-	echo "<tr><td>Aangemaakt op: " .$message["date"]."<tr><td>";
-	echo "<tr><td>Geldig tot: " .$message["valdate"]."<tr><td>";
-
-	echo "<tr><td>&nbsp</td></tr>";
-
-	echo "<tr class='even_row'><td valign='bottom'>";
-	if (!empty($message["amount"])){
-		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency;
-		echo ($message['units']) ? ' per ' . $message['units'] : '';
-	} else {
-		echo "Er werd geen (vraag)prijs ingegeven";
-	}
-	echo "</td></tr>";
-
-	echo "</table>";
-
-}
 
 function show_user($user){
 	echo "<table cellspacing='0' cellpadding='0' border='0'>";

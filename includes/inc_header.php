@@ -1,5 +1,5 @@
 <?php
-//header("Content-Type:text/html;charset=utf-8");
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
@@ -57,6 +57,8 @@ echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 // echo '<div class="col-md-12">';
 
+$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
+
 $menu = array();
 
 if (!$s_accountrole)
@@ -68,10 +70,6 @@ if (!$s_accountrole)
 }
 else
 {
-	$menu[] = array(
-		'ircchat.php'	=> 'Chatbox #letsbe',
-	);
-
 	$main_menu = array(
 		'searchcat.php'		=> 'Vraag & Aanbod',
 		'memberlist.php'	=> 'Contactlijst',
@@ -100,6 +98,7 @@ else
 
 	$menu[] = array(
 		'help.php'	=> 'Probleem melden',
+		'ircchat.php'	=> 'Chatbox #letsbe',
 	);
 }
 
@@ -109,7 +108,8 @@ foreach ($menu as $sub_menu)
 
 	foreach ($sub_menu as $link => $label)
 	{
-		echo '<li><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
+		$active_class = ($script_name == $link) ? ' class="active"' : '';
+		echo '<li' . $active_class . '><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
 	}
 
 	echo '</ul>';
@@ -135,7 +135,8 @@ if ($s_accountrole == 'admin')
 
 	foreach ($menu as $link => $label)
 	{
-		echo '<li><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
+		$active_class = ($script_name == $link) ? ' class="active"' : '';
+		echo '<li'. $active_class . '><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
 	}
 
 	echo '</ul>';
@@ -145,12 +146,13 @@ echo '</div>';
 
 $class_admin = ($role == 'admin') ? ' class="admin"' : '';
 
-echo '<div id="main"' . $class_admin . '>';
+echo '<div id="main"' . $class_admin . ' class="container-fluid">';
+
+$alert->render();
+
 echo '<div class="col-md-12">';
 echo '<div class="visible-xs pull-left button-offcanvas">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"><i class="glyphicon glyphicon-chevron-left"></i></button>';
 echo '</div>';
 
-echo '<div>';
-$alert->render();
-echo '</div>';
+

@@ -19,62 +19,49 @@ $messagerows = $db->GetArray($query);
 
 include($rootpath."includes/inc_header.php");
 
-echo "<table width='100%' border=0><tr><td>";
-echo "<div id='navcontainer'>";
 echo "<ul class='hormenu'>";
 echo '<li><a href="'. $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
 echo "</ul>";
-echo "</div>";
-echo "</td></tr></table>";
+
 
 echo "<h1>Mijn Vraag & Aanbod</h1>";
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td><strong>V/A</strong></td>";
-echo "<td><strong>Wat</strong></td>";
-echo "<td><strong>Geldig tot</strong></td>";
-echo "<td valign='top' nowrap><strong>Categorie</strong></td>";
-echo "<td><strong>Verlengen</strong></td>";
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+echo '<thead>';
+echo '<tr>';
+echo "<th>V/A</th>";
+echo "<th>Wat</th>";
+echo '<th data-hide="phone, tablet">Geldig tot</th>';
+echo '<th data-hide="phone, tablet">Categorie</th>';
+echo '<th data-hide="phone, tablet">Verlengen</th>';
 echo "</tr>";
-$rownumb=0;
-foreach($messagerows as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
-	echo "<td valign='top'>";
-	if($value["msg_type"]==0){
-		echo "V";
-	}elseif ($value["msg_type"]==1){
-		echo "A";
-	}
-	echo "</td><td valign='top'>";
-	 if(strtotime($value["valdate"]) < time()) {
-					echo "<del>";
-			}
-	echo "<a href='" .$rootpath ."messages/view.php?id=".$value["msgid"]."'>";
-	$content = htmlspecialchars($value["content"],ENT_QUOTES);
+echo '</thead>';
 
-	echo chop_string($content, 50);
-	if(strlen($content)>50){
-		echo "...";
-	}
-	echo "</a>";
-	 if(strtotime($value["valdate"]) < time()) {
-					echo "</del>";
-			}
+echo '<tbody>';
+
+foreach($messagerows as $key => $value)
+{
+	$del = (strtotime($value["valdate"]) < time()) ? true : false;
+
+	echo '<tr';
+	echo ($del) ? ' class="danger"' : '';
+	echo '>';
+	echo '<td>';
+
+	echo ($value["msg_type"]) ? 'A' : 'V';
+	echo '</td>';
+
+	echo '<td>';
+	echo ($del) ? '<del>' : '';
+	echo "<a href='" .$rootpath ."messages/view.php?id=".$value["msgid"]."'>";
+
+	echo htmlspecialchars($value["content"],ENT_QUOTES);
+	echo ($del) ? '</del>' : '';
+
 	echo "</td><td>";
-	if(strtotime($value["valdate"]) < time()) {
-		echo "<font color='red'><b>";
-	}
+
 	echo $value["valdate"];
-			if(strtotime($value["valdate"]) < time()) {
-					echo "</b></font>";
-			}
 
 	echo "</td>";
 
@@ -86,6 +73,8 @@ foreach($messagerows as $key => $value){
 
 	echo "</tr>";
 }
+
+echo '</tbody>';
 echo "</table>";
 echo "</div>";
 

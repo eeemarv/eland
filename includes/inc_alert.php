@@ -41,7 +41,10 @@ class alert
 		while ($alert = array_pop($_SESSION['alert']))
 		{
 			$alert[0] = ($alert[0] == 'error') ? 'danger' : $alert[0];
-			echo '<p class="alert alert-' . $alert[0] . '" role="alert">' . $alert[1] . '</p>';
+			echo '<div class="alert alert-' . $alert[0] . ' alert-dismissible" role="alert">';
+			echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+			echo '<span aria-hidden="true">&times;</span></button>';
+			echo $alert[1] . '</div>';
 		}
 	}
 }

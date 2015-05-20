@@ -46,6 +46,7 @@ echo '<script type="text/javascript">
 </script>';*/
 
 echo '<script src="' . $cdn_footable_sort_js . '"></script>';
+echo '<script src="' . $cdn_footable_filter_js . '"></script>';
 echo '<script src="' . $rootpath . 'js/base.js"></script>';
 
 if (isset($includejs))

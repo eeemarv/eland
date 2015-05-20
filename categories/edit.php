@@ -33,7 +33,7 @@ if(isset($_POST["zend"])){
 	$error_list = array();
 	if (!(isset($cat["name"])|| (trim($cat["name"] )=="")))
 	{
-		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";	
+		$error_list["name"]= 'Vul naam in!';	
 	}
 	if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 	{
@@ -71,36 +71,35 @@ if(isset($_POST["zend"])){
 include($rootpath."includes/inc_header.php");
 echo '<h1>Categorie aanpassen : ' . $cat['name'] . '</h1>';
 
-echo "<div class='border_b'><p>";
-echo "<form action='edit.php?id=".$cat["id"]."' method='POST'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td valign='top' align='right'>Naam </td><td>";
-echo "<input type='text' name='name' size='60' ";
-echo "value='". $cat["name"] . "' required>";
-echo "</td><td>";
-if (isset($error_list["name"])){
-	echo $error_list["name"];
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" ';
+echo 'value="'. $cat["name"] . '" required>';
+echo '</div>';
+if (isset($error_list["name"]))
+{
+	echo '<p class="danger">' .$error_list["name"] . '</p>';
 }
-echo "</td></tr>";
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Hoofdcategorie of deelcategorie van";
-echo "<td valign='top'>";
-echo "<select name='id_parent'>";
-
+echo '<div class="form-group">';
+echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
+echo '<div class="col-sm-10">';
+echo '<select class="form-control" id="id_parent" name="id_parent">';
 $parent_cats = array(0 => '-- Hoofdcategorie --');
 $parent_cats += $db->GetAssoc('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
 $id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
 
 render_select_options($parent_cats, $id_parent);
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "</select>";
-echo "</td><td>";
-echo "</td></tr>";
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-default">';
 
-echo "<tr><td></td><td>";
-echo "<input type='submit' value='Opslaan' name='zend'>";
-echo "</td><td>&nbsp;</td></tr></table>";
 echo "</form>";
-echo "</p></div>";
 
 include($rootpath."includes/inc_footer.php");

@@ -8,86 +8,22 @@ require_once($rootpath."includes/inc_userinfo.php");
 
 include($rootpath."includes/inc_header.php");
 
-if (!isset($_GET["id"])){
+if (!isset($_GET["id"]))
+{
 	header('Location: overview.php');
 }
 
 $id = $_GET["id"];
 $group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
 echo '<h1>' . $group['groupname'] . '</h1>';
-echo "<table width='95%' border='1'>";
-echo "<tr>";
-echo "<td>";
+
 
 echo "<div >";
-echo "<table width='95%' border='0'>";
 
-echo "<tr>";
-echo "<td>Groepnaam</td>";
-echo "<td>" .$group["groupname"] ."</td>";
-echo "</tr>";
+echo '<dl class="dl-horizontal">';
+echo "<dt>eLAS Soap status</dt>";
 
-echo "<tr>";
-echo "<td>Korte naam</td>";
-echo "<td>" .$group["shortname"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>Prefix</td>";
-echo "<td>" .$group["prefix"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>API methode</td>";
-echo "<td>" .$group["apimethod"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>API key</td>";
-echo "<td>" .$group["remoteapikey"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>Lokale LETS code</td>";
-echo "<td>" .$group["localletscode"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>Remote LETS code</td>";
-echo "<td>" .$group["myremoteletscode"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>URL</td>";
-echo "<td>" .$group["url"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>SOAP URL</td>";
-echo "<td>" .$group["elassoapurl"] ."</td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td>Preshared Key</td>";
-echo "<td>" .$group["presharedkey"]."</td>";
-echo "</tr>";
-
-echo "</table>";
-echo "</div>";
-
-
-echo "</td>";
-
-echo "<td valign='top' width='300'>";
-
-//echo "<script type='text/javascript' src='/js/soapstatus.js'></script>";
-echo "<table width='100%' border='0'>";
-
-echo "<tr>";
-echo "<td bgcolor='grey'>eLAS Soap status</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td><i><div id='statusdiv'>";
+echo "<dd><i><div id='statusdiv'>";
 //echo "<script type='text/javascript'>showsmallloader('statusdiv')</script>";
 $soapurl = $group["elassoapurl"] ."/wsdlelas.php?wsdl";
 $apikey = $group["remoteapikey"];
@@ -101,16 +37,63 @@ if (!$err) {
 	}
 }
 echo "</div></i>";
-echo "</td>";
-echo "</tr>";
+echo "</dd>";
+echo '</dl>';
 
-echo "</table>";
-//echo "<script type='text/javascript'>soapstatus($id)</script>";
+echo '<dl class="dl-horizontal">';
+echo "<dt>Groepnaam</dt>";
+echo "<dd>" .$group["groupname"] ."</dd>";
+echo "</dl>";
 
-echo "</td>";
+echo '<dl class="dl-horizontal">';
+echo "<dt>Korte naam</dt>";
+echo "<dd>" .$group["shortname"] ."</dd>";
+echo "</dl>";
 
-echo "</tr>";
-echo "</table>";
+echo '<dl class="dl-horizontal">';
+echo "<dt>Prefix</dt>";
+echo "<dd>" .$group["prefix"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>API methode</dt>";
+echo "<dd>" .$group["apimethod"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>API key</dt>";
+echo "<dd>" .$group["remoteapikey"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>Lokale LETS code</dt>";
+echo "<dd>" .$group["localletscode"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>Remote LETS code</dt>";
+echo "<dd>" .$group["myremoteletscode"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>URL</dt>";
+echo "<dd>" .$group["url"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>SOAP URL</dt>";
+echo "<dd>" .$group["elassoapurl"] ."</dd>";
+echo "</dl>";
+
+echo '<dl class="dl-horizontal">';
+echo "<dt>Preshared Key</dt>";
+echo "<dd>" .$group["presharedkey"]."</dd>";
+echo "</dl>";
+
+echo "</div>";
+
+
+//echo "<script type='text/javascript' src='/js/soapstatus.js'></script>";
 
 echo "<p><small><i>";
 echo "* API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail";
@@ -122,13 +105,12 @@ echo "<br>* SOAP URL is de locatie voor de communicatie tussen eLAS en het ander
 echo "<br>* Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant";
 echo "</i></small></p>";
 
-echo "<table width='100%' border=0><tr><td>";
+
 echo "<div id='navcontainer'>";
 echo "<ul class='hormenu'>";
 echo '<li><a href="edit.php?mode=edit&id=' . $id . '">Aanpassen</a></li>';
 echo '<li><a href="delete.php?id=' . $id . '">Verwijderen</a></li>';
 echo "</ul>";
 echo "</div>";
-echo "</td></tr></table>";
 
 include($rootpath."includes/inc_footer.php");

@@ -24,7 +24,7 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	echo "</td></tr></table>";
 }
 
-echo "<h1>Overzicht transacties</h1>";
+echo '<h1>Transacties</h1>';
 
 $query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;
 $query = 'SELECT t.*, 
@@ -46,71 +46,97 @@ $transactions = $db->GetArray($query);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
-	'indicator' => '');
+	'indicator' => '',
+);
 
 $tableheader_ary = array(
-	'cdate'	=> array_merge($asc_preset_ary, array(
-		'lang' => 'Tijdstip')),
-	'fromusername' => array_merge($asc_preset_ary, array(
-		'lang' => 'Van')),
-	'tousername' => array_merge($asc_preset_ary, array(
-		'lang' => 'Aan')),
+	'description' => array_merge($asc_preset_ary, array(
+		'lang' => 'Omschrijving')),
 	'amount' => array_merge($asc_preset_ary, array(
 		'lang' => 'Bedrag')),
-	'description' => array_merge($asc_preset_ary, array(
-		'lang' => 'Dienst')));
+	'fromusername' => array_merge($asc_preset_ary, array(
+		'lang' => 'Van',
+		'data_hide'	=> 'phone, tablet')),
+	'tousername' => array_merge($asc_preset_ary, array(
+		'lang' => 'Aan',
+		'data_hide'	=> 'phone, tablet')),
+	'cdate'	=> array_merge($asc_preset_ary, array(
+		'lang' => 'Tijdstip',
+		'data_hide' => 'phone')),
+);
 
 $tableheader_ary[$trans_orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '&nbsp;&#9650;' : '&nbsp;&#9660;';
+$tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
+echo '<div class="table-responsive">';
+echo '<table class="table table-bordered table-striped table-hover footable" data-sort="false">';
+echo '<thead>';
+echo '<tr>';
 
-foreach ($tableheader_ary as $key_orderby => $data){
-	echo '<td valign="top"><strong><a href="alltrans.php?trans_orderby='.$key_orderby.'&asc='.$data['asc'].'">';
-	echo $data['lang'].$data['indicator'].'</a></strong></td>';
+foreach ($tableheader_ary as $key_orderby => $data)
+{
+	echo '<th';
+	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo '>';
+	echo '<a href="alltrans.php?trans_orderby='.$key_orderby.'&asc='.$data['asc'].'">';
+	echo $data['lang'];
+	echo '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+	echo '</a></td>';
 }
 
-echo "</tr>";
-$rownumb=0;
-foreach($transactions as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
-	echo "<td nowrap valign='top'>";
-	echo $value["cdatum"];
-	echo "</td>";
-	echo '</td><td valign="top"';
+echo '</tr>';
+echo '</thead>';
+echo '<tbody>';
+
+foreach($transactions as $key => $value)
+{
+	echo '<tr>';
+
+	echo '<td><a href="' . $rootpath . 'view.php?id=' . $value['transid'] . '">';
+	echo htmlspecialchars($value['description'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	echo $value['amount'];
+	echo '</td>';
+
+	echo '<td';
 	echo ($value['fromuserid'] == $s_id) ? ' class="me"' : '';
 	echo '>';
-	if(!empty($value["real_from"])){
+	if(!empty($value["real_from"]))
+	{
 		echo htmlspecialchars($value["real_from"],ENT_QUOTES);
-	} else {
+	}
+	else
+	{
 		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['fromuserid'] . '">';
 		echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
 		echo '</a>';
 	}
-	echo '</td><td valign="top"';
+	echo '</td>';
+
+	echo '<td';
 	echo ($value['touserid'] == $s_id) ? ' class="me"' : '';
 	echo '>';
-	if(!empty($value["real_to"])){
+	if(!empty($value["real_to"]))
+	{
 		echo htmlspecialchars($value["real_to"],ENT_QUOTES);
-	} else { 
+	}
+	else
+	{ 
 		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['touserid'] . '">';
 		echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
 		echo '</a>';
 	}
-	echo "</td><td valign='top' nowrap>";
-	echo $value["amount"];
-	echo "</td><td valign='top'><a href='view.php?id=".$value["transid"] ."'>";
-	echo htmlspecialchars($value["description"],ENT_QUOTES);
-	echo "</a> ";
-	echo "</td></tr>";
+	echo '</td>';
+
+	echo '<td>';
+	echo $value['cdatum'];
+	echo '</td>';
+
+	echo '</tr>';
 }
-echo "</table></div>";
+echo '</table></div>';
 
 include($rootpath."includes/inc_footer.php");

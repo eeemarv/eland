@@ -1,3 +1,164 @@
+/** typeahead **/
+
+.tt-query
+.tt-hint 
+{
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #ccc;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    outline: none;
+}
+
+.tt-query
+{
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint
+{
+    color: #999
+}
+
+.tt-dropdown-menu
+{
+    width: 422px;
+    margin-top: 2px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion
+{
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion.tt-is-under-cursor
+{
+    color: #fff;
+    background-color: #0097cf;
+
+}
+
+.tt-suggestion p
+{
+    margin: 0;
+}
+
+.tt-dropdown-menu
+{
+  min-width: 300px;
+  margin-top: 2px;
+  padding: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,.2);
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding;
+          background-clip: padding-box;
+}
+
+.tt-suggestion
+{
+  display: block;
+  padding: 0 0;
+}
+
+.tt-suggestion.tt-is-under-cursor
+{
+  color: #fff;
+  background-color: #0081c2;
+  background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -o-linear-gradient(top, #0088cc, #0077b3);
+  background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0)
+}
+
+.tt-suggestion.tt-is-under-cursor a
+{
+  color: #fff;
+}
+
+.tt-suggestion p
+{
+  margin: 0;
+  padding: 2px 5px 2px 10px;
+}
+
+
+.twitter-typeahead
+{
+	width: 100%;
+	margin-bottom: 5px; 
+}
+
+.tt-suggestion p.success
+{
+	background-color: #dff0d8;;
+}
+
+div.tt-suggestion p.danger
+{
+	background-color: #f2dede;
+}
+div.tt-suggestion p.warning
+{
+	background-color: #fcf8e3;
+}
+div.tt-suggestion p.info
+{
+	background-color: #d9edf7;
+}
+div.tt-suggestion p.inactive
+{
+	background-color: #ddd;
+}
+
+div.tt-is-under-cursor p.success,
+div.tt-is-under-cursor p.error,
+div.tt-is-under-cursor p.warning,
+div.tt-is-under-cursor p.info,
+div.tt-is-under-cursor p.inactive
+{
+	background-color: transparent;
+} 
+
+div.tt-suggestion p:hover
+{
+	background-color: blue;
+	color: white;
+	cursor: pointer;
+}
+
+/**/
+
 body,html,.row-offcanvas
 {
   height:100%;
@@ -121,7 +282,7 @@ div.navbar-header a.navbar-brand img
 
 form
 {
-	background-color: #fdea9c;
+	background-color: #fec;
 	padding: 10px;
 	border-radius: 8px;
 }
@@ -133,4 +294,9 @@ form
 	margin: 0 -15px 0 -15px;
 	border-top: 1px solid #e5e5e5;
 	background-color: #f5f5f5; 
+}
+
+div.alert
+{
+	margin-top: 5px;
 }

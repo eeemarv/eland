@@ -11,6 +11,12 @@ require_once($rootpath."includes/inc_form.php");
 
 $transaction = array();
 
+if (isset($_POST['cancel']))
+{
+	header('Location: ' . $rootpath . 'transactions/alltrans.php');
+	exit;
+}
+
 if (isset($_POST['zend']))
 {
 	$transaction["description"] = $_POST["description"];
@@ -162,7 +168,6 @@ if (!isset($_POST['zend']))
 }
 
 $includejs = '
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>
 	<script src="' . $cdn_typeahead . '"></script>
@@ -175,59 +180,56 @@ include $rootpath . 'includes/inc_header.php';
 $user = get_user($s_id);
 $balance = $user["saldo"];
 
-//$list_users = get_users($s_id);
+$letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
 $currency = readconfigfromdb('currency');
 
-echo "<h1>{$currency} uitschrijven</h1>";
+echo "<h1>Nieuwe transactie</h1>";
 
 $minlimit = $user["minlimit"];
 
-echo "<div id='baldiv'>";
+echo "<div>";
 echo '<p><strong>' . $user["name"].' '.$user["letscode"] . ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
 echo "<strong>Limiet minstand: " . $minlimit . "</strong></p>";
 echo "</div>";
 
 $date = date("Y-m-d");
 
-//echo "<script type='text/javascript' src='/js/posttransaction.js'></script>";
-// echo "<script type='text/javascript' src='/js/userinfo.js'></script>";
-echo "<div id='transformdiv'>";
-echo "<form  method='post'>";
-echo "<table>";
+echo '<form  method="post" class="form-horizontal">';
 
-echo "<tr>";
-echo "<td align='right'>Van LETScode</td>";
-echo "<td>";
+echo ($s_accountrole == 'admin') ? '' : '<div style="display:none;">';
 
-echo '<input type="text" name="letscode_from" size="30" value="' . $transaction['letscode_from'] . '" ';
+echo '<div class="form-group"';
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
-echo 'required id="letscode_from">';
+echo '>';
+echo '<label for="letscode_from" class="col-sm-2 control-label">Van letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
+echo 'value="' . $transaction['letscode_from'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "</td><td width='150'><div id='fromoutputdiv'></div>";
-echo "</td></tr>";
-
-echo "<tr><td valign='top' align='right'>Datum</td><td>";
-echo "<input type='text' name='date' size='10' value='" .$date ."' ";
-echo ($s_accountrole == "admin") ? '' : ' disabled="disabled" ';
+echo '<div class="form-group"';
+echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
+echo '>';
+echo '<label for="date" class="col-sm-2 control-label">Datum</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="date" name="date" ';
 echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-language="nl" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
 echo 'data-date-enable-on-readonly="false" ';
-echo ">";
-echo "</td><td>";
+echo 'value="' . $transaction['date'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
+echo ($s_accountrole == 'admin') ? '' : '</div>';
 
-echo "<tr><td align='right'>";
-echo "Aan LETS groep";
-echo "</td><td>";
-$letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
-
-echo "<select name='letsgroup_id' id='letsgroup_id'>";
-
+echo '<div class="form-group">';
+echo '<label for="letsgroup_id" class="col-sm-2 control-label">Aan letsgroep</label>';
+echo '<div class="col-sm-10">';
+echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
 foreach ($letsgroups as $value)
 {
 	$thumbprint = (getenv('ELAS_DEBUG')) ? time() : $redis->get($value['url'] . '_typeahead_thumbprint');
@@ -237,52 +239,45 @@ foreach ($letsgroups as $value)
 	echo ($value['id'] == $letsgroup_id) ? ' data-this-letsgroup="1"' : '';
 	echo '>' . htmlspecialchars($value['groupname'], ENT_QUOTES) . '</option>';
 }
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "</select>";
-echo "</td><td>";
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
+echo 'value="' . $transaction['letscode_to'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td></td><td>";
-echo "<tr><td align='right'>";
-echo "Aan LETScode";
-echo "</td><td>";
-echo '<input type="text" name="letscode_to" id="letscode_to" ';
-echo 'value="' . $transaction['letscode_to'] . '" size="30" required>';
-echo "</td><td><div id='tooutputdiv'></div>";
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
-
-echo '<tr><td valign="top" align="right">Aantal ' . $currency . '</td><td>';
-echo "<input type='number' min='1' name='amount' size='10' ";
+echo '<div class="form-group">';
+echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $currency . '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="number" class="form-control" id="amount" name="amount" ';
 echo 'value="' . $transaction['amount'] . '" required>';
-echo "</td><td>";
-echo "</td></tr>";
-echo "<tr><td></td><td>";
-echo "</td></tr>";
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Dienst</td><td>";
-echo '<input type="text" name="description" id="description" size="30" maxlength="60" ';
+echo '<div class="form-group">';
+echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="description" name="description" ';
 echo 'value="' . $transaction['description'] . '" required>';
-echo "</td><td>";
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
-echo "<tr><tr><td colspan='3'>&nbsp;</td></tr><td></td><td colspan='2'>";
-echo "<input type='submit' name='zend' id='zend' value='Overschrijven'>";
-echo "</td></tr></table>";
+echo '</div>';
+echo '</div>';
+
+echo '<input type="submit" name="cancel" value="Annuleren" class="btn btn-default">&nbsp;';
+echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
+
 echo "</form>";
-echo "</div>";
 
 include($rootpath."includes/inc_footer.php");
 
-///////////////////////////////////////////////////////
+////////
 
-
-// Make timestamps for SQL statements
 function make_timestamp($timestring)
 {
-/*	$month = substr($timestring, 3, 2);
-	$day = substr($timestring, 0, 2);
-	$year = substr($timestring, 6, 4); */
 	list($day, $month, $year) = explode('-', $timestring);
 	return mktime(0, 0, 0, trim($month), trim($day), trim($year));
 }

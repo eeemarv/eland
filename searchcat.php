@@ -5,11 +5,6 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
 $q = $_GET['q'];
 
 include($rootpath."includes/inc_header.php");
@@ -65,16 +60,25 @@ foreach($cats as $value)
 echo '</tbody>';
 echo "</table></div>";
 
-if($s_accountrole != 'guest'){
-	echo "<h1>Andere (interlets) groepen raadplegen</h1>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
+if($s_accountrole != 'guest')
+{
 	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
-	foreach($letsgroups as $key => $value)
+
+	if (count($letsgroups))
 	{
-		echo "<tr><td nowrap>";
-		echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
-		echo "</td></tr>";
+		echo '<h1>Interletsgroepen raadplegen</h1>';
+		echo '<div class="table responsive">';
+		echo '<table class="table talble-bordered table-striped table-hover" data-sort="false">';
+
+		foreach($letsgroups as $key => $value)
+		{
+			echo "<tr><td nowrap>";
+			echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
+			echo "</td></tr>";
+		}
+		echo '</table>';
+		echo '</div>';
 	}
-	echo "</table>";
 }
+
 include($rootpath."includes/inc_footer.php");

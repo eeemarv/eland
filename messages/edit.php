@@ -13,19 +13,39 @@ if ($_POST['zend'])
 {
 	$validity = (int) $_POST["validity"];
 	$vtime = count_validity($validity);
+
+	if ($s_accountrole == 'admin')
+	{
+		list($user_letscode) = explode(' ', $_POST['user_letscode']);
+		$user_letscode = trim($user_letscode);
+		$user = $db->GetRow('select *
+			from users
+			where letscode = \'' . $user_letscode . '\'
+				and status in (1, 2)');
+		if (!$user)
+		{
+			$error = 'Ongeldige letscode.' . $user_letscode;
+		}
+	}
+
 	$msg = array(
 		'validity'		=> (int) $_POST["validity"],
 		'vtime'			=> $vtime,
 		'content'		=> $_POST["content"],
 		'description'	=> $_POST["description"],
 		'msg_type'		=> (int) $_POST["msg_type"],
-		'id_user'		=> ($s_accountrole == 'admin') ? (int) $_POST["id_user"] : $s_id,
+		'id_user'		=> ($s_accountrole == 'admin') ? (int) $user['id'] : $s_id,
 		'id_category'	=> (int) $_POST["id_category"],
 		'amount'		=> (int) $_POST["amount"],
 		'units'			=> $_POST["units"],
 	);
 
-	$errors= validate_input($msg, $mode);
+	$errors = validate_input($msg, $mode);
+
+	if ($error)
+	{
+		$errors[] = $error;
+	}
 
 	if (count($errors))
 	{
@@ -77,15 +97,31 @@ else if ($mode == 'new')
 		'validity'		=> '2',
 		'content'		=> '',
 		'description'	=> '',
-		'msg_type'		=> 1,
+		'msg_type'		=> '1',
 		'id_user'		=> $s_id,
 		'id_category'	=> '',
 		'amount'		=> '',
 		'units'			=> '',
 	);
+
+	$user = readuser($s_id);
+
+	$user_letscode = $s_letscode . ' ' . $user['fullname'];
 }
 
+$letsgroup_id = $db->GetOne('SELECT id
+	FROM letsgroups
+	WHERE apimethod = \'internal\'');
+
+$cat_list = array('' => '') + get_cats();
+
+$currency = readconfigfromdb("currency");
+
 array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
+
+$includejs = '
+	<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/msg_edit.js"></script>';
 
 include($rootpath."includes/inc_header.php");
 
@@ -98,83 +134,85 @@ else
 	echo "<h1>Vraag & Aanbod aanpassen</h1>";
 }
 
-if($s_accountrole == 'admin'){
-	echo "<strong>[admin mode]</strong><br>";
-}
+echo '<form method="post" class="form-horizontal">';
 
-echo "<div class='border_b'><p>";
-echo "<form method='post'>";
-
-echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
-echo "<tr>\n<td align='right'>";
-echo "V/A ";
-echo "</td><td>";
-echo "<select name='msg_type' required>";
+echo '<div class="form-group">';
+echo '<label for="msg_type" class="col-sm-2 control-label">Vraag/Aanbod</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="msg_type" id="msg_type" class="form-control" required>';
 render_select_options(array('1' => 'Aanbod', '0' => 'Vraag'), $msg['msg_type']);
 echo "</select>";
-echo "</td></tr>";
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Wat </td><td>";
-echo '<input type="text" name="content" size="30" value="' . $msg['content'] . '" required>';
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="content" class="col-sm-2 control-label">Wat</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="content" name="content" ';
+echo 'value="' . $msg['content'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Omschrijving </td><td>";
-echo "<textarea name='description' rows='4' cols='50'>";
+echo '<div class="form-group">';
+echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="description" class="form-control" id="description" rows="4">';
 echo $msg['description'];
-echo "</textarea>";
-echo "</td></tr>";
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
 // Who selection is only for admins
-if($s_accountrole == "admin"){
-	$user_list = get_users();
-	
-	echo "<tr><td align='right'>";
-	echo "Wie";
-	echo "</td><td>";
-	echo "<select name='id_user'>\n";
-	render_select_options($user_list, $msg['id_user']);
-	echo "</select>\n";
-	echo "</td>\n</tr>\n\n<tr><td></td>\n<td>";
-	echo "</td>\n</tr>\n\n";
+if($s_accountrole == "admin")
+{
+	echo '<div class="form-group">';
+	echo '<label for="user_letscode" class="col-sm-2 control-label">Gebruiker [admin]</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
+	echo 'data-letsgroup-id="' . $letsgroup_id . '" ';
+	echo 'value="' . $user_letscode . '" required>';
+	echo '</div>';
+	echo '</div>';
 }
 
-echo "<tr><td align='right'>";
-echo "Categorie ";
-echo "</td>\n<td>";
-echo "<select name='id_category' required>\n";
-
-echo '<option></option>';
-$cat_list = get_cats();
+echo '<div class="form-group">';
+echo '<label for="id_category" class="col-sm-2 control-label">Categorie</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="id_category" id="id_category" class="form-control" required>';
 render_select_options($cat_list, $msg['id_category']);
+echo "</select>";
+echo '</div>';
+echo '</div>';
 
-echo "</select>\n";
-echo "</td>\n</tr>";
+echo '<div class="form-group">';
+echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in maanden</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="number" class="form-control" id="validity" name="validity" ';
+echo 'value="' . $msg['validity'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr>\n<td valign='top' align='right'>Geldigheid </td>\n";
+echo '<div class="form-group">';
+echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $currency . '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="number" class="form-control" id="amount" name="amount" ';
+echo 'value="' . $msg['amount'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<td>";
-echo '<input type="number" name="validity" size="4" value="' . $msg['validity'] . '" required> maanden';
-echo "</td>\n</tr>\n";
+echo '<div class="form-group">';
+echo '<label for="units" class="col-sm-2 control-label">Per (uur, stuk, ...)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="units" name="units" ';
+echo 'value="' . $msg['units'] . '">';
+echo '</div>';
+echo '</div>';
 
-$currency = readconfigfromdb("currency");
-echo "<tr><td valign='top' align='right'>Prijs </td>";
-echo "<td>";
-echo '<input type="number" name="amount" size="8" value="' . $msg['amount'] . '">' . $currency;
-echo "</td>\n</tr>\n";
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
 
-echo "<tr>\n<td valign='top' align='right'>Per </td>\n";
-echo "<td>";
-echo '<input type="text" name="units" value="' . $msg['units'] . '"> (uur, stuk, ...)';
-echo "</td>\n</tr>\n";
-echo "<tr><td></td><td>";
-echo "<input type='submit' value='Opslaan' name='zend' id='zend'>";
-echo "</td></tr>\n\n</table>\n\n";
 echo "</form>";
-echo "</p></div>";
-
 
 include($rootpath."includes/inc_footer.php");
-
 
 function validate_input($msg)
 {
@@ -186,14 +224,14 @@ function validate_input($msg)
 	}
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
 	{
-		$error_list["content"] = "<font color='#F56DB5'>Vul <strong>inhoud</strong> in!</font>";
+		$error_list["content"] = "Vul inhoud in!";
 		$query =" SELECT * FROM categories ";
 		$query .=" WHERE  id = '".$msg["id_category"]."' ";
 		$rs = $db->Execute($query);
     	$number = $rs->recordcount();
 		if( $number == 0 )
 		{
-			$error_list["id_category"]="<font color='#F56DB5'>Categorie <strong>bestaat niet!</strong></font>";
+			$error_list["id_category"]=">Categorie bestaat niet!";
 		}
 	}
 
@@ -205,7 +243,7 @@ function validate_input($msg)
 
 	if( $number2 == 0 )
 	{
-		$error_list["id_user"]="<font color='#F56DB5'>Gebruiker <strong>bestaat niet!</strong></font>";
+		$error_list["id_user"]="Gebruiker bestaat niet!";
 	}
 	return $error_list;
 
@@ -301,20 +339,6 @@ function insert_msg($posted_list){
 	}
 
 	return false;
-}
-
-function get_users()
-{
-    global $db;
-    $user_ary = array();
-	$query = "SELECT id, name, letscode FROM users ";
-	$query .= " WHERE status = 1 OR status = 2 order by letscode";
- 	$users = $db->GetArray($query);
- 	foreach ($users as $user)
- 	{
-		$user_ary[$user['id']] = $user['name'] . ' ' . $user['letscode'];
-	}
-	return $user_ary;
 }
 
 function get_cats()
