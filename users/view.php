@@ -33,6 +33,10 @@ echo "<table width='100%' border=0><tr><td>";
 echo "<div id='navcontainer'>";
 echo "<ul class='hormenu'>";
 echo '<li><a href="edit.php?mode=new">Toevoegen</a></li>';
+if (!$db->GetOne('select id from transactions where id_to = ' . $id . ' or id_from = ' . $id))
+{
+	echo '<li><a href="delete.php?id=' . $id . '">Verwijderen</a></li>';
+}
 echo "</ul>";
 echo "</div>";
 echo "</td></tr></table>";
