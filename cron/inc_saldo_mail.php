@@ -394,8 +394,10 @@ function saldo()
 	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $mydetails_url;
 	$html .= '<p>' . $t . 'Klik <a href="' . $mydetails_url . '">hier</a> om aan te passen</p>';
 
+	$subject = '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.';
+
 	$message = array(
-		'subject'		=> '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.',
+		'subject'		=> $subject,
 		'text'			=> $text,
 		'html'			=> $html,
 		'from_email'	=> $from,
@@ -416,7 +418,7 @@ function saldo()
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
-	log_event('', 'Mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_mail);
+	log_event('', 'Mail', 'Saldomail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . implode(', ', $to_mail));
 
 	return true;
 }

@@ -310,11 +310,11 @@ echo '<input type="text" name="fullname" size="30" value="' . $user['fullname'] 
 echo "</td></tr><tr><td ></td></tr>";
 
 echo "<tr><td align='right'>Letscode</td>";
-echo '<td ><input type="text" name="letscode" value="' . $user['letscode'] . '" size="30" required>';
+echo '<td ><input type="text" name="letscode" value="' . $user['letscode'] . '" size="30" maxlength="20" required>';
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Postcode</td>";
-echo "<td ><input type='text' name='postcode' value='" . $user['postcode'] . "' size='30'>";
+echo '<td ><input type="text" name="postcode" value="' . $user['postcode'] . '" size="30" maxlength="6">';
 echo "</td></tr>";
 
 echo "<tr><td align='right'>Geboortedatum (jjjj-mm-dd)</td>";

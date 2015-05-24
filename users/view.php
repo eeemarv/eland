@@ -27,115 +27,287 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
 
-$top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"><i class="fa fa-plus"></i>';
-$top_buttons .= '<span> Gebruiker toevoegen</span></a>';
-$top_buttons .= '<a href="edit.php?mode=edit" class="btn btn-primary"><i class="fa fa-pencil"></i>';
-$top_buttons .= '<span> Aanpassen</span></a>';
+$top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"';
+$top_buttons .= ' title="gebruiker toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
+$top_buttons .= '<a href="edit.php?mode=edit&id=' . $id . '" class="btn btn-primary"';
+$top_buttons .= ' title="Gebruiker aanpassen"><i class="fa fa-pencil"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
 
-$top_buttons .= '<a href="delete.php?mode=edit&id=' . $id . '" class="btn btn-danger">';
-$top_buttons .= '<i class="fa fa-times"></i>';
-$top_buttons .= '<span> Verwijderen</span></a>';
+$top_buttons .= '<a href="editpw.php?id='. $id . '" class="btn btn-info"';
+$top_buttons .= ' title="Paswoord aanpassen"><i class="fa fa-key"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
 
+$top_buttons .= '<a href="activate.php?id='. $id . '" class="btn btn-warning"';
+$top_buttons .= ' title="Activeren"><i class="fa fa-check"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Activeren</span></a>';
 
+if (!$db->GetOne('select id from transactions where id_to = ' . $id . ' or id_from = ' . $id))
+{
+	$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';
+	$top_buttons .= ' title="gebruiker verwijderen">';
+	$top_buttons .= '<i class="fa fa-times"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+}
 
 include($rootpath."includes/inc_header.php");
 
 echo '<h1><i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
 
-echo "<p>| <a href='editpw.php?id=" .$id. "'>Paswoord veranderen</a> |";
-echo " <a href='activate.php?id=" .$id. "'>Activeren</a> |";
-//	echo " <a href='delete.php?id=" .$s_id. "'>Delete</a> |";
+echo '<div class="row">';
+echo '<div class="col-xs-4">';
 
-echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
-echo "<tr class='even_row'><td colspan='2'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." (";
-echo trim($user["letscode"]).")</strong></td></tr>";
-
-// Wrap arround another table to show user picture
-	echo "<td width='170' align='left'>";
-if($user["PictureFile"] == NULL) {
-	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen afbeelding';
-} else {
-	echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
-}
-echo "</td>";
-
-// inline table
-echo "<td>";
-echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
-echo "<tr><td>Naam: </td>";
-	echo "<td>".$user["fullname"]."</td></tr>";
-
-echo "<tr><td>Postcode: </td>";
-echo "<td>".$user["postcode"]."</td></tr>";
-
-echo "<tr><td>Geboortedatum: </td>";
-echo "<td>".$user["birthday"]."</td></tr>";
-
-echo "<tr><td valign='top'>Hobbies/interesses: </td>";
-echo "<td>".nl2br(htmlspecialchars($user["hobbies"],ENT_QUOTES))."</td></tr>";
-
-echo "<tr><td valign='top'>Commentaar: </td>";
-echo "<td>".nl2br(htmlspecialchars($user["comments"],ENT_QUOTES))."</td></tr>";
-
-echo "<tr><td valign='top'>Login: </td>";
-echo "<td>".htmlspecialchars($user["login"],ENT_QUOTES)."</td></tr>";
-echo "<tr><td valign='top'>Datum aanmaak: </td>";
-		echo "<td>" .$user["cdate"]."</td></tr>";
-echo "<tr><td valign='top'>Datum activering: </td>";
-		echo "<td>" .$user["adate"]."</td></tr>";
-echo "<tr><td valign='top'>Laatste login: </td>";
-echo "<td>".$user["logdate"]."</td></tr>";
-echo "<tr><td valign='top'>Rechten:</td>";
-echo "<td>".$user["accountrole"]."</td></tr>";
-echo "<tr><td valign='top'>Status: </td>";
-echo "<td>";
-if($user["status"]==0){
-	echo "Gedesactiveerd";
-}elseif ($user["status"]==1){
-	echo "Actief";
-}elseif ($user["status"]==2){
-	echo "Uitstapper";
-}elseif ($user["status"]==3){
-	echo "Instapper";
-}elseif ($user["status"]==5){
-	echo "Infopakket";
-}elseif ($user["status"]==6){
-	echo "Infoavond";
-}elseif ($user["status"]==7){
-	echo "Extern";
-}
-echo "</td></tr>";
-
-echo "<tr><td valign='top'>Commentaar van de admin: </td>";
-echo "<td>".nl2br(htmlspecialchars($user["admincomment"],ENT_QUOTES))."</td></tr>";
-
-echo "<tr><td valign='top'>Limiet minstand:</td>";
-echo "<td>".$user["minlimit"]."</td></tr>";
-
-echo "<tr><td valign='top'>Saldo mail met recent vraag en aanbod:  </td>";
-if($user["cron_saldo"] == 't')
+if(isset($user["PictureFile"]))
 {
-	echo "<td valign='top'>Aan</td>";
+	echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 }
 else
 {
-	echo "<td valign='top'>Uit</td>";
+	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
 }
+
+echo '</div>';
+echo '<div class="col-xs-8">';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Naam';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["name"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Volledige naam';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["fullname"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Postcode';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["postcode"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Geboortedatum';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["birthday"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Hobbies / Interesses';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["hobbies"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Commentaar';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["comments"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Login';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["login"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Tijdstip aanmaak';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["cdate"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Tijdstip activering';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["adate"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Laatste login';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["logdate"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+$status_ary = array(
+	0	=> 'Gedesactiveerd',
+	1	=> 'Actief',
+	2	=> 'Uitstapper',
+	3	=> 'Instapper', // not used
+	4	=> 'Infopakket',
+	5	=> 'Infoavond',
+	6	=> 'Extern',
+);
+
+echo '<dl>';
+echo '<dt>';
+echo 'Rechten';
+echo '</dt>';
+echo '<dd>';
+echo $status_ary[$user['status']];
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Commentaar van de admin';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user["admincomment"],ENT_QUOTES);
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Saldo, limiet min, limiet max';
+echo '</dt>';
+echo '<dd>';
+echo '<span class="label label-default">' . $user['saldo'] . '</span>&nbsp;';
+echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
+echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
+echo '</dd>';
+echo '</dl>';
+
+echo '<dl>';
+echo '<dt>';
+echo 'Periodieke Saldo mail met recent vraag en aanbod';
+echo '</dt>';
+echo '<dd>';
+echo ($user["cron_saldo"] == 't') ? 'Aan' : 'Uit';
+echo '</dd>';
+echo '</dl>';
+
+echo '</div></div>';
+
+$contacts = $db->GetArray('select c.*, tc.abbrev
+	from contact c, type_contact tc
+	where c.id_type_contact = tc.id
+		and c.id_user = ' . $id);
+
+echo '<div class="row">';
+echo '<div class="col-xs-12 col-md-12">';
+
+echo '<h3>Contacten ';
+echo '<a href="' . $rootpath . 'users/cont_add.php?uid=' . $id . '"';
+echo ' class="btn btn-success" title="Contact toevoegen">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
+echo '</h3>';
+
+
+
+
+
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+
+echo '<thead>';
+echo '<tr>';
+echo '<th>Type</th>';
+echo '<th>Waarde</th>';
+echo '<th data-hide="phone, tablet">Commentaar</th>';
+echo '<th data-hide="phone, tablet">Publiek</th>';
+echo '<th data-sort-ignore="true" data-hide="phone, tablet">Verwijderen</th>';
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach ($contacts as $c)
+{
+	$a = '<a href="' . $rootpath . 'users/cont_edit.php?cid=' . $c['id'];
+	$a .= '&uid=' . $c['id_user'] . '">';
+	echo '<tr>';
+	echo '<td>' . $a . $c['abbrev'] . '</a></td>';
+	echo '<td>' . $a . htmlspecialchars($c['value'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $a . htmlspecialchars($c['comment'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $a . (($c['flag_public'] == 1) ? 'Ja' : 'Nee') . '</a></td>';
+	echo '<td><a href="' . $rootpath . 'users/cont_delete.php?cid='.$c['id'];
+	echo '&uid=' . $c['id_user'] . '" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>';
+	echo ' Verwijderen</a></td>';
+	echo '</tr>';
+}
+
+echo '</tbody>';
+
+echo '</table>';
+echo '</div>';
+
+echo '</div></div>';
+
+echo "<div >";
+echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
+
+echo "<tr class='even_row'>";
+echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
+echo "</tr>";
+echo "<tr>";
+echo "<th>Type</th>";
+echo "<th valign='top'>Waarde</th>";
+echo "<th valign='top'>Commentaar</th>";
+echo "<th valign='top'>Publiek</th>";
+echo "<th valign='top'></th>";
 echo "</tr>";
 
-echo "</table>";
-echo "</td>";
+foreach($contact as $key => $value){
+	echo "<tr>";
+	echo "<td valign='top'>".$value["abbrev"].": </td>";
+	echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
+	echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
+	echo "<td valign='top'>";
+	if (trim($value["flag_public"]) == 1){
+			echo "Ja";
+	}else{
+			echo "Nee";
+	}
+	echo "</td>";
+	echo "<td valign='top' nowrap>|";
+	echo "<a href='cont_edit.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+	echo " aanpassen </a> |";
+	echo "<a href='cont_delete.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
+	echo "verwijderen </a>|";
+	echo "</td>";
+	echo "</tr>";
+}
+	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
+	echo "<tr><td colspan='5'>| ";
+	echo "<a href='cont_add.php?uid=" . $value['id_user'] . "'>";
+	echo "Contact toevoegen</a> ";
+	echo "|</td></tr>";
+	echo "</table></div>";
 
-echo "<tr><td colspan='2'>&#160;</td></tr>";
-echo "<tr><td colspan='2'>";
 
-echo '| <a href="edit.php?mode=edit&id=' . $user["id"] . '" >Aanpassen</a> | ';
-echo "</td></tr>";
-echo "</table>";
 
-$contact = get_contact($id);
-show_contact($contact, $user_id);
 
 $balance = $user["saldo"];
 $currency = readconfigfromdb("currency");

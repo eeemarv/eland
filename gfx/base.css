@@ -231,11 +231,6 @@ body
 }
 */
 
-#main div.button-offcanvas
-{
-	margin-right: 5px;
-}
-
 @media screen and (max-width: 768px)
 {
   .row-offcanvas
