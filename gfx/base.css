@@ -164,6 +164,7 @@ body,html,.row-offcanvas
   height:100%;
 }
 
+
 body
 {
   padding-top: 50px;
@@ -223,14 +224,16 @@ body
 	overflow: auto;
 }
 
+/*
 #main div.col-md-12
 {
 	padding-bottom: 50px;
 }
+*/
 
 #main div.button-offcanvas
 {
-	margin-right: 10px;
+	margin-right: 5px;
 }
 
 @media screen and (max-width: 768px)
@@ -299,4 +302,14 @@ form
 div.alert
 {
 	margin-top: 5px;
+}
+
+div.top-buttons
+{
+	margin-top: 5px;
+}
+
+div.top-buttons a
+{
+	margin-left: 5px;
 }

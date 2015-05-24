@@ -144,15 +144,17 @@ if ($s_accountrole == 'admin')
 
 echo '</div>';
 
-$class_admin = ($role == 'admin') ? ' class="admin"' : '';
+$class_admin = ($role == 'admin') ? ' admin' : '';
 
-echo '<div id="main"' . $class_admin . ' class="container-fluid">';
+echo '<div id="main" class="container-fluid' . $class_admin . '">';
 
 $alert->render();
 
-echo '<div class="col-md-12">';
+echo '<div class="row">';
+echo '<div class="col-md-12 top-buttons">';
 echo '<div class="visible-xs pull-left button-offcanvas">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"><i class="glyphicon glyphicon-chevron-left"></i></button>';
 echo '</div>';
-
-
+echo (isset($top_buttons)) ? $top_buttons : '';
+echo '</div>';
+echo '</div>';

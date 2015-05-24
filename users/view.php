@@ -27,17 +27,21 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
 
+$top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span> Gebruiker toevoegen</span></a>';
+$top_buttons .= '<a href="edit.php?mode=edit" class="btn btn-primary"><i class="fa fa-pencil"></i>';
+$top_buttons .= '<span> Aanpassen</span></a>';
+
+
+$top_buttons .= '<a href="delete.php?mode=edit&id=' . $id . '" class="btn btn-danger">';
+$top_buttons .= '<i class="fa fa-times"></i>';
+$top_buttons .= '<span> Verwijderen</span></a>';
+
+
+
 include($rootpath."includes/inc_header.php");
 
-echo "<table width='100%' border=0><tr><td>";
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo '<li><a href="edit.php?mode=new">Toevoegen</a></li>';
-echo "</ul>";
-echo "</div>";
-echo "</td></tr></table>";
-
-echo "<h1>Gebruiker</h1>";
+echo '<h1><i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
 
 echo "<p>| <a href='editpw.php?id=" .$id. "'>Paswoord veranderen</a> |";
 echo " <a href='activate.php?id=" .$id. "'>Activeren</a> |";
@@ -50,7 +54,7 @@ echo trim($user["letscode"]).")</strong></td></tr>";
 // Wrap arround another table to show user picture
 	echo "<td width='170' align='left'>";
 if($user["PictureFile"] == NULL) {
-	echo "<img src='" .$rootpath ."gfx/nouser.png' width='250'></img>";
+	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen afbeelding';
 } else {
 	echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 }
