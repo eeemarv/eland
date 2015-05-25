@@ -197,6 +197,14 @@ $.noConflict();
 					window.location.href = 'memberlist_view.php?id=' + user.id;
 				}
 			});
+
+			$('#chartdiv1').bind('resize', function(event, ui) {
+				plot1.replot( { resetAxes: true } );
+			});
+
+			$('#chartdiv2').bind('resize', function(event, ui) {
+				plot1.replot( { resetAxes: true } );
+			});
 		}
 	});
 });

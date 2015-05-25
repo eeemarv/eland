@@ -9,17 +9,19 @@ require_once($rootpath."includes/inc_transactions.php");
 include($rootpath."includes/inc_header.php");
 include($rootpath."includes/inc_nav.php");
 
-if (!isset($_GET["id"]))
+if (!isset($_GET['id']))
 {
-	header("Location: overview.php");
+	header('Location: ' . $rootpath . 'transactions/overview.php');
 	exit;
 }
 
 $id = $_GET["id"];
 $transaction = get_transaction($id);
-echo "<h1>Transactie</h1>";
 
-$currency = readconfigfromdb("currency");
+$currency = readconfigfromdb('currency');
+echo '<h1><i class="fa fa-refresh"></i> Transactie</h1>';
+
+
 echo "<div >";
 echo "<table cellpadding='0' cellspacing='0' border='1' class='data' width='99%'>";
 echo "<tr>";

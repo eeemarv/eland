@@ -14,9 +14,13 @@ foreach ($cats as $cat)
 	$child_count_ary[$cat['id_parent']]++;
 }
 
-include($rootpath."includes/inc_header.php");
-echo "<div>| <a href='add.php'>Categorie toevoegen</a> |</div>";
-echo "<h1>Overzicht categorie&#235;n</h1>";
+$top_buttons = '<a href="' . $rootpath . 'categories/add.php" class="btn btn-success"';
+$top_buttons .= ' title="Categorie toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<h1><span class="text-danger">Admin:</span> Categorieën</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
@@ -52,13 +56,13 @@ foreach($cats as $value){
 	echo '<td>' . (($v = $value['stat_msgs_offers']) ? $v : '') . '</td>';
 	$child_count = $value['stat_msgs_wanted'] + $value['stat_msgs_offers'];
 	$child_count += $child_count_ary[$value['id']];
-	echo '<td><a href="edit.php?id=' . $value['id'] . '">Aanpassen</a></td>';
-	echo '<td>' . (($child_count) ? '' : '<a href="delete.php?id=' . $value['id'] . '">Verwijderen</a>') . '</td>';
-	echo "</tr>";
+	echo '<td><a href="edit.php?id=' . $value['id'] . '" class="btn btn-default btn-xs">Aanpassen</a></td>';
+	echo '<td>' . (($child_count) ? '' : '<a href="delete.php?id=' . $value['id'] . '" class="btn btn-danger btn-xs">Verwijderen</a>') . '</td>';
+	echo '</tr>';
 }
 echo "</table></div>";
 
-echo '<p>Categoriën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
+echo '<p>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
 
 include($rootpath."includes/inc_footer.php");
 

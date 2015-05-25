@@ -7,18 +7,17 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $groups = $db->GetArray('SELECT * FROM letsgroups');
 
+$top_buttons = '<a href="' . $rootpath . 'interlets/edit.php?mode=add" class="btn btn-success"';
+$top_buttons .= ' title="Groep toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'interlets/queue.php" class="btn btn-default"';
+$top_buttons .= ' title="Interlets transactie queue"><i class="fa fa-refresh"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Interlets queue</span></a>';
+
 include($rootpath."includes/inc_header.php");
 
-echo "<table><tr><td>";
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo '<li><a href="edit.php?mode=new">Groep toevoegen</a></li>';
-echo '<li><a href="renderqueue.php">Interlets Queue</a></li>';
-echo "</ul>";
-echo "</div>";
-echo "</td></tr></table>";
-
-echo "<h1>LETS groepen</h1>";
+echo '<h1><span class="text-danger">Admin:</span> LETS groepen</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';

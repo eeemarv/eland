@@ -11,12 +11,6 @@ require_once($rootpath."includes/inc_form.php");
 
 $transaction = array();
 
-if (isset($_POST['cancel']))
-{
-	header('Location: ' . $rootpath . 'transactions/alltrans.php');
-	exit;
-}
-
 if (isset($_POST['zend']))
 {
 	$transaction["description"] = $_POST["description"];
@@ -129,18 +123,19 @@ else
 
 	if ($mid)
 	{
-		$transaction = $db->GetRow('SELECT
-				m.content, m.amount, u.letscode as letscode_to, u.fullname
+		$row = $db->GetRow('SELECT
+				m.content, m.amount, u.letscode, u.fullname
 			FROM messages m, users u
 			WHERE u.id = m.id_user
 				AND m.id = ' . $mid);
-		$transaction['letscode_to'] .= ' ' . $transaction['fullname'];
-		$transaction['description'] =  '#m' . $mid . ' ' . $transaction['content'];
+		$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['fullname'];
+		$transaction['description'] =  '#m' . $mid . ' ' . $row['content'];
+		$transaction['amount'] = $row['amount'];
 	}
 	else if ($uid)
 	{
-		$transaction = $db->GetRow('SELECT letscode as letscode_to, fullname FROM users WHERE id = ' . $uid);
-		$transaction['letscode_to'] .= ' ' . $transaction['fullname'];
+		$row = readuser($uid);
+		$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['fullname'];
 	}
 }
 
@@ -267,7 +262,7 @@ echo 'value="' . $transaction['description'] . '" required>';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="submit" name="cancel" value="Annuleren" class="btn btn-default">&nbsp;';
+echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
 
 echo "</form>";

@@ -11,7 +11,38 @@ if (!isset($_GET["id"])){
 
 $id = $_GET["id"];
 
-$user = $db->GetRow('SELECT *, cdate AS date, lastlogin AS logdate FROM users WHERE id = '.$id);
+$user = $db->GetRow('SELECT *
+	FROM users
+	WHERE id = '.$id);
+
+$contacts = $db->GetArray('select c.*, tc.abbrev
+	from contact c, type_contact tc
+	where c.id_type_contact = tc.id
+		and c.id_user = ' . $id);
+
+$messages = $db->GetArray("SELECT *
+	FROM messages
+	where id_user = ".$id."
+		and validity > now()
+	order by cdate");
+
+$transactions = $db->GetArray('select t.*,
+		fu.name as from_username,
+		tu.name as to_username,
+		fu.letscode as from_letscode,
+		tu.letscode as to_letscode
+	from transactions t, users fu, users tu
+	where (t.id_to = ' . $id . '
+		or t.id_from = ' . $id . ')
+		and t.id_to = tu.id
+		and t.id_from = fu.id');
+
+$currency = readconfigfromdb('currency');
+
+$trans_en = ($db->GetOne('select id
+	from transactions
+	where id_to = ' . $id . '
+		or id_from = ' . $id)) ? true : false;
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jquery . '"></script>
@@ -43,7 +74,7 @@ $top_buttons .= '<a href="activate.php?id='. $id . '" class="btn btn-warning"';
 $top_buttons .= ' title="Activeren"><i class="fa fa-check"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Activeren</span></a>';
 
-if (!$db->GetOne('select id from transactions where id_to = ' . $id . ' or id_from = ' . $id))
+if (!$trans_en)
 {
 	$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';
 	$top_buttons .= ' title="gebruiker verwijderen">';
@@ -53,14 +84,15 @@ if (!$db->GetOne('select id from transactions where id_to = ' . $id . ' or id_fr
 
 include($rootpath."includes/inc_header.php");
 
-echo '<h1><i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
+echo '<h1><span class="text-danger">Admin:</span> ';
+echo '<i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
 
 echo '<div class="row">';
-echo '<div class="col-xs-4">';
+echo '<div class="col-md-4">';
 
 if(isset($user["PictureFile"]))
 {
-	echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
+	echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 }
 else
 {
@@ -68,7 +100,7 @@ else
 }
 
 echo '</div>';
-echo '<div class="col-xs-8">';
+echo '<div class="col-md-8">';
 
 echo '<dl>';
 echo '<dt>';
@@ -210,23 +242,13 @@ echo '</dl>';
 
 echo '</div></div>';
 
-$contacts = $db->GetArray('select c.*, tc.abbrev
-	from contact c, type_contact tc
-	where c.id_type_contact = tc.id
-		and c.id_user = ' . $id);
-
 echo '<div class="row">';
-echo '<div class="col-xs-12 col-md-12">';
-
-echo '<h3>Contacten ';
+echo '<div class="col-md-12">';
+echo '<h3><i class="fa fa-map-marker"></i> Contacten ';
 echo '<a href="' . $rootpath . 'users/cont_add.php?uid=' . $id . '"';
 echo ' class="btn btn-success" title="Contact toevoegen">';
 echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
 echo '</h3>';
-
-
-
-
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';
@@ -265,271 +287,186 @@ echo '</div>';
 
 echo '</div></div>';
 
-echo "<div >";
-echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3>Saldo: <span class="label label-default">' . $user['saldo'] . '</span> ';
+echo $currency . '</h3>';
+echo '</div></div>';
 
-echo "<tr class='even_row'>";
-echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
-echo "</tr>";
-echo "<tr>";
-echo "<th>Type</th>";
-echo "<th valign='top'>Waarde</th>";
-echo "<th valign='top'>Commentaar</th>";
-echo "<th valign='top'>Publiek</th>";
-echo "<th valign='top'></th>";
-echo "</tr>";
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+echo '<div id="chartdiv1" data-height="480px" data-width="960px"></div>';
+echo '</div>';
+echo '<div class="col-md-6">';
+echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
+echo '<h4>Interacties laatste jaar</h4>';
+echo '</div>';
+echo '</div>';
 
-foreach($contact as $key => $value){
-	echo "<tr>";
-	echo "<td valign='top'>".$value["abbrev"].": </td>";
-	echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
-	echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
-	echo "<td valign='top'>";
-	if (trim($value["flag_public"]) == 1){
-			echo "Ja";
-	}else{
-			echo "Nee";
-	}
-	echo "</td>";
-	echo "<td valign='top' nowrap>|";
-	echo "<a href='cont_edit.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
-	echo " aanpassen </a> |";
-	echo "<a href='cont_delete.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
-	echo "verwijderen </a>|";
-	echo "</td>";
-	echo "</tr>";
-}
-	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
-	echo "<tr><td colspan='5'>| ";
-	echo "<a href='cont_add.php?uid=" . $value['id_user'] . "'>";
-	echo "Contact toevoegen</a> ";
-	echo "|</td></tr>";
-	echo "</table></div>";
+$includejs = '
+<script>
+jQuery(document).ready(function ($) {
 
-
-
-
-$balance = $user["saldo"];
-$currency = readconfigfromdb("currency");
-echo "<table cellpadding='0' cellspacing='0' border='0' width='99%'>";
-echo "<tr><td>&#160;</td></tr>";
-echo "<tr class='even_row'>";
-echo '<td><strong>' . $currency .'stand: ' . $balance .'</strong></td><td>Interacties voorbije jaar</td></tr>';
-echo "<tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
-echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
-
-echo "<div class='border_b'>";
-echo "<a href='../print_usertransacties.php?id=".$id."'>Print transactielijst</a> ";
-echo "<a href='../export_transactions.php?userid=".$id."'>Export transactielijst</a>";
-echo "</div>";
-
-$messages = $db->GetArray("SELECT * FROM messages where id_user = ".$id." and validity > now() order by cdate");
-
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td colspan='2'><strong>Vraag & Aanbod</strong></td>";
-echo "</tr>";
-$rownumb=0;
-foreach($messages as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
-	echo "<td valign='top'>";
-	if($value["msg_type"]==0){
-		echo "V";
-	}elseif ($value["msg_type"]==1){
-		echo "A";
-	}
-	echo "</td>";
-	echo "<td valign='top'>";
-	echo "<a href='../messages/view.php?id=".$value["id"]."'>";
-	if(strtotime($value["validity"]) < time()) {
-					echo "<del>";
-			}
-	$content = htmlspecialchars($value["content"],ENT_QUOTES);
-	echo chop_string($content, 60);
-	if(strlen($content)>60){
-		echo "...";
-	}
-	if(strtotime($value["validity"]) < time()) {
-					echo "</del>";
-			}
-	echo "</a>";
-	echo "</td>";
-	echo "</td>";
-	echo "</tr>";
-}
-//echo "<tr><td colspan='2'>&#160;</td></tr>";
-echo "</table>";
-
-
-
-
-$transactions = get_all_transactions($id);
-
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td nowrap valign='top'><strong>";
-echo "Datum";
-echo "</strong></td><td valign='top'><strong>Van</strong></td>";
-echo "<td><strong>Aan</strong></td>";
-echo "<td><strong>";
-echo "Bedrag uit";
-echo "</strong></td>";
-echo "<td><strong>";
-echo "Bedrag in";
-echo "</strong></td>";
-echo "<td valign='top'><strong>";
-echo "Dienst";
-echo "</strong></td></tr>";
-$rownumb=0;
-
-foreach($transactions as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
-	echo "<td nowrap valign='top'>";
-	echo $value["datum"];
-	echo '</td><td' . (($value['id_from'] == $id) ? ' class="me"' : '') . '>';
-	echo '<a href="view.php?id=' . $value['id_from'] . '">';
-	echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
-	echo '</a></td><td' . (($value['id_to'] == $id) ? ' class="me"' : '') . '>';
-	echo '<a href="view.php?id=' . $value['id_to'] . '">';
-	echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
-	echo "</a></td>";
-
-	if ($value["fromusername"] == $user["name"]){
-		echo "<td valign='top' nowrap>";
-		echo $value["amount"];
-		echo "</td>";
-		echo "<td></td>";
-	}else{
-		echo "<td></td>";
-		echo "<td valign='top' nowrap>";
-		echo "+".$value["amount"];
-		echo "</td>";
-	}
-	echo "<td valign='top'>";
-	echo "<a href='".$rootpath."transactions/view.php?id=".$value["transid"]."'>";
-	echo htmlspecialchars($value["description"],ENT_QUOTES);
-	echo "</a> ";
-	echo "</td></tr>";
-}
-echo "</table>";
-
-
-
-function chop_string($content, $maxsize){
-$strlength = strlen($content);
-    //geef substr van kar 0 tot aan 1ste spatie na 30ste kar
-    //dit moet enkel indien de lengte van de string groter is dan 30
-    if ($strlength >= $maxsize){
-        $spacechar = strpos($content," ", 60);
-        if($spacechar == 0){
-            return $content;
-        }else{
-            return substr($content,0,$spacechar);
-        }
-    }else{
-        return $content;
-    }
-}
-
-function get_numberoftransactions($user_id){
-	global $db;
-
-	$query_min = "SELECT count(*) ";
-	$query_min .= " FROM transactions ";
-	$query_min .= " WHERE id_from = ".$user_id ." or id_to = ".$user_id ;
-	return $db->GetOne($query_min);
-}
-
-
-
-
-function get_contact($id){
-	global $db;
-	$query = "SELECT *, ";
-	$query .= " contact.id AS cid, users.id AS uid, type_contact.id AS tcid, ";
-	$query .= " type_contact.name AS tcname, users.name AS uname ";
-	$query .= " FROM users, type_contact, contact ";
-	$query .= " WHERE users.id=".$id;
-	$query .= " AND contact.id_type_contact = type_contact.id ";
-	$query .= " AND users.id = contact.id_user ";
-	$contact = $db->GetArray($query);
-	return $contact;
-}
-
-function show_contact($contact, $user_id ){
-	echo "<div >";
-	echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
-
-	echo "<tr class='even_row'>";
-	echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
-	echo "</tr>";
-	echo "<tr>";
-	echo "<th valign='top'>Type</th>";
-	echo "<th valign='top'>Waarde</th>";
-	echo "<th valign='top'>Commentaar</th>";
-	echo "<th valign='top'>Publiek</th>";
-	echo "<th valign='top'></th>";
-	echo "</tr>";
-
-	foreach($contact as $key => $value){
-		echo "<tr>";
-		echo "<td valign='top'>".$value["abbrev"].": </td>";
-		echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
-		echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
-		echo "<td valign='top'>";
-		if (trim($value["flag_public"]) == 1){
-				echo "Ja";
-		}else{
-				echo "Nee";
+	function scaleChart() {
+		var parentWidth = $("#chartdiv1").parent().width();
+		if (parentWidth) {
+			$("#chartdiv1").css("width", parentWidth);
 		}
-		echo "</td>";
-		echo "<td valign='top' nowrap>|";
-		echo "<a href='cont_edit.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
-		echo " aanpassen </a> |";
-		echo "<a href='cont_delete.php?cid=".$value["id"]."&uid=".$value["id_user"]."'>";
-		echo "verwijderen </a>|";
-		echo "</td>";
-		echo "</tr>";
+		else
+		{
+			window.setTimeout(scaleChart, 30);
+		}
 	}
-	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
-	echo "<tr><td colspan='5'>| ";
-	echo "<a href='cont_add.php?uid=" . $value['id_user'] . "'>";
-	echo "Contact toevoegen</a> ";
-	echo "|</td></tr>";
-	echo "</table></div>";
+	scaleChart();
+	$(window).bind("load", scaleChart);
+	$(window).bind("resize", scaleChart);
+	$(window).bind("orientationchange", scaleChart);
+});
+</script>
+';
+
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3><i class="fa fa-leanpub"></i> Vraag en aanbod ';
+echo '<a href="' . $rootpath . 'messages/edit.php?mode=new&uid=' . $id . '"';
+echo ' class="btn btn-success" title="Vraag of aanbod toevoegen">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
+echo '</h3>';
+
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+
+echo '<thead>';
+echo '<tr>';
+echo '<th>V/A</th>';
+echo '<th>Wat</th>';
+echo '<th data-hide="phone, tablet">Geldig tot</th>';
+echo '<th data-hide="phone, tablet">Geplaatst</th>';
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach ($messages as $m)
+{
+	$class = (strtotime($m['validity']) < time()) ? ' class="danger"' : '';
+	list($validity) = explode(' ', $m['validity']);
+	list($cdate) = explode(' ', $m['cdate']);
+	
+	echo '<tr' . $class . '>';
+	echo '<td>';
+	echo ($m['msg_type']) ? 'Aanbod' : 'Vraag';
+	echo '</td>';
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'messages/view.php?id=' . $m['id'] . '">';
+	echo htmlspecialchars($m['content'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+	echo '<td>';
+	echo $validity;
+	echo '</td>';
+	echo '<td>';
+	echo $cdate;
+	echo '</td>';
+	echo '</tr>';
+}
+echo '</tbody>';
+echo '</table>';
+
+echo '</div>';
+echo '</div></div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3><i class="fa fa-refresh"></i> Transacties ';
+echo '<a href="' . $rootpath . 'transactions/add.php?uid=' . $id . '"';
+echo ' class="btn btn-success" title="Transactie toevoegen">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a> ';
+echo '<a href="' . $rootpath . 'print_usertransacties.php?id=' . $id . '"';
+echo ' class="btn btn-default" title="Print transactielijst">';
+echo '<i class="fa fa-print"></i><span class="hidden-xs"> Print transactielijst</span></a> ';
+echo '<a href="' . $rootpath . 'export_transactions.php?userid=' . $id . '"';
+echo ' class="btn btn-default" title="csv export transacties">';
+echo '<i class="fa fa-file"></i><span class="hidden-xs"> Export csv</span></a>';
+echo '</h3>';
+
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+
+echo '<thead>';
+echo '<tr>';
+echo '<th>Omschrijving</th>';
+echo '<th>Bedrag</th>';
+echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
+echo '<th data-hide="phone, tablet">Uit/In</th>';
+echo '<th data-hide="phone, tablet">Tegenpartij</th>';
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach($transactions as $t){
+
+	echo '<tr>';
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'transactions/view.php?id=' . $t['id'] . '">';
+	echo htmlspecialchars($t['description'], ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+	
+	echo '<td>';
+	echo '<span class="text-';
+	echo ($t['id_from'] == $id) ? 'danger">-' : 'success">';
+	echo $t['amount'];
+	echo '</span></td>';
+
+	echo '<td>';
+	echo $t['cdate'];
+	echo '</td>';
+
+	echo '<td>';
+	echo ($t['id_from'] == $id) ? 'Uit' : 'In'; 
+	echo '</td>';
+
+	if ($t['id_from'] == $id)
+	{
+		if ($t['real_to'])
+		{
+			$other_user = htmlspecialchars($t['real_to'], ENT_QUOTES);
+		}
+		else
+		{
+			$other_user = '<a href="' . $rootpath . 'users/view.php?id=' . $t['id_to'] . '">';
+			$other_user .= htmlspecialchars($t['to_letscode'] . ' ' . $t['to_username'], ENT_QUOTES);
+			$other_user .= '</a>';
+		}
+	}
+	else
+	{
+		if ($t['real_from'])
+		{
+			$other_user = htmlspecialchars($t['real_from'], ENT_QUOTES);
+		}
+		else
+		{
+			$other_user = '<a href="' . $rootpath . 'users/view.php?id=' . $t['id_from'] . '">';
+			$other_user .= htmlspecialchars($t['from_letscode'] . ' ' . $t['from_username'], ENT_QUOTES);
+			$other_user .= '</a>';
+		}
+	}
+
+	echo '<td>';
+	echo $other_user;
+	echo '</td>';
+
+	echo '</tr>';
 }
 
-function get_all_transactions($user_id){
-	global $db;
-	$query = "SELECT *, ";
-	$query .= " transactions.id AS transid, ";
-	$query .= " fromusers.id AS userid, ";
-	$query .= " fromusers.name AS fromusername, tousers.name AS tousername, ";
-	$query .= " fromusers.letscode AS fromletscode, tousers.letscode AS toletscode, ";
-	$query .= " transactions.date AS datum ";
-	$query .= " FROM transactions, users  AS fromusers, users AS tousers";
-	$query .= " WHERE transactions.id_to = tousers.id";
-	$query .= " AND transactions.id_from = fromusers.id";
-	$query .= " AND (transactions.id_from = ".$user_id." OR transactions.id_to = ".$user_id.")";
+echo '</tbody>';
+echo '</table>';
 
-	if (isset($trans_orderby)){
-		$query .= " ORDER BY transactions.".$trans_orderby. " ";
-	}
-	else {
-		$query .= " ORDER BY transactions.date DESC";
-	}
-	$transactions = $db->GetArray($query);
-	return $transactions;
-}
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

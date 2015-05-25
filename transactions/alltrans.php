@@ -5,26 +5,11 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 $trans_orderby = $_GET["trans_orderby"];
 $asc = $_GET["asc"];
 
 $trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
-
-if (in_array($s_accountrole, array('admin', 'user')))
-{
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
-}
-
-echo '<h1>Transacties</h1>';
 
 $query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;
 $query = 'SELECT t.*, 
@@ -68,6 +53,17 @@ $tableheader_ary = array(
 $tableheader_ary[$trans_orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	$top_buttons = '<a href="' . $rootpath . 'transactions/add.php?" class="btn btn-success"';
+	$top_buttons .= ' title="gebruiker toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+}
+
+include($rootpath."includes/inc_header.php");
+
+echo '<h1>Transacties</h1>';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable" data-sort="false">';
 echo '<thead>';
@@ -91,7 +87,6 @@ echo '<tbody>';
 foreach($transactions as $key => $value)
 {
 	echo '<tr>';
-
 	echo '<td><a href="' . $rootpath . 'view.php?id=' . $value['transid'] . '">';
 	echo htmlspecialchars($value['description'],ENT_QUOTES);
 	echo '</a>';
@@ -106,7 +101,7 @@ foreach($transactions as $key => $value)
 	echo '>';
 	if(!empty($value["real_from"]))
 	{
-		echo htmlspecialchars($value["real_from"],ENT_QUOTES);
+		echo htmlspecialchars($value['real_from'],ENT_QUOTES);
 	}
 	else
 	{

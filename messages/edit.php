@@ -9,6 +9,13 @@ require_once($rootpath."includes/inc_form.php");
 $id = (isset($_GET["id"])) ? $_GET['id'] : 0;
 $mode = $_GET["mode"];
 
+if (!isset($mode))
+{
+	$alert->error('Edit mode is not set.');
+	header('Location: ' . $rootpath . 'messages/overview.php');
+	exit;
+}
+
 if ($_POST['zend'])
 {
 	$validity = (int) $_POST["validity"];
@@ -104,9 +111,11 @@ else if ($mode == 'new')
 		'units'			=> '',
 	);
 
-	$user = readuser($s_id);
+	$uid = (isset($_GET['uid']) && $s_accountrole == 'admin') ? $_GET['uid'] : $s_id;
 
-	$user_letscode = $s_letscode . ' ' . $user['fullname'];
+	$user = readuser($uid);
+
+	$user_letscode = $user['letscode'] . ' ' . $user['fullname'];
 }
 
 $letsgroup_id = $db->GetOne('SELECT id
