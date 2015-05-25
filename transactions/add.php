@@ -265,7 +265,7 @@ echo '</div>';
 echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
 
-echo "</form>";
+echo '</form>';
 
 include($rootpath."includes/inc_footer.php");
 

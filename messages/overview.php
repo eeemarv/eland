@@ -40,9 +40,12 @@ if (isset($user_filterby)){
 	}
 }
 
-if (isset($msg_orderby)){
+if (isset($msg_orderby))
+{
 		$query .= " ORDER BY ".$msg_orderby. " ";
-}else{
+}
+else
+{
 		$query .= " ORDER BY messages.msg_type,letscode ";
 }
 $messagerows = $db->GetArray($query);

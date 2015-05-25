@@ -285,40 +285,54 @@ array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT
 array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
 $includejs = '
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 include($rootpath."includes/inc_header.php");
-echo '<h1>Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'wijzigen') . '</h1>';
-echo "<div class='border_b'><p>";
+echo '<h1><span class="text-danger">Admin:</span> <i class="fa fa-user"></i>';
+echo ' Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'aanpassen') . '</h1>';
 
-echo '<form method="post">';
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td align='right' >";
-echo "Naam";
-echo "</td><td >";
-echo '<input type="text" name="name" value="' . $user['name'] . '" size="30" required>';
-echo "</td></tr>";
+echo '<form method="post" class="form-horizontal">';
 
-echo "<tr><td align='right'>";
-echo "Volledige Naam (Voornaam en Achternaam)";
-echo "</td><td >";
-echo '<input type="text" name="fullname" size="30" value="' . $user['fullname'] . '" required>';
-echo "</td></tr><tr><td ></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" ';
+echo 'value="' . $user['name'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Letscode</td>";
-echo '<td ><input type="text" name="letscode" value="' . $user['letscode'] . '" size="30" maxlength="20" required>';
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
+echo 'value="' . $user['fullname'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Postcode</td>";
-echo '<td ><input type="text" name="postcode" value="' . $user['postcode'] . '" size="30" maxlength="6">';
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+echo 'value="' . $user['letscode'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Geboortedatum (jjjj-mm-dd)</td>";
-echo "<td ><div></div><input type='text' name='birthday' value='" . $user['birthday'] . "' ";
+echo '<div class="form-group">';
+echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
+echo 'value="' . $user['postcode'] . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum (jjjj-mm-dd)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
+echo 'value="' . $user['birthday'] . '" required ';
 echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-default-view="2" ';
 echo 'data-date-end-date="' . date('Y-m-d') . '" ';
@@ -327,37 +341,51 @@ echo 'data-date-start-view="2" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
 echo 'data-date-immediate-updates="true" ';
-echo "size='10'></div></td></tr>";
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td  align='right'>Hobbies/interesses:</td><td >";
-echo "<textarea name='hobbies' cols='60' rows='4'>";
+echo '<div class="form-group">';
+echo '<label for="hobbies" class="col-sm-2 control-label">Hobbies, interesses</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="hobbies" id="hobbies" class="form-control">';
 echo $user['hobbies'];
-echo "</textarea>";
-echo "</td></tr><tr><td></td><td >";
-echo "</td></tr>";
-echo "<tr><td align='right'>Commentaar</td><td >";
-echo "<input type='text' name='comments' value='" . $user['comments'] . "' size='30'>";
-echo "</td></tr>";
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Login</td><td >";
-echo '<input type="text" name="login" value="' . $user['login'] . '" size="30">';
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="login" name="login" ';
+echo 'value="' . $user['login'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Rechten</td>";
-echo "<td >";
+echo '<div class="form-group">';
+echo '<label for="accountrole" class="col-sm-2 control-label">Rechten</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="login" name="login" ';
+echo 'value="' . $user['login'] . '">';
+echo '</div>';
+echo '</div>';
+
 $role_ary = array(
 	'admin'		=> 'Admin',
 	'user'		=> 'User',
 	'guest'		=> 'Guest',
 	'interlets'	=> 'Interlets',
 );
-echo "<select name='accountrole' id='accountrole'>";
+
+echo '<div class="form-group">';
+echo '<label for="accountrole" class="col-sm-2 control-label">Rechten</label>';
+echo '<div class="col-sm-10">';
+echo '<select id="accountrole" name="accountrole" class="form-control">';
 render_select_options($role_ary, $user['accountrole']);
-echo "</select>";
-echo "</td></tr>";
-echo "<tr><td  align='right'>Status</td>";
-echo "<td >";
-echo '<select name="status">';
+echo '</select>';
+echo '</div>';
+echo '</div>';
+
 $status_ary = array(
 	0	=> 'Gedesactiveerd',
 	1	=> 'Actief',
@@ -366,55 +394,88 @@ $status_ary = array(
 	6	=> 'Infoavond',
 	7	=> 'Extern',
 );
+
+echo '<div class="form-group">';
+echo '<label for="status" class="col-sm-2 control-label">Status</label>';
+echo '<div class="col-sm-10">';
+echo '<select id="status" name="status" class="form-control">';
 render_select_options($status_ary, $user['status']);
-echo "</select>";
-echo "</td>";
-echo "</tr>";
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Commentaar van de admin:</td><td >";
-echo "<textarea name='admincomment' cols='60' rows='4'>";
+echo '<div class="form-group">';
+echo '<label for="admincomment" class="col-sm-2 control-label">Commentaar van de admin</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="admincomment" id="admincomment" class="form-control">';
 echo $user['admincomment'];
-echo "</textarea>";
-echo "</td></tr><tr><td >";
-echo "</td></tr>";
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Limiet minstand</td><td >";
-echo "<input type='number' name='minlimit' value='" . $user['minlimit'] . "' size='30' required>";
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="minlimit" class="col-sm-2 control-label">Minimum limiet saldo</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="number" class="form-control" id="minlimit" name="minlimit" ';
+echo 'value="' . $user['minlimit'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right'>Limiet maxstand</td><td >";
-echo "<input type='number' name='maxlimit' value='" . $user['maxlimit'] . "' size='30' required>";
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="maxlimit" class="col-sm-2 control-label">Maximum limiet saldo</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="number" class="form-control" id="maxlimit" name="maxlimit" ';
+echo 'value="' . $user['maxlimit'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td  align='right'>Preshared key<br><small><i>Interlets veld</i></small></td><td >";
-echo "<input type='text' name='presharedkey' value='" . $user['presharedkey'] . "' size='30'>";
-echo "</td></tr><tr><td></td>";
-echo "</tr>";
+echo '<div class="form-group">';
+echo '<label for="presharedkey" class="col-sm-2 control-label">Preshared key</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
+echo 'value="' . $user['presharedkey'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td  align='right'>Saldo mail met recent vraag en aanbod</td><td >";
-echo "<input type='checkbox' name='cron_saldo'";
+echo '<div class="form-group">';
+echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke saldo mail met recent vraag en aanbod</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
 echo ($user['cron_saldo'] == 't') ? ' checked="checked"' : '';
-echo ">";
-echo "</td></tr><tr><td></td>";
-echo "</tr>";
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo '<tr class="contact"><td colspan="2"><h2>Contacten</h2></td></tr>';
+echo '<div class="bg-warning">';
+echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
 $already_one_mail_input = false;
 
 foreach ($contact as $key => $c)
 {
-	echo '<tr class="contact"><td  align="right">' . $c['name'] . '</td><td >';
-	echo '<input name="contact[' . $key . '][value]" value="' . $c['value'] . '" size="30"';
+	$name = 'contact[' . $key . '][value]';
+	$public = 'contact[' . $key . '][flag_public]';
+
+	echo '<div class="form-group">';
+	echo '<label for="' . $name . '" class="col-sm-2 control-label">' . $c['abbrev'] . '</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
+	echo 'value="' . $c['value'] . '"';
 	echo ($c['abbrev'] == 'mail' && !$already_one_mail_input) ? ' required="required"' : '';
 	echo ($c['abbrev'] == 'mail') ? ' type="email"' : ' type="text"';
 	echo '>';
-	echo '</td></tr>';
+	echo '</div>';
+	echo '</div>';
 
-	echo '<tr class="contact"><td  align="right"></td><td>';
-	echo '<input type="checkbox" name="contact[' . $key . '][flag_public]" value="1"';
+	echo '<div class="form-group">';
+	echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaar</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="checkbox" id="' . $public . '" name="' . $public . '" ';
+	echo 'value="1"';
 	echo  ($c['flag_public']) ? ' checked="checked"' : '';
-	echo '>zichtbaar</td></tr>';
+	echo '>';
+	echo '</div>';
+	echo '</div>';
 
 	if ($c['abbrev'] == 'mail' && !$already_one_mail_input)
 	{
@@ -427,21 +488,27 @@ foreach ($contact as $key => $c)
 	$already_one_mail_input = ($c['abbrev'] == 'mail') ? true : $already_one_mail_input;
 }
 
+echo '</div>';
+
 if ($mode == 'new')
 {
-	echo "<tr><td  align='right'>Activeren?</td><td >";
-	echo "<input type='checkbox' name='activate' ";
-	echo "checked='checked'";
-	echo ">";
-	echo "</td></tr>";
+	echo '<div class="form-group">';
+	echo '<label for="activate" class="col-sm-2 control-label">Activeren? (mail met paswoord versturen)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="checkbox" name="activate" id="activate"';
+	echo ' checked="checked"';
+	echo '>';
+	echo '</div>';
+	echo '</div>';
 }
 
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' value='Opslaan'>";
-echo "</td></tr></table>";
-echo "</form>";
+$cancel_red = ($id) ? 'view.php?id=' . $id : 'overview.php';
+echo '<a href="' . $rootpath . 'users/' . $cancel_red . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 
-include($rootpath."includes/inc_footer.php");
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';
 
 function validate_input($posted_list)
 {
@@ -476,20 +543,12 @@ function validate_input($posted_list)
 	    }
 	}
 
-	//amount may not be empty
 	$var = trim($posted_list["minlimit"]);
 	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )==""))
 	{
 		$error_list["minlimit"]="Vul bedrag in!";
-	//amount amy only contain  numbers between 0 en 9
 	}
-/*	allow positive minlimit
- *
- * else if(eregi('^-[0-9]+$', $var) == FALSE)
-	{
-		$error_list["minlimit"]="Bedrag moet een negatief getal,zijn!";
-	}
-	*/
+
 	return $error_list;
 }
 
