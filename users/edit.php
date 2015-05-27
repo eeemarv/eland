@@ -291,7 +291,7 @@ $includejs = '
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 include($rootpath."includes/inc_header.php");
-echo '<h1><span class="text-danger">Admin:</span> <i class="fa fa-user"></i>';
+echo '<h1><span class="label label-danger">Admin</span> <i class="fa fa-user"></i>';
 echo ' Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'aanpassen') . '</h1>';
 
 echo '<form method="post" class="form-horizontal">';

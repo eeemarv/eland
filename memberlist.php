@@ -67,6 +67,8 @@ if(!empty($searchname))
 
 $userrows = $db->GetArray($query);
 
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
 $query = 'SELECT tc.abbrev, c.id_user, c.value
 	FROM contact c, type_contact tc, users u
 	WHERE tc.id = c.id_type_contact
@@ -101,8 +103,6 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
 foreach($userrows as $value)
 {
 	$id = $value['id'];
@@ -114,10 +114,9 @@ foreach($userrows as $value)
 
 	echo '<td>';
 	echo '<a href="memberlist_view.php?id=' .$id .'">';
-
 	echo $value['letscode'];
-
-	echo '</td></a>';
+	echo '</a></td>';
+	
 	echo '<td>';
 	echo '<a href="memberlist_view.php?id=' .$id .'">'.htmlspecialchars($value['fullname'],ENT_QUOTES).'</a></td>';
 	echo '<td>';
@@ -133,21 +132,23 @@ foreach($userrows as $value)
 
 	echo "<td align='right'>";
 	$balance = $value["saldo"];
-	if($balance < $value["minlimit"] || ($value["maxlimit"] != NULL && $balance > $value["maxlimit"]))
+	if($balance < $value['minlimit'] || ($value['maxlimit'] != NULL && $balance > $value['maxlimit']))
 	{
-		echo "<font color='red'> $balance </font>";
+		echo '<span class="text-danger">' . $balance . '</span>';
 	}
 	else
 	{
 		echo $balance;
 	}
 
-	echo "</td>";
-	echo "</tr>";
+	echo '</td>';
+	echo '</tr>';
 
 }
 echo '</tbody>';
 echo '</table>';
+echo '</div>';
+echo '</div>';
 echo '</div>';
 
 // active legend
