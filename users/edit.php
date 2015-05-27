@@ -476,20 +476,16 @@ function validate_input($posted_list)
 	    }
 	}
 
-	//amount may not be empty
-	$var = trim($posted_list["minlimit"]);
-	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )==""))
+	if (!filter_var($posted_list['minlimit'] ,FILTER_VALIDATE_INT))
 	{
-		$error_list["minlimit"]="Vul bedrag in!";
-	//amount amy only contain  numbers between 0 en 9
+		$error_list['minlimit'] = 'Geef getal op voor de minimum limiet.';
 	}
-/*	allow positive minlimit
- *
- * else if(eregi('^-[0-9]+$', $var) == FALSE)
+
+	if (!filter_var($posted_list['maxlimit'] ,FILTER_VALIDATE_INT))
 	{
-		$error_list["minlimit"]="Bedrag moet een negatief getal,zijn!";
+		$error_list['maxlimit'] = 'Geef getal op voor de maximum limiet.';
 	}
-	*/
+
 	return $error_list;
 }
 
