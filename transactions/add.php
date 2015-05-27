@@ -179,7 +179,7 @@ $letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
 $currency = readconfigfromdb('currency');
 
-echo "<h1>Nieuwe transactie</h1>";
+echo '<h1><i class="fa fa-exchange"></i> Nieuwe transactie</h1>';
 
 $minlimit = $user["minlimit"];
 

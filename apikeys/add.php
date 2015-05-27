@@ -2,9 +2,8 @@
 ob_start();
 $rootpath = "../";
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_apikeys.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $posted_list = array();
 $posted_list["apikey"] = $_POST["apikey"];
@@ -13,7 +12,8 @@ $posted_list["type"] = $_POST["type"];
 
 if ($_POST['zend'])
 {
-	if($db->AutoExecute("apikeys", $posted_list, 'INSERT')){
+	if($db->AutoExecute('apikeys', $posted_list, 'INSERT'))
+	{
 		$alert->success('Apikey opgeslagen.');
 		header('Location: '.$rootpath.'apikeys/overview.php');
 		exit;
@@ -21,35 +21,42 @@ if ($_POST['zend'])
 	$alert->error('Apikey niet opgeslagen.');
 }
 
-$mykey = generate_apikey();
+$apikey = sha1(readconfigfromdb('systemname') . microtime());
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Apikey toevoegen</h1>";
-echo "<div id='apikeydiv' class='border_b'>";
-echo "<form method='post' >";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td align='right'>";
-echo "Apikey";
-echo "</td><td>";
-echo "<input type='text' name='apikey' id='apikey' size='40' value='";
-echo $mykey;
-echo "' READONLY required>";
-echo "</td></tr>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<tr><td align='right'>Type</td><td>";
-echo "<select name='type'>";
-echo "<option value='interlets' >Interlets</option>";
-echo "</select>";
-echo "</td></tr>";
+echo '<h1><span class="label label-danger">Admin</span> Apikey toevoegen</h1>';
 
-echo "<tr><td align='right'>Comment</td><td>";
-echo "<input type='text' name='comment' id='comment' size='50'>";
-echo "</td></tr>";
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' id='zend' value='opslaan'>";
-echo "</td></tr></table>";
-echo "</form>";
-echo "</div>";
-include($rootpath."includes/inc_footer.php");
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="apikey" class="col-sm-2 control-label">Apikey</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="apikey" name="apikey" ';
+echo 'value="' . $apikey . '" required readonly>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="type" class="col-sm-2 control-label">Apikey</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="type" name="type" ';
+echo 'value="interlets" required readonly>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="comment" class="col-sm-2 control-label">Comment</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="comment" name="comment" ';
+echo 'value="' . $posted_list['comment'] . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'apikeys/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';
 
 

@@ -14,28 +14,26 @@ if($s_accountrole != "admin"){
 $query .= " ORDER BY cdate DESC";
 $newsitems = $db->GetArray($query);
 
-include($rootpath."includes/inc_header.php");
-
-if($s_accountrole == "user" || $s_accountrole == "admin"){
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<li><a href='edit.php?mode=new'>Toevoegen</a></li>";
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+if($s_accountrole == 'user' || $s_accountrole == 'admin')
+{
+	$top_buttons = '<a href="' .$rootpath . 'news/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-echo "<h1>Nieuws</h1>";
+include $rootpath . 'includes/inc_header.php';
+
+echo '<h1><i class="fa fa-newspaper-o"></i> Nieuws</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable">';
 
 echo '<thead>';
 echo '<tr>';
-echo "<th>Titel</th>";
+echo '<th>Titel</th>';
 echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
 echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
-echo "</tr>";
+echo '</tr>';
 echo '</thead>';
 
 echo '<tbody>';
@@ -68,4 +66,4 @@ foreach ($newsitems as $value)
 echo '</tbody>';
 echo "</table></div>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

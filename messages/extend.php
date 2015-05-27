@@ -1,7 +1,8 @@
 <?php
+
 ob_start();
 $rootpath = "../";
-$role = 'user';
+$role = 'admin'; 
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
@@ -10,7 +11,7 @@ $validity = $_GET['validity'];
 
 if(isset($msgid))
 {
-	$msg = $db->GetRow('select * from messages where id = ' . $msgid . ' and id_user = ' . $s_id);
+	$msg = $db->GetRow('select * from messages where id = ' . $msgid);
 
 	if ($msg)
 	{
@@ -31,5 +32,5 @@ if(isset($msgid))
 	}
 }
 
-header('Location: ' . $rootpath . 'userdetails/mymsg_overview.php');
+header('Location: ' . $rootpath . 'messages/overview.php');
 exit;

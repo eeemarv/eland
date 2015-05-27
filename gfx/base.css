@@ -308,3 +308,37 @@ div.top-buttons a
 {
 	margin-left: 5px;
 }
+
+/** nav-tabs **/
+
+.bg-white
+{
+  background-color: white; 
+}
+
+.nav-tabs
+{
+   border-bottom: 0px; 
+   margin-bottom: 5px;
+}
+
+.nav-tabs > li > a
+{
+  border-bottom: 2px solid grey;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus
+{
+  background-color: transparent;
+  border: 2px solid grey;
+  border-bottom-color: transparent;
+} 
+  
+.nav-tabs > li > a,
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus
+{
+  border-bottom-color: #777;
+} 

@@ -1,20 +1,17 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-include($rootpath."includes/inc_header.php");
-
-$account_user_admin = (in_array($s_accountrole, array('admin', 'user'))) ? true : false;
-
+/*
 $msg_orderby =  (isset($_GET["msg_orderby"])) ? $_GET["msg_orderby"] : "messages.id";
 
 $user_filterby = $_GET["user_filterby"];
 
 $date = date('Y-m-d');
-global $db;
+
 $query = "SELECT *, ";
 $query .= " messages.id AS msgid, ";
 $query .= " users.id AS userid, ";
@@ -48,132 +45,117 @@ else
 {
 		$query .= " ORDER BY messages.msg_type,letscode ";
 }
-$messagerows = $db->GetArray($query);
+*/
+$msgs = $db->GetArray('select m.*,
+		c.id as cid, c.fullname as cat,
+		u.letscode, u.fullname, u.id as uid
+	from messages m, categories c, users u
+	where m.id_category = c.id
+		and m.id_user = u.id
+	order by id desc');
 
+$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-if ($account_user_admin)
+include $rootpath . 'includes/inc_header.php';
+
+if ($s_accountrole == 'admin')
 {
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo "<li><a href='edit.php?mode=new'>Vraag & Aanbod toevoegen</a></li>";
-	if ($s_accountrole == "admin")
-	{
-		echo '<li><a href="' . $rootpath. 'export_messages.php">Export</a></li>';
-	}
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	echo '<div class="pull-right hidden-xs">';
+	echo '<a href="' . $rootpath . 'export_messages.php';
+	echo '" target="new">';
+	echo '<i class="fa fa-file"></i>';
+	echo '&nbsp;csv</a>';
+	echo '</div>';
 }
 
-echo "<h1>Overzicht Vraag & Aanbod</h1>";
+echo '<h1><i class="fa fa-leanpub"></i> Vraag & Aanbod</h1>';
 
+echo '<ul class="nav nav-tabs">';
+echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';
+echo '<li class="active"><input type="text" class="search"></li>';
+echo '<li><a href="#" class="bg-white">Geldig</a></li>';
+echo '<li><a href="#" class="bg-danger">Vervallen</a></li>';
+echo '</ul>';
+
+/*
 echo "<br>Filter: ";
 echo "<a href='overview.php?user_filterby=all'>Alle</a>";
 echo " - ";
 echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
 echo " - ";
 echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
+*/
 
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td nowrap><strong>";
-echo "<a href='overview.php?msg_orderby=msg_type'>V/A</a>";
-echo "</strong></td>";
-echo "<td ><strong>";
-echo "<a href='overview.php?msg_orderby=content'>Wat</a>";
-echo "</strong></td>";
-echo "<td ><strong>Geldig tot";
-echo "</strong></td>";
-echo "<td ><strong>";
-echo "<a href='overview.php?msg_orderby=letscode'>Wie</a>";
-echo "</strong></td>";
-echo "<td ><strong>";
-echo "<a href='overview.php?msg_orderby=catname'>Categorie</a>";
-echo "</strong></td>";
-if ($account_user_admin)
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+echo '<thead>';
+echo '<tr>';
+echo "<th>V/A</th>";
+echo "<th>Wat</th>";
+echo '<th data-hide="phone, tablet">Geldig tot</th>';
+echo '<th data-hide="phone, tablet">Wie</th>';
+echo '<th data-hide="phone, tablet">Categorie</th>';
+if ($s_accountrole == 'admin')
 {
-	echo "<td><strong>Verlengen</strong></td>";
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verlengen</th>';
 }
-echo "</tr>";
-$rownumb=0;
-foreach($messagerows as $key => $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
+echo '</tr>';
+echo '</thead>';
 
-	echo "<td valign='top' nowrap>";
-	if($value["msg_type"]==0){
-		echo "V";
-	}elseif ($value["msg_type"]==1){
-		echo "A";
-	}
-	echo "</td>";
-	echo "<td valign='top'>";
-	if(strtotime($value["valdate"]) < time()) {
-					echo "<del>";
-			}
-	echo "<a href='view.php?id=".$value["msgid"]."'>";
-	$content = htmlspecialchars($value["content"],ENT_QUOTES);
-	echo chop_string($content, 50);
-	if(strlen($content)>50){
-		echo "...";
-	}
-	echo "</a>";
-			 if(strtotime($value["valdate"]) < time()) {
-					echo "</del>";
-			}
+echo '<tbody>';
 
-	echo "</a> ";
-	echo "</td>";
+foreach($msgs as $msg)
+{
+	$del = (strtotime($msg['validity']) < time()) ? true : false;
 
-	echo "<td>";
-			if(strtotime($value["valdate"]) < time()) {
-					echo "<font color='red'><b>";
-			}
-			echo $value["valdate"];
-			if(strtotime($value["valdate"]) < time()) {
-					echo "</b></font>";
-			}
-			echo "</td>";
+	echo '<tr';
+	echo ($del) ? ' class="danger"' : '';
+	echo '>';
+	echo '<td>';
 
-	echo "<td valign='top' nowrap>";
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'].'">';
-	echo  htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
+	echo ($msg["msg_type"]) ? 'A' : 'V';
+	echo '</td>';
+
+	echo '<td>';
+	echo '<a href="' .$rootpath . 'messages/view.php?id=' . $msg['id']. '">';
+	echo htmlspecialchars($msg['content'],ENT_QUOTES);
 	echo '</a>';
-	echo "</td>";
-	echo "<td valign='top'>";
-	echo htmlspecialchars($value["fullname"],ENT_QUOTES);
-	echo "</td>";
-	if ($account_user_admin)
+	echo '</td>';
+
+	echo '<td>';
+	echo $msg['validity'];
+	echo '</td>';
+
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
+	echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
+	echo htmlspecialchars($msg['cat'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+
+	if ($s_accountrole == 'admin')
 	{
-		echo "<td valign='top'>";
-		if ($s_accountrole = 'admin' || ($s_accountrole == 'user' && $s_id == $value['userid']))
-		{
-			echo '<a href="message_extend.php?id='.$value["msgid"].'&validity=12">1 jaar</a> | <a href="message_extend.php?id="'.$value['msgid'].'&validity=60">5 jaar</a>';
-		}
-		echo "</td>";
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'messages/extend.php?id=' . $msg['id'] . '&validity=12" class="btn btn-default btn-xs">';
+		echo '1 jaar</a>&nbsp;';
+		echo '<a href="' . $rootpath . 'messages/extend.php?id=' . $msg['id'] . '&validity=60" class="btn btn-default btn-xs">';
+		echo '5 jaar</a>';
+		echo '</td>';
 	}
-	echo "</tr>";
-}
-echo "</table></div>";
 
-include($rootpath."includes/inc_footer.php");
-
-function chop_string($content, $maxsize){
-	$strlength = strlen($content);
-	if ($strlength >= $maxsize){
-		$spacechar = strpos($content," ", 50);
-		if($spacechar == 0){
-			return $content;
-		}else{
-			return substr($content,0,$spacechar);
-		}
-	}else{
-		return $content;
-	}
+	echo '</tr>';
 }
+
+echo '</tbody>';
+echo '</table>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';
+

@@ -7,20 +7,16 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $q = $_GET['q'];
 
-include($rootpath."includes/inc_header.php");
-
 if (in_array($s_accountrole, array('admin', 'user')))
 {
-	echo "<table><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-echo "<h1>Vraag & Aanbod</h1>";
+include $rootpath . 'includes/inc_header.php';
+
+echo '<h1><i class="fa fa-leanpub"></i> Vraag & Aanbod</h1>';
 
 echo "<form method='get' action='$rootpath/messages/search.php'>";
 echo "<input type='text' name='q' size='40' ";
@@ -81,4 +77,4 @@ if($s_accountrole != 'guest')
 	}
 }
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

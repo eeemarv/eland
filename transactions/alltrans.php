@@ -55,14 +55,14 @@ $tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 if (in_array($s_accountrole, array('admin', 'user')))
 {
-	$top_buttons = '<a href="' . $rootpath . 'transactions/add.php?" class="btn btn-success"';
-	$top_buttons .= ' title="gebruiker toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons = '<a href="' . $rootpath . 'transactions/add.php" class="btn btn-success"';
+	$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
-echo '<h1>Transacties</h1>';
+echo '<h1><i class="fa fa-exchange"></i> Transacties</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable" data-sort="false">';

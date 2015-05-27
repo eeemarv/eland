@@ -5,8 +5,6 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 //status 0: inactief
 //status 1: letser
 //status 2: uitstapper
@@ -43,7 +41,12 @@ echo "</ul>";
 echo "</div>";
 echo "</td></tr></table>";
 
-echo "<h1>Overzicht actieve gebruikers</h1>";
+
+
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<h1><span class="label label-danger">Admin</span> Gebruikers</h1>';
 
 // active legend
 echo "<table>";

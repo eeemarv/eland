@@ -5,26 +5,20 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-$query = "SELECT *, ";
-$query .= " messages.id AS msgid, ";
-$query .= " categories.id AS catid, ";
-$query .= " messages.cdate AS date, ";
-$query .= " messages.validity AS valdate, ";
-$query .= "categories.name AS catname ";
-$query .= " FROM messages, categories ";
-$query .= " WHERE messages.id_user = $s_id";
-$query .= " AND messages.id_category = categories.id";
-$query .= " ORDER BY msg_type, content";
-$messagerows = $db->GetArray($query);
+$msgs = $db->GetArray('select m.*,
+		c.id as cid, c.fullname as cat
+	from messages m, categories c
+	where m.id_category = c.id
+		and m.id_user = ' . $s_id . '
+	order by id desc');
 
-include($rootpath."includes/inc_header.php");
+$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-echo "<ul class='hormenu'>";
-echo '<li><a href="'. $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
-echo "</ul>";
+include $rootpath . 'includes/inc_header.php';
 
-
-echo "<h1>Mijn Vraag & Aanbod</h1>";
+echo '<h1><i class="fa fa-leanpub"></i> Mijn Vraag & Aanbod</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';
@@ -34,62 +28,53 @@ echo "<th>V/A</th>";
 echo "<th>Wat</th>";
 echo '<th data-hide="phone, tablet">Geldig tot</th>';
 echo '<th data-hide="phone, tablet">Categorie</th>';
-echo '<th data-hide="phone, tablet">Verlengen</th>';
-echo "</tr>";
+echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verlengen</th>';
+echo '</tr>';
 echo '</thead>';
 
 echo '<tbody>';
 
-foreach($messagerows as $key => $value)
+foreach($msgs as $msg)
 {
-	$del = (strtotime($value["valdate"]) < time()) ? true : false;
+	$del = (strtotime($msg['validity']) < time()) ? true : false;
 
 	echo '<tr';
 	echo ($del) ? ' class="danger"' : '';
 	echo '>';
 	echo '<td>';
 
-	echo ($value["msg_type"]) ? 'A' : 'V';
+	echo ($msg["msg_type"]) ? 'A' : 'V';
 	echo '</td>';
 
 	echo '<td>';
-	echo ($del) ? '<del>' : '';
-	echo "<a href='" .$rootpath ."messages/view.php?id=".$value["msgid"]."'>";
+	echo '<a href="' .$rootpath . 'messages/view.php?id=' . $msg['id']. '">';
+	echo htmlspecialchars($msg['content'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
 
-	echo htmlspecialchars($value["content"],ENT_QUOTES);
-	echo ($del) ? '</del>' : '';
+	echo '<td>';
+	echo $msg['validity'];
+	echo '</td>';
 
-	echo "</td><td>";
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
+	echo htmlspecialchars($msg['cat'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
 
-	echo $value["valdate"];
-
-	echo "</td>";
-
-	echo "<td valign='top' >";
-	echo htmlspecialchars($value["fullname"],ENT_QUOTES);
-	echo "</td>";
-
-	echo "<td valign='top'><a href='mymsg_extend.php?id=".$value["msgid"]."&validity=12'>1 jaar</a> | <a href='mymsg_extend.php?id=".$value["msgid"]."&validity=60'>5 jaar</a>";
-
-	echo "</tr>";
+	echo '<td>';
+	echo '<a href="mymsg_extend.php?id=' . $msg['id'] . '&validity=12" class="btn btn-default btn-xs">';
+	echo '1 jaar</a>&nbsp;';
+	echo '<a href="mymsg_extend.php?id=' . $msg['id'] . '&validity=60" class="btn btn-default btn-xs">';
+	echo '5 jaar</a>';
+	echo '</td>';
+	
+	echo '</tr>';
 }
 
 echo '</tbody>';
-echo "</table>";
-echo "</div>";
+echo '</table>';
+echo '</div>';
 
-function chop_string($content, $maxsize){
-$strlength = strlen($content);
-	if ($strlength >= $maxsize){
-		$spacechar = strpos($content," ", 50);
-		if($spacechar == 0){
-			return $content;
-		}else{
-			return substr($content,0,$spacechar);
-		}
-	}else{
-		return $content;
-	}
-}
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

@@ -137,5 +137,3 @@ function get_all_msgs($msg_orderby,$user_filterby){
 	$messagerows = $db->GetArray($query);
 	return $messagerows;
 }
-
-?>

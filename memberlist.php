@@ -17,7 +17,7 @@ $query = "SELECT prefix, shortname FROM letsgroups WHERE apimethod ='internal' A
 $prefixes = $db->GetAssoc($query);
 $prefixes['ALL'] = 'ALLE';
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="pull-right hidden-xs">';
 echo '<a href="print_memberlist.php?prefix_filterby=' .$prefix_filterby . '">';
@@ -28,7 +28,7 @@ echo '<i class="fa fa-file"></i>';
 echo '&nbsp;csv</a>';
 echo '</div>';
 
-echo '<h1>Contactlijst</h1>';
+echo '<h1><i class="fa fa-users"></i> Contactlijst</h1>';
 
 echo '<form method="GET" class="form-horizontal">';
 

@@ -82,9 +82,9 @@ if (!$trans_en)
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
 }
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
-echo '<h1><span class="text-danger">Admin:</span> ';
+echo '<h1><span class="label label-danger">Admin</span> ';
 echo '<i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
 
 echo '<div class="row">';
@@ -378,7 +378,8 @@ echo '</div></div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-12">';
-echo '<h3><i class="fa fa-refresh"></i> Transacties ';
+
+echo '<h3><i class="fa fa-exchange"></i> Transacties ';
 echo '<a href="' . $rootpath . 'transactions/add.php?uid=' . $id . '"';
 echo ' class="btn btn-success" title="Transactie toevoegen">';
 echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a> ';

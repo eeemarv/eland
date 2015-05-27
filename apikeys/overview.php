@@ -1,77 +1,50 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_apikeys.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-include($rootpath."includes/inc_header.php");
+$apikeys = $db->GetArray('select * from apikeys');
 
-echo "<table width='100%' border=0><tr><td>";
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo "<li><a href='add.php'>Apikey toevoegen</a></li>";
-echo "</div>";
-echo "</td></tr></table>";
-echo "<h1>Overzicht API Keys</h1>";
-$apikeys= get_apikeys();
-show_keys($apikeys);
+$top_buttons = '<a href="' . $rootpath . 'apikeys/add.php" class="btn btn-success"';
+$top_buttons .= ' title="Apikey toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_header.php';
 
+echo '<h1><span class="label label-danger label-sm">Admin</span> Apikeys</h1>';
 
-/////////////////
+echo '<div class="table-responsive">';
+echo '<table class="table table-bordered table-hover table-striped footable">';
+echo '<thead>';
+echo '<tr>';
+echo '<th>Id</th>';
+echo '<th>Comment</th>';
+echo '<th data-hide="phone">Type</th>';
+echo '<th data-hide="phone, tablet">Apikey</th>';
+echo '<th data-hide="phone, tablet" data-sort-initial="true">Creatietijdstip</th>';
+echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>';
+echo '</tr>';
+echo '</thead>';
 
+echo '<tbody>';
 
-function showlinks($rootpath){
-	global $s_id;
-
+foreach($apikeys as $a)
+{
+	echo '<tr>';
+	echo '<td>' . $a['id'] . '</td>';
+	echo '<td>' . $a['comment'] . '</td>';
+	echo '<td>' . $a['type'] . '</td>';
+	echo '<td>' . $a['apikey'] . '</td>';
+	echo '<td>' . $a['created'] . '</td>';
+	echo '<td><a href="' . $rootpath . 'apikeys/delete.php?id=' . $a['id'] . '" class="btn btn-danger btn-xs">';
+	echo 'Verwijderen</a></td>';
 }
 
-function show_keys($apikeys){
-	echo "<div class='border_b'><table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td valign='top'><strong>";
-	echo "ID";
-	echo "</strong></td>";
-	echo "<td valign='top'><strong>";
-	echo "Apikey";
-	echo "</strong></td>";
-	echo "<td valign='top'><strong>";
-    echo "Creatiedatum";
-    echo "</strong></td>";
-    echo "<td valign='top'><strong>";
-	echo "Type";
-	echo "</strong></td>";
-	echo "<td valign='top'><strong>";
-	echo "Comment";
-	echo "</strong></td>";
-	echo "<td valign='top'><strong>";
-        echo "Verwijderen";
-        echo "</strong></td>";
-	echo "</tr>\n\n";
-	$rownumb=0;
-	foreach($apikeys as $key => $value){
-		$rownumb=$rownumb+1;
-		echo "<tr";
-		if($rownumb % 2 == 1){
-			echo " class='uneven_row'";
-		}else{
-	        	echo " class='even_row'";
-		}
-		echo ">";
+echo '</tbody>';
+echo '</table>';
+echo '</div></div>';
+echo '</div>';
 
-		echo "<td>" .$value['id'] ."</td>";
-		echo "<td>" .$value['apikey'] ."</td>";
-		echo "<td>" .$value['created'] ."</td>";
-		echo "<td>" .$value['type'] ."</td>";
-		echo "<td>" .$value['comment'] ."</td>";
-		echo "<td> | ";
-		echo '<a href="delete.php?id=' .$value['id'] . '">';
-		echo "Verwijderen |</a></td>";
-	}
-	echo "</tr>";
-	echo "</table>";
-
-}
+include $rootpath.'includes/inc_footer.php';

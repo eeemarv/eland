@@ -38,13 +38,6 @@ echo '</div>';
 echo '<script src="' . $cdn_jquery . '"></script>';
 echo '<script src="' . $cdn_bootstrap_js . '"></script>';
 echo '<script src="' . $cdn_footable_js . '"></script>';
-/*
-echo '<script type="text/javascript">
-	$(function () {
-		$(".footable").footable();
-	});
-</script>';*/
-
 echo '<script src="' . $cdn_footable_sort_js . '"></script>';
 echo '<script src="' . $cdn_footable_filter_js . '"></script>';
 echo '<script src="' . $rootpath . 'js/base.js"></script>';

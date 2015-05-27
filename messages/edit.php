@@ -132,16 +132,11 @@ $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/msg_edit.js"></script>';
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
-if($mode == "new")
-{
-	echo "<h1>Nieuw Vraag & Aanbod toevoegen</h1>";
-}
-else
-{
-	echo "<h1>Vraag & Aanbod aanpassen</h1>";
-}
+echo '<h1><i class="fa fa-leanpub"></i> ';
+echo ($mode == 'new') ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
+echo '</h1>';
 
 echo '<form method="post" class="form-horizontal">';
 
@@ -217,11 +212,12 @@ echo 'value="' . $msg['units'] . '">';
 echo '</div>';
 echo '</div>';
 
+echo '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
 
-echo "</form>";
+echo '</form>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
 function validate_input($msg)
 {
@@ -318,7 +314,8 @@ function update_msg($id, $posted_list)
 	return $result;
 }
 
-function insert_msg($posted_list){
+function insert_msg($posted_list)
+{
     global $db;
 	$posted_list["cdate"] = gmdate("Y-m-d H:i:s");
     $posted_list["validity"] = $posted_list["vtime"];

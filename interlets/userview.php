@@ -49,8 +49,7 @@ $letsgroups = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod <> \'inter
 
 include($rootpath."includes/inc_header.php");
 
-echo "<h1>Andere interlets groepen raadplegen</h1>";
-
+echo '<h1><i class="fa fa-share-alt"></i> Interlets groepen</h1>';
 
 if (count($letsgroups))
 {

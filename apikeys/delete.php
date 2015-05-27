@@ -5,14 +5,18 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-$id = $_GET["id"];
-if(!isset($id)){
+$id = $_GET['id'];
+
+if(!isset($id))
+{
+	$alert->error('id niet bepaald.');
 	header("Location: overview.php");
 	exit;
 }
 
-if(isset($_POST["zend"])){
-	if ($db->Execute("DELETE FROM apikeys WHERE id=" .$id))
+if(isset($_POST['zend']))
+{
+	if ($db->Execute('DELETE FROM apikeys WHERE id=' .$id))
 	{
 		$alert->success('Apikey verwijderd.');
 		header('Location: ' . $rootpath . 'apikeys/overview.php');
@@ -23,15 +27,19 @@ if(isset($_POST["zend"])){
 
 $apikey = $db->GetRow('SELECT * FROM apikeys WHERE id = ' . $id);
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Apikey verwijderen</h1>";
-echo '<p>' . $apikey['apikey'] . '</p>';
-echo '<p>' . $apikey['comment'] . '</p>';
-echo "<form action='delete.php?id=".$id ."' method='POST'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
-echo "<tr>\n";
-echo "<td>Apikey verwijderen? <input type='submit' value='Verwijderen' name='zend'></td>\n";
-echo "</tr>\n\n</table>";
-echo "</form>";
+include $rootpath . 'includes/inc_header.php';
 
-include($rootpath."includes/inc_footer.php");
+echo '<h1><span class="label label-danger">Admin</span> Apikey verwijderen?</h1>';
+
+echo '<form method="post" class="form-horizontal">';
+echo '<dl>';
+echo '<dt>Apikey</dt>';
+echo '<dd>' . $apikey['apikey'] . '</dd>';
+echo '<dt>Comment</dt>';
+echo '<dd>' . $apikey['comment'] .  '</dd>';
+echo '</dl>';
+echo '<a href="' . $rootpath . 'apikeys/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';
