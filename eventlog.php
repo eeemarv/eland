@@ -17,11 +17,11 @@ $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/eventlog.js"></script>';
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Logs';
 
-echo "<h1>Logs</h1>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<form method='get'>";
+echo '<form method="get">';
 
 echo '<div class="form-group">';
 echo '<label for="q" class="col-sm-2 control-label">Zoek event</label>';

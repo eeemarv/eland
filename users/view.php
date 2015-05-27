@@ -82,10 +82,10 @@ if (!$trans_en)
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
 }
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = $user['letscode'] . ' ' . $user['fullname'];
+$fa = 'user';
 
-echo '<h1><span class="label label-danger">Admin</span> ';
-echo '<i class="fa fa-user"></i> ' . $user['letscode'] . ' ' . $user['fullname'] . '</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="row">';
 echo '<div class="col-md-4">';

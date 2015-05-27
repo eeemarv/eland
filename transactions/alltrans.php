@@ -60,9 +60,10 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Transacties';
+$fa = 'exchange';
 
-echo '<h1><i class="fa fa-exchange"></i> Transacties</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable" data-sort="false">';

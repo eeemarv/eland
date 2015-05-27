@@ -159,3 +159,12 @@ echo '</div>';
 echo (isset($top_buttons)) ? $top_buttons : '';
 echo '</div>';
 echo '</div>';
+
+if (isset($h1))
+{
+	echo '<h1>';
+	echo ($role == 'admin') ? '<span class="label label-danger">Admin</span> ' : '';
+	echo (isset($fa)) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
+	echo $h1 . '</h1>';
+	echo ($role == 'admin') ? '<p>&nbsp;</p>' : '';
+}

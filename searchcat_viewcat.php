@@ -5,107 +5,96 @@ $role = 'guest';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
-if (!isset($_GET["id"])){
+if (!isset($_GET['id']))
+{
 	header("Location: searchcat.php");
 	exit;
 }
 
 $id = $_GET["id"];
 
+$msgs = $db->GetArray('select m.*,
+		u.letscode, u.fullname, u.id as uid
+	from messages m, users u
+	where m.id_user = u.id
+		and u.status in (1, 2)
+	order by id desc');
+
+
 if (in_array($s_accountrole, array('admin', 'user')))
 {
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new&catid=' . $id . '">Vraag/Aanbod toevoegen</a></li>';
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-$query = "SELECT fullname FROM categories WHERE id=". $id;
-$row = $db->GetRow($query);
-echo "<h1>". $row["fullname"]."</h1>";
+$h1 = $db->GetOne("SELECT fullname FROM categories WHERE id=". $id);
+$fa = 'leanpub';
 
-$msgs = get_msgs($id);
+include $rootpath . 'includes/inc_header.php';
 
+echo '<ul class="nav nav-tabs">';
+echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';
+echo '<li class="active"><input type="text" class="search"></li>';
+echo '<li><a href="#" class="bg-white">Geldig</a></li>';
+echo '<li><a href="#" class="bg-danger">Vervallen</a></li>';
+echo '</ul>';
 
-echo "<div id='output'>";
-echo "<div class='border_b'>";
-echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-echo "<tr class='header'>";
-echo "<td><strong nowrap>V/A</strong></td>";
+/*
+echo "<br>Filter: ";
+echo "<a href='overview.php?user_filterby=all'>Alle</a>";
+echo " - ";
+echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
+echo " - ";
+echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
+*/
 
-echo "<td><strong nowrap>Wat</strong></td>";
-echo "<td><strong nowrap>Wie</strong></td>";
-echo "<td><strong nowrap>Geldig tot</strong></td>";
-echo "</tr>";
-$rownumb=0;
-foreach ($msgs as $key => $value){
-	$rownumb++;
-	if($rownumb % 2 == 1){
-		echo "<tr class='uneven_row'>";
-	}else{
-		echo "<tr class='even_row'>";
-	}
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+echo '<thead>';
+echo '<tr>';
+echo "<th>V/A</th>";
+echo "<th>Wat</th>";
+echo '<th data-hide="phone, tablet">Geldig tot</th>';
+echo '<th data-hide="phone, tablet">Wie</th>';
+echo '</tr>';
+echo '</thead>';
 
-	if ($value["msg_type"] == 0){
-		echo "<td nowrap valign='top'>V</td>";
-	}elseif ($value["msg_type"] == 1){
-		echo "<td nowrap valign='top'>A</td>";
-	}
+echo '<tbody>';
 
-	echo "<td valign='top'>";
-	echo "<a href='messages/view.php?id=".$value["mid"]."&cat=".$id."'>";
-	if(strtotime($value["valdate"]) < time()) {
-		echo "<del>";
-	}
-	$content = nl2br(htmlspecialchars($value["content"],ENT_QUOTES));
-	echo $content;
-	if(strtotime($value["valdate"]) < time()) {
-		echo "</del>";
-	}
-	echo "</a></td>";
+foreach($msgs as $msg)
+{
+	$del = (strtotime($msg['validity']) < time()) ? true : false;
 
-	echo "<td valign='top' nowrap>";
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['userid'] . '">';
-	echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
-	echo "</a></td>";
+	echo '<tr';
+	echo ($del) ? ' class="danger"' : '';
+	echo '>';
+	echo '<td>';
 
-	echo "<td>";
-			if(strtotime($value["valdate"]) < time()) {
-					echo "<font color='red'><b>";
-			}
-			echo $value["valdate"];
-			if(strtotime($value["valdate"]) < time()) {
-					echo "</b></font>";
-			}
-			echo "</td>";
-	echo "</tr>";
-}
-echo "</table></div>";
-echo "</div>";
+	echo ($msg["msg_type"]) ? 'A' : 'V';
+	echo '</td>';
 
+	echo '<td>';
+	echo '<a href="' .$rootpath . 'messages/view.php?id=' . $msg['id']. '">';
+	echo htmlspecialchars($msg['content'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
 
-function get_msgs($id){
-	global $db;
-	$query = 'SELECT *, 
-					m.id AS mid , 
-					m.validity AS valdate, 
-					c.fullname AS catname,
-					u.name AS username,
-					u.id AS userid,
-					c.id_parent AS parent_id
-				FROM messages m, users u, categories c
-				WHERE m.id_category = c.id
-					AND m.id_user = u.id
-					AND (u.status = 1 OR u.status = 2 OR u.status = 3) 
-					AND (m.id_category = ' . $id . '
-						OR c.id_parent = ' .$id . ')
-				ORDER BY m.msg_type DESC, u.letscode';
-	return $db->GetArray($query);
+	echo '<td>';
+	echo $msg['validity'];
+	echo '</td>';
+
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
+	echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+
+	echo '</tr>';
 }
 
-include($rootpath."includes/inc_footer.php");
+echo '</tbody>';
+echo '</table>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';

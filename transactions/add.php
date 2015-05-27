@@ -170,7 +170,7 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-include $rootpath . 'includes/inc_header.php';
+
 
 $user = get_user($s_id);
 $balance = $user["saldo"];
@@ -179,7 +179,10 @@ $letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
 $currency = readconfigfromdb('currency');
 
-echo '<h1><i class="fa fa-exchange"></i> Nieuwe transactie</h1>';
+$h1 = 'Nieuwe transactie';
+$fa = 'exchange';
+
+include $rootpath . 'includes/inc_header.php';
 
 $minlimit = $user["minlimit"];
 

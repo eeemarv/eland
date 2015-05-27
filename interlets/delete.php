@@ -23,19 +23,20 @@ if(isset($_POST["zend"]))
 
 	$alert->error('Letsgroup niet verwijderd.');
 }
-
-include($rootpath."includes/inc_header.php");
-
-echo "<h1>LETS groep verwijderen</h1>";
-
 $groupname = $db->GetOne('SELECT groupname FROM letsgroups WHERE id = ' . $id);
+
+$h1 = 'Letsgroep verwijderen';
+
+include $rootpath . 'includes/inc_header.php';
+
 echo "<div >";
 echo "LETS Groep: " .$groupname;
 echo "</div>";
 echo "<p><font color='red'><strong>Ben je zeker dat deze groep";
 echo " moet verwijderd worden?</strong></font></p>";
 echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
-echo "<input type='submit' value='Verwijderen' name='zend'>";
+echo '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo "</form></p>";
 echo "</div>";
 	

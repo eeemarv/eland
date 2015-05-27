@@ -6,25 +6,39 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 
-include($rootpath."includes/inc_header.php");
-
 if (!isset($_GET["id"]))
 {
 	header('Location: overview.php');
 }
 
 $id = $_GET["id"];
+
 $group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
-echo '<h1>' . $group['groupname'] . '</h1>';
 
+$top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"';
+$top_buttons .= ' title="Letsgroep toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-echo "<div >";
+$top_buttons .= '<a href="' . $rootpath . 'edit.php?mode=edit&id=' . $id . '" class="btn btn-primary"';
+$top_buttons .= ' title="Letsgroep aanpassen"><i class="fa fa-pencil"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'interlets/delete.php?id=' . $id . '" class="btn btn-danger"';
+$top_buttons .= ' title="Letsgroep verwijderen">';
+$top_buttons .= '<i class="fa fa-times"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+
+$h1 = $group['groupname'];
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<div>';
 
 echo '<dl class="dl-horizontal">';
 echo "<dt>eLAS Soap status</dt>";
 
 echo "<dd><i><div id='statusdiv'>";
-//echo "<script type='text/javascript'>showsmallloader('statusdiv')</script>";
+
 $soapurl = $group["elassoapurl"] ."/wsdlelas.php?wsdl";
 $apikey = $group["remoteapikey"];
 $client = new nusoap_client($soapurl, true);

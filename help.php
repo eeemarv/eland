@@ -7,7 +7,8 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
-if(isset($_POST["zend"])){
+if(isset($_POST["zend"]))
+{
 	$posted_list = array(); 
 	$posted_list["login"] = mysql_escape_string($_POST["login"]);
 	$posted_list["email"] = mysql_escape_string($_POST["email"]);
@@ -16,7 +17,8 @@ if(isset($_POST["zend"])){
 	$posted_list["browser"] = $_SERVER['HTTP_USER_AGENT'];
 	$error_list = validate_input($posted_list);
 
-	if(empty($error_list)){
+	if(empty($error_list))
+	{
 		if (!($return_message = helpmail($posted_list)))
 		{
 			$alert->success("Support mail verstuurd");
@@ -49,68 +51,50 @@ else if (!readconfigfromdb('support'))
 	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
-require_once($rootpath."includes/inc_header.php");
+$h1 = 'eLAS help';
 
-echo "<table border='0' width='100%'><tr><td><h1>eLAS Help</h1>";
-echo "</td><td align='right'>";
-echo "</td></tr></table>";
+require_once $rootpath . 'includes/inc_header.php';
 
-echo "<form action='help.php' method='post'>";
-echo "<table cellpadding='0' cellspacing='0' border='0'>";
-echo "<tr><td>";
-echo "Loginnaam";
-echo "</td><td>";
+echo '<form method="post" class="form-horizontal">';
 
-echo "<input type='text' name='login' size='30' value='" .$posted_list["login"] ."'>";
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="login" name="login" ';
+echo 'value="' . $posted_list['login'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "</td><td>";
-if(!empty($error_list["login"])){
-	echo $error_list["login"];
-}
-echo "</td></tr>";
-echo "<tr><td>";
-echo "E-mail adres<br><small><i>(Dit adres moet in eLAS geregistreerd staan)</i></small>";
-echo "</td><td>";
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="email" class="form-control" id="email" name="email" ';
+echo 'value="' . $posted_list['email'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<input type='email' name='email' size='30' value='" .$posted_list["email"] ."' required>";
+echo '<div class="form-group">';
+echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="subject" name="subject" ';
+echo 'value="' . $posted_list['subject'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "</td><td>";
-if(!empty($error_list["email"])){
-	echo $error_list["email"];
-}
-echo "</td></tr>";
-// Subject line
-echo "<tr><td>";
-echo "Onderwerp<br><small><i>(verplicht, bv. Inloggen lukt niet)</i></small><br>";
-echo "</td><td>";
+echo '<div class="form-group">';
+echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="description" class="form-control" id="description" rows="4" required>';
+echo $posted_list['description'];
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
-echo "<input type='text' name='subject' size='30' value='" .$posted_list["subject"] ."' required>";
+echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
 
-echo "</td><td>";
-if(!empty($error_list["subject"])){
-	echo $error_list["subject"];
-}
-echo "</td></tr>";
-	// subject
-echo "<tr><td>";
-echo "Omschrijving van je probleem:<br>";
-echo "</td><td>";
-
-echo "<TEXTAREA NAME='description' COLS=60 ROWS=6 required>" .$posted_list["description"] ."</TEXTAREA>";
-
-echo "</td></tr>";
-echo "<tr><td>";
-if(!empty($error_list["description"])){
-	echo $error_list["description"];
-}
-echo "</td></tr>";
-echo "<tr><td></td><td>";
-
-echo "<input type='submit' name='zend' value='Verzenden'>";
-echo "</td><td>&nbsp;</td></tr></table>";
 echo "</form>";
 
-echo "<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>";
+echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>';
 
 include $rootpath . 'includes/inc_footer.php';
 
@@ -152,7 +136,8 @@ function get_user_maildetails($userid){
         return $user;
 }
 
-function helpmail($posted_list,$rootpath){
+function helpmail($posted_list,$rootpath)
+{
 
 	global $rootpath, $s_id;
 
@@ -160,16 +145,18 @@ function helpmail($posted_list,$rootpath){
 	
 
 	$mailto = trim(readconfigfromdb("support"));
-	if (empty($mailto)){
+	if (empty($mailto))
+	{
 		return false;
 	}
 
-	$mailsubject = readconfigfromdb("systemtag") ." - " .$posted_list['subject'];
+	$mailsubject = '[eLAS-' . readconfigfromdb("systemtag") . '] ' .$posted_list['subject'];
 
     $mailcontent  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
 	$mailcontent .= "E-mail: {$posted_list['email']}\r\n";
 	$mailcontent .= "Login:  {$posted_list['login']}\r\n";
-	if ($s_id){
+	if ($s_id)
+	{
 		$user = readuser($s_id);
 		$mailcontent .= "Letscode:  {$user['letscode']}\r\n";
 	}

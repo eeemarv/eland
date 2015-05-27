@@ -7,6 +7,8 @@ require_once($rootpath."includes/inc_adoconnection.php");
 
 $q = $_GET['q'];
 
+$cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
+
 if (in_array($s_accountrole, array('admin', 'user')))
 {
 	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
@@ -14,19 +16,22 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
+$h1 = 'Vraag en aanbod';
+$fa = 'leanpub';
+
 include $rootpath . 'includes/inc_header.php';
 
-echo '<h1><i class="fa fa-leanpub"></i> Vraag & Aanbod</h1>';
-
-echo "<form method='get' action='$rootpath/messages/search.php'>";
-echo "<input type='text' name='q' size='40' ";
-echo " value='". $q ."'";
-echo ">";
-echo "<input type='submit' name='zend' value='Zoeken'>";
-echo "<br><small><i>Een leeg zoekveld geeft ALLE V/A als resultaat terug</i></small>";
-echo "</form>";
-
-$cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
+echo '<form method="get" action="' . $rootpath . 'messages/search.php">';
+echo '<div class="col-lg-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-btn">';
+echo '<button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Zoeken</button>';
+echo '</span>';
+echo '<input type="text" class="form-control" name="q">';
+echo '</div>';
+echo '</div>';
+echo '<br><small><i>Een leeg zoekveld geeft ALLE V/A als resultaat terug</i></small>';
+echo '</form>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';

@@ -132,11 +132,10 @@ $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/msg_edit.js"></script>';
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = ($mode == 'new') ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
+$fa = 'leanpub';
 
-echo '<h1><i class="fa fa-leanpub"></i> ';
-echo ($mode == 'new') ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
-echo '</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="post" class="form-horizontal">';
 
@@ -170,7 +169,8 @@ echo '</div>';
 if($s_accountrole == "admin")
 {
 	echo '<div class="form-group">';
-	echo '<label for="user_letscode" class="col-sm-2 control-label">Gebruiker [admin]</label>';
+	echo '<label for="user_letscode" class="col-sm-2 control-label">';
+	echo '[Admin] Gebruiker</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 	echo 'data-letsgroup-id="' . $letsgroup_id . '" ';

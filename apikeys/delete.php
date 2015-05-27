@@ -27,9 +27,9 @@ if(isset($_POST['zend']))
 
 $apikey = $db->GetRow('SELECT * FROM apikeys WHERE id = ' . $id);
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Apikey verwijderen?';
 
-echo '<h1><span class="label label-danger">Admin</span> Apikey verwijderen?</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="post" class="form-horizontal">';
 echo '<dl>';

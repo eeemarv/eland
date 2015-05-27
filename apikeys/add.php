@@ -23,9 +23,9 @@ if ($_POST['zend'])
 
 $apikey = sha1(readconfigfromdb('systemname') . microtime());
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Apikey toevoegen';
 
-echo '<h1><span class="label label-danger">Admin</span> Apikey toevoegen</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="post" class="form-horizontal">';
 

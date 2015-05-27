@@ -5,60 +5,18 @@ $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-/*
-$msg_orderby =  (isset($_GET["msg_orderby"])) ? $_GET["msg_orderby"] : "messages.id";
-
-$user_filterby = $_GET["user_filterby"];
-
-$date = date('Y-m-d');
-
-$query = "SELECT *, ";
-$query .= " messages.id AS msgid, ";
-$query .= " users.id AS userid, ";
-$query .= " categories.id AS catid, ";
-$query .= " categories.fullname AS catname, ";
-$query .= " users.name AS username, ";
-$query .= " users.letscode AS letscode, ";
-$query .= " messages.validity AS valdate, ";
-$query .= " messages.cdate AS date ";
-$query .= " FROM messages, users, categories ";
-$query .= "  WHERE messages.id_user = users.id ";
-
-$query .= " AND messages.id_category = categories.id";
-
-if (isset($user_filterby)){
-	switch ($user_filterby) {
-		case "expired":
-			$query .= " AND messages.validity < " ."'" .$date ."'";
-			break;
-		case "valid":
-			$query .= " AND messages.validity >= " ."'" .$date ."'";
-			break;
-	}
-}
-
-if (isset($msg_orderby))
-{
-		$query .= " ORDER BY ".$msg_orderby. " ";
-}
-else
-{
-		$query .= " ORDER BY messages.msg_type,letscode ";
-}
-*/
 $msgs = $db->GetArray('select m.*,
 		c.id as cid, c.fullname as cat,
 		u.letscode, u.fullname, u.id as uid
 	from messages m, categories c, users u
 	where m.id_category = c.id
 		and m.id_user = u.id
+		and u.status in (1, 2)
 	order by id desc');
 
 $top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
 $top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
-
-include $rootpath . 'includes/inc_header.php';
 
 if ($s_accountrole == 'admin')
 {
@@ -70,7 +28,10 @@ if ($s_accountrole == 'admin')
 	echo '</div>';
 }
 
-echo '<h1><i class="fa fa-leanpub"></i> Vraag & Aanbod</h1>';
+$h1 = 'Vraag & Aanbod';
+$fa = 'leanpub';
+
+include $rootpath . 'includes/inc_header.php';
 
 echo '<ul class="nav nav-tabs">';
 echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';

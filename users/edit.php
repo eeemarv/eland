@@ -290,9 +290,10 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-include($rootpath."includes/inc_header.php");
-echo '<h1><span class="label label-danger">Admin</span> <i class="fa fa-user"></i>';
-echo ' Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'aanpassen') . '</h1>';
+$h1 = 'Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'aanpassen');
+$fa = 'user';
+
+include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="post" class="form-horizontal">';
 
@@ -390,8 +391,8 @@ $status_ary = array(
 	0	=> 'Gedesactiveerd',
 	1	=> 'Actief',
 	2	=> 'Uitstapper',	
-	5	=> 'Infopakket',
-	6	=> 'Infoavond',
+	5	=> 'Info-pakket',
+	6	=> 'Info-moment',
 	7	=> 'Extern',
 );
 
