@@ -543,10 +543,14 @@ function validate_input($posted_list)
 	    }
 	}
 
-	$var = trim($posted_list["minlimit"]);
-	if (empty($posted_list["minlimit"])|| (trim($posted_list["minlimit"] )==""))
+	if (!filter_var($posted_list['minlimit'] ,FILTER_VALIDATE_INT))
 	{
-		$error_list["minlimit"]="Vul bedrag in!";
+		$error_list['minlimit'] = 'Geef getal op voor de minimum limiet.';
+	}
+
+	if (!filter_var($posted_list['maxlimit'] ,FILTER_VALIDATE_INT))
+	{
+		$error_list['maxlimit'] = 'Geef getal op voor de maximum limiet.';
 	}
 
 	return $error_list;
