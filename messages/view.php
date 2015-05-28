@@ -15,7 +15,18 @@ if(!isset($msgid))
 	exit;
 }
 
-$message = get_msg($msgid);
+$message = $db->GetRow('SELECT m.*,
+			u.letscode,
+			u.id as uid,
+			u.fullname as username,
+			m.cdate AS date, 
+			m.validity AS valdate,
+			c.id as cid,
+			c.fullname as catname
+		FROM messages m, users u, categories c
+		WHERE m.id = ' . $msgid . '
+			AND m.id_user = u.id
+			AND c.id = m.id_category');
 
 $user = readuser($message['id_user']);
 $title = $message["content"];
@@ -259,19 +270,6 @@ function show_editlinks($msgid)
 	echo "</td></tr></table>";
 }
 
-
-function get_msg($msgid)
-{
-	global $db;
-	$query = 'SELECT *, 
-			m.cdate AS date, 
-			m.validity AS valdate
-		FROM messages m, users u 
-		WHERE m.id = ' . $msgid . '
-			AND m.id_user = u.id';
-	return $db->GetRow($query);
-}
-
 function get_msgpictures($id)
 {
 	global $db;
@@ -290,6 +288,60 @@ function show_balance($balance,$currency)
 }
 
 
+<<<<<<< HEAD
+=======
+function show_msg($message, $balance)
+{
+	global $baseurl, $msgid, $rootpath;
+
+	$currency = readconfigfromdb("currency");
+	echo "<table cellspacing='0' cellpadding='0' border='0' width='100%'>";
+	echo "<tr class='even_row'><td>";
+	echo "<p><strong><font size='+1'><i>";
+	if($message["msg_type"]==0){
+		echo "Vraag:  ";
+	}elseif($message["msg_type"]==1){
+		echo "Aanbod: ";
+	}
+	echo "</i>";
+	//echo htmlspecialchars($message["name"],ENT_QUOTES)." (" .trim($message["letscode"])."): ".$message["content"];
+	echo htmlspecialchars($message["content"]);
+	echo "</font></strong><br>";
+	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
+	echo htmlspecialchars($message["username"],ENT_QUOTES) ."  " .trim($message["letscode"]);
+	echo "</a><i> Saldo-stand: " .$balance ." " .$currency ."</i>";
+	echo "</td></tr>";
+	echo '<tr class="even_row"><td>Categorie: ';
+	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $message['cid'] . '">';
+	echo htmlspecialchars($message['catname'], ENT_QUOTES) . '</a></td></tr>';
+	echo "<tr><td>";
+	if (!empty($message["Description"])){
+		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
+	} else {
+		echo "<i>Er werd geen omschrijving ingegeven</i>";
+	}
+	echo "</td></tr>";
+
+        echo "<tr><td>&nbsp</td></tr>";
+
+	echo "<tr><td>Aangemaakt op: " .$message["date"]."<tr><td>";
+	echo "<tr><td>Geldig tot: " .$message["valdate"]."<tr><td>";
+
+	echo "<tr><td>&nbsp</td></tr>";
+
+	echo "<tr class='even_row'><td valign='bottom'>";
+	if (!empty($message["amount"])){
+		echo "De (vraag)prijs is " .$message["amount"] ." " .$currency;
+		echo ($message['units']) ? ' per ' . $message['units'] : '';
+	} else {
+		echo "Er werd geen (vraag)prijs ingegeven";
+	}
+	echo "</td></tr>";
+
+	echo "</table>";
+
+}
+>>>>>>> master
 
 function show_user($user){
 	echo "<table cellspacing='0' cellpadding='0' border='0'>";
