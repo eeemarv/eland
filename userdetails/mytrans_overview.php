@@ -1,32 +1,42 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
 
-include($rootpath."includes/inc_header.php");
+$currency = readconfigfromdb('currency');
 
-if (isset($s_id)){
-	if($s_accountrole == "user" || $s_accountrole == "admin" || $s_accountrole == "interlets"){
-	$user = get_user($s_id);
-	
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="'. $rootpath . 'transactions/add.php">Nieuwe transactie</a></li>';
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+$user = readuser($s_id);
 
-	echo "<h1>Mijn transacties</h1>";
+$interletsq = $db->GetArray('SELECT * FROM interletsq WHERE id_from = ' .$s_id);
 
-	echo $user["$minlimit"];
-	$balance = $user["saldo"];
-	show_balance($balance, $user);
+$transactions = $db->GetArray('select t.*,
+		fu.name as from_username,
+		tu.name as to_username,
+		fu.letscode as from_letscode,
+		tu.letscode as to_letscode
+	from transactions t, users fu, users tu
+	where (t.id_to = ' . $s_id . '
+		or t.id_from = ' . $s_id . ')
+		and t.id_to = tu.id
+		and t.id_from = fu.id');
 
-	$interletsq = $db->GetArray('SELECT * FROM interletsq WHERE id_from = ' .$s_id);
+$top_buttons = '<a href="' .$rootpath . 'transactions/add.php" class="btn btn-success"';
+$top_buttons .= ' title="Nieuwe transactie toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+$h1 = 'Mijn transacties';
+$fa = 'exchange';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<div>';
+echo '<p><strong>' . $user['letscode'] .' '. $user['name']. ' huidige ';
+echo $currency . ' stand: '.$user['saldo'].'</strong> || ';
+echo '<strong>Limiet minstand: ' . $user['minlimit'] . '</strong></p>';
+echo '</div>';
 
 	if(!empty($interletsq)){
 			echo "<h2>Interlets transacties in verwerking</h2>";
@@ -97,20 +107,84 @@ if (isset($s_id)){
 
 	//my transactions
 
-	$query = 'SELECT t.*, 
-			fu.name AS fromname,
-			fu.id AS fromid,
-			fu.letscode AS fromcode,
-			fu.minlimit AS fromminlimit,
-			tu.name AS toname,
-			tu.id AS toid,
-			tu.letscode AS tocode,
-			t.date AS datum
-		FROM transactions t, users fu, users tu
-		WHERE (t.id_from =' . $s_id . ' OR t.id_to = '. $s_id. ')
-			AND t.id_from = fu.id
-			AND t.id_to = tu.id ORDER BY date DESC';
-	$transactions =  $db->GetArray($query);
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+
+echo '<thead>';
+echo '<tr>';
+echo '<th>Omschrijving</th>';
+echo '<th>Bedrag</th>';
+echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
+echo '<th data-hide="phone, tablet">Uit/In</th>';
+echo '<th data-hide="phone, tablet">Tegenpartij</th>';
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach($transactions as $t){
+
+	echo '<tr>';
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'transactions/view.php?id=' . $t['id'] . '">';
+	echo htmlspecialchars($t['description'], ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
+	
+	echo '<td>';
+	echo '<span class="text-';
+	echo ($t['id_from'] == $s_id) ? 'danger">-' : 'success">';
+	echo $t['amount'];
+	echo '</span></td>';
+
+	echo '<td>';
+	echo $t['cdate'];
+	echo '</td>';
+
+	echo '<td>';
+	echo ($t['id_from'] == $s_id) ? 'Uit' : 'In'; 
+	echo '</td>';
+
+	if ($t['id_from'] == $s_id)
+	{
+		if ($t['real_to'])
+		{
+			$other_user = htmlspecialchars($t['real_to'], ENT_QUOTES);
+		}
+		else
+		{
+			$other_user = '<a href="' . $rootpath . 'users/view.php?id=' . $t['id_to'] . '">';
+			$other_user .= htmlspecialchars($t['to_letscode'] . ' ' . $t['to_username'], ENT_QUOTES);
+			$other_user .= '</a>';
+		}
+	}
+	else
+	{
+		if ($t['real_from'])
+		{
+			$other_user = htmlspecialchars($t['real_from'], ENT_QUOTES);
+		}
+		else
+		{
+			$other_user = '<a href="' . $rootpath . 'users/view.php?id=' . $t['id_from'] . '">';
+			$other_user .= htmlspecialchars($t['from_letscode'] . ' ' . $t['from_username'], ENT_QUOTES);
+			$other_user .= '</a>';
+		}
+	}
+
+	echo '<td>';
+	echo $other_user;
+	echo '</td>';
+
+	echo '</tr>';
+}
+
+echo '</tbody>';
+echo '</table>';
+
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
 	// show transactions
 	echo "<div class='border_b'>";
@@ -170,35 +244,7 @@ if (isset($s_id)){
 	}
 	echo "</table></div>";	
 
-	}else{
-		redirect_login($rootpath);
-	}
-}else{
-	redirect_login($rootpath);
-}
 
 ////////////////////////////////////////////////////////////////////////////
 
-function show_balance($balance, $user){
-	$currency = readconfigfromdb("currency");
-	$minlimit = $user["minlimit"];
-	if ($balance < $minlimit ){
-		echo "<strong><font color='red'>Je hebt de limiet minstand bereikt.<br>";
-		echo " Je kunt geen {$currency} uitschrijven!</font></strong>";
-	}
-	if($user["maxlimit"] != NULL && $balance > $user["maxlimit"]){
-		echo "<strong><font color='red'>Je hebt de limiet maxstand bereikt.<br>";
-                echo " Je kunt geen {$currency} meer ontvangen</font></strong>";
-        }
-	echo "<p><strong>Huidige {$currency}stand: ".$balance."</strong></br>";
-	echo "Limiet minstand: ".$minlimit."</p>";
-}
-
-
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}
-
-
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

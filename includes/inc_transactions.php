@@ -183,6 +183,11 @@ function mail_interlets_transaction($posted_list)
 
 	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
 
+	$mailcontent .= "\r\n";
+	$mailcontent .= "         \,,,/\r\n";
+	$mailcontent .= "         (o o)\r\n";
+	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
 	$mailcontent .= "\r\n\r\n* Wat zijn LETS uren? http://elas.vsbnet.be/content/wat-een-lets-uur-elas-2x\r\n";
 
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
@@ -250,6 +255,11 @@ function mail_transaction($posted_list)
 
 	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
 
+	$mailcontent .= "\r\n";
+	$mailcontent .= "         \,,,/\r\n";
+	$mailcontent .= "         (o o)\r\n";
+	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 	// log it
 	log_event($s_id,"Mail","Transaction sent to $mailto");
@@ -304,6 +314,11 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$mailcontent .= "--\r\n";
 
 	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
+
+	$mailcontent .= "\r\n";
+	$mailcontent .= "         \,,,/\r\n";
+	$mailcontent .= "         (o o)\r\n";
+	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 	// log it

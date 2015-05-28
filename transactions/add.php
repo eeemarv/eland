@@ -186,10 +186,10 @@ include $rootpath . 'includes/inc_header.php';
 
 $minlimit = $user["minlimit"];
 
-echo "<div>";
-echo '<p><strong>' . $user["name"].' '.$user["letscode"] . ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
-echo "<strong>Limiet minstand: " . $minlimit . "</strong></p>";
-echo "</div>";
+echo '<div>';
+echo '<p><strong>' . $user['letscode'] .' '. $user['name']. ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
+echo '<strong>Limiet minstand: ' . $minlimit . '</strong></p>';
+echo '</div>';
 
 $date = date("Y-m-d");
 

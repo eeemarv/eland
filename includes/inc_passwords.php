@@ -67,6 +67,11 @@ Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens b
         $mailcontent .= "\n\n";
         $mailcontent .= "Met vriendelijke groeten.\n\nDe eLAS Account robot\n";
 
+		$mailcontent .= "\r\n";
+		$mailcontent .= "         \,,,/\r\n";
+		$mailcontent .= "         (o o)\r\n";
+		$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
         //echo "Bezig met het verzenden naar $mailto...\n";
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
         // log it
@@ -118,6 +123,11 @@ function sendactivationmail($password, $user){
 		$mailcontent .= readconfigfromdb("support");
 		$mailcontent .= "\n\n";
 		$mailcontent .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
+
+		$mailcontent .= "\r\n";
+		$mailcontent .= "         \,,,/\r\n";
+		$mailcontent .= "         (o o)\r\n";
+		$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
         //echo "Bezig met het verzenden naar $mailto...\n";
         sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);

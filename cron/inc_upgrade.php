@@ -78,6 +78,11 @@ function executequery($query) {
 
 			$mailcontent .= "De eLAS update robot";
 
+			$mailcontent .= "\r\n";
+			$mailcontent .= "         \,,,/\r\n";
+			$mailcontent .= "         (o o)\r\n";
+			$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
 			if($elas->branch != 'dev'){
 				sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 			}

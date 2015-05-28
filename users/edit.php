@@ -585,5 +585,10 @@ function sendadminmail($user)
 	$mailcontent .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 	$mailcontent .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
+	$mailcontent .= "\r\n";
+	$mailcontent .= "         \,,,/\r\n";
+	$mailcontent .= "         (o o)\r\n";
+	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
 	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
 }
