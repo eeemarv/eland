@@ -7,66 +7,9 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_form.php");
 
-$prefix = ($_GET["prefix"]) ?: 'ALL';
-$posted_list["prefix"] = $prefix;
-$searchname = $_GET["searchname"];
-
-$sort = ($sort) ? $sort : 'letscode';
-
-$query = "SELECT prefix, shortname FROM letsgroups WHERE apimethod ='internal' AND prefix IS NOT NULL";
-$prefixes = $db->GetAssoc($query);
-$prefixes['ALL'] = 'ALLE';
-
-$h1 = 'Contactlijst';
-$fa = 'users';
-
-include $rootpath . 'includes/inc_header.php';
-
-echo '<div class="pull-right hidden-xs">';
-echo '<a href="print_memberlist.php?prefix_filterby=' .$prefix_filterby . '">';
-echo '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
-echo '<a href="' . $rootpath . 'csv_memberlist.php?prefix_filterby=' . $prefix_filterby;
-echo '" target="new">';
-echo '<i class="fa fa-file"></i>';
-echo '&nbsp;csv</a>';
-echo '</div>';
-
-echo '<form method="GET" class="form-horizontal">';
-
-echo '<div class="form-group">';
-echo '<label for="prefix" class="col-sm-2 control-label">Groep</label>';
-echo '<div class="col-sm-10">';
-echo '<select class="form-control" id="prefix" name="prefix">'; 
-render_select_options($prefixes, $prefix);
-echo '</select>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="searchname" class="col-sm-2 control-label">Naam</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" name="searchname" value="' . $searchname . '" id="searchname" class="form-control">';
-echo '</div>';
-echo '</div>';
-
-echo '<input type="submit" name="zend" value="Weergeven" class="btn btn-default">';
-
-echo '</form>';
-
-$query = 'SELECT * FROM users u
+$users = $db->GetArray('SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
-		AND u.accountrole <> \'guest\' ';
-if ($prefix_filterby <> 'ALL')
-{
-	 $query .= 'AND u.letscode like \'' . $prefix_filterby .'%\' ';
-}
-if(!empty($searchname))
-{
-	$query .= 'AND (LOWER(u.fullname) like \'%' .strtolower($searchname) . '%\'
-		OR LOWER(u.name) like \'%' .strtolower($searchname) . '%\') ';
-}
-
-$userrows = $db->GetArray($query);
+		AND u.accountrole <> \'guest\'');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
@@ -86,14 +29,40 @@ foreach ($c_ary as $c)
 	$contacts[$c['id_user']][$c['abbrev']][] = $c['value'];
 }
 
+$h1 = 'Contactlijst';
+$fa = 'users';
+
+$top_right = '<a href="print_memberlist.php?prefix_filterby=' .$prefix_filterby . '">';
+$top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
+$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php?prefix_filterby=' . $prefix_filterby;
+$top_right .= '" target="new">';
+$top_right .= '<i class="fa fa-file"></i>';
+$top_right .= '&nbsp;csv</a>';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="filter">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo '</form>';
+
 //show table
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable">';
+echo '<table class="table table-bordered table-striped table-hover footable"';
+echo ' data-filter="#filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
-echo '<th>Naam</th>';
+echo '<th data-filter="#filter">Naam</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
@@ -104,7 +73,7 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-foreach($userrows as $value)
+foreach($users as $value)
 {
 	$id = $value['id'];
 

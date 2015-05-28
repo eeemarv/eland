@@ -341,4 +341,9 @@ div.top-buttons a
 .nav-tabs > li > a:focus
 {
   border-bottom-color: #777;
-} 
+}
+
+div.pag
+{
+	padding-left: 10px;
+}

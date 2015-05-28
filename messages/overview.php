@@ -20,12 +20,10 @@ $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 if ($s_accountrole == 'admin')
 {
-	echo '<div class="pull-right hidden-xs">';
-	echo '<a href="' . $rootpath . 'export_messages.php';
-	echo '" target="new">';
-	echo '<i class="fa fa-file"></i>';
-	echo '&nbsp;csv</a>';
-	echo '</div>';
+	$top_right = '<a href="' . $rootpath . 'export_messages.php';
+	$top_right .= '" target="new">';
+	$top_right .= '<i class="fa fa-file"></i>';
+	$top_right .= '&nbsp;csv</a>';
 }
 
 $h1 = 'Vraag & Aanbod';
@@ -33,13 +31,27 @@ $fa = 'leanpub';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="filter">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo '</form>';
+
+/*
 echo '<ul class="nav nav-tabs">';
 echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';
 echo '<li class="active"><input type="text" class="search"></li>';
 echo '<li><a href="#" class="bg-white">Geldig</a></li>';
 echo '<li><a href="#" class="bg-danger">Vervallen</a></li>';
 echo '</ul>';
-
+*/
 /*
 echo "<br>Filter: ";
 echo "<a href='overview.php?user_filterby=all'>Alle</a>";
@@ -50,7 +62,8 @@ echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
 */
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-hover table-striped table-bordered footable">';
+echo '<table class="table table-hover table-striped table-bordered footable"';
+echo ' data-filter="#filter" data-filter-minimum="1">';
 echo '<thead>';
 echo '<tr>';
 echo "<th>V/A</th>";

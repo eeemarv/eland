@@ -50,21 +50,26 @@ if ($activate || $deactivate)
 	}
 }
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Periodieke saldo mail';
 
-echo "<h1>Periodieke saldo mail met overzicht nieuw vraag en aanbod activeren voor alle actieve gebruikers?</h1>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<div class='border_b'>";
-echo "<form method='POST'>";
-echo "<table class='data'>";
-echo "<tr><td>Paswoord:</td><td>";
-echo '<input type="password" name="password" value="" autocomplete="off">';
-echo "</td></tr>";
-echo "<tr><td colspan='2'>";
-echo "<input type='submit' name='cancel' value='Anneleren'>&nbsp;";
-echo "<input type='submit' name='activate' value='Activeren'>&nbsp;";
-echo "<input type='submit' name='deactivate' value='Deactiveren'>";
-echo "</td></tr>";
-echo "</table></form></div>";
+echo '<h3>Periodieke saldo mail met overzicht nieuw vraag en aanbod activeren voor alle actieve gebruikers?</h3>';
+
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="password" name="password" ';
+echo 'value="" required autocomplete="off">';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default">Anneleren</a>&nbsp;';
+echo '<input type="submit" name="activate" value="Activeren" class="btn btn-success">&nbsp;';
+echo '<input type="submit" name="deactivate" value="Deactiveren" class="btn btn-danger">';
+echo '</form>';
+echo '</div>';
 echo '<p>Opmerking: gebruikers kunnen steeds individueel de saldo mail aan- of uitzetten in hun instellingen.</p>';
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

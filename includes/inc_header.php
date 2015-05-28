@@ -120,7 +120,7 @@ if ($s_accountrole == 'admin')
 	echo '<ul class="admin">';
 
 	$menu = array(
-		'users/overview.php?user_orderby=letscode'	=> 'Gebruikers',
+		'users/overview.php'						=> 'Gebruikers',
 		'categories/overview.php'	 				=> 'Categorieën',
 		'interlets/overview.php'					=> 'LETS Groepen',
 		'apikeys/overview.php'						=> 'Apikeys',
@@ -159,6 +159,13 @@ echo '</div>';
 echo (isset($top_buttons)) ? $top_buttons : '';
 echo '</div>';
 echo '</div>';
+
+if (isset($top_right))
+{
+	echo '<div class="pull-right hidden-xs">';
+	echo $top_right;
+	echo '</div>';
+}
 
 if (isset($h1))
 {

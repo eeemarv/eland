@@ -98,55 +98,68 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Nieuwsbericht ';
+$h1 .= ($mode == 'new') ? 'toevoegen' : 'aanpassen';
+$fa = 'newspaper-o';
 
-echo '<h1>Nieuwsbericht ';
-echo ($mode == 'new') ? 'toevoegen' : 'aanpassen';
-echo '</h1>';
 
-echo "<div class='border_b'><p>";
-echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>";
-echo "<form method='post'>";
-echo "<tr><td width='10%' valign='top' align='right'>Agendadatum: <i>wanneer gaat dit door?</i></td><td>";
-echo "<input type='date' name='itemdate' size='10' ";
+include $rootpath . 'includes/inc_header.php';
+
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum (wanneer gaat dit door?)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-language="nl" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
 echo  " value ='". $news['itemdate'] ."' required>";
+echo '</div>';
+echo '</div>';
 
-echo "</td></tr>";
-echo "<tr><td width='10%' valign='top' align='right'>Locatie</td><td>";
-echo "<input type='text' name='location' size='40' value='" . $news['location'] . "'>";
+echo '<div class="form-group">';
+echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="location" name="location" ';
+echo 'value="' . $news['location'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "</td></tr><tr><td></td><td>";
+echo '<div class="form-group">';
+echo '<label for="headline" class="col-sm-2 control-label">Titel</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="headline" name="headline" ';
+echo 'value="' . $news['headline'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "</td></tr>";
-
-echo "<tr><td valign='top' align='right'>Titel </td><td>";
-echo "<input type='text' name='headline' size='40' value='" . $news['headline'] . "' required>";
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
-
-echo "<tr><td valign='top' align='right'>Nieuwsbericht </td>";
-echo "<td>";
-echo "<textarea name='newsitem' cols='60' rows='15' required>";
+echo '<div class="form-group">';
+echo '<label for="newsitem" class="col-sm-2 control-label">Bericht</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="newsitem" id="newsitem" class="form-control" rows="10" required>';
 echo $news['newsitem'];
-echo "</textarea></td></tr><tr><td></td><td>";
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
-echo "</td></tr>";
-echo "<tr><td>Behoud na datum</td><td><input type='checkbox' name='sticky'";
-echo ($news['sticky'] == 't') ? ' checked="checked"' : '';
-echo "</td>";
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' id='zend' value='Opslaan'>";
-echo "</td></tr></table>";
-echo "</form>";
-echo "</p></div>";
+echo '<div class="form-group">';
+echo '<label for="sticky" class="col-sm-2 control-label">Behoud na datum</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" id="sticky" name="sticky" ';
+echo 'value="1"';
+echo  ($news['sticky'] == 't') ? ' checked="checked"' : '';
+echo '>';
+echo '</div>';
+echo '</div>';
 
-include($rootpath."includes/inc_footer.php");
+echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 
-//////////////////////
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';
 
 function validate_input($posted_list){
 	$error_list = array();

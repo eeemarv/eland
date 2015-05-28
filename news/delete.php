@@ -5,15 +5,15 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 $id = $_GET["id"];
-if(empty($id)){
+if(empty($id))
+{
 	header('Location: overview.php');
 	exit;
 }
 
-if(isset($_POST["zend"])){
+if(isset($_POST["zend"]))
+{
 	if($db->Execute("DELETE FROM news WHERE id =".$id))
 	{
 		$alert->success('Nieuwsbericht verwijderd.');
@@ -29,9 +29,11 @@ $query = 'SELECT n.*, u.name, u.letscode
 	AND n.id_user = u.id';
 $news = $db->GetRow($query);
 
-echo "<h1>Nieuwsbericht verwijderen?</h1>";
 
-echo '<h2>' . $news['headline'] . '</h2>';
+$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
+$fa = 'newspaper-o';
+
+include $rootpath . 'includes/inc_header.php';
 
 echo "<div >";
 echo "<strong>Agendadatum: ";
@@ -64,10 +66,9 @@ echo "</div>";
 echo "<p><font color='red'><strong>Ben je zeker dat dit nieuwsbericht";
 echo " moet verwijderd worden?</strong></font></p>";
 
-
-echo "<div><p><form method='POST'>";
-echo "<input type='submit' value='Verwijderen' name='zend'>";
+echo '<form method="post">';
+echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo "</form></p>";
-echo "</div>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath. 'includes/inc_footer.php';

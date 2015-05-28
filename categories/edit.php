@@ -68,8 +68,9 @@ if(isset($_POST["zend"])){
 	}
 }
 
+$h1 = 'Categorie aanpassen : ' . $cat['name'];
+
 include($rootpath."includes/inc_header.php");
-echo '<h1>Categorie aanpassen : ' . $cat['name'] . '</h1>';
 
 echo '<form method="post" class="form-horizontal">';
 
@@ -81,7 +82,7 @@ echo 'value="'. $cat["name"] . '" required>';
 echo '</div>';
 if (isset($error_list["name"]))
 {
-	echo '<p class="danger">' .$error_list["name"] . '</p>';
+	echo '<p class="danger">' .$error_list['name'] . '</p>';
 }
 echo '</div>';
 
@@ -98,8 +99,9 @@ echo '</select>';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-default">';
+echo '<a href="' .$rootpath . 'categories/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
-echo "</form>";
+echo '</form>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

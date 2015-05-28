@@ -8,7 +8,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 $query = 'SELECT * FROM news';
 
 if($s_accountrole != "admin"){
-	$query .= " AND approved = True";
+	$query .= " where approved = True";
 }
 
 $query .= " ORDER BY cdate DESC";
@@ -21,9 +21,10 @@ if($s_accountrole == 'user' || $s_accountrole == 'admin')
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 }
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Nieuws';
+$fa = 'newspaper-o';
 
-echo '<h1><i class="fa fa-newspaper-o"></i> Nieuws</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable">';

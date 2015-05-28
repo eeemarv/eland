@@ -2,18 +2,28 @@
 ob_start();
 $rootpath = "../";
 $role = 'guest';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_pagination.php';
 
-$trans_orderby = $_GET["trans_orderby"];
-$asc = $_GET["asc"];
+$orderby = $_GET['orderby'];
+$asc = $_GET['asc'];
+
+$limit = ($_GET['limit']) ?: 25;
+$start = ($_GET['start']) ?: 0;
+
+$pagination = new pagination(array(
+	'limit' 	=> $limit,
+	'start' 	=> $start,
+	'base_url' 	=> $rootpath . 'transactions/alltrans.php?orderby=' . $orderby . '&asc=' . $asc,
+	'table'		=> 'transactions',
+));
 
 $trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
 $query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;
-$query = 'SELECT t.*, 
-		t.id AS transid, 
+$query = 'select t.*, 
 		fu.id AS fromuserid,
 		tu.id AS touserid,
 		fu.name AS fromusername,
@@ -21,12 +31,14 @@ $query = 'SELECT t.*,
 		fu.letscode AS fromletscode, tu.letscode AS toletscode, 
 		t.date AS datum,
 		t.cdate AS cdatum 
-	FROM transactions t, users fu, users tu
-	WHERE t.id_to = tu.id
-	AND t.id_from = fu.id
-	ORDER BY '.$query_orderby. ' ';
+	from transactions t, users fu, users tu
+	where t.id_to = tu.id
+		and t.id_from = fu.id
+	order by ' . $query_orderby . ' ';
 $query .= ($asc) ? 'ASC ' : 'DESC ';
-$query .= 'LIMIT 1000';
+
+$query .= $pagination->getSqlLimit();
+
 $transactions = $db->GetArray($query);
 
 $asc_preset_ary = array(
@@ -65,6 +77,8 @@ $fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 
+$pagination->render();
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable" data-sort="false">';
 echo '<thead>';
@@ -88,7 +102,7 @@ echo '<tbody>';
 foreach($transactions as $key => $value)
 {
 	echo '<tr>';
-	echo '<td><a href="' . $rootpath . 'view.php?id=' . $value['transid'] . '">';
+	echo '<td><a href="' . $rootpath . 'view.php?id=' . $value['id'] . '">';
 	echo htmlspecialchars($value['description'],ENT_QUOTES);
 	echo '</a>';
 	echo '</td>';
@@ -135,4 +149,6 @@ foreach($transactions as $key => $value)
 }
 echo '</table></div>';
 
-include($rootpath."includes/inc_footer.php");
+$pagination->render();
+
+include $rootpath . 'includes/inc_footer.php';
