@@ -8,7 +8,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 $query = 'SELECT * FROM news';
 
 if($s_accountrole != "admin"){
-	$query .= " AND approved = True";
+	$query .= " where approved = True";
 }
 
 $query .= " ORDER BY cdate DESC";
