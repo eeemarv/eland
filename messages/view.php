@@ -14,7 +14,19 @@ if(!isset($msgid))
 	exit;
 }
 
-$message = get_msg($msgid);
+$message = $db->GetRow('SELECT m.*,
+			u.letscode,
+			u.id as uid,
+			u.fullname as username,
+			m.cdate AS date, 
+			m.validity AS valdate,
+			c.id as cid,
+			c.fullname as catname
+		FROM messages m, users u, categories c
+		WHERE m.id = ' . $msgid . '
+			AND m.id_user = u.id
+			AND c.id = m.id_category');
+
 $user = readuser($message['id_user']);
 $title = $message["content"];
 
@@ -202,19 +214,6 @@ function show_editlinks($msgid)
 	echo "</td></tr></table>";
 }
 
-
-function get_msg($msgid){
-	global $db;
-	$query = 'SELECT *, 
-			m.cdate AS date, 
-			m.validity AS valdate
-		FROM messages m, users u 
-		WHERE m.id = ' . $msgid . '
-			AND m.id_user = u.id';
-	$message = $db->GetRow($query);
-	return $message;
-}
-
 function get_msgpictures($id){
 	global $db;
 	$query = "SELECT * FROM msgpictures WHERE msgid = " .$id;
@@ -251,9 +250,12 @@ function show_msg($message, $balance)
 	echo htmlspecialchars($message["content"]);
 	echo "</font></strong><br>";
 	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
-	echo htmlspecialchars($message["fullname"],ENT_QUOTES) ."  " .trim($message["letscode"]);
+	echo htmlspecialchars($message["username"],ENT_QUOTES) ."  " .trim($message["letscode"]);
 	echo "</a><i> Saldo-stand: " .$balance ." " .$currency ."</i>";
 	echo "</td></tr>";
+	echo '<tr class="even_row"><td>Categorie: ';
+	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $message['cid'] . '">';
+	echo htmlspecialchars($message['catname'], ENT_QUOTES) . '</a></td></tr>';
 	echo "<tr><td>";
 	if (!empty($message["Description"])){
 		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
