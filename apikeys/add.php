@@ -38,7 +38,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="type" class="col-sm-2 control-label">Apikey</label>';
+echo '<label for="type" class="col-sm-2 control-label">Type</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="type" name="type" ';
 echo 'value="interlets" required readonly>';

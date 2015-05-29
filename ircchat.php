@@ -5,17 +5,18 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'LETS Chat';
 
-echo "<h1>LETS Chat</h1>";
+include $rootpath . 'includes/inc_header.php';
 
 $tag = readconfigfromdb("systemtag");
 $name = strtolower(preg_replace('/\s+/', '', $s_login));
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
 $nick = $name ."_" . $tag;
 
-echo '<div class"responsive-embed embed-responsive-4by3">';
-echo '<iframe class="embed-responsive-item" src="http://webchat.freenode.net?nick=' .$nick . '&channels=letsbe\"></iframe>';
+echo '<div class="embed-responsive embed-responsive-16by9">';
+echo '<iframe class="embed-responsive-item" src="http://webchat.freenode.net?nick=' .$nick . '&channels=letsbe\">';
+echo '</iframe>';
 echo '</div>';
 
 echo "<p><small><i>";
@@ -24,4 +25,4 @@ echo "Om misbruik op het netwerk te voorkomen vraagt het Freenode netwerk je om 
 echo "<br>Sluit gewoon dit venster om uit te loggen op de chatroom.";
 echo "</i></small></p>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

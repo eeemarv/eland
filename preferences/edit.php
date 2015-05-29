@@ -8,7 +8,7 @@ require_once($rootpath."includes/inc_transactions.php");
 require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
-$setting = $_GET["setting"];
+$setting = $_GET['setting'];
 
 if ($_POST['zend'])
 {
@@ -18,7 +18,7 @@ if ($_POST['zend'])
 		if (writeconfig($setting, $value))
 		{
 			$alert->success('Instelling aangepast.');
-			header('Location: config.php');
+			header('Location: ' . $rootpath . 'preferences/config.php');
 			exit;
 		}
 	}
@@ -26,37 +26,33 @@ if ($_POST['zend'])
 }
 else
 {
-	$config = $db->GetRow("SELECT * FROM config WHERE setting = '" . $setting ."'");
+	$value = readconfigfromdb($setting);
 }
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Instelling ' . $setting . ' aanpassen';
 
-echo "<h1>Instelling $setting aanpassen</h1>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<div class='border_b'>";
-echo "<form method='post'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td align='right'>";
-echo "</td><td>";
-echo "<input type='text' name='setting' value='". $setting . "' READONLY>";
-echo '</td></tr>';
-echo '<tr><td>Waarde</td><td>';
-echo "<input type='text' name='value' size='40' value='" . htmlspecialchars($config["value"], ENT_QUOTES) . "' required>";
-echo "</td></tr>";
-echo "<tr><td align='right'>";
-echo "Omschrijving";
-echo "</td><td><i>";
-echo $config["description"];
-echo "</i></td></tr>";
-echo "<tr><td align='right'>";
-echo "Commentaar";
-echo "</td><td><i>";
-echo $config["comment"];
-echo "</i></td></tr>";
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' id='zend' value='opslaan'>";
-echo "</td></tr></table>";
-echo "</form>";
-echo "</div>";
+echo '<form method="post" class="form-horizontal">';
 
-include($rootpath."includes/inc_footer.php");
+echo '<div class="form-group">';
+echo '<label for="setting" class="col-sm-2 control-label">Instelling</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="setting" name="setting" ';
+echo 'value="' . $setting . '" required readonly>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="value" name="value" ';
+echo 'value="' . $value . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'preferences/config.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';
