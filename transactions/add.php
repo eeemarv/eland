@@ -63,11 +63,11 @@ if (isset($_POST['zend']))
 					{
 						mail_interlets_transaction($transaction);
 					}
-					$alert->success("Transactie opgeslagen");
+					$alert->success('Transactie opgeslagen');
 				}
 				else
 				{
-					$alert->error("Gefaalde transactie");
+					$alert->error('Gefaalde transactie');
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
@@ -88,15 +88,15 @@ if (isset($_POST['zend']))
 				$transid = queuetransaction($transaction, $fromuser, $touser);
 				if($transaction['transid'] == $transid)
 				{
-					$alert->success("Interlets transactie in verwerking");
+					$alert->success('Interlets transactie in verwerking');
 				}
 				else
 				{
-					$alert->error("Gefaalde transactie");
+					$alert->error('Gefaalde transactie');
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
-				
+
 				break;
 
 			case 'interletsdirect':

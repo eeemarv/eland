@@ -195,14 +195,13 @@ function Password_Strength($password, $username = null)
     $strength = 0;
     $password_length = strlen($password);
 
-    if ($password_length < 4)
+    if ($password_length < 5)
     {
         return $strength;
     }
-
     else
     {
-        $strength = $password_length * 4;
+        $strength = $password_length * 9;
     }
 
     for ($i = 2; $i <= 4; $i++)
@@ -223,7 +222,6 @@ function Password_Strength($password, $username = null)
             $strength += 5;
         }
     }
-
     else
     {
         $numbers = 0;
@@ -240,7 +238,6 @@ function Password_Strength($password, $username = null)
             $strength += 5;
         }
     }
-
     else
     {
         $symbols = 0;
@@ -253,7 +250,6 @@ function Password_Strength($password, $username = null)
     {
         $lowercase_characters = count($lowercase_characters[0]);
     }
-
     else
     {
         $lowercase_characters = 0;
@@ -263,7 +259,6 @@ function Password_Strength($password, $username = null)
     {
         $uppercase_characters = count($uppercase_characters[0]);
     }
-
     else
     {
         $uppercase_characters = 0;
@@ -291,16 +286,6 @@ function Password_Strength($password, $username = null)
         $strength += 15;
     }
 
-    if (($numbers == 0) && ($symbols == 0))
-    {
-        $strength -= 10;
-    }
-
-    if (($symbols == 0) && ($characters == 0))
-    {
-        $strength -= 10;
-    }
-
     if ($strength < 0)
     {
         $strength = 0;
@@ -311,7 +296,7 @@ function Password_Strength($password, $username = null)
         $strength = 100;
     }
 
+	var_dump ($strength);
+
     return $strength;
 }
-
-?>

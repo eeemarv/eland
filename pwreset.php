@@ -44,20 +44,22 @@ if ($token & $user_id)
 		}
 	}
 
-	require_once($rootpath."includes/inc_header.php");
-	
-	echo "<form method='post'>";
-	echo "<table class='selectbox' border='0'><tr>";
-	echo "<td>Nieuw paswoord</td>";
-	echo "<td><input type='text' name='password' size='30' value='" . $password . "' required></td>";
-	echo "</tr>";
-	echo "<tr><td></td><td>";
-	echo "<input type='submit' name='zend' value='Reset paswoord'>";
-	echo "</td></tr>";
-	echo "</table>";
-	echo "</form>";
+	$h1 = 'Nieuw paswoord ingeven.';
 
-	require_once($rootpath."includes/inc_footer.php");
+	require_once $rootpath . 'includes/inc_header.php';
+
+	echo '<form method="post" class="form-horizontal">';
+	echo '<div class="form-group">';
+	echo '<label for="email" class="col-sm-2 control-label">Nieuw paswoord</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="password" name="password" ';
+	echo 'value="' . $password . '" required>';
+	echo '</div>';
+	echo '</div>';
+	echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
+	echo '</form>';
+
+	require_once $rootpath . 'includes/inc_footer.php';
 	exit;
 }
 
@@ -93,7 +95,7 @@ if ($_POST['zend'])
 				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
 				$message .= "Je login is: ". $login;
 				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
-				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet deze link blijft slechts één uur geldig.');
+				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event($s_id,"System","Paswoord reset link verstuurd naar " . $email);
 				header('Location: login.php');
 				exit;
@@ -115,10 +117,12 @@ if ($_POST['zend'])
 	}
 }
 
-require_once($rootpath."includes/inc_header.php");
+$h1 = 'Login of paswoord vergeten';
 
-echo "<h1>Login of paswoord vergeten</h1>";
+require_once $rootpath . 'includes/inc_header.php';
+
 echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
+
 echo '<form method="post" class="form-horizontal">';
 echo '<div class="form-group">';
 echo '<label for="email" class="col-sm-2 control-label">Email</label>';
@@ -128,6 +132,6 @@ echo 'value="' . $email . '" required>';
 echo '</div>';
 echo '</div>';
 echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
-echo "</form>";
+echo '</form>';
 
 require_once($rootpath."includes/inc_footer.php");
