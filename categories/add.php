@@ -8,20 +8,24 @@ require_once($rootpath."includes/inc_form.php");
 
 $posted_list = array();
 
-if (isset($_POST["zend"])){
+if (isset($_POST["zend"]))
+{
 	$posted_list["name"] = $_POST["name"];
 	$posted_list["id_parent"] = $_POST["id_parent"];
 	$posted_list["leafnote"] = ($_POST["id_parent"] == 0) ? 0 : 1;
 
 	$error_list = array();
-	if (!isset($posted_list["name"])|| (trim($posted_list["name"])=="")){
+	if (!isset($posted_list["name"])|| (trim($posted_list["name"])==""))
+	{
 		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
 	}
-	if (!isset($posted_list["id_parent"])|| (trim($posted_list["id_parent"])=="")){
-	$error_list["id_parent"]="<font color='#F56DB5'>Vul <strong>hoofdrubriek</strong> in!</font>";
+	if (!isset($posted_list["id_parent"])|| (trim($posted_list["id_parent"])==""))
+	{
+		$error_list["id_parent"]="<font color='#F56DB5'>Vul <strong>hoofdrubriek</strong> in!</font>";
 	}
 
-	if (!count($error_list)){
+	if (!count($error_list))
+	{
 		$posted_list["cdate"] = date("Y-m-d H:i:s");
 		$posted_list["id_creator"] = $s_id;
 		$posted_list["fullname"] = ($posted_list['leafnote']) ? $db->GetOne("SELECT name FROM categories WHERE id=". (int) $posted_list["id_parent"]) . ' - ' : '';
@@ -42,41 +46,43 @@ if (isset($_POST["zend"])){
 	}
 }
 
-include($rootpath."includes/inc_header.php");
-
-echo "<h1>Categorie toevoegen</h1>";
-echo "<div class='border_b'>";
-echo "<form method='POST' action='add.php'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td valign='top' align='right'>Naam </td><td>";
-echo "<input type='text' name='name' size='30' required";
-if (isset($posted_list["name"])){
-	echo  " value ='".$posted_list["name"]."'>";
-}
-echo "</td><td>";
-if(isset($error_list["name"])){
-	echo $error_list["name"];
-}
-echo "</td></tr>";
-
-echo "<tr><td valign='top' align='right'>Hoofdcategorie of deelcategorie van";
-echo "<td valign='top'>";
-echo "<select name='id_parent'>";
-
 $parent_cats = array(0 => '-- Hoofdcategorie --');
 $parent_cats += $db->GetAssoc('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
 $id_parent = ($posted_list['id_parent']) ? $posted_list['id_parent'] : 0;
 
+$h1 = 'Categorie toevoegen';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<form  method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Van letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" ';
+echo 'value="' . $posted_list['name'] . '" required>';
+if(isset($error_list["name"])){
+	echo $error_list["name"];
+}
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="id_parent" id="id_parent" class="form-control">';
 render_select_options($parent_cats, $id_parent);
+echo '</select>';
+if(isset($error_list["id_parent"])){
+	echo $error_list["id_parent"];
+}
+echo '</div>';
+echo '</div>';
 
-echo "</select>";
-echo "</td><td>";
-echo "</td></tr>";
+echo '<a href="' . $rootpath . 'categories/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-primary">';
+echo '</form>';
 
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' value='Toevoegen'>";
-echo "</td><td>&nbsp;</td></tr></table>";
-echo "</form>";
-echo "</p></div>";
+echo '</div></div>';
 
 include($rootpath."includes/inc_footer.php");

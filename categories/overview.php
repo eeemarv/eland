@@ -56,8 +56,16 @@ foreach($cats as $value){
 	echo '<td>' . (($v = $value['stat_msgs_offers']) ? $v : '') . '</td>';
 	$child_count = $value['stat_msgs_wanted'] + $value['stat_msgs_offers'];
 	$child_count += $child_count_ary[$value['id']];
-	echo '<td><a href="edit.php?id=' . $value['id'] . '" class="btn btn-default btn-xs">Aanpassen</a></td>';
-	echo '<td>' . (($child_count) ? '' : '<a href="delete.php?id=' . $value['id'] . '" class="btn btn-danger btn-xs">Verwijderen</a>') . '</td>';
+	echo '<td><a href="edit.php?id=' . $value['id'] . '" class="btn btn-primary btn-xs">';
+	echo '<i class="fa fa-pencil"></i> Aanpassen</a></td>';
+	echo '<td>';
+
+	if (!$child_count)
+	{
+		echo '<a href="delete.php?id=' . $value['id'] . '" class="btn btn-danger btn-xs">';
+		echo '<i class="fa fa-times"></i> Verwijderen</a>';
+	}
+	echo '</td>';
 	echo '</tr>';
 }
 echo "</table></div>";

@@ -15,11 +15,11 @@ $id = $_GET["id"];
 
 $group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
 
-$top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"';
+$top_buttons = '<a href="' . $rootpath . 'interlets/edit.php?mode=new" class="btn btn-success"';
 $top_buttons .= ' title="Letsgroep toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-$top_buttons .= '<a href="' . $rootpath . 'edit.php?mode=edit&id=' . $id . '" class="btn btn-primary"';
+$top_buttons .= '<a href="' . $rootpath . 'interlets/edit.php?mode=edit&id=' . $id . '" class="btn btn-primary"';
 $top_buttons .= ' title="Letsgroep aanpassen"><i class="fa fa-pencil"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
 

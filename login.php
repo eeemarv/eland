@@ -11,8 +11,6 @@ require_once($rootpath."includes/inc_userinfo.php");
 require_once($rootpath."includes/inc_tokens.php");
 require_once($rootpath."includes/inc_auth.php");
 
-//require_once($rootpath."contrib/includes/lightopenid/openid.php");
-
 if ($s_id)
 {
 	header('Location: index.php');
@@ -29,13 +27,16 @@ $location = ($location == 'logout.php') ? 'index.php' : $location;
 $error_location = 'login.php?location=' . urlencode($location);
 
 // Intercept old direct links and rewrite them
-if(!empty($redirectmsg)){
+if(!empty($redirectmsg))
+{
 	$_GET['url'] = "http://$baseurl/messages/view.php?id=" .$redirectmsg;
 }
 
 // Verify the token first and redirect to index if it is valid
-if(!empty($token)){
-	if(verify_token($token, "guestlogin")){
+if(!empty($token))
+{
+	if(verify_token($token, "guestlogin"))
+	{
         session_start();
         $_SESSION["id"] = 0;
         $_SESSION["name"] = "letsguest";
@@ -47,7 +48,9 @@ if(!empty($token)){
 		$alert->success($_SESSION["name"] ." ingelogd");
 		header('Location: ' . $location);
 		exit;
-	} else {
+	}
+	else
+	{
 		$alert->error("Interlets login is mislukt.");
 		log_event("","LogFail", "Token login failed ($token)");
 	}
@@ -135,12 +138,10 @@ if(readconfigfromdb("maintenance") == 1)
 	$alert->warning('eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }
 
-require_once($rootpath."includes/inc_header.php");
+$h1 = 'Login';
 
-// Draw the login form division
+require_once $rootpath . 'includes/inc_header.php';
 
-echo '<h1>Login</h1>';
- 
 if(empty($token))
 {
 	echo '<form method="post" class="form-horizontal">';
@@ -167,5 +168,5 @@ if(empty($token))
 	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord en/of login vergeten.</a>';
 }
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 

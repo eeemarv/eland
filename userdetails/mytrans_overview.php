@@ -10,7 +10,10 @@ $currency = readconfigfromdb('currency');
 
 $user = readuser($s_id);
 
-$interletsq = $db->GetArray('SELECT * FROM interletsq WHERE id_from = ' .$s_id);
+$interletsq = $db->GetArray('select q.*, l.groupname
+	from interletsq q, letsgroups l
+	where q.id_from = ' . $s_id . '
+		and q.letsgroup_id = l.id');
 
 $transactions = $db->GetArray('select t.*,
 		fu.name as from_username,
@@ -38,74 +41,69 @@ echo $currency . ' stand: '.$user['saldo'].'</strong> || ';
 echo '<strong>Limiet minstand: ' . $user['minlimit'] . '</strong></p>';
 echo '</div>';
 
-	if(!empty($interletsq)){
-			echo "<h2>Interlets transacties in verwerking</h2>";
-			echo "<div class='border_b'>";
-			echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-			echo "<tr class='header'>";
-			//echo "<td valign='top'>TransID</td>";
-			echo "<td valign='top'>Datum</td>";
-			echo "<td valign='top'>Van</td>";
-			echo "<td valign='top'>Groep</td>";
-			echo "<td valign='top'>Aan</td>";
-			echo "<td valign='top'>Waarde</td>";
-			echo "<td valign='top'>Omschrijving</td>";
-			echo "<td valign='top'>Pogingen</td>";
-			echo "<td valign='top'>Status</td>";
-			echo "</tr>";
+if(!empty($interletsq))
+{
+	echo '<h2>Interlets transacties in verwerking</h2>';
 
-			$rownumb=0;
-			foreach($interletsq as $key => $value){
-				$rownumb=$rownumb+1;
-				if($rownumb % 2 == 1){
-					echo "<tr class='uneven_row'>";
-				}else{
-					echo "<tr class='even_row'>";
-				}
-				echo "<td nowrap valign='top'>";
-					echo $value["date_created"];
-					echo "</td>";
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-hover table-striped table-bordered footable">';
 
-				echo "<td nowrap valign='top'>";
-			$user = get_user($value["id_from"]);
-					//echo $value["id_from"];
-			echo $user["fullname"];
-					echo "</td>";
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th>Omschrijving</th>';
+	echo '<th>Bedrag</th>';
+	echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
+	echo '<th data-hide="phone, tablet">Aan letscode</th>';
+	echo '<th data-hide="phone, tablet">Groep</th>';
+	echo '<th data-hide="phone, tablet">Pogingen</th>';
+	echo '<th data-hide="phone, tablet">Status</th>';
+	echo '<th data-hide="phone, tablet">trans id</th>';
+	echo '</tr>';
+	echo '</thead>';
 
-					echo "<td nowrap valign='top'>";
-			$group = get_letsgroup($value["letsgroup_id"]);
-			echo $group["shortname"];
-					//echo $value["letsgroup_id"];
-					echo "</td>";
+	echo '<tbody>';
 
-			echo "<td nowrap valign='top'>";
-			echo $value["letscode_to"];
-			echo "</td>";
+	foreach($interletsq as $q)
+	{
+		echo '<tr>';
 
-			echo "<td nowrap valign='top'>";
-			$ratio = readconfigfromdb("currencyratio");
-			$realvalue = $value["amount"] * $ratio;
-			echo $realvalue;
-			echo "</td>";
+		echo '<td>';
+		echo htmlspecialchars($q['description'], ENT_QUOTES);
+		echo '</td>';
 
-			echo "<td nowrap valign='top'>";
-			echo $value["description"];
-			echo "</td>";
+		echo '<td>';
+		echo $q['amount'] * readconfigfromdb('currencyratio');
+		echo '</td>';
 
-			echo "<td nowrap valign='top'>";
-			echo $value["retry_count"];
-			echo "</td>";
+		echo '<td>';
+		echo $q['date_created'];
+		echo '</td>';
 
-			echo "<td nowrap valign='top'>";
-			echo $value["last_status"];
-			echo "</td>";
+		echo '<td>';
+		echo $q['letscode_to'];
+		echo '</td>';
 
-			echo "</tr>";
-		}
-		echo "</table></div>";
+		echo '<td>';
+		echo $q['groupname'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['retry_count'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['last_status'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['transid'];
+		echo '</td>';
+		
+		echo '</tr>';
+
 	}
-
-	//my transactions
+	echo '</table></div>';
+}
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';

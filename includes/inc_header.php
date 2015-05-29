@@ -4,15 +4,8 @@ echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
 echo '<title>' . readconfigfromdb("systemname") .'</title>';
-/*
-echo "<link type='text/css' rel='stylesheet' href='" . $rootpath. "gfx/main.css'>";
 
-echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/layout.css'>";
-echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/menu.css'>"; */
-echo "<link type='text/css' rel='stylesheet' href='".$rootpath."tinybox/tinybox.css'>";
-
-// echo "<link type='text/css' rel='stylesheet' href='".$rootpath."gfx/alert.css'>";
-
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'tinybox/tinybox.css">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '">';
@@ -33,8 +26,6 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
 echo '<body>';
 
-//echo '<div class="page-container">';
-
 ?>
 <script type='text/javascript'>
 	function OpenTBox(url){
@@ -47,7 +38,7 @@ $name = readconfigfromdb('systemname');
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="navbar-header">';
-echo '<a class="navbar-brand" href="' . $rootpath . '">';
+echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
 echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo.png">';
 echo $name . '</a>';
 echo '</div>';

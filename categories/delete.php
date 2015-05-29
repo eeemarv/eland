@@ -5,15 +5,15 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 $id = $_GET["id"];
 
-if(!$id){
+if(!$id)
+{
 	header('Location: overview.php');
 }
 
-if(isset($_POST["zend"])){
+if(isset($_POST["zend"]))
+{
 	if ($db->Execute("DELETE FROM categories WHERE id =".$id))
 	{
 		$alert->success('Categorie verwijderd.');
@@ -26,11 +26,16 @@ if(isset($_POST["zend"])){
 
 $fullname = $db->GetOne('SELECT fullname FROM categories WHERE id = ' . $id);
 
-echo '<h1>Categorie verwijderen : ' . $fullname . '</h1>';
+$h1 = 'Categorie verwijderen : ' . $fullname;
+
+include $rootpath . 'includes/inc_header.php';
+
 echo "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";
 echo " moet verwijderd worden?</strong></font></p>";
-echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
-echo "<input type='submit' value='Verwijderen' name='zend'>";
-echo "</form></p></div>";
+echo '<form method="POST">';
+echo '<a href="' . $rootpath . 'categories/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 
-include($rootpath."includes/inc_footer.php");
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';

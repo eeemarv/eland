@@ -39,7 +39,7 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['apikey'] . '</td>';
 	echo '<td>' . $a['created'] . '</td>';
 	echo '<td><a href="' . $rootpath . 'apikeys/delete.php?id=' . $a['id'] . '" class="btn btn-danger btn-xs">';
-	echo 'Verwijderen</a></td>';
+	echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
 }
 
 echo '</tbody>';

@@ -12,7 +12,7 @@ $top_buttons .= ' title="Groep toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 $top_buttons .= '<a href="' . $rootpath . 'interlets/queue.php" class="btn btn-default"';
-$top_buttons .= ' title="Interlets transactie queue"><i class="fa fa-refresh"></i>';
+$top_buttons .= ' title="Interlets transactie queue"><i class="fa fa-exchange"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Interlets queue</span></a>';
 
 include $rootpath . 'includes/inc_header.php';

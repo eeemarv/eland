@@ -129,7 +129,7 @@ foreach($users as $u)
 	echo '<td>';
 	$balance = $u['saldo'];
 	$text_danger = ($balance < $u['minlimit'] || ($u['maxlimit'] != NULL && $balance > $u['maxlimit'])) ? 'text-danger ' : '';
-	echo '<span class="' . $text_danger  . 'label label-default">' . $balance . '</span>';
+	echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
 	echo '</td>';
 
 	echo '<td>';
@@ -165,9 +165,10 @@ foreach($users as $u)
 	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users/edit.php?mode=edit&id=' . $id . '" class="btn btn-default btn-xs">Aanpassen</a>';
+	echo '<a href="' . $rootpath . 'users/edit.php?mode=edit&id=' . $id . '" ';
+	echo 'class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Aanpassen</a>';
 	echo '</td>';
-		
+
 	echo '</tr>';
 
 }
