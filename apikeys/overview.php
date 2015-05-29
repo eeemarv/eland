@@ -11,9 +11,9 @@ $top_buttons = '<a href="' . $rootpath . 'apikeys/add.php" class="btn btn-succes
 $top_buttons .= ' title="Apikey toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Apikeys';
 
-echo '<h1><span class="label label-danger label-sm">Admin</span> Apikeys</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';
@@ -40,6 +40,7 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['created'] . '</td>';
 	echo '<td><a href="' . $rootpath . 'apikeys/delete.php?id=' . $a['id'] . '" class="btn btn-danger btn-xs">';
 	echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
+	echo '</tr>';
 }
 
 echo '</tbody>';
