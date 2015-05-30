@@ -199,3 +199,25 @@ foreach ($objects as $object)
 }
 
 echo 'Sync image files ready.' . $r;
+
+echo 'Cleanup orphaned contacts. ' . $r;
+
+$orphaned_contacts = $db->GetAssoc('select c.id, c.value
+	from contact c
+	left join users u
+		on c.id_user = u.id
+	where u.id IS NULL');
+
+$count = count($orphaned_contacts);
+
+if ($count)
+{
+	echo 'Found ' . $count . ' orphaned contacts.' . $r;
+	echo '---------------------------------------------' . $r;
+	foreach ($orphaned_contacts as $id => $val)
+	{
+		echo $id . ' => ' . $val . $r;
+	}
+}
+
+
