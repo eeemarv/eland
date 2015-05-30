@@ -212,12 +212,15 @@ $count = count($orphaned_contacts);
 
 if ($count)
 {
-	echo 'Found ' . $count . ' orphaned contacts.' . $r;
+	$db->Execute('delete from contact where id in (' . implode(', ' . array_keys($orphaned_contacts)) . ')');
+
+	echo 'Found & deleted ' . $count . ' orphaned contacts.' . $r;
 	echo '---------------------------------------------' . $r;
 	foreach ($orphaned_contacts as $id => $val)
 	{
 		echo $id . ' => ' . $val . $r;
 	}
 }
+
 
 
