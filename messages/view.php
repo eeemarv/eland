@@ -51,7 +51,7 @@ if ($_POST['zend'])
 	$my_mail = get_user_maildetails($s_id);
 	$mailfrom = $my_mail['emailaddress'];
 
-    $mailsubject = "[eLAS-".$systemtag ."] - Reactie op je V/A " .$message["content"];
+    $mailsubject = "[eLAS-".$systemtag ."] - Reactie op je V/A " .$message['content'];
 
 	if($cc){
 		$mailto =  $mailuser["emailaddress"] ."," .$my_mail["emailaddress"];
@@ -91,35 +91,93 @@ if ($_POST['zend'])
 }
 
 $msgpictures = get_msgpictures($msgid);
-$currency = readconfigfromdb("currency");
+$currency = readconfigfromdb('currency');
 
 $includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 	<script src="' . $rootpath . 'js/msg_view.js"></script>';
 
-include $rootpath."includes/inc_header.php";
-
-if (in_array($s_accountrole, array('admin', 'user')))
+if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 {
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="' . $rootpath . 'messages/edit.php?mode=new">Vraag/Aanbod toevoegen</a></li>';
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+	if ($s_accountrole == 'admin' || $s_id == $message['uid'])
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'messages/edit.php?mode=edit&id=' . $msgid . '" ';
+		$top_buttons .= 'class="btn btn-primary"';
+		$top_buttons .= ' title="Vraag of aanbod aanpassen"><i class="fa fa-pencil"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
+	}
 }
 
+$h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
+$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
+$fa = 'leanpub';
+
+include $rootpath.'includes/inc_header.php';
+
 echo '<div class="row">';
-echo '<div class="col-xs-12">';
-echo '<h1>';
-echo ($message['msg_type']) ? 'Aanbod' : 'Vraag';
-echo ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
-echo '</h1>';
+echo '<div class="col-md-6 text-center">';
+echo '<div class="col-lg-8 col-lg-offset-2 text-center">';
+echo '<div id="slider1_container" style="position: relative; 
+                top: 0px; left: 0px; width: 600px; height: 300px;">';
+echo '<div u="slides" style="cursor: move; position: absolute;
+                    overflow: hidden; left: 0px; top: 0px; width: 600px; height: 300px;">';
+
+foreach ($msgpictures as $key => $value)
+{
+	$file = $value['PictureFile'];
+	$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
+	echo '<div><img u="image" src="' . $url . '" /></div>';
+}
+
+echo '</div></div></div></div>';
+
+echo '<div class="col-md-6">';
+
+echo '<div class="panel panel-default">';
+echo '<div class="panel-body">';
+
+if (!empty($message['Description']))
+{
+	echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
+}
+else
+{
+	echo '<i>Er werd geen omschrijving ingegeven.</i>';
+}
+
 echo '</div>';
 echo '</div>';
 
+echo '<p>';
+
+if (!empty($message['amount']))
+{
+	echo 'De (vraag)prijs is ' . $message['amount'] . ' ' . $currency;
+	echo ($message['units']) ? ' per ' . $message['units'] : '';
+}
+else
+{
+	echo 'Er werd geen (vraag)prijs ingegeven.';
+}
+
+echo '</p>';
+
+echo '<dl>';
+
+echo '<dt>De </dt></dl>';
+
+echo '</div>'; //col-md-6
+
+echo '</div>'; //row
+
+
+
+
 echo '<div class="row">';
-echo '<div class="col-xs-12">';
+echo '<div class="col-md-12">';
 if (count($msgpictures))
 {
 	echo '<div id="slider1_container" style="display: none; position: relative; margin: 0 auto; width: 980px; height: 380px; overflow: hidden;">';

@@ -7,7 +7,7 @@ require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_form.php");
 
 $id = (isset($_GET["id"])) ? $_GET['id'] : 0;
-$mode = $_GET["mode"];
+$mode = $_GET['mode'];
 
 if (!isset($mode))
 {
@@ -93,7 +93,9 @@ if ($_POST['zend'])
 }
 else if ($mode == 'edit' && $id)
 {
-	$msg = get_msg($id);
+	$msg =  $db->GetRow('select m.*
+		from messages m
+		where m.id = ' . $id);
 	$msg['description'] = $msg['Description'];
 	unset($msg['Description']);
 	$msg['validity'] = reverse_count_validity($msg['validity']);
@@ -352,12 +354,4 @@ function get_cats()
 	global $db;
 	$query = "SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname";
 	return $db->GetAssoc($query);
-}
-
-function get_msg($id)
-{
-	global $db;
-	$query = "SELECT * , messages.validity AS valdate ";
-	$query .= " FROM messages WHERE id=" .$id ;
-	return $db->GetRow($query);
 }
