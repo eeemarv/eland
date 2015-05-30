@@ -6,25 +6,24 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-include($rootpath."includes/inc_header.php");
-
 $id = $_GET["id"];
+
 if(empty($id))
 {
 	header('Location: ' . $rootpath . 'messages/overview.php');
 	exit;
 }
 
-$msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname
+$msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname as catname
 	FROM messages m, users u, categories ct
 	WHERE m.id = ' .$id . '
 		AND m.id_category = ct.id
 		AND m.id_user = u.id');
 
-if ($role == 'user' && $s_id != $msg['id_user'])
+if ($s_accountrole == 'user' && $s_id != $msg['id_user'])
 {
 	$alert->warning('Je hebt onvoldoende rechten om het vraag of aanbod te verwijderen.');
-	header('Location: ' . $rootpath . 'overview.php');
+	header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
 	exit;
 }	
 
@@ -44,9 +43,9 @@ if(isset($_POST["zend"]))
 		));
 	}
 
-	$db->Execute("DELETE FROM msgpictures WHERE msgid = ".$id );
+	$db->Execute('DELETE FROM msgpictures WHERE msgid = '.$id );
 
-	$result = $db->Execute("DELETE FROM messages WHERE id =".$id );
+	$result = $db->Execute('DELETE FROM messages WHERE id = '.$id );
 
 	if ($result)
 	{
@@ -68,50 +67,43 @@ if(isset($_POST["zend"]))
 	$alert->error('Vraag / aanbod niet verwijderd.');
 }
 
-echo "<h1>Vraag & Aanbod verwijderen</h1>";
-echo "<div >";
-echo "<table cellpadding='0' cellspacing='0' border='1' class='data' width='99%'>";
-echo "<tr class='header'>";
-echo "<td valign='top' nowrap><strong>V/A</strong></td>";
-echo "<td valign='top' nowrap><strong>Wat</strong></td>";
-echo "<td valign='top' nowrap><strong>Wie</strong></td>";
-echo "<td valign='top' nowrap><strong>Geldig tot</strong></td>";
-echo "<td valign='top' nowrap><strong>Categorie</strong></td>";
-echo "</tr>";
+$h1 = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+$h1 .= ': ' . htmlspecialchars($msg['content'], ENT_QUOTES);
+$h1 .= ' verwijderen?';
+$fa = 'leanpub';
 
-echo "<tr>";
-echo "<td valign='top' nowrap>";
-	if ($msg["msg_type"] == 0){
-	echo "V ";
-}elseif($msg["msg_type"] == 1){
-	echo "A ";
-}
-echo "</td>";
-echo "<td valign='top'>";
-echo nl2br(htmlspecialchars($msg["content"],ENT_QUOTES));
-echo "</td>";
-echo "<td valign='top' nowrap>";
-echo htmlspecialchars($msg["username"],ENT_QUOTES)." (".trim($msg["letscode"]).")<br>";
-echo "</td>";
-echo "<td valign='top' nowrap>";
-echo $msg["validity"];
-echo "</td>";
-echo "<td valign='top'>";
-echo htmlspecialchars($msg["fullname"],ENT_QUOTES);
-echo "</td>";
-echo "</tr>";
-echo "</table></div>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<p><font color='red'><strong>Ben je zeker dat ";
-if($msg["msg_type"] == 0){
-	echo "deze vraag";
-}elseif($msg["msg_type"] == 1){
-	echo "dit aanbod";
-}
-echo " moet verwijderd worden?</strong></font></p>";
-echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
-echo "<input type='submit' value='Verwijderen' name='zend'>";
+echo '<div class="panel panel-defaut"><div class="panel-body">';
+echo htmlspecialchars($msg['Description'], ENT_QUOTES);
+echo '</div></div>';
+
+echo '<dl>';
+
+echo '<dt>Wie</dt>';
+echo '<dd>';
+echo htmlspecialchars($msg['letscode'] . ' ' . $msg['username'], ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>Categorie</dt>';
+echo '<dd>';
+echo htmlspecialchars($msg['catname'], ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>Geldig tot</dt>';
+echo '<dd>';
+echo $msg['validity'];
+echo '</dd>';
+echo '</dl>';
+
+echo '<div class="label label-warning">';
+echo 'Ben je zeker dat ';
+echo ($msg['msg_type']) ? 'dit aanbod' : 'deze vraag';
+echo ' moet verwijderd worden?</div><br><br>';
+
+echo '<form method="post">';
+echo '<a href="' . $rootpath . 'messages/view.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo "</form></p>";
-echo "</div>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

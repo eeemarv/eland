@@ -93,12 +93,17 @@ if ($_POST['zend'])
 }
 else if ($mode == 'edit' && $id)
 {
-	$msg =  $db->GetRow('select m.*
+	$msg =  $db->GetRow('select m.*,
+		m."Description" as description
 		from messages m
 		where m.id = ' . $id);
 	$msg['description'] = $msg['Description'];
 	unset($msg['Description']);
 	$msg['validity'] = reverse_count_validity($msg['validity']);
+
+	$user = readuser($msg['id_user']);
+
+	$user_letscode = $user['letscode'] . ' ' . $user['fullname'];
 }
 else if ($mode == 'new')
 {
@@ -172,7 +177,7 @@ if($s_accountrole == "admin")
 {
 	echo '<div class="form-group">';
 	echo '<label for="user_letscode" class="col-sm-2 control-label">';
-	echo '[Admin] Gebruiker</label>';
+	echo '<span class="label label-danger">Admin</span> Gebruiker</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 	echo 'data-letsgroup-id="' . $letsgroup_id . '" ';

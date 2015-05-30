@@ -4,11 +4,15 @@ jQuery(document).ready(function ($) {
 		$DragOrientation: 3,
 		$BulletNavigatorOptions: {
 			$Class: $JssorBulletNavigator$,
-			$ChanceToShow: 2
+			$AutoCenter: 1,
+			$ChanceToShow: 2,
+			$SpacingX: 10,
+			$SpacingY: 10   
 		},
 		$ArrowNavigatorOptions: {
 			$Class: $JssorArrowNavigator$,
-			$ChanceToShow: 2
+			$ChanceToShow: 2,
+			$AutoCenter: 2 
 		}
 	};
 	

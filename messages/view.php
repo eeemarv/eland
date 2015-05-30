@@ -108,6 +108,18 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 		$top_buttons .= 'class="btn btn-primary"';
 		$top_buttons .= ' title="Vraag of aanbod aanpassen"><i class="fa fa-pencil"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
+
+		$top_buttons .= '<a href="' . $rootpath . 'messages/delete.php?id=' . $msgid . '" ';
+		$top_buttons .= 'class="btn btn-danger"';
+		$top_buttons .= ' title="Vraag of aanbod verwijderen"><i class="fa fa-times"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+	}
+
+	if ($message['msg_type'] == 1 && $s_id != $message['uid'])
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'transactions/add.php?mid=' . $msgid . '" class="btn btn-warning"';
+		$top_buttons .= ' title="Transactie voor dit aanbod toevoegen"><i class="fa fa-exchange"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
 	}
 }
 
@@ -132,7 +144,16 @@ foreach ($msgpictures as $key => $value)
 	echo '<div><img u="image" src="' . $url . '" /></div>';
 }
 
-echo '</div></div></div></div>';
+echo '</div>';
+
+echo '<div u="navigator" class="jssorb01" style="bottom: 16px; right: 10px;">';
+echo '<div u="prototype"></div>';
+echo '</div>';
+
+echo '<span u="arrowleft" class="jssora02l" style="top: 123px; left: 8px;"></span>';
+echo '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
+
+echo '</div></div></div>';
 
 echo '<div class="col-md-6">';
 
