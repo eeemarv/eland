@@ -42,29 +42,29 @@ foreach ($newsitems as $value)
 {
 	echo '<tr>';
 
-	echo "<td>";
-	echo "<a href='view.php?id=".$value["id"]."'>";
-	echo htmlspecialchars($value["headline"],ENT_QUOTES);
-	echo "</a>";
-	echo "</td>";
+	echo '<td>';
+	echo '<a href="view.php?id=' . $value['id'] . '">';
+	echo htmlspecialchars($value['headline'],ENT_QUOTES);
+	echo '</a>';
+	echo '</td>';
 
 	echo '<td>';
-	if(trim($value["itemdate"]) != "00/00/00")
+	if(trim($value['itemdate']) != '00/00/00')
 	{
 		list($date) = explode(' ', $value['itemdate']);
 		echo $date;
 	}
-	echo "</td>";
+	echo '</td>';
 
 	if ($s_accountrole == 'admin')
 	{
 		echo '<td>';
-		echo ($value['approved'] == 't') ? 'Goedgekeurd' : 'Nee';
+		echo ($value['approved'] == 't') ? 'Ja' : 'Nee';
 		echo '</td>';
 	}
-	echo "</tr>";
+	echo '</tr>';
 }
 echo '</tbody>';
-echo "</table></div>";
+echo '</table></div>';
 
 include $rootpath . 'includes/inc_footer.php';

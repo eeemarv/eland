@@ -1,11 +1,11 @@
 <?php
 ob_start();
-$rootpath = "";
+$rootpath = '';
 $role = 'guest';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+
+$filter = $_GET['filter'];
 
 $users = $db->GetArray('SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
@@ -13,14 +13,13 @@ $users = $db->GetArray('SELECT * FROM users u
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-$query = 'SELECT tc.abbrev, c.id_user, c.value
+$c_ary = $db->GetArray('SELECT tc.abbrev, c.id_user, c.value
 	FROM contact c, type_contact tc, users u
 	WHERE tc.id = c.id_type_contact
 		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')
 		AND u.id = c.id_user
 		AND u.status IN (1, 2, 3)
-		AND c.flag_public = 1';
-$c_ary = $db->GetArray($query);
+		AND c.flag_public = 1');
 
 $contacts = array();
 
@@ -32,12 +31,14 @@ foreach ($c_ary as $c)
 $h1 = 'Contactlijst';
 $fa = 'users';
 
-$top_right = '<a href="print_memberlist.php?prefix_filterby=' .$prefix_filterby . '">';
+$top_right = '<a href="print_memberlist.php';
 $top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
-$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php?prefix_filterby=' . $prefix_filterby;
+$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php';
 $top_right .= '" target="new">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
+
+$includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -48,7 +49,7 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="filter">';
+echo '<input type="text" class="form-control" id="filter" name="filter" value="' . $filter . '">';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -91,17 +92,17 @@ foreach($users as $value)
 	echo '<a href="memberlist_view.php?id=' .$id .'">'.htmlspecialchars($value['fullname'],ENT_QUOTES).'</a></td>';
 	echo '<td>';
 	echo render_contacts($contacts[$value['id']]['tel']);
-	echo "</td>";
-	echo "<td>";
+	echo '</td>';
+	echo '<td>';
 	echo render_contacts($contacts[$value['id']]['gsm']);
-	echo "</td>";
-	echo "<td>".$value["postcode"]."</td>";
-	echo "<td>";
+	echo '</td>';
+	echo '<td>' . $value['postcode'] . '</td>';
+	echo '<td>';
 	echo render_contacts($contacts[$value['id']]['mail'], 'mail');
-	echo "</td>";
+	echo '</td>';
 
-	echo "<td align='right'>";
-	$balance = $value["saldo"];
+	echo '<td>';
+	$balance = $value['saldo'];
 	if($balance < $value['minlimit'] || ($value['maxlimit'] != NULL && $balance > $value['maxlimit']))
 	{
 		echo '<span class="text-danger">' . $balance . '</span>';

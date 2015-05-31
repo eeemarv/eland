@@ -5,6 +5,8 @@ $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
+$filter = $_GET['filter'];
+
 $msgs = $db->GetArray('select m.*,
 		c.id as cid, c.fullname as cat,
 		u.letscode, u.fullname, u.id as uid
@@ -29,6 +31,8 @@ if ($s_accountrole == 'admin')
 $h1 = 'Vraag & Aanbod';
 $fa = 'leanpub';
 
+$includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
+
 include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="get">';
@@ -38,7 +42,7 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="filter">';
+echo '<input type="text" class="form-control" id="filter" value="' . $filter . '" name="filter">';
 echo '</div>';
 echo '</div>';
 echo '</div>';

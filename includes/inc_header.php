@@ -119,7 +119,7 @@ if ($s_accountrole == 'admin')
 		'messages/overview.php'						=> 'Vraag & Aanbod',
 		'reports/overview.php'						=> 'Rapporten',
 		'preferences/config.php'					=> 'Instellingen',
-		'importexport.php'							=> 'Import/Export',
+		'export.php'								=> 'Export',
 		'eventlog.php'								=> 'Logs',
 		'transactions/many_to_one.php'				=> 'Massa-Transactie',
 	);

@@ -18,65 +18,165 @@
 ob_start();
 $rootpath = "./";
 $role = 'guest';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-include($rootpath."includes/inc_header.php");
+$news = $db->GetArray('select * from news where approved = True order by cdate desc');
 
-if(!isset($s_id)){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
+$newusertreshold = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400);
 
-if($s_accountrole == "admin"){
-	echo "<table class='data' width='99%'><tr class='header'><td>eLAS Status (admin)</td></tr>";
-	echo "<tr><td>";
-	$schemacheck = schema_check();
-	if($schemacheck != $schemaversion){
-		echo "<font color='red'>";
-		echo "Database update is nodig";
-		echo "</font>";
+$newusers = $db->GetArray('select id, letscode, fullname
+	from users
+	where status = 1
+		and adate > \'' . $newusertreshold . '\'');
+
+include $rootpath . 'includes/inc_header.php';
+
+if($s_accountrole == 'admin')
+{
+	$version = $db->GetOne('select value from parameters where parameter = \'schemaversion\'');
+	$db_update = ($version == $schemaversion) ? false : true;
+	$default_config = $db->GetOne('select setting from config where "default" = True');
+	$group_internal = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+
+	if ($db_update || $default_config || !$group_internal)
+	{
+		echo '<div class="panel panel-danger">';
+		echo '<div class="panel-heading">';
+		echo 'eLAS status (amdin)';
+		echo '</div>';
+
+		echo '<ul class="list-group">';
+		if ($db_update)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Een database update is nodig.';
+			echo '</li>';
+		}
+		if ($default_config)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er zijn nog settings met standaardwaarden, ';
+			echo 'klik op <a href="' . $rootpath . 'preferences/config.php">instellingen</a> ';
+			echo 'om ze te wijzigen of bevestigen';
+			echo '</li>';
+		}
+		if ($group_internal)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er bestaat geen LETS groep met type intern voor je eigen groep.  ';
+			echo 'Voeg die toe onder <a href="' . $rootpath . 'interlets/overview.php">LETS Groepen</a>.';
+			echo '</li>';
+		}
+		echo '</ul>';
+		echo '</div>';
 	}
-	echo "</td></tr>";
-	$settingsstatus = checkdefaultsettings();
-	if($settingsstatus != ""){
-		echo "<tr><td>$settingsstatus</td></tr>";
+}
+
+if($s_accountrole == 'guest')
+{
+	$systemname = readconfigfromdb('systemname');
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	echo 'Welkom bij de eLAS installatie van ' . $systemname;
+	echo '</div>';
+	echo '<div class="panel-body">';
+	echo 'Je bent ingelogd als LETS-gast, je kan informatie ';
+	echo 'raadplegen maar niets wijzigen of transacties invoeren.  ';
+	echo 'Als guest kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS';
+	echo '</div>';
+	echo '</div>';
+}
+
+if($news)
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">Nieuws</div>';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-striped table-hover table-bordered footable">';
+
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th>Titel</th>';
+	echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
+	echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
+	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+	foreach ($news as $value)
+	{
+		echo '<tr>';
+
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'news/view.php?id=' . $value['id'] . '">';
+		echo htmlspecialchars($value['headline'],ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
+
+		echo '<td>';
+		if(trim($value['itemdate']) != '00/00/00')
+		{
+			list($date) = explode(' ', $value['itemdate']);
+			echo $date;
+		}
+		echo '</td>';
+
+		if ($s_accountrole == 'admin')
+		{
+			echo '<td>';
+			echo ($value['approved'] == 't') ? 'Ja' : 'Nee';
+			echo '</td>';
+		}
+		echo '</tr>';
 	}
+	echo '</tbody>';
+	echo '</table></div>';
+	echo '</div>';
+}
 
-	echo "<tr><td>";
-	echo "</td></tr>";
-	$interletsstatus = checkinterlets();
-	if($interletsstatus  != ""){
-		echo "<tr><td>$interletsstatus</td></tr>";
+if($newusers)
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">Nieuwe leden</div>';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-bordered table-striped table-hover footable"';
+	echo ' data-filter="#filter" data-filter-minimum="1">';
+	echo '<thead>';
+
+	echo '<tr>';
+	echo '<th data-sort-initial="true">Code</th>';
+	echo '<th data-filter="#filter">Naam</th>';
+	echo '</tr>';
+
+	echo '</thead>';
+	echo '<tbody>';
+
+	foreach($newusers as $value)
+	{
+		$id = $value['id'];
+
+		echo '<tr class="success">';
+
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' .$id .'">';
+		echo $value['letscode'];
+		echo '</a></td>';
+		
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' .$id .'">';
+		echo htmlspecialchars($value['fullname'],ENT_QUOTES).'</a>';
+		echo '</td>';
+		echo '</tr>';
+
 	}
-	echo "</table>";
-}
-
-if($s_accountrole == "guest"){
-	$mygroup = readconfigfromdb("systemname");
-	echo "<table class='data' width='99%'><tr class='header'><td><strong>Interlets login<strong></td></tr>";
-	echo "<tr><td>";
-	echo "Welkom bij de eLAS installatie van $mygroup.";
-	echo "<br>Je bent ingelogd als LETS-gast, je kan informatie raadplegen maar niets wijzigen of transacties invoeren.  Als guest kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS";
-	echo "</td></tr>";
-	echo "</table>";
-}
-
-$newsitems = get_all_newsitems();
-if($newsitems){
-	show_all_newsitems($newsitems);
-}
-
-/*  postgres error: LIKE is wrong operator for date type
-$birthdays = get_all_birthdays();
-if($birthdays){
-	show_all_birthdays($birthdays);
-}
-*/
-
-$newusers = get_all_newusers();
-if($newusers){
-	show_all_newusers($newusers);
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div>';
+	echo '</div>';
 }
 
 $messagerows = get_all_msgs();
@@ -84,37 +184,12 @@ $messagerows = get_all_msgs();
 			show_all_msgs($messagerows);
 }
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
 //////////////////////////////////////////
 
-function checkdefaultsettings(){
-	global $db;
-	$query = "SELECT * FROM config WHERE \"default\" = True";
-	$result = $db->Execute($query) ;
-	$numrows = $result->RecordCount();
-	if($numrows > 0){
-		$status = "<font color='red'>Er zijn nog settings met standaardwaarden, klik op instellingen om ze te wijzigen of bevestigen</font>";
-	} else {
-		$status = "";
-	}
-	return $status;
-}
-
-function checkinterlets(){
-	global $db;
-	$query = "SELECT * FROM letsgroups WHERE apimethod = 'internal'";
-	$result = $db->Execute($query) ;
-	$numrows = $result->RecordCount();
-	if($numrows == 0){
-			$status = "<font color='red'>Er bestaat geen LETS groep met type intern voor je eigen groep.  Voeg die toe onder beheer > LETS Groepen.</font>";
-	} else {
-			$status = "";
-	}
-	return $status;
-}
-
-function schema_check(){
+function schema_check()
+{
         //echo $version;
     global $db;
 	$query = "SELECT * FROM parameters WHERE parameter= 'schemaversion'";
@@ -181,15 +256,8 @@ function show_all_birthdays($birthdays){
 	echo "</table></div>";
 }
 
-function get_all_birthdays(){
-	global $db;
-	$mymonth = date("m");
-	$query = "SELECT * FROM users WHERE status = 1 AND birthday LIKE '%-$mymonth-%'";
-	$birthdays = $db->GetArray($query);
-	return $birthdays;
-}
-
-function get_all_newusers(){
+function get_all_newusers()
+{
 	global $db;
 	$query = "SELECT * FROM users WHERE status = 3 ORDER by letscode ";
 	$newusers = $db->GetArray($query);

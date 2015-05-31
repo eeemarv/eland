@@ -504,8 +504,9 @@ if ($mode == 'new')
 }
 
 $cancel_red = ($id) ? 'view.php?id=' . $id : 'overview.php';
+$btn = ($mode == 'edit') ? 'primary' : 'success';
 echo '<a href="' . $rootpath . 'users/' . $cancel_red . '" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 echo '</form>';
 

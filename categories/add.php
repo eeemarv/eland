@@ -57,7 +57,7 @@ include $rootpath . 'includes/inc_header.php';
 echo '<form  method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
-echo '<label for="name" class="col-sm-2 control-label">Van letscode</label>';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="name" name="name" ';
 echo 'value="' . $posted_list['name'] . '" required>';
@@ -80,9 +80,9 @@ echo '</div>';
 echo '</div>';
 
 echo '<a href="' . $rootpath . 'categories/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-primary">';
+echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
 echo '</form>';
 
 echo '</div></div>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
