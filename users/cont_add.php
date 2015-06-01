@@ -46,7 +46,7 @@ echo "<table  class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr>";
 echo "<td valign='top' align='right'>Type</td>";
 echo "<td>";
-echo "<select name='id_type_contact'>";
+echo '<select name="id_type_contact"';
 render_select_options($contact_types, $contact['id_type_contact']);
 echo "</select>";
 echo "</td></tr><tr><td></td>";
@@ -117,7 +117,7 @@ function validate_input($contact)
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
 
-	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE  id = ' .$contact["id_type_contact"]))
+	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE id = ' . $contact['id_type_contact']))
 	{
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}
