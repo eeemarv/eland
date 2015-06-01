@@ -140,7 +140,7 @@ $includejs = '
 	<script src="' . $rootpath . 'js/msg_edit.js"></script>';
 
 $h1 = ($mode == 'new') ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 include $rootpath . 'includes/inc_header.php';
 

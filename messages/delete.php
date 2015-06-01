@@ -70,7 +70,7 @@ if(isset($_POST["zend"]))
 $h1 = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 $h1 .= ': ' . htmlspecialchars($msg['content'], ENT_QUOTES);
 $h1 .= ' verwijderen?';
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 include $rootpath . 'includes/inc_header.php';
 

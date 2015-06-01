@@ -2,8 +2,8 @@
 ob_start();
 $rootpath = "../";
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
 
@@ -18,59 +18,65 @@ $top_buttons = '<a href="' . $rootpath . 'categories/add.php" class="btn btn-suc
 $top_buttons .= ' title="Categorie toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'Categorieën';
 
-echo '<h1><span class="label label-danger">Admin</span> Categorieën</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
 echo '<tr>';
 echo '<thead>';
 echo '<th>Categorie</th>';
-echo '<th data-hide="phone, tablet">Vraag</th>';
-echo '<th data-hide="phone, tablet">Aanbod</th>';
-echo '<th data-hide="phone">Aanpassen</th>';
+echo '<th data-hide="phone">Vraag</th>';
+echo '<th data-hide="phone">Aanbod</th>';
 echo '<th data-hide="phone">Verwijderen</th>';
-echo '</tr></thead>';
+echo '</tr>';
+echo '</thead>';
 
-foreach($cats as $value){
+echo '<tbody>';
 
-	if (!$value["id_parent"])
+foreach($cats as $cat)
+{
+	$count_wanted = $cat['stat_msgs_wanted'];
+	$count_offers = $cat['stat_msgs_offers'];
+	$count = $count_wanted + $count_offers;
+	$count += $child_count_ary[$cat['id']];
+
+	if (!$cat['id_parent'])
 	{
 		echo '<tr class="info">';
-		echo "<td><strong><a href='edit.php?id=".$value["id"]."'>";
-		echo htmlspecialchars($value["name"],ENT_QUOTES);
-		echo "</a></strong></td>";
+		echo '<td><strong><a href="edit.php?id=' . $cat['id'] . '">';
+		echo htmlspecialchars($cat['name'],ENT_QUOTES);
+		echo '</a></strong></td>';
 	}
 	else
 	{
 		echo '<tr>';
 		echo '<td>';
 		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		echo '<a href="edit.php?id=' . $value['id'] . '">';
-		echo htmlspecialchars($value["name"],ENT_QUOTES);
-		echo "</a></td>";
+		echo '<a href="edit.php?id=' . $cat['id'] . '">';
+		echo htmlspecialchars($cat['name'],ENT_QUOTES);
+		echo '</a></td>';
 	}
 
-	echo '<td>' . (($v = $value['stat_msgs_wanted']) ? $v : '') . '</td>';
-	echo '<td>' . (($v = $value['stat_msgs_offers']) ? $v : '') . '</td>';
-	$child_count = $value['stat_msgs_wanted'] + $value['stat_msgs_offers'];
-	$child_count += $child_count_ary[$value['id']];
-	echo '<td><a href="edit.php?id=' . $value['id'] . '" class="btn btn-primary btn-xs">';
-	echo '<i class="fa fa-pencil"></i> Aanpassen</a></td>';
-	echo '<td>';
+	echo '<td>' . (($count_wanted) ?: '') . '</td>';
+	echo '<td>' . (($count_offers) ?: '') . '</td>';
 
-	if (!$child_count)
+	echo '<td>';
+	if (!$count)
 	{
-		echo '<a href="delete.php?id=' . $value['id'] . '" class="btn btn-danger btn-xs">';
+		echo '<a href="delete.php?id=' . $cat['id'] . '" class="btn btn-danger btn-xs">';
 		echo '<i class="fa fa-times"></i> Verwijderen</a>';
 	}
 	echo '</td>';
 	echo '</tr>';
 }
-echo "</table></div>";
+
+echo '</tbody>';
+echo '</table>';
+echo '</div>';
 
 echo '<p>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 

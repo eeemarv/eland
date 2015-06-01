@@ -125,7 +125,7 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 
 $h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
 $h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 include $rootpath.'includes/inc_header.php';
 

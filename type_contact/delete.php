@@ -5,38 +5,52 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(!(isset($s_id) && ($s_accountrole == "admin"))){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
+$id = $_GET['id'];
 
-$id = $_GET["id"];
-if(empty($id)){
+if(!$id)
+{
+	$alert->warning('Geen id!');
 	header('Location: ' . $rootpath . 'type_contact/overview.php');
 	exit;
 }
 
-$contacttype = get_contacttype($id);
+$ct = $db->GetRow('select tc.*, count(c.id)
+	from type_contact tc, contact c
+	where tc.id = ' . $id . '
+		and c.id_type_contact = tc.id');
 
-if (in_array($contacttype['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
+if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
 	$alert->warning('Beschermd contact type.');
 	header('Location: ' . $rootpath . 'type_contact/overview.php');
 	exit;
 }
 
-if(isset($_POST["zend"])){
-	delete_contacttype($id);
-	$alert->success('Contact type verwijderd.');
+if(isset($_POST["zend"]))
+{
+	if ($db->Execute('delete from type_contact where id = ' . $id))
+	{
+		$alert->success('Contact type verwijderd.');
+	}
+	else
+	{
+		$db->error('Fout bij het verwijderen.');
+	}
+	
 	header('Location: ' . $rootpath . 'type_contact/overview.php');
 	exit;
 }
 
-include($rootpath."includes/inc_header.php");	
-echo "<h1>Contacttype verwijderen</h1>";
-show_contacttype($contacttype);
-ask_confirmation($contacttype);
-show_form($id);
+$h1 = 'Contact type verwijderen: ' . $ct['name'];
+
+include $rootpath . 'includes/inc_header.php';	
+
+echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
+echo '<form method="post">';
+echo '<a href="' . $rootpath . 'type_contact/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+echo '</form>';
+
 include($rootpath."includes/inc_footer.php");	
 
 

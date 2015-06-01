@@ -30,6 +30,19 @@ $newusers = $db->GetArray('select id, letscode, fullname
 	where status = 1
 		and adate > \'' . $newusertreshold . '\'');
 
+$msgs = $db->GetArray('SELECT m.*,
+		u.id AS uid,
+		u.fullname,
+		u.letscode,
+		c.fullname as cat,
+		c.id as cid
+	from messages m, users u, categories c
+	where m.id_user = u.id
+		and u.status in (1, 2)
+		and m.id_category = c.id
+	order by m.cdate DESC
+	limit 100');
+
 include $rootpath . 'includes/inc_header.php';
 
 if($s_accountrole == 'admin')
@@ -91,8 +104,9 @@ if($s_accountrole == 'guest')
 
 if($news)
 {
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading">Nieuws</div>';
+	echo '<div class="panel panel-warning">';
+	echo '<div class="panel-heading"><i class="fa fa-calendar"></i> ';
+	echo '<a href="' . $rootpath . 'news/overview.php">Nieuws</a></div>';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered footable">';
@@ -139,8 +153,9 @@ if($news)
 
 if($newusers)
 {
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading">Nieuwe leden</div>';
+	echo '<div class="panel panel-success">';
+	echo '<div class="panel-heading"><i class="fa fa-users"></i> ';
+	echo '<a href="' . $rootpath . 'memberlist.php">Nieuwe leden</a></div>';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-bordered table-striped table-hover footable"';
@@ -179,217 +194,70 @@ if($newusers)
 	echo '</div>';
 }
 
-$messagerows = get_all_msgs();
-	if($messagerows){
-			show_all_msgs($messagerows);
+if($msgs)
+{
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	echo '<i class="fa fa-newspaper-o"></i> ';
+	echo '<a href="' . $rootpath . 'messages/overview.php">Recent vraag en aanbod</a>';
+	echo '</div>';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-hover table-striped table-bordered footable"';
+	echo ' data-filter="#filter" data-filter-minimum="1">';
+	echo '<thead>';
+	echo '<tr>';
+	echo "<th>V/A</th>";
+	echo "<th>Wat</th>";
+	echo '<th data-hide="phone, tablet">Geldig tot</th>';
+	echo '<th data-hide="phone, tablet">Wie</th>';
+	echo '<th data-hide="phone, tablet">Categorie</th>';
+	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	foreach($msgs as $msg)
+	{
+		$del = (strtotime($msg['validity']) < time()) ? true : false;
+
+		echo '<tr';
+		echo ($del) ? ' class="danger"' : '';
+		echo '>';
+		echo '<td>';
+
+		echo ($msg["msg_type"]) ? 'A' : 'V';
+		echo '</td>';
+
+		echo '<td>';
+		echo '<a href="' .$rootpath . 'messages/view.php?id=' . $msg['id']. '">';
+		echo htmlspecialchars($msg['content'],ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
+
+		echo '<td>';
+		echo $msg['validity'];
+		echo '</td>';
+
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
+		echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
+
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
+		echo htmlspecialchars($msg['cat'],ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
+
+		echo '</tr>';
+	}
+
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div>';
+	echo '</div>';
 }
 
 include $rootpath . 'includes/inc_footer.php';
-
-//////////////////////////////////////////
-
-function schema_check()
-{
-        //echo $version;
-    global $db;
-	$query = "SELECT * FROM parameters WHERE parameter= 'schemaversion'";
-    $result = $db->GetRow($query) ;
-	return $result["value"];
-}
-
-function show_all_newusers($newusers){
-
-	echo "<div class='border_b'>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td colspan='3'><strong>Instappers</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach($newusers as $value){
-		$rownumb=$rownumb+1;
-		if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-		}else{
-	        	echo "<tr class='even_row'>";
-		}
-
-		echo "<td valign='top'>";
-		echo trim($value["letscode"]);
-		echo " </td><td valign='top'>";
-		echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["name"],ENT_QUOTES)."</a>";
-		echo "</td>";
-		echo "<td valign='top'>";
-		echo $value["postcode"];
-		echo " </td>";
-		echo "</tr>";
-
-	}
-	echo "</table></div>";
-}
-
-function show_all_birthdays($birthdays){
-	echo "<div class='border_b'>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td colspan='2'><strong>Verjaardagen deze maand</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach($birthdays as $value){
-	$rownumb=$rownumb+1;
-	if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-	}else{
-			echo "<tr class='even_row'>";
-	}
-
-	echo "<td valign='top' width='15%'>";
-	echo $value['birthday'];
-	echo " </td>";
-
-	echo "<td valign='top'>";
-	echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["name"],ENT_QUOTES)."</a>";
-	echo " </td>";
-
-	echo "</tr>";
-
-	}
-	echo "</table></div>";
-}
-
-function get_all_newusers()
-{
-	global $db;
-	$query = "SELECT * FROM users WHERE status = 3 ORDER by letscode ";
-	$newusers = $db->GetArray($query);
-	return $newusers;
-}
-
-function show_all_newsitems($newsitems){
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td colspan='2'><strong>Nieuws</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach($newsitems as $value){
-	$rownumb=$rownumb+1;
-		if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-		}else{
-	        	echo "<tr class='even_row'>";
-		}
-
-		echo "<td valign='top' width='15%'>";
-		if(trim($value["idate"]) != "00/00/00"){
-			list($date) = explode(' ', $value['idate']); 
-			echo $date;
-		}
-		echo " </td>";
-		echo "<td valign='top'>";
-		echo " <a href='news/view.php?id=".$value["nid"]."'>";
-		echo htmlspecialchars($value["headline"],ENT_QUOTES);
-		echo "</a>";
-		echo "</td></tr>";
-	}
-
-	echo "</table>";
-}
-
-function chop_string($content, $maxsize){
-$strlength = strlen($content);
-    //geef substr van kar 0 tot aan 1ste spatie na 30ste kar
-    //dit moet enkel indien de lengte van de string groter is dan 30
-    if ($strlength >= $maxsize){
-        $spacechar = strpos($content," ", 60);
-        if($spacechar == 0){
-            return $content;
-        }else{
-            return substr($content,0,$spacechar);
-        }
-    }else{
-        return $content;
-    }
-}
-
-function show_all_msgs($messagerows){
-
-	global $rootpath;
-
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td colspan='3'><strong>Laatste nieuwe Vraag & Aanbod</strong></td>";
-	echo "</tr>";
-	$rownumb=0;
-	foreach($messagerows as $key => $value){
-		$rownumb=$rownumb+1;
-		if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-		}else{
-	        	echo "<tr class='even_row'>";
-		}
-		echo "<td valign='top'>";
-		if($value["msg_type"]==0){
-			echo "V";
-		}elseif ($value["msg_type"]==1){
-			echo "A";
-		}
-		echo "</td>";
-		echo "<td valign='top'>";
-		echo "<a href='messages/view.php?id=".$value["msgid"]."'>";
-		if(strtotime($value["valdate"]) < time()) {
-                        echo "<del>";
-                }
-		$content = htmlspecialchars($value["content"],ENT_QUOTES);
-		echo chop_string($content, 60);
-		if(strlen($content)>60){
-			echo "...";
-		}
-		if(strtotime($value["valdate"]) < time()) {
-                        echo "</del>";
-                }
-		echo "</a>";
-		echo "</td><td valign='top'>";
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['uid'] . '">';
-		echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
-		echo "</a></td>";
-		echo "</tr>"; 
-	}
-	echo "</table>";
-}
-
-function get_all_newsitems(){
-	global $db;
-	$query = 'SELECT n.headline, 
-			n.id AS nid,
-			n.cdate AS date,
-			n.itemdate AS idate
-		FROM news n
-		WHERE n.approved = True
-		ORDER BY n.itemdate DESC
-		LIMIT 50';
-
-	return $db->GetArray($query);
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-
-}
-
-function get_all_msgs(){
-	global $db;
-	$query = 'SELECT m.id AS msgid,
-			m.validity AS valdate,
-			m.content,
-			m.msg_type,
-			u.id AS uid,
-			u.name AS username,
-			u.letscode,
-			m.cdate AS date
-		FROM messages m, users u
-		WHERE m.id_user = u.id
-			AND (u.status = 1 OR u.status = 2 OR u.status = 3)
-		ORDER BY m.cdate DESC
-		LIMIT 100';
-	return $db->GetArray($query);
-}
-

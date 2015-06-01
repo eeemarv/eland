@@ -1,69 +1,81 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-if(!(isset($s_id) && ($s_accountrole == "admin"))){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
+$types = $db->GetArray('select * from type_contact tc');
 
-include($rootpath."includes/inc_header.php");
+$contact_count = $db->GetAssoc('select id_type_contact, count(id)
+	from contact
+	group by id_type_contact');
 
-echo "<div class='border_b'>| <a href='add.php'>Contacttype toevoegen</a> |</div>";
-echo "<h1>Overzicht contacttypes</h1>";
-$contacttypes = get_all_contacttypes();
-show_all_contacttypes($contacttypes);
+$top_buttons = '<a href="' . $rootpath . 'type_contact/add.php" class="btn btn-success"';
+$top_buttons .= ' title="Contact type toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-include($rootpath."includes/inc_footer.php");
+$h1 = 'Contact types';
 
+include $rootpath . 'includes/inc_header.php';
 
-//////////////////
+echo '<div class="table-responsive">';
+echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
+echo '<tr>';
+echo '<thead>';
+echo '<th>Naam</th>';
+echo '<th>Afkorting</th>';
+echo '<th data-hide="phone">Verwijderen</th>';
+echo '<th data-hide="phone">Contacts</th>';
+echo '</tr>';
+echo '</thead>';
 
+echo '<tbody>';
 
-function show_all_contacttypes($contacttypes){
-	echo "<div class='border_b'>";
-	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
-	echo "<tr class='header'>";
-	echo "<td><strong>Naam </strong></td>";
-	echo "<td><strong>Afkorting</strong></td>";
-	echo '<td>Aanpassen</td>';
-	echo '<td>Verwijderen</td>';
-	echo "</tr>";
-	$rownumb=0;
-	foreach($contacttypes as $value){
+foreach($types as $t)
+{
+	$count = $contact_count[$t['id']];
+	$protected = (in_array($t['abbrev'], array('mail', 'gsm', 'tel', 'adr', 'web'))) ? true : false;
 
-		$protected = (in_array($value['abbrev'], array('mail', 'gsm', 'tel', 'adr', 'web'))) ? true : false;
-	 	$rownumb=$rownumb+1;
-		if($rownumb % 2 == 1){
-			echo "<tr class='uneven_row'>";
-		}else{
-	        	echo "<tr class='even_row'>";
-		}
-		echo "<td valign='top'>";
-		echo ($protected) ? '' : "<a href='edit.php?id=".$value["id"]."'>";
-		echo htmlspecialchars($value["name"],ENT_QUOTES);
-		echo ($protected) ? '*': '</a>';
-		echo "</td><td>";
-		if(!empty($value["abbrev"])){
-			echo htmlspecialchars($value["abbrev"],ENT_QUOTES);
-		}
-		echo "</td><td>";
-		echo ($protected) ? '' : '<a href="edit.php?id=' . $value['id'] . '">Aanpassen</a>';
-		echo '</td><td>';
-		echo ($protected) ? '' : '<a href="delete.php?id=' . $value['id'] . '">Verwijderen</a>';
-		echo '</td>';
-		echo '</tr>';
+	echo '<tr>';
+
+	echo '<td>';
+	echo ($protected) ? '' : '<a href="' . $rootpath . 'type_contact/edit.php?id=' . $t['id'] . '">';
+	echo htmlspecialchars($t['abbrev'],ENT_QUOTES);
+	echo ($protected) ? '*' : '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	echo ($protected) ? '' : '<a href="' . $rootpath . 'type_contact/edit.php?id=' . $t['id'] . '">';
+	echo htmlspecialchars($t['name'],ENT_QUOTES);
+	echo ($protected) ? '*' : '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	if ($protected || $count)
+	{
+		echo '&nbsp;';
 	}
-	echo "</table></div>";
-	echo '<p>* Beschermd contact type: kan niet aangepast of verwijderd worden.</p>';
+	else
+	{
+		echo '<a href="' . $rootpath . 'type_contact/delete.php?id=' . $t['id'] . '" ';
+		echo 'class="btn btn-danger btn-xs"><i class="fa fa-times"></i> ';
+		echo 'Verwijderen</a>';
+	}
+	echo '</td>';
+
+	echo '<td>';
+	echo $count;
+	echo '</td>';
+
+	echo '</tr>';
 }
 
-function get_all_contacttypes(){
-	global $db;
-	$query = "SELECT * FROM type_contact";
-	$contacttypes = $db->GetArray($query);
-	return $contacttypes;
-}
+echo '</tbody>';
+echo '</table>';
+echo '</div>';
+
+echo '<p>Kunnen niet verwijderd worden: ';
+echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</p>';
+
+include $rootpath . 'includes/inc_footer.php';

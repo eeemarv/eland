@@ -49,7 +49,7 @@ if($s_accountrole == 'user' || $s_accountrole == 'admin')
 
 
 $h1 = 'Nieuwsbericht: ' . $news['headline'];
-$fa = 'newspaper-o';
+$fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 

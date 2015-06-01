@@ -31,7 +31,7 @@ $news = $db->GetRow($query);
 
 
 $h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
-$fa = 'newspaper-o';
+$fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -54,7 +54,6 @@ echo "<p>";
 echo nl2br(htmlspecialchars($news["newsitem"],ENT_QUOTES));
 echo "</p>";
 
-echo "<p>";
 echo "<table width='100%' border=0><tr><td>";
 echo "<div id='navcontainer'>";
 echo "</div>";
@@ -69,6 +68,6 @@ echo " moet verwijderd worden?</strong></font></p>";
 echo '<form method="post">';
 echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-echo "</form></p>";
+echo '</form>';
 
 include $rootpath. 'includes/inc_footer.php';

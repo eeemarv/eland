@@ -46,7 +46,6 @@ echo '</div>';
 
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
-// echo '<div class="col-md-12">';
 
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 
@@ -115,13 +114,14 @@ if ($s_accountrole == 'admin')
 		'categories/overview.php'	 				=> 'Categorieën',
 		'interlets/overview.php'					=> 'LETS Groepen',
 		'apikeys/overview.php'						=> 'Apikeys',
-		'type_contact/overview.php'					=> 'Contacttypes',
+		'type_contact/overview.php'					=> 'Contact types',
 		'messages/overview.php'						=> 'Vraag & Aanbod',
 		'reports/overview.php'						=> 'Rapporten',
 		'preferences/config.php'					=> 'Instellingen',
 		'export.php'								=> 'Export',
-		'eventlog.php'								=> 'Logs',
+//		'bulk.php'									=> 'Bulk acties',
 		'transactions/many_to_one.php'				=> 'Massa-Transactie',
+		'eventlog.php'								=> 'Logs',
 	);
 
 	foreach ($menu as $link => $label)

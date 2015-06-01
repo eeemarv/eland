@@ -327,7 +327,7 @@ jQuery(document).ready(function ($) {
 
 echo '<div class="row">';
 echo '<div class="col-md-12">';
-echo '<h3><i class="fa fa-leanpub"></i> Vraag en aanbod ';
+echo '<h3><i class="fa fa-newspaper-o"></i> Vraag en aanbod ';
 echo '<a href="' . $rootpath . 'messages/edit.php?mode=new&uid=' . $id . '"';
 echo ' class="btn btn-success" title="Vraag of aanbod toevoegen">';
 echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';

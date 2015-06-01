@@ -5,112 +5,85 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(!(isset($s_id) && ($s_accountrole == "admin"))){
-	header("Location: ".$rootpath."login.php");
-}
+$id = $_GET['id'];
 
-$id = $_GET["id"];
-if(!isset($id)){
-	header("Location: overview.php");
+if(!isset($id))
+{
+	header('Location: ' . $rootpath . 'type_contact/overview.php');
 	exit;
 }
 
-$contacttype = get_contacttype($id);
+$ct_prefetch = $db->GetRow('select * from type_contact where id = ' . $id);
 
-if (in_array($contacttype['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
+if (in_array($ct_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
 	$alert->warning('Beschermd contact type.');
-	header("Location: overview.php");
+	header('Location: ' . $rootpath . 'type_contact/overview.php');
 	exit;	
 }
 
-if(isset($_POST["zend"])){
-	$posted_list = array();
-	$posted_list["name"] = $_POST["name"];
-	$posted_list["abbrev"] = $_POST["abbrev"];
-	if ($_POST["protect"] == TRUE){
-		$posted_list["protect"] = TRUE;
-	}else{
-		$posted_list["protect"] = FALSE;
+if(isset($_POST['zend']))
+{
+	$ct = array();
+	$ct['name'] = $_POST['name'];
+	$ct['abbrev'] = $_POST['abbrev'];
+	$ct['protect'] = ($_POST['protect']) ? true : false;
+	$ct['id'] = $_GET['id'];
+
+	$error = (empty($ct['name'])) ? 'Geen naam ingevuld! ' : '';
+	$error .= (empty($ct['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
+
+	
+	$ct['mdate'] = date('Y-m-d H:i:s');
+
+	if (!$error)
+	{
+		if ($db->AutoExecute('type_contact', $ct, 'UPDATE', 'id=' . $id))
+		{
+			$alert->success('Contact type aangepast.');
+			header('Location: ' . $rootpath . 'type_contact/overview.php');
+			exit;
+		}
+		else
+		{
+			$alert->error('Fout bij het opslaan.');
+		}
 	}
-
-	echo "Posted protect value is " .$_POST["protect"];
-	$posted_list["id"] = $_GET["id"];
-	$error_list = validate_input($posted_list);
-
-	if (!empty($error_list)){
-		show_form($posted_list, $error_list);
-	}else{
-		update_contacttype($id, $posted_list);
-		$alert->success('Contact type aangepast.');
-		header('Location: ' . $rootpath . 'type_contact/overview.php');
-		exit;
+	else
+	{
+		$alert->error('Fout in één of meer velden. ' . $error);
 	}
-
-	$alert->error('Fout in één of meer velden.');
+}
+else
+{
+	$ct = $ct_prefetch;
 }
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Contact type aanpassen';
 
-echo "<h1>Contacttype aanpassen</h1>";
-show_form($contacttype, $error_list);
+include $rootpath . 'includes/inc_header.php';
 
-include($rootpath."includes/inc_footer.php");
+echo '<form method="post" class="form-horizontal">';
 
-////////////////
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
+echo 'value="' . $ct['name'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-function validate_input($posted_list){
-	$error_list = array();
-	if (!isset($posted_list["name"])|| (trim($posted_list["name"] )=="")){
-		$error_list["name"]="<font color='#F56DB5'>Vul <strong>Type contact</strong> in!</font>";
-	}
-	return $error_list;
-}
+echo '<div class="form-group">';
+echo '<label for="abbrev" class="col-sm-2 control-label">Afkorting</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
+echo 'value="'. $ct['abbrev'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-function update_contacttype($id, $posted_list){
-  	global $db;
-	$posted_list["mdate"] = date("Y-m-d H:i:s");
-	echo "Protect is " .$posted_list["protect"];
-	$result = $db->AutoExecute("type_contact", $posted_list, 'UPDATE', "id=$id");
+echo '<a href="' . $rootpath . 'type_contact/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 
-}
+echo '</form>';
 
-function show_form($contacttype, $error_list){
-	echo "<div class='border_b'><p>";
-	echo "<form action='edit.php?id=".$contacttype["id"]."' method='POST'>";
-	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-	echo "<tr><td valign='top' align='right'>Type contact </td><td>";
-	echo "<input type='text' name='name' size='40' required ";
-	echo "value='". htmlspecialchars($contacttype["name"],ENT_QUOTES). "'>";
-	echo "</td><td>";
-	if (isset($error_list["name"])){
-		echo $error_list["name"];
-	}
-	echo "</td></tr>";
-
-	echo "<tr><td valign='top' align='right'>Afkorting </td><td>";
-	echo "<input type='text' name='abbrev' size='40' required ";
-	echo "value='". htmlspecialchars($contacttype["abbrev"],ENT_QUOTES). "'>";
-	echo "</td><td></td></tr>";
-/*	echo "<tr><td valign='top' align='right'>Beschermd </td><td>";
-	if($contacttype["protect"] == 1) {
-        	echo "<input type='checkbox' name='protect' value='1' CHECKED>";
-	} else {
-		echo "<input type='checkbox' name='protect'>";
-	} 
-
-	echo "</td><td></td></tr>";*/
-
-	echo "<tr><td colspan='2' align='right'>";
-	echo "<input type='submit' value='Opslaan' name='zend'>";
-	echo "</td><td>&nbsp;</td></tr></table>";
-	echo "</form>";
-	echo "</p></div>";
-}
-
-function get_contacttype($id){
-global $db;
-	$query = "SELECT * FROM type_contact WHERE id=".$id;
-	$contacttype = $db->GetRow($query);
-	return $contacttype;
-}
+include $rootpath . 'includes/inc_footer.php';

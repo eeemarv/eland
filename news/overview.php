@@ -22,7 +22,7 @@ if($s_accountrole == 'user' || $s_accountrole == 'admin')
 }
 
 $h1 = 'Nieuws';
-$fa = 'newspaper-o';
+$fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 

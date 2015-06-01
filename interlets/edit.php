@@ -1,21 +1,19 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_form.php';
 
-include($rootpath."includes/inc_header.php");
-
-$mode = $_GET["mode"];
-$id = $_GET["id"];
+$mode = $_GET['mode'];
+$id = $_GET['id'];
 
 $group = $_POST;
 
 if ($mode == 'edit' && !$id)
 {
-	header('Location: overview.php');
+	header('Location: ' . $rootpath . 'interlets/overview.php');
 	exit;
 }
 
@@ -49,82 +47,115 @@ else if ($mode == 'edit')
 	$group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
 }
 
-echo "<h1>LETS groep " . (($mode == 'new') ? 'toevoegen' : 'wijzigen') . '</h1>';
+$h1 = 'LETS groep ';
+$h1 .= ($mode == 'new') ? 'toevoegen' : 'wijzigen'; 
 
-echo "<div class='border_b'><p>";
-echo '<form method="post">';
+include $rootpath . 'includes/inc_header.php';
 
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+echo '<form method="post" class="form-horizontal">';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Groepnaam";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='groupname' value='" . $group['groupname'] . "' size='30' required>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="groupname" class="col-sm-2 control-label">Groepsnaam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="groupname" name="groupname" ';
+echo 'value="' . $group['groupname'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Korte naam:<br><small><i>(kleine letters zonder spaties)</i></small>";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='shortname' value='" . $group['shortname'] . "' size='30'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="shortname" class="col-sm-2 control-label">Korte naam ';
+echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="shortname" name="shortname" ';
+echo 'value="' . $group['shortname'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Prefix:<br><small><i>(kleine letters zonder spaties)</i></small>";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='prefix' value='" . $group['prefix'] . "' size='8'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="prefix" class="col-sm-2 control-label">Prefix ';
+echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="prefix" name="prefix" ';
+echo 'value="' . $group['prefix'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "API Methode<br><small><i>(Type connectie naar de andere installatie)</i></small>";
-echo "</td>\n<td valign='top'>";
-echo "<select name='apimethod'>";
+echo '<div class="form-group">';
+echo '<label for="apimethod" class="col-sm-2 control-label">';
+echo 'API methode <small><i>(type connectie naar de andere installatie)</i></small></label>';
+echo '<div class="col-sm-10">';
+echo '<select class="form-control" id="apimethod" name="apimethod" >';
 render_select_options(array(
 	'elassoap'	=> 'eLAS naar eLAS (elassoap)',
 	'internal'	=> 'Intern (eigen installatie)',
 	'mail'		=> 'E-mail',
 ), $group['apimethod']);
-echo "</select>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Remote API key";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='remoteapikey' value='" . $group['remoteapikey'] . "' size='45'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="remoteapikey" class="col-sm-2 control-label">Remote API key</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
+echo 'value="' . $group['remoteapikey'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Lokale LETS code<br><small><i>(De letscode waarmee de andere groep op deze installatie bekend is)</i></small>";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='localletscode' value='" . $group['localletscode'] . "' size='30'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="localletscode" class="col-sm-2 control-label">';
+echo 'Lokale letscode <small><i>(de letscode waarmee de andere ';
+echo 'groep op deze installatie bekend is.)</i></small></label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
+echo 'value="' . $group['localletscode'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Remote LETS code<br><small><i>(De letscode waarmee deze groep bij de andere bekend is)</i></small>";
-echo "</td>\n<td valign='top'>";
-echo "<input type='text' name='myremoteletscode' value='" . $group['myremoteletscode'] . "' size='30'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="myremoteletscode" class="col-sm-2 control-label">';
+echo 'Remote LETS code <small><i>(De letscode waarmee deze groep bij de andere bekend is)';
+echo '</i></small></label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="myremoteletscode" name="myremoteletscode" ';
+echo 'value="' . $group['myremoteletscode'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "URL";
-echo "</td>\n<td valign='top'>";
-echo "<input type='url' name='url' value='" . $group['url'] . "' size='30'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="url" class="col-sm-2 control-label">';
+echo 'URL';
+echo '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="url" class="form-control" id="url" name="url" ';
+echo 'value="' . $group['url'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "SOAP URL<br><small><i>(voor eLAS, de URL met /soap erachter)</i></small>";
-echo "</td>\n<td valign='top'>";
-echo "<input type='url' name='elassoapurl' value='" . $group['elassoapurl'] . "' size='30'>";
-echo "</td></tr><tr><td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="elassoapurl" class="col-sm-2 control-label">';
+echo 'SOAP URL <small><i>(voor eLAS, de URL met /soap erachter)</i></small>';
+echo '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="url" class="form-control" id="elassoapurl" name="elassoapurl" ';
+echo 'value="' . $group['elassoapurl'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td align='right' valign='top'>";
-echo "Preshared key";
-echo "</td><td valign='top'>";
-echo "<input type='text' name='presharedkey' value='" . $group['presharedkey'] . "' size='30'>";
-echo "</td>\n</tr>\n\n<tr>\n<td valign='top'></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="presharedkey" class="col-sm-2 control-label">';
+echo 'Preshared key';
+echo '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
+echo 'value="' . $group['presharedkey'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td></td><td>";
-echo "<input type='submit' name='zend' value='Opslaan'>";
-echo "</td></tr></table>";
-echo "</form>";
+$btn = ($mode == 'edit') ? 'primary' : 'success';
+echo '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
-include($rootpath."includes/inc_footer.php");
+echo '</form>';
+
+include $rootpath . 'includes/inc_footer.php';

@@ -2,15 +2,11 @@
 ob_start();
 $rootpath = "../";
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-if(!(isset($s_id) && ($s_accountrole == "admin"))){
-	header("Location: ".$rootpath."login.php");
-	exit;
-}
-
-if (isset($_POST["zend"])){
+if (isset($_POST["zend"]))
+{
 	$posted_list = array();
 	$posted_list["name"] = $_POST["name"];
 	$posted_list["abbrev"] = $_POST["abbrev"];
@@ -27,9 +23,9 @@ if (isset($_POST["zend"])){
 	$alert->error('Corrigeer één of meerdere velden.');
 }
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Contact type toevoegen';
 
-echo "<h1>Contacttype toevoegen</h1>";
+include $rootpath . 'includes/inc_header.php';
 
 echo "<div class='border_b'><p>";
 echo "<form method='POST' action='add.php'>";

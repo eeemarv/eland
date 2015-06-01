@@ -29,7 +29,7 @@ if ($s_accountrole == 'admin')
 }
 
 $h1 = 'Vraag & Aanbod';
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 $includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
 

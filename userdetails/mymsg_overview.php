@@ -18,7 +18,7 @@ $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<h1><i class="fa fa-leanpub"></i> Mijn Vraag & Aanbod</h1>';
+echo '<h1><i class="fa fa-newspaper-o"></i> Mijn Vraag & Aanbod</h1>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';

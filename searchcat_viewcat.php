@@ -29,7 +29,7 @@ if (in_array($s_accountrole, array('admin', 'user')))
 }
 
 $h1 = $db->GetOne("SELECT fullname FROM categories WHERE id=". $id);
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 include $rootpath . 'includes/inc_header.php';
 

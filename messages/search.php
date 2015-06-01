@@ -27,7 +27,7 @@ if (in_array($s_accountrole, array('user', 'admin')))
 }
 
 $h1 = 'Zoek vraag en aanbod';
-$fa = 'leanpub';
+$fa = 'newspaper-o';
 
 include $rootpath . 'includes/inc_header.php';
 

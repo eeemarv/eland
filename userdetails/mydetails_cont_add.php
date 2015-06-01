@@ -1,120 +1,90 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_form.php';
 
-if(isset($_POST["zend"]))
+$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+
+if(isset($_POST['zend']))
 {
-	$posted_list = array();
-	$posted_list["id_type_contact"] = $_POST["id_type_contact"];
-	$posted_list["value"] = $_POST["value"];
-	$posted_list["comments"] = $_POST["comments"];
+	$contact = array();
+	$contact['id_type_contact'] = $_POST['id_type_contact'];
+	$contact['value'] = $_POST['value'];
+	$contact['comments'] = $_POST['comments'];
+	$contact['flag_public'] = ($_POST['flag_public']) ? 1 : 0;
 
-	$posted_list["flag_public"] = ($_POST["flag_public"]) ? 1 : 0;
+	$error = (!$contact['value']) ? 'Geen waarde ingevuld! ' : '';
+	$error = (!$tc[$contact['id_type_contact']]) ? 'Dit contact type bestaat niet! ' : $error;
 
-	$error_list = validate_input($posted_list);
-
-	if(empty($error_list))
+	if(!$error)
 	{
-		$posted_list["id_user"] = $s_id;
-		$result = $db->AutoExecute('contact', $posted_list, 'INSERT');
-		$alert->success('Contact toegevoegd.');
-		header('Location: mydetails.php');
+		$contact['id_user'] = $s_id;
+		if ($db->AutoExecute('contact', $contact, 'INSERT'))
+		{
+			$alert->success('Contact toegevoegd.');
+		}
+		else
+		{
+			$alert->error('Opslaan contact niet gelukt.');
+		}
+		header('Location: ' . $rootpath . 'userdetails/mydetails.php');
 		exit;
 	}
 
-	$alert->error('Contact niet toegevoegd.');
+	$alert->error('Fout in één of meerdere velden. ' . $error);
 }
+
+$h1 = 'Contact toevoegen';
 
 include $rootpath . 'includes/inc_header.php';
-echo "<h1>Contact toevoegen</h1>";
 
-$typecontacts = $db->GetAssoc('SELECT id, name FROM type_contact');
+echo '<form method="post" class="form-horizontal">';
 
-echo "<div class='border_b'>";
-echo "<form method='POST' action='mydetails_cont_add.php'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr>";
-echo "<td valign='top' align='right'>Type</td>";
-echo "<td>";
-echo "<select name='id_type_contact'>";
-render_select_options($typecontacts, $posted_list['id_type_contact']);
-echo "</select></td>";
+echo '<div class="form-group">';
+echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="id_type_contact" id="id_type_contact" class="form-control" required>';
+render_select_options($tc, $contact['id_type_contact']);
+echo "</select>";
+echo '</div>';
+echo '</div>';
 
-echo "</tr><tr><td></td><td>";
-if(isset($error_list["id_type_contact"]))
+echo '<div class="form-group">';
+echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="value" name="value" ';
+echo 'value="' . $contact['value'] . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="comments" name="comments" ';
+echo 'value="' . $contact['comments'] . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="flag_public" class="col-sm-2 control-label">';
+echo 'Ja, dit contact mag zichtbaar zijn voor iedereen</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" name="flag_public" id="flag_public"';
+if ($contact['flag_public'])
 {
-	echo $error_list["id_type_contact"];
+	echo ' checked="checked"';
 }
-echo "</td>";
-echo "</tr>";
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr>";
-echo "<td valign='top' align='right'>Waarde</td>";
-echo "<td>";
-echo "<input type='text' name='value' size='20' required ";
-if (isset($posted_list["value"]))
-{
-	echo " value='".$posted_list["value"]."' ";
-}
-echo ">";
-echo "</td>";
-echo "</tr><tr><td></td><td>";
-if(isset($error_list["value"]))
-{
-	echo $error_list["value"];
-}
-echo "</td>";
-echo "</tr>";
+echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
 
-echo "<tr>";
-echo "<td valign='top' align='right'>Commentaar</td>";
-echo "<td>";
-echo "<input type='text' name='comments' size='30' ";
-if (isset($posted_list["comments"]))
-{
-	echo " value='".$posted_list["comments"]."' ";
-}
-echo "</td>";
-echo "</tr><tr><td></td><td>";
-echo "</td>";
-echo "</tr>";
+echo '</form>';
 
-echo "<tr>";
-echo "<td valign='top' align='right'></td>";
-echo "<td>";
-echo "<input type='checkbox' name='flag_public' CHECKED";
-echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
-
-echo "</td>";
-echo "</tr><tr><td></td><td>";
-echo "</td>";
-echo "</tr>";
-
-echo "<tr><td></td><td><input type='submit' name='zend' value='Opslaan'>";
-echo "</td></tr>";
-echo "</table></form></div>";
-
-include($rootpath."includes/inc_footer.php");
-
-////////////////////////
-
-function validate_input($posted_list)
-{
-  	global $db;
-	$error_list = array();
-	if (empty($posted_list["value"]) || (trim($posted_list["value"]) == ""))
-	{
-		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
-	}
-
-	if(!$db->GetOne("SELECT abbrev FROM type_contact WHERE  id = '".$posted_list["id_type_contact"]))
-	{
-		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
-	}
-	return $error_list;
-}
+include $rootpath . 'includes/inc_footer.php';
 

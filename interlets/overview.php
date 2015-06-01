@@ -15,9 +15,9 @@ $top_buttons .= '<a href="' . $rootpath . 'interlets/queue.php" class="btn btn-d
 $top_buttons .= ' title="Interlets transactie queue"><i class="fa fa-exchange"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Interlets queue</span></a>';
 
-include $rootpath . 'includes/inc_header.php';
+$h1 = 'LETS groepen';
 
-echo '<h1><span class="label label-danger">Admin</span> LETS groepen</h1>';
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';

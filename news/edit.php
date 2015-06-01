@@ -6,8 +6,8 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_mailfunctions.php");
 
-$mode = $_GET["mode"];
-$id = $_GET["id"];
+$mode = $_GET['mode'];
+$id = $_GET['id'];
 
 $news = array();
 
@@ -100,7 +100,7 @@ $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_
 
 $h1 = 'Nieuwsbericht ';
 $h1 .= ($mode == 'new') ? 'toevoegen' : 'aanpassen';
-$fa = 'newspaper-o';
+$fa = 'calendar';
 
 
 include $rootpath . 'includes/inc_header.php';
@@ -115,7 +115,7 @@ echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-language="nl" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
-echo  " value ='". $news['itemdate'] ."' required>";
+echo ' value="' . $news['itemdate'] . '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -154,8 +154,9 @@ echo '>';
 echo '</div>';
 echo '</div>';
 
+$btn = ($mode == 'new') ? 'success' : 'primary';
 echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 echo '</form>';
 
