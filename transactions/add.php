@@ -170,8 +170,6 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-
-
 $user = get_user($s_id);
 $balance = $user["saldo"];
 

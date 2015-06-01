@@ -29,11 +29,15 @@ else
 	$value = readconfigfromdb($setting);
 }
 
+$description = $db->Getone('select description from config where setting = \'' . $setting . '\'');
+
 $h1 = 'Instelling ' . $setting . ' aanpassen';
 
 include $rootpath . 'includes/inc_header.php';
 
 echo '<form method="post" class="form-horizontal">';
+
+echo '<p>' . $description . '</p>';
 
 echo '<div class="form-group">';
 echo '<label for="setting" class="col-sm-2 control-label">Instelling</label>';
@@ -52,7 +56,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<a href="' . $rootpath . 'preferences/config.php" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 echo '</form>';
 
 include $rootpath . 'includes/inc_footer.php';

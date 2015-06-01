@@ -26,7 +26,7 @@ echo '<thead>';
 echo '<th>Naam</th>';
 echo '<th>Afkorting</th>';
 echo '<th data-hide="phone">Verwijderen</th>';
-echo '<th data-hide="phone">Contacts</th>';
+echo '<th data-hide="phone">Contacten</th>';
 echo '</tr>';
 echo '</thead>';
 

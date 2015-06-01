@@ -3,21 +3,12 @@ ob_start();
 
 $rootpath = '../';
 $role = 'admin';
-require_once($rootpath.'includes/inc_default.php');
-require_once($rootpath.'includes/inc_adoconnection.php');
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath.'includes/inc_adoconnection.php';
 
-require_once($rootpath.'includes/inc_transactions.php');
-require_once($rootpath.'includes/inc_request.php');
-require_once($rootpath.'includes/inc_data_table.php');
-
-//status 0: inactief
-//status 1: letser
-//status 2: uitstapper
-//status 3: instapper
-//status 4: secretariaat
-//status 5: infopakket
-//status 6: stapin
-//status 7: extern
+require_once $rootpath.'includes/inc_transactions.php';
+require_once $rootpath.'includes/inc_request.php';
+require_once $rootpath.'includes/inc_data_table.php';
 
 $req = new request();
 $req->add('fixed', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4, 'maxlength' => 4, 'label' => 'Vast bedrag'), array('match' => 'positive'))
@@ -173,13 +164,15 @@ $data_table->set_data($active_users)->set_input($req)
 	->add_column('amount', array('title' => 'Bedrag', 'input' => 'id', 'footer' => 'sum'))
 	->add_column('minlimit', array('title' => 'Min.Limiet'));
 
-include($rootpath.'includes/inc_header.php');
+$includejs = '
+	<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/mass_transaction_add.js"></script>';
 
-echo '<h2><font color="#8888FF"><b><i>[admin]</i></b></font></h2>';
+$h1 = 'Massa transactie: "veel naar één"';
 
-echo '<h1>Massa-Transactie. "Veel naar Eén".</h1><p>bvb. voor leden-bijdrage.</p>';
+include $rootpath . 'includes/inc_header.php';
 
-echo '<form method="post"><div style="background-color:#ffdddd; padding:10px;">';
+echo '<div style="background-color:#ffdddd; padding:10px;">';
 echo '<h2>Invul-hulp</h2>';
 echo '<p>Met deze invul hulp kan je snel alle bedragen van de massa-transactie invullen. ';
 echo 'De eigenlijke massa-transactie doe je met het gele formulier onderaan. Daar zie ook de ';
@@ -198,13 +191,29 @@ echo '<li><strong>Percentage op saldo</strong> (Het percentage kan ook negatief 
 echo 'De basis zal gewoonlijk nul zijn, maar er het is ook mogelijk een percentage te berekenen t.o.v. een ander bedrag.</li>';
 echo '<li><strong>Percentage op uitgeschreven transacties</strong> Percentage en aantal dagen dienen beide ingevuld te zijn indien men deze optie wil gebruiken.</li>';
 echo '</ul></div>';
+
+echo '<div class="panel panel-default">';
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
+echo 'value="' . $transaction['letscode_to'] . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+
+
+
 echo '<div id="transformdiv" style="padding:10px;">';
 $data_table->render();
 echo '<table cellspacing="0" cellpadding="5" border="0">';
 $req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
 echo '</table></div></form>';
 
-include($rootpath.'includes/inc_footer.php');
+include $rootpath . 'includes/inc_footer.php';
 
 function check_newcomer($adate)
 {

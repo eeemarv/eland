@@ -7,16 +7,25 @@ require_once $rootpath . 'includes/inc_adoconnection.php';
 
 if (isset($_POST["zend"]))
 {
-	$posted_list = array();
-	$posted_list["name"] = $_POST["name"];
-	$posted_list["abbrev"] = $_POST["abbrev"];
-	$error_list = validate_input($posted_list);
+	$tc = array();
+	$tc['name'] = $_POST['name'];
+	$tc['abbrev'] = $_POST['abbrev'];
+	
+	$error = (empty($tc['name'])) ? 'Geen naam ingevuld! ' : '';
+	$error .= (empty($tc['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
 
-	if (empty($error_list)){
-		$db->AutoExecute("type_contact", $posted_list, 'INSERT');
-		header("Location: overview.php");
-		$alert->success('Contact type toegevoegd.');
-		redirect_overview();
+	if (!$error)
+	{
+		if ($db->AutoExecute('type_contact', $tc, 'INSERT'))
+		{
+			$alert->success('Contact type toegevoegd.');
+		}
+		else
+		{
+			$alert->error('Fout bij het opslaan');
+		}
+
+		header('Location: ' . $rootpath . 'type_contact/overview.php');
 		exit;
 	}
 
@@ -27,51 +36,28 @@ $h1 = 'Contact type toevoegen';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo "<div class='border_b'><p>";
-echo "<form method='POST' action='add.php'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td valign='top' align='right'>Contacttype </td><td>";
-echo "<input type='text' name='name' size='30' required ";
-if (isset($posted_list["name"])){
-	echo  "value ='".$posted_list["name"]."'";
-}
-echo "></td><td>";
-if(isset($error_list["name"])){
-	echo $error_list["name"];
-}
-echo "</td></tr>";
+echo '<form method="post" class="form-horizontal">';
 
-echo "<tr><td valign='top' align='right'>Afkorting</td>";
-echo "<td>";
-echo "<input type='text' name='abbrev' size='30' required ";
-if (isset($posted_list["abbrev"])){
-	echo  "value ='".$posted_list["abbrev"]."'>";
-}
-echo "</td><td>";
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
+echo 'value="' . $ct['name'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td colspan='2' align='right'>";
-echo "<input type='submit' name='zend' value='Toevoegen'>";
-echo "</td><td>&nbsp;</td></tr></table>";
-echo "</form>";
-echo "</p></div>";
+echo '<div class="form-group">';
+echo '<label for="abbrev" class="col-sm-2 control-label">Afkorting</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
+echo 'value="'. $ct['abbrev'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-include($rootpath."includes/inc_footer.php");
+echo '<a href="' . $rootpath . 'type_contact/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 
-/////////////
+echo '</form>';
 
-function validate_input($posted_list){
-	global $db;
-	
-	$error_list = array();
-	if (!isset($posted_list["name"])|| (trim($posted_list["name"])=="")){
-		$error_list["name"]="<font color='#F56DB5'>Vul <strong>contacttype</strong> in!</font>";
-	}
+include $rootpath . 'includes/inc_footer.php';
 
-	$types_asc = $db->GetAssoc('SELECT abbrev, name FROM type_contact');
-
-	if (isset($types_asc[$posted_list["abbrev"]])){
-		$error_list["abbrev"]="<font color='#F56DB5'>bestaat reeds!</font>";
-	}	
-	return $error_list;
-}

@@ -48,7 +48,7 @@ else if ($mode == 'edit')
 }
 
 $h1 = 'LETS groep ';
-$h1 .= ($mode == 'new') ? 'toevoegen' : 'wijzigen'; 
+$h1 .= ($mode == 'edit') ? 'aanpassen' : 'toevoegen'; 
 
 include $rootpath . 'includes/inc_header.php';
 

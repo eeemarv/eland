@@ -13,9 +13,9 @@ if(!isset($id))
 	exit;
 }
 
-$ct_prefetch = $db->GetRow('select * from type_contact where id = ' . $id);
+$tc_prefetch = $db->GetRow('select * from type_contact where id = ' . $id);
 
-if (in_array($ct_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
+if (in_array($tc_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
 	$alert->warning('Beschermd contact type.');
 	header('Location: ' . $rootpath . 'type_contact/overview.php');
@@ -24,21 +24,20 @@ if (in_array($ct_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 
 if(isset($_POST['zend']))
 {
-	$ct = array();
-	$ct['name'] = $_POST['name'];
-	$ct['abbrev'] = $_POST['abbrev'];
-	$ct['protect'] = ($_POST['protect']) ? true : false;
-	$ct['id'] = $_GET['id'];
+	$tc = array();
+	$tc['name'] = $_POST['name'];
+	$tc['abbrev'] = $_POST['abbrev'];
+	$tc['protect'] = ($_POST['protect']) ? true : false;
+	$tc['id'] = $_GET['id'];
 
-	$error = (empty($ct['name'])) ? 'Geen naam ingevuld! ' : '';
-	$error .= (empty($ct['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
+	$error = (empty($tc['name'])) ? 'Geen naam ingevuld! ' : '';
+	$error .= (empty($tc['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
 
-	
-	$ct['mdate'] = date('Y-m-d H:i:s');
+	$tc['mdate'] = date('Y-m-d H:i:s');
 
 	if (!$error)
 	{
-		if ($db->AutoExecute('type_contact', $ct, 'UPDATE', 'id=' . $id))
+		if ($db->AutoExecute('type_contact', $tc, 'UPDATE', 'id=' . $id))
 		{
 			$alert->success('Contact type aangepast.');
 			header('Location: ' . $rootpath . 'type_contact/overview.php');
@@ -56,7 +55,7 @@ if(isset($_POST['zend']))
 }
 else
 {
-	$ct = $ct_prefetch;
+	$tc = $tc_prefetch;
 }
 
 $h1 = 'Contact type aanpassen';
@@ -69,7 +68,7 @@ echo '<div class="form-group">';
 echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
-echo 'value="' . $ct['name'] . '" required>';
+echo 'value="' . $tc['name'] . '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -77,7 +76,7 @@ echo '<div class="form-group">';
 echo '<label for="abbrev" class="col-sm-2 control-label">Afkorting</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
-echo 'value="'. $ct['abbrev'] . '" required>';
+echo 'value="'. $tc['abbrev'] . '" required>';
 echo '</div>';
 echo '</div>';
 

@@ -87,4 +87,3 @@ echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">'
 echo '</form>';
 
 include $rootpath . 'includes/inc_footer.php';
-
