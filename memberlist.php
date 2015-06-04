@@ -32,6 +32,7 @@ $h1 = 'Contactlijst';
 $fa = 'users';
 
 $top_right = '<a href="print_memberlist.php';
+$top_right .= '">';
 $top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
 $top_right .= '<a href="' . $rootpath . 'csv_memberlist.php';
 $top_right .= '" target="new">';

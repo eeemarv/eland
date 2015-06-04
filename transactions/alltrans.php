@@ -102,7 +102,7 @@ echo '<tbody>';
 foreach($transactions as $key => $value)
 {
 	echo '<tr>';
-	echo '<td><a href="' . $rootpath . 'view.php?id=' . $value['id'] . '">';
+	echo '<td><a href="' . $rootpath . 'transactions/view.php?id=' . $value['id'] . '">';
 	echo htmlspecialchars($value['description'],ENT_QUOTES);
 	echo '</a>';
 	echo '</td>';

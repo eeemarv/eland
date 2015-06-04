@@ -11,14 +11,14 @@ show_ptitle();
 
 $q = 'SELECT id, letscode, fullname, postcode, saldo
 	FROM users
-	WHERE status IN (1, 2, 3, 4)
+	WHERE status IN (1, 2)
 		AND accountrole <> \'guest\'';
 $q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like \'' . $prefix_filterby . '%\'' : '';
+$q .= ' ORDER BY letscode';
 $userrows = $db->GetArray($q);
 
 show_all_users($userrows,$configuration);
 show_legend();
-
 
 ///////////
 

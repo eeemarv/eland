@@ -1,59 +1,89 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_transactions.php");
-
-include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 if (!isset($_GET['id']))
 {
+	$alert->warning('Geen id opgegeven.');
 	header('Location: ' . $rootpath . 'transactions/overview.php');
 	exit;
 }
 
 $id = $_GET["id"];
-$transaction = get_transaction($id);
+$transaction = $db->GetRow('select t.*,
+	fu.letscode as from_letscode, fu.fullname as from_fullname,
+	tu.letscode as to_letscode, tu.fullname as to_fullname
+	from transactions t, users fu, users tu
+	where t.id = ' . $id . '
+		and fu.id = t.id_from
+		and tu.id = t.id_to');
 
 $currency = readconfigfromdb('currency');
-echo '<h1><i class="fa fa-refresh"></i> Transactie</h1>';
 
+$h1 = 'Transactie';
+$fa = 'exchange';
 
-echo "<div >";
-echo "<table cellpadding='0' cellspacing='0' border='1' class='data' width='99%'>";
-echo "<tr>";
-echo "<td width='150'>Datum</td>";
-echo "<td>".$transaction["datum"] ."</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Creatiedatum</td>";
-echo "<td>".$transaction["cdatum"] ."</td>";
-echo "</tr><tr>";
-echo "<td width='150'>TransactieID</td>";
-echo "<td>".$transaction["transid"] ."</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Account Van</td>";
-echo "<td>". $transaction["fromusername"]. " (" .trim($transaction["fromletscode"]).")</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Van</td>";
-echo "<td>". $transaction["real_from"] ."</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Account Aan</td>";
-echo "<td>". $transaction["tousername"]. " (" .trim($transaction["toletscode"]).")</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Aan</td>";
-echo "<td>". $transaction["real_to"] ."</td>";
-echo "</tr><tr>";
+include $rootpath . 'includes/inc_header.php';
 
-echo "<td width='150'>Waarde</td>";
-echo "<td>". $transaction["amount"] ." $currency</td>";
-echo "</tr><tr>";
-echo "<td width='150'>Omschrijving</td>";
-echo "<td>". $transaction["description"]."</td>";
+echo '<dl class="dl-horizontal">';
+echo '<dt>Tijdstip</dt>';
+echo '<dd>';
+echo $transaction['date'];
+echo '</dd>';
 
-echo "</tr>";
-echo "</table></div>";
+echo '<dt>Creatietijdstip</dt>';
+echo '<dd>';
+echo $transaction['cdate'];
+echo '</dd>';
 
-include($rootpath."includes/inc_footer.php");
+echo '<dt>Transactie ID</dt>';
+echo '<dd>';
+echo $transaction['transid'];
+echo '</dd>';
+
+echo '<dt>Van account</dt>';
+echo '<dd>';
+echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $transaction['id_from'] . '">';
+echo $transaction['from_letscode'] . ' ' . $transaction['from_fullname'];
+echo '</a>';
+echo '</dd>';
+
+if ($transaction['real_from'])
+{
+	echo '<dt>Van remote gebruiker</dt>';
+	echo '<dd>';
+	echo $transaction['real_from'];
+	echo '</dd>';
+}
+
+echo '<dt>Naar account</dt>';
+echo '<dd>';
+echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $transaction['id_to'] . '">';
+echo $transaction['to_letscode'] . ' ' . $transaction['to_fullname'];
+echo '</a>';
+echo '</dd>';
+
+if ($transaction['real_to'])
+{
+	echo '<dt>Naar remote gebruiker</dt>';
+	echo '<dd>';
+	echo $transaction['real_to'];
+	echo '</dd>';
+}
+
+echo '<dt>Waarde</dt>';
+echo '<dd>';
+echo $transaction['amount'] . ' ' . $currency;
+echo '</dd>';
+
+echo '<dt>Omschrijving</dt>';
+echo '<dd>';
+echo $transaction['description'];
+echo '</dd>';
+
+echo '</dl>';
+
+include $rootpath . 'includes/inc_footer.php';

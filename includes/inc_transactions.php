@@ -346,23 +346,3 @@ function queuetransaction($posted_list,$fromuser,$touser)
 
 	return $transid;
 }
-
-function get_transaction($id)
-{
-	global $db;
-	$query = "SELECT *, ";
-	$query .= " transactions.id AS transactionid, ";
-	$query .= " fromusers.id AS userid, ";
-	$query .= " fromusers.fullname AS fromusername, tousers.fullname AS tousername, ";
-	$query .= " fromusers.letscode AS fromletscode, tousers.letscode AS toletscode, ";
-	$query .= " transactions.date AS datum, ";
-	$query .= " transactions.cdate AS cdatum ";
-	$query .= " FROM transactions, users  AS fromusers, users AS tousers";
-	$query .= " WHERE transactions.id_to = tousers.id";
-	$query .= " AND transactions.id_from = fromusers.id";
-	$query .= " AND transactions.id =".$id;
-	$transaction = $db->GetRow($query);
-	return $transaction;
-}
-
-
