@@ -33,11 +33,15 @@ include($rootpath."includes/inc_footer.php");
 
 ////////////////////////
 
-function show_form($id){
-	echo "<div class='border_b'>";
-	echo "<p><form action='mymsg_delete.php?id=".$id."' method='POST'>";
+function show_form($id)
+{
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	echo "<p><form method='POST'>";
 	echo "<input type='submit' value='Verwijderen' name='zend'";
-	echo "</form></p></div>";
+	echo '</form>';
+	echo '</div>';
+	echo '</div>';
 }
 
 function ask_confirmation($msg){

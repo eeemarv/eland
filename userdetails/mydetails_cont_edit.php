@@ -32,7 +32,7 @@ if(isset($_POST["zend"])){
 	{
 		$result = $db->AutoExecute("contact", $posted_list, 'UPDATE', 'id='.$posted_list["id"]);
 		$alert->success('Contact aangepast.');
-		redirect_mydetails_view();
+		header('Location: '. $rootpath . 'userdetails/mydetails.php');
 		exit;
 	}
 	else
@@ -54,9 +54,6 @@ include $rootpath . 'includes/inc_header.php';
 echo "<h1>Contact aanpassen</h1>";
 show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list);
 include $rootpath . 'includes/inc_footer.php';
-
-
-////////////////////////////////////////////////////////////////////////////
 
 
 function validate_input($posted_list,$s_id){
@@ -81,8 +78,11 @@ $error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaa
 	return $error_list;
 }
 
-function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list){
-	echo "<div class='border_b'>";
+function show_form($s_id, $id, $contact, $typecontactrow, $error_list, $posted_list)
+{
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
 	echo "<form method='POST' action='mydetails_cont_edit.php?id=".$id."'>\n";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n\n";
 
@@ -155,11 +155,10 @@ if (trim($contact["flag_public"]) == 1){
 	echo "</tr>\n\n";
 
 	echo "<tr>\n<td colspan='2' align='right'><input type='submit' name='zend' value='Opslaan'>\n</tr>\n\n";
-	echo "</table>\n\n</form></div>";
-}
+	echo "</table>\n\n</form>";
 
-function redirect_mydetails_view(){
-	header("Location:  mydetails.php");
+	echo '</div>';
+	echo '</div>';
 }
 
 function get_type_contacts(){

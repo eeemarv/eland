@@ -26,9 +26,13 @@ if(isset($_POST["zend"])){
 	$alert->error('Paswoord niet opgeslagen.');
 }
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Paswoord veranderen</h1>";
-echo "<div class='border_b'>";
+$h1 = 'Paswoord veranderen';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Paswoord</td>";
@@ -61,8 +65,11 @@ echo "<input type='submit' value='paswoord wijzigen' name='zend'>";
 echo "</td><td>&nbsp;</td></tr>";
 echo "</table>";
 echo "</form>";
-echo "</div>";
-include($rootpath."includes/inc_footer.php");
+
+echo '</div>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';
 
 
 ///////////////

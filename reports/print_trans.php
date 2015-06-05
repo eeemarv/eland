@@ -31,8 +31,12 @@ show_all_transactions($transactions);
 
 /////////
 
-function show_userselect($list_users,$posted_list){
-	echo "<form method='POST' action='transperuser.php'>";
+function show_userselect($list_users,$posted_list)
+{
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo "<form method='POST'>";
 	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
 	echo "<tr>\n<td>";
@@ -73,7 +77,10 @@ function show_userselect($list_users,$posted_list){
 	echo ">";
 	echo "</td></tr>\n";
 	echo "</table>\n";
-        echo "</form>";
+	echo "</form>";
+
+	echo '</div>';
+	echo '</div>';
 }
 
 function get_user($id){

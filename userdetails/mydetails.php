@@ -30,10 +30,9 @@ $includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';</scrip
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Mijn gegevens';
 
-echo "<h1>Mijn gegevens</h1>";
-// echo "<script type='text/javascript' src='" .$rootpath ."js/mydetails.js'></script>";
+include $rootpath . 'includes/inc_header.php';
 
 $user = readuser($s_id);
 show_user($user);
@@ -42,48 +41,14 @@ show_editlink();
 $contact = get_contact($s_id);
 show_contact($contact, $s_id);
 
-//show_oids();
-//show_oidform();
 $balance = $user["saldo"];
 show_balance($balance, $user, readconfigfromdb("currency"));
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
-////////////////////////////////////////////////////////////////////////////
 
 function show_changepwlink($s_id){
 	echo "<p>| <a href='mydetails_pw.php?id=" .$s_id. "'>Paswoord veranderen</a> |</p>";
-}
-
-function show_oidform() {
-	global $s_id, $rootpath;
-	echo "<div id='oidformdiv' class='hidden'>";
-	echo "<form action='". $rootpath ."/resources/user/$s_id/openid' id='oidform' method='post'>";
-	echo "<table class='selectbox' cellspacing='0' cellpadding='0' border='0'>";
-	echo "<tr><td valign='top' align='right'>OpenID</td>";
-	echo "<td valign='top'>";
-	echo "<input  type='text' id='openid' name='openid' size='30' required>";
-	echo "</td>";
-	echo "</tr>";
-	echo "<tr><td colspan='2' align='right'>";
-	echo "<input type='submit' id='zend' value='OpenID toevoegen' name='zend'>";
-	echo "</td><td>&nbsp;</td></tr>";
-	echo "</table>";
-	echo "</form>";
-	echo "</div>";
-}
-
-function show_oids(){
-	global $rootpath;
-	
-	$url = "renderoid.php";
-	echo "<div id='oiddiv'></div>";
-	echo "<script type='text/javascript'>showsmallloader('oiddiv');loadoid('$url');</script>";
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<ul class='hormenu'>";
-	echo "<li><a id='showoidform' href='#'>OpenID toevoegen</a></li>";
-	echo "</ul>";
-	echo "</td></tr></table>";
 }
 
 function get_type_contacts(){
@@ -92,7 +57,8 @@ function get_type_contacts(){
 	return $db->GetArray($query);
 }
 
-function show_editlink(){
+function show_editlink()
+{
 	global $s_id;
 	echo "<table width='100%' border=0><tr><td>";
 	echo "<div id='navcontainer'>";
@@ -105,7 +71,7 @@ function show_editlink(){
 
 	echo "<script type='text/javascript'>function RemovePic() {  OpenTBox('" ."/userdetails/remove_picture.php?id=" .$s_id ."'); } </script>";
 	echo "<li><a href='javascript: RemovePic();'>Foto verwijderen</a></li>";
-	//echo "<li><a id='showmsgform' href='#'>Mail versturen</a></li>";
+
 	echo "</ul>";
 	echo "</div>";
 	echo "</td></tr></table>";

@@ -37,8 +37,12 @@ if(isset($_POST["zend"]))
 $contact_types = $db->GetAssoc('SELECT id, name FROM type_contact');
 $user = $db->GetRow('SELECT name, letscode FROM users WHERE id = ' . $uid);
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Contact toevoegen</h1>";
+$h1 = 'Contact toevoegen';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
 
 echo "<div class='border_b'>";
 echo "<form method='POST'>";
@@ -100,8 +104,10 @@ echo "<tr><td></td><td><input type='submit' name='zend' value='Opslaan'>";
 echo "</td></tr>";
 echo "</table></form></div>";
 
+echo '</div>';
+echo '</div>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
 
 ////////////////////

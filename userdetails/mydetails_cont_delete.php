@@ -2,8 +2,8 @@
 ob_start();
 $rootpath = "../";
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 if (!isset($_GET['id']))
 {
@@ -42,17 +42,28 @@ $contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.
 		AND c.id_user = u.id
 		AND c.id = ' . $id);
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Contact verwijderen?';
 
-echo '<h1>Contact verwijderen?</h1>';
+include $rootpath . 'includes/inc_header.php';
+
 echo '<p>Type: ' . $contact['abbrev'] . '</p>';
 echo '<p>Waarde: ' . $contact['value'] . '</p>';
 echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
 echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
 echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
-echo '<form method="post"><input type="submit" value="Verwijder" name="zend"></form>';
 
-include($rootpath."includes/inc_footer.php");
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+echo '<form method="post">';
+echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>';
+echo '<input type="submit" value="Verwijder" name="zend" class="btn btn-primary">';
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';
 
 /////////////////////////
 

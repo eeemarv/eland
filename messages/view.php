@@ -291,7 +291,14 @@ echo "</td>";
 //Response form
 echo "<td>";
 
+
+
 // response form
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+
 echo "<div id='responseformdiv'>";
 echo "<table border='0'>";
 echo "<tr><td colspan='2'>";
@@ -325,6 +332,9 @@ echo "</td>";
 
 echo "</tr>";
 echo "</table>";
+
+echo '</div>';
+echo '</div>';
 
 if($s_accountrole == "admin" || $s_id == $user['id']){
 	show_editlinks($msgid);

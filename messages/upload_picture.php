@@ -75,7 +75,8 @@ show_form($msgid);
 
 ////////////////////////////////////////////////////////////////////////////
 
-function show_form($msgid){
+function show_form($msgid)
+{
 	echo '<form action="upload_picture.php?msgid=' . $msgid . '" enctype="multipart/form-data" method="POST">' . "\n";
 	echo "<input name='picturefile' type='file' required>\n";
 	echo "<input type='submit' name='zend' value='Versturen' />\n";

@@ -169,11 +169,15 @@ if(isset($_POST['delete']))
 	}
 }
 
+$h1 = 'Gebruiker ' . $user['letscode'] . ' ' . $user['fullname'] . ' verwijderen?';
+
 include($rootpath."includes/inc_header.php");
 
-echo '<h1>Gebruiker ' . $user['letscode'] . ' ' . $user['fullname'] . ' verwijderen?</h1>';
 echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['fullname'];
 echo ' worden verwijderd.</font></p>';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
 
 echo "<div class='border_b'>";
 echo "<form method='POST'>";
@@ -186,5 +190,9 @@ echo "<input type='submit' name='cancel' value='Annuleren'>&nbsp;";
 echo "<input type='submit' name='delete' value='Verwijderen'>";
 echo "</td></tr>";
 echo "</table></form></div>";
-include($rootpath."includes/inc_footer.php");
+
+echo '</div>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';
 

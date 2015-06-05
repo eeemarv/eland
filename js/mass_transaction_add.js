@@ -1,6 +1,6 @@
 var users = new Bloodhound({
 	prefetch: {
-		url: 'get_active_users.php?letsgroup_id=' + $(this).val(),
+		url: 'get_active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
 		ttl: 4320000,	// 50 days
 		thumbprint: $(this).attr('data-thumbprint'),
 		filter: function(users){
@@ -24,14 +24,14 @@ var users = new Bloodhound({
 
 users.initialize();
 
-$('#letscode_to').typeahead({
+$('#to_letscode').typeahead({
 	highLight: true
 },
 {
 	displayKey: function(user){ 
 		return user.value;
 	},
-	source: this_letsgroup_users.ttAdapter(),
+	source: users.ttAdapter(),
 	templates: {
 		suggestion: function(data) {
 			return '<p class="' + data.class + '"><strong>' + data.letscode +

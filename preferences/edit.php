@@ -35,6 +35,9 @@ $h1 = 'Instelling ' . $setting . ' aanpassen';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<p>' . $description . '</p>';
@@ -58,5 +61,8 @@ echo '</div>';
 echo '<a href="' . $rootpath . 'preferences/config.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';

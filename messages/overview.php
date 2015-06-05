@@ -35,6 +35,9 @@ $includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="get">';
 echo '<div class="row">';
 echo '<div class="col-xs-12">';
@@ -47,6 +50,9 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 /*
 echo '<ul class="nav nav-tabs">';

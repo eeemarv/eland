@@ -56,6 +56,9 @@ include $rootpath . 'includes/inc_header.php';
 
 echo '<h3>Periodieke saldo mail met overzicht nieuw vraag en aanbod activeren voor alle actieve gebruikers?</h3>';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
@@ -69,7 +72,11 @@ echo '</div>';
 echo '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default">Anneleren</a>&nbsp;';
 echo '<input type="submit" name="activate" value="Activeren" class="btn btn-success">&nbsp;';
 echo '<input type="submit" name="deactivate" value="Deactiveren" class="btn btn-danger">';
+
 echo '</form>';
+
 echo '</div>';
+echo '</div>';
+
 echo '<p>Opmerking: gebruikers kunnen steeds individueel de saldo mail aan- of uitzetten in hun instellingen.</p>';
 include $rootpath . 'includes/inc_footer.php';

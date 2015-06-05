@@ -5,24 +5,22 @@ $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(isset($s_id)){
-	$id = $_GET["id"];
-	if(isset($id)){
-		if(isset($_POST["zend"])){
-			update_user($id,$rootpath);
-			//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-			$alert->success("Foto verwijderd.");
-			header("Location:  mydetails.php");
-		}else{
-			echo "<h1>Foto verwijderen</h1>";
-			show_form($id);
-		}
+$id = $_GET["id"];
+
+if(isset($id)){
+	if(isset($_POST["zend"])){
+		update_user($id,$rootpath);
+		//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
+		$alert->success("Foto verwijderd.");
+		header("Location:  mydetails.php");
 	}else{
-		redirect_view();
+		echo "<h1>Foto verwijderen</h1>";
+		show_form($id);
 	}
 }else{
-	redirect_login($rootpath);
+	redirect_view();
 }
+
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -56,20 +54,26 @@ function update_user($id, $rootpath){
 }
 
 function show_form($user){
-	echo "<form action='remove_picture.php?id=".$user ."' method='POST'>";
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	echo "<form method='POST'>";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
 	echo "<tr>\n";
 	echo "<td>Foto verwijderen? <input type='submit' value='Foto verwijderen' name='zend'></td>\n";
 	echo "</tr>\n\n</table>";
 	echo "</form>";
-	echo '<p>&nbsp;</p>';
+
+	echo '</div>';
+	echo '</div>';
 }
 
-function get_user($id){
+function get_user($id)
+{
    return readuser($id);
 }
 
-function redirect_view(){
+function redirect_view()
+{
 	header("Location: mydetails.php");
 }
 

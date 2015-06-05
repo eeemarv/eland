@@ -31,6 +31,9 @@ $h1 = 'Apikey verwijderen?';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 echo '<dl>';
 echo '<dt>Apikey</dt>';
@@ -41,5 +44,8 @@ echo '</dl>';
 echo '<a href="' . $rootpath . 'apikeys/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';

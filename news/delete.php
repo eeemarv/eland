@@ -65,9 +65,15 @@ echo "</div>";
 echo "<p><font color='red'><strong>Ben je zeker dat dit nieuwsbericht";
 echo " moet verwijderd worden?</strong></font></p>";
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post">';
 echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath. 'includes/inc_footer.php';

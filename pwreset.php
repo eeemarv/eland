@@ -48,6 +48,9 @@ if ($token & $user_id)
 
 	require_once $rootpath . 'includes/inc_header.php';
 
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	
 	echo '<form method="post" class="form-horizontal">';
 	echo '<div class="form-group">';
 	echo '<label for="email" class="col-sm-2 control-label">Nieuw paswoord</label>';
@@ -58,6 +61,9 @@ if ($token & $user_id)
 	echo '</div>';
 	echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
 	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
 
 	require_once $rootpath . 'includes/inc_footer.php';
 	exit;
@@ -123,6 +129,9 @@ require_once $rootpath . 'includes/inc_header.php';
 
 echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 echo '<div class="form-group">';
 echo '<label for="email" class="col-sm-2 control-label">Email</label>';
@@ -134,4 +143,7 @@ echo '</div>';
 echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
 echo '</form>';
 
-require_once($rootpath."includes/inc_footer.php");
+echo '</div>';
+echo '</div>';
+
+require_once $rootpath . 'includes/inc_footer.php';

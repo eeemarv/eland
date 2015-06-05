@@ -21,6 +21,9 @@ $h1 = 'Logs';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="get">';
 
 echo '<div class="form-group">';
@@ -51,6 +54,9 @@ echo '</div>';
 echo '<input type="submit" value="Zoeken" name="zend" class="btn btn-default">';
 
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 $find = array();
 

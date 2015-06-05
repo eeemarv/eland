@@ -49,10 +49,14 @@ $h1 = 'Contact type verwijderen: ' . $ct['name'];
 
 include $rootpath . 'includes/inc_header.php';	
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
 echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 echo '<form method="post">';
 echo '<a href="' . $rootpath . 'type_contact/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo '</form>';
+echo '</div>';
+echo '</div>';
 
 include($rootpath."includes/inc_footer.php");	

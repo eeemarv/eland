@@ -54,6 +54,9 @@ $h1 = 'Categorie toevoegen';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form  method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
@@ -83,6 +86,7 @@ echo '<a href="' . $rootpath . 'categories/overview.php" class="btn btn-default"
 echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
 echo '</form>';
 
-echo '</div></div>';
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';

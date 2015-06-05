@@ -31,6 +31,9 @@ $fa = 'newspaper-o';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="get" action="' . $rootpath . 'messages/search.php">';
 echo '<div class="col-lg-12">';
 echo '<div class="input-group">';
@@ -42,6 +45,9 @@ echo '</div>';
 echo '</div>';
 echo '<br><small><i>Een leeg zoekveld geeft ALLE V/A als resultaat terug</i></small>';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';

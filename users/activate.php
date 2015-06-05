@@ -122,8 +122,13 @@ function validate_input($posted_list,$configuration){
 	return $errorlist;
 }
 
-function show_pwform($errorlist, $id, $user){
+function show_pwform($errorlist, $id, $user)
+{
 	$pw = GeneratePassword();
+	
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	
 	echo "<div class='border_b'>";
 	echo "<form action='activate.php?id=".$id."' method='POST'>";
 	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
@@ -170,6 +175,9 @@ function show_pwform($errorlist, $id, $user){
 	echo "</table>";
 	echo "</form>";
 	echo "</div>";
+
+	echo '</div>';
+	echo '</div>';
 }
 
 

@@ -28,15 +28,24 @@ $contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.
 		AND c.id_user = u.id
 		AND c.id = ' . $cid);
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Contact verwijderen?';
 
-echo '<h1>Contact verwijderen?</h1>';
+include $rootpath . 'includes/inc_header.php';
+
+
 echo '<p>Type: ' . $contact['abbrev'] . '</p>';
 echo '<p>Waarde: ' . $contact['value'] . '</p>';
 echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
 echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
 echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post"><input type="submit" value="Verwijder" name="zend"></form>';
 
-include($rootpath."includes/inc_footer.php");
+echo '</div>';
+echo '</div>';
+
+include $rootpath . 'includes/inc_footer.php';
 

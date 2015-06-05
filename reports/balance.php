@@ -74,6 +74,8 @@ function show_csvversion($rootpath,$user_date,$user_prefix)
 }
 
 function show_userselect($list_users,$posted_list){
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
 	echo "<form method='GET'>";
 	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
@@ -111,6 +113,9 @@ function show_userselect($list_users,$posted_list){
 
 	echo "</table>\n";
         echo "</form>";
+
+	echo '</div>';
+	echo '</div>';
 }
 
 include($rootpath."includes/inc_footer.php");

@@ -55,6 +55,9 @@ $h1 = 'eLAS help';
 
 require_once $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
@@ -92,7 +95,10 @@ echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
 
-echo "</form>";
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>';
 

@@ -30,6 +30,9 @@ $h1 = 'Categorie verwijderen : ' . $fullname;
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";
 echo " moet verwijderd worden?</strong></font></p>";
 echo '<form method="POST">';
@@ -37,5 +40,8 @@ echo '<a href="' . $rootpath . 'categories/overview.php" class="btn btn-default"
 
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';

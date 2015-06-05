@@ -88,23 +88,26 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list)
 {
 	global $posted_list;
 	//Selection form
-        echo "<div class='border_b'>";
-        echo "<form method='GET'>";
-        echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-        echo "<tr><td valign='top' align='right'>V/A </td>";
-        echo "<td>";
-        echo "<select name='msg_type'>";
-        if($posted_list["msg_type"] == 0 ){
-                echo "<option value='0' SELECTED >Vraag</option>";
-        }else{
-                echo "<option value='0' >Vraag</option>";
-        }
-        if($posted_list["msg_type"] == 1 ){
-                echo "<option value='1' SELECTED >Aanbod</option>";
-        }else{
-                echo "<option value='1' >Aanbod</option>";
-        }
-        echo "</select>";
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';	
+
+	echo "<form method='GET'>";
+	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+	echo "<tr><td valign='top' align='right'>V/A </td>";
+	echo "<td>";
+	echo "<select name='msg_type'>";
+	if($posted_list["msg_type"] == 0 ){
+			echo "<option value='0' SELECTED >Vraag</option>";
+	}else{
+			echo "<option value='0' >Vraag</option>";
+	}
+	if($posted_list["msg_type"] == 1 ){
+			echo "<option value='1' SELECTED >Aanbod</option>";
+	}else{
+			echo "<option value='1' >Aanbod</option>";
+	}
+	echo "</select>";
 	echo "</td></tr>";
 
 	#Add subgroup selection
@@ -144,7 +147,9 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list)
         echo "<input type='submit' name='zend' value='Zoeken'>";
         echo "</td></tr></table>";
         echo "</form>";
-        echo "</p></div>";
+
+	echo '</div>';
+	echo '</div>';
 
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";

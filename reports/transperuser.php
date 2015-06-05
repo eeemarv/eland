@@ -94,6 +94,9 @@ function show_csvversion($rootpath,$user_userid,$user_datefrom,$user_dateto,$use
 
 function show_userselect($list_users,$posted_list)
 {
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
 	echo "<form method='GET'>";
 	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
@@ -171,6 +174,9 @@ function show_userselect($list_users,$posted_list)
 	echo "</td></tr>\n";
 	echo "</table>\n";
 	echo "</form>";
+
+	echo '</div>';
+	echo '</div>';
 }
 
 function show_all_transactions($transactions)

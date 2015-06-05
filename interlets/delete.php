@@ -25,13 +25,13 @@ if(isset($_POST["zend"]))
 }
 $groupname = $db->GetOne('SELECT groupname FROM letsgroups WHERE id = ' . $id);
 
-$h1 = 'Letsgroep verwijderen';
+$h1 = 'Letsgroep verwijderen: ' . $groupname;
 
 include $rootpath . 'includes/inc_header.php';
 
-echo "<div >";
-echo "LETS Groep: " .$groupname;
-echo "</div>";
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo "<p><font color='red'><strong>Ben je zeker dat deze groep";
 echo " moet verwijderd worden?</strong></font></p>";
 echo "<div class='border_b'><p><form action='delete.php?id=".$id."' method='POST'>";
@@ -39,5 +39,8 @@ echo '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default">
 echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo "</form></p>";
 echo "</div>";
+
+echo '</div>';
+echo '</div>';
 	
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

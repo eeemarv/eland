@@ -105,6 +105,9 @@ $fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
@@ -159,6 +162,9 @@ echo '<a href="' . $rootpath . 'news/overview.php" class="btn btn-default">Annul
 echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 

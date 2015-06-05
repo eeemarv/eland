@@ -144,6 +144,9 @@ require_once $rootpath . 'includes/inc_header.php';
 
 if(empty($token))
 {
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
@@ -164,7 +167,11 @@ if(empty($token))
 
 	echo '<input type="submit" class="btn btn-default" value="Inloggen" name="zend">';
 
-	echo "</form>";
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
 	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord en/of login vergeten.</a>';
 }
 

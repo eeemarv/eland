@@ -17,10 +17,10 @@ if (isset($_POST['zend']))
 	list($letscode_from) = explode(' ', $_POST['letscode_from']);
 	list($letscode_to) = explode(' ', $_POST['letscode_to']);
 	$transaction['amount'] = $_POST['amount'];
-	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : $transaction["date"] = date("Y-m-d H:i:s");
+	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : $transaction['date'] = date('Y-m-d H:i:s');
 	$letsgroup_id = $_POST['letsgroup_id'];
 
-	$timestamp = make_timestamp($transaction["date"]);
+	$timestamp = make_timestamp($transaction['date']);
 
 	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
 
@@ -191,6 +191,9 @@ echo '</div>';
 
 $date = date("Y-m-d");
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form  method="post" class="form-horizontal">';
 
 echo ($s_accountrole == 'admin') ? '' : '<div style="display:none;">';
@@ -267,6 +270,8 @@ echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-defaul
 echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
 
 echo '</form>';
+echo '</div>';
+echo '</div>';
 
 include($rootpath."includes/inc_footer.php");
 

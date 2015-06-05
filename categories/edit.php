@@ -72,6 +72,9 @@ $h1 = 'Categorie aanpassen : ' . $cat['name'];
 
 include($rootpath."includes/inc_header.php");
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
@@ -103,5 +106,8 @@ echo '<a href="' .$rootpath . 'categories/overview.php" class="btn btn-default">
 echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
 echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';

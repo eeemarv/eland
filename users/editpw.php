@@ -35,10 +35,19 @@ if(isset($_POST["zend"])){
 
 $user = readuser($id);
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Paswoord veranderen</h1>";
+$h1 = 'Paswoord veranderen';
+$fa = 'key';
+
+include $rootpath . 'includes/inc_header.php';
+
+
 echo '<p>Gebruiker: ' . $user['name'] . ' ( ' . $user['letscode'] . ' )</p>';
 echo "<div class='border_b'>";
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+
 echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 echo "<tr><td valign='top' align='right'>Paswoord</td>";
@@ -71,11 +80,13 @@ echo "<input type='submit' value='paswoord wijzigen' name='zend'>";
 echo "</td><td>&nbsp;</td></tr>";
 echo "</table>";
 echo "</form>";
+
+echo '</div>';
+echo '</div>';
+
 echo "</div>";
-include($rootpath."includes/inc_footer.php");
 
-
-///////////////
+include $rootpath . 'includes/inc_footer.php';
 
 function validate_input($pw){
 	$errorlist = array();

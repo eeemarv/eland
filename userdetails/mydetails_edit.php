@@ -62,7 +62,9 @@ echo "<tr><td colspan='2'><strong>".$user["name"]." ";
 echo $user["letscode"]."</strong></td></tr>";
 echo "</table>";
 
-echo "<div class='border_b'>";
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo "<form method='POST'>";
 echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
 
@@ -141,7 +143,9 @@ echo "<tr><td></td><td>";
 echo "<input type='submit' value='Opslaan' name='zend'>";
 echo "</td></tr></table>";
 echo "</form>";
-echo "</div>";
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 

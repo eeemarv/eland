@@ -164,6 +164,8 @@ $data_table->set_data($active_users)->set_input($req)
 	->add_column('amount', array('title' => 'Bedrag', 'input' => 'id', 'footer' => 'sum'))
 	->add_column('minlimit', array('title' => 'Min.Limiet'));
 
+$letsgroup_id = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/mass_transaction_add.js"></script>';
@@ -172,12 +174,72 @@ $h1 = 'Massa transactie: "veel naar één"';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div style="background-color:#ffdddd; padding:10px;">';
-echo '<h2>Invul-hulp</h2>';
+echo '<div class="panel panel-warning">';
+echo '<div class="panel-heading">';
+echo '<button class="btn btn-default" title="Toon invul hulp">';
+echo '<i class="fa fa-question"></i>';
+echo ' Invul hulp</button>';
+echo '</div>';
+echo '<div class="panel-body">';
+
 echo '<p>Met deze invul hulp kan je snel alle bedragen van de massa-transactie invullen. ';
-echo 'De eigenlijke massa-transactie doe je met het gele formulier onderaan. Daar zie ook de ';
-echo 'feitelijk bedragen die zullen worden overgeschreven. Je kan daar de bedragen alvorens nog individueel ';
-echo 'aanpassen.</p>';
+echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
+echo '</p>';
+
+echo '<form class="form form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="fixed" class="col-sm-3 control-label">Vast bedrag</label>';
+echo '<div class="col-sm-9">';
+echo '<input type="number" class="form-control" id="fixed" placeholder="vast bedrag" ';
+echo 'min="0">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="percentage_saldo" class="col-sm-3 control-label">';
+echo 'Percentage op saldo (kan ook negatief zijn)</label>';
+echo '<div class="col-sm-5">';
+echo '<input type="number" class="form-control" id="percentage_saldo"';
+echo ' placeholder="percentage op saldo">';
+echo '</div>';
+echo '<div class="col-sm-4">';
+echo '<input type="number" class="form-control" id="percentage_saldo_base" ';
+echo 'placeholder="percentage saldo basis">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="percentage_transactions" class="col-sm-3 control-label">';
+echo 'Percentage op transacties (kan ook negatief zijn)</label>';
+echo '<div class="col-sm-5">';
+echo '<input type="number" class="form-control" id="percentage_transactions"';
+echo ' placeholder="percentage op transacties">';
+echo '</div>';
+echo '<div class="col-sm-4">';
+echo '<input type="number" class="form-control" id="percentage_transactions_days" ';
+echo 'placeholder="aantal dagen" min="0">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="respect_min_limit" class="col-sm-3 control-label">';
+echo 'Respecteer minimum limieten</label>';
+echo '<div class="col-sm-9">';
+echo '<input type="checkbox" id="respect_min_limit" checked="checked">';
+echo '</div>';
+echo '<div class="col-sm-4">';
+echo '</div>';
+echo '</div>';
+
+echo '<button class="btn btn-default" id="fill-in">Vul in</button>';
+
+echo '</form>';
+
+echo '</div>';
+
+echo '<div style="background-color:#ffdddd; padding:10px;">';
+
 echo '<table  cellspacing="5" cellpadding="0" border="0">';
 $req->set_output('tr')->render(array(
 	'fixed', 'percentage', 'percentage_base',
@@ -196,12 +258,39 @@ echo '<div class="panel panel-default">';
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
-echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
+echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $currency . '</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
-echo 'value="' . $transaction['letscode_to'] . '" required>';
+echo '<input type="text" class="form-control" id="total" readonly>';
 echo '</div>';
 echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="to_letscode" class="col-sm-2 control-label">Aan letscode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
+echo 'value="' . $transaction['to_letscode'] . '" required ';
+echo 'data-letsgroup-id="' . $letsgroup_id . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="description" name="description" ';
+echo 'value="' . $transaction['description'] . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="password" class="form-control" id="password" name="password" ';
+echo 'value="" autocomplete="false" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Alle transacties uitvoeren" name="zend" class="btn btn-success">';
 
 echo '</div>';
 
@@ -212,6 +301,9 @@ $data_table->render();
 echo '<table cellspacing="0" cellpadding="5" border="0">';
 $req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
 echo '</table></div></form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 

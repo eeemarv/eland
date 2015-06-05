@@ -132,6 +132,9 @@ if ($notice) {
 
 echo '<h1>Massa-Transactie. "Eén naar Veel". </h1>';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
 echo '<form method="post">';
 echo '<div id="transformdiv" style="padding:10px;"><table cellspacing="5" cellpadding="0" border="0">';
 $req->set_output('tr')->render(array('letscode_from', 'description'));
@@ -150,6 +153,9 @@ echo '<p><strong><i>Je kan een vast bedrag en/of een percentage op het saldo inv
 echo '</div><br/><table>';
 $req->set_output('tr')->render('refresh');
 echo '</table></form>';
+
+echo '</div>';
+echo '</div>';
 
 include($rootpath.'includes/inc_footer.php');
 
