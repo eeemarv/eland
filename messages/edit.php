@@ -243,11 +243,8 @@ function validate_input($msg)
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
 	{
 		$error_list["content"] = "Vul inhoud in!";
-		$query =" SELECT * FROM categories ";
-		$query .=" WHERE  id = '".$msg["id_category"]."' ";
-		$rs = $db->Execute($query);
-    	$number = $rs->recordcount();
-		if( $number == 0 )
+
+		if(!$db->GetOne('select id from categories where id = ' . $msg['id_category']))
 		{
 			$error_list["id_category"]=">Categorie bestaat niet!";
 		}

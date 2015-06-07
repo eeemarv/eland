@@ -1,37 +1,50 @@
-eLAS-Heroku
-=====
+#eLAS-Heroku
 
 Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 
-Checklist
----------
+##Checklist
 
-#####Cron
-    heroku addons:add scheduler
-Set every 10 min.  `$ php -r "echo file_get_contents('http://yourdomain.com/cron/cron.php');"`
+###Cron
+```shell
+heroku addons:add scheduler
+```
+Set every 10 min.  
+```shell
+$ php -r "echo file_get_contents('http://yourdomain.com/cron/cron.php');"
+```
 Only one cronjob is needed for all installed domains (unlike eLAS). Just choose one domain.
 
-#####Domain
+###Domain
 Configure your domain with a CNAME to the Heroku app URL.
 set a config var for each domain to the name of the schema in the database
-    heroku config:set ELAS_SCHEMA_EXAMPLE__COM=examplecom
+```shell
+heroku config:set ELAS_SCHEMA_EXAMPLE__COM=examplecom
+```
 A good choice for a schema name is the `systemtag` or `letscode` of the letsgroup.
 
-#####AWS S3
+###AWS S3
 Create a file bucket (in your region) on Amazon S3 and put the config in environment vars.
-    heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb S3_BUCKET=ccc
+```shell
+heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb S3_BUCKET=ccc
+```
 
-#####Redistogo
-    heroku addons:add redistogo
+###Redistogo
+```shell
+heroku addons:add redistogo
+```
 
-#####Mandrill
-    heroku addons:add mandrill
+###Mandrill
+```shell
+heroku addons:add mandrill
+```
 
-#####Mongolab (logs are stored in mongodb)
-    heroku addons:add mongolab
+###Mongolab (logs are stored in mongodb)
+```shell
+heroku addons:add mongolab
+```
 
-Environment Vars
-------
+###Environment Vars
+
 * AWS_ACCESS_KEY
 * AWS_SECRET_ACCESS_KEY
 * S3_BUCKET
@@ -52,11 +65,18 @@ Environment Vars
     `Colons in domain are replaced by quadruple underscore ____`
 
     i.e couple e-example.com with schema `eexample`
-        `heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample`
-         Also add the domain to Heroku with `heroku domains:add e.example.com`
+    ```shell
+        heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample
+    ```
+    Also add the domain to Heroku: 
+    ```shell
+    heroku domains:add e.example.com
+    ```
                 
     i.e localhost:40000 on php development server
-        `ELAS_SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000`
+    ```shell
+        ELAS_SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
+    ```
 
 The schema name is also:
   * the name of the session
@@ -71,7 +91,7 @@ By convention the schema is named after the so called system tag or letscode of 
 * ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
 
 CDN / defaults:
---
+
 * ELAS_CDN_JQPLOT: `//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/`
 * ELAS_CDN_JQUERY: `//code.jquery.com/jquery-2.1.3.min.js`
 * ELAS_CDN_TYPEAHEAD: `//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js`
@@ -80,29 +100,49 @@ CDN / defaults:
 * ELAS_CDN_DATEPICKER_NL: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js`
 
 
-Migrating a group from eLAS 3.1 to eLAS-Heroku
-----------
+##Migrating a group from eLAS 3.1 to eLAS-Heroku
 
-For eLAS 2.6 see /doc/migrate-eLAS-2.6.md
+
+For eLAS 2.6 see [/doc/migrate-eLAS-2.6.md]
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
-* Add the domain in Heroku with command `heroku domains:add my-domain.com` (note that wildcards can be set on heroku.  `heroku domains:add *.example.com` will add all subdomains of example.com
-* To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`.
+* Add the domain in Heroku with command 
+```shell
+heroku domains:add my-domain.com
+``` 
+note that wildcards can be set on heroku.  
+```shell
+heroku domains:add *.example.com
+``` 
+will add all subdomains of example.com
+* To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`. (or on the Heroku website)
 In eLAS-Heroku all letsgroups are stored as schemas in one database.
 You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).
-    `$> \i myletsgroupdumpfile.sql`
+```sql
+\i myletsgroupdumpfile.sql
+```
 The tables of the imported letsgroup are now in the default schema named public.
 You can truncate the city_distance table which is not used anymore and which is very big. (More than a 1M rows.)
-    `$> TRUNCATE TABLE city_distance;`
+```sql
+TRUNCATE TABLE city_distance;
+```
 Rename then the public schema to the letsgroup code
-    `$> ALTER SCHEMA public RENAME TO abc;`
+```sql
+ALTER SCHEMA public RENAME TO abc;
+```
 This way of importing letsgroups leaves the already present letsgroups data untouched. This can not be done with the Heroku tools.
 Now there is no public schema anymore. this is no problem, but you need schema public to be present when you import the next letsgroup.
-    `$> CREATE SCHEMA public;`
+```sql
+CREATE SCHEMA public;
+```
 Meta command to list all schemas:
-    `$> \dn`
+```
+\dn
+```
 Meta command list all tables from all schemas:
-    `$> \dt *.*`
+```
+\dt *.*
+```
 
 * Match a domain to a schema with config variable `ELAS_SCHEMA_domain=schema`
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
@@ -112,6 +152,7 @@ yphen must be converted to a triple underscore and a colon (for defining port nu
 Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
 Make the image files public.
 * Log in with admin rights to your website (you can use the master login and password) and go to path `/cron/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
-The files get prefixed with the schema name and the user or message id. All extensions become jpg.
-    i.e   abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
-          abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg
+The files get prefixed with the schema name and the user or message id. All extensions become jpg. 
+ie.
+    abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
+    abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg

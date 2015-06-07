@@ -6,125 +6,206 @@ $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath.'includes/inc_adoconnection.php';
 
-require_once $rootpath.'includes/inc_transactions.php';
-require_once $rootpath.'includes/inc_request.php';
-require_once $rootpath.'includes/inc_data_table.php';
+$currency = readconfigfromdb('currency');
 
-$req = new request();
-$req->add('fixed', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4, 'maxlength' => 4, 'label' => 'Vast bedrag'), array('match' => 'positive'))
-	->add('percentage', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage op saldo'))
-	->add('percentage_base', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Basis voor percentage op saldo'))
-	->add('percentage_transactions', 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 4, 'maxlength' => 4, 'label' => 'Percentage op uitgeschreven transacties'))
-	->add('percentage_transactions_days', 0, 'post', array('type' => 'number', 'size' => 4, 'maxlength' => 4, 'label' => 'Periode in dagen voor het percentage op uitgeschreven transacties.'))
-	->add('fill_in', '', 'post', array('type' => 'submit', 'label' => 'Vul in'))
-	->add('no_newcomers', '', 'post', array('type' => 'checkbox', 'label' => 'Geen instappers.'), array())
-	->add('no_leavers', '', 'post', array('type' => 'checkbox', 'label' => 'Geen uitstappers.'), array())
-	->add('no_min_limit', '', 'post', array('type' => 'checkbox', 'label' => 'Geen saldo\'s onder de minimum limiet.'), array())
-	->add('letscode_to', '', 'post', array('type' => 'text', 'size' => 5, 'maxlength' => 10, 'autocomplete' => 'off', 'label' => 'Aan LetsCode'), array('not_empty' => true, 'match' => 'existing_letscode'))
-	->add('description', '', 'post', array('type' => 'text', 'size' => 40, 'maxlength' => 60, 'autocomplete' => 'off', 'label' => 'Omschrijving'), array('not_empty' => true))
-	->add('confirm_password', '', 'post', array('type' => 'password', 'size' => 10, 'maxlength' => 20, 'autocomplete' => 'off', 'label' => 'Paswoord (extra veiligheid)'), array('not_empty' => true, 'match' => 'password'))
-	->add('zend', '', 'post', array('type' => 'submit', 'label' => 'Voer alle transacties uit.'))
-	->add('transid', generate_transid(), 'post', array('type' => 'hidden'));
-
-$active_users = $db->GetArray(
+$users = $db->GetAssoc(
 	'SELECT id, fullname, letscode,
 		accountrole, status, saldo, minlimit, maxlimit, adate
 	FROM users
-	WHERE status IN (1, 2)
+	WHERE status IN (0, 1, 2, 5, 6)
 	ORDER BY letscode');
 
-$letscode_to = $req->get('letscode_to');
-$to_user_id = null;
+list($to_letscode) = explode(' ', $_POST['to_letscode']);
+$amount = $_POST['amount'] ?: array();
+$description = $_POST['description'];
+$password = $_POST['password'];
+$transid = $_POST['transid'];
+$mail_en = ($_POST['mail_en']) ? true : false;
+$transid = $_POST['transid'];
 
-foreach($active_users as $user){
-	$req->add('amount-'.$user['id'], 0, 'post', array('type' => 'number', 'min' => 0, 'size' => 3, 'maxlength' => 3, 'onkeyup' => 'recalc_table_sum(this);'), array('match' => 'positive'));
-	if ($letscode_to && $user['letscode'] == $letscode_to){
-		$to_user_id = $user['id'];
-		$to_user_fullname = $user['fullname'];
-	}
-}
-
-if ($req->get('zend') && $req->errors())
+if ($_POST['zend'])
 {
-	$alert->error('Eén of meerdere velden in het formulier zijn niet correct ingevuld (zie onder).');
-	$form_errors = true;
-}
+	$errors = array();
 
-if ($req->get('zend') && !(isset($form_errors)) && $to_user_id)
-{
-	$description = $req->get('description');
-	$transid = $req->get('transid');
-	$date = date('Y-m-d H:i:s');
-
-	$mail_ary = array(
-		'to' 			=> $to_user_id,
-		'description'	=> $description,
-		'date'			=> $date,
-	);
-
-	if (check_duplicate_transaction($transid))
+	if (!$password)
 	{
-		$alert->error('Een dubbele boeking van een transactie werd voorkomen.');
+		$errors[] = 'Paswoord is niet ingevuld.';
 	}
 	else
 	{
-		foreach($active_users as $user)
+		$password = hash('sha512', $password);
+
+		if ($password != $db->GetOne('select password from users where id = ' . $s_id))
 		{
-			$amount = $req->get('amount-'.$user['id']);
-			if (!$amount || $to_user_id == $user['id'])
+			$errors[] = 'Paswoord is niet juist.';
+		}
+	}
+
+	if (!$description)
+	{
+		$errors[] = 'Vul een omschrijving in.';
+	}
+
+	if (!$to_letscode)
+	{
+		$errors[] = 'Bestemmeling is niet ingevuld.';
+	}
+	else
+	{
+		$to_user_id = $db->GetOne('select id from users where letscode = \'' . $to_letscode . '\'');
+
+		if (!$to_user_id)
+		{
+			$errors[] = 'Geen bestaande letscode voor bestemmeling.';
+		}
+		else
+		{
+			unset($amount[$to_user_id]);
+		}
+	}
+
+	$filter_options = array(
+		'options'	=> array(
+			'min_range' => 0,
+		),
+	);
+
+	$count = 0;
+
+	foreach ($amount as $user_id => $amo)
+	{
+		if (!$amo)
+		{
+			continue;
+		}
+
+		$count++;
+		
+		if (!filter_var($amo, FILTER_VALIDATE_INT, $filter_options))
+		{
+			$errors[] = 'Ongeldig bedrag ingevuld.';
+			break;
+		}
+	}
+
+	if (!$count)
+	{
+		$errors[] = 'Er is geen enkel bedrag ingevuld.';
+	}
+
+	if (!$transid)
+	{
+		$errors[] = 'Geen geldig transactie id';
+	}
+
+	if ($db->GetOne('select id from transactions where transid = \'' . $transid . '\''))
+	{
+		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
+	}
+
+	if (count($errors))
+	{
+		$alert->error(implode('<br>', $errors));
+	}
+	else
+	{
+		$db->StartTrans();
+
+		$date = date('Y-m-d H:i:s');
+		$cdate = gmdate('Y-m-d H:i:s');
+
+		$mail_ary = array(
+			'to' 			=> $to_user_id,
+			'description'	=> $description,
+			'date'			=> $date,
+		);
+
+		$alert_success = $log = '';
+		$total = 0;
+
+		foreach ($amount as $from_user_id => $amo)
+		{
+			if (!$amo || $from_user_id == $to_user_id)
 			{
 				continue;
 			}
+
+			$user = $users[$from_user_id];
+			$to_user_fullname = $users[$to_user_id]['fullname'];
+
+			$alert_success .= 'Transactie van gebruiker ' . $user['letscode'] . ' ' . $user['fullname'];
+			$alert_success .= ' naar ' . $to_letscode . ' ' . $to_user_fullname;
+			$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' ' . 'uitgevoerd.<br>';
+
+			$log_from .= $user['letscode'] . ' ' . $user['fullname'] . '(' . $amo . '), ';
+
+			$mail_ary['from'][$user['id']] = array(
+				'amount'	=> $amo,
+				'transid' 	=> $transid,
+			);
+
 			$trans = array(
 				'id_to' 		=> $to_user_id,
-				'id_from' 		=> $user['id'],
-				'amount' 		=> $amount,
+				'id_from' 		=> $from_user_id,
+				'amount' 		=> $amo,
 				'description' 	=> $description,
 				'date' 			=> $date,
+				'cdate' 		=> $cdate,
 				'transid'		=> $transid,
+				'creator'		=> $s_id,
 			);
-			$notice_text = 'Transactie van gebruiker '.$user['fullname'].' ( '.$user['letscode'].' ) naar '.$to_user_fullname.' ( '.$letscode_to.' ) met bedrag '.$amount.' ';
-			if(insert_transaction($trans))
-			{
-				//mail_masstransaction($trans);
-				$mail_ary['from'][$user['id']] = array(
-					'amount'	=> $amount,
-					'transid' 	=> $transid,
-				);
 
-				$alert->success($notice_text . ' opgeslagen');
-			}
-			else
-			{
-				$alert->error($notice_text . ' mislukt');
-			}
+			$db->AutoExecute('transactions', $trans, 'INSERT');
+
+			$db->Execute('update users
+				set saldo = saldo - ' . $amo . '
+				where id = ' . $from_user_id);
+
+			$total += $amo;
+
 			$transid = generate_transid();
 		}
-		mail_mass_transaction($mail_ary);
+
+		$db->Execute('update users
+			set saldo = saldo + ' . $total . '
+			where id = ' . $to_user_id);
+
+		if ($db->CompleteTrans())
+		{
+			$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
+			$alert->success($alert_success);
+
+			log_event($s_id, "Trans", 'Massa Transaction to ' . $to_letscode . ' ' . $to_user_fullname . ' amount: ' . $total .
+				' from: ' . $log_from);
+
+			if ($mail_en)
+			{
+				if (mail_mass_transaction($mail_ary))
+				{
+					$alert->success('Notificatie mails verzonden.');
+				}
+				else
+				{
+					$alert->error('Fout bij het verzenden van notificatie mails.');
+				}
+			} 
+
+			$users = $db->GetAssoc(
+				'SELECT id, fullname, letscode,
+					accountrole, status, saldo, minlimit, maxlimit, adate
+				FROM users
+				WHERE status IN (0, 1, 2, 5, 6)
+				ORDER BY letscode');
+
+		}
+		else
+		{
+			$alert->error('Fout bij het opslaan.');
+		} 
 	}
-	$req->set('letscode_to', '');
-	$req->set('description', '');
 }
 
-$fixed = $req->get('fixed');
-$percentage = $req->get('percentage');
-$percentage_base = $req->get('percentage_base');
-$perc = 0;
-
-$percentage_transactions = $req->get('percentage_transactions');
-$percentage_transactions_days = $req->get('percentage_transactions_days');
-
-if ($percentage_transactions && $percentage_transactions_days)
-{
-	$refdate = date('Y-m-d H:i:s', time() - (86400 * $percentage_transactions_days));
-	$user_trans = $db->GetAssoc('SELECT tr.id_from, SUM(tr.amount) 
-		FROM transactions tr, users u
-		WHERE tr.cdate > \'' . $refdate . '\'
-			AND u.id = tr.id_from
-			AND u.status IN (1, 2)
-		GROUP BY tr.id_from');
-}
-
+/*
 if ($req->get('fill_in') && ($fixed || $percentage || $user_trans))
 {
 	$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
@@ -152,19 +233,21 @@ if ($req->get('fill_in') && ($fixed || $percentage || $user_trans))
 	}
 }
 
-$req->set('amount-'.$to_user_id, 0);
-$req->set('confirm_password', '');
+*/
 
-$data_table = new data_table();
-$data_table->set_data($active_users)->set_input($req)
-	->add_column('letscode', array('title' => 'Van LetsCode', 'render' => 'status'))
-	->add_column('fullname', array('title' => 'Naam'))
-	->add_column('accountrole', array('title' => 'Rol', 'footer_text' => 'TOTAAL'))
-	->add_column('saldo', array('title' => 'Saldo', 'footer' => 'sum', 'render' => 'limit'))
-	->add_column('amount', array('title' => 'Bedrag', 'input' => 'id', 'footer' => 'sum'))
-	->add_column('minlimit', array('title' => 'Min.Limiet'));
+$transid = generate_transid();
+
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 $letsgroup_id = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+
+if ($to_letscode)
+{
+	if ($fullname = $db->GetOne('select fullname from users where letscode = \'' . $to_letscode . '\''))
+	{
+		$to_letscode .= ' ' . $fullname;
+	}
+}
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
@@ -176,13 +259,14 @@ include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
-echo '<button class="btn btn-default" title="Toon invul hulp">';
+echo '<button class="btn btn-default" title="Toon invul-hulp" data-toggle="collapse" ';
+echo 'data-target="#help">';
 echo '<i class="fa fa-question"></i>';
-echo ' Invul hulp</button>';
+echo ' Invul-hulp</button>';
 echo '</div>';
-echo '<div class="panel-body">';
+echo '<div class="panel-body collapse" id="help">';
 
-echo '<p>Met deze invul hulp kan je snel alle bedragen van de massa-transactie invullen. ';
+echo '<p>Met deze invul-hulp kan je snel alle bedragen van de massa-transactie invullen. ';
 echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
 echo '</p>';
 
@@ -199,26 +283,34 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="percentage_saldo" class="col-sm-3 control-label">';
 echo 'Percentage op saldo (kan ook negatief zijn)</label>';
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-3">';
 echo '<input type="number" class="form-control" id="percentage_saldo"';
 echo ' placeholder="percentage op saldo">';
 echo '</div>';
-echo '<div class="col-sm-4">';
+echo '<div class="col-sm-3">';
+echo '<input type="number" class="form-control" id="percentage_saldo_days" ';
+echo 'placeholder="aantal dagen" min="0">';
+echo '</div>';
+echo '<div class="col-sm-3">';
 echo '<input type="number" class="form-control" id="percentage_saldo_base" ';
-echo 'placeholder="percentage saldo basis">';
+echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="percentage_transactions" class="col-sm-3 control-label">';
 echo 'Percentage op transacties (kan ook negatief zijn)</label>';
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-3">';
 echo '<input type="number" class="form-control" id="percentage_transactions"';
 echo ' placeholder="percentage op transacties">';
 echo '</div>';
-echo '<div class="col-sm-4">';
+echo '<div class="col-sm-3">';
 echo '<input type="number" class="form-control" id="percentage_transactions_days" ';
 echo 'placeholder="aantal dagen" min="0">';
+echo '</div>';
+echo '<div class="col-sm-3">';
+echo '<input type="number" class="form-control" id="percentage_transactions_base" ';
+echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
 
@@ -228,8 +320,6 @@ echo 'Respecteer minimum limieten</label>';
 echo '<div class="col-sm-9">';
 echo '<input type="checkbox" id="respect_min_limit" checked="checked">';
 echo '</div>';
-echo '<div class="col-sm-4">';
-echo '</div>';
 echo '</div>';
 
 echo '<button class="btn btn-default" id="fill-in">Vul in</button>';
@@ -237,25 +327,72 @@ echo '<button class="btn btn-default" id="fill-in">Vul in</button>';
 echo '</form>';
 
 echo '</div>';
+echo '</div>';
 
-echo '<div style="background-color:#ffdddd; padding:10px;">';
-
-echo '<table  cellspacing="5" cellpadding="0" border="0">';
-$req->set_output('tr')->render(array(
-	'fixed', 'percentage', 'percentage_base',
-	'percentage_transactions', 'percentage_transactions_days',
-	'no_newcomers', 'no_leavers', 'no_min_limit', 'fill_in'));
-echo '</table>';
-echo '<p><strong><i>Aan LETSCode</i></strong> wordt altijd automatisch overgeslagen. Alle bedragen blijven individueel aanpasbaar alvorens de massa-transactie uitgevoerd wordt.</p>';
-echo '<p>Deze mogelijkheden zijn combineerbaar:';
-echo '<ul><li><strong>Vast bedrag</strong></li>';
-echo '<li><strong>Percentage op saldo</strong> (Het percentage kan ook negatief zijn.) ';
-echo 'De basis zal gewoonlijk nul zijn, maar er het is ook mogelijk een percentage te berekenen t.o.v. een ander bedrag.</li>';
-echo '<li><strong>Percentage op uitgeschreven transacties</strong> Percentage en aantal dagen dienen beide ingevuld te zijn indien men deze optie wil gebruiken.</li>';
-echo '</ul></div>';
-
-echo '<div class="panel panel-default">';
 echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="panel panel-info">';
+
+echo '<table class="table table-bordered table-striped table-hover panel-body footable"';
+echo ' data-filter="#filter" data-filter-minimum="1">';
+echo '<thead>';
+
+echo '<tr>';
+echo '<th data-sort-initial="true">Code</th>';
+echo '<th data-filter="#filter">Naam</th>';
+echo '<th data-sort-ignore="true">Bedrag</th>';
+echo '<th data-hide="phone">Saldo</th>';
+echo '<th data-hide="phone">Min.limit</th>';
+echo '</tr>';
+
+echo '</thead>';
+echo '<tbody>';
+
+foreach($users as $user_id => $user)
+{
+
+	$class = ($newusertreshold < strtotime($user['adate'])) ? ' class="success"' : '';
+	$class = ($user['status'] == 2) ? ' class="danger"' : $class;
+
+	echo '<tr' . $class . '>';
+
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
+	echo $user['letscode'];
+	echo '</a></td>';
+	
+	echo '<td>';
+	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
+	echo htmlspecialchars($user['fullname'],ENT_QUOTES).'</a></td>';
+	
+	echo '<td>';
+	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
+	echo 'value="' . $amount[$user_id] . '">';
+	echo '</td>';
+
+	echo '<td>';
+	$balance = $user['saldo'];
+	if($balance < $user['minlimit'] || ($user['maxlimit'] != NULL && $balance > $user['maxlimit']))
+	{
+		echo '<span class="text-danger">' . $balance . '</span>';
+	}
+	else
+	{
+		echo $balance;
+	}
+	echo '</td>';
+
+	echo '<td>';
+	echo $user['minlimit'];
+	echo '</td>';
+	
+	echo '</tr>';
+
+}
+echo '</tbody>';
+echo '</table>';
+
+echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
 echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $currency . '</label>';
@@ -268,7 +405,7 @@ echo '<div class="form-group">';
 echo '<label for="to_letscode" class="col-sm-2 control-label">Aan letscode</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
-echo 'value="' . $transaction['to_letscode'] . '" required ';
+echo 'value="' . $to_letscode . '" required ';
 echo 'data-letsgroup-id="' . $letsgroup_id . '">';
 echo '</div>';
 echo '</div>';
@@ -277,7 +414,17 @@ echo '<div class="form-group">';
 echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="description" name="description" ';
-echo 'value="' . $transaction['description'] . '" required>';
+echo 'value="' . $description . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="mail_en" class="col-sm-2 control-label">';
+echo 'Verstuur notificatie mails</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
+echo ($mail_en) ? ' checked="checked"' : '';
+echo '>';
 echo '</div>';
 echo '</div>';
 
@@ -293,24 +440,16 @@ echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-defaul
 echo '<input type="submit" value="Alle transacties uitvoeren" name="zend" class="btn btn-success">';
 
 echo '</div>';
-
-
-
-echo '<div id="transformdiv" style="padding:10px;">';
-$data_table->render();
-echo '<table cellspacing="0" cellpadding="5" border="0">';
-$req->set_output('tr')->render(array('letscode_to', 'description', 'confirm_password', 'zend', 'transid'));
-echo '</table></div></form>';
+echo '</div>';
 
 echo '</div>';
 echo '</div>';
+
+echo '<input type="hidden" value="' . $transid . '" name="transid">';
+
+echo '</form>';
 
 include $rootpath . 'includes/inc_footer.php';
-
-function check_newcomer($adate)
-{
-	return  (time() - (readconfigfromdb('newuserdays') * 86400) < strtotime($adate)) ? true : false;
-}
 
 function mail_mass_transaction($mail_ary)
 {
@@ -322,7 +461,7 @@ function mail_mass_transaction($mail_ary)
 		return;
 	}
 	
-	$from = readconfigfromdb("from_address_transactions");
+	$from = readconfigfromdb('from_address_transactions');
 	if (empty($from))
 	{
 		$alert->warning('Mail from_address_transactions is not set in configuration');
@@ -536,7 +675,7 @@ function mail_mass_transaction($mail_ary)
 	{
 		// Mandrill errors are thrown as exceptions
 		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		return;
+		return false;
 	}
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
@@ -559,4 +698,10 @@ function mail_mass_transaction($mail_ary)
 	$mandrill->messages->send($message, true);
 
 	return true;
+}
+
+function generate_transid()
+{
+	global $baseurl, $schema, $s_id;
+	return sha1($s_id . $schema . microtime() . mt_rand(0, 50000)) . $_SESSION['id'] . '@' . $baseurl;
 }

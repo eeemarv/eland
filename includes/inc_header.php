@@ -37,10 +37,37 @@ echo '<body>';
 $name = readconfigfromdb('systemname');
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
+echo '<div class="container-fluid">';
 echo '<div class="navbar-header">';
 echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
 echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo.png">';
 echo $name . '</a>';
+echo '</div>';
+
+if ($s_letscode)
+{
+	echo '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
+	echo '<ul class="nav navbar-nav navbar-right">';
+	echo '<li class="dropdown">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+	echo '<span class="fa fa-user"></span> ';
+	echo $s_letscode . ' ' . $s_name . '<span class="caret"></span></a>';
+	echo '<ul class="dropdown-menu" role="menu">';
+	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
+	{
+		echo '<li><a href="' . $rootpath . 'userdetails/mydetails.php">Mijn gegevens</a></li>';
+		echo '<li><a href="' . $rootpath . 'userdetails/mymsg_overview.php">Mijn vraag en aanbod</a></li>';
+		echo '<li><a href="' . $rootpath . 'userdetails/mytrans_overview.php">Mijn transacties</a></li>';
+		echo '<li class="divider"></li>';
+	}
+	echo '<li><a href="' . $rootpath . 'logout.php">Uitloggen</a></li>';
+	echo '</ul>';
+	echo '</li>';
+	echo '</ul>';
+	echo '</div>';
+}
+
+
 echo '</div>';
 echo '</div>';
 
@@ -80,9 +107,9 @@ else
 	$menu[] = $main_menu;
 
 	$menu[] = array(
-		'userdetails/mydetails.php'			=> 'Mijn gegevens',
+/*		'userdetails/mydetails.php'			=> 'Mijn gegevens',
 		'userdetails/mymsg_overview.php'	=> 'Mijn Vraag & Aanbod',
-		'userdetails/mytrans_overview.php'	=> 'Mijn transacties',
+		'userdetails/mytrans_overview.php'	=> 'Mijn transacties', */
 		'transactions/add.php'				=> 'Nieuwe transactie',
 	);
 
