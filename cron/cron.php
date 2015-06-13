@@ -256,9 +256,9 @@ else
 	run_cronjob('processqueue');
 }
 
-run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
+run_cronjob('saldo', 86400 *  readconfigfromdb('saldofreqdays'));
 
-run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), readconfigfromdb("adminmsgexp"));
+run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
 
 function admin_exp_msg()
 {
@@ -283,7 +283,7 @@ function admin_exp_msg()
 	   $mailto = $admin;
 	}
 
-	$from_address_transactions = readconfigfromdb("from_address_transactions");
+	$from_address_transactions = readconfigfromdb('from_address_transactions');
 
 	if (!empty($from_address_transactions))
 	{
@@ -314,7 +314,7 @@ function admin_exp_msg()
 	return true;
 }
 
-run_cronjob('user_exp_msgs', 86400, readconfigfromdb("msgexpwarnenabled"));
+run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {

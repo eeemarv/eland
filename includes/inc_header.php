@@ -10,6 +10,7 @@ echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">'
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css">';
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/tooltip.css">';
 
 echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>";
 
@@ -40,18 +41,20 @@ echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 echo '<div class="navbar-header">';
 echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
-echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo.png">';
+echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo-inv.png">';
 echo $name . '</a>';
 echo '</div>';
 
 if ($s_letscode)
 {
-	echo '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
+//	echo '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
 	echo '<ul class="nav navbar-nav navbar-right">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
-	echo $s_letscode . ' ' . $s_name . '<span class="caret"></span></a>';
+	echo '<span class="hidden-xs">';
+	echo $s_letscode . ' ' . $s_name . '</span>';
+	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
@@ -64,7 +67,7 @@ if ($s_letscode)
 	echo '</ul>';
 	echo '</li>';
 	echo '</ul>';
-	echo '</div>';
+//	echo '</div>';
 }
 
 
@@ -88,6 +91,7 @@ if (!$s_accountrole)
 else
 {
 	$main_menu = array(
+		'index.php'			=> 'Home',
 		'searchcat.php'		=> 'Vraag & Aanbod',
 		'memberlist.php'	=> 'Contactlijst',
 	);
@@ -121,12 +125,13 @@ else
 
 foreach ($menu as $sub_menu)
 {
-	echo '<ul>';
+	echo '<ul class="nav nav-pills nav-stacked">';
 
 	foreach ($sub_menu as $link => $label)
 	{
 		$active_class = ($script_name == $link) ? ' class="active"' : '';
-		echo '<li' . $active_class . '><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
+		echo '<li' . $active_class . ' role="presentation">';
+		echo '<a href="' . $rootpath . $link . '">' . $label . '</a></li>';
 	}
 
 	echo '</ul>';
@@ -134,7 +139,7 @@ foreach ($menu as $sub_menu)
 
 if ($s_accountrole == 'admin')
 {
-	echo '<ul class="admin">';
+	echo '<ul class="nav nav-pills nav-stacked admin">';
 
 	$menu = array(
 		'users/overview.php'						=> 'Gebruikers',
@@ -154,7 +159,8 @@ if ($s_accountrole == 'admin')
 	foreach ($menu as $link => $label)
 	{
 		$active_class = ($script_name == $link) ? ' class="active"' : '';
-		echo '<li'. $active_class . '><a href="' . $rootpath . $link . '">' . $label . '</a></li>';
+		echo '<li'. $active_class . ' role="presentation">';
+		echo '<a href="' . $rootpath . $link . '">' . $label . '</a></li>';
 	}
 
 	echo '</ul>';
