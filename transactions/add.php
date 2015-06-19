@@ -335,8 +335,9 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 		$errors["id_to"] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 	}
 
-
-	if($letsgroup['apimethod'] == 'internal' && !($touser["status"] == '1' || $touser["status"] == '2'))
+	if($letsgroup['apimethod'] == 'internal'
+		&& $s_accountrole != 'admin'
+		&& !($touser["status"] == '1' || $touser["status"] == '2'))
 	{
 		$errors["id_to"]="De bestemmeling is niet actief";
 	}
