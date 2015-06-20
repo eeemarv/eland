@@ -108,7 +108,7 @@ else if ($mode == 'edit' && $id)
 else if ($mode == 'new')
 {
 	$msg = array(
-		'validity'		=> '2',
+		'validity'		=> '24',
 		'content'		=> '',
 		'description'	=> '',
 		'msg_type'		=> '1',
