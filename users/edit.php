@@ -527,28 +527,15 @@ function validate_input($posted_list)
 		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
 	}
 
-	$query = "SELECT * FROM users ";
-	$query .= "WHERE TRIM(letscode)  <> '' ";
-	$query .= "AND TRIM(letscode) = '".$posted_list["letscode"]."'";
-	$query .= " AND status <> 0 ";
-	$rs=$db->Execute($query);
-	$number2 = $rs->recordcount();
-
-	if ($number2 !== 0)
+	if ($db->GetOne('select letscode from users where letscode = \'' . $posted_list['letscode'] . '\''))
 	{
-		$error_list["letscode"]="Letscode bestaat al!";
+		$error_list['letscode']= 'Letscode bestaat al!';
 	}
 
-	if (!empty($posted_list["login"]))
+	if (!empty($posted_list['login'])
+		&& $db->GetOne('select login from users where login = \'' . $posted_list['login'] . '\''))
 	{
-	    $query = "SELECT * FROM users WHERE login = '".$posted_list["login"]."'";
-    	    $rs=$db->Execute($query);
-	    $number = $rs->recordcount();
-
-	    if ($number !== 0)
-	    {
-			$error_list["login"]="Login bestaat al!";
-	    }
+		$error_list['login'] = 'Login bestaat al!';
 	}
 
 	if (!filter_var($posted_list['minlimit'] ,FILTER_VALIDATE_INT))
