@@ -251,7 +251,7 @@ if ($to_letscode)
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/mass_transaction_add.js"></script>';
+	<script src="' . $rootpath . 'js/many_to_one.js"></script>';
 
 $h1 = 'Massa transactie: "veel naar één"';
 
@@ -270,7 +270,7 @@ echo '<p>Met deze invul-hulp kan je snel alle bedragen van de massa-transactie i
 echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
 echo '</p>';
 
-echo '<form class="form form-horizontal">';
+echo '<form class="form form-horizontal" id="fill_in_aid">';
 
 echo '<div class="form-group">';
 echo '<label for="fixed" class="col-sm-3 control-label">Vast bedrag</label>';
@@ -281,18 +281,18 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="percentage_saldo" class="col-sm-3 control-label">';
+echo '<label for="percentage_balance" class="col-sm-3 control-label">';
 echo 'Percentage op saldo (kan ook negatief zijn)</label>';
 echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_saldo"';
+echo '<input type="number" class="form-control" id="percentage_balance"';
 echo ' placeholder="percentage op saldo">';
 echo '</div>';
 echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_saldo_days" ';
+echo '<input type="number" class="form-control" id="percentage_balance_days" ';
 echo 'placeholder="aantal dagen" min="0">';
 echo '</div>';
 echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_saldo_base" ';
+echo '<input type="number" class="form-control" id="percentage_balance_base" ';
 echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
@@ -367,7 +367,8 @@ foreach($users as $user_id => $user)
 	
 	echo '<td>';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
-	echo 'value="' . $amount[$user_id] . '">';
+	echo 'value="' . $amount[$user_id] . '" ';
+	echo 'data-letscode="' . $user['letscode'] . '">';
 	echo '</td>';
 
 	echo '<td>';
@@ -397,12 +398,12 @@ echo '<div class="panel-heading">';
 echo '<div class="form-group">';
 echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $currency . '</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="total" readonly>';
+echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="to_letscode" class="col-sm-2 control-label">Aan letscode</label>';
+echo '<label for="to_letscode" class="col-sm-2 control-label">Aan letscode (moet actief zijn)</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="' . $to_letscode . '" required ';

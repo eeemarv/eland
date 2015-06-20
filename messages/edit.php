@@ -129,7 +129,8 @@ $letsgroup_id = $db->GetOne('SELECT id
 	FROM letsgroups
 	WHERE apimethod = \'internal\'');
 
-$cat_list = array('' => '') + get_cats();
+$cat_list = array('' => '') +
+	$db->GetAssoc('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
 
 $currency = readconfigfromdb("currency");
 
@@ -355,11 +356,4 @@ function insert_msg($posted_list)
 	}
 
 	return false;
-}
-
-function get_cats()
-{
-	global $db;
-	$query = "SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname";
-	return $db->GetAssoc($query);
 }

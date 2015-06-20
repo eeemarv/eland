@@ -43,7 +43,7 @@ echo '<div class="navbar-header">';
 echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
 echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo-inv.png">';
 echo $name . '</a>';
-echo '</div>';
+
 
 if ($s_letscode)
 {
@@ -70,7 +70,7 @@ if ($s_letscode)
 //	echo '</div>';
 }
 
-
+echo '</div>';
 echo '</div>';
 echo '</div>';
 
