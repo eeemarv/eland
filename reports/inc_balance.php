@@ -44,5 +44,3 @@ function show_user_balance($users,$date){
         }
         echo "</table></div>";
 }
-
-?>

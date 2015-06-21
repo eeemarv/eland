@@ -14,11 +14,11 @@ $includejs = '
 	
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Saldo op datum';
 
-include("inc_balance.php");
+include $rootpath . 'includes/inc_header.php';
 
-echo "<h1>Saldo op datum</h1>";
+include 'inc_balance.php';
 
 $posted_list = array();
 
@@ -29,17 +29,64 @@ if (isset($_GET["zend"]))
 }
 else
 {
-	$localdate = date("Y-m-d");
+	$localdate = date("Y-m-d ");
 	$posted_list["date"] = $localdate;
 }
 
 $user_date = $posted_list["date"];
 $users = get_filtered_users($posted_list["prefix"]);
 
+
+
+
 echo "<table border=0 width='100%'>";
 echo "<tr>";
 echo "<td valign='top' align='left'>";
-show_userselect($list_users,$posted_list);
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+echo "<form method='GET'>";
+echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
+
+echo "<tr><td>Datum afsluiting (yyyy-mm-dd):   </td>\n";
+echo "<td>";
+echo "<input type='text' name='date' size='10' ";
+if (isset($posted_list["date"]))
+{
+	echo " value ='".$posted_list["date"]."' ";
+}
+echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-enable-on-readonly="false" ';        
+echo ">";
+echo "</td>";
+
+echo "<td>";
+	echo "<input type='submit' name='zend' value='Filter'>";
+	echo "</td>\n</tr>\n\n";
+echo "<tr>";
+echo "<td>";
+echo "Filter subgroep:";
+	echo "</td><td>";
+echo "<select name='prefix'>\n";
+
+	echo "<option value='ALL'>ALLE</option>";
+	$list_prefixes = get_prefixes();
+	foreach ($list_prefixes as $key => $value){
+			echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";
+	}
+	echo "</select>\n";
+echo "</td></tr>\n\n";
+
+echo "</table>\n";
+	echo "</form>";
+
+echo '</div>';
+echo '</div>';
+
+
 echo "</td>";
 echo "<td valign='top' align='right'>";
 show_printversion($rootpath,$user_date,$posted_list["prefix"]);
@@ -73,49 +120,8 @@ function show_csvversion($rootpath,$user_date,$user_prefix)
 	echo "CSV Export</a>";
 }
 
-function show_userselect($list_users,$posted_list){
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-	echo "<form method='GET'>";
-	echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
 
-	echo "<tr><td>Datum afsluiting (yyyy-mm-dd):   </td>\n";
-	echo "<td>";
-	echo "<input type='text' name='date' size='10' ";
-	if (isset($posted_list["date"]))
-	{
-		echo " value ='".$posted_list["date"]."' ";
-	}
-	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
-	echo 'data-date-language="nl" ';
-	echo 'data-date-today-highlight="true" ';
-	echo 'data-date-autoclose="true" ';
-	echo 'data-date-enable-on-readonly="false" ';        
-    echo ">";
-	echo "</td>";
 
-	echo "<td>";
-        echo "<input type='submit' name='zend' value='Filter'>";
-        echo "</td>\n</tr>\n\n";
-	echo "<tr>";
-	echo "<td>";
-	echo "Filter subgroep:";
-        echo "</td><td>";
-	echo "<select name='prefix'>\n";
 
-        echo "<option value='ALL'>ALLE</option>";
-        $list_prefixes = get_prefixes();
-        foreach ($list_prefixes as $key => $value){
-                echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";
-        }
-        echo "</select>\n";
-	echo "</td></tr>\n\n";
 
-	echo "</table>\n";
-        echo "</form>";
-
-	echo '</div>';
-	echo '</div>';
-}
-
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

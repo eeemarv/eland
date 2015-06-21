@@ -46,7 +46,8 @@ $end_date = strtotime($end_date);
 
 $transactions = $users = $_users = array();
 
-foreach ($trans as $t){
+foreach ($trans as $t)
+{
 	$date = strtotime($t['date']);
 	$out = ($t['id_from'] == $user_id) ? true : false;
 	$mul = ($out) ? 1 : -1;
@@ -55,11 +56,14 @@ foreach ($trans as $t){
 	$name = $t['name'];
 	$real = ($t['real_from']) ? $t['real_from'] : null;
 	$real = ($t['real_to']) ? $t['real_to'] : null;
-	if ($real){
+	if ($real)
+	{
 		list($name, $code) = explode('(', $real);
 		$name = trim($name);
 		$code = $t['letscode'] . ' ' . trim($code, ' ()\t\n\r\0\x0B');
-	} else {
+	}
+	else
+	{
 		$code = $t['letscode'];
 	}
 
@@ -69,17 +73,18 @@ foreach ($trans as $t){
 		'userCode' => strip_tags($code),
 		'desc' => strip_tags($t['description']),
 		'out' => $out,
-		);
+	);
 
 	$_users[(string) $code] = array(
 		'name' => strip_tags($name),
 		'linkable' => ($real || $t['status'] == 0) ? 0 : 1,
 		'id' => $t['id'],
-		);
+	);
 
 }
 
-foreach ($_users as $code => $ary){
+foreach ($_users as $code => $ary)
+{
 	$users[] = array_merge($ary, array(
 		'code' => (string) $code,
 		));
