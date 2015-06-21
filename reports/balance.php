@@ -36,22 +36,20 @@ if (isset($_GET['zend']))
 }
 
 $includejs = '
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
+	<script src="' . $cdn_typeahead . '"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
-/*
-$top_right = '<a href="print_memberlist.php';
-$top_right .= '">';
+
+$top_right = '<a href="' . $rootpath . 'reports/print_balance.php?date=';
+$top_right .= $date . '">';
 $top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
-$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php';
-$top_right .= '" target="new">';
+$top_right .= '<a href="' . $rootpath . 'reports/csv_balance.php?date=';
+$top_right .= $date . '" target="new">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
-*/
+
 $h1 = 'Saldo op datum';
 
 include $rootpath . 'includes/inc_header.php';
@@ -60,23 +58,34 @@ echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
 echo '<form method="get">';
-
-echo '<div class="form-group"';
-echo '>';
-echo '<label for="date" class="col-sm-2 control-label">Datum (jjjj-mm-dd)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="date" name="date" ';
+echo '<div class="col-lg-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-btn">';
+echo '<button class="btn btn-default" type="submit" name="zend" value="1">Toon</button>';
+echo '</span>';
+echo '<input type="text" class="form-control" name="date" ';
 echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-language="nl" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
 echo 'data-date-enable-on-readonly="false" ';
+echo 'placeholder="Datum jjjj-mm-dd" ';
 echo 'value="' . $date . '">';
 echo '</div>';
 echo '</div>';
+echo '</form>';
+echo '<div class="clearfix"></div>';
+
+echo '</div>';
+echo '</div>';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+echo '<form method="get">';
 
 echo '<div class="form-group">';
-echo '<div class="col-sm-12">';
+echo '<div class="col-lg-12">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
@@ -86,68 +95,10 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-echo '<button type="submit" name="zend" value="1" class="btn btn-default">Toon</button>';
-
 echo '</form>';
-
+echo '<div class="clearfix"></div>';
 echo '</div>';
 echo '</div>';
-
-
-
-
-/*
-echo "<form method='GET'>";
-echo "<table  class='data'  cellspacing='0' cellpadding='0' border='0'>\n";
-
-echo "<tr><td>Datum afsluiting (yyyy-mm-dd):   </td>\n";
-echo "<td>";
-echo "<input type='text' name='date' size='10' ";
-if (isset($posted_list["date"]))
-{
-	echo " value ='".$posted_list["date"]."' ";
-}
-echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
-echo 'data-date-language="nl" ';
-echo 'data-date-today-highlight="true" ';
-echo 'data-date-autoclose="true" ';
-echo 'data-date-enable-on-readonly="false" ';        
-echo ">";
-echo "</td>";
-
-echo "<td>";
-	echo "<input type='submit' name='zend' value='Filter'>";
-	echo "</td>\n</tr>\n\n";
-echo "<tr>";
-echo "<td>";
-echo "Filter subgroep:";
-	echo "</td><td>";
-echo "<select name='prefix'>\n";
-
-	echo "<option value='ALL'>ALLE</option>";
-	$list_prefixes = get_prefixes();
-	foreach ($list_prefixes as $key => $value){
-			echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";
-	}
-	echo "</select>\n";
-echo "</td></tr>\n\n";
-
-echo "</table>\n";
-	echo "</form>";
-
-echo '</div>';
-echo '</div>';
-
-
-echo "</td>";
-echo "<td valign='top' align='right'>";
-show_printversion($rootpath,$user_date,$posted_list["prefix"]);
-echo "<br>";
-show_csvversion($rootpath,$user_date,$posted_list["prefix"]);
-echo "</td>";
-echo "</tr>";
-echo "</table>";
-*/
 
 //show table
 echo '<div class="table-responsive">';
@@ -157,7 +108,7 @@ echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
-echo '<th data-filter="#filter">Naam</th>';
+echo '<th>Naam</th>';
 echo '<th>Saldo</th>';
 echo '</tr>';
 
@@ -230,7 +181,5 @@ function show_csvversion($rootpath,$user_date,$user_prefix)
 	echo "<img src='".$rootpath."gfx/csv.jpg' border='0'> ";
 	echo "CSV Export</a>";
 }
-
-
 
 include $rootpath . 'includes/inc_footer.php';
