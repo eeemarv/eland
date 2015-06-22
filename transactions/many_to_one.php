@@ -297,6 +297,7 @@ echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
 
+/*
 echo '<div class="form-group">';
 echo '<label for="percentage_transactions" class="col-sm-3 control-label">';
 echo 'Percentage op transacties (kan ook negatief zijn)</label>';
@@ -313,6 +314,7 @@ echo '<input type="number" class="form-control" id="percentage_transactions_base
 echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
+*/
 
 echo '<div class="form-group">';
 echo '<label for="respect_min_limit" class="col-sm-3 control-label">';

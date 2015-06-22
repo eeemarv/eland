@@ -298,6 +298,11 @@ div.navbar-header a.navbar-brand img
 	margin-right: 20px;
 }
 
+div.navbar-header ul.nav
+{
+	margin-right: 20px;
+}
+
 .footer
 {
 	text-align: center;

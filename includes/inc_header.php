@@ -39,22 +39,35 @@ $name = readconfigfromdb('systemname');
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
-echo '<div class="navbar-header">';
-echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
-echo '<img class="img-responsive navbar-left hidden-xs" width="70" src="' . $rootpath . 'gfx/logo-inv.png">';
-echo $name . '</a>';
+echo '<div class="navbar-header pull-left">';
+/*
+if ($s_letscode)
+{
+	echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="fa fa-user"></span>
+			<span class="hidden-xs">' . $s_letscode . ' ' . $s_name . '</span>
+		  </button>';
+}*/
 
+echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
+echo '<img class="img-responsive navbar-left hidden-xs hidden-sm" width="70" ';
+echo 'src="' . $rootpath . 'gfx/logo-inv.png">';
+echo $name . '</a>';
+echo '</div>';
 
 if ($s_letscode)
 {
 //	echo '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
-	echo '<ul class="nav navbar-nav navbar-right">';
+	echo '<div class="navbar-header pull-right">';
+	echo '<ul class="nav navbar-nav pull-left">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
-	echo '<span class="fa fa-user"></span> ';
-	echo '<span class="hidden-xs">';
-	echo $s_letscode . ' ' . $s_name . '</span>';
-	echo '<span class="caret"></span></a>';
+	echo '<span class="fa fa-user"></span>';
+	echo '<span class="hidden-xs"> ';
+	echo $s_letscode . ' ' . $s_name;
+	echo '</span>';
+	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
@@ -67,10 +80,10 @@ if ($s_letscode)
 	echo '</ul>';
 	echo '</li>';
 	echo '</ul>';
+	echo '</div>';
 //	echo '</div>';
 }
 
-echo '</div>';
 echo '</div>';
 echo '</div>';
 

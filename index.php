@@ -43,6 +43,8 @@ $msgs = $db->GetArray('SELECT m.*,
 	order by m.cdate DESC
 	limit 100');
 
+$h1 = 'Home';
+
 include $rootpath . 'includes/inc_header.php';
 
 if($s_accountrole == 'admin')
