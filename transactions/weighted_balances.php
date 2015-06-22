@@ -49,8 +49,6 @@ foreach ($balance as $user_id => $b)
 	$weighted[$user_id] = round($acc[$user_id] / ($days * 86400));
 }
 
-$weighted['sum'] = array_sum($weighted);
-
 ob_clean();
 header('Content-type: application/json');
 echo json_encode($weighted);

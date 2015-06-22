@@ -58,22 +58,54 @@ $('#to_letscode').bind('typeahead:selected', function(ev, data) {
 });
 
 $('#fill_in_aid').submit(function(e){
+
+	var days = $('#percentage_balance_days').val();
+
+	if (days > 1)
+	{
+		var jqxhr = $.get('weighted_balances.php', {"days" :days})
+		.done(function(data){
+			fill_in(data);
+		})
+		.fail(function(){
+			alert('Data ophalen mislukt.');
+		});
+	}
+	else
+	{
+		fill_in();
+	}
+
+	e.preventDefault();
+});
+
+function fill_in(data)
+{
 	var ignore_letscode = $('#to_letscode').val().split(' ');
 	ignore_letscode = ignore_letscode[0];
+
 	var fixed = $('#fixed').val();
+	var perc = $('#percentage_balance').val();
+	var base = $('#percentage_balance_base').val();
 
     $('table input[type="number"]').each(function() {
 
+		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
+		am = (am >= base) ? am - base : 0;
+
 		var amount = fixed;
+		amount += Math.round(am * perc / 100);
+
+		amount = (amount < 0) ? 0 : amount;
 
 		if ($(this).attr('data-letscode') != ignore_letscode)
 		{
 			$(this).val(amount);
 		}
     });
+
     recalc_sum();
-	e.preventDefault();
-});
+}
 
 
 /*

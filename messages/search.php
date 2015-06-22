@@ -40,7 +40,7 @@ echo '<div class="input-group">';
 echo '<span class="input-group-btn">';
 echo '<button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Zoeken</button>';
 echo '</span>';
-echo '<input type="text" class="form-control" name="q">';
+echo '<input type="text" class="form-control" name="q" value="' . $q . '">';
 echo '</div>';
 echo '</div>';
 echo '<br><small><i>Een leeg zoekveld geeft ALLE V/A als resultaat terug</i></small>';

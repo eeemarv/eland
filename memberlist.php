@@ -70,7 +70,7 @@ echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
-echo '<th data-filter="#filter">Naam</th>';
+echo '<th>Naam</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';

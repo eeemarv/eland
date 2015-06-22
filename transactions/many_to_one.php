@@ -370,7 +370,10 @@ foreach($users as $user_id => $user)
 	echo '<td>';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="' . $amount[$user_id] . '" ';
-	echo 'data-letscode="' . $user['letscode'] . '">';
+	echo 'data-letscode="' . $user['letscode'] . '" ';
+	echo 'data-id="' . $user_id . '" ';
+	echo 'data-balance="' . $user['saldo'] . '" ';
+	echo '>';
 	echo '</td>';
 
 	echo '<td>';
