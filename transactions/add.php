@@ -44,7 +44,7 @@ if (isset($_POST['zend']))
 
 	if(!empty($errors))
 	{
-		$alert->error(implode("\n", $errors));
+		$alert->error(implode('<br>', $errors));
 	}
 	else
 	{
@@ -106,7 +106,7 @@ if (isset($_POST['zend']))
 	}
 
 	$transaction['letscode_to'] = $_POST['letscode_to'];
-	$transaction['letscode_from'] = $_POST['letscode_from'];
+	$transaction['letscode_from'] = ($s_accountrole == 'admin') ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;
 }
 else
 {
@@ -190,8 +190,6 @@ echo "</div>";
 
 $date = date("Y-m-d");
 
-//echo "<script type='text/javascript' src='/js/posttransaction.js'></script>";
-// echo "<script type='text/javascript' src='/js/userinfo.js'></script>";
 echo "<div id='transformdiv'>";
 echo "<form  method='post'>";
 echo "<table>";
@@ -272,7 +270,7 @@ echo "</td></tr></table>";
 echo "</form>";
 echo "</div>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
 ///////////////////////////////////////////////////////
 
@@ -280,9 +278,6 @@ include($rootpath."includes/inc_footer.php");
 // Make timestamps for SQL statements
 function make_timestamp($timestring)
 {
-/*	$month = substr($timestring, 3, 2);
-	$day = substr($timestring, 0, 2);
-	$year = substr($timestring, 6, 4); */
 	list($day, $month, $year) = explode('-', $timestring);
 	return mktime(0, 0, 0, trim($month), trim($day), trim($year));
 }
