@@ -44,7 +44,7 @@ if (isset($_POST['zend']))
 
 	if(!empty($errors))
 	{
-		$alert->error(implode("\n", $errors));
+		$alert->error(implode('<br>', $errors));
 	}
 	else
 	{
@@ -106,7 +106,7 @@ if (isset($_POST['zend']))
 	}
 
 	$transaction['letscode_to'] = $_POST['letscode_to'];
-	$transaction['letscode_from'] = $_POST['letscode_from'];
+	$transaction['letscode_from'] = ($s_accountrole == 'admin') ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;
 }
 else
 {
@@ -327,7 +327,7 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 	if(($touser["maxlimit"] != NULL && $touser["maxlimit"] != 0)
 		&& $touser["saldo"] > $touser["maxlimit"] && $s_accountrole != "admin")
 	{
-		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'interletsrekening' : 'bestemmeling';
+		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
 		$errors["id_to"] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 	}
 
