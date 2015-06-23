@@ -205,36 +205,6 @@ if ($_POST['zend'])
 	}
 }
 
-/*
-if ($req->get('fill_in') && ($fixed || $percentage || $user_trans))
-{
-	$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-	foreach ($active_users as $user)
-	{
-		if ($user['letscode'] == $req->get('letscode_to')
-			|| ($newusertreshold < strtotime($user['adate'])
-				&& $req->get('no_newcomers'))
-			|| ($user['status'] == 2 && $req->get('no_leavers'))
-			|| ($user['saldo'] < $user['minlimit'] && $req->get('no_min_limit')))
-		{
-			$req->set('amount-'.$user['id'], 0);
-		}
-		else
-		{
-			if ($percentage)
-			{
-				$perc = round(($user['saldo'] - $percentage_base)*$percentage/100);
-				$perc = ($perc > 0) ? $perc : 0;
-			}
-			$perc_trans = (isset($user_trans[$user['id']])) ? round($user_trans[$user['id']] * $percentage_transactions / 100) : 0;
-			$amount = $fixed + $perc + $perc_trans;
-			$req->set('amount-'.$user['id'], $amount);
-		}
-	}
-}
-
-*/
-
 $transid = generate_transid();
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
@@ -296,25 +266,6 @@ echo '<input type="number" class="form-control" id="percentage_balance_base" ';
 echo 'placeholder="basis">';
 echo '</div>';
 echo '</div>';
-
-/*
-echo '<div class="form-group">';
-echo '<label for="percentage_transactions" class="col-sm-3 control-label">';
-echo 'Percentage op transacties (kan ook negatief zijn)</label>';
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_transactions"';
-echo ' placeholder="percentage op transacties">';
-echo '</div>';
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_transactions_days" ';
-echo 'placeholder="aantal dagen" min="0">';
-echo '</div>';
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_transactions_base" ';
-echo 'placeholder="basis">';
-echo '</div>';
-echo '</div>';
-*/
 
 echo '<div class="form-group">';
 echo '<label for="respect_min_limit" class="col-sm-3 control-label">';

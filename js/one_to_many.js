@@ -1,6 +1,6 @@
 var users = new Bloodhound({
 	prefetch: {
-		url: 'get_active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
+		url: 'get_active_users.php?letsgroup_id=' + $('#from_letscode').attr('data-letsgroup-id'),
 		ttl: 4320000,	// 50 days
 		thumbprint: $(this).attr('data-thumbprint'),
 		filter: function(users){
@@ -24,7 +24,7 @@ var users = new Bloodhound({
 
 users.initialize();
 
-$('#to_letscode').typeahead({
+$('#from_letscode').typeahead({
 	highLight: true
 },
 {
@@ -52,7 +52,7 @@ function recalc_sum(){
 	$('input#total').val(sum);
 }
 
-$('#to_letscode').bind('typeahead:selected', function(ev, data) {
+$('#from_letscode').bind('typeahead:selected', function(ev, data) {
 	$('table input[data-letscode="' + data.letscode + '"]').val(0);
 	recalc_sum();
 });
@@ -81,7 +81,7 @@ $('#fill_in_aid').submit(function(e){
 
 function fill_in(data)
 {
-	var ignore_letscode = $('#to_letscode').val().split(' ');
+	var ignore_letscode = $('#from_letscode').val().split(' ');
 	ignore_letscode = ignore_letscode[0];
 
 	var fixed = $('#fixed').val();
