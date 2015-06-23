@@ -40,15 +40,6 @@ $name = readconfigfromdb('systemname');
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 echo '<div class="navbar-header pull-left">';
-/*
-if ($s_letscode)
-{
-	echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="fa fa-user"></span>
-			<span class="hidden-xs">' . $s_letscode . ' ' . $s_name . '</span>
-		  </button>';
-}*/
 
 echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
 echo '<img class="img-responsive navbar-left hidden-xs hidden-sm" width="70" ';
@@ -79,6 +70,40 @@ if ($s_letscode)
 	echo '<li><a href="' . $rootpath . 'logout.php">Uitloggen</a></li>';
 	echo '</ul>';
 	echo '</li>';
+	if ($s_accountrole == 'admin')
+	{
+
+		$menu = array(
+			'users/overview.php'						=> 'Gebruikers',
+			'categories/overview.php'	 				=> 'Categorieën',
+			'interlets/overview.php'					=> 'LETS Groepen',
+			'apikeys/overview.php'						=> 'Apikeys',
+			'type_contact/overview.php'					=> 'Contact types',
+			'messages/overview.php'						=> 'Vraag & Aanbod',
+			'reports/overview.php'						=> 'Rapporten',
+			'preferences/config.php'					=> 'Instellingen',
+			'export.php'								=> 'Export',
+	//		'bulk.php'									=> 'Bulk acties',
+			'transactions/many_to_one.php'				=> 'Massa-Transactie',
+			'eventlog.php'								=> 'Logs',
+		);
+
+		echo '<li class="dropdown">';
+		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+		echo '<span class="fa fa-cog"></span>';
+		echo '<span class="hidden-xs"> ';
+		echo 'Admin';
+		echo '</span>';
+		echo '<span class="caret"></span></a>'; 
+		echo '<ul class="dropdown-menu" role="menu">';
+		foreach ($menu as $link => $label)
+		{
+			echo '<li><a href="' . $rootpath . $link .'">' . $label . '</a></li>';
+		}
+		echo '</ul>';
+		echo '</li>';
+
+	}
 	echo '</ul>';
 	echo '</div>';
 //	echo '</div>';
@@ -150,6 +175,7 @@ foreach ($menu as $sub_menu)
 	echo '</ul>';
 }
 
+/*
 if ($s_accountrole == 'admin')
 {
 	echo '<ul class="nav nav-pills nav-stacked admin">';
@@ -178,6 +204,7 @@ if ($s_accountrole == 'admin')
 
 	echo '</ul>';
 }
+*/
 
 echo '</div>';
 
