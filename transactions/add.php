@@ -331,7 +331,7 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 	if(($touser["maxlimit"] != NULL && $touser["maxlimit"] != 0)
 		&& $touser["saldo"] > $touser["maxlimit"] && $s_accountrole != "admin")
 	{
-		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'interletsrekening' : 'bestemmeling';
+		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
 		$errors["id_to"] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 	}
 
