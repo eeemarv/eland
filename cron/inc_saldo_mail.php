@@ -51,7 +51,7 @@ function saldo()
 		{
 			continue;
 		}
-		
+
 		$to[] = array(
 			'email'	=> $mailaddr[$user['id']],
 			'name'	=> $user['name'],
@@ -121,7 +121,6 @@ function saldo()
 		from msgpictures p, messages m
 		where p.msgid = m.id
 			and m.cdate >= \'' . $treshold_time. '\'
-			
 		group by m.id');
 
 	$rs = $db->Execute('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
