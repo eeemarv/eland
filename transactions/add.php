@@ -270,6 +270,8 @@ echo "</td></tr></table>";
 echo "</form>";
 echo "</div>";
 
+echo '<small><p>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of letscode in te typen.</p></small>';
+
 include $rootpath . 'includes/inc_footer.php';
 
 ///////////////////////////////////////////////////////
