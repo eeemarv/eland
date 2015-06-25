@@ -74,6 +74,10 @@ $top_buttons .= '<a href="activate.php?id='. $id . '" class="btn btn-warning"';
 $top_buttons .= ' title="Activeren"><i class="fa fa-check"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Activeren</span></a>';
 
+$top_buttons .= '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
 if (!$trans_en)
 {
 	$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';

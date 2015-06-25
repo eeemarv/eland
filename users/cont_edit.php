@@ -91,7 +91,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<a href="' . $rootpath . 'users/view.php?id=' . $uid . '" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
 echo '</form>';
 

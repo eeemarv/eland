@@ -35,7 +35,7 @@ include $rootpath . 'includes/inc_header.php';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
+echo '<p>Gebruiker: ' . $contact['letscode'] . ' ' . $contact['fullname'] . '</p>';
 echo '<p>Type: ' . $contact['abbrev'] . '</p>';
 echo '<p>Waarde: ' . $contact['value'] . '</p>';
 echo '<p>Commentaar: ' . $contact['comments'] . '</p>';

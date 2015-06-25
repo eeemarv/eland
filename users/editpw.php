@@ -6,14 +6,16 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_passwords.php");
 
-if (!isset($_GET["id"])){
+if (!isset($_GET['id']))
+{
 	header("Location: overview.php");
 	exit;
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
-if(isset($_POST["zend"])){
+if(isset($_POST["zend"]))
+{
 	$pw = array();
 	$pw["pw1"] = trim($_POST["pw1"]);
 	$pw["pw2"] = trim($_POST["pw2"]);
@@ -35,56 +37,42 @@ if(isset($_POST["zend"])){
 
 $user = readuser($id);
 
-$h1 = 'Paswoord veranderen';
+$h1 = 'Paswoord aanpassen';
 $fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 
 
-echo '<p>Gebruiker: ' . $user['name'] . ' ( ' . $user['letscode'] . ' )</p>';
-echo "<div class='border_b'>";
-
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
+echo '<form method="post" class="form-horizontal">';
 
-echo "<form method='POST'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
-echo "<tr><td valign='top' align='right'>Paswoord</td>";
-echo "<td valign='top'>";
-echo "<input  type='password' name='pw1' size='30' value='" . $pw['pw1'] . "' required>";
-echo "</td>";
-echo "<td>";
-	if (isset($errorlist["pw1"])){
-		echo $errorlist["pw1"];
-	}
-echo "</td>";
-echo "</tr>";
-echo "<tr><td valign='top' align='right'>Herhaal paswoord</td>";
-echo "<td valign='top'>";
-echo "<input  type='password' name='pw2' size='30' value='".$pw['pw2'] . "' required>";
-echo "</td>";
-echo "<td>";
-	if (isset($errorlist["pw2"])){
-		echo $errorlist["pw2"];
-	}
-echo "</td>";
-echo "</tr>";
-echo "<tr><td colspan='3'>";
-	if (isset($errorlist["pw3"])){
-		echo $errorlist["pw3"];
-	}
-echo "</td></tr>";
-echo "<tr><td></td><td>";
-echo "<input type='submit' value='paswoord wijzigen' name='zend'>";
-echo "</td><td>&nbsp;</td></tr>";
-echo "</table>";
-echo "</form>";
+echo '<p>Gebruiker: ' . $user['letscode'] . ' ' . $user['fullname'] . '</p>';
 
+echo '<div class="form-group">';
+echo '<label for="pw1" class="col-sm-2 control-label">Paswoord</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="pw1" name="pw1" ';
+echo 'value="' . $pw['pw1'] . '" required>';
 echo '</div>';
 echo '</div>';
 
-echo "</div>";
+echo '<div class="form-group">';
+echo '<label for="pw2" class="col-sm-2 control-label">Herhaal paswoord</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="pw2" name="pw2" ';
+echo 'value="' . $pw['pw2'] . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'users/view.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
+
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 

@@ -47,9 +47,19 @@ if ($letsgroup_id)
 
 $letsgroups = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod <> \'internal\'');
 
-include($rootpath."includes/inc_header.php");
+$top_buttons = '';
 
-echo '<h1><i class="fa fa-share-alt"></i> Interlets groepen</h1>';
+if ($s_accountrole == 'admin')
+{
+	$top_buttons .= '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Beheer letsgroepen"><i class="fa fa-cog"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Admin</span></a>';
+}
+
+$h1 = 'Interlets groepen';
+$fa = 'share-alt';
+
+include $rootpath . 'includes/inc_header.php';
 
 if (count($letsgroups))
 {

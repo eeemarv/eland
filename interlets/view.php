@@ -28,6 +28,10 @@ $top_buttons .= ' title="Letsgroep verwijderen">';
 $top_buttons .= '<i class="fa fa-times"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
 
+$top_buttons .= '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Lijst letsgroepen"><i class="fa fa-share-alt"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
 $h1 = $group['groupname'];
 
 include $rootpath . 'includes/inc_header.php';
@@ -52,62 +56,39 @@ if (!$err) {
 }
 echo "</div></i>";
 echo "</dd>";
-echo '</dl>';
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Groepnaam</dt>";
 echo "<dd>" .$group["groupname"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Korte naam</dt>";
 echo "<dd>" .$group["shortname"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Prefix</dt>";
 echo "<dd>" .$group["prefix"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>API methode</dt>";
 echo "<dd>" .$group["apimethod"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>API key</dt>";
 echo "<dd>" .$group["remoteapikey"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Lokale LETS code</dt>";
 echo "<dd>" .$group["localletscode"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Remote LETS code</dt>";
 echo "<dd>" .$group["myremoteletscode"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>URL</dt>";
 echo "<dd>" .$group["url"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>SOAP URL</dt>";
 echo "<dd>" .$group["elassoapurl"] ."</dd>";
-echo "</dl>";
 
-echo '<dl class="dl-horizontal">';
 echo "<dt>Preshared Key</dt>";
 echo "<dd>" .$group["presharedkey"]."</dd>";
 echo "</dl>";
 
 echo "</div>";
-
-
-//echo "<script type='text/javascript' src='/js/soapstatus.js'></script>";
 
 echo "<p><small><i>";
 echo "* API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail";
@@ -119,12 +100,4 @@ echo "<br>* SOAP URL is de locatie voor de communicatie tussen eLAS en het ander
 echo "<br>* Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant";
 echo "</i></small></p>";
 
-
-echo "<div id='navcontainer'>";
-echo "<ul class='hormenu'>";
-echo '<li><a href="edit.php?mode=edit&id=' . $id . '">Aanpassen</a></li>';
-echo '<li><a href="delete.php?id=' . $id . '">Verwijderen</a></li>';
-echo "</ul>";
-echo "</div>";
-
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
