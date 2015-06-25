@@ -14,6 +14,10 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
 	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 }
 
 $h1 = 'Vraag en aanbod';

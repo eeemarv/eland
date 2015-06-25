@@ -70,6 +70,10 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_buttons = '<a href="' . $rootpath . 'transactions/add.php" class="btn btn-success"';
 	$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mytrans_overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
 }
 
 $h1 = 'Transacties';

@@ -177,11 +177,11 @@ echo '</div>';
 echo '</div>';
 
 // Who selection is only for admins
-if($s_accountrole == "admin")
+if($s_accountrole == 'admin')
 {
 	echo '<div class="form-group">';
 	echo '<label for="user_letscode" class="col-sm-2 control-label">';
-	echo '<span class="label label-danger">Admin</span> Gebruiker</label>';
+	echo '<span class="label label-default">Admin</span> Gebruiker</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 	echo 'data-letsgroup-id="' . $letsgroup_id . '" ';

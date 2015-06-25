@@ -28,6 +28,21 @@ foreach ($c_ary as $c)
 	$contacts[$c['id_user']][$c['abbrev']][] = $c['value'];
 }
 
+$top_buttons = '';
+
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default"';
+	$top_buttons .= ' title="Mijn gegevens"><i class="fa fa-user"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn gegevens</span></a>';
+}
+if ($s_accountrole == 'admin')
+{
+	$top_buttons .= '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Beheer gebruikers"><i class="fa fa-cog"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Admin</span></a>';
+}
+
 $h1 = 'Contactlijst';
 $fa = 'users';
 

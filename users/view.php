@@ -90,7 +90,7 @@ include $rootpath . 'includes/inc_header.php';
 echo '<div class="row">';
 echo '<div class="col-md-4">';
 
-if(isset($user["PictureFile"]))
+if(isset($user['PictureFile']))
 {
 	echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 }
@@ -109,88 +109,69 @@ echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["name"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Volledige naam';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["fullname"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Postcode';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["postcode"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Geboortedatum';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["birthday"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Hobbies / Interesses';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["hobbies"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Commentaar';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["comments"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Login';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["login"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Tijdstip aanmaak';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["cdate"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Tijdstip activering';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["adate"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Laatste login';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["logdate"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
 $status_ary = array(
 	0	=> 'Gedesactiveerd',
@@ -202,25 +183,20 @@ $status_ary = array(
 	6	=> 'Extern',
 );
 
-echo '<dl>';
 echo '<dt>';
 echo 'Rechten';
 echo '</dt>';
 echo '<dd>';
 echo $status_ary[$user['status']];
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Commentaar van de admin';
 echo '</dt>';
 echo '<dd>';
 echo htmlspecialchars($user["admincomment"],ENT_QUOTES);
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Saldo, limiet min, limiet max';
 echo '</dt>';
@@ -229,9 +205,7 @@ echo '<span class="label label-default">' . $user['saldo'] . '</span>&nbsp;';
 echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
 echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
 echo '</dd>';
-echo '</dl>';
 
-echo '<dl>';
 echo '<dt>';
 echo 'Periodieke Saldo mail met recent vraag en aanbod';
 echo '</dt>';
@@ -244,7 +218,7 @@ echo '</div></div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-12">';
-echo '<h3><i class="fa fa-map-marker"></i> Contacten ';
+echo '<h3><i class="fa fa-map-marker"></i> Contactinfo ';
 echo '<a href="' . $rootpath . 'users/cont_add.php?uid=' . $id . '"';
 echo ' class="btn btn-success" title="Contact toevoegen">';
 echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
@@ -272,7 +246,7 @@ foreach ($contacts as $c)
 	echo '<tr>';
 	echo '<td>' . $a . $c['abbrev'] . '</a></td>';
 	echo '<td>' . $a . htmlspecialchars($c['value'],ENT_QUOTES) . '</a></td>';
-	echo '<td>' . $a . htmlspecialchars($c['comment'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $a . htmlspecialchars($c['comments'],ENT_QUOTES) . '</a></td>';
 	echo '<td>' . $a . (($c['flag_public'] == 1) ? 'Ja' : 'Nee') . '</a></td>';
 	echo '<td><a href="' . $rootpath . 'users/cont_delete.php?cid='.$c['id'];
 	echo '&uid=' . $c['id_user'] . '" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>';

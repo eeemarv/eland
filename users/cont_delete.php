@@ -22,7 +22,7 @@ if ($_POST['zend'])
 	exit;
 }
 
-$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.name, u.letscode
+$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.fullname, u.letscode
 	FROM type_contact tc, contact c, users u
 	WHERE c.id_type_contact = tc.id
 		AND c.id_user = u.id
@@ -32,17 +32,21 @@ $h1 = 'Contact verwijderen?';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
 
+echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
 echo '<p>Type: ' . $contact['abbrev'] . '</p>';
 echo '<p>Waarde: ' . $contact['value'] . '</p>';
 echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
 echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
-echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
 
-echo '<div class="panel panel-info">';
-echo '<div class="panel-heading">';
+echo '<form method="post" class="form-horizontal">';
 
-echo '<form method="post"><input type="submit" value="Verwijder" name="zend"></form>';
+echo '<a href="' . $rootpath . 'users/view.php?id=' . $uid . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+
+echo '</form>';
 
 echo '</div>';
 echo '</div>';

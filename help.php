@@ -100,7 +100,10 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw password aanvragen met je e-mail adres!</i></small>';
+if (!$s_id)
+{
+	echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord aanvragen met je e-mail adres!</i></small>';
+}
 
 include $rootpath . 'includes/inc_footer.php';
 
@@ -172,7 +175,7 @@ function helpmail($posted_list,$rootpath)
 	$mailcontent .= "User Agent:\r\n";
         $mailcontent .= "{$posted_list['browser']}\r\n";
 	$mailcontent .= "\r\n";
-	$mailcontent .= "eLAS versie: Heroku \r\n";// .$elas->version ."-" .$elas->branch ."-r" .$elas->revision ."\r\n";
+	$mailcontent .= "eLAS versie: Heroku \r\n";
 	$mailcontent .= "Webserver: " .gethostname() ."\r\n";
 
 	return sendemail($mailfrom, $mailto, $mailsubject, $mailcontent);

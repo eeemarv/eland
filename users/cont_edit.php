@@ -6,8 +6,8 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 require_once($rootpath."includes/inc_form.php");
 
-$uid = $_GET["uid"];
-$cid = $_GET["cid"];
+$uid = $_GET['uid'];
+$cid = $_GET['cid'];
 
 if(!isset($cid))
 {
@@ -38,8 +38,8 @@ else
 	$contact = $db->GetRow('SELECT * FROM contact WHERE id = ' . $cid);
 }
 
-$contact_types = $db->GetAssoc('SELECT id, name FROM type_contact');
-$user = $db->GetRow('SELECT name, letscode FROM users WHERE id = ' . $uid);
+$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+$user = readuser($uid);
 
 $h1 = 'Contact aanpassen';
 	
@@ -48,61 +48,52 @@ include $rootpath . 'includes/inc_header.php';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo "<div class='border_b'>";
-echo "<form method='POST'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+echo '<p>Gebruiker: ' . $user['letscode'] . ' ' . $user['fullname'] . '</p>';
 
-echo "<tr>";
-echo "<td valign='top' align='right'>Type </td>";
-echo "<td>";
-echo "<select name='id_type_contact'>";
-render_select_options($contact_types, $contact['id_type_contact']);
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="id_type_contact" id="id_type_contact" class="form-control" required>';
+render_select_options($tc, $contact['id_type_contact']);
 echo "</select>";
-echo "</td></tr><tr><td></td>";
-echo "<td>";
-if(isset($error_list["id_type_contact"])){
-	echo $error_list["id_type_contact"];
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="value" name="value" ';
+echo 'value="' . $contact['value'] . '" required>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="comments" name="comments" ';
+echo 'value="' . $contact['comments'] . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="flag_public" class="col-sm-2 control-label">';
+echo 'Ja, dit contact mag zichtbaar zijn voor iedereen</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" name="flag_public" id="flag_public"';
+if ($contact['flag_public'])
+{
+	echo ' checked="checked"';
 }
-echo "</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td valign='top' align='right'>Waarde </td>";
-echo "<td><input type='text' name='value' size='30' required ";
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo " value='".htmlspecialchars($contact["value"],ENT_QUOTES)."' ";
+echo '<a href="' . $rootpath . 'users/view.php?id=' . $uid . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
 
-echo "></td></tr><tr><td></td>";
-echo "<td>";
-if(isset($error_list["value"])){
-	echo $error_list["value"];
-}
-echo "</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td valign='top' align='right'>Commentaar </td>";
-echo "<td><input type='text' name='comments' size='30' ";
-
-echo " value='".htmlspecialchars($contact["comments"],ENT_QUOTES)."' ";
-
-echo "</td></tr><tr><td></td>";
-echo "<td></td>";
-echo "</tr>";
-
-echo "<tr>";
-echo "<td valign='top' align='right'></td>";
-echo "<td>";
-echo "<input type='checkbox' name='flag_public' ";
-if ($contact["flag_public"]){
-	echo " CHECKED ";
-}
-
-echo " value='1' >Ja, dit contact mag zichtbaar zijn voor iedereen";
-
-echo '<p>Gebruiker: ' . $user['name'] . ' ( ' . $user['letscode'] . ' )</p>';
-
-echo "<tr><td></td><td><input type='submit' name='zend' value='Oplaan'>";
-echo "</td></tr>";
-echo "</table></form></div>";
+echo '</form>';
 
 echo '</div>';
 echo '</div>';
@@ -110,7 +101,6 @@ echo '</div>';
 include $rootpath . 'includes/inc_footer.php';
 
 ////////////////
-
 
 function validate_input($contact){
 	global $db;
