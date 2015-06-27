@@ -223,8 +223,9 @@ echo 'value="' . $msg['units'] . '">';
 echo '</div>';
 echo '</div>';
 
+$btn = ($mode == 'edit') ? 'primary' : 'success';
 echo '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 
 echo '</form>';
 
@@ -275,7 +276,9 @@ function count_validity($months)
 
 function reverse_count_validity($vtime)
 {
-	return round((strtotime($vtime) - time()) / (30 * 86400));
+	$rev = round((strtotime($vtime) - time()) / (30 * 86400));
+	$rev = ($rev < 1) ? 0 : $rev;
+	return $rev;
 }
 
 function update_msg($id, $posted_list)

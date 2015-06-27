@@ -19,12 +19,14 @@ $query = 'SELECT n.*, u.name, u.letscode
 	AND n.id_user = u.id';
 $news = $db->GetRow($query);
 
+$top_buttons = '';
+
 if($s_accountrole == 'user' || $s_accountrole == 'admin')
 {
-	$top_buttons = '<a href="' .$rootpath . 'news/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= '<a href="' .$rootpath . 'news/edit.php?mode=new" class="btn btn-success"';
 	$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
-	
+
 	if($s_accountrole == 'admin')
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'news/edit.php?mode=edit&id=' . $id . '" class="btn btn-primary"';
@@ -44,9 +46,11 @@ if($s_accountrole == 'user' || $s_accountrole == 'admin')
 			$top_buttons .= '<span class="hidden-xs hidden-sm"> Goedkeuren</span></a>';
 		}
 	}
-
 }
 
+$top_buttons .= '<a href="' .$rootpath . 'news/overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Lijst"><i class="fa fa-calendar"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 $h1 = 'Nieuwsbericht: ' . $news['headline'];
 $fa = 'calendar';

@@ -96,9 +96,11 @@ $currency = readconfigfromdb('currency');
 $includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 	<script src="' . $rootpath . 'js/msg_view.js"></script>';
 
+$top_buttons = '';
+
 if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 {
-	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
 	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
@@ -122,6 +124,10 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
 	}
 }
+
+$top_buttons .= '<a href="' . $rootpath . 'searchcat.php" class="btn btn-default"';
+$top_buttons .= ' title="Vraag of aanbod zoeken"><i class="fa fa-newspaper-o"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Zoeken</span></a>';
 
 $h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
 $h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
