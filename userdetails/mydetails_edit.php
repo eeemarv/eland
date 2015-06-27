@@ -10,7 +10,6 @@ $user = readuser($s_id);
 if(isset($_POST["zend"])){
 	$posted_list = array();
 
-	$posted_list["ostatus_id"] = $_POST["ostatus_id"];
 	$posted_list["postcode"] = $_POST["postcode"];
 	$posted_list["birthday"] = $_POST["birthday"];
 	$posted_list["login"] = $_POST["login"];
@@ -47,50 +46,49 @@ if(isset($_POST["zend"])){
 }
 
 $includejs = '
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" >';
 
-include($rootpath."includes/inc_header.php");
+$h1 = 'Mijn gegevens aanpassen';
 
-echo "<h1>Mijn gegevens aanpassen</h1>";
-
-echo "<table cellpadding='0' cellspacing='0' border='0'>";
-echo "<tr><td colspan='2'><strong>".$user["name"]." ";
-echo $user["letscode"]."</strong></td></tr>";
-echo "</table>";
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo "<form method='POST'>";
-echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>";
+echo '<form method="post" class="form-horizontal">';
 
-echo "<tr><td valign='top' align='right'>Chatter ID</td><td>";
-echo "<input  type='text' name='ostatus_id' size='40' ";
-echo " value='";
-echo $user["ostatus_id"];
-echo "'>";
-echo "</td></tr><tr><td></td>";
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name" ';
+echo 'value="' . $user['name'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Postcode</td><td>";
-echo "<input  type='text' name='postcode' size='40' ";
-echo " value='";
-echo $user["postcode"];
-echo "'>";
-echo "</td></tr><tr><td></td><td>";
-if (isset($error_list["postcode"])){
-	echo $error_list["postcode"];
-}
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
+echo 'value="' . $user['fullname'] . '" required>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Verjaardag (jjjj-mm-dd):</td><td>";
-echo "<input name='birthday' size='10'";
-echo " value='" ;
-echo $user["birthday"];
-echo "' ";
+echo '<div class="form-group">';
+echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
+echo 'value="' . $user['postcode'] . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum (jjjj-mm-dd)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
+echo 'value="' . $user['birthday'] . '" required ';
 echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 echo 'data-date-default-view="2" ';
 echo 'data-date-end-date="' . date('Y-m-d') . '" ';
@@ -99,76 +97,70 @@ echo 'data-date-start-view="2" ';
 echo 'data-date-today-highlight="true" ';
 echo 'data-date-autoclose="true" ';
 echo 'data-date-immediate-updates="true" ';
-echo ">";
-echo "</td></tr>";
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td></td><td>";
+echo '<div class="form-group">';
+echo '<label for="hobbies" class="col-sm-2 control-label">Hobbies, interesses</label>';
+echo '<div class="col-sm-10">';
+echo '<textarea name="hobbies" id="hobbies" class="form-control">';
+echo $user['hobbies'];
+echo '</textarea>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Login:</td><td>";
-echo "<input  type='text' name='login' size='40' ";
-echo " value='";
-echo htmlspecialchars($user["login"],ENT_QUOTES);
-echo "' >";
-echo "</td></tr><tr><td></td><td>";
-if (isset($error_list["login"])){
-	echo $error_list["login"];
-}
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="comments" name="comments" ';
+echo 'value="' . $user['comments'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Hobbies/interesses:</td><td>";
-echo "<textarea name='hobbies' cols='40' rows='2' >";
-echo htmlspecialchars($user["hobbies"],ENT_QUOTES);
-echo "</textarea>";
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
-echo "<tr><td valign='top' align='right'>Commentaar:</td><td>";
-echo "<input type='text' name='comments' size='40' ";
-echo " value='" ;
-echo htmlspecialchars($user["comments"],ENT_QUOTES);
-echo "'>";
-echo "</td></tr><tr><td></td><td>";
-echo "</td></tr>";
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="login" name="login" ';
+echo 'value="' . $user['login'] . '">';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td valign='top' align='right'>Saldo mail: </td><td>";
-echo "<input type='checkbox' name='cron_saldo' value='1' ";
-if ($user["cron_saldo"] == 't')
-{
-	echo ' checked="checked"';
-}
-echo ">";
-echo " Mail mij periodiek mijn saldo en recent vraag en aanbod";
-echo "</td></tr><tr><td></td><td></td></tr>";
+echo '<div class="form-group">';
+echo '<label for="cron_saldo" class="col-sm-2 control-label">Mail mij periodiek mijn saldo en recent vraag en aanbod</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
+echo ($user['cron_saldo'] == 't') ? ' checked="checked"' : '';
+echo '>';
+echo '</div>';
+echo '</div>';
 
-echo "<tr><td></td><td>";
-echo "<input type='submit' value='Opslaan' name='zend'>";
-echo "</td></tr></table>";
-echo "</form>";
+echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
+
+echo '</form>';
 
 echo '</div>';
 echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-//////////
+function validate_input($posted_list)
+{
+	global $db, $s_id;
 
-function validate_input($posted_list){
-global $db, $s_id;
 	$error_list = array();
 
 	//login may not be empty
-	if (empty($posted_list["login"]) || (trim($posted_list["login"]) == "")){
-		$error_list["login"] = "<font color='#F56DB5'>Vul <strong>login</strong> in!</font>";
+	if (empty($posted_list["login"]) || (trim($posted_list["login"]) == ""))
+	{
+		$error_list['login'] = 'Vul login in!';
 	}
 
 	//login may not exist, except while editing your own record!
-	$query = "SELECT * FROM users ";
-	$query .= "WHERE login = '".$posted_list["login"]."' ";
-	$query .= "AND id <> '".$s_id."' ";
-
-	$rs = $db->Execute($query);
-    $number = $rs->recordcount();
-	if ($number !== 0){
-		$error_list["login"]="<font color='#F56DB5'>Login bestaat al!</font>";
+	if ($db->GetOne('select id from users where id <> ' . $s_id . ' and login = \'' . $posted_list['login'] . '\''))
+	{
+		$error_list[] = 'Login bestaat al!';
 	}
 
 	return $error_list;

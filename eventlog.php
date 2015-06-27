@@ -1,9 +1,9 @@
 <?php
 ob_start();
-$rootpath = "./";
+$rootpath = './';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $q = $_GET['q'];
 $letscode = $_GET['letscode'];
@@ -24,7 +24,7 @@ include $rootpath . 'includes/inc_header.php';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="get">';
+echo '<form method="get" class="form-horizontal">';
 
 echo '<div class="form-group">';
 echo '<label for="q" class="col-sm-2 control-label">Zoek event</label>';
@@ -83,12 +83,12 @@ echo '<table class="table table-hover table-bordered table-striped footable">';
 echo '<thead>';
 echo '<tr>';
 echo '<th data-sort-initial="descending">Tijd</th>';
-echo "<th>Type</th>";
+echo '<th>Type</th>';
 echo '<th data-hide="phone, tablet">ip</th>';
 echo '<th data-hide="phone, tablet">gebruiker</th>';
 
 echo '<th data-hide="phone">Event</th>';
-echo "</tr>";
+echo '</tr>';
 echo '</thead>';
 
 echo '<tbody>';
@@ -96,8 +96,8 @@ foreach($rows as $value)
 {
 	echo '<tr>';
 	echo '<td>' . $value['ts_tz'] .'</td>';
-	echo "<td>" .$value['type'] ."</td>";
-	echo "<td>" .$value['ip'] ."</td>";
+	echo '<td>' . $value['type'] . '</td>';
+	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td><a href="' . $rootpath . 'users/view.php?id=' . $value['user_id'] . '">';
 	echo $value['letscode'] . ' ' . $value['username'] . '</a></td>';
 	echo '<td>' . $value['event'] . '</td>';
@@ -105,6 +105,7 @@ foreach($rows as $value)
 }
 
 echo '</tbody>';
-echo "</table></div>";
+echo '</table>';
+echo '</div>';
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

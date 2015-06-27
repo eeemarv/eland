@@ -18,8 +18,8 @@ require_once($rootpath."includes/inc_mailfunctions.php");
 //status 6: infoavond
 //status 7: extern
 
-$mode = $_GET["mode"];
-$id = $_GET["id"];
+$mode = $_GET['mode'];
+$id = $_GET['id'];
 $user = $contact = array();
 
 if ($_POST['zend'])
@@ -360,14 +360,6 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="login" class="col-sm-2 control-label">Login</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="login" name="login" ';
-echo 'value="' . $user['login'] . '">';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="accountrole" class="col-sm-2 control-label">Rechten</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="login" name="login" ';
 echo 'value="' . $user['login'] . '">';

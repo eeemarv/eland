@@ -14,13 +14,25 @@ if (!isset($_GET['id']))
 
 $id = $_GET["id"];
 
+$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.id as uid
+	FROM type_contact tc, contact c, users u
+	WHERE c.id_type_contact = tc.id
+		AND c.id_user = u.id
+		AND c.id = ' . $id);
+
+if ($contact['uid'] != $s_id)
+{
+	$alert->error('Je bent geen eigenaar van dit contact.');
+	header('Location: ' . $rootpath . 'userdetails/mydetails.php');
+	exit;
+}
+
 if (!validate_request($id))
 {
 	$alert->error('De instellingen van eLAS laten je niet toe deze informatie te verwijderen. Als je niet wil dat andere leden deze gegevens zien kan je de optie \'publiek\' uitschakelen.');
 	header('Location: ' . $rootpath . 'userdetails/mydetails.php');
 	exit;
 }
-
 
 if ($_POST['zend'])
 {
@@ -36,28 +48,21 @@ if ($_POST['zend'])
 	exit;
 }
 
-$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.name, u.letscode
-	FROM type_contact tc, contact c, users u
-	WHERE c.id_type_contact = tc.id
-		AND c.id_user = u.id
-		AND c.id = ' . $id);
-
 $h1 = 'Contact verwijderen?';
 
 include $rootpath . 'includes/inc_header.php';
+
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
 
 echo '<p>Type: ' . $contact['abbrev'] . '</p>';
 echo '<p>Waarde: ' . $contact['value'] . '</p>';
 echo '<p>Commentaar: ' . $contact['comments'] . '</p>';
 echo '<p>Publiek: ' . (($contact['flag_public']) ? 'ja' : 'nee') . '</p>';
-echo '<p>Gebruiker: ' . $contact['name'] . ' ( ' . $contact['letscode'] . ' )</p>';
-
-echo '<div class="panel panel-info">';
-echo '<div class="panel-heading">';
 
 echo '<form method="post">';
-echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>';
-echo '<input type="submit" value="Verwijder" name="zend" class="btn btn-primary">';
+echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 echo '</form>';
 
 echo '</div>';
@@ -65,7 +70,6 @@ echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-/////////////////////////
 
 function validate_request($id)
 {

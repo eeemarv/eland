@@ -46,13 +46,16 @@ if ($s_accountrole == 'admin')
 $h1 = 'Contactlijst';
 $fa = 'users';
 
-$top_right = '<a href="print_memberlist.php';
-$top_right .= '">';
-$top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
-$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php';
-$top_right .= '" target="new">';
-$top_right .= '<i class="fa fa-file"></i>';
-$top_right .= '&nbsp;csv</a>';
+if (in_array($s_accountrole, array('admin', 'user')))
+{
+	$top_right = '<a href="print_memberlist.php';
+	$top_right .= '">';
+	$top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
+	$top_right .= '<a href="' . $rootpath . 'csv_memberlist.php';
+	$top_right .= '" target="new">';
+	$top_right .= '<i class="fa fa-file"></i>';
+	$top_right .= '&nbsp;csv</a>';
+}
 
 $includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
 

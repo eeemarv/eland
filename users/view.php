@@ -1,15 +1,16 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-if (!isset($_GET["id"])){
+if (!isset($_GET['id']))
+{
 	header('Location: overview.php');
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 $user = $db->GetRow('SELECT *
 	FROM users
@@ -45,7 +46,6 @@ $trans_en = ($db->GetOne('select id
 		or id_from = ' . $id)) ? true : false;
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
@@ -74,10 +74,6 @@ $top_buttons .= '<a href="activate.php?id='. $id . '" class="btn btn-warning"';
 $top_buttons .= ' title="Activeren"><i class="fa fa-check"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Activeren</span></a>';
 
-$top_buttons .= '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default"';
-$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
-
 if (!$trans_en)
 {
 	$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';
@@ -85,6 +81,10 @@ if (!$trans_en)
 	$top_buttons .= '<i class="fa fa-times"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
 }
+
+$top_buttons .= '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 $h1 = $user['letscode'] . ' ' . $user['fullname'];
 $fa = 'user';

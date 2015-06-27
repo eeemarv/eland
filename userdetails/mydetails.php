@@ -1,23 +1,21 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-if (!isset($s_id))
-{
-	header("Location: " . $rootpath . "login.php");
-	exit;
-}
+$user = readuser($s_id);
 
-if (!($s_accountrole == 'user' || $s_accountrole == 'admin'))
-{
-	exit;
-}
+$contacts = $db->GetArray('select c.*, tc.abbrev
+	from contact c, type_contact tc
+	where c.id_type_contact = tc.id
+		and c.id_user = ' . $s_id . '
+	order by c.id');
+
+$currency = readconfigfromdb('currency');
 
 $includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';</script>
-	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
@@ -27,180 +25,206 @@ $includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';</scrip
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
+$top_buttons = '<a href="' . $rootpath . 'userdetails/mydetails_edit.php" class="btn btn-primary"';
+$top_buttons .= ' title="Mijn gegevens aanpassen"><i class="fa fa-pencil"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mydetails_pw.php" class="btn btn-info"';
+$top_buttons .= ' title="Mijn paswoord aanpassen"><i class="fa fa-key"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mytrans_overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Mijn transacties"><i class="fa fa-exchange"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'memberlist.php" class="btn btn-default"';
+$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
 	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
 
 $h1 = 'Mijn gegevens';
+$fa = 'user';
 
 include $rootpath . 'includes/inc_header.php';
 
-$user = readuser($s_id);
-show_user($user);
-show_editlink();
+echo '<div class="row">';
+echo '<div class="col-md-4">';
 
-$contact = get_contact($s_id);
-show_contact($contact, $s_id);
-
-$balance = $user["saldo"];
-show_balance($balance, $user, readconfigfromdb("currency"));
-
-include $rootpath . 'includes/inc_footer.php';
-
-
-function show_changepwlink($s_id){
-	echo "<p>| <a href='mydetails_pw.php?id=" .$s_id. "'>Paswoord veranderen</a> |</p>";
-}
-
-function get_type_contacts(){
-	global $db;
-	$query = "SELECT * FROM type_contact";
-	return $db->GetArray($query);
-}
-
-function show_editlink()
+if(isset($user['PictureFile']))
 {
-	global $s_id;
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "<ul class='hormenu'>";
-	echo '<li><a href="mydetails_edit.php">Gegevens aanpassen</a></li>';
-	echo "<li><a href='mydetails_pw.php' id='showpwform'>Passwoord wijzigen</a></li>";
-
-	echo "<script type='text/javascript'>function AddPic () { OpenTBox('" ."/userdetails/upload_picture.php" ."'); } </script>";
-    echo "<li><a href='javascript: AddPic()'>Foto toevoegen</a></li>";
-
-	echo "<script type='text/javascript'>function RemovePic() {  OpenTBox('" ."/userdetails/remove_picture.php?id=" .$s_id ."'); } </script>";
-	echo "<li><a href='javascript: RemovePic();'>Foto verwijderen</a></li>";
-
-	echo "</ul>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
 }
-
-function show_user($user)
+else
 {
-	global $rootpath;
+	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
+}
 
-	echo "<table class='memberview' cellpadding='0' cellspacing='0' border='0' width='99%'>";
-	echo "<tr class='memberheader'>";
+echo '</div>';
+echo '<div class="col-md-8">';
 
-	// Show header block
-	echo "<td colspan='2' valign='top'><strong>".htmlspecialchars($user["name"],ENT_QUOTES)." (";
-	echo trim($user["letscode"])." )";
-	if($user["status"] == 2){
-		echo " <font color='#F56DB5'>Uitstapper </font>";
+echo '<dl>';
+
+echo '<dt>';
+echo 'Letscode';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['letscode'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Naam';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['name'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Volledige naam';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['fullname'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Postcode';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['postcode'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Geboortedatum';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['birthday'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Hobbies / Interesses';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['hobbies'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Commentaar';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['comments'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Login';
+echo '</dt>';
+echo '<dd>';
+echo htmlspecialchars($user['login'],ENT_QUOTES);
+echo '</dd>';
+
+echo '<dt>';
+echo 'Saldo, limiet min, limiet max';
+echo ' (' . $currency . ')';
+echo '</dt>';
+echo '<dd>';
+echo '<span class="label label-default">' . $user['saldo'] . '</span>&nbsp;';
+echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
+echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
+echo '</dd>';
+
+echo '<dt>';
+echo 'Periodieke Saldo mail met recent vraag en aanbod';
+echo '</dt>';
+echo '<dd>';
+echo ($user['cron_saldo'] == 't') ? 'Aan' : 'Uit';
+echo '</dd>';
+echo '</dl>';
+
+echo '</div></div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3><i class="fa fa-map-marker"></i> Contactinfo ';
+echo '<a href="' . $rootpath . 'users/cont_add.php?uid=' . $id . '"';
+echo ' class="btn btn-success" title="Contact toevoegen">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
+echo '</h3>';
+
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable">';
+
+echo '<thead>';
+echo '<tr>';
+echo '<th>Type</th>';
+echo '<th>Waarde</th>';
+echo '<th data-hide="phone, tablet">Commentaar</th>';
+echo '<th data-hide="phone, tablet">Publiek</th>';
+echo '<th data-sort-ignore="true" data-hide="phone, tablet">Verwijderen</th>';
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach ($contacts as $c)
+{
+	$a = '<a href="' . $rootpath . 'userdetails/mydetails_cont_edit.php?id=' . $c['id'];
+	$a .= '">';
+	echo '<tr>';
+	echo '<td>' . $a . $c['abbrev'] . '</a></td>';
+	echo '<td>' . $a . htmlspecialchars($c['value'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $a . htmlspecialchars($c['comments'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $a . (($c['flag_public'] == 1) ? 'Ja' : 'Nee') . '</a></td>';
+	echo '<td><a href="' . $rootpath . 'userdetails/mydetails_cont_delete.php?id=' . $c['id'];
+	echo '" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>';
+	echo ' Verwijderen</a></td>';
+	echo '</tr>';
+}
+
+echo '</tbody>';
+
+echo '</table>';
+echo '</div>';
+
+echo '</div></div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3>Saldo: <span class="label label-default">' . $user['saldo'] . '</span> ';
+echo $currency . '</h3>';
+echo '</div></div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+echo '<div id="chartdiv1" data-height="480px" data-width="960px"></div>';
+echo '</div>';
+echo '<div class="col-md-6">';
+echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
+echo '<h4>Interacties laatste jaar</h4>';
+echo '</div>';
+echo '</div>';
+
+$includejs = '
+<script>
+jQuery(document).ready(function ($) {
+
+	function scaleChart() {
+		var parentWidth = $("#chartdiv1").parent().width();
+		if (parentWidth) {
+			$("#chartdiv1").css("width", parentWidth);
+		}
+		else
+		{
+			window.setTimeout(scaleChart, 30);
+		}
 	}
-	echo "</strong></td></tr>";
-	// End header
-
-	// Wrap arround another table to show user picture
-	echo "<td width='170' align='left'>";
-	if(!isset($user["PictureFile"])) {
-		echo "<img src='" .$rootpath ."gfx/nouser.png' width='250'></img>";
-	} else {
-		echo '<img src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/'. $user['PictureFile'] .'" width="250"></img>';
-	}
-	echo "</td>";
-
-	// inline table
-	echo "<td>";
-	echo "<table cellpadding='0' cellspacing='0' border='0' width='100%'>";
-	echo "<tr><td width='50%' valign='top'>Naam: </td>";
-	echo "<td width='50%' valign='top'>".$user["fullname"]."</td></tr>";
-	echo "<tr><td width='50%' valign='top'>Postcode: </td>";
-	echo "<td width='50%' valign='top'>".$user["postcode"]."</td></tr>";
-	echo "<tr><td width='50%' valign='top'>Geboortedatum:  </td>";
-	echo "<td width='50%' valign='top'>".$user["birthday"]."</td></tr>";
-
-	echo "<tr><td valign='top'>Hobbies/interesses: </td>";
-	echo "<td valign='top'>".htmlspecialchars($user["hobbies"],ENT_QUOTES)."</td></tr>";
-	echo "<tr><td valign='top'>Commentaar: </td>";
-	echo "<td valign='top'>".htmlspecialchars($user["comments"],ENT_QUOTES)."</td></tr>";
-
-	echo "<tr><td valign='top'>Saldo mail met recent vraag en aanbod: </td><td valign='top'>";
-	echo ($user["cron_saldo"] == 't') ? "Aan" : "Uit";
-	echo '</td></tr>';
-
-	echo "</table>";
-	echo "</td>";
-	echo "</table>";
-}
-
-
-function show_balance($balance, $user, $currency){
-	echo "<div class='border_b'>";
-	echo "<table class='memberview' cellpadding='0' cellspacing='0' border='0' width='99%'>";
-	echo "<tr class='memberheader'><td colspan='2'>";
-	echo "<strong>{$currency}stand</strong></td></tr>";
-	echo "<tr>";
-	echo "<td width='50%'>Huidige {$currency}stand: </td>";
-	echo "<td width='50%'>";
-	echo $balance;
-	echo "</td></tr>";
-	echo "<tr>";
-	echo "<td width='50%'>Limiet minstand: </td>";
-	echo "<td width='50%'>";
-	echo $user["minlimit"];
-	echo "</td></tr>";
-	echo "<td width='50%'>Limiet maxstand: </td>";
-	echo "<td width='50%'>";
-	echo $user["maxlimit"];
-	echo "</td></tr>";
-	echo "</table>";
-	echo "<table  cellpadding='0' cellspacing='0' border='0'  width='99%'>";
-	echo "<tr></tr><td><div id='chartdiv1' style='height:300px;width:400px;'></div></td>";
-	echo "<td><div id='chartdiv2' style='height:300px;width:300px;'></div></td></tr></table>";
-}
-
-function get_contact($id){
-	global $db;
-	$query = "SELECT *, ";
-	$query .= " contact.id AS cid, users.id AS uid, type_contact.id AS tcid, ";
-	$query .= " type_contact.name AS tcname, users.name AS uname ";
-	$query .= " FROM users, type_contact, contact ";
-	$query .= " WHERE users.id=".$id;
-	$query .= " AND contact.id_type_contact = type_contact.id ";
-	$query .= " AND users.id = contact.id_user ";
-
-	$contact = $db->GetArray($query);
-	return $contact;
-}
-
-function show_contact($contact, $user_id){
-	echo "<div >";
-	echo "<table cellpadding='0' cellspacing='0' border='1' width='99%' class='data'>";
-
-	echo "<tr class='even_row'>";
-	echo "<td colspan='5'><p><strong>Contactinfo</strong></p></td>";
-	echo "</tr>";
-echo "<tr>";
-echo "<th valign='top'>Type</th>";
-echo "<th valign='top'>Waarde</th>";
-echo "<th valign='top'>Commentaar</th>";
-echo "<th valign='top'>Publiek</th>";
-echo "<th valign='top'></th>";
-echo "</tr>";
-
-	foreach($contact as $key => $value){
-		echo "<tr>";
-		echo "<td valign='top'>".$value["abbrev"].": </td>";
-		echo "<td valign='top'>".htmlspecialchars($value["value"],ENT_QUOTES)."</td>";
-		echo "<td valign='top'>".htmlspecialchars($value["comments"],ENT_QUOTES)."</td>";
-		echo "<td valign='top'>";
-		echo ($value["flag_public"]) ? "Ja" : "Nee";
-		echo "</td>";
-		echo "<td valign='top' nowrap>|";
-		echo '<a href="mydetails_cont_edit.php?id='.$value["id"].'">';
-		echo " aanpassen </a> |";
-		echo '<a href="mydetails_cont_delete.php?id='.$value["id"].'">';
-		echo "verwijderen </a>|";
-		echo "</td>";
-		echo "</tr>";
-	}
-	echo "<tr><td colspan='5'><p>&#160;</p></td></tr>";
-	echo "<tr><td colspan='5'>| ";
-	echo "<a href='mydetails_cont_add.php'>";
-	echo "Contact toevoegen</a> ";
-	echo "|</td></tr>";
-	echo "</table></div>";
-}
+	scaleChart();
+	$(window).bind("load", scaleChart);
+	$(window).bind("resize", scaleChart);
+	$(window).bind("orientationchange", scaleChart);
+});
+</script>
+';
