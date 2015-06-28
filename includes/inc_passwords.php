@@ -177,7 +177,8 @@ function generatePassword ($length = 10)
     $num_vowels = count($vowels);
     $num_cons = count($cons);
 
-    for($i = 0; $i < $length; $i++){
+    for($i = 0; $i < $length; $i++)
+    {
         $password .= $cons[rand(0, $num_cons - 1)] . $vowels[rand(0, $num_vowels - 1)];
     }
 

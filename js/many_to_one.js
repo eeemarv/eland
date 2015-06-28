@@ -85,7 +85,7 @@ function fill_in(data)
 	ignore_letscode = ignore_letscode[0];
 
 	var fixed = $('#fixed').val();
-	var perc = $('#percentage_balance').val();
+	var perc = $('#percentage_balance').val() / 100;
 	var base = $('#percentage_balance_base').val();
 
     $('table input[type="number"]').each(function() {
@@ -93,8 +93,7 @@ function fill_in(data)
 		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
 		am = (am >= base) ? am - base : 0;
 
-		var amount = fixed;
-		amount += Math.round(am * perc / 100);
+		var amount = +fixed + Math.round(am * perc);
 
 		amount = (amount < 0) ? 0 : amount;
 

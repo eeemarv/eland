@@ -2,18 +2,20 @@
 ob_start();
 $rootpath = "../";
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
-require_once($rootpath."includes/inc_passwords.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
+require_once $rootpath . 'includes/inc_passwords.php';
 
-if (!isset($_GET["id"])){
+if (!isset($_GET['id']))
+{
 	header('Location: overview.php');
 	exit;
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
+
 $user = get_user_maildetails($id);
 
 $user = $db->GetRow('SELECT u.*, c.value as mail
@@ -45,7 +47,7 @@ if(isset($_POST["zend"])){
 	$alert->error('Fout in formulier. Activatie emails niet verzonden.');
 }
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 echo "<h1>Account activeren</h1>";
 show_pwform($errorlist, $id, $user);
 include($rootpath."includes/inc_footer.php");

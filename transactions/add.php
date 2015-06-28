@@ -17,7 +17,7 @@ if (isset($_POST['zend']))
 	list($letscode_from) = explode(' ', $_POST['letscode_from']);
 	list($letscode_to) = explode(' ', $_POST['letscode_to']);
 	$transaction['amount'] = $_POST['amount'];
-	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : $transaction['date'] = date('Y-m-d H:i:s');
+	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : gmdate('Y-m-d H:i:s');
 	$letsgroup_id = $_POST['letsgroup_id'];
 
 	$timestamp = make_timestamp($transaction['date']);
@@ -210,6 +210,7 @@ echo 'value="' . $transaction['letscode_from'] . '" required>';
 echo '</div>';
 echo '</div>';
 
+/*
 echo '<div class="form-group"';
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
 echo '>';
@@ -226,6 +227,7 @@ echo 'data-date-enable-on-readonly="false" ';
 echo 'value="' . $transaction['date'] . '" required>';
 echo '</div>';
 echo '</div>';
+*/
 
 echo ($s_accountrole == 'admin') ? '' : '</div>';
 

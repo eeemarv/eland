@@ -1,10 +1,10 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_passwords.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 if (!isset($_GET['id']))
 {
@@ -14,41 +14,131 @@ if (!isset($_GET['id']))
 
 $id = $_GET['id'];
 
+$user = readuser($id);
+
 if(isset($_POST["zend"]))
 {
 	$pw = array();
 	$pw["pw1"] = trim($_POST["pw1"]);
 	$pw["pw2"] = trim($_POST["pw2"]);
-	$errorlist = validate_input($pw);
-	if (empty($errorlist))
+
+	$errors = array();
+
+	if (empty($pw["pw1"]) || (trim($pw["pw1"]) == ""))
 	{
-		$update["password"]=hash('sha512', $pw["pw1"]);
-		$update["mdate"] = date("Y-m-d H:i:s");
-		if ($db->AutoExecute("users", $update, 'UPDATE', "id=$id"))
+		$errors[] = "Vul paswoord in!";
+	}
+
+	if (empty($pw["pw2"]) || (trim($pw["pw2"]) == ""))
+	{
+		$errors[] = "Vul paswoord in!";
+	}
+	if ($pw["pw1"] !== $pw["pw2"])
+	{
+		$errors[] = "De paswoorden zijn niet identiek!";
+	}
+
+	if (empty($errors))
+	{
+		$update['password']=hash('sha512', $pw['pw1']);
+		$update['mdate'] = date('Y-m-d H:i:s');
+		if ($db->AutoExecute('users', $update, 'UPDATE', 'id=' . $id))
 		{
 			readuser($id, true);
 			$alert->success('Paswoord opgeslagen.');
+
+			if ($user['status'] == 1 && $_POST['notify'])
+			{
+				$from = readconfigfromdb('from_address');
+				$to = $db->GetOne('select c.value
+					from contact c, type_contact tc
+					where tc.id = c.id_type_contact
+						and tc.abbrev = \'mail\'
+						and c.id_user = ' . $id);
+
+				if ($user['login'])
+				{
+					if ($to)
+					{
+						$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+						$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
+						$url = $http . $_SERVER["SERVER_NAME"] . $port . '?login=' . $user['login'];
+
+						$subj = '[eLAS-' . readconfigfromdb('systemtag');
+						$subj .= '] nieuw paswoord voor je account';
+
+						$con = '*** Dit is een automatische mail van het eLAS systeem van ';
+						$con .= readconfigfromdb('systemname');
+						$con .= '. Niet beantwoorden astublieft. ';
+						$con .= "***\n\n";
+						$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
+						$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
+						$con .= "\n\n";
+						$con .= 'Je kan inloggen op eLAS met de volgende gegevens:';
+						$con .= "\n\nLogin: " . $user['login'];
+						$con .= "\nPaswoord: " .$pw['pw1'] . "\n\n";
+						$con .= 'eLAS adres waar je kan inloggen: ' . $url;
+						$con .= "\n\n";
+						$con .= 'Veel letsgenot!';
+						sendemail($from, $to, $subj, $con);
+						log_event($s_id, 'Mail', "Pasword change notification mail sent to $to");
+						$alert->success('Notificatie mail verzonden naar ' . $to);
+					}
+					else
+					{
+						$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+					}
+				}
+				else
+				{
+					$alert->warning('Deze gebruiker heeft geen login! Er werd geen notificatie email verstuurd.');
+				}
+			}
+
 			header('Location: view.php?id=' . $id);
 			exit;
 		}
+		else
+		{
+			$alert->error('Paswoord niet opgeslagen.');
+		}
 	}
-	$alert->error('Paswoord niet opgeslagen.');
+	else
+	{
+		$alert->error(implode('<br>', $errors));
+	}
+
 }
 
-$user = readuser($id);
+$status = array(
+	0 => 'niet actief',
+	1 => 'actief',
+	2 => 'uitstapper',
+	3 => 'instapper',		// not used
+	4 => 'secretariaat',	// not used
+	5 => 'info-pakket',
+	6 => 'info-moment',
+	7 => 'extern',
+);
+
+$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
 
 $h1 = 'Paswoord aanpassen';
 $fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 
-
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="post" class="form-horizontal">';
-
 echo '<p>Gebruiker: ' . $user['letscode'] . ' ' . $user['fullname'] . '</p>';
+
+echo '<p>Status: ' . $status[$user['status']] . '</p>';
+
+echo '<button class="btn btn-default" id="generate">Genereer automatisch</button>';
+echo '<br><br>';
+
+echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
 echo '<label for="pw1" class="col-sm-2 control-label">Paswoord</label>';
@@ -66,6 +156,15 @@ echo 'value="' . $pw['pw2'] . '" required>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="form-group">';
+echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief en login ingesteld is)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="checkbox" name="notify" id="notify"';
+echo ($user['status'] == 1 && $user['login']) ? ' checked="checked"' : ' readonly';
+echo '>';
+echo '</div>';
+echo '</div>';
+
 echo '<a href="' . $rootpath . 'users/view.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
@@ -76,17 +175,3 @@ echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-function validate_input($pw){
-	$errorlist = array();
-	if (empty($pw["pw1"]) || (trim($pw["pw1"]) == "")){
-		$errorlist["pw1"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
-	}
-
-	if (empty($pw["pw2"]) || (trim($pw["pw2"]) == "")){
-		$errorlist["pw2"] = "<font color='#F56DB5'>Vul <strong>paswoord</strong> in!</font>";
-	}
-	if ($pw["pw1"] !== $pw["pw2"]){
-	$errorlist["pw3"] = "<font color='#F56DB5'><strong>Paswoorden zijn niet identiek</strong>!</font>";
-	}
-	return $errorlist;
-}
