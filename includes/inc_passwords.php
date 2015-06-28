@@ -137,55 +137,6 @@ function sendactivationmail($password, $user){
 		echo "OK - Activatiemail verstuurd";
 }
 
-function get_openids($user_id){
-	global $db;
-	$query = "SELECT openid FROM openid WHERE user_id = " .$user_id;
-	$result = $db->Execute($query);
-	return $result;
-}
-
-function update_password($id, $posted_list){
-	global $db;
-	global $s_id;
-
-	$posted_list["password"]=hash('sha512',$posted_list["pw1"]);
-	$posted_list["mdate"] = date("Y-m-d H:i:s");
-	$result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$id");
-	
-	readuser($id, true);
-	
-	if($result == true){
-		log_event($s_id,"Password","Password for userID $id changed by ID $s_id");
-		setstatus('Passwoord gewijzigd',0);
-	} else {
-		setstatus('Passwoord niet gewijzigd',0);
-	}
-
-	log_event($s_id,"System","");
-        return $result;
-}
-
-function generatePassword ($length = 10)
-{
-    srand((double)microtime()*1000000);
-    $number = rand(0,9);
-
-    $vowels = array("a", "e", "i", "o", "u");
-    $cons = array("b", "c", "d", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "u", "v", "w", "tr",
-    "cr", "br", "fr", "th", "dr", "ch", "ph", "wr", "st", "sp", "sw", "pr", "sl", "cl");
-
-    $num_vowels = count($vowels);
-    $num_cons = count($cons);
-
-    for($i = 0; $i < $length; $i++)
-    {
-        $password .= $cons[rand(0, $num_cons - 1)] . $vowels[rand(0, $num_vowels - 1)];
-    }
-
-    $word = substr($password, 0, ($length - 1));
-    return $word . $number;
-}
-
 function Password_Strength($password, $username = null)
 {
     if (!empty($username))
@@ -296,8 +247,6 @@ function Password_Strength($password, $username = null)
     {
         $strength = 100;
     }
-
-	var_dump ($strength);
 
     return $strength;
 }

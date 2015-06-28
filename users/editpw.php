@@ -24,18 +24,18 @@ if(isset($_POST["zend"]))
 
 	$errors = array();
 
-	if (empty($pw["pw1"]) || (trim($pw["pw1"]) == ""))
+	if (empty($pw['pw1']) || (trim($pw['pw1']) == ''))
 	{
-		$errors[] = "Vul paswoord in!";
+		$errors[] = 'Vul paswoord in!';
 	}
 
-	if (empty($pw["pw2"]) || (trim($pw["pw2"]) == ""))
+	if (empty($pw['pw2']) || (trim($pw['pw2']) == ''))
 	{
-		$errors[] = "Vul paswoord in!";
+		$errors[] = 'Vul paswoord in!';
 	}
-	if ($pw["pw1"] !== $pw["pw2"])
+	if ($pw['pw1'] !== $pw['pw2'])
 	{
-		$errors[] = "De paswoorden zijn niet identiek!";
+		$errors[] = 'De paswoorden zijn niet identiek!';
 	}
 
 	if (empty($errors))
@@ -44,7 +44,7 @@ if(isset($_POST["zend"]))
 		$update['mdate'] = date('Y-m-d H:i:s');
 		if ($db->AutoExecute('users', $update, 'UPDATE', 'id=' . $id))
 		{
-			readuser($id, true);
+			$user = readuser($id, true);
 			$alert->success('Paswoord opgeslagen.');
 
 			if ($user['status'] == 1 && $_POST['notify'])
