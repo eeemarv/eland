@@ -1,71 +1,40 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$user_userid = $_GET["userid"];
-$user_datefrom = $_GET["datefrom"];
-$user_dateto = $_GET["dateto"];
+$messages = $db->GetArray('select m.*,
+	u.name, u.letscode
+	from messages m, users u
+	where m.id_user = u.id
+		and validity > \'' . gmdate('Y-m-d H:i:s') . '\'');
 
-show_ptitle();
-$messages=get_messages();
-show_all_messages($messages);
-
-////////////////
-
-
-function show_ptitle(){
-        header("Content-disposition: attachment; filename=elas-messages-".date("Y-m-d").".csv");
-        header("Content-Type: application/force-download");
-        header("Content-Transfer-Encoding: binary");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-}
-
-function get_user($id){
-        global $db;
-        $query = "SELECT *";
-        $query .= " FROM users ";
-        $query .= " WHERE id='".$id."'";
-        $user = $db->GetRow($query);
-        return $user;
-}
-
-function get_messages(){
-	global $db;
-
-        $query = "SELECT * FROM messages WHERE validity > " .time();
-
-	$list_contacts = $db->GetArray($query);
-	return $list_contacts;
-}
-
-function show_all_messages($messages){
-
-	echo '"letscode","cdate","validity","id_category","content","msg_type"';
-        echo "\r\n";
-	foreach($messages as $key => $value){
-		$user = get_user($value["id_user"]);
-		echo "\"";
-                echo $user["letscode"];
-		echo "\",";
-		echo "\"";
-                echo $value["cdate"];
-                echo "\",";
-		echo "\"";
-		echo $value["validity"];
-		echo "\",";
-		echo "\"";
-		echo $value["id_category"];
-                echo "\",";
-                echo "\"";
-		echo $value["content"];
-                echo "\",";
-                echo "\"";
-                echo $value["msg_type"];
-		echo "\"";
-                echo "\r\n";
-        }
+header("Content-disposition: attachment; filename=elas-messages-".date("Y-m-d").".csv");
+header("Content-Type: application/force-download");
+header("Content-Transfer-Encoding: binary");
+header("Pragma: no-cache");
+header("Expires: 0");
+        
+echo '"letscode", "username", "cdate","validity","id_category","content","msg_type"';
+	echo "\r\n";
+foreach($messages as $value)
+{
+	echo '"';
+	echo $value['letscode'];
+	echo '","';
+	echo $value['name'];
+	echo '","';
+	echo $value['cdate'];
+	echo '","';
+	echo $value['validity'];
+	echo '","';
+	echo $value['id_category'];
+	echo '","';
+	echo $value['content'];
+	echo '","';
+	echo $value['msg_type'];
+	echo '"';
+	echo "\r\n";
 }
