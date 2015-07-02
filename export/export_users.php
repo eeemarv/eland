@@ -9,13 +9,10 @@ $user_userid = $_GET["userid"];
 $user_datefrom = $_GET["datefrom"];
 $user_dateto = $_GET["dateto"];
 
-if(isset($s_id) && ($s_accountrole == "admin")){
-	show_ptitle();
-	$users = get_users();
-	show_all_users($users);
-}else{
-	redirect_login($rootpath);
-}
+show_ptitle();
+$users = get_users();
+show_all_users($users);
+
 
 ///////////////////
 
@@ -49,7 +46,7 @@ function get_users(){
 }
 
 function show_all_users($users){
-	echo '"letscode","cdate","comments","hobbies","name","postcode","login","mailinglist","password","accountrole","status","lastlogin","minlimit","fullname","admincomment","activeringsdatum"';
+	echo '"letscode","cdate","comments","hobbies","name","postcode","login","mailinglist","password","accountrole","status","lastlogin","minlimit","maxlimit","fullname","admincomment","activeringsdatum"';
         echo "\r\n";
 	foreach($users as $key => $value){
 		echo "\"";
@@ -90,6 +87,8 @@ function show_all_users($users){
                 echo "\",";
                 echo "\"";
                 echo $value["minlimit"];
+                echo '", "';
+                echo $value['maxlimit'];
                 echo "\",";
                 echo "\"";
                 echo $value["fullname"];
