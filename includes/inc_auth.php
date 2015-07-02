@@ -46,15 +46,8 @@ function startmastersession() {
 	log_event(0,"Login","Master user " .$user["login"] ." logged in");
 }
 
-function iselasuser() {
-	# Check if the user is an eLAS user, return 1 if succesfull
-}
-
-function iselasadmin() {
-	# Check if the user is an eLAS admin, return 1 if succesfull
-}
-
-function insert_date_into_lastlogin($s_id){
+function insert_date_into_lastlogin($s_id)
+{
         global $db;
         $posted_list["lastlogin"] = date("Y-m-d H:i:s");
         $result = $db->AutoExecute("users", $posted_list, 'UPDATE', "id=$s_id");
