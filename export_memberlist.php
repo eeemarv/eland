@@ -5,15 +5,9 @@ $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
-if(isset($s_id)){
-	show_ptitle();
-	$userrows = get_all_users($user_orderby);
- 	show_all_users($userrows);
-	//show_legend();
-
-}else{
-	redirect_login($rootpath);
-}
+show_ptitle();
+$userrows = get_all_users($user_orderby);
+show_all_users($userrows);
 
 /////////////////
 
