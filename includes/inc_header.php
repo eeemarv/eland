@@ -39,7 +39,14 @@ $name = readconfigfromdb('systemname');
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
-echo '<div class="navbar-header pull-left">';
+
+echo '<div class="navbar-header">';
+echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">';
+echo '<span class="sr-only">Toggle navigation</span>';
+echo '<span class="icon-bar"></span>';
+echo '<span class="icon-bar"></span>';
+echo '<span class="icon-bar"></span>';
+echo '</button>';
 
 echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
 echo '<img class="img-responsive navbar-left hidden-xs hidden-sm" width="70" ';
@@ -49,15 +56,15 @@ echo '</div>';
 
 if ($s_letscode)
 {
-//	echo '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
-	echo '<div class="navbar-header pull-right">';
-	echo '<ul class="nav navbar-nav pull-left">';
+	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
+//	echo '<div class="navbar-header">';
+	echo '<ul class="nav navbar-nav navbar-right">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
-	echo '<span class="fa fa-user"></span>';
-	echo '<span class="hidden-xs"> ';
+	echo '<span class="fa fa-user"></span> ';
+//	echo '<span class="hidden-xs"> ';
 	echo $s_letscode . ' ' . $s_name;
-	echo '</span>';
+//	echo '</span>';
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
@@ -72,7 +79,6 @@ if ($s_letscode)
 	echo '</li>';
 	if ($s_accountrole == 'admin')
 	{
-
 		$menu = array(
 			'users/overview.php'						=> 'Gebruikers',
 			'categories/overview.php'	 				=> 'Categorieën',
@@ -90,10 +96,10 @@ if ($s_letscode)
 
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
-		echo '<span class="fa fa-cog"></span>';
-		echo '<span class="hidden-xs"> ';
+		echo '<span class="fa fa-cog"></span> ';
+//		echo '<span class="hidden-xs"> ';
 		echo 'Admin';
-		echo '</span>';
+//		echo '</span>';
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
@@ -105,8 +111,8 @@ if ($s_letscode)
 
 	}
 	echo '</ul>';
-	echo '</div>';
 //	echo '</div>';
+	echo '</div>';
 }
 
 echo '</div>';

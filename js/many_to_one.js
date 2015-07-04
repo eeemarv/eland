@@ -91,7 +91,10 @@ function fill_in(data)
     $('table input[type="number"]').each(function() {
 
 		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
-		am = (am >= base) ? am - base : 0;
+
+
+			am = (am >= base) ? am - base : 0;
+
 
 		var amount = +fixed + Math.round(am * perc);
 
