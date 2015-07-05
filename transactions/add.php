@@ -2,12 +2,12 @@
 ob_start();
 $rootpath = "../";
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_transactions.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
+require_once $rootpath . 'includes/inc_form.php';
 
 $transaction = array();
 
@@ -347,14 +347,13 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 		$errors["id_to"]="De bestemmeling is niet actief";
 	}
 
-	//date may not be empty
-	if (!isset($transaction["date"]) || (trim($transaction["date"] )==""))
+	if (!isset($transaction['date']) || (trim($transaction['date'] )== ''))
 	{
-		$errors["date"]="Datum is niet ingevuld";
+		$errors['date'] = 'Datum is niet ingevuld';
 	}
 	else if (strtotime($transaction["date"]) == -1)
 	{
-		$errors["date"]="Fout in datumformaat (jjjj-mm-dd)";
+		$errors['date'] = 'Fout in datumformaat (jjjj-mm-dd)';
 	}
 
 	return $errors;
