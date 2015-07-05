@@ -30,17 +30,12 @@ else
 
 
 function delete_file($file){
-	/*
-	global $rootpath;
-	global $baseurl;
-	global $dirbase;
-	
-	$target =  $rootpath ."sites/$dirbase/msgpictures/".$file;
-	unlink($target); */
+
 
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
-		'region'	=>'eu-central-1',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
 	));
 
 	$result = $s3->deleteObject(array(
@@ -48,7 +43,6 @@ function delete_file($file){
 		'Key'    => $file,
 	));
 
-//	echo $result;
 }
 
 function delete_record($id){

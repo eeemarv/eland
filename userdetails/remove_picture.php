@@ -10,7 +10,6 @@ if(isset($s_id)){
 	if(isset($id)){
 		if(isset($_POST["zend"])){
 			update_user($id,$rootpath);
-			//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 			$alert->success("Foto verwijderd.");
 			header("Location:  mydetails.php");
 		}else{
@@ -24,14 +23,15 @@ if(isset($s_id)){
 	redirect_login($rootpath);
 }
 
-////////////////////////////////////////////////////////////////////////////
+
 
 function update_user($id, $rootpath){
 	global $db;
 
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
-		'region'	=>'eu-central-1',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
 	));
 
 	// First, grab the filename and delete the file after clearing the field

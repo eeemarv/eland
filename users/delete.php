@@ -57,6 +57,7 @@ if(isset($_POST['delete']))
 			$s3 = Aws\S3\S3Client::factory(array(
 				'signature'	=> 'v4',
 				'region'	=> 'eu-central-1',
+				'version'	=> '2006-03-01',
 			));
 
 			$usr = $user['letscode'] . ' ' . $user['fullname'] . ' [id:' . $id . ']';
