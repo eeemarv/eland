@@ -1,43 +1,24 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$id = $_GET["id"];
-
-if(isset($id)){
-	if(isset($_POST["zend"])){
-		update_user($id,$rootpath);
-		//echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
-		$alert->success("Foto verwijderd.");
-		header("Location:  mydetails.php");
-	}else{
-		echo "<h1>Foto verwijderen</h1>";
-		show_form($id);
-	}
-}else{
-	redirect_view();
-}
-
-
-////////////////////////////////////////////////////////////////////////////
-
-function update_user($id, $rootpath){
-	global $db;
-
+if(isset($_POST["zend"]))
+{
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
-		'region'	=>'eu-central-1',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
 	));
 
 	// First, grab the filename and delete the file after clearing the field
-	$q1 = "SELECT \"PictureFile\" FROM users WHERE id=" .$id;
+	$q1 = "SELECT \"PictureFile\" FROM users WHERE id=" . $s_id;
 	$file = $db->GetOne($q1);
 
 	// Clear the PictureFile field
-	$query = "UPDATE users SET \"PictureFile\" = NULL WHERE id=" .$id;
+	$query = "UPDATE users SET \"PictureFile\" = NULL WHERE id=" .$s_id;
 	$db->Execute($query);
 
 	if(!empty($file)){
@@ -48,35 +29,26 @@ function update_user($id, $rootpath){
 		log_event($id, "Pict", "Removing old picture file " . $file);
 	}
 	$msg = "Removed picture " .$file;
-	log_event($id, "Pict",$msg);
+	log_event($s_id, "Pict",$msg);
 
-	readuser($id, true);
+	readuser($s_id, true);
+
+	$alert->success("Foto verwijderd.");
+	header("Location:  mydetails.php");
+	exit;
 }
 
-function show_form($user){
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-	echo "<form method='POST'>";
-	echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
-	echo "<tr>\n";
-	echo "<td>Foto verwijderen? <input type='submit' value='Foto verwijderen' name='zend'></td>\n";
-	echo "</tr>\n\n</table>";
-	echo "</form>";
+echo "<h1>Foto verwijderen</h1>";
 
-	echo '</div>';
-	echo '</div>';
-}
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+echo "<form method='POST'>";
+echo "<table class='data' cellspacing='0' cellpadding='0' border='0'>\n";
+echo "<tr>\n";
+echo "<td>Foto verwijderen? <input type='submit' value='Foto verwijderen' name='zend'></td>\n";
+echo "</tr>\n\n</table>";
+echo "</form>";
 
-function get_user($id)
-{
-   return readuser($id);
-}
+echo '</div>';
+echo '</div>';
 
-function redirect_view()
-{
-	header("Location: mydetails.php");
-}
-
-function redirect_login($rootpath){
-	header("Location: ".$rootpath."login.php");
-}

@@ -15,7 +15,8 @@ else
 {
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
-		'region'	=>'eu-central-1',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
 	));
 	$bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
 		

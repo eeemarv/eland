@@ -35,6 +35,7 @@ require_once $rootpath . 'includes/inc_eventlog.php';
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
 	'region'	=> 'eu-central-1',
+	'version'	=> '2006-03-01',
 ));
 
 header('Content-Type:text/html');
