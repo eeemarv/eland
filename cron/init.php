@@ -174,29 +174,31 @@ $schemas = array_fill_keys($schemas, true);
 
 echo '* Cleanup files in bucket without valid schema prefix *' . $r;
 
-$objects = $s3->getIterator('ListObjects', array(
+$results = $s3->getPaginator('ListObjects', array(
 	'Bucket' => getenv('S3_BUCKET')
 ));
 
-foreach ($objects as $object)
+foreach ($results as $result)
 {
-	$key = $object['Key'];
-
-	list($sch, $type, $type_id, $hash) = explode('_', $key);
-
-	if ($schemas[$sch])
+	foreach ($result['Contents'] as $object)
 	{
-		continue;
+		$key = $object['Key'];
+
+		list($sch, $type, $type_id, $hash) = explode('_', $key);
+
+		if ($schemas[$sch])
+		{
+			continue;
+		}
+
+		$s3->deleteObject(array(
+			'Key'		=> $key,
+			'Bucket'	=> getenv('S3_BUCKET'),
+		));
+
+		echo 'Image deleted from bucket: ' . $key . $r;
+		log_event($s_id, 'init', 'Image deleted from bucket: ' . $key);
 	}
-
-	$s3->deleteObject(array(
-		'Key'		=> $key,
-		'Bucket'	=> getenv('S3_BUCKET'),
-	));
-
-	echo 'Image deleted from bucket: ' . $key . $r;
-	log_event($s_id, 'init', 'Image deleted from bucket: ' . $key);
-
 }
 
 echo 'Sync image files ready.' . $r;
@@ -227,5 +229,6 @@ else
 	echo 'none found.' . $r;
 }
 
+echo '** end **';
 
 
