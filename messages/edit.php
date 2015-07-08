@@ -48,14 +48,11 @@ if ($_POST['zend'])
 	);
 
 	$errors = validate_input($msg, $mode);
-<<<<<<< HEAD
 
 	if ($error)
 	{
 		$errors[] = $error;
 	}
-=======
->>>>>>> master
 
 	if (count($errors))
 	{
