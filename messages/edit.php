@@ -48,11 +48,14 @@ if ($_POST['zend'])
 	);
 
 	$errors = validate_input($msg, $mode);
+<<<<<<< HEAD
 
 	if ($error)
 	{
 		$errors[] = $error;
 	}
+=======
+>>>>>>> master
 
 	if (count($errors))
 	{
@@ -240,7 +243,7 @@ function validate_input($msg)
 	$error_list = array();
 	if (!$msg['id_category'])
 	{
-		$error['id_category'] = 'Geieve een categorie te selecteren.';
+		$error_list['id_category'] = 'Geieve een categorie te selecteren.';
 	}
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
 	{
