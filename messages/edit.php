@@ -25,7 +25,7 @@ if ($_POST['zend'])
 		'units'			=> $_POST["units"],
 	);
 
-	$errors= validate_input($msg, $mode);
+	$errors = validate_input($msg, $mode);
 
 	if (count($errors))
 	{
@@ -182,7 +182,7 @@ function validate_input($msg)
 	$error_list = array();
 	if (!$msg['id_category'])
 	{
-		$error['id_category'] = 'Geieve een categorie te selecteren.';
+		$error_list['id_category'] = 'Geieve een categorie te selecteren.';
 	}
 	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
 	{
