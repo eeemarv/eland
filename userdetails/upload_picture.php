@@ -98,7 +98,7 @@ else
 
 function show_form($sizelimit){
 	echo "<form action='upload_picture.php' enctype='multipart/form-data' method='POST'>\n";
-    echo "<input name='picturefile' type='file' required>\n";
+    echo '<input name="picturefile" type="file" required accept="image/jpeg">';
 	echo "<input type='submit' name='zend' value='Versturen'/>\n";
 	echo "</form>\n";
 	echo '<p>LET OP: Je foto moet in het jpeg (jpg) formaat en mag maximaal ' . $sizelimit . 'kB groot zijn </p>';

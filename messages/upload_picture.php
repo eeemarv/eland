@@ -78,7 +78,7 @@ show_form($msgid);
 
 function show_form($msgid){
 	echo '<form action="upload_picture.php?msgid=' . $msgid . '" enctype="multipart/form-data" method="POST">' . "\n";
-	echo "<input name='picturefile' type='file' required>\n";
+	echo '<input name="picturefile" type="file" required accept="image/jpeg">';
 	echo "<input type='submit' name='zend' value='Versturen' />\n";
 	echo "</form>\n";
 	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn en mag maximaal 200kB groot zijn.";
