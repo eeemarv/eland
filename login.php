@@ -118,16 +118,7 @@ if ($_POST['zend'])
 	$alert->error('Login gefaald.');
 }
 
-// OPENID login code goes here
 
-//echo "<h1>" . $tr->get('login', 'login') ."</h1>";
-
-if(!empty($_GET['url']))
-{
-	echo "<script type='text/javascript'>var redirecturl='" .$_GET['url'] ."';</script>";
-} else {
-	echo "<script type='text/javascript'>var redirecturl='index.php';</script>";
-}
 
 // Check if we are in maintenance mode
 if(readconfigfromdb("maintenance") == 1)
@@ -136,6 +127,13 @@ if(readconfigfromdb("maintenance") == 1)
 }
 
 require_once($rootpath."includes/inc_header.php");
+
+if(!empty($_GET['url']))
+{
+	echo "<script type='text/javascript'>var redirecturl='" .$_GET['url'] ."';</script>";
+} else {
+	echo "<script type='text/javascript'>var redirecturl='index.php';</script>";
+}
 
 // Draw the login form division
 
