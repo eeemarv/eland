@@ -33,5 +33,6 @@ if (isset($includejs)) {
 }
 ?>
 
+</div>
 </body>
 </html>
