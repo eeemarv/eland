@@ -98,32 +98,11 @@ else
 
 function show_form($sizelimit){
 	echo "<form action='upload_picture.php' enctype='multipart/form-data' method='POST'>\n";
-    echo "<input name='picturefile' type='file' required>\n";
+    echo '<input name="picturefile" type="file" required accept="image/jpeg">';
 	echo "<input type='submit' name='zend' value='Versturen'/>\n";
 	echo "</form>\n";
 	echo '<p>LET OP: Je foto moet in het jpeg (jpg) formaat en mag maximaal ' . $sizelimit . 'kB groot zijn </p>';
 	echo '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>';
-}
-
-function place_picture($file,$tmpfile,$rootpath,$id){
-	global $baseurl;
-	global $dirbase;
-	$ext = pathinfo($file, PATHINFO_EXTENSION);
-	$ts = time();
-	// Limit file size
-	// Check if the file is already there.
-	$uploadfile =  $rootpath ."sites/$dirbase/userpictures/" .$id ."_" .$ts ."." .$ext;
-	if(file_exists($uploadfile)){
-		echo "<font color='red'>Het bestand bestaat al, hernoem je bestand en probeer opnieuw.</font>";
-	} else {
-		if (!move_uploaded_file($tmpfile  , $uploadfile) ){
-    			echo "Foto uploaden is niet gelukt...\n";
-		} else {
-			echo "Foto opgeladen, wordt toegevoegd aan je profiel...<br>";
-			$target = $id ."_" .$ts ."." .$ext;
-			dbinsert($id, $target,$rootpath);
-		}
-	}
 }
 
 function resizepic($file,$tmpfile,$rootpath, $id){
@@ -155,7 +134,7 @@ function resizepic($file,$tmpfile,$rootpath, $id){
 function dbinsert($userid, $file, $rootpath) {
 	global $db;
 	global $_SESSION;
-	// Save the old filename for cleanup
+
         $q1 = 'SELECT \'PictureFile\' FROM users WHERE id=' .$userid;
         $myuser = $db->GetRow($q1);
 
@@ -163,21 +142,18 @@ function dbinsert($userid, $file, $rootpath) {
 	$db->Execute($query);
 	log_event($userid,"Pict","Picture $file uploaded");
 
-	// Delete the old file
 	if(!empty($myuser['PictureFile'])){
                 delete_file($rootpath, $myuser['PictureFile']);
 		$msg = "Removing old picture file " .$myuser['PictureFile'];
 		log_event($userid,"Pict",$msg);
 	}
 
-	// Redirect
 	setstatus("Foto toegevoegd", 0);
 
 	readuser($userid, true);
 
-	//header("Location: ".$rootpath ."userdetails/mydetails_view.php");
 	header("Location:  mydetails.php");
-        //echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
+    exit;
 }
 
 function delete_file($rootpath, $file){
