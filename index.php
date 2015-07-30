@@ -16,7 +16,7 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ob_start();
-$rootpath = "./";
+$rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -43,7 +43,7 @@ $msgs = $db->GetArray('SELECT m.*,
 	order by m.cdate DESC
 	limit 100');
 
-$h1 = 'Home';
+//$h1 = 'Home';
 
 include $rootpath . 'includes/inc_header.php';
 
