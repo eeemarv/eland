@@ -58,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "677b931b10163726f9fb5662d9748db67a825d29"
+                "reference": "dce784598e359f01a29258260ffb0a231e4c8e27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/677b931b10163726f9fb5662d9748db67a825d29",
-                "reference": "677b931b10163726f9fb5662d9748db67a825d29",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/dce784598e359f01a29258260ffb0a231e4c8e27",
+                "reference": "dce784598e359f01a29258260ffb0a231e4c8e27",
                 "shasum": ""
             },
             "require": {
@@ -123,7 +123,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-07-28 22:59:37"
+            "time": "2015-07-30 20:09:04"
         },
         {
             "name": "bramus/ansi-php",
