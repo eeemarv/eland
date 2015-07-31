@@ -1,10 +1,10 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_form.php';
 
 $id = (isset($_GET["id"])) ? $_GET['id'] : 0;
 $mode = $_GET['mode'];
@@ -265,7 +265,6 @@ function validate_input($msg)
 	return $error_list;
 
 }
-
 
 function count_validity($months)
 {

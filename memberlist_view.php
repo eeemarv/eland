@@ -166,11 +166,9 @@ echo '<tbody>';
 
 foreach ($contacts as $c)
 {
-	$a = '<a href="' . $rootpath . 'users/cont_edit.php?cid=' . $c['id'];
-	$a .= '&uid=' . $c['id_user'] . '">';
 	echo '<tr>';
-	echo '<td>' . $a . $c['name'] . '</a></td>';
-	echo '<td>' . $a . htmlspecialchars($c['value'],ENT_QUOTES) . '</a></td>';
+	echo '<td>' . $c['abbrev'] . '</td>';
+	echo '<td>' . htmlspecialchars($c['value'],ENT_QUOTES) . '</td>';
 	echo '</tr>';
 }
 

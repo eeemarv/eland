@@ -1,11 +1,16 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$msgid = $_GET["msgid"];
+$msgid = $_GET['msgid'];
+
+if (!$msgid)
+{
+	exit;
+}
 
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
@@ -15,6 +20,13 @@ $s3 = Aws\S3\S3Client::factory(array(
 $bucket = getenv('S3_BUCKET')?: die('No "S3_BUCKET" config var in found in env!');
 
 $sizelimit = 200;
+
+$msg = $db->GetArray('select id_user, msg_type from messages where id = ' . $msgid);
+
+if (!($s_accountrole == 'admin' || $msg['id_user'] == $s_id))
+{
+	exit;
+}
 
 if (isset($_POST["zend"])){
 	$tmpfile = $_FILES['picturefile']['tmp_name'];
@@ -70,42 +82,16 @@ if (isset($_POST["zend"])){
 	exit;
 }
 
-echo "<h1>Foto aan V/A toevoegen</h1>";
-show_form($msgid);
+$va = ($msg['msg_type']) ? 'aanbod' : 'vraag';
 
+echo '<h1>Foto aan ' . $va . ' toevoegen</h1>';
 
-////////////////////////////////////////////////////////////////////////////
-
-function show_form($msgid)
-{
-	echo '<form action="upload_picture.php?msgid=' . $msgid . '" enctype="multipart/form-data" method="POST">' . "\n";
-	echo '<input name="picturefile" type="file" required accept="image/jpeg">';
-	echo "<input type='submit' name='zend' value='Versturen' />\n";
-	echo "</form>\n";
-	echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn en mag maximaal 200kB groot zijn.";
-	echo '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>';
-}
-
-function place_picture($file, $tmpfile, $rootpath, $msgid){
-	global $baseurl;
-	global $dirbase;
-	$ext = pathinfo($file, PATHINFO_EXTENSION);
-	// Limit file size
-	// Check if the file is already there.
-	$ts = time();
-	$uploadfile =  $rootpath ."sites/$dirbase/msgpictures/" .$msgid ."_" .$ts ."." .$ext;
-	if(file_exists($uploadfile)){
-		echo "<font color='red'>Het bestand bestaat al, hernoem je bestand en probeer opnieuw.</font>";
-	} else {
-		if (!move_uploaded_file($tmpfile  , $uploadfile) ){
-    			echo "Foto uploaden is niet gelukt...\n";
-		} else {
-			echo "Foto opgeladen, wordt toegevoegd aan je profiel...<br>";
-			$target = $msgid ."_" .$ts ."." .$ext;
-			dbinsert($msgid, $target, $rootpath);
-		}
-	}
-}
+echo '<form action="upload_picture.php?msgid=' . $msgid . '" enctype="multipart/form-data" method="POST">' . "\n";
+echo '<input name="picturefile" type="file" required accept="image/jpeg">';
+echo "<input type='submit' name='zend' value='Versturen' />\n";
+echo "</form>\n";
+echo "LET OP: Je foto moet in het jpeg (jpg) formaat zijn en mag maximaal 200kB groot zijn.";
+echo '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>';
 
 function resizepic($file, $tmpfile, $rootpath, $msgid){
 	global $baseurl;

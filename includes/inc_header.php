@@ -1,9 +1,11 @@
 <?php
 
+$name = readconfigfromdb("systemname");
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
-echo '<title>' . readconfigfromdb("systemname") .'</title>';
+echo '<title>' . $name .'</title>';
 
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'tinybox/tinybox.css">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">';
@@ -35,7 +37,6 @@ echo '<body>';
 </script>
 
 <?php
-$name = readconfigfromdb('systemname');
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
@@ -57,7 +58,6 @@ echo '</div>';
 if ($s_letscode)
 {
 	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
-//	echo '<div class="navbar-header">';
 	echo '<ul class="nav navbar-nav navbar-right">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
@@ -111,7 +111,6 @@ if ($s_letscode)
 
 	}
 	echo '</ul>';
-//	echo '</div>';
 	echo '</div>';
 }
 
@@ -155,9 +154,6 @@ else
 	$menu[] = $main_menu;
 
 	$menu[] = array(
-/*		'userdetails/mydetails.php'			=> 'Mijn gegevens',
-		'userdetails/mymsg_overview.php'	=> 'Mijn Vraag & Aanbod',
-		'userdetails/mytrans_overview.php'	=> 'Mijn transacties', */
 		'transactions/add.php'				=> 'Nieuwe transactie',
 	);
 
@@ -180,37 +176,6 @@ foreach ($menu as $sub_menu)
 
 	echo '</ul>';
 }
-
-/*
-if ($s_accountrole == 'admin')
-{
-	echo '<ul class="nav nav-pills nav-stacked admin">';
-
-	$menu = array(
-		'users/overview.php'						=> 'Gebruikers',
-		'categories/overview.php'	 				=> 'Categorieën',
-		'interlets/overview.php'					=> 'LETS Groepen',
-		'apikeys/overview.php'						=> 'Apikeys',
-		'type_contact/overview.php'					=> 'Contact types',
-		'messages/overview.php'						=> 'Vraag & Aanbod',
-		'reports/overview.php'						=> 'Rapporten',
-		'preferences/config.php'					=> 'Instellingen',
-		'export.php'								=> 'Export',
-//		'bulk.php'									=> 'Bulk acties',
-		'transactions/many_to_one.php'				=> 'Massa-Transactie',
-		'eventlog.php'								=> 'Logs',
-	);
-
-	foreach ($menu as $link => $label)
-	{
-		$active_class = ($script_name == $link) ? ' class="active"' : '';
-		echo '<li'. $active_class . ' role="presentation">';
-		echo '<a href="' . $rootpath . $link . '">' . $label . '</a></li>';
-	}
-
-	echo '</ul>';
-}
-*/
 
 echo '</div>';
 
