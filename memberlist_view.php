@@ -238,6 +238,4 @@ echo '</table>';
 echo '</div>';
 echo '</div></div>';
 
-
-
 include $rootpath . 'includes/inc_footer.php';

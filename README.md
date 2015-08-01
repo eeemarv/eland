@@ -48,17 +48,12 @@ heroku addons:add mongolab
 * AWS_ACCESS_KEY
 * AWS_SECRET_ACCESS_KEY
 * S3_BUCKET
-
 * REDISTOGO_URL: addon redistogo (redis server)
-
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
-
 * MONGOLAB_URI (mongodb)
-
 * DATABASE_URL: postgres url
-
-* ELAS_SCHEMA_domain: couples a domain to a schema 
+* ELAS_SCHEMA_domain: couples a domain to a schema
 
     `Dots in domain are replaced by double underscore __`
     `Hyphens in domain are replaced by triple underscore ___`
@@ -68,11 +63,11 @@ heroku addons:add mongolab
     ```shell
         heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample
     ```
-    Also add the domain to Heroku: 
+    Also add the domain to Heroku:
     ```shell
     heroku domains:add e.example.com
     ```
-                
+
     i.e localhost:40000 on php development server
     ```shell
         ELAS_SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
@@ -103,17 +98,17 @@ CDN / defaults:
 ##Migrating a group from eLAS 3.1 to eLAS-Heroku
 
 
-For eLAS 2.6 see [/doc/migrate-eLAS-2.6.md]
+For eLAS 2.6 see [here](https://eeemarv/elas-heroku/doc/migrate-eLAS-2.6.md)
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
-* Add the domain in Heroku with command 
+* Add the domain in Heroku with command
 ```shell
 heroku domains:add my-domain.com
-``` 
+```
 note that wildcards can be set on heroku.  
 ```shell
 heroku domains:add *.example.com
-``` 
+```
 will add all subdomains of example.com
 * To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`. (or on the Heroku website)
 In eLAS-Heroku all letsgroups are stored as schemas in one database.
@@ -148,11 +143,11 @@ Meta command list all tables from all schemas:
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
 yphen must be converted to a triple underscore and a colon (for defining port number) with quadruple underscore.
 
-* Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG). 
+* Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG).
 Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
 Make the image files public.
 * Log in with admin rights to your website (you can use the master login and password) and go to path `/cron/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
-The files get prefixed with the schema name and the user or message id. All extensions become jpg. 
+The files get prefixed with the schema name and the user or message id. All extensions become jpg.
 ie.
     abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
     abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg

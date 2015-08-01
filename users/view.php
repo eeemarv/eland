@@ -281,6 +281,7 @@ echo '<h4>Interacties laatste jaar</h4>';
 echo '</div>';
 echo '</div>';
 
+/*
 $includejs = '
 <script>
 jQuery(document).ready(function ($) {
@@ -301,7 +302,7 @@ jQuery(document).ready(function ($) {
 	$(window).bind("orientationchange", scaleChart);
 });
 </script>
-';
+'; */
 
 echo '<div class="row">';
 echo '<div class="col-md-12">';

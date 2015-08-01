@@ -156,7 +156,7 @@ if($s_accountrole == "admin" || $s_id == $user['id'])
     $btn_add_img .= '<span class="hidden-xs hidden-sm"> Afbeelding toevoegen</span></a>';
 }
 
-$btn_add_img = ($btn_add_img) ? '<br><p>' . $btn_add_img . '</p>' : '';
+$btn_add_img = ($btn_add_img) ? '<p>' . $btn_add_img . '</p>' : '';
 
 if ($msgpictures)
 {

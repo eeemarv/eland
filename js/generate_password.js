@@ -34,8 +34,7 @@ $('#generate').click(function(e){
 
 	pw += (Math.floor(Math.random() * 9) + 1);
 
-	$('#pw1').val(pw);
-	$('#pw2').val(pw);
+	$('#pw').val(pw);
 
 	e.preventDefault();
 });

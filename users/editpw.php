@@ -18,29 +18,18 @@ $user = readuser($id);
 
 if(isset($_POST["zend"]))
 {
-	$pw = array();
-	$pw["pw1"] = trim($_POST["pw1"]);
-	$pw["pw2"] = trim($_POST["pw2"]);
+	$pw = trim($_POST['pw']);
 
 	$errors = array();
 
-	if (empty($pw['pw1']) || (trim($pw['pw1']) == ''))
+	if (empty($pw) || (trim($pw) == ''))
 	{
 		$errors[] = 'Vul paswoord in!';
-	}
-
-	if (empty($pw['pw2']) || (trim($pw['pw2']) == ''))
-	{
-		$errors[] = 'Vul paswoord in!';
-	}
-	if ($pw['pw1'] !== $pw['pw2'])
-	{
-		$errors[] = 'De paswoorden zijn niet identiek!';
 	}
 
 	if (empty($errors))
 	{
-		$update['password']=hash('sha512', $pw['pw1']);
+		$update['password']=hash('sha512', $pw);
 		$update['mdate'] = date('Y-m-d H:i:s');
 		if ($db->AutoExecute('users', $update, 'UPDATE', 'id=' . $id))
 		{
@@ -76,7 +65,7 @@ if(isset($_POST["zend"]))
 						$con .= "\n\n";
 						$con .= 'Je kan inloggen op eLAS met de volgende gegevens:';
 						$con .= "\n\nLogin: " . $user['login'];
-						$con .= "\nPaswoord: " .$pw['pw1'] . "\n\n";
+						$con .= "\nPaswoord: " .$pw . "\n\n";
 						$con .= 'eLAS adres waar je kan inloggen: ' . $url;
 						$con .= "\n\n";
 						$con .= 'Veel letsgenot!';
@@ -141,18 +130,10 @@ echo '<br><br>';
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
-echo '<label for="pw1" class="col-sm-2 control-label">Paswoord</label>';
+echo '<label for="pw" class="col-sm-2 control-label">Paswoord</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="pw1" name="pw1" ';
-echo 'value="' . $pw['pw1'] . '" required>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="pw2" class="col-sm-2 control-label">Herhaal paswoord</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="pw2" name="pw2" ';
-echo 'value="' . $pw['pw2'] . '" required>';
+echo '<input type="text" class="form-control" id="pw" name="pw" ';
+echo 'value="' . $pw . '" required>';
 echo '</div>';
 echo '</div>';
 
