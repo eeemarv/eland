@@ -23,8 +23,7 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="gfx/tooltip.css" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
 
 $currency = readconfigfromdb('currency');
 
@@ -195,6 +194,11 @@ echo '<h4>Interacties laatste jaar</h4>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="row">';
+echo '<div class="col-md-12">';
+echo '<h3><i class="fa fa-newspaper-o"></i> Vraag en aanbod';
+echo '</h3>';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';
 
@@ -236,6 +240,7 @@ echo '</tbody>';
 echo '</table>';
 
 echo '</div>';
+echo '</div></div>';
 echo '</div></div>';
 
 include $rootpath . 'includes/inc_footer.php';

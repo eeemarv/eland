@@ -1,22 +1,13 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_passwords.php");
-require_once($rootpath."includes/inc_form.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
-
-//status 0: inactief
-//status 1: letser
-//status 2: uitstapper
-//status 3: instapper
-//status 4: secretariaat
-//status 5: infopakket
-//status 6: infoavond
-//status 7: extern
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_passwords.php';
+require_once $rootpath . 'includes/inc_form.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 $mode = $_GET['mode'];
 $id = $_GET['id'];
@@ -148,6 +139,7 @@ if ($_POST['zend'])
 				{
 					$alert->warning('Geen activatiemail verstuurd.');
 				}
+
 				header('Location: view.php?id=' . $id);
 				exit;
 

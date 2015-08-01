@@ -360,8 +360,11 @@ echo '<div class="col-md-12">';
 
 echo '<h3><i class="fa fa-exchange"></i> Transacties ';
 echo '<a href="' . $rootpath . 'transactions/add.php?uid=' . $id . '"';
-echo ' class="btn btn-success" title="Transactie toevoegen">';
-echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a> ';
+echo ' class="btn btn-success" title="Transactie naar ' . $user['fullname'] . '">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Transactie naar</span></a> ';
+echo '<a href="' . $rootpath . 'transactions/add.php?fuid=' . $id . '"';
+echo ' class="btn btn-success" title="Transactie van ' . $user['fullname'] . '">';
+echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Transactie van</span></a> ';
 echo '<a href="' . $rootpath . 'print_usertransacties.php?id=' . $id . '"';
 echo ' class="btn btn-default" title="Print transactielijst">';
 echo '<i class="fa fa-print"></i><span class="hidden-xs"> Print transactielijst</span></a> ';

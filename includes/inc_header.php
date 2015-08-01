@@ -12,17 +12,16 @@ echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">'
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '">';
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css">';
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/tooltip.css">';
 
-echo "<script type='text/javascript' src='/tinybox/tinybox.js'></script>";
+echo '<script type="text/javascript" src="/tinybox/tinybox.js"></script>';
 
 if (isset ($includecss))
 {
 	echo $includecss;
 }
 
-echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />";
-echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />";
+// echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />";
+// echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />";
 
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';

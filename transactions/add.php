@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -13,7 +13,7 @@ $transaction = array();
 
 if (isset($_POST['zend']))
 {
-	$transaction["description"] = $_POST["description"];
+	$transaction['description'] = $_POST['description'];
 	list($letscode_from) = explode(' ', $_POST['letscode_from']);
 	list($letscode_to) = explode(' ', $_POST['letscode_to']);
 	$transaction['amount'] = $_POST['amount'];
@@ -74,7 +74,7 @@ if (isset($_POST['zend']))
 
 				break;
 
-			case "elassoap":
+			case 'elassoap':
 
 				$transaction["letscode_to"] = $letscode_to;
 				$transaction["letsgroup_id"] = $letsgroup_id;
@@ -112,6 +112,7 @@ else
 {
 	$mid = ($_GET['mid']) ?: false;
 	$uid = ($_GET['uid']) ?: false;
+	$fuid = ($_GET['fuid']) ?: false;
 
 	$transaction = array(
 		'date'			=> date('Y-m-d'),
@@ -136,6 +137,12 @@ else
 	{
 		$row = readuser($uid);
 		$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['fullname'];
+	}
+
+	if ($fuid && $s_accountrole == 'admin')
+	{
+		$row = readuser($fuid);
+		$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['fullname'];
 	}
 }
 
@@ -209,25 +216,6 @@ echo '<input type="text" class="form-control" id="letscode_from" name="letscode_
 echo 'value="' . $transaction['letscode_from'] . '" required>';
 echo '</div>';
 echo '</div>';
-
-/*
-echo '<div class="form-group"';
-echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
-echo '>';
-echo '<label for="date" class="col-sm-2 control-label">';
-echo '<span class="label label-default">Admin</span> ';
-echo 'Datum</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="date" name="date" ';
-echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
-echo 'data-date-language="nl" ';
-echo 'data-date-today-highlight="true" ';
-echo 'data-date-autoclose="true" ';
-echo 'data-date-enable-on-readonly="false" ';
-echo 'value="' . $transaction['date'] . '" required>';
-echo '</div>';
-echo '</div>';
-*/
 
 echo ($s_accountrole == 'admin') ? '' : '</div>';
 

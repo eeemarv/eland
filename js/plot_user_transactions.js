@@ -140,7 +140,7 @@ $.noConflict();
 				var transDate = new Date(transactionData.date * 1000);
 				var transDateString = transDate.getDate() + '-' + (Number(transDate.getMonth()) + 1) + '-' + transDate.getFullYear();
 
-				var transdiv = '<div class="tooltip"><p>';
+				var transdiv = '<div class="tooltip-div"><p>';
 				transdiv += transactionData.userCode + ' ' + users[transactionData.userIndex].name;
 				transdiv += '<br/><strong>';
 				transdiv += (transactionData.out) ? '-' : '+';
@@ -153,7 +153,7 @@ $.noConflict();
 			});
 
 			$('#chartdiv1').bind('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
-				$('div.tooltip').remove();
+				$('div.tooltip-div').remove();
 			});
 
 			$.jqplot('chartdiv2', [donut] , {
@@ -179,7 +179,7 @@ $.noConflict();
 				if (user.linkable){
 					$(this).css('cursor', 'pointer');
 				}
-				var dddiv = '<div class="tooltip"><p>'+user.code+' '+user.name;
+				var dddiv = '<div class="tooltip-div"><p>'+user.code+' '+user.name;
 				dddiv += (dd.out) ? '<br/><strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
 				dddiv += (dd.in) ? '<br/><strong>+</strong> '+dd.in+' transacties, '+dd.amountIn+' '+data.currency : '';
 				dddiv += '</p></div>';
@@ -187,7 +187,7 @@ $.noConflict();
 			});
 
 			$('#chartdiv2').bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
-				$('div.tooltip').remove();
+				$('div.tooltip-div').remove();
 				$(this).css('cursor', 'default');
 			});
 

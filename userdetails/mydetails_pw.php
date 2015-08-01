@@ -119,7 +119,6 @@ echo '>';
 echo '</div>';
 echo '</div>';
 
-
 echo '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 

@@ -406,3 +406,21 @@ div.pag
 .jssora02r:hover { background-position: -183px -33px; }
 .jssora02l.jssora02ldn { background-position: -3px -33px; }
 .jssora02r.jssora02rdn { background-position: -63px -33px; }
+
+
+/** tooltip **/
+
+div.tooltip-div {
+  background-color: #222;
+  color: white;
+  position: absolute;
+  left: 0;
+  top: -50px;
+  z-index: 1000000;
+  width: 250px;
+  border-radius: 5px;
+}
+
+div.tooltip-div p {
+  margin: 10px;
+}
