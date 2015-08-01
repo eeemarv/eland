@@ -18,7 +18,7 @@ if(isset($_POST['zend']))
 		$errors[] = 'Vul paswoord in!';
 	}
 
-	if (Password_Strength($pw, $s_name) < readconfigfromdb('pwscore'))
+	if (password_strength($pw) < readconfigfromdb('pwscore'))
 	{
 		$errors[] = 'Te zwak paswoord.';
 	}

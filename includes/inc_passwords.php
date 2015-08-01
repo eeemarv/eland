@@ -20,68 +20,10 @@
  * generatePassword ($length = 10)i			Generate a random password
  * update_password($id, $posted_list)			Write password to database
  * sendactivationmail($password, $user,$s_id)		Send the password to the user
- * sendpasswordresetemail($password, $user,$s_id)	Send the password reset message to the user
 */
 
-function sendpasswordresetemail($password, $user,$s_id){
-	global $baseurl;
-	$mailfrom = readconfigfromdb("from_address");
-
-        if (!empty($user["emailaddress"])){
-                $mailto = $user["emailaddress"];
-        } else {
-                echo "<p><b>Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!</b></p>";
-                return 0;
-        }
-
-	$systemtag = readconfigfromdb("systemtag");
-        $mailsubject = "[";
-        $mailsubject .= $systemtag;
-        $mailsubject .= "] eLAS account";
-
-        $mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";
-        $mailcontent .= $systemtag;
-        $mailcontent .= " ***\r\n\n";
-        $mailcontent .= "Beste ";
-        $mailcontent .= $user["name"];
-        $mailcontent .= "\n\n";
-        $mailcontent .= "eLAS heeft voor jouw een nieuw wachtwoord ingesteld, zodat je (weer) kan inloggen op http://$baseurl.\n";
-	$mailcontent .= "\neLAS is een elektronisch systeem voor het beheer van vraag & aanbod en transacties.
-Er werd voor jou een account aangemaakt waarmee je kan inloggen en je gegevens beheren.\n\n";
-        $mailcontent .= "\n-- Account gegevens --\n";
-        $mailcontent .= "Login: ";
-        $mailcontent .= $user["login"];
-        $mailcontent .= "\nPasswoord: ";
-        $mailcontent .= $password;
-        $mailcontent .= "\n-- --\n\n";
-
-		$openids = get_openids($user["id"]);
-       	$mailcontent .= "Of log in met een OpenID account (indien gelinked): \n";
-		foreach($openids as $value){
-			$mailcontent .= " * " .$value["openid"] ."\n";
-		}
-		$mailcontent .= "\n";
-
-        $mailcontent .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-        $mailcontent .= readconfigfromdb("support");
-        $mailcontent .= "\n\n";
-        $mailcontent .= "Met vriendelijke groeten.\n\nDe eLAS Account robot\n";
-
-		$mailcontent .= "\r\n";
-		$mailcontent .= "         \,,,/\r\n";
-		$mailcontent .= "         (o o)\r\n";
-		$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
-
-        //echo "Bezig met het verzenden naar $mailto...\n";
-        sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-        // log it
-        log_event($s_id,"Mail","Password reset email sent to $mailto");
-        //echo "OK<br>";
-		$status = "OK - Een nieuw wachtwoord is verstuurd via email";
-		return $status;
-}
-
-function sendactivationmail($password, $user){
+function sendactivationmail($password, $user)
+{
 	global $baseurl, $s_id, $alert;
 	$mailfrom = readconfigfromdb("from_address");
 
@@ -137,7 +79,7 @@ function sendactivationmail($password, $user){
 		echo "OK - Activatiemail verstuurd";
 }
 
-function Password_Strength($password, $username = null)
+function password_strength($password, $username = null)
 {
     if (!empty($username))
     {
@@ -169,9 +111,9 @@ function Password_Strength($password, $username = null)
     {
         $numbers = count($numbers[0]);
 
-        if ($numbers >= 3)
+        if ($numbers >= 1)
         {
-            $strength += 5;
+            $strength += 8;
         }
     }
     else
@@ -185,9 +127,9 @@ function Password_Strength($password, $username = null)
     {
         $symbols = count($symbols[0]);
 
-        if ($symbols >= 2)
+        if ($symbols >= 1)
         {
-            $strength += 5;
+            $strength += 8;
         }
     }
     else
