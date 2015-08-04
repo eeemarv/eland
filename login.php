@@ -1,15 +1,15 @@
 <?php
 ob_start();
-$ptitle="login";
-$rootpath = "./";
+
+$rootpath = './';
 $role = 'anonymous';
 $allow_anonymous_post = true;
 
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_tokens.php");
-require_once($rootpath."includes/inc_auth.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_tokens.php';
+require_once $rootpath . 'includes/inc_auth.php';
 
 if ($s_id)
 {
@@ -17,8 +17,8 @@ if ($s_id)
 	exit;
 }
 
-$token = $_GET["token"];
-$login = $_GET["login"];
+$token = $_GET['token'];
+$login = $_GET['login'];
 $openid = $_GET['openid_identity'];
 $location = $_GET['location'];
 $location = ($location) ? urldecode($location) : 'index.php';
@@ -29,30 +29,30 @@ $error_location = 'login.php?location=' . urlencode($location);
 // Intercept old direct links and rewrite them
 if(!empty($redirectmsg))
 {
-	$_GET['url'] = "http://$baseurl/messages/view.php?id=" .$redirectmsg;
+	$_GET['url'] = 'http://$baseurl/messages/view.php?id=' . $redirectmsg;
 }
 
 // Verify the token first and redirect to index if it is valid
 if(!empty($token))
 {
-	if(verify_token($token, "guestlogin"))
+	if(verify_token($token, 'guestlogin'))
 	{
         session_start();
-        $_SESSION["id"] = 0;
-        $_SESSION["name"] = "letsguest";
-        $_SESSION["letscode"] = "X000";
-        $_SESSION["accountrole"] = "guest";
-		$_SESSION["type"] = "interlets";
-		$_SESSION["status"] = array();
-		log_event($_SESSION["id"],"Login","Guest login using token succeeded");
-		$alert->success($_SESSION["name"] ." ingelogd");
+        $_SESSION['id'] = 0;
+        $_SESSION['name'] = 'letsguest';
+        $_SESSION['letscode'] = 'X000';
+        $_SESSION['accountrole'] = 'guest';
+		$_SESSION['type'] = 'interlets';
+		$_SESSION['status'] = array();
+		log_event($_SESSION['id'], 'Login', 'Guest login using token succeeded');
+		$alert->success($_SESSION['name'] . ' ingelogd');
 		header('Location: ' . $location);
 		exit;
 	}
 	else
 	{
-		$alert->error("Interlets login is mislukt.");
-		log_event("","LogFail", "Token login failed ($token)");
+		$alert->error('Interlets login is mislukt.');
+		log_event('', 'LogFail', 'Token login failed (' . $token . ')');
 	}
 }
 

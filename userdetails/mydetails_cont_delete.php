@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -12,7 +12,7 @@ if (!isset($_GET['id']))
 	exit;
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 $contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.id as uid
 	FROM type_contact tc, contact c, users u
@@ -34,9 +34,9 @@ if (!validate_request($id))
 	exit;
 }
 
-if ($_POST['zend'])
+if (isset($_POST['zend']))
 {
-	if ($db->Execute("DELETE FROM contact WHERE id =".$id))
+	if ($db->Execute('delete from contact where id = ' . $id))
 	{
 		$alert->success('Contact verwijderd.');
 	}

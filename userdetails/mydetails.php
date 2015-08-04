@@ -15,7 +15,8 @@ $contacts = $db->GetArray('select c.*, tc.abbrev
 
 $currency = readconfigfromdb('currency');
 
-$includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';</script>
+$includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';
+	var user_link_location = \'' . $rootpath . 'memberlist_view.php?id=\'; </script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
@@ -45,8 +46,7 @@ $top_buttons .= '<a href="' . $rootpath . 'memberlist.php" class="btn btn-defaul
 $top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
 
 $h1 = 'Mijn gegevens';
 $fa = 'user';
@@ -59,11 +59,27 @@ echo '<div class="col-md-4">';
 if(isset($user['PictureFile']))
 {
 	echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
+
+	$btn_del_img = '<a href="' . $rootpath . 'userdetails/remove_picture.php" class="btn btn-danger" ';
+	$btn_del_img .= 'title="foto verwijderen">';
+	$btn_del_img .= '<span class="fa fa-times"></span><span class="hidden-xs hidden-sm hidden-md">';
+	$btn_del_img .= 'Foto verwijderen</span></a>';
+	$ra = 'vervangen';
 }
 else
 {
 	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
+	$btn_del_img = '';
+	$ra = 'toevoegen';
 }
+
+$myurl = $rootpath . 'userdetails/upload_picture.php';
+$btn_add_img = "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
+$btn_add_img .= '<a href="javascript: AddPic()" class="btn btn-success" title="Foto ' . $ra . '">';
+$btn_add_img .= '<i class="fa fa-plus"></i>';
+$btn_add_img .= '<span class="hidden-xs hidden-sm hiddin-md"> Foto ' . $ra . '</span></a>';
+
+echo '<br><p>' . $btn_add_img . '&nbsp;' . $btn_del_img . '</p>';
 
 echo '</div>';
 echo '<div class="col-md-8">';
@@ -149,7 +165,7 @@ echo '</div></div>';
 echo '<div class="row">';
 echo '<div class="col-md-12">';
 echo '<h3><i class="fa fa-map-marker"></i> Contactinfo ';
-echo '<a href="' . $rootpath . 'users/cont_add.php?uid=' . $id . '"';
+echo '<a href="' . $rootpath . 'userdetails/mydetails_cont_add.php"';
 echo ' class="btn btn-success" title="Contact toevoegen">';
 echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
 echo '</h3>';
@@ -206,25 +222,3 @@ echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
 echo '<h4>Interacties laatste jaar</h4>';
 echo '</div>';
 echo '</div>';
-
-$includejs = '
-<script>
-jQuery(document).ready(function ($) {
-
-	function scaleChart() {
-		var parentWidth = $("#chartdiv1").parent().width();
-		if (parentWidth) {
-			$("#chartdiv1").css("width", parentWidth);
-		}
-		else
-		{
-			window.setTimeout(scaleChart, 30);
-		}
-	}
-	scaleChart();
-	$(window).bind("load", scaleChart);
-	$(window).bind("resize", scaleChart);
-	$(window).bind("orientationchange", scaleChart);
-});
-</script>
-';

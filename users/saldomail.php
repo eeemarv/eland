@@ -69,7 +69,7 @@ echo 'value="" required autocomplete="off">';
 echo '</div>';
 echo '</div>';
 
-echo '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default">Anneleren</a>&nbsp;';
+echo '<a href="' . $rootpath . 'users/overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" name="activate" value="Activeren" class="btn btn-success">&nbsp;';
 echo '<input type="submit" name="deactivate" value="Deactiveren" class="btn btn-danger">';
 

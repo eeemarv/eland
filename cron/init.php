@@ -14,7 +14,7 @@ if ($php_sapi_name == 'cli')
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -96,6 +96,7 @@ foreach($user_images as $user_id => $filename)
 			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
+			'CacheControl'	=> 'max-age=31536000',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
@@ -150,6 +151,7 @@ foreach($message_images as $image)
 			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
+			'CacheControl'	=> 'max-age=31536000',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)

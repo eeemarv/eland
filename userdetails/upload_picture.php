@@ -41,7 +41,11 @@ if (isset($_POST['zend']))
 		try {
 			$filename = $schema . '_u_' . $s_id . '_' . sha1(time()) . '.jpg';
 
-			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
+			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+				'params'	=> array(
+					'CacheControl'	=> 'max-age=31536000',
+				),
+			));
 
 			$old = $db->GetOne('SELECT "PictureFile" FROM users WHERE id=' . $s_id);
 

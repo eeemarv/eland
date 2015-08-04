@@ -5,7 +5,7 @@ $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$filter = $_GET['filter'];
+$q = $_GET['q'];
 
 $users = $db->GetArray('SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
@@ -57,7 +57,7 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -71,7 +71,7 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="filter" name="filter" value="' . $filter . '">';
+echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -80,10 +80,17 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
+echo '<li><a href="#" class="bg-success" data-filter="6a501bbf">Instappers</a></li>';
+echo '<li><a href="#" class="bg-danger" data-filter="51505c3e">Uitstappers</a></li>';
+echo '</ul>';
+echo '<input type="hidden" value="" id="combined-filter">';
+
 //show table
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable"';
-echo ' data-filter="#filter" data-filter-minimum="1">';
+echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
@@ -103,12 +110,22 @@ foreach($users as $value)
 {
 	$id = $value['id'];
 
-	$class = ($newusertreshold < strtotime($value['adate'])) ? ' class="success"' : '';
-	$class = ($value["status"] == 2) ? ' class="danger"' : $class;
+	$class = $status_filter = '';
+
+	if ($value['status'] == 2)
+	{
+		$status_filter = '51505c3e';
+		$class = ' class="danger"';
+	}
+	else if ($newusertreshold < strtotime($value['adate']))
+	{
+		$status_filter = '6a501bbf';
+		$class = ' class="success"';
+	}
 
 	echo '<tr' . $class . '>';
 
-	echo '<td>';
+	echo '<td data-value="' . $status_filter . '">';
 	echo '<a href="memberlist_view.php?id=' .$id .'">';
 	echo $value['letscode'];
 	echo '</a></td>';
@@ -146,20 +163,6 @@ echo '</table>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
-
-// active legend
-/*
-echo '<table class="table">';
-echo "<tr>";
-echo "<td bgcolor='#B9DC2E'><font color='white'>";
-echo "<strong>Groen blokje:</strong></font></td><td> Instapper<br>";
-echo "</tr>";
-echo "<tr>";
-echo "<td bgcolor='#f56db5'><font color='white'>";
-echo "<strong>Rood blokje:</strong></font></td><td>Uitstapper<br>";
-echo "</tr>";
-echo "</tr></table>";
-*/
 
 include $rootpath . 'includes/inc_footer.php';
 

@@ -14,18 +14,18 @@ $id = $_GET['id'];
 
 $user = $db->GetRow('SELECT *
 	FROM users
-	WHERE id = '.$id);
+	WHERE id = ' . $id);
 
 $contacts = $db->GetArray('select c.*, tc.abbrev
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
 		and c.id_user = ' . $id);
 
-$messages = $db->GetArray("SELECT *
+$messages = $db->GetArray('SELECT *
 	FROM messages
-	where id_user = ".$id."
+	where id_user = ' . $id . '
 		and validity > now()
-	order by cdate");
+	order by cdate');
 
 $transactions = $db->GetArray('select t.*,
 		fu.name as from_username,
@@ -45,7 +45,8 @@ $trans_en = ($db->GetOne('select id
 	where id_to = ' . $id . '
 		or id_from = ' . $id)) ? true : false;
 
-$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
+$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
+	var user_link_location = \'' . $rootpath . 'users/view.php?id=\'; </script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
@@ -55,8 +56,7 @@ $includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 	<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />
-	<link rel="stylesheet" type="text/css" href="' . $rootpath . 'gfx/tooltip.css" />';
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
 
 $top_buttons = '<a href="edit.php?mode=new" class="btn btn-success"';
 $top_buttons .= ' title="gebruiker toevoegen"><i class="fa fa-plus"></i>';
@@ -111,70 +111,70 @@ echo '<dt>';
 echo 'Naam';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["name"],ENT_QUOTES);
+echo htmlspecialchars($user['name'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Volledige naam';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["fullname"],ENT_QUOTES);
+echo htmlspecialchars($user['fullname'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Postcode';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["postcode"],ENT_QUOTES);
+echo htmlspecialchars($user['postcode'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Geboortedatum';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["birthday"],ENT_QUOTES);
+echo htmlspecialchars($user['birthday'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Hobbies / Interesses';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["hobbies"],ENT_QUOTES);
+echo htmlspecialchars($user['hobbies'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Commentaar';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["comments"],ENT_QUOTES);
+echo htmlspecialchars($user['comments'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Login';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["login"],ENT_QUOTES);
+echo htmlspecialchars($user['login'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Tijdstip aanmaak';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["cdate"],ENT_QUOTES);
+echo htmlspecialchars($user['cdate'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Tijdstip activering';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["adate"],ENT_QUOTES);
+echo htmlspecialchars($user['adate'],ENT_QUOTES);
 echo '</dd>';
 
 echo '<dt>';
 echo 'Laatste login';
 echo '</dt>';
 echo '<dd>';
-echo htmlspecialchars($user["logdate"],ENT_QUOTES);
+echo htmlspecialchars($user['lastlogin'],ENT_QUOTES);
 echo '</dd>';
 
 $status_ary = array(
@@ -280,29 +280,6 @@ echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
 echo '<h4>Interacties laatste jaar</h4>';
 echo '</div>';
 echo '</div>';
-
-/*
-$includejs = '
-<script>
-jQuery(document).ready(function ($) {
-
-	function scaleChart() {
-		var parentWidth = $("#chartdiv1").parent().width();
-		if (parentWidth) {
-			$("#chartdiv1").css("width", parentWidth);
-		}
-		else
-		{
-			window.setTimeout(scaleChart, 30);
-		}
-	}
-	scaleChart();
-	$(window).bind("load", scaleChart);
-	$(window).bind("resize", scaleChart);
-	$(window).bind("orientationchange", scaleChart);
-});
-</script>
-'; */
 
 echo '<div class="row">';
 echo '<div class="col-md-12">';

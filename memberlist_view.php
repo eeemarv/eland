@@ -12,7 +12,8 @@ if (!isset($_GET['id']))
 
 $id = $_GET["id"];
 
-$includejs = '<script type="text/javascript">var user_id = ' . $id . ';</script>
+$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
+	var user_link_location = \'' . $rootpath . 'memberlist_view.php?id=\'; </script>
 	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>

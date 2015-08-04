@@ -1,5 +1,3 @@
-$.noConflict();
-
 ;jQuery(document).ready(function($){
 	$.ajax({
 		url: '/plot_user_transactions.php',
@@ -194,7 +192,7 @@ $.noConflict();
 			$('#chartdiv2').bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.linkable){
-					window.location.href = 'memberlist_view.php?id=' + user.id;
+					window.location.href = user_link_location + user.id;
 				}
 			});
 

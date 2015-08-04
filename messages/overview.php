@@ -5,7 +5,7 @@ $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$filter = $_GET['filter'];
+$q = $_GET['q'];
 
 $msgs = $db->GetArray('select m.*,
 		c.id as cid, c.fullname as cat,
@@ -31,7 +31,7 @@ if ($s_accountrole == 'admin')
 $h1 = 'Vraag & Aanbod';
 $fa = 'newspaper-o';
 
-$includejs = '<script src="' . $rootpath . 'js/fooprefilter.js"></script>';
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -45,7 +45,7 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="filter" value="' . $filter . '" name="filter">';
+echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q">';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -54,26 +54,16 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-/*
-echo '<ul class="nav nav-tabs">';
-echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';
-echo '<li class="active"><input type="text" class="search"></li>';
-echo '<li><a href="#" class="bg-white">Geldig</a></li>';
-echo '<li><a href="#" class="bg-danger">Vervallen</a></li>';
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
+echo '<li><a href="#" class="bg-white" data-filter="34a94cd7">Geldig</a></li>';
+echo '<li><a href="#" class="bg-danger" data-filter="09293e38">Vervallen</a></li>';
 echo '</ul>';
-*/
-/*
-echo "<br>Filter: ";
-echo "<a href='overview.php?user_filterby=all'>Alle</a>";
-echo " - ";
-echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
-echo " - ";
-echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
-*/
+echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable"';
-echo ' data-filter="#filter" data-filter-minimum="1">';
+echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 echo '<tr>';
 echo "<th>V/A</th>";
@@ -97,9 +87,10 @@ foreach($msgs as $msg)
 	echo '<tr';
 	echo ($del) ? ' class="danger"' : '';
 	echo '>';
-	echo '<td>';
 
-	echo ($msg["msg_type"]) ? 'A' : 'V';
+	echo '<td ';
+	echo ' data-value="' . (($del) ? '09293e38' : '34a94cd7') . '">';
+	echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 	echo '</td>';
 
 	echo '<td>';

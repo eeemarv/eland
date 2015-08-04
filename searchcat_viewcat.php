@@ -1,17 +1,17 @@
 <?php
 ob_start();
-$rootpath = "";
+$rootpath = '';
 $role = 'guest';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 if (!isset($_GET['id']))
 {
-	header("Location: searchcat.php");
+	header('Location: ' . $rootpath . 'searchcat.php');
 	exit;
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 $msgs = $db->GetArray('select m.*,
 		u.letscode, u.fullname, u.id as uid
@@ -35,19 +35,9 @@ include $rootpath . 'includes/inc_header.php';
 
 echo '<ul class="nav nav-tabs">';
 echo '<li class="active"><a href="#" class="bg-white">Alle</a></li>';
-echo '<li class="active"><input type="text" class="search"></li>';
 echo '<li><a href="#" class="bg-white">Geldig</a></li>';
 echo '<li><a href="#" class="bg-danger">Vervallen</a></li>';
 echo '</ul>';
-
-/*
-echo "<br>Filter: ";
-echo "<a href='overview.php?user_filterby=all'>Alle</a>";
-echo " - ";
-echo "<a href='overview.php?user_filterby=expired'>Vervallen</a>";
-echo " - ";
-echo "<a href='overview.php?user_filterby=valid'>Geldig</a>";
-*/
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';

@@ -50,7 +50,11 @@ if (isset($_POST['zend']))
 		try {
 			$filename = $schema . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
 			
-			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read');
+			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+				'params'	=> array(
+					'CacheControl'	=> 'max-age=31536000',
+				),
+			));
 			
 			$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
 			$db->Execute($query);
