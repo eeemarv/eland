@@ -70,7 +70,7 @@ if(isset($_POST["zend"]))
 						$con .= "\n\n";
 						$con .= 'Veel letsgenot!';
 						sendemail($from, $to, $subj, $con);
-						log_event($s_id, 'Mail', "Pasword change notification mail sent to $to");
+						log_event($s_id, 'Mail', 'Pasword change notification mail sent to ' . $to);
 						$alert->success('Notificatie mail verzonden naar ' . $to);
 					}
 					else

@@ -1,13 +1,12 @@
 <?php
 ob_start();
-//$ptitle="login";
-$rootpath = "./";
+$rootpath = './';
 $role = 'anonymous';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
 
-if(isset($_POST["zend"]))
+if(isset($_POST['zend']))
 {
 	$posted_list = array(); 
 	$posted_list["login"] = mysql_escape_string($_POST["login"]);
@@ -52,6 +51,7 @@ else if (!readconfigfromdb('support'))
 }
 
 $h1 = 'eLAS help';
+$fa = 'ambulance';
 
 require_once $rootpath . 'includes/inc_header.php';
 

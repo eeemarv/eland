@@ -43,7 +43,8 @@ $msgs = $db->GetArray('SELECT m.*,
 	order by m.cdate DESC
 	limit 100');
 
-//$h1 = 'Home';
+$h1 = 'Overzicht';
+$fa = 'home';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -1,15 +1,16 @@
 <?php
 ob_start();
-$rootpath = "";
+$rootpath = '';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $h1 = 'LETS Chat';
+$fa = 'comments-o';
 
 include $rootpath . 'includes/inc_header.php';
 
-$tag = readconfigfromdb("systemtag");
+$tag = readconfigfromdb('systemtag');
 $name = strtolower(preg_replace('/\s+/', '', $s_login));
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
 $nick = $name ."_" . $tag;

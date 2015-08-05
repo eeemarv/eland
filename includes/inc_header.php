@@ -1,6 +1,6 @@
 <?php
 
-$name = readconfigfromdb("systemname");
+$name = readconfigfromdb('systemname');
 
 echo '<!DOCTYPE html>';
 echo '<html>';
@@ -133,32 +133,29 @@ if (!$s_accountrole)
 else
 {
 	$main_menu = array(
-		'index.php'			=> 'Home',
-		'searchcat.php'		=> 'Vraag & Aanbod',
-		'memberlist.php'	=> 'Contactlijst',
+		'index.php'			=> array('home', 'Overzicht'),
+		'searchcat.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
+		'memberlist.php'	=> array('users', 'Contactlijst'),
 	);
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
-		$main_menu['transactions/alltrans.php'] = 'Transacties';
+		$main_menu['transactions/alltrans.php'] = array('exchange', 'Transacties');
+		$main_menu['transactions/add.php'] = array('exchange', 'Nieuwe transactie');
 	}
 
-	$main_menu['news/overview.php'] = 'Nieuws';
+	$main_menu['news/overview.php'] = array('calendar-o', 'Nieuws');
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
-		$main_menu['interlets/userview.php'] = 'Interlets';
+		$main_menu['interlets/userview.php'] = array('share-alt', 'Interlets');
 	}
 
 	$menu[] = $main_menu;
 
 	$menu[] = array(
-		'transactions/add.php'				=> 'Nieuwe transactie',
-	);
-
-	$menu[] = array(
-		'help.php'	=> 'Probleem melden',
-		'ircchat.php'	=> 'Chatbox #letsbe',
+		'help.php'		=> array('ambulance', 'Probleem melden'),
+		'ircchat.php'	=> array('comments', 'Chatbox #letsbe'),
 	);
 }
 
@@ -170,7 +167,9 @@ foreach ($menu as $sub_menu)
 	{
 		$active_class = ($script_name == $link) ? ' class="active"' : '';
 		echo '<li' . $active_class . ' role="presentation">';
-		echo '<a href="' . $rootpath . $link . '">' . $label . '</a></li>';
+		echo '<a href="' . $rootpath . $link . '">';
+		echo '<span class="fa fa-' . $label[0] . '"></span> ';
+		echo  $label[1] . '</a></li>';
 	}
 
 	echo '</ul>';
