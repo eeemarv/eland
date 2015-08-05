@@ -278,7 +278,8 @@ array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars
 
 $includejs = '
 	<script src="' . $cdn_datepicker . '"></script>
-	<script src="' . $cdn_datepicker_nl . '"></script>';
+	<script src="' . $cdn_datepicker_nl . '"></script>
+	<script src="' . $rootpath . 'js/generate_password.js"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 

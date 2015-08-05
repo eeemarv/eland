@@ -276,21 +276,72 @@ div.top-buttons a
   border-bottom-color: transparent;
 }
 
-.nav-tabs > li.active > a.bg-danger
+.nav-tabs > li.active > a.bg-danger,
+.nav-tabs > li.active > a.bg-danger:focus
 {
   background-color: #f2dede;
 }
-.nav-tabs > li.active > a.bg-danger:hover
+
+.nav-tabs > li > a.bg-danger:hover
 {
   background-color: #e4b9b9;
 }
-.nav-tabs > li.active > a.bg-success
+
+.nav-tabs > li.active > a.bg-success,
+.nav-tabs > li.active > a.bg-success:focus
 {
   background-color: #dff0d8;
 }
-.nav-tabs > li.active > a.bg-success:hover
+
+.nav-tabs > li > a.bg-success:hover
 {
-  background-color: c1e2b3;
+  background-color: #c1e2b3;
+}
+
+.nav-tabs > li.active > a.bg-warning,
+.nav-tabs > li.active > a.bg-warning:focus
+{
+  background-color: #fcf8e3; 
+}
+.nav-tabs > li > a.bg-warning:hover
+{
+  background-color: #faf2cc; 
+}
+.nav-tabs > li.active > a.bg-info,
+.nav-tabs > li.active > a.bg-info:focus
+{
+  background-color: #d9edf7;
+}
+
+.nav-tabs > li > a.bg-info:hover
+{
+  background-color: #c4e3f3;
+}
+
+.nav-tabs > li > a.bg-extern,
+.nav-tabs > li > a.bg-extern:focus,
+table tr.extern > td
+{
+  background-color: #ffdbfc;
+}
+
+.nav-tabs > li:not(.active) > a.bg-extern:hover,
+table tr.extern:hover > td
+{
+  background-color: #ffd0f1;
+}
+
+.nav-tabs > li > a.bg-inactive,
+.nav-tabs > li > a.bg-inactive:focus,
+table tr.inactive > td
+{
+  background-color: #d8d8d8;
+}
+
+.nav-tabs > li:not(.active) > a.bg-inactive:hover,
+table tr.inactive:hover > td
+{
+  background-color: #d0d0d0;
 }
 
 .nav-tabs > li > a,

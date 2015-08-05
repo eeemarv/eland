@@ -1,30 +1,67 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$status_ary = array(
-	0 	=> 'inactief',
-	1 	=> 'actief',
-	2 	=> 'uitstapper',
-	3	=> 'instapper',		// not used
-	4	=> 'secretariaat',	// not used
-	5	=> 'info-pakket',
-	6	=> 'info-moment',
-	7	=> 'extern',
+$q = ($_GET['q']) ?: '';
+
+$st = array(
+	'all'		=> array(
+		'lbl'	=> 'Alle',
+	),
+	'active'	=> array(
+		'lbl'	=> 'Actief',
+		'st'	=> 1,
+		'hsh'	=> '58d267',
+	),
+	'leaving'	=> array(
+		'lbl'	=> 'Uitstappers',
+		'st'	=> 2,
+		'hsh'	=> 'ea4d04',
+		'cl'	=> 'danger',
+	),
+	'new'		=> array(
+		'lbl'	=> 'Instappers',
+		'st'	=> 3,
+		'hsh'	=> 'e25b92',
+		'cl'	=> 'success',
+	),
+	'inactive'	=> array(
+		'lbl'	=> 'Inactief',
+		'st'	=> 0,
+		'hsh'	=> '79a240',
+		'cl'	=> 'inactive',
+	),
+	'info-packet'	=> array(
+		'lbl'	=> 'Info-pakket',
+		'st'	=> 5,
+		'hsh'	=> '2ed157',
+		'cl'	=> 'warning',
+	),
+	'info-moment'	=> array(
+		'lbl'	=> 'Info-moment',
+		'st'	=> 6,
+		'hsh'	=> '065878',
+		'cl'	=> 'info',
+	),
+	'extern'	=> array(
+		'lbl'	=> 'Extern',
+		'st'	=> 7,
+		'hsh'	=> '05306b',
+		'cl'	=> 'extern',
+	),
 );
 
-$status_class = array(
-	0	=> 'black',
-	1	=> '',
-	2	=> 'danger',
-	3	=> 'success',
-	4	=> '',
-	5	=> 'warning',
-	6	=> 'info',
-	7	=> 'inactif',
+$status_ary = array(
+	0 	=> 'inactive',
+	1 	=> 'active',
+	2 	=> 'leaving',
+	3	=> 'new',
+	5	=> 'info-packet',
+	6	=> 'info-moment',
+	7	=> 'extern',
 );
 
 $users = $db->GetArray('select * from users order by letscode asc');
@@ -54,17 +91,51 @@ $top_buttons .= '<span class="hidden-xs hidden-sm"> Saldo mail</span></a>';
 $h1 = 'Gebruikers';
 $fa = 'users';
 
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
+
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
+
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+
+foreach ($st as $k => $s)
+{
+	$class_li = ($k == 'all') ? ' class="active"' : '';
+	$class_a  = ($s['cl']) ?: 'white';
+	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
+	echo 'data-filter="' . (($s['hsh']) ?: '') . '">' . $s['lbl'] . '</a></li>';
+}
+
+echo '</ul>';
+echo '<input type="hidden" value="" id="combined-filter">';
+
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable">';
+echo '<table class="table table-bordered table-striped table-hover footable"';
+echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
 echo '<th data-hide="phone">Rol</th>';
-echo '<th data-hide="phone">Status</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
@@ -87,11 +158,14 @@ echo '<tbody>';
 foreach($users as $u)
 {
 	$id = $u['id'];
-	$status = $u['status'];
-	$new_user = ($newusertreshold < strtotime($u['adate'])) ? true : false;
-	$class = ($new_user && $status == 1) ? 'success' : '';
-	$class = ($status_class[$u['status']]) ?: $class;
-	$class = ($class) ? ' class="' . $class . '"' : '';
+
+	$status_key = $status_ary[$u['status']];
+	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($u['adate'])) ? 'new' : $status_key;
+
+	$hsh = ($st[$status_key]['hsh']) ?: '';
+	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
+
+	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
 	echo '<tr' . $class . '>';
 
@@ -108,11 +182,7 @@ foreach($users as $u)
 	echo $u['accountrole'];
 	echo '</td>';
 
-	echo '<td>';
-	echo $status_ary[$u['status']];
-	echo '</td>';
-	
-	echo '<td>';
+	echo '<td data-value="' . $hsh . '">';
 	echo render_contacts($contacts[$id]['tel']);
 	echo '</td>';
 	
