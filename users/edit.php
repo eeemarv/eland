@@ -35,7 +35,8 @@ if ($_POST['zend'])
 	);
 
 	$contact = $_POST['contact'];
-	$activate = $_POST['activate'];
+	$notify = $_POST['notify'];
+	$password = $_POST['pw'];
 
 	foreach ($contact as $c)
 	{
@@ -82,6 +83,18 @@ if ($_POST['zend'])
 		}
 	}
 
+	if ($mode == 'new')
+	{
+		if (!$password)
+		{
+			$errors[] = 'Gelieve een paswoord in te vullen.';
+		}
+		else if (!password_strength($password))
+		{
+			$errors[] = 'Het paswoord is niet sterk genoeg.';
+		}
+	}
+
 	if (!count($errors))
 	{
 		$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
@@ -90,16 +103,13 @@ if ($_POST['zend'])
 		{
 			$user['creator'] = $s_id;
 			$user['cdate'] = date('Y-m-d H:i:s');
-			if ($user['activate'] || $user['status'] == 1)
+
+			if ($user['status'] == 1)
 			{
-				$user["adate"] = date("Y-m-d H:i:s");
+				$user['adate'] = date('Y-m-d H:i:s');
 			}
 
-			if ($activate)
-			{
-				$password = generatePassword(); 
-				$user['password'] = hash('sha512', $password);
-			}
+			$user['password'] = hash('sha512', $password);
 
 			if ($db->AutoExecute('users', $user, 'INSERT'))
 			{
@@ -125,22 +135,21 @@ if ($_POST['zend'])
 					$db->AutoExecute('contact', $insert, 'INSERT');
 				}
 
-				// Activate the user if activate is set
 				$mailenabled = readconfigfromdb('mailenabled');
 
-				if($activate && !empty($mail) && $mailenabled)
+				if($notify && !empty($mail) && $mailenabled && $user['status'] == 1)
 				{
 					$user['mail'] = $mail;
 					sendactivationmail($password, $user);
 					sendadminmail($user);
-					$alert->success("OK - Activatiemail verstuurd");
+					$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
 				}
 				else
 				{
-					$alert->warning('Geen activatiemail verstuurd.');
+					$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 				}
 
-				header('Location: view.php?id=' . $id);
+				header('Location: ' . $rootpath . 'users/view.php?id=' . $id);
 				exit;
 
 				if (!$mailenabled)
@@ -155,7 +164,15 @@ if ($_POST['zend'])
 		}
 		else if ($id)
 		{
+			$user_stored = readuser($id);
+
 			$user['mdate'] = date('Y-m-d H:i:s');
+
+			if (!$user_stored['adate'] && $user['status'] == 1)
+			{
+				$user['adate'] = date('Y-m-d H:i:s');
+			}
+
 			if($db->AutoExecute('users', $user, 'UPDATE', 'id = ' . $id))
 			{
 				$alert->success('Gebruiker aangepast.');
@@ -209,7 +226,7 @@ if ($_POST['zend'])
 						'id = ' . $value['id'] . ' AND id_user = ' . $id);
 				}
 
-				header('Location: view.php?id=' . $id);
+				header('Location: ' . $rootpath . 'users/view.php?id=' . $id);
 				exit;
 			}
 			else
@@ -279,7 +296,8 @@ array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars
 $includejs = '
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $rootpath . 'js/generate_password.js"></script>';
+	<script src="' . $rootpath . 'js/generate_password.js"></script>
+	<script src="' . $rootpath . 'js/generate_password_onload.js"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
@@ -376,7 +394,7 @@ echo '</div>';
 echo '</div>';
 
 $status_ary = array(
-	0	=> 'Gedesactiveerd',
+	0	=> 'Inactief',
 	1	=> 'Actief',
 	2	=> 'Uitstapper',	
 	5	=> 'Info-pakket',
@@ -481,10 +499,21 @@ echo '</div>';
 
 if ($mode == 'new')
 {
+	echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
+	echo '<br><br>';
+	
 	echo '<div class="form-group">';
-	echo '<label for="activate" class="col-sm-2 control-label">Activeren? (mail met paswoord versturen)</label>';
+	echo '<label for="pw" class="col-sm-2 control-label">Paswoord</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="checkbox" name="activate" id="activate"';
+	echo '<input type="text" class="form-control" id="pw" name="pw" ';
+	echo 'value="' . $password . '" required>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="notify" class="col-sm-2 control-label">Zend mail met paswoord naar gebruiker (enkel wanneer account actief is.)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="checkbox" name="notify" id="notify"';
 	echo ' checked="checked"';
 	echo '>';
 	echo '</div>';
