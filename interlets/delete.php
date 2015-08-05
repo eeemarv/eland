@@ -1,9 +1,9 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $id = $_GET["id"];
 
@@ -12,7 +12,7 @@ if(empty($id)){
 	exit;
 }
 
-if(isset($_POST["zend"]))
+if(isset($_POST['zend']))
 {
 	if($db->Execute('DELETE FROM letsgroups WHERE id = ' . $id))
 	{
@@ -26,6 +26,7 @@ if(isset($_POST["zend"]))
 $groupname = $db->GetOne('SELECT groupname FROM letsgroups WHERE id = ' . $id);
 
 $h1 = 'Letsgroep verwijderen: ' . $groupname;
+$fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 

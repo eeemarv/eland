@@ -68,29 +68,33 @@ if ($s_letscode)
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
-		echo '<li><a href="' . $rootpath . 'userdetails/mydetails.php">Mijn gegevens</a></li>';
-		echo '<li><a href="' . $rootpath . 'userdetails/mymsg_overview.php">Mijn vraag en aanbod</a></li>';
-		echo '<li><a href="' . $rootpath . 'userdetails/mytrans_overview.php">Mijn transacties</a></li>';
+		echo '<li><a href="' . $rootpath . 'userdetails/mydetails.php">';
+		echo '<span class="fa fa-user"></span> Mijn gegevens</a></li>';
+		echo '<li><a href="' . $rootpath . 'userdetails/mymsg_overview.php">';
+		echo '<span class="fa fa-newspaper-o"></span> Mijn vraag en aanbod</a></li>';
+		echo '<li><a href="' . $rootpath . 'userdetails/mytrans_overview.php">';
+		echo '<span class="fa fa-exchange"></span> Mijn transacties</a></li>';
 		echo '<li class="divider"></li>';
 	}
-	echo '<li><a href="' . $rootpath . 'logout.php">Uitloggen</a></li>';
+	echo '<li><a href="' . $rootpath . 'logout.php">';
+	echo '<span class="fa fa-sign-out"></span> Uitloggen</a></li>';
 	echo '</ul>';
 	echo '</li>';
 	if ($s_accountrole == 'admin')
 	{
 		$menu = array(
-			'users/overview.php'						=> 'Gebruikers',
-			'categories/overview.php'	 				=> 'Categorieën',
-			'interlets/overview.php'					=> 'LETS Groepen',
-			'apikeys/overview.php'						=> 'Apikeys',
-			'type_contact/overview.php'					=> 'Contact types',
-			'messages/overview.php'						=> 'Vraag & Aanbod',
-			'reports/overview.php'						=> 'Rapporten',
-			'preferences/config.php'					=> 'Instellingen',
-			'export.php'								=> 'Export',
+			'users/overview.php'						=> array('users', 'Gebruikers'),
+			'categories/overview.php'	 				=> array('files-o', 'Categorieën'),
+			'interlets/overview.php'					=> array('share-alt', 'LETS Groepen'),
+			'apikeys/overview.php'						=> array('key', 'Apikeys'),
+			'type_contact/overview.php'					=> array('circle-o-notch', 'Contact types'),
+			'messages/overview.php'						=> array('newspaper-o','Vraag & Aanbod'),
+			'reports/overview.php'						=> array('calculator', 'Rapporten'),
+			'preferences/config.php'					=> array('gears', 'Instellingen'),
+			'export.php'								=> array('download', 'Export'),
 	//		'bulk.php'									=> 'Bulk acties',
-			'transactions/many_to_one.php'				=> 'Massa-Transactie',
-			'eventlog.php'								=> 'Logs',
+			'transactions/many_to_one.php'				=> array('exchange', 'Massa-Transactie'),
+			'eventlog.php'								=> array('list', 'Logs'),
 		);
 
 		echo '<li class="dropdown">';
@@ -103,7 +107,8 @@ if ($s_letscode)
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
 		{
-			echo '<li><a href="' . $rootpath . $link .'">' . $label . '</a></li>';
+			echo '<li><a href="' . $rootpath . $link .'">';
+			echo '<span class="fa fa-' . $label[0] . '"></span> ' . $label[1] . '</a></li>';
 		}
 		echo '</ul>';
 		echo '</li>';
@@ -126,8 +131,8 @@ $menu = array();
 if (!$s_accountrole)
 {
 	$menu[] = array(
-		'login.php'		=> 'Login',
-		'help.php'		=> 'Help',
+		'login.php'		=> array('sign-in', 'Login'),
+		'help.php'		=> array('ambulance', 'Help'),
 	);
 }
 else

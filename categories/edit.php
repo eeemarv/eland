@@ -69,6 +69,7 @@ if(isset($_POST["zend"])){
 }
 
 $h1 = 'Categorie aanpassen : ' . $cat['name'];
+$fa = 'files-o';
 
 include($rootpath."includes/inc_header.php");
 

@@ -1,12 +1,9 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role='admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $setting = $_GET['setting'];
 
@@ -32,6 +29,7 @@ else
 $description = $db->Getone('select description from config where setting = \'' . $setting . '\'');
 
 $h1 = 'Instelling ' . $setting . ' aanpassen';
+$fa = 'gears';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -1,17 +1,17 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
 
-if (!isset($_GET["id"]))
+if (!isset($_GET['id']))
 {
-	header('Location: overview.php');
+	header('Location: ' . $rootpath . 'interlets/overview.php');
 }
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 $group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
 
@@ -33,6 +33,7 @@ $top_buttons .= ' title="Lijst letsgroepen"><i class="fa fa-share-alt"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 $h1 = $group['groupname'];
+$fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -1,14 +1,15 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 // exclude plaza stuff
 $config = $db->GetArray('SELECT * FROM config where category not like \'plaza%\' ORDER BY category, setting');
 
 $h1 = 'Instellingen';
+$fa = 'gears';
 
 include $rootpath . 'includes/inc_header.php';
 

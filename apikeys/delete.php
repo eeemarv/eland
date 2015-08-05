@@ -28,6 +28,7 @@ if(isset($_POST['zend']))
 $apikey = $db->GetRow('SELECT * FROM apikeys WHERE id = ' . $id);
 
 $h1 = 'Apikey verwijderen?';
+$fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 

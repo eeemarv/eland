@@ -130,6 +130,7 @@ if(readconfigfromdb("maintenance") == 1)
 }
 
 $h1 = 'Login';
+$fa = 'sign-in';
 
 require_once $rootpath . 'includes/inc_header.php';
 

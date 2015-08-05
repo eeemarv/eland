@@ -1,10 +1,10 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_form.php';
 
 $posted_list = array();
 
@@ -15,26 +15,26 @@ if (isset($_POST["zend"]))
 	$posted_list["leafnote"] = ($_POST["id_parent"] == 0) ? 0 : 1;
 
 	$error_list = array();
-	if (!isset($posted_list["name"])|| (trim($posted_list["name"])==""))
+	if (!isset($posted_list['name'])|| (trim($posted_list['name']) == ''))
 	{
-		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
+		$error_list[] = 'Vul naam in!';
 	}
-	if (!isset($posted_list["id_parent"])|| (trim($posted_list["id_parent"])==""))
+	if (!isset($posted_list['id_parent'])|| (trim($posted_list['id_parent']) == ''))
 	{
-		$error_list["id_parent"]="<font color='#F56DB5'>Vul <strong>hoofdrubriek</strong> in!</font>";
+		$error_list[] = 'Vul hoofdrubriek in!';
 	}
 
 	if (!count($error_list))
 	{
-		$posted_list["cdate"] = date("Y-m-d H:i:s");
-		$posted_list["id_creator"] = $s_id;
-		$posted_list["fullname"] = ($posted_list['leafnote']) ? $db->GetOne("SELECT name FROM categories WHERE id=". (int) $posted_list["id_parent"]) . ' - ' : '';
-		$posted_list['fullname'] .= $posted_list["name"];
+		$posted_list['cdate'] = date('Y-m-d H:i:s');
+		$posted_list['id_creator'] = $s_id;
+		$posted_list['fullname'] = ($posted_list['leafnote']) ? $db->GetOne('SELECT name FROM categories WHERE id = '. (int) $posted_list["id_parent"]) . ' - ' : '';
+		$posted_list['fullname'] .= $posted_list['name'];
 
-		if ($db->AutoExecute("categories", $posted_list, 'INSERT'))
+		if ($db->AutoExecute('categories', $posted_list, 'INSERT'))
 		{
 			$alert->success('Categorie toegevoegd.');
-			header('Location: overview.php');
+			header('Location: ' . $rootpath . 'categories/overview.php');
 			exit;
 		}
 
@@ -51,6 +51,7 @@ $parent_cats += $db->GetAssoc('SELECT id, name FROM categories WHERE leafnote = 
 $id_parent = ($posted_list['id_parent']) ? $posted_list['id_parent'] : 0;
 
 $h1 = 'Categorie toevoegen';
+$fa = 'files-o';
 
 include $rootpath . 'includes/inc_header.php';
 

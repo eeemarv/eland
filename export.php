@@ -6,6 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $h1 = 'Export';
+$fa = 'download';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -48,7 +48,8 @@ else if ($mode == 'edit')
 }
 
 $h1 = 'LETS groep ';
-$h1 .= ($mode == 'edit') ? 'aanpassen' : 'toevoegen'; 
+$h1 .= ($mode == 'edit') ? 'aanpassen' : 'toevoegen';
+$fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 

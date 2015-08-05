@@ -1,11 +1,12 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $h1 = 'Interlets queue';
+$fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 

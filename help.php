@@ -49,6 +49,8 @@ else if (!readconfigfromdb('support'))
 {
 	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
+ 
+$readonly = ($s_id) ? ' readonly' : '';
 
 $h1 = 'eLAS help';
 $fa = 'ambulance';
@@ -64,7 +66,7 @@ echo '<div class="form-group">';
 echo '<label for="login" class="col-sm-2 control-label">Login</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="login" name="login" ';
-echo 'value="' . $posted_list['login'] . '" required>';
+echo 'value="' . $posted_list['login'] . '" required' . $readonly . '>';
 echo '</div>';
 echo '</div>';
 
@@ -72,7 +74,7 @@ echo '<div class="form-group">';
 echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $posted_list['email'] . '" required>';
+echo 'value="' . $posted_list['email'] . '" required' . $readonly . '>';
 echo '</div>';
 echo '</div>';
 

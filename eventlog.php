@@ -18,6 +18,7 @@ $includejs = '
 	<script src="' . $rootpath . 'js/eventlog.js"></script>';
 
 $h1 = 'Logs';
+$fa = 'list';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -7,8 +7,8 @@ require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $posted_list = array();
 $posted_list["apikey"] = $_POST["apikey"];
-$posted_list["comment"] = $_POST["comment"];
-$posted_list["type"] = $_POST["type"];
+$posted_list['comment'] = $_POST["comment"];
+$posted_list['type'] = 'interlets';
 
 if ($_POST['zend'])
 {
@@ -24,6 +24,7 @@ if ($_POST['zend'])
 $apikey = sha1(readconfigfromdb('systemname') . microtime());
 
 $h1 = 'Apikey toevoegen';
+$fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -37,14 +38,6 @@ echo '<label for="apikey" class="col-sm-2 control-label">Apikey</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="apikey" name="apikey" ';
 echo 'value="' . $apikey . '" required readonly>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="type" class="col-sm-2 control-label">Type</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="type" name="type" ';
-echo 'value="interlets" required readonly>';
 echo '</div>';
 echo '</div>';
 

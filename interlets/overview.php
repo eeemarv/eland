@@ -1,9 +1,9 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $groups = $db->GetArray('SELECT * FROM letsgroups');
 
@@ -16,6 +16,7 @@ $top_buttons .= ' title="Interlets transactie queue"><i class="fa fa-exchange"><
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Interlets queue</span></a>';
 
 $h1 = 'LETS groepen';
+$fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 

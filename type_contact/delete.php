@@ -1,9 +1,9 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $id = $_GET['id'];
 
@@ -46,6 +46,7 @@ if(isset($_POST['zend']))
 }
 
 $h1 = 'Contact type verwijderen: ' . $ct['name'];
+$fa = 'circle-o-notch';
 
 include $rootpath . 'includes/inc_header.php';	
 

@@ -12,6 +12,7 @@ $top_buttons .= ' title="Apikey toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 $h1 = 'Apikeys';
+$fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -21,8 +22,7 @@ echo '<thead>';
 echo '<tr>';
 echo '<th>Id</th>';
 echo '<th>Comment</th>';
-echo '<th data-hide="phone">Type</th>';
-echo '<th data-hide="phone, tablet">Apikey</th>';
+echo '<th data-hide="phone">Apikey</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="true">Creatietijdstip</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>';
 echo '</tr>';
@@ -35,7 +35,6 @@ foreach($apikeys as $a)
 	echo '<tr>';
 	echo '<td>' . $a['id'] . '</td>';
 	echo '<td>' . $a['comment'] . '</td>';
-	echo '<td>' . $a['type'] . '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
 	echo '<td>' . $a['created'] . '</td>';
 	echo '<td><a href="' . $rootpath . 'apikeys/delete.php?id=' . $a['id'] . '" class="btn btn-danger btn-xs">';

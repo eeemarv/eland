@@ -1,20 +1,20 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 if(!$id)
 {
-	header('Location: overview.php');
+	header('Location: ' . $rootpath . 'categories/overview.php');
 }
 
-if(isset($_POST["zend"]))
+if(isset($_POST['zend']))
 {
-	if ($db->Execute("DELETE FROM categories WHERE id =".$id))
+	if ($db->Execute('DELETE FROM categories WHERE id = ' . $id))
 	{
 		$alert->success('Categorie verwijderd.');
 		header('Location: overview.php');
@@ -27,6 +27,7 @@ if(isset($_POST["zend"]))
 $fullname = $db->GetOne('SELECT fullname FROM categories WHERE id = ' . $id);
 
 $h1 = 'Categorie verwijderen : ' . $fullname;
+$fa = 'files-o';
 
 include $rootpath . 'includes/inc_header.php';
 

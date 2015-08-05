@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -33,6 +33,7 @@ if (isset($_POST["zend"]))
 }
 
 $h1 = 'Contact type toevoegen';
+$fa = 'circle-o-notch';
 
 include $rootpath . 'includes/inc_header.php';
 

@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
@@ -19,6 +19,7 @@ $top_buttons .= ' title="Categorie toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 $h1 = 'Categorieën';
+$fa = 'files-o';
 
 include $rootpath . 'includes/inc_header.php';
 

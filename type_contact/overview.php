@@ -16,6 +16,7 @@ $top_buttons .= ' title="Contact type toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 $h1 = 'Contact types';
+$fa = 'circle-o-notch';
 
 include $rootpath . 'includes/inc_header.php';
 

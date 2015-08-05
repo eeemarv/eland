@@ -1,9 +1,9 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $id = $_GET['id'];
 
@@ -59,6 +59,7 @@ else
 }
 
 $h1 = 'Contact type aanpassen';
+$fa = 'circle-o-notch';
 
 include $rootpath . 'includes/inc_header.php';
 
