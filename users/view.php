@@ -70,10 +70,6 @@ $top_buttons .= '<a href="editpw.php?id='. $id . '" class="btn btn-info"';
 $top_buttons .= ' title="Paswoord aanpassen"><i class="fa fa-key"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
 
-$top_buttons .= '<a href="activate.php?id='. $id . '" class="btn btn-warning"';
-$top_buttons .= ' title="Activeren"><i class="fa fa-check"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Activeren</span></a>';
-
 if (!$trans_en)
 {
 	$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';

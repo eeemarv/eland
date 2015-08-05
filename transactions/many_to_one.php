@@ -6,6 +6,65 @@ $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath.'includes/inc_adoconnection.php';
 
+$q = ($_GET['q']) ?: '';
+
+$st = array(
+	'all'		=> array(
+		'lbl'	=> 'Alle',
+	),
+	'active'	=> array(
+		'lbl'	=> 'Actief',
+		'st'	=> 1,
+		'hsh'	=> '58d267',
+	),
+	'leaving'	=> array(
+		'lbl'	=> 'Uitstappers',
+		'st'	=> 2,
+		'hsh'	=> 'ea4d04',
+		'cl'	=> 'danger',
+	),
+	'new'		=> array(
+		'lbl'	=> 'Instappers',
+		'st'	=> 3,
+		'hsh'	=> 'e25b92',
+		'cl'	=> 'success',
+	),
+	'inactive'	=> array(
+		'lbl'	=> 'Inactief',
+		'st'	=> 0,
+		'hsh'	=> '79a240',
+		'cl'	=> 'inactive',
+	),
+	'info-packet'	=> array(
+		'lbl'	=> 'Info-pakket',
+		'st'	=> 5,
+		'hsh'	=> '2ed157',
+		'cl'	=> 'warning',
+	),
+	'info-moment'	=> array(
+		'lbl'	=> 'Info-moment',
+		'st'	=> 6,
+		'hsh'	=> '065878',
+		'cl'	=> 'info',
+	),
+	'extern'	=> array(
+		'lbl'	=> 'Extern',
+		'st'	=> 7,
+		'hsh'	=> '05306b',
+		'cl'	=> 'extern',
+	),
+);
+
+$status_ary = array(
+	0 	=> 'inactive',
+	1 	=> 'active',
+	2 	=> 'leaving',
+	3	=> 'new',
+	5	=> 'info-packet',
+	6	=> 'info-moment',
+	7	=> 'extern',
+);
+
 $currency = readconfigfromdb('currency');
 
 $users = $db->GetAssoc(
@@ -221,9 +280,11 @@ if ($to_letscode)
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/many_to_one.js"></script>';
+	<script src="' . $rootpath . 'js/many_to_one.js"></script>
+	<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
 $h1 = 'Massa transactie: "veel naar één"';
+$fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -282,12 +343,44 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
+
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+
+foreach ($st as $k => $s)
+{
+	$class_li = ($k == 'all') ? ' class="active"' : '';
+	$class_a  = ($s['cl']) ?: 'white';
+	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
+	echo 'data-filter="' . (($s['hsh']) ?: '') . '">' . $s['lbl'] . '</a></li>';
+}
+
+echo '</ul>';
+echo '<input type="hidden" value="" id="combined-filter">';
+
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="panel panel-info">';
 
 echo '<table class="table table-bordered table-striped table-hover panel-body footable"';
-echo ' data-filter="#filter" data-filter-minimum="1">';
+echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
@@ -303,9 +396,13 @@ echo '<tbody>';
 
 foreach($users as $user_id => $user)
 {
+	$status_key = $status_ary[$user['status']];
+	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($user['adate'])) ? 'new' : $status_key;
 
-	$class = ($newusertreshold < strtotime($user['adate'])) ? ' class="success"' : '';
-	$class = ($user['status'] == 2) ? ' class="danger"' : $class;
+	$hsh = ($st[$status_key]['hsh']) ?: '';
+	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
+
+	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
 	echo '<tr' . $class . '>';
 
@@ -318,7 +415,7 @@ foreach($users as $user_id => $user)
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
 	echo htmlspecialchars($user['fullname'],ENT_QUOTES).'</a></td>';
 	
-	echo '<td>';
+	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="' . $amount[$user_id] . '" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
