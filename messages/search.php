@@ -81,6 +81,7 @@ function show_results($zoekresultaten){
 	echo "<td valign='top' nowrap><strong>V/A</strong></td>";
 	echo "<td valign='top' nowrap><strong>Inhoud</strong></td>";
 	echo "<td valign='top' nowrap><strong>Wie</strong></td>";
+	echo "<td valign='top' nowrap><strong>Plaats</strong></td>";
 	echo "</tr>";
 	$rownumb=0;
 	foreach ($zoekresultaten as $value){
@@ -109,7 +110,9 @@ function show_results($zoekresultaten){
 		echo "</td><td valign='top' nowrap>";
 		echo '<a href="'.$rootpath.'memberlist_view.php?id=' . $value['id_user'] . '">';
 		echo htmlspecialchars($value["name"],ENT_QUOTES) ." (". trim($value["letscode"]).")";
-		echo "</a></td></tr>";
+		echo "</a></td>";
+		echo '<td>' . $value['postcode'] . '</td>';
+		echo "</tr>";
 	}
 	echo "</table></div>";
 }

@@ -40,10 +40,10 @@ echo "<td><strong nowrap>V/A</strong></td>";
 
 echo "<td><strong nowrap>Wat</strong></td>";
 echo "<td><strong nowrap>Wie</strong></td>";
-echo "<td><strong nowrap>Geldig tot</strong></td>";
+echo "<td><strong nowrap>Plaats</strong></td>";
 echo "</tr>";
 $rownumb=0;
-foreach ($msgs as $key => $value){
+foreach ($msgs as $value){
 	$rownumb++;
 	if($rownumb % 2 == 1){
 		echo "<tr class='uneven_row'>";
@@ -74,7 +74,7 @@ foreach ($msgs as $key => $value){
 	echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
 	echo "</a></td>";
 
-	echo "<td>";
+/*	echo "<td>";
 			if(strtotime($value["valdate"]) < time()) {
 					echo "<font color='red'><b>";
 			}
@@ -82,7 +82,8 @@ foreach ($msgs as $key => $value){
 			if(strtotime($value["valdate"]) < time()) {
 					echo "</b></font>";
 			}
-			echo "</td>";
+			echo "</td>"; */
+	echo '<td>' . $value['postcode'] . '</td>';
 	echo "</tr>";
 }
 echo "</table></div>";
@@ -97,6 +98,7 @@ function get_msgs($id){
 					c.fullname AS catname,
 					u.name AS username,
 					u.id AS userid,
+					u.postcode,
 					c.id_parent AS parent_id
 				FROM messages m, users u, categories c
 				WHERE m.id_category = c.id

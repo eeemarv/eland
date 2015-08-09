@@ -248,7 +248,7 @@ function show_all_msgs($messagerows){
 
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";
 	echo "<tr class='header'>";
-	echo "<td colspan='3'><strong>Laatste nieuwe Vraag & Aanbod</strong></td>";
+	echo "<td colspan='4'><strong>Laatste nieuwe Vraag & Aanbod</strong></td>";
 	echo "</tr>";
 	$rownumb=0;
 	foreach($messagerows as $key => $value){
@@ -283,6 +283,8 @@ function show_all_msgs($messagerows){
 		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['uid'] . '">';
 		echo htmlspecialchars($value["username"],ENT_QUOTES)." (".trim($value["letscode"]).")";
 		echo "</a></td>";
+
+		echo '<td>' . $value['postcode'] . '</td>';
 		echo "</tr>"; 
 	}
 	echo "</table>";
@@ -316,6 +318,7 @@ function get_all_msgs(){
 			u.id AS uid,
 			u.name AS username,
 			u.letscode,
+			u.postcode,
 			m.cdate AS date
 		FROM messages m, users u
 		WHERE m.id_user = u.id

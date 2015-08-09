@@ -18,6 +18,7 @@ $message = $db->GetRow('SELECT m.*,
 			u.letscode,
 			u.id as uid,
 			u.fullname as username,
+			u.postcode,
 			m.cdate AS date, 
 			m.validity AS valdate,
 			c.id as cid,
@@ -248,10 +249,11 @@ function show_msg($message, $balance)
 	echo "</i>";
 	//echo htmlspecialchars($message["name"],ENT_QUOTES)." (" .trim($message["letscode"])."): ".$message["content"];
 	echo htmlspecialchars($message["content"]);
-	echo "</font></strong><br>";
+	echo "</font></strong><br>Van: ";
 	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $message['id_user'] . '">';
 	echo htmlspecialchars($message["username"],ENT_QUOTES) ."  " .trim($message["letscode"]);
 	echo "</a><i> Saldo-stand: " .$balance ." " .$currency ."</i>";
+	echo '<br>Plaats: ' . $message['postcode'];
 	echo "</td></tr>";
 	echo '<tr class="even_row"><td>Categorie: ';
 	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $message['cid'] . '">';
