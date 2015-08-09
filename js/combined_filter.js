@@ -8,6 +8,7 @@ $(document).ready(function() {
 		var cf = $('#combined-filter');
 		cf.val($('#q').val() + f);
 		cf.keyup();
+		resetInputs();
 		e.preventDefault();
 	});
 
@@ -17,12 +18,21 @@ $(document).ready(function() {
 		var cf = $('#combined-filter');
 		cf.val(f);
 		cf.keyup();
+		resetInputs();
 	});
+
+	function resetInputs(){
+		if ($('input#total')){
+			$('table tr > td > input[type="number"]').each(function() {
+				$(this).val('');
+			});
+			$('input#total').val('');			
+		}
+	}
 
 	var footableFilter = $('table').data('footable-filter');
 	var q = $('#q').val();
 	footableFilter.filter(q);
-
 	$('form[method!="post"]').submit(function( event ) {
 		event.preventDefault();
 	});	

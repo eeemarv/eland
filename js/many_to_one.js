@@ -46,7 +46,7 @@ $('table input[type="number"]').keyup(function(){
 
 function recalc_sum(){
     var sum = 0;
-    $('table input[type="number"]').each(function() {
+    $('table input[type="number"]:visible').each(function() {
 		sum += Number($(this).val());
     });
 	$('input#total').val(sum);
@@ -88,7 +88,7 @@ function fill_in(data)
 	var perc = $('#percentage_balance').val() / 100;
 	var base = $('#percentage_balance_base').val();
 
-    $('table input[type="number"]').each(function() {
+    $('table input[type="number"]:visible').each(function() {
 
 		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
 
