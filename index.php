@@ -34,6 +34,7 @@ $msgs = $db->GetArray('SELECT m.*,
 		u.id AS uid,
 		u.fullname,
 		u.letscode,
+		u.postcode,
 		c.fullname as cat,
 		c.id as cid
 	from messages m, users u, categories c
@@ -189,7 +190,6 @@ if($newusers)
 		echo htmlspecialchars($value['fullname'],ENT_QUOTES).'</a>';
 		echo '</td>';
 		echo '</tr>';
-
 	}
 	echo '</tbody>';
 	echo '</table>';
@@ -210,11 +210,12 @@ if($msgs)
 	echo ' data-filter="#filter" data-filter-minimum="1">';
 	echo '<thead>';
 	echo '<tr>';
-	echo "<th>V/A</th>";
-	echo "<th>Wat</th>";
+	echo '<th>V/A</th>';
+	echo '<th>Wat</th>';
 	echo '<th data-hide="phone, tablet">Geldig tot</th>';
 	echo '<th data-hide="phone, tablet">Wie</th>';
 	echo '<th data-hide="phone, tablet">Categorie</th>';
+	echo '<th data-hide="phone">Plaats</th>';
 	echo '</tr>';
 	echo '</thead>';
 
@@ -252,6 +253,10 @@ if($msgs)
 		echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
 		echo htmlspecialchars($msg['cat'],ENT_QUOTES);
 		echo '</a>';
+		echo '</td>';
+
+		echo '<td>';
+		echo $msg['postcode'];
 		echo '</td>';
 
 		echo '</tr>';

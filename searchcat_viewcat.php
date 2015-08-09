@@ -14,7 +14,7 @@ if (!isset($_GET['id']))
 $id = $_GET['id'];
 
 $msgs = $db->GetArray('select m.*,
-		u.letscode, u.fullname, u.id as uid
+		u.letscode, u.fullname, u.id as uid, u.postcode
 	from messages m, users u
 	where m.id_user = u.id
 		and u.status in (1, 2)
@@ -47,6 +47,7 @@ echo "<th>V/A</th>";
 echo "<th>Wat</th>";
 echo '<th data-hide="phone, tablet">Geldig tot</th>';
 echo '<th data-hide="phone, tablet">Wie</th>';
+echo '<th data-hide="phone">Plaats</th>';
 echo '</tr>';
 echo '</thead>';
 
@@ -78,6 +79,10 @@ foreach($msgs as $msg)
 	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
 	echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
 	echo '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	echo $msg['postcode'];
 	echo '</td>';
 
 	echo '</tr>';

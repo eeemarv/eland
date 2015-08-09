@@ -1,16 +1,16 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'guest';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 if(isset($_GET['q']))
 {
 	$q = $_GET['q'];
 
 	$msgs = $db->GetArray('select m.*,
-		u.id as uid, u.letscode, u.fullname,
+		u.id as uid, u.letscode, u.fullname, u.postcode,
 		c.id as cid, c.fullname as cat
 		from messages m, users u, categories c
 		where lower(content) like \'%' . $q . '%\'
@@ -62,6 +62,7 @@ echo "<th>Wat</th>";
 echo '<th data-hide="phone, tablet">Geldig tot</th>';
 echo '<th data-hide="phone, tablet">Wie</th>';
 echo '<th data-hide="phone, tablet">Categorie</th>';
+echo '<th data-hide="phone">Plaats</th>';
 echo '</tr>';
 echo '</thead>';
 
@@ -99,6 +100,10 @@ foreach($msgs as $msg)
 	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
 	echo htmlspecialchars($msg['cat'],ENT_QUOTES);
 	echo '</a>';
+	echo '</td>';
+
+	echo '<td>';
+	echo $msg['postcode'];
 	echo '</td>';
 
 	echo '</tr>';

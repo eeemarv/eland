@@ -230,6 +230,9 @@ echo '</a>';
 echo ' (saldo: <span class="label label-default">' . $balance . '</span> ' .$currency . ')';
 echo '</dd>';
 
+echo '<dt>Plaats</dt>';
+echo '<dd>' . $user['postcode'] . '</dd>';
+
 echo '<dt>Aangemaakt op</dt>';
 echo '<dd>' . $message['cdate'] . '</dd>';
 
