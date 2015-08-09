@@ -127,7 +127,3 @@ function get_all_msgs($msg_type, $id_category){
 	$messagerows = $db->GetArray($query);
 	return $messagerows;
 }
-
-//include($rootpath."includes/inc_sidebar.php");
-//include($rootpath."includes/inc_footer.php");
-?>

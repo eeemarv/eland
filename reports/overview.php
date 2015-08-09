@@ -15,3 +15,4 @@ echo '<p><a href="balance.php">Saldo op datum</a></p>';
 echo '<p><a href="messages.php">Lijst Vraag & Aanbod per categorie</a></p>';
 
 include $rootpath . 'includes/inc_footer.php';
+
