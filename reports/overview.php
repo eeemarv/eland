@@ -6,7 +6,6 @@ require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_header.php");
-include($rootpath."includes/inc_nav.php");
 
 if(isset($s_id) && ($s_accountrole == "admin")){
 	show_ptitle();
@@ -33,6 +32,4 @@ function show_listing(){
 	echo "<br><a href='messages.php'>Lijst Vraag & Aanbod per categorie</a>";
 }
 
-include($rootpath."includes/inc_sidebar.php");
 include($rootpath."includes/inc_footer.php");
-?>

@@ -1,13 +1,13 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $groups = $db->GetArray('SELECT * FROM letsgroups');
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
 echo "<table width='100%' border=0><tr><td>";
 echo "<div id='navcontainer'>";
@@ -55,4 +55,4 @@ echo "<p><small><i>";
 echo "Belangrijk: er moet zeker een interletsrekening bestaan van het type internal om eLAS toe te laten met zichzelf te communiceren.  Deze moet een geldige SOAP URL en Apikey hebben.";
 echo "</i></small></p>";
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

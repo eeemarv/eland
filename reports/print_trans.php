@@ -136,6 +136,3 @@ function show_all_transactions($transactions){
 	echo "</table></div>";
 }
 
-#include($rootpath."includes/inc_sidebar.php");
-#include($rootpath."includes/inc_footer.php");
-?>

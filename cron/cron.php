@@ -16,19 +16,17 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$rootpath = "../";
+$rootpath = '../';
 $role = 'anonymous';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 require_once $rootpath . 'cron/inc_upgrade.php';
 require_once $rootpath . 'cron/inc_processqueue.php';
 require_once $rootpath . 'cron/inc_saldo_mail.php';
 
-require_once($rootpath."includes/inc_mailfunctions.php");
-require_once($rootpath."includes/inc_userinfo.php");
-
-require_once($rootpath."includes/inc_news.php");
+require_once $rootpath . 'includes/inc_mailfunctions.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
