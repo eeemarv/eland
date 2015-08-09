@@ -23,7 +23,7 @@ $(document).ready(function() {
 	var q = $('#q').val();
 	footableFilter.filter(q);
 
-	$('form').submit(function( event ) {
+	$('form[method!="post"]').submit(function( event ) {
 		event.preventDefault();
 	});	
 });

@@ -4,7 +4,7 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath.'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $q = ($_GET['q']) ?: '';
 
@@ -16,6 +16,11 @@ $st = array(
 		'lbl'	=> 'Actief',
 		'st'	=> 1,
 		'hsh'	=> '58d267',
+	),
+	'without-leaving-and-new' => array(
+		'lbl'	=> 'Actief zonder uit- en instappers',
+		'st'	=> '123',
+		'hsh'	=> '096024',
 	),
 	'leaving'	=> array(
 		'lbl'	=> 'Uitstappers',
@@ -47,12 +52,6 @@ $st = array(
 		'hsh'	=> '065878',
 		'cl'	=> 'info',
 	),
-	'extern'	=> array(
-		'lbl'	=> 'Extern',
-		'st'	=> 7,
-		'hsh'	=> '05306b',
-		'cl'	=> 'extern',
-	),
 );
 
 $status_ary = array(
@@ -63,6 +62,7 @@ $status_ary = array(
 	5	=> 'info-packet',
 	6	=> 'info-moment',
 	7	=> 'extern',
+	123 => 'without-leaving-and-new',
 );
 
 $currency = readconfigfromdb('currency');
@@ -401,6 +401,7 @@ foreach($users as $user_id => $user)
 
 	$hsh = ($st[$status_key]['hsh']) ?: '';
 	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
+	$hsh .= ($status_key == 'active') ? $st['without-leaving-and-new']['hsh'] : '';
 
 	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
