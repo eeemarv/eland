@@ -1,10 +1,74 @@
 <?php
 ob_start();
+
 $rootpath = '../';
 $role = 'admin';
-require_once $rootpath.'includes/inc_default.php';
-require_once $rootpath.'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
 
+$q = ($_POST['q']) ?: (($_GET['q']) ?: '');
+$hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '');
+$selected_users = $_POST['selected_users'];
+$selected_users = ltrim($selected_users, '.');
+$selected_users = explode('.', $selected_users);
+$selected_users = array_combine($selected_users, $selected_users);
+
+$st = array(
+	'all'		=> array(
+		'lbl'	=> 'Alle',
+	),
+	'active'	=> array(
+		'lbl'	=> 'Actief',
+		'st'	=> 1,
+		'hsh'	=> '58d267',
+	),
+	'without-leaving-and-new' => array(
+		'lbl'	=> 'Actief zonder uit- en instappers',
+		'st'	=> '123',
+		'hsh'	=> '096024',
+	),
+	'leaving'	=> array(
+		'lbl'	=> 'Uitstappers',
+		'st'	=> 2,
+		'hsh'	=> 'ea4d04',
+		'cl'	=> 'danger',
+	),
+	'new'		=> array(
+		'lbl'	=> 'Instappers',
+		'st'	=> 3,
+		'hsh'	=> 'e25b92',
+		'cl'	=> 'success',
+	),
+	'inactive'	=> array(
+		'lbl'	=> 'Inactief',
+		'st'	=> 0,
+		'hsh'	=> '79a240',
+		'cl'	=> 'inactive',
+	),
+	'info-packet'	=> array(
+		'lbl'	=> 'Info-pakket',
+		'st'	=> 5,
+		'hsh'	=> '2ed157',
+		'cl'	=> 'warning',
+	),
+	'info-moment'	=> array(
+		'lbl'	=> 'Info-moment',
+		'st'	=> 6,
+		'hsh'	=> '065878',
+		'cl'	=> 'info',
+	),
+);
+
+$status_ary = array(
+	0 	=> 'inactive',
+	1 	=> 'active',
+	2 	=> 'leaving',
+	3	=> 'new',
+	5	=> 'info-packet',
+	6	=> 'info-moment',
+	7	=> 'extern',
+	123 => 'without-leaving-and-new',
+);
 
 $currency = readconfigfromdb('currency');
 
@@ -16,6 +80,7 @@ $users = $db->GetAssoc(
 	ORDER BY letscode');
 
 list($to_letscode) = explode(' ', $_POST['to_letscode']);
+list($from_letscode) = explode(' ', $_POST['from_letscode']);
 $amount = $_POST['amount'] ?: array();
 $description = $_POST['description'];
 $password = $_POST['password'];
@@ -46,21 +111,29 @@ if ($_POST['zend'])
 		$errors[] = 'Vul een omschrijving in.';
 	}
 
-	if (!$to_letscode)
+	if ($to_letscode && $from_letscode)
 	{
-		$errors[] = 'Bestemmeling is niet ingevuld.';
+		$errors[] = '\'Van letscode\' en \'Aan letscode\' kunnen niet beide ingevuld worden.';
+	}
+	else if (!($to_letscode || $from_letscode))
+	{
+		$errors[] = '\'Van letscode\' OF \'Aan letscode\' moet ingevuld worden.';
 	}
 	else
 	{
-		$to_user_id = $db->GetOne('select id from users where letscode = \'' . $to_letscode . '\'');
+		$to_one = ($to_letscode) ? true : false;
+		$letscode = ($to_one) ? $to_letscode : $from_letscode;
 
-		if (!$to_user_id)
+		$one_uid = $db->GetOne('select id from users where letscode = \'' . $letscode . '\'');
+
+		if (!$one_uid)
 		{
-			$errors[] = 'Geen bestaande letscode voor bestemmeling.';
+			$field = ($to_one) ? '\'Aan letscode\'' : '\'Van letscode\'';
+			$errors[] = 'Geen bestaande letscode in veld ' . $field . '.';
 		}
 		else
 		{
-			unset($amount[$to_user_id]);
+			unset($amount[$one_uid]);
 		}
 	}
 
@@ -72,8 +145,13 @@ if ($_POST['zend'])
 
 	$count = 0;
 
-	foreach ($amount as $user_id => $amo)
+	foreach ($amount as $uid => $amo)
 	{
+		if (!$selected_users[$uid])
+		{
+			continue;
+		}
+
 		if (!$amo)
 		{
 			continue;
@@ -114,8 +192,11 @@ if ($_POST['zend'])
 		$date = date('Y-m-d H:i:s');
 		$cdate = gmdate('Y-m-d H:i:s');
 
+		$one_field = ($to_one) ? 'to' : 'from';
+		$many_field = ($to_one) ? 'from' : 'to';
+
 		$mail_ary = array(
-			'to' 			=> $to_user_id,
+			$one_field 		=> $one_uid,
 			'description'	=> $description,
 			'date'			=> $date,
 		);
@@ -123,30 +204,38 @@ if ($_POST['zend'])
 		$alert_success = $log = '';
 		$total = 0;
 
-		foreach ($amount as $from_user_id => $amo)
+		foreach ($amount as $many_uid => $amo)
 		{
-			if (!$amo || $from_user_id == $to_user_id)
+			if (!$selected_users[$many_uid])
 			{
 				continue;
 			}
 
-			$user = $users[$from_user_id];
-			$to_user_fullname = $users[$to_user_id]['fullname'];
+			if (!$amo || $many_uid == $one_uid)
+			{
+				continue;
+			}
 
-			$alert_success .= 'Transactie van gebruiker ' . $user['letscode'] . ' ' . $user['fullname'];
-			$alert_success .= ' naar ' . $to_letscode . ' ' . $to_user_fullname;
-			$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' ' . 'uitgevoerd.<br>';
+			$many_user = $users[$many_uid];
+			$to_id = ($to_one) ? $one_uid : $many_uid;
+			$from_id = ($to_one) ? $many_uid : $one_uid;
+			$from_user = $users[$from_id];
+			$to_user = $users[$to_id];
 
-			$log_from .= $user['letscode'] . ' ' . $user['fullname'] . '(' . $amo . '), ';
+			$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['fullname'];
+			$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['fullname'];
+			$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' uitgevoerd.<br>';
 
-			$mail_ary['from'][$user['id']] = array(
+			$log_many .= $many_user['letscode'] . ' ' . $many_user['fullname'] . '(' . $amo . '), ';
+
+			$mail_ary[$many_field][$many_uid] = array(
 				'amount'	=> $amo,
 				'transid' 	=> $transid,
 			);
 
 			$trans = array(
-				'id_to' 		=> $to_user_id,
-				'id_from' 		=> $from_user_id,
+				'id_to' 		=> $to_id,
+				'id_from' 		=> $from_id,
 				'amount' 		=> $amo,
 				'description' 	=> $description,
 				'date' 			=> $date,
@@ -158,8 +247,8 @@ if ($_POST['zend'])
 			$db->AutoExecute('transactions', $trans, 'INSERT');
 
 			$db->Execute('update users
-				set saldo = saldo - ' . $amo . '
-				where id = ' . $from_user_id);
+				set saldo = saldo ' . (($to_one) ? '- ' : '+ ')  . $amo . '
+				where id = ' . $many_uid);
 
 			$total += $amo;
 
@@ -167,16 +256,22 @@ if ($_POST['zend'])
 		}
 
 		$db->Execute('update users
-			set saldo = saldo + ' . $total . '
-			where id = ' . $to_user_id);
+			set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . $total . '
+			where id = ' . $one_uid);
 
 		if ($db->CompleteTrans())
 		{
 			$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
 			$alert->success($alert_success);
 
-			log_event($s_id, "Trans", 'Massa Transaction to ' . $to_letscode . ' ' . $to_user_fullname . ' amount: ' . $total .
-				' from: ' . $log_from);
+			$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['fullname'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
+			$log_many = rtrim($log_many, ', ');
+			$log_str = 'Mass transaction from ';
+			$log_str .= ($to_one) ? $log_many : $log_one;
+			$log_str .= ' to ';
+			$log_str .= ($to_one) ? $log_one : $log_many;
+
+			log_event($s_id, 'Trans', $log_str);
 
 			if ($mail_en)
 			{
@@ -213,17 +308,26 @@ $letsgroup_id = $db->GetOne('select id from letsgroups where apimethod = \'inter
 
 if ($to_letscode)
 {
-	if ($fullname = $db->GetOne('select fullname from users where letscode = \'' . $to_letscode . '\''))
+	if ($to_fullname = $db->GetOne('select fullname from users where letscode = \'' . $to_letscode . '\''))
 	{
-		$to_letscode .= ' ' . $fullname;
+		$to_letscode .= ' ' . $to_fullname;
+	}
+}
+if ($from_letscode)
+{
+	if ($from_fullname = $db->GetOne('select fullname from users where letscode = \'' . $from_letscode . '\''))
+	{
+		$from_letscode .= ' ' . $from_fullname;
 	}
 }
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/one_to_many.js"></script>';
+	<script src="' . $rootpath . 'js/mass.js"></script>
+	<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
-$h1 = 'Massa transactie: "één naar veel"';
+$h1 = 'Massa transactie';
+$fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -282,17 +386,54 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="panel panel-info">';
+echo '<div class="panel-heading">';
+
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
+
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+
+foreach ($st as $k => $s)
+{
+	$shsh = $s['hsh'] ?: '';
+	$class_li = ($shsh == $hsh) ? ' class="active"' : '';
+	$class_a  = ($s['cl']) ?: 'white';
+	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
+	echo 'data-filter="' . $shsh . '">' . $s['lbl'] . '</a></li>';
+}
+
+echo '</ul>';
+
 echo '<form method="post" class="form-horizontal">';
 
-echo '<div class="panel panel-info">';
+echo '<input type="hidden" value="" id="combined-filter">';
+echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
+echo '<input type="hidden" value="" name="selected_users" id="selected_users">';
 
+echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="from_letscode" class="col-sm-2 control-label">Van letscode (moet actief zijn)</label>';
+echo '<label for="from_letscode" class="col-sm-2 control-label">';
+echo "Van letscode (gebruik dit voor een 'één naar veel' transactie)";
+echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
-echo 'value="' . $from_letscode . '" required ';
+echo 'value="' . $from_letscode . '" ';
 echo 'data-letsgroup-id="' . $letsgroup_id . '">';
 echo '</div>';
 echo '</div>';
@@ -300,7 +441,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<table class="table table-bordered table-striped table-hover panel-body footable"';
-echo ' data-filter="#filter" data-filter-minimum="1">';
+echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
@@ -316,11 +457,16 @@ echo '<tbody>';
 
 foreach($users as $user_id => $user)
 {
+	$status_key = $status_ary[$user['status']];
+	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($user['adate'])) ? 'new' : $status_key;
 
-	$class = ($newusertreshold < strtotime($user['adate'])) ? ' class="success"' : '';
-	$class = ($user['status'] == 2) ? ' class="danger"' : $class;
+	$hsh = ($st[$status_key]['hsh']) ?: '';
+	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
+	$hsh .= ($status_key == 'active') ? $st['without-leaving-and-new']['hsh'] : '';
 
-	echo '<tr' . $class . '>';
+	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
+
+	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
@@ -331,7 +477,7 @@ foreach($users as $user_id => $user)
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
 	echo htmlspecialchars($user['fullname'],ENT_QUOTES).'</a></td>';
 	
-	echo '<td>';
+	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="' . $amount[$user_id] . '" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
@@ -368,6 +514,17 @@ echo '<div class="form-group">';
 echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $currency . '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="number" class="form-control" id="total" readonly>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="to_letscode" class="col-sm-2 control-label">';
+echo "Aan letscode (gebruik dit voor een 'veel naar één' transactie)";
+echo '</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
+echo 'value="' . $to_letscode . '" ';
+echo 'data-letsgroup-id="' . $letsgroup_id . '">';
 echo '</div>';
 echo '</div>';
 
@@ -464,7 +621,7 @@ function mail_mass_transaction($mail_ary)
 	$to_log = '';
 	$total = 0;
 	$t = 'Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.';
-	$t_one = $one_user['fullname'] . '(' . $one_user['letscode'] . ')';
+	$t_one = $one_user['letscode'] . ' ' . $one_user['fullname'];
 
 	$one_msg = $t . $r . $r;
 
@@ -498,7 +655,7 @@ function mail_mass_transaction($mail_ary)
 		$one_msg .= ', transactie-id: ' . $transid . $r;
 
 		$total += $amount;
-		$to_log .= $user['fullname'] . '(' . $user['letscode'] . '), ';
+		$to_log .= $user['letscode'] . ' ' . $user['fullname'] . ', ';
 
 		$to[] = array(
 			'email'	=> $mailaddr[$user['id']],
@@ -666,4 +823,3 @@ function generate_transid()
 	global $baseurl, $schema, $s_id;
 	return sha1($s_id . $schema . microtime() . mt_rand(0, 50000)) . $_SESSION['id'] . '@' . $baseurl;
 }
-

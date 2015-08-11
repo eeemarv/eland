@@ -93,7 +93,7 @@ if ($s_letscode)
 			'preferences/config.php'					=> array('gears', 'Instellingen'),
 			'export.php'								=> array('download', 'Export'),
 	//		'bulk.php'									=> 'Bulk acties',
-			'transactions/many_to_one.php'				=> array('exchange', 'Massa-Transactie'),
+			'transactions/mass.php'						=> array('exchange', 'Massa-Transactie'),
 			'eventlog.php'								=> array('list', 'Logs'),
 		);
 
