@@ -74,7 +74,9 @@ $currency = readconfigfromdb('currency');
 
 $users = $db->GetAssoc(
 	'SELECT id, fullname, letscode,
-		accountrole, status, saldo, minlimit, maxlimit, adate
+		accountrole, status, saldo,
+		minlimit, maxlimit, adate,
+		postcode
 	FROM users
 	WHERE status IN (0, 1, 2, 5, 6)
 	ORDER BY letscode');
@@ -450,6 +452,8 @@ echo '<th data-filter="#filter">Naam</th>';
 echo '<th data-sort-ignore="true">Bedrag</th>';
 echo '<th data-hide="phone">Saldo</th>';
 echo '<th data-hide="phone">Min.limit</th>';
+echo '<th data-hide="phone">Max.limit</th>';
+echo '<th data-hide="phone, tablet">Postcode</th>';
 echo '</tr>';
 
 echo '</thead>';
@@ -498,10 +502,10 @@ foreach($users as $user_id => $user)
 	}
 	echo '</td>';
 
-	echo '<td>';
-	echo $user['minlimit'];
-	echo '</td>';
-	
+	echo '<td>' . $user['minlimit'] . '</td>';
+	echo '<td>' . $user['maxlimit'] . '</td>';
+	echo '<td>' . $user['postcode'] . '</td>';
+
 	echo '</tr>';
 
 }
