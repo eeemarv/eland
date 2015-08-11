@@ -3,37 +3,28 @@ $(document).ready(function() {
 		var li = $(this).parent();
 		li.siblings('li').removeClass('active');
 		li.addClass('active');
-		var f = li.find('a').attr('data-filter');
-		f = (f.length > 0) ? ' ' + f : '';
-		var cf = $('#combined-filter');
-		cf.val($('#q').val() + f);
-		cf.keyup();
-		resetInputs();
+		var hsh = li.find('a').attr('data-filter');
+		$('input[type="hidden"][name="hsh"]').val(hsh);
+		syncCombined();
 		e.preventDefault();
 	});
 
 	$('#q').keyup(function(e){
-		var f = $(this).val();
-		f += ' ' + $('ul#nav-tabs li.active a').attr('data-filter');
-		var cf = $('#combined-filter');
-		cf.val(f);
-		cf.keyup();
-		resetInputs();
+		syncCombined();
 	});
 
-	function resetInputs(){
-		if ($('input#total')){
-			$('table tr > td > input[type="number"]').each(function() {
-				$(this).val('');
-			});
-			$('input#total').val('');			
-		}
+	function syncCombined(){
+		var cf = $('#combined-filter');
+		var hsh = $('input[type="hidden"][name="hsh"]').val();
+		hsh = (hsh.length > 0) ? ' ' + hsh : '';
+		cf.val($('#q').val() + hsh);
+		cf.keyup();
+		$('table tr > td > input[type="number"]').eq(0).keyup();
 	}
 
-	var footableFilter = $('table').data('footable-filter');
-	var q = $('#q').val();
-	footableFilter.filter(q);
-	$('form[method!="post"]').submit(function( event ) {
-		event.preventDefault();
+	syncCombined();
+
+	$('form[method!="post"]').submit(function(e) {
+		e.preventDefault();
 	});	
 });

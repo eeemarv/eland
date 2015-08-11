@@ -40,6 +40,22 @@ $('#to_letscode').typeahead({
 	}
 });
 
+$('#from_letscode').typeahead({
+	highLight: true
+},
+{
+	displayKey: function(user){ 
+		return user.value;
+	},
+	source: users.ttAdapter(),
+	templates: {
+		suggestion: function(data) {
+			return '<p class="' + data.class + '"><strong>' + data.letscode +
+				'</strong> ' + data.name + '</p>';
+		}
+	}
+});
+
 $('table input[type="number"]').keyup(function(){
 	recalc_sum();
 });
@@ -53,55 +69,60 @@ function recalc_sum(){
 }
 
 $('#to_letscode').bind('typeahead:selected', function(ev, data) {
-	$('table input[data-letscode="' + data.letscode + '"]').val(0);
+	$('#from_letscode').val('');
+	$('table input[data-letscode="' + data.letscode + '"]').val('');
 	recalc_sum();
 });
+
+$('#from_letscode').bind('typeahead:selected', function(ev, data) {
+	$('#to_letscode').val('');
+	$('table input[data-letscode="' + data.letscode + '"]').val('');
+	recalc_sum();
+});
+
+$('table').footable().bind({
+	'footable_filtered' : function(e) {
+		recalc_sum();
+	}
+});
+
+$('form[method="post"]').submit(function(event) {
+	$('table input[type="number"]:hidden').each(function(){
+		$(this).val('');
+	});
+});	
 
 $('#fill_in_aid').submit(function(e){
 
 	var days = $('#percentage_balance_days').val();
-
-	if (days > 1)
-	{
-		var jqxhr = $.get('weighted_balances.php', {"days" :days})
+	if (days > 1){
+		var jqxhr = $.get('weighted_balances.php', {'days' :days})
 		.done(function(data){
 			fill_in(data);
 		})
 		.fail(function(){
 			alert('Data ophalen mislukt.');
 		});
-	}
-	else
-	{
+	} else {
 		fill_in();
 	}
 
 	e.preventDefault();
 });
 
-function fill_in(data)
-{
+function fill_in(data){
 	var ignore_letscode = $('#to_letscode').val().split(' ');
 	ignore_letscode = ignore_letscode[0];
-
 	var fixed = $('#fixed').val();
 	var perc = $('#percentage_balance').val() / 100;
 	var base = $('#percentage_balance_base').val();
 
     $('table input[type="number"]:visible').each(function() {
-
 		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
-
-
-			am = (am >= base) ? am - base : 0;
-
-
+		am = (am >= base) ? am - base : 0;
 		var amount = +fixed + Math.round(am * perc);
-
 		amount = (amount < 0) ? 0 : amount;
-
-		if ($(this).attr('data-letscode') != ignore_letscode)
-		{
+		if ($(this).attr('data-letscode') != ignore_letscode){
 			$(this).val(amount);
 		}
     });
