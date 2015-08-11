@@ -6,8 +6,12 @@ $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$q = ($_GET['q']) ?: (($_POST['q']) ?: '');
-$hsh = ($_GET['hsh']) ?: (($_POST['hsh']) ?: '');
+$q = ($_POST['q']) ?: (($_GET['q']) ?: '');
+$hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '');
+$selected_users = $_POST['selected_users'];
+$selected_users = ltrim($selected_users, '.');
+$selected_users = explode('.', $selected_users);
+$selected_users = array_combine($selected_users, $selected_users);
 
 $st = array(
 	'all'		=> array(
@@ -141,8 +145,13 @@ if ($_POST['zend'])
 
 	$count = 0;
 
-	foreach ($amount as $amo)
+	foreach ($amount as $uid => $amo)
 	{
+		if (!$selected_users[$uid])
+		{
+			continue;
+		}
+
 		if (!$amo)
 		{
 			continue;
@@ -197,6 +206,11 @@ if ($_POST['zend'])
 
 		foreach ($amount as $many_uid => $amo)
 		{
+			if (!$selected_users[$many_uid])
+			{
+				continue;
+			}
+
 			if (!$amo || $many_uid == $one_uid)
 			{
 				continue;
@@ -301,7 +315,7 @@ if ($to_letscode)
 }
 if ($from_letscode)
 {
-	if ($from_fullname = $db->GetOne('select fullname from users where letscode = \'' . $to_letscode . '\''))
+	if ($from_fullname = $db->GetOne('select fullname from users where letscode = \'' . $from_letscode . '\''))
 	{
 		$from_letscode .= ' ' . $from_fullname;
 	}
@@ -403,10 +417,12 @@ foreach ($st as $k => $s)
 }
 
 echo '</ul>';
-echo '<input type="hidden" value="" id="combined-filter">';
-echo '<input type="hidden" value="' . $hsh . '" name="hsh">';
 
 echo '<form method="post" class="form-horizontal">';
+
+echo '<input type="hidden" value="" id="combined-filter">';
+echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
+echo '<input type="hidden" value="" name="selected_users" id="selected_users">';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -450,7 +466,7 @@ foreach($users as $user_id => $user)
 
 	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
-	echo '<tr' . $class . '>';
+	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';

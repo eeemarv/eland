@@ -87,9 +87,11 @@ $('table').footable().bind({
 });
 
 $('form[method="post"]').submit(function(event) {
-	$('table input[type="number"]:hidden').each(function(){
-		$(this).val('');
+	var selected_users = '';
+	$('table > tbody > tr:visible').each(function(){
+		selected_users += '.' + $(this).attr('data-user-id');
 	});
+	$('#selected_users').val(selected_users);
 });	
 
 $('#fill_in_aid').submit(function(e){
