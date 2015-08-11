@@ -325,7 +325,7 @@ if ($from_letscode)
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/mass.js"></script>
+	<script src="' . $rootpath . 'js/mass_transaction.js"></script>
 	<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
 $h1 = 'Massa transactie';
@@ -485,7 +485,7 @@ foreach($users as $user_id => $user)
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="' . $amount[$user_id] . '" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
-	echo 'data-id="' . $user_id . '" ';
+	echo 'data-user-id="' . $user_id . '" ';
 	echo 'data-balance="' . $user['saldo'] . '" ';
 	echo '>';
 	echo '</td>';
@@ -559,7 +559,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default">Annuleren</a>&nbsp;';
-echo '<input type="submit" value="Alle transacties uitvoeren" name="zend" class="btn btn-success">';
+echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
 
 echo '</div>';
 echo '</div>';
@@ -806,14 +806,30 @@ function mail_mass_transaction($mail_ary)
 
 	log_event($s_id, 'Mail', 'Massa transaction mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
 
+	$to = array(array(
+		'name' 	=> $one_user['fullname'],
+		'email'	=> $one_user['mail'],
+	));
+
+	if ($one_user_id != $s_id)
+	{
+		$s_user = $db->GetRow('select u.fullname, c.value as mail
+			from users u, contact c, type_contact tc
+			where u.id = ' . $s_id . '
+				and u.id = c.id_user
+				and c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'');
+		$to[] = array(
+			'name'	=> $s_user['fullname'],
+			'email' => $s_user['mail'],
+		);
+	}
+
 	$message = array(
 		'subject'		=> $subject,
 		'text'			=> $one_msg,
 		'from_email'	=> $from,
-		'to'			=> array(array(
-			'name' 	=> $one_user['fullname'],
-			'email'	=> $one_user['mail'],
-		)),
+		'to'			=> $to,
 		'merge_vars'	=> $merge_vars,
 	);
 

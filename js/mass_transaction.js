@@ -120,12 +120,16 @@ function fill_in(data){
 	var base = $('#percentage_balance_base').val();
 
     $('table input[type="number"]:visible').each(function() {
-		var am = (typeof data == 'object') ? data[$(this).attr('data-id')] : $(this).attr('data-balance');
-		am = (am >= base) ? am - base : 0;
+		var am = (typeof data == 'object') ? data[$(this).attr('data-user-id')] : $(this).attr('data-balance');
+		am =  am - base;
 		var amount = +fixed + Math.round(am * perc);
 		amount = (amount < 0) ? 0 : amount;
 		if ($(this).attr('data-letscode') != ignore_letscode){
-			$(this).val(amount);
+			if (amount == 0){
+				$(this).val('');
+			} else {
+				$(this).val(amount);
+			}
 		}
     });
 
