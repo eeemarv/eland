@@ -5,7 +5,8 @@ $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-$q = $_GET['q'];
+$q = ($_GET['q']) ?: '';
+$hsh = ($_GET['hsh']) ?: '';
 
 $users = $db->GetArray('SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
@@ -75,6 +76,8 @@ echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '"
 echo '</div>';
 echo '</div>';
 echo '</div>';
+echo '<input type="hidden" value="" id="combined-filter">';
+echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';
@@ -85,7 +88,6 @@ echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></l
 echo '<li><a href="#" class="bg-success" data-filter="6a501bbf">Instappers</a></li>';
 echo '<li><a href="#" class="bg-danger" data-filter="51505c3e">Uitstappers</a></li>';
 echo '</ul>';
-echo '<input type="hidden" value="" id="combined-filter">';
 
 //show table
 echo '<div class="table-responsive">';

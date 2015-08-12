@@ -5,19 +5,17 @@ $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
-if(isset($_GET['q']))
-{
-	$q = $_GET['q'];
+$q = ($_GET['q']) ?: '';
+$hsh = ($_GET['hsh']) ?: '';
 
-	$msgs = $db->GetArray('select m.*,
-		u.id as uid, u.letscode, u.fullname, u.postcode,
-		c.id as cid, c.fullname as cat
-		from messages m, users u, categories c
-		where lower(content) like \'%' . $q . '%\'
-			and m.id_user = u.id
-			and u.status in (1, 2)
-			and m.id_category = c.id');
-}
+$msgs = $db->GetArray('select m.*,
+		c.id as cid, c.fullname as cat,
+		u.letscode, u.fullname, u.id as uid, u.postcode
+	from messages m, categories c, users u
+	where m.id_category = c.id
+		and m.id_user = u.id
+		and u.status in (1, 2)
+	order by id desc');
 
 if (in_array($s_accountrole, array('user', 'admin')))
 { 
@@ -30,31 +28,43 @@ if (in_array($s_accountrole, array('user', 'admin')))
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 }
 
-$h1 = 'Zoek vraag en aanbod';
+$h1 = 'Vraag en aanbod';
 $fa = 'newspaper-o';
+
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="get" action="' . $rootpath . 'messages/search.php">';
-echo '<div class="col-lg-12">';
+echo '<form method="get">';
+echo '<div class="row">';
+echo '<div class="col-xs-12">';
 echo '<div class="input-group">';
-echo '<span class="input-group-btn">';
-echo '<button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Zoeken</button>';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" name="q" value="' . $q . '">';
+echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q">';
 echo '</div>';
 echo '</div>';
-echo '<br><small><i>Een leeg zoekveld geeft ALLE V/A als resultaat terug</i></small>';
+echo '</div>';
+echo '<input type="hidden" value="" id="combined-filter">';
+echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';
 echo '</div>';
 
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
+echo '<li><a href="#" class="bg-white" data-filter="34a94cd7">Geldig</a></li>';
+echo '<li><a href="#" class="bg-danger" data-filter="09293e38">Vervallen</a></li>';
+echo '</ul>';
+
 echo '<div class="table-responsive">';
-echo '<table class="table table-hover table-striped table-bordered footable">';
+echo '<table class="table table-hover table-striped table-bordered footable" ';
+echo 'data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 echo '<tr>';
 echo "<th>V/A</th>";
@@ -75,8 +85,9 @@ foreach($msgs as $msg)
 	echo '<tr';
 	echo ($del) ? ' class="danger"' : '';
 	echo '>';
-	echo '<td>';
 
+	echo '<td ';
+	echo ' data-value="' . (($del) ? '09293e38' : '34a94cd7') . '">';
 	echo ($msg["msg_type"]) ? 'A' : 'V';
 	echo '</td>';
 
