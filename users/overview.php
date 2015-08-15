@@ -6,6 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $q = ($_GET['q']) ?: '';
+$hsh = ($_GET['hsh']) ?: '';
 
 $st = array(
 	'all'		=> array(
@@ -109,6 +110,9 @@ echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '"
 echo '</div>';
 echo '</div>';
 echo '</div>';
+
+echo '<input type="hidden" value="" id="combined-filter">';
+echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';

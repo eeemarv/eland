@@ -184,6 +184,14 @@ $letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
 $currency = readconfigfromdb('currency');
 
+$top_buttons .= '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default"';
+$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mytrans_overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+
 $h1 = 'Nieuwe transactie';
 $fa = 'exchange';
 

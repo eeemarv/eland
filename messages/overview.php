@@ -1,7 +1,7 @@
 <?php
 ob_start();
 $rootpath = '../';
-$role = 'user';
+$role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_adoconnection.php';
 require_once $rootpath . 'includes/inc_form.php';
@@ -55,9 +55,17 @@ while ($row = $rs->FetchRow())
 }
 $cats_hsh_name[$p_hsh] .= ($p_hsh) ? sprintf($ow_str, $want_sum, $offer_sum) : '';
 
-$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
-$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+if ($s_accountrole == 'admin' || $s_accountrole == 'user')
+{
+
+	$top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
+	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+}
 
 if ($s_accountrole == 'admin')
 {
@@ -192,6 +200,27 @@ foreach($msgs as $msg)
 echo '</tbody>';
 echo '</table>';
 echo '</div>';
+
+if($s_accountrole != 'guest')
+{
+	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
+
+	if (count($letsgroups))
+	{
+		echo '<h1>Interletsgroepen raadplegen</h1>';
+		echo '<div class="table responsive">';
+		echo '<table class="table talble-bordered table-striped table-hover" data-sort="false">';
+
+		foreach($letsgroups as $key => $value)
+		{
+			echo "<tr><td nowrap>";
+			echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=messages/overview.php">' .$value['groupname'] . '</a>';
+			echo "</td></tr>";
+		}
+		echo '</table>';
+		echo '</div>';
+	}
+}
 
 include $rootpath . 'includes/inc_footer.php';
 

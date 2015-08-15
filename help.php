@@ -52,7 +52,7 @@ else if (!readconfigfromdb('support'))
  
 $readonly = ($s_id) ? ' readonly' : '';
 
-$h1 = 'eLAS help';
+$h1 = 'eLAS help / Probleem melden';
 $fa = 'ambulance';
 
 require_once $rootpath . 'includes/inc_header.php';

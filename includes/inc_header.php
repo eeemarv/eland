@@ -20,9 +20,6 @@ if (isset ($includecss))
 	echo $includecss;
 }
 
-// echo "<link rel='alternate' type='application/rss+xml' title='Messages RSS' href='$rootpath/rss.php?feed=messages' />";
-// echo "<link rel='alternate' type='application/rss+xml' title='News RSS' href='$rootpath/rss.php?feed=news' />";
-
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
@@ -61,9 +58,7 @@ if ($s_letscode)
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
-//	echo '<span class="hidden-xs"> ';
 	echo $s_letscode . ' ' . $s_name;
-//	echo '</span>';
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
@@ -88,11 +83,9 @@ if ($s_letscode)
 			'interlets/overview.php'					=> array('share-alt', 'LETS Groepen'),
 			'apikeys/overview.php'						=> array('key', 'Apikeys'),
 			'type_contact/overview.php'					=> array('circle-o-notch', 'Contact types'),
-			'messages/overview.php'						=> array('newspaper-o','Vraag & Aanbod'),
 			'reports/overview.php'						=> array('calculator', 'Rapporten'),
 			'preferences/config.php'					=> array('gears', 'Instellingen'),
 			'export.php'								=> array('download', 'Export'),
-	//		'bulk.php'									=> 'Bulk acties',
 			'transactions/mass.php'						=> array('exchange', 'Massa-Transactie'),
 			'eventlog.php'								=> array('list', 'Logs'),
 		);
@@ -100,9 +93,7 @@ if ($s_letscode)
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 		echo '<span class="fa fa-cog"></span> ';
-//		echo '<span class="hidden-xs"> ';
 		echo 'Admin';
-//		echo '</span>';
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
@@ -138,9 +129,9 @@ if (!$s_accountrole)
 else
 {
 	$main_menu = array(
-		'index.php'			=> array('home', 'Overzicht'),
-		'searchcat.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
-		'memberlist.php'	=> array('users', 'Contactlijst'),
+		'index.php'					=> array('home', 'Overzicht'),
+		'messages/overview.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
+		'memberlist.php'			=> array('users', 'Contactlijst'),
 	);
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')

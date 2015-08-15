@@ -30,6 +30,18 @@ $top_buttons = '<a href="' .$rootpath . 'transactions/add.php" class="btn btn-su
 $top_buttons .= ' title="Nieuwe transactie toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mydetails.php" class="btn btn-default"';
+$top_buttons .= ' title="Mijn gegevens"><i class="fa fa-user"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn gegevens</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default"';
+$top_buttons .= ' title="Alle transacties"><i class="fa fa-exchange"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Alle transacties</span></a>';
+
 $h1 = 'Mijn transacties';
 $fa = 'exchange';
 

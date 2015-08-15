@@ -23,6 +23,14 @@ $transaction = $db->GetRow('select t.*,
 
 $currency = readconfigfromdb('currency');
 
+$top_buttons = '<a href="' . $rootpath . 'transactions/add.php" class="btn btn-success"';
+$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default"';
+$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
 $h1 = 'Transactie';
 $fa = 'exchange';
 
