@@ -19,7 +19,6 @@ $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "
 $rootpath = '../';
 $role = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
 
 require_once $rootpath . 'cron/inc_upgrade.php';
 require_once $rootpath . 'cron/inc_processqueue.php';
@@ -460,14 +459,14 @@ function cleanup_messages()
 			AND u.status IN (1, 2, 3)
 			AND msg_type = 1
 		GROUP BY m.id_category');
-		
+
 	$want_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
 		FROM messages m, users u
 		WHERE  m.id_user = u.id
 			AND u.status IN (1, 2, 3)
 			AND msg_type = 0
 		GROUP BY m.id_category');
-		
+
 	$all_cat = $db->GetArray('SELECT id, stat_msgs_offers, stat_msgs_wanted
 		FROM categories
 		WHERE id_parent IS NOT NULL');

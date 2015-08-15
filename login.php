@@ -6,10 +6,7 @@ $role = 'anonymous';
 $allow_anonymous_post = true;
 
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
-require_once $rootpath . 'includes/inc_userinfo.php';
-require_once $rootpath . 'includes/inc_tokens.php';
-require_once $rootpath . 'includes/inc_auth.php';
+//require_once $rootpath . 'includes/inc_userinfo.php';
 
 if ($s_id)
 {
@@ -26,16 +23,16 @@ $location = ($location == 'login.php') ? 'index.php' : $location;
 $location = ($location == 'logout.php') ? 'index.php' : $location;
 $error_location = 'login.php?location=' . urlencode($location);
 
-// Intercept old direct links and rewrite them
-if(!empty($redirectmsg))
-{
-	$_GET['url'] = 'http://$baseurl/messages/view.php?id=' . $redirectmsg;
-}
-
 // Verify the token first and redirect to index if it is valid
 if(!empty($token))
 {
-	if(verify_token($token, 'guestlogin'))
+	$query = 'select token
+		from tokens
+		where token = \'' . $token . '\'
+		and validity > \'' . date('Y-m-d H:i:s') . '
+		and type = \'guestlogin\'';
+
+	if($db->GetOne($query))
 	{
         session_start();
         $_SESSION['id'] = 0;
@@ -72,9 +69,21 @@ if ($_POST['zend'])
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
-		log_event(0,"Master","Login as master user");
-		startmastersession();
-		$alert->success("OK - Gebruiker ingelogd");
+		session_start();
+		$_SESSION['id'] = 0;
+		$_SESSION['name'] = 'master';
+		$_SESSION['fullname'] = 'eLAS Master';
+		$_SESSION['login'] = 'master';
+		$_SESSION['user_postcode'] = '0000';
+		$_SESSION['letscode'] = '000000';
+		$_SESSION['accountrole'] = 'admin';
+		$_SESSION['userstatus'] = 1;
+		$_SESSION['email'] = '';
+		$_SESSION['lang'] = 'nl';
+		$_SESSION['status'] = array();
+		$_SESSION['type'] = 'master';
+		log_event(0,'Login','Master user ' .$user['login'] .' logged in');
+		$alert->success('OK - Gebruiker ingelogd als master.');
 		header('Location: ' . $location);
 		exit;
 	}
@@ -112,7 +121,24 @@ if ($_POST['zend'])
 			exit;
 		}
 
-		startsession($user);
+		session_start();
+		$_SESSION['id'] = $user['id'];
+		$_SESSION['name'] = $user['name'];
+		$_SESSION['fullname'] = $user['fullname'];
+		$_SESSION['login'] = $user['login'];
+		$_SESSION['user_postcode'] = $user['postcode'];
+		$_SESSION['letscode'] = $user['letscode'];
+		$_SESSION['accountrole'] = $user['accountrole'];
+		$_SESSION['userstatus'] = $user['status'];
+		$_SESSION['email'] = $user['emailaddress'];
+		$_SESSION['lang'] = $user['lang'];
+		$_SESSION['status'] = array();
+		$_SESSION['type'] = 'local';
+
+		$browser = $_SERVER['HTTP_USER_AGENT'];
+		log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
+		log_event($user['id'],'Agent', $browser);
+		$db->AutoExecute('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), 'UPDATE', 'id = ' . $s_id);
 		$alert->success('Ok Gebruiker ingelogd.');
 		header('Location: ' . $location);
 		exit;
@@ -121,9 +147,6 @@ if ($_POST['zend'])
 	$alert->error('Login gefaald.');
 }
 
-
-
-// Check if we are in maintenance mode
 if(readconfigfromdb("maintenance") == 1)
 {
 	$alert->warning('eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');

@@ -18,43 +18,15 @@ function elas_log_flush()
 	$elas_log->flush();
 }
 
-//Download the elas log in json format
-function get_elaslog() {
-	global $rootpath;
-	global $provider;
-	global $baseurl;
 
-//	$logurl = $provider->logurl;
-
-	$url = "$logurl/site?tag=" . readconfigfromdb("systemtag");
-
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	$resp = curl_exec($ch);
-	if(curl_errno($ch)) {
-		$msg = 'Curl error: ' . curl_error($ch);
-		log_event(0, 'Info', $msg);
-	}
-
-	curl_close($ch);
-
-	//print $resp;
-
-	# Write response to a file
-	$file = "$rootpath/sites/$baseurl/json/eventlog.json";
-	file_put_contents($file, $resp);
-}
-
-//Write log entry
-function log_event($id, $type, $event){
+function log_event($id, $type, $event)
+{
 
 	global $elasdebug, $schema, $elas_log;
 
 	$type = strtolower($type);
 
-//find domain from session / real domain
+	//find domain from session / real domain
 
 	$domain = array_search($schema, $_ENV);
 	$domain = str_replace('ELAS_SCHEMA_', '', $domain);

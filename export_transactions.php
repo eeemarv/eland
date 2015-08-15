@@ -3,7 +3,6 @@ ob_start();
 $rootpath = "";
 $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
 
 if (isset($_GET["userid"])) {
     $userid=$_GET["userid"];
@@ -19,11 +18,6 @@ if (isset($userid)){
 	$transactions = get_all_transactions($trans_orderby);
 }
 show_all_transactions($transactions);
-
-
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////////F U N C T I E S //////////////////////////////
-////////////////////////////////////////////////////////////////////////////
 
 function redirect_login($rootpath){
 	header("Location: ".$rootpath."login.php");

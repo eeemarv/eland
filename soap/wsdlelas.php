@@ -1,12 +1,9 @@
 <?php
-$rootpath="../";
+$rootpath='../';
 $role = 'anonymous';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_apikeys.php");
-require_once($rootpath."includes/inc_tokens.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_transactions.php';
 
 // Create the server instance
 $server = new soap_server();
@@ -84,14 +81,26 @@ $server->register('dopayment',
    'Commit an interlets transaction'
 );
 
-function gettoken($apikey){
-	log_event("","debug","Token request");
-	if(check_apikey($apikey,"interlets") == 1){
-		$token = generate_token("guestlogin");
-		log_event("","Soap","Token $token generated");
-	} else {
-		$token = "---";
-		log_event("","Soap","APIkey rejected, no token generated");
+function gettoken($apikey)
+{
+	global $db;
+	log_event('','debug','Token request');
+	if(check_apikey($apikey,'interlets'))
+	{
+		$token = array(
+			'token'		=> 'elasv2' . md5(microtime()),
+			'validity'	=> date('Y-m-d H:i:s', time() + (10 * 60)),
+			'type'		=> 'guestlogin'
+		);
+
+		$db->AutoExecute('tokens', $token, 'INSERT')
+
+		log_event('','Soap','Token ' . $token . ' generated');
+	}
+	else
+	{
+		$token = '---';
+		log_event('','Soap','APIkey rejected, no token generated');
 	}
 	return $token;
 }
@@ -99,147 +108,163 @@ function gettoken($apikey){
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
-	log_event("","debug","Transaction request");
+	log_event('','debug','Transaction request');
 	
 	if(check_duplicate_transaction($transid) == 1)
 	{
-		log_event("","Soap","Transaction $transid is a duplicate");
-		return "DUPLICATE";
+		log_event('','Soap','Transaction ' . $transid . ' is a duplicate');
+		return 'DUPLICATE';
 	}
 
-	if(check_apikey($apikey, "interlets") == 1)
+	if(check_apikey($apikey, 'interlets'))
 	{
-		if(readconfigfromdb("maintenance") == 1)
+		if(readconfigfromdb('maintenance') == 1)
 		{
-			log_event("", "Soap", "Transaction $transid deferred (offline)");
-			return "OFFLINE";
+			log_event('', 'Soap', 'Transaction ' . $transid . ' deferred (offline)');
+			return 'OFFLINE';
 		}
 		else
 		{
-			$posted_list["transid"] = $transid;
-			$posted_list["date"] = date("Y-m-d H:i:s");
-			$posted_list["description"] = $description;
+			$posted_list['transid'] = $transid;
+			$posted_list['date'] = date('Y-m-d H:i:s');
+			$posted_list['description'] = $description;
 
 			$fromuser = get_user_by_letscode($from);
-			log_event("","debug", "Looking up Interlets user $from");
+			log_event('','debug', 'Looking up Interlets user ' . $from);
 
-			log_event("","debug", 'Found Interlets fromuser ' . serialize($fromuser));
+			log_event('','debug', 'Found Interlets fromuser ' . serialize($fromuser));
 
-			$posted_list["id_from"] = $fromuser["id"];
-			$posted_list["real_from"] = $real_from;
+			$posted_list['id_from'] = $fromuser['id'];
+			$posted_list['real_from'] = $real_from;
 			$touser = get_user_by_letscode($to);
-			$posted_list["id_to"] = $touser["id"];
-			$posted_list["amount"] = $amount;
-			$posted_list["letscode_to"] = $touser["letscode"];
+			$posted_list['id_to'] = $touser['id'];
+			$posted_list['amount'] = $amount;
+			$posted_list['letscode_to'] = $touser['letscode'];
 
-			if(empty($fromuser["letscode"]) || $fromuser["accountrole"] != 'interlets')
+			if(empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 			{
-				log_event("","Soap","Transaction $transid, unknown FROM user");
-				return "NOUSER";
+				log_event('','Soap','Transaction ' . $transid . ', unknown FROM user');
+				return 'NOUSER';
 			}
 
 			// Stop already if the user doesn't exist
-			if(empty($touser["letscode"]) || ($touser["status"] != 1 && $touser["status"] != 2))
+			if(empty($touser['letscode']) || ($touser['status'] != 1 && $touser['status'] != 2))
 			{
-				log_event("","Soap","Transaction $transid, unknown or invalid TO user");
-				return "NOUSER";
+				log_event('','Soap','Transaction ' . $transid . ', unknown or invalid TO user');
+				return 'NOUSER';
 			}
 
 			// Check the signature first
-			$sigtest = sign_transaction($posted_list,$fromuser["presharedkey"]);
+			$sigtest = sign_transaction($posted_list,$fromuser['presharedkey']);
 			if($sigtest != $signature)
 			{
-				log_event("","Soap","Transaction $transid, invalid signature");
-				return "SIGFAIL";
+				log_event('','Soap','Transaction ' . $transid . ', invalid signature');
+				return 'SIGFAIL';
 			}
 
-			$posted_list["amount"] = $amount * readconfigfromdb("currencyratio");
+			$posted_list['amount'] = $amount * readconfigfromdb('currencyratio');
 
 			if(insert_transaction($posted_list))
 			{
-				$result = "SUCCESS";
-				log_event("","Soap","Transaction $transid processed");
-				$posted_list["amount"] = round($posted_list["amount"]);
+				$result = 'SUCCESS';
+				log_event('','Soap','Transaction ' . $transid . ' processed');
+				$posted_list['amount'] = round($posted_list['amount']);
 				mail_transaction($posted_list, $transid);
 			}
 			else
 			{
-				log_event("","Soap","Transaction $transid FAILED");
-				$result = "FAILED";
+				log_event('','Soap','Transaction ' . $transid . ' FAILED');
+				$result = 'FAILED';
 			}
 			return $result;
 		}
 	}
 	else
 	{
-		return "APIKEYFAIL";
-		log_event("","Soap","APIKEY failed for Transaction $transid");
+		return 'APIKEYFAIL';
+		log_event('','Soap','APIKEY failed for Transaction ' . $transid);
 	}
 }
 
 function userbyletscode($apikey, $letscode)
 {
-	log_event("","debug","Lookup request for $letscode");
-	if(check_apikey($apikey,"interlets") == 1)
+	log_event('','debug','Lookup request for ' . $letscode);
+	if(check_apikey($apikey,'interlets'))
 	{
 		$user = get_user_by_letscode($letscode);
-		if($user["fullname"] == "")
+		if($user['fullname'] == '')
 		{
-			return "Onbekend";
+			return 'Onbekend';
 		}
 		else
 		{
-			return $user["fullname"];
+			return $user['fullname'];
 		}
 	}
 	else
 	{
-		return "---";
+		return '---';
 	}
 }
 
-function userbyname($apikey, $name){
-	log_event("","debug","Lookup request for user $name");
-	if(check_apikey($apikey,"interlets") == 1)
+function userbyname($apikey, $name)
+{
+	log_event('','debug','Lookup request for user ' . $name);
+	if(check_apikey($apikey,'interlets'))
 	{
 		$user = get_user_by_name($name);
-		if($user["fullname"] == "")
+		if($user['fullname'] == '')
 		{
-			return "Onbekend";
+			return 'Onbekend';
 		}
 		else
 		{
-			return $user["letscode"];
+			return $user['letscode'];
 		}
 	}
 	else
 	{
-		return "---";
+		return '---';
 	}
 }
 
 function getstatus($apikey){
 	global $elasversion;
-	if(check_apikey($apikey,"interlets") == 1){
-		if(readconfigfromdb("maintenance") == 1){
-			return "OFFLINE";
-		} else {
-			return "OK - eLAS $elasversion";
+	if(check_apikey($apikey,'interlets'))
+	{
+		if(readconfigfromdb('maintenance') == 1)
+		{
+			return 'OFFLINE';
 		}
-	} else {
-		return "APIKEYFAIL";
+		else
+		{
+			return 'OK - eLAS ' . $elasversion;
+		}
+	}
+	else
+	{
+		return 'APIKEYFAIL';
 	}
 }
 
 function apiversion($apikey)
 {
-	if(check_apikey($apikey,"interlets") == 1)
+	if(check_apikey($apikey,'interlets'))
 	{
 		global $soapversion;
 		return $soapversion;
 	}
 }
 
+function check_apikey($apikey, $type)
+{
+	global $db;
+
+	return ($db->GetOne('select apikey
+		from apikeys
+		where apikey = \'' .$apikey . '\'
+		and type = \'' .$type . '\'')) ? true : false;
+}
 
 // Use the request to (try to) invoke the service
 $HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';

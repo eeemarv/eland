@@ -76,7 +76,7 @@ class pagination
 		
 		if ($min_adjacent)
 		{
-			echo $this->addLink(0);		
+			echo $this->addLink(0);
 		}
 
 		for($page = $min_adjacent; $page < $max_adjacent + 1; $page++)

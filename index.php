@@ -19,7 +19,6 @@ ob_start();
 $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $news = $db->GetArray('select * from news where approved = True order by cdate desc');
 

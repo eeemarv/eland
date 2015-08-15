@@ -3,7 +3,6 @@ ob_start();
 $rootpath = "";
 $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
 
 show_ptitle();
 $messagerows = get_all_msgs();

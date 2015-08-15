@@ -24,12 +24,120 @@ $cdn_datepicker = (getenv('ELAS_CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/aja
 $cdn_datepicker_nl = (getenv('ELAS_CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
 require_once $rootpath . 'vendor/autoload.php';
-require_once $rootpath . 'includes/inc_session.php';
+
+// Connect to Redis
+$redis_url = getenv('REDISTOGO_URL');
+
+if(!empty($redis_url))
+{
+	Predis\Autoloader::register();
+	try
+	{
+		$redis_con = parse_url($redis_url);
+		$redis_con['password'] = $redis_con['pass'];
+		$redis_con['scheme'] = 'tcp';
+		$redis = new Predis\Client($redis_con);
+
+	}
+	catch (Exception $e)
+	{
+	    echo "Couldn't connected to Redis: ";
+	    echo $e->getMessage();
+	}
+}
+
+/*
+ * get session name from environment variable ELAS_SCHEMA_<domain>
+ * dots in <domain> are replaced by double underscore __
+ * hyphens in <domain> are replaced by triple underscore ___
+ *
+ * example:
+ *
+ * to link e-example.com to a session set environment variable
+ * ELAS_SCHEMA_E___EXAMPLE__COM = <session_name>
+ *
+ * + the session name is the schema name !
+ * + session name is prefix of the image files.
+ * + session name is prefix of keys in Redis.
+ *
+ */
+
+if (!isset($schema))
+{
+	$schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
+	$schema = str_replace('-', '___', $schema);
+	$schema = str_replace(':', '____', $schema);
+	$schema = strtoupper($schema);
+	$schema = getenv('ELAS_SCHEMA_' . $schema);
+}
+
+if (!$schema)
+{
+	http_response_code(404);
+	include $rootpath. '404.html';
+	exit;
+}
+
+session_name($schema);
+session_start();
+
+$s_id = $_SESSION['id'];
+$s_name = $_SESSION['name'];
+$s_letscode = $_SESSION['letscode'];
+$s_accountrole = $_SESSION['accountrole'];
+
+if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous'))))
+{
+	http_response_code(500);
+	include $rootpath . '500.html';
+	exit;
+}
+
+if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name))
+{
+	header('Location: ../login.php?location=' . urlencode($_SERVER['REQUEST_URI']));
+	exit;
+}
+
+if ((!isset($allow_anonymous_post) && $s_accountrole == 'anonymous' && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($s_accountrole == 'guest' && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($role == 'admin' && $s_accountrole != 'admin')
+	|| ($role == 'user' && !in_array($s_accountrole, array('admin', 'user')))
+	|| ($role == 'guest' && !in_array($s_accountrole, array('admin', 'user', 'guest'))))
+{
+	http_response_code(403);
+	include $rootpath . '403.html';
+	exit;
+}
+
 require_once $rootpath . 'includes/inc_eventlog.php';
-require_once $rootpath . 'includes/inc_redis.php';
-require_once $rootpath . 'includes/inc_setstatus.php';
-require_once $rootpath . 'includes/inc_timezone.php';
-require_once $rootpath . 'includes/inc_version.php';
 require_once $rootpath . 'includes/inc_alert.php';
 
 $alert = new alert();
+
+// default timezone to Europe/Brussels (read from config file removed, use env var instead)
+$elas_timezone = getenv('ELAS_TIMEZONE');
+$elas_timezone = ($elas_timezone) ? $elas_timezone : 'Europe/Brussels';
+date_default_timezone_set($elas_timezone);
+
+$elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
+
+// release file (xml) not loaded anymore.
+$elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
+$schemaversion= 31000;  // no new versions anymore, release file is not read anymore.
+$soapversion = 1200;
+$restversion = 1;
+
+// database connection
+$db = NewADOConnection(getenv('DATABASE_URL'));
+
+$db->Execute('set search_path to ' . (($schema) ?: 'public'));
+
+$db->SetFetchMode(ADODB_FETCH_ASSOC);
+
+if(getenv('ELAS_DB_DEBUG'))
+{
+	$db->debug = true;
+}
+
+require_once $rootpath . 'includes/inc_dbconfig.php';

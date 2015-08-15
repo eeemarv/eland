@@ -4,7 +4,6 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $q = ($_POST['q']) ?: (($_GET['q']) ?: '');
 $hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '');

@@ -3,7 +3,6 @@ ob_start();
 $rootpath = "";
 $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
 
 show_ptitle();
 $userrows = get_all_users($user_orderby);

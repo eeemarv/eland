@@ -3,21 +3,17 @@ ob_start();
 
 $rootpath = '';
 $role = 'guest';
-require_once($rootpath.'includes/inc_default.php');
-require_once($rootpath.'includes/inc_adoconnection.php');
-require_once($rootpath.'includes/inc_request.php');
+require_once $rootpath . 'includes/inc_default.php';
 
-$req = new request();
-$req->add('days', 365, 'get');
-$req->add('user_id', 0, 'get');
-$user_id = $req->get('user_id');
+$days = ($_GET['days']) ?: 365;
+$user_id = ($_GET['user_id']) ?: 0;
 
 if (!$user_id)
 {
 	exit;
 }
 
-$user = $db->GetRow('SELECT saldo FROM users WHERE id = '.$user_id);
+$user = readuser($user_id);
 
 if (!$user)
 {
@@ -26,7 +22,7 @@ if (!$user)
 
 $balance = (int) $user['saldo'];
 
-$begin_date = date('Y-m-d H:i:s', time() - (86400 * $req->get('days')));
+$begin_date = date('Y-m-d H:i:s', time() - (86400 * $days));
 $end_date = date('Y-m-d H:i:s');
 
 $query = 'SELECT t.amount, t.id_from, t.id_to, 
@@ -97,7 +93,7 @@ ob_end_clean();
 
 echo json_encode(array(
 	'user_id' => $user_id,
-	'ticks' => ($req->get('days') == 365) ? 12 : 4,
+	'ticks' => ($days == 365) ? 12 : 4,
 	'currency' => readconfigfromdb('currency'),
 	'transactions' => $transactions,
 	'users' => $users,

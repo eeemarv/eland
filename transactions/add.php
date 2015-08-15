@@ -3,7 +3,6 @@ ob_start();
 $rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 require_once $rootpath . 'includes/inc_userinfo.php';
 require_once $rootpath . 'includes/inc_mailfunctions.php';
@@ -79,11 +78,11 @@ if (isset($_POST['zend']))
 				$transaction["letscode_to"] = $letscode_to;
 				$transaction["letsgroup_id"] = $letsgroup_id;
 				$currencyratio = readconfigfromdb("currencyratio");
-				$transaction["amount"] = $transaction["amount"] / $currencyratio;
-				$transaction["amount"] = (float) $transaction["amount"];
-				$transaction["amount"] = round($transaction["amount"], 5);
-				$transaction["signature"] = sign_transaction($transaction, $letsgroup["presharedkey"]);
-				$transaction["retry_until"] = time() + (60*60*24*4);
+				$transaction['amount'] = $transaction['amount'] / $currencyratio;
+				$transaction['amount'] = (float) $transaction['amount'];
+				$transaction['amount'] = round($transaction['amount'], 5);
+				$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
+				$transaction['retry_until'] = time() + (60*60*24*4);
 				// Queue the transaction for later handling
 				$transid = queuetransaction($transaction, $fromuser, $touser);
 				if($transaction['transid'] == $transid)
@@ -177,8 +176,8 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-$user = get_user($s_id);
-$balance = $user["saldo"];
+$user = readuser($s_id);
+$balance = $user['saldo'];
 
 $letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
 
@@ -197,7 +196,7 @@ $fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 
-$minlimit = $user["minlimit"];
+$minlimit = $user['minlimit'];
 
 echo '<div>';
 echo '<p><strong>' . $user['letscode'] .' '. $user['name']. ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
@@ -294,60 +293,60 @@ function validate_input($transaction, $fromuser, $touser, $letsgroup)
 
 	$errors = array();
 
-	if (!isset($transaction["description"]) || (trim($transaction["description"] )==""))
+	if (!isset($transaction['description']) || (trim($transaction['description'] ) == ''))
 	{
-		$errors["description"]="Dienst is niet ingevuld";
+		$errors['description']='Dienst is niet ingevuld';
 	}
 
-	if (!isset($transaction["amount"])|| (trim($transaction["amount"] )==""))
+	if (!isset($transaction['amount'])|| (trim($transaction['amount'] )==''))
 	{
-		$errors["amount"]="Bedrag is niet ingevuld";
+		$errors['amount']='Bedrag is niet ingevuld';
 	}
 	else if (eregi('^[0-9]+$', $transaction['amount']) == FALSE)
 	{
-		$errors["amount"]="Bedrag is geen geldig getal";
+		$errors['amount']='Bedrag is geen geldig getal';
 	}
 
-	$user = get_user($transaction["id_from"]);
-	if(($user["saldo"] - $transaction["amount"]) < $fromuser["minlimit"] && $s_accountrole != "admin")
+	$user = readuser($transaction['id_from']);
+	if(($user['saldo'] - $transaction['amount']) < $fromuser['minlimit'] && $s_accountrole != 'admin')
 	{
-		$errors["amount"]="Je beschikbaar saldo laat deze transactie niet toe";
+		$errors['amount'] = 'Je beschikbaar saldo laat deze transactie niet toe';
 	}
 
 	if(empty($fromuser))
 	{
-		$errors["id_from"] = "Gebruiker bestaat niet";
+		$errors['id_from'] = 'Gebruiker bestaat niet';
 	}
 
 	if(empty($touser) )
 	{
-		$errors["id_to"] = "Bestemmeling bestaat niet";
+		$errors['id_to'] = 'Bestemmeling bestaat niet';
 	}
 
-	if($fromuser["letscode"] == $touser["letscode"])
+	if($fromuser['letscode'] == $touser['letscode'])
 	{
-		$errors["id"] = "Van en Aan zijn hetzelfde";
+		$errors['id'] = 'Van en Aan zijn hetzelfde';
 	}
 
-	if(($touser["maxlimit"] != NULL && $touser["maxlimit"] != 0)
-		&& $touser["saldo"] > $touser["maxlimit"] && $s_accountrole != "admin")
+	if(($touser['maxlimit'] != NULL && $touser['maxlimit'] != 0)
+		&& $touser['saldo'] > $touser['maxlimit'] && $s_accountrole != 'admin')
 	{
 		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
-		$errors["id_to"] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
+		$errors['id_to'] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 	}
 
 	if($letsgroup['apimethod'] == 'internal'
 		&& $s_accountrole != 'admin'
-		&& !($touser["status"] == '1' || $touser["status"] == '2'))
+		&& !($touser['status'] == '1' || $touser['status'] == '2'))
 	{
-		$errors["id_to"]="De bestemmeling is niet actief";
+		$errors['id_to']='De bestemmeling is niet actief';
 	}
 
 	if (!isset($transaction['date']) || (trim($transaction['date'] )== ''))
 	{
 		$errors['date'] = 'Datum is niet ingevuld';
 	}
-	else if (strtotime($transaction["date"]) == -1)
+	else if (strtotime($transaction['date']) == -1)
 	{
 		$errors['date'] = 'Fout in datumformaat (jjjj-mm-dd)';
 	}

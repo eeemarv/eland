@@ -3,7 +3,6 @@ ob_start();
 $rootpath = "../";
 $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
 
 $msg_type = $_GET["msg_type"];
 $id_category = $_GET["id_category"];

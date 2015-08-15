@@ -16,67 +16,68 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  * GNU General Public License for more details.
 */
 /** Provided functions:
- * Password_Strength($password, $username = null)	Check the strength of a password
- * generatePassword ($length = 10)i			Generate a random password
- * update_password($id, $posted_list)			Write password to database
+ * password_strength($password, $username = null)	Check the strength of a password
  * sendactivationmail($password, $user,$s_id)		Send the password to the user
 */
 
 function sendactivationmail($password, $user)
 {
 	global $baseurl, $s_id, $alert;
-	$mailfrom = readconfigfromdb("from_address");
+	
+	$from = readconfigfromdb("from_address");
 
-        if (!empty($user["mail"])){
-            $mailto = $user["mail"];
-        } else {
-			$alert->warning("Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!");
-			return 0;
-        }
+	if (!empty($user["mail"]))
+	{
+		$to = $user["mail"];
+	}
+	else
+	{
+		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
+		return 0;
+	}
 
 	$systemtag = readconfigfromdb("systemtag");
-        $systemletsname = readconfigfromdb("systemname");
-        $mailsubject = "[eLAS-";
-        $mailsubject .= $systemtag;
-        $mailsubject .= "] eLAS account activatie voor $systemletsname";
+	$systemletsname = readconfigfromdb("systemname");
+	$subject = "[eLAS-";
+	$subject .= $systemtag;
+	$subject .= "] eLAS account activatie voor $systemletsname";
 
-        $mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";
-        $mailcontent .= $systemtag;
-        $mailcontent .= " ***\r\n\n";
-        $mailcontent .= "Beste ";
-        $mailcontent .= $user["name"];
-        $mailcontent .= "\n\n";
+	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content .= $systemtag;
+	$content .= " ***\r\n\n";
+	$content .= "Beste ";
+	$content .= $user["name"];
+	$content .= "\n\n";
 
-        $mailcontent .= "Welkom bij Letsgroep $systemletsname";
-		$mailcontent .= '. Surf naar http://' . $baseurl;
-        $mailcontent .= " en meld je aan met onderstaande gegevens.\n";
-        $mailcontent .= "\n-- Account gegevens --\n";
-        $mailcontent .= "Login: ";
-        $mailcontent .= $user["login"]; 
-        $mailcontent .= "\nPasswoord: ";
-        $mailcontent .= $password;
-        $mailcontent .= "\n-- --\n\n";
+	$content .= "Welkom bij Letsgroep $systemletsname";
+	$content .= '. Surf naar http://' . $baseurl;
+	$content .= " en meld je aan met onderstaande gegevens.\n";
+	$content .= "\n-- Account gegevens --\n";
+	$content .= "Login: ";
+	$content .= $user["login"]; 
+	$content .= "\nPasswoord: ";
+	$content .= $password;
+	$content .= "\n-- --\n\n";
 
-	$mailcontent .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
-	$mailcontent .= " zelf bijwerken op het Internet.";
-        $mailcontent .= "\n\n";
-        
-		$mailcontent .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-		$mailcontent .= readconfigfromdb("support");
-		$mailcontent .= "\n\n";
-		$mailcontent .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
+	$content .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
+	$content .= " zelf bijwerken op het Internet.";
+	$content .= "\n\n";
 
-		$mailcontent .= "\r\n";
-		$mailcontent .= "         \,,,/\r\n";
-		$mailcontent .= "         (o o)\r\n";
-		$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
+	$content .= readconfigfromdb("support");
+	$content .= "\n\n";
+	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
 
-        //echo "Bezig met het verzenden naar $mailto...\n";
-        sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-        // log it
-        log_event($s_id,"Mail","Activation mail sent to $mailto");
-        //echo "OK<br>";
-		echo "OK - Activatiemail verstuurd";
+	$content .= "\r\n";
+	$content .= "         \,,,/\r\n";
+	$content .= "         (o o)\r\n";
+	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+
+	sendemail($from,$to,$subject,$content);
+
+	log_event($s_id,"Mail","Activation mail sent to $to");
+
+	echo "OK - Activatiemail verstuurd";
 }
 
 function password_strength($password, $username = null)

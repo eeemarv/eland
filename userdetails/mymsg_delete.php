@@ -1,17 +1,18 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
 
-$id = $_GET["id"];
-if(empty($id)){
-	header("Location:  mymsg_overview.php");
+$id = $_GET['id'];
+
+if(empty($id))
+{
+	header('Location: ' . $rootpath . 'userdetails/mymsg_overview.php');
 	exit;
 }
 
-if(isset($_POST["zend"])){
+if(isset($_POST['zend'])){
 	if ($db->Execute('DELETE FROM messages WHERE id = ' . $id . ' AND id_user = ' . $s_id))
 	{
 		$alert->success('Vraag/aanbod verwijderd.');

@@ -3,10 +3,9 @@ ob_start();
 $rootpath = "../";
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_adoconnection.php';
 
 $posted_list = array();
-$posted_list["apikey"] = $_POST["apikey"];
+$posted_list['apikey'] = $_POST['apikey'];
 $posted_list['comment'] = $_POST["comment"];
 $posted_list['type'] = 'interlets';
 

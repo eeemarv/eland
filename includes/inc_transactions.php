@@ -17,312 +17,246 @@
  * GNU General Public License for more details.
 */
 
-// Enable logging
-global $rootpath;
-require_once($rootpath."includes/inc_saldofunctions.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
-// require_once($rootpath."includes/inc_amq.php");
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 function generate_transid()
 {
-	global $baseurl;
-	global $s_id;
-	$genid = sha1($s_id .microtime()) .$_SESSION["id"] ."@" . $baseurl;
-	return $genid;
+	global $baseurl, $s_id;
+	return sha1($s_id .microtime()) .$_SESSION['id'] .'@' . $baseurl;
 }
 
 function sign_transaction($posted_list, $sharedsecret)
 {
-	$signamount = (float) $posted_list["amount"];
+	$signamount = (float) $posted_list['amount'];
 	$signamount = $signamount * 100;
 	$signamount = round($signamount);
-	$tosign = $sharedsecret .$posted_list["transid"] .strtolower($posted_list["letscode_to"]) .$signamount;
+	$tosign = $sharedsecret .$posted_list['transid'] .strtolower($posted_list['letscode_to']) .$signamount;
 	$signature = sha1($tosign);
-	log_event("","debug","Signing $tosign: $signature");
+	log_event('','debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
 }
 
 function check_duplicate_transaction($transid)
 {
 	global $db;
-	$query = "SELECT * FROM transactions WHERE transid = '" .$transid ."'";
-	$result = $db->GetArray($query);
-	if(count($result) > 0){
-		return 1;
-	} else {
-		return 0;
-	}
+	return ($db->GetOne('SELECT * FROM transactions WHERE transid = \'' .$transid . '\'')) ? 1 : 0;
 }
 
 function insert_transaction($posted_list)
 {
     global $db, $s_id;
 
-	$posted_list["creator"] = (empty($s_id)) ? 0 : $s_id;
-    $posted_list["cdate"] = date("Y-m-d H:i:s");
+	$posted_list['creator'] = (empty($s_id)) ? 0 : $s_id;
+    $posted_list['cdate'] = date('Y-m-d H:i:s');
 
-	if($db->AutoExecute("transactions", $posted_list, 'INSERT'))
+	$db->StartTrans();
+	$db->AutoExecute('transactions', $posted_list, 'INSERT');
+	$db->Execute('update users
+		set saldo = saldo + ' . $posted_list['amount'] . '
+		where id = ' . $posted_list['id_to']);
+	$db->Execute('update users
+		set saldo = saldo - ' . $posted_list['amount'] . '
+		where id = ' . $posted_list['id_from']);
+	if ($db->CompleteTrans())
 	{
+		readuser($posted_list['id_to'], true);
+		readuser($posted_list['id_from'], true);
 
-		log_event($s_id, "Trans", 'Transaction ' . $posted_list['transid'] . ' saved: ' .
+		log_event($s_id, 'Trans', 'Transaction ' . $posted_list['transid'] . ' saved: ' .
 			$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
 
-		update_saldo($posted_list["id_from"]);
-		update_saldo($posted_list["id_to"]);
 		return true;
 	}
 
 	$reason = $db->ErrorMsg();
-	log_event($s_id, "Trans", "Transaction $transid failed with error $reason");
+	log_event($s_id, 'Trans', 'Transaction ' . $transid . ' failed with error ' . $reason);
 
 	return false;
-}
-
-function get_transaction_by_id($transid)
-{
-	global $db;
-	$query = "SELECT * FROM transactions WHERE transid = '" .$transid ."'";
-	$transaction = $db->GetRow($query);
-        return $transaction;
-
-}
-
-function validate_interletsq($posted_list)
-{
-	global $db;
-	global $_SESSION;
-	$s_accountrole = $_SESSION["accountrole"];
-        $error_list = array();
-
-        //description may not be empty
-        if (!isset($posted_list["description"])|| (trim($posted_list["description"] )=="")){
-        $error_list["description"]="Dienst is niet ingevuld";
-        }
-/*
-		if (!ctype_digit($posted_list['amount'])
-		{
-			$error_list['amount'] = 'Bedrag moet uit cijfers bestaan';
-		}
-*/
-        //amount may not be empty
-        $var = trim($posted_list["amount"]);
-        if (!isset($posted_list["amount"]) || (trim($posted_list["amount"] ) == "" || !$posted_list['amount'])){
-                $error_list["amount"]="Bedrag is niet ingevuld";
-        }
-
-        //userfrom must exist
-	$fromuser = get_user($posted_list["id_from"]);
-        if(empty($fromuser)){
-                $error_list["id_from"]="Gebruiker bestaat niet";
-        }
-
-        //userto must exist
-	$touser = get_user($posted_list["id_to"]);
-        if(empty($touser) ){
-                $error_list["id_to"]="Gebruiker bestaat niet";
-	}
-
-	//userfrom and userto should not be the same
-	if($fromuser["letscode"] == $touser["letscode"]){
-		$error_list["id"]="Van en Aan zijn hetzelfde";
-	}
-
-        //date may not be empty
-        if (!isset($posted_list["date"])|| (trim($posted_list["date"] )=="")){
-                $error_list["date"]="Datum is niet ingevuld";
-        }elseif(strtotime($posted_list["date"]) == -1){
-                $error_list["date"]="Fout in datumformaat (jjjj-mm-dd)";
-        }
-
-        return $error_list;
 }
 
 function mail_interlets_transaction($posted_list)
 {
 	global $s_id;
 
-	$mailfrom = readconfigfromdb("from_address_transactions");
+	$from = readconfigfromdb("from_address_transactions");
 
-	$userfrom=get_user_maildetails($posted_list["id_from"]);
+	$userfrom = get_user_maildetails($posted_list["id_from"]);
 
 	$userto = get_user_mailaddresses($posted_list["id_to"]);
-	$mailto .= ",". $userto;
+	$to .= ",". $userto;
 
 	$systemname = readconfigfromdb("systemname");
 	$systemtag = readconfigfromdb("systemtag");
 	$currency = readconfigfromdb("currency");
 
-	$mailsubject .= "[eLAS-".$systemtag."] " . "Interlets transactie";
+	$subject .= "[eLAS-".$systemtag."] " . "Interlets transactie";
 
-	$mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 
-	$mailcontent  = "Er werd een interlets transactie ingegeven op de eLAS installatie van $systemname met de volgende gegevens:\r\n\r\n";
-	//$mailcontent .= "Datum: \t\t$timestamp\r\n"
+	$content  = "Er werd een interlets transactie ingegeven op de eLAS installatie van $systemname met de volgende gegevens:\r\n\r\n";
+
 	if(!empty($posted_list["real_from"]))
 	{
-			$mailcontent .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
+		$content .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
 	}
 	else
 	{
-			$mailcontent .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
+		$content .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
 	}
 
-	$mailcontent .= "Aan: \t\t". $posted_list["letscode_to"] ."\r\n";
+	$content .= "Aan: \t\t". $posted_list["letscode_to"] ."\r\n";
 
-	$mailcontent .= "Voor: \t\t".$posted_list["description"]."\r\n";
-	//calculate metacurrency
+	$content .= "Voor: \t\t".$posted_list["description"]."\r\n";
+
 	$currencyratio = readconfigfromdb("currencyratio");
 	$meta = round($posted_list["amount"] / $currencyratio, 4);
 
-	$mailcontent .= "Aantal: \t".$posted_list["amount"]. " $currency ($meta LETS uren*, $currencyratio $currency = 1 uur)\r\n";
-	$mailcontent .= "\r\nTransactieID: \t\t" . $posted_list['transid'] . "\r\n";
+	$content .= "Aantal: \t".$posted_list["amount"]. " $currency ($meta LETS uren*, $currencyratio $currency = 1 uur)\r\n";
+	$content .= "\r\nTransactieID: \t\t" . $posted_list['transid'] . "\r\n";
 
-	$mailcontent .= "\r\nJe moet deze in je eigen systeem verder verwerken.\r\n";
-	$mailcontent .= "\r\nAls dit niet mogelijk is moet je de kern van de andere groep verwittigen zodat ze de transactie aan hun kant annuleren.\r\n";
+	$content .= "\r\nJe moet deze in je eigen systeem verder verwerken.\r\n";
+	$content .= "\r\nAls dit niet mogelijk is moet je de kern van de andere groep verwittigen zodat ze de transactie aan hun kant annuleren.\r\n";
 
-	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
+	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
-	$mailcontent .= "\r\n";
-	$mailcontent .= "         \,,,/\r\n";
-	$mailcontent .= "         (o o)\r\n";
-	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+	$content .= "\r\n";
+	$content .= "         \,,,/\r\n";
+	$content .= "         (o o)\r\n";
+	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	$mailcontent .= "\r\n\r\n* Wat zijn LETS uren? http://elas.vsbnet.be/content/wat-een-lets-uur-elas-2x\r\n";
-
-	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
-	// log it
-	log_event($s_id,"Mail","Transaction sent to $mailto");
+	sendemail($from,$to,$subject,$content);
+	log_event($s_id, "Mail", "Transaction sent to $to");
 }
 
 function mail_transaction($posted_list)
 {
 	global $s_id;
 
-	$mailfrom = readconfigfromdb("from_address_transactions");
+	$from = readconfigfromdb("from_address_transactions");
 
 	$userfrom=get_user_maildetails($posted_list["id_from"]);
 	
 	if($userfrom["accountrole"] != "interlets")
 	{
-		$mailto .= ",".$userfrom["emailaddress"];
+		$to .= ",".$userfrom["emailaddress"];
 	}
 
 	$userto=get_user_maildetails($posted_list["id_to"]);
 
 	$userto_mail = get_user_mailaddresses($posted_list["id_to"]);
-	$mailto .= ",". $userto_mail;
+	$to .= ",". $userto_mail;
 
 	$systemtag = readconfigfromdb("systemtag");
 	$currency = readconfigfromdb("currency");
 
-	$mailsubject .= "[eLAS-".$systemtag."] " . $posted_list["amount"] . " " .$currency;
+	$subject .= "[eLAS-".$systemtag."] " . $posted_list["amount"] . " " .$currency;
 	if(!empty($posted_list["real_from"]))
 	{
-		$mailsubject .= " van " . $posted_list["real_from"];
+		$subject .= " van " . $posted_list["real_from"];
 	} else {
-		$mailsubject .= " van " . $userfrom["fullname"] ;
+		$subject .= " van " . $userfrom["fullname"] ;
 	}
 	if(!empty($posted_list["real_to"]))
 	{
-		$mailsubject .= " aan " . $posted_list["real_to"];
+		$subject .= " aan " . $posted_list["real_to"];
 	} else {
-		$mailsubject .= " aan " . $userto["fullname"] ;
+		$subject .= " aan " . $userto["fullname"] ;
 	}
 
-	$mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 
 	if(!empty($posted_list["real_from"]))
 	{
-		$mailcontent .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
+		$content .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
 	}
 	else
 	{
-		$mailcontent .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
+		$content .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
 	}
 	if(!empty($posted_list["real_to"]))
 	{
-		$mailcontent .= "Aan: \t\t". $posted_list["real_to"] ."\r\n";
+		$content .= "Aan: \t\t". $posted_list["real_to"] ."\r\n";
     }
     else
     {
-		$mailcontent .= "Aan: \t\t". $userto["fullname"] ."\r\n";
+		$content .= "Aan: \t\t". $userto["fullname"] ."\r\n";
 	}
 
-	$mailcontent .= "Voor: \t\t".$posted_list["description"]."\r\n";
-	$mailcontent .= "Aantal: \t".$posted_list["amount"]."\r\n";
-	$mailcontent .= "\r\nTransactieID: \t\t".$posted_list['transid'] . "\r\n";
+	$content .= "Voor: \t\t".$posted_list["description"]."\r\n";
+	$content .= "Aantal: \t".$posted_list["amount"]."\r\n";
+	$content .= "\r\nTransactieID: \t\t".$posted_list['transid'] . "\r\n";
 
-	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
+	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
-	$mailcontent .= "\r\n";
-	$mailcontent .= "         \,,,/\r\n";
-	$mailcontent .= "         (o o)\r\n";
-	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+	$content .= "\r\n";
+	$content .= "         \,,,/\r\n";
+	$content .= "         (o o)\r\n";
+	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+	sendemail($from,$to,$subject,$content);
 	// log it
-	log_event($s_id,"Mail","Transaction sent to $mailto");
+	log_event($s_id,"Mail","Transaction sent to $to");
 }
 
 function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,$admincc)
 {
-	$mailfrom = readconfigfromdb("from_address_transactions");
+	$from = readconfigfromdb("from_address_transactions");
 
 	$systemtag = readconfigfromdb("systemtag");
 	$currency = readconfigfromdb("currency");
 
-	$mailsubject .= "[eLAS-".$systemtag."] Gefaalde transactie $transid" ;
+	$subject .= "[eLAS-".$systemtag."] Gefaalde transactie $transid" ;
 
 	$userfrom=get_user_maildetails($id_from);
 	if($userfrom["accountrole"] != "interlets")
 	{
-			$mailto = $userfrom["emailaddress"];
+			$to = $userfrom["emailaddress"];
 	}
 
 	if($admincc == 1)
 	{
-		$mailto .= ",". readconfigfromdb("admin");
+		$to .= ",". readconfigfromdb("admin");
 	}
 
-	//$mailcontent .= "Datum: \t\t$timestamp\r\n";
-	$mailcontent  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
-	$mailcontent .= "Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:\r\n";
-	$mailcontent .= "\r\n";
+	//$content .= "Datum: \t\t$timestamp\r\n";
+	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content .= "Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:\r\n";
+	$content .= "\r\n";
 
 	switch ($result){
 		case "SIGFAIL":
-			$mailcontent .= "De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de 2 eLAS installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.\r\n";
+			$content .= "De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de 2 eLAS installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.\r\n";
 			break;
 		case "EXPIRED":
-			$mailcontent .= "Na 4 dagen kon geen contact met de andere eLAS installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.\r\n";
+			$content .= "Na 4 dagen kon geen contact met de andere eLAS installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.\r\n";
 			break;
 		case "NOUSER":
-			$mailcontent .= "De gebruiker met die letscode bestaat niet in de andere groep.  Controleer de letscode via de interlets-functies en probeer het eventueel opnieuw.\r\n";
+			$content .= "De gebruiker met die letscode bestaat niet in de andere groep.  Controleer de letscode via de interlets-functies en probeer het eventueel opnieuw.\r\n";
 		break;
 	}
-	$mailcontent .= "\r\n";
+	$content .= "\r\n";
 
 	// Transaction details
 	$amount = $amount * readconfigfromdb("currencyratio");
 	$amount = round($amount);
-	$mailcontent .= "--\r\n";
-	$mailcontent .= "Letscode: \t". $letscode_to ."\r\n";
-	$mailcontent .= "Voor: \t\t".$description."\r\n";
-	$mailcontent .= "Aantal: \t".$amount." $currency\r\n";
-	$mailcontent .= "\r\nTransactieID: \t\t$transid\r\n";
-	$mailcontent .= "--\r\n";
+	$content .= "--\r\n";
+	$content .= "Letscode: \t". $letscode_to ."\r\n";
+	$content .= "Voor: \t\t".$description."\r\n";
+	$content .= "Aantal: \t".$amount." $currency\r\n";
+	$content .= "\r\nTransactieID: \t\t$transid\r\n";
+	$content .= "--\r\n";
 
-	$mailcontent .= "\r\n--\nDe eLAS transactie robot\r\n";
+	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
-	$mailcontent .= "\r\n";
-	$mailcontent .= "         \,,,/\r\n";
-	$mailcontent .= "         (o o)\r\n";
-	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+	$content .= "\r\n";
+	$content .= "         \,,,/\r\n";
+	$content .= "         (o o)\r\n";
+	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+	sendemail($from,$to,$subject,$content);
 	// log it
-	log_event($s_id,"Mail","Interlets failure sent to $mailto");
+	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
 }
 
 function queuetransaction($posted_list,$fromuser,$touser)

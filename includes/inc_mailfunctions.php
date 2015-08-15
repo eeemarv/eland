@@ -1,7 +1,5 @@
 <?php
 /**
- * Class to perform eLAS Mail operations
- *
  * This file is part of eLAS http://elas.vsbnet.be
  *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
@@ -15,116 +13,28 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  * GNU General Public License for more details.
 */
-/** Provided functions:
- * sendemail($mailfrom,$mailto,$mailsubject,$mailcontent)	Immediately send out an e-mail
-*/
 
-function sendemail($mailfrom, $mailto, $mailsubject, $mailcontent){
-	global $elasversion;
+function sendemail($from, $to, $subject, $content)
+{
+	global $s_id;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
-		log_event("", "mail", "Mail $mailsubject not sent, mail functions are disabled");
-		return "Mail functies zijn uitgeschakeld";
+		log_event('', 'mail', 'Mail ' . $subject . ' not sent, mail functions are disabled');
+		return 'Mail functies zijn uitgeschakeld';
 	}
 
-	if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent))
+	if(empty($from) || empty($to) || empty($subject) || empty($content))
 	{
-		$logline = "Mail $mailsubject not sent, missing fields\n";
-		$logline .= "From: $mailfrom\nTo: $mailto\nSubject: $mailsubject\nContent: $mailcontent";
-		log_event("", "mail", $logline);
-		return "Fout: mail niet verstuurd, ontbrekende velden";
+		$log = "Mail $subject not sent, missing fields\n";
+		$log .= "From: $from\nTo: $to\nSubject: $subject\nContent: $content";
+		log_event("", "mail", $log);
+		return 'Fout: mail niet verstuurd, ontbrekende velden';
 	}
 
-	//Filter off leading and trailing commas to avoid errors
-	$mailto = preg_replace('/^,/i', '', $mailto);
-	$mailto = preg_replace('/,$/i', '', $mailto);
+	$to = trim($to, ',');
 
-	$toarray = explode(",", $mailto);
-
-	// use the official mandrill api wrapper.
-	return sendemail_mandrill_simple($mailfrom, $toarray, $mailsubject, $mailcontent);
-
-	// Swiftmailer below disabled.
-
-	// return 0 on success, 1 on failure
-	// use Mandrill for transport
-	$transport = Swift_SmtpTransport::newInstance('smtp.mandrillapp.com', 587);
-	$transport->setUsername(getenv('MANDRILL_USERNAME'));
-	$transport->setPassword(getenv('MANDRILL_PASSWORD'));
-	$mailer = Swift_Mailer::newInstance($transport);
-
-	if(readconfigfromdb('mailenabled')){
-		if(empty($mailfrom) || empty($mailto) || empty($mailsubject) || empty($mailcontent)){
-			$mailstatus = "Fout: mail niet verstuurd, ontbrekende velden";
-			$logline = "Mail $mailsubject not sent, missing fields\n";
-			$logline .= "From: $mailfrom\nTo: $mailto\nSubject: $mailsubject\nContent: $mailcontent";
-			log_event("", "mail", $logline);
-		} else {
-			$message = Swift_Message::newInstance();
-			$message->setSubject($mailsubject);
-
-			try
-			{
-				$message->setFrom($mailfrom);
-			}
-			catch (Exception $e)
-			{
-				$emess = $e->getMessage();
-				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
-				$status = 0;
-			}
-
-			try
-			{
-				$message->setTo($toarray);
-			}
-			catch (Exception $e)
-			{
-				$emess = $e->getMessage();
-				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
-				$status = 0;
-			}
-
-			try
-			{
-				$message->setBody($mailcontent);
-			}
-			catch (Exception $e) {
-				$emess = $e->getMessage();
-				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
-				$status = 0;
-			}
-			$status = 1;
-			try
-			{
-				$mailer->send($message);
-			}
-			catch (Exception $e) {
-				$emess = $e->getMessage();
-				$mailstatus = "Fout: mail naar $mailto niet verstuurd.";
-				log_event("", "mail", "Mail $mailsubject not send, mail command said $emess");
-				$status = 0;
-			}
-			if($status == 1) {
-				$mailstatus = "OK - Mail verstuurd";
-				log_event("", "mail", "Mail $mailsubject sent to $mailto");
-			}
-		}
-	} else {
-		$mailstatus = "Mail functies zijn uitgeschakeld";
-		log_event("", "mail", "Mail $mailsubject not sent, mail functions are disabled");
-	}
-
-	return $mailstatus;
-}
-
-function sendemail_mandrill_simple($from, $to, $subject, $content)
-{
-	global $s_id;
+	$to = explode(',', $to);
 
 	$to_mandrill = array_map(function($email_address){return array('email' => $email_address);}, $to);
 

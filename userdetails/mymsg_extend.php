@@ -1,9 +1,8 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 $msgid = $_GET['id'];
 $validity = $_GET['validity'];
