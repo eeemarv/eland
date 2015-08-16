@@ -45,10 +45,7 @@ class elas_heroku_log
 		);
 
 		$this->insert_items[] = $item;
-		/*
-		$this->connect();
-		$this->logs->insert($item);
-		*/
+
 		return $this;
 	}
 
@@ -96,9 +93,9 @@ class elas_heroku_log
 		$url = getenv('MONGOLAB_URI');
 		$mongo_client = new MongoClient($url);
 		$path = parse_url($url, PHP_URL_PATH);
-		$logdb = $mongo_client->selectDB(trim($path, '/'));
+		$mdb = $mongo_client->selectDB(trim($path, '/'));
 		$collection_name = $this->schema . '_logs';
-		$this->logs = $logdb->$collection_name;
+		$this->logs = $mdb->$collection_name;
 
 		return $this;
 	}

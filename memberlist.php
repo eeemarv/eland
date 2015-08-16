@@ -43,7 +43,7 @@ if ($s_accountrole == 'admin')
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Admin</span></a>';
 }
 
-$h1 = 'Contactlijst';
+$h1 = 'Leden';
 $fa = 'users';
 
 if (in_array($s_accountrole, array('admin', 'user')))

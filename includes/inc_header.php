@@ -78,16 +78,17 @@ if ($s_letscode)
 	if ($s_accountrole == 'admin')
 	{
 		$menu = array(
-			'users/overview.php'						=> array('users', 'Gebruikers'),
-			'categories/overview.php'	 				=> array('files-o', 'Categorieën'),
-			'interlets/overview.php'					=> array('share-alt', 'LETS Groepen'),
-			'apikeys/overview.php'						=> array('key', 'Apikeys'),
-			'type_contact/overview.php'					=> array('circle-o-notch', 'Contact types'),
-			'reports/overview.php'						=> array('calculator', 'Rapporten'),
-			'preferences/config.php'					=> array('gears', 'Instellingen'),
-			'export.php'								=> array('download', 'Export'),
-			'transactions/mass.php'						=> array('exchange', 'Massa-Transactie'),
-			'eventlog.php'								=> array('list', 'Logs'),
+			'users/overview.php'				=> array('users', 'Gebruikers'),
+			'categories/overview.php'	 		=> array('files-o', 'Categorieën'),
+			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
+			'apikeys/overview.php'				=> array('key', 'Apikeys'),
+			'type_contact/overview.php'			=> array('circle-o-notch', 'Contact types'),
+			'reports/overview.php'				=> array('calculator', 'Rapporten'),
+			'preferences/config.php'			=> array('gears', 'Instellingen'),
+			'export.php'						=> array('download', 'Export'),
+			'autolimits.php'					=> array('arrows-v', 'Auto limieten'),
+			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
+			'eventlog.php'						=> array('list', 'Logs'),
 		);
 
 		echo '<li class="dropdown">';
@@ -131,7 +132,7 @@ else
 	$main_menu = array(
 		'index.php'					=> array('home', 'Overzicht'),
 		'messages/overview.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
-		'memberlist.php'			=> array('users', 'Contactlijst'),
+		'memberlist.php'			=> array('users', 'Leden'),
 	);
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
