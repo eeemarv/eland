@@ -116,9 +116,11 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list)
         echo "<select name='prefix'>";
 
 	echo "<option value='ALL'>ALLE</option>";
-	$list_prefixes = get_prefixes();
-	
-	foreach ($list_prefixes as $key => $value){ 
+
+	$list_prefixes = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
+
+	foreach ($list_prefixes as $key => $value)
+	{ 
 		echo "<option value='" .$value["prefix"] ."'";
 		echo ($posted_list['prefix'] == $value['prefix']) ? ' selected="selected"' : '';
 		echo ">" .$value["shortname"] ."</option>";

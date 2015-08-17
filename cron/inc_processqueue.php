@@ -146,7 +146,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	$posted_list["description"] = $description;
 	$posted_list["id_from"] = $id_from;
 	//Lookup id_to first
-	$to_user = get_user_by_letscode($myletsgroup["localletscode"]);
+	$to_user = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $myletsgroup['localletscode'] . '\'');
 
 	$posted_list["id_to"] = $to_user["id"];
 	//Real_to has to be set by a soap call

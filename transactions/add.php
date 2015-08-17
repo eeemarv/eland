@@ -168,13 +168,8 @@ if (!isset($_POST['zend']))
 	$letsgroup['id'] = $letsgroup_id;
 }
 
-$includejs = '
-	<script src="' . $cdn_datepicker . '"></script>
-	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $cdn_typeahead . '"></script>
+$includejs = '<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/transactions_add.js"></script>';
-
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 $user = readuser($s_id);
 $balance = $user['saldo'];

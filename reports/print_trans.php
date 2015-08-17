@@ -91,17 +91,6 @@ function get_user($id){
         return $user;
 }
 
-function get_users(){
-	global $db;
-        $query = "SELECT * FROM users ";
-        $query .= "WHERE (status = 1  ";
-        $query .= "OR status =2 OR status = 3)  ";
-        $query .= "AND users.accountrole <> 'guest' ";
-        $query .= " order by letscode";
-        $list_users = $db->GetArray($query);
-        return $list_users;
-}
-
 function show_all_transactions($transactions){
 	echo "<div class='border_b'>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1' width='99%'>";

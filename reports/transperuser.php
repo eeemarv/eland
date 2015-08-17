@@ -37,7 +37,11 @@ else
 	$posted_list["dateto"] = $year ."-12-31";
 }
 
-$list_users = get_users();
+$list_users = $users = $db->GetArray('SELECT *
+		FROM users
+		WHERE status in (1, 2) 
+			and users.accountrole <> \'guest\' order by letscode');
+
 $user_userid = $posted_list["userid"];
 $user_datefrom = $posted_list["datefrom"];
 $user_dateto = $posted_list["dateto"];
@@ -105,7 +109,7 @@ function show_userselect($list_users,$posted_list)
 	echo "<select name='prefix'>\n";
 
 	echo "<option value='ALL'>ALLE</option>";
-	$list_prefixes = get_prefixes();
+	$list_prefixes = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
 	foreach ($list_prefixes as $key => $value)
 	{
 		echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";

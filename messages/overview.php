@@ -26,7 +26,7 @@ $cats_hsh_name = array(
 
 $rs = $db->Execute('SELECT * FROM categories ORDER BY fullname');
 
-$ow_str = ' (vraag: %1$s - aanbod: %2$s)';
+$ow_str = ' . . . . vraag: %1$s - aanbod: %2$s';
 
 while ($row = $rs->FetchRow())
 {
@@ -35,7 +35,7 @@ while ($row = $rs->FetchRow())
 	if ($row['id_parent'])
 	{
 		$id_parent = $row['id_parent'];
-		$cats_hsh_name[$c_hsh] = '........' . $row['name'];
+		$cats_hsh_name[$c_hsh] = '. . . . . ' . $row['name'];
 		$offer = $row['stat_msgs_offers'];
 		$want = $row['stat_msgs_wanted'];
 		$cats_hsh_name[$c_hsh] .= sprintf($ow_str, $want, $offer);

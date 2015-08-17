@@ -329,20 +329,23 @@ function user_exp_msgs()
 	foreach ($warn_messages AS $key => $value)
 	{
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
-		echo "Found new expired message " .$value["id"];
-		$user = get_user_maildetails($value["id_user"]);
+		echo "Found new expired message " .$value['id'];
+		$user = readuser($value['id_user']);
+		$mailto = $db->GetOne('select c.value
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
+				and c.id_user = ' . $value['id_user'] . '
+				and tc.abbrev = \'mail\'');
 		$username = $user["name"];
 		$extend_url = $base_url . '/userdetails/mymsg_extend.php?id=' . $value['id'] . '&validity=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
-		$content = "Beste $username\n\nJe " . $va . ' ' . $value["content"];
+		$content = "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'];
 		$content .= " in eLAS is vervallen en zal over " . $msgcleanupdays . ' dagen verwijderd worden. ';
 		$content .= "Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen. ";
 		$content .= "\n Verlengen met één maand: " . $extend_url . "1 \n";
 		$content .= "\n Verlengen met één jaar: " . $extend_url . "12 \n";
 		$content .= "\n Verlengen met vijf jaar: " . $extend_url . "60 \n";
 		$content .= "\n Nieuw vraag of aanbod ingeven: " . $base_url . "/messages/edit.php?mode=new \n";
-
-		$mailto = $user["emailaddress"];
 
 		$subject = 'Je ' . $va . ' in eLAS is vervallen.';
 

@@ -86,7 +86,7 @@ if ($s_letscode)
 			'reports/overview.php'				=> array('calculator', 'Rapporten'),
 			'preferences/config.php'			=> array('gears', 'Instellingen'),
 			'export.php'						=> array('download', 'Export'),
-			'autolimits.php'					=> array('arrows-v', 'Auto limieten'),
+			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
 			'eventlog.php'						=> array('list', 'Logs'),
 		);

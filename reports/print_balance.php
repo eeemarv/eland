@@ -11,5 +11,8 @@ $user_date = $_GET["date"];
 $user_prefix = $_GET["prefix"];
 
 echo "<h1>Stand rekeningen op " .$user_date ."</h1>";
-$users = get_users($user_prefix);
+$users = $db->GetArray('SELECT *
+		FROM users
+		WHERE status in (1, 2) 
+			and users.accountrole <> \'guest\' order by letscode');
 show_user_balance($users,$user_date);

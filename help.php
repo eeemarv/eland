@@ -8,10 +8,10 @@ require_once $rootpath . 'includes/inc_mailfunctions.php';
 if(isset($_POST['zend']))
 {
 	$posted_list = array(); 
-	$posted_list["login"] = mysql_escape_string($_POST["login"]);
-	$posted_list["email"] = mysql_escape_string($_POST["email"]);
-	$posted_list["subject"] = mysql_escape_string($_POST["subject"]);
-	$posted_list["description"] = mysql_escape_string($_POST["description"]);
+	$posted_list["login"] = $_POST["login"];
+	$posted_list["email"] = $_POST["email"];
+	$posted_list["subject"] = $_POST["subject"];
+	$posted_list["description"] = $_POST["description"];
 	$posted_list["browser"] = $_SERVER['HTTP_USER_AGENT'];
 	$error_list = validate_input($posted_list);
 
@@ -33,10 +33,15 @@ if(isset($_POST['zend']))
 }
 else
 {
-	if(isset($s_id)){
-		$user = get_user_maildetails($s_id);
+	if(isset($s_id))
+	{
+		$user = readuser($s_id);
 		$posted_list['login'] = $user['login'];
-		$posted_list['email'] = $user['emailaddress'];
+		$posted_list['email'] = $db->GetOne('select c.value
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
+				and c.id_user = ' . $s_id . '
+				and tc.abbrev = \'mail\'');
 	}
 }
 
@@ -129,21 +134,12 @@ function validate_input($posted_list){
         return $error_list;
 }
 
-function checkmailaddress($email){
+function checkmailaddress($email)
+{
 	global $db;
 	$query = "SELECT contact.value FROM contact, type_contact WHERE id_type_contact = type_contact.id and type_contact.abbrev = 'mail' AND contact.value = '" .$email ."'";
 	$checkedaddress = $db->GetRow($query);
 	return $checkedaddress;
-}
-
-function get_user_maildetails($userid){
-        global $db;
-        $user = readuser($userid);
-        $query = "SELECT * FROM contact, type_contact WHERE id_user = $userid AND id_type_contact = type_contact.id and type_contact.abbrev = 'mail'";
-        $contacts = $db->GetRow($query);
-        $user["emailaddress"] = $contacts["value"];
-
-        return $user;
 }
 
 function helpmail($posted_list,$rootpath)
@@ -152,15 +148,14 @@ function helpmail($posted_list,$rootpath)
 	global $rootpath, $s_id;
 
 	$mailfrom = trim($posted_list['email']);
-	
 
-	$mailto = trim(readconfigfromdb("support"));
+	$mailto = trim(readconfigfromdb('support'));
 	if (empty($mailto))
 	{
 		return false;
 	}
 
-	$mailsubject = '[eLAS-' . readconfigfromdb("systemtag") . '] ' .$posted_list['subject'];
+	$mailsubject = '[eLAS-' . readconfigfromdb('systemtag') . '] ' .$posted_list['subject'];
 
     $mailcontent  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
 	$mailcontent .= "E-mail: {$posted_list['email']}\r\n";

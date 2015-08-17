@@ -81,14 +81,13 @@ function mail_interlets_transaction($posted_list)
 
 	$from = readconfigfromdb("from_address_transactions");
 
-	$userfrom = get_user_maildetails($posted_list["id_from"]);
+	$userfrom = readuser($posted_list['id_from']);
 
-	$userto = get_user_mailaddresses($posted_list["id_to"]);
-	$to .= ",". $userto;
+	$to = get_mailaddresses($posted_list['id_to']);
 
-	$systemname = readconfigfromdb("systemname");
-	$systemtag = readconfigfromdb("systemtag");
-	$currency = readconfigfromdb("currency");
+	$systemname = readconfigfromdb('systemname');
+	$systemtag = readconfigfromdb('systemtag');
+	$currency = readconfigfromdb('currency');
 
 	$subject .= "[eLAS-".$systemtag."] " . "Interlets transactie";
 
@@ -109,7 +108,7 @@ function mail_interlets_transaction($posted_list)
 
 	$content .= "Voor: \t\t".$posted_list["description"]."\r\n";
 
-	$currencyratio = readconfigfromdb("currencyratio");
+	$currencyratio = readconfigfromdb('currencyratio');
 	$meta = round($posted_list["amount"] / $currencyratio, 4);
 
 	$content .= "Aantal: \t".$posted_list["amount"]. " $currency ($meta LETS uren*, $currencyratio $currency = 1 uur)\r\n";
@@ -125,8 +124,8 @@ function mail_interlets_transaction($posted_list)
 	$content .= "         (o o)\r\n";
 	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	sendemail($from,$to,$subject,$content);
-	log_event($s_id, "Mail", "Transaction sent to $to");
+	sendemail($from, $to, $subject, $content);
+	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
 
 function mail_transaction($posted_list)
@@ -135,16 +134,17 @@ function mail_transaction($posted_list)
 
 	$from = readconfigfromdb("from_address_transactions");
 
-	$userfrom=get_user_maildetails($posted_list["id_from"]);
+	$userfrom = readuser($posted_list['id_from']);
 	
-	if($userfrom["accountrole"] != "interlets")
+	if($userfrom['accountrole'] != 'interlets')
 	{
-		$to .= ",".$userfrom["emailaddress"];
+		$to = get_mailaddresses($posted_list['id_to']);
 	}
 
-	$userto=get_user_maildetails($posted_list["id_to"]);
+	$userto = readuser($posted_list['id_to']);
 
-	$userto_mail = get_user_mailaddresses($posted_list["id_to"]);
+	$userto_mail = get_mailaddresses($posted_list['id_to']);
+
 	$to .= ",". $userto_mail;
 
 	$systemtag = readconfigfromdb("systemtag");
@@ -194,9 +194,8 @@ function mail_transaction($posted_list)
 	$content .= "         (o o)\r\n";
 	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	sendemail($from,$to,$subject,$content);
-	// log it
-	log_event($s_id,"Mail","Transaction sent to $to");
+	sendemail($from, $to, $subject, $content);
+	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
 
 function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,$admincc)
@@ -208,10 +207,12 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 
 	$subject .= "[eLAS-".$systemtag."] Gefaalde transactie $transid" ;
 
-	$userfrom=get_user_maildetails($id_from);
+	$userfrom = readuser($id_from);
+
+
 	if($userfrom["accountrole"] != "interlets")
 	{
-			$to = $userfrom["emailaddress"];
+		$to = get_mailaddresses($id_from);
 	}
 
 	if($admincc == 1)
@@ -280,3 +281,18 @@ function queuetransaction($posted_list,$fromuser,$touser)
 
 	return $transid;
 }
+
+function get_mailaddresses($uid)
+{
+	$addr = '';
+	$rs = $db->Execute('select c.value
+		from contact c, type_contact tc
+		where c.id_type_contact = tc.id
+			and c.id_user = ' . $uid . '
+			and tc.abbrev = \'mail\'');
+	while($addr .= $rs->FetchOne() . ', ')
+	{
+	}
+	return rtrim($addr, ', ');
+}
+

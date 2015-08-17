@@ -129,14 +129,15 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			$posted_list['date'] = date('Y-m-d H:i:s');
 			$posted_list['description'] = $description;
 
-			$fromuser = get_user_by_letscode($from);
+			$fromuser = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $from . '\'');
+
 			log_event('','debug', 'Looking up Interlets user ' . $from);
 
 			log_event('','debug', 'Found Interlets fromuser ' . serialize($fromuser));
 
 			$posted_list['id_from'] = $fromuser['id'];
 			$posted_list['real_from'] = $real_from;
-			$touser = get_user_by_letscode($to);
+			$touser = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $to . '\'');
 			$posted_list['id_to'] = $touser['id'];
 			$posted_list['amount'] = $amount;
 			$posted_list['letscode_to'] = $touser['letscode'];
@@ -191,7 +192,7 @@ function userbyletscode($apikey, $letscode)
 	log_event('','debug','Lookup request for ' . $letscode);
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = get_user_by_letscode($letscode);
+		$user = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $letscode . '\'');
 		if($user['fullname'] == '')
 		{
 			return 'Onbekend';
@@ -212,7 +213,7 @@ function userbyname($apikey, $name)
 	log_event('','debug','Lookup request for user ' . $name);
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = get_user_by_name($name);
+		$user = $db->GetRow('SELECT * FROM users WHERE (LOWER(fullname)) LIKE \'%' .strtolower($name) . '%\'');
 		if($user['fullname'] == '')
 		{
 			return 'Onbekend';
@@ -228,7 +229,8 @@ function userbyname($apikey, $name)
 	}
 }
 
-function getstatus($apikey){
+function getstatus($apikey)
+{
 	global $elasversion;
 	if(check_apikey($apikey,'interlets'))
 	{
