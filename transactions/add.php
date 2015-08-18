@@ -4,7 +4,6 @@ $rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
-require_once $rootpath . 'includes/inc_userinfo.php';
 require_once $rootpath . 'includes/inc_mailfunctions.php';
 require_once $rootpath . 'includes/inc_form.php';
 

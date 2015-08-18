@@ -1,9 +1,8 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_userinfo.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
@@ -13,7 +12,7 @@ $includejs = '
 	
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
 include("inc_transperuser.php");
 

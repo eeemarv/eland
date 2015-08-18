@@ -25,7 +25,6 @@ require_once $rootpath . 'cron/inc_processqueue.php';
 require_once $rootpath . 'cron/inc_saldo_mail.php';
 
 require_once $rootpath . 'includes/inc_mailfunctions.php';
-require_once $rootpath . 'includes/inc_userinfo.php';
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 

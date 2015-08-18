@@ -1,9 +1,8 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_userinfo.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 include("inc_balance.php");
 

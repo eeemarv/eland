@@ -2,10 +2,9 @@
 ob_start();
 $rootpath = '../';
 $role = 'admin';
-require_once($rootpath.'includes/inc_default.php');
-require_once($rootpath.'includes/inc_userinfo.php');
+require_once $rootpath . 'includes/inc_default.php';
 
-include('inc_balance.php');
+include 'inc_balance.php';
 
 $user_date = $_GET['date'];
 $user_prefix = $_GET['prefix'];

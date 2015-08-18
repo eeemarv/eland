@@ -17,7 +17,6 @@
  * GNU General Public License for more details.
 */
 
-require_once $rootpath . 'includes/inc_userinfo.php';
 require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 function generate_transid()
