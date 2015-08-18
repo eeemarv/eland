@@ -119,11 +119,6 @@ function mail_interlets_transaction($posted_list)
 
 	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
-	$content .= "\r\n";
-	$content .= "         \,,,/\r\n";
-	$content .= "         (o o)\r\n";
-	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
-
 	sendemail($from, $to, $subject, $content);
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
@@ -189,11 +184,6 @@ function mail_transaction($posted_list)
 
 	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
-	$content .= "\r\n";
-	$content .= "         \,,,/\r\n";
-	$content .= "         (o o)\r\n";
-	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
-
 	sendemail($from, $to, $subject, $content);
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
@@ -249,11 +239,6 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$content .= "--\r\n";
 
 	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
-
-	$content .= "\r\n";
-	$content .= "         \,,,/\r\n";
-	$content .= "         (o o)\r\n";
-	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
 	sendemail($from,$to,$subject,$content);
 	// log it

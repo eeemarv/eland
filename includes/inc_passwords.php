@@ -68,11 +68,6 @@ function sendactivationmail($password, $user)
 	$content .= "\n\n";
 	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
 
-	$content .= "\r\n";
-	$content .= "         \,,,/\r\n";
-	$content .= "         (o o)\r\n";
-	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
-
 	sendemail($from,$to,$subject,$content);
 
 	log_event($s_id,"Mail","Activation mail sent to $to");
