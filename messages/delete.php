@@ -1,14 +1,14 @@
 <?php
 
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 require_once($rootpath."includes/inc_adoconnection.php");
 
 include($rootpath."includes/inc_header.php");
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 if(empty($id))
 {
 	header('Location: ' . $rootpath . 'messages/overview.php');
@@ -21,12 +21,12 @@ $msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname
 		AND m.id_category = ct.id
 		AND m.id_user = u.id');
 
-if ($role == 'user' && $s_id != $msg['id_user'])
+if ($s_accountrole == 'user' && $s_id != $msg['id_user'])
 {
 	$alert->warning('Je hebt onvoldoende rechten om het vraag of aanbod te verwijderen.');
 	header('Location: ' . $rootpath . 'overview.php');
 	exit;
-}	
+}
 
 if(isset($_POST["zend"]))
 {
