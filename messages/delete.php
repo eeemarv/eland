@@ -1,11 +1,11 @@
 <?php
 
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
+require_once $rootpath . 'includes/inc_default.php';
 
-$id = $_GET["id"];
+$id = $_GET['id'];
 
 if(empty($id))
 {
@@ -24,7 +24,7 @@ if ($s_accountrole == 'user' && $s_id != $msg['id_user'])
 	$alert->warning('Je hebt onvoldoende rechten om het vraag of aanbod te verwijderen.');
 	header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
 	exit;
-}	
+}
 
 if(isset($_POST["zend"]))
 {
