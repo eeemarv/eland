@@ -64,6 +64,8 @@ $status_ary = array(
 	7	=> 'extern',
 );
 
+$currency = readconfigfromdb('currency');
+
 $users = $db->GetArray('select * from users order by letscode asc');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
@@ -91,7 +93,8 @@ $top_buttons .= '<span class="hidden-xs hidden-sm"> Saldo mail</span></a>';
 $h1 = 'Gebruikers';
 $fa = 'users';
 
-$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
+	<script src="' . $rootpath . 'js/calc_sum.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -170,7 +173,7 @@ foreach($users as $u)
 
 	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
-	echo '<tr' . $class . '>';
+	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
 	echo '<td>';
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$id .'">';
@@ -247,6 +250,11 @@ foreach($users as $u)
 }
 echo '</tbody>';
 echo '</table>';
+
+echo '<div class="panel panel-default">';
+echo '<div class="panel-heading">';
+echo '<p>Totaal saldo van geselecteerde gebruikers: <span id="sum"></span> ' . $currency . '</p>';
+echo '</div></div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
