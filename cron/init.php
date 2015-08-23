@@ -96,6 +96,7 @@ foreach($user_images as $user_id => $filename)
 			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
+			'CacheControl'	=> 'public, max-age=31536000',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
@@ -150,6 +151,7 @@ foreach($message_images as $image)
 			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
+			'CacheControl'	=> 'public, max-age=31536000',
 		));
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
