@@ -51,7 +51,7 @@ if (isset($_POST['zend']))
 			
 			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 				'params'	=> array(
-					'CacheControl'	=> 'max-age=31536000',
+					'CacheControl'	=> 'public, max-age=31536000',
 				),
 			));
 			
