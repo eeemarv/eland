@@ -52,10 +52,18 @@ include($rootpath."includes/inc_header.php");
 echo "<h1>Andere interlets groepen raadplegen</h1>";
 echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 
-foreach($letsgroups as $key => $value){
-	echo "<tr><td nowrap>";
-	echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
-	echo "</td></tr>";
+if ($letsgroups)
+{
+	foreach($letsgroups as $key => $value)
+	{
+		echo "<tr><td nowrap>";
+		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
+		echo "</td></tr>";
+	}
+}
+else
+{
+	echo '<tr><td>Er zijn geen interletsgroepen verbonden met je letsgroep.</td></tr>';
 }
 
 echo "</table>";

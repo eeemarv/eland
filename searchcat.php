@@ -68,12 +68,20 @@ if($s_accountrole != 'guest'){
 	echo "<h1>Andere (interlets) groepen raadplegen</h1>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
-	foreach($letsgroups as $key => $value)
+	if ($letsgroups)
 	{
-		echo "<tr><td nowrap>";
-		echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
-		echo "</td></tr>";
+		foreach($letsgroups as $key => $value)
+		{
+			echo "<tr><td nowrap>";
+			echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
+			echo "</td></tr>";
+		}
 	}
+	else
+	{
+		echo '<tr><td>Er zijn geen interletsgroepen verbonden met je letsgroep.</td></tr>';
+	}
+
 	echo "</table>";
 }
 include($rootpath."includes/inc_footer.php");
