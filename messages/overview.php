@@ -77,7 +77,8 @@ if ($s_accountrole == 'admin')
 $h1 = 'Vraag & Aanbod';
 $fa = 'newspaper-o';
 
-$includejs = '<script src="' . $rootpath . 'js/combined_filter_msgs.js"></script>';
+$includejs = '<script src="' . $rootpath . 'js/combined_filter_msgs.js"></script>
+	<script src="' . $rootpath . 'js/msgs_sum.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -116,6 +117,10 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="pull-right hidden-xs">';
+echo 'Totaal: <span id="total"></span>';
+echo '</div>';
+
 echo '<ul class="nav nav-tabs" id="nav-tabs">';
 echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
 echo '<li><a href="#" class="bg-white" data-filter="34a9">Geldig</a></li>';
@@ -124,7 +129,7 @@ echo '</ul>';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable"';
-echo ' data-filter="#combined-filter" data-filter-minimum="1">';
+echo ' data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
 echo '<thead>';
 echo '<tr>';
 echo "<th>V/A</th>";

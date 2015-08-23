@@ -120,6 +120,10 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="pull-right hidden-xs">';
+echo 'Totaal: <span id="total"></span>';
+echo '</div>';
+
 echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 foreach ($st as $k => $s)

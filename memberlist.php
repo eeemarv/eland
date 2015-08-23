@@ -57,7 +57,8 @@ if (in_array($s_accountrole, array('admin', 'user')))
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
+$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
+	<script src="' . $rootpath . 'js/calc_sum.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -80,6 +81,10 @@ echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';
+echo '</div>';
+
+echo '<div class="pull-right hidden-xs">';
+echo 'Totaal: <span id="total"></span>';
 echo '</div>';
 
 echo '<ul class="nav nav-tabs" id="nav-tabs">';
@@ -124,7 +129,7 @@ foreach($users as $value)
 		$class = ' class="success"';
 	}
 
-	echo '<tr' . $class . '>';
+	echo '<tr' . $class . ' data-balance="' . $value['saldo'] . '">';
 
 	echo '<td data-value="' . $status_filter . '">';
 	echo '<a href="memberlist_view.php?id=' .$id .'">';
@@ -161,6 +166,12 @@ foreach($users as $value)
 }
 echo '</tbody>';
 echo '</table>';
+
+echo '<div class="panel panel-default">';
+echo '<div class="panel-heading">';
+echo '<p>Totaal saldo van geselecteerde leden: <span id="sum"></span> ' . $currency . '</p>';
+echo '</div></div>';
+
 echo '</div>';
 echo '</div>';
 echo '</div>';
