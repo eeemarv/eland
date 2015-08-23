@@ -12,7 +12,7 @@ include $rootpath . 'includes/inc_header.php';
 $tag = readconfigfromdb('systemtag');
 $name = strtolower(preg_replace('/\s+/', '', $s_login));
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
-$nick = $name ."_" . $tag;
+$nick = $s_name ."_" . $tag;
 
 echo '<div class="embed-responsive embed-responsive-16by9">';
 echo '<iframe class="embed-responsive-item" src="http://webchat.freenode.net?nick=' .$nick . '&channels=letsbe\">';
