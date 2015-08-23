@@ -12,7 +12,7 @@ echo "<h1>LETS Chat</h1>";
 $tag = readconfigfromdb("systemtag");
 $name = strtolower(preg_replace('/\s+/', '', $s_login));
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
-$nick = $name ."_" . $tag;
+$nick = $s_name ."_" . $tag;
 $url = "<iframe src=\"http://webchat.freenode.net?nick=" .$nick . "&channels=letsbe\" width=\"700\" height=\"400\"></iframe>";
 echo $url;
 
