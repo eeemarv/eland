@@ -67,10 +67,10 @@ echo "</table></div>";
 if($s_accountrole != 'guest'){
 	echo "<h1>Andere (interlets) groepen raadplegen</h1>";
 	echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
-	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
+	$letsgroups = $db->GetArray("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
 	if ($letsgroups)
 	{
-		foreach($letsgroups as $key => $value)
+		foreach($letsgroups as $value)
 		{
 			echo "<tr><td nowrap>";
 			echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=searchcat.php">' .$value['groupname'] . '</a>';
@@ -79,7 +79,7 @@ if($s_accountrole != 'guest'){
 	}
 	else
 	{
-		echo '<tr><td>Er zijn geen interletsgroepen verbonden met je letsgroep.</td></tr>';
+		echo '<tr><td>Er zijn geen interlets groepen verbonden met je letsgroep.</td></tr>';
 	}
 
 	echo "</table>";

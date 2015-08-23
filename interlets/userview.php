@@ -54,7 +54,7 @@ echo "<table class='data' cellpadding='0' cellspacing='0' border='1'>";
 
 if ($letsgroups)
 {
-	foreach($letsgroups as $key => $value)
+	foreach($letsgroups as $value)
 	{
 		echo "<tr><td nowrap>";
 		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
@@ -63,7 +63,7 @@ if ($letsgroups)
 }
 else
 {
-	echo '<tr><td>Er zijn geen interletsgroepen verbonden met je letsgroep.</td></tr>';
+	echo '<tr><td>Er zijn geen interlets groepen verbonden met je letsgroep.</td></tr>';
 }
 
 echo "</table>";
