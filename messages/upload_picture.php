@@ -43,7 +43,6 @@ if (isset($_POST['zend']))
 		exit;
 	}
 
-
 	if($ext == "jpeg" || $ext == "jpg"){
 
 		try {
