@@ -54,9 +54,6 @@ header("Content-Type:text/html;charset=utf-8");
 			<?php
 				$name = readconfigfromdb("systemname");
 				echo "<li><a href='".$rootpath."index.php'>$name</a></li>";
-				if($s_accountrole == "user" || $s_accountrole == "admin"){
-					echo "<li><a href='" . $rootpath . "ircchat.php' >Chatbox #letsbe</a></li>";
-				}
 			?>
 			</ul>
 		</div>
