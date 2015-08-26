@@ -33,7 +33,6 @@ echo '<body>';
 </script>
 
 <?php
-
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 
@@ -152,7 +151,6 @@ else
 
 	$menu[] = array(
 		'help.php'		=> array('ambulance', 'Probleem melden'),
-		'ircchat.php'	=> array('comments', 'Chatbox #letsbe'),
 	);
 }
 
