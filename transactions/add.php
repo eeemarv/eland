@@ -232,8 +232,6 @@ include $rootpath . 'includes/inc_header.php';
 $user = readuser($s_id);
 $balance = $user["saldo"];
 
-//$list_users = get_users($s_id);
-
 $currency = readconfigfromdb('currency');
 
 echo '<h1>' . $currency . ' uitschrijven</h1>';
@@ -245,7 +243,7 @@ echo '<p><strong>' . $user['name'].' '.$user['letscode'] . ' huidige ' . $curren
 echo "<strong>Limiet minstand: " . $minlimit . "</strong></p>";
 echo "</div>";
 
-$date = date("Y-m-d");
+//$date = date("Y-m-d");
 
 echo "<div id='transformdiv'>";
 echo "<form  method='post'>";
@@ -262,7 +260,7 @@ echo 'required id="letscode_from">';
 echo "</td><td width='150'>";
 echo "</td></tr>";
 
-
+/*
 echo "<tr><td valign='top' align='right'>Datum</td><td>";
 echo "<input type='text' name='date' size='10' value='" .$date ."' ";
 echo ($s_accountrole == "admin") ? '' : ' disabled="disabled" ';
@@ -273,7 +271,7 @@ echo 'data-date-autoclose="true" ';
 echo 'data-date-enable-on-readonly="false" ';
 echo ">";
 echo "</td><td>";
-echo "</td></tr>"; 
+echo "</td></tr>"; */
 
 echo "<tr><td></td><td>";
 echo "</td></tr>";
