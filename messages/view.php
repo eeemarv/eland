@@ -130,7 +130,7 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'transactions/add.php?mid=' . $msgid . '" class="btn btn-warning"';
 		$top_buttons .= ' title="Transactie voor dit aanbod toevoegen"><i class="fa fa-exchange"></i>';
-		$top_buttons .= ' Transactie</span></a>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
 	}
 }
 
