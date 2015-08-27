@@ -268,15 +268,18 @@ function queuetransaction($posted_list,$fromuser,$touser)
 
 function get_mailaddresses($uid)
 {
-	$addr = '';
+	global $db;
+
+	$addr = array();
 	$rs = $db->Execute('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ' . $uid . '
 			and tc.abbrev = \'mail\'');
-	while($addr .= $rs->FetchOne() . ', ')
+	while($row = $rs->FetchRow())
 	{
+		$addr[] = $row['value'];
 	}
-	return rtrim($addr, ', ');
+	return implode(', ', $addr);
 }
 
