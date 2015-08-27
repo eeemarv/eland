@@ -1,26 +1,24 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_adoconnection.php");
-require_once($rootpath."includes/inc_transactions.php");
-require_once($rootpath."includes/inc_userinfo.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_adoconnection.php';
+require_once $rootpath . 'includes/inc_transactions.php';
+require_once $rootpath . 'includes/inc_userinfo.php';
+require_once $rootpath . 'includes/inc_mailfunctions.php';
+require_once $rootpath . 'includes/inc_form.php';
 
 $transaction = array();
 
 if (isset($_POST['zend']))
 {
-	$transaction["description"] = $_POST["description"];
+	$transaction['description'] = $_POST['description'];
 	list($letscode_from) = explode(' ', $_POST['letscode_from']);
 	list($letscode_to) = explode(' ', $_POST['letscode_to']);
 	$transaction['amount'] = $_POST['amount'];
-	$transaction['date'] = ($_POST['date']) ? $_POST['date'] : $transaction["date"] = date("Y-m-d H:i:s");
+	$transaction['date'] = ($_POST['date']) ?: date('Y-m-d H:i:s');
 	$letsgroup_id = $_POST['letsgroup_id'];
-
-	$timestamp = make_timestamp($transaction["date"]);
 
 	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
 
@@ -40,7 +38,64 @@ if (isset($_POST['zend']))
 
 	$transaction['transid'] = generate_transid();
 
-	$errors = validate_input($transaction, $fromuser, $touser, $letsgroup);
+	$errors = array();
+
+	if (!$transaction['description'])
+	{
+		$errors[]= 'De omschrijving is niet ingevuld';
+	}
+
+	if (!$transaction['amount'])
+	{
+		$errors[] = 'Bedrag is niet ingevuld';
+	}
+
+	else if (!(ctype_digit($transaction['amount'])))
+	{
+		$errors[] = 'Het bedrag is geen geldig getal';
+	}
+
+	if(($fromuser['saldo'] - $transaction['amount']) < $fromuser['minlimit'] && $s_accountrole != 'admin')
+	{
+		$errors[] = 'Je beschikbaar saldo laat deze transactie niet toe';
+	}
+
+	if(empty($fromuser))
+	{
+		$errors[] = 'Gebruiker bestaat niet';
+	}
+
+	if(empty($touser) )
+	{
+		$errors[] = 'Bestemmeling bestaat niet';
+	}
+
+	if($fromuser['letscode'] == $touser['letscode'])
+	{
+		$errors[] = 'Van en Aan letscode zijn hetzelfde';
+	}
+
+	if($touser['saldo'] > $touser['maxlimit'] && $s_accountrole != 'admin')
+	{
+		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
+		$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
+	}
+
+	if($letsgroup['apimethod'] == 'internal'
+		&& $s_accountrole != 'admin'
+		&& !($touser['status'] == '1' || $touser['status'] == '2'))
+	{
+		$errors[] = 'De bestemmeling is niet actief';
+	}
+
+	if (!$transaction['date'])
+	{
+		$errors[] = 'Datum is niet ingevuld';
+	}
+	else if (strtotime($transaction['date']) == -1)
+	{
+		$errors[] = 'Fout in datumformaat (jjjj-mm-dd)';
+	}
 
 	if(!empty($errors))
 	{
@@ -52,7 +107,7 @@ if (isset($_POST['zend']))
 		{
 			case 'internal':
 			case 'mail':
-			
+
 				if (insert_transaction($transaction))
 				{
 					if ($letsgroup['apimethod'] == 'internal')
@@ -63,18 +118,18 @@ if (isset($_POST['zend']))
 					{
 						mail_interlets_transaction($transaction);
 					}
-					$alert->success("Transactie opgeslagen");
+					$alert->success('Transactie opgeslagen');
 				}
 				else
 				{
-					$alert->error("Gefaalde transactie");
+					$alert->error('Gefaalde transactie');
 				}
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
 
 				break;
 
-			case "elassoap":
+			case 'elassoap':
 
 				$transaction["letscode_to"] = $letscode_to;
 				$transaction["letsgroup_id"] = $letsgroup_id;
@@ -99,7 +154,9 @@ if (isset($_POST['zend']))
 				
 				break;
 
-			case 'interletsdirect':
+			default:
+
+				$alert->error('Geen geldige apimethode geselecteerd voor deze letsgroep. (contacteer een admin)');
 
 				break;
 		}
@@ -172,19 +229,19 @@ $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_
 
 include $rootpath . 'includes/inc_header.php';
 
-$user = get_user($s_id);
+$user = readuser($s_id);
 $balance = $user["saldo"];
 
 //$list_users = get_users($s_id);
 
 $currency = readconfigfromdb('currency');
 
-echo "<h1>{$currency} uitschrijven</h1>";
+echo '<h1>' . $currency . ' uitschrijven</h1>';
 
-$minlimit = $user["minlimit"];
+$minlimit = $user['minlimit'];
 
 echo "<div id='baldiv'>";
-echo '<p><strong>' . $user["name"].' '.$user["letscode"] . ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
+echo '<p><strong>' . $user['name'].' '.$user['letscode'] . ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
 echo "<strong>Limiet minstand: " . $minlimit . "</strong></p>";
 echo "</div>";
 
@@ -202,8 +259,9 @@ echo '<input type="text" name="letscode_from" size="30" value="' . $transaction[
 echo ($s_accountrole == 'admin') ? '' : ' disabled="disabled" ';
 echo 'required id="letscode_from">';
 
-echo "</td><td width='150'><div id='fromoutputdiv'></div>";
+echo "</td><td width='150'>";
 echo "</td></tr>";
+
 
 echo "<tr><td valign='top' align='right'>Datum</td><td>";
 echo "<input type='text' name='date' size='10' value='" .$date ."' ";
@@ -215,8 +273,9 @@ echo 'data-date-autoclose="true" ';
 echo 'data-date-enable-on-readonly="false" ';
 echo ">";
 echo "</td><td>";
+echo "</td></tr>"; 
 
-echo "</td></tr><tr><td></td><td>";
+echo "<tr><td></td><td>";
 echo "</td></tr>";
 
 echo "<tr><td align='right'>";
@@ -274,86 +333,3 @@ echo '<small><p>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of let
 echo 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.</p></small>';
 
 include $rootpath . 'includes/inc_footer.php';
-
-///////////////////////////////////////////////////////
-
-
-// Make timestamps for SQL statements
-function make_timestamp($timestring)
-{
-	list($day, $month, $year) = explode('-', $timestring);
-	return mktime(0, 0, 0, trim($month), trim($day), trim($year));
-}
-
-function validate_input($transaction, $fromuser, $touser, $letsgroup)
-{
-	global $s_accountrole;
-
-	$errors = array();
-
-	if (!isset($transaction["description"]) || (trim($transaction["description"] )==""))
-	{
-		$errors["description"]="Dienst is niet ingevuld";
-	}
-
-	if (!isset($transaction["amount"])|| (trim($transaction["amount"] )==""))
-	{
-		$errors["amount"]="Bedrag is niet ingevuld";
-	}
-	else if (eregi('^[0-9]+$', $transaction['amount']) == FALSE)
-	{
-		$errors["amount"]="Bedrag is geen geldig getal";
-	}
-
-	$user = get_user($transaction["id_from"]);
-	if(($user["saldo"] - $transaction["amount"]) < $fromuser["minlimit"] && $s_accountrole != "admin")
-	{
-		$errors["amount"]="Je beschikbaar saldo laat deze transactie niet toe";
-	}
-
-	if(empty($fromuser))
-	{
-		$errors["id_from"] = "Gebruiker bestaat niet";
-	}
-
-	if(empty($touser) )
-	{
-		$errors["id_to"] = "Bestemmeling bestaat niet";
-	}
-
-	if($fromuser["letscode"] == $touser["letscode"])
-	{
-		$errors["id"] = "Van en Aan zijn hetzelfde";
-	}
-
-	if(($touser["maxlimit"] != NULL && $touser["maxlimit"] != 0)
-		&& $touser["saldo"] > $touser["maxlimit"] && $s_accountrole != "admin")
-	{
-		$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
-		$errors["id_to"] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
-	}
-
-	if($letsgroup['apimethod'] == 'internal'
-		&& $s_accountrole != 'admin'
-		&& !($touser["status"] == '1' || $touser["status"] == '2'))
-	{
-		$errors["id_to"]="De bestemmeling is niet actief";
-	}
-
-	//date may not be empty
-	if (!isset($transaction["date"]) || (trim($transaction["date"] )==""))
-	{
-		$errors["date"]="Datum is niet ingevuld";
-	}
-	else if (strtotime($transaction["date"]) == -1)
-	{
-		$errors["date"]="Fout in datumformaat (jjjj-mm-dd)";
-	}
-
-	return $errors;
-}
-
-
-
-
-
