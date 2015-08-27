@@ -12,6 +12,7 @@ $users = $db->GetArray('SELECT * FROM users u
 		AND u.accountrole <> \'guest\'');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+$currency = readconfigfromdb('currency');
 
 $c_ary = $db->GetArray('SELECT tc.abbrev, c.id_user, c.value
 	FROM contact c, type_contact tc, users u
