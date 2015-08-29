@@ -132,11 +132,17 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 		$top_buttons .= ' title="Transactie voor dit aanbod toevoegen"><i class="fa fa-exchange"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
 	}
+
+	$top_buttons .= '<a href="' . $rootpath . 'messages/overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
+	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+	$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 }
 
-$top_buttons .= '<a href="' . $rootpath . 'searchcat.php" class="btn btn-default"';
-$top_buttons .= ' title="Vraag of aanbod zoeken"><i class="fa fa-newspaper-o"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Zoeken</span></a>';
+
 
 $h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
 $h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);

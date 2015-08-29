@@ -135,6 +135,14 @@ $currency = readconfigfromdb("currency");
 
 array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
+$top_buttons = '<a href="' . $rootpath . 'messages/overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+
+$top_buttons .= '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default"';
+$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/msg_edit.js"></script>';
