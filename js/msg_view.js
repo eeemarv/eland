@@ -36,3 +36,19 @@ jQuery(document).ready(function ($) {
 	$(window).bind('resize', ScaleSlider);
 	$(window).bind('orientationchange', ScaleSlider);
 });
+
+var fi = $('#fileupload');
+
+fi.fileupload({
+    url: 'view.php',
+    dataType: 'json',
+    //autoUpload: false,
+    acceptFileTypes: /(\.|\/)(jpe?g)$/i,
+    maxFileSize: 50000, 
+    disableImageResize: /Android(?!.*Chrome)|Opera/
+    .test(window.navigator.userAgent),
+    previewMaxWidth: 50,
+    previewMaxHeight: 50,
+    previewCrop: true,
+    dropZone: $('body')
+});

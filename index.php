@@ -249,7 +249,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['cid'] . '">';
+		echo '<a href="' . $rootpath . 'messages/overview.php?cid=' . $msg['cid'] . '">';
 		echo htmlspecialchars($msg['cat'],ENT_QUOTES);
 		echo '</a>';
 		echo '</td>';

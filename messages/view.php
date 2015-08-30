@@ -9,7 +9,7 @@ $msgid = $_GET['id'];
 
 if(!isset($msgid))
 {
-	header('Location: ' . $rootpath . 'searchcat_viewcat.php');
+	header('Location: ' . $rootpath . 'messages/overview.php');
 	exit;
 }
 
@@ -103,6 +103,14 @@ $contacts = $db->GetArray('select c.*, tc.abbrev
 		and c.flag_public = 1');
 
 $includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
+	<script src="' . $cdn_jquery_ui_widget . '"></script>
+	<script src="' . $cdn_load_image . '"></script>
+	<script src="' . $cdn_canvas_to_blob . '"></script>
+	<script src="' . $cdn_jquery_iframe_transport . '"></script>
+	<script src="' . $cdn_jquery_fileupload . '"></script>
+	<script src="' . $cdn_jquery_fileupload_process . '"></script>
+	<script src="' . $cdn_jquery_fileupload_image . '"></script>
+	<script src="' . $cdn_jquery_fileupload_validate . '"></script>
 	<script src="' . $rootpath . 'js/msg_view.js"></script>';
 
 $top_buttons = '';
@@ -142,8 +150,6 @@ if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 }
 
-
-
 $h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
 $h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
 $fa = 'newspaper-o';
@@ -154,14 +160,18 @@ echo '<div class="row">';
 
 if($s_accountrole == "admin" || $s_id == $user['id'])
 {
-	$myurl = 'upload_picture.php?msgid=' . $msgid;
-	$btn_add_img = "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
-    $btn_add_img .= '<a href="javascript: AddPic()" class="btn btn-success" title="Afbeelding toevoegen">';
-    $btn_add_img .= '<i class="fa fa-plus"></i>';
-    $btn_add_img .= '<span class="hidden-xs hidden-sm"> Afbeelding toevoegen</span></a>';
+	$add_img = '<div class="upload-wrapper">
+<div id="error_output"></div>
+    <div id="files" class="files"></div>
+</div>';
+	// $btn_add_img = "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
+	$add_img .= '<input type="file" name="files[]" class="btn btn-success" ';
+	$add_img .= 'title="Afbeelding toevoegen" multiple id="fileupload">';
+//	$add_img .= '<i class="fa fa-plus"></i>';
+//	$add_img .= '<span class="hidden-xs hidden-sm"> Afbeelding toevoegen</span>';
 }
 
-$btn_add_img = ($btn_add_img) ? '<p>' . $btn_add_img . '</p>' : '';
+$add_img = ($add_img) ? '<p>' . $add_img . '</p>' : '';
 
 if ($msgpictures)
 {
@@ -189,7 +199,7 @@ if ($msgpictures)
 	echo '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
 
 	echo '</div></div>';
-	echo $btn_add_img;
+	echo $add_img;
 	echo '</div>';
 
 	echo '<div class="col-md-6">';
@@ -197,9 +207,10 @@ if ($msgpictures)
 else
 {
 	echo '<div class="col-md-12">';
+	echo '<div id="slider1_container"></div>';
 	$str = ($message['msg_type']) ? ' dit aanbod' : ' deze vraag';
 	echo '<p>Er zijn geen afbeeldingen voor ' . $str . '.</p>';
-	echo $btn_add_img;
+	echo $add_img;
 }	
 
 echo '<div class="panel panel-default">';

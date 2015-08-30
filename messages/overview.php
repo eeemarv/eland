@@ -7,6 +7,7 @@ require_once $rootpath . 'includes/inc_form.php';
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
+$cid = ($_GET['cid']) ?: '';
 $cat_hsh = ($_GET['cat_hsh']) ?: '';
 
 $msgs = $db->GetArray('select m.*,
@@ -18,7 +19,7 @@ $msgs = $db->GetArray('select m.*,
 
 $offer_sum = $want_sum = 0;
 
-$cats = array();
+$cats = $cats_hsh = array();
 
 $cats_hsh_name = array(
 	''	=> '-- Alle categorieën --',
@@ -41,7 +42,7 @@ while ($row = $rs->FetchRow())
 		$cats_hsh_name[$c_hsh] .= sprintf($ow_str, $want, $offer);
 		$offer_sum += $offer;
 		$want_sum += $want;
-		$cats[$row['id']]['hsh'] = $p_hsh . ' ' . $c_hsh;		
+		$cats[$row['id']]['hsh'] = $p_hsh . ' ' . $c_hsh;	
 	}
 	else
 	{
@@ -51,8 +52,12 @@ while ($row = $rs->FetchRow())
 		$p_hsh = $c_hsh;
 		$cats[$row['id']]['hsh'] = $c_hsh;
 	}
+
+	$cats_hsh[$row['id']] = $c_hsh;	
 }
 $cats_hsh_name[$p_hsh] .= ($p_hsh) ? sprintf($ow_str, $want_sum, $offer_sum) : '';
+
+$cat_hsh = ($cat_hsh) ?: (($cats_hsh[$cid]) ?: '');
 
 if ($s_accountrole == 'admin' || $s_accountrole == 'user')
 {
@@ -179,7 +184,7 @@ foreach($msgs as $msg)
 	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'searchcat_viewcat.php?id=' . $msg['id_category'] . '">';
+	echo '<a href="' . $rootpath . 'messages/overview.php?cid=' . $msg['id_category'] . '">';
 	echo htmlspecialchars($cats[$msg['id_category']]['fullname'], ENT_QUOTES);
 	echo '</a>';
 	echo '</td>';
