@@ -251,7 +251,7 @@ else
 	run_cronjob('processqueue');
 }
 
-run_cronjob('saldo', 86400 *  readconfigfromdb("saldofreqdays"));
+run_cronjob('saldo', 86400 *  readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb("adminmsgexpfreqdays"), readconfigfromdb("adminmsgexp"));
 
