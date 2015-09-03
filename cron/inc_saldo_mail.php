@@ -17,7 +17,7 @@ function saldo()
 		return true;
 	}
 
-	$to = $merge_vars = $msgs = $news = $new_users = $leaving_users = $transactions = $to_mail = array();
+	$mailaddr = $to = $merge_vars = $msgs = $news = $new_users = $leaving_users = $transactions = $to_mail = array();
 
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 
 
@@ -34,8 +34,6 @@ function saldo()
 		FROM users u
 		WHERE u.status in (1, 2)
 		AND u.cron_saldo = \'t\'');
-
-	$mailaddr = array();
 
 	$rs = $db->Execute('select u.id, c.value
 		from users u, contact c, type_contact tc
@@ -64,7 +62,6 @@ function saldo()
 		);
 
 		$to_mail[] = $mail;
-
 
 		$merge_vars[] = array(
 			'rcpt'	=> $mail,
