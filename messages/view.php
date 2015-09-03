@@ -1,4 +1,9 @@
 <?php
+
+use Imagine\Image\Box;
+use Imagine\Image\Point;
+use Imagine\Image\ImageInterface;
+
 ob_start();
 $rootpath = '../';
 $role = 'guest';
@@ -6,6 +11,7 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 $msgid = $_GET['id'];
+$upload = ($_FILES['files']) ?: null;
 
 if(!isset($msgid))
 {
@@ -30,7 +36,60 @@ $to = $db->GetOne('select c.value
 
 $balance = $user['saldo'];
 
-if ($_POST['zend'])
+if($_SERVER['REQUEST_METHOD'] === 'POST'
+	&& $upload
+	&& is_array($upload['tmp_name'])
+	&& ($s_accountrole == 'admin' || $message['id_user'] == $s_id))
+{
+	$ret_ary = array();
+
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',		
+	));
+	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
+	
+    foreach($upload['tmp_name'] as $index => $value)
+    {
+        $tmpfile = $upload['tmp_name'][$index];
+/*
+		$imagine = new Imagine\Imagick\Imagine();
+		$image = $imagine->open($tmpfile);
+		$image->resize(new Box(400, 400), ImageInterface::FILTER_LANCZOS)
+		   ->save($tmpfile);
+*/
+		try {
+			$filename = $schema . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
+			
+			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+				'params'	=> array(
+					'CacheControl'	=> 'public, max-age=31536000',
+				),
+			));
+			
+			$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
+			$db->Execute($query);
+			log_event($s_id, 'Pict', 'Message-Picture ' . $file . 'uploaded. Message: ' . $msgid);
+
+			unlink($tmpfile);
+			//$alert->success('De afbeelding is opgeladen.');
+
+			$ret_ary[$index] = $filename;
+		}
+		catch(Exception $e)
+		{ 
+			//$alert->error( 'Upladen afbeelding mislukt.');
+			echo $e->getMessage();
+			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+		}
+	}
+
+	echo json_encode($ret_ary);
+	//header('Location: ' . $rootpath . 'messages/view.php?id=' . $msgid);
+	exit;	
+}
+else if ($_POST['zend'])
 {
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
@@ -178,9 +237,9 @@ if ($msgpictures)
 	echo '<div class="col-md-6">';
 	echo '<div class="col-lg-8 col-lg-offset-2 text-center">';
 	echo '<div id="slider1_container" style="position: relative; 
-					top: 0px; left: 0px; width: 600px; height: 300px;">';
+					top: 0px; left: 0px; width: 800px; height: 600px;">';
 	echo '<div u="slides" style="cursor: move; position: absolute;
-						overflow: hidden; left: 0px; top: 0px; width: 600px; height: 300px;">';
+						overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;">';
 
 	foreach ($msgpictures as $key => $value)
 	{

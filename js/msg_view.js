@@ -40,15 +40,13 @@ jQuery(document).ready(function ($) {
 var fi = $('#fileupload');
 
 fi.fileupload({
-    url: 'view.php',
     dataType: 'json',
-    //autoUpload: false,
     acceptFileTypes: /(\.|\/)(jpe?g)$/i,
-    maxFileSize: 50000, 
+    maxFileSize: 5000000, 
     disableImageResize: /Android(?!.*Chrome)|Opera/
-    .test(window.navigator.userAgent),
-    previewMaxWidth: 50,
-    previewMaxHeight: 50,
-    previewCrop: true,
+        .test(window.navigator && navigator.userAgent),
+    imageMaxWidth: 800,
+    imageMaxHeight: 600,
+    imageCrop: true,
     dropZone: $('body')
 });

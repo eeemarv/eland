@@ -58,8 +58,6 @@ if (isset($_POST['zend']))
 			$db->Execute($query);
 			log_event($s_id, "Pict", "Message-Picture $file uploaded");
 
-			setstatus("Foto toegevoegd", 0);
-
 			echo "<script type=\"text/javascript\">self.close(); window.opener.location.reload()</script>";
 			echo '<p>Upload <a href="' . htmlspecialchars($upload->get('ObjectURL')) . '">succes</a> :)</p>';
 		}
