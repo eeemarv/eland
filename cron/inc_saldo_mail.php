@@ -28,39 +28,46 @@ function saldo()
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'adr\'');
 
-	$mailaddr = $db->GetAssoc('select u.id, c.value
+	$users = $db->GetAssoc('SELECT u.id,
+			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
+			u.fullname, u.letscode, u.login
+		FROM users u
+		WHERE u.status in (1, 2)
+		AND u.cron_saldo = \'t\'');
+
+	$mailaddr = array();
+
+	$rs = $db->Execute('select u.id, c.value
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'');
-
-	// Get all users that want their saldo auto-mailed.
-
-	$query = 'SELECT u.id,
-			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.fullname, u.letscode, u.login
-		FROM users u
-		WHERE u.status in (1, 2)
-		AND u.cron_saldo = \'t\'';
-	$rs = $db->Execute($query);
-
-	while ($user = $rs->FetchRow())
+	while ($row = $rs->FetchRow())
 	{
-		if (!$mailaddr[$user['id']])
+		$user_id = $row['id'];
+		$mail = $row['value'];
+		$mailaddr[$user_id][] = $mail;
+
+		if (!$users[$user_id])
 		{
 			continue;
 		}
 
+		$users[$user_id]['id'] = $user_id;
+
+		$user = $users[$user_id];
+
 		$to[] = array(
-			'email'	=> $mailaddr[$user['id']],
+			'email'	=> $mail,
 			'name'	=> $user['name'],
 		);
 
-		$to_mail[] = $mailaddr[$user['id']];
+		$to_mail[] = $mail;
+
 
 		$merge_vars[] = array(
-			'rcpt'	=> $mailaddr[$user['id']],
+			'rcpt'	=> $mail,
 			'vars'	=> array(
 				array(
 					'name'		=> 'NAME',
@@ -100,7 +107,7 @@ function saldo()
 				),
 				array(
 					'name'		=> 'GOOGLEADDR',
-					'content'	=> str_replace(' ', '+', $addr[$user['id']]),
+					'content'	=> str_replace(' ', '+', $addr[$user_id]),
 				),
 			),
 		);
