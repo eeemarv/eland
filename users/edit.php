@@ -493,12 +493,15 @@ function sendadminmail($user)
 	$mailcontent .= $user["login"];
 	$mailcontent .= ' ( ' . $user['letscode'] . ' ) ';
 	$mailcontent .= " werd geactiveerd met een nieuw passwoord.\n";
-	if (!empty($user["mail"])){
-			$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
-			$mailcontent .= $user["mail"];
-			$mailcontent .= ".\n\n";
-	} else {
-			$mailcontent .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
+	if ($user['mail'])
+	{
+		$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
+		$mailcontent .= $user["mail"];
+		$mailcontent .= ".\n\n";
+	}
+	else
+	{
+		$mailcontent .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
 	}
 
 	$mailcontent .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
