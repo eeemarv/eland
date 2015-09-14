@@ -42,7 +42,7 @@ if(isset($_POST["zend"]))
 
 	if(empty($error_list))
 	{
-		$result = $db->AutoExecute("contact", $posted_list, 'UPDATE', 'id='.$posted_list["id"]);
+		$result = $db->update('contact', $posted_list, array('id' => $posted_list['id']));
 		$alert->success('Contact aangepast.');
 		header('Location: '. $rootpath . 'userdetails/mydetails.php');
 		exit;

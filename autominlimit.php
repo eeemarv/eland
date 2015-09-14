@@ -125,7 +125,7 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		$db->StartTrans();
+		$db->beginTransaction();
 
 		$date = date('Y-m-d H:i:s');
 		$cdate = gmdate('Y-m-d H:i:s');
@@ -182,20 +182,20 @@ if ($_POST['zend'])
 				'creator'		=> $s_id,
 			);
 
-			$db->AutoExecute('transactions', $trans, 'INSERT');
+			$db->insert('transactions', $trans);
 
-			$db->Execute('update users
-				set saldo = saldo ' . (($to_one) ? '- ' : '+ ')  . $amo . '
-				where id = ' . $many_uid);
+			$db->executeUpdate('update users
+				set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
+				where id = ?', array($amo, $many_uid));
 
 			$total += $amo;
 
 			$transid = generate_transid();
 		}
 
-		$db->Execute('update users
-			set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . $total . '
-			where id = ' . $one_uid);
+		$db->executeUpdate('update users
+			set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
+			where id = ?', array($total, $one_uid));
 
 		if ($db->CompleteTrans())
 		{

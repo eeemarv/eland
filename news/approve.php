@@ -7,7 +7,7 @@ require_once($rootpath."includes/inc_mailfunctions.php");
 
 $id = $_GET["id"];
 
-if ($db->Execute('UPDATE news SET approved = \'t\', published = \'t\' WHERE id = ' . $id))
+if ($db->update('news', array('approved' => 't', 'published' => 't'), array('id' => $id)))
 {
 	$alert->success("Nieuwsbericht goedgekeurd");
 }

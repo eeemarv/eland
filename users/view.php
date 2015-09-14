@@ -35,7 +35,7 @@ $transactions = $db->fetchAll('select t.*,
 	where (t.id_to = ?
 		or t.id_from = ?)
 		and t.id_to = tu.id
-		and t.id_from = fu.id', array($id, $id))
+		and t.id_from = fu.id', array($id, $id));
 $currency = readconfigfromdb('currency');
 
 $trans_en = ($db->fetchColumn('select id

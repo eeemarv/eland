@@ -25,7 +25,7 @@ else
 	$value = readconfigfromdb($setting);
 }
 
-$description = $db->Getone('select description from config where setting = \'' . $setting . '\'');
+$description = $db->fetchColumn('select description from config where setting = ?', array($setting));
 
 $h1 = 'Instelling ' . $setting . ' aanpassen';
 $fa = 'gears';

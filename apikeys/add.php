@@ -11,7 +11,7 @@ $posted_list['type'] = 'interlets';
 
 if ($_POST['zend'])
 {
-	if($db->AutoExecute('apikeys', $posted_list, 'INSERT'))
+	if($db->insert('apikeys', $posted_list))
 	{
 		$alert->success('Apikey opgeslagen.');
 		header('Location: '.$rootpath.'apikeys/overview.php');

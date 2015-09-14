@@ -23,7 +23,7 @@ if(isset($_POST["zend"])){
 	{
 		$posted_list["mdate"] = date("Y-m-d H:i:s");
 
-		if ($db->AutoExecute('users', $posted_list, 'UPDATE', 'id = ' . $s_id))
+		if ($db->update('users', $posted_list, array('id' => $s_id)))
 		{
 			$alert->success('Je gegevens zijn aangepast.');
 			readuser($s_id, true);

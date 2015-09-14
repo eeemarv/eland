@@ -67,9 +67,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'
 					'CacheControl'	=> 'public, max-age=31536000',
 				),
 			));
-			
-			$query = 'INSERT INTO msgpictures (msgid, "PictureFile") VALUES (' . $msgid . ', \'' . $filename . '\')';
-			$db->Execute($query);
+
+			$db->insert('msgpictures', array(
+				'msgid'			=> $msgid,
+				'"PictureFile"'	=> $filename));
 			log_event($s_id, 'Pict', 'Message-Picture ' . $file . 'uploaded. Message: ' . $msgid);
 
 			unlink($tmpfile);

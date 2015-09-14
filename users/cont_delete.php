@@ -9,7 +9,7 @@ $uid = $_GET["uid"];
 
 if ($_POST['zend'])
 {
-	if ($db->Execute("DELETE FROM contact WHERE id =".$cid))
+	if ($db->delete('contact', array('id' => $cid)))
 	{
 		$alert->success('Contact verwijderd.');
 	}

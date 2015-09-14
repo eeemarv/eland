@@ -23,7 +23,7 @@ if(isset($_POST['zend']))
 	if(!$error)
 	{
 		$contact['id_user'] = $s_id;
-		if ($db->AutoExecute('contact', $contact, 'INSERT'))
+		if ($db->insert('contact', $contact))
 		{
 			$alert->success('Contact toegevoegd.');
 		}

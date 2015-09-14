@@ -4,6 +4,8 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
+$trans_orderby = $_GET['trans_orderby'];
+
 $includejs = '
 	<script src="' . $cdn_jquery . '"></script>
 	<script src="' . $cdn_datepicker . '"></script>
@@ -12,13 +14,11 @@ $includejs = '
 	
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
+$h1 = 'Transactierapport per gebruiker';
+
 include $rootpath . 'includes/inc_header.php';
 
 include 'inc_transperuser.php';
-
-$trans_orderby = $_GET["trans_orderby"];
-
-echo "<h1>Transactierapport per gebruiker</h1>";
 
 $posted_list = array();
 if (isset($_GET["zend"]))
@@ -36,10 +36,10 @@ else
 	$posted_list["dateto"] = $year ."-12-31";
 }
 
-$list_users = $users = $db->fetchAll('SELECT *
-		FROM users
-		WHERE status in (1, 2) 
-			and users.accountrole <> \'guest\' order by letscode');
+$users = $db->fetchAll('SELECT *
+	FROM users
+	WHERE status in (1, 2) 
+		and accountrole <> \'guest\' order by letscode');
 
 $user_userid = $posted_list["userid"];
 $user_datefrom = $posted_list["datefrom"];
@@ -49,7 +49,7 @@ $user_prefix = $posted_list["prefix"];
 echo "<table border=0 width='100%'>";
 echo "<tr>";
 echo "<td valign='top' align='left'>";
-show_userselect($list_users,$posted_list);
+show_userselect($users,$posted_list);
 echo "</td>";
 echo "<td valign='top' align='right'>";
 show_printversion($rootpath,$user_userid,$user_datefrom,$user_dateto,$user_prefix);
@@ -62,7 +62,7 @@ echo "</table>";
 $transactions = get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_prefix);
 show_all_transactions($transactions);
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';
 
 ///////
 
@@ -96,6 +96,7 @@ function show_csvversion($rootpath,$user_userid,$user_datefrom,$user_dateto,$use
 
 function show_userselect($list_users,$posted_list)
 {
+	global $db;
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 

@@ -189,7 +189,7 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		$db->StartTrans();
+		$db->beginTransaction();
 
 		$date = date('Y-m-d H:i:s');
 		$cdate = gmdate('Y-m-d H:i:s');
@@ -206,99 +206,104 @@ if ($_POST['zend'])
 		$alert_success = $log = '';
 		$total = 0;
 
-		foreach ($amount as $many_uid => $amo)
+		try
 		{
-			if (!$selected_users[$many_uid])
+
+			foreach ($amount as $many_uid => $amo)
 			{
-				continue;
+				if (!$selected_users[$many_uid])
+				{
+					continue;
+				}
+
+				if (!$amo || $many_uid == $one_uid)
+				{
+					continue;
+				}
+
+				$many_user = $users[$many_uid];
+				$to_id = ($to_one) ? $one_uid : $many_uid;
+				$from_id = ($to_one) ? $many_uid : $one_uid;
+				$from_user = $users[$from_id];
+				$to_user = $users[$to_id];
+
+				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['fullname'];
+				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['fullname'];
+				$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' uitgevoerd.<br>';
+
+				$log_many .= $many_user['letscode'] . ' ' . $many_user['fullname'] . '(' . $amo . '), ';
+
+				$mail_ary[$many_field][$many_uid] = array(
+					'amount'	=> $amo,
+					'transid' 	=> $transid,
+				);
+
+				$trans = array(
+					'id_to' 		=> $to_id,
+					'id_from' 		=> $from_id,
+					'amount' 		=> $amo,
+					'description' 	=> $description,
+					'date' 			=> $date,
+					'cdate' 		=> $cdate,
+					'transid'		=> $transid,
+					'creator'		=> $s_id,
+				);
+
+				$db->insert('transactions', $trans);
+
+				$db->executeUpdate('update users
+					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
+					where id = ?', array($amo, $many_uid));
+
+				$total += $amo;
+
+				$transid = generate_transid();
 			}
 
-			if (!$amo || $many_uid == $one_uid)
-			{
-				continue;
-			}
+			$db->executeUpdate('update users
+				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
+				where id = ?', array($total, $one_uid));
 
-			$many_user = $users[$many_uid];
-			$to_id = ($to_one) ? $one_uid : $many_uid;
-			$from_id = ($to_one) ? $many_uid : $one_uid;
-			$from_user = $users[$from_id];
-			$to_user = $users[$to_id];
-
-			$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['fullname'];
-			$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['fullname'];
-			$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' uitgevoerd.<br>';
-
-			$log_many .= $many_user['letscode'] . ' ' . $many_user['fullname'] . '(' . $amo . '), ';
-
-			$mail_ary[$many_field][$many_uid] = array(
-				'amount'	=> $amo,
-				'transid' 	=> $transid,
-			);
-
-			$trans = array(
-				'id_to' 		=> $to_id,
-				'id_from' 		=> $from_id,
-				'amount' 		=> $amo,
-				'description' 	=> $description,
-				'date' 			=> $date,
-				'cdate' 		=> $cdate,
-				'transid'		=> $transid,
-				'creator'		=> $s_id,
-			);
-
-			$db->AutoExecute('transactions', $trans, 'INSERT');
-
-			$db->Execute('update users
-				set saldo = saldo ' . (($to_one) ? '- ' : '+ ')  . $amo . '
-				where id = ' . $many_uid);
-
-			$total += $amo;
-
-			$transid = generate_transid();
+			$db->commit();
 		}
-
-		$db->Execute('update users
-			set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . $total . '
-			where id = ' . $one_uid);
-
-		if ($db->CompleteTrans())
-		{
-			$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
-			$alert->success($alert_success);
-
-			$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['fullname'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
-			$log_many = rtrim($log_many, ', ');
-			$log_str = 'Mass transaction from ';
-			$log_str .= ($to_one) ? $log_many : $log_one;
-			$log_str .= ' to ';
-			$log_str .= ($to_one) ? $log_one : $log_many;
-
-			log_event($s_id, 'Trans', $log_str);
-
-			if ($mail_en)
-			{
-				if (mail_mass_transaction($mail_ary))
-				{
-					$alert->success('Notificatie mails verzonden.');
-				}
-				else
-				{
-					$alert->error('Fout bij het verzenden van notificatie mails.');
-				}
-			} 
-
-			$users = $db->fetchAll(
-				'SELECT id, fullname, letscode,
-					accountrole, status, saldo, minlimit, maxlimit, adate
-				FROM users
-				WHERE status IN (0, 1, 2, 5, 6)
-				ORDER BY letscode');
-			assoc($users);
-		}
-		else
+		catch (Exception $e)
 		{
 			$alert->error('Fout bij het opslaan.');
+			$db->rollback();
+			throw $e;
+		}
+
+		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
+		$alert->success($alert_success);
+
+		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['fullname'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
+		$log_many = rtrim($log_many, ', ');
+		$log_str = 'Mass transaction from ';
+		$log_str .= ($to_one) ? $log_many : $log_one;
+		$log_str .= ' to ';
+		$log_str .= ($to_one) ? $log_one : $log_many;
+
+		log_event($s_id, 'Trans', $log_str);
+
+		if ($mail_en)
+		{
+			if (mail_mass_transaction($mail_ary))
+			{
+				$alert->success('Notificatie mails verzonden.');
+			}
+			else
+			{
+				$alert->error('Fout bij het verzenden van notificatie mails.');
+			}
 		} 
+
+		$users = $db->fetchAll(
+			'SELECT id, fullname, letscode,
+				accountrole, status, saldo, minlimit, maxlimit, adate
+			FROM users
+			WHERE status IN (0, 1, 2, 5, 6)
+			ORDER BY letscode');
+		assoc($users);
 	}
 }
 
@@ -648,10 +653,23 @@ function mail_mass_transaction($mail_ary)
 		WHERE u.status in (1, 2)
 			AND u.id';
 	$query .= (count($many_user_ids) > 1) ? ' IN (' . implode(', ', $many_user_ids) . ')' : ' = ' . $many_user_ids[0];
-			
-	$rs = $db->Execute($query);
 
-	while ($user = $rs->FetchRow())
+	if (count($many_user_ids) > 1)
+	{
+		$query .= ' IN (?)';
+		$st = $db->prepare($query);
+		$st->bindValue(1, $many_user_ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+	}
+	else
+	{
+		$query .= ' = ?';
+		$st = $db->prepare($query);
+		$st->bindValue(1, $many_user_ids[0]);
+	}
+
+	$st->execute();
+
+	while ($user = $st->fetch())
 	{
 		$amount = $many_ary[$user['id']]['amount'];
 		$transid = $many_ary[$user['id']]['transid'];

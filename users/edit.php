@@ -111,11 +111,12 @@ if ($_POST['zend'])
 
 			$user['password'] = hash('sha512', $password);
 
-			if ($db->AutoExecute('users', $user, 'INSERT'))
+			if ($db->insert('users', $user))
 			{
 				$alert->success('Gebruiker opgeslagen.');
 
-				$id = $db->insert_ID();
+				$id = $db->lastInsertId('users_id_seq');
+
 				readuser($id, true);
 
 				foreach ($contact as $value)
@@ -131,8 +132,8 @@ if ($_POST['zend'])
 						'id_type_contact'	=> $contact_types[$value['abbrev']],
 						'id_user'			=> $id,
 					);
-					
-					$db->AutoExecute('contact', $insert, 'INSERT');
+					error_log(implode('|',$insert) . ' ---- ' . $id);
+					$db->insert('contact', $insert);
 				}
 
 				$mailenabled = readconfigfromdb('mailenabled');
@@ -173,7 +174,7 @@ if ($_POST['zend'])
 				$user['adate'] = date('Y-m-d H:i:s');
 			}
 
-			if($db->AutoExecute('users', $user, 'UPDATE', 'id = ' . $id))
+			if($db->update('users', $user, array('id' => $id)))
 			{
 				$alert->success('Gebruiker aangepast.');
 
@@ -194,9 +195,7 @@ if ($_POST['zend'])
 					{
 						if ($stored_contact && !$value['main_mail'])
 						{
-							$db->Execute('DELETE FROM contact
-								WHERE id_user = ' . $id . '
-									AND id = ' . $value['id']);
+							$db->delete('contact', array('id_user' => $id, 'id' => $value['id']));
 						}
 						continue;
 					}
@@ -216,7 +215,7 @@ if ($_POST['zend'])
 							'flag_public'		=> ($value['flag_public']) ? 1 : 0,
 							'id_user'			=> $id,
 						);
-						$db->AutoExecute('contact', $insert, 'INSERT');
+						$db->insert('contact', $insert);
 						continue;
 					}
 
@@ -224,8 +223,8 @@ if ($_POST['zend'])
 					unset($contact_update['id'], $contact_update['abbrev'],
 						$contact_update['name'], $contact_update['main_mail']);
 
-					$db->AutoExecute('contact', $contact_update, 'UPDATE',
-						'id = ' . $value['id'] . ' AND id_user = ' . $id);
+					$db->update('contact', $contact_update,
+						array('id' => $value['id'], 'id_user' => $id));
 				}
 
 				header('Location: ' . $rootpath . 'users/view.php?id=' . $id);
@@ -263,12 +262,15 @@ else
 
 		$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
 
-		$rs = $db->Execute('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
+		$st = $db->prepare('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
 			FROM type_contact tc, contact c
 			WHERE tc.id = c.id_type_contact
-				AND c.id_user = ' . $id);
+				AND c.id_user = ?');
 
-		while ($row = $rs->FetchRow())
+		$st->bindValue(1, $id);
+		$st->execute();
+
+		while ($row = $st->fetch())
 		{
 			if (isset($contact_keys[$row['abbrev']]))
 			{
@@ -583,7 +585,7 @@ function sendadminmail($user)
 	$mailcontent .= "De account ";
 	$mailcontent .= $user["login"];
 	$mailcontent .= ' ( ' . $user['letscode'] . ' ) ';
-	$mailcontent .= " werd geactiveerd met een nieuw passwoord.\n";
+	$mailcontent .= " werd geactiveerd met een nieuw paswoord.\n";
 	if ($user['mail'])
 	{
 		$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";

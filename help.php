@@ -19,7 +19,7 @@ if(isset($_POST['zend']))
 	{
 		if (!($return_message = helpmail($posted_list)))
 		{
-			$alert->success("Support mail verstuurd");
+			$alert->success('De support mail is verzonden.');
 			header('Location: index.php');
 			exit;
 		}
@@ -66,21 +66,28 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
-echo '<div class="form-group">';
-echo '<label for="login" class="col-sm-2 control-label">Login</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="login" name="login" ';
-echo 'value="' . $posted_list['login'] . '" required' . $readonly . '>';
-echo '</div>';
-echo '</div>';
+if ($s_id)
+{
+	echo '<div style="display:none;">';
 
-echo '<div class="form-group">';
-echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $posted_list['email'] . '" required' . $readonly . '>';
-echo '</div>';
-echo '</div>';
+	echo '<div class="form-group">';
+	echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="login" name="login" ';
+	echo 'value="' . $posted_list['login'] . '" required' . $readonly . '>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="email" class="form-control" id="email" name="email" ';
+	echo 'value="' . $posted_list['email'] . '" required' . $readonly . '>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '</div>';
+}
 
 echo '<div class="form-group">';
 echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
@@ -113,25 +120,37 @@ if (!$s_id)
 
 include $rootpath . 'includes/inc_footer.php';
 
-function validate_input($posted_list){
-        $error_list = array();
-	if(empty($posted_list["login"])){
-	                $error_list["login"] = "<font color='red'> Vul een <strong>eLAS login</strong> in</font>";
+function validate_input($posted_list)
+{
+    $error_list = array();
+   
+	if(empty($posted_list['login']))
+	{
+		$error_list[] = 'Vul een eLAS login in';
 	}
-	if(empty($posted_list["email"])){
-		$error_list["email"] = "<font color='red'> Vul een <strong>E-mail adres</strong> in</font>";
+
+	if(empty($posted_list['email']))
+	{
+		$error_list[] = 'Vul een E-mail adres in';
 	}
-	$checkedaddress = checkmailaddress($posted_list["email"]);
-	if(empty($checkedaddress)) {
-			$error_list["email"] = "<font color='red'> Dit mailadres is niet gekend in eLAS</font>";
+
+	$checkedaddress = checkmailaddress($posted_list['email']);
+
+	if(empty($checkedaddress))
+	{
+			$error_list[] = 'Dit mailadres is niet gekend in eLAS';
 	}
-	if(empty($posted_list["subject"])){
-                $error_list["subject"] = "<font color='red'> Geef een <strong>onderwerp</stong> op</font>";
+
+	if(empty($posted_list[]))
+	{
+                $error_list["subject"] = 'Geef een onderwerp op.';
 	}
-	if(empty($posted_list["description"])){
-		$error_list["description"] = "<font color='red'> Geef een <strong>omschrijving</strong> van je probleem</font>";
+
+	if(empty($posted_list[]))
+	{
+		$error_list[] = 'Geef een omschrijving van je probleem<.';
 	}
-        return $error_list;
+	return $error_list;
 }
 
 function checkmailaddress($email)

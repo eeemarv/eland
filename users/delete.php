@@ -61,10 +61,14 @@ if(isset($_POST['delete']))
 
 			$usr = $user['letscode'] . ' ' . $user['fullname'] . ' [id:' . $id . ']';
 			$msgs = '';
-			$rs = $db->Execute('SELECT id, content, id_category, msg_type
+			$st = $db->prepare('SELECT id, content, id_category, msg_type
 				FROM messages
-				WHERE id_user = \'' .$id . '\'');
-			while ($row = $rs->FetchRow())
+				WHERE id_user = ?');
+
+			$st->bindValue(1, $id);
+			$st->execute();
+
+			while ($row = $st->fetch())
 			{
 				$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
 			}
@@ -141,7 +145,7 @@ if(isset($_POST['delete']))
 					'stat_msgs_wanted'	=> ($want_count[$cat_id]) ?: 0,
 				);
 				
-				$db->AutoExecute('categories', $stats, 'UPDATE', 'id = ' . $cat_id);
+				$db->update('categories', $stats, array('id' => $cat_id));
 			}
 
 			//delete contacts
@@ -176,8 +180,9 @@ if(isset($_POST['delete']))
 }
 
 $h1 = 'Gebruiker ' . $user['letscode'] . ' ' . $user['fullname'] . ' verwijderen?';
+$fa = 'user';
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
 echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['fullname'];
 echo ' worden verwijderd.</font></p>';
@@ -185,20 +190,22 @@ echo ' worden verwijderd.</font></p>';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo "<div class='border_b'>";
-echo "<form method='POST'>";
-echo "<table class='data'>";
-echo "<tr><td>Paswoord:</td><td>";
-echo '<input type="password" name="password" value="" autocomplete="off">';
-echo "</td></tr>";
-echo "<tr><td colspan='2'>";
-echo "<input type='submit' name='cancel' value='Annuleren'>&nbsp;";
-echo "<input type='submit' name='delete' value='Verwijderen'>";
-echo "</td></tr>";
-echo "</table></form></div>";
+echo '<form method="post" class="form-horizontal">';
+
+echo '<div class="form-group">';
+echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="password" class="form-control" id="password" name="password" ';
+echo 'value="" required autocomplete="off">';
+echo '</div>';
+echo '</div>';
+
+echo '<a href="' . $rootpath . 'users/view.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+echo '<input type="submit" value="Verwijderen" name="delete" class="btn btn-danger">';
+
+echo '</form>';
 
 echo '</div>';
 echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
-

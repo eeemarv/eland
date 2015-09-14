@@ -95,8 +95,10 @@ if ($_POST['zend'])
 			{
 				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 10);
 				$validity = gmdate('Y-m-d H:i:s', time() + 3600);
-				$db->Execute('INSERT INTO tokens (token, validity, type)
-					values (\'' . $token . '_' . $user_id . '\', \'' . $validity . '\', \'pwreset\')');
+				$db->insert('tokens', array(
+					'token'		=> $token . '_' . $user_id,
+					'validity' 	=> $validity,
+					'type'		=> 'pwreset'));
 				$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
 				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];

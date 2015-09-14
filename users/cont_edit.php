@@ -22,7 +22,7 @@ if(isset($_POST["zend"])){
 	$error_list = validate_input($contact);
 	
 	if(empty($error_list)){
-		if ($db->AutoExecute("contact", $contact, 'UPDATE', "id=$cid"))
+		if ($db->update('contact', $contact, array('id' => $cid)))
 		{
 			$alert->success('Contact aangepast.');
 			header('Location: view.php?id=' . $uid);

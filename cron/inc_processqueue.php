@@ -123,17 +123,15 @@ function processqueue()
 function unqueue($transid)
 {
 	global $db;
-	$query = "DELETE FROM interletsq WHERE transid = '" .$transid ."'";
-	log_event("","Trans","Removing $transid from queue");
-	$db->Execute($query);
+	$db->delete('interletsq', array('transid' => $transid));
+	log_event("","Trans","Removing $transid from queue");	
 }
 
 function update_queue($transid,$count,$result)
 {
 	global $db;
-	$count = $count + 1;
-	$query = "UPDATE interletsq SET retry_count = $count, last_status = '" .$result ."' WHERE transid = '" .$transid ."'";
-	$db->Execute($query);
+	$count++;
+	$db->update('interletsq', array('retry_count' => $count, 'last_status' => $result), array('transid' => $transid));
 }
 
 function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to)

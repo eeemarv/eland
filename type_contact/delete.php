@@ -13,7 +13,7 @@ if(!$id)
 	exit;
 }
 
-$ct = $db->fetchAssoc('select * from type_contact tc');
+$ct = $db->fetchAssoc('select * from type_contact where id = ?', array($id));
 
 if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
@@ -31,7 +31,7 @@ if ($db->fetchColumn('select id from contact where id_type_contact = ?', array($
 
 if(isset($_POST['zend']))
 {
-	if ($db->delete('type_contact', array('id' => $id))
+	if ($db->delete('type_contact', array('id' => $id)))
 	{
 		$alert->success('Contact type verwijderd.');
 	}

@@ -13,7 +13,7 @@ if(!$id)
 
 if(isset($_POST['zend']))
 {
-	if ($db->Execute('DELETE FROM categories WHERE id = ' . $id))
+	if ($db->delete('categories', array('id' => $id)))
 	{
 		$alert->success('Categorie verwijderd.');
 		header('Location: overview.php');

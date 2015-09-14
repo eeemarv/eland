@@ -156,13 +156,14 @@ function assoc(&$ary)
 		return;
 	}
 
-	$in = $ary;
-	$ary = array();
+	$out = array();
 
-	foreach ($in as $k => $v)
+	foreach ($ary as $v)
 	{
-		$ary[$v[0]] = (sizeof($v) > 2) ? $v : $v[1];
+		list($key, $val) = array_values($v);
+		$out[$key] = (sizeof($v) > 2) ? $v : $val;
 	}
+	$ary = $out;
 }
 
 require_once $rootpath . 'includes/inc_dbconfig.php';

@@ -26,7 +26,7 @@ if(isset($_POST['zend']))
 	{
 		$update['password'] = hash('sha512', $pw);
 		$update['mdate'] = date('Y-m-d H:i:s');
-		if ($db->AutoExecute('users', $update, 'UPDATE', 'id=' . $s_id))
+		if ($db->update('users', $update, array('id' => $s_id)))
 		{
 			$user = readuser($s_id, true);
 			$alert->success('Paswoord opgeslagen.');

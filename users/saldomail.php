@@ -25,7 +25,8 @@ if ($activate || $deactivate)
 			$bool = ($activate) ? 't' : 'f';
 			$de = ($activate) ? '' : 'de';
 
-			if ($db->Execute('update users set cron_saldo = \'' . $bool . '\' where status in (1, 2)'))
+			if ($db->executeUpdate('update users set cron_saldo = ? where status in (1, 2)',
+				array($bool)))
 			{
 				$msg = 'De saldo mail met recent vraag en aanbod is ge' . $de . 'activeerd voor alle actieve gebruikers.';
 				$alert->success($msg);

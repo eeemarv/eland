@@ -87,7 +87,7 @@ foreach($user_images as $user_id => $filename)
 
 	if (!$found)
 	{
-		$db->Execute('UPDATE users SET "PictureFile" = NULL WHERE id = ' . $user_id);
+		$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
 		echo 'Profile image not present, deleted in database: ' . $filename . $r;
 		log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 	}
@@ -104,7 +104,7 @@ foreach($user_images as $user_id => $filename)
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
 		{
-			$db->Execute('UPDATE users SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $user_id);
+			$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 			log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
@@ -142,7 +142,7 @@ foreach($message_images as $image)
 
 	if (!$found)
 	{
-		$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
+		$db->delete('msgpictures', array('id' => $id));
 		echo 'Message image not present, deleted in database: ' . $filename . $r;
 		log_event ($s_id, 'init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 	}
@@ -159,7 +159,7 @@ foreach($message_images as $image)
 
 		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
 		{
-			$db->Execute('UPDATE msgpictures SET "PictureFile" = \'' . $new_filename . '\' WHERE id = ' . $id);
+			$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 			log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
@@ -222,7 +222,10 @@ $count = count($orphaned_contacts);
 
 if ($count)
 {
-	$db->Execute('delete from contact where id in (' . implode(', ', array_keys($orphaned_contacts)) . ')');
+	$db->executeQuery('delete * from contact where id IN (?)',
+		array(implode(', ', array_keys($orphaned_contacts))),
+		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+	);
 
 	echo 'Found & deleted ' . $count . ' orphaned contacts.' . $r;
 	echo '---------------------------------------------' . $r;

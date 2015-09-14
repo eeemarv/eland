@@ -27,7 +27,7 @@ if ($_POST['zend'])
 			$news['id_user'] = $s_id;
 			$news['cdate'] = date('Y-m-d H:i:s');
 			
-			if ($db->AutoExecute('news', $news, 'INSERT'))
+			if ($db->insert('news', $news))
 			{
 				$alert->success('Nieuwsbericht opgeslagen.');
 		 		if($s_accountrole != "admin"){
@@ -46,7 +46,7 @@ if ($_POST['zend'])
 					header('Location: overview.php');
 					exit;
 				}
-				header('Location: view.php?id=' . $db->insert_ID());
+				header('Location: view.php?id=' . $db->lastInsertId('news_id_seq'));
 				exit;
 			}
 			else
@@ -56,7 +56,7 @@ if ($_POST['zend'])
 		}
 		else if ($id)
 		{
-			if($db->AutoExecute('news', $news, 'UPDATE', 'id = ' . $id))
+			if($db->update('news', $news, array('id' => $id)))
 			{
 				$alert->success('Nieuwsbericht aangepast.');
 				header('Location: view.php?id=' . $id);

@@ -18,9 +18,12 @@ if ($mode == 'edit' && !$id)
 
 if ($_POST['zend'])
 {
+	unset($group['zend']);
+
 	if ($mode == 'edit')
 	{
-		if ($db->AutoExecute('letsgroups', $group, 'UPDATE', 'id=' . $id))
+		
+		if ($db->update('letsgroups', $group, array('id' => $id)))
 		{
 			$alert->success('Letsgroep aangepast.');
 			header('Location: overview.php');
@@ -31,7 +34,7 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		if ($db->AutoExecute('letsgroups', $group, 'INSERT'))
+		if ($db->insert('letsgroups', $group))
 		{
 			$alert->success('Letsgroep opgeslagen.');
 			header('Location: overview.php');

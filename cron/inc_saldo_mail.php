@@ -39,13 +39,16 @@ function saldo()
 
 	assoc($users);
 
-	$rs = $db->Execute('select u.id, c.value
+	$st = $db->prepare('select u.id, c.value
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'');
-	while ($row = $rs->FetchRow())
+
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$user_id = $row['id'];
 		$mail = $row['value'];
@@ -133,15 +136,18 @@ function saldo()
 
 	assoc($image_count_ary);
 
-	$rs = $db->Execute('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
+	$st = $db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
 		u.fullname, u.letscode
 		FROM messages m, users u
 		WHERE m.id_user = u.id
 			AND u.status IN (1, 2)
 			AND m.cdate >= ?
-		ORDER BY m.cdate DESC', array($treshold_time));
+		ORDER BY m.cdate DESC');
 
-	while ($msg = $rs->FetchRow())
+	$st->bindValue(1, $treshold_time);
+	$st->execute();
+
+	while ($msg = $rs->fetch())
 	{
 		$va = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
@@ -164,14 +170,16 @@ function saldo()
 		);
 	}
 
-	$rs = $db->Execute('select n.*, u.fullname, u.letscode
+	$st = $db->prepare('select n.*, u.fullname, u.letscode
 		from news n, users u
 		where n.approved = \'t\'
 			and n.published = \'t\'
 			and n.id_user = u.id
 		order by n.cdate desc');
 
-	while ($row = $rs->FetchRow())
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$location_text = ($row['location']) ? 'Locatie: ' . $row['location'] . $r : '';
 		$location_html = ($row['location']) ? 'Locatie: <b>' . $row['location'] . '</b><br>' : '';
@@ -194,13 +202,15 @@ function saldo()
 		);
 	}
 
-	$rs = $db->Execute('select u.id, u.fullname, u.letscode
+	$st = $db->prepare('select u.id, u.fullname, u.letscode
 		from users u
 		where u.status = 1
-			and u.adate > \'' .
-				gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400) . '\'');
+			and u.adate > ?');
 
-	while ($row = $rs->FetchRow())
+	$st->bindValue(1, gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400));
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$new_users[] = array(
 			'text'	=> $row['fullname'] . ' (' . $row['letscode'] . ') ' . $user_url . $row['id'] . $r,
@@ -208,11 +218,13 @@ function saldo()
 		);
 	}
 
-	$rs = $db->Execute('select u.id, u.fullname, u.letscode
+	$st = $db->prepare('select u.id, u.fullname, u.letscode
 		from users u
 		where u.status = 2');
 
-	while ($row = $rs->FetchRow())
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$leaving_users[] = array(
 			'text'	=> $row['fullname'] . ' (' . $row['letscode'] . ') ' . $user_url . $row['id'] . $r,
@@ -220,16 +232,19 @@ function saldo()
 		);
 	}
 
-	$rs = $db->Execute('select t.id_from, t.id_to, t.real_from, t.real_to,
+	$st = $db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
 			t.amount, t.cdate, t.description,
 			uf.fullname as fullname_from, uf.letscode as letscode_from,
 			ut.fullname as fullname_to, ut.letscode as letscode_to
 		from transactions t, users uf, users ut
 		where t.id_from = uf.id
 			and t.id_to = ut.id
-			and t.cdate > \'' . $treshold_time . '\'');
+			and t.cdate > ?');
 
-	while ($row = $rs->FetchRow())
+	$st->bindValue(1, $treshold_time);
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$tr_from_text = ($row['real_from']) ? $row['fullname_from'] . ': ' . $row['real_from'] : $row['fullname_from'] . ' (' . $row['letscode_from'] . ')';
 		$tr_to_text = ($row['real_to']) ? $row['fullname_to'] . ': ' . $row['real_to'] : $row['fullname_to'] . ' (' . $row['letscode_to'] . ')';

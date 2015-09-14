@@ -25,11 +25,11 @@ $cats_hsh_name = array(
 	''	=> '-- Alle categorieën --',
 );
 
-$rs = $db->Execute('SELECT * FROM categories ORDER BY fullname');
+$st = $db->executeQuery('select * from categories order by fullname');
 
 $ow_str = ' . . . . vraag: %1$s - aanbod: %2$s';
 
-while ($row = $rs->FetchRow())
+while ($row = $st->fetch())
 {
 	$cats[$row['id']] = $row;	
 	$c_hsh = substr(md5($row['id'] . $row['fullname']), 0, 4);
@@ -212,7 +212,7 @@ echo '</div>';
 
 if($s_accountrole != 'guest')
 {
-	$letsgroups = $db->Execute("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
+	$letsgroups = $db->fetchAll("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
 
 	if (count($letsgroups))
 	{

@@ -2,11 +2,10 @@
 ob_start();
 $rootpath = "../";
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_userfunctions.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_form.php';
 
-$uid = $_GET["uid"];
+$uid = $_GET['uid'];
 
 if(isset($_POST["zend"]))
 {
@@ -21,7 +20,7 @@ if(isset($_POST["zend"]))
 	
 	if(empty($error_list))
 	{
-		if ($db->AutoExecute('contact', $contact, 'INSERT'))
+		if ($db->insert('contact', $contact))
 		{
 			$alert->success('Contact opgeslagen.');
 			header("Location: view.php?id=$uid");

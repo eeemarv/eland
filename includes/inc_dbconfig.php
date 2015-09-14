@@ -35,7 +35,7 @@ function writeconfig($key, $value)
 {
 	global $db, $redis, $schema;
 
-	if (!$db->Execute('UPDATE config SET value = \'' . pg_escape_string($value) . '\', "default" = \'f\' WHERE setting = \'' . $key . '\''))
+	if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
 	{
 		return false;
 	}

@@ -15,7 +15,7 @@ if (isset($_POST['zend']))
 	list($letscode_from) = explode(' ', $_POST['letscode_from']);
 	list($letscode_to) = explode(' ', $_POST['letscode_to']);
 	$transaction['amount'] = $_POST['amount'];
-	$transaction['date'] = ($_POST['date']) ?: date('Y-m-d H:i:s');
+	$transaction['date'] = date('Y-m-d H:i:s');
 	$letsgroup_id = $_POST['letsgroup_id'];
 
 	$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
@@ -142,7 +142,7 @@ if (isset($_POST['zend']))
 				$transaction['amount'] = (float) $transaction['amount'];
 				$transaction['amount'] = round($transaction['amount'], 5);
 				$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
-				$transaction['retry_until'] = time() + (60*60*24*4);
+				$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + (60*60*24*4));
 				// Queue the transaction for later handling
 				$transid = queuetransaction($transaction, $fromuser, $touser);
 				if($transaction['transid'] == $transid)

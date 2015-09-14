@@ -36,7 +36,7 @@ if(isset($_POST['zend']))
 
 	if (!$error)
 	{
-		if ($db->AutoExecute('type_contact', $tc, 'UPDATE', 'id=' . $id))
+		if ($db->update('type_contact', $tc, array('id' => $id)))
 		{
 			$alert->success('Contact type aangepast.');
 			header('Location: ' . $rootpath . 'type_contact/overview.php');

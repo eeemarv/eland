@@ -15,7 +15,7 @@ if(!isset($id))
 
 if(isset($_POST['zend']))
 {
-	if ($db->delete('apikeys', array('id' => $id))
+	if ($db->delete('apikeys', array('id' => $id)))
 	{
 		$alert->success('Apikey verwijderd.');
 		header('Location: ' . $rootpath . 'apikeys/overview.php');

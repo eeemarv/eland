@@ -34,7 +34,7 @@ if(isset($_POST["zend"]))
 		'version'	=> '2006-03-01',
 	));
 
-	$pictures = $db->Execute("SELECT * FROM msgpictures WHERE msgid = ".$id);
+	$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', array($id));
 	foreach($pictures as $value)
 	{
 		$s3->deleteObject(array(
@@ -44,16 +44,16 @@ if(isset($_POST["zend"]))
 	}
 
 	$db->delete('msgpictures', array('msgid' => $id));
-	$result = $db->Execute('messages', array('id' => $id));
+	$result = $db->delete('messages', array('id' => $id));
 
 	if ($result)
 	{
 		$column = 'stat_msgs_';
 		$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-		$db->Execute('update categories
+		$db->executeUpdate('update categories
 			set ' . $column . ' = ' . $column . ' - 1
-			where id = ' . $msg['id_category']);
+			where id = ?', array($msg['id_category']));
 	}
 
 	if ($result)

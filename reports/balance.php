@@ -16,6 +16,14 @@ if (isset($_GET['zend']))
 	$date = $_GET['date'];
 	$filter = $_GET['filter'];
 
+	$d  = explode('-', $date);
+	if (!checkdate($d[1], $d[2], $d[0]))
+	{
+		$alert->error('Geen geldige datum.');
+		header('Location: ' . $rootpath . 'reports/balance.php');
+		exit;
+	}
+
 	if ($date)
 	{
 		$out = $db->fetchAll('select id_to, sum(amount)

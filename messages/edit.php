@@ -107,7 +107,7 @@ else if ($mode == 'edit' && $id)
 else if ($mode == 'new')
 {
 	$msg = array(
-		'validity'		=> '24',
+		'validity'		=> '',
 		'content'		=> '',
 		'description'	=> '',
 		'msg_type'		=> '1',
@@ -258,19 +258,13 @@ function validate_input($msg)
 
 		if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
 		{
-			$error_list["id_category"]=">Categorie bestaat niet!";
+			$error_list[] = 'Categorie bestaat niet!';
 		}
 	}
 
-	$query = "SELECT * FROM users ";
-	$query .= " WHERE id = ". $msg['id_user'];
-	$query .= " AND status <> 0" ;
-	$rs = $db->Execute($query);
-    $number2 = $rs->recordcount();
-
-	if( $number2 == 0 )
+	if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
 	{
-		$error_list["id_user"]="Gebruiker bestaat niet!";
+		$error_list[] = 'Gebruiker bestaat niet!';
 	}
 	return $error_list;
 
@@ -312,26 +306,26 @@ function update_msg($id, $posted_list)
 		unset($posted_list['amount']);
 	}
 
-	$result = $db->AutoExecute('messages', $posted_list, 'UPDATE', 'id = ' . $id);
+	$result = $db->update('messages', $posted_list, array('id' => $id));
 
-	// Description could not be inserted with AutoExecute because the column is mixed case.
-	$db->Execute('update messages set "Description" = \'' . pg_escape_string($description) . '\' where id = ' . $id);
-
+	// Description column is mixed case.
+	$db->update('messages', array('"Description"' => $description), array('id' => $id));
+;
 	if ($msg['msg_type'] != $posted_list['msg_type'] || $msg['id_category'] != $posted_list['id_category'])
 	{
 		$column = 'stat_msgs_';
 		$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-		$db->Execute('update categories
+		$db->executeUpdate('update categories
 			set ' . $column . ' = ' . $column . ' - 1
-			where id = ' . $msg['id_category']);
+			where id = ?', array($msg['id_category']));
 
 		$column = 'stat_msgs_';
 		$column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
 
-		$db->Execute('update categories
+		$db->executeUpdate('update categories
 			set ' . $column . ' = ' . $column . ' + 1
-			where id = ' . $posted_list['id_category']);
+			where id = ?', array($posted_list['id_category']));
 	}
 
 	return $result;
@@ -352,17 +346,17 @@ function insert_msg($posted_list)
 		unset($posted_list['amount']);
 	}
 
-	if ($db->AutoExecute('messages', $posted_list, 'INSERT'))
+	if ($db->insert('messages', $posted_list))
 	{
-		$id = $db->insert_ID();
+		$id = $db->lastInsertId('messages_id_seq');
 
 		$stat_column = 'stat_msgs_';
 		$stat_column .= ($posted_list['msg_type']) ? 'offers' : 'wanted';
 
-		$db->Execute('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ' . $posted_list['id_category']);
+		$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', array($posted_list['id_category']));
 
-		// Description could not be inserted with AutoExecute because the column is mixed case.
-		$db->Execute('update messages set "Description" = \'' . pg_escape_string($description) . '\' where id = ' . $id);
+		// Description column is mixed case.
+		$db->update('messages', array('"Description"' => $description), array('id' => $id));
 
 		return $id;
 	}

@@ -38,25 +38,25 @@ if(isset($_POST["zend"])){
 	}
 	if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 	{
-		$error_list['a'] = 'a'; // display error in alert;
+		$error_list[] = 'a'; // display error in alert;
 		$alert->error('Hoofdcategoriën kunnen geen berichten bevatten.');
 	}
 	if ($cat['leafnote'] && $child_count_ary[$id])
 	{
-		$error_list['b'] = 'b'; // display error in alert;
+		$error_list[] = 'b'; // display error in alert;
 		$alert->error('Subcategoriën kunnen geen categoriën bevatten.');
 	}
 	
-	if (!count($error_list)){
-		$prefix = ($cat['id_parent']) ? $db->GetOne("SELECT name FROM categories WHERE id=" . $cat["id_parent"]) . ' - ' : '';
+	if (!count($error_list))
+	{
+		$prefix = ($cat['id_parent']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array($cat['id_parent'])) . ' - ' : '';
 		$cat['fullname'] = $prefix . $cat['name'];
-		$cat["fullname"] = ($cat['leafnote']) ? $db->GetOne("SELECT name FROM categories WHERE id=". (int) $cat["id_parent"]) . ' - ' : '';
-		$cat['fullname'] .= $cat["name"];
 		unset($cat['id']);
-		if ($db->AutoExecute("categories", $cat, 'UPDATE', "id=$id"))
+
+		if ($db->update('categories', $cat, array('id' => $id)))
 		{
 			$alert->success('Categorie aangepast.');
-			$db->Execute('UPDATE categories SET fullname = \'' . $cat['name'] . ' - \' || name WHERE id_parent = ' . $id);
+			$db->executeUpdate('UPDATE categories SET fullname = ? || \'-\' || name WHERE id_parent = ?', array($cat['name'], $id));
 			header('Location: overview.php');
 			exit;
 		}

@@ -15,7 +15,7 @@ if (isset($_POST["zend"]))
 
 	if (!$error)
 	{
-		if ($db->AutoExecute('type_contact', $tc, 'INSERT'))
+		if ($db->insert('type_contact', $tc))
 		{
 			$alert->success('Contact type toegevoegd.');
 		}

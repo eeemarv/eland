@@ -49,29 +49,29 @@ function insert_transaction($posted_list)
 	$posted_list['creator'] = (empty($s_id)) ? 0 : $s_id;
     $posted_list['cdate'] = date('Y-m-d H:i:s');
 
-	$db->StartTrans();
-	$db->AutoExecute('transactions', $posted_list, 'INSERT');
-	$db->Execute('update users
-		set saldo = saldo + ' . $posted_list['amount'] . '
-		where id = ' . $posted_list['id_to']);
-	$db->Execute('update users
-		set saldo = saldo - ' . $posted_list['amount'] . '
-		where id = ' . $posted_list['id_from']);
-	if ($db->CompleteTrans())
+	$db->beginTransaction();
+	try
 	{
-		readuser($posted_list['id_to'], true);
-		readuser($posted_list['id_from'], true);
+		$db->insert('transactions', $posted_list);
+		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', array($posted_list['amount'], $posted_list['id_to']));
+		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', array($posted_list['amount'], $posted_list['id_from']));
+		$db->commit();
 
-		log_event($s_id, 'Trans', 'Transaction ' . $posted_list['transid'] . ' saved: ' .
-			$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
-
-		return true;
 	}
+	catch(Exception $e)
+	{
+		$conn->rollback();
+		throw $e;
+		return false;
+	}
+	readuser($posted_list['id_to'], true);
+	readuser($posted_list['id_from'], true);
 
-	$reason = $db->ErrorMsg();
-	log_event($s_id, 'Trans', 'Transaction ' . $transid . ' failed with error ' . $reason);
+	log_event($s_id, 'Trans', 'Transaction ' . $posted_list['transid'] . ' saved: ' .
+		$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
 
-	return false;
+	return true;
+
 }
 
 function mail_interlets_transaction($posted_list)
@@ -132,7 +132,7 @@ function mail_transaction($posted_list)
 	
 	if($userfrom['accountrole'] != 'interlets')
 	{
-		$to = get_mailaddresses($posted_list['id_to']);
+		$to = get_mailaddresses($posted_list['id_from']);
 	}
 
 	$userto = readuser($posted_list['id_to']);
@@ -141,8 +141,8 @@ function mail_transaction($posted_list)
 
 	$to .= ",". $userto_mail;
 
-	$systemtag = readconfigfromdb("systemtag");
-	$currency = readconfigfromdb("currency");
+	$systemtag = readconfigfromdb('systemtag');
+	$currency = readconfigfromdb('currency');
 
 	$subject .= "[eLAS-".$systemtag."] " . $posted_list["amount"] . " " .$currency;
 	if(!empty($posted_list["real_from"]))
@@ -248,22 +248,18 @@ function queuetransaction($posted_list,$fromuser,$touser)
 {
 	global $db, $redis, $schema;
 
+	unset($posted_list['date'],$posted_list['id_to']);
 	$posted_list["retry_count"] = 0;
 	$posted_list["last_status"] = "NEW";
-	if ($db->AutoExecute("interletsq", $posted_list, 'INSERT'))
+	if ($db->insert("interletsq", $posted_list))
 	{
-		$transid = $posted_list["transid"];
 		if (!$redis->get($schema . '_interletsq'))
 		{
 			$redis->set($schema . '_interletsq', time());
 		}
+		return $posted_list['transid'];
 	}
-	else
-	{
-			$transid = "";
-	}
-
-	return $transid;
+	return '';
 }
 
 function get_mailaddresses($uid)
@@ -271,12 +267,16 @@ function get_mailaddresses($uid)
 	global $db;
 
 	$addr = array();
-	$rs = $db->Execute('select c.value
+	$st = $db->prepare('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
-			and c.id_user = ' . $uid . '
+			and c.id_user = ?
 			and tc.abbrev = \'mail\'');
-	while($row = $rs->FetchRow())
+
+	$st->bindValue(1, $uid);
+	$st->execute();
+
+	while($row = $st->fetch())
 	{
 		$addr[] = $row['value'];
 	}

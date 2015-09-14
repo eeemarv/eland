@@ -99,7 +99,7 @@ if (count($schemas))
 		{
 			$schema = $schema_n;
 			echo ' (selected)';			
-			$db->Execute('SET search_path TO ' . $schema);
+			$db->exec('SET search_path TO ' . $schema);
 			$selected = true;
 		}
 		echo $r;
@@ -374,7 +374,7 @@ function user_exp_msgs()
 		log_event("","Mail","Message expiration mail sent to $mailto");
 	}
 
-	$db->Execute('UPDATE messages set exp_user_warn = \'t\' WHERE validity < \'' . $now . '\'');
+	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
 
 	//no double warn in eLAS-Heroku.
 
@@ -389,10 +389,15 @@ function cleanup_messages()
 
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
-	$rs = $db->Execute("SELECT id, content, id_category, msg_type
+
+	$st = $db->prepare('SELECT id, content, id_category, msg_type
 		FROM messages
-		WHERE validity < '" .$testdate ."'");
-	while ($row = $rs->FetchRow())
+		WHERE validity < ?');
+
+	$st->bindValue(1, $testdate);
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
 	}
@@ -402,17 +407,20 @@ function cleanup_messages()
 	{
 		log_event('','Cron','Expired and deleted Messages ' . $msgs);
 
-		$db->Execute('DELETE FROM messages WHERE validity < \'' . $testdate . '\'');
+		$db->executeQuery('delete from messages WHERE validity < ?', array($testdate));
 	}
 
 	$users = '';
 	$ids = array();
-	$rs = $db->Execute("SELECT u.id, u.letscode, u.name
+
+	$st = $db->prepare('SELECT u.id, u.letscode, u.name
 		FROM users u, messages m
 		WHERE u.status = 0
-			AND m.id_user = u.id");
+			AND m.id_user = u.id');
 
-	while ($row = $rs->FetchRow())
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
 		$ids[] = $row['id'];
 		$users .= '(id: ' . $row['id'] . ') ' . $row['letscode'] . ' ' . $row['name'] . ', ';
@@ -426,11 +434,13 @@ function cleanup_messages()
 
 		if (count($ids) == 1)
 		{
-			$db->Execute('delete from messages where id_user = ' . $ids[0]);
+			$db->delete('messages', array('id_user' => $ids[0]));
 		}
 		else if (count($ids) > 1)
 		{
-			$db->Execute('delete from messages where id_user in ('. implode(', ', $ids) . ')');
+			$db->executeQuery('delete from messages where id_user in (?)',
+				array($ids),
+				array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
 		}
 	}
 
@@ -451,7 +461,7 @@ function cleanup_messages()
 				'Key'    => $file,
 			));
 
-			$db->Execute('DELETE FROM msgpictures WHERE id = ' . $id);
+			$db->delete('msgpictures', array('id' => $id));
 		}
 	}
 
@@ -498,7 +508,7 @@ function cleanup_messages()
 			'stat_msgs_wanted'	=> ($want_count[$id]) ?: 0,
 		);
 		
-		$db->AutoExecute('categories', $stats, 'UPDATE', 'id = ' . $id);
+		$db->update('categories', $stats, array('id' => $id));
 	}
 
 	return true;
@@ -538,7 +548,7 @@ function saldo_update()
 			continue;
 		}
 
-		$db->Execute('update users set saldo = ' . $calculated . ' where id = ' . $id);
+		$db->update('users', array('saldo' => $calculated), array('id' => $id));
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
 		log_event('', 'Cron' , $m);
@@ -552,7 +562,7 @@ run_cronjob('cleanup_news', 86400);
 function cleanup_news()
 {
     global $db, $now;
-	return ($db->Execute("DELETE FROM news WHERE itemdate < '" .$now ."' AND sticky = 'f'")) ? true : false;
+	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', array($now))) ? true : false;
 }
 
 run_cronjob('cleanup_tokens', 3600);
@@ -560,7 +570,7 @@ run_cronjob('cleanup_tokens', 3600);
 function cleanup_tokens()
 {
 	global $db, $now;
-	return ($db->Execute("DELETE FROM tokens WHERE validity < '" .$now ."'")) ? true : false;
+	return ($db->executeQuery('delete from tokens where validity < ?', array($now))) ? true : false;
 }
 
 run_cronjob('cleanup_logs', 86400);
@@ -601,11 +611,11 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (isset($lastrun_ary[$name]))
 	{
-		$db->Execute('update cron set lastrun = \'' . gmdate('Y-m-d H:i:s') . '\' where cronjob = \'' . $name . '\'');
+		$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s')), array('cronjob' => $name));
 	}
 	else
 	{
-		$db->Execute('insert into cron (cronjob, lastrun) values (\'' . $name . '\', \'' . $now . '\')');
+		$db->insert('cron', array('cronjob' 	=> $name, 'lastrun'	=> $now);
 	}
 	log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;

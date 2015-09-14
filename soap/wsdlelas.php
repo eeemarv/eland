@@ -92,7 +92,7 @@ function gettoken($apikey)
 			'type'		=> 'guestlogin'
 		);
 
-		$db->AutoExecute('tokens', $token, 'INSERT')
+		$db->insert('tokens', $token)
 
 		log_event('','Soap','Token ' . $token . ' generated');
 	}
