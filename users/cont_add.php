@@ -33,7 +33,10 @@ if(isset($_POST["zend"]))
 }
 
 
-$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+
+assoc($tc);
+
 $user = readuser($uid);
 
 $h1 = 'Contact toevoegen';
@@ -109,7 +112,7 @@ function validate_input($contact)
 		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
 	}
 
-	if(!$db->GetOne('SELECT abbrev FROM type_contact WHERE id = ' . $contact['id_type_contact']))
+	if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
 	{
 		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
 	}

@@ -24,9 +24,14 @@ if ($token & $user_id)
 
 		if (!(password_strength($password) < readconfigfromdb('pwscore')))
 		{
-			if ($db->GetOne('select token from tokens where token = \'' . $token . '_' . $user_id . '\' and validity > \'' . gmdate('Y-m-d H:i:s') . '\' and type = \'pwreset\''))
+			if ($db->fetchColumn('select token
+				from tokens
+					where token = ?
+						and validity > ?
+						and type = \'pwreset\'', 
+				array($token . '_' . $user_id, gmdate('Y-m-d H:i:s'))))
 			{
-				$db->Execute('UPDATE users SET password = \'' . hash('sha512', $password) . '\' WHERE id = ' . $user_id);
+				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
 				readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
 				log_event($s_id, 'System', 'password reset success user ' . $user_id);
@@ -74,12 +79,12 @@ if ($_POST['zend'])
 	if($email)
 	{
 		log_event($s_id,"System","Activation request for " .$email);
-		$mail_ary = $db->GetArray('SELECT c.id_user, u.login
+		$mail_ary = $db->fetchAll('SELECT c.id_user, u.login
 			FROM contact c, type_contact tc, users u
-			WHERE c. value = \'' . $email . '\'
+			WHERE c. value = ?
 				AND tc.id = c.id_type_contact
 				AND tc.abbrev = \'mail\'
-				AND c.id_user = u.id');
+				AND c.id_user = u.id', array($email));
 
 		if (count($mail_ary) < 2)
 		{

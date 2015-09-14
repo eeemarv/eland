@@ -4,7 +4,7 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$apikeys = $db->GetArray('select * from apikeys');
+$apikeys = $db->fetchAll('select * from apikeys');
 
 $top_buttons = '<a href="' . $rootpath . 'apikeys/add.php" class="btn btn-success"';
 $top_buttons .= ' title="Apikey toevoegen"><i class="fa fa-plus"></i>';

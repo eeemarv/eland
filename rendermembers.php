@@ -4,26 +4,12 @@ $rootpath = '';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$prefix = $_POST["prefix"]; 
-$posted_list["prefix"] = $prefix;
-$searchname = $_POST["searchname"];
-$sortfield = $_POST["sort"];
-
 $query = "SELECT * FROM users ";
 $query .= "WHERE status IN (1, 2, 3)  ";
 $query .= "AND users.accountrole <> 'guest' ";
-if ($prefix <> 'ALL'){
-	 $query .= "AND users.letscode like '" .$prefix."%'";
-}
-if(!empty($searchname)){
-	$query .= " AND (LOWER(fullname) like '%" .strtolower($searchname) ."%' OR LOWER(name) like '%" .strtolower($searchname) ."%')";
-}
-if(!empty($sortfield)){
-	$query .= " ORDER BY " .$sortfield;
-}
 
 //echo $query;
-$userrows = $db->GetArray($query);
+$userrows = $db->fetchAll($query);
 
 show_all_users($userrows);
 
@@ -34,7 +20,7 @@ function get_contacts($userid){
 	$query = "SELECT * FROM contact ";
 	$query .= " WHERE id_user =".$userid;
  	$query .= " AND contact.flag_public = 1";
-	$contactrows = $db->GetArray($query);
+	$contactrows = $db->fetchAll($query);
 	return $contactrows;
 }
 			

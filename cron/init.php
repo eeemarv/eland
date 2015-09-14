@@ -61,7 +61,11 @@ echo 'Sync the image files.' . $r;
 
 $possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
 
-$user_images = $db->GetAssoc('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+$user_images = $db->fetchAll('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+
+assoc($user_images);
+
+assoc($user_images);
 
 foreach($user_images as $user_id => $filename)
 {
@@ -112,7 +116,7 @@ foreach($user_images as $user_id => $filename)
 	}
 }
 
-$message_images = $db->GetArray('SELECT id, msgid, "PictureFile" FROM msgpictures');
+$message_images = $db->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
 
 foreach($message_images as $image)
 {
@@ -167,7 +171,7 @@ foreach($message_images as $image)
 	}
 }
 
-$schemas = $db->GetArray('select schema_name from information_schema.schemata');
+$schemas = $db->fetchAll('select schema_name from information_schema.schemata');
 
 $schemas = array_map(function($row){ return $row['schema_name']; }, $schemas);
 
@@ -206,11 +210,13 @@ echo 'Sync image files ready.' . $r;
 
 echo 'Cleanup orphaned contacts. ' . $r;
 
-$orphaned_contacts = $db->GetAssoc('select c.id, c.value
+$orphaned_contacts = $db->fetchAll('select c.id, c.value
 	from contact c
 	left join users u
 		on c.id_user = u.id
 	where u.id IS NULL');
+	
+assoc($orphaned_contacts);
 
 $count = count($orphaned_contacts);
 

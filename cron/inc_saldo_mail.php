@@ -21,19 +21,23 @@ function saldo()
 
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 
 
-	$addr = $db->GetAssoc('select u.id, c.value
+	$addr = $db->fetchAll('select u.id, c.value
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'adr\'');
 
-	$users = $db->GetAssoc('SELECT u.id,
+	assoc($addr);
+	
+	$users = $db->fetchAll('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.fullname, u.letscode, u.login
 		FROM users u
 		WHERE u.status in (1, 2)
 		AND u.cron_saldo = \'t\'');
+
+	assoc($users);
 
 	$rs = $db->Execute('select u.id, c.value
 		from users u, contact c, type_contact tc
@@ -121,19 +125,21 @@ function saldo()
 	$new_transaction_url = $base_url . '/transactions/add.php';
 	$mydetails_url = $base_url . '/userdetails/mydetails_edit.php';
 
-	$image_count_ary = $db->GetAssoc('select m.id, count(p.id)
+	$image_count_ary = $db->fetchAll('select m.id, count(p.id)
 		from msgpictures p, messages m
 		where p.msgid = m.id
-			and m.cdate >= \'' . $treshold_time. '\'
-		group by m.id');
+			and m.cdate >= ?
+		group by m.id', array($treshold_time));
+
+	assoc($image_count_ary);
 
 	$rs = $db->Execute('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
 		u.fullname, u.letscode
 		FROM messages m, users u
 		WHERE m.id_user = u.id
 			AND u.status IN (1, 2)
-			AND m.cdate >= \'' . $treshold_time . '\'
-		ORDER BY m.cdate DESC');
+			AND m.cdate >= ?
+		ORDER BY m.cdate DESC', array($treshold_time));
 
 	while ($msg = $rs->FetchRow())
 	{

@@ -16,7 +16,7 @@ function readconfigfromdb($key){
 		return $cache[$key] = $redis->get($redis_key);
 	}
 
-	$value = $db->GetOne('SELECT value FROM config WHERE setting = \'' . $key . '\'');
+	$value = $db->fetchColumn('SELECT value FROM config WHERE setting = ?', array($key));
 
 	if (isset($value))
 	{
@@ -70,7 +70,7 @@ function readparameter($key, $refresh = false)
 		}
 	}
 
-	$value = $db->GetOne('SELECT value FROM parameters WHERE parameter = \'' . $key . '\'');
+	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', array($key));
 
 	if (isset($value))
 	{
@@ -110,7 +110,7 @@ function readuser($id, $refresh = false)
 		} 
 	}
 
-	$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
+	$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
 
 	if (isset($user))
 	{

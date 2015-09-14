@@ -37,11 +37,11 @@ else
 	{
 		$user = readuser($s_id);
 		$posted_list['login'] = $user['login'];
-		$posted_list['email'] = $db->GetOne('select c.value
+		$posted_list['email'] = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
-				and c.id_user = ' . $s_id . '
-				and tc.abbrev = \'mail\'');
+				and c.id_user = ?
+				and tc.abbrev = \'mail\'', array($s_id));
 	}
 }
 
@@ -137,9 +137,8 @@ function validate_input($posted_list){
 function checkmailaddress($email)
 {
 	global $db;
-	$query = "SELECT contact.value FROM contact, type_contact WHERE id_type_contact = type_contact.id and type_contact.abbrev = 'mail' AND contact.value = '" .$email ."'";
-	$checkedaddress = $db->GetRow($query);
-	return $checkedaddress;
+	$query = "SELECT c.value FROM contact c, type_contact tc WHERE c.id_type_contact = tc.id and tc.abbrev = 'mail' AND c.value = ?";
+	return ($db->fetchColumn($query, array($email))) ? true : false;
 }
 
 function helpmail($posted_list,$rootpath)

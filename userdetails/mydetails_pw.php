@@ -34,11 +34,11 @@ if(isset($_POST['zend']))
 			if ($_POST['notify'])
 			{
 				$from = readconfigfromdb('from_address');
-				$to = $db->GetOne('select c.value
+				$to = $db->fetchColumn('select c.value
 					from contact c, type_contact tc
 					where tc.id = c.id_type_contact
 						and tc.abbrev = \'mail\'
-						and c.id_user = ' . $s_id);
+						and c.id_user = ?', array($s_id));
 
 				if ($to)
 				{

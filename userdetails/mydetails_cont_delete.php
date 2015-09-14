@@ -13,11 +13,11 @@ if (!isset($_GET['id']))
 
 $id = $_GET['id'];
 
-$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.id as uid
+$contact = $db->fetchAssoc('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.id as uid
 	FROM type_contact tc, contact c, users u
 	WHERE c.id_type_contact = tc.id
 		AND c.id_user = u.id
-		AND c.id = ' . $id);
+		AND c.id = ?', array($id));
 
 if ($contact['uid'] != $s_id)
 {
@@ -35,7 +35,7 @@ if (!validate_request($id))
 
 if (isset($_POST['zend']))
 {
-	if ($db->Execute('delete from contact where id = ' . $id))
+	if ($db->delete('contact', array('id' => $id)))
 	{
 		$alert->success('Contact verwijderd.');
 	}
@@ -74,20 +74,20 @@ function validate_request($id)
 {
 	global $db;
 
-	$row = $db->GetRow('SELECT tc.*, c.id_user
+	$row = $db->fetchAssoc('SELECT tc.*, c.id_user
 		FROM type_contact tc, contact c
 		WHERE tc.id = c.id_type_contact
-			AND c.id = ' . $id);
+			AND c.id = ?', array($id));
 
 	if (!$row['protect'] && $row['abbrev'] != 'mail')
 	{
 		return true;
 	}
 
-	$count = $db->GetOne('SELECT COUNT(*)
+	$count = $db->fetchColumn('SELECT COUNT(*)
 		FROM contact
-		WHERE id_type_contact = ' . $row['id'] . '
-			AND id_user = ' . $row['id_user']);
+		WHERE id_type_contact = ?
+			AND id_user = ?', array($row['id'], $row['id_user']));
 
 	return ($count >= 2) ? true : false;
 }

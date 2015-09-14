@@ -7,7 +7,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $currency = readconfigfromdb('currency');
 
-$users = $db->GetAssoc(
+$users = $db->fetchAll(
 	'SELECT id, fullname, letscode,
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
@@ -15,6 +15,7 @@ $users = $db->GetAssoc(
 	FROM users
 	WHERE status IN (0, 1, 2, 5, 6)
 	ORDER BY letscode');
+assoc($users);
 
 list($to_letscode) = explode(' ', $_POST['to_letscode']);
 list($from_letscode) = explode(' ', $_POST['from_letscode']);
@@ -37,7 +38,7 @@ if ($_POST['zend'])
 	{
 		$password = hash('sha512', $password);
 
-		if ($password != $db->GetOne('select password from users where id = ' . $s_id))
+		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
 			$errors[] = 'Paswoord is niet juist.';
 		}
@@ -61,7 +62,7 @@ if ($_POST['zend'])
 		$to_one = ($to_letscode) ? true : false;
 		$letscode = ($to_one) ? $to_letscode : $from_letscode;
 
-		$one_uid = $db->GetOne('select id from users where letscode = \'' . $letscode . '\'');
+		$one_uid = $db->fetchColumn('select id from users where letscode = ?', array($letscode));
 
 		if (!$one_uid)
 		{
@@ -113,7 +114,7 @@ if ($_POST['zend'])
 		$errors[] = 'Geen geldig transactie id';
 	}
 
-	if ($db->GetOne('select id from transactions where transid = \'' . $transid . '\''))
+	if ($db->fetchColumn('select id from transactions where transid = ?', array($transid)))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
@@ -222,12 +223,13 @@ if ($_POST['zend'])
 				}
 			} 
 
-			$users = $db->GetAssoc(
+			$users = $db->fetchAll(
 				'SELECT id, fullname, letscode,
 					accountrole, status, saldo, minlimit, maxlimit, adate
 				FROM users
 				WHERE status IN (0, 1, 2, 5, 6)
 				ORDER BY letscode');
+			assoc($users);
 
 		}
 		else
@@ -241,7 +243,7 @@ $transid = '';
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-$letsgroup_id = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+$letsgroup_id = $db->fetchColumn('select id from letsgroups where apimethod = \'internal\'');
 
 $h1 = 'Automatische minimum limiet';
 $fa = 'arrows-v';

@@ -42,7 +42,7 @@ function get_all_transactions($user_id){
 	$query .= " FROM transactions, users  AS fromusers, users AS tousers";
 	$query .= " WHERE transactions.id_to = tousers.id";
 	$query .= " AND transactions.id_from = fromusers.id";
-	$query .= " AND (transactions.id_from = ".$user_id." OR transactions.id_to = ".$user_id.")";
+	$query .= " AND (transactions.id_from = ? OR transactions.id_to = ?)";
 
 	if (isset($trans_orderby)){
 		$query .= " ORDER BY transactions.".$trans_orderby. " ";
@@ -50,7 +50,7 @@ function get_all_transactions($user_id){
 	else {
 		$query .= " ORDER BY transactions.date DESC";
 	}
-	$transactions = $db->GetArray($query);
+	$transactions = $db->fetchAll($query, array($user_id, $user_id));
 	return $transactions;
 }
 

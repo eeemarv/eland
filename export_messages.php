@@ -61,9 +61,9 @@ function get_all_msgs(){
 	$query .= " FROM messages, users, categories ";
 	$query .= "  WHERE messages.id_user = users.id ";
 	$query .= " AND messages.id_category = categories.id";
-	$query .= " AND validity > '" .date("Y-m-d") ."'";
+	$query .= " AND validity > ?";
 	//print $query;
-	$messagerows = $db->GetArray($query);
+	$messagerows = $db->fetchAll($query, array(date("Y-m-d")));
 	return $messagerows;
 }
 

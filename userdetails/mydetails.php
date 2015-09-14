@@ -6,11 +6,11 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $user = readuser($s_id);
 
-$contacts = $db->GetArray('select c.*, tc.abbrev
+$contacts = $db->fetchAll('select c.*, tc.abbrev
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
-		and c.id_user = ' . $s_id . '
-	order by c.id');
+		and c.id_user = ?
+	order by c.id', array($s_id));
 
 $currency = readconfigfromdb('currency');
 

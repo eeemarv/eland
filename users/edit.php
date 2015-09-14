@@ -55,11 +55,11 @@ if ($_POST['zend'])
 	}
 	else if ($mode == 'new')
 	{
-		if ($db->GetOne('select c.value
+		if ($db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and c.value = \'' . $mail . '\''))
+				and c.value = ?', array($mail)))
 		{
 			$errors['mail'] = 'Het mailadres is al in gebruik.';
 		}
@@ -70,12 +70,12 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		if ($db->GetOne('SELECT c.value
+		if ($db->fetchColumn('SELECT c.value
 			FROM contact c, type_contact tc
 			WHERE c.id_user <> ' . $id . '
 				AND c.id_type_contact = tc.id
 				AND tc.abbrev = \'mail\'
-				AND c.value = \'' . $mail . '\''))
+				AND c.value = ?', array($mail)))
 		{
 			$errors['mail'] = 'Het email adres is al in gebruik.';
 		}
@@ -95,7 +95,9 @@ if ($_POST['zend'])
 
 	if (!count($errors))
 	{
-		$contact_types = $db->GetAssoc('SELECT abbrev, id FROM type_contact');
+		$contact_types = $db->fetchAll('SELECT abbrev, id FROM type_contact');
+
+		assoc($contact_types);
 
 		if ($mode == 'new')
 		{
@@ -175,10 +177,12 @@ if ($_POST['zend'])
 			{
 				$alert->success('Gebruiker aangepast.');
 
-				$stored_contacts = $db->GetAssoc('SELECT c.id, tc.abbrev, c.value, c.flag_public
+				$stored_contacts = $db->fetchAll('SELECT c.id, tc.abbrev, c.value, c.flag_public
 					FROM type_contact tc, contact c
 					WHERE tc.id = c.id_type_contact
 						AND c.id_user = ' . $id);
+
+				assoc($stored_contacts);
 
 				foreach ($contact as $value)
 				{
@@ -244,7 +248,7 @@ if ($_POST['zend'])
 }
 else
 {
-	$contact = $db->GetArray('select name, abbrev, \'\' as value, 0 as flag_public, 0 as id
+	$contact = $db->fetchAll('select name, abbrev, \'\' as value, 0 as flag_public, 0 as id
 		from type_contact
 		where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 
@@ -257,7 +261,7 @@ else
 			$contact_keys[$c['abbrev']] = $key;
 		}
 
-		$user = $db->GetRow('SELECT * FROM users WHERE id = ' . $id);
+		$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
 
 		$rs = $db->Execute('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
 			FROM type_contact tc, contact c
@@ -539,13 +543,13 @@ function validate_input($posted_list)
 		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
 	}
 
-	if ($db->GetOne('select letscode from users where letscode = \'' . $posted_list['letscode'] . '\''))
+	if ($db->fetchColumn('select letscode from users where letscode = ?', array($posted_list['letscode'])))
 	{
 		$error_list['letscode']= 'Letscode bestaat al!';
 	}
 
 	if (!empty($posted_list['login'])
-		&& $db->GetOne('select login from users where login = \'' . $posted_list['login'] . '\''))
+		&& $db->fetchColumn('select login from users where login = ?', array($posted_list['login'])))
 	{
 		$error_list['login'] = 'Login bestaat al!';
 	}

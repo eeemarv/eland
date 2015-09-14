@@ -32,16 +32,16 @@ function redirect_login($rootpath){
 function get_contacts($userid){
 	global $db;
 	$query = "SELECT * FROM contact ";
-	$query .= " WHERE id_user =".$userid;
-	$contactrows = $db->GetArray($query);
+	$query .= " WHERE id_user = ?";
+	$contactrows = $db->fetchAll($query, array($userid));
 	return $contactrows;
 }
 
 function get_va($userid){
 	global $db;
 	$query = "SELECT count(*) FROM messages ";
-	$query .= " WHERE id_user =".$userid;
-	$resultrow = $db->GetRow($query);
+	$query .= " WHERE id_user = ?";
+	$resultrow = $db->fetchAssoc($query, array($userid));
 	return $resultrow;
 }
 
@@ -51,7 +51,7 @@ function get_all_users($user_orderby){
 	$query .= "WHERE status <> 0  ";
 	$query .= "ORDER BY users.letscode ";
 
-	$userrows = $db->GetArray($query);
+	$userrows = $db->fetchAll($query);
 	return $userrows;
 }
 

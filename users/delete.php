@@ -19,7 +19,7 @@ if (!isset($_GET["id"]))
 
 $id = $_GET['id'];
 
-if ($db->GetOne('select id from transactions where id_to = ' . $id . ' or id_from = ' . $id))
+if ($db->fetchColumn('select id from transactions where id_to = ? or id_from = ?', array($id, $id)))
 {
 	$alert->error('Een gebruiker met transacties kan niet worden verwijderd.');
 	header('Location: overview.php');
@@ -51,7 +51,7 @@ if(isset($_POST['delete']))
 	{
 		$sha512 = hash('sha512', $password);
 
-		if ($sha512 == $db->GetOne('select password from users where id = ' . $s_id))
+		if ($sha512 == $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
 			$s3 = Aws\S3\S3Client::factory(array(
 				'signature'	=> 'v4',
@@ -74,14 +74,16 @@ if(isset($_POST['delete']))
 			{
 				log_event('','user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
-				$db->Execute('DELETE FROM messages WHERE id_user = \'' . $id . '\'');
+				$db->delete('messages', array('id_user' => $id));
 			}
 
 			// remove orphaned images.
-			$orphan_images = $db->GetAssoc('SELECT mp.id, mp."PictureFile"
+			$orphan_images = $db->fetchAll('SELECT mp.id, mp."PictureFile"
 				FROM msgpictures mp
 				LEFT JOIN messages m ON mp.msgid = m.id
 				WHERE m.id IS NULL');
+
+			assoc($orphan_images);
 
 			if (count($orphan_images))
 			{
@@ -92,27 +94,31 @@ if(isset($_POST['delete']))
 						'Key'    => $file,
 					));
 
-					$db->Execute('DELETE FROM msgpictures WHERE id = ' . $msgp_id);
+					$db->delete('msgpictures', array('id' => $msgp_id));
 				}
 			}
 
 			// update counts for each category
 
-			$offer_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+			$offer_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
 				FROM messages m, users u
 				WHERE  m.id_user = u.id
 					AND u.status IN (1, 2, 3)
 					AND msg_type = 1
 				GROUP BY m.id_category');
-				
-			$want_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+
+			assoc($offer_count);
+
+			$want_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
 				FROM messages m, users u
 				WHERE  m.id_user = u.id
 					AND u.status IN (1, 2, 3)
 					AND msg_type = 0
 				GROUP BY m.id_category');
 
-			$all_cat = $db->GetArray('SELECT id, stat_msgs_offers, stat_msgs_wanted
+			assoc($want_count);
+
+			$all_cat = $db->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
 				FROM categories
 				WHERE id_parent IS NOT NULL');
 
@@ -139,7 +145,7 @@ if(isset($_POST['delete']))
 			}
 
 			//delete contacts
-			$db->Execute('delete from contact where id_user = ' . $id);
+			$db->delete('contact', array('id_user' => $id));
 
 			//delete userimage from bucket;
 			if (isset($user['PictureFile']))
@@ -151,7 +157,7 @@ if(isset($_POST['delete']))
 			}
 
 			//finally, the user
-			$db->Execute('delete from users where id = ' . $id);
+			$db->delete('users', array('id' => $id));
 			$redis->expire($schema . '_user_' . $id, 0);
 
 			$alert->success('De gebruiker is verwijderd.');

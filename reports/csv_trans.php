@@ -18,42 +18,26 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 $transactions = get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_prefix);
-show_all_transactions($transactions);
 
-//////////////
+echo '"Datum","Van","Aan","Bedrag","Dienst"';
+echo "\r\n";
+foreach($transactions as $key => $value){
+echo "\"";
+		echo $value["datum"];
+echo "\",";
+echo "\"";
+		echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
+echo "\",";
+echo "\"";
+		echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
+echo "\",";
+echo "\"";
+		echo $value["amount"];
+echo "\",";
+echo "\"";
+		echo htmlspecialchars($value["description"],ENT_QUOTES);
+echo "\"";
 
-function get_user($id)
-{
-        global $db;
-        $query = "SELECT *";
-        $query .= " FROM users ";
-        $query .= " WHERE id='".$id."'";
-        $user = $db->GetRow($query);
-        return $user;
+		echo "\r\n";
 }
 
-function show_all_transactions($transactions){
-
-        //echo '"id","Creatiedatum","Transactiedatum","Van","Aan","Bedrag","Dienst","Ingebracht door"';
-	echo '"Datum","Van","Aan","Bedrag","Dienst"';
-        echo "\r\n";
-	foreach($transactions as $key => $value){
-		echo "\"";
-                echo $value["datum"];
-		echo "\",";
-		echo "\"";
-                echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
-		echo "\",";
-		echo "\"";
-                echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
-		echo "\",";
-		echo "\"";
-                echo $value["amount"];
-		echo "\",";
-		echo "\"";
-                echo htmlspecialchars($value["description"],ENT_QUOTES);
-		echo "\"";
-
-                echo "\r\n";
-        }
-}

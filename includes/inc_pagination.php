@@ -22,7 +22,7 @@ class pagination
 		$this->table = $param['table'] ?: '';
 		$this->base_url = $param['base_url'] ?: '';
 
-		$this->row_count = (int) $db->GetOne('select count(*) from ' . $this->table);
+		$this->row_count = (int) $db->fetchColumn('select count(*) from ' . $this->table);
 		$this->page_num = ceil($this->row_count / $this->limit);
 		$this->page = floor($this->start / $this->limit);
 

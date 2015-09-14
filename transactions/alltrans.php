@@ -38,7 +38,7 @@ $query .= ($asc) ? 'ASC ' : 'DESC ';
 
 $query .= $pagination->getSqlLimit();
 
-$transactions = $db->GetArray($query);
+$transactions = $db->fetchAll($query);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,

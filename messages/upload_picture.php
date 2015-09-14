@@ -20,7 +20,7 @@ $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 
 $sizelimit = 200;
 
-$msg = $db->GetArray('select id_user, msg_type from messages where id = ' . $msgid);
+$msg = $db->fetchAll('select id_user, msg_type from messages where id = ?', array($msgid));
 
 if (!($s_accountrole == 'admin' || $msg['id_user'] == $s_id))
 {

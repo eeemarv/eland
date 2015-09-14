@@ -68,7 +68,7 @@ $query .= " AND transactions.creator = cusers.id";
 	else {
 		$query .= " ORDER BY transactions.date DESC";
 	}
-	$transactions = $db->GetArray($query);
+	$transactions = $db->fetchAll($query);
 	return $transactions;
 }
 
@@ -92,7 +92,7 @@ function get_all_transactions_by_userid($userid,$trans_orderby){
 	else {
 		$query .= " ORDER BY transactions.date DESC";
 	}
-	$transactions = $db->GetArray($query);
+	$transactions = $db->fetchAll($query);
 	return $transactions;
 }
 

@@ -13,7 +13,7 @@ if(!$id)
 	exit;
 }
 
-$ct = $db->GetRow('select * from type_contact tc');
+$ct = $db->fetchAssoc('select * from type_contact tc');
 
 if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {
@@ -22,7 +22,7 @@ if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 	exit;
 }
 
-if ($db->GetOne('select id from contact where id_type_contact = ' . $id))
+if ($db->fetchColumn('select id from contact where id_type_contact = ?', array($id)))
 {
 	$alert->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
 	header('Location: ' . $rootpath . 'type_contact/overview.php');
@@ -31,7 +31,7 @@ if ($db->GetOne('select id from contact where id_type_contact = ' . $id))
 
 if(isset($_POST['zend']))
 {
-	if ($db->Execute('delete from type_contact where id = ' . $id))
+	if ($db->delete('type_contact', array('id' => $id))
 	{
 		$alert->success('Contact type verwijderd.');
 	}
@@ -59,4 +59,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-include($rootpath."includes/inc_footer.php");	
+include $rootpath . 'includes/inc_footer.php';	

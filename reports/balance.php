@@ -4,10 +4,12 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$users = $db->GetAssoc('select id, *
+$users = $db->fetchAll('select *
 	from users
 	where status in (1, 2)
 	order by letscode');
+
+assoc($users);
 
 if (isset($_GET['zend']))
 {
@@ -16,15 +18,19 @@ if (isset($_GET['zend']))
 
 	if ($date)
 	{
-		$out = $db->GetAssoc('select id_to, sum(amount)
+		$out = $db->fetchAll('select id_to, sum(amount)
 			from transactions
 			where date >= \'' . $date . '\'
 			group by id_to');
 
-		$in = $db->GetAssoc('select id_from, sum(amount)
+		assoc($out);
+
+		$in = $db->fetchAll('select id_from, sum(amount)
 			from transactions
 			where date >= \'' . $date . '\'
 			group by id_from');
+
+		assoc($in);
 
 		array_walk($users, function(&$user, $id) use ($out, $in){
 			$user['saldo'] += $in[$id];

@@ -12,7 +12,7 @@ if (!isset($letsgroup_id))
 	exit;
 }
 
-$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
+$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
 
 if (!$letsgroup)
 {
@@ -30,7 +30,7 @@ switch($letsgroup['apimethod'])
 		exit;
 
 	case 'internal':
-		$users = $db->GetArray(
+		$users = $db->fetchAll(
 			'SELECT letscode as c,
 				fullname as n,
 				extract(epoch from adate) as e,

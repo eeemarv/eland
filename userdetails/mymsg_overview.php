@@ -4,12 +4,12 @@ $rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 
-$msgs = $db->GetArray('select m.*,
+$msgs = $db->fetchAll('select m.*,
 		c.id as cid, c.fullname as cat
 	from messages m, categories c
 	where m.id_category = c.id
-		and m.id_user = ' . $s_id . '
-	order by id desc');
+		and m.id_user = ?
+	order by id desc', array($s_id));
 
 $top_buttons = '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
 $top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';

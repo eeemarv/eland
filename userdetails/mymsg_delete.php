@@ -12,8 +12,9 @@ if(empty($id))
 	exit;
 }
 
-if(isset($_POST['zend'])){
-	if ($db->Execute('DELETE FROM messages WHERE id = ' . $id . ' AND id_user = ' . $s_id))
+if(isset($_POST['zend']))
+{
+	if ($db->delete('messages', array('id' => $id, 'id_user' => $s_id)))
 	{
 		$alert->success('Vraag/aanbod verwijderd.');
 		header("Location:  mymsg_overview.php");
@@ -23,10 +24,12 @@ if(isset($_POST['zend'])){
 	$alert->error('Vraag/aanbod verwijderen mislukt.');
 }
 
+$h1 = 'Mijn Vraag of Aanbod verwijderen';
 
-include($rootpath."includes/inc_header.php");
-echo "<h1>Mijn Vraag & Aanbod verwijderen</h1>";
+include $rootpath  . 'includes/inc_header.php';
 $msg = get_msg($id);
+
+
 show_msg($msg);
 ask_confirmation($msg);
 
@@ -63,10 +66,10 @@ function get_msg($id){
 	$query .= " messages.cdate AS date, ";
 	$query .= " messages.validity AS valdate ";
 	$query .= " FROM messages, users, categories ";
-	$query .= " WHERE messages.id=" .$id;
+	$query .= " WHERE messages.id = ?";
 	$query .= " AND messages.id_category = categories.id ";
 	$query .= " AND messages.id_user = users.id ";
-	$msg = $db->GetRow($query);
+	$msg = $db->fetchAssoc($query, array($id));
 	return $msg;
 }
 

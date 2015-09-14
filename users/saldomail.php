@@ -20,7 +20,7 @@ if ($activate || $deactivate)
 	{
 		$sha512 = hash('sha512', $password);
 
-		if ($sha512 == $db->GetOne('select password from users where id = ' . $s_id))
+		if ($sha512 == $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
 			$bool = ($activate) ? 't' : 'f';
 			$de = ($activate) ? '' : 'de';

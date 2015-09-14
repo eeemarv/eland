@@ -46,10 +46,9 @@ if (isset($_POST['zend']))
 				),
 			));
 
-			$old = $db->GetOne('SELECT "PictureFile" FROM users WHERE id=' . $s_id);
+			$old = $db->fetchColumn('SELECT "PictureFile" FROM users WHERE id = ?', array($s_id));
 
-			$query = 'UPDATE users SET "PictureFile" =  \'' . $filename . '\' WHERE id = ' . $s_id;
-			$db->Execute($query);
+			$db->update('users', array('"PictureFile"' => $filename), array('id' => $s_id));
 
 			readuser($s_id, true);
 

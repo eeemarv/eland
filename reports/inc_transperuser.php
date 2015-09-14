@@ -33,19 +33,18 @@ function get_all_transactions($user_userid,$user_datefrom,$user_dateto,$user_pre
         	$query .= " transactions.cdate AS cdatum ";
 	        $query .= " FROM transactions, users  AS fromusers, users AS tousers";
 	        $query .= " WHERE transactions.id_to = tousers.id";
-                $query .= " AND transactions.id_from = fromusers.id";
-                $query .= " AND (transactions.id_from = " .$user_userid;
-                $query .= " OR transactions.id_to = " .$user_userid;
-                $query .= ")";
-        	$query .= " AND (transactions.date >= '" .$user_datefrom;
-        	$query .= "' AND transactions.date <= '" .$user_dateto;
-        	$query .= "')";
+			$query .= " AND transactions.id_from = fromusers.id";
+			$query .= " AND (transactions.id_from = ?";
+			$query .= " OR transactions.id_to = ?";
+			$query .= ")";
+        	$query .= " AND (transactions.date >= ?";
+        	$query .= " AND transactions.date <= ?";
+        	$query .= ")";
         	$query .= " ORDER BY transactions.date";
         }
 
 	//echo $query;
-        $transactions = $db->GetArray($query);
+        $transactions = $db->fetchAll($query, array($user_userid, $user_userid, $user_datefrom, $user_dateto));
         return $transactions;
 }
 
-?>

@@ -8,21 +8,21 @@ $currency = readconfigfromdb('currency');
 
 $user = readuser($s_id);
 
-$interletsq = $db->GetArray('select q.*, l.groupname
+$interletsq = $db->fetchAll('select q.*, l.groupname
 	from interletsq q, letsgroups l
-	where q.id_from = ' . $s_id . '
-		and q.letsgroup_id = l.id');
+	where q.id_from = ?
+		and q.letsgroup_id = l.id', array($s_id));
 
-$transactions = $db->GetArray('select t.*,
+$transactions = $db->fetchAll('select t.*,
 		fu.name as from_username,
 		tu.name as to_username,
 		fu.letscode as from_letscode,
 		tu.letscode as to_letscode
 	from transactions t, users fu, users tu
-	where (t.id_to = ' . $s_id . '
-		or t.id_from = ' . $s_id . ')
+	where (t.id_to = ?
+		or t.id_from = ?)
 		and t.id_to = tu.id
-		and t.id_from = fu.id');
+		and t.id_from = fu.id', array($s_id, $s_id));
 
 $top_buttons = '<a href="' .$rootpath . 'transactions/add.php" class="btn btn-success"';
 $top_buttons .= ' title="Nieuwe transactie toevoegen"><i class="fa fa-plus"></i>';

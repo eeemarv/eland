@@ -12,7 +12,9 @@ if (!$_GET["id"])
 
 $id = $_GET['id'];
 
-$cats = $db->GetAssoc('SELECT id, * FROM categories ORDER BY fullname');
+$cats = $db->fetchAll('SELECT id, * FROM categories ORDER BY fullname');
+
+assoc($cats);
 
 $child_count_ary = array();
 
@@ -93,8 +95,10 @@ echo '<div class="form-group">';
 echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
 echo '<div class="col-sm-10">';
 echo '<select class="form-control" id="id_parent" name="id_parent">';
-$parent_cats = array(0 => '-- Hoofdcategorie --');
-$parent_cats += $db->GetAssoc('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+$parent_cats = $db->fetchAll('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+assoc($parent_cats);
+$parent_cats = array(0 => '-- Hoofdcategorie --') + $parent_cats;
+
 $id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
 
 render_select_options($parent_cats, $id_parent);

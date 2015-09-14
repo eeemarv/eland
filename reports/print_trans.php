@@ -16,7 +16,7 @@ if($user_userid == 'ALL') {
 	$user['name'] = "Alle gebruikers";
 	$user['letscode'] = "Alle";
 } else {
-	$user = get_user($user_userid);
+	$user = readuser($user_userid);
 }
 echo "<p>Gebruiker: ";
 echo $user['name'];
@@ -80,15 +80,6 @@ function show_userselect($list_users,$posted_list)
 
 	echo '</div>';
 	echo '</div>';
-}
-
-function get_user($id){
-        global $db;
-        $query = "SELECT *";
-        $query .= " FROM users ";
-        $query .= " WHERE id='".$id."'";
-        $user = $db->GetRow($query);
-        return $user;
 }
 
 function show_all_transactions($transactions){

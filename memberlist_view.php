@@ -29,17 +29,17 @@ $currency = readconfigfromdb('currency');
 
 $user = readuser($id);
 
-$contacts = $db->GetArray('select c.*, tc.abbrev
+$contacts = $db->fetchAll('select c.*, tc.abbrev
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
-		and c.id_user = ' . $id . '
-		and c.flag_public = 1');
+		and c.id_user = ?
+		and c.flag_public = 1', array($id));
 
-$messages = $db->GetArray("SELECT *
+$messages = $db->fetchAll('SELECT *
 	FROM messages
-	where id_user = ".$id."
+	where id_user = ?
 		and validity > now()
-	order by cdate");
+	order by cdate', array($id));
 
 if (in_array($s_accountrole, array('admin', 'user')))
 {

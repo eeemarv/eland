@@ -71,7 +71,7 @@ $status_ary = array(
 
 $currency = readconfigfromdb('currency');
 
-$users = $db->GetAssoc(
+$users = $db->fetchAll(
 	'SELECT id, fullname, letscode,
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
@@ -79,6 +79,7 @@ $users = $db->GetAssoc(
 	FROM users
 	WHERE status IN (0, 1, 2, 5, 6)
 	ORDER BY letscode');
+assoc($users);
 
 list($to_letscode) = explode(' ', $_POST['to_letscode']);
 list($from_letscode) = explode(' ', $_POST['from_letscode']);
@@ -101,7 +102,7 @@ if ($_POST['zend'])
 	{
 		$password = hash('sha512', $password);
 
-		if ($password != $db->GetOne('select password from users where id = ' . $s_id))
+		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
 			$errors[] = 'Paswoord is niet juist.';
 		}
@@ -125,7 +126,7 @@ if ($_POST['zend'])
 		$to_one = ($to_letscode) ? true : false;
 		$letscode = ($to_one) ? $to_letscode : $from_letscode;
 
-		$one_uid = $db->GetOne('select id from users where letscode = \'' . $letscode . '\'');
+		$one_uid = $db->fetchColumn('select id from users where letscode = ?', array($letscode));
 
 		if (!$one_uid)
 		{
@@ -177,7 +178,7 @@ if ($_POST['zend'])
 		$errors[] = 'Geen geldig transactie id';
 	}
 
-	if ($db->GetOne('select id from transactions where transid = \'' . $transid . '\''))
+	if ($db->fetchColumn('select id from transactions where transid = ?', array($transid)))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
@@ -286,13 +287,13 @@ if ($_POST['zend'])
 				}
 			} 
 
-			$users = $db->GetAssoc(
+			$users = $db->fetchAll(
 				'SELECT id, fullname, letscode,
 					accountrole, status, saldo, minlimit, maxlimit, adate
 				FROM users
 				WHERE status IN (0, 1, 2, 5, 6)
 				ORDER BY letscode');
-
+			assoc($users);
 		}
 		else
 		{
@@ -305,18 +306,18 @@ $transid = generate_transid();
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-$letsgroup_id = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+$letsgroup_id = $db->fetchColumn('select id from letsgroups where apimethod = \'internal\'');
 
 if ($to_letscode)
 {
-	if ($to_fullname = $db->GetOne('select fullname from users where letscode = \'' . $to_letscode . '\''))
+	if ($to_fullname = $db->fetchColumn('select fullname from users where letscode = ?', array($to_letscode)))
 	{
 		$to_letscode .= ' ' . $to_fullname;
 	}
 }
 if ($from_letscode)
 {
-	if ($from_fullname = $db->GetOne('select fullname from users where letscode = \'' . $from_letscode . '\''))
+	if ($from_fullname = $db->fetchColumn('select fullname from users where letscode = ?', array($from_letscode)))
 	{
 		$from_letscode .= ' ' . $from_fullname;
 	}
@@ -600,19 +601,21 @@ function mail_mass_transaction($mail_ary)
 
 	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
 
-	$one_user = $db->GetRow('select u.id, u.fullname, u.letscode, c.value as mail
+	$one_user = $db->fetchAssoc('select u.id, u.fullname, u.letscode, c.value as mail
 		from users u, contact c, type_contact tc
-		where u.id = ' . $one_user_id . '
+		where u.id = ?
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'');
+			and tc.abbrev = \'mail\'', array($one_user_id));
 
-	$mailaddr = $db->GetAssoc('select u.id, c.value
+	$mailaddr = $db->fetchAll('select u.id, c.value
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'');
+
+	assoc($mailaddr);
 
 	$r = "\r\n";
 	$currency = readconfigfromdb('currency');
@@ -812,12 +815,12 @@ function mail_mass_transaction($mail_ary)
 
 	if ($one_user_id != $s_id)
 	{
-		$s_user = $db->GetRow('select u.fullname, c.value as mail
+		$s_user = $db->fetchAssoc('select u.fullname, c.value as mail
 			from users u, contact c, type_contact tc
-			where u.id = ' . $s_id . '
+			where u.id = ?
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
-				and tc.abbrev = \'mail\'');
+				and tc.abbrev = \'mail\'', array($s_id));
 		$to[] = array(
 			'name'	=> $s_user['fullname'],
 			'email' => $s_user['mail'],

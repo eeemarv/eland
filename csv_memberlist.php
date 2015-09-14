@@ -10,8 +10,8 @@ $q = 'SELECT id, letscode, fullname, postcode, saldo
 	FROM users
 	WHERE status IN (1, 2, 3, 4)
 		AND accountrole <> \'guest\'';
-$q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like \'' . $prefix_filterby . '%\'' : '';
-$userrows = $db->GetArray($q);
+$q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like ?%' : '';
+$userrows = $db->fetchAll($q, array($prefix_filterby));
 
 $user_date = date("Y-m-d");
 
@@ -23,28 +23,19 @@ header("Expires: 0");
 
 show_all_users($userrows);
 
-function get_contacts($userid){
+function get_contact($userid,$contact_type_id)
+{
 	global $db;
-	$query = "SELECT * FROM contact ";
-	$query .= " WHERE id_user =".$userid;
-	$contactrows = $db->GetArray($query);
-	return $contactrows;
+	return $db->fetchAssoc('select from contact where id_user = ? and id_type_contact = ?', array(
+		$userid, $contact_type_id));
 }
 
-function get_contact($userid,$contact_type_id){
-        global $db;
-        $query = "SELECT * FROM contact WHERE id_user = " .$userid;
-	$query .= " AND id_type_contact = " .$contact_type_id;
-	//$query .= " AND contact.flag_public = 1";
-        $contact = $db->GetRow($query);
-        return $contact;
-}
-
-function get_contact_types(){
+function get_contact_types()
+{
 	global $db;
         $query = "SELECT * FROM type_contact";
 	$query .= " ORDER BY id";
-	$contact_types = $db->GetArray($query);
+	$contact_types = $db->fetchAll($query);
         return $contact_types;
 }
 

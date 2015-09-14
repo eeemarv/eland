@@ -29,13 +29,13 @@ $query = 'SELECT t.amount, t.id_from, t.id_to,
 		t.real_from, t.real_to, t.date, t.description, 
 		u.id, u.name, u.letscode, u.accountrole, u.status 
 	FROM transactions t, users u
-	WHERE (t.id_to = ' . $user_id . ' OR t.id_from = ' . $user_id . ') 
+	WHERE (t.id_to = ? OR t.id_from = ?) 
 		AND (u.id = t.id_to OR u.id = t.id_from) 
-		AND u.id <> ' . $user_id . ' 
-		AND t.date >= \'' . $begin_date . '\' 
-		AND t.date <= \'' . $end_date . '\' 
+		AND u.id <> ? 
+		AND t.date >= ? 
+		AND t.date <= ? 
 	ORDER BY t.date DESC';
-$trans = $db->GetArray($query);
+$trans = $db->fetchAll($query, array($user_id, $user_id, $user_id, $begin_date, $end_date));
 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);

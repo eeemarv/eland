@@ -10,7 +10,7 @@ $hsh = ($_GET['hsh']) ?: '';
 $cid = ($_GET['cid']) ?: '';
 $cat_hsh = ($_GET['cat_hsh']) ?: '';
 
-$msgs = $db->GetArray('select m.*,
+$msgs = $db->fetchAll('select m.*,
 		u.letscode, u.fullname, u.id as uid, u.postcode
 	from messages m, users u
 	where m.id_user = u.id

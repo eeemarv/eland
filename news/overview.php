@@ -11,7 +11,7 @@ if($s_accountrole != "admin"){
 }
 
 $query .= " ORDER BY cdate DESC";
-$newsitems = $db->GetArray($query);
+$newsitems = $db->fetchAll($query);
 
 if($s_accountrole == 'user' || $s_accountrole == 'admin')
 {

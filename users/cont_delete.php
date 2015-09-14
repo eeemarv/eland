@@ -21,11 +21,11 @@ if ($_POST['zend'])
 	exit;
 }
 
-$contact = $db->GetRow('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.fullname, u.letscode
+$contact = $db->fetchAssoc('SELECT tc.abbrev, c.value, c.comments, c.flag_public, u.fullname, u.letscode
 	FROM type_contact tc, contact c, users u
 	WHERE c.id_type_contact = tc.id
 		AND c.id_user = u.id
-		AND c.id = ' . $cid);
+		AND c.id = ?', array($cid));
 
 $h1 = 'Contact verwijderen?';
 

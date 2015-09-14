@@ -15,10 +15,10 @@ header('Content-Transfer-Encoding: binary');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$users = $db->GetArray('SELECT *
+$users = $db->fetchAll('SELECT *
 	FROM users
 	WHERE status in (1, 2) 
-		and users.accountrole <> 'guest' order by letscode');
+		and users.accountrole <> \'guest\' order by letscode');
 
 echo '"Letscode","Naam","Saldo"';
 echo "\r\n";

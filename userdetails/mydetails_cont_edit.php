@@ -13,7 +13,7 @@ if(!isset($id))
 	exit;
 }
 
-$contact = $db->GetRow('SELECT * FROM contact WHERE id=' . $id);
+$contact = $db->fetchAssoc('SELECT * FROM contact WHERE id = ?', array($id));
 
 if ($contact['id_user'] != $s_id)
 {
@@ -53,7 +53,9 @@ if(isset($_POST["zend"]))
 	}
 }
 
-$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+
+assoc($tc);
 
 $h1 = 'Contact aanpassen';
 

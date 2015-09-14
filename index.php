@@ -20,16 +20,16 @@ $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$news = $db->GetArray('select * from news where approved = True order by cdate desc');
+$news = $db->fetchAll('select * from news where approved = True order by cdate desc');
 
 $newusertreshold = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400);
 
-$newusers = $db->GetArray('select id, letscode, fullname
+$newusers = $db->fetchAll('select id, letscode, fullname
 	from users
 	where status = 1
-		and adate > \'' . $newusertreshold . '\'');
+		and adate > ?', array($newusertreshold));
 
-$msgs = $db->GetArray('SELECT m.*,
+$msgs = $db->fetchAll('SELECT m.*,
 		u.id AS uid,
 		u.fullname,
 		u.letscode,
@@ -50,10 +50,10 @@ include $rootpath . 'includes/inc_header.php';
 
 if($s_accountrole == 'admin')
 {
-	$version = $db->GetOne('select value from parameters where parameter = \'schemaversion\'');
+	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 	$db_update = ($version == $schemaversion) ? false : true;
-	$default_config = $db->GetOne('select setting from config where "default" = True');
-	$group_internal = $db->GetOne('select id from letsgroups where apimethod = \'internal\'');
+	$default_config = $db->fetchColumn('select setting from config where "default" = True');
+	$group_internal = $db->fetchColumn('select id from letsgroups where apimethod = \'internal\'');
 
 	if ($db_update || $default_config || !$group_internal)
 	{

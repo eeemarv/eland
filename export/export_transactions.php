@@ -8,7 +8,7 @@ $user_userid = $_GET["userid"];
 $user_datefrom = $_GET["datefrom"];
 $user_dateto = $_GET["dateto"];
 
-$transactions = $db->GetArray('select 
+$transactions = $db->fetchAll('select 
 		t.transid, 
 		t.description,
 		fu.name AS from_name, tu.name AS to_name,

@@ -4,7 +4,7 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$groups = $db->GetArray('SELECT * FROM letsgroups');
+$groups = $db->fetchAll('SELECT * FROM letsgroups');
 
 $top_buttons = '<a href="' . $rootpath . 'interlets/edit.php?mode=add" class="btn btn-success"';
 $top_buttons .= ' title="Groep toevoegen"><i class="fa fa-plus"></i>';

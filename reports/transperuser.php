@@ -14,7 +14,7 @@ $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_
 
 include $rootpath . 'includes/inc_header.php';
 
-include("inc_transperuser.php");
+include 'inc_transperuser.php';
 
 $trans_orderby = $_GET["trans_orderby"];
 
@@ -36,7 +36,7 @@ else
 	$posted_list["dateto"] = $year ."-12-31";
 }
 
-$list_users = $users = $db->GetArray('SELECT *
+$list_users = $users = $db->fetchAll('SELECT *
 		FROM users
 		WHERE status in (1, 2) 
 			and users.accountrole <> \'guest\' order by letscode');
@@ -108,7 +108,7 @@ function show_userselect($list_users,$posted_list)
 	echo "<select name='prefix'>\n";
 
 	echo "<option value='ALL'>ALLE</option>";
-	$list_prefixes = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
+	$list_prefixes = $db->fetchAll('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
 	foreach ($list_prefixes as $key => $value)
 	{
 		echo "<option value='" .$value["prefix"] ."'>" .$value["shortname"] ."</option>";

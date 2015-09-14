@@ -9,7 +9,7 @@ $location = $_GET['location'];
 
 if ($letsgroup_id)
 {
-	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
+	$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
 
 	$err_group = $letsgroup['groupname'] . ': ';
 
@@ -44,7 +44,7 @@ if ($letsgroup_id)
 	}
 }
 
-$letsgroups = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod <> \'internal\'');
+$letsgroups = $db->fetchAll('SELECT * FROM letsgroups WHERE apimethod <> \'internal\'');
 
 $top_buttons = '';
 

@@ -5,7 +5,9 @@ $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_form.php';
 
-$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+
+assoc($tc);
 
 if(isset($_POST['zend']))
 {

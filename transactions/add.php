@@ -18,18 +18,24 @@ if (isset($_POST['zend']))
 	$transaction['date'] = ($_POST['date']) ?: date('Y-m-d H:i:s');
 	$letsgroup_id = $_POST['letsgroup_id'];
 
-	$letsgroup = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $letsgroup_id);
+	$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
 
 	if (!isset($letsgroup))
 	{
 		$alert->error('Letsgroep niet gevonden.');
 	}
 
-	$where = ($s_accountrole == 'user') ? 'id = ' . $s_id : 'letscode = \'' . $letscode_from . '\'';
-	$fromuser = $db->GetRow('SELECT * FROM users WHERE ' . $where);
+	if ($s_accountrole == 'user')
+	{
+		$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($s_id));
+	}
+	else
+	{
+		$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_from));		
+	}
 
 	$letscode_touser = ($letsgroup['apimethod'] == 'internal') ? $letscode_to : $letsgroup['localletscode'];
-	$touser = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $letscode_touser . '\'');
+	$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_touser));
 
 	$transaction['id_from'] = $fromuser['id'];
 	$transaction['id_to'] = $touser['id'];
@@ -179,11 +185,11 @@ else
 
 	if ($mid)
 	{
-		$row = $db->GetRow('SELECT
+		$row = $db->fetchAssoc('SELECT
 				m.content, m.amount, u.letscode, u.fullname
 			FROM messages m, users u
 			WHERE u.id = m.id_user
-				AND m.id = ' . $mid);
+				AND m.id = ?', array($mid));
 		$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['fullname'];
 		$transaction['description'] =  '#m' . $mid . ' ' . $row['content'];
 		$transaction['amount'] = $row['amount'];
@@ -201,10 +207,12 @@ else
 	}
 }
 
-$internal_letsgroup_prefixes = $db->GetAssoc('SELECT id, prefix
+$internal_letsgroup_prefixes = $db->fetchAll('SELECT id, prefix
 	FROM letsgroups
 	WHERE apimethod = \'internal\'
 	ORDER BY prefix asc');
+
+assoc($internal_letsgroup_prefixes);
 
 foreach ($internal_letsgroup_prefixes as $letsgroup_id => $letsgroup_prefix)
 {
@@ -230,7 +238,7 @@ $includejs = '<script src="' . $cdn_typeahead . '"></script>
 $user = readuser($s_id);
 $balance = $user['saldo'];
 
-$letsgroups = $db->getArray('SELECT id, groupname, url FROM letsgroups');
+$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups');
 
 $currency = readconfigfromdb('currency');
 

@@ -12,13 +12,9 @@ if(isset($_POST["zend"]))
 		'version'	=> '2006-03-01',
 	));
 
-	// First, grab the filename and delete the file after clearing the field
-	$q1 = "SELECT \"PictureFile\" FROM users WHERE id=" . $s_id;
-	$file = $db->GetOne($q1);
+	$file = $db->fetchColumn('select "PictureFile" from users where id = ?', array($s_id));
 
-	// Clear the PictureFile field
-	$query = "UPDATE users SET \"PictureFile\" = NULL WHERE id=" .$s_id;
-	$db->Execute($query);
+	$db->update('users', array('"PictureFile"' => null), array('id' => $s_id));
 
 	if(!empty($file)){
 		$result = $s3->deleteObject(array(

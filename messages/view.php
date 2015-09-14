@@ -19,20 +19,20 @@ if(!isset($msgid))
 	exit;
 }
 
-$message = $db->GetRow('SELECT m.*,
+$message = $db->fetchAssoc('SELECT m.*,
 		c.id as cid,
 		c.fullname as catname
 	FROM messages m, categories c
-	WHERE m.id = ' . $msgid . '
-		AND c.id = m.id_category');
+	WHERE m.id = ?
+		AND c.id = m.id_category', array($msgid));
 
 $user = readuser($message['id_user']);
 
-$to = $db->GetOne('select c.value
+$to = $db->fetchColumn('select c.value
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
-		and c.id_user = ' . $user['id'] . '
-		and tc.abbrev = \'mail\'');
+		and c.id_user = ?
+		and tc.abbrev = \'mail\'', array($user['id']));
 
 $balance = $user['saldo'];
 
@@ -98,17 +98,17 @@ else if ($_POST['zend'])
 
 	$me = readuser($s_id);
 
-	$from = $db->GetOne('select c.value
+	$from = $db->fetchColumn('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
-			and c.id_user = ' . $s_id . '
-			and tc.abbrev = \'mail\'');
+			and c.id_user = ?
+			and tc.abbrev = \'mail\'', array($s_id));
 
-	$my_contacts = $db->GetArray('select c.value, tc.abbrev
+	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from contact c, type_contact tc
 		where c.flag_public = 1
-			and c.id_user = ' . $s_id . '
-			and c.id_type_contact = tc.id');
+			and c.id_user = ?
+			and c.id_type_contact = tc.id', array($s_id));
 
 	$va = ($message['msg_type']) ? 'aanbod' : 'vraag';
 
@@ -150,16 +150,16 @@ else if ($_POST['zend'])
 	}
 }
 
-$msgpictures = $db->GetArray('select * from msgpictures where msgid = ' . $msgid);
+$msgpictures = $db->fetchAll('select * from msgpictures where msgid = ?', array($msgid));
 $currency = readconfigfromdb('currency');
 
 $title = $message['content'];
 
-$contacts = $db->GetArray('select c.*, tc.abbrev
+$contacts = $db->fetchAll('select c.*, tc.abbrev
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
-		and c.id_user = ' . $user['id'] . '
-		and c.flag_public = 1');
+		and c.id_user = ?
+		and c.flag_public = 1', array($user['id']));
 
 $includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 	<script src="' . $cdn_jquery_ui_widget . '"></script>

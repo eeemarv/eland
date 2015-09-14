@@ -16,14 +16,15 @@ $end_unix = time();
 $begin_unix = $end_unix - ($days * 86400);
 $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 
-$balance = $db->GetAssoc('select id, saldo from users');
+$balance = $db->fetchAll('select id, saldo from users');
+assoc($balance);
 $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
 $acc = array_map(function (){ return 0; }, $balance);
 
-$trans = $db->GetArray('select id_to, id_from, amount, date
+$trans = $db->fetchAll('select id_to, id_from, amount, date
 	from transactions
-	where date >= \'' . $begin . '\'
-	order by date desc');
+	where date >= ?
+	order by date desc', array($begin));
 	
 foreach ($trans as $t)
 {

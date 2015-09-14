@@ -13,7 +13,7 @@ if(empty($id)){
 
 if(isset($_POST['zend']))
 {
-	if($db->Execute('DELETE FROM letsgroups WHERE id = ' . $id))
+	if($db->delete('letsgroups', array('id' => $id)))
 	{
 		$alert->success('Letsgroup verwijderd.');
 		header('Location: ' . $rootpath . 'interlets/overview.php');
@@ -22,7 +22,7 @@ if(isset($_POST['zend']))
 
 	$alert->error('Letsgroup niet verwijderd.');
 }
-$groupname = $db->GetOne('SELECT groupname FROM letsgroups WHERE id = ' . $id);
+$groupname = $db->fetchColumn('SELECT groupname FROM letsgroups WHERE id = ?', array($id));
 
 $h1 = 'Letsgroep verwijderen: ' . $groupname;
 $fa = 'share-alt';

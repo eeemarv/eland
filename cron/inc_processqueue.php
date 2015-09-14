@@ -9,7 +9,7 @@ function processqueue()
 {
 	global $db;
 	echo "Running eLAS Interlets System\n\n";
-	$transactions = $db->GetArray('SELECT * FROM interletsq');
+	$transactions = $db->fetchAll('SELECT * FROM interletsq');
 
 	$systemtag = readconfigfromdb("systemtag");
 
@@ -27,7 +27,7 @@ function processqueue()
 
 		echo "Processing transaction $transid\t";
 
-		$myletsgroup = $db->GetRow('select * from letsgroups where id = ' . $letsgroup_id);
+		$myletsgroup = $db->fetchAssoc('select * from letsgroups where id = ?', array($letsgroup_id));
 
 		$myuser = readuser($value['id_from']);
 		$real_from = $myuser["fullname"] ."(" .$myuser["letscode"] .")";
@@ -146,7 +146,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	$posted_list["description"] = $description;
 	$posted_list["id_from"] = $id_from;
 	//Lookup id_to first
-	$to_user = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $myletsgroup['localletscode'] . '\'');
+	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($myletsgroup['localletscode']));
 
 	$posted_list["id_to"] = $to_user["id"];
 	//Real_to has to be set by a soap call

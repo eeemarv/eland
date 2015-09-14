@@ -11,7 +11,7 @@ if (!isset($_GET['id']))
 
 $id = $_GET['id'];
 
-$group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
+$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($id));
 
 $top_buttons = '<a href="' . $rootpath . 'interlets/edit.php?mode=new" class="btn btn-success"';
 $top_buttons .= ' title="Letsgroep toevoegen"><i class="fa fa-plus"></i>';

@@ -4,7 +4,7 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$cats = $db->GetArray('SELECT * FROM categories ORDER BY fullname');
+$cats = $db->fetchAll('SELECT * FROM categories ORDER BY fullname');
 
 $child_count_ary = array();
 

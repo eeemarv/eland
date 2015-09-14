@@ -11,38 +11,37 @@ if (!isset($_GET['id']))
 
 $id = $_GET['id'];
 
-$user = $db->GetRow('SELECT *
+$user = $db->fetchAssoc('SELECT *
 	FROM users
-	WHERE id = ' . $id);
+	WHERE id = ?', array($id));
 
-$contacts = $db->GetArray('select c.*, tc.abbrev
+$contacts = $db->fetchAll('select c.*, tc.abbrev
 	from contact c, type_contact tc
 	where c.id_type_contact = tc.id
-		and c.id_user = ' . $id);
+		and c.id_user = ?', array($id));
 
-$messages = $db->GetArray('SELECT *
+$messages = $db->fetchAll('SELECT *
 	FROM messages
-	where id_user = ' . $id . '
+	where id_user = ?
 		and validity > now()
-	order by cdate');
+	order by cdate', array($id));
 
-$transactions = $db->GetArray('select t.*,
+$transactions = $db->fetchAll('select t.*,
 		fu.name as from_username,
 		tu.name as to_username,
 		fu.letscode as from_letscode,
 		tu.letscode as to_letscode
 	from transactions t, users fu, users tu
-	where (t.id_to = ' . $id . '
-		or t.id_from = ' . $id . ')
+	where (t.id_to = ?
+		or t.id_from = ?)
 		and t.id_to = tu.id
-		and t.id_from = fu.id');
-
+		and t.id_from = fu.id', array($id, $id))
 $currency = readconfigfromdb('currency');
 
-$trans_en = ($db->GetOne('select id
+$trans_en = ($db->fetchColumn('select id
 	from transactions
-	where id_to = ' . $id . '
-		or id_from = ' . $id)) ? true : false;
+	where id_to = ?
+		or id_from = ?', array($id, $id))) ? true : false;
 
 $includejs = '<script type="text/javascript">var user_id = ' . $id . ';
 	var user_link_location = \'' . $rootpath . 'users/view.php?id=\'; </script>

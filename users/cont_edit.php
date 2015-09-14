@@ -34,10 +34,11 @@ if(isset($_POST["zend"])){
 }
 else
 {
-	$contact = $db->GetRow('SELECT * FROM contact WHERE id = ' . $cid);
+	$contact = $db->fetchAssoc('SELECT * FROM contact WHERE id = ?', array($cid));
 }
 
-$tc = $db->GetAssoc('SELECT id, name FROM type_contact');
+$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+assoc($tc);
 $user = readuser($uid);
 
 $h1 = 'Contact aanpassen';
@@ -101,18 +102,18 @@ include $rootpath . 'includes/inc_footer.php';
 
 ////////////////
 
-function validate_input($contact){
+function validate_input($contact)
+{
 	global $db;
 	$error_list = array();
-	if (empty($contact["value"]) || (trim($contact["value"]) == "")){
-		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
+	if (empty($contact["value"]) || (trim($contact["value"]) == ""))
+	{
+		$error_list[] = 'Vul waarde in!';
 	}
 
-	$query =" SELECT * FROM type_contact ";
-	$query .=" WHERE  id = '".$contact["id_type_contact"]."' ";
-	$result = $db->GetArray($query);
-	if( count($result)  == 0 ){
-		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong> </font>";
+	if (!$db->fetchColumn('select id from type_contact where id = ?', array($contact['id_type_contact'])))
+	{
+		$error_list[]= 'Contact type bestaat niet!';
 	}
 
 	return $error_list;

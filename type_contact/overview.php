@@ -4,11 +4,12 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$types = $db->GetArray('select * from type_contact tc');
+$types = $db->fetchAll('select * from type_contact tc');
 
-$contact_count = $db->GetAssoc('select id_type_contact, count(id)
+$contact_count = $db->fetchAll('select id_type_contact, count(id)
 	from contact
 	group by id_type_contact');
+assoc($contact_count);
 
 $top_buttons = '<a href="' . $rootpath . 'type_contact/add.php" class="btn btn-success"';
 $top_buttons .= ' title="Contact type toevoegen"><i class="fa fa-plus"></i>';

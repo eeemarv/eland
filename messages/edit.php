@@ -24,10 +24,10 @@ if ($_POST['zend'])
 	{
 		list($user_letscode) = explode(' ', $_POST['user_letscode']);
 		$user_letscode = trim($user_letscode);
-		$user = $db->GetRow('select *
+		$user = $db->fetchAssoc('select *
 			from users
-			where letscode = \'' . $user_letscode . '\'
-				and status in (1, 2)');
+			where letscode = ?
+				and status in (1, 2)', array($user_letscode));
 		if (!$user)
 		{
 			$error = 'Ongeldige letscode.' . $user_letscode;
@@ -92,10 +92,10 @@ if ($_POST['zend'])
 }
 else if ($mode == 'edit' && $id)
 {
-	$msg =  $db->GetRow('select m.*,
+	$msg =  $db->fetchAssoc('select m.*,
 		m."Description" as description
 		from messages m
-		where m.id = ' . $id);
+		where m.id = ?', array($id));
 	$msg['description'] = $msg['Description'];
 	unset($msg['Description']);
 	$msg['validity'] = reverse_count_validity($msg['validity']);
@@ -124,12 +124,15 @@ else if ($mode == 'new')
 	$user_letscode = $user['letscode'] . ' ' . $user['fullname'];
 }
 
-$letsgroup_id = $db->GetOne('SELECT id
+$letsgroup_id = $db->fetchColumn('SELECT id
 	FROM letsgroups
 	WHERE apimethod = \'internal\'');
 
-$cat_list = array('' => '') +
-	$db->GetAssoc('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
+$cat_list = $db->fetchAll('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
+
+assoc($cat_list);
+
+$cat_list = array('' => '') + $cat_list;
 
 $currency = readconfigfromdb("currency");
 
@@ -253,7 +256,7 @@ function validate_input($msg)
 	{
 		$error_list["content"] = "Vul inhoud in!";
 
-		if(!$db->GetOne('select id from categories where id = ' . $msg['id_category']))
+		if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
 		{
 			$error_list["id_category"]=">Categorie bestaat niet!";
 		}

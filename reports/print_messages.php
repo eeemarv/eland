@@ -7,7 +7,8 @@ require_once($rootpath."includes/inc_default.php");
 $msg_type = $_GET["msg_type"];
 $id_category = $_GET["id_category"];
 
-$catname = get_cat_title($id_category);
+$catname = $db->fetchColumn('select fullname from categories where id = ?', array($id_category));
+
 show_ptitle($catname, $msg_type);
 $messagerows = get_all_msgs($msg_type, $id_category);
 show_all_msgs($messagerows, $s_accountrole);
@@ -27,16 +28,8 @@ function show_ptitle($catname, $type)
 function get_cats(){
         global $db;
         $query = "SELECT * FROM categories WHERE leafnote = 1 ORDER BY fullname";
-        $list_cats = $db->GetArray($query);
+        $list_cats = $db->fetchAll($query);
         return $list_cats;
-}
-
-function get_cat_title($cat_id){
-        global $db;
-        $query = "SELECT fullname FROM categories WHERE id = $cat_id";
-        $cat = $db->GetRow($query);
-        $catname = $cat["fullname"];
-        return $catname;
 }
 
 function chop_string($content, $maxsize){
@@ -120,9 +113,9 @@ function get_all_msgs($msg_type, $id_category){
 	$query .= "  WHERE messages.id_user = users.id ";
 	$query .= " AND messages.id_category = categories.id";
 
-	$query .= " AND msg_type = " .$msg_type;
-	$query .= " AND messages.id_category = " .$id_category;
+	$query .= " AND msg_type = ?";
+	$query .= " AND messages.id_category = ?";
 
-	$messagerows = $db->GetArray($query);
+	$messagerows = $db->fetchAll($query, array($msg_type, $id_category));
 	return $messagerows;
 }

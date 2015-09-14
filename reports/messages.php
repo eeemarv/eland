@@ -12,7 +12,7 @@ if (isset($_GET["zend"]))
 	$posted_list = array();
 	$posted_list["msg_type"] = $_GET["msg_type"];
 	$posted_list["id_category"] = $_GET["id_category"];
-	$catname = get_cat_title($posted_list["id_category"]);
+	$catname = $db->fetchColumn('select fullname from categories where id = ?', array($id_category));
 	$posted_list["prefix"] = $_GET["prefix"];
 }
 else
@@ -56,16 +56,8 @@ function show_printversion($rootpath, $msg_type, $id_category){
 function get_cats(){
 	global $db;
 	$query = "SELECT * FROM categories WHERE leafnote = 1 ORDER BY fullname";
-	$list_cats = $db->GetArray($query);
+	$list_cats = $db->fetchAll($query);
 	return $list_cats;
-}
-
-function get_cat_title($cat_id){
-	global $db;
-	$query = "SELECT fullname FROM categories WHERE id = $cat_id";
-	$cat = $db->GetRow($query);
-	$catname = $cat["fullname"];
-        return $catname;
 }
 
 function chop_string($content, $maxsize){
@@ -116,7 +108,7 @@ function show_all_msgs($messagerows, $s_accountrole, $cat_list)
 
 	echo "<option value='ALL'>ALLE</option>";
 
-	$list_prefixes = $db->GetArray('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
+	$list_prefixes = $db->fetchAll('SELECT * FROM letsgroups WHERE apimethod = \'internal\' AND prefix IS NOT NULL');
 
 	foreach ($list_prefixes as $key => $value)
 	{ 
@@ -226,8 +218,8 @@ function get_all_msgs($posted_list){
 	$query .= "  WHERE messages.id_user = users.id ";
 	$query .= " AND messages.id_category = categories.id";
 
-	$query .= " AND msg_type = " .$posted_list["msg_type"];
-	$query .= " AND messages.id_category = " .$posted_list["id_category"];
+	$query .= " AND msg_type = ?";
+	$query .= " AND messages.id_category = ?";
 
 	#Add subgroup filtering
 	$prefix_filterby = $posted_list["prefix"];
@@ -235,7 +227,7 @@ function get_all_msgs($posted_list){
 		 $query .= " AND users.letscode like '" .$prefix_filterby ."%'";
 	}
 
-	$messagerows = $db->GetArray($query);
+	$messagerows = $db->fetchAll($query, array($posted_list["msg_type"], $posted_list["id_category"]));
 	return $messagerows;
 }
 

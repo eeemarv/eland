@@ -5,7 +5,7 @@ $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
 // exclude plaza stuff
-$config = $db->GetArray('SELECT * FROM config where category not like \'plaza%\' ORDER BY category, setting');
+$config = $db->fetchAll('SELECT * FROM config where category not like \'plaza%\' ORDER BY category, setting');
 
 $h1 = 'Instellingen';
 $fa = 'gears';

@@ -140,15 +140,29 @@ $soapversion = 1200;
 $restversion = 1;
 
 // database connection
-$db = NewADOConnection(getenv('DATABASE_URL'));
 
-$db->Execute('set search_path to ' . (($schema) ?: 'public'));
+$config = new \Doctrine\DBAL\Configuration();
 
-$db->SetFetchMode(ADODB_FETCH_ASSOC);
+$db = \Doctrine\DBAL\DriverManager::getConnection(array(
+	'url' => getenv('DATABASE_URL'),
+), $config);
 
-if(getenv('ELAS_DB_DEBUG'))
+$db->exec('set search_path to ' . ($schema) ?: 'public');
+
+function assoc(&$ary)
 {
-	$db->debug = true;
+	if (!is_array($ary))
+	{
+		return;
+	}
+
+	$in = $ary;
+	$ary = array();
+
+	foreach ($in as $k => $v)
+	{
+		$ary[$v[0]] = (sizeof($v) > 2) ? $v : $v[1];
+	}
 }
 
 require_once $rootpath . 'includes/inc_dbconfig.php';

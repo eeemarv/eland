@@ -81,7 +81,7 @@ else
 {
 	if ($mode == 'edit' && $id)
 	{
-		$news = $db->GetRow('SELECT * FROM news WHERE id = ' . $id);
+		$news = $db->fetchAssoc('SELECT * FROM news WHERE id = ?', array($id));
 		list($news['itemdate']) = explode(' ', $news['itemdate']);
 	}
 	else

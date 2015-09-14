@@ -15,7 +15,7 @@ if(!isset($id))
 
 if(isset($_POST['zend']))
 {
-	if ($db->Execute('DELETE FROM apikeys WHERE id=' .$id))
+	if ($db->delete('apikeys', array('id' => $id))
 	{
 		$alert->success('Apikey verwijderd.');
 		header('Location: ' . $rootpath . 'apikeys/overview.php');
@@ -24,7 +24,7 @@ if(isset($_POST['zend']))
 	$alert->error('Apikey niet verwijderd.');
 }
 
-$apikey = $db->GetRow('SELECT * FROM apikeys WHERE id = ' . $id);
+$apikey = $db->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', array($id));
 
 $h1 = 'Apikey verwijderen?';
 $fa = 'key';

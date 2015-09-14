@@ -12,13 +12,13 @@ if (!isset($_GET['id']))
 }
 
 $id = $_GET["id"];
-$transaction = $db->GetRow('select t.*,
+$transaction = $db->fetchAssoc('select t.*,
 	fu.letscode as from_letscode, fu.fullname as from_fullname,
 	tu.letscode as to_letscode, tu.fullname as to_fullname
 	from transactions t, users fu, users tu
-	where t.id = ' . $id . '
+	where t.id = ?
 		and fu.id = t.id_from
-		and tu.id = t.id_to');
+		and tu.id = t.id_to', array($id));
 
 $currency = readconfigfromdb('currency');
 

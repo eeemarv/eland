@@ -12,9 +12,9 @@ $q = 'SELECT id, letscode, fullname, postcode, saldo
 	FROM users
 	WHERE status IN (1, 2)
 		AND accountrole <> \'guest\'';
-$q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like \'' . $prefix_filterby . '%\'' : '';
+$q .= ($prefix_filterby <> 'ALL') ? ' AND users.letscode like ?%' : '';
 $q .= ' ORDER BY letscode';
-$userrows = $db->GetArray($q);
+$userrows = $db->fetchAll($q, array($prefix_filterby));
 
 show_all_users($userrows,$configuration);
 show_legend();
@@ -41,25 +41,21 @@ function show_ptitle(){
 	echo " </h1>";
 }
 
-function get_contacts($userid){
-	global $db;
-	$query = "SELECT * FROM contact ";
-	$query .= " WHERE id_user =".$userid;
-	$contactrows = $db->GetArray($query);
-	return $contactrows;
-}
-
-function check_timestamp($cdate,$agelimit){
+function check_timestamp($cdate,$agelimit)
+{
         // agelimit is the time after which it expired
         $now = time();
         // age should be converted to seconds
         $limit = $now - ($agelimit * 60 * 60 * 24);
         $timestamp = strtotime($cdate);
 
-        if($limit < $timestamp) {
-                return 1;
-        } else {
-                return 0;
+        if($limit < $timestamp)
+        {
+			return 1;
+        }
+        else
+        {
+			return 0;
         }
 }
 
@@ -113,7 +109,8 @@ function show_all_users($userrows,$configuration){
 
 		echo "</td>\n";
 		$userid = $value["id"];
-		$contactrows = get_contacts($userid);
+		$contactrows = $db->fetchAll('select * from contact where id_user = ?', array($userid));
+		
 		echo "<td valign='top'>";
                         foreach($contactrows as $key2 => $value2){
                                 if ($value2["id_type_contact"] == 4 && ($value2["flag_public"] == 1 || $s_accountrole == "admin")){

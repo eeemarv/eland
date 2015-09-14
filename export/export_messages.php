@@ -4,11 +4,11 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$messages = $db->GetArray('select m.*,
+$messages = $db->fetchAll('select m.*,
 	u.name, u.letscode
 	from messages m, users u
 	where m.id_user = u.id
-		and validity > \'' . gmdate('Y-m-d H:i:s') . '\'');
+		and validity > ?', array(gmdate('Y-m-d H:i:s')));
 
 header("Content-disposition: attachment; filename=elas-messages-".date("Y-m-d").".csv");
 header("Content-Type: application/force-download");

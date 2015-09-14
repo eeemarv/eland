@@ -4,15 +4,27 @@ $rootpath = "../";
 $role = 'user';
 require_once($rootpath."includes/inc_default.php");
 
-$id = $_POST["id"];
+$id = $_POST['id'];
 
-$picture = get_picture($id);
-$msg = get_msg($picture["msgid"]);
-if($msg["id_user"] == $s_id || $s_accountrole == "admin")
+$picture = $db->fetchAssoc('select * from msgpictures where id = ?', array($id));
+
+$user_id = $db->fetchColumn('select id_user from messages where id = ?', array($picture['msgid']));
+
+if($user_id == $s_id || $s_accountrole == "admin")
 {
-	if(delete_record($id) == TRUE)
+	if($db->delete('msgpictures', array('id' => $id))
 	{
-		delete_file($schema . '_m_' . $picture["PictureFile"]);
+		$s3 = Aws\S3\S3Client::factory(array(
+			'signature'	=> 'v4',
+			'region'	=> 'eu-central-1',
+			'version'	=> '2006-03-01',
+		));
+
+		$result = $s3->deleteObject(array(
+			'Bucket' => getenv('S3_BUCKET'),
+			'Key'    => $schema . '_m_' . $picture["PictureFile"],
+		));
+		
 		echo "<font color='green'><strong>OK</font> - Foto $id verwijderd</strong></font>";
 	}
 	else
@@ -24,50 +36,3 @@ else
 {
 	echo "<font color='red'><strong>Fout: Geen rechten op deze foto</strong></font>";
 }
-
-////////////////////////////////////////////////////////////////////////////
-
-
-function delete_file($file){
-
-
-	$s3 = Aws\S3\S3Client::factory(array(
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	));
-
-	$result = $s3->deleteObject(array(
-		'Bucket' => getenv('S3_BUCKET'),
-		'Key'    => $file,
-	));
-
-}
-
-function delete_record($id){
-	global $db;
-        $query = "DELETE FROM msgpictures WHERE id=" .$id;
-	$result = $db->Execute($query);
-	return $result;
-}
-
-function get_picture($id){
-        global $db;
-        $query = "SELECT * FROM msgpictures WHERE id = " .$id;
-        $picture = $db->GetRow($query);
-        return $picture;
-}
-
-function get_msg($msgid){
-        global $db;
-        $query = "SELECT * , ";
-        $query .= " messages.cdate AS date, ";
-        $query .= " messages.validity AS valdate";
-        $query .= " FROM messages, users ";
-        $query .= " WHERE messages.id = ". $msgid;
-        $query .= " AND messages.id_user = users.id ";
-        $message = $db->GetRow($query);
-        return $message;
-}
-
-?>

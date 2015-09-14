@@ -8,7 +8,7 @@ $q = $_GET['q'];
 $letscode = $_GET['letscode'];
 $type = $_GET['type'];
 
-$letsgroup_id = $db->GetOne('SELECT id
+$letsgroup_id = $db->fetchColumn('SELECT id
 	FROM letsgroups
 	WHERE apimethod = \'internal\'');
 

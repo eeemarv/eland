@@ -43,7 +43,7 @@ echo 'php version: ' . phpversion() . $r;
 // select in which schema to perform updates
 $schemas = $domains = $schema_lastrun_ary = $schema_interletsq_ary = array();
 
-$schemas_db = ($db->GetArray('select schema_name from information_schema.schemata')) ?: array();
+$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
 $schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
 $schemas_db = array_fill_keys($schemas_db, true);
 
@@ -65,10 +65,10 @@ foreach ($_ENV as $key => $schema)
 
 	$domains[$schema] = $domain;
 
-	$lastrun = $db->GetOne('select max(lastrun) from ' . $schema . '.cron');
+	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
 
-	if ($date_interletsq = $db->GetOne('select min(date_created)
+	if ($date_interletsq = $db->fetchColumn('select min(date_created)
 		from '. $schema . '.interletsq
 		where last_status = \'NEW\''))
 	{
@@ -122,7 +122,7 @@ $base_url = $http . $domains[$schema];
 if (!isset($schema_interletsq_min))
 {
 
-	$letsgroups = $db->GetArray('SELECT *
+	$letsgroups = $db->fetchAll('SELECT *
 		FROM letsgroups
 		WHERE apimethod = \'elassoap\'
 			AND remoteapikey IS NOT NULL');
@@ -266,8 +266,8 @@ function admin_exp_msg()
 		FROM messages m, users u
 		WHERE users.status <> 0
 			AND m.id_user = u.id
-			AND validity <= '" .$now ."'";
-	$messages = $db->GetArray($query);
+			AND validity <= ?";
+	$messages = $db->fetchAll($query, array($now));
 
 	$admin = readconfigfromdb("admin");
 	if (empty($admin))
@@ -318,10 +318,10 @@ function user_exp_msgs()
 	global $db, $now, $base_url;
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
-	$warn_messages  = $db->GetArray("SELECT m.*
+	$warn_messages  = $db->fetchAll("SELECT m.*
 		FROM messages m
 			WHERE m.exp_user_warn = 'f'
-				AND m.validity < '" .$now ."'");
+				AND m.validity < ?", array($now));
 
 	// $warn_messages = get_warn_messages($msgexpwarningdays);
 	
@@ -330,11 +330,11 @@ function user_exp_msgs()
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
 		echo "Found new expired message " .$value['id'];
 		$user = readuser($value['id_user']);
-		$mailto = $db->GetOne('select c.value
+		$mailto = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
-				and c.id_user = ' . $value['id_user'] . '
-				and tc.abbrev = \'mail\'');
+				and c.id_user = ?
+				and tc.abbrev = \'mail\'', array($value['id_user']));
 		$username = $user["name"];
 		$extend_url = $base_url . '/userdetails/mymsg_extend.php?id=' . $value['id'] . '&validity=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
@@ -435,10 +435,12 @@ function cleanup_messages()
 	}
 
 	// remove orphaned images.
-	$orphan_images = $db->GetAssoc('SELECT mp.id, mp."PictureFile"
+	$orphan_images = $db->fetchAll('SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
 		LEFT JOIN messages m ON mp.msgid = m.id
 		WHERE m.id IS NULL');
+
+	assoc($orphan_images);
 
 	if (count($orphan_images))
 	{
@@ -455,21 +457,25 @@ function cleanup_messages()
 
 	// update counts for each category
 
-	$offer_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+	$offer_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
 		FROM messages m, users u
 		WHERE  m.id_user = u.id
 			AND u.status IN (1, 2, 3)
 			AND msg_type = 1
 		GROUP BY m.id_category');
 
-	$want_count = $db->GetAssoc('SELECT m.id_category, COUNT(m.*)
+	assoc($offer_count);
+
+	$want_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
 		FROM messages m, users u
 		WHERE  m.id_user = u.id
 			AND u.status IN (1, 2, 3)
 			AND msg_type = 0
 		GROUP BY m.id_category');
 
-	$all_cat = $db->GetArray('SELECT id, stat_msgs_offers, stat_msgs_wanted
+	assoc($want_count);
+
+	$all_cat = $db->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
 		FROM categories
 		WHERE id_parent IS NOT NULL');
 
@@ -504,14 +510,21 @@ function saldo_update()
 {
 	global $db, $r;
 
-	$user_balances = $db->GetAssoc('select id, saldo from users');
+	$user_balances = $db->fetchAll('select id, saldo from users');
 
-	$min = $db->GetAssoc('select id_from, sum(amount)
+	assoc($user_balances);
+
+	$min = $db->fetchAll('select id_from, sum(amount)
 		from transactions
 		group by id_from');
-	$plus = $db->GetAssoc('select id_to, sum(amount)
+
+	assoc($min);
+
+	$plus = $db->fetchAll('select id_to, sum(amount)
 		from transactions
 		group by id_to');
+
+	assoc($plus);
 
 	foreach ($user_balances as $id => $balance)
 	{
@@ -571,7 +584,9 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
 	{
-		$lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
+		$lastrun_ary = $db->fetchAll('select cronjob, lastrun from cron');
+
+		assoc($lastrun_ary);
 	}
 
 	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))

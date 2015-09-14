@@ -4,7 +4,7 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$categories = $db->GetArray('select * from categories');
+$categories = $db->fetchAll('select * from categories');
 
 header("Content-disposition: attachment; filename=elas-categories-".date("Y-m-d").".csv");
 header("Content-Type: application/force-download");

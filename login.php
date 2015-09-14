@@ -27,11 +27,11 @@ if(!empty($token))
 {
 	$query = 'select token
 		from tokens
-		where token = \'' . $token . '\'
-		and validity > \'' . date('Y-m-d H:i:s') . '
+		where token = ?
+		and validity > ? 
 		and type = \'guestlogin\'';
 
-	if($db->GetOne($query))
+	if($db->fetchColumn($query, array($token, date('Y-m-d H:i:s'))))
 	{
         session_start();
         $_SESSION['id'] = 0;
@@ -87,7 +87,7 @@ if ($_POST['zend'])
 		exit;
 	}
 
-	$user = $db->GetRow('SELECT * FROM users WHERE login = \'' . $login . '\'');
+	$user = $db->fetchAssoc('SELECT * FROM users WHERE login = ?', array($login));
 	if (!$user)
 	{
 		$alert->error('Login gefaald. Onbekende gebruiker.');
@@ -103,7 +103,7 @@ if ($_POST['zend'])
 	{
 		if ($user['password'] != $sha512)
 		{
-			$db->Execute('UPDATE users SET password = \'' . hash('sha512', $password) . '\' WHERE id = ' . $user['id']);
+			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
 		}
 
 		if ($user['status'] == 0)
@@ -137,7 +137,7 @@ if ($_POST['zend'])
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
 		log_event($user['id'],'Agent', $browser);
-		$db->AutoExecute('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), 'UPDATE', 'id = ' . $s_id);
+		$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $s_id));
 		$alert->success('Ok Gebruiker ingelogd.');
 		header('Location: ' . $location);
 		exit;

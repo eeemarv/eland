@@ -9,13 +9,13 @@ $fa = 'exchange';
 
 include $rootpath . 'includes/inc_header.php';
 
-$interletsq = $db->GetArray("SELECT * FROM interletsq");
+$interletsq = $db->fetchAll("SELECT * FROM interletsq");
 
-$interletsq = $db->GetArray('select q.*, l.groupname, u.letscode, u.fullname
+$interletsq = $db->fetchAll('select q.*, l.groupname, u.letscode, u.fullname
 	from interletsq q, letsgroups l, users u
-	where q.id_from = ' . $s_id . '
+	where q.id_from = ?
 		and q.letsgroup_id = l.id
-		and q.id_from = u.id');
+		and q.id_from = u.id', array($s_id));
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';

@@ -23,7 +23,7 @@ if(isset($_POST['zend']))
 	$alert->error('Categorie niet verwijderd.');
 }
 
-$fullname = $db->GetOne('SELECT fullname FROM categories WHERE id = ' . $id);
+$fullname = $db->fetchColumn('SELECT fullname FROM categories WHERE id = ?', array($id));
 
 $h1 = 'Categorie verwijderen : ' . $fullname;
 $fa = 'files-o';

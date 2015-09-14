@@ -10,7 +10,7 @@ $validity = $_GET['validity'];
 
 if(isset($msgid))
 {
-	$msg = $db->GetRow('select * from messages where id = ' . $msgid);
+	$msg = $db->fetchAssoc('select * from messages where id = ?', array($msgid));
 
 	if ($msg)
 	{
@@ -20,7 +20,7 @@ if(isset($msgid))
 			'exp_user_warn'	=> 'f',
 		);
 
-		if ($db->AutoExecute("messages", $m, 'UPDATE', 'id = ' . $msgid))
+		if ($db->update('messages', $m, 'UPDATE', array('id' => $msgid))
 		{
 			$alert->success('Vraag of aanbod is verlengd.');
 		}

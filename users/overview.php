@@ -66,11 +66,11 @@ $status_ary = array(
 
 $currency = readconfigfromdb('currency');
 
-$users = $db->GetArray('select * from users order by letscode asc');
+$users = $db->fetchAll('select * from users order by letscode asc');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-$c_ary = $db->GetArray('SELECT tc.abbrev, c.id_user, c.value
+$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value
 	FROM contact c, type_contact tc
 	WHERE tc.id = c.id_type_contact
 		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')');

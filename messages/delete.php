@@ -13,11 +13,11 @@ if(empty($id))
 	exit;
 }
 
-$msg = $db->GetRow('SELECT m.*, u.name as username, u.letscode, ct.fullname as catname
+$msg = $db->fetchAssoc('SELECT m.*, u.name as username, u.letscode, ct.fullname as catname
 	FROM messages m, users u, categories ct
-	WHERE m.id = ' .$id . '
+	WHERE m.id = ?
 		AND m.id_category = ct.id
-		AND m.id_user = u.id');
+		AND m.id_user = u.id', array($id));
 
 if ($s_accountrole == 'user' && $s_id != $msg['id_user'])
 {
@@ -43,9 +43,8 @@ if(isset($_POST["zend"]))
 		));
 	}
 
-	$db->Execute('DELETE FROM msgpictures WHERE msgid = '.$id );
-
-	$result = $db->Execute('DELETE FROM messages WHERE id = '.$id );
+	$db->delete('msgpictures', array('msgid' => $id));
+	$result = $db->Execute('messages', array('id' => $id));
 
 	if ($result)
 	{

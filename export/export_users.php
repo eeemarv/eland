@@ -10,7 +10,7 @@ header('Content-Transfer-Encoding: binary');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$users = $db->GetArray('SELECT *
+$users = $db->fetchAll('SELECT *
 	FROM users 
 	ORDER BY letscode');
 

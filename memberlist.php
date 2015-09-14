@@ -7,14 +7,14 @@ require_once $rootpath . 'includes/inc_default.php';
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
 
-$users = $db->GetArray('SELECT * FROM users u
+$users = $db->fetchAll('SELECT * FROM users u
 		WHERE status IN (1, 2, 3) 
 		AND u.accountrole <> \'guest\'');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 $currency = readconfigfromdb('currency');
 
-$c_ary = $db->GetArray('SELECT tc.abbrev, c.id_user, c.value
+$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value
 	FROM contact c, type_contact tc, users u
 	WHERE tc.id = c.id_type_contact
 		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')

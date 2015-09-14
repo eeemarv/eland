@@ -27,10 +27,10 @@ if (isset($_POST["zend"]))
 	{
 		$posted_list['cdate'] = date('Y-m-d H:i:s');
 		$posted_list['id_creator'] = $s_id;
-		$posted_list['fullname'] = ($posted_list['leafnote']) ? $db->GetOne('SELECT name FROM categories WHERE id = '. (int) $posted_list["id_parent"]) . ' - ' : '';
+		$posted_list['fullname'] = ($posted_list['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array((int) $posted_list["id_parent"])) . ' - ' : '';
 		$posted_list['fullname'] .= $posted_list['name'];
 
-		if ($db->AutoExecute('categories', $posted_list, 'INSERT'))
+		if ($db->insert('categories', $posted_list))
 		{
 			$alert->success('Categorie toegevoegd.');
 			header('Location: ' . $rootpath . 'categories/overview.php');
@@ -46,7 +46,9 @@ if (isset($_POST["zend"]))
 }
 
 $parent_cats = array(0 => '-- Hoofdcategorie --');
-$parent_cats += $db->GetAssoc('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+$pcats = $db->fetchAll('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+assoc($pcats);
+$parent_cats += $pcats;
 $id_parent = ($posted_list['id_parent']) ? $posted_list['id_parent'] : 0;
 
 $h1 = 'Categorie toevoegen';

@@ -39,7 +39,7 @@ function sign_transaction($posted_list, $sharedsecret)
 function check_duplicate_transaction($transid)
 {
 	global $db;
-	return ($db->GetOne('SELECT * FROM transactions WHERE transid = \'' .$transid . '\'')) ? 1 : 0;
+	return ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid))) ? 1 : 0;
 }
 
 function insert_transaction($posted_list)

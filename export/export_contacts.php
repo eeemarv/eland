@@ -10,7 +10,7 @@ header("Content-Transfer-Encoding: binary");
 header("Pragma: no-cache");
 header("Expires: 0");
 
-$contacts = $db->GetArray('select c.*, tc.abbrev, u.letscode, u.name
+$contacts = $db->fetchAll('select c.*, tc.abbrev, u.letscode, u.name
 	from contact c, type_contact tc, users u
 	where c.id_type_contact = tc.id
 		and c.id_user = u.id');

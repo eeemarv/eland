@@ -128,15 +128,14 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			$posted_list['date'] = date('Y-m-d H:i:s');
 			$posted_list['description'] = $description;
 
-			$fromuser = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $from . '\'');
+			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from));
 
 			log_event('','debug', 'Looking up Interlets user ' . $from);
-
 			log_event('','debug', 'Found Interlets fromuser ' . serialize($fromuser));
 
 			$posted_list['id_from'] = $fromuser['id'];
 			$posted_list['real_from'] = $real_from;
-			$touser = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $to . '\'');
+			$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($to));
 			$posted_list['id_to'] = $touser['id'];
 			$posted_list['amount'] = $amount;
 			$posted_list['letscode_to'] = $touser['letscode'];
@@ -191,7 +190,7 @@ function userbyletscode($apikey, $letscode)
 	log_event('','debug','Lookup request for ' . $letscode);
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->GetRow('SELECT * FROM users WHERE letscode = \'' . $letscode . '\'');
+		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode));
 		if($user['fullname'] == '')
 		{
 			return 'Onbekend';
@@ -212,7 +211,7 @@ function userbyname($apikey, $name)
 	log_event('','debug','Lookup request for user ' . $name);
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->GetRow('SELECT * FROM users WHERE (LOWER(fullname)) LIKE \'%' .strtolower($name) . '%\'');
+		$user = $db->fetchAssoc('SELECT * FROM users WHERE (LOWER(fullname)) LIKE \'%?%\'', array(strtolower($name)));
 		if($user['fullname'] == '')
 		{
 			return 'Onbekend';
@@ -261,10 +260,10 @@ function check_apikey($apikey, $type)
 {
 	global $db;
 
-	return ($db->GetOne('select apikey
+	return ($db->fetchColumn('select apikey
 		from apikeys
-		where apikey = \'' .$apikey . '\'
-		and type = \'' .$type . '\'')) ? true : false;
+		where apikey = ?
+		and type = ?', array($apikey, $type))) ? true : false;
 }
 
 // Use the request to (try to) invoke the service

@@ -43,7 +43,7 @@ if ($_POST['zend'])
 }
 else if ($mode == 'edit')
 {
-	$group = $db->GetRow('SELECT * FROM letsgroups WHERE id = ' . $id);
+	$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($id));
 }
 
 $h1 = 'LETS groep ';

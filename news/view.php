@@ -12,11 +12,10 @@ if (!isset($_GET["id"]))
 
 $id = $_GET["id"];
 
-$query = 'SELECT n.*, u.name, u.letscode
+$news = $db->fetchAssoc('SELECT n.*, u.name, u.letscode
 	FROM news n, users u  
-	WHERE n.id=' . $id . '
-	AND n.id_user = u.id';
-$news = $db->GetRow($query);
+	WHERE n.id = ?
+	AND n.id_user = u.id', array($id));
 
 $top_buttons = '';
 

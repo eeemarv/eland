@@ -12,7 +12,7 @@ if(!isset($id))
 	exit;
 }
 
-$tc_prefetch = $db->GetRow('select * from type_contact where id = ' . $id);
+$tc_prefetch = $db->fetchAssoc('select * from type_contact where id = ?', array($id));
 
 if (in_array($tc_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 {

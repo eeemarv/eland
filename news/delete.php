@@ -13,7 +13,7 @@ if(empty($id))
 
 if(isset($_POST["zend"]))
 {
-	if($db->Execute("DELETE FROM news WHERE id =".$id))
+	if($db->delete('news', array('id' => $id)))
 	{
 		$alert->success('Nieuwsbericht verwijderd.');
 		header('Location: overview.php');
@@ -22,11 +22,10 @@ if(isset($_POST["zend"]))
 	$alert->error('Nieuwsbericht niet verwijderd.');
 }
 
-$query = 'SELECT n.*, u.name, u.letscode
+$news = $db->fetchAssoc('SELECT n.*, u.name, u.letscode
 	FROM news n, users u  
-	WHERE n.id=' . $id . '
-	AND n.id_user = u.id';
-$news = $db->GetRow($query);
+	WHERE n.id = ?
+	AND n.id_user = u.id', array($id));
 
 
 $h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';

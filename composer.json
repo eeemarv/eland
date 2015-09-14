@@ -2,7 +2,6 @@
     "require": {
 		"predis/predis": "~0.8",
 		"aws/aws-sdk-php": "3.0.*@dev",
-		"adodb/adodb-php": "~5",
 		"swiftmailer/swiftmailer": "5.3.*@dev",
 		"monolog/monolog": "1.13.*@dev",
 		"bramus/monolog-colored-line-formatter": "2.0.*",
@@ -12,6 +11,7 @@
 		"ext-mongo": "*",
 		"ext-imagick": "*",
 		"blueimp/jquery-file-upload": "~9.11",
-        "imagine/imagine": "~0.5.0"
+        "imagine/imagine": "~0.5.0",
+        "doctrine/dbal": "~2.5"
 	}
 }
