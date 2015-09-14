@@ -58,24 +58,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "1ba620b73e651cd9606d0dd7db322e97dcecdb54"
+                "reference": "8373b742e26150165eb954087b9cb743efaaf578"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/1ba620b73e651cd9606d0dd7db322e97dcecdb54",
-                "reference": "1ba620b73e651cd9606d0dd7db322e97dcecdb54",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8373b742e26150165eb954087b9cb743efaaf578",
+                "reference": "8373b742e26150165eb954087b9cb743efaaf578",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": ">=5.3|~6.0.1|~6.1",
+                "guzzlehttp/guzzle": "~5.3|~6.0.1|~6.1",
                 "guzzlehttp/promises": "~1.0",
                 "guzzlehttp/psr7": "~1.0",
                 "mtdowling/jmespath.php": "~2.2",
                 "php": ">=5.5"
             },
             "require-dev": {
-                "aws/aws-php-sns-message-validator": "^1.0",
+                "aws/aws-php-sns-message-validator": "~1.0",
                 "behat/behat": "~3.0",
+                "doctrine/cache": "~1.4",
                 "ext-dom": "*",
                 "ext-json": "*",
                 "ext-openssl": "*",
@@ -85,6 +86,7 @@
                 "phpunit/phpunit": "~4.0"
             },
             "suggest": {
+                "doctrine/cache": "To use the DoctrineCacheAdapter",
                 "ext-curl": "To send requests using cURL",
                 "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages"
             },
@@ -124,20 +126,20 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-08-28 16:49:42"
+            "time": "2015-09-06 06:13:03"
         },
         {
             "name": "blueimp/jquery-file-upload",
-            "version": "9.11.1",
+            "version": "9.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vkhramtsov/jQuery-File-Upload.git",
-                "reference": "cfb3b6cf2e3c0c01435b86c4c7afa15fed33ea76"
+                "reference": "1944c390ed490ff3ca9c03f0b822088bd4589cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vkhramtsov/jQuery-File-Upload/zipball/cfb3b6cf2e3c0c01435b86c4c7afa15fed33ea76",
-                "reference": "cfb3b6cf2e3c0c01435b86c4c7afa15fed33ea76",
+                "url": "https://api.github.com/repos/vkhramtsov/jQuery-File-Upload/zipball/1944c390ed490ff3ca9c03f0b822088bd4589cde",
+                "reference": "1944c390ed490ff3ca9c03f0b822088bd4589cde",
                 "shasum": ""
             },
             "type": "library",
@@ -174,7 +176,7 @@
                 "upload",
                 "widget"
             ],
-            "time": "2015-08-26 06:24:13"
+            "time": "2015-08-31 05:28:42"
         },
         {
             "name": "bramus/ansi-php",
