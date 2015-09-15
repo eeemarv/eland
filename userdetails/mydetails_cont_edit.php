@@ -126,7 +126,7 @@ function validate_input($posted_list)
 		$error_list["value"] = 'Vul waarde in!';
 	}
 
-    if (!$db->GetOne('select id from type_contact where id = ' . $posted_list['id_type_contact']))
+    if (!$db->fetchColumn('select id from type_contact where id = ?', array($posted_list['id_type_contact'])))
 	{
 		$error_list[]= 'Contacttype bestaat niet!';
 	}

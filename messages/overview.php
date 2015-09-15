@@ -27,7 +27,7 @@ $cats_hsh_name = array(
 
 $st = $db->executeQuery('select * from categories order by fullname');
 
-$ow_str = ' . . . . vraag: %1$s - aanbod: %2$s';
+$ow_str = ' . . . . . . . V%1$s A%2$s';
 
 while ($row = $st->fetch())
 {

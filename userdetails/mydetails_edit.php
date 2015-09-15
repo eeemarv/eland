@@ -157,7 +157,7 @@ function validate_input($posted_list)
 	}
 
 	//login may not exist, except while editing your own record!
-	if ($db->GetOne('select id from users where id <> ' . $s_id . ' and login = \'' . $posted_list['login'] . '\''))
+	if ($db->fetchColumn('select id from users where id <> ? and login = ?', array($s_id, $posted_list['login'])))
 	{
 		$error_list[] = 'Login bestaat al!';
 	}

@@ -21,7 +21,7 @@ function doupgrade($version)
 				break;
 
 			case 31000:
-				$db->delete('letsgroups', array('id' = 0));
+				$db->delete('letsgroups', array('id' => 0));
 				break;
 
 			case 31002:
@@ -46,7 +46,7 @@ function doupgrade($version)
 		$db->commit();
 		return true;
 	}
-	catch(Exception e)
+	catch(Exception $e)
 	{
 		$db->rollback();
 		throw $e;
