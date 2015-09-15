@@ -134,6 +134,7 @@ if (!isset($schema_interletsq_min))
 		if ($redis->get($schema . '_typeahead_failed_' . $letsgroup['remoteapikey'])
 			|| $redis->get($schema . '_typeahead_failed_' . $letsgroup['url']))
 		{
+			unset($letsgroup);
 			continue;
 		}
 
@@ -160,7 +161,7 @@ if (!isset($schema_interletsq_min))
 
 			$redis_key = $schema . '_typeahead_failed_' . $letsgroup['url'];
 			$redis->set($redis_key, '1');
-			$redis->expire($redis_key, 43200);  // 12 hours
+			$redis->expire($redis_key, 21600);  // 6 hours
 		}
 		else
 		{
@@ -173,7 +174,7 @@ if (!isset($schema_interletsq_min))
 				$unvalid_apikeys[$letsgroup['remoteapikey']] = 1;
 				$redis_key = $schema . '_typeahead_failed_' . $letsgroup['remoteapikey'];
 				$redis->set($redis_key, '1');
-				$redis->expire($redis_key, 43200);  // 12 hours
+				$redis->expire($redis_key, 21600);  // 6 hours
 			}
 		}
 
