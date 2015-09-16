@@ -98,7 +98,7 @@ if (count($schemas))
 			|| (isset($schema_interletsq_min) && $schema_interletsq_min == $schema_n))
 		{
 			$schema = $schema_n;
-			echo ' (selected)';			
+			echo ' (selected)';
 			$db->exec('SET search_path TO ' . $schema);
 			$selected = true;
 		}

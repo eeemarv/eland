@@ -121,6 +121,10 @@ if ((!isset($allow_anonymous_post) && $s_accountrole == 'anonymous' && $_SERVER[
 	exit;
 }
 
+require_once $rootpath . 'includes/elas_mongo.php';
+
+$elas_mongo = new elas_mongo($schema);
+
 require_once $rootpath . 'includes/inc_eventlog.php';
 require_once $rootpath . 'includes/inc_alert.php';
 

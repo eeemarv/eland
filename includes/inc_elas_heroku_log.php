@@ -1,23 +1,14 @@
 <?php
-
-/** logs in mongodb
- */
  
 class elas_heroku_log
 {
-	private $logs;
-	private $schema;
 	private $insert_items;
+	private $elas_mongo;
 
-	public function __construct($schema)
+	public function __construct(elas_mongo $elas_mongo)
 	{
-		$this->schema = $schema;
 		$this->insert_items = array();
-	}
-
-	public function set_schema($schema)
-	{
-		$this->schema = $schema;
+		$this->elas_mongo = $elas_mongo;
 	}
 
 	public function insert($id, $type, $event)
@@ -56,11 +47,11 @@ class elas_heroku_log
 			return;
 		}
 
-		$this->connect();
+		$this->elas_mongo->connect();
 		
 		foreach ($this->insert_items as $item)
 		{
-			$this->logs->insert($item);
+			$this->elas_mongo->logs->insert($item);
 		}
 
 		$this->insert_items = array();
@@ -70,33 +61,17 @@ class elas_heroku_log
 
 	public function find($find = array())
 	{
-		$this->connect();
-		return $this->logs->find($find)->sort(array('timestamp' => -1))->limit(200);
+		$this->elas_mongo->connect();
+		return $this->elas_mongo->logs->find($find)->sort(array('timestamp' => -1))->limit(200);
 	}
 
+	/* cleanup logs older than 30 days. */
 	public function cleanup()
 	{
-		$this->connect();
-		// cleanup logs older than 30 days.
+		$this->elas_mongo->connect();
+		
 		$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
-		$this->logs->remove(array('timestamp' => array('$lt' => $treshold)));
-		return $this;
-	}
-
-	private function connect()
-	{
-		if (is_object($this->logs))
-		{
-			return $this;
-		}
-
-		$url = getenv('MONGOLAB_URI');
-		$mongo_client = new MongoClient($url);
-		$path = parse_url($url, PHP_URL_PATH);
-		$mdb = $mongo_client->selectDB(trim($path, '/'));
-		$collection_name = $this->schema . '_logs';
-		$this->logs = $mdb->$collection_name;
-
+		$this->elas_mongo->logs->remove(array('timestamp' => array('$lt' => $treshold)));
 		return $this;
 	}
 }

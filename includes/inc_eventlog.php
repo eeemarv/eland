@@ -7,7 +7,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-$elas_log = new elas_heroku_log($schema);
+$elas_log = new elas_heroku_log($elas_mongo);
 
 register_shutdown_function('elas_log_flush');
 
@@ -26,8 +26,6 @@ function log_event($id, $type, $event)
 
 	$type = strtolower($type);
 
-	//find domain from session / real domain
-
 	$domain = array_search($schema, $_ENV);
 	$domain = str_replace('ELAS_SCHEMA_', '', $domain);
 	$domain = str_replace('____', ':', $domain);
@@ -36,16 +34,13 @@ function log_event($id, $type, $event)
 	$domain = strtolower($domain);
 	$domain = $domain . ' / ' . $_SERVER['HTTP_HOST'];
 
-	// formatter
 	$formatter = new ColoredLineFormatter();
 
-	// create a log channel to STDOUT
 	$log = new Logger($schema);
 	$streamHandler = new StreamHandler('php://stdout', Logger::NOTICE);
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	// messages
 	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
 
 	$elas_log->insert($id, $type, $event);
