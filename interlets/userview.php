@@ -13,11 +13,11 @@ if ($letsgroup_id)
 
 	$err_group = $letsgroup['groupname'] . ': ';
 
-	if($letsgroup["apimethod"] == 'elassoap')
+	if($letsgroup['apimethod'] == 'elassoap')
 	{
 		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
-		$soapurl = $soapurl ."/wsdlelas.php?wsdl";
-		$apikey = $letsgroup["remoteapikey"];
+		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
+		$apikey = $letsgroup['remoteapikey'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if ($err)
@@ -67,7 +67,7 @@ if (count($letsgroups))
 	foreach ($letsgroups as $key => $value)
 	{
 		echo '<tr><td>';
-		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value["groupname"] . '</a>';
+		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value['groupname'] . '</a>';
 		echo "</td></tr>";
 	}
 	echo '</table></div>';

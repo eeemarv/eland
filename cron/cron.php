@@ -277,7 +277,7 @@ function admin_exp_msg()
 			AND validity <= ?";
 	$messages = $db->fetchAll($query, array($now));
 
-	$admin = readconfigfromdb("admin");
+	$admin = readconfigfromdb('admin');
 	if (empty($admin))
 	{
 		echo "No admin E-mail address specified in config" . $r;
