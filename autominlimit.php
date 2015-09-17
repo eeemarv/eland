@@ -23,7 +23,7 @@ if (isset($_POST['zend']))
 	$a = array(
 		'name'							=> 'autominlimit',
 		'enabled'						=> ($_POST['enabled']) ? true : false,
-		'all_without_new_and_leaving'	=> ($_POST['all_without_new_and_leaving']) ? true : false,
+		'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
 		'new'							=> ($_POST['new']) ? true : false,
 		'leaving'						=> ($_POST['leaving']) ? true : false,
 		'inclusive'						=> $_POST['inclusive'],
@@ -74,11 +74,11 @@ echo '<h3>Voor accounts</h3>';
 echo '<p>Enkel actieve accounts kunnen een automatische minimum limiet hebben.</p>';
 
 echo '<div class="form-group">';
-echo '<label for="all_without_new_and_leaving" class="col-sm-3 control-label">';
+echo '<label for="active_no_new_or_leaving" class="col-sm-3 control-label">';
 echo 'Alle actieve zonder in- en uitstappers</label>';
 echo '<div class="col-sm-9">';
-echo '<input type="checkbox" id="all_without_new_and_leaving" name="all_without_new_and_leaving" value="1" ';
-echo ($a['all_without_new_and_leaving']) ? ' checked="checked"' : '';
+echo '<input type="checkbox" id="active_no_new_or_leaving" name="active_no_new_or_leaving" value="1" ';
+echo ($a['active_no_new_or_leaving']) ? ' checked="checked"' : '';
 echo '>';
 echo '</div>';
 echo '</div>';

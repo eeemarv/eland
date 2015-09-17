@@ -1,6 +1,7 @@
 <?php
 
-function readconfigfromdb($key){
+function readconfigfromdb($key)
+{
     global $db, $schema, $redis;
     static $cache;
 

@@ -64,8 +64,11 @@ function insert_transaction($posted_list)
 		throw $e;
 		return false;
 	}
-	readuser($posted_list['id_to'], true);
-	readuser($posted_list['id_from'], true);
+	$to_user = readuser($posted_list['id_to'], true);
+	$from_user = readuser($posted_list['id_from'], true);
+
+	register_shutdown_function('check_auto_minlimit',
+		$to_user['id'], $from_user['id'], $posted_list['amount']);
 
 	log_event($s_id, 'Trans', 'Transaction ' . $posted_list['transid'] . ' saved: ' .
 		$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
@@ -240,7 +243,6 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
 	sendemail($from,$to,$subject,$content);
-	// log it
 	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
 }
 
@@ -283,3 +285,95 @@ function get_mailaddresses($uid)
 	return implode(', ', $addr);
 }
 
+function check_auto_minlimit($to_user_id, $from_user_id, $amount)
+{
+	global $elas_mongo, $db;
+
+	if (!$to_user_id || !$from_user_id)
+	{
+		return;
+	}
+
+	$user = readuser($to_user_id);
+	$from_user = readuser($from_user_id);
+
+	if (!$user
+		|| !$amount
+		|| !is_array($user)
+		|| !in_array($user['status'], array(1, 2))
+		|| !$from_user
+		|| !is_array($from_user)
+		|| !$from_user['letscode']
+	)
+	{
+		return;
+	}
+
+	$elas_mongo->connect();
+	$a = $elas_mongo->settings->findOne(array('name' => 'autominlimit'));
+
+	$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
+	$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
+
+	$inclusive = explode(',', $a['inclusive']);
+	$exclusive = explode(',', $a['exclusive']);
+	$trans_exclusive = explode(',', $a['trans_exclusive']);
+
+	array_walk($inclusive, function(&$val){ return strtolower(trim($val)); });	
+	array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
+	array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
+
+	$inclusive = array_fill_keys($inclusive, true);
+	$exclusive = array_fill_keys($exclusive, true);
+	$trans_exclusive = array_fill_keys($trans_exclusive, true);
+
+	$inc = $inclusive[strtolower($user['letscode'])] ? true :false; 
+
+	if (!is_array($a)
+		|| !$a['enabled']
+		|| ($user['status'] == 1 && !$a['active_no_new_or_leaving'] && !$inc)
+		|| ($user['status'] == 2 && !$a['leaving'] && !$inc)
+		|| ($user['status'] == 3 && !$a['new'] && !$inc) 
+		|| (isset($exclusive[trim(strtolower($user['letscode']))]))
+		|| (isset($trans_exclusive[trim(strtolower($from_user['letscode']))]))
+		|| ($a['min'] >= $user['minlimit'])
+		|| ($a['account_base'] >= $user['saldo']) 
+	)
+	{
+		error_log('----------------- start -----------------');
+		error_log(implode(' | -- | ', $a));
+		error_log(' | ++ | ' . implode(' | ++ | ', array_keys($a)));
+		return;
+	}
+
+	$extract = round(($a['trans_percentage'] / 100) * $amount);
+
+	if (!$extract)
+	{
+		return;
+	}
+
+	$new_minlimit = $user['minlimit'] - $extract;
+	$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
+
+	write_new_limit($to_user_id, $new_minlimit);
+	log_event('','auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . $user['letscode'] . ' ' . $user['fullname'] . ' (id:' . $to_user_id . ') ');	
+}
+
+function write_new_limit($user_id, $new_limit, $type = 'min')
+{
+	global $elas_mongo, $db;
+
+	$e = array(
+		'user_id'	=> $user_id,
+		'limit'		=> $new_limit,
+		'type'		=> $type,
+		'ts'		=> new MongoDate(),
+	);
+
+	$elas_mongo->connect();
+	$elas_mongo->limit_events->insert($e);
+	$db->update('users', array($type . 'limit' => $new_limit), array('id' => $user_id));
+	readuser($user_id, true);
+}
