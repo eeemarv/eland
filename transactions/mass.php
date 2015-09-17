@@ -4,6 +4,7 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_transactions.php';
 
 $q = ($_POST['q']) ?: (($_GET['q']) ?: '');
 $hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '');
@@ -160,7 +161,7 @@ if ($_POST['zend'])
 		}
 
 		$count++;
-		
+
 		if (!filter_var($amo, FILTER_VALIDATE_INT, $filter_options))
 		{
 			$errors[] = 'Ongeldig bedrag ingevuld.';
@@ -189,6 +190,8 @@ if ($_POST['zend'])
 	}
 	else
 	{
+		$transactions = array();
+
 		$db->beginTransaction();
 
 		$date = date('Y-m-d H:i:s');
@@ -258,6 +261,8 @@ if ($_POST['zend'])
 				$total += $amo;
 
 				$transid = generate_transid();
+
+				$transactions[] = $trans;
 			}
 
 			$db->executeUpdate('update users
@@ -271,6 +276,12 @@ if ($_POST['zend'])
 			$alert->error('Fout bij het opslaan.');
 			$db->rollback();
 			throw $e;
+		}
+
+		foreach($transactions as $t)
+		{
+			register_shutdown_function('check_auto_minlimit',
+				$t['id_to'], $t['id_from'], $t['amount']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
@@ -481,11 +492,11 @@ foreach($users as $user_id => $user)
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
 	echo $user['letscode'];
 	echo '</a></td>';
-	
+
 	echo '<td>';
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
 	echo htmlspecialchars($user['fullname'],ENT_QUOTES).'</a></td>';
-	
+
 	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="' . $amount[$user_id] . '" ';
@@ -858,8 +869,10 @@ function mail_mass_transaction($mail_ary)
 	return true;
 }
 
+/*
 function generate_transid()
 {
 	global $baseurl, $schema, $s_id;
 	return sha1($s_id . $schema . microtime() . mt_rand(0, 50000)) . $_SESSION['id'] . '@' . $baseurl;
 }
+*/
