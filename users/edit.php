@@ -7,7 +7,6 @@ require_once $rootpath . 'includes/inc_passwords.php';
 require_once $rootpath . 'includes/inc_form.php';
 require_once $rootpath . 'includes/inc_mailfunctions.php';
 
-$mode = $_GET['mode'];
 $id = $_GET['id'];
 $user = $contact = array();
 
@@ -45,43 +44,107 @@ if ($_POST['zend'])
 		}
 	}
 
-	if (!isset($mail))
-	{
-		$errors['mail'] = 'Geen mail adres ingevuld.';
-	}
-	else if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-	{
-		$errors['mail'] = 'Geen geldig email adres.';
-	}
-	else if ($mode == 'new')
-	{
-		if ($db->fetchColumn('select c.value
+	$mail_sql = 'select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and c.value = ?', array($mail)))
-		{
-			$errors['mail'] = 'Het mailadres is al in gebruik.';
-		}
-		else
-		{
-			$errors = validate_input($user);
-		}
-	}
-	else
+				and c.value = ?';
+	$mail_sql_params = array($mail);
+
+	$login_sql = 'select login
+		from users
+		where login = ?';
+	$login_sql_params = array($user['login']);
+
+	$letscode_sql = 'select letscode
+		from users
+		where letscode = ?';
+	$letscode_sql_params = array($user['letscode']);
+
+	$name_sql = 'select name
+		from users
+		where name = ?';
+	$name_sql_params = array($user['name']);
+
+	$fullname_sql = 'select fullname
+		from users
+		where fullname = ?';
+	$fullname_sql_params = array($user['fullname']);	
+
+	if ($id)
 	{
-		if ($db->fetchColumn('SELECT c.value
-			FROM contact c, type_contact tc
-			WHERE c.id_user <> ' . $id . '
-				AND c.id_type_contact = tc.id
-				AND tc.abbrev = \'mail\'
-				AND c.value = ?', array($mail)))
-		{
-			$errors['mail'] = 'Het email adres is al in gebruik.';
-		}
+		$mail_sql .= ' and c.id_user <> ?';		
+		$mail_sql_params[] = $id;
+		$login_sql .= ' and id <> ?';
+		$login_sql_params[] = $id;
+		$letscode_sql .= ' and id <> ?';
+		$letscode_sql_params[] = $id;
+		$name_sql .= 'and id <> ?';
+		$name_sql_params[] = $id;
+		$fullname_sql .= 'and id <> ?';
+		$fullname_sql_params[] = $id;		
 	}
 
-	if ($mode == 'new')
+	if (!isset($mail))
+	{
+		$errors[] = 'Geen mail adres ingevuld.';
+	}
+	else if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+	{
+		$errors[] = 'Geen geldig email adres.';
+	}
+	else if ($db->fetchColumn($mail_sql, $mail_sql_params))
+	{
+		$errors[] = 'Het mailadres is al in gebruik.';
+	}
+		
+	if (!$user['name'])
+	{
+		$errors[] = 'Vul naam in!';
+	}
+	else if ($db->fetchColumn($name_sql, $name_sql_params))
+	{
+		$errors[] = 'Deze naam is al in gebruik!';
+	}
+
+	if (!$user['fullname'])
+	{
+		$errors[] = 'Vul de volledige naam in!';
+	}
+	else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+	{
+		$errors[] = 'De volledige naam is al in gebruik!';
+	}	
+
+	if (!$user['login'])
+	{
+		$errors[] = 'Vul een login in';
+	}
+	else if ($db->fetchColumn($login_sql, $login_sql_params))
+	{
+		$errors['login'] = 'Login bestaat al!';
+	}
+
+	if (!$user['letscode'])
+	{
+		$errors[] = 'Vul een letscode in!';
+	}
+	else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
+	{
+		$errors[]= 'De letscode bestaat al!';
+	}
+
+	if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))
+	{
+		$errors['minlimit'] = 'Geef getal op voor de minimum limiet.';
+	}
+
+	if (!($user['maxlimit'] == 0 || filter_var($user['maxlimit'], FILTER_VALIDATE_INT)))
+	{
+		$errors['maxlimit'] = 'Geef getal op voor de maximum limiet.';
+	}
+
+	if (!$id)
 	{
 		if (!$password)
 		{
@@ -99,7 +162,7 @@ if ($_POST['zend'])
 
 		assoc($contact_types);
 
-		if ($mode == 'new')
+		if (!$id)
 		{
 			$user['creator'] = $s_id;
 			$user['cdate'] = date('Y-m-d H:i:s');
@@ -163,7 +226,7 @@ if ($_POST['zend'])
 				$alert->error('Gebruiker niet opgeslagen.');
 			}
 		}
-		else if ($id)
+		else
 		{
 			$user_stored = readuser($id);
 
@@ -235,14 +298,10 @@ if ($_POST['zend'])
 				$alert->error('Gebruiker niet aangepast.');
 			}
 		}
-		else
-		{
-			$alert->error('Update niet mogelijk zonder id.');
-		}
 	}
 	else
 	{
-		$alert->error('Fout in formulier: ' . implode(' | ', $errors));
+		$alert->error(implode('<br>', $errors));
 	}
 }
 else
@@ -251,7 +310,7 @@ else
 		from type_contact
 		where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 
-	if ($mode == 'edit')
+	if ($id)
 	{
 		$contact_keys = array();
 
@@ -305,7 +364,7 @@ $includejs = '
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-$h1 = 'Gebruiker ' . (($mode == 'new') ? 'toevoegen' : 'aanpassen');
+$h1 = 'Gebruiker ' . (($id) ? 'aanpassen' : 'toevoegen');
 $fa = 'user';
 
 include $rootpath . 'includes/inc_header.php';
@@ -501,7 +560,7 @@ foreach ($contact as $key => $c)
 
 echo '</div>';
 
-if ($mode == 'new')
+if (!$id)
 {
 	echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 	echo '<br><br>';
@@ -525,7 +584,7 @@ if ($mode == 'new')
 }
 
 $cancel_red = ($id) ? 'view.php?id=' . $id : 'overview.php';
-$btn = ($mode == 'edit') ? 'primary' : 'success';
+$btn = ($id) ? 'primary' : 'success';
 echo '<a href="' . $rootpath . 'users/' . $cancel_red . '" class="btn btn-default">Annuleren</a>&nbsp;';
 echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
@@ -536,74 +595,41 @@ echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-function validate_input($posted_list)
-{
-	global $db;	
-	$error_list = array();
-	if (!isset($posted_list["name"])|| $posted_list["name"]=="")
-	{
-		$error_list["name"]="<font color='#F56DB5'>Vul <strong>naam</strong> in!</font>";
-	}
-
-	if ($db->fetchColumn('select letscode from users where letscode = ?', array($posted_list['letscode'])))
-	{
-		$error_list['letscode']= 'Letscode bestaat al!';
-	}
-
-	if (!empty($posted_list['login'])
-		&& $db->fetchColumn('select login from users where login = ?', array($posted_list['login'])))
-	{
-		$error_list['login'] = 'Login bestaat al!';
-	}
-
-	if (!filter_var($posted_list['minlimit'] ,FILTER_VALIDATE_INT))
-	{
-		$error_list['minlimit'] = 'Geef getal op voor de minimum limiet.';
-	}
-
-	if (!filter_var($posted_list['maxlimit'] ,FILTER_VALIDATE_INT))
-	{
-		$error_list['maxlimit'] = 'Geef getal op voor de maximum limiet.';
-	}
-
-	return $error_list;
-}
-
 function sendadminmail($user)
 {
-	$mailfrom = trim(readconfigfromdb("from_address"));
-	$mailto = trim(readconfigfromdb("admin"));
-	$systemtag = readconfigfromdb("systemtag");
+	$from = readconfigfromdb('from_address');
+	$to = readconfigfromdb('admin');
+	$systemtag = readconfigfromdb('systemtag');
 
-	$mailsubject = "[eLAS-";
-	$mailsubject .= readconfigfromdb("systemtag");
-	$mailsubject .= "] eLAS account activatie";
+	$subject = "[eLAS-";
+	$subject .= readconfigfromdb('systemtag');
+	$subject .= "] eLAS account activatie";
 
-	$mailcontent  = "*** Dit is een automatische mail van het eLAS systeem van ";
-	$mailcontent .= $systemtag;
-	$mailcontent .= " ***\r\n\n";
-	$mailcontent .= "De account ";
-	$mailcontent .= $user["login"];
-	$mailcontent .= ' ( ' . $user['letscode'] . ' ) ';
-	$mailcontent .= " werd geactiveerd met een nieuw paswoord.\n";
+	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content .= $systemtag;
+	$content .= " ***\r\n\n";
+	$content .= "De account ";
+	$content .= $user["login"];
+	$content .= ' ( ' . $user['letscode'] . ' ) ';
+	$content .= " werd geactiveerd met een nieuw paswoord.\n";
 	if ($user['mail'])
 	{
-		$mailcontent .= "Er werd een mail verstuurd naar de gebruiker op ";
-		$mailcontent .= $user["mail"];
-		$mailcontent .= ".\n\n";
+		$content .= "Er werd een mail verstuurd naar de gebruiker op ";
+		$content .= $user['mail'];
+		$content .= ".\n\n";
 	}
 	else
 	{
-		$mailcontent .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
+		$content .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
 	}
 
-	$mailcontent .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
-	$mailcontent .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
+	$content .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
+	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
-	$mailcontent .= "\r\n";
-	$mailcontent .= "         \,,,/\r\n";
-	$mailcontent .= "         (o o)\r\n";
-	$mailcontent .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
+	$content .= "\r\n";
+	$content .= "         \,,,/\r\n";
+	$content .= "         (o o)\r\n";
+	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
-	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+	sendemail($from, $to, $subject, $content);
 }

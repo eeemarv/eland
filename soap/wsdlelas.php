@@ -4,9 +4,7 @@ $role = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
-// Create the server instance
 $server = new soap_server();
-// Initialize WSDL support
 $server->configureWSDL('interletswsdl', 'urn:interletswsdl');
 
 // Register the method to expose
@@ -92,9 +90,9 @@ function gettoken($apikey)
 			'type'		=> 'guestlogin'
 		);
 
-		$db->insert('tokens', $token)
+		$db->insert('tokens', $token);
 
-		log_event('','Soap','Token ' . $token . ' generated');
+		log_event('' ,'Soap' ,'Token ' . $token . ' generated');
 	}
 	else
 	{
@@ -124,51 +122,51 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		}
 		else
 		{
-			$posted_list['transid'] = $transid;
-			$posted_list['date'] = date('Y-m-d H:i:s');
-			$posted_list['description'] = $description;
-
 			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from));
-
 			log_event('','debug', 'Looking up Interlets user ' . $from);
 			log_event('','debug', 'Found Interlets fromuser ' . serialize($fromuser));
 
-			$posted_list['id_from'] = $fromuser['id'];
-			$posted_list['real_from'] = $real_from;
 			$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($to));
-			$posted_list['id_to'] = $touser['id'];
-			$posted_list['amount'] = $amount;
-			$posted_list['letscode_to'] = $touser['letscode'];
 
-			if(empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
+			$transaction = array(
+				'transid'		=> $transid,
+				'date' 			=> date('Y-m-d H:i:s'),
+				'description' 	=> $description,
+				'id_from' 		=> $fromuser['id'],
+				'real_from' 	=> $real_from,
+				'id_to' 		=> $touser['id'],
+				'amount' 		=> $amount,
+				'letscode_to' 	=> $touser['letscode'],
+			);
+
+			if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 			{
 				log_event('','Soap','Transaction ' . $transid . ', unknown FROM user');
 				return 'NOUSER';
 			}
 
-			// Stop already if the user doesn't exist
-			if(empty($touser['letscode']) || ($touser['status'] != 1 && $touser['status'] != 2))
+			if (empty($touser['letscode']) || ($touser['status'] != 1 && $touser['status'] != 2))
 			{
 				log_event('','Soap','Transaction ' . $transid . ', unknown or invalid TO user');
 				return 'NOUSER';
 			}
 
-			// Check the signature first
-			$sigtest = sign_transaction($posted_list,$fromuser['presharedkey']);
-			if($sigtest != $signature)
+			$sigtest = sign_transaction($transaction, $fromuser['presharedkey']);
+
+			if ($sigtest != $signature)
 			{
 				log_event('','Soap','Transaction ' . $transid . ', invalid signature');
 				return 'SIGFAIL';
 			}
 
-			$posted_list['amount'] = $amount * readconfigfromdb('currencyratio');
+			$transaction['amount'] = $amount * readconfigfromdb('currencyratio');
 
-			if(insert_transaction($posted_list))
+			if(insert_transaction($transaction))
 			{
 				$result = 'SUCCESS';
 				log_event('','Soap','Transaction ' . $transid . ' processed');
-				$posted_list['amount'] = round($posted_list['amount']);
-				mail_transaction($posted_list, $transid);
+				$transaction['amount'] = round($transaction['amount']);
+				mail_transaction($transaction, $transid);
 			}
 			else
 			{
@@ -208,18 +206,12 @@ function userbyletscode($apikey, $letscode)
 
 function userbyname($apikey, $name)
 {
-	log_event('','debug','Lookup request for user ' . $name);
+	log_event('', 'debug', 'Lookup request for user ' . $name);
+
 	if(check_apikey($apikey,'interlets'))
 	{
 		$user = $db->fetchAssoc('SELECT * FROM users WHERE (LOWER(fullname)) LIKE \'%?%\'', array(strtolower($name)));
-		if($user['fullname'] == '')
-		{
-			return 'Onbekend';
-		}
-		else
-		{
-			return $user['letscode'];
-		}
+		return ($user['fullname']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
 	{
@@ -230,16 +222,10 @@ function userbyname($apikey, $name)
 function getstatus($apikey)
 {
 	global $elasversion;
-	if(check_apikey($apikey,'interlets'))
+
+	if (check_apikey($apikey,'interlets'))
 	{
-		if(readconfigfromdb('maintenance') == 1)
-		{
-			return 'OFFLINE';
-		}
-		else
-		{
-			return 'OK - eLAS ' . $elasversion;
-		}
+		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAS ' . $elasversion;
 	}
 	else
 	{

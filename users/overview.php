@@ -245,7 +245,7 @@ foreach($users as $u)
 	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users/edit.php?mode=edit&id=' . $id . '" ';
+	echo '<a href="' . $rootpath . 'users/edit.php?id=' . $id . '" ';
 	echo 'class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Aanpassen</a>';
 	echo '</td>';
 

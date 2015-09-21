@@ -51,10 +51,7 @@ function sendemail($from, $to, $subject, $content)
 	}
 	catch (Mandrill_Error $e)
 	{
-		// Mandrill errors are thrown as exceptions
 		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		
-		// throw $e;
 		return 'Mail niet verzonden. Fout in mail service.';
 	}
 

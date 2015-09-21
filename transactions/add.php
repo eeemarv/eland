@@ -135,16 +135,17 @@ if (isset($_POST['zend']))
 
 			case 'elassoap':
 
-				$transaction["letscode_to"] = $letscode_to;
-				$transaction["letsgroup_id"] = $letsgroup_id;
-				$currencyratio = readconfigfromdb("currencyratio");
+				$transaction['letscode_to'] = $letscode_to;
+				$transaction['letsgroup_id'] = $letsgroup_id;
+				$currencyratio = readconfigfromdb('currencyratio');
 				$transaction['amount'] = $transaction['amount'] / $currencyratio;
 				$transaction['amount'] = (float) $transaction['amount'];
 				$transaction['amount'] = round($transaction['amount'], 5);
 				$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
-				$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + (60*60*24*4));
-				// Queue the transaction for later handling
+				$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
+
 				$transid = queuetransaction($transaction, $fromuser, $touser);
+
 				if($transaction['transid'] == $transid)
 				{
 					$alert->success('Interlets transactie in verwerking');
@@ -153,6 +154,7 @@ if (isset($_POST['zend']))
 				{
 					$alert->error('Gefaalde transactie');
 				}
+
 				header('Location: ' . $rootpath . 'transactions/alltrans.php');
 				exit;
 
