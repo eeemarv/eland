@@ -26,7 +26,7 @@ echo '<tr>';
 echo '<th data-sort-initial="true">id</th>';
 echo '<th>groepsnaam</th>';
 echo '<th data-hide="phone">api</th>';
-echo '<th data-hide="phone">actieve gebruikers</th>';
+echo '<th data-hide="phone">leden</th>';
 echo '</tr>';
 echo '</thead>';
 

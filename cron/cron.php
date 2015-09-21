@@ -113,7 +113,7 @@ else
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
-$elas_log->set_schema($schema);
+$elas_mongo->set_schema($schema);
 
 $base_url = $http . $domains[$schema];
 
