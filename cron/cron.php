@@ -229,6 +229,10 @@ if (!isset($schema_interletsq_min))
 
 			$user_count = count($users);
 
+			$redis_user_count_key = $letsgroup['url'] . '_active_user_count';
+			$redis->set($redis_user_count_key, $user_count);
+			$redis->expire($redis_user_count_key, 86400); // 1 day
+
 			log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $letsgroup['groupname']);
 
 			echo '----------------------------------------------------' . $r;
