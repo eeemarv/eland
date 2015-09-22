@@ -339,7 +339,7 @@ echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Transactie van</span></
 echo '<a href="' . $rootpath . 'print_usertransacties.php?id=' . $id . '"';
 echo ' class="btn btn-default" title="Print transactielijst">';
 echo '<i class="fa fa-print"></i><span class="hidden-xs"> Print transactielijst</span></a> ';
-echo '<a href="' . $rootpath . 'export_transactions.php?userid=' . $id . '"';
+echo '<a href="' . $rootpath . 'export/export_transactions.php?userid=' . $id . '"';
 echo ' class="btn btn-default" title="csv export transacties">';
 echo '<i class="fa fa-file"></i><span class="hidden-xs"> Export csv</span></a>';
 echo '</h3>';
