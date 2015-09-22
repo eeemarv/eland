@@ -63,12 +63,21 @@ include $rootpath . 'includes/inc_header.php';
 if (count($letsgroups))
 {
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-bordered table-hover">';
+	echo '<table class="table table-striped table-bordered table-hover footable">';
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th>groepsnaam</th>';
+	echo '<th>leden</th>';
+	echo '</tr>';
+	echo '</thead>';
+
 	foreach ($letsgroups as $key => $value)
 	{
 		echo '<tr><td>';
 		echo '<a href="?letsgroup_id=' . $value['id'] . '">' .$value['groupname'] . '</a>';
-		echo "</td></tr>";
+		echo '</td>';
+		echo '<td>' . $redis->get($value['url'] . '_active_user_count') . '</td>';
+		echo '</tr>';
 	}
 	echo '</table></div>';
 }
