@@ -18,7 +18,7 @@ $top_buttons .= ' title="Categorie toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
 $h1 = 'Categorieën';
-$fa = 'files-o';
+$fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 

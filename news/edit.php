@@ -1,9 +1,8 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'user';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 $mode = $_GET['mode'];
 $id = $_GET['id'];

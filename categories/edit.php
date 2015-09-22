@@ -3,7 +3,6 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_form.php';
 
 if (!$_GET['id'])
 {
@@ -83,7 +82,7 @@ $id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
 
 
 $h1 = 'Categorie aanpassen : ' . $cat['name'];
-$fa = 'files-o';
+$fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 

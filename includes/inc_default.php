@@ -9,7 +9,7 @@ if(!isset($rootpath))
 
 $cdn_bootstrap_css = (getenv('ELAS_CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
 $cdn_bootstrap_js = (getenv('ELAS_CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = (getenv('ELAS_CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css';
+$cdn_fontawesome = (getenv('ELAS_CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
 
 $cdn_footable_js = (getenv('ELAS_CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.js';
 $cdn_footable_sort_js = (getenv('ELAS_CDN_FOOTABLE_SORT_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.sort.js';
@@ -153,4 +153,194 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
-require_once $rootpath . 'includes/inc_dbconfig.php';
+
+/** functions **/
+/*
+ *
+ */
+function readconfigfromdb($key)
+{
+    global $db, $schema, $redis;
+    static $cache;
+
+	if (isset($cache[$key]))
+	{
+		return $cache[$key];
+	}
+
+	$redis_key = $schema . '_config_' . $key;
+
+	if ($redis->exists($redis_key))
+	{
+		return $cache[$key] = $redis->get($redis_key);
+	}
+
+	$value = $db->fetchColumn('SELECT value FROM config WHERE setting = ?', array($key));
+
+	if (isset($value))
+	{
+		$redis->set($redis_key, $value);
+		$redis->expire($redis_key, 7200);
+		$cache[$key] = $value;
+	}
+
+	return $value;
+}
+
+/**
+ *
+ */
+function writeconfig($key, $value)
+{
+	global $db, $redis, $schema;
+
+	if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
+	{
+		return false;
+	}
+
+	$redis_key = $schema . '_config_' . $key;
+	$redis->set($redis_key, $value);
+	$redis->expire($redis_key, 7200);
+
+	return true;
+}
+
+/**
+ *
+ */
+function readparameter($key, $refresh = false)
+{
+    global $db, $schema, $redis;
+    static $cache;
+
+	if (!$refresh)
+	{
+		if (isset($cache[$key]))
+		{
+			return $cache[$key];
+		}
+
+		$redis_key = $schema . '_parameters_' . $key;
+
+		if ($redis->exists($redis_key))
+		{
+			return $cache[$key] = $redis->get($redis_key);
+		}
+	}
+
+	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', array($key));
+
+	if (isset($value))
+	{
+		$redis->set($redis_key, $value);
+		$redis->expire($redis_key, 28800);
+		$cache[$key] = $value;
+	}
+
+	return $value;
+}
+
+/**
+ *
+ */
+function readuser($id, $refresh = false)
+{
+    global $db, $schema, $redis;
+    static $cache;
+
+	if (!$id)
+	{
+		return array();
+	}
+
+	$redis_key = $schema . '_user_' . $id;	
+
+	if (!$refresh)
+	{
+		if (isset($cache[$id]))
+		{
+			return $cache[$id];
+		}
+
+		if ($redis->exists($redis_key))
+		{
+			return $cache[$id] = unserialize($redis->get($redis_key));
+		} 
+	}
+
+	$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
+
+	if (isset($user))
+	{
+		$redis->set($redis_key, serialize($user));
+		$redis->expire($redis_key, 7200);
+		$cache[$id] = $user;
+	}
+
+	return $user;
+}
+
+/*
+ *
+ */
+function sendemail($from, $to, $subject, $content)
+{
+	global $s_id;
+
+	if (!readconfigfromdb('mailenabled'))
+	{
+		log_event('', 'mail', 'Mail ' . $subject . ' not sent, mail functions are disabled');
+		return 'Mail functies zijn uitgeschakeld';
+	}
+
+	if(empty($from) || empty($to) || empty($subject) || empty($content))
+	{
+		$log = "Mail $subject not sent, missing fields\n";
+		$log .= "From: $from\nTo: $to\nSubject: $subject\nContent: $content";
+		log_event("", "mail", $log);
+		return 'Fout: mail niet verstuurd, ontbrekende velden';
+	}
+
+	$to = trim($to, ',');
+
+	$to = explode(',', $to);
+
+	$to_mandrill = array_map(function($email_address){return array('email' => $email_address);}, $to);
+
+	$message = array(
+		'subject'		=> $subject,
+		'text'			=> $content,
+		'from_email'	=> $from,
+		'to'			=> $to_mandrill,
+	);
+
+	try {
+		$mandrill = new Mandrill(); 
+		$mandrill->messages->send($message, true);
+	}
+	catch (Mandrill_Error $e)
+	{
+		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
+		return 'Mail niet verzonden. Fout in mail service.';
+	}
+
+	$to = (is_array($to)) ? implode(', ', $to) : $to;
+
+	log_event($s_id, 'mail', 'mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
+
+	return false;
+}
+
+/*
+ *
+ */
+function render_select_options($option_ary, $selected)
+{
+	foreach ($option_ary as $key => $value)
+	{
+		echo '<option value="' . $key . '"';
+		echo ($key == $selected) ? ' selected="selected"' : '';
+		echo '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
+	}
+}

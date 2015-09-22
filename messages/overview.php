@@ -3,7 +3,6 @@ ob_start();
 $rootpath = '../';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_form.php';
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
@@ -106,7 +105,7 @@ echo '<div class="row">';
 echo '<div class="col-sm-12">';
 echo '<div class="input-group">';
 echo '<div class="input-group-addon">';
-echo '<i class="fa fa-files-o"></i>';
+echo '<i class="fa fa-clone"></i>';
 echo '</div>';
 echo '<select class="form-control" id="cat_hsh" value="' . $cat_hsh . '" name="cat_hsh">';
 render_select_options($cats_hsh_name, $cat_hsh);

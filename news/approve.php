@@ -1,15 +1,14 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_mailfunctions.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 $id = $_GET["id"];
 
 if ($db->update('news', array('approved' => 't', 'published' => 't'), array('id' => $id)))
 {
-	$alert->success("Nieuwsbericht goedgekeurd");
+	$alert->success('Nieuwsbericht goedgekeurd');
 }
 else
 {

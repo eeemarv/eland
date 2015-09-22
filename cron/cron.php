@@ -24,10 +24,6 @@ require_once $rootpath . 'cron/inc_upgrade.php';
 require_once $rootpath . 'cron/inc_processqueue.php';
 require_once $rootpath . 'cron/inc_saldo_mail.php';
 
-require_once $rootpath . 'includes/inc_mailfunctions.php';
-
-require_once $rootpath . 'includes/inc_eventlog.php';
-
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
 	'region'	=> 'eu-central-1',

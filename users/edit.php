@@ -4,8 +4,6 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_passwords.php';
-require_once $rootpath . 'includes/inc_form.php';
-require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 $id = $_GET['id'];
 $user = $contact = array();

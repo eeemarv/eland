@@ -1,19 +1,19 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 $uid = $_GET['uid'];
 $cid = $_GET['cid'];
 
 if(!isset($cid))
 {
-	header("Location: view.php?id=$uid");	
+	header('Location: ' . $rootpath . 'users/view.php?id=' . $uid);	
 }
 
-if(isset($_POST["zend"])){
+if(isset($_POST['zend']))
+{
 	$contact = array();
 	$contact["id_type_contact"] = $_POST["id_type_contact"];
 	$contact["value"] = $_POST["value"];

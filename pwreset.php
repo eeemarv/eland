@@ -5,7 +5,6 @@ $role = 'anonymous';
 $allow_anonymous_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_passwords.php';
-require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 if ($s_id)
 {

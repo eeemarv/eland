@@ -3,11 +3,10 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 if (!isset($_GET['id']))
 {
-	header("Location: overview.php");
+	header('Location: ' . $rootpath . 'users/overview.php');
 	exit;
 }
 
@@ -15,7 +14,7 @@ $id = $_GET['id'];
 
 $user = readuser($id);
 
-if(isset($_POST["zend"]))
+if(isset($_POST['zend']))
 {
 	$pw = trim($_POST['pw']);
 

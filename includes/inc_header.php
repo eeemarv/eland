@@ -78,7 +78,7 @@ if ($s_letscode)
 	{
 		$menu = array(
 			'users/overview.php'				=> array('users', 'Gebruikers'),
-			'categories/overview.php'	 		=> array('files-o', 'Categorieën'),
+			'categories/overview.php'	 		=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys/overview.php'				=> array('key', 'Apikeys'),
 			'type_contact/overview.php'			=> array('circle-o-notch', 'Contact types'),
@@ -145,6 +145,7 @@ else
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
 		$main_menu['interlets/userview.php'] = array('share-alt', 'Interlets');
+		$main_menu['docs.php'] = array('files-o', 'Documenten');
 	}
 
 	$menu[] = $main_menu;

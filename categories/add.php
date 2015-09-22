@@ -3,7 +3,6 @@ ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_form.php';
 
 $cat = array();
 
@@ -59,7 +58,7 @@ while ($row = $rs->fetch())
 $id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
 
 $h1 = 'Categorie toevoegen';
-$fa = 'files-o';
+$fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 

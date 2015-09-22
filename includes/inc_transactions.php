@@ -1,7 +1,5 @@
 <?php
 /**
- * Class to perform eLAS transactions
- *
  * This file is part of eLAS http://elas.vsbnet.be
  *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
@@ -16,8 +14,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
 */
-
-require_once $rootpath . 'includes/inc_mailfunctions.php';
 
 function generate_transid()
 {

@@ -1,7 +1,5 @@
 <?php
 /**
- * Class to perform eLAS password functions
- *
  * This file is part of eLAS http://elas.vsbnet.be
  *
  * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
@@ -14,10 +12,6 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  * GNU General Public License for more details.
-*/
-/** Provided functions:
- * password_strength($password, $username = null)	Check the strength of a password
- * sendactivationmail($password, $user,$s_id)		Send the password to the user
 */
 
 function sendactivationmail($password, $user)
@@ -36,8 +30,8 @@ function sendactivationmail($password, $user)
 		return 0;
 	}
 
-	$systemtag = readconfigfromdb("systemtag");
-	$systemletsname = readconfigfromdb("systemname");
+	$systemtag = readconfigfromdb('systemtag');
+	$systemletsname = readconfigfromdb('systemname');
 	$subject = "[eLAS-";
 	$subject .= $systemtag;
 	$subject .= "] eLAS account activatie voor $systemletsname";
@@ -64,15 +58,13 @@ function sendactivationmail($password, $user)
 	$content .= "\n\n";
 
 	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-	$content .= readconfigfromdb("support");
+	$content .= readconfigfromdb('support');
 	$content .= "\n\n";
 	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
 
 	sendemail($from,$to,$subject,$content);
 
-	log_event($s_id,"Mail","Activation mail sent to $to");
-
-	echo "OK - Activatiemail verstuurd";
+	log_event($s_id, 'Mail', 'Activation mail sent to ' . $to);
 }
 
 function password_strength($password, $username = null)

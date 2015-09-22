@@ -26,7 +26,7 @@ if(isset($_POST['zend']))
 $fullname = $db->fetchColumn('SELECT fullname FROM categories WHERE id = ?', array($id));
 
 $h1 = 'Categorie verwijderen : ' . $fullname;
-$fa = 'files-o';
+$fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 
