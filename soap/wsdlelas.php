@@ -107,15 +107,15 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 	log_event('','debug','Transaction request');
 	
-	if(check_duplicate_transaction($transid) == 1)
+	if (check_duplicate_transaction($transid))
 	{
 		log_event('','Soap','Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
 	}
 
-	if(check_apikey($apikey, 'interlets'))
+	if (check_apikey($apikey, 'interlets'))
 	{
-		if(readconfigfromdb('maintenance') == 1)
+		if(readconfigfromdb('maintenance'))
 		{
 			log_event('', 'Soap', 'Transaction ' . $transid . ' deferred (offline)');
 			return 'OFFLINE';
