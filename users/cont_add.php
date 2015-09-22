@@ -31,10 +31,16 @@ if(isset($_POST["zend"]))
 	$alert->error('Contact niet opgeslagen.');
 }
 
+$tc = array();
 
-$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+$rs = $db->fetchAll('SELECT id, name FROM type_contact');
 
-assoc($tc);
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$tc[$row['id']] = $row['name'];
+}
 
 $user = readuser($uid);
 

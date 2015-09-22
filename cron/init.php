@@ -61,14 +61,15 @@ echo 'Sync the image files.' . $r;
 
 $possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
 
-$user_images = $db->fetchAll('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+$rs = $db->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
 
-assoc($user_images);
+$rs->execute();
 
-assoc($user_images);
-
-foreach($user_images as $user_id => $filename)
+while($row = $rs->fetch())
 {
+	$filename = $row['PictureFile'];
+	$user_id = $row['id'];
+
 	list($f_schema) = explode('_', $filename);
 
 	$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
@@ -210,13 +211,20 @@ echo 'Sync image files ready.' . $r;
 
 echo 'Cleanup orphaned contacts. ' . $r;
 
-$orphaned_contacts = $db->fetchAll('select c.id, c.value
+$orphaned_contacts = array();
+
+$rs = $db->prepare('select c.id, c.value
 	from contact c
 	left join users u
 		on c.id_user = u.id
 	where u.id IS NULL');
-	
-assoc($orphaned_contacts);
+
+$rs->execute();
+
+while($row = $rs->fetch())
+{
+	$orphaned_contacts[$row['id']] = $row['value'];
+}
 
 $count = count($orphaned_contacts);
 

@@ -158,9 +158,16 @@ if ($_POST['zend'])
 
 	if (!count($errors))
 	{
-		$contact_types = $db->fetchAll('SELECT abbrev, id FROM type_contact');
+		$contact_types = array();
 
-		assoc($contact_types);
+		$rs = $db->prepare('SELECT abbrev, id FROM type_contact');
+
+		$rs->execute();
+
+		while ($row = $rs->fetch())
+		{
+			$contact_types[$row['abbrev']] = $row['id'];
+		}
 
 		if (!$id)
 		{
@@ -241,12 +248,20 @@ if ($_POST['zend'])
 			{
 				$alert->success('Gebruiker aangepast.');
 
-				$stored_contacts = $db->fetchAll('SELECT c.id, tc.abbrev, c.value, c.flag_public
+				$stored_contacts = array();
+
+				$rs = $db->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
 					FROM type_contact tc, contact c
 					WHERE tc.id = c.id_type_contact
-						AND c.id_user = ' . $id);
+						AND c.id_user = ?');
+				$rs->bindValue(1, $id);
 
-				assoc($stored_contacts);
+				$rs->execute();
+
+				while ($row = $rs->fetch())
+				{
+					$stored_contacts[$row['id']] = $row;
+				}
 
 				foreach ($contact as $value)
 				{

@@ -5,32 +5,32 @@ $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_form.php';
 
-$posted_list = array();
+$cat = array();
 
 if (isset($_POST["zend"]))
 {
-	$posted_list["name"] = $_POST["name"];
-	$posted_list["id_parent"] = $_POST["id_parent"];
-	$posted_list["leafnote"] = ($_POST["id_parent"] == 0) ? 0 : 1;
+	$cat['name'] = $_POST['name'];
+	$cat['id_parent'] = $_POST['id_parent'];
+	$cat['leafnote'] = ($_POST['id_parent'] == 0) ? 0 : 1;
 
-	$error_list = array();
-	if (!isset($posted_list['name'])|| (trim($posted_list['name']) == ''))
+	$errors = array();
+	if (!isset($cat['name'])|| (trim($cat['name']) == ''))
 	{
-		$error_list[] = 'Vul naam in!';
+		$errors[] = 'Vul naam in!';
 	}
-	if (!isset($posted_list['id_parent'])|| (trim($posted_list['id_parent']) == ''))
+	if (!isset($cat['id_parent'])|| (trim($cat['id_parent']) == ''))
 	{
-		$error_list[] = 'Vul hoofdrubriek in!';
+		$errors[] = 'Vul hoofdrubriek in!';
 	}
 
-	if (!count($error_list))
+	if (!count($errors))
 	{
-		$posted_list['cdate'] = date('Y-m-d H:i:s');
-		$posted_list['id_creator'] = $s_id;
-		$posted_list['fullname'] = ($posted_list['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array((int) $posted_list["id_parent"])) . ' - ' : '';
-		$posted_list['fullname'] .= $posted_list['name'];
+		$cat['cdate'] = date('Y-m-d H:i:s');
+		$cat['id_creator'] = $s_id;
+		$cat['fullname'] = ($cat['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array((int) $cat['id_parent'])) . ' - ' : '';
+		$cat['fullname'] .= $cat['name'];
 
-		if ($db->insert('categories', $posted_list))
+		if ($db->insert('categories', $cat))
 		{
 			$alert->success('Categorie toegevoegd.');
 			header('Location: ' . $rootpath . 'categories/overview.php');
@@ -46,10 +46,17 @@ if (isset($_POST["zend"]))
 }
 
 $parent_cats = array(0 => '-- Hoofdcategorie --');
-$pcats = $db->fetchAll('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
-assoc($pcats);
-$parent_cats += $pcats;
-$id_parent = ($posted_list['id_parent']) ? $posted_list['id_parent'] : 0;
+
+$rs = $db->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$parent_cats[$row['id']] = $row['name'];
+}
+
+$id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
 
 $h1 = 'Categorie toevoegen';
 $fa = 'files-o';
@@ -65,9 +72,9 @@ echo '<div class="form-group">';
 echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="name" name="name" ';
-echo 'value="' . $posted_list['name'] . '" required>';
-if(isset($error_list["name"])){
-	echo $error_list["name"];
+echo 'value="' . $cat['name'] . '" required>';
+if(isset($errors["name"])){
+	echo $errors["name"];
 }
 echo '</div>';
 echo '</div>';
@@ -78,8 +85,8 @@ echo '<div class="col-sm-10">';
 echo '<select name="id_parent" id="id_parent" class="form-control">';
 render_select_options($parent_cats, $id_parent);
 echo '</select>';
-if(isset($error_list["id_parent"])){
-	echo $error_list["id_parent"];
+if(isset($errors["id_parent"])){
+	echo $errors["id_parent"];
 }
 echo '</div>';
 echo '</div>';

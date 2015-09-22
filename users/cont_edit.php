@@ -37,8 +37,17 @@ else
 	$contact = $db->fetchAssoc('SELECT * FROM contact WHERE id = ?', array($cid));
 }
 
-$tc = $db->fetchAll('SELECT id, name FROM type_contact');
-assoc($tc);
+$tc = array();
+
+$rs = $db->prepare('SELECT id, name FROM type_contact');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$tc[$row['id']] = $row['name'];
+}
+
 $user = readuser($uid);
 
 $h1 = 'Contact aanpassen';

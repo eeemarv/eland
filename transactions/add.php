@@ -209,12 +209,19 @@ else
 	}
 }
 
-$internal_letsgroup_prefixes = $db->fetchAll('SELECT id, prefix
+$internal_letsgroup_prefixes = array();
+
+$rs = $db->prepare('SELECT id, prefix
 	FROM letsgroups
 	WHERE apimethod = \'internal\'
 	ORDER BY prefix asc');
 
-assoc($internal_letsgroup_prefixes);
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$internal_letsgroup_prefixes[$row['id']] = $row['prefix'];
+}
 
 foreach ($internal_letsgroup_prefixes as $letsgroup_id => $letsgroup_prefix)
 {

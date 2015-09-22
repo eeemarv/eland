@@ -453,49 +453,58 @@ function cleanup_messages()
 	}
 
 	// remove orphaned images.
-	$orphan_images = $db->fetchAll('SELECT mp.id, mp."PictureFile"
+	$rs = $db->prepare('SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
 		LEFT JOIN messages m ON mp.msgid = m.id
 		WHERE m.id IS NULL');
 
-	assoc($orphan_images);
+	$rs->execute();
 
-	if (count($orphan_images))
+	while ($row = $rs->fetch())
 	{
-		foreach ($orphan_images as $id => $file)
-		{
-			$result = $s3->deleteObject(array(
-				'Bucket' => getenv('S3_BUCKET'),
-				'Key'    => $file,
-			));
+		$result = $s3->deleteObject(array(
+			'Bucket' => getenv('S3_BUCKET'),
+			'Key'    => $row['PictureFile'],
+		));
 
-			$db->delete('msgpictures', array('id' => $id));
-		}
+		$db->delete('msgpictures', array('id' => $row['id']));
 	}
 
 	// update counts for each category
 
-	$offer_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
-		FROM messages m, users u
-		WHERE  m.id_user = u.id
-			AND u.status IN (1, 2, 3)
-			AND msg_type = 1
-		GROUP BY m.id_category');
+	$offer_count = $want_count = array();
 
-	assoc($offer_count);
+	$rs = $db->prepare('select m.id_category, count(m.*)
+		from messages m, users u
+		where  m.id_user = u.id
+			and u.status IN (1, 2, 3)
+			and msg_type = 1
+		group by m.id_category');
 
-	$want_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
-		FROM messages m, users u
-		WHERE  m.id_user = u.id
-			AND u.status IN (1, 2, 3)
-			AND msg_type = 0
-		GROUP BY m.id_category');
+	$rs->execute();
 
-	assoc($want_count);
+	while ($row = $rs->fetch())
+	{
+		$offer_count[$row['id_category']] = $row['count'];
+	}
 
-	$all_cat = $db->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
-		FROM categories
-		WHERE id_parent IS NOT NULL');
+	$rs = $db->prepare('select m.id_category, count(m.*)
+		from messages m, users u
+		where  m.id_user = u.id
+			and u.status IN (1, 2, 3)
+			and msg_type = 0
+		group by m.id_category');
+
+	$rs->execute();
+
+	while ($row = $rs->fetch())
+	{
+		$want_count[$row['id_category']] = $row['count'];
+	}
+
+	$all_cat = $db->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
+		from categories
+		where id_parent is not null');
 
 	foreach ($all_cat as $val)
 	{
@@ -528,21 +537,38 @@ function saldo_update()
 {
 	global $db, $r;
 
-	$user_balances = $db->fetchAll('select id, saldo from users');
+	$user_balances = $min = $plus = array();
 
-	assoc($user_balances);
+	$rs = $db->prepare('select id, saldo from users');
 
-	$min = $db->fetchAll('select id_from, sum(amount)
+	$rs->execute();
+
+	while ($row = $rs->fetch())
+	{
+		$user_balances[$row['id']] = $row['saldo'];
+	}
+
+	$rs = $db->prepare('select id_from, sum(amount)
 		from transactions
 		group by id_from');
 
-	assoc($min);
+	$rs->execute();
 
-	$plus = $db->fetchAll('select id_to, sum(amount)
+	while ($row = $rs->fetch())
+	{
+		$min[$row['id_from']] = $row['sum'];
+	}
+
+	$rs = $db->prepare('select id_to, sum(amount)
 		from transactions
 		group by id_to');
 
-	assoc($plus);
+	$rs->execute();
+
+	while ($row = $rs->fetch())
+	{
+		$plus[$row['id_to']] = $row['sum'];
+	}
 
 	foreach ($user_balances as $id => $balance)
 	{
@@ -602,9 +628,16 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
 	{
-		$lastrun_ary = $db->fetchAll('select cronjob, lastrun from cron');
+		$lastrun_ary = array();
 
-		assoc($lastrun_ary);
+		$rs = $db->prepare('select cronjob, lastrun from cron');
+
+		$rs->execute();
+
+		while ($row = $rs->fetch())
+		{
+			$lastrun_ary[$row['cronjob']] = $row['lastrun'];
+		}
 	}
 
 	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))

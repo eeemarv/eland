@@ -82,45 +82,55 @@ if(isset($_POST['delete']))
 			}
 
 			// remove orphaned images.
-			$orphan_images = $db->fetchAll('SELECT mp.id, mp."PictureFile"
+
+			$rs = $db->prepare('SELECT mp.id, mp."PictureFile"
 				FROM msgpictures mp
 				LEFT JOIN messages m ON mp.msgid = m.id
 				WHERE m.id IS NULL');
 
-			assoc($orphan_images);
+			$rs->execute();
 
-			if (count($orphan_images))
+			while ($row = $rs->fetch())
 			{
-				foreach ($orphan_images as $msgp_id => $file)
-				{
-					$result = $s3->deleteObject(array(
-						'Bucket' => getenv('S3_BUCKET'),
-						'Key'    => $file,
-					));
+				$result = $s3->deleteObject(array(
+					'Bucket' => getenv('S3_BUCKET'),
+					'Key'    => $row['PictureFile'],
+				));
 
-					$db->delete('msgpictures', array('id' => $msgp_id));
-				}
+				$db->delete('msgpictures', array('id' => $row['id']));
 			}
 
 			// update counts for each category
 
-			$offer_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
+			$offer_count = $want_count = array();
+
+			$rs = $db->prepare('SELECT m.id_category, count(m.*)
 				FROM messages m, users u
 				WHERE  m.id_user = u.id
 					AND u.status IN (1, 2, 3)
 					AND msg_type = 1
 				GROUP BY m.id_category');
 
-			assoc($offer_count);
+			$rs->execute();
 
-			$want_count = $db->fetchAll('SELECT m.id_category, COUNT(m.*)
+			while ($row = $rs->fetch())
+			{
+				$offer_count[$row['id_category']] = $row['count'];
+			}
+
+			$rs = $db->prepare('SELECT m.id_category, count(m.*)
 				FROM messages m, users u
 				WHERE  m.id_user = u.id
 					AND u.status IN (1, 2, 3)
 					AND msg_type = 0
 				GROUP BY m.id_category');
 
-			assoc($want_count);
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$want_count[$row['id_category']] = $row['count'];
+			}
 
 			$all_cat = $db->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
 				FROM categories

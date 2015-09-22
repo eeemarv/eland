@@ -128,11 +128,16 @@ $letsgroup_id = $db->fetchColumn('SELECT id
 	FROM letsgroups
 	WHERE apimethod = \'internal\'');
 
-$cat_list = $db->fetchAll('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
+$cat_list = array('' => '');
 
-assoc($cat_list);
+$rs = $db->prepare('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
 
-$cat_list = array('' => '') + $cat_list;
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$cat_list[$row['id']] = $row['fullname'];
+}
 
 $currency = readconfigfromdb("currency");
 

@@ -72,7 +72,9 @@ $status_ary = array(
 
 $currency = readconfigfromdb('currency');
 
-$users = $db->fetchAll(
+$users = array();
+
+$rs = $db->prepare(
 	'SELECT id, fullname, letscode,
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
@@ -80,7 +82,13 @@ $users = $db->fetchAll(
 	FROM users
 	WHERE status IN (0, 1, 2, 5, 6)
 	ORDER BY letscode');
-assoc($users);
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$users[$row['id']] = $row;
+}
 
 list($to_letscode) = explode(' ', $_POST['to_letscode']);
 list($from_letscode) = explode(' ', $_POST['from_letscode']);
@@ -308,13 +316,21 @@ if ($_POST['zend'])
 			}
 		} 
 
-		$users = $db->fetchAll(
+		$users = array();
+
+		$users = $db->prepare(
 			'SELECT id, fullname, letscode,
 				accountrole, status, saldo, minlimit, maxlimit, adate
 			FROM users
 			WHERE status IN (0, 1, 2, 5, 6)
 			ORDER BY letscode');
-		assoc($users);
+
+		$rs->execute();
+
+		while($row = $rs->fetch())
+		{
+			$users[$row['id']] = $row;
+		}
 	}
 }
 
@@ -624,14 +640,21 @@ function mail_mass_transaction($mail_ary)
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'', array($one_user_id));
 
-	$mailaddr = $db->fetchAll('select u.id, c.value
+	$mailaddr = array();
+
+	$rs = $db->prepare('select u.id, c.value
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'');
 
-	assoc($mailaddr);
+	$rs->execute();
+
+	while ($row = fetch())
+	{
+		$mailaddr[$row['id']] = $row['value'];
+	}
 
 	$r = "\r\n";
 	$currency = readconfigfromdb('currency');

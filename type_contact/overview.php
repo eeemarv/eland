@@ -6,10 +6,17 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $types = $db->fetchAll('select * from type_contact tc');
 
-$contact_count = $db->fetchAll('select id_type_contact, count(id)
+$contact_count = array();
+
+$rs = $db->prepare('select id_type_contact, count(id)
 	from contact
 	group by id_type_contact');
-assoc($contact_count);
+$rs->execute();
+
+while($row = $rs->fetch())
+{
+	$contact_count[$row['id_type_contact']] = $row['count'];
+}
 
 $top_buttons = '<a href="' . $rootpath . 'type_contact/add.php" class="btn btn-success"';
 $top_buttons .= ' title="Contact type toevoegen"><i class="fa fa-plus"></i>';

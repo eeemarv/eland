@@ -1,20 +1,27 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
-require_once($rootpath."includes/inc_form.php");
+require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_form.php';
 
-if (!$_GET["id"])
+if (!$_GET['id'])
 {
 	header('Location: overview.php');
 }
 
 $id = $_GET['id'];
 
-$cats = $db->fetchAll('SELECT id, * FROM categories ORDER BY fullname');
+$cats = array();
 
-assoc($cats);
+$rs = $db->prepare('SELECT id, * FROM categories ORDER BY fullname');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$cats[$row['id']] = $row;
+}
 
 $child_count_ary = array();
 
@@ -27,27 +34,23 @@ $cat = $cats[$id];
 
 if(isset($_POST["zend"])){
 
-	$cat["name"] = $_POST["name"];
-	$cat["id_parent"] = $_POST["id_parent"];
-	$cat["leafnote"] = ($_POST["id_parent"] == 0) ? 0 : 1;
+	$cat['name'] = $_POST['name'];
+	$cat['id_parent'] = $_POST['id_parent'];
+	$cat['leafnote'] = ($_POST['id_parent'] == 0) ? 0 : 1;
 
-	$error_list = array();
-	if (!(isset($cat["name"])|| (trim($cat["name"] )=="")))
+	if (!$cat['name'])
 	{
-		$error_list["name"]= 'Vul naam in!';	
+		$alert->error('Vul naam in!');	
 	}
-	if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
+	else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 	{
-		$error_list[] = 'a'; // display error in alert;
 		$alert->error('Hoofdcategoriën kunnen geen berichten bevatten.');
 	}
-	if ($cat['leafnote'] && $child_count_ary[$id])
+	else if ($cat['leafnote'] && $child_count_ary[$id])
 	{
-		$error_list[] = 'b'; // display error in alert;
 		$alert->error('Subcategoriën kunnen geen categoriën bevatten.');
 	}
-	
-	if (!count($error_list))
+	else
 	{
 		$prefix = ($cat['id_parent']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array($cat['id_parent'])) . ' - ' : '';
 		$cat['fullname'] = $prefix . $cat['name'];
@@ -56,23 +59,33 @@ if(isset($_POST["zend"])){
 		if ($db->update('categories', $cat, array('id' => $id)))
 		{
 			$alert->success('Categorie aangepast.');
-			$db->executeUpdate('UPDATE categories SET fullname = ? || \'-\' || name WHERE id_parent = ?', array($cat['name'], $id));
+			$db->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', array($cat['name'], $id));
 			header('Location: overview.php');
 			exit;
 		}
 
 		$alert->error('Categorie niet aangepast.');
 	}
-	else
-	{
-		$alert->error('Categorie niet aangepast.');
-	}
 }
+
+$parent_cats = array(0 => '-- Hoofdcategorie --');
+
+$rs = $db->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$parent_cats[$row['id']] = $row['name'];
+}
+
+$id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
+
 
 $h1 = 'Categorie aanpassen : ' . $cat['name'];
 $fa = 'files-o';
 
-include($rootpath."includes/inc_header.php");
+include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -85,22 +98,12 @@ echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="name" name="name" ';
 echo 'value="'. $cat["name"] . '" required>';
 echo '</div>';
-if (isset($error_list["name"]))
-{
-	echo '<p class="danger">' .$error_list['name'] . '</p>';
-}
 echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
 echo '<div class="col-sm-10">';
 echo '<select class="form-control" id="id_parent" name="id_parent">';
-$parent_cats = $db->fetchAll('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
-assoc($parent_cats);
-$parent_cats = array(0 => '-- Hoofdcategorie --') + $parent_cats;
-
-$id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
-
 render_select_options($parent_cats, $id_parent);
 echo '</select>';
 echo '</div>';

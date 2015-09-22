@@ -4,12 +4,19 @@ $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$users = $db->fetchAll('select *
+$users = $out = $in = array();
+
+$rs = $db->prepare('select *
 	from users
 	where status in (1, 2)
 	order by letscode');
 
-assoc($users);
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$users[$row['id']] = $row;
+}
 
 if (isset($_GET['zend']))
 {
@@ -26,19 +33,31 @@ if (isset($_GET['zend']))
 
 	if ($date)
 	{
-		$out = $db->fetchAll('select id_to, sum(amount)
+		$rs = $db->prepare('select id_to, sum(amount)
 			from transactions
-			where date >= \'' . $date . '\'
+			where date >= ?
 			group by id_to');
+		$rs->bindValue(1, $date);
 
-		assoc($out);
+		$rs->execute();
 
-		$in = $db->fetchAll('select id_from, sum(amount)
+		while($row = $rs->fetch())
+		{
+			$out[$row['id_to']] = $row['sum'];
+		}
+
+		$rs = $db->prepare('select id_from, sum(amount)
 			from transactions
-			where date >= \'' . $date . '\'
+			where date >= ?
 			group by id_from');
+		$rs->bindValue(1, $date);
 
-		assoc($in);
+		$rs->execute();
+
+		while($row = $rs->fetch())
+		{
+			$out[$row['id_from']] = $row['sum'];
+		}
 
 		array_walk($users, function(&$user, $id) use ($out, $in){
 			$user['saldo'] += $in[$id];

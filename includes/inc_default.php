@@ -153,21 +153,4 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
-function assoc(&$ary)
-{
-	if (!is_array($ary))
-	{
-		return;
-	}
-
-	$out = array();
-
-	foreach ($ary as $v)
-	{
-		list($key, $val) = array_values($v);
-		$out[$key] = (sizeof($v) > 2) ? $v : $val;
-	}
-	$ary = $out;
-}
-
 require_once $rootpath . 'includes/inc_dbconfig.php';

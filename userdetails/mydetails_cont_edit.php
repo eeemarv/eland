@@ -53,9 +53,16 @@ if(isset($_POST["zend"]))
 	}
 }
 
-$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+$tc = array();
 
-assoc($tc);
+$rs = $db->prepare('SELECT id, name FROM type_contact');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$tc[$row['id']] = $row['name'];
+}
 
 $h1 = 'Contact aanpassen';
 

@@ -16,8 +16,17 @@ $end_unix = time();
 $begin_unix = $end_unix - ($days * 86400);
 $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 
-$balance = $db->fetchAll('select id, saldo from users');
-assoc($balance);
+$balance = array();
+
+$rs = $db->prepare('select id, saldo from users');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$balance[$row['id']] = $row['saldo'];
+}
+
 $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
 $acc = array_map(function (){ return 0; }, $balance);
 

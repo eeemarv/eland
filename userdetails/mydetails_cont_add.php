@@ -5,9 +5,16 @@ $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_form.php';
 
-$tc = $db->fetchAll('SELECT id, name FROM type_contact');
+$tc = array();
 
-assoc($tc);
+$rs = $db->prepare('SELECT id, name FROM type_contact');
+
+$rs->execute();
+
+while ($row = $rs->fetch())
+{
+	$tc[$row['id']] = $row['name'];
+}
 
 if(isset($_POST['zend']))
 {
