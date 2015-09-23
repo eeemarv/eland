@@ -14,7 +14,7 @@ if (isset($_POST['zend']))
 		'version'	=> '2006-03-01',
 	));
 	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
-		
+
 	$tmpfile = $_FILES['picturefile']['tmp_name'];
 	$file = $_FILES['picturefile']['name'];
 	$file_size=$_FILES['picturefile']['size'];

@@ -234,7 +234,6 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
-
 echo '<div class="form-group">';
 echo '<label for="first_name" class="col-sm-2 control-label">Voornaam*</label>';
 echo '<div class="col-sm-10">';

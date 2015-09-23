@@ -6,6 +6,7 @@ class elas_mongo
 	public $logs;
 	public $limit_events;
 	public $settings;
+	public $docs;
 
 	public function __construct($schema)
 	{
@@ -31,10 +32,12 @@ class elas_mongo
 		$log_collection = $this->schema . '_logs';
 		$limit_events_collection = $this->schema . '_limit_events';
 		$settings_collection = $this->schema . '_settings';
+		$docs = $this->schema . '_docs';
 
 		$this->logs = $mdb->$log_collection;
 		$this->limit_events = $mdb->$limit_events_collection;
 		$this->settings = $mdb->$settings_collection;
+		$this->docs = $mdb->$docs;
 
 		return $this;
 	}

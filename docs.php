@@ -5,35 +5,89 @@ $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
 $q = ($_GET['q']) ?: '';
-$hsh = ($_GET['hsh']) ?: '';
 
-$users = $db->fetchAll('SELECT * FROM users u
-		WHERE status IN (1, 2, 3) 
-		AND u.accountrole <> \'guest\'');
+$bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-$currency = readconfigfromdb('currency');
-
-$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value
-	FROM contact c, type_contact tc, users u
-	WHERE tc.id = c.id_type_contact
-		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')
-		AND u.id = c.id_user
-		AND u.status IN (1, 2, 3)
-		AND c.flag_public = 1');
-
-$contacts = array();
-
-foreach ($c_ary as $c)
+if ($_POST['zend'])
 {
-	$contacts[$c['id_user']][$c['abbrev']][] = $c['value'];
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
+	));
+
+	$tmpfile = $_FILES['file']['tmp_name'];
+	$file = $_FILES['file']['name'];
+	$file_size = $_FILES['file']['size'];
+	$type = $_FILES['file']['type'];
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+	if ($file_size > 1024 * 1024 * 10)
+	{
+		$alert->error('Het bestand is te groot. De maximum grootte is 10MB.');
+	}
+	else if (!$file)
+	{
+		$alert->error('Geen bestand geselecteerd.');
+	}
+	else if (!($token = $_POST['token']))
+	{
+		$alert->error('Een token ontbreekt.');
+	}
+	else if (!$redis->get($schema . '_d_' . $token))
+	{
+		$alert->error('Geen geldig token');
+	}
+	else
+	{
+		$redis->del($schema . '_d_' . $token);
+
+		$access = $_POST['access'];
+
+		$mid = new MongoId();
+
+		$filename = $schema . '_d_' . $mid . '_' . sha1(time() . mt_rand(0, 1000000)) . '.' . $ext;
+
+		$elas_mongo->connect();
+
+		$doc = array(
+			'_id' 			=> $mid,
+			'filename'		=> $filename,
+			'org_filename'	=> $file,
+			'access'		=> $access,
+			'time'			=> gmdate('Y-m-d H:i:s'),
+		);
+
+		if ($name = $_POST['name'])
+		{
+			$doc['name'] = $name;
+		}
+
+		$elas_mongo->docs->insert($doc);
+
+		$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+			'params'	=> array(
+				'CacheControl'	=> 'public, max-age=31536000',
+				'ContentType'	=> $type,
+			),
+		));
+
+		$alert->success('Het bestand is opgeladen.');
+		header('Location: ' . $rootpath . 'docs.php');
+		exit;
+	}
+
 }
+
+$token = sha1(time() . mt_rand(0, 1000000));
+$redis->set($schema . '_d_' . $token, '1');
+$redis->expire($schema . '_d_' . $token, 3600);
+
+$elas_mongo->connect();
+$docs = $elas_mongo->docs->find();
 
 $h1 = 'Documenten';
 $fa = 'files-o';
-
-$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>';
-$includejs .= '<script src="' . $rootpath . 'js/calc_sum.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -51,102 +105,90 @@ echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '"
 echo '</div>';
 echo '</div>';
 echo '</div>';
-echo '<input type="hidden" value="" id="combined-filter">';
-echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';
 echo '</div>';
 
-echo '<div class="pull-right hidden-xs">';
-echo 'Totaal: <span id="total"></span>';
-echo '</div>';
-
-echo '<ul class="nav nav-tabs" id="nav-tabs">';
-echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
-echo '<li><a href="#" class="bg-white" data-filter="6a501bbf">Admins</a></li>';
-echo '<li><a href="#" class="bg-white" data-filter="51505c3e">Leden</a></li>';
-echo '<li><a href="#" class="bg-white" data-filter="88ed65a3">Interlets</a></li>';
-echo '</ul>';
-
 //show table
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable"';
-echo ' data-filter="#combined-filter" data-filter-minimum="1">';
+echo ' data-filter="#q" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
-echo '<th data-sort-initial="true">Code</th>';
-echo '<th>Naam</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
-echo '<th data-hide="phone">Postc</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
-echo '<th data-hide="phone">Saldo</th>';
+echo '<th data-sort-initial="true">Naam</th>';
 echo '</tr>';
 
 echo '</thead>';
 echo '<tbody>';
 
-foreach($users as $value)
+foreach($docs as $val)
 {
-	$id = $value['id'];
+	echo '<tr>';
 
-	$class = $status_filter = '';
-
-	if ($value['status'] == 2)
-	{
-		$status_filter = '51505c3e';
-		$class = ' class="danger"';
-	}
-	else if ($newusertreshold < strtotime($value['adate']))
-	{
-		$status_filter = '6a501bbf';
-		$class = ' class="success"';
-	}
-
-	echo '<tr' . $class . ' data-balance="' . $value['saldo'] . '">';
-
-	echo '<td data-value="' . $status_filter . '">';
-	echo '<a href="memberlist_view.php?id=' .$id .'">';
-	echo $value['letscode'];
-	echo '</a></td>';
-	
 	echo '<td>';
-	echo '<a href="memberlist_view.php?id=' .$id .'">'.htmlspecialchars($value['fullname'],ENT_QUOTES).'</a></td>';
-	echo '<td>';
-	echo render_contacts($contacts[$value['id']]['tel']);
-	echo '</td>';
-	echo '<td>';
-	echo render_contacts($contacts[$value['id']]['gsm']);
-	echo '</td>';
-	echo '<td>' . $value['postcode'] . '</td>';
-	echo '<td>';
-	echo render_contacts($contacts[$value['id']]['mail'], 'mail');
+	echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $val['filename'] . '" target="_self">';
+	echo ($val['name']) ?: $val['org_filename'];
+	echo '</a>';
 	echo '</td>';
 
-	echo '<td>';
-	$balance = $value['saldo'];
-	if($balance < $value['minlimit'] || ($value['maxlimit'] != NULL && $balance > $value['maxlimit']))
-	{
-		echo '<span class="text-danger">' . $balance . '</span>';
-	}
-	else
-	{
-		echo $balance;
-	}
-
-	echo '</td>';
 	echo '</tr>';
 
 }
 echo '</tbody>';
 echo '</table>';
 
-echo '<div class="panel panel-default">';
+echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
+
+echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
-echo '<p>Totaal saldo van geselecteerde leden: <span id="sum"></span> ' . $currency . '</p>';
-echo '</div></div>';
+
+/*
+echo '<div class="form-group">';
+echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
+echo '<div class="col-sm-10">';
+echo '<select name="id_type_contact" id="id_type_contact" class="form-control" required>';
+render_select_options($tc, $contact['id_type_contact']);
+echo "</select>";
+echo '</div>';
+echo '</div>';
+*/
+echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
+
+echo '<div class="form-group">';
+echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="file" class="form-control" id="file" name="file" ';
+echo 'required>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="name" name="name">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
+echo '<div class="col-sm-10">';
+echo '<select type="file" class="form-control" id="access" name="access" ';
+echo 'required>';
+echo '<option value="0">Admin</option>';
+echo '<option value="1">Leden</option>';
+echo '<option value="2">Interlets</option>';
+echo '</select>';
+echo '</div>';
+echo '</div>';
+
+echo '<input type="submit" name="zend" value="Opladen" class="btn btn-default">';
+echo '<input type="hidden" value="' . $token . '" name="token">';
+
+echo '</div>';
+echo '</div>';
+echo '</form>';
 
 echo '</div>';
 echo '</div>';
@@ -154,28 +196,3 @@ echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-function render_contacts($contacts, $abbrev = null)
-{
-	if (count($contacts))
-	{
-		end($contacts);
-		$end = key($contacts);
-
-		$f = ($abbrev == 'mail') ? '<a href="mailto:%1$s">%1$s</a>' : '%1$s';
-
-		foreach ($contacts as $key => $contact)
-		{
-			echo sprintf($f, htmlspecialchars($contact, ENT_QUOTES));
-
-			if ($key == $end)
-			{
-				break;
-			}
-			echo '<br>';
-		}
-	}
-	else
-	{
-		echo '&nbsp;';
-	}
-}

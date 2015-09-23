@@ -12,6 +12,26 @@ $letsgroup_id = $db->fetchColumn('SELECT id
 	FROM letsgroups
 	WHERE apimethod = \'internal\'');
 
+$find = array();
+
+if ($letscode)
+{
+	list($l) = explode(' ', $letscode);
+	$find['letscode'] = strtolower(trim($l));
+}
+
+if ($type)
+{
+	$find['type'] = strtolower(trim($type));
+}
+
+if ($q)
+{
+	$find['event'] = array('$regex' => new MongoRegex('/' . $q . '/i'));
+}
+
+$rows = $elas_log->find($find);
+
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/eventlog.js"></script>';
@@ -57,26 +77,6 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
-
-$find = array();
-
-if ($letscode)
-{
-	list($l) = explode(' ', $letscode);
-	$find['letscode'] = strtolower(trim($l));
-}
-
-if ($type)
-{
-	$find['type'] = strtolower(trim($type));
-}
-
-if ($q)
-{
-	$find['event'] = array('$regex' => new MongoRegex('/' . $q . '/i'));
-}
-
-$rows = $elas_log->find($find);
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-bordered table-striped footable">';
