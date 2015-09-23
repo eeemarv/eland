@@ -6,17 +6,47 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$posted_list = array(); 
-	$posted_list["login"] = $_POST["login"];
-	$posted_list["email"] = $_POST["email"];
-	$posted_list["subject"] = $_POST["subject"];
-	$posted_list["description"] = $_POST["description"];
-	$posted_list["browser"] = $_SERVER['HTTP_USER_AGENT'];
-	$error_list = validate_input($posted_list);
+	$help = array(); 
+	$help['login'] = $_POST["login"];
+	$help['email'] = $_POST["email"];
+	$help['subject'] = $_POST["subject"];
+	$help['description'] = $_POST["description"];
+	$help['browser'] = $_SERVER['HTTP_USER_AGENT'];
 
-	if(empty($error_list))
+    $errors = array();
+   
+	if(empty($help['login']))
 	{
-		if (!($return_message = helpmail($posted_list)))
+		$errors[] = 'Vul een eLAS login in';
+	}
+
+	if(empty($help['email']))
+	{
+		$errors[] = 'Vul een E-mail adres in';
+	}
+
+	if(!($db->fetchColumn('select c.value
+		from contact c, type_contact tc
+		where c.id_type_contact = tc.id
+			and tc.abbrev = \'mail\'
+			and c.value = ?', array($help['email']))))
+	{
+		$errors[] = 'Dit mailadres is niet gekend in eLAS';
+	}
+
+	if(empty($help['subject']))
+	{
+        $errors[] = 'Geef een onderwerp op.';
+	}
+
+	if(empty($help['description']))
+	{
+		$errors[] = 'Geef een omschrijving van je probleem<.';
+	}
+
+	if(empty($errors))
+	{
+		if (!($return_message = helpmail($help)))
 		{
 			$alert->success('De support mail is verzonden.');
 			header('Location: index.php');
@@ -35,8 +65,8 @@ else
 	if(isset($s_id))
 	{
 		$user = readuser($s_id);
-		$posted_list['login'] = $user['login'];
-		$posted_list['email'] = $db->fetchColumn('select c.value
+		$help['login'] = $user['login'];
+		$help['email'] = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
@@ -68,23 +98,26 @@ echo '<form method="post" class="form-horizontal">';
 if ($s_id)
 {
 	echo '<div style="display:none;">';
+}
 
-	echo '<div class="form-group">';
-	echo '<label for="login" class="col-sm-2 control-label">Login</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="login" name="login" ';
-	echo 'value="' . $posted_list['login'] . '" required' . $readonly . '>';
-	echo '</div>';
-	echo '</div>';
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="text" class="form-control" id="login" name="login" ';
+echo 'value="' . $help['login'] . '" required' . $readonly . '>';
+echo '</div>';
+echo '</div>';
 
-	echo '<div class="form-group">';
-	echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="email" class="form-control" id="email" name="email" ';
-	echo 'value="' . $posted_list['email'] . '" required' . $readonly . '>';
-	echo '</div>';
-	echo '</div>';
+echo '<div class="form-group">';
+echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
+echo '<div class="col-sm-10">';
+echo '<input type="email" class="form-control" id="email" name="email" ';
+echo 'value="' . $help['email'] . '" required' . $readonly . '>';
+echo '</div>';
+echo '</div>';
 
+if ($s_id)
+{
 	echo '</div>';
 }
 
@@ -92,7 +125,7 @@ echo '<div class="form-group">';
 echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="subject" name="subject" ';
-echo 'value="' . $posted_list['subject'] . '" required>';
+echo 'value="' . $help['subject'] . '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -100,7 +133,7 @@ echo '<div class="form-group">';
 echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 echo '<div class="col-sm-10">';
 echo '<textarea name="description" class="form-control" id="description" rows="4" required>';
-echo $posted_list['description'];
+echo $help['description'];
 echo '</textarea>';
 echo '</div>';
 echo '</div>';
@@ -119,78 +152,40 @@ if (!$s_id)
 
 include $rootpath . 'includes/inc_footer.php';
 
-function validate_input($posted_list)
-{
-    $error_list = array();
-   
-	if(empty($posted_list['login']))
-	{
-		$error_list[] = 'Vul een eLAS login in';
-	}
 
-	if(empty($posted_list['email']))
-	{
-		$error_list[] = 'Vul een E-mail adres in';
-	}
 
-	$checkedaddress = checkmailaddress($posted_list['email']);
-
-	if(empty($checkedaddress))
-	{
-			$error_list[] = 'Dit mailadres is niet gekend in eLAS';
-	}
-
-	if(empty($posted_list[]))
-	{
-                $error_list["subject"] = 'Geef een onderwerp op.';
-	}
-
-	if(empty($posted_list[]))
-	{
-		$error_list[] = 'Geef een omschrijving van je probleem<.';
-	}
-	return $error_list;
-}
-
-function checkmailaddress($email)
-{
-	global $db;
-	$query = "SELECT c.value FROM contact c, type_contact tc WHERE c.id_type_contact = tc.id and tc.abbrev = 'mail' AND c.value = ?";
-	return ($db->fetchColumn($query, array($email))) ? true : false;
-}
-
-function helpmail($posted_list,$rootpath)
+function helpmail($help,$rootpath)
 {
 
 	global $rootpath, $s_id;
 
-	$mailfrom = trim($posted_list['email']);
+	$from = trim($help['email']);
 
-	$mailto = trim(readconfigfromdb('support'));
-	if (empty($mailto))
+	$to = trim(readconfigfromdb('support'));
+	if (empty($to))
 	{
 		return false;
 	}
 
-	$mailsubject = '[eLAS-' . readconfigfromdb('systemtag') . '] ' .$posted_list['subject'];
+	$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] ' .$help['subject'];
 
-    $mailcontent  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
-	$mailcontent .= "E-mail: {$posted_list['email']}\r\n";
-	$mailcontent .= "Login:  {$posted_list['login']}\r\n";
+    $content  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
+	$content .= "E-mail: {$help['email']}\r\n";
+	$content .= "Login:  {$help['login']}\r\n";
 	if ($s_id)
 	{
 		$user = readuser($s_id);
-		$mailcontent .= "Letscode:  {$user['letscode']}\r\n";
+		$content .= "Letscode:  {$user['letscode']}\r\n";
 	}
-	$mailcontent .= "Omschrijving:\r\n";
-	$mailcontent .= "{$posted_list['description']}\r\n";
-	$mailcontent .= "\r\n";
-	$mailcontent .= "User Agent:\r\n";
-        $mailcontent .= "{$posted_list['browser']}\r\n";
-	$mailcontent .= "\r\n";
-	$mailcontent .= "eLAS versie: Heroku \r\n";
-	$mailcontent .= "Webserver: " .gethostname() ."\r\n";
+	$content .= "Omschrijving:\r\n";
+	$content .= "{$help['description']}\r\n";
+	$content .= "\r\n";
+	$content .= "User Agent:\r\n";
+	$content .= "{$help['browser']}\r\n";
+	$content .= "\r\n";
+	$content .= "eLAS versie: Heroku \r\n";
+	$content .= "Webserver: " .gethostname() ."\r\n";
 
-	return sendemail($mailfrom, $mailto, $mailsubject, $mailcontent);
+	return sendemail($from, $to, $subject, $content);
 
 }

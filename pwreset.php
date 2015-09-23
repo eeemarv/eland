@@ -56,7 +56,7 @@ if ($token & $user_id)
 	
 	echo '<form method="post" class="form-horizontal">';
 	echo '<div class="form-group">';
-	echo '<label for="email" class="col-sm-2 control-label">Nieuw paswoord</label>';
+	echo '<label for="password" class="col-sm-2 control-label">Nieuw paswoord</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
 	echo 'value="' . $password . '" required>';
@@ -74,10 +74,11 @@ if ($token & $user_id)
 
 if ($_POST['zend'])
 {
-	$email = $_POST["email"];
+	$email = $_POST['email'];
+
 	if($email)
 	{
-		log_event($s_id,"System","Activation request for " .$email);
+		log_event($s_id, 'System', 'Activation request for ' .$email);
 		$mail_ary = $db->fetchAll('SELECT c.id_user, u.login
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
@@ -123,8 +124,8 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		$alert->error("Geef een mailadres op");
-		log_event($s_id,"System","Empty activation request");
+		$alert->error('Geef een mailadres op');
+		log_event($s_id, 'System', 'Empty activation request');
 	}
 }
 
