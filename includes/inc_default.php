@@ -7,34 +7,34 @@ if(!isset($rootpath))
 	$rootpath = '';
 }
 
-$cdn_bootstrap_css = (getenv('ELAS_CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
-$cdn_bootstrap_js = (getenv('ELAS_CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = (getenv('ELAS_CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
+$cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
+$cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
+$cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
 
-$cdn_footable_js = (getenv('ELAS_CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.js';
-$cdn_footable_sort_js = (getenv('ELAS_CDN_FOOTABLE_SORT_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.sort.js';
-$cdn_footable_filter_js = (getenv('ELAS_CDN_FOOTABLE_FILTER_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.filter.js';
-$cdn_footable_css = (getenv('ELAS_CDN_FOOTABLE_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/css/footable.core.min.css';
-$cdn_jssor_slider_mini_js = (getenv('ELAS_CDN_JSSOR_MINI_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jssor/js/jssor.slider.mini.js';
+$cdn_footable_js = (getenv('CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.js';
+$cdn_footable_sort_js = (getenv('CDN_FOOTABLE_SORT_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.sort.js';
+$cdn_footable_filter_js = (getenv('CDN_FOOTABLE_FILTER_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.filter.js';
+$cdn_footable_css = (getenv('CDN_FOOTABLE_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/css/footable.core.min.css';
+$cdn_jssor_slider_mini_js = (getenv('CDN_JSSOR_MINI_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jssor/js/jssor.slider.mini.js';
 
-$cdn_jqplot = (getenv('ELAS_CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
-$cdn_jquery = (getenv('ELAS_CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
+$cdn_jqplot = (getenv('CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
+$cdn_jquery = (getenv('CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
 
-$cdn_jquery_ui_widget = (getenv('ELAS_CDN_JQUERY_UI_WIDGET')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
-$cdn_jquery_iframe_transport = (getenv('ELAS_CDN_JQUERY_IFRAME_TRANSPORT')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
-$cdn_load_image = (getenv('ELAS_CDN_LOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
-$cdn_canvas_to_blob = (getenv('ELAS_CDN_CANVAS_TO_BLOB')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
-$cdn_jquery_fileupload = (getenv('ELAS_CDN_JQUERY_FILEUPLOAD')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
-$cdn_jquery_fileupload_process = (getenv('ELAS_CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
-$cdn_jquery_fileupload_image = (getenv('ELAS_CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
-$cdn_jquery_fileupload_validate = (getenv('ELAS_CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
+$cdn_jquery_ui_widget = (getenv('CDN_JQUERY_UI_WIDGET')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
+$cdn_jquery_iframe_transport = (getenv('CDN_JQUERY_IFRAME_TRANSPORT')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
+$cdn_load_image = (getenv('CDN_LOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
+$cdn_canvas_to_blob = (getenv('CDN_CANVAS_TO_BLOB')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
+$cdn_jquery_fileupload = (getenv('CDN_JQUERY_FILEUPLOAD')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
+$cdn_jquery_fileupload_process = (getenv('CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
+$cdn_jquery_fileupload_image = (getenv('CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
+$cdn_jquery_fileupload_validate = (getenv('CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
 
-$cdn_typeahead = (getenv('ELAS_CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js';
-$cdn_datepicker_css = (getenv('ELAS_CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
-$cdn_datepicker = (getenv('ELAS_CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
-$cdn_datepicker_nl = (getenv('ELAS_CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
+$cdn_typeahead = (getenv('CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js';
+$cdn_datepicker_css = (getenv('CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
+$cdn_datepicker = (getenv('CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
+$cdn_datepicker_nl = (getenv('CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
-$cdn_ckeditor = (getenv('ELAS_CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
+$cdn_ckeditor = (getenv('CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
 
 require_once $rootpath . 'vendor/autoload.php';
 

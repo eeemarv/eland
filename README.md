@@ -47,7 +47,8 @@ heroku addons:add mongolab
 
 * AWS_ACCESS_KEY
 * AWS_SECRET_ACCESS_KEY
-* S3_BUCKET
+* S3_BUCKET (bucket for images of profiles and messages)
+* S3_BUCKET_DOC (buckets for documents)
 * REDISTOGO_URL: addon redistogo (redis server)
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
@@ -82,23 +83,13 @@ By convention the schema is named after the so called system tag or letscode of 
 
 * ELAS_TIMEZONE: defaults to 'Europe/Brussels'
 * ELAS_DEBUG
-* ELAS_DB_DEBUG
 * ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
 
-CDN / defaults:
-
-* ELAS_CDN_JQPLOT: `//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/`
-* ELAS_CDN_JQUERY: `//code.jquery.com/jquery-2.1.3.min.js`
-* ELAS_CDN_TYPEAHEAD: `//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js`
-* ELAS_CDN_DATEPICKER_CSS: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css`
-* ELAS_CDN_DATEPICKER: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js`
-* ELAS_CDN_DATEPICKER_NL: `//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js`
-
+CDN urls of cdns see [includes/inc_default.php] for defaults
 
 ##Migrating a group from eLAS 3.1 to eLAS-Heroku
 
-
-For eLAS 2.6 see [here](https://eeemarv/elas-heroku/doc/migrate-eLAS-2.6.md)
+For eLAS 2.6 see [here](https://eeemarv/elas-heroku/setup/migrate-eLAS-2.6.md)
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command

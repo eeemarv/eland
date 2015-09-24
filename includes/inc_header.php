@@ -80,14 +80,14 @@ if ($s_letscode)
 			'users/overview.php'				=> array('users', 'Gebruikers'),
 			'categories/overview.php'	 		=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
-			'apikeys/overview.php'				=> array('key', 'Apikeys'),
+			'apikeys.php'						=> array('key', 'Apikeys'),
 			'type_contact/overview.php'			=> array('circle-o-notch', 'Contact types'),
 			'reports/overview.php'				=> array('calculator', 'Rapporten'),
 			'preferences/config.php'			=> array('gears', 'Instellingen'),
 			'export.php'						=> array('download', 'Export'),
 			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
-			'eventlog.php'						=> array('list', 'Logs'),
+			'logs.php'							=> array('list', 'Logs'),
 		);
 
 		echo '<li class="dropdown">';
