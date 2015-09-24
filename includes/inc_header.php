@@ -83,7 +83,7 @@ if ($s_letscode)
 			'apikeys.php'						=> array('key', 'Apikeys'),
 			'type_contact/overview.php'			=> array('circle-o-notch', 'Contact types'),
 			'reports/overview.php'				=> array('calculator', 'Rapporten'),
-			'preferences/config.php'			=> array('gears', 'Instellingen'),
+			'config.php'						=> array('gears', 'Instellingen'),
 			'export.php'						=> array('download', 'Export'),
 			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
