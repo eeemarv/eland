@@ -1,7 +1,4 @@
 info.php
-javapop.txt
-update-rsync.sh
-sites/default/config/elas.xml
-testdeploy.sh
-/vendor/*
+vendor
 composer.phar
+components

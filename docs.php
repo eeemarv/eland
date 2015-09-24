@@ -4,23 +4,107 @@ $rootpath = '';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
+$elas_mongo->connect();
+
 $q = ($_GET['q']) ?: '';
+$del = $_GET['del'];
 
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
-if ($_POST['zend'])
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
 	));
+}
 
+if (isset($_POST['confirm_del']) && $del)
+{
+	$doc_id = new MongoId($del);
+
+	if ($doc = $elas_mongo->docs->findOne(array('_id' => $doc_id)))
+	{
+		$s3->deleteObject(array(
+			'Bucket'	=> $bucket,
+			'Key'		=> $doc['filename'],
+		));
+		
+		$elas_mongo->docs->remove(
+			array('_id' => $doc_id),
+			array('justOne'	=> true)
+		);
+
+		$alert->success('Het document werd verwijderd.');
+		header('Location: ' . $rootpath . 'docs.php');
+		exit;
+	}
+	$alert->error('Document niet gevonden.');
+}
+
+if (isset($del))
+{
+	$doc_id = new MongoId($del);
+
+	$doc = $elas_mongo->docs->findOne(array('_id' => $doc_id));
+
+	if ($doc)
+	{
+		$h1 = 'Document verwijderen?';
+		$fa = 'files-o';
+
+		require_once $rootpath . 'includes/inc_header.php';
+		
+		echo '<div class="panel panel-info">';
+		echo '<div class="panel-heading">';
+		echo '<form method="post">';
+
+		echo '<p>';
+		echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $doc['filename'] . '" target="_self">';
+		echo ($doc['name']) ?: $doc['org_filename'];
+		echo '</a>';
+		echo '</p>';
+
+		echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
+		echo '</form>';
+
+		echo '</div>';
+		echo '</div>';
+
+		require_once $rootpath . 'includes/inc_footer.php';
+		exit;
+	}
+
+	$alert->error('Document niet gevonden.');
+}
+
+
+if ($_POST['zend'])
+{
 	$tmpfile = $_FILES['file']['tmp_name'];
 	$file = $_FILES['file']['name'];
 	$file_size = $_FILES['file']['size'];
 	$type = $_FILES['file']['type'];
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+	$allowed_types = array(
+		'application/pdf'			=> 1,
+		'image/jpeg'				=> 1,
+		'image/png'					=> 1,
+		'image/gif'					=> 1,
+		'image/bmp'					=> 1,
+		'image/tiff'				=> 1,
+		'text/plain'				=> 1,
+		'text/rtf'					=> 1,
+		'application/msword'		=> 1,
+		'application/zip'			=> 1,
+		'audio/mpeg'				=> 1,
+		'application/x-gzip'		=> 1,
+		'application/x-compressed'	=> 1,
+		'application/zip'			=> 1,
+	);
 
 	if ($file_size > 1024 * 1024 * 10)
 	{
@@ -48,14 +132,12 @@ if ($_POST['zend'])
 
 		$filename = $schema . '_d_' . $mid . '_' . sha1(time() . mt_rand(0, 1000000)) . '.' . $ext;
 
-		$elas_mongo->connect();
-
 		$doc = array(
 			'_id' 			=> $mid,
 			'filename'		=> $filename,
 			'org_filename'	=> $file,
-			'access'		=> $access,
-			'time'			=> gmdate('Y-m-d H:i:s'),
+			'access'		=> (int) $access,
+			'ts'			=> gmdate('Y-m-d H:i:s'),
 		);
 
 		if ($name = $_POST['name'])
@@ -65,11 +147,17 @@ if ($_POST['zend'])
 
 		$elas_mongo->docs->insert($doc);
 
+		$params = array(
+			'CacheControl'	=> 'public, max-age=31536000',
+		);
+
+		if ($allowed_types[$type])
+		{
+			$params['ContentType'] = $type;
+		}
+
 		$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
-			'params'	=> array(
-				'CacheControl'	=> 'public, max-age=31536000',
-				'ContentType'	=> $type,
-			),
+			'params'	=> $params
 		));
 
 		$alert->success('Het bestand is opgeladen.');
@@ -83,8 +171,23 @@ $token = sha1(time() . mt_rand(0, 1000000));
 $redis->set($schema . '_d_' . $token, '1');
 $redis->expire($schema . '_d_' . $token, 3600);
 
-$elas_mongo->connect();
-$docs = $elas_mongo->docs->find();
+$acc = array(
+	'admin'		=> 0,
+	'user'		=> 1,
+	'guest'		=> 2,
+);
+
+$find = array(
+	'access'	=> array('$gte'	=> $acc[$s_accountrole])
+);
+
+$acc_lang = array(
+	0	=> 'admin',
+	1	=> 'leden',
+	2	=> 'interlets',
+);
+
+$docs = $elas_mongo->docs->find($find);
 
 $h1 = 'Documenten';
 $fa = 'files-o';
@@ -110,7 +213,6 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-//show table
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable"';
 echo ' data-filter="#q" data-filter-minimum="1">';
@@ -118,6 +220,9 @@ echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Naam</th>';
+echo '<th data-hide="phone, tablet">Tijdstip</th>';
+echo ($s_accountrole == 'guest') ? '' : '<th data-hide="phone, tablet">Toegang</th>';
+echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>' : '';
 echo '</tr>';
 
 echo '</thead>';
@@ -132,7 +237,18 @@ foreach($docs as $val)
 	echo ($val['name']) ?: $val['org_filename'];
 	echo '</a>';
 	echo '</td>';
+	echo '<td>' . $val['ts'] . '</td>';
 
+	if ($s_accountrole != 'guest')
+	{
+		echo '<td>' . $acc_lang[$val['access']] . '</td>';
+	}
+
+	if ($s_accountrole == 'admin')
+	{
+		echo '<td><a href="'. $rootpath . 'docs.php?del=' . $val['_id'] . '" class="btn btn-danger btn-xs">';
+		echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
+	}
 	echo '</tr>';
 
 }
@@ -144,16 +260,6 @@ echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-/*
-echo '<div class="form-group">';
-echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
-echo '<div class="col-sm-10">';
-echo '<select name="id_type_contact" id="id_type_contact" class="form-control" required>';
-render_select_options($tc, $contact['id_type_contact']);
-echo "</select>";
-echo '</div>';
-echo '</div>';
-*/
 echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
 
 echo '<div class="form-group">';
@@ -176,9 +282,9 @@ echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
 echo '<div class="col-sm-10">';
 echo '<select type="file" class="form-control" id="access" name="access" ';
 echo 'required>';
-echo '<option value="0">Admin</option>';
-echo '<option value="1">Leden</option>';
-echo '<option value="2">Interlets</option>';
+echo '<option value="0" selected="selected">admin</option>';
+echo '<option value="1">leden</option>';
+echo '<option value="2">interlets</option>';
 echo '</select>';
 echo '</div>';
 echo '</div>';
