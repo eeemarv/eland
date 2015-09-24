@@ -34,6 +34,8 @@ $cdn_datepicker_css = (getenv('ELAS_CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare
 $cdn_datepicker = (getenv('ELAS_CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
 $cdn_datepicker_nl = (getenv('ELAS_CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
+$cdn_ckeditor = (getenv('ELAS_CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
+
 require_once $rootpath . 'vendor/autoload.php';
 
 // Connect to Redis
@@ -96,6 +98,15 @@ $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
+
+$access_ary = array(
+	'admin'		=> 0,
+	'user'		=> 1,
+	'guest'		=> 2,
+	'anonymous'	=> 3,
+);
+
+$access_level = (isset($access_ary[$s_accountrole])) ? $access_ary[$s_accountrole] : 3;
 
 if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous'))))
 {
