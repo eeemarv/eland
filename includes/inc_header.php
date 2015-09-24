@@ -81,7 +81,7 @@ if ($s_letscode)
 			'categories/overview.php'	 		=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys.php'						=> array('key', 'Apikeys'),
-			'type_contact/overview.php'			=> array('circle-o-notch', 'Contact types'),
+			'type_contact.php'					=> array('circle-o-notch', 'Contact types'),
 			'reports/overview.php'				=> array('calculator', 'Rapporten'),
 			'config.php'						=> array('gears', 'Instellingen'),
 			'export.php'						=> array('download', 'Export'),
