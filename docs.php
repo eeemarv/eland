@@ -138,6 +138,7 @@ if ($_POST['zend'])
 			'org_filename'	=> $file,
 			'access'		=> (int) $access,
 			'ts'			=> gmdate('Y-m-d H:i:s'),
+			'user_id'		=> $s_id,
 		);
 
 		if ($name = $_POST['name'])

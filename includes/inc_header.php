@@ -78,7 +78,7 @@ if ($s_letscode)
 	{
 		$menu = array(
 			'users/overview.php'				=> array('users', 'Gebruikers'),
-			'categories/overview.php'	 		=> array('clone', 'Categorieën'),
+			'categories.php'	 				=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys.php'						=> array('key', 'Apikeys'),
 			'type_contact.php'					=> array('circle-o-notch', 'Contact types'),
