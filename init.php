@@ -14,10 +14,10 @@ if ($php_sapi_name == 'cli')
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
-$rootpath = '../';
+$rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'cron/inc_upgrade.php';
+require_once $rootpath . 'includes/inc_upgrade.php';
 
 header('Content-Type:text/plain');
 echo '*** Init eLAS-Heroku ***' . $r;

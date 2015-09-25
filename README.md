@@ -10,7 +10,7 @@ heroku addons:add scheduler
 ```
 Set every 10 min.  
 ```shell
-$ php -r "echo file_get_contents('http://yourdomain.com/cron/cron.php');"
+$ php -r "echo file_get_contents('http://yourdomain.com/cron.php');"
 ```
 Only one cronjob is needed for all installed domains (unlike eLAS). Just choose one domain.
 
@@ -137,7 +137,7 @@ yphen must be converted to a triple underscore and a colon (for defining port nu
 * Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG).
 Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
 Make the image files public.
-* Log in with admin rights to your website (you can use the master login and password) and go to path `/cron/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
+* Log in with admin rights to your website (you can use the master login and password) and go to path `/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
 The files get prefixed with the schema name and the user or message id. All extensions become jpg.
 ie.
     abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg

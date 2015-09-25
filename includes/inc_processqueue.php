@@ -2,13 +2,11 @@
 
 require_once $rootpath . 'includes/inc_transactions.php';
 
-// Process the interlets Queue
-// Foreach entry, try to execute it, than remove if complete OR expired, leave on failures
-
 function processqueue()
 {
 	global $db;
 	echo "Running eLAS Interlets System\n\n";
+
 	$transactions = $db->fetchAll('SELECT * FROM interletsq');
 
 	$systemtag = readconfigfromdb("systemtag");
