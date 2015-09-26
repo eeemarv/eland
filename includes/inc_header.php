@@ -89,7 +89,8 @@ if ($s_letscode)
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
 			'logs.php'							=> array('list', 'Logs'),
 			'divider1'							=> 'divider',
-			'admin.php'							=> array('times text-danger', 'Admin uit'),
+			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>
+													array('times text-danger', 'Admin uit'),
 		);
 
 		echo '<li class="dropdown">';
