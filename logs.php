@@ -30,7 +30,8 @@ if ($q)
 	$find['event'] = array('$regex' => new MongoRegex('/' . $q . '/i'));
 }
 
-$rows = $elas_log->find($find);
+$elas_mongo->connect();
+$rows = $elas_mongo->logs->find($find)->sort(array('timestamp' => -1))->limit(200);
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>

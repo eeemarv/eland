@@ -1,27 +1,13 @@
 <?php
 require_once $rootpath . 'vendor/autoload.php';
-require_once $rootpath . 'includes/inc_elas_heroku_log.php';
 
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-$elas_log = new elas_heroku_log($elas_mongo);
-
-register_shutdown_function('elas_log_flush');
-
-function elas_log_flush()
+function log_event($user_id, $type, $event)
 {
-	global $elas_log;
-
-	$elas_log->flush();
-}
-
-
-function log_event($id, $type, $event)
-{
-
 	global $elasdebug, $schema, $elas_log;
 
 	$type = strtolower($type);
@@ -41,7 +27,39 @@ function log_event($id, $type, $event)
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' . $type . ': ' . $event . ' user id:' . $id . "\n\r");
+	if ($user_id)
+	{
+		$user = readuser($user_id);
+		$username = $user['name'];
+		$letscode = $user['letscode'];
+	}
+	else
+	{
+		$username = $letscode = '';
+	}
 
-	$elas_log->insert($id, $type, $event);
+	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' .
+		$type . ': ' . $event . ' user id:' . $user_id .
+		' user: ' . $letscode . ' ' . $name . "\n\r");
+
+	$item = array(
+		'ts_tz'		=> date('Y-m-d H:i:s'),
+		'timestamp'	=> gmdate('Y-m-d H:i:s'),
+		'user_id' 	=> $user_id,
+		'letscode'	=> strtolower($letscode),
+		'username'	=> $username,
+		'ip'		=> $_SERVER['REMOTE_ADDR'],
+		'type'		=> strtolower($type),
+		'event'		=> $event,
+	);
+
+	register_shutdown_function('insert_log', $item);	
+}
+
+function insert_log($item)
+{
+	global $elas_mongo;
+
+	$elas_mongo->connect();
+	$elas_mongo->logs->insert($item);
 }

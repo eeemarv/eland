@@ -280,14 +280,14 @@ function admin_exp_msg()
 	}
 	else
 	{
-	   $mailto = $admin;
+	   $to = $admin;
 	}
 
 	$from_address_transactions = readconfigfromdb('from_address_transactions');
 
 	if (!empty($from_address_transactions))
 	{
-		$mailfrom .= "From: ".trim($from_address_transactions);
+		$from .= "From: ".trim($from_address_transactions);
 	}
 	else
 	{
@@ -296,20 +296,20 @@ function admin_exp_msg()
 	}
 
 	$systemtag = readconfigfromdb("systemtag");
-	$mailsubject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
+	$subject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
 
-	$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --" . $r;
-	$mailcontent .= "ID\tUser\tMessage\n";
+	$content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --" . $r;
+	$content .= "ID\tUser\tMessage\n";
 	
 	foreach($messages as $key => $value)
 	{
-		$mailcontent .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
-		$mailcontent .= $base_url . '\messages\view?id=' . $value['mid'] . " \n";
+		$content .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
+		$content .= $base_url . '\messages\view?id=' . $value['mid'] . " \n";
 	}
 
-	$mailcontent .=  $r;
+	$content .=  $r;
 
-	sendemail($mailfrom,$mailto,$mailsubject,$mailcontent);
+	sendemail($from, $to, $subject, $content);
 
 	return true;
 }
@@ -333,7 +333,7 @@ function user_exp_msgs()
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
 		echo "Found new expired message " .$value['id'];
 		$user = readuser($value['id_user']);
-		$mailto = $db->fetchColumn('select c.value
+		$to = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
@@ -355,7 +355,7 @@ function user_exp_msgs()
 
 		if (!empty($from_address_transactions))
 		{
-			$mailfrom = trim($from_address_transactions);
+			$from = trim($from_address_transactions);
 		}
 		else
 		{
@@ -366,15 +366,15 @@ function user_exp_msgs()
 		$systemtag = readconfigfromdb("systemtag");
 		$subject = "[eLAS-".$systemtag ."] - " . $subject;
 
-		$mailcontent = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
-		$mailcontent .= "$content\n\n";
+		$content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+		$content .= "$content\n\n";
 
-		$mailcontent .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
-		$mailcontent .= readconfigfromdb("support");
+		$content .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
+		$content .= readconfigfromdb('support');
 
-		$mailcontent .= "\n\nDe eLAS Robot\n";
-		sendemail($mailfrom, $mailto, $subject, $mailcontent);
-		log_event("","Mail","Message expiration mail sent to $mailto");
+		$content .= "\n\nDe eLAS Robot\n";
+		sendemail($from, $to, $subject, $content);
+		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
 	}
 
 	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
@@ -606,9 +606,12 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
-	global $elas_log;
-	$elas_log->cleanup();
-	return true;
+	global $elas_mongo;
+
+	$elas_mongo->connect();	
+	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
+	$elas_mongo->logs->remove(array('timestamp' => array('$lt' => $treshold)));
+	return $this;
 }
 
 echo "*** Cron run finished ***" . $r;
