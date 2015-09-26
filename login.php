@@ -38,8 +38,8 @@ if(!empty($token))
         $_SESSION['name'] = 'letsguest';
         $_SESSION['letscode'] = 'X000';
         $_SESSION['accountrole'] = 'guest';
+        $_SESSION['rights'] = 'guest';
 		$_SESSION['type'] = 'interlets';
-		$_SESSION['status'] = array();
 		log_event($_SESSION['id'], 'Login', 'Guest login using token succeeded');
 		$alert->success($_SESSION['name'] . ' ingelogd');
 		header('Location: ' . $location);
@@ -76,12 +76,12 @@ if ($_POST['zend'])
 		$_SESSION['user_postcode'] = '0000';
 		$_SESSION['letscode'] = '000000';
 		$_SESSION['accountrole'] = 'admin';
+		$_SESSION['rights'] = 'admin';
 		$_SESSION['userstatus'] = 1;
 		$_SESSION['email'] = '';
 		$_SESSION['lang'] = 'nl';
-		$_SESSION['status'] = array();
 		$_SESSION['type'] = 'master';
-		log_event(0,'Login','Master user ' .$user['login'] .' logged in');
+		log_event(0,'Login','Master user ' . $user['login'] . ' logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		header('Location: ' . $location);
 		exit;
@@ -113,9 +113,9 @@ if ($_POST['zend'])
 			exit;
 		}
 
-		if(readconfigfromdb("maintenance") == 1 && $user["accountrole"] != "admin")
+		if(readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
 		{
-			$alert->error("eLAS is in onderhoud, probeer later opnieuw");
+			$alert->error('eLAS is in onderhoud, probeer later opnieuw');
 			header('Location: ' . $error_location);
 			exit;
 		}
@@ -127,11 +127,11 @@ if ($_POST['zend'])
 		$_SESSION['login'] = $user['login'];
 		$_SESSION['user_postcode'] = $user['postcode'];
 		$_SESSION['letscode'] = $user['letscode'];
-		$_SESSION['accountrole'] = $user['accountrole'];
+		$_SESSION['accountrole'] = ($user['accountrole'] == 'admin') ? 'user' : $user['accountrole'];
+		$_SESSION['rights'] = $user['accountrole'];
 		$_SESSION['userstatus'] = $user['status'];
 		$_SESSION['email'] = $user['emailaddress'];
 		$_SESSION['lang'] = $user['lang'];
-		$_SESSION['status'] = array();
 		$_SESSION['type'] = 'local';
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];

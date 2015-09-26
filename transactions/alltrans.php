@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_pagination.php';

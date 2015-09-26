@@ -88,6 +88,8 @@ if ($s_letscode)
 			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
 			'logs.php'							=> array('list', 'Logs'),
+			'divider1'							=> 'divider',
+			'admin.php'							=> array('times text-danger', 'Admin uit'),
 		);
 
 		echo '<li class="dropdown">';
@@ -98,12 +100,25 @@ if ($s_letscode)
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
 		{
+			if ($label == 'divider')
+			{
+				echo '<li class="divider"></li>';
+				continue;
+			}
 			echo '<li><a href="' . $rootpath . $link .'">';
 			echo '<span class="fa fa-' . $label[0] . '"></span> ' . $label[1] . '</a></li>';
 		}
 		echo '</ul>';
 		echo '</li>';
 
+	}
+	else if ($_SESSION['rights'] == 'admin')
+	{
+		echo '<li class="dropdown">';
+		echo '<a href="' . $rootpath . 'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) . '">';
+		echo '<span class="fa fa-times text-danger"></span> ';
+		echo 'Admin';
+		echo '</a>'; 
 	}
 	echo '</ul>';
 	echo '</div>';

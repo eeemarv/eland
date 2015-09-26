@@ -98,6 +98,7 @@ $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
+$s_rights = $_SESSION['rights'];
 
 $access_ary = array(
 	'admin'		=> 0,

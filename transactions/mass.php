@@ -891,11 +891,3 @@ function mail_mass_transaction($mail_ary)
 
 	return true;
 }
-
-/*
-function generate_transid()
-{
-	global $baseurl, $schema, $s_id;
-	return sha1($s_id . $schema . microtime() . mt_rand(0, 50000)) . $_SESSION['id'] . '@' . $baseurl;
-}
-*/
