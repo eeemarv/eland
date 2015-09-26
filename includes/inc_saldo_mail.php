@@ -131,7 +131,7 @@ function saldo()
 	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$msg_url = $base_url . '/messages/view.php?id=';
-	$news_url = $base_url . '/news/view.php?id=';
+	$news_url = $base_url . '/news.php?id=';
 	$user_url = $base_url . '/memberlist_view.php?&id=';
 	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
 	$new_message_url = $base_url . '/messages/edit.php?mode=new';
@@ -325,7 +325,7 @@ function saldo()
 
 	$text .= 'Nieuws' . $r;
 	$text .= '------' . $r;
-	$text .= 'Bekijk online: ' . $base_url . '/news/overview.php' . $r . $r;
+	$text .= 'Bekijk online: ' . $base_url . '/news.php' . $r . $r;
 	$html .= '<h1>Nieuws</h1>';
 
 	if (count($news))
