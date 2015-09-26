@@ -140,7 +140,7 @@ else
 		$main_menu['transactions/add.php'] = array('exchange', 'Nieuwe transactie');
 	}
 
-	$main_menu['news/overview.php'] = array('calendar-o', 'Nieuws');
+	$main_menu['news.php'] = array('calendar-o', 'Nieuws');
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
