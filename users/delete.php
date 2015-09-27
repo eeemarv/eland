@@ -4,12 +4,6 @@ $rootpath = "../";
 $role = 'admin';
 require_once($rootpath."includes/inc_default.php");
 
-if (isset($_POST['cancel']))
-{
-	header('Location: ' . $rootpath . 'users/overview.php');
-	exit;
-}
-
 if (!isset($_GET["id"]))
 {
 	$alert->error('User id niet bepaald.');
@@ -189,12 +183,12 @@ if(isset($_POST['delete']))
 	}
 }
 
-$h1 = 'Gebruiker ' . $user['letscode'] . ' ' . $user['fullname'] . ' verwijderen?';
+$h1 = 'Gebruiker ' . $user['letscode'] . ' ' . $user['name'] . ' verwijderen?';
 $fa = 'user';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['fullname'];
+echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['name'];
 echo ' worden verwijderd.</font></p>';
 
 echo '<div class="panel panel-info">';

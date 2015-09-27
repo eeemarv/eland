@@ -1,6 +1,7 @@
 <?php
 
 $name = readconfigfromdb('systemname');
+$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 
 echo '<!DOCTYPE html>';
 echo '<html>';
@@ -77,7 +78,7 @@ if ($s_letscode)
 	if ($s_accountrole == 'admin')
 	{
 		$menu = array(
-			'users/overview.php'				=> array('users', 'Gebruikers'),
+			'users.php'							=> array('users', 'Gebruikers'),
 			'categories.php'	 				=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys.php'						=> array('key', 'Apikeys'),
@@ -88,7 +89,7 @@ if ($s_letscode)
 			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
 			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
 			'logs.php'							=> array('list', 'Logs'),
-			'divider1'							=> 'divider',
+			'divider_1'							=> 'divider',
 			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>
 													array('times text-danger', 'Admin uit'),
 		);
@@ -106,7 +107,8 @@ if ($s_letscode)
 				echo '<li class="divider"></li>';
 				continue;
 			}
-			echo '<li><a href="' . $rootpath . $link .'">';
+			$active_class = ($script_name == $link) ? ' class="active"' : '';
+			echo '<li' . $active_class . '><a href="' . $rootpath . $link .'">';
 			echo '<span class="fa fa-' . $label[0] . '"></span> ' . $label[1] . '</a></li>';
 		}
 		echo '</ul>';
@@ -130,8 +132,6 @@ echo '</div>';
 
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
-
-$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 
 $menu = array();
 
@@ -215,7 +215,7 @@ if (isset($top_right))
 if (isset($h1))
 {
 	echo '<h1>';
-	echo ($role == 'admin') ? '<span class="label label-default">Admin</span> ' : '';
+	echo ($role == 'admin' || $s_admin) ? '<span class="label label-default">Admin</span> ' : '';
 	echo (isset($fa)) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
 	echo $h1 . '</h1>';
 	echo ($role == 'admin') ? '<p>&nbsp;</p>' : '';

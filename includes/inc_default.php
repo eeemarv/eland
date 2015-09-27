@@ -109,6 +109,11 @@ $access_ary = array(
 
 $access_level = (isset($access_ary[$s_accountrole])) ? $access_ary[$s_accountrole] : 3;
 
+$s_admin = ($s_accountrole == 'admin') ? true : false;
+$s_user = ($s_accountrole == 'user') ? true : false;
+$s_guest = ($s_accountrole == 'guest') ? true : false;
+$s_anonymous = ($s_accountrole == 'anonymous') ? true : false;
+
 if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous'))))
 {
 	http_response_code(500);
@@ -122,11 +127,11 @@ if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name))
 	exit;
 }
 
-if ((!isset($allow_anonymous_post) && $s_accountrole == 'anonymous' && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| ($s_accountrole == 'guest' && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| ($role == 'admin' && $s_accountrole != 'admin')
-	|| ($role == 'user' && !in_array($s_accountrole, array('admin', 'user')))
-	|| ($role == 'guest' && !in_array($s_accountrole, array('admin', 'user', 'guest'))))
+if ((!isset($allow_anonymous_post) && $s_anonymous && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($s_guest && $_SERVER['REQUEST_METHOD'] != 'GET')
+	|| ($role == 'admin' && !$s_admin)
+	|| ($role == 'user' && !($s_admin || $s_user))
+	|| ($role == 'guest' && !($s_admin || $s_user || $s_guest)))
 {
 	http_response_code(403);
 	include $rootpath . '403.html';
@@ -355,4 +360,15 @@ function render_select_options($option_ary, $selected)
 		echo ($key == $selected) ? ' selected="selected"' : '';
 		echo '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
 	}
+}
+
+/**
+ *
+ */
+
+function link_user($user)
+{
+	global $rootpath;
+	$user = (is_array($user)) ? $user : readuser($user);
+	return '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $user['letscode'] . ' ' . $user['name'] . '</a>'; 
 }

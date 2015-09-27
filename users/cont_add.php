@@ -15,15 +15,29 @@ if(isset($_POST["zend"]))
 	$contact["flag_public"] = ($_POST["flag_public"]) ? 1 : 0;
 	$contact['id_user'] = $uid;
 
-	$error_list = validate_input($contact);
-	
-	if(empty($error_list))
+	$error_list = array();
+
+	if (empty($contact["value"]) || (trim($contact["value"]) == ""))
+	{
+		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
+	}
+
+	if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
+	{
+		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
+	}
+
+	if(!count($error_list))
 	{
 		if ($db->insert('contact', $contact))
 		{
 			$alert->success('Contact opgeslagen.');
 			header("Location: view.php?id=$uid");
 			exit;
+		}
+		else
+		{
+			$alert->error('Fout bij het opslaan');
 		}
 	}
 
@@ -109,17 +123,6 @@ function validate_input($contact)
 {
 	global $db;
 
-	$error_list = array();
 
-	if (empty($contact["value"]) || (trim($contact["value"]) == ""))
-	{
-		$error_list["value"] = "<font color='#F56DB5'>Vul <strong>waarde</strong> in!</font>";
-	}
-
-	if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
-	{
-		$error_list["id_type_contact"]="<font color='#F56DB5'>Contacttype <strong>bestaat niet!</strong></font>";
-	}
-	return $error_list;
 }
 

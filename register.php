@@ -20,7 +20,7 @@ if ($token = $_GET['token'])
 		$data = json_decode($data, true);
 		$redis->del($key);
 
-		$letscode = '0x' . substr($token, 0, 5);
+		$letscode = '--' . substr($token, 0, 5);
 
 		for ($i = 0; $i < 60; $i++)
 		{
