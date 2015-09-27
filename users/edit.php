@@ -67,7 +67,7 @@ if ($_POST['zend'])
 	$fullname_sql = 'select fullname
 		from users
 		where fullname = ?';
-	$fullname_sql_params = array($user['fullname']);	
+	$fullname_sql_params = array($user['fullname']);
 
 	if ($id)
 	{
@@ -112,7 +112,7 @@ if ($_POST['zend'])
 	else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
 	{
 		$errors[] = 'De volledige naam is al in gebruik!';
-	}	
+	}
 
 	if (!$user['login'])
 	{
@@ -638,11 +638,6 @@ function sendadminmail($user)
 
 	$content .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
-
-	$content .= "\r\n";
-	$content .= "         \,,,/\r\n";
-	$content .= "         (o o)\r\n";
-	$content .= "-----oOOo-(_)-oOOo-----\r\n\r\n\r\n";
 
 	sendemail($from, $to, $subject, $content);
 }

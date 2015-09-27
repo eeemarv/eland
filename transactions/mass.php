@@ -708,7 +708,7 @@ function mail_mass_transaction($mail_ary)
 		$amount = $many_ary[$user['id']]['amount'];
 		$transid = $many_ary[$user['id']]['transid'];
 
-		$one_msg .= $user['letscode'] . ' ' . $user['fullname'] . ': ';
+		$one_msg .= link_user($user) . ': ';
 		$one_msg .= $amount . ' ' . $currency;
 		$one_msg .= ', transactie-id: ' . $transid . $r;
 

@@ -118,7 +118,7 @@ include $rootpath . 'includes/inc_header.php';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<p>Gebruiker: ' . $user['letscode'] . ' ' . $user['fullname'] . '</p>';
+echo '<p>Gebruiker: ' . link_user($user) . '</p>';
 
 echo '<p>Status: ' . $status[$user['status']] . '</p>';
 

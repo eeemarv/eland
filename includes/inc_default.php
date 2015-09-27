@@ -370,5 +370,7 @@ function link_user($user)
 {
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
-	return '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $user['letscode'] . ' ' . $user['name'] . '</a>'; 
+	$ret = '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">';
+	$ret .= htmlspecialchars($user['letscode'] . ' ' . $user['name'], ENT_QUOTES);
+	return $ret . '</a>'; 
 }

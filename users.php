@@ -2,6 +2,8 @@
 ob_start();
 $rootpath = './';
 
+include $rootpath . 'includes/inc_passwords.php';
+
 $id = ($_GET['id']) ?: false;
 $del = ($_GET['del']) ?: false;
 $edit = ($_GET['edit']) ?: false;
@@ -183,12 +185,12 @@ if ($del)
 			}
 			else
 			{
-				$alert->error('Paswoord is niet correct.');
+				$alert->error('Het paswoord is niet correct.');
 			}
 		}
 		else
 		{
-			$alert->error('Paswoord is niet ingevuld.');
+			$alert->error('Het paswoord is niet ingevuld.');
 		}
 	}
 
@@ -239,8 +241,366 @@ if ($add || $edit)
 
 	if ($submit)
 	{
-		
+		$user = array(
+			'name'			=> $_POST['name'],
+			'fullname'		=> $_POST['fullname'],
+			'letscode'		=> $_POST['letscode'],
+			'postcode'		=> $_POST['postcode'],
+			'birthday'		=> $_POST['birthday'],
+			'hobbies'		=> $_POST['hobbies'],
+			'comments'		=> $_POST['comments'],
+			'login'			=> $_POST['login'],
+			'accountrole'	=> $_POST['accountrole'],
+			'status'		=> $_POST['status'],
+			'admincomment'	=> $_POST['admincomment'],
+			'minlimit'		=> $_POST['minlimit'],
+			'maxlimit'		=> $_POST['maxlimit'],
+			'presharedkey'	=> $_POST['presharedkey'],
+			'cron_saldo'	=> ($_POST['cron_saldo']) ? 't' : 'f',
+			'lang'			=> 'nl',
+		);
+
+		$contact = $_POST['contact'];
+		$notify = $_POST['notify'];
+		$password = $_POST['pw'];
+
+		foreach ($contact as $c)
+		{
+			if ($c['abbrev'] == 'mail' && $c['main_mail'])
+			{
+				$mail = $c['value'];
+				break;
+			}
+		}
+
+		$mail_sql = 'select c.value
+				from contact c, type_contact tc
+				where c.id_type_contact = tc.id
+					and tc.abbrev = \'mail\'
+					and c.value = ?';
+		$mail_sql_params = array($mail);
+
+		$login_sql = 'select login
+			from users
+			where login = ?';
+		$login_sql_params = array($user['login']);
+
+		$letscode_sql = 'select letscode
+			from users
+			where letscode = ?';
+		$letscode_sql_params = array($user['letscode']);
+
+		$name_sql = 'select name
+			from users
+			where name = ?';
+		$name_sql_params = array($user['name']);
+
+		$fullname_sql = 'select fullname
+			from users
+			where fullname = ?';
+		$fullname_sql_params = array($user['fullname']);
+
+		if ($edit)
+		{
+			$mail_sql .= ' and c.id_user <> ?';		
+			$mail_sql_params[] = $edit;
+			$login_sql .= ' and id <> ?';
+			$login_sql_params[] = $edit;
+			$letscode_sql .= ' and id <> ?';
+			$letscode_sql_params[] = $edit;
+			$name_sql .= 'and id <> ?';
+			$name_sql_params[] = $edit;
+			$fullname_sql .= 'and id <> ?';
+			$fullname_sql_params[] = $edit;		
+		}
+
+		$errors = array();
+
+		if (!isset($mail))
+		{
+			$errors[] = 'Geen mail adres ingevuld.';
+		}
+		else if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+		{
+			$errors[] = 'Geen geldig email adres.';
+		}
+		else if ($db->fetchColumn($mail_sql, $mail_sql_params))
+		{
+			$errors[] = 'Het mailadres is al in gebruik.';
+		}
+			
+		if (!$user['name'])
+		{
+			$errors[] = 'Vul gebruikersnaam in!';
+		}
+		else if ($db->fetchColumn($name_sql, $name_sql_params))
+		{
+			$errors[] = 'Deze gebruikersnaam is al in gebruik!';
+		}
+
+		if (!$user['fullname'])
+		{
+			$errors[] = 'Vul de volledige naam in!';
+		}
+		else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+		{
+			$errors[] = 'De volledige naam is al in gebruik!';
+		}
+
+		if (!$user['login'])
+		{
+			$errors[] = 'Vul een login in';
+		}
+		else if ($db->fetchColumn($login_sql, $login_sql_params))
+		{
+			$errors[] = 'De login bestaat al!';
+		}
+
+		if (!$user['letscode'])
+		{
+			$errors[] = 'Vul een letscode in!';
+		}
+		else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
+		{
+			$errors[]= 'De letscode bestaat al!';
+		}
+
+		if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))
+		{
+			$errors[] = 'Geef getal op voor de minimum limiet.';
+		}
+
+		if (!($user['maxlimit'] == 0 || filter_var($user['maxlimit'], FILTER_VALIDATE_INT)))
+		{
+			$errors[] = 'Geef getal op voor de maximum limiet.';
+		}
+
+		if ($add)
+		{
+			if (!$password)
+			{
+				$errors[] = 'Gelieve een paswoord in te vullen.';
+			}
+			else if (!password_strength($password))
+			{
+				$errors[] = 'Het paswoord is niet sterk genoeg.';
+			}
+		}
+
+		if (!count($errors))
+		{
+			$contact_types = array();
+
+			$rs = $db->prepare('SELECT abbrev, id FROM type_contact');
+
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$contact_types[$row['abbrev']] = $row['id'];
+			}
+
+			if ($add)
+			{
+				$user['creator'] = $s_id;
+				$user['cdate'] = date('Y-m-d H:i:s');
+
+				if ($user['status'] == 1)
+				{
+					$user['adate'] = date('Y-m-d H:i:s');
+				}
+
+				$user['password'] = hash('sha512', $password);
+
+				if ($db->insert('users', $user))
+				{
+					$alert->success('Gebruiker opgeslagen.');
+
+					$id = $db->lastInsertId('users_id_seq');
+
+					readuser($id, true);
+
+					foreach ($contact as $value)
+					{
+						if (!$value['value'])
+						{
+							continue;
+						}
+
+						$insert = array(
+							'value'				=> $value['value'],
+							'flag_public'		=> ($value['flag_public']) ? 1 : 0,
+							'id_type_contact'	=> $contact_types[$value['abbrev']],
+							'id_user'			=> $id,
+						);
+						error_log(implode('|',$insert) . ' ---- ' . $id);
+						$db->insert('contact', $insert);
+					}
+
+					$mailenabled = readconfigfromdb('mailenabled');
+
+					if ($notify && !empty($mail) && $mailenabled && $user['status'] == 1)
+					{
+						$user['mail'] = $mail;
+						sendactivationmail($password, $user);
+						sendadminmail($user);
+						$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+					}
+					else
+					{
+						$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+					}
+
+					cancel($id);
+
+					if (!$mailenabled)
+					{
+						$alert->warning('Mailfuncties zijn uitgeschakeld.');
+					}
+				}
+				else
+				{
+					$alert->error('Gebruiker niet opgeslagen.');
+				}
+			}
+			else
+			{
+				$user_stored = readuser($edit);
+
+				$user['mdate'] = date('Y-m-d H:i:s');
+
+				if (!$user_stored['adate'] && $user['status'] == 1)
+				{
+					$user['adate'] = date('Y-m-d H:i:s');
+				}
+
+				if($db->update('users', $user, array('id' => $edit)))
+				{
+					readuser($edit, true);
+
+					$alert->success('Gebruiker aangepast.');
+
+					$stored_contacts = array();
+
+					$rs = $db->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
+						FROM type_contact tc, contact c
+						WHERE tc.id = c.id_type_contact
+							AND c.id_user = ?');
+					$rs->bindValue(1, $edit);
+
+					$rs->execute();
+
+					while ($row = $rs->fetch())
+					{
+						$stored_contacts[$row['id']] = $row;
+					}
+
+					foreach ($contact as $value)
+					{
+						$stored_contact = $stored_contacts[$value['id']];
+
+						$value['flag_public'] = ($value['flag_public']) ? 1 : 0;
+
+						if (!$value['value'])
+						{
+							if ($stored_contact && !$value['main_mail'])
+							{
+								$db->delete('contact', array('id_user' => $edit, 'id' => $value['id']));
+							}
+							continue;
+						}
+
+						if ($stored_contact['abbrev'] == $value['abbrev']
+							&& $stored_contact['value'] == $value['value']
+							&& $stored_contact['flag_public'] == $value['flag_public'])
+						{
+							continue;
+						}
+
+						if (!isset($stored_contact))
+						{
+							$insert = array(
+								'id_type_contact'	=> $contact_types[$value['abbrev']],
+								'value'				=> $value['value'],
+								'flag_public'		=> ($value['flag_public']) ? 1 : 0,
+								'id_user'			=> $edit,
+							);
+							$db->insert('contact', $insert);
+							continue;
+						}
+
+						$contact_update = $value;
+						unset($contact_update['id'], $contact_update['abbrev'],
+							$contact_update['name'], $contact_update['main_mail']);
+
+						$db->update('contact', $contact_update,
+							array('id' => $value['id'], 'id_user' => $edit));
+					}
+
+					cancel($edit);
+				}
+				else
+				{
+					$alert->error('Gebruiker niet aangepast.');
+				}
+			}
+		}
+		else
+		{
+			$alert->error(implode('<br>', $errors));
+		}
 	}
+	else
+	{
+		$contact = $db->fetchAll('select name, abbrev, \'\' as value, 0 as flag_public, 0 as id
+			from type_contact
+			where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
+
+		if ($edit)
+		{
+			$contact_keys = array();
+
+			foreach ($contact as $key => $c)
+			{
+				$contact_keys[$c['abbrev']] = $key;
+			}
+
+			$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($edit));
+
+			$st = $db->prepare('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
+				FROM type_contact tc, contact c
+				WHERE tc.id = c.id_type_contact
+					AND c.id_user = ?');
+
+			$st->bindValue(1, $edit);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				if (isset($contact_keys[$row['abbrev']]))
+				{
+					$contact[$contact_keys[$row['abbrev']]] = $row;				
+					unset($contact_keys[$row['abbrev']]);
+					continue;
+				}
+
+				$contact[] = $row;
+			}
+		}
+		else
+		{
+			$user = array(
+				'minlimit'		=> readconfigfromdb('minlimit'),
+				'maxlimit'		=> readconfigfromdb('maxlimit'),
+				'accountrole'	=> 'user',
+				'status'		=> '1',
+				'cron_saldo'	=> 't',
+			);
+		}
+	}
+
+	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
+	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -250,7 +610,7 @@ if ($add || $edit)
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-	$h1 = 'Gebruiker ' . (($id) ? 'aanpassen' : 'toevoegen');
+	$h1 = 'Gebruiker ' . (($edit) ? 'aanpassen: ' . link_user($user) : 'toevoegen');
 	$fa = 'user';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -261,7 +621,15 @@ if ($add || $edit)
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
+	echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+	echo 'value="' . $user['letscode'] . '" required>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="name" class="col-sm-2 control-label">Gebruikersnaam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
 	echo 'value="' . $user['name'] . '" required>';
@@ -277,18 +645,10 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-	echo 'value="' . $user['letscode'] . '" required>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
-	echo 'value="' . $user['postcode'] . '">';
+	echo 'value="' . $user['postcode'] . '" required>';
 	echo '</div>';
 	echo '</div>';
 
@@ -322,7 +682,7 @@ if ($add || $edit)
 	echo '<label for="login" class="col-sm-2 control-label">Login</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="login" name="login" ';
-	echo 'value="' . $user['login'] . '">';
+	echo 'value="' . $user['login'] . '" required>';
 	echo '</div>';
 	echo '</div>';
 
@@ -446,7 +806,7 @@ if ($add || $edit)
 
 	echo '</div>';
 
-	if (!$id)
+	if ($add)
 	{
 		echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 		echo '<br><br>';
@@ -469,9 +829,9 @@ if ($add || $edit)
 		echo '</div>';
 	}
 
-	$cancel_red = ($id) ? 'view.php?id=' . $id : 'overview.php';
-	$btn = ($id) ? 'primary' : 'success';
-	echo '<a href="' . $rootpath . 'users/' . $cancel_red . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	$cancel_id = ($edit) ? '?id=' . $edit : '';
+	$btn = ($edit) ? 'primary' : 'success';
+	echo '<a href="' . $rootpath . 'users.php' . $cancel_id . '" class="btn btn-default">Annuleren</a>&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -492,11 +852,6 @@ if ($id)
 	$s_owner = ($s_id == $id) ? true : false;
 
 	$user = readuser($id);
-
-	$contacts = $db->fetchAll('select c.*, tc.abbrev
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?', array($id));
 
 	$messages = $db->fetchAll('SELECT *
 		FROM messages
@@ -540,7 +895,7 @@ if ($id)
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 	}
 
-	if ($s_admin || $s_id == $id)
+	if ($s_admin || $s_owner)
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'users.php?edit=' . $id . '" class="btn btn-primary"';
 		$top_buttons .= ' title="Gebruiker aanpassen"><i class="fa fa-pencil"></i>';
@@ -551,9 +906,9 @@ if ($id)
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
 	}
 
-	if ($s_admin && !count($transactions) && $s_id != $id)
+	if ($s_admin && !count($transactions) && !$s_owner)
 	{
-		$top_buttons .= '<a href="delete.php?id=' . $id . '" class="btn btn-danger"';
+		$top_buttons .= '<a href="' . $rootpath . 'users.php?del=' . $id . '" class="btn btn-danger"';
 		$top_buttons .= ' title="gebruiker verwijderen">';
 		$top_buttons .= '<i class="fa fa-times"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
@@ -563,7 +918,7 @@ if ($id)
 	$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
-	$h1 = $user['letscode'] . ' ' . $user['name'];
+	$h1 = (($s_owner) ? 'Mijn gegevens: ' : '') . link_user($user);
 	$fa = 'user';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -584,99 +939,85 @@ if ($id)
 	echo '<div class="col-md-8">';
 
 	echo '<dl>';
-	echo '<dt>';
-	echo 'Naam';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['name'],ENT_QUOTES);
-	echo '</dd>';
 
-	echo '<dt>';
-	echo 'Volledige naam';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['fullname'],ENT_QUOTES);
-	echo '</dd>';
+	if ($s_admin || $s_owner)
+	{
+		echo '<dt>';
+		echo 'Volledige naam';
+		echo '</dt>';
+		dd_render($user['fullname']);
+	}
 
 	echo '<dt>';
 	echo 'Postcode';
 	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['postcode'],ENT_QUOTES);
-	echo '</dd>';
+	dd_render($user['postcode']);
 
-	echo '<dt>';
-	echo 'Geboortedatum';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['birthday'],ENT_QUOTES);
-	echo '</dd>';
+	if ($s_admin || $s_owner)
+	{
+		echo '<dt>';
+		echo 'Geboortedatum';
+		echo '</dt>';
+		echo '<dd>';
+		dd_render($user['birthday']);
+		echo '</dd>';
+	}
 
 	echo '<dt>';
 	echo 'Hobbies / Interesses';
 	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['hobbies'],ENT_QUOTES);
-	echo '</dd>';
+	dd_render($user['hobbies']);
 
 	echo '<dt>';
 	echo 'Commentaar';
 	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['comments'],ENT_QUOTES);
-	echo '</dd>';
+	dd_render($user['comments']);
 
-	echo '<dt>';
-	echo 'Login';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['login'],ENT_QUOTES);
-	echo '</dd>';
+	if ($s_admin || $s_owner)
+	{
+		echo '<dt>';
+		echo 'Login';
+		echo '</dt>';
+		dd_render($user['login']);
+	}
 
-	echo '<dt>';
-	echo 'Tijdstip aanmaak';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['cdate'],ENT_QUOTES);
-	echo '</dd>';
+	if ($s_admin)
+	{
+		echo '<dt>';
+		echo 'Tijdstip aanmaak';
+		echo '</dt>';
+		dd_render($user['cdate']);
 
-	echo '<dt>';
-	echo 'Tijdstip activering';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['adate'],ENT_QUOTES);
-	echo '</dd>';
+		echo '<dt>';
+		echo 'Tijdstip activering';
+		echo '</dt>';
+		dd_render($user['adate']);
 
-	echo '<dt>';
-	echo 'Laatste login';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user['lastlogin'],ENT_QUOTES);
-	echo '</dd>';
+		echo '<dt>';
+		echo 'Laatste login';
+		echo '</dt>';
+		dd_render($user['lastlogin']);
 
-	$status_ary = array(
-		0	=> 'Gedesactiveerd',
-		1	=> 'Actief',
-		2	=> 'Uitstapper',
-		3	=> 'Instapper', // not used
-		4	=> 'Infopakket',
-		5	=> 'Infoavond',
-		6	=> 'Extern',
-	);
+		$status_ary = array(
+			0	=> 'Gedesactiveerd',
+			1	=> 'Actief',
+			2	=> 'Uitstapper',
+			3	=> 'Instapper', // not used
+			4	=> 'Infopakket',
+			5	=> 'Infoavond',
+			6	=> 'Extern',
+		);
 
-	echo '<dt>';
-	echo 'Rechten';
-	echo '</dt>';
-	echo '<dd>';
-	echo $status_ary[$user['status']];
-	echo '</dd>';
+		echo '<dt>';
+		echo 'Status';
+		echo '</dt>';
+		dd_render($status_ary[$user['status']]);
 
-	echo '<dt>';
-	echo 'Commentaar van de admin';
-	echo '</dt>';
-	echo '<dd>';
-	echo htmlspecialchars($user["admincomment"],ENT_QUOTES);
-	echo '</dd>';
+		echo '<dt>';
+		echo 'Commentaar van de admin';
+		echo '</dt>';
+		dd_render($user['admincomment']);
+	}
 
 	echo '<dt>';
 	echo 'Saldo, limiet min, limiet max';
@@ -687,13 +1028,14 @@ if ($id)
 	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
 	echo '</dd>';
 
-	echo '<dt>';
-	echo 'Periodieke Saldo mail met recent vraag en aanbod';
-	echo '</dt>';
-	echo '<dd>';
-	echo ($user["cron_saldo"] == 't') ? 'Aan' : 'Uit';
-	echo '</dd>';
-	echo '</dl>';
+	if ($s_admin || $s_owner)
+	{
+		echo '<dt>';
+		echo 'Periodieke Saldo mail met recent vraag en aanbod';
+		echo '</dt>';
+		dd_render(($user['cron_saldo'] == 't') ? 'Aan' : 'Uit');
+		echo '</dl>';
+	}
 
 	echo '</div></div>';
 
@@ -1203,4 +1545,45 @@ function cancel($id = null)
 
 	header('Location: ' . $rootpath . 'users.php' . (($id) ? '?id=' . $id : ''));
 	exit;
+}
+
+function dd_render($str)
+{
+	echo '<dd>';
+	echo ($str) ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
+	echo '</dd>';
+}
+
+function sendadminmail($user)
+{
+	$from = readconfigfromdb('from_address');
+	$to = readconfigfromdb('admin');
+	$systemtag = readconfigfromdb('systemtag');
+
+	$subject = "[eLAS-";
+	$subject .= readconfigfromdb('systemtag');
+	$subject .= "] eLAS account activatie";
+
+	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content .= $systemtag;
+	$content .= " ***\r\n\n";
+	$content .= "De account ";
+	$content .= $user["login"];
+	$content .= ' ( ' . $user['letscode'] . ' ) ';
+	$content .= " werd geactiveerd met een nieuw paswoord.\n";
+	if ($user['mail'])
+	{
+		$content .= "Er werd een mail verstuurd naar de gebruiker op ";
+		$content .= $user['mail'];
+		$content .= ".\n\n";
+	}
+	else
+	{
+		$content .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
+	}
+
+	$content .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
+	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
+
+	sendemail($from, $to, $subject, $content);
 }

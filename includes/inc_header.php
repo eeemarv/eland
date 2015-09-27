@@ -63,7 +63,7 @@ if ($s_letscode)
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
-		echo '<li><a href="' . $rootpath . 'userdetails/mydetails.php">';
+		echo '<li><a href="' . $rootpath . 'users.php?id=' . $s_id . '">';
 		echo '<span class="fa fa-user"></span> Mijn gegevens</a></li>';
 		echo '<li><a href="' . $rootpath . 'userdetails/mymsg_overview.php">';
 		echo '<span class="fa fa-newspaper-o"></span> Mijn vraag en aanbod</a></li>';
@@ -147,7 +147,7 @@ else
 	$main_menu = array(
 		'index.php'					=> array('home', 'Overzicht'),
 		'messages/overview.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
-		'memberlist.php'			=> array('users', 'Leden'),
+		'users.php'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
 	);
 
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')

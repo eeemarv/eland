@@ -209,6 +209,7 @@ echo '</tbody>';
 echo '</table>';
 echo '</div>';
 
+/*
 if($s_accountrole != 'guest')
 {
 	$letsgroups = $db->fetchAll("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
@@ -229,6 +230,7 @@ if($s_accountrole != 'guest')
 		echo '</div>';
 	}
 }
+*/
 
 include $rootpath . 'includes/inc_footer.php';
 
