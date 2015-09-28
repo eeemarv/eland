@@ -21,7 +21,7 @@ if ($token & $user_id)
 	{
 		$password = $_POST['password'];
 
-		if (!(password_strength($password) < readconfigfromdb('pwscore')))
+		if (!(password_strength($password) < 50)) // ignored readconfigfromdb('pwscore')
 		{
 			if ($db->fetchColumn('select token
 				from tokens

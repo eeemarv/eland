@@ -2,45 +2,202 @@
 ob_start();
 $rootpath = './';
 
-include $rootpath . 'includes/inc_passwords.php';
-
 $id = ($_GET['id']) ?: false;
 $del = ($_GET['del']) ?: false;
 $edit = ($_GET['edit']) ?: false;
 $add = ($_GET['add']) ?: false;
+$pw = ($_GET['pw']) ?: false;
 $password = ($_POST['password']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
 
-if ($del || $add)
-{
-	$role = 'admin';
-}
-else if ($edit)
-{
-	$role = 'user';
-}
-else
-{
-	$role = 'guest';
-}
+$role = ($edit || $del || $add || $pw) ? 'user' : 'guest';
 
 require_once $rootpath . 'includes/inc_default.php';
 
+$role_ary = array(
+	'admin'		=> 'Admin',
+	'user'		=> 'User',
+	'guest'		=> 'Guest',
+	'interlets'	=> 'Interlets', 
+);
+
+$status_ary = array(
+	0	=> 'Gedesactiveerd',
+	1	=> 'Actief',
+	2	=> 'Uitstapper',
+	3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
+	4	=> 'Infopakket',
+	5	=> 'Infoavond',
+	6	=> 'Extern',
+);
+
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+$currency = readconfigfromdb('currency');
+
+if ($pw)
+{
+	$s_owner = ($pw == $s_id) ? true : false;
+
+	if (!$s_admin && !$s_owner)
+	{
+		$alert->error('Je hebt onvoldoende rechten om het paswoord aan te passen voor deze gebruiker.');
+		cancel($pw);
+	}
+
+	if($submit)
+	{
+		$password = trim($_POST['password']);
+
+		$errors = array();
+
+		if (empty($password) || (trim($password) == ''))
+		{
+			$errors[] = 'Vul paswoord in!';
+		}
+
+		if (!$s_admin && password_strength($password) < 50) // ignored readconfigfromdb('pwscore')
+		{
+			$errors[] = 'Te zwak paswoord.';
+		}
+
+		if (empty($errors))
+		{
+			$update = array(
+				'password'	=> hash('sha512', $password),
+				'mdate'		=> date('Y-m-d H:i:s'),
+			);
+
+			if ($db->update('users', $update, array('id' => $pw)))
+			{
+				$user = readuser($pw, true);
+				$alert->success('Paswoord opgeslagen.');
+
+				if ($user['status'] == 1 && $_POST['notify'])
+				{
+					$from = readconfigfromdb('from_address');
+					$to = $db->fetchColumn('select c.value
+						from contact c, type_contact tc
+						where tc.id = c.id_type_contact
+							and tc.abbrev = \'mail\'
+							and c.id_user = ?', array($pw));
+
+					if ($user['login'])
+					{
+						if ($to)
+						{
+							$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+							$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
+							$url = $http . $_SERVER["SERVER_NAME"] . $port . '?login=' . $user['login'];
+
+							$subj = '[eLAS-' . readconfigfromdb('systemtag');
+							$subj .= '] nieuw paswoord voor je account';
+
+							$con = '*** Dit is een automatische mail van het eLAS systeem van ';
+							$con .= readconfigfromdb('systemname');
+							$con .= '. Niet beantwoorden astublieft. ';
+							$con .= "***\n\n";
+							$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
+							$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
+							$con .= "\n\n";
+							$con .= 'Je kan inloggen op eLAS met de volgende gegevens:';
+							$con .= "\n\nLogin: " . $user['login'];
+							$con .= "\nPaswoord: " .$password . "\n\n";
+							$con .= 'eLAS adres waar je kan inloggen: ' . $url;
+							$con .= "\n\n";
+							$con .= 'Veel letsgenot!';
+							sendemail($from, $to, $subj, $con);
+							log_event($s_id, 'Mail', 'Pasword change notification mail sent to ' . $to);
+							$alert->success('Notificatie mail verzonden naar ' . $to);
+						}
+						else
+						{
+							$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+						}
+					}
+					else
+					{
+						$alert->warning('Deze gebruiker heeft geen login! Er werd geen notificatie email verstuurd.');
+					}
+				}
+				cancel($pw);
+			}
+			else
+			{
+				$alert->error('Paswoord niet opgeslagen.');
+			}
+		}
+		else
+		{
+			$alert->error(implode('<br>', $errors));
+		}
+
+	}
+
+	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
+
+	$h1 = 'Paswoord aanpassen';
+	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($pw); 
+	$fa = 'key';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<button class="btn btn-default" id="generate">Genereer automatisch</button>';
+	echo '<br><br>';
+
+	echo '<form method="post" class="form-horizontal">';
+
+	echo '<div class="form-group">';
+	echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="password" name="password" ';
+	echo 'value="' . $password . '" required>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief en login ingesteld is)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="checkbox" name="notify" id="notify"';
+	echo ($user['status'] == 1 && $user['login']) ? ' checked="checked"' : ' readonly';
+	echo '>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<a href="' . $rootpath . 'users.php?id=' . $pw . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
 if ($del)
 {
+	if (!$s_admin)
+	{
+		$alert->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
+	}
+
 	if ($s_id == $del)
 	{
 		$alert->error('Je kan jezelf niet verwijderen.');
-		cancel();
+		cancel($del);
 	}
 
 	if ($db->fetchColumn('select id from transactions where id_to = ? or id_from = ?', array($del, $del)))
 	{
 		$alert->error('Een gebruiker met transacties kan niet worden verwijderd.');
-		cancel();
+		cancel($del);
 	}
 
 	$user = readuser($del);
@@ -233,7 +390,15 @@ if ($del)
 
 if ($add || $edit)
 {
-	if ($edit && $s_user && $s_id != $edit)
+	if ($add && !$s_admin)
+	{
+		$alert->error('Je hebt geen rechten om een gebruiker toe te voegen.');
+		cancel();
+	}
+
+	$s_owner =  ($edit && $s_id && $edit == $s_id) ? true : false;
+
+	if ($edit && !$s_admin && !$s_owner)
 	{
 		$alert->error('Je hebt geen rechten om deze gebruiker aan te passen.');
 		cancel($edit);
@@ -260,9 +425,14 @@ if ($add || $edit)
 			'lang'			=> 'nl',
 		);
 
+		if (!$s_admin)
+		{
+			
+		}
+
 		$contact = $_POST['contact'];
 		$notify = $_POST['notify'];
-		$password = $_POST['pw'];
+		$password = $_POST['password'];
 
 		foreach ($contact as $c)
 		{
@@ -686,13 +856,6 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	$role_ary = array(
-		'admin'		=> 'Admin',
-		'user'		=> 'User',
-		'guest'		=> 'Guest',
-		'interlets'	=> 'Interlets',
-	);
-
 	echo '<div class="form-group">';
 	echo '<label for="accountrole" class="col-sm-2 control-label">Rechten</label>';
 	echo '<div class="col-sm-10">';
@@ -701,15 +864,6 @@ if ($add || $edit)
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
-
-	$status_ary = array(
-		0	=> 'Inactief',
-		1	=> 'Actief',
-		2	=> 'Uitstapper',	
-		5	=> 'Info-pakket',
-		6	=> 'Info-moment',
-		7	=> 'Extern',
-	);
 
 	echo '<div class="form-group">';
 	echo '<label for="status" class="col-sm-2 control-label">Status</label>';
@@ -810,11 +964,11 @@ if ($add || $edit)
 	{
 		echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 		echo '<br><br>';
-		
+
 		echo '<div class="form-group">';
-		echo '<label for="pw" class="col-sm-2 control-label">Paswoord</label>';
+		echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
 		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" id="pw" name="pw" ';
+		echo '<input type="text" class="form-control" id="password" name="password" ';
 		echo 'value="' . $password . '" required>';
 		echo '</div>';
 		echo '</div>';
@@ -870,8 +1024,6 @@ if ($id)
 			and t.id_to = tu.id
 			and t.id_from = fu.id', array($id, $id));
 
-	$currency = readconfigfromdb('currency');
-
 	$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
 		var user_link_location = \'' . $rootpath . 'users.php?id=\'; </script>
 		<script src="' . $rootpath . 'js/user.js"></script>
@@ -901,7 +1053,7 @@ if ($id)
 		$top_buttons .= ' title="Gebruiker aanpassen"><i class="fa fa-pencil"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
 
-		$top_buttons .= '<a href="editpw.php?id='. $id . '" class="btn btn-info"';
+		$top_buttons .= '<a href="' . $rootpath . 'users.php?pw='. $id . '" class="btn btn-info"';
 		$top_buttons .= ' title="Paswoord aanpassen"><i class="fa fa-key"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
 	}
@@ -997,16 +1149,6 @@ if ($id)
 		echo 'Laatste login';
 		echo '</dt>';
 		dd_render($user['lastlogin']);
-
-		$status_ary = array(
-			0	=> 'Gedesactiveerd',
-			1	=> 'Actief',
-			2	=> 'Uitstapper',
-			3	=> 'Instapper', // not used
-			4	=> 'Infopakket',
-			5	=> 'Infoavond',
-			6	=> 'Extern',
-		);
 
 		echo '<dt>';
 		echo 'Status';
@@ -1268,7 +1410,7 @@ if ($s_admin)
 	);
 }
 
-$status_ary = array(
+$st_ary = array(
 	0 	=> 'inactive',
 	1 	=> 'active',
 	2 	=> 'leaving',
@@ -1278,16 +1420,12 @@ $status_ary = array(
 	7	=> 'extern',
 );
 
-$currency = readconfigfromdb('currency');
-
 $where = ($s_admin) ? '' : 'where u.status in (1, 2)';
 
 $users = $db->fetchAll('select u.*
 	from users u
 	' . $where . '
 	order by u.letscode asc');
-
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 $c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 	FROM contact c, type_contact tc
@@ -1404,7 +1542,7 @@ foreach($users as $u)
 {
 	$id = $u['id'];
 
-	$status_key = $status_ary[$u['status']];
+	$status_key = $st_ary[$u['status']];
 	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($u['adate'])) ? 'new' : $status_key;
 
 	$hsh = ($st[$status_key]['hsh']) ?: '';
@@ -1586,4 +1724,171 @@ function sendadminmail($user)
 	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
 	sendemail($from, $to, $subject, $content);
+}
+
+function password_strength($password, $username = null)
+{
+    if (!empty($username))
+    {
+        $password = str_replace($username, '', $password);
+    }
+
+    $strength = 0;
+    $password_length = strlen($password);
+
+    if ($password_length < 5)
+    {
+        return $strength;
+    }
+    else
+    {
+        $strength = $password_length * 9;
+    }
+
+    for ($i = 2; $i <= 4; $i++)
+    {
+        $temp = str_split($password, $i);
+
+        $strength -= (ceil($password_length / $i) - count(array_unique($temp)));
+    }
+
+    preg_match_all('/[0-9]/', $password, $numbers);
+
+    if (!empty($numbers))
+    {
+        $numbers = count($numbers[0]);
+
+        if ($numbers >= 1)
+        {
+            $strength += 8;
+        }
+    }
+    else
+    {
+        $numbers = 0;
+    }
+
+    preg_match_all('/[|!@#$%&*\/=?,;.:\-_+~^¨\\\]/', $password, $symbols);
+
+    if (!empty($symbols))
+    {
+        $symbols = count($symbols[0]);
+
+        if ($symbols >= 1)
+        {
+            $strength += 8;
+        }
+    }
+    else
+    {
+        $symbols = 0;
+    }
+
+    preg_match_all('/[a-z]/', $password, $lowercase_characters);
+    preg_match_all('/[A-Z]/', $password, $uppercase_characters);
+
+    if (!empty($lowercase_characters))
+    {
+        $lowercase_characters = count($lowercase_characters[0]);
+    }
+    else
+    {
+        $lowercase_characters = 0;
+    }
+
+    if (!empty($uppercase_characters))
+    {
+        $uppercase_characters = count($uppercase_characters[0]);
+    }
+    else
+    {
+        $uppercase_characters = 0;
+    }
+
+    if (($lowercase_characters > 0) && ($uppercase_characters > 0))
+    {
+        $strength += 10;
+    }
+
+    $characters = $lowercase_characters + $uppercase_characters;
+
+    if (($numbers > 0) && ($symbols > 0))
+    {
+        $strength += 15;
+    }
+
+    if (($numbers > 0) && ($characters > 0))
+    {
+        $strength += 15;
+    }
+
+    if (($symbols > 0) && ($characters > 0))
+    {
+        $strength += 15;
+    }
+
+    if ($strength < 0)
+    {
+        $strength = 0;
+    }
+
+    if ($strength > 100)
+    {
+        $strength = 100;
+    }
+
+    return $strength;
+}
+
+function sendactivationmail($password, $user)
+{
+	global $baseurl, $s_id, $alert;
+	
+	$from = readconfigfromdb("from_address");
+
+	if (!empty($user['mail']))
+	{
+		$to = $user['mail'];
+	}
+	else
+	{
+		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
+		return 0;
+	}
+
+	$systemtag = readconfigfromdb('systemtag');
+	$systemletsname = readconfigfromdb('systemname');
+	$subject = "[eLAS-";
+	$subject .= $systemtag;
+	$subject .= "] eLAS account activatie voor $systemletsname";
+
+	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content .= $systemtag;
+	$content .= " ***\r\n\n";
+	$content .= "Beste ";
+	$content .= $user["name"];
+	$content .= "\n\n";
+
+	$content .= "Welkom bij Letsgroep $systemletsname";
+	$content .= '. Surf naar http://' . $baseurl;
+	$content .= " en meld je aan met onderstaande gegevens.\n";
+	$content .= "\n-- Account gegevens --\n";
+	$content .= "Login: ";
+	$content .= $user["login"]; 
+	$content .= "\nPasswoord: ";
+	$content .= $password;
+	$content .= "\n-- --\n\n";
+
+	$content .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
+	$content .= " zelf bijwerken op het Internet.";
+	$content .= "\n\n";
+
+	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
+	$content .= readconfigfromdb('support');
+	$content .= "\n\n";
+	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
+
+	sendemail($from,$to,$subject,$content);
+
+	log_event($s_id, 'Mail', 'Activation mail sent to ' . $to);
 }

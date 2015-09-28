@@ -170,14 +170,21 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
-
 /** functions **/
 /*
  *
  */
+
+$elas_heroku_config = array(
+	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
+	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
+	'registration_en'			=> array('0', 'Registratie formulier ingeschakeld [0, 1]'),
+); 
+ 
 function readconfigfromdb($key)
 {
     global $db, $schema, $redis;
+    global $elas_mongo, $elas_heroku_config;
     static $cache;
 
 	if (isset($cache[$key]))
@@ -192,12 +199,21 @@ function readconfigfromdb($key)
 		return $cache[$key] = $redis->get($redis_key);
 	}
 
-	$value = $db->fetchColumn('SELECT value FROM config WHERE setting = ?', array($key));
+	if (isset($elas_heroku_config[$key]))
+	{
+		$elas_mongo->connect();
+		$s = $elas_mongo->settings->findOne(array('name' => $key));
+		$value = (isset($s['value'])) ? $s['value'] : $elas_heroku_config[$key][0];
+	}
+	else
+	{
+		$value = $db->fetchColumn('SELECT value FROM config WHERE setting = ?', array($key));
+	}
 
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 7200);
+		$redis->expire($redis_key, 14400);
 		$cache[$key] = $value;
 	}
 
@@ -210,10 +226,22 @@ function readconfigfromdb($key)
 function writeconfig($key, $value)
 {
 	global $db, $redis, $schema;
+	global $elas_heroku_config, $elas_mongo;
 
-	if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
+	if ($elas_heroku_config[$key])
 	{
-		return false;
+		$a = array(
+			'value' => $value,
+			'name'	=> $key
+		);
+		$elas_mongo->settings->update(array('name' => $key), $a, array('upsert' => true));
+	}
+	else
+	{
+		if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
+		{
+			return false;
+		}
 	}
 
 	$redis_key = $schema . '_config_' . $key;

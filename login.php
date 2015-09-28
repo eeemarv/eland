@@ -138,7 +138,7 @@ if ($_POST['zend'])
 		log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
 		log_event($user['id'],'Agent', $browser);
 		$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $s_id));
-		$alert->success('Ok Gebruiker ingelogd.');
+		$alert->success('Je bent ingelogd.');
 		header('Location: ' . $location);
 		exit;
 	}

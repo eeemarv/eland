@@ -320,14 +320,12 @@ function user_exp_msgs()
 {
 	global $db, $now, $base_url;
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
-	$msgcleanupdays = readconfigfromdb("msgexpcleanupdays");
+	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
 	$warn_messages  = $db->fetchAll("SELECT m.*
 		FROM messages m
 			WHERE m.exp_user_warn = 'f'
 				AND m.validity < ?", array($now));
 
-	// $warn_messages = get_warn_messages($msgexpwarningdays);
-	
 	foreach ($warn_messages AS $key => $value)
 	{
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.

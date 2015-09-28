@@ -4,10 +4,14 @@ $rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
+$elas_mongo->connect();
+
 $setting = ($_GET['edit']) ?: false;
 
 if ($setting)
 {
+	$eh_config = $elas_heroku_config[$setting];
+
 	if ($_POST['zend'])
 	{
 		$value = $_POST['value'];
@@ -17,8 +21,7 @@ if ($setting)
 			if (writeconfig($setting, $value))
 			{
 				$alert->success('Instelling aangepast.');
-				header('Location: ' . $rootpath . 'config.php');
-				exit;
+				cancel();
 			}
 		}
 		$alert->error('Instelling niet aangepast.');
@@ -28,7 +31,7 @@ if ($setting)
 		$value = readconfigfromdb($setting);
 	}
 
-	$description = $db->fetchColumn('select description from config where setting = ?', array($setting));
+	$description = ($eh_config[1]) ?: $db->fetchColumn('select description from config where setting = ?', array($setting));
 
 	$h1 = 'Instelling ' . $setting . ' aanpassen';
 	$fa = 'gears';
@@ -69,8 +72,40 @@ if ($setting)
 	exit;
 }
 
-// exclude plaza stuff
-$config = $db->fetchAll('SELECT * FROM config where category not like \'plaza%\' ORDER BY category, setting');
+// exclude plaza stuff, emptypasswordlogin, share_enabled, pwscore
+$config = $db->fetchAll('select *
+	from config
+	where category not like \'plaza%\'
+		and setting <> \'emptypasswordlogin\'
+		and setting <> \'share_enabled\'
+		and setting <> \'pwscore\'
+		and setting <> \'msgexpwarningdays\'
+	order by category, setting');
+
+$eh_settings = array_keys($elas_heroku_config);
+
+$cursor = $elas_mongo->settings->find(array('name' => array('$in' => $eh_settings))); 
+
+$eh_stored_settings = array();
+
+foreach ($cursor as $c)
+{
+	$eh_stored_settings[$c['name']] = $c['value'];
+}
+
+foreach ($eh_settings as $setting)
+{
+	$default = (isset($eh_stored_settings[$setting])) ? false : true;
+
+	$config[] = array(
+		'category'		=> 'eLAS-Heroku',
+		'setting'		=> $setting,
+		'value'			=> ($default) ? $elas_heroku_config[$setting][0] : $eh_stored_settings[$setting],
+		'description'	=> $elas_heroku_config[$setting][1],
+		'default'		=> $default,
+	);
+}
+
 
 $h1 = 'Instellingen';
 $fa = 'gears';
@@ -95,7 +130,7 @@ echo '<tbody>';
 foreach($config as $c)
 {
 	echo '<tr';
-	echo ($c['default'] == 't') ? ' class="bg-danger"' : '';
+	echo ($c['default']) ? ' class="danger"' : '';
 	echo '>';
 	echo '<td>' . $c['category'] . '</td>';
 	echo '<td>';
@@ -115,3 +150,9 @@ echo '</div></div>';
 echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
+
+function cancel()
+{
+	header('Location: ' . $rootpath . 'config.php');
+	exit;
+}

@@ -209,28 +209,5 @@ echo '</tbody>';
 echo '</table>';
 echo '</div>';
 
-/*
-if($s_accountrole != 'guest')
-{
-	$letsgroups = $db->fetchAll("SELECT * FROM letsgroups WHERE apimethod <> 'internal'");
-
-	if (count($letsgroups))
-	{
-		echo '<h1>Interletsgroepen raadplegen</h1>';
-		echo '<div class="table responsive">';
-		echo '<table class="table talble-bordered table-striped table-hover" data-sort="false">';
-
-		foreach($letsgroups as $key => $value)
-		{
-			echo "<tr><td nowrap>";
-			echo '<a href="'. $rootpath . 'interlets/userview.php?letsgroup_id=' .$value['id'] . '&location=messages/overview.php">' .$value['groupname'] . '</a>';
-			echo "</td></tr>";
-		}
-		echo '</table>';
-		echo '</div>';
-	}
-}
-*/
-
 include $rootpath . 'includes/inc_footer.php';
 

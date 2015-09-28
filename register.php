@@ -225,7 +225,8 @@ if ($_POST['zend'])
 	}
 }
 
-$h1 = 'Registratie';
+$h1 = 'Inschrijven';
+$fa = 'check-square-o';
 
 require_once $rootpath . 'includes/inc_header.php';
 
@@ -282,7 +283,7 @@ echo 'value="' . $reg['tel'] . '">';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="submit" class="btn btn-default" value="Registeren" name="zend">';
+echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
 echo '</form>';
 
 echo '</div>';
@@ -292,26 +293,3 @@ require_once $rootpath . 'includes/inc_footer.php';
 exit;
 
 $h1 = 'Login of paswoord vergeten';
-
-require_once $rootpath . 'includes/inc_header.php';
-
-echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
-
-echo '<div class="panel panel-info">';
-echo '<div class="panel-heading">';
-
-echo '<form method="post" class="form-horizontal">';
-echo '<div class="form-group">';
-echo '<label for="email" class="col-sm-2 control-label">Email</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $email . '" required>';
-echo '</div>';
-echo '</div>';
-echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
-echo '</form>';
-
-echo '</div>';
-echo '</div>';
-
-require_once $rootpath . 'includes/inc_footer.php';

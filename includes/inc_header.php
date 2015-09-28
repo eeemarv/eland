@@ -141,6 +141,11 @@ if (!$s_accountrole)
 		'login.php'		=> array('sign-in', 'Login'),
 		'help.php'		=> array('ambulance', 'Help'),
 	);
+
+	if (readconfigfromdb('registration_en'))
+	{
+		$menu[]['register.php'] = array('check-square-o', 'Inschrijven');
+	}
 }
 else
 {
