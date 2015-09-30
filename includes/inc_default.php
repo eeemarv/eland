@@ -107,6 +107,12 @@ $access_ary = array(
 	'anonymous'	=> 3,
 );
 
+$acc_ary = array(
+	0	=> array('privé', 'default'),
+	1	=> array('leden', 'warning'),
+	2	=> array('interlets', 'success'),
+);
+
 $access_level = (isset($access_ary[$s_accountrole])) ? $access_ary[$s_accountrole] : 3;
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;

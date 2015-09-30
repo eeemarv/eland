@@ -13,13 +13,6 @@ $role = ($del || $add || $edit) ? 'user' : 'guest';
 
 require_once $rootpath . 'includes/inc_default.php';
 
-$acc_ary = array(
-	0	=> array('privé', 'default'),
-	1	=> array('leden', 'warning'),
-	2	=> array('interlets', 'success'),
-);
-
-
 if ($del)
 {
 	if (!($uid = $db->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
