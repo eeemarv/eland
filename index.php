@@ -24,15 +24,12 @@ $news = $db->fetchAll('select * from news where approved = True order by cdate d
 
 $newusertreshold = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400);
 
-$newusers = $db->fetchAll('select id, letscode, fullname
+$newusers = $db->fetchAll('select id, letscode, name
 	from users
 	where status = 1
 		and adate > ?', array($newusertreshold));
 
 $msgs = $db->fetchAll('SELECT m.*,
-		u.id AS uid,
-		u.fullname,
-		u.letscode,
 		u.postcode,
 		c.fullname as cat,
 		c.id as cid
@@ -173,20 +170,20 @@ if($newusers)
 	echo '</thead>';
 	echo '<tbody>';
 
-	foreach($newusers as $value)
+	foreach($newusers as $u)
 	{
-		$id = $value['id'];
+		$id = $u['id'];
 
 		echo '<tr class="success">';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' .$id .'">';
-		echo $value['letscode'];
+		echo '<a href="' . $rootpath . 'users.php?id=' . $id .'">';
+		echo $u['letscode'];
 		echo '</a></td>';
 		
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' .$id .'">';
-		echo htmlspecialchars($value['fullname'],ENT_QUOTES).'</a>';
+		echo '<a href="' . $rootpath . 'users.php?id=' . $id .'">';
+		echo htmlspecialchars($u['name'],ENT_QUOTES).'</a>';
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -243,9 +240,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
-		echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
-		echo '</a>';
+		echo link_user($msg['id_user']);
 		echo '</td>';
 
 		echo '<td>';

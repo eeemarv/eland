@@ -221,11 +221,9 @@ if ($del)
 		$alert->error('Nieuwsbericht niet verwijderd.');
 	}
 
-	$news = $db->fetchAssoc('SELECT n.*, u.name, u.letscode
-		FROM news n, users u  
-		WHERE n.id = ?
-		AND n.id_user = u.id', array($del));
-
+	$news = $db->fetchAssoc('SELECT n.*
+		FROM news n  
+		WHERE n.id = ?', array($del));
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
@@ -242,9 +240,8 @@ if ($del)
 	echo "<br>Locatie: " .$news["location"];
 	echo "</strong>";
 	echo "<br><i>Ingegeven door : ";
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $news['id_user'] . '">';
-	echo htmlspecialchars($news["name"],ENT_QUOTES)." (".trim($news["letscode"]).")";
-	echo "</a></i>";
+	echo link_user($news['id_user']);
+	echo "</i>";
 	echo ($news['approved'] == 't') ? '<br><i>Goedgekeurd.</i>' : '<br><i>Nog niet goedgekeurd.</i>';
 	echo ($news['sticky'] == 't') ? '<br><i>Behoud na datum.</i>' : '<br><i>Wordt verwijderd na datum.</i>';
 
@@ -283,10 +280,9 @@ if ($id)
 	$role = 'guest';
 	require_once $rootpath . 'includes/inc_default.php';
 
-	$news = $db->fetchAssoc('SELECT n.*, u.name, u.letscode
-		FROM news n, users u  
-		WHERE n.id = ?
-		AND n.id_user = u.id', array($id));
+	$news = $db->fetchAssoc('SELECT n.*
+		FROM news n  
+		WHERE n.id = ?', array($id));
 
 	$top_buttons = '';
 
@@ -342,9 +338,7 @@ if ($id)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $news['id_user'] . '">';
-	echo $news['letscode'] . ' ' . htmlspecialchars($news['name'],ENT_QUOTES);
-	echo '</a>';
+	echo link_user($news['id_user']);
 	echo '</dd>';
 
 	echo '<dt>Goedgekeurd</dt>';

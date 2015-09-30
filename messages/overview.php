@@ -10,7 +10,7 @@ $cid = ($_GET['cid']) ?: '';
 $cat_hsh = ($_GET['cat_hsh']) ?: '';
 
 $msgs = $db->fetchAll('select m.*,
-		u.letscode, u.fullname, u.id as uid, u.postcode
+		u.postcode
 	from messages m, users u
 	where m.id_user = u.id
 		and u.status in (1, 2)
@@ -173,9 +173,7 @@ foreach($msgs as $msg)
 	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $msg['uid'] . '">';
-	echo htmlspecialchars($msg['letscode'] . ' ' . $msg['fullname'], ENT_QUOTES);
-	echo '</a>';
+	echo link_user($msg['id_user']);
 	echo '</td>';
 
 	echo '<td>';

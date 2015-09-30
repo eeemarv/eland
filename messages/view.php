@@ -119,8 +119,8 @@ else if ($_POST['zend'])
 		$to =  $to . ', ' . $from;
 	}
 
-	$mailcontent = 'Beste ' . $user['fullname'] . "\r\n\n";
-	$mailcontent .= '-- ' . $me['fullname'] . ' heeft een reactie op je ' . $va . " verstuurd via eLAS --\r\n\n";
+	$mailcontent = 'Beste ' . $user['name'] . "\r\n\n";
+	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $va . " verstuurd via eLAS --\r\n\n";
 	$mailcontent .= $content . "\n\n";
 	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
 	$mailcontent .= 'Contactgegevens van ' . $me['fullname'] . ":\n";
@@ -299,9 +299,7 @@ echo '</dd>';
 echo '<dt>Van gebruiker: ';
 echo '</dt>';
 echo '<dd>';
-echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $user['id'] . '">';
-echo trim($user['letscode']) . ' ' . htmlspecialchars($user['fullname'],ENT_QUOTES);
-echo '</a>';
+echo link_user($user);
 echo ' (saldo: <span class="label label-default">' . $balance . '</span> ' .$currency . ')';
 echo '</dd>';
 
@@ -361,7 +359,7 @@ echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
 echo '<div class="col-sm-12">';
-echo '<textarea name="content" rows="6" placeholder="Je reactie naar ' . $user['fullname'] . '" ';
+echo '<textarea name="content" rows="6" placeholder="Je reactie naar ' . $user['name'] . '" ';
 echo 'class="form-control" required';
 if(empty($to) || $s_accountrole == 'guest')
 {

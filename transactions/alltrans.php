@@ -22,17 +22,8 @@ $trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orde
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
 $query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;
-$query = 'select t.*, 
-		fu.id AS fromuserid,
-		tu.id AS touserid,
-		fu.name AS fromusername,
-		tu.name AS tousername,
-		fu.letscode AS fromletscode, tu.letscode AS toletscode, 
-		t.date AS datum,
-		t.cdate AS cdatum 
-	from transactions t, users fu, users tu
-	where t.id_to = tu.id
-		and t.id_from = fu.id
+$query = 'select t.*
+	from transactions t
 	order by ' . $query_orderby . ' ';
 $query .= ($asc) ? 'ASC ' : 'DESC ';
 
@@ -117,15 +108,13 @@ foreach($transactions as $key => $value)
 	echo '<td';
 	echo ($value['fromuserid'] == $s_id) ? ' class="me"' : '';
 	echo '>';
-	if(!empty($value["real_from"]))
+	if(!empty($value['real_from']))
 	{
 		echo htmlspecialchars($value['real_from'],ENT_QUOTES);
 	}
 	else
 	{
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['fromuserid'] . '">';
-		echo htmlspecialchars($value["fromusername"],ENT_QUOTES). " (" .trim($value["fromletscode"]).")";
-		echo '</a>';
+		echo link_user($value['id_from']);
 	}
 	echo '</td>';
 
@@ -138,14 +127,12 @@ foreach($transactions as $key => $value)
 	}
 	else
 	{ 
-		echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $value['touserid'] . '">';
-		echo htmlspecialchars($value["tousername"],ENT_QUOTES). " (" .trim($value["toletscode"]).")";
-		echo '</a>';
+		echo link_user($value['id_to']);
 	}
 	echo '</td>';
 
 	echo '<td>';
-	echo $value['cdatum'];
+	echo $value['cdate'];
 	echo '</td>';
 
 	echo '</tr>';

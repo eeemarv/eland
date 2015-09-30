@@ -156,12 +156,12 @@ foreach($users as $value)
 	echo '<tr' . $class . '>';
 
 	echo '<td>';
-	echo '<a href="memberlist_view.php?id=' .$id .'">';
+	echo '<a href="users.php?id=' .$id .'">';
 	echo $value['letscode'];
 	echo '</a></td>';
-	
+
 	echo '<td>';
-	echo '<a href="memberlist_view.php?id=' .$id .'">'.htmlspecialchars($value['fullname'],ENT_QUOTES).'</a>';
+	echo '<a href="users.php?id=' .$id .'">'.htmlspecialchars($value['name'],ENT_QUOTES).'</a>';
 	echo '</td>';
 
 	echo '<td>';

@@ -80,17 +80,19 @@ function show_all_users($userrows){
 
 		echo"</td>\n";
 		echo "<td valign='top'>";
-		echo "<a href='memberlist_view.php?id=".$value["id"]."'>".htmlspecialchars($value["fullname"],ENT_QUOTES)."</a></td>\n";
+		echo link_user($value);
+		echo '</td>';
 		echo "<td nowrap  valign='top'>";
 		$userid = $value["id"];
 		$contactrows = get_contacts($userid);
-			
-			foreach($contactrows as $key2 => $value2){
-				if ($value2["id_type_contact"] == 1){
-					echo  $value2["value"];
-				break;
-				}
+		foreach($contactrows as $key2 => $value2)
+		{
+			if ($value2["id_type_contact"] == 1)
+			{
+				echo  $value2["value"];
+			break;
 			}
+		}
 		echo "</td>\n";
 		echo "<td nowrap valign='top'>";
 			foreach($contactrows as $key2 => $value2){

@@ -132,7 +132,7 @@ function saldo()
 	$support = readconfigfromdb('support');
 	$msg_url = $base_url . '/messages/view.php?id=';
 	$news_url = $base_url . '/news.php?id=';
-	$user_url = $base_url . '/memberlist_view.php?&id=';
+	$user_url = $base_url . '/users.php?&id=';
 	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
 	$new_message_url = $base_url . '/messages/edit.php?mode=new';
 	$new_transaction_url = $base_url . '/transactions/add.php';

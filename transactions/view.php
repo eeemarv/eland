@@ -12,13 +12,9 @@ if (!isset($_GET['id']))
 }
 
 $id = $_GET["id"];
-$transaction = $db->fetchAssoc('select t.*,
-	fu.letscode as from_letscode, fu.fullname as from_fullname,
-	tu.letscode as to_letscode, tu.fullname as to_fullname
-	from transactions t, users fu, users tu
-	where t.id = ?
-		and fu.id = t.id_from
-		and tu.id = t.id_to', array($id));
+$transaction = $db->fetchAssoc('select t.*
+	from transactions t
+	where t.id = ?', array($id));
 
 $currency = readconfigfromdb('currency');
 
@@ -53,9 +49,7 @@ echo '</dd>';
 
 echo '<dt>Van account</dt>';
 echo '<dd>';
-echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $transaction['id_from'] . '">';
-echo $transaction['from_letscode'] . ' ' . $transaction['from_fullname'];
-echo '</a>';
+echo link_user($transaction['id_from']);
 echo '</dd>';
 
 if ($transaction['real_from'])
@@ -68,9 +62,7 @@ if ($transaction['real_from'])
 
 echo '<dt>Naar account</dt>';
 echo '<dd>';
-echo '<a href="' . $rootpath . 'memberlist_view.php?id=' . $transaction['id_to'] . '">';
-echo $transaction['to_letscode'] . ' ' . $transaction['to_fullname'];
-echo '</a>';
+echo link_user($transaction['id_to']);
 echo '</dd>';
 
 if ($transaction['real_to'])

@@ -15,7 +15,7 @@ $contacts = $db->fetchAll('select c.*, tc.abbrev
 $currency = readconfigfromdb('currency');
 
 $includejs = '<script type="text/javascript">var user_id = ' . $s_id . ';
-	var user_link_location = \'' . $rootpath . 'memberlist_view.php?id=\'; </script>
+	var user_link_location = \'' . $rootpath . 'users.php?id=\'; </script>
 	<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
 	<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
