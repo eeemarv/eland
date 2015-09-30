@@ -78,7 +78,6 @@ if ($s_letscode)
 	if ($s_accountrole == 'admin')
 	{
 		$menu = array(
-			'users.php'							=> array('users', 'Gebruikers'),
 			'categories.php'	 				=> array('clone', 'Categorieën'),
 			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys.php'						=> array('key', 'Apikeys'),

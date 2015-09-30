@@ -31,10 +31,37 @@ if ($token & $user_id)
 				array($token . '_' . $user_id, gmdate('Y-m-d H:i:s'))))
 			{
 				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
-				readuser($user_id, true);
+				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
 				log_event($s_id, 'System', 'password reset success user ' . $user_id);
-				header('Location: login.php');
+
+				$to = array();
+				$st = $db->prepare('SELECT c.value
+					FROM contact c, type_contact tc
+					WHERE tc.id = c.id_type_contact
+						AND tc.abbrev = \'mail\'
+						AND c.id_user = ?');
+				$st->bindValue(1, $user_id);
+				$st->execute();
+				while ($row = $st->fetch())
+				{
+					$to[] = $row['value'];
+				}
+				error_log(implode(' ---- ', $to));
+				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
+				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/login.php?login=' . $user['login'];
+
+				$subj = '[' . readconfigfromdb('systemtag') . '] nieuw paswoord.';
+				$body = 'Beste ' . $user['name'] . ",\n\n";
+				$body .= 'Er werd een nieuw paswoord voor je account ingesteld.';
+				$body .= "\n\npaswoord: " . $password . "\n";
+				$body .= 'login: ' . $user['login'] . "\n\n";
+				$body .= 'Inloggen: ' . $url;
+
+				sendemail(readconfigfromdb('from_address'), $to, $subj, $body);
+
+				header('Location: ' . $rootpath . 'login.php');
 				exit;
 			}
 			$alert->error('Het reset-token is niet meer geldig.');
@@ -48,12 +75,18 @@ if ($token & $user_id)
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';
+	$fa = 'key';
+
+	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
 
 	require_once $rootpath . 'includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
-	
+
+	echo '<button class="btn btn-default" id="generate">Genereer automatisch</button>';
+	echo '<br><br>';
+
 	echo '<form method="post" class="form-horizontal">';
 	echo '<div class="form-group">';
 	echo '<label for="password" class="col-sm-2 control-label">Nieuw paswoord</label>';
@@ -78,7 +111,7 @@ if ($_POST['zend'])
 
 	if($email)
 	{
-		log_event($s_id, 'System', 'Activation request for ' .$email);
+		log_event($s_id, 'System', 'Activation request for ' . $email);
 		$mail_ary = $db->fetchAll('SELECT c.id_user, u.login
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
@@ -99,13 +132,14 @@ if ($_POST['zend'])
 					'token'		=> $token . '_' . $user_id,
 					'validity' 	=> $validity,
 					'type'		=> 'pwreset'));
-				$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
+				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
 				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/pwreset.php?token=' . $token . '&u=' . $user_id;
 				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
 				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
-				$message .= "Je login is: ". $login;
+				$message .= "Je login is: ". $login . "\n\n";
+				$message .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, gelieve deze mail te negeren.';
 				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event($s_id,"System","Paswoord reset link verstuurd naar " . $email);

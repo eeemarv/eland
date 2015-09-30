@@ -347,6 +347,8 @@ function sendemail($from, $to, $subject, $content)
 		return 'Fout: mail niet verstuurd, ontbrekende velden';
 	}
 
+	$to = (is_array($to)) ? implode(',', $to) : $to;
+
 	$to = trim($to, ',');
 
 	$to = explode(',', $to);

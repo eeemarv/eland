@@ -1,12 +1,12 @@
 <?php
 ob_start();
-$rootpath = "../";
+$rootpath = '../';
 $role = 'admin';
-require_once($rootpath."includes/inc_default.php");
+require_once $rootpath . 'includes/inc_default.php';
 
 if ($_POST['cancel'])
 {
-	header('Location: ' . $rootpath . 'users/overview.php');
+	header('Location: ' . $rootpath . 'users.php');
 	exit;
 }
 

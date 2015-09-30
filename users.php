@@ -75,7 +75,7 @@ if ($pw)
 				$user = readuser($pw, true);
 				$alert->success('Paswoord opgeslagen.');
 
-				if ($user['status'] == 1 && $_POST['notify'])
+				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
 					$from = readconfigfromdb('from_address');
 					$to = $db->fetchColumn('select c.value
@@ -136,10 +136,12 @@ if ($pw)
 
 	}
 
+	$user = readuser($pw);
+
 	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
 
 	$h1 = 'Paswoord aanpassen';
-	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($pw); 
+	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user); 
 	$fa = 'key';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -164,7 +166,7 @@ if ($pw)
 	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief en login ingesteld is)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="notify" id="notify"';
-	echo ($user['status'] == 1 && $user['login']) ? ' checked="checked"' : ' readonly';
+	echo (($user['status'] == 1 || $user['status'] == 2) && $user['login']) ? ' checked="checked"' : ' readonly';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
