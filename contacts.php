@@ -176,12 +176,6 @@ if ($edit || $add)
 		$contact = $db->fetchAssoc('select * from contact where id = ?', array($edit));
 	}
 
-	$access_options = array(
-		'0'	=> 'privé',
-		'1'	=> 'leden',
-		'2' => 'interlets',
-	); 
-
 	$tc = array();
 
 	$rs = $db->prepare('SELECT id, name FROM type_contact');

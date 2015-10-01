@@ -428,7 +428,7 @@ if ($add || $edit)
 			'hobbies'		=> $_POST['hobbies'],
 			'comments'		=> $_POST['comments'],
 			'login'			=> $_POST['login'],
-			'cron_saldo'	=> $_POST['cron_saldo'] ? true : false,
+			'cron_saldo'	=> $_POST['cron_saldo'] ? 1 : 0,
 			'lang'			=> 'nl'
 		);
 
@@ -632,7 +632,7 @@ if ($add || $edit)
 
 						$insert = array(
 							'value'				=> $value['value'],
-							'flag_public'		=> ($value['flag_public']) ? 1 : 0,
+							'flag_public'		=> $value['flag_public'],
 							'id_type_contact'	=> $contact_types[$value['abbrev']],
 							'id_user'			=> $id,
 						);
@@ -702,8 +702,6 @@ if ($add || $edit)
 						{
 							$stored_contact = $stored_contacts[$value['id']];
 
-							$value['flag_public'] = ($value['flag_public']) ? 1 : 0;
-
 							if (!$value['value'])
 							{
 								if ($stored_contact && !$value['main_mail'])
@@ -725,7 +723,7 @@ if ($add || $edit)
 								$insert = array(
 									'id_type_contact'	=> $contact_types[$value['abbrev']],
 									'value'				=> $value['value'],
-									'flag_public'		=> ($value['flag_public']) ? 1 : 0,
+									'flag_public'		=> $value['flag_public'],
 									'id_user'			=> $edit,
 								);
 								$db->insert('contact', $insert);
@@ -861,6 +859,15 @@ if ($add || $edit)
 		echo 'value="' . $user['fullname'] . '" required>';
 		echo '</div>';
 		echo '</div>';
+
+		echo '<div class="form-group">';
+		echo '<label for="fullname_access" class="col-sm-2 control-label">Zichtbaarheid volledige naam</label>';
+		echo '<div class="col-sm-10">';
+		echo '<select class="form-control" id="fullname_access" name="fullname_access" required>';
+		render_select_options($access_options, $user['fullname_access']);
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
 	}
 
 	echo '<div class="form-group">';
@@ -992,12 +999,11 @@ if ($add || $edit)
 			echo '</div>';
 
 			echo '<div class="form-group">';
-			echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaar</label>';
+			echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
 			echo '<div class="col-sm-10">';
-			echo '<input type="checkbox" id="' . $public . '" name="' . $public . '" ';
-			echo 'value="1"';
-			echo  ($c['flag_public']) ? ' checked="checked"' : '';
-			echo '>';
+			echo '<select id="' . $public . '" name="' . $public . '" class="form-control">';
+			render_select_options($access_options, $c['flag_public']);
+			echo '</select>';
 			echo '</div>';
 			echo '</div>';
 
@@ -1547,7 +1553,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="pull-right hidden-xs">';
+echo '<div class="pull-right hidden-xs" id="sum">';
 echo 'Totaal: <span id="total"></span>';
 echo '</div>';
 

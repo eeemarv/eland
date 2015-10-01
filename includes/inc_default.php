@@ -113,6 +113,12 @@ $acc_ary = array(
 	2	=> array('interlets', 'success'),
 );
 
+$access_options = array(
+	'0'	=> 'privé',
+	'1'	=> 'leden',
+	'2' => 'interlets',
+);
+
 $access_level = (isset($access_ary[$s_accountrole])) ? $access_ary[$s_accountrole] : 3;
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;

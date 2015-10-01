@@ -8,11 +8,12 @@ echo '<html>';
 echo '<head>';
 echo '<title>' . $name .'</title>';
 
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'tinybox/tinybox.css">';
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '">';
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '">';
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '">';
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css">';
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'tinybox/tinybox.css" media="screen">';
+echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '" media="screen">';
+echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '" media="screen">';
+echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '" media="screen">';
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css" media="screen">';
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">';
 
 echo '<script type="text/javascript" src="/tinybox/tinybox.js"></script>';
 
