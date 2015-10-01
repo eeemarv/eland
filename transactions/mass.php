@@ -75,7 +75,7 @@ $currency = readconfigfromdb('currency');
 $users = array();
 
 $rs = $db->prepare(
-	'SELECT id, fullname, letscode,
+	'SELECT id, name, letscode,
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
 		postcode
@@ -238,11 +238,11 @@ if ($_POST['zend'])
 				$from_user = $users[$from_id];
 				$to_user = $users[$to_id];
 
-				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['fullname'];
-				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['fullname'];
+				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
+				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
 				$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' uitgevoerd.<br>';
 
-				$log_many .= $many_user['letscode'] . ' ' . $many_user['fullname'] . '(' . $amo . '), ';
+				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
 				$mail_ary[$many_field][$many_uid] = array(
 					'amount'	=> $amo,
@@ -295,7 +295,7 @@ if ($_POST['zend'])
 		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
 		$alert->success($alert_success);
 
-		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['fullname'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
+		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
 		$log_many = rtrim($log_many, ', ');
 		$log_str = 'Mass transaction from ';
 		$log_str .= ($to_one) ? $log_many : $log_one;
@@ -319,7 +319,7 @@ if ($_POST['zend'])
 		$users = array();
 
 		$users = $db->prepare(
-			'SELECT id, fullname, letscode,
+			'SELECT id, name, letscode,
 				accountrole, status, saldo, minlimit, maxlimit, adate
 			FROM users
 			WHERE status IN (0, 1, 2, 5, 6)
@@ -342,16 +342,16 @@ $letsgroup_id = $db->fetchColumn('select id from letsgroups where apimethod = \'
 
 if ($to_letscode)
 {
-	if ($to_fullname = $db->fetchColumn('select fullname from users where letscode = ?', array($to_letscode)))
+	if ($to_name = $db->fetchColumn('select name from users where letscode = ?', array($to_letscode)))
 	{
-		$to_letscode .= ' ' . $to_fullname;
+		$to_letscode .= ' ' . $to_name;
 	}
 }
 if ($from_letscode)
 {
-	if ($from_fullname = $db->fetchColumn('select fullname from users where letscode = ?', array($from_letscode)))
+	if ($from_name = $db->fetchColumn('select name from users where letscode = ?', array($from_letscode)))
 	{
-		$from_letscode .= ' ' . $from_fullname;
+		$from_letscode .= ' ' . $from_name;
 	}
 }
 
@@ -511,7 +511,7 @@ foreach($users as $user_id => $user)
 
 	echo '<td>';
 	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
-	echo htmlspecialchars($user['fullname'],ENT_QUOTES).'</a></td>';
+	echo htmlspecialchars($user['name'],ENT_QUOTES).'</a></td>';
 
 	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
@@ -633,7 +633,7 @@ function mail_mass_transaction($mail_ary)
 
 	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
 
-	$one_user = $db->fetchAssoc('select u.id, u.fullname, u.letscode, c.value as mail
+	$one_user = $db->fetchAssoc('select u.id, u.name, u.letscode, c.value as mail
 		from users u, contact c, type_contact tc
 		where u.id = ?
 			and u.id = c.id_user
@@ -666,7 +666,7 @@ function mail_mass_transaction($mail_ary)
 	$to_log = '';
 	$total = 0;
 	$t = 'Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.';
-	$t_one = $one_user['letscode'] . ' ' . $one_user['fullname'];
+	$t_one = $one_user['letscode'] . ' ' . $one_user['name'];
 
 	$one_msg = $t . $r . $r;
 
@@ -681,8 +681,8 @@ function mail_mass_transaction($mail_ary)
 	}
 
 	$query = 'SELECT u.id,
-			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.fullname, u.letscode, u.login
+			u.saldo, u.status, u.minlimit, u.maxlimit,
+			u.name, u.letscode, u.login
 		FROM users u
 		WHERE u.status in (1, 2)
 			AND u.id';
@@ -713,11 +713,11 @@ function mail_mass_transaction($mail_ary)
 		$one_msg .= ', transactie-id: ' . $transid . $r;
 
 		$total += $amount;
-		$to_log .= $user['letscode'] . ' ' . $user['fullname'] . ', ';
+		$to_log .= $user['letscode'] . ' ' . $user['name'] . ', ';
 
 		$to[] = array(
 			'email'	=> $mailaddr[$user['id']],
-			'name'	=> $user['fullname'],
+			'name'	=> $user['name'],
 		);
 		$merge_vars[] = array(
 			'rcpt'	=> $mailaddr[$user['id']],
@@ -733,10 +733,6 @@ function mail_mass_transaction($mail_ary)
 				array(
 					'name'		=> 'LETSCODE',
 					'content'	=> $user['letscode'],
-				),
-				array(
-					'name'		=> 'FULLNAME',
-					'content'	=> $user['fullname'],
 				),
 				array(
 					'name'		=> 'ID',
@@ -784,7 +780,7 @@ function mail_mass_transaction($mail_ary)
 	$text .= 'Notificatie transactie' . $r;
 	$html .= '<h2>Notificatie transactie</h2>';
 
-	$t_many = '*|FULLNAME|* (*|LETSCODE|*)';
+	$t_many = '*|LETSCODE|* *|NAME|*';
 
 	$t = ($from_many_bool) ? $t_many : $t_one;
 
@@ -861,20 +857,20 @@ function mail_mass_transaction($mail_ary)
 	log_event($s_id, 'Mail', 'Massa transaction mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
 
 	$to = array(array(
-		'name' 	=> $one_user['fullname'],
+		'name' 	=> $one_user['name'],
 		'email'	=> $one_user['mail'],
 	));
 
 	if ($one_user_id != $s_id)
 	{
-		$s_user = $db->fetchAssoc('select u.fullname, c.value as mail
+		$s_user = $db->fetchAssoc('select u.name, c.value as mail
 			from users u, contact c, type_contact tc
 			where u.id = ?
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'', array($s_id));
 		$to[] = array(
-			'name'	=> $s_user['fullname'],
+			'name'	=> $s_user['name'],
 			'email' => $s_user['mail'],
 		);
 	}

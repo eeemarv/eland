@@ -10,7 +10,7 @@ body,html
 }
 
 span, div.alert, ul, div.panel, .footer, div.navbar,
-#sidebar, #sum, button, a.csv
+#sidebar, .print-hide, button, a.csv
 {
 	display: none;
 }

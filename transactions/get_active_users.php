@@ -32,7 +32,7 @@ switch($letsgroup['apimethod'])
 	case 'internal':
 		$users = $db->fetchAll(
 			'SELECT letscode as c,
-				fullname as n,
+				name as n,
 				extract(epoch from adate) as e,
 				status as s,
 				postcode as p

@@ -123,7 +123,7 @@ else if ($_POST['zend'])
 	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $va . " verstuurd via eLAS --\r\n\n";
 	$mailcontent .= $content . "\n\n";
 	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
-	$mailcontent .= 'Contactgegevens van ' . $me['fullname'] . ":\n";
+	$mailcontent .= 'Contactgegevens van ' . $me['name'] . ":\n";
 
 	foreach($my_contacts as $value)
 	{

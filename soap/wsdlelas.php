@@ -189,13 +189,13 @@ function userbyletscode($apikey, $letscode)
 	if(check_apikey($apikey,'interlets'))
 	{
 		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode));
-		if($user['fullname'] == '')
+		if($user['name'] == '')
 		{
 			return 'Onbekend';
 		}
 		else
 		{
-			return $user['fullname'];
+			return $user['name'];
 		}
 	}
 	else
@@ -210,8 +210,8 @@ function userbyname($apikey, $name)
 
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->fetchAssoc('SELECT * FROM users WHERE (LOWER(fullname)) LIKE \'%?%\'', array(strtolower($name)));
-		return ($user['fullname']) ? $user['letscode'] : 'Onbekend';
+		$user = $db->fetchAssoc('SELECT * FROM users WHERE (LOWER(name)) LIKE \'%?%\'', array(strtolower($name)));
+		return ($user['name']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
 	{

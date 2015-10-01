@@ -1553,7 +1553,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="pull-right hidden-xs" id="sum">';
+echo '<div class="pull-right hidden-xs print-hide">';
 echo 'Totaal: <span id="total"></span>';
 echo '</div>';
 

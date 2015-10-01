@@ -101,7 +101,7 @@ else if ($mode == 'edit' && $id)
 
 	$user = readuser($msg['id_user']);
 
-	$user_letscode = $user['letscode'] . ' ' . $user['fullname'];
+	$user_letscode = $user['letscode'] . ' ' . $user['name'];
 }
 else if ($mode == 'new')
 {
@@ -120,7 +120,7 @@ else if ($mode == 'new')
 
 	$user = readuser($uid);
 
-	$user_letscode = $user['letscode'] . ' ' . $user['fullname'];
+	$user_letscode = $user['letscode'] . ' ' . $user['name'];
 }
 
 $letsgroup_id = $db->fetchColumn('SELECT id

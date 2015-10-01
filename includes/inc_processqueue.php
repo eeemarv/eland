@@ -23,19 +23,19 @@ function processqueue()
 		$retry_until = $value['retry_until'];
 		$count = $value['retry_count'];
 
-		echo "Processing transaction $transid\t";
+		echo 'Processing transaction' .  $transid . "\t";
 
 		$myletsgroup = $db->fetchAssoc('select * from letsgroups where id = ?', array($letsgroup_id));
 
 		$myuser = readuser($value['id_from']);
-		$real_from = $myuser["fullname"] ."(" .$myuser["letscode"] .")";
+		$real_from = $myuser['letscode'] . ' ' . $myuser['name'];
 
 		$soapurl = ($myletsgroup['elassoapurl']) ?: $myletsgroup['url'] . '/soap';
 		$soapurl .= '/wsdlelas.php?wsdl';
 
 		// Make the SOAP connection, send our API key and the transaction details
-		$myapikey = $myletsgroup["remoteapikey"];
-		$from = $myletsgroup["myremoteletscode"];
+		$myapikey = $myletsgroup['remoteapikey'];
+		$from = $myletsgroup['myremoteletscode'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if (!$err)
@@ -59,56 +59,56 @@ function processqueue()
 				echo "\n";
 				switch ($result)
 				{
-					case "SUCCESS":
+					case 'SUCCESS':
 						//Commit locally
 						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED")
 						{
-							update_queue($transid,$count,"LOCALFAIL");
+							update_queue($transid, $count, 'LOCALFAIL');
 						}
 						break;
-					case "OFFLINE":
+					case 'OFFLINE':
 						//Do nothing
 						update_queue($transid,$count,$result);
-						log_event("", "Soap", "Remote eLAS offline $transid");
+						log_event('', 'Soap', 'Remote eLAS offline ' . $transid);
 						break;
-					case "FAILED":
+					case 'FAILED':
 						//Handle error and remove transaction
 						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,1);
 						unqueue($transid);
 						break;
-					case "SIGFAIL":
+					case 'SIGFAIL':
 						//Handle the error and remove transaction
 						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,1);
 						unqueue($transid);
 						break;
-					case "DUPLICATE":
+					case 'DUPLICATE':
 						//Commit locally
 						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED"){
 							update_queue($transid,$count,"LOCALFAIL");
 						}
 						break;
-					case "NOUSER":
+					case 'NOUSER':
 						//Handle the error and remove transaction
 						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result, 0);
 						unqueue($transid);
 						break;
-					case "APIKEYFAIL":
+					case 'APIKEYFAIL':
 						update_queue($transid,$count,$result);
 						break;
 					default:
 						//Evaluate the date and pop the transaction if needed, handling the error.
-						echo "Default handling";
-						update_queue($transid,$count,"DEFAULT");
+						echo 'Default handling';
+						update_queue($transid, $count, 'DEFAULT');
 				}
 			}
 			else
 			{
-				if(strtotime($value["retry_until"]) < time())
+				if(strtotime($value['retry_until']) < time())
 				{
-					echo "EXPIRED";
+					echo 'EXPIRED';
 					echo "\n";
 				}
-				update_queue($transid, $count, "UNKNOWN");
+				update_queue($transid, $count, 'UNKNOWN');
 			}
 		}
 

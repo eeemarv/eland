@@ -7,15 +7,6 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $currency = readconfigfromdb('currency');
 
-$users = $db->fetchAll(
-	'SELECT id, fullname, letscode,
-		accountrole, status, saldo,
-		minlimit, maxlimit, adate,
-		postcode
-	FROM users
-	WHERE status IN (0, 1, 2, 5, 6)
-	ORDER BY letscode');
-
 $elas_mongo->connect();
 
 if (isset($_POST['zend']))
