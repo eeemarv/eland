@@ -176,16 +176,22 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
-/** functions **/
 /*
- *
+ * vars
  */
 
 $elas_heroku_config = array(
 	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
 	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
 	'registration_en'			=> array('0', 'Registratie formulier ingeschakeld [0, 1]'),
-); 
+);
+
+$top_right = '';
+$top_buttons = '';
+
+/*
+ * functions
+ */
  
 function readconfigfromdb($key)
 {
@@ -402,11 +408,11 @@ function render_select_options($option_ary, $selected)
  *
  */
 
-function link_user($user)
+function link_user($user, $render = null)
 {
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
-	$ret = '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">';
-	$ret .= htmlspecialchars($user['letscode'] . ' ' . $user['name'], ENT_QUOTES);
-	return $ret . '</a>'; 
+	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
+	$str = htmlspecialchars($str, ENT_QUOTES);
+	return '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>';
 }

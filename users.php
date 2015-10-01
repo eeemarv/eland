@@ -1497,6 +1497,10 @@ foreach ($c_ary as $c)
 
 if ($s_admin)
 {
+	$top_right .= '<a href="#" class="csv">';
+	$top_right .= '<i class="fa fa-file"></i>';
+	$top_right .= '&nbsp;csv</a>';
+
 	$top_buttons = '<a href="' . $rootpath . 'users.php?add=1" class="btn btn-success"';
 	$top_buttons .= ' title="Gebruiker toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
@@ -1515,7 +1519,8 @@ else
 $fa = 'users';
 
 $includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
-	<script src="' . $rootpath . 'js/calc_sum.js"></script>';
+	<script src="' . $rootpath . 'js/calc_sum.js"></script>
+	<script src="' . $rootpath . 'js/csv.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -1562,13 +1567,14 @@ echo '</ul>';
 echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable"';
+echo '<table class="table table-bordered table-striped table-hover footable csv"';
 echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
+echo ($s_admin) ? '<th data-hide="phone, tablet">Volledige naam</th>' : '';
 echo '<th data-hide="phone, tablet">Rol</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
@@ -1609,13 +1615,19 @@ foreach($users as $u)
 	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users.php?id=' .$id .'">';
-	echo $u['letscode'];
-	echo '</a></td>';
+	echo link_user($u, 'letscode');
+	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users.php?id=' .$id .'">'.htmlspecialchars($u['name'],ENT_QUOTES);
-	echo '</a></td>';
+	echo link_user($u, 'name');
+	echo '</td>';
+
+	if ($s_admin)
+	{
+		echo '<td>';
+		echo link_user($u, 'fullname');
+		echo '</td>';
+	}
 
 	echo '<td>';
 	echo $u['accountrole'];
