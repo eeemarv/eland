@@ -86,4 +86,4 @@ else
 	echo '<p>Er zijn geen verbindingen met andere letsgroepen.</p>';
 }
 
-include($rootpath."includes/inc_footer.php");
+include $rootpath . 'includes/inc_footer.php';

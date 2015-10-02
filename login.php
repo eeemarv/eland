@@ -146,7 +146,7 @@ if ($_POST['zend'])
 	$alert->error('Login gefaald.');
 }
 
-if(readconfigfromdb("maintenance") == 1)
+if(readconfigfromdb('maintenance'))
 {
 	$alert->warning('eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }

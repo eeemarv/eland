@@ -15,7 +15,7 @@ if ($php_sapi_name == 'cli')
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
-$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 $rootpath = './';
 $role = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';

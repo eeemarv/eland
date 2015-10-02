@@ -55,7 +55,7 @@ if ($_POST['zend'])
 	$apikey = array(
 		'apikey' 	=> $_POST['apikey'],
 		'comment'	=> $_POST['comment'],
-		'type'		=> 'interlets'
+		'type'		=> 'interlets',
 	);
 
 	if($db->insert('apikeys', $apikey))

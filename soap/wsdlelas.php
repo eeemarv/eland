@@ -81,8 +81,8 @@ $server->register('dopayment',
 function gettoken($apikey)
 {
 	global $db;
-	log_event('','debug','Token request');
-	if(check_apikey($apikey,'interlets'))
+	log_event('', 'debug', 'Token request');
+	if(check_apikey($apikey, 'interlets'))
 	{
 		$token = array(
 			'token'		=> 'elasv2' . md5(microtime()),
@@ -92,14 +92,14 @@ function gettoken($apikey)
 
 		$db->insert('tokens', $token);
 
-		log_event('' ,'Soap' ,'Token ' . $token . ' generated');
+		log_event('' ,'Soap' ,'Token ' . $token['token'] . ' generated');
 	}
 	else
 	{
 		$token = '---';
 		log_event('','Soap','APIkey rejected, no token generated');
 	}
-	return $token;
+	return $token['token'];
 }
 
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
