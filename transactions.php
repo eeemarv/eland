@@ -14,9 +14,10 @@ $start = ($_GET['start']) ?: 0;
 
 $id = ($_GET['id']) ?: false;
 $add = ($_GET['add']) ? true : false;
-$mid = ($_GET['m']) ?: false;
-$tuid = ($_GET['tu']) ?: false;
-$user_id = ($_GET['u']) ?: false;
+$mid = ($_GET['mid']) ?: false;
+$tuid = ($_GET['tuid']) ?: false;
+$fuid = ($_GET['fuid']) ?: false;
+$uid = ($_GET['uid']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
 $currency = readconfigfromdb('currency');
@@ -271,7 +272,7 @@ if ($add)
 	$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
-	$top_buttons .= '<a href="' . $rootpath . 'userdetails/mytrans_overview.php" class="btn btn-default"';
+	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
 	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-exchange"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
 
@@ -443,25 +444,34 @@ if ($id)
 	exit;
 }
 
-$pagination = new pagination(array(
-	'limit' 	=> $limit,
-	'start' 	=> $start,
-	'base_url' 	=> $rootpath . 'transactions.php?orderby=' . $orderby . '&asc=' . $asc,
-	'table'		=> 'transactions',
-));
+$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$trans_orderby = (isset($trans_orderby) && ($trans_orderby != '')) ? $trans_orderby : 'cdate';
+$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
-$query_orderby = ($trans_orderby == 'fromusername' || $trans_orderby == 'tousername') ? $trans_orderby : 't.'.$trans_orderby;
+$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 't.' . $orderby;
+$where = ($uid) ? ' where t.id_from = ? or t.id_to = ? ' : '';
+$sql_params = ($uid) ? array($uid, $uid) : array();
 $query = 'select t.*
-	from transactions t
+	from transactions t ' .
+	$where . '
 	order by ' . $query_orderby . ' ';
 $query .= ($asc) ? 'ASC ' : 'DESC ';
+$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
 
-$query .= $pagination->getSqlLimit();
+$transactions = $db->fetchAll($query, $sql_params);
 
-$transactions = $db->fetchAll($query);
+$row_count = $db->fetchColumn('select count(t.*)
+	from transactions t ' . $where, $sql_params);
+
+$filter = ($uid) ? '&uid=' . $uid : '';
+
+$pagination = new pagination(array(
+	'limit' 		=> $limit,
+	'start' 		=> $start,
+	'base_url' 		=> $rootpath . 'transactions.php?orderby=' . $orderby . '&asc=' . $asc . $filter,
+	'row_count'		=> $row_count,
+));
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -473,19 +483,23 @@ $tableheader_ary = array(
 		'lang' => 'Omschrijving')),
 	'amount' => array_merge($asc_preset_ary, array(
 		'lang' => 'Bedrag')),
-	'fromusername' => array_merge($asc_preset_ary, array(
+	'from_user' => array_merge($asc_preset_ary, array(
 		'lang' => 'Van',
-		'data_hide'	=> 'phone, tablet')),
-	'tousername' => array_merge($asc_preset_ary, array(
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true,
+	)),
+	'to_user' => array_merge($asc_preset_ary, array(
 		'lang' => 'Aan',
-		'data_hide'	=> 'phone, tablet')),
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true,
+	)),
 	'cdate'	=> array_merge($asc_preset_ary, array(
 		'lang' => 'Tijdstip',
 		'data_hide' => 'phone')),
 );
 
-$tableheader_ary[$trans_orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$trans_orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 if ($s_admin || $s_user)
 {
@@ -493,7 +507,7 @@ if ($s_admin || $s_user)
 	$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?u=' . $s_id . '" class="btn btn-default"';
+	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
 	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
 }
@@ -506,6 +520,8 @@ if ($s_admin)
 }
 
 $h1 = 'Transacties';
+$h1 .= ($uid) ? ' van ' . link_user($uid) : '';
+$h1 = (!$s_admin && $s_owner) ? 'Mijn transacties' : $h1;
 $fa = 'exchange';
 
 $includejs = '<script src="' . $rootpath . 'js/csv.js"></script>';
@@ -524,10 +540,18 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	echo '<th';
 	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 	echo '>';
-	echo '<a href="' . $rootpath . 'transactions.php?trans_orderby=' . $key_orderby . '&asc=' . $data['asc'] . '">';
-	echo $data['lang'];
-	echo '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
-	echo '</a></td>';
+	if ($data['no_sort'])
+	{
+		echo $data['lang'];
+	}
+	else
+	{
+		echo '<a href="' . $rootpath . 'transactions.php?orderby=' . $key_orderby . '&asc=' . $data['asc'] . $filter . '">';
+		echo $data['lang'];
+		echo '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '</a>';
+	}
+	echo '</th>';
 }
 
 echo '</tr>';
@@ -547,7 +571,7 @@ foreach($transactions as $key => $value)
 	echo '</td>';
 
 	echo '<td';
-	echo ($value['fromuserid'] == $s_id) ? ' class="me"' : '';
+	echo ($value['id_from'] == $s_id) ? ' class="me"' : '';
 	echo '>';
 	if(!empty($value['real_from']))
 	{
@@ -560,7 +584,7 @@ foreach($transactions as $key => $value)
 	echo '</td>';
 
 	echo '<td';
-	echo ($value['touserid'] == $s_id) ? ' class="me"' : '';
+	echo ($value['id_to'] == $s_id) ? ' class="me"' : '';
 	echo '>';
 	if(!empty($value["real_to"]))
 	{

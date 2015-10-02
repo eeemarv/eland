@@ -15,14 +15,11 @@ class pagination
 
 	public function __construct($param)
 	{
-		global $db;
-
 		$this->limit = $param['limit'] ?: 25;
 		$this->start = $param['start'] ?: 0;
-		$this->table = $param['table'] ?: '';
+		$this->row_count = $param['row_count'] ?: 0;
 		$this->base_url = $param['base_url'] ?: '';
 
-		$this->row_count = (int) $db->fetchColumn('select count(*) from ' . $this->table);
 		$this->page_num = ceil($this->row_count / $this->limit);
 		$this->page = floor($this->start / $this->limit);
 
@@ -111,11 +108,6 @@ class pagination
 		$pag_link .= ($text == '') ? ($page + 1) : $text;
 		$pag_link .= '</a></li>';
 		return $pag_link;	
-	}
-
-	public function getSqlLimit()
-	{
-		return ' LIMIT ' . $this->limit . ' OFFSET ' . $this->start;
 	}
 
 	private function get_link($params)

@@ -9,6 +9,9 @@ $elas_mongo->connect();
 $q = ($_GET['q']) ?: '';
 $del = $_GET['del'];
 
+$submit = ($_POST['zend']) ? true : false;
+$confirm_del = ($_POST['confirm_del']) ? true : false;
+
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
@@ -20,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	));
 }
 
-if (isset($_POST['confirm_del']) && $del)
+if ($confirm_del && $del)
 {
 	$doc_id = new MongoId($del);
 
@@ -81,7 +84,7 @@ if (isset($del))
 }
 
 
-if ($_POST['zend'])
+if ($submit)
 {
 	$tmpfile = $_FILES['file']['tmp_name'];
 	$file = $_FILES['file']['name'];
@@ -172,20 +175,8 @@ $token = sha1(time() . mt_rand(0, 1000000));
 $redis->set($schema . '_d_' . $token, '1');
 $redis->expire($schema . '_d_' . $token, 3600);
 
-$acc = array(
-	'admin'		=> 0,
-	'user'		=> 1,
-	'guest'		=> 2,
-);
-
 $find = array(
-	'access'	=> array('$gte'	=> $acc[$s_accountrole])
-);
-
-$acc_lang = array(
-	0	=> 'admin',
-	1	=> 'leden',
-	2	=> 'interlets',
+	'access'	=> array('$gte'	=> $access_ary[$s_accountrole])
 );
 
 $docs = $elas_mongo->docs->find($find);
@@ -222,8 +213,8 @@ echo '<thead>';
 echo '<tr>';
 echo '<th data-sort-initial="true">Naam</th>';
 echo '<th data-hide="phone, tablet">Tijdstip</th>';
-echo ($s_accountrole == 'guest') ? '' : '<th data-hide="phone, tablet">Toegang</th>';
-echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>' : '';
+echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Toegang</th>';
+echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>' : '';
 echo '</tr>';
 
 echo '</thead>';
@@ -231,6 +222,7 @@ echo '<tbody>';
 
 foreach($docs as $val)
 {
+	$access = $acc_ary[$val['access']];
 	echo '<tr>';
 
 	echo '<td>';
@@ -240,12 +232,14 @@ foreach($docs as $val)
 	echo '</td>';
 	echo '<td>' . $val['ts'] . '</td>';
 
-	if ($s_accountrole != 'guest')
+	if (!$s_guest)
 	{
-		echo '<td>' . $acc_lang[$val['access']] . '</td>';
+		echo '<td>';
+		echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
+		echo '</td>';
 	}
 
-	if ($s_accountrole == 'admin')
+	if ($s_admin)
 	{
 		echo '<td><a href="'. $rootpath . 'docs.php?del=' . $val['_id'] . '" class="btn btn-danger btn-xs">';
 		echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
@@ -256,50 +250,51 @@ foreach($docs as $val)
 echo '</tbody>';
 echo '</table>';
 
-echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
+if ($s_admin)
+{
+	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
 
-echo '<div class="panel panel-info">';
-echo '<div class="panel-heading">';
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
 
-echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
+	echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
 
-echo '<div class="form-group">';
-echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="file" class="form-control" id="file" name="file" ';
-echo 'required>';
-echo '</div>';
-echo '</div>';
+	echo '<div class="form-group">';
+	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="file" class="form-control" id="file" name="file" ';
+	echo 'required>';
+	echo '</div>';
+	echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="name" name="name">';
-echo '</div>';
-echo '</div>';
+	echo '<div class="form-group">';
+	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="name" name="name">';
+	echo '</div>';
+	echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
-echo '<div class="col-sm-10">';
-echo '<select type="file" class="form-control" id="access" name="access" ';
-echo 'required>';
-echo '<option value="0" selected="selected">admin</option>';
-echo '<option value="1">leden</option>';
-echo '<option value="2">interlets</option>';
-echo '</select>';
-echo '</div>';
-echo '</div>';
+	echo '<div class="form-group">';
+	echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
+	echo '<div class="col-sm-10">';
+	echo '<select type="file" class="form-control" id="access" name="access" ';
+	echo 'required>';
+	render_select_options($access_options, 0);
+	echo '</select>';
+	echo '</div>';
+	echo '</div>';
 
-echo '<input type="submit" name="zend" value="Opladen" class="btn btn-default">';
-echo '<input type="hidden" value="' . $token . '" name="token">';
+	echo '<input type="submit" name="zend" value="Opladen" class="btn btn-default">';
+	echo '<input type="hidden" value="' . $token . '" name="token">';
 
-echo '</div>';
-echo '</div>';
-echo '</form>';
+	echo '</div>';
+	echo '</div>';
+	echo '</form>';
 
-echo '</div>';
-echo '</div>';
-echo '</div>';
+	echo '</div>';
+	echo '</div>';
+	echo '</div>';
+}
 
 include $rootpath . 'includes/inc_footer.php';
 

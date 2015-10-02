@@ -335,6 +335,13 @@ if ($del)
 					));
 				}
 
+				//delete mongo record
+				$elas_mongo->connect();
+				$elas_mongo->users->remove(
+					array('id' => $del),
+					array('justOne'	=> true)
+				);
+
 				//finally, the user
 				$db->delete('users', array('id' => $del));
 				$redis->expire($schema . '_user_' . $del, 0);
@@ -479,6 +486,8 @@ if ($add || $edit)
 			$user['fullname'] = $_POST['fullname'];
 		}
 
+		$fullname_access = $_POST['fullname_access'];
+
 		$login_sql = 'select login
 			from users
 			where login = ?';
@@ -509,6 +518,11 @@ if ($add || $edit)
 		}
 
 		$errors = array();
+
+		if (!in_array($fullname_access, array(0, 1, 2)))
+		{
+			$errors[] = 'Ongeldige zichtbaarheid volledige naam.';
+		}
 
 		if ($username_edit)
 		{
@@ -617,9 +631,19 @@ if ($add || $edit)
 
 				if ($db->insert('users', $user))
 				{
-					$alert->success('Gebruiker opgeslagen.');
-
 					$id = $db->lastInsertId('users_id_seq');
+
+					$elas_mongo->connect();
+					$elas_mongo->users->update(array(
+						'id'				=> $id,
+						), array(
+						'id'				=> $id,
+						'fullname_access'	=> $fullname_access,
+						), array(
+						'upsert'			=> true,
+					));
+
+					$alert->success('Gebruiker opgeslagen.');
 
 					readuser($id, true);
 
@@ -677,6 +701,16 @@ if ($add || $edit)
 
 				if($db->update('users', $user, array('id' => $edit)))
 				{
+					$elas_mongo->connect();
+					$elas_mongo->users->update(array(
+						'id'				=> $edit,
+						), array(
+						'id'				=> $edit,
+						'fullname_access'	=> $fullname_access,
+						), array(
+						'upsert'			=> true,
+					));
+
 					readuser($edit, true);
 
 					$alert->success('Gebruiker aangepast.');
@@ -756,6 +790,7 @@ if ($add || $edit)
 		if ($edit)
 		{
 			$user = readuser($edit);
+			$fullname_access = $user['fullname_access'];
 		}
 
 		if ($s_admin)
@@ -1154,12 +1189,19 @@ if ($id)
 
 	echo '<dl>';
 
-	if ($s_admin || $s_owner)
+	$fullname_access = ($user['fullname_access']) ?: 0;
+
+	if ($s_admin || $s_owner || $fullname_access >= $access_level)
 	{
+		$access = $acc_ary[$fullname_access];
 		echo '<dt>';
-		echo 'Volledige naam';
+		echo 'Volledige naam  (zichtbaarheid: ';
+		echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
+		echo ')';
 		echo '</dt>';
-		dd_render($user['fullname']);
+		echo '<dd>';
+		echo htmlspecialchars($user['fullname'], ENT_QUOTES);
+		echo '</dd>';
 	}
 
 	echo '<dt>';
@@ -1211,6 +1253,11 @@ if ($id)
 		echo 'Laatste login';
 		echo '</dt>';
 		dd_render($user['lastlogin']);
+
+		echo '<dt>';
+		echo 'Rechten';
+		echo '</dt>';
+		dd_render($user['accountrole']);
 
 		echo '<dt>';
 		echo 'Status';
@@ -1316,15 +1363,12 @@ if ($id)
 	echo '<div class="col-md-12">';
 
 	echo '<h3><i class="fa fa-exchange"></i> Transacties ';
-	echo '<a href="' . $rootpath . 'transactions/add.php?uid=' . $id . '"';
-	echo ' class="btn btn-success" title="Transactie naar ' . $user['fullname'] . '">';
+	echo '<a href="' . $rootpath . 'transactions.php?add=1&tuid=' . $id . '"';
+	echo ' class="btn btn-success" title="Transactie naar ' . $user['name'] . '">';
 	echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Transactie naar</span></a> ';
-	echo '<a href="' . $rootpath . 'transactions/add.php?fuid=' . $id . '"';
-	echo ' class="btn btn-success" title="Transactie van ' . $user['fullname'] . '">';
+	echo '<a href="' . $rootpath . 'transactions.php?add=1&fuid=' . $id . '"';
+	echo ' class="btn btn-success" title="Transactie van ' . $user['name'] . '">';
 	echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Transactie van</span></a> ';
-	echo '<a href="' . $rootpath . 'print_usertransacties.php?id=' . $id . '"';
-	echo ' class="btn btn-default" title="Print transactielijst">';
-	echo '<i class="fa fa-print"></i><span class="hidden-xs"> Print transactielijst</span></a> ';
 	echo '<a href="' . $rootpath . 'export/export_transactions.php?userid=' . $id . '"';
 	echo ' class="btn btn-default" title="csv export transacties">';
 	echo '<i class="fa fa-file"></i><span class="hidden-xs"> Export csv</span></a>';

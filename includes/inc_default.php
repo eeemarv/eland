@@ -108,13 +108,13 @@ $access_ary = array(
 );
 
 $acc_ary = array(
-	0	=> array('privé', 'default'),
+	0	=> array('admin', 'default'),
 	1	=> array('leden', 'warning'),
 	2	=> array('interlets', 'success'),
 );
 
 $access_options = array(
-	'0'	=> 'privé',
+	'0'	=> 'admin',
 	'1'	=> 'leden',
 	'2' => 'interlets',
 );
@@ -231,7 +231,7 @@ function readconfigfromdb($key)
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 14400);
+		$redis->expire($redis_key, 604800);
 		$cache[$key] = $value;
 	}
 
@@ -264,7 +264,7 @@ function writeconfig($key, $value)
 
 	$redis_key = $schema . '_config_' . $key;
 	$redis->set($redis_key, $value);
-	$redis->expire($redis_key, 7200);
+	$redis->expire($redis_key, 604800);
 
 	return true;
 }
@@ -297,7 +297,7 @@ function readparameter($key, $refresh = false)
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 28800);
+		$redis->expire($redis_key, 604800);
 		$cache[$key] = $value;
 	}
 
@@ -309,7 +309,7 @@ function readparameter($key, $refresh = false)
  */
 function readuser($id, $refresh = false)
 {
-    global $db, $schema, $redis;
+    global $db, $schema, $redis, $elas_mongo;
     static $cache;
 
 	if (!$id)
@@ -334,10 +334,13 @@ function readuser($id, $refresh = false)
 
 	$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
 
+	$elas_mongo->connect();
+	$user += (is_array($ary = $elas_mongo->users->findOne(array('id' => $id)))) ? $ary : array();
+
 	if (isset($user))
 	{
 		$redis->set($redis_key, serialize($user));
-		$redis->expire($redis_key, 7200);
+		$redis->expire($redis_key, 604800);
 		$cache[$id] = $user;
 	}
 
