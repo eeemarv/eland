@@ -231,7 +231,7 @@ function readconfigfromdb($key)
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 604800);
+		$redis->expire($redis_key, 2592000);
 		$cache[$key] = $value;
 	}
 
@@ -264,7 +264,7 @@ function writeconfig($key, $value)
 
 	$redis_key = $schema . '_config_' . $key;
 	$redis->set($redis_key, $value);
-	$redis->expire($redis_key, 604800);
+	$redis->expire($redis_key, 2592000);
 
 	return true;
 }
@@ -297,7 +297,7 @@ function readparameter($key, $refresh = false)
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 604800);
+		$redis->expire($redis_key, 2592000);
 		$cache[$key] = $value;
 	}
 
@@ -340,7 +340,7 @@ function readuser($id, $refresh = false)
 	if (isset($user))
 	{
 		$redis->set($redis_key, serialize($user));
-		$redis->expire($redis_key, 604800);
+		$redis->expire($redis_key, 2592000);
 		$cache[$id] = $user;
 	}
 

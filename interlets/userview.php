@@ -87,3 +87,11 @@ else
 }
 
 include $rootpath . 'includes/inc_footer.php';
+
+function cancel()
+{
+	global $rootpath;
+
+	header('Location: ' . $rootpath . 'interlets/userview.php');
+	exit;
+}
