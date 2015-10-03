@@ -144,8 +144,8 @@ if (!isset($schema_interletsq_min))
 		$err_group = $letsgroup['groupname'] . ': ';
 
 		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
-		$soapurl = $soapurl ."/wsdlelas.php?wsdl";
-		$apikey = $letsgroup["remoteapikey"];
+		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
+		$apikey = $letsgroup['remoteapikey'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if ($err)

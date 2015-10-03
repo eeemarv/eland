@@ -417,11 +417,11 @@ function render_select_options($option_ary, $selected)
  *
  */
 
-function link_user($user, $render = null)
+function link_user($user, $render = null, $link = true)
 {
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = htmlspecialchars($str, ENT_QUOTES);
-	return '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>';
+	return ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
 }

@@ -158,7 +158,6 @@ else
 	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
 	{
 		$main_menu['transactions.php'] = array('exchange', 'Transacties');
-		$main_menu['transactions.php?add=1'] = array('exchange', 'Nieuwe transactie');
 	}
 
 	$main_menu['news.php'] = array('calendar-o', 'Nieuws');

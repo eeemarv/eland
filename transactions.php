@@ -18,6 +18,8 @@ $mid = ($_GET['mid']) ?: false;
 $tuid = ($_GET['tuid']) ?: false;
 $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
+$inline = ($_GET['inline']) ? true : false;
+
 $submit = ($_POST['zend']) ? true : false;
 
 $currency = readconfigfromdb('currency');
@@ -313,14 +315,14 @@ if ($add)
 	echo '<label for="letsgroup_id" class="col-sm-2 control-label">Aan letsgroep</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
-	foreach ($letsgroups as $value)
+	foreach ($letsgroups as $l)
 	{
-		$thumbprint = (getenv('ELAS_DEBUG')) ? time() : $redis->get($value['url'] . '_typeahead_thumbprint');
-		echo '<option value="' . $value['id'] . '" ';
+		$thumbprint = (getenv('ELAS_DEBUG')) ? time() : $redis->get($l['url'] . '_typeahead_thumbprint');
+		echo '<option value="' . $l['id'] . '" ';
 		echo 'data-thumbprint="' . $thumbprint . '"';
-		echo ($value['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
-		echo ($value['id'] == $letsgroup_id) ? ' data-this-letsgroup="1"' : '';
-		echo '>' . htmlspecialchars($value['groupname'], ENT_QUOTES) . '</option>';
+		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
+		echo ($l['id'] == $letsgroup_id) ? ' data-this-letsgroup="1"' : '';
+		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 	echo '</select>';
 	echo '</div>';
@@ -483,33 +485,75 @@ $tableheader_ary = array(
 		'lang' => 'Omschrijving')),
 	'amount' => array_merge($asc_preset_ary, array(
 		'lang' => 'Bedrag')),
-	'from_user' => array_merge($asc_preset_ary, array(
-		'lang' => 'Van',
-		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true,
-	)),
-	'to_user' => array_merge($asc_preset_ary, array(
-		'lang' => 'Aan',
-		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true,
-	)),
 	'cdate'	=> array_merge($asc_preset_ary, array(
-		'lang' => 'Tijdstip',
-		'data_hide' => 'phone')),
+		'lang' 		=> 'Tijdstip',
+		'data_hide' => 'phone'))
 );
+
+if ($uid)
+{
+	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
+		'lang'			=> 'Tegenpartij',
+		'data_hide'		=> 'phone, tablet',
+		'no_sort'		=> true,
+	));
+}
+else
+{
+	$tableheader_ary += array(
+		'from_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Van',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+		'to_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Aan',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+	);
+}
 
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 if ($s_admin || $s_user)
 {
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1" class="btn btn-success"';
-	$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+	if ($uid)
+	{
+		$user_str = link_user($uid, null, false);
 
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
-	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+		if ($s_admin)
+		{
+			$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1&fuid=' . $uid . '" class="btn btn-success"';
+			$top_buttons .= ' title="Transactie van ' . $user_str . '"><i class="fa fa-plus"></i>';
+			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie van ' . $user_str . '</span></a>';
+		}
+
+		if ($s_admin || ($s_user && !$s_owner))
+		{
+			$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1&tuid=' . $uid . '" class="btn btn-success"';
+			$top_buttons .= ' title="Transactie naar ' . $user_str . '"><i class="fa fa-plus"></i>';
+			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie naar ' . $user_str . '</span></a>';
+		}
+
+		if (!$inline)
+		{
+			$top_buttons .= '<a href="' . $rootpath . 'transactions.php" class="btn btn-default"';
+			$top_buttons .= ' title="Lijst"><i class="fa fa-exchange"></i>';
+			$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+		}
+	}
+	else
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1" class="btn btn-success"';
+		$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+
+		$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
+		$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+	}
 }
 
 if ($s_admin)
@@ -519,19 +563,33 @@ if ($s_admin)
 	$top_right .= '&nbsp;csv</a>';
 }
 
+
 $h1 = 'Transacties';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn transacties' : $h1;
 $fa = 'exchange';
 
-$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>';
+if (!$inline)
+{
+	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>';
 
-include $rootpath . 'includes/inc_header.php';
+	include $rootpath . 'includes/inc_header.php';
+}
+else
+{
+	echo '<div class="row">';
+	echo '<div class="col-md-12">';
+
+	echo '<h3><i class="fa fa-exchange"></i>' . $h1;
+	echo '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo '</h3>';
+}
 
 $pagination->render();
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable csv" data-sort="false">';
+echo '<table class="table table-bordered table-striped table-hover footable csv transactions" ';
+echo 'data-sort="false">';
 echo '<thead>';
 echo '<tr>';
 
@@ -558,55 +616,117 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-foreach($transactions as $key => $value)
+if ($uid)
 {
-	echo '<tr>';
-	echo '<td><a href="' . $rootpath . 'transactions.php?id=' . $value['id'] . '">';
-	echo htmlspecialchars($value['description'],ENT_QUOTES);
-	echo '</a>';
-	echo '</td>';
-
-	echo '<td>';
-	echo $value['amount'];
-	echo '</td>';
-
-	echo '<td';
-	echo ($value['id_from'] == $s_id) ? ' class="me"' : '';
-	echo '>';
-	if(!empty($value['real_from']))
+	foreach($transactions as $t)
 	{
-		echo htmlspecialchars($value['real_from'],ENT_QUOTES);
+		echo '<tr>';
+		echo '<td>';
+		echo '<a href="' . $rootpath . 'transactions/view.php?id=' . $t['id'] . '">';
+		echo htmlspecialchars($t['description'], ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
+
+		echo '<td>';
+		echo '<span class="text-';
+		echo ($t['id_from'] == $uid) ? 'danger">-' : 'success">+';
+		echo $t['amount'];
+		echo '</span></td>';
+
+		echo '<td>';
+		echo $t['cdate'];
+		echo '</td>';
+
+		echo '<td>';
+
+		if ($t['id_from'] == $uid)
+		{
+			if ($t['real_to'])
+			{
+				echo htmlspecialchars($t['real_to'], ENT_QUOTES);
+			}
+			else
+			{
+				echo link_user($t['id_to']);
+			}
+		}
+		else
+		{
+			if ($t['real_from'])
+			{
+				echo htmlspecialchars($t['real_from'], ENT_QUOTES);
+			}
+			else
+			{
+				echo link_user($t['id_from']);
+			}
+		}
+
+		echo '</td>';
+		echo '</tr>';
 	}
-	else
+}
+else
+{
+	foreach($transactions as $t)
 	{
-		echo link_user($value['id_from']);
-	}
-	echo '</td>';
+		echo '<tr>';
+		echo '<td><a href="' . $rootpath . 'transactions.php?id=' . $t['id'] . '">';
+		echo htmlspecialchars($t['description'],ENT_QUOTES);
+		echo '</a>';
+		echo '</td>';
 
-	echo '<td';
-	echo ($value['id_to'] == $s_id) ? ' class="me"' : '';
-	echo '>';
-	if(!empty($value["real_to"]))
-	{
-		echo htmlspecialchars($value["real_to"],ENT_QUOTES);
-	}
-	else
-	{ 
-		echo link_user($value['id_to']);
-	}
-	echo '</td>';
+		echo '<td>';
+		echo $t['amount'];
+		echo '</td>';
 
-	echo '<td>';
-	echo $value['cdate'];
-	echo '</td>';
+		echo '<td>';
+		echo $t['cdate'];
+		echo '</td>';
 
-	echo '</tr>';
+		echo '<td';
+		echo ($t['id_from'] == $s_id) ? ' class="me"' : '';
+		echo '>';
+		if(!empty($t['real_from']))
+		{
+			echo htmlspecialchars($t['real_from'],ENT_QUOTES);
+		}
+		else
+		{
+			echo link_user($t['id_from']);
+		}
+		echo '</td>';
+
+		echo '<td';
+		echo ($t['id_to'] == $s_id) ? ' class="me"' : '';
+		echo '>';
+		if(!empty($t["real_to"]))
+		{
+			echo htmlspecialchars($t["real_to"],ENT_QUOTES);
+		}
+		else
+		{ 
+			echo link_user($t['id_to']);
+		}
+		echo '</td>';
+
+		echo '</tr>';
+	}
 }
 echo '</table></div>';
 
-$pagination->render();
+if ($inline)
+{
+	$pagination->render();
 
-include $rootpath . 'includes/inc_footer.php';
+	echo '</div></div>';
+}
+else
+{
+	include $rootpath . 'includes/inc_footer.php';
+}
+
+
 
 function cancel($id = null)
 {

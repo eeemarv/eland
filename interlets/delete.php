@@ -15,12 +15,12 @@ if(isset($_POST['zend']))
 {
 	if($db->delete('letsgroups', array('id' => $id)))
 	{
-		$alert->success('Letsgroup verwijderd.');
+		$alert->success('Letsgroep verwijderd.');
 		header('Location: ' . $rootpath . 'interlets/overview.php');
 		exit;
 	}
 
-	$alert->error('Letsgroup niet verwijderd.');
+	$alert->error('Letsgroep niet verwijderd.');
 }
 $groupname = $db->fetchColumn('SELECT groupname FROM letsgroups WHERE id = ?', array($id));
 

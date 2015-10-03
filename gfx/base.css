@@ -250,7 +250,7 @@ div.top-buttons
 	margin-top: 5px;
 }
 
-div.top-buttons a
+div.top-buttons a, span.inline-buttons a
 {
 	margin-left: 5px;
 }
