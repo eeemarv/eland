@@ -10,6 +10,8 @@ $pw = ($_GET['pw']) ?: false;
 $password = ($_POST['password']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
+$inline = ($_GET['inline']) ? true : false;
+
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
 

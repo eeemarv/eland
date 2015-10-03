@@ -189,7 +189,7 @@ $db->exec('set search_path to ' . ($schema) ?: 'public');
 $elas_heroku_config = array(
 	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
 	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
-	'registration_en'			=> array('0', 'Registratie formulier ingeschakeld [0, 1]'),
+	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
 );
 
 $top_right = '';

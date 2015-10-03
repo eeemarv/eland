@@ -19,7 +19,7 @@ if ($_POST['zend'])
 	$validity = (int) $_POST["validity"];
 	$vtime = count_validity($validity);
 
-	if ($s_accountrole == 'admin')
+	if ($s_admin)
 	{
 		list($user_letscode) = explode(' ', $_POST['user_letscode']);
 		$user_letscode = trim($user_letscode);
@@ -34,18 +34,37 @@ if ($_POST['zend'])
 	}
 
 	$msg = array(
-		'validity'		=> (int) $_POST["validity"],
+		'validity'		=> (int) $_POST['validity'],
 		'vtime'			=> $vtime,
-		'content'		=> $_POST["content"],
-		'description'	=> $_POST["description"],
+		'content'		=> $_POST['content'],
+		'description'	=> $_POST['description'],
 		'msg_type'		=> (int) $_POST["msg_type"],
-		'id_user'		=> ($s_accountrole == 'admin') ? (int) $user['id'] : $s_id,
-		'id_category'	=> (int) $_POST["id_category"],
-		'amount'		=> (int) $_POST["amount"],
-		'units'			=> $_POST["units"],
+		'id_user'		=> ($s_admin) ? (int) $user['id'] : $s_id,
+		'id_category'	=> (int) $_POST['id_category'],
+		'amount'		=> (int) $_POST['amount'],
+		'units'			=> $_POST['units'],
 	);
 
-	$errors = validate_input($msg, $mode);
+	$errors = array();
+	
+	if (!$msg['id_category'])
+	{
+		$errors['id_category'] = 'Geieve een categorie te selecteren.';
+	}
+	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
+	{
+		$errors["content"] = "Vul inhoud in!";
+
+		if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
+		{
+			$errors[] = 'Categorie bestaat niet!';
+		}
+	}
+
+	if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
+	{
+		$errors[] = 'Gebruiker bestaat niet!';
+	}
 
 	if ($error)
 	{
@@ -67,7 +86,7 @@ if ($_POST['zend'])
 			{
 				$alert->success('Vraag/aanbod toegevoegd.');
 				header('Location: ' . $rootpath . 'messages/view.php?id=' . $id);
-				exit;				
+				exit;
 			}
 			else
 			{
@@ -116,7 +135,7 @@ else if ($mode == 'new')
 		'units'			=> '',
 	);
 
-	$uid = (isset($_GET['uid']) && $s_accountrole == 'admin') ? $_GET['uid'] : $s_id;
+	$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : $s_id;
 
 	$user = readuser($uid);
 
@@ -191,7 +210,7 @@ echo '</div>';
 echo '</div>';
 
 // Who selection is only for admins
-if($s_accountrole == 'admin')
+if($s_admin)
 {
 	echo '<div class="form-group">';
 	echo '<label for="user_letscode" class="col-sm-2 control-label">';
@@ -248,31 +267,6 @@ echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 
-function validate_input($msg)
-{
-	global $db;
-	$error_list = array();
-	if (!$msg['id_category'])
-	{
-		$error_list['id_category'] = 'Geieve een categorie te selecteren.';
-	}
-	if (empty($msg["content"]) || (trim($msg["content"]) == ""))
-	{
-		$error_list["content"] = "Vul inhoud in!";
-
-		if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
-		{
-			$error_list[] = 'Categorie bestaat niet!';
-		}
-	}
-
-	if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
-	{
-		$error_list[] = 'Gebruiker bestaat niet!';
-	}
-	return $error_list;
-
-}
 
 function count_validity($months)
 {

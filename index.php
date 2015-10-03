@@ -45,7 +45,7 @@ $fa = 'home';
 
 include $rootpath . 'includes/inc_header.php';
 
-if($s_accountrole == 'admin')
+if($s_admin)
 {
 	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 	$db_update = ($version == $schemaversion) ? false : true;
@@ -86,7 +86,7 @@ if($s_accountrole == 'admin')
 	}
 }
 
-if($s_accountrole == 'guest')
+if($s_guest)
 {
 	$systemname = readconfigfromdb('systemname');
 
@@ -106,7 +106,7 @@ if($news)
 {
 	echo '<div class="panel panel-warning">';
 	echo '<div class="panel-heading"><i class="fa fa-calendar"></i> ';
-	echo '<a href="' . $rootpath . 'news/overview.php">Nieuws</a></div>';
+	echo '<a href="' . $rootpath . 'news.php">Nieuws</a></div>';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered footable">';
@@ -115,7 +115,7 @@ if($news)
 	echo '<tr>';
 	echo '<th>Titel</th>';
 	echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
-	echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
+	echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
 	echo '</tr>';
 	echo '</thead>';
 
@@ -125,7 +125,7 @@ if($news)
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'news/view.php?id=' . $value['id'] . '">';
+		echo '<a href="' . $rootpath . 'news.php?id=' . $value['id'] . '">';
 		echo htmlspecialchars($value['headline'],ENT_QUOTES);
 		echo '</a>';
 		echo '</td>';
@@ -138,7 +138,7 @@ if($news)
 		}
 		echo '</td>';
 
-		if ($s_accountrole == 'admin')
+		if ($s_admin)
 		{
 			echo '<td>';
 			echo ($value['approved'] == 't') ? 'Ja' : 'Nee';
@@ -155,7 +155,7 @@ if($newusers)
 {
 	echo '<div class="panel panel-success">';
 	echo '<div class="panel-heading"><i class="fa fa-users"></i> ';
-	echo '<a href="' . $rootpath . 'memberlist.php">Nieuwe leden</a></div>';
+	echo '<a href="' . $rootpath . 'users.php">Nieuwe leden</a></div>';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-bordered table-striped table-hover footable"';
@@ -198,7 +198,7 @@ if($msgs)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 	echo '<i class="fa fa-newspaper-o"></i> ';
-	echo '<a href="' . $rootpath . 'messages/overview.php">Recent vraag en aanbod</a>';
+	echo '<a href="' . $rootpath . 'messages.php">Recent vraag en aanbod</a>';
 	echo '</div>';
 
 	echo '<div class="table-responsive">';
@@ -230,7 +230,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' .$rootpath . 'messages/view.php?id=' . $msg['id']. '">';
+		echo '<a href="' .$rootpath . 'messages.php?id=' . $msg['id']. '">';
 		echo htmlspecialchars($msg['content'],ENT_QUOTES);
 		echo '</a>';
 		echo '</td>';
@@ -244,7 +244,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'messages/overview.php?cid=' . $msg['cid'] . '">';
+		echo '<a href="' . $rootpath . 'messages.php?cid=' . $msg['cid'] . '">';
 		echo htmlspecialchars($msg['cat'],ENT_QUOTES);
 		echo '</a>';
 		echo '</td>';
