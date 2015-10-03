@@ -62,7 +62,7 @@ if ($s_letscode)
 	echo $s_letscode . ' ' . $s_name;
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
+	if ($s_user || $s_admin)
 	{
 		echo '<li><a href="' . $rootpath . 'users.php?id=' . $s_id . '">';
 		echo '<span class="fa fa-user"></span> Mijn gegevens</a></li>';
@@ -76,7 +76,7 @@ if ($s_letscode)
 	echo '<span class="fa fa-sign-out"></span> Uitloggen</a></li>';
 	echo '</ul>';
 	echo '</li>';
-	if ($s_accountrole == 'admin')
+	if ($s_admin)
 	{
 		$menu = array(
 			'categories.php'	 				=> array('clone', 'Categorieën'),
@@ -137,59 +137,46 @@ $menu = array();
 
 if (!$s_accountrole)
 {
-	$menu[] = array(
+	$menu = array(
 		'login.php'		=> array('sign-in', 'Login'),
 		'help.php'		=> array('ambulance', 'Help'),
 	);
 
 	if (readconfigfromdb('registration_en'))
 	{
-		$menu[]['register.php'] = array('check-square-o', 'Inschrijven');
+		$menu['register.php'] = array('check-square-o', 'Inschrijven');
 	}
 }
 else
 {
-	$main_menu = array(
+	$menu = array(
 		'index.php'					=> array('home', 'Overzicht'),
 		'messages/overview.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
 		'users.php'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
+		'transactions.php'			=> array('exchange', 'Transacties'),
+		'news.php'					=> array('calendar-o', 'Nieuws'),
 	);
 
-	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
+	if ($s_user || $s_admin)
 	{
-		$main_menu['transactions.php'] = array('exchange', 'Transacties');
+		$menu['interlets/userview.php'] = array('share-alt', 'Interlets');
 	}
 
-	$main_menu['news.php'] = array('calendar-o', 'Nieuws');
-
-	if ($s_accountrole == 'user' || $s_accountrole == 'admin')
-	{
-		$main_menu['interlets/userview.php'] = array('share-alt', 'Interlets');
-		$main_menu['docs.php'] = array('files-o', 'Documenten');
-	}
-
-	$menu[] = $main_menu;
-
-	$menu[] = array(
-		'help.php'		=> array('ambulance', 'Probleem melden'),
-	);
+	$menu['docs.php'] = array('files-o', 'Documenten');
+	$menu['help.php'] = array('ambulance', 'Probleem melden');
 }
 
-foreach ($menu as $sub_menu)
+echo '<ul class="nav nav-pills nav-stacked">';
+
+foreach ($menu as $link => $label)
 {
-	echo '<ul class="nav nav-pills nav-stacked">';
-
-	foreach ($sub_menu as $link => $label)
-	{
-		$active_class = ($script_name == $link) ? ' class="active"' : '';
-		echo '<li' . $active_class . ' role="presentation">';
-		echo '<a href="' . $rootpath . $link . '">';
-		echo '<span class="fa fa-' . $label[0] . '"></span> ';
-		echo  $label[1] . '</a></li>';
-	}
-
-	echo '</ul>';
+	$active_class = ($script_name == $link) ? ' class="active"' : '';
+	echo '<li' . $active_class . ' role="presentation">';
+	echo '<a href="' . $rootpath . $link . '">';
+	echo '<span class="fa fa-' . $label[0] . '"></span> ';
+	echo  $label[1] . '</a></li>';
 }
+echo '</ul>';
 
 echo '</div>';
 
