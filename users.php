@@ -1103,12 +1103,6 @@ if ($id)
 
 	$user = readuser($id);
 
-	$messages = $db->fetchAll('SELECT *
-		FROM messages
-		where id_user = ?
-			and validity > now()
-		order by cdate', array($id));
-
 	$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
 		var user_link_location = \'' . $rootpath . 'users.php?id=\'; </script>
 		<script src="' . $rootpath . 'js/user.js"></script>
@@ -1297,64 +1291,9 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="row">';
-	echo '<div class="col-md-12">';
-	echo '<h3><i class="fa fa-newspaper-o"></i> Vraag en aanbod ';
-	echo '<a href="' . $rootpath . 'messages/edit.php?mode=new&uid=' . $id . '"';
-	echo ' class="btn btn-success" title="Vraag of aanbod toevoegen">';
-	echo '<i class="fa fa-plus"></i><span class="hidden-xs"> Toevoegen</span></a>';
-	echo '</h3>';
-
-	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable">';
-
-	echo '<thead>';
-	echo '<tr>';
-	echo '<th>V/A</th>';
-	echo '<th>Wat</th>';
-	echo '<th data-hide="phone, tablet">Geldig tot</th>';
-	echo '<th data-hide="phone, tablet">Geplaatst</th>';
-	echo '</tr>';
-	echo '</thead>';
-
-	echo '<tbody>';
-
-	foreach ($messages as $m)
-	{
-		$class = (strtotime($m['validity']) < time()) ? ' class="danger"' : '';
-		list($validity) = explode(' ', $m['validity']);
-		list($cdate) = explode(' ', $m['cdate']);
-		
-		echo '<tr' . $class . '>';
-		echo '<td>';
-		echo ($m['msg_type']) ? 'Aanbod' : 'Vraag';
-		echo '</td>';
-		echo '<td>';
-		echo '<a href="' . $rootpath . 'messages/view.php?id=' . $m['id'] . '">';
-		echo htmlspecialchars($m['content'],ENT_QUOTES);
-		echo '</a>';
-		echo '</td>';
-		echo '<td>';
-		echo $validity;
-		echo '</td>';
-		echo '<td>';
-		echo $cdate;
-		echo '</td>';
-		echo '</tr>';
-	}
-	echo '</tbody>';
-	echo '</table>';
-
-	echo '</div>';
-	echo '</div></div>';
-
-	echo '<div class="row">';
-	echo '<div class="col-md-12">';
+	echo '<div id="messages" data-uid="' . $id . '"></div>';
 
 	echo '<div id="transactions" data-uid="' . $id . '"></div>';
-
-	echo '</div></div>';
-	echo '</div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;

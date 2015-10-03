@@ -286,7 +286,7 @@ if ($add)
 	$minlimit = $user['minlimit'];
 
 	echo '<div>';
-	echo '<p><strong>' . $user['letscode'] .' '. $user['name']. ' huidige ' . $currency . ' stand: '.$balance.'</strong> || ';
+	echo '<p><strong>' . link_user($user) . ' huidige ' . $currency . ' stand: ' . $balance . '</strong> || ';
 	echo '<strong>Limiet minstand: ' . $minlimit . '</strong></p>';
 	echo '</div>';
 
@@ -580,7 +580,7 @@ else
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	echo '<h3><i class="fa fa-exchange"></i>' . $h1;
+	echo '<h3><i class="fa fa-exchange"></i> ' . $h1;
 	echo '<span class="inline-buttons">' . $top_buttons . '</span>';
 	echo '</h3>';
 }
@@ -715,18 +715,16 @@ else
 }
 echo '</table></div>';
 
+$pagination->render();
+
 if ($inline)
 {
-	$pagination->render();
-
 	echo '</div></div>';
 }
 else
 {
 	include $rootpath . 'includes/inc_footer.php';
 }
-
-
 
 function cancel($id = null)
 {

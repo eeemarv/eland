@@ -66,9 +66,9 @@ if ($s_letscode)
 	{
 		echo '<li><a href="' . $rootpath . 'users.php?id=' . $s_id . '">';
 		echo '<span class="fa fa-user"></span> Mijn gegevens</a></li>';
-		echo '<li><a href="' . $rootpath . 'userdetails/mymsg_overview.php">';
+		echo '<li><a href="' . $rootpath . 'messages.php?uid=' . $s_id . '">';
 		echo '<span class="fa fa-newspaper-o"></span> Mijn vraag en aanbod</a></li>';
-		echo '<li><a href="' . $rootpath . 'userdetails/mytrans_overview.php">';
+		echo '<li><a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '">';
 		echo '<span class="fa fa-exchange"></span> Mijn transacties</a></li>';
 		echo '<li class="divider"></li>';
 	}
@@ -151,7 +151,7 @@ else
 {
 	$menu = array(
 		'index.php'					=> array('home', 'Overzicht'),
-		'messages/overview.php'		=> array('newspaper-o', 'Vraag & Aanbod'),
+		'messages.php'				=> array('newspaper-o', 'Vraag & Aanbod'),
 		'users.php'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
 		'transactions.php'			=> array('exchange', 'Transacties'),
 		'news.php'					=> array('calendar-o', 'Nieuws'),
@@ -163,7 +163,11 @@ else
 	}
 
 	$menu['docs.php'] = array('files-o', 'Documenten');
-	$menu['help.php'] = array('ambulance', 'Probleem melden');
+
+	if ($s_user || $s_admin)
+	{
+		$menu['help.php'] = array('ambulance', 'Probleem melden');
+	}
 }
 
 echo '<ul class="nav nav-pills nav-stacked">';

@@ -213,7 +213,7 @@ echo '<thead>';
 echo '<tr>';
 echo '<th data-sort-initial="true">Naam</th>';
 echo '<th data-hide="phone, tablet">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Toegang</th>';
+echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>' : '';
 echo '</tr>';
 
