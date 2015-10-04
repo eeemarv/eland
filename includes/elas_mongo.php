@@ -7,7 +7,7 @@ class elas_mongo
 	public $limit_events;
 	public $settings;
 	public $docs;
-	public $forum_posts;
+	public $forum;
 	public $users;
 
 	public function __construct($schema)
@@ -36,14 +36,14 @@ class elas_mongo
 		$limit_events_collection = $this->schema . '_limit_events';
 		$settings_collection = $this->schema . '_settings';
 		$docs = $this->schema . '_docs';
-		$forum_posts = $this->schema . '_forum_posts';
+		$forum = $this->schema . '_forum';
 		$users = $this->schema . '_users';
 
 		$this->logs = $mdb->$log_collection;
 		$this->limit_events = $mdb->$limit_events_collection;
 		$this->settings = $mdb->$settings_collection;
 		$this->docs = $mdb->$docs;
-		$this->forum_posts = $mdb->$forum_posts;
+		$this->forum = $mdb->$forum;
 		$this->users = $mdb->$users;
 
 		return $this;

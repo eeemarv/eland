@@ -163,6 +163,7 @@ else
 	}
 
 	$menu['docs.php'] = array('files-o', 'Documenten');
+	$menu['forum.php'] = array('comments-o', 'Forum');
 
 	if ($s_user || $s_admin)
 	{

@@ -8,7 +8,6 @@ $id = ($_GET['id']) ?: false;
 $del = ($_GET['del']) ?: false;
 $edit = ($_GET['edit']) ?: false;
 $add = ($_GET['add']) ?: false;
-
 $inline = ($_GET['inline']) ? true : false;
 $uid = ($_GET['uid']) ?: false;
 
