@@ -1605,7 +1605,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function render_contacts($contacts, $abbrev = null)
 {
-	global $access_level, $acc_ary;
+	global $access_level;
 
 	if (count($contacts))
 	{
@@ -1619,18 +1619,13 @@ function render_contacts($contacts, $abbrev = null)
 			if ($contact[1] >= $access_level)
 			{
 				echo sprintf($f, htmlspecialchars($contact[0], ENT_QUOTES));
-			}
-			else
-			{
-				$access = $acc_ary[$contact[1]];
-				echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
-			}
 
-			if ($key == $end)
-			{
-				break;
+				if ($key == $end)
+				{
+					break;
+				}
+				echo '<br>';
 			}
-			echo '<br>';
 		}
 	}
 	else

@@ -18,7 +18,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$post = $elas_mongo->forum_posts->findOne(array('_id' => new MongoId($t)));
+	$post = $elas_mongo->forum->findOne(array('_id' => new MongoId($t)));
 
 	if (!$post)
 	{
@@ -49,14 +49,14 @@ if ($submit)
 {
 	if ($del)
 	{
-		$elas_mongo->forum_posts->remove(
+		$elas_mongo->forum->remove(
 			array('_id' => new MongoId($del)),
 			array('justOne'	=> true)
 		);
 
 		if (!$post['id_parent'])
 		{
-			$elas_mongo->forum_posts->remove(
+			$elas_mongo->forum->remove(
 				array('id_parent' => $del)
 			);
 
@@ -67,36 +67,6 @@ if ($submit)
 		$alert->success('De reactie is verwijderd.');
 		cancel($post['id_parent']);
 	}
-}
-
-if ($del)
-{
-	$a = '<a href="forum.php?t=' . $post['_id'] . '">' . $post['subject'] . '</a>';
-	$h1 = ($post['id_parent']) ? 'Reactie' : 'Forum onderwerp ' . $a;
-	$h1 .= ' verwijderen?';
-
-	$t = ($post['id_parent']) ?: $post['_id'];
-
-	require_once $rootpath . 'includes/inc_header.php';
-
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-
-	echo '<p>' . $post['content'] . '</p>';
-
-	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'forum.php?t=' . $t . '" class="btn btn-default">Annuleren</a>&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo '</form>';
-
-	echo '</div>';
-	echo '</div>';
-	require_once $rootpath . 'includes/inc_footer.php';
-	exit;
-}
-
-if($submit)
-{
 
 	$post = array(
 		'content'	=> $_POST['content'],
@@ -145,18 +115,50 @@ if($submit)
 	}
 	else if ($edit)
 	{
-		$elas_mongo->forum_posts->update(array('_id' => new MongoId($edit)), $post);
+		$elas_mongo->forum->update(array('_id' => new MongoId($edit)), $post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
 	}
 	else
 	{
-		$elas_mongo->forum_posts->insert($post);
+		$elas_mongo->forum->insert($post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
 	}
+}
+
+if ($del)
+{
+	$a = '<a href="forum.php?t=' . $post['_id'] . '">' . $post['subject'] . '</a>';
+	$h1 = ($post['id_parent']) ? 'Reactie' : 'Forum onderwerp ' . $a;
+	$h1 .= ' verwijderen?';
+
+	$t = ($post['id_parent']) ?: $post['_id'];
+
+	require_once $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<p>' . $post['content'] . '</p>';
+
+	echo '<form method="post">';
+	echo '<a href="' . $rootpath . 'forum.php?t=' . $t . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+	require_once $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+if($submit)
+{
+
+
 }
 
 if ($topic)
@@ -170,7 +172,7 @@ else
 
 if (!$edit)
 {
-	$posts = $elas_mongo->forum_posts->find($find);
+	$posts = $elas_mongo->forum->find($find);
 	$posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
 	$posts = iterator_to_array($posts);
