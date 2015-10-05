@@ -7,13 +7,10 @@ var map_names = new Bloodhound({
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 });
 
-map_names.initialize();
-
 $('#map_name').typeahead({
 	highLight: true
 },
 {
-//	displayKey: 'map_name',
-	source: map_names.ttAdapter(),
+	source: map_names,
 	name: 'map_names'
 });

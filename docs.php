@@ -91,9 +91,11 @@ if ($map_edit)
 
 if ($edit)
 {
-	$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($edit)));
+	$edit_id = new MongoId($edit);
 
-	if (!$map)
+	$doc = $elas_mongo->docs->findOne(array('_id' => $edit_id));
+
+	if (!$doc)
 	{
 		$alert->error('Document niet gevonden.');
 		cancel();
@@ -101,14 +103,44 @@ if ($edit)
 
 	if ($submit)
 	{
+		$update = array(
+			'user_id'		=> $doc['user_id'],
+			'filename'		=> $doc['filename'],
+			'org_filename'	=> $doc['org_filename'],
+			'ts'			=> $doc['ts'],
+			'name'			=> $_POST['name'],
+			'access'		=> (int) $_POST['access'],
+		);
+
 		if ($map_name = $_POST['map_name'])
 		{
-			$elas_mongo->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
-			$alert->success('Map naam aangepast.');
-			cancel($map_edit);
+			$map = $elas_mongo->docs->findOne(array('map_name' => $map_name));
+
+			if (!$map)
+			{
+				$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
+				$elas_mongo->docs->insert($map);
+			}
+			$update['map_id'] = (string) $map['_id'];
 		}
 
-		$alert->error('Geen map naam ingevuld!');
+		if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
+		{
+			if (count(iterator_to_array($elas_mongo->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+			{
+				$elas_mongo->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+			}
+		}
+
+		$elas_mongo->docs->update(array('_id' => $edit_id), $update);
+
+		$alert->success('Document aangepast');
+		cancel($update['map_id']);
+	}
+
+	if ($map_id = $doc['map_id'])
+	{
+		$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($map_id)));
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -126,16 +158,16 @@ if ($edit)
 	echo '<div class="form-group">';
 	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name" value="' . $map['name'] . '">';
+	echo '<input type="text" class="form-control" id="name" name="name" value="' . $doc['name'] . '">';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
+	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select type="file" class="form-control" id="access" name="access" ';
 	echo 'required>';
-	render_select_options($access_options, $map['access']);
+	render_select_options($access_options, $doc['access']);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -143,12 +175,12 @@ if ($edit)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_id'] . '">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_name'] . '">';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
-	echo '<input type="submit" name="zend" value="Opladen" class="btn btn-primary">';
+	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
 	echo '</form>';
 
@@ -169,7 +201,12 @@ if ($confirm_del && $del)
 			'Bucket'	=> $bucket,
 			'Key'		=> $doc['filename'],
 		));
-		
+
+		if (count(iterator_to_array($elas_mongo->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+		{
+			$elas_mongo->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+		}
+
 		$elas_mongo->docs->remove(
 			array('_id' => $doc_id),
 			array('justOne'	=> true)
@@ -335,6 +372,12 @@ if ($map)
 {
 	$map_name = $elas_mongo->docs->findOne(array('_id' => new MongoId($map)));
 	$map_name = $map_name['map_name'];
+
+	if (!$map_name)
+	{
+		$alert->error('Onbestaande map id.');
+		cancel();
+	}
 
 	$find['map_id'] = $map;
 	$maps = array();
