@@ -1,6 +1,6 @@
 var users = new Bloodhound({
 	prefetch: {
-		url: 'get_active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
+		url: './ajax/get_active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
 		ttl: 4320000,	// 50 days
 		thumbprint: $(this).attr('data-thumbprint'),
 		filter: function(users){
@@ -98,7 +98,7 @@ $('#fill_in_aid').submit(function(e){
 
 	var days = $('#percentage_balance_days').val();
 	if (days > 1){
-		var jqxhr = $.get('weighted_balances.php', {'days' :days})
+		var jqxhr = $.get('./ajax/weighted_balances.php', {'days' :days})
 		.done(function(data){
 			fill_in(data);
 		})

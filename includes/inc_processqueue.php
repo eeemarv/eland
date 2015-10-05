@@ -9,7 +9,7 @@ function processqueue()
 
 	$transactions = $db->fetchAll('SELECT * FROM interletsq');
 
-	$systemtag = readconfigfromdb("systemtag");
+	$systemtag = readconfigfromdb('systemtag');
 
 	foreach ($transactions AS $key => $value)
 	{
@@ -61,7 +61,7 @@ function processqueue()
 				{
 					case 'SUCCESS':
 						//Commit locally
-						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED")
+						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED')
 						{
 							update_queue($transid, $count, 'LOCALFAIL');
 						}
@@ -83,8 +83,8 @@ function processqueue()
 						break;
 					case 'DUPLICATE':
 						//Commit locally
-						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == "FAILED"){
-							update_queue($transid,$count,"LOCALFAIL");
+						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED'){
+							update_queue($transid,$count,'LOCALFAIL');
 						}
 						break;
 					case 'NOUSER':
@@ -122,7 +122,7 @@ function unqueue($transid)
 {
 	global $db;
 	$db->delete('interletsq', array('transid' => $transid));
-	log_event("","Trans","Removing $transid from queue");	
+	log_event('','Trans','Removing ' . $transid . 'from queue');	
 }
 
 function update_queue($transid,$count,$result)
@@ -136,69 +136,69 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 {
 	//FIXME Add data validation and clear error message for bug #321
 	//FIXME output debug info when elasdebug = 1
-	echo "Local commiting $transid\t\t";
-	$ratio = readconfigfromdb("currencyratio");
-	$posted_list["amount"] = $amount * $ratio;
-	$posted_list["description"] = $description;
-	$posted_list["id_from"] = $id_from;
+	echo 'Local commiting ' . $transid . "\t\t";
+	$ratio = readconfigfromdb('currencyratio');
+	$transaction['amount'] = $amount * $ratio;
+	$transaction['description'] = $description;
+	$transaction['id_from'] = $id_from;
 	//Lookup id_to first
 	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($myletsgroup['localletscode']));
 
-	$posted_list["id_to"] = $to_user["id"];
+	$transaction['id_to'] = $to_user['id'];
 	//Real_to has to be set by a soap call
-	$mysoapurl = $myletsgroup["elassoapurl"] ."/wsdlelas.php?wsdl";
-	$myapikey = $myletsgroup["remoteapikey"];
+	$mysoapurl = $myletsgroup['elassoapurl'] .'/wsdlelas.php?wsdl';
+	$myapikey = $myletsgroup['remoteapikey'];
 	$client = new nusoap_client($mysoapurl, true);
 	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));
 	$err = $client->getError();
 	if (!$err)
 	{
-		$posted_list["real_to"] = $result;
+		$transaction['real_to'] = $result;
 	}
 
-	$posted_list["transid"] = $transid;
-	$posted_list["date"] = date("Y-m-d H:i:s");
+	$transaction['transid'] = $transid;
+	$transaction['date'] = date('Y-m-d H:i:s');
 
 	$error_list = array();
 
-	if (!isset($posted_list["description"])|| (trim($posted_list["description"] ) == ""))
+	if (!isset($transaction['description'])|| (trim($transaction['description'] ) == ''))
 	{
-		$error_list["description"]="Dienst is niet ingevuld";
+		$error_list['description']='Dienst is niet ingevuld';
 	}
 
 	//amount may not be empty
-	$var = trim($posted_list["amount"]);
-	if (!isset($posted_list["amount"]) || (trim($posted_list["amount"] ) == "" || !$posted_list['amount']))
+	$var = trim($transaction['amount']);
+	if (!isset($transaction['amount']) || (trim($transaction['amount'] ) == '' || !$transaction['amount']))
 	{
-		$error_list["amount"]="Bedrag is niet ingevuld";
+		$error_list['amount'] = 'Bedrag is niet ingevuld';
 	}
 
 	//userfrom must exist
-	$fromuser = readuser($posted_list["id_from"]);
-	if(empty($fromuser))
+	$fromuser = readuser($transaction['id_from']);
+	if(!$fromuser)
 	{
-		$error_list["id_from"]="Gebruiker bestaat niet";
+		$error_list['id_from'] = 'Gebruiker bestaat niet';
 	}
 
 	//userto must exist
-	$touser = readuser($posted_list["id_to"]);
-	if(empty($touser) )
+	$touser = readuser($transaction['id_to']);
+	if(!$touser)
 	{
-		$error_list["id_to"]="Gebruiker bestaat niet";
+		$error_list['id_to'] = 'Gebruiker bestaat niet';
 	}
 
 	//userfrom and userto should not be the same
-	if($fromuser["letscode"] == $touser["letscode"]){
-		$error_list["id"]="Van en Aan zijn hetzelfde";
+	if($fromuser['letscode'] == $touser['letscode']){
+		$error_list['id']='Van en Aan zijn hetzelfde';
 	}
 
-	if (!isset($posted_list["date"])|| (trim($posted_list["date"] )==""))
+	if (!isset($transaction['date'])|| (trim($transaction['date'] )==''))
 	{
-		$error_list["date"]="Datum is niet ingevuld";
+		$error_list['date']='Datum is niet ingevuld';
 	}
-	else if(strtotime($posted_list["date"]) == -1)
+	else if(strtotime($transaction['date']) == -1)
 	{
-		$error_list["date"]="Fout in datumformaat (jjjj-mm-dd)";
+		$error_list['date']='Fout in datumformaat (jjjj-mm-dd)';
 	}
 
 	if(!empty($error_list))
@@ -206,35 +206,35 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		echo "\nVALIDATION ERRORS\n";
 		var_dump($error_list);
 		echo "\Tried to commit:\n";
-		var_dump($posted_list);
+		var_dump($transaction);
 		echo "\n";
 	}
 	else
 	{
-		$r = insert_transaction($posted_list);
+		$r = insert_transaction($transaction);
 	}
 
 	if($r)
 	{
-		$result = "SUCCESS";
-		log_event("","Trans","Local commit of interlets transaction succeeded");
-		$posted_list["amount"] = round($posted_list["amount"]);
-		mail_transaction($posted_list, $mytransid);
+		$result = 'SUCCESS';
+		log_event('', 'Trans', 'Local commit of interlets transaction succeeded');
+		$transaction['amount'] = round($transaction['amount']);
+		mail_transaction($transaction, $mytransid);
 		unqueue($transid);
 	}
 	else
 	{
-		$result = "FAILED";
-		log_event("","Trans","Local commit of $transid failed");
+		$result = 'FAILED';
+		log_event('','Trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
-		$systemtag = readconfigfromdb("systemtag");
-		$mailsubject .= "[eLAS-".$systemtag."] " . "Interlets FAILURE!";
-		$from = readconfigfromdb("from_address_transactions");
-		$to = readconfigfromdb("admin");
+		$systemtag = readconfigfromdb('systemtag');
+		$subject .= '[eLAS-'.$systemtag.'] ' . 'Interlets FAILURE!';
+		$from = readconfigfromdb('from_address_transactions');
+		$to = readconfigfromdb('admin');
 
-		$mailcontent = "WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!";
+		$content = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
 
-		sendemail($from,$to,$mailsubject,$mailcontent);
+		sendemail($from,$to,$subject,$content);
 	}
 	echo $result;
 	echo "\n";

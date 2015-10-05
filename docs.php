@@ -8,6 +8,8 @@ $elas_mongo->connect();
 
 $q = ($_GET['q']) ?: '';
 $del = $_GET['del'];
+$edit = $_GET['edit'];
+$map = $_GET['map'];
 
 $submit = ($_POST['zend']) ? true : false;
 $confirm_del = ($_POST['confirm_del']) ? true : false;
@@ -21,6 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
 	));
+}
+
+if (($confirm_del || $submit || $edit || $del) & !$s_admin)
+{
+	cancel();
 }
 
 if ($confirm_del && $del)
@@ -83,7 +90,6 @@ if (isset($del))
 	$alert->error('Document niet gevonden.');
 }
 
-
 if ($submit)
 {
 	$tmpfile = $_FILES['file']['tmp_name'];
@@ -144,12 +150,24 @@ if ($submit)
 			'user_id'		=> $s_id,
 		);
 
+		if ($map_name = $_POST['map_name'])
+		{
+			$map = array(
+				'ts'		=> gmdate('Y-m-d H:i:s'),
+				'map_name'	=> $map_name,
+			);
+
+			$elas_mongo->docs->update(array('map_name' => $map_name), $map, array('upsert' => true));
+
+			$doc['map_id'] = $map_id = $map['_id'];
+		}
+
 		if ($name = $_POST['name'])
 		{
 			$doc['name'] = $name;
 		}
 
-		$elas_mongo->docs->insert($doc);
+		$elas_mongo->docs->update(array('_id' => $mid), $doc, array('upsert' => true));
 
 		$params = array(
 			'CacheControl'	=> 'public, max-age=31536000',
@@ -165,10 +183,8 @@ if ($submit)
 		));
 
 		$alert->success('Het bestand is opgeladen.');
-		header('Location: ' . $rootpath . 'docs.php');
-		exit;
+		cancel($map_id);
 	}
-
 }
 
 $token = sha1(time() . mt_rand(0, 1000000));
@@ -180,6 +196,16 @@ $find = array(
 );
 
 $docs = $elas_mongo->docs->find($find);
+
+if ($s_admin)
+{
+	$top_buttons .= '<a href="#add" class="btn btn-success"';
+	$top_buttons .= ' title="Document opladen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Document opladen</span></a>';
+}
+
+$includejs = '<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/docs.js"></script>';
 
 $h1 = 'Documenten';
 $fa = 'files-o';
@@ -252,12 +278,12 @@ echo '</table>';
 
 if ($s_admin)
 {
-	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
+	echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
 
-	echo '<div class="panel panel-info">';
+	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
+	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';	
 
 	echo '<div class="form-group">';
 	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
@@ -284,17 +310,27 @@ if ($s_admin)
 	echo '</div>';
 	echo '</div>';
 
+	echo '<div class="form-group">';
+	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name">';
+	echo '</div>';
+	echo '</div>';
+
 	echo '<input type="submit" name="zend" value="Opladen" class="btn btn-default">';
 	echo '<input type="hidden" value="' . $token . '" name="token">';
 
-	echo '</div>';
-	echo '</div>';
 	echo '</form>';
 
-	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 }
 
 include $rootpath . 'includes/inc_footer.php';
 
+function cancel($map = null)
+{
+	$map = ($map) ? '?map=' . $map : '';
+	header('Location: ' . $rootpath . 'docs.php' . $map);
+	exit;
+}

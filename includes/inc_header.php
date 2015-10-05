@@ -87,7 +87,7 @@ if ($s_letscode)
 			'config.php'						=> array('gears', 'Instellingen'),
 			'export.php'						=> array('download', 'Export'),
 			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
-			'transactions/mass.php'				=> array('exchange', 'Massa-Transactie'),
+			'mass_transaction.php'				=> array('exchange', 'Massa-Transactie'),
 			'logs.php'							=> array('list', 'Logs'),
 			'divider_1'							=> 'divider',
 			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>

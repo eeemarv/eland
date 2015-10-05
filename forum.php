@@ -155,11 +155,6 @@ if ($del)
 	exit;
 }
 
-if($submit)
-{
-
-
-}
 
 if ($topic)
 {
@@ -369,7 +364,11 @@ if (!$s_guest)
 		echo '</div>';
 	}
 
-	echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
+	$str = ($topic) ? 'Reactie' : 'Onderwerp';
+	$btn = ($edit) ? 'primary' : 'success';
+	$action = ($edit) ? 'aanpassen' : 'toevoegen';
+
+	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
 
@@ -381,7 +380,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($topic = null)
 {
-	$tl = ($topic) ? '?t=' . $topic : '';
-	header('Location: ' . $rootpath . 'forum.php' . $tl);
+	$topic = ($topic) ? '?t=' . $topic : '';
+	header('Location: ' . $rootpath . 'forum.php' . $topic);
 	exit;
 }
