@@ -564,7 +564,7 @@ if ($s_admin)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<input type="submit" name="zend" value="Opladen" class="btn btn-default">';
+	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
 	echo '<input type="hidden" value="' . $token . '" name="token">';
 
 	echo '</form>';
