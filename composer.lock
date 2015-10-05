@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0d880127d61ae2bd8a6c4610f729221fadf2fede"
+                "reference": "ca3dd59d394d2320d94eec4d50e6fdff7cac477d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0d880127d61ae2bd8a6c4610f729221fadf2fede",
-                "reference": "0d880127d61ae2bd8a6c4610f729221fadf2fede",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ca3dd59d394d2320d94eec4d50e6fdff7cac477d",
+                "reference": "ca3dd59d394d2320d94eec4d50e6fdff7cac477d",
                 "shasum": ""
             },
             "require": {
@@ -81,7 +81,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-09-23 04:54:39"
+            "time": "2015-10-01 21:39:32"
         },
         {
             "name": "blueimp/jquery-file-upload",
@@ -1145,16 +1145,16 @@
         },
         {
             "name": "mandrill/mandrill",
-            "version": "1.0.54",
+            "version": "1.0.55",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/mailchimp/mandrill-api-php.git",
-                "reference": "9f336b08ea148c80db3b694f3dc737cd4f414e19"
+                "reference": "da3adc10042eafac2e53de141b358a52b8e53596"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/mailchimp/mandrill-api-php/get/9f336b08ea148c80db3b694f3dc737cd4f414e19.zip",
-                "reference": "9f336b08ea148c80db3b694f3dc737cd4f414e19",
+                "url": "https://bitbucket.org/mailchimp/mandrill-api-php/get/da3adc10042eafac2e53de141b358a52b8e53596.zip",
+                "reference": "da3adc10042eafac2e53de141b358a52b8e53596",
                 "shasum": ""
             },
             "require": {
@@ -1184,7 +1184,7 @@
                 "api",
                 "email"
             ],
-            "time": "2014-10-16 21:08:20"
+            "time": "2015-09-22 13:58:03"
         },
         {
             "name": "monolog/monolog",
@@ -1552,15 +1552,15 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v2.7.4",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/BrowserKit.git",
+                "url": "https://github.com/symfony/browser-kit.git",
                 "reference": "277a2457776d4cc25706fbdd9d1e4ab2dac884e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/BrowserKit/zipball/277a2457776d4cc25706fbdd9d1e4ab2dac884e4",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/277a2457776d4cc25706fbdd9d1e4ab2dac884e4",
                 "reference": "277a2457776d4cc25706fbdd9d1e4ab2dac884e4",
                 "shasum": ""
             },
@@ -1607,16 +1607,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.7.4",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "ffb5f3b8a75f8d1b9801e74dc6789a0751a670ad"
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "abe19cc0429a06be0c133056d1f9859854860970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/ffb5f3b8a75f8d1b9801e74dc6789a0751a670ad",
-                "reference": "ffb5f3b8a75f8d1b9801e74dc6789a0751a670ad",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/abe19cc0429a06be0c133056d1f9859854860970",
+                "reference": "abe19cc0429a06be0c133056d1f9859854860970",
                 "shasum": ""
             },
             "require": {
@@ -1656,20 +1656,20 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2015-08-24 07:13:45"
+            "time": "2015-09-22 13:49:29"
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v2.7.4",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/DomCrawler.git",
-                "reference": "2a161e4ee2b2f33d4153be58df4f6f2a5506936e"
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "2e185ca136399f902b948694987e62c80099c052"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DomCrawler/zipball/2a161e4ee2b2f33d4153be58df4f6f2a5506936e",
-                "reference": "2a161e4ee2b2f33d4153be58df4f6f2a5506936e",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/2e185ca136399f902b948694987e62c80099c052",
+                "reference": "2e185ca136399f902b948694987e62c80099c052",
                 "shasum": ""
             },
             "require": {
@@ -1709,7 +1709,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2015-08-26 10:48:03"
+            "time": "2015-09-20 21:13:58"
         }
     ],
     "packages-dev": [],

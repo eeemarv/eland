@@ -4,19 +4,24 @@ $rootpath = '';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
+$fa = 'files-o';
+
 $elas_mongo->connect();
 
 $q = ($_GET['q']) ?: '';
 $del = $_GET['del'];
 $edit = $_GET['edit'];
 $map = $_GET['map'];
+$map_edit = $_GET['map_edit'];
 
 $submit = ($_POST['zend']) ? true : false;
 $confirm_del = ($_POST['confirm_del']) ? true : false;
 
+$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
+
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+if ($post)
 {
 	$s3 = Aws\S3\S3Client::factory(array(
 		'signature'	=> 'v4',
@@ -25,9 +30,133 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	));
 }
 
-if (($confirm_del || $submit || $edit || $del) & !$s_admin)
+if (($confirm_del || $submit || $edit || $del || $post || $map_edit) & !$s_admin)
 {
+	$alert->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
+}
+
+if ($map_edit)
+{
+	$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($map_edit)));
+
+	$map_name = $map['map_name'];
+
+	if (!$map_name)
+	{
+		$alert->error('Map niet gevonden.');
+		cancel();
+	}
+
+	if ($submit)
+	{
+		if ($map_name = $_POST['map_name'])
+		{
+			$elas_mongo->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
+			$alert->success('Map naam aangepast.');
+			cancel($map_edit);
+		}
+
+		$alert->error('Geen map naam ingevuld!');
+	}
+
+	$h1 = 'Map aanpassen: <a href="'. $rootpath . 'docs.php?map=' . $map_edit . '">';
+	$h1 .= $map_name . '</a>';
+
+	require_once $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info" id="add">';
+	echo '<div class="panel-heading">';
+
+	echo '<form method="post">';	
+
+	echo '<div class="form-group">';
+	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	require_once $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+if ($edit)
+{
+	$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($edit)));
+
+	if (!$map)
+	{
+		$alert->error('Document niet gevonden.');
+		cancel();
+	}
+
+	if ($submit)
+	{
+		if ($map_name = $_POST['map_name'])
+		{
+			$elas_mongo->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
+			$alert->success('Map naam aangepast.');
+			cancel($map_edit);
+		}
+
+		$alert->error('Geen map naam ingevuld!');
+	}
+
+	$includejs = '<script src="' . $cdn_typeahead . '"></script>
+		<script src="' . $rootpath . 'js/docs.js"></script>';
+
+	$h1 = 'Document aanpassen';
+
+	require_once $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info" id="add">';
+	echo '<div class="panel-heading">';
+
+	echo '<form method="post" class="form-horizontal">';	
+
+	echo '<div class="form-group">';
+	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="name" name="name" value="' . $map['name'] . '">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
+	echo '<div class="col-sm-10">';
+	echo '<select type="file" class="form-control" id="access" name="access" ';
+	echo 'required>';
+	render_select_options($access_options, $map['access']);
+	echo '</select>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_id'] . '">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" name="zend" value="Opladen" class="btn btn-primary">';
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	require_once $rootpath . 'includes/inc_footer.php';
+	exit;
 }
 
 if ($confirm_del && $del)
@@ -62,7 +191,6 @@ if (isset($del))
 	if ($doc)
 	{
 		$h1 = 'Document verwijderen?';
-		$fa = 'files-o';
 
 		require_once $rootpath . 'includes/inc_header.php';
 		
@@ -137,12 +265,12 @@ if ($submit)
 
 		$access = $_POST['access'];
 
-		$mid = new MongoId();
+		$doc_id = new MongoId();
 
-		$filename = $schema . '_d_' . $mid . '_' . sha1(time() . mt_rand(0, 1000000)) . '.' . $ext;
+		$filename = $schema . '_d_' . $doc_id . '_' . sha1(time() . mt_rand(0, 1000000)) . '.' . $ext;
 
 		$doc = array(
-			'_id' 			=> $mid,
+			'_id' 			=> $doc_id,
 			'filename'		=> $filename,
 			'org_filename'	=> $file,
 			'access'		=> (int) $access,
@@ -152,14 +280,22 @@ if ($submit)
 
 		if ($map_name = $_POST['map_name'])
 		{
-			$map = array(
-				'ts'		=> gmdate('Y-m-d H:i:s'),
-				'map_name'	=> $map_name,
-			);
+			$m = $elas_mongo->docs->findOne(array('map_name' => $map_name));
 
-			$elas_mongo->docs->update(array('map_name' => $map_name), $map, array('upsert' => true));
+			$map_id = new MongoId($m['_id']);
 
-			$doc['map_id'] = $map_id = $map['_id'];
+			if (!$m)
+			{
+				$map = array(
+					'_id'		=> $map_id,
+					'ts'		=> gmdate('Y-m-d H:i:s'),
+					'map_name'	=> $map_name,
+				);
+
+				$elas_mongo->docs->insert($map);
+			}
+
+			$doc['map_id'] = (string) $map_id;
 		}
 
 		if ($name = $_POST['name'])
@@ -167,7 +303,7 @@ if ($submit)
 			$doc['name'] = $name;
 		}
 
-		$elas_mongo->docs->update(array('_id' => $mid), $doc, array('upsert' => true));
+		$elas_mongo->docs->insert($doc);
 
 		$params = array(
 			'CacheControl'	=> 'public, max-age=31536000',
@@ -195,20 +331,59 @@ $find = array(
 	'access'	=> array('$gte'	=> $access_ary[$s_accountrole])
 );
 
-$docs = $elas_mongo->docs->find($find);
+if ($map)
+{
+	$map_name = $elas_mongo->docs->findOne(array('_id' => new MongoId($map)));
+	$map_name = $map_name['map_name'];
+
+	$find['map_id'] = $map;
+	$maps = array();
+}
+else
+{
+	$maps = iterator_to_array($elas_mongo->docs->find(array('map_name' => array('$exists' => true))));
+}
+
+$docs = iterator_to_array($elas_mongo->docs->find($find));
+
+if (!$map)
+{
+	$docs = array_merge($maps, $docs);
+
+	foreach ($docs as &$d)
+	{
+		if ($d['map_id'])
+		{
+			$docs[$d['map_id']]['count']++;
+			unset($d);
+		}
+	}
+}
 
 if ($s_admin)
 {
-	$top_buttons .= '<a href="#add" class="btn btn-success"';
-	$top_buttons .= ' title="Document opladen"><i class="fa fa-plus"></i>';
+	$top_buttons .= '<a href="#add" class="btn btn-success" ';
+	$top_buttons .= 'title="Document opladen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Document opladen</span></a>';
+
+	if ($map)
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'docs.php?map_edit=' . $map . '" class="btn btn-primary" ';
+		$top_buttons .= 'title="Map aanpassen"><i class="fa fa-files-o"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Map aanpassen</span></a>';
+	}
+}
+if ($map)
+{
+	$top_buttons .= '<a href="' . $rootpath . 'docs.php" class="btn btn-default" ';
+	$top_buttons .= 'title="Lijst"><i class="fa fa-files-o"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 }
 
 $includejs = '<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/docs.js"></script>';
 
-$h1 = 'Documenten';
-$fa = 'files-o';
+$h1 = ($map) ? $map_name : 'Documenten';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -240,23 +415,48 @@ echo '<tr>';
 echo '<th data-sort-initial="true">Naam</th>';
 echo '<th data-hide="phone, tablet">Tijdstip</th>';
 echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>' : '';
+echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 echo '</tr>';
 
 echo '</thead>';
 echo '<tbody>';
 
-foreach($docs as $val)
+foreach($docs as $d)
 {
-	$access = $acc_ary[$val['access']];
+	if ($d['count'])
+	{
+		echo '<tr class="info">';
+		echo '<td><a href="' . $rootpath . 'docs.php?map=' . $d['_id'] . '">';
+		echo '<i class="fa fa-file"></i> ';
+		echo $d['map_name'] . ' (' . $d['count'] . ')';
+		echo '</a></td>';
+
+		echo ($s_guest) ? '' : '<td></td><td></td>';
+
+		if ($s_admin)
+		{
+			echo '<td><a href="' . $rootpath . 'docs.php?map_edit=' . $d['_id'] . '" ';
+			echo 'class="btn btn-primary btn-xs">Aanpassen</a></td>';
+		}
+		echo '</tr>';
+
+		continue;
+	}
+	else if ($d['map_name'] || ($d['map_id'] && !$map))
+	{
+		continue;
+	}
+
+	$access = $acc_ary[$d['access']];
+
 	echo '<tr>';
 
 	echo '<td>';
-	echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $val['filename'] . '" target="_self">';
-	echo ($val['name']) ?: $val['org_filename'];
+	echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $d['filename'] . '" target="_self">';
+	echo ($d['name']) ?: $d['org_filename'];
 	echo '</a>';
 	echo '</td>';
-	echo '<td>' . $val['ts'] . '</td>';
+	echo '<td>' . $d['ts'] . '</td>';
 
 	if (!$s_guest)
 	{
@@ -267,8 +467,12 @@ foreach($docs as $val)
 
 	if ($s_admin)
 	{
-		echo '<td><a href="'. $rootpath . 'docs.php?del=' . $val['_id'] . '" class="btn btn-danger btn-xs">';
-		echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
+		echo '<td>';
+		echo '<a href="'. $rootpath . 'docs.php?edit=' . $d['_id'] . '" class="btn btn-primary btn-xs">';
+		echo 'Aanpassen</a>&nbsp;';
+		echo '<a href="'. $rootpath . 'docs.php?del=' . $d['_id'] . '" class="btn btn-danger btn-xs">';
+		echo '<i class="fa fa-times"></i> Verwijderen</a>';
+		echo '</td>';
 	}
 	echo '</tr>';
 
@@ -301,7 +505,7 @@ if ($s_admin)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="access" class="col-sm-2 control-label">Zichtbaar</label>';
+	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select type="file" class="form-control" id="access" name="access" ';
 	echo 'required>';
@@ -313,7 +517,7 @@ if ($s_admin)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '">';
 	echo '</div>';
 	echo '</div>';
 

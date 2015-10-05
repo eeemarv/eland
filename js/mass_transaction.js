@@ -1,6 +1,6 @@
 var users = new Bloodhound({
 	prefetch: {
-		url: './ajax/get_active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
+		url: './ajax/active_users.php?letsgroup_id=' + $('#to_letscode').attr('data-letsgroup-id'),
 		ttl: 4320000,	// 50 days
 		thumbprint: $(this).attr('data-thumbprint'),
 		filter: function(users){

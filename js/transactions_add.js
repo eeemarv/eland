@@ -1,7 +1,7 @@
 $("#letsgroup_id").find('option').each(function(){
 	$(this).data('users', new Bloodhound({
 		prefetch: {
-			url: './ajax/get_active_users.php?letsgroup_id=' + $(this).val(),
+			url: './ajax/active_users.php?letsgroup_id=' + $(this).val(),
 			ttl: 4320000,	// 50 days
 			thumbprint: $(this).attr('data-thumbprint'),
 			filter: function(users){
