@@ -120,21 +120,18 @@ if ($token = $_GET['token'])
 			throw $e;
 		}
 
-		$alert->success('Registratie voltooid.');
+		$alert->success('Inschrijving voltooid.');
 
 		require_once $rootpath . 'includes/inc_header.php';
-
+/*
 		echo '<div class="panel panel-success">';
-		echo '<div class="panel-heading">';
-
-		echo '<h2>Registratie gelukt</h2>';
-
-		echo '</div>';
 		echo '<div class="panel-body">';
 
-		echo '</div>';
-		echo '</div>';
+//		echo '<h2>Inschrijving gelukt</h2>';
 
+		echo '</div>';
+		echo '</div>';
+*/
 		require_once $rootpath . 'includes/inc_footer.php';
 		exit;
 	}
@@ -187,7 +184,7 @@ if ($_POST['zend'])
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', array($reg['email'])))
 	{
-		$alert->error('Er bestaat reeds een bevestigde registratie met dit mailadres.');
+		$alert->error('Er bestaat reeds een bevestigde inschrijving met dit mailadres.');
 	}
 	else if (!$reg['first_name'])
 	{
@@ -210,7 +207,7 @@ if ($_POST['zend'])
 		$key = $schema . '_register_email_' . $email;
 		$redis->set($key, '1');
 		$redis->expire($key, 86400);
-		$subject = '[' . readconfigfromdb('systemtag') . '] Bevestig je registratie';
+		$subject = '[' . readconfigfromdb('systemtag') . '] Bevestig je inschrijving';
 		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 		$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url = $http . $_SERVER['SERVER_NAME'] . $port . '/register.php?token=' . $token;
@@ -218,7 +215,7 @@ if ($_POST['zend'])
 		$message .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$message .= "Deze link blijft 1 dag geldig.\n\n";
 		sendemail(readconfigfromdb('from_address'), $reg['email'], $subject, $message);
-		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je verstuurd hebben om de registratie te voltooien.');
+		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je verstuurd hebben om je inschrijving te voltooien.');
 		log_event('', 'System', 'Bevestigings email verstuurd naar ' . $email);
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
