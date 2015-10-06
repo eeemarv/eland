@@ -847,21 +847,21 @@ if (!$inline)
 	echo '<form method="get" class="form-horizontal">';
 
 	echo '<div class="row">';
-	echo '<div class="col-sm-12">';
+	echo '<div class="col-xs-12">';
 	echo '<div class="input-group">';
-	echo '<div class="input-group-addon">';
+	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
-	echo '</div>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q">';
 	echo '</div>';
-	echo '</div></div>';
+	echo '</div></div><br>';
 
 	echo '<div class="row">';
-	echo '<div class="col-sm-12">';
+	echo '<div class="col-xs-12">';
 	echo '<div class="input-group">';
-	echo '<div class="input-group-addon">';
+	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-clone"></i>';
-	echo '</div>';
+	echo '</span>';
 	echo '<select class="form-control" id="cat_hsh" value="' . $cat_hsh . '" name="cat_hsh">';
 	render_select_options($cats_hsh_name, $cat_hsh);
 	echo '</select>';

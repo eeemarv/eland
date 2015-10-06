@@ -38,7 +38,7 @@ $balance = $user['saldo'];
 if($_SERVER['REQUEST_METHOD'] === 'POST'
 	&& $upload
 	&& is_array($upload['tmp_name'])
-	&& ($s_accountrole == 'admin' || $message['id_user'] == $s_id))
+	&& ($s_admin || $message['id_user'] == $s_id))
 {
 	$ret_ary = array();
 
@@ -174,13 +174,13 @@ $includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 
 $top_buttons = '';
 
-if ($s_accountrole == 'user' || $s_accountrole == 'admin')
+if ($s_user || $s_admin)
 {
 	$top_buttons .= '<a href="' . $rootpath . 'messages/edit.php?mode=new" class="btn btn-success"';
 	$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-	if ($s_accountrole == 'admin' || $s_id == $message['id_user'])
+	if ($s_admin || $s_id == $message['id_user'])
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'messages/edit.php?mode=edit&id=' . $msgid . '" ';
 		$top_buttons .= 'class="btn btn-primary"';
@@ -217,7 +217,7 @@ include $rootpath.'includes/inc_header.php';
 
 echo '<div class="row">';
 
-if($s_accountrole == "admin" || $s_id == $user['id'])
+if($s_admin || $s_id == $user['id'])
 {
 	$add_img = '<div class="upload-wrapper">
 <div id="error_output"></div>

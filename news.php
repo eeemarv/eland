@@ -59,8 +59,8 @@ if ($add || $edit)
 
 if ($add && $submit && !count($errors))
 {
-	$news['approved'] = ($s_accountrole == 'admin') ? 't' : 'f';
-	$news['published'] = ($s_accountrole == 'admin') ? 't' : 'f';
+	$news['approved'] = ($s_admin) ? 't' : 'f';
+	$news['published'] = ($s_admin) ? 't' : 'f';
 	$news['id_user'] = $s_id;
 	$news['cdate'] = date('Y-m-d H:i:s');
 	
@@ -69,7 +69,7 @@ if ($add && $submit && !count($errors))
 		$alert->success('Nieuwsbericht opgeslagen.');
 
 		$id = $db->lastInsertId('news_id_seq');
-		if($s_accountrole != 'admin')
+		if(!$s_admin)
 		{
 			// Send a notice to ask for approval
 			$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
@@ -286,13 +286,13 @@ if ($id)
 
 	$top_buttons = '';
 
-	if($s_accountrole == 'user' || $s_accountrole == 'admin')
+	if($s_user || $s_admin)
 	{
 		$top_buttons .= '<a href="' .$rootpath . 'news.php?add=1" class="btn btn-success"';
 		$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-		if($s_accountrole == 'admin')
+		if($s_admin)
 		{
 			$top_buttons .= '<a href="' . $rootpath . 'news.php?edit=' . $id . '" class="btn btn-primary"';
 			$top_buttons .= ' title="Nieuwsbericht aanpassen"><i class="fa fa-pencil"></i>';
@@ -370,7 +370,7 @@ $query .= ' ORDER BY cdate DESC';
 
 $news = $db->fetchAll($query);
 
-if($s_accountrole == 'user' || $s_accountrole == 'admin')
+if($s_user || $s_admin)
 {
 	$top_buttons = '<a href="' .$rootpath . 'news.php?add=1" class="btn btn-success"';
 	$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
@@ -389,7 +389,7 @@ echo '<thead>';
 echo '<tr>';
 echo '<th>Titel</th>';
 echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
-echo ($s_accountrole == 'admin') ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
+echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
 echo '</tr>';
 echo '</thead>';
 
@@ -413,7 +413,7 @@ foreach ($news as $value)
 	}
 	echo '</td>';
 
-	if ($s_accountrole == 'admin')
+	if ($s_admin)
 	{
 		echo '<td>';
 		echo ($value['approved']) ? 'Ja' : 'Nee';

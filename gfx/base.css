@@ -118,7 +118,7 @@
 	margin-bottom: 5px; 
 }
 
-.tt-suggestion p.success
+p.success.tt-suggestion 
 {
 	background-color: #dff0d8;;
 }

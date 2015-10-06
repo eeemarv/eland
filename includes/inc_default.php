@@ -100,6 +100,23 @@ $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
 $s_rights = $_SESSION['rights'];
 
+$role_ary = array(
+	'admin'		=> 'Admin',
+	'user'		=> 'User',
+	'guest'		=> 'Guest',
+	'interlets'	=> 'Interlets', 
+);
+
+$status_ary = array(
+	0	=> 'Gedesactiveerd',
+	1	=> 'Actief',
+	2	=> 'Uitstapper',
+	3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
+	4	=> 'Info-pakket',
+	5	=> 'Info-moment',
+	6	=> 'Extern',
+);
+
 $access_ary = array(
 	'admin'		=> 0,
 	'user'		=> 1,

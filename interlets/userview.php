@@ -48,7 +48,7 @@ $letsgroups = $db->fetchAll('SELECT * FROM letsgroups WHERE apimethod <> \'inter
 
 $top_buttons = '';
 
-if ($s_accountrole == 'admin')
+if ($s_admin)
 {
 	$top_buttons .= '<a href="' . $rootpath . 'interlets/overview.php" class="btn btn-default"';
 	$top_buttons .= ' title="Beheer letsgroepen"><i class="fa fa-cog"></i>';

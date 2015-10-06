@@ -288,5 +288,3 @@ echo '</div>';
 
 require_once $rootpath . 'includes/inc_footer.php';
 exit;
-
-$h1 = 'Login of paswoord vergeten';

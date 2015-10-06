@@ -1,6 +1,6 @@
 ;jQuery(document).ready(function($){
 	$.ajax({
-		url: '/plot_user_transactions.php',
+		url: './ajax/plot_user_transactions.php',
 		dataType: 'json',
 		data: { user_id: user_id },
 		success:function(data){

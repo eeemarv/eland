@@ -13,7 +13,7 @@ $location = ($location == 'logout.php') ? 'index.php' : $location;
 
 if ($_SESSION['rights'] == 'admin')
 {
-	if ($s_accountrole == 'user')
+	if ($s_user)
 	{
 		$_SESSION['accountrole'] = 'admin';
 	}

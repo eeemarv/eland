@@ -426,7 +426,8 @@ if ($map)
 $includejs = '<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/docs.js"></script>';
 
-$h1 = ($map) ? $map_name : 'Documenten';
+$h1 = '<a href="' . $rootpath . 'docs.php">Documenten</a>';
+$h1 .= ($map) ? ': ' . $map_name : '';
 
 include $rootpath . 'includes/inc_header.php';
 

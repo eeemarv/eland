@@ -315,8 +315,8 @@ if ($uid)
 
 		if (($c['flag_public'] < $access_level) && !$s_owner)
 		{
-			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
-			echo '<td></td>';
+			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
+			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
 		}
 		else
 		{

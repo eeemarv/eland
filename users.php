@@ -19,23 +19,6 @@ $role = ($edit || $del || $add || $pw) ? 'user' : 'guest';
 
 require_once $rootpath . 'includes/inc_default.php';
 
-$role_ary = array(
-	'admin'		=> 'Admin',
-	'user'		=> 'User',
-	'guest'		=> 'Guest',
-	'interlets'	=> 'Interlets', 
-);
-
-$status_ary = array(
-	0	=> 'Gedesactiveerd',
-	1	=> 'Actief',
-	2	=> 'Uitstapper',
-	3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
-	4	=> 'Infopakket',
-	5	=> 'Infoavond',
-	6	=> 'Extern',
-);
-
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 $currency = readconfigfromdb('currency');
 
@@ -1402,6 +1385,10 @@ if ($s_admin)
 	$top_buttons .= ' title="Saldo mail aan/uitzetten"><i class="fa fa-envelope-o"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Saldo mail</span></a>';
 
+	$top_buttons .= '<a href="#actions" class="btn btn-default"';
+	$top_buttons .= ' title="Acties"><i class="fa fa-cog"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Acties</span></a>';
+
 	$h1 = 'Gebruikers';
 }
 else
@@ -1413,7 +1400,8 @@ $fa = 'users';
 
 $includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
 	<script src="' . $rootpath . 'js/calc_sum.js"></script>
-	<script src="' . $rootpath . 'js/csv.js"></script>';
+	<script src="' . $rootpath . 'js/csv.js"></script>
+	<script src="' . $rootpath . 'js/users.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -1508,6 +1496,7 @@ foreach($users as $u)
 	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
 	echo '<td>';
+	echo '<input type="checkbox" name="sel[' . $id . ']" value="1">&nbsp;';
 	echo link_user($u, 'letscode');
 	echo '</td>';
 
@@ -1595,8 +1584,76 @@ echo '</table>';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
-echo '<p>Totaal saldo van geselecteerde gebruikers: <span id="sum"></span> ' . $currency . '</p>';
+echo '<p>Totaal saldo van zichtbare gebruikers: <span id="sum"></span> ' . $currency . '</p>';
 echo '</div></div>';
+
+if ($s_admin)
+{
+	$tabs = array(
+		'mail'	=> array(
+			'active'	=> true,
+			'lbl'		=> 'Mail',
+		),
+		'field'	=> array(
+			'lbl'		=> 'Veld aanpassen',
+			'dropdown'	=> array(
+				'fullname_access'	=> array(
+					'lbl'	=> 'Zichtbaarheid volledige naam',
+				),
+				'adr_access'		=> array(
+					'lbl'	=> 'Zichtbaarheid adres',
+				),
+				'mail_access'		=> array(
+					'lbl'	=> 'Zichtbaarheid email adres',
+				),
+				'tel_access'		=> array(
+					'lbl'	=> 'Zichtbaarheid telefoon nummer',
+				),
+				'saldo_mail'		=> array(
+					'lbl'	=> 'Periodieke overzichtsmail (aan/uit)',
+				),
+				'accountrole'		=> array(
+					'lbl'	=> 'Rechten',
+				),
+				'status'			=> array(
+					'lbl'	=> 'Status',
+				),
+			),
+		),
+	);
+
+
+	echo '<div class="panel panel-default" id="actions">';
+	echo '<div class="panel-heading">';
+	echo '<button class="btn btn-default" id="select_all">Selecteer alle</button>&nbsp;';
+	echo '<button class="btn btn-default" id="deselect_all">De-selecteer alle</button>';
+	echo '</div></div>';
+	echo '<h3>Acties met geselecteerde gebruikers</h3>';	
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<ul class="nav nav-tabs">';
+	echo '<li class="active"><a href="#">Mail</a></li>';
+	echo '<li class="dropdown">';
+	echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
+	echo '<span class="caret"></span></a>';
+	echo '<ul class="dropdown-menu">';
+	echo '<li><a href="#">Zichtbaarheid volledige naam</a></li>';
+	echo '<li><a href="#">Zichtbaarheid adres</a></li>';
+	echo '<li><a href="#">Zichtbaarheid email</a></li>';
+	echo '<li><a href="#">Zichtbaarheid gsm</a></li>';
+	echo '<li><a href="#">Zichtbaarheid telefoon</a></li>';
+	echo '<li><a href="#">Periodieke overzichtsmail (aan/uit)</a></li>';
+	echo '<li><a href="#">Rechten</a></li>';
+	echo '<li><a href="#">Status</a></li>';
+	echo '</ul>';
+	echo '</li>';
+	echo '</ul>';
+
+	echo '</div>';
+	echo '</div>';
+}
+
 echo '</div>';
 echo '</div>';
 echo '</div>';
