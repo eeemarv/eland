@@ -268,7 +268,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 					'content'	=> $user['name'],
 				),
 				array(
-					'name'		=> 'voll_naam',
+					'name'		=> 'volledige_naam',
 					'content'	=> $user['fullname'],
 				),
 				array(
@@ -2003,11 +2003,15 @@ if ($s_admin)
 
 	echo '<tbody>';
 	echo '<tr><td>{{letscode}}</td><td>Letscode</td></tr>';
-	echo '<tr><td>{{name}}</td><td>Gebruikersnaam</td></tr>';
-	echo '<tr><td>{{fullname}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
+	echo '<tr><td>{{naam}}</td><td>Gebruikersnaam</td></tr>';
+	echo '<tr><td>{{volledige_naam}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
 	echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
 	echo '<tr><td>{{login}}</td><td>Login</td></tr>';
-	echo '<tr><td>{{saldo}}</td><td>Huidige saldo in ' . $currency . '</td></tr>';
+	echo '<tr><td>{{status}}</td><td>Status</td></tr>';
+	echo '<tr><td>{{min_limiet}}</td><td>Minimum limiet</td></tr>';
+	echo '<tr><td>{{max_limiet}}</td><td>Maximum limiet</td></tr>';
+	echo '<tr><td>{{saldo}}</td><td>Huidig saldo in ' . $currency . '</td></tr>';
+	echo '<tr><td>{{id}}</td><td>Gebruikers id (kan gebruikt worden om urls te vormen).</td></tr>';
 	echo '</body>';
 	echo '</table>';
 
