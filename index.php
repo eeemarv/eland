@@ -97,7 +97,7 @@ if($s_guest)
 	echo '<div class="panel-body">';
 	echo 'Je bent ingelogd als LETS-gast, je kan informatie ';
 	echo 'raadplegen maar niets wijzigen of transacties invoeren.  ';
-	echo 'Als guest kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS';
+	echo 'Als gast kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS';
 	echo '</div>';
 	echo '</div>';
 }

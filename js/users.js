@@ -14,4 +14,10 @@ $(document).ready(function() {
 			this.checked = checked;
 		});
 	}
+
+	$('form[method="post"]').submit(function(event) {
+		$('table > tbody > tr > td > input[type="checkbox"]:hidden').each(function(){
+			$(this).prop('checked', false);
+		});
+	});	
 });

@@ -35,6 +35,7 @@ $cdn_datepicker = (getenv('CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/lib
 $cdn_datepicker_nl = (getenv('CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
 $cdn_ckeditor = (getenv('CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
+// $cdn_ckeditor = (getenv('CDN_CKEDITOR')) ?: '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.4.5/ckeditor.js';
 
 require_once $rootpath . 'vendor/autoload.php';
 
