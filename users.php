@@ -146,7 +146,7 @@ if ($post && $s_admin)
 	}
 }
 
-if ($s_admin && ($field_submit || $mail_test || $mail_submit))
+if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 { 
 	if (!count($selected_users) && !$mail_test)
 	{
@@ -163,7 +163,7 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit))
 	}
 }
 
-if ($s_admin && !count($errors) && ($field_submit || $mail_test || $mail_submit))
+if ($s_admin && !count($errors) && $field_submit && $post)
 {
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
@@ -225,21 +225,116 @@ if ($s_admin && !count($errors) && ($field_submit || $mail_test || $mail_submit)
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
+}
 
-/*
-		if ($_POST['mail_test'])
-		{
+if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
+{
+	$to = $merge_vars = array();
+	$to_log = '';
 
-		}
-		else if ($_POST['mail_submit'])
-		{
+	$sel_ary = ($mail_test) ? array($s_id => true) : $selected_users;
 
-		}
-		else
+	$st = $db->prepare('select u.*, c.value as mail
+		from users u, contact c, type_contact tc
+		where u.id = c.id_user
+			and c.id_type_contact = tc.id
+			and tc.abbrev = \'mail\'');
+
+	$st->execute();
+
+	while ($user = $st->fetch())
+	{
+		if ($user['id'] == $s_id)
 		{
-			$alert->error('Geen geldige invoer.');
+			$from = $user['mail'];
 		}
-	*/
+
+		if (!$sel_ary[$user['id']])
+		{
+			continue;
+		}
+
+		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
+
+		$to[] = array(
+			'email'	=> $user['mail'],
+			'name'	=> $user['name'],
+		);
+		$merge_vars[] = array(
+			'rcpt'	=> $user['mail'],
+			'vars'	=> array(
+				array(
+					'name'		=> 'naam',
+					'content'	=> $user['name'],
+				),
+				array(
+					'name'		=> 'voll_naam',
+					'content'	=> $user['fullname'],
+				),
+				array(
+					'name'		=> 'saldo',
+					'content'	=> $user['saldo'],
+				),
+				array(
+					'name'		=> 'letscode',
+					'content'	=> $user['letscode'],
+				),
+				array(
+					'name'		=> 'postcode',
+					'content'	=> $user['postcode'],
+				),
+				array(
+					'name'		=> 'id',
+					'content'	=> $user['id'],
+				),
+				array(
+					'name'		=> 'status',
+					'content'	=> $status_ary[$user['status']],
+				),
+				array(
+					'name'		=> 'min_limiet',
+					'content'	=> $user['minlimit'],
+				),
+				array(
+					'name'		=> 'max_limiet',
+					'content'	=> $user['maxlimit'],
+				),
+				array(
+					'name'		=> 'login',
+					'content'	=> $user['login'],
+				),
+			),
+		);
+	}
+
+	$subject = '['. readconfigfromdb('systemtag') .']' . $mail_subject;
+	$text = str_replace(array('{{', '}}'), array('*|', '|*'), $mail_content);
+
+	$message = array(
+		'subject'		=> $subject,
+		'text'			=> $text,
+		'from_email'	=> $from,
+		'to'			=> $to,
+		'merge_vars'	=> $merge_vars,
+	);
+
+	try
+	{
+		$mandrill = new Mandrill();
+		$mandrill->messages->send($message, true);
+
+		$to_log = ltrim($to_log, ', ');
+
+		log_event($s_id, 'Mail', 'Multi mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
+
+		$alert->success('Mail verzonden.');
+	}
+	catch (Mandrill_Error $e)
+	{
+		// Mandrill errors are thrown as exceptions
+		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
+		$alert->error('Mail fout');
+	}
 }
 
 /**
