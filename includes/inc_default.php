@@ -103,7 +103,7 @@ $s_rights = $_SESSION['rights'];
 $role_ary = array(
 	'admin'		=> 'Admin',
 	'user'		=> 'User',
-	'guest'		=> 'Guest',
+	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
 	'interlets'	=> 'Interlets', 
 );
 
@@ -111,10 +111,11 @@ $status_ary = array(
 	0	=> 'Gedesactiveerd',
 	1	=> 'Actief',
 	2	=> 'Uitstapper',
-	3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
-	4	=> 'Info-pakket',
-	5	=> 'Info-moment',
-	6	=> 'Extern',
+	//3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
+	//4 => 'Secretariaat, // not used 
+	5	=> 'Info-pakket',
+	6	=> 'Info-moment',
+	7	=> 'Extern',
 );
 
 $access_ary = array(
@@ -166,6 +167,14 @@ if ((!isset($allow_anonymous_post) && $s_anonymous && $_SERVER['REQUEST_METHOD']
 	include $rootpath . '403.html';
 	exit;
 }
+
+/*
+ *
+ */
+
+$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
+$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
 
 require_once $rootpath . 'includes/elas_mongo.php';
 
@@ -352,7 +361,7 @@ function readuser($id, $refresh = false)
 	$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
 
 	$elas_mongo->connect();
-	$user += (is_array($ary = $elas_mongo->users->findOne(array('id' => $id)))) ? $ary : array();
+	$user += (is_array($ary = $elas_mongo->users->findOne(array('id' => (int) $id)))) ? $ary : array();
 
 	if (isset($user))
 	{
@@ -420,14 +429,23 @@ function sendemail($from, $to, $subject, $content)
 /*
  *
  */
-function render_select_options($option_ary, $selected)
+function render_select_options($option_ary, $selected, $print = true)
 {
+	$str = '';
+
 	foreach ($option_ary as $key => $value)
 	{
-		echo '<option value="' . $key . '"';
-		echo ($key == $selected) ? ' selected="selected"' : '';
-		echo '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
+		$str .= '<option value="' . $key . '"';
+		$str .= ($key == $selected) ? ' selected="selected"' : '';
+		$str .= '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
 	}
+
+	if ($print)
+	{
+		echo $str;
+	}
+
+	return $str;
 }
 
 /**

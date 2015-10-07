@@ -8,14 +8,11 @@ echo '<html>';
 echo '<head>';
 echo '<title>' . $name .'</title>';
 
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'tinybox/tinybox.css" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">';
-
-echo '<script type="text/javascript" src="/tinybox/tinybox.js"></script>';
 
 if (isset ($includecss))
 {
@@ -27,14 +24,6 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
 echo '<body>';
 
-?>
-<script type='text/javascript'>
-	function OpenTBox(url){
-		TINY.box.show({url:url,width:0,height:0})
-	}
-</script>
-
-<?php
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 

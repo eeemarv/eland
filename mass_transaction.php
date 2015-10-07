@@ -607,7 +607,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function mail_mass_transaction($mail_ary)
 {
-	global $db, $alert, $s_id;
+	global $db, $alert, $s_id, $base_url;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
@@ -621,10 +621,6 @@ function mail_mass_transaction($mail_ary)
 		$alert->warning('Mail from_address_transactions is not set in configuration');
 		return;
 	}
-
-	$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-	$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
-	$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
 
 	$from_many_bool = (is_array($mail_ary['from'])) ? true : false;
 

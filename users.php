@@ -1,6 +1,7 @@
 <?php
 ob_start();
 $rootpath = './';
+$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $id = ($_GET['id']) ?: false;
 $del = ($_GET['del']) ?: false;
@@ -15,12 +16,235 @@ $inline = ($_GET['inline']) ? true : false;
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
 
-$role = ($edit || $del || $add || $pw) ? 'user' : 'guest';
+$role = ($edit || $del || $add || $pw || $post) ? 'user' : 'guest';
+
+if (!$inline)
+{
+	require_once $rootpath . 'includes/inc_passwords.php';
+}
 
 require_once $rootpath . 'includes/inc_default.php';
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 $currency = readconfigfromdb('currency');
+
+/**
+ * bulk actions
+ */
+
+if ($s_admin)
+{
+	$edit_fields_tabs = array(
+		'fullname_access'	=> array(
+			'lbl'		=> 'Zichtbaarheid volledige naam',
+			'options'	=> 'access_options',
+		),
+		'adr_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid adres',
+			'options'	=> 'access_options',
+		),
+		'mail_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid email adres',
+			'options'	=> 'access_options',
+		),
+		'tel_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid telefoonnummer',
+			'options'	=> 'access_options',
+		),
+		'gsm_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid gsmnummer',
+			'options'	=> 'access_options',
+		),
+		'accountrole'		=> array(
+			'lbl'		=> 'Rechten',
+			'options'	=> 'role_ary',
+			'string'	=> true,
+		),
+		'status'			=> array(
+			'lbl'		=> 'Status',
+			'options'	=> 'status_ary',
+		),
+		'admincomment'		=> array(
+			'lbl'		=> 'Commentaar van de admin',
+			'tye'		=> 'text',
+			'string'	=> true,
+		),
+		'minlimit'			=> array(
+			'lbl'		=> 'Minimum limiet saldo',
+			'type'		=> 'number',
+		),
+		'maxlimit'			=> array(
+			'lbl'		=> 'Maximum limiet saldo',
+			'type'		=> 'number',
+		),
+		'cron_saldo'		=> array(
+			'lbl'	=> 'Periodieke overzichtsmail (aan/uit)',
+			'type'	=> 'checkbox',
+		),
+
+		
+	);
+}
+
+if ($post && $s_admin)
+{
+	$field_submit = false;
+
+	$mail_submit = $_POST['mail_submit'];
+	$mail_test = $_POST['mail_test'];
+
+	$selected_users = $_POST['sel'];
+
+	if (!($mail_test || $mail_submit))
+	{
+		foreach ($edit_fields_tabs as $field => $t)
+		{
+			if (isset($_POST[$field . '_submit']))
+			{
+				$field_submit = true;
+				break;
+			}
+		}
+	}
+
+	if ($field_submit || $mail_submit)
+	{
+		$password = ($mail_submit) ? $_POST['mail_password'] : $_POST[$field . '_password'];
+		$value = $_POST[$field];
+
+		$errors = array();
+
+		if (!$password)
+		{
+			$errors[] = 'Vul je paswoord in.';
+		}
+		$password = hash('sha512', $password);
+
+		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
+		{
+			$errors[] = 'Paswoord is niet juist.';
+		}
+	}
+
+	if ($mail_test || $mail_submit)
+	{
+		$mail_subject = $_POST['mail_subject'];
+		$mail_content = $_POST['mail_content'];
+
+		if (!$mail_subject)
+		{
+			$errors[] = 'Gelieve een onderwerp in te vullen voor je mail.';
+		}
+		if (!$mail_content)
+		{
+			$errors[] = 'Het mail bericht is leeg.';
+		}
+		if (!readconfigfromdb('mailenabled'))
+		{
+			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
+		}
+	}
+}
+
+if ($s_admin && ($field_submit || $mail_test || $mail_submit))
+{ 
+	if (!count($selected_users) && !$mail_test)
+	{
+		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
+	}
+
+	if (count($errors))	
+	{
+		$alert->error(implode('<br>', $errors));
+	}
+	else
+	{
+		$user_ids = array_keys($selected_users);
+	}
+}
+
+if ($s_admin && !count($errors) && ($field_submit || $mail_test || $mail_submit))
+{
+	$users_log = '';
+	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
+			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+	foreach ($rows as $row)
+	{
+		$users_log .= ', ' . $row['letscode'] . ' ' . $row['name'] . ' (' . $row['id'] . ')'; 
+	}
+	$users_log = ltrim($users_log, ', ');
+
+	if ($field == 'fullname_access')
+	{
+		$elas_mongo->connect();
+
+		foreach ($user_ids as $user_id)
+		{
+			$elas_mongo->users->update(
+				array('id' => (int) $user_id),
+				array('$set' => array('id' => (int) $user_id, 'fullname_access' => (int) $value)),
+				array('upsert' => true)
+			);
+
+			$redis->del($schema . '_user_' . $user_id);
+		}
+
+		log_event($s_id, 'bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
+		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
+		cancel();
+	}
+	else if (array('cron_saldo' => 1, 'accountrole' => 1, 'status' => 1,
+		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1)[$field])
+	{
+		$type = ($edit_fields_tabs[$field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+
+		$db->executeUpdate('update users set ' . $field . ' = ? where id in (?)',
+			array($value, $user_ids),
+			array($type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+		foreach ($user_ids as $user_id)
+		{
+			$redis->del($schema . '_user_' . $user_id);
+		}
+
+		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		$alert->success('Het veld werd aangepast.');
+		cancel();
+	}
+	else if (array('adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1)[$field])
+	{
+		list($abbrev) = explode('_', $field);
+
+		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', array($abbrev));
+
+		$db->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
+			array($value, $user_ids, $id_type_contact),
+			array(\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT));
+
+		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		$alert->success('Het veld werd aangepast.');
+		cancel();
+	}
+
+/*
+		if ($_POST['mail_test'])
+		{
+
+		}
+		else if ($_POST['mail_submit'])
+		{
+
+		}
+		else
+		{
+			$alert->error('Geen geldige invoer.');
+		}
+	*/
+}
+
+/**
+ * Change password.
+ */
 
 if ($pw)
 {
@@ -167,6 +391,10 @@ if ($pw)
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
 }
+
+/**
+ * delete a user.
+ */
 
 if ($del)
 {
@@ -323,7 +551,7 @@ if ($del)
 				//delete mongo record
 				$elas_mongo->connect();
 				$elas_mongo->users->remove(
-					array('id' => $del),
+					array('id' => (int) $del),
 					array('justOne'	=> true)
 				);
 
@@ -379,7 +607,7 @@ if ($del)
 }
 
 /**
- *
+ * Edit or add a user
  */
 
 if ($add || $edit)
@@ -620,12 +848,14 @@ if ($add || $edit)
 
 					$elas_mongo->connect();
 					$elas_mongo->users->update(array(
-						'id'				=> $id,
-						), array(
-						'id'				=> $id,
-						'fullname_access'	=> $fullname_access,
-						), array(
-						'upsert'			=> true,
+						'id'		=> (int) $id),
+						array(
+							'$set' => array(
+								'id'				=> (int) $id,
+								'fullname_access'	=> (int) $fullname_access,
+							)),
+						array(
+						'upsert'	=> true,
 					));
 
 					$alert->success('Gebruiker opgeslagen.');
@@ -688,12 +918,16 @@ if ($add || $edit)
 				{
 					$elas_mongo->connect();
 					$elas_mongo->users->update(array(
-						'id'				=> $edit,
-						), array(
-						'id'				=> $edit,
-						'fullname_access'	=> $fullname_access,
-						), array(
-						'upsert'			=> true,
+							'id'	=> (int) $edit,
+						),
+						array(
+							'$set'	=> array(
+								'id'				=> (int) $edit,
+								'fullname_access'	=> (int) $fullname_access,
+							),
+						),
+						array(
+							'upsert'			=> true,
 					));
 
 					readuser($edit, true);
@@ -821,13 +1055,17 @@ if ($add || $edit)
 				'maxlimit'		=> readconfigfromdb('maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
-				'cron_saldo'	=> 't',
+				'cron_saldo'	=> 1,
 			);
 		}
 	}
 
 	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
+
+	$top_buttons .= '<a href="' . $rootpath . 'users.php" class="btn btn-default"';
+	$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -1079,7 +1317,7 @@ if ($add || $edit)
 }
 
 /*
- *
+ * Show a user
  */
 
 if ($id)
@@ -1252,7 +1490,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Periodieke Saldo mail met recent vraag en aanbod';
 		echo '</dt>';
-		dd_render(($user['cron_saldo'] == 't') ? 'Aan' : 'Uit');
+		dd_render(($user['cron_saldo']) ? 'Aan' : 'Uit');
 		echo '</dl>';
 	}
 
@@ -1285,7 +1523,7 @@ if ($id)
 }
 
 /*
- *
+ * List all users
  */
 
 $st = array(
@@ -1447,6 +1685,8 @@ foreach ($st as $k => $s)
 echo '</ul>';
 echo '<input type="hidden" value="" id="combined-filter">';
 
+echo '<form method="post" class="form-horizontal">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable csv"';
 echo ' data-filter="#combined-filter" data-filter-minimum="1">';
@@ -1496,7 +1736,12 @@ foreach($users as $u)
 	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
 	echo '<td>';
-	echo '<input type="checkbox" name="sel[' . $id . ']" value="1">&nbsp;';
+	if ($s_admin)
+	{
+		echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
+		echo ($selected_users[$id]) ? ' checked="checked"' : '';
+		echo '>&nbsp;';
+	}
 	echo link_user($u, 'letscode');
 	echo '</td>';
 
@@ -1581,6 +1826,7 @@ foreach($users as $u)
 }
 echo '</tbody>';
 echo '</table>';
+echo '</div>';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
@@ -1589,74 +1835,124 @@ echo '</div></div>';
 
 if ($s_admin)
 {
-	$tabs = array(
-		'mail'	=> array(
-			'active'	=> true,
-			'lbl'		=> 'Mail',
-		),
-		'field'	=> array(
-			'lbl'		=> 'Veld aanpassen',
-			'dropdown'	=> array(
-				'fullname_access'	=> array(
-					'lbl'	=> 'Zichtbaarheid volledige naam',
-				),
-				'adr_access'		=> array(
-					'lbl'	=> 'Zichtbaarheid adres',
-				),
-				'mail_access'		=> array(
-					'lbl'	=> 'Zichtbaarheid email adres',
-				),
-				'tel_access'		=> array(
-					'lbl'	=> 'Zichtbaarheid telefoon nummer',
-				),
-				'saldo_mail'		=> array(
-					'lbl'	=> 'Periodieke overzichtsmail (aan/uit)',
-				),
-				'accountrole'		=> array(
-					'lbl'	=> 'Rechten',
-				),
-				'status'			=> array(
-					'lbl'	=> 'Status',
-				),
-			),
-		),
-	);
+	$inp =  '<div class="form-group">';
+	$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
+	$inp .=  '<div class="col-sm-10">';
+	$inp .=  '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
+	$inp .=  '</div>';
+	$inp .=  '</div>';
 
+	$acc_sel = '<div class="form-group">';
+	$acc_sel .= '<label for="%1$s" class="col-sm-2 control-label">';
+	$acc_sel .= '%2$s</label>';
+	$acc_sel .= '<div class="col-sm-10">';
+	$acc_sel .= '<select name="%1$s" id="%1$s" class="form-control">';
+	$acc_sel .= '%3$s';
+	$acc_sel .= '</select>';
+	$acc_sel .= '</div>';
+	$acc_sel .= '</div>';
 
 	echo '<div class="panel panel-default" id="actions">';
 	echo '<div class="panel-heading">';
-	echo '<button class="btn btn-default" id="select_all">Selecteer alle</button>&nbsp;';
-	echo '<button class="btn btn-default" id="deselect_all">De-selecteer alle</button>';
+	echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
+	echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
 	echo '</div></div>';
-	echo '<h3>Acties met geselecteerde gebruikers</h3>';	
+	echo '<h3>Acties met geselecteerde gebruikers</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<ul class="nav nav-tabs">';
-	echo '<li class="active"><a href="#">Mail</a></li>';
+	echo '<ul class="nav nav-tabs" role="tablist">';
+	echo '<li class="active"><a href="#mail_tab" data-toggle="tab">Mail</a></li>';
 	echo '<li class="dropdown">';
 	echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu">';
-	echo '<li><a href="#">Zichtbaarheid volledige naam</a></li>';
-	echo '<li><a href="#">Zichtbaarheid adres</a></li>';
-	echo '<li><a href="#">Zichtbaarheid email</a></li>';
-	echo '<li><a href="#">Zichtbaarheid gsm</a></li>';
-	echo '<li><a href="#">Zichtbaarheid telefoon</a></li>';
-	echo '<li><a href="#">Periodieke overzichtsmail (aan/uit)</a></li>';
-	echo '<li><a href="#">Rechten</a></li>';
-	echo '<li><a href="#">Status</a></li>';
+	foreach ($edit_fields_tabs as $k => $t)
+	{
+		echo '<li><a href="#' . $k . '_tab" data-toggle="tab">' . $t['lbl'] . '</a></li>';
+	}
 	echo '</ul>';
 	echo '</li>';
 	echo '</ul>';
 
+	echo '<div class="tab-content">';
+
+	echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
+	echo '<h3>Mail verzenden naar geselecteerde gebruikers</h3>';
+
+	echo '<div class="form-group">';
+	echo '<div class="col-sm-12">';
+	echo '<input type="text" class="form-control" id="mail_subject" name="mail_subject" ';
+	echo 'placeholder="Onderwerp" ';
+	echo 'value="' . $mail_subject . '">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<div class="col-sm-12">';
+	echo '<textarea name="mail_content" class="form-control" id="mail_content" rows="16">';
+	echo $mail_content;
+	echo '</textarea>';
+	echo '</div>';
+	echo '</div>';
+
+	echo sprintf($inp, 'mail_password', 'Paswoord', 'password', 'class="form-control"', 'mail_password');
+
+	echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
+	echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
+	echo '<p>*Om een test mail te verzenden moet je je paswoord niet invullen.</p>';
+	echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
+	echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
+	echo '<div class="table-responsive collapse" id="mail_variables">';
+	echo '<table class="table table-bordered table-hover" data-sort="false">';
+
+	echo '<tbody>';
+	echo '<tr><td>{{letscode}}</td><td>Letscode</td></tr>';
+	echo '<tr><td>{{name}}</td><td>Gebruikersnaam</td></tr>';
+	echo '<tr><td>{{fullname}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
+	echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
+	echo '<tr><td>{{login}}</td><td>Login</td></tr>';
+	echo '<tr><td>{{saldo}}</td><td>Huidige saldo in ' . $currency . '</td></tr>';
+	echo '</body>';
+	echo '</table>';
+
+	echo '</div>';
+	echo '</div>';
+
+	foreach($edit_fields_tabs as $k => $t)
+	{
+		echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab">';
+		echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
+
+		if ($options = $t['options'])
+		{
+			echo sprintf($acc_sel, $k, $t['lbl'], render_select_options($$options, 0, false));
+		}
+		else if ($t['type'] == 'checkbox')
+		{
+			echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
+		}
+		else
+		{
+			echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
+		}
+
+		echo sprintf($inp, $k . '_password', 'Paswoord', 'password', 'class="form-control"', $k . '_password');
+
+		echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
+
+		echo '</div>';
+	}
+
+	echo '<div class="clearfix"></div>';
+	echo '</div>'; 
 	echo '</div>';
 	echo '</div>';
 }
 
 echo '</div>';
-echo '</div>';
-echo '</div>';
+
+echo '</form>';
 
 include $rootpath . 'includes/inc_footer.php';
 
@@ -1738,171 +2034,4 @@ function sendadminmail($user)
 	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
 	sendemail($from, $to, $subject, $content);
-}
-
-function password_strength($password, $username = null)
-{
-    if (!empty($username))
-    {
-        $password = str_replace($username, '', $password);
-    }
-
-    $strength = 0;
-    $password_length = strlen($password);
-
-    if ($password_length < 5)
-    {
-        return $strength;
-    }
-    else
-    {
-        $strength = $password_length * 9;
-    }
-
-    for ($i = 2; $i <= 4; $i++)
-    {
-        $temp = str_split($password, $i);
-
-        $strength -= (ceil($password_length / $i) - count(array_unique($temp)));
-    }
-
-    preg_match_all('/[0-9]/', $password, $numbers);
-
-    if (!empty($numbers))
-    {
-        $numbers = count($numbers[0]);
-
-        if ($numbers >= 1)
-        {
-            $strength += 8;
-        }
-    }
-    else
-    {
-        $numbers = 0;
-    }
-
-    preg_match_all('/[|!@#$%&*\/=?,;.:\-_+~^¨\\\]/', $password, $symbols);
-
-    if (!empty($symbols))
-    {
-        $symbols = count($symbols[0]);
-
-        if ($symbols >= 1)
-        {
-            $strength += 8;
-        }
-    }
-    else
-    {
-        $symbols = 0;
-    }
-
-    preg_match_all('/[a-z]/', $password, $lowercase_characters);
-    preg_match_all('/[A-Z]/', $password, $uppercase_characters);
-
-    if (!empty($lowercase_characters))
-    {
-        $lowercase_characters = count($lowercase_characters[0]);
-    }
-    else
-    {
-        $lowercase_characters = 0;
-    }
-
-    if (!empty($uppercase_characters))
-    {
-        $uppercase_characters = count($uppercase_characters[0]);
-    }
-    else
-    {
-        $uppercase_characters = 0;
-    }
-
-    if (($lowercase_characters > 0) && ($uppercase_characters > 0))
-    {
-        $strength += 10;
-    }
-
-    $characters = $lowercase_characters + $uppercase_characters;
-
-    if (($numbers > 0) && ($symbols > 0))
-    {
-        $strength += 15;
-    }
-
-    if (($numbers > 0) && ($characters > 0))
-    {
-        $strength += 15;
-    }
-
-    if (($symbols > 0) && ($characters > 0))
-    {
-        $strength += 15;
-    }
-
-    if ($strength < 0)
-    {
-        $strength = 0;
-    }
-
-    if ($strength > 100)
-    {
-        $strength = 100;
-    }
-
-    return $strength;
-}
-
-function sendactivationmail($password, $user)
-{
-	global $baseurl, $s_id, $alert;
-	
-	$from = readconfigfromdb("from_address");
-
-	if (!empty($user['mail']))
-	{
-		$to = $user['mail'];
-	}
-	else
-	{
-		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
-		return 0;
-	}
-
-	$systemtag = readconfigfromdb('systemtag');
-	$systemletsname = readconfigfromdb('systemname');
-	$subject = "[eLAS-";
-	$subject .= $systemtag;
-	$subject .= "] eLAS account activatie voor $systemletsname";
-
-	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
-	$content .= $systemtag;
-	$content .= " ***\r\n\n";
-	$content .= "Beste ";
-	$content .= $user["name"];
-	$content .= "\n\n";
-
-	$content .= "Welkom bij Letsgroep $systemletsname";
-	$content .= '. Surf naar http://' . $baseurl;
-	$content .= " en meld je aan met onderstaande gegevens.\n";
-	$content .= "\n-- Account gegevens --\n";
-	$content .= "Login: ";
-	$content .= $user["login"]; 
-	$content .= "\nPasswoord: ";
-	$content .= $password;
-	$content .= "\n-- --\n\n";
-
-	$content .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
-	$content .= " zelf bijwerken op het Internet.";
-	$content .= "\n\n";
-
-	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-	$content .= readconfigfromdb('support');
-	$content .= "\n\n";
-	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
-
-	sendemail($from,$to,$subject,$content);
-
-	log_event($s_id, 'Mail', 'Activation mail sent to ' . $to);
 }
