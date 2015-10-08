@@ -1714,12 +1714,8 @@ if ($s_admin)
 	$top_buttons .= ' title="Gebruiker toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 
-	$top_buttons .= '<a href="' . $rootpath . 'users/saldomail.php" class="btn btn-default"';
-	$top_buttons .= ' title="Saldo mail aan/uitzetten"><i class="fa fa-envelope-o"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Saldo mail</span></a>';
-
 	$top_buttons .= '<a href="#actions" class="btn btn-default"';
-	$top_buttons .= ' title="Acties"><i class="fa fa-cog"></i>';
+	$top_buttons .= ' title="Acties"><i class="fa fa-envelope-o"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Acties</span></a>';
 
 	$h1 = 'Gebruikers';

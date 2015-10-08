@@ -322,13 +322,19 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<dl>';
+	
+
+
 	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<h3>Bericht</h3>';
+	echo '</div>';
 	echo '<div class="panel-body">';
 	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
 	echo '</div>';
-	echo '</div>';
-
+	echo '<div class="panel-heading">';
+	
+	echo '<dl>';
 	echo '<dt>Agendadatum</dt>';
 	list($itemdate) = explode(' ', $news['itemdate']);
 	echo '<dd>' . $itemdate . '</dd>';
@@ -341,16 +347,22 @@ if ($id)
 	echo link_user($news['id_user']);
 	echo '</dd>';
 
-	echo '<dt>Goedgekeurd</dt>';
-	echo '<dd>';
-	echo ($news['approved']) ? 'Ja' : 'Nee';
-	echo '</dd>';
+	if ($s_admin)
+	{
+		echo '<dt>Goedgekeurd</dt>';
+		echo '<dd>';
+		echo ($news['approved']) ? 'Ja' : 'Nee';
+		echo '</dd>';
 
-	echo '<dt>Behoud na datum?</dt>';
-	echo '<dd>';
-	echo ($news['sticky']) ? 'Ja' : 'Nee';
-	echo '</dd>';
-	echo '</dl>';
+		echo '<dt>Behoud na datum?</dt>';
+		echo '<dd>';
+		echo ($news['sticky']) ? 'Ja' : 'Nee';
+		echo '</dd>';
+		echo '</dl>';
+	}
+
+	echo '</div>';
+	echo '</div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;

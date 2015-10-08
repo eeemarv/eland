@@ -10,6 +10,7 @@ $edit = ($_GET['edit']) ?: false;
 $add = ($_GET['add']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
 $uid = ($_GET['uid']) ?: false;
+$extend = ($_GET['extend']) ?: false;
 
 $upload = ($_FILES['files']) ?: null;
 
@@ -37,6 +38,27 @@ if ($id || $edit || $del)
 			AND c.id = m.id_category', array($id));
 
 	$s_owner = ($s_id == $message['id_user']) ? true : false;
+
+	if ($msg['local'] && $s_guest)
+	{
+		$alert->error('Je hebt geen toegang tot dit bericht.');
+		cancel();
+	}
+
+	$ow_type = ($msg['msg_type']) ? 'aanbod' : 'vraag';
+	$ow_type_this = ($msg['msg_type']) ? 'dit aanbod' : 'deze vraag';
+	$ow_type_the = ($msg['msg_type']) ? 'het aanbod' : 'de vraag';
+	$ow_type_uc = ucfirst($ow_type);
+}
+
+if ($post)
+{
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
+	));
+	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 }
 
 if($post && $upload & $id
@@ -46,13 +68,6 @@ if($post && $upload & $id
 {
 	$ret_ary = array();
 
-	$s3 = Aws\S3\S3Client::factory(array(
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	));
-	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
-	
 	foreach($upload['tmp_name'] as $index => $value)
 	{
 		$tmpfile = $upload['tmp_name'][$index];
@@ -115,9 +130,7 @@ if ($mail && $post && $id)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', array($s_id));
 
-	$va = ($message['msg_type']) ? 'aanbod' : 'vraag';
-
-	$subject = '[eLAS-' . $systemtag . '] - Reactie op je ' . $va . ' ' . $message['content'];
+	$subject = '[eLAS-' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
 
 	if($cc)
 	{
@@ -125,7 +138,7 @@ if ($mail && $post && $id)
 	}
 
 	$mailcontent = 'Beste ' . $user['name'] . "\r\n\n";
-	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $va . " verstuurd via eLAS --\r\n\n";
+	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $ow_type . " verstuurd via eLAS --\r\n\n";
 	$mailcontent .= $content . "\n\n";
 	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
 	$mailcontent .= 'Contactgegevens van ' . $me['name'] . ":\n";
@@ -156,13 +169,106 @@ if ($mail && $post && $id)
 	cancel($id);
 }
 
-
-if ($del && !$s_guest)
+/*
+ * delete
+ */
+if ($del)
 {
+	if (!($s_owner || $s_admin))
+	{
+		$alert->warning('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
+		cancel($del);
+	}
 
+	if($submit)
+	{
+		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', array($del));
+		foreach($pictures as $value)
+		{
+			$s3->deleteObject(array(
+				'Bucket' => $bucket,
+				'Key'    => $value['PictureFile'],
+			));
+		}
+
+		$db->delete('msgpictures', array('msgid' => $del));
+
+		if ($db->delete('messages', array('id' => $del)))
+		{
+			$column = 'stat_msgs_';
+			$column .= ($message['msg_type']) ? 'offers' : 'wanted';
+
+			$db->executeUpdate('update categories
+				set ' . $column . ' = ' . $column . ' - 1
+				where id = ?', array($message['id_category']));
+
+			$alert->success(ucfirst($ow_type_this) . ' is verwijderd.');
+			cancel();
+		}
+
+		$alert->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
+	}
+
+	$h1 = ucfirst($ow_type_this);
+	$h1 .= ' <a href="' . $rootpath . 'messages.php?id=' . $del . '">';
+	$h1 .= htmlspecialchars($message['content'], ENT_QUOTES) . '</a>';
+	$h1 .= ' verwijderen?';
+	$fa = 'newspaper-o';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info">';
+
+	echo '<div class="panel-heading">';
+
+	echo '<dl>';
+
+	echo '<dt>Wie</dt>';
+	echo '<dd>';
+	echo link_user($message['id_user']);
+	echo '</dd>';
+
+	echo '<dt>Categorie</dt>';
+	echo '<dd>';
+	echo htmlspecialchars($message['catname'], ENT_QUOTES);
+	echo '</dd>';
+
+	echo '<dt>Geldig tot</dt>';
+	echo '<dd>';
+	echo $message['validity'];
+	echo '</dd>';
+	echo '</dl>';
+
+	echo '</div>';
+
+	echo '<div class="panel-body">';
+	echo htmlspecialchars($message['Description'], ENT_QUOTES);
+	echo '</div>';
+
+	echo '<div class="panel-heading">';
+	echo '<h3>';
+	echo '<span class="danger">';
+	echo 'Ben je zeker dat ' . $ow_type_this;
+	echo ' moet verwijderd worden?</span>';
+
+	echo '</h3>';
+
+	echo '<form method="post">';
+	echo '<a href="' . $rootpath . 'messages.php?id=' . $del . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo "</form></p>";
+
+	echo '</div>';
+	echo '</div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
 }
 
-if (($edit || $add) && !$s_guest)
+/*
+ * edit - add
+ */
+if (($edit || $add))
 {
 	if (!($s_admin || $s_user) && $add)
 	{
@@ -172,7 +278,7 @@ if (($edit || $add) && !$s_guest)
 
 	if (!($s_admin || $s_owner) && $edit)
 	{
-		$alert->error('Je hebt onvoldoende rechten om dit vraag of aanbod aan te passen.');
+		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
 		cancel($edit);
 	}
 
@@ -209,6 +315,7 @@ if (($edit || $add) && !$s_guest)
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
+			'local'			=> ($_POST['local']),
 		);
 
 		if (!$msg['id_category'])
@@ -289,8 +396,6 @@ if (($edit || $add) && !$s_guest)
 				unset($msg['amount']);
 			}
 
-			error_log(implode(' ----- ', $msg));
-
 			$db->beginTransaction();
 
 			try
@@ -359,6 +464,7 @@ if (($edit || $add) && !$s_guest)
 			'id_category'	=> '',
 			'amount'		=> '',
 			'units'			=> '',
+			'local'			=> 0,
 		);
 
 		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : $s_id;
@@ -481,8 +587,17 @@ if (($edit || $add) && !$s_guest)
 	echo '</div>';
 	echo '</div>';
 
+	echo '<div class="form-group">';
+	echo '<label for="local" class="col-sm-2 control-label">Zichtbaarheid</label>';
+	echo '<div class="col-sm-10">';
+	echo '<select name="local" id="local" class="form-control" required>';
+	render_select_options(array('1' => 'leden', '0' => 'interlets'), $msg['local']);
+	echo "</select>";
+	echo '</div>';
+	echo '</div>';
+
 	$btn = ($edit) ? 'primary' : 'success';
-	echo '<a href="' . $rootpath . 'userdetails/mymsg_overview.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<a href="' . $rootpath . 'messages.php" class="btn btn-default">Annuleren</a>&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -541,12 +656,12 @@ if ($id)
 		{
 			$top_buttons .= '<a href="' . $rootpath . 'messages.php?edit=' . $id . '" ';
 			$top_buttons .= 'class="btn btn-primary"';
-			$top_buttons .= ' title="Vraag of aanbod aanpassen"><i class="fa fa-pencil"></i>';
+			$top_buttons .= ' title="' . $ow_type_uc . ' aanpassen"><i class="fa fa-pencil"></i>';
 			$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
 
 			$top_buttons .= '<a href="' . $rootpath . 'messages.php?del=' . $id . '" ';
 			$top_buttons .= 'class="btn btn-danger"';
-			$top_buttons .= ' title="Vraag of aanbod verwijderen"><i class="fa fa-times"></i>';
+			$top_buttons .= ' title="' . $ow_type_uc . ' verwijderen"><i class="fa fa-times"></i>';
 			$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
 		}
 
@@ -566,11 +681,11 @@ if ($id)
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 	}
 
-	$h1 = ($message['msg_type']) ? 'Aanbod' : 'Vraag';
+	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
 	$fa = 'newspaper-o';
 
-	include $rootpath.'includes/inc_header.php';
+	include $rootpath . 'includes/inc_header.php';
 
 	echo '<div class="row">';
 
@@ -624,27 +739,28 @@ if ($id)
 	{
 		echo '<div class="col-md-12">';
 		echo '<div id="slider1_container"></div>';
-		$str = ($message['msg_type']) ? ' dit aanbod' : ' deze vraag';
-		echo '<p>Er zijn geen afbeeldingen voor ' . $str . '.</p>';
+		echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '.</p>';
 		echo $add_img;
-	}	
+	}
 
 	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<h3>Omschrijving</h3>';
+	echo '</div>';
 	echo '<div class="panel-body">';
-
-	if (!empty($message['Description']))
+	echo '<p>';
+	if ($message['Description'])
 	{
-		echo nl2br(htmlspecialchars($message['Description'],ENT_QUOTES));
+		echo htmlspecialchars($message['Description'],ENT_QUOTES);
 	}
 	else
 	{
 		echo '<i>Er werd geen omschrijving ingegeven.</i>';
 	}
-
+	echo '</p>';
 	echo '</div>';
-	echo '</div>';
-
-	echo '<dl class="dl-horizontal">';
+	echo '<div class="panel-footer">';
+	echo '<dl>';
 	echo '<dt>';
 	echo '(Richt)prijs';
 	echo '</dt>';
@@ -669,7 +785,15 @@ if ($id)
 	echo '<dt>Geldig tot</dt>';
 	echo '<dd>' . $message['validity'] . '</dd>';
 
+	$access = $acc_ary[($message['local']) ? 1 : 2];
+
+	echo '<dt>Zichtbaarheid</dt>';
+	echo '<dd><span class="label label-' . $access[1] . '">' . $access[0] . '</span></dd>';
+
 	echo '</dl>';
+
+	echo '</div>';
+	echo '</div>'; // panel
 
 	echo '</div>'; //col-md-6
 	echo '</div>'; //row
@@ -677,6 +801,26 @@ if ($id)
 	echo '<div id="contacts" data-uid="' . $message['id_user'] . '"></div>';
 
 	// response form
+
+	if ($s_guest)
+	{
+		$placeholder = 'Als gast kan je niet het reactieformulier gebruiken.';
+	}
+	else if ($s_owner)
+	{
+		$placeholder = 'Je kan geen reacties op je eigen berichten sturen.';
+	}
+	else if ($to)
+	{
+		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+	}
+	else
+	{
+		$placeholder = '';
+	}
+
+	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
+	echo  link_user($message['id_user']) . '</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
@@ -684,7 +828,7 @@ if ($id)
 
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
-	echo '<textarea name="content" rows="6" placeholder="Je reactie naar ' . $user['name'] . '" ';
+	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
 	if(empty($to) || $s_guest || $s_owner)
 	{
@@ -721,7 +865,9 @@ if ($id)
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
 $sql_and_where = ($uid) ? ' and u.id = ? ' : '';
-$sql_params = ($uid) ? array($uid) : array();
+$sql_params = ($uid) ? array($uid) : array(); 
+
+$sql_and_where .= ($s_guest) ? ' and local = false ' : '';
 
 $msgs = $db->fetchAll('select m.*,
 		u.postcode
@@ -911,11 +1057,17 @@ if (!$uid)
 echo '<th data-hide="phone, tablet">Categorie</th>';
 echo '<th data-hide="phone, tablet">Geldig tot</th>';
 
+if (!$s_guest)
+{
+	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+}
+
 if ($s_admin)
 {
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true">';
 	echo '[Admin] Verlengen</th>';
 }
+
 echo '</tr>';
 echo '</thead>';
 
@@ -960,6 +1112,12 @@ foreach($msgs as $msg)
 	echo '<td>';
 	echo $msg['validity'];
 	echo '</td>';
+
+	if (!$s_guest)
+	{
+		$access = $acc_ary[($message['local']) ? 1 : 2];
+		echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+	}
 
 	if ($s_admin)
 	{

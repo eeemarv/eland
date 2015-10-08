@@ -388,6 +388,9 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
@@ -441,6 +444,8 @@ if ($id)
 	echo '</dd>';
 
 	echo '</dl>';
+
+	echo '</div></div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;

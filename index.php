@@ -104,20 +104,13 @@ if($s_guest)
 
 if($news)
 {
+	echo '<h3><i class="fa fa-calendar"></i> ';
+	echo '<a href="' . $rootpath . 'news.php">Nieuws</a></h3>';	
+
 	echo '<div class="panel panel-warning">';
-	echo '<div class="panel-heading"><i class="fa fa-calendar"></i> ';
-	echo '<a href="' . $rootpath . 'news.php">Nieuws</a></div>';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-hover table-bordered footable">';
-
-	echo '<thead>';
-	echo '<tr>';
-	echo '<th>Titel</th>';
-	echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
-	echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
-	echo '</tr>';
-	echo '</thead>';
+	echo '<table class="table table-striped table-hover table-bordered">';
 
 	echo '<tbody>';
 	foreach ($news as $value)
@@ -153,21 +146,14 @@ if($news)
 
 if($newusers)
 {
+	echo '<h3><i class="fa fa-users"></i> ';
+	echo '<a href="' . $rootpath . 'users.php">Nieuwe leden</a></h3>';
+
 	echo '<div class="panel panel-success">';
-	echo '<div class="panel-heading"><i class="fa fa-users"></i> ';
-	echo '<a href="' . $rootpath . 'users.php">Nieuwe leden</a></div>';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-bordered table-striped table-hover footable"';
-	echo ' data-filter="#filter" data-filter-minimum="1">';
-	echo '<thead>';
+	echo '<table class="table table-bordered table-striped table-hover">';
 
-	echo '<tr>';
-	echo '<th data-sort-initial="true">Code</th>';
-	echo '<th data-filter="#filter">Naam</th>';
-	echo '</tr>';
-
-	echo '</thead>';
 	echo '<tbody>';
 
 	foreach($newusers as $u)
@@ -176,15 +162,8 @@ if($newusers)
 
 		echo '<tr class="success">';
 
-		echo '<td>';
-		echo '<a href="' . $rootpath . 'users.php?id=' . $id .'">';
-		echo $u['letscode'];
-		echo '</a></td>';
-		
-		echo '<td>';
-		echo '<a href="' . $rootpath . 'users.php?id=' . $id .'">';
-		echo htmlspecialchars($u['name'],ENT_QUOTES).'</a>';
-		echo '</td>';
+		echo '<td>' . link_user($id) . '</td>';
+
 		echo '</tr>';
 	}
 	echo '</tbody>';
@@ -195,15 +174,15 @@ if($newusers)
 
 if($msgs)
 {
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
+	echo '<h3>';
 	echo '<i class="fa fa-newspaper-o"></i> ';
 	echo '<a href="' . $rootpath . 'messages.php">Recent vraag en aanbod</a>';
-	echo '</div>';
+	echo '</h3>';
+
+	echo '<div class="panel panel-info">';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable"';
-	echo ' data-filter="#filter" data-filter-minimum="1">';
+	echo '<table class="table table-hover table-striped table-bordered footable">';
 	echo '<thead>';
 	echo '<tr>';
 	echo '<th>V/A</th>';
@@ -226,7 +205,7 @@ if($msgs)
 		echo '>';
 		echo '<td>';
 
-		echo ($msg["msg_type"]) ? 'A' : 'V';
+		echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 		echo '</td>';
 
 		echo '<td>';

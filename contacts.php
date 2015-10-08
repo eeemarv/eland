@@ -106,11 +106,14 @@ if ($edit || $add)
 	{
 		if (!($uid = $db->fetchColumn('select id_user from contact where id = ?', array($edit))))
 		{
+			$alert->error('Dit contact heeft geen eigenaar.');
 			cancel();
 		}
 	}
 
-	if (!($s_admin || $uid == $s_id))
+	$s_owner = ($uid == $s_id) ? true : false;
+
+	if (!($s_admin || $s_owner))
 	{
 		$err = ($edit) ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
 		$alert->error('Je hebt geen rechten om ' . $err);
@@ -188,7 +191,7 @@ if ($edit || $add)
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
-	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($uid);
+	$h1 .= ($s_owner && !$s_admin) ? '' : ' voor ' . link_user($uid);
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -268,7 +271,7 @@ if ($uid)
 
 	if (!$inline)
 	{
-		$h1 = ($s_owner) ? 'Mijn contacten' : 'Contacten Gebruiker ' . $user['letscode'] . ' ' . $user['name'];
+		$h1 = ($s_owner) ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user);
 		$fa = 'map-marker';
 
 		include $rootpath . 'includes/inc_header.php';
@@ -279,7 +282,7 @@ if ($uid)
 		echo '<div class="row">';
 		echo '<div class="col-md-12">';
 
-		echo '<h3><i class="fa fa-map-marker"></i> Contactinfo ';
+		echo '<h3><i class="fa fa-map-marker"></i> Contactinfo van ' . link_user($user) . ' ';
 		echo $top_buttons;
 		echo '</h3>';
 	}

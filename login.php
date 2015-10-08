@@ -22,7 +22,6 @@ $location = ($location == 'login.php') ? 'index.php' : $location;
 $location = ($location == 'logout.php') ? 'index.php' : $location;
 $error_location = 'login.php?location=' . urlencode($location);
 
-// Verify the token first and redirect to index if it is valid
 if(!empty($token))
 {
 	$query = 'select token
