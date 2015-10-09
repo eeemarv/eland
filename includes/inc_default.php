@@ -219,7 +219,7 @@ $elas_heroku_config = array(
 	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
 	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
 	'docs_en'					=> array('0', 'Documenten ingeschakeld [0, 1]'),
-	'css'						=> array('', 'Extra stijl: url van extra .css bestand'),
+	'css'						=> array('', 'Extra stijl: url van .css bestand'),
 );
 
 $top_right = '';
@@ -463,4 +463,14 @@ function link_user($user, $render = null, $link = true)
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = htmlspecialchars($str, ENT_QUOTES);
 	return ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
+}
+
+/**
+ *
+ */
+function redirect_index()
+{
+	global $rootpath;
+	header ('Location: ' . $rootpath . 'index.php');
+	exit;
 }

@@ -14,6 +14,12 @@ $edit = ($_GET['edit']) ?: false;
 
 $submit = ($_POST['zend']) ? true : false;
 
+if (!readconfigfromdb('forum_en'))
+{
+	$alert->error('De forum pagina is niet ingeschakeld.');
+	redirect_index();
+}
+
 if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;

@@ -21,6 +21,12 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
+if (!readconfigfromdb('docs_en'))
+{
+	$alert->error('De documenten pagina is niet ingeschakeld.');
+	redirect_index();
+}
+
 if ($post)
 {
 	$s3 = Aws\S3\S3Client::factory(array(
@@ -305,7 +311,7 @@ if ($submit)
 
 		$doc_id = new MongoId();
 
-		$filename = $schema . '_d_' . $doc_id) . '.' . $ext;
+		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
 
 		$doc = array(
 			'_id' 			=> $doc_id,

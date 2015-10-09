@@ -156,8 +156,14 @@ else
 		$menu['interlets/userview.php'] = array('share-alt', 'Interlets');
 	}
 
-	$menu['docs.php'] = array('files-o', 'Documenten');
-	$menu['forum.php'] = array('comments-o', 'Forum');
+	if (readconfigfromdb('docs_en'))
+	{
+		$menu['docs.php'] = array('files-o', 'Documenten');
+	}
+	if (readconfigfromdb('forum_en'))
+	{
+		$menu['forum.php'] = array('comments-o', 'Forum');
+	}
 
 	if ($s_user || $s_admin)
 	{
