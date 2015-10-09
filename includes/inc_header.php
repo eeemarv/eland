@@ -19,6 +19,11 @@ if (isset ($includecss))
 	echo $includecss;
 }
 
+if ($css = readconfigfromdb('css'))
+{
+	echo '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
+} 
+
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';

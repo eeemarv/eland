@@ -272,6 +272,7 @@ if ($submit)
 		'image/tiff'				=> 1,
 		'text/plain'				=> 1,
 		'text/rtf'					=> 1,
+		'text/css'					=> 1,
 		'application/msword'		=> 1,
 		'application/zip'			=> 1,
 		'audio/mpeg'				=> 1,
@@ -304,7 +305,7 @@ if ($submit)
 
 		$doc_id = new MongoId();
 
-		$filename = $schema . '_d_' . $doc_id . '_' . sha1(time() . mt_rand(0, 1000000)) . '.' . $ext;
+		$filename = $schema . '_d_' . $doc_id) . '.' . $ext;
 
 		$doc = array(
 			'_id' 			=> $doc_id,

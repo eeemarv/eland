@@ -92,12 +92,11 @@ if($s_guest)
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
-	echo 'Welkom bij de eLAS installatie van ' . $systemname;
+	echo 'Welkom bij ' . $systemname;
 	echo '</div>';
 	echo '<div class="panel-body">';
 	echo 'Je bent ingelogd als LETS-gast, je kan informatie ';
-	echo 'raadplegen maar niets wijzigen of transacties invoeren.  ';
-	echo 'Als gast kan je ook niet rechtstreeks reageren op V/A of andere mails versturen uit eLAS';
+	echo 'raadplegen maar niets wijzigen of transacties invoeren. ';
 	echo '</div>';
 	echo '</div>';
 }
