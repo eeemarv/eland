@@ -581,7 +581,10 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 		$lastrun_ary = $db->GetAssoc('select cronjob, lastrun from cron');
 	}
 
-	if (!((time() - $interval > ((isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) : 0)) & ($enabled || !isset($enabled))))
+	$time = time();
+	$lastrun = (isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) . ' UTC' : 0;
+
+	if (!((($time - $interval) > $lastrun) & ($enabled || !isset($enabled))))
 	{
 		echo '+++ Cronjob: ' . $name . ' not running. +++' . $r;
 		return;
@@ -591,9 +594,11 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	$updated = call_user_func($name);
 
+	$lastrun = ($interval > 86400) ? $lastrun + $interval : $time;
+
 	if (isset($lastrun_ary[$name]))
 	{
-		$db->Execute('update cron set lastrun = \'' . gmdate('Y-m-d H:i:s') . '\' where cronjob = \'' . $name . '\'');
+		$db->Execute('update cron set lastrun = \'' . gmdate('Y-m-d H:i:s', $lastrun) . '\' where cronjob = \'' . $name . '\'');
 	}
 	else
 	{
