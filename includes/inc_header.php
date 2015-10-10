@@ -40,10 +40,10 @@ echo '<span class="icon-bar"></span>';
 echo '<span class="icon-bar"></span>';
 echo '</button>';
 
-echo '<a class="navbar-brand" href="' . $rootpath . 'index.php">';
-echo '<img class="img-responsive navbar-left hidden-xs hidden-sm" width="70" ';
-echo 'src="' . $rootpath . 'gfx/logo-inv.png">';
+echo '<a href="' . $rootpath . '" class="pull-left hidden-xs"><div class="logo"></div></a>';
+echo '<a class="navbar-brand" href="' . $rootpath . '">';
 echo $name . '</a>';
+
 echo '</div>';
 
 if ($s_letscode)

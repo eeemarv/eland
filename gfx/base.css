@@ -415,3 +415,12 @@ div.tooltip-div {
 div.tooltip-div p {
   margin: 10px;
 }
+
+div.logo {
+	background-image: url('logo-inv.png');
+	background-size: 60%;
+	background-position: center;
+	background-repeat: no-repeat;
+	padding-left: 70px;
+	padding-top: 50px;
+}
