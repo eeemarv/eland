@@ -39,6 +39,7 @@ jQuery(document).ready(function ($) {
 
 var fi = $('#fileupload');
 
+/*
 fi.fileupload({
     dataType: 'json',
     acceptFileTypes: /(\.|\/)(jpe?g)$/i,
@@ -50,6 +51,18 @@ fi.fileupload({
     imageCrop: true,
     dropZone: $('body')
 });
+*/
+
+/*
+$('#file_upload').fileupload({
+    url: 'messages.php',
+    done: function (e, data) {
+        $.each(data.result, function (index, file) {
+            $('<p/>').text(file.name).appendTo('body');
+        });
+    }
+});
+*/
 
 var contacts_div = $('#contacts');
 var uid = contacts_div.attr('data-uid');

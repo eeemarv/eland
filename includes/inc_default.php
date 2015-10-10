@@ -28,6 +28,8 @@ $cdn_jquery_fileupload = (getenv('CDN_JQUERY_FILEUPLOAD')) ?: 'http://elas-c.s3-
 $cdn_jquery_fileupload_process = (getenv('CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
 $cdn_jquery_fileupload_image = (getenv('CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
 $cdn_jquery_fileupload_validate = (getenv('CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
+$cdn_fileupload_css = (getenv('CDN_FILEUPLOAD_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
+
 
 $cdn_typeahead = (getenv('CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
 $cdn_datepicker_css = (getenv('CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';

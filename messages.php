@@ -11,8 +11,9 @@ $add = ($_GET['add']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
 $uid = ($_GET['uid']) ?: false;
 $extend = ($_GET['extend']) ?: false;
+$img = ($_GET['img']) ? true : false;
 
-$upload = ($_FILES['files']) ?: null;
+$images = ($_FILES['images']) ?: null;
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
@@ -24,8 +25,13 @@ $extend = ($_GET['extend']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 $mail = ($_POST['mail']) ? true : false;
 
-$post = ($_SERVER['REQUEST_METHOD'] === 'POST') ? true : false;
+$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
+$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
+
+/*
+ *
+ */
 if ($id || $edit || $del || $extend)
 {
 	$id = ($id) ?: (($edit) ?: (($del) ?: $extend));
@@ -94,19 +100,31 @@ if ($post)
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
 	));
-	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 }
 
-if($post && $upload & $id
-	&& is_array($upload['tmp_name'])
+/**
+ *
+ */
+if ($post && $images & $id & $img
+	&& is_array($images['tmp_name'])
 	&& ($s_admin || $s_owner)
 	&& !$s_guest)
 {
 	$ret_ary = array();
 
-	foreach($upload['tmp_name'] as $index => $value)
+	$name = $images['name'];
+	$size = $images['size'];
+
+	foreach($images['tmp_name'] as $index => $tmpfile)
 	{
-		$tmpfile = $upload['tmp_name'][$index];
+		$name = $images['name'][$index];
+		$size = $images['size'][$index];
+		$type = $images['type'][$index];
+
+		if ($type != 'image/jpeg')
+		{
+			continue;
+		}
 /*
 		$imagine = new Imagine\Imagick\Imagine();
 		$image = $imagine->open($tmpfile);
@@ -114,8 +132,8 @@ if($post && $upload & $id
 		   ->save($tmpfile);
 */
 		try {
-			$filename = $schema . '_m_' . $msgid . '_' . sha1(time()) . '.jpg';
-			
+			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
+
 			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 				'params'	=> array(
 					'CacheControl'	=> 'public, max-age=31536000',
@@ -123,27 +141,103 @@ if($post && $upload & $id
 			));
 
 			$db->insert('msgpictures', array(
-				'msgid'			=> $msgid,
+				'msgid'			=> $id,
 				'"PictureFile"'	=> $filename));
-			log_event($s_id, 'Pict', 'Message-Picture ' . $file . 'uploaded. Message: ' . $msgid);
+
+			$img_id = $db->lastInsertId('msgpictures_id_seq');
+
+			// $size = $s3->get_object_filesize($bucket, $filename);
+
+			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . 'uploaded. Message: ' . $id);
 
 			unlink($tmpfile);
-			$alert->success('De afbeelding is opgeladen.');
 
-			$ret_ary[$index] = $filename;
+			$ret_ary[] = array(
+				'url'	=> 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $filename,
+				'name'	=> $name,
+				'size'	=> $size,
+				'delete_url'	=> 'messages.php?id=' . $id . '&img_del=' . $img_id,
+				'delete_type'	=> 'POST',
+			);
 		}
 		catch(Exception $e)
 		{ 
-			$alert->error( 'Upladen afbeelding mislukt.');
 			echo $e->getMessage();
 			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
 		}
 	}
 
+	header('Pragma: no-cache');
+	header('Cache-Control: no-store, no-cache, must-revalidate');
+	header('Content-Disposition: inline; filename="files.json"');
+	header('X-Content-Type-Options: nosniff');
+	header('Access-Control-Allow-Origin: *');
+	header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
+	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
+
+	header('Vary: Accept');
+
 	echo json_encode($ret_ary);
-	cancel($id);
 	exit;
 }
+
+if ($img)
+{
+	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+
+
+	$includejs = '
+		<script src="' . $cdn_jquery_ui_widget . '"></script>
+		<script src="' . $cdn_load_image . '"></script>
+		<script src="' . $cdn_canvas_to_blob . '"></script>
+		<script src="' . $cdn_jquery_iframe_transport . '"></script>
+		<script src="' . $cdn_jquery_fileupload . '"></script>
+		<script src="' . $cdn_jquery_fileupload_process . '"></script>
+		<script src="' . $cdn_jquery_fileupload_image . '"></script>
+		<script src="' . $cdn_jquery_fileupload_validate . '"></script>
+		<script src="' . $rootpath . 'js/msg_img.js"></script>';
+
+	$h1 = 'Afbeeldingen';
+	$fa = 'newspaper-o';
+
+
+
+	include $rootpath . 'includes/inc_header.php';
+
+echo '<div>';
+
+/*
+echo	'
+	<div class="panel panel-default">';
+echo '<div class="panel-heading">';
+
+echo '<div class="row">';
+echo '<div class="col-md-12">'; */
+echo '<span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i> Selecteer afbeelding
+        <input id="fileupload" type="file" name="images[]" data-id="' . $id . ' multiple>
+    </span>
+
+<br><br>
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div>
+
+
+    <div id="files" class="files"></div>';
+
+
+echo '</div>';
+/*
+echo '</div></div>';
+
+echo '</div></div>';*/
+
+	include $rootpath . 'includes/inc_footer.php';
+
+	exit;
+}
+
 
 if ($mail && $post && $id)
 {
@@ -658,7 +752,7 @@ if ($id)
 
 	$balance = $user['saldo'];
 
-	$msgpictures = $db->fetchAll('select * from msgpictures where msgid = ?', array($msgid));
+	$msgpictures = $db->fetchAll('select * from msgpictures where msgid = ?', array($id));
 	$currency = readconfigfromdb('currency');
 
 	$title = $message['content'];
@@ -670,14 +764,6 @@ if ($id)
 			and c.flag_public = 1', array($user['id']));
 
 	$includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
-		<script src="' . $cdn_jquery_ui_widget . '"></script>
-		<script src="' . $cdn_load_image . '"></script>
-		<script src="' . $cdn_canvas_to_blob . '"></script>
-		<script src="' . $cdn_jquery_iframe_transport . '"></script>
-		<script src="' . $cdn_jquery_fileupload . '"></script>
-		<script src="' . $cdn_jquery_fileupload_process . '"></script>
-		<script src="' . $cdn_jquery_fileupload_image . '"></script>
-		<script src="' . $cdn_jquery_fileupload_validate . '"></script>
 		<script src="' . $rootpath . 'js/msg.js"></script>';
 
 	$top_buttons = '';
@@ -740,6 +826,17 @@ if ($id)
 
 	$add_img = ($add_img) ? '<p>' . $add_img . '</p>' : '';
 
+
+	$add_img = '
+            <input id="file_upload" type="file" name="files[]" >
+
+            <div id="files">
+                <h2>File Preview</h2>
+                <ul id="filePreview"></ul>
+                <a id="remove" href="#" title="Remove file">Remove file</a>
+            </div>';
+
+
 	if ($msgpictures)
 	{
 		echo '<div class="col-md-6">';
@@ -756,7 +853,7 @@ if ($id)
 		foreach ($msgpictures as $key => $value)
 		{
 			$file = $value['PictureFile'];
-			$url = 'https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $file;
+			$url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $file;
 			echo '<div><img u="image" src="' . $url . '" /></div>';
 		}
 
@@ -772,6 +869,10 @@ if ($id)
 		echo '</div></div>';
 		echo '</div>';
 		echo '<div class="panel-footer">';
+
+
+
+
 		echo $add_img;
 		echo '</div></div>';
 
@@ -790,6 +891,11 @@ if ($id)
 
 		echo '</div></div>';
 	}
+
+	echo '</div></div>';
+	echo '<div class="col-md-';
+	echo ($msgpictures) ? '6' : '12';
+	echo '">';
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';

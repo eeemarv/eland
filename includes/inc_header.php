@@ -85,13 +85,13 @@ if ($s_letscode)
 			'logs.php'							=> array('list', 'Logs'),
 			'divider_1'							=> 'divider',
 			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>
-													array('times text-danger', 'Admin rechten uit'),
+													array('times text-danger', 'Admin modus uit'),
 		);
 
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 		echo '<span class="fa fa-cog"></span> ';
-		echo 'Admin';
+		echo 'Admin modus';
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
@@ -171,6 +171,7 @@ else
 	}
 }
 
+echo '<br>';
 echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $link => $label)

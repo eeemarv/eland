@@ -31,7 +31,6 @@ if (isset($_POST['zend']))
 {
 	$tmpfile = $_FILES['picturefile']['tmp_name'];
 	$file = $_FILES['picturefile']['name'];
-
 	$file_size=$_FILES['picturefile']['size'];
 	
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
