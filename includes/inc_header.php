@@ -85,7 +85,7 @@ if ($s_letscode)
 			'logs.php'							=> array('list', 'Logs'),
 			'divider_1'							=> 'divider',
 			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>
-													array('times text-danger', 'Admin uit'),
+													array('times text-danger', 'Admin rechten uit'),
 		);
 
 		echo '<li class="dropdown">';

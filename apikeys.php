@@ -78,6 +78,8 @@ $fa = 'key';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';
 echo '<thead>';
@@ -106,6 +108,8 @@ foreach($apikeys as $a)
 
 echo '</tbody>';
 echo '</table>';
+
+echo '</div></div>';
 
 $key = sha1(readconfigfromdb('systemname') . microtime());
 

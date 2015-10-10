@@ -35,7 +35,8 @@ $fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div>';
+echo '<div class="panel panel-default">';
+echo '<div class="panel-heading">';
 
 echo '<dl class="dl-horizontal">';
 echo "<dt>eLAS Soap status</dt>";
@@ -87,7 +88,7 @@ echo "<dt>Preshared Key</dt>";
 echo "<dd>" .$group["presharedkey"]."</dd>";
 echo "</dl>";
 
-echo "</div>";
+echo '</div></div>';
 
 echo "<p><small><i>";
 echo "* API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail";

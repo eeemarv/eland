@@ -79,6 +79,8 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-bordered table-striped footable">';
 echo '<thead>';
@@ -107,6 +109,6 @@ foreach($rows as $value)
 
 echo '</tbody>';
 echo '</table>';
-echo '</div>';
+echo '</div></div>';
 
 include $rootpath . 'includes/inc_footer.php';

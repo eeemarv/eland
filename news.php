@@ -322,16 +322,16 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	
-
-
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
-	echo '<h3>Bericht</h3>';
+
+	echo '<p>Bericht</p>';
 	echo '</div>';
 	echo '<div class="panel-body">';
 	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
-	echo '</div>';
+	echo '</div></div>';
+
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
 	
 	echo '<dl>';
@@ -394,6 +394,7 @@ $fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-warning">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable">';
 
@@ -434,6 +435,6 @@ foreach ($news as $value)
 	echo '</tr>';
 }
 echo '</tbody>';
-echo '</table></div>';
+echo '</table></div></div>';
 
 include $rootpath . 'includes/inc_footer.php';

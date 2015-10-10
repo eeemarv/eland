@@ -17,6 +17,7 @@ $interletsq = $db->fetchAll('select q.*, l.groupname, u.letscode, u.fullname
 		and q.letsgroup_id = l.id
 		and q.id_from = u.id', array($s_id));
 
+echo '<div class="panel panel-default">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-striped table-bordered footable">';
 
@@ -81,6 +82,6 @@ foreach($interletsq as $q)
 	echo '</tr>';
 
 }
-echo '</table></div>';
+echo '</table></div></div>';
 
 include $rootpath . 'includes/inc_footer.php';

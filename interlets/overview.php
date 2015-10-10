@@ -19,6 +19,8 @@ $fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';
 echo '<thead>';
@@ -43,8 +45,8 @@ foreach($groups as $value)
 }
 
 echo '</tbody>';
-echo "</table>";
-echo '</div>';
+echo '</table>';
+echo '</div></div>';
 
 echo "<p><small><i>";
 echo "Belangrijk: er moet zeker een interletsrekening bestaan van het type internal om eLAS toe te laten met zichzelf te communiceren.  Deze moet een geldige SOAP URL en Apikey hebben.";

@@ -114,6 +114,8 @@ include $rootpath . 'includes/inc_header.php';
 
 echo 'Tijdzone: UTC' . date('O') . '</p>';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';
 echo '<thead>';
@@ -143,11 +145,9 @@ foreach($config as $c)
 
 echo '</tbody>';
 echo '</table>';
+echo '</div></div>';
 
 echo '<p>Waardes in het rood moeten nog gewijzigd (of bevestigd) worden</p>';
-
-echo '</div></div>';
-echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
 

@@ -457,6 +457,8 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable"';
 echo ' data-filter="#q" data-filter-minimum="1">';
@@ -530,6 +532,9 @@ foreach($docs as $d)
 }
 echo '</tbody>';
 echo '</table>';
+
+echo '</div>';
+echo '</div>';
 
 if ($s_admin)
 {

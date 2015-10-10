@@ -229,6 +229,8 @@ $fa = 'circle-o-notch';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
 echo '<tr>';
@@ -283,7 +285,7 @@ foreach($types as $t)
 
 echo '</tbody>';
 echo '</table>';
-echo '</div>';
+echo '</div></div>';
 
 echo '<p>Kunnen niet verwijderd worden: ';
 echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</p>';

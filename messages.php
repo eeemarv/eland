@@ -26,9 +26,9 @@ $mail = ($_POST['mail']) ? true : false;
 
 $post = ($_SERVER['REQUEST_METHOD'] === 'POST') ? true : false;
 
-if ($id || $edit || $del)
+if ($id || $edit || $del || $extend)
 {
-	$id = ($id) ?: (($edit) ?: $del);
+	$id = ($id) ?: (($edit) ?: (($del) ?: $extend));
 
 	$message = $db->fetchAssoc('SELECT m.*,
 			c.id as cid,
@@ -37,18 +37,54 @@ if ($id || $edit || $del)
 		WHERE m.id = ?
 			AND c.id = m.id_category', array($id));
 
+	if (!$message)
+	{
+		$alert->error('Bericht niet gevonden.');
+		cancel();
+	}
+
 	$s_owner = ($s_id == $message['id_user']) ? true : false;
 
-	if ($msg['local'] && $s_guest)
+	if ($message['local'] && $s_guest)
 	{
 		$alert->error('Je hebt geen toegang tot dit bericht.');
 		cancel();
 	}
 
-	$ow_type = ($msg['msg_type']) ? 'aanbod' : 'vraag';
-	$ow_type_this = ($msg['msg_type']) ? 'dit aanbod' : 'deze vraag';
-	$ow_type_the = ($msg['msg_type']) ? 'het aanbod' : 'de vraag';
+	$ow_type = ($message['msg_type']) ? 'aanbod' : 'vraag';
+	$ow_type_this = ($message['msg_type']) ? 'dit aanbod' : 'deze vraag';
+	$ow_type_the = ($message['msg_type']) ? 'het aanbod' : 'de vraag';
 	$ow_type_uc = ucfirst($ow_type);
+	$ow_type_uc_the = ucfirst($ow_type_the);
+}
+
+if ($extend)
+{
+	if (!($s_admin || $s_owner))
+	{
+		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
+		cancel($extend);
+	}
+ 
+	$validity = $_GET['validity'];
+	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * 30 * $validity));
+
+	$m = array(
+		'validity'		=> $validity,
+		'mdate'			=> gmdate('Y-m-d H:i:s'),
+		'exp_user_warn'	=> 'f',
+	);
+
+	if ($db->update('messages', $m, array('id' => $extend)))
+	{
+		$alert->success($ow_type_uc_the . ' "' . $message['content'] . '" is verlengd.');
+		cancel();
+	}
+	else
+	{
+		$alert->error('Fout: ' . $ow_type_uc_the . ' is niet verlengd.');
+		cancel();
+	}
 }
 
 if ($post)
@@ -707,6 +743,10 @@ if ($id)
 	if ($msgpictures)
 	{
 		echo '<div class="col-md-6">';
+
+		echo '<div class="panel panel-default">';
+		echo '<div class="panel-body">';
+
 		echo '<div class="col-lg-8 col-lg-offset-2 text-center">';
 		echo '<div id="slider1_container" style="position: relative; 
 						top: 0px; left: 0px; width: 800px; height: 600px;">';
@@ -730,22 +770,31 @@ if ($id)
 		echo '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
 
 		echo '</div></div>';
-		echo $add_img;
 		echo '</div>';
+		echo '<div class="panel-footer">';
+		echo $add_img;
+		echo '</div></div>';
 
-		echo '<div class="col-md-6">';
+		echo '<div class="col-md-6">';		
 	}
 	else
 	{
 		echo '<div class="col-md-12">';
+
+		echo '<div class="panel panel-default">';
+		echo '<div class="panel-body text-center">';
+
 		echo '<div id="slider1_container"></div>';
 		echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '.</p>';
 		echo $add_img;
+
+		echo '</div></div>';
 	}
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
-	echo '<h3>Omschrijving</h3>';
+	
+	echo '<p><b>Omschrijving</b></p>';
 	echo '</div>';
 	echo '<div class="panel-body">';
 	echo '<p>';
@@ -758,8 +807,11 @@ if ($id)
 		echo '<i>Er werd geen omschrijving ingegeven.</i>';
 	}
 	echo '</p>';
-	echo '</div>';
-	echo '<div class="panel-footer">';
+	echo '</div></div>';
+
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+
 	echo '<dl>';
 	echo '<dt>';
 	echo '(Richt)prijs';
@@ -1042,13 +1094,14 @@ else
 	echo '</h3>';
 }
 
+echo '<div class="panel panel-info">';
 echo '<div class="table-responsive">';
-echo '<table class="table table-hover table-striped table-bordered footable csv"';
-echo ' data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
+echo '<table class="table table-striped table-bordered footable csv"';
+echo ' table-hover data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
 echo '<thead>';
 echo '<tr>';
-echo "<th>V/A</th>";
-echo "<th>Wat</th>";
+echo '<th>V/A</th>';
+echo '<th>Wat</th>';
 if (!$uid)
 {
 	echo '<th data-hide="phone, tablet">Wie</th>';
@@ -1062,10 +1115,11 @@ if (!$s_guest)
 	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 }
 
-if ($s_admin)
+if ($s_admin || $s_owner)
 {
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true">';
-	echo '[Admin] Verlengen</th>';
+	echo ($s_admin) ? '[Admin] ' : '';
+	echo 'Verlengen</th>';
 }
 
 echo '</tr>';
@@ -1119,7 +1173,7 @@ foreach($msgs as $msg)
 		echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
 	}
 
-	if ($s_admin)
+	if ($s_admin || $s_owner)
 	{
 		echo '<td>';
 		echo '<a href="' . $rootpath . 'messages.php?extend=' . $msg['id'] . '&validity=12" class="btn btn-default btn-xs">';
@@ -1134,7 +1188,7 @@ foreach($msgs as $msg)
 
 echo '</tbody>';
 echo '</table>';
-echo '</div>';
+echo '</div></div>';
 
 if ($inline)
 {

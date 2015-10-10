@@ -592,6 +592,7 @@ else
 
 $pagination->render();
 
+echo '<div class="panel panel-primary">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable csv transactions" ';
 echo 'data-sort="false">';
@@ -718,7 +719,7 @@ else
 		echo '</tr>';
 	}
 }
-echo '</table></div>';
+echo '</table></div></div>';
 
 $pagination->render();
 

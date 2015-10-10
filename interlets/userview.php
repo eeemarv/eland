@@ -62,6 +62,7 @@ include $rootpath . 'includes/inc_header.php';
 
 if (count($letsgroups))
 {
+	echo '<div class="panel panel-primary">';
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-bordered table-hover footable">';
 	echo '<thead>';
@@ -79,7 +80,7 @@ if (count($letsgroups))
 		echo '<td>' . $redis->get($value['url'] . '_active_user_count') . '</td>';
 		echo '</tr>';
 	}
-	echo '</table></div>';
+	echo '</table></div></div>';
 }
 else
 {

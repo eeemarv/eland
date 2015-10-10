@@ -269,6 +269,8 @@ $fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<div class="panel panel-default">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
 echo '<tr>';
@@ -321,7 +323,7 @@ foreach($cats as $cat)
 
 echo '</tbody>';
 echo '</table>';
-echo '</div>';
+echo '</div></div>';
 
 echo '<p>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
 

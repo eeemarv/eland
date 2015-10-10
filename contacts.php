@@ -287,6 +287,7 @@ if ($uid)
 		echo '</h3>';
 	}
 
+	echo '<div class="panel panel-danger">';
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-hover table-striped table-bordered footable">';
 
@@ -344,7 +345,7 @@ if ($uid)
 	echo '</tbody>';
 
 	echo '</table>';
-	echo '</div>';
+	echo '</div></div>';
 
 	echo '</div></div>';
 

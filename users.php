@@ -1476,6 +1476,9 @@ if ($id)
 	echo '<div class="row">';
 	echo '<div class="col-md-4">';
 
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading text-center center-block">';
+
 	if(isset($user['PictureFile']))
 	{
 		echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
@@ -1485,9 +1488,12 @@ if ($id)
 		echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
 	}
 
-	echo '</div>';
+	echo '</div></div></div>';
+
 	echo '<div class="col-md-8">';
 
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
 	echo '<dl>';
 
 	$fullname_access = ($user['fullname_access']) ?: 0;
@@ -1496,9 +1502,8 @@ if ($id)
 	{
 		$access = $acc_ary[$fullname_access];
 		echo '<dt>';
-		echo 'Volledige naam  (zichtbaarheid: ';
+		echo 'Volledige naam, zichtbaarheid: ';
 		echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
-		echo ')';
 		echo '</dt>';
 		echo '<dd>';
 		echo htmlspecialchars($user['fullname'], ENT_QUOTES);
@@ -1589,7 +1594,7 @@ if ($id)
 		echo '</dl>';
 	}
 
-	echo '</div></div>';
+	echo '</div></div></div></div>';
 
 	echo '<div id="contacts" data-uid="' . $id . '"></div>';
 
@@ -1778,6 +1783,7 @@ echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<form method="post" class="form-horizontal">';
 
+echo '<div class="panel panel-success">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable csv"';
 echo ' data-filter="#combined-filter" data-filter-minimum="1">';
@@ -1917,7 +1923,7 @@ foreach($users as $u)
 }
 echo '</tbody>';
 echo '</table>';
-echo '</div>';
+echo '</div></div>';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
