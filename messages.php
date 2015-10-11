@@ -123,6 +123,21 @@ if ($post && $images & $id & $img
 
 		if ($type != 'image/jpeg')
 		{
+			$ret_ary[] = array(
+				'name'	=> $name,
+				'size'	=> $size,
+				'error' => 'ongeldig bestandstype',
+			);
+			continue;
+		}
+
+		if ($size > (200 * 1024))
+		{
+			$ret_ary[] = array(
+				'name'	=> $name,
+				'size'	=> $size,
+				'error' => 'te groot bestand',
+			);
 			continue;
 		}
 /*
@@ -171,8 +186,8 @@ if ($post && $images & $id & $img
 	header('Cache-Control: no-store, no-cache, must-revalidate');
 	header('Content-Disposition: inline; filename="files.json"');
 	header('X-Content-Type-Options: nosniff');
-	header('Access-Control-Allow-Origin: *');
-	header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
+//	header('Access-Control-Allow-Origin: *');
+//	header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
 	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
 
 	header('Vary: Accept');
@@ -184,7 +199,6 @@ if ($post && $images & $id & $img
 if ($img)
 {
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
-
 
 	$includejs = '
 		<script src="' . $cdn_jquery_ui_widget . '"></script>
@@ -199,8 +213,6 @@ if ($img)
 
 	$h1 = 'Afbeeldingen';
 	$fa = 'newspaper-o';
-
-
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -869,9 +881,6 @@ if ($id)
 		echo '</div></div>';
 		echo '</div>';
 		echo '<div class="panel-footer">';
-
-
-
 
 		echo $add_img;
 		echo '</div></div>';

@@ -130,7 +130,14 @@ if ($edit || $add)
 			'id_user'				=> $uid,
 		);
 
+		$mail_type_id = $db->fetchColumn('select id from id_type_contact where abbrev = \'mail\'');
+
 		$errors = array();
+
+		if ($contact['id_type_contact'] == $mail_type_id && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
+		{
+			$errors[] = 'Geen geldig email adres';
+		}
 
 		if (!$contact['value'])
 		{
@@ -140,6 +147,26 @@ if ($edit || $add)
 		if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
+		}
+
+		if ($edit)
+		{
+			$count_mail = $db->fetchColumn('select count(*)
+				from contact
+				where id_user = ?
+					and id_type_contact = ?',
+				array($uid, $mail_type_id));
+
+			$mail_id = $db->fetchColumn('select id
+				from contact
+				where id_user = ?
+					and id_type_contact = ?',
+				array($uid, $mail_type_id));
+
+			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
+			{
+				$errors[] = 'Een gebruiker moet tenminste één mailadres hebben.';
+			} 
 		}
 
 		if(!count($errors))
@@ -313,9 +340,29 @@ if ($uid)
 	foreach ($contacts as $c)
 	{
 		$access = $acc_ary[$c['flag_public']];
-		$a1 = ($s_admin || $s_owner) ? '<a href="' . $rootpath . 'contacts.php?edit=' . $c['id'] . '">' : '';
+
+		if ($s_admin || $s_owner)
+		{
+			$a1 = '<a href="' . $rootpath . 'contacts.php?edit=' . $c['id'] . '">';
+			$a3 = '';
+		}
+		else if ($c['abbrev'] == 'mail')
+		{
+			$a1 = '<a href="mailto:' . $c['value'] . '">';
+			$a3 = '</a>';
+		}
+		else if ($c['abbrev'] == 'adr')
+		{
+			$a1 = '<a href="https://www.google.com/maps/place/' . str_replace(' ', '+', $c['value']) . '">';
+			$a3 = '</a>';
+		}
+		else
+		{
+			$a1 = $a3 = '';
+		}
+
 		echo '<tr>';
-		echo '<td>' . $a1 . $c['abbrev'] . $a2 . '</td>';
+		echo '<td>' . $a1 . $c['abbrev'] . $a2 . $a3 . '</td>';
 
 		if (($c['flag_public'] < $access_level) && !$s_owner)
 		{
@@ -324,8 +371,8 @@ if ($uid)
 		}
 		else
 		{
-			echo '<td>' . $a1 . htmlspecialchars($c['value'], ENT_QUOTES) . $a2 . '</td>';
-			echo '<td>' . $a1 . htmlspecialchars($c['comments'],ENT_QUOTES) . $a2 . '</td>';
+			echo '<td>' . $a1 . htmlspecialchars($c['value'], ENT_QUOTES) . $a2 . $a3 . '</td>';
+			echo '<td>' . $a1 . htmlspecialchars($c['comments'],ENT_QUOTES) . $a2 . $a3 . '</td>';
 		}
 
 		if ($s_admin || $s_owner)
