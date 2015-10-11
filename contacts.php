@@ -33,8 +33,7 @@ if ($del)
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
-			and tc.abbrev = \'mail\'
-			and c.id = ?', array($uid, $del)) == 1)
+			and tc.abbrev = \'mail\'', array($uid)) == 1)
 	{
 		$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een gebruiker';
 		$alert->error('Je kan niet ' . $err . ' verwijderen.');
@@ -130,7 +129,7 @@ if ($edit || $add)
 			'id_user'				=> $uid,
 		);
 
-		$mail_type_id = $db->fetchColumn('select id from id_type_contact where abbrev = \'mail\'');
+		$mail_type_id = $db->fetchColumn('select id from type_contact where abbrev = \'mail\'');
 
 		$errors = array();
 
