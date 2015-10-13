@@ -1488,7 +1488,9 @@ if ($id)
 		echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
 	}
 
-	echo '</div></div></div>';
+	echo '</div>';
+
+	echo '</div></div>';
 
 	echo '<div class="col-md-8">';
 

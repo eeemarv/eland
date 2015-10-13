@@ -1,4 +1,29 @@
-jQuery(document).ready(function ($) {
+//jQuery(document).ready(function ($) {
+
+	var html_sl = '<div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 800px; height: 600px;">';
+	html_sl = html_sl + '<div u="slides" id="slides_cont" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;" id="slides">';
+	html_sl = html_sl + '</div>';
+	html_sl = html_sl + '<div u="navigator" class="jssorb01" style="bottom: 16px; right: 10px;">';
+	html_sl = html_sl + '<div u="prototype"></div>';
+	html_sl = html_sl + '</div>';
+	html_sl = html_sl + '<span u="arrowleft" class="jssora02l" style="top: 123px; left: 8px;"></span>';
+	html_sl = html_sl + '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
+	html_sl = html_sl + '</div>';
+
+	var images_con = $('#images_con');
+	var bucket_url = images_con.attr('data-bucket-url');
+
+	images_con.append(html_sl);
+
+	var imgs = images_con.data('images');
+	imgs = imgs.split(',');
+
+	var slides_cont = $('#slides_cont');
+
+	$.each(imgs, function(k, v){
+		slides_cont.append('<div><img src="' + bucket_url + v + '" u="image"/></div>');
+	});
+
 	var options = {
 		$FillMode: 3,
 		$DragOrientation: 3,
@@ -35,34 +60,7 @@ jQuery(document).ready(function ($) {
 	$(window).bind('load', ScaleSlider);
 	$(window).bind('resize', ScaleSlider);
 	$(window).bind('orientationchange', ScaleSlider);
-});
-
-var fi = $('#fileupload');
-
-/*
-fi.fileupload({
-    dataType: 'json',
-    acceptFileTypes: /(\.|\/)(jpe?g)$/i,
-    maxFileSize: 5000000, 
-    disableImageResize: /Android(?!.*Chrome)|Opera/
-        .test(window.navigator && navigator.userAgent),
-    imageMaxWidth: 800,
-    imageMaxHeight: 600,
-    imageCrop: true,
-    dropZone: $('body')
-});
-*/
-
-/*
-$('#file_upload').fileupload({
-    url: 'messages.php',
-    done: function (e, data) {
-        $.each(data.result, function (index, file) {
-            $('<p/>').text(file.name).appendTo('body');
-        });
-    }
-});
-*/
+//});
 
 var contacts_div = $('#contacts');
 var uid = contacts_div.attr('data-uid');

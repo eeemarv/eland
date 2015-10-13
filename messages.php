@@ -168,9 +168,10 @@ if ($post && $images & $id & $img
 			unlink($tmpfile);
 
 			$ret_ary[] = array(
-				'url'	=> 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $filename,
-				'name'	=> $name,
-				'size'	=> $size,
+				'url'			=> 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $filename,
+				'filename'		=> $filename,
+				'name'			=> $name,
+				'size'			=> $size,
 				'delete_url'	=> 'messages.php?id=' . $id . '&img_del=' . $img_id,
 				'delete_type'	=> 'POST',
 			);
@@ -226,8 +227,8 @@ echo '<div class="panel-heading">';
 echo '<div class="row">';
 echo '<div class="col-md-12">'; */
 echo '<span class="btn btn-success fileinput-button">
-        <i class="glyphicon glyphicon-plus"></i> Selecteer afbeelding
-        <input id="fileupload" type="file" name="images[]" data-id="' . $id . ' multiple>
+        <i class="glyphicon glyphicon-plus"></i> Afbeelding toevoegen
+        <input id="fileupload" type="file" name="images[]" data-id="' . $id . '" multiple>
     </span>
 
 <br><br>
@@ -751,7 +752,9 @@ if (($edit || $add))
 	exit;
 }
 
-
+/**
+ * show a message
+ */
 if ($id)
 {
 	$user = readuser($message['id_user']);
@@ -764,7 +767,17 @@ if ($id)
 
 	$balance = $user['saldo'];
 
-	$msgpictures = $db->fetchAll('select * from msgpictures where msgid = ?', array($id));
+	$images = array();
+
+	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
+	$st->bindValue(1, $id);
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$images[$row['id']] = $row['PictureFile'];
+	}
+
 	$currency = readconfigfromdb('currency');
 
 	$title = $message['content'];
@@ -775,8 +788,23 @@ if ($id)
 			and c.id_user = ?
 			and c.flag_public = 1', array($user['id']));
 
+	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+
 	$includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 		<script src="' . $rootpath . 'js/msg.js"></script>';
+
+	if ($s_admin || $s_owner)
+	{
+		$includejs .= '<script src="' . $cdn_jquery_ui_widget . '"></script>
+			<script src="' . $cdn_load_image . '"></script>
+			<script src="' . $cdn_canvas_to_blob . '"></script>
+			<script src="' . $cdn_jquery_iframe_transport . '"></script>
+			<script src="' . $cdn_jquery_fileupload . '"></script>
+			<script src="' . $cdn_jquery_fileupload_process . '"></script>
+			<script src="' . $cdn_jquery_fileupload_image . '"></script>
+			<script src="' . $cdn_jquery_fileupload_validate . '"></script>
+			<script src="' . $rootpath . 'js/msg_img.js"></script>';
+	}
 
 	$top_buttons = '';
 
@@ -823,88 +851,49 @@ if ($id)
 
 	echo '<div class="row">';
 
-	if($s_admin || $s_owner)
+	echo '<div class="col-md-6">';
+
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-body">';
+
+/*
+	echo '<div id="no_images text-center center-body"><i class="fa fa-image fa-5x"></i> ';
+	echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '</p>';
+	echo '</div>';
+*/
+
+	echo '<div id="images_con" ';
+	echo 'data-bucket-url="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/" ';
+	echo 'data-images="' . implode(',', $images) . '">';
+	echo '</div>';
+
+	echo '</div>'; // panel-body
+
+	if ($s_admin || $s_owner)
 	{
-		$add_img = '<div class="upload-wrapper">
-	<div id="error_output"></div>
-		<div id="files" class="files"></div>
-	</div>';
-		// $btn_add_img = "<script type='text/javascript'>function AddPic () { OpenTBox('" . $myurl ."'); } </script>";
-		$add_img .= '<input type="file" name="files[]" class="btn btn-success" ';
-		$add_img .= 'title="Afbeelding toevoegen" multiple id="fileupload">';
-	//	$add_img .= '<i class="fa fa-plus"></i>';
-	//	$add_img .= '<span class="hidden-xs hidden-sm"> Afbeelding toevoegen</span>';
+		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">
+				<i class="fa fa-plus"></i> Afbeelding opladen
+				<input id="fileupload" type="file" name="images[]" ';
+		echo 'data-url="' . $rootpath . 'messages.php?img=1&id=' . $id . '" ';
+		echo 'data-data-type="json" data-auto-upload="true" ';
+		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+		echo 'data-max-file-size="999000" ';
+		echo 'multiple></span>&nbsp;';
+		echo '<a href="' . $rootpath . 'messages.php?img_del=' . $id . '" class="btn btn-danger">';
+		echo '<i class="fa fa-trash"></i> Afbeeldingen verwijderen</a>';
+		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
+		echo '</div>';
 	}
 
-	$add_img = ($add_img) ? '<p>' . $add_img . '</p>' : '';
+	echo '</div>';
+
+	echo '</div>';
 
 
-	$add_img = '
-            <input id="file_upload" type="file" name="files[]" >
 
-            <div id="files">
-                <h2>File Preview</h2>
-                <ul id="filePreview"></ul>
-                <a id="remove" href="#" title="Remove file">Remove file</a>
-            </div>';
-
-
-	if ($msgpictures)
-	{
-		echo '<div class="col-md-6">';
-
-		echo '<div class="panel panel-default">';
-		echo '<div class="panel-body">';
-
-		echo '<div class="col-lg-8 col-lg-offset-2 text-center">';
-		echo '<div id="slider1_container" style="position: relative; 
-						top: 0px; left: 0px; width: 800px; height: 600px;">';
-		echo '<div u="slides" style="cursor: move; position: absolute;
-							overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;">';
-
-		foreach ($msgpictures as $key => $value)
-		{
-			$file = $value['PictureFile'];
-			$url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $file;
-			echo '<div><img u="image" src="' . $url . '" /></div>';
-		}
-
-		echo '</div>';
-
-		echo '<div u="navigator" class="jssorb01" style="bottom: 16px; right: 10px;">';
-		echo '<div u="prototype"></div>';
-		echo '</div>';
-
-		echo '<span u="arrowleft" class="jssora02l" style="top: 123px; left: 8px;"></span>';
-		echo '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
-
-		echo '</div></div>';
-		echo '</div>';
-		echo '<div class="panel-footer">';
-
-		echo $add_img;
-		echo '</div></div>';
-
-		echo '<div class="col-md-6">';		
-	}
-	else
-	{
-		echo '<div class="col-md-12">';
-
-		echo '<div class="panel panel-default">';
-		echo '<div class="panel-body text-center">';
-
-		echo '<div id="slider1_container"></div>';
-		echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '.</p>';
-		echo $add_img;
-
-		echo '</div></div>';
-	}
-
-	echo '</div></div>';
-	echo '<div class="col-md-';
-	echo ($msgpictures) ? '6' : '12';
-	echo '">';
+//	echo '</div></div>';
+	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
@@ -977,7 +966,7 @@ if ($id)
 	{
 		$placeholder = 'Je kan geen reacties op je eigen berichten sturen.';
 	}
-	else if ($to)
+	else if (!$to)
 	{
 		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
 	}
