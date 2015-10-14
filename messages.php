@@ -12,6 +12,7 @@ $inline = ($_GET['inline']) ? true : false;
 $uid = ($_GET['uid']) ?: false;
 $extend = ($_GET['extend']) ?: false;
 $img = ($_GET['img']) ? true : false;
+$img_del = ($_GET['img_del']) ?: false;
 
 $images = ($_FILES['images']) ?: null;
 
@@ -28,9 +29,10 @@ $mail = ($_POST['mail']) ? true : false;
 $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
+$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
 /*
- *
+ * 
  */
 if ($id || $edit || $del || $extend)
 {
@@ -64,6 +66,9 @@ if ($id || $edit || $del || $extend)
 	$ow_type_uc_the = ucfirst($ow_type_the);
 }
 
+/*
+ * extend validity
+ */
 if ($extend)
 {
 	if (!($s_admin || $s_owner))
@@ -103,12 +108,10 @@ if ($post)
 }
 
 /**
- *
+ * post images
  */
-if ($post && $images & $id & $img
-	&& is_array($images['tmp_name'])
-	&& ($s_admin || $s_owner)
-	&& !$s_guest)
+if ($post && $images && $id && $img
+	&& ($s_admin || $s_owner))
 {
 	$ret_ary = array();
 
@@ -168,7 +171,7 @@ if ($post && $images & $id & $img
 			unlink($tmpfile);
 
 			$ret_ary[] = array(
-				'url'			=> 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $filename,
+				'url'			=> $bucket_url . $filename,
 				'filename'		=> $filename,
 				'name'			=> $name,
 				'size'			=> $size,
@@ -187,8 +190,6 @@ if ($post && $images & $id & $img
 	header('Cache-Control: no-store, no-cache, must-revalidate');
 	header('Content-Disposition: inline; filename="files.json"');
 	header('X-Content-Type-Options: nosniff');
-//	header('Access-Control-Allow-Origin: *');
-//	header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
 	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
 
 	header('Vary: Accept');
@@ -197,61 +198,80 @@ if ($post && $images & $id & $img
 	exit;
 }
 
-if ($img)
+if ($img && $id && !$post)
 {
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+	if (!($s_admin || $s_owner))
+	{
+		$alert->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
+	}
 
-	$includejs = '
-		<script src="' . $cdn_jquery_ui_widget . '"></script>
-		<script src="' . $cdn_load_image . '"></script>
-		<script src="' . $cdn_canvas_to_blob . '"></script>
-		<script src="' . $cdn_jquery_iframe_transport . '"></script>
-		<script src="' . $cdn_jquery_fileupload . '"></script>
-		<script src="' . $cdn_jquery_fileupload_process . '"></script>
-		<script src="' . $cdn_jquery_fileupload_image . '"></script>
-		<script src="' . $cdn_jquery_fileupload_validate . '"></script>
-		<script src="' . $rootpath . 'js/msg_img.js"></script>';
+	$images = array();
 
-	$h1 = 'Afbeeldingen';
+	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
+	$st->bindValue(1, $id);
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$images[$row['id']] = $row['PictureFile'];
+	}
+
+	$str_this_ow = $ow_type . ' "<a href="' . $rootpath . 'messages.php?id=' . $id . '">' . $message['content'] . '</a>"';
+	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
 	include $rootpath . 'includes/inc_header.php';
 
-echo '<div>';
+	if ($s_admin)
+	{
+		echo 'Gebruiker: ' . link_user($message['id_user']);
+	}
 
-/*
-echo	'
-	<div class="panel panel-default">';
-echo '<div class="panel-heading">';
+	echo '<div class="row">';
 
-echo '<div class="row">';
-echo '<div class="col-md-12">'; */
-echo '<span class="btn btn-success fileinput-button">
-        <i class="glyphicon glyphicon-plus"></i> Afbeelding toevoegen
-        <input id="fileupload" type="file" name="images[]" data-id="' . $id . '" multiple>
-    </span>
+	foreach ($images as $img_id => $file)
+	{
+		$a_img = $bucket_url . $file;
 
-<br><br>
-    <div id="progress" class="progress">
-        <div class="progress-bar progress-bar-success"></div>
-    </div>
+		echo '<div class="col-xs-6 col-md-3">';
+		echo '<div class="thumbnail">';
+		echo '<img src="' . $a_img . '" class="img-rounded">';
 
+		echo '<div class="caption">';
+        echo '<p><a href="#" class="btn btn-danger" role="button">';
+        echo '<i class="fa fa-times"></i> ';
+        echo 'Verwijderen</a></p>';
+		echo '</div>';
+ 		echo '</div>';     
+		echo '</div>';
 
-    <div id="files" class="files"></div>';
+	}
 
+	echo '</div>';
 
-echo '</div>';
-/*
-echo '</div></div>';
+	echo '<form method="post" class="form-horizontal">';
 
-echo '</div></div>';*/
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<h3>Alle afbeeldingen verwijderen voor ' . $str_this_ow . '?</h3>';
+
+	echo '<a href="' . $rootpath . 'messages.php?=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 
 	exit;
 }
 
-
+/*
+ * send email
+ */
 if ($mail && $post && $id)
 {
 	$content = $_POST['content'];
@@ -313,7 +333,7 @@ if ($mail && $post && $id)
 }
 
 /*
- * delete
+ * delete message
  */
 if ($del)
 {
@@ -326,6 +346,7 @@ if ($del)
 	if($submit)
 	{
 		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', array($del));
+
 		foreach($pictures as $value)
 		{
 			$s3->deleteObject(array(
@@ -856,14 +877,13 @@ if ($id)
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 
-/*
-	echo '<div id="no_images text-center center-body"><i class="fa fa-image fa-5x"></i> ';
+	echo '<div id="no_images" class="text-center center-body" style="display: none;">';
+	echo '<i class="fa fa-image fa-5x"></i> ';
 	echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '</p>';
 	echo '</div>';
-*/
 
 	echo '<div id="images_con" ';
-	echo 'data-bucket-url="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/" ';
+	echo 'data-bucket-url="' . $bucket_url . '" ';
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 
@@ -871,16 +891,17 @@ if ($id)
 
 	if ($s_admin || $s_owner)
 	{
-		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">
-				<i class="fa fa-plus"></i> Afbeelding opladen
-				<input id="fileupload" type="file" name="images[]" ';
+		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
+		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
+		echo '<input id="fileupload" type="file" name="images[]" ';
 		echo 'data-url="' . $rootpath . 'messages.php?img=1&id=' . $id . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
-		echo '<a href="' . $rootpath . 'messages.php?img_del=' . $id . '" class="btn btn-danger">';
-		echo '<i class="fa fa-trash"></i> Afbeeldingen verwijderen</a>';
+		echo '<a href="' . $rootpath . 'messages.php?img=1&id=' . $id . '" class="btn btn-danger" ';
+		echo 'id="btn_remove" style="display:none;">';
+		echo '<i class="fa fa-times"></i> Afbeeldingen verwijderen</a>';
 		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 		echo '</div>';
@@ -889,8 +910,6 @@ if ($id)
 	echo '</div>';
 
 	echo '</div>';
-
-
 
 //	echo '</div></div>';
 	echo '<div class="col-md-6">';
