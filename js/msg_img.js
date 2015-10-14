@@ -30,6 +30,8 @@ $(function () {
 
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);
 
+				$('#btn_remove').css('display', 'inline');
+
             } else {
 				alert('Fout bij het opladen van de afbeelding: ' + file.error);
             }

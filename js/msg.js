@@ -42,6 +42,8 @@ function jssor_init()
 	jssor_slider1 = new $JssorSlider$("slider1_container", {
 		$FillMode: 3,
 		$DragOrientation: 3,
+		$PlayOrientation: 1,
+		$ArrowKeyNavigation: 1,
 		$BulletNavigatorOptions: {
 			$Class: $JssorBulletNavigator$,
 			$AutoCenter: 1,

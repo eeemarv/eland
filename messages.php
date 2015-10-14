@@ -198,11 +198,72 @@ if ($post && $images && $id && $img
 	exit;
 }
 
-if ($img && $id && !$post)
+if ($img_del == 'all' && $id && $post)
+{
+	if (!($s_owner || $s_admin))
+	{
+		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
+	}
+
+	$imgs = $db->fetchAll('select * from msgpictures where msgid = ?', array($id));
+
+	foreach($imgs as $img)
+	{
+		$s3->deleteObject(array(
+			'Bucket'	=> $bucket,
+			'Key'		=> $img['PictureFile'],
+		));
+	}
+
+	$db->delete('msgpictures', array('msgid' => $id));
+
+	$alert->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
+
+	cancel($id);
+}
+
+/*
+ * delete an image
+ */
+if ($img_del && $post && ctype_digit($img_del))
+{
+	if (!($msg = $db->fetchAssoc('select m.id_user, p."PictureFile"
+		from msgpictures p, messages m
+		where p.msgid = m.id
+			and p.id = ?', array($img_del))))
+	{
+		echo json_encode(array('error' => 'Afbeelding niet gevonden.'));
+		exit;
+	}
+
+	$s_owner = ($msg['id_user'] == $s_id) ? true : false;
+
+	if (!($s_owner || $s_admin))
+	{
+		echo json_encode(array('error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.'));
+		exit;
+	}
+
+	$db->delete('msgpictures', array('id' => $img_del));
+
+	$s3->deleteObject(array(
+		'Bucket'	=> $bucket,
+		'Key'		=> $msg['PictureFile'],
+	));
+
+	echo json_encode(array('success' => true));
+	exit;
+}
+
+/**
+ * delete images form
+ */
+if ($img_del == 'all' && $id)
 {
 	if (!($s_admin || $s_owner))
 	{
 		$alert->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
+		cancel($id);
 	}
 
 	$images = array();
@@ -216,9 +277,17 @@ if ($img && $id && !$post)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
+	if (!count($images))
+	{
+		$alert->error($ow_type_uc_the . ' heeft geen afbeeldingen.');
+		cancel($id);
+	}
+
 	$str_this_ow = $ow_type . ' "<a href="' . $rootpath . 'messages.php?id=' . $id . '">' . $message['content'] . '</a>"';
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
+
+	$includejs = '<script src="' . $rootpath . 'js/msg_img_del.js"></script>';
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -238,9 +307,9 @@ if ($img && $id && !$post)
 		echo '<img src="' . $a_img . '" class="img-rounded">';
 
 		echo '<div class="caption">';
-        echo '<p><a href="#" class="btn btn-danger" role="button">';
+        echo '<span class="btn btn-danger" data-img-del="' . $img_id . '" role="button">';
         echo '<i class="fa fa-times"></i> ';
-        echo 'Verwijderen</a></p>';
+        echo 'Verwijderen</span>';
 		echo '</div>';
  		echo '</div>';     
 		echo '</div>';
@@ -256,7 +325,7 @@ if ($img && $id && !$post)
 
 	echo '<h3>Alle afbeeldingen verwijderen voor ' . $str_this_ow . '?</h3>';
 
-	echo '<a href="' . $rootpath . 'messages.php?=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<a href="' . $rootpath . 'messages.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -899,7 +968,7 @@ if ($id)
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
-		echo '<a href="' . $rootpath . 'messages.php?img=1&id=' . $id . '" class="btn btn-danger" ';
+		echo '<a href="' . $rootpath . 'messages.php?img_del=all&id=' . $id . '" class="btn btn-danger" ';
 		echo 'id="btn_remove" style="display:none;">';
 		echo '<i class="fa fa-times"></i> Afbeeldingen verwijderen</a>';
 		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
