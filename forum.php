@@ -383,12 +383,15 @@ if (!$s_guest)
 
 	if (!$topic)
 	{
-		$acc_select = 0;
+		if (!$edit)
+		{
+			$post['access'] = 0;
+		}
 
 		if ($s_user)
 		{
 			unset($access_options[0]);
-			$acc_select = 1;
+			$post['access'] = ($post['access']) ?: 1;
 		}
 
 		echo '<div class="form-group">';
@@ -396,7 +399,7 @@ if (!$s_guest)
 		echo '<div class="col-sm-10">';
 		echo '<select type="file" class="form-control" id="access" name="access" ';
 		echo 'required>';
-		render_select_options($access_options, $acc_select);
+		render_select_options($access_options, $post['access']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
