@@ -36,7 +36,7 @@ if ($del || $edit)
 
 	if (!($s_admin || $s_owner))
 	{
-		$str = ($post['id_parent']) ? 'deze reactie' : 'dit onderwerp';
+		$str = ($post['parent_id']) ? 'deze reactie' : 'dit onderwerp';
 
 		if ($del)
 		{
@@ -47,8 +47,10 @@ if ($del || $edit)
 			$alert->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
 		}
 
-		cancel(($post['id_parent']) ?: $t);
-	} 
+		cancel(($post['parent_id']) ?: $t);
+	}
+
+	$topic = ($post['parent_id']) ?: false;
 }
 
 if ($submit)
@@ -60,10 +62,10 @@ if ($submit)
 			array('justOne'	=> true)
 		);
 
-		if (!$post['id_parent'])
+		if (!$post['parent_id'])
 		{
 			$elas_mongo->forum->remove(
-				array('id_parent' => $del)
+				array('parent_id' => $del)
 			);
 
 			$alert->success('Het forum onderwerp is verwijderd.');
@@ -71,20 +73,25 @@ if ($submit)
 		}
 
 		$alert->success('De reactie is verwijderd.');
-		cancel($post['id_parent']);
+		cancel($post['parent_id']);
 	}
 
 	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
-	$content = preg_replace('/\b\(<p>&nbsp;</p>)+$/', '', $content);
 
-var_dump($content);
+	$content = str_replace(array("\n", "\r"), '', $content);
+
+	while ($content != ($c = chop($content, '<p>&nbsp;</p>')))
+	{
+		$content = $c;
+	}
+
 	$post = array(
 		'content'	=> $content,
 	);
 
 	if ($topic)
 	{
-		$post['id_parent'] = $topic;
+		$post['parent_id'] = $topic;
 	}
 	else
 	{
@@ -100,6 +107,7 @@ var_dump($content);
 	{
 		$post['ts'] = gmdate('Y-m-d H:i:s');
 		$post['uid'] = $s_id;
+//		$post['edit_count'] = 0;
 	}
 
     $errors = array();
@@ -125,7 +133,9 @@ var_dump($content);
 	}
 	else if ($edit)
 	{
-		$elas_mongo->forum->update(array('_id' => new MongoId($edit)), $post);
+		$elas_mongo->forum->update(array('_id' => new MongoId($edit)),
+			array('$set'	=> $post, '$inc' => array('edit_count' => 1)),
+			array('upsert'	=> true));
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
@@ -142,10 +152,10 @@ var_dump($content);
 if ($del)
 {
 	$a = '<a href="forum.php?t=' . $post['_id'] . '">' . $post['subject'] . '</a>';
-	$h1 = ($post['id_parent']) ? 'Reactie' : 'Forum onderwerp ' . $a;
+	$h1 = ($post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . $a;
 	$h1 .= ' verwijderen?';
 
-	$t = ($post['id_parent']) ?: $post['_id'];
+	$t = ($post['parent_id']) ?: $post['_id'];
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -165,18 +175,17 @@ if ($del)
 	exit;
 }
 
-
-if ($topic)
-{
-	$find = array('$or'=> array(array('id_parent' => $topic), array('_id' => new MongoId($topic))));
-}
-else
-{
-	$find = array('id_parent' => array('$exists' => false));
-}
-
 if (!$edit)
 {
+	if ($topic)
+	{
+		$find = array('$or'=> array(array('parent_id' => $topic), array('_id' => new MongoId($topic))));
+	}
+	else
+	{
+		$find = array('parent_id' => array('$exists' => false));
+	}
+
 	$posts = $elas_mongo->forum->find($find);
 	$posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
@@ -211,7 +220,8 @@ if (!$edit)
 }
 else
 {
-
+	$h1 = ($topic) ? 'Reactie' : 'Onderwerp';
+	$h1 .= ' aanpassen';
 }
 
 $includejs = '<script src="' . $cdn_ckeditor . '"></script>
@@ -236,6 +246,7 @@ if (!$edit)
 
 			echo '<div class="panel-footer">';
 			echo '<p>' . link_user((int) $p['uid']) . ' @' . $p['ts'];
+			echo ($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 			if ($s_admin || $s_owner)
 			{
@@ -332,26 +343,27 @@ if (!$edit)
 
 if (!$s_guest)
 {
-	$h = 'Reactie' . (($edit) ? ' aanpassen' : '');
+	$hh = 'Reactie' . (($edit) ? ' aanpassen' : '');
 
-
+	if (!$edit)
+	{
+		if ($topic)
+		{
+			echo '<h3>Reactie</h3>';
+		}
+		else
+		{
+			echo '<h3>Nieuw onderwerp</h3>';
+		}
+	}
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
 	echo '<form method="post" class="form-horizontal">';
 
-	if ($topic)
+	if (!$topic)
 	{
-		echo '<h4>Reactie';
-		echo ($edit) ? ' aanpassen' : '';
-		echo '</h4>';
-	}
-	else
-	{
-		echo '<h4>';
-		echo ($edit) ? 'Onderwerp aanpassen' : 'Nieuw onderwerp';
-		echo '</h4>';
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<input type="text" class="form-control" id="subject" name="subject" ';
