@@ -8,6 +8,8 @@ $del = ($_GET['del']) ?: false;
 $edit = ($_GET['edit']) ?: false;
 $add = ($_GET['add']) ?: false;
 $pw = ($_GET['pw']) ?: false;
+$img = ($_GET['img']) ? true : false;
+$img_del = ($_GET['img_del']) ? true : false;
 $password = ($_POST['password']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
@@ -15,6 +17,11 @@ $inline = ($_GET['inline']) ? true : false;
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
+
+$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
+
+$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
+$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
 $role = ($edit || $del || $add || $pw || $post) ? 'user' : 'guest';
 
@@ -28,10 +35,128 @@ require_once $rootpath . 'includes/inc_default.php';
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 $currency = readconfigfromdb('currency');
 
+if ($post)
+{
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
+	));
+}
+
+/*
+ * upload image
+ */
+
+if ($post && ($img || $img_del) && $id )
+{
+	$s_owner = ($s_id == $id) ? true : false;
+
+	if (!($s_owner || $s_admin))
+	{
+		echo json_encode(array('error' => 'Je hebt onvoldoende rechten voor deze actie.'));
+		exit;
+	}
+
+	$user = readuser($id);
+
+	if ($img_del)
+	{
+		if ($user['PictureFile'])
+		{
+			$s3->deleteObject(array(
+				'Bucket'	=> $bucket,
+				'Key'		=> $user['PictureFile'],
+			));
+		}
+
+		if ($db->update('users', array('"PictureFile"' => ''), array('id' => $id)))
+		{
+			readuser($id, true);
+			echo json_encode(array('success' => 1));
+			exit;
+		}
+		else
+		{
+			echo json_encode(array('error' => 'Wissen Profielfoto niet gelukt.'));
+			exit;
+		}
+	}
+
+	$image = ($_FILES['image']) ?: null;
+
+	if (!$image)
+	{
+		echo json_encode(array('error' => 'Afbeeldingsbestand ontbreekt.'));
+		exit;
+	}
+
+	$size = $image['size'];
+	$tmp_name = $image['tmp_name'];
+	$type = $image['type'];
+
+	if ($size > 200 * 1024)
+	{
+		echo json_encode(array('error' => 'Het bestand is te groot.'));
+		exit;
+	}
+
+	if ($type != 'image/jpeg')
+	{
+		echo json_encode(array('error' => 'Ongeldig bestandstype.'));
+		exit;
+	}
+
+	try {
+
+		if ($user['PictureFile'])
+		{
+			$s3->deleteObject(array(
+				'Bucket'	=> $bucket,
+				'Key'		=> $user['PictureFile'],
+			));
+		}
+
+		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
+
+		$upload = $s3->upload($bucket, $filename, fopen($tmp_name, 'rb'), 'public-read', array(
+			'params'	=> array(
+				'CacheControl'	=> 'public, max-age=31536000',
+			),
+		));
+
+		$db->update('users', array(
+			'"PictureFile"'	=> $filename
+		),array('id' => $id));
+
+		log_event($s_id, 'Pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
+
+		readuser($id, true);
+
+		unlink($tmp_name);
+	}
+	catch(Exception $e)
+	{ 
+		echo json_encode(array('error' => $e->getMessage()));
+		log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+		exit;
+	}
+
+	header('Pragma: no-cache');
+	header('Cache-Control: no-store, no-cache, must-revalidate');
+	header('Content-Disposition: inline; filename="files.json"');
+	header('X-Content-Type-Options: nosniff');
+	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
+
+	header('Vary: Accept');
+
+	echo json_encode(array('success' => 1, 'filename' => $filename));
+	exit;
+}
+
 /**
  * bulk actions
  */
-
 if ($s_admin)
 {
 	$edit_fields_tabs = array(
@@ -163,8 +288,12 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 	}
 }
 
+/**
+ * change a field for multiple users
+ */
 if ($s_admin && !count($errors) && $field_submit && $post)
 {
+	
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
@@ -526,12 +655,6 @@ if ($del)
 
 			if ($sha512 == $db->fetchColumn('select password from users where id = ?', array($s_id)))
 			{
-				$s3 = Aws\S3\S3Client::factory(array(
-					'signature'	=> 'v4',
-					'region'	=> 'eu-central-1',
-					'version'	=> '2006-03-01',
-				));
-
 				$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 				$msgs = '';
 				$st = $db->prepare('SELECT id, content, id_category, msg_type
@@ -566,7 +689,7 @@ if ($del)
 				while ($row = $rs->fetch())
 				{
 					$result = $s3->deleteObject(array(
-						'Bucket' => getenv('S3_BUCKET'),
+						'Bucket' => $bucket,
 						'Key'    => $row['PictureFile'],
 					));
 
@@ -638,7 +761,7 @@ if ($del)
 				if (isset($user['PictureFile']))
 				{
 					$result = $s3->deleteObject(array(
-						'Bucket' => getenv('S3_BUCKET'),
+						'Bucket' => $bucket,
 						'Key'    => $user['PictureFile'],
 					));
 				}
@@ -1433,7 +1556,21 @@ if ($id)
 		<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
 		<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
 
+	if ($s_admin || $s_owner)
+	{
+		$includejs .= '<script src="' . $cdn_jquery_ui_widget . '"></script>
+			<script src="' . $cdn_load_image . '"></script>
+			<script src="' . $cdn_canvas_to_blob . '"></script>
+			<script src="' . $cdn_jquery_iframe_transport . '"></script>
+			<script src="' . $cdn_jquery_fileupload . '"></script>
+			<script src="' . $cdn_jquery_fileupload_process . '"></script>
+			<script src="' . $cdn_jquery_fileupload_image . '"></script>
+			<script src="' . $cdn_jquery_fileupload_validate . '"></script>
+			<script src="' . $rootpath . 'js/user_img.js"></script>';
+	}
+
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
+	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
 
 	$top_buttons = '';
 
@@ -1474,25 +1611,48 @@ if ($id)
 	include $rootpath . 'includes/inc_header.php';
 
 	echo '<div class="row">';
-	echo '<div class="col-md-4">';
+	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading text-center center-block">';
+	echo '<div class="panel-body text-center center-block" id="img_user">';
 
-	if(isset($user['PictureFile']))
-	{
-		echo '<img class="img-rounded" src="https://s3.eu-central-1.amazonaws.com/' . getenv('S3_BUCKET') . '/' . $user['PictureFile'] . '" width="250"></img>';
-	}
-	else
-	{
-		echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto';
-	}
+	$show_img = ($user['PictureFile']) ? true : false;
+
+	$user_img = ($show_img) ? '' : ' style="display:none;"';
+	$no_user_img = ($show_img) ? ' style="display:none;"' : '';
+
+	echo '<img id="user_img"' . $user_img . ' class="img-rounded img-responsive center-block" ';
+	echo 'src="' . $bucket_url . $user['PictureFile'] . '" ';
+	echo 'data-bucket-url="' . $bucket_url . '"></img>';
+
+	echo '<div id="no_user_img"' . $no_user_img . '>';
+	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto</div>';
 
 	echo '</div>';
 
+	if ($s_admin || $s_owner)
+	{
+
+		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
+		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
+		echo '<input id="fileupload" type="file" name="image" ';
+		echo 'data-url="' . $rootpath . 'users.php?img=1&id=' . $id . '" ';
+		echo 'data-data-type="json" data-auto-upload="true" ';
+		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+		echo 'data-max-file-size="999000" data-image-max-width="400" ';
+		echo 'data-image-crop="true" ';
+		echo 'data-image-max-height="400"></span>&nbsp;';
+		echo '<span data-url="' . $rootpath . 'users.php?img_del=1&id=' . $id . '" class="btn btn-danger" ';
+		echo 'id="btn_remove"' . $user_img . '>';
+		echo '<i class="fa fa-times"></i> Foto verwijderen</span>';
+		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';
+		echo 'Je kan ook een foto hierheen verslepen.</p>';
+		echo '</div>';
+	}
+
 	echo '</div></div>';
 
-	echo '<div class="col-md-8">';
+	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';

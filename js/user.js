@@ -8,7 +8,7 @@ $.get('contacts.php?inline=1&uid=' + uid, function(data){
 });
 
 $.get('transactions.php?inline=1&uid=' + uid, function(data){
-	transactions_div.html(data).trigger('footable_redraw');
+	transactions_div.html(data);
 });
 
 $.get('messages.php?inline=1&uid=' + uid, function(data){

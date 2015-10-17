@@ -16,7 +16,7 @@ $(function () {
 				btn.find('i').removeClass('fa-spin fa-spinner').addClass('fa-times');
 			}
 		}, 'json').fail(function() {
-			alert('Fout bij het verwijderen');
+			alert('Fout bij het verwijderen afbeelding');
 			btn.find('i').removeClass('fa-spin fa-spinner').addClass('fa-times');
 		});
 	});

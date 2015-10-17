@@ -1090,7 +1090,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<input type="submit" name="zend" value="Versturen" class="btn btn-default"';
+	echo '<input type="submit" name="mail" value="Versturen" class="btn btn-default"';
 	if(empty($to) || $s_guest || $s_owner)
 	{
 		echo ' disabled';
