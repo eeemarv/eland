@@ -74,8 +74,12 @@ if ($submit)
 		cancel($post['id_parent']);
 	}
 
+	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
+	$content = preg_replace('/\b\(<p>&nbsp;</p>)+$/', '', $content);
+
+var_dump($content);
 	$post = array(
-		'content'	=> $_POST['content'],
+		'content'	=> $content,
 	);
 
 	if ($topic)
@@ -204,12 +208,19 @@ if (!$edit)
 	}
 
 	$h1 = ($topic) ? $posts[$topic]['subject'] : 'Forum';
+}
+else
+{
 
-	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
-		<script src="' . $rootpath . 'js/forum.js"></script>';
+}
 
-	require_once $rootpath . 'includes/inc_header.php';
+$includejs = '<script src="' . $cdn_ckeditor . '"></script>
+	<script src="' . $rootpath . 'js/forum.js"></script>';
 
+require_once $rootpath . 'includes/inc_header.php';
+
+if (!$edit)
+{
 	if ($topic)
 	{
 		foreach ($posts as $p)
@@ -321,6 +332,10 @@ if (!$edit)
 
 if (!$s_guest)
 {
+	$h = 'Reactie' . (($edit) ? ' aanpassen' : '');
+
+
+
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 

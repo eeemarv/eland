@@ -1862,7 +1862,7 @@ $users = $db->fetchAll('select u.*
 $c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 	FROM contact c, type_contact tc
 	WHERE tc.id = c.id_type_contact
-		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')');
+		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
 $contacts = array();
 
@@ -1875,7 +1875,11 @@ if ($s_admin)
 {
 	$top_right .= '<a href="#" class="csv">';
 	$top_right .= '<i class="fa fa-file"></i>';
-	$top_right .= '&nbsp;csv</a>';
+	$top_right .= '&nbsp;csv</a>&nbsp;';
+
+	$top_right .= '<a href="#" class="csv-adr">';
+	$top_right .= '<i class="fa fa-file"></i>';
+	$top_right .= '&nbsp;csv adres</a>';
 
 	$top_buttons = '<a href="' . $rootpath . 'users.php?add=1" class="btn btn-success"';
 	$top_buttons .= ' title="Gebruiker toevoegen"><i class="fa fa-plus"></i>';
@@ -1947,19 +1951,20 @@ echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="panel panel-success">';
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable csv"';
+echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr"';
 echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet">Volledige naam</th>' : '';
+echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
 echo '<th data-hide="phone, tablet">Rol</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
+echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
 echo '<th data-hide="phone">Saldo</th>';
 
 if ($s_admin)
@@ -2031,6 +2036,10 @@ foreach($users as $u)
 	
 	echo '<td>';
 	echo render_contacts($contacts[$id]['mail'], 'mail');
+	echo '</td>';
+
+	echo '<td>';
+	echo render_contacts($contacts[$id]['adr'], 'adr');
 	echo '</td>';
 
 	echo '<td>';
