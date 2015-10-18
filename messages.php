@@ -3,28 +3,38 @@ ob_start();
 $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_pagination.php';
 
-$id = ($_GET['id']) ?: false;
-$del = ($_GET['del']) ?: false;
-$edit = ($_GET['edit']) ?: false;
-$add = ($_GET['add']) ?: false;
-$inline = ($_GET['inline']) ? true : false;
-$uid = ($_GET['uid']) ?: false;
-$extend = ($_GET['extend']) ?: false;
-$img = ($_GET['img']) ? true : false;
-$img_del = ($_GET['img_del']) ?: false;
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'id';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : '0';
 
-$images = ($_FILES['images']) ?: null;
+$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
+$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
 
-$q = ($_GET['q']) ?: '';
-$hsh = ($_GET['hsh']) ?: '';
-$cid = ($_GET['cid']) ?: '';
-$cat_hsh = ($_GET['cat_hsh']) ?: '';
+$id = (isset($_GET['id'])) ? $_GET['id'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$add = (isset($_GET['add'])) ? true : false;
+$inline = (isset($_GET['inline'])) ? true : false;
+$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
+$img = (isset($_GET['img'])) ? true : false;
+$img_del = (isset($_GET['img_del'])) ? $_GET['img_del'] : false;
 
-$extend = ($_GET['extend']) ?: false;
+$images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
 
-$submit = ($_POST['zend']) ? true : false;
-$mail = ($_POST['mail']) ? true : false;
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$hsh = (isset($_GET['hsh'])) ? $_GET['hsh'] : '';
+$cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
+$cat_hsh = (isset($_GET['cat_hsh'])) ? $_GET['cat_hsh'] : '';
+
+$submit = (isset($_POST['zend'])) ? true : false;
+$mail = (isset($_POST['mail'])) ? true : false;
+
+$selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : array();
+$extend_submit = (isset($_POST['extend_submit'])) ? true : false;
+$extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
+$access_submit = (isset($_POST['access_submit'])) ? true : false;
+$access = (isset($_POST['access'])) ? $_POST['access'] : false;
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
@@ -32,11 +42,107 @@ $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
 /*
- * 
+ * bulk actions (set access or validity)
  */
-if ($id || $edit || $del || $extend)
+if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_admin || $s_user))
 {
-	$id = ($id) ?: (($edit) ?: (($del) ?: $extend));
+	if (!is_array($selected_msgs) || !count($selected_msgs))
+	{
+		$alert->error('Selecteer ten minste één vraag of aanbod voor deze actie.');
+		cancel();
+	}
+
+	$selected_msgs = array_keys($selected_msgs);
+
+	$validity_ary = array();
+
+	$rows = $db->executeQuery('select id_user, id, content, validity from messages where id in (?)',
+			array($selected_msgs), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+	foreach ($rows as $row)
+	{
+		if ($s_user && ($row['id_user'] != $s_id))
+		{
+			$alert->error('Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')');
+			cancel();
+		}
+
+		$validity_ary[$row['id']] = $row['validity'];
+	}
+
+	if ($extend_submit)
+	{
+		foreach ($validity_ary as $id => $validity)
+		{
+			$validity = gmdate('Y-m-d H:i:s', strtotime($validity) + (86400 * $extend));
+
+			$m = array(
+				'validity'		=> $validity,
+				'mdate'			=> gmdate('Y-m-d H:i:s'),
+				'exp_user_warn'	=> 'f',
+			);
+
+			if (!$db->update('messages', $m, array('id' => $id)))
+			{
+				$alert->error('Fout: ' . $row['content'] . ' is niet verlengd.');
+				cancel();
+			}
+
+			error_log('--- update validity ---- id: ' . $id . ' validity: ' . $validity . ' ---- ');
+		}
+		if (count($validity_ary) > 1)
+		{
+			$alert->success('De berichten zijn verlengd.');
+		}
+		else
+		{
+			$alert->success('Het bericht is verlengd.');
+		}
+	}
+
+	if ($access_submit)
+	{
+		$m = array(
+			'local' => ($access == '2') ? 'f' : 't',
+			'mdate' => gmdate('Y-m-d H:i:s')
+		);
+
+		$db->beginTransaction();
+		try
+		{
+			foreach ($validity_ary as $id => $validity)
+			{
+				$db->update('messages', $m, array('id' => $id));
+			}
+
+			$db->commit();
+
+			if (count($selected_msgs) > 1)
+			{
+				$alert->success('De berichten zijn aangepast.');
+			}
+			else
+			{
+				$alert->success('Het bericht is aangepast.');
+			}
+		}
+		catch(Exception $e)
+		{
+			$db->rollback();
+			throw $e;
+			$alert->error('Fout bij het opslaan.');
+			exit;
+		}
+	}
+	cancel();
+}
+
+/*
+ * fetch message
+ */
+if ($id || $edit || $del)
+{
+	$id = ($id) ?: (($edit) ?: $del);
 
 	$message = $db->fetchAssoc('SELECT m.*,
 			c.id as cid,
@@ -64,38 +170,6 @@ if ($id || $edit || $del || $extend)
 	$ow_type_the = ($message['msg_type']) ? 'het aanbod' : 'de vraag';
 	$ow_type_uc = ucfirst($ow_type);
 	$ow_type_uc_the = ucfirst($ow_type_the);
-}
-
-/*
- * extend validity
- */
-if ($extend)
-{
-	if (!($s_admin || $s_owner))
-	{
-		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
-		cancel($extend);
-	}
- 
-	$validity = $_GET['validity'];
-	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * 30 * $validity));
-
-	$m = array(
-		'validity'		=> $validity,
-		'mdate'			=> gmdate('Y-m-d H:i:s'),
-		'exp_user_warn'	=> 'f',
-	);
-
-	if ($db->update('messages', $m, array('id' => $extend)))
-	{
-		$alert->success($ow_type_uc_the . ' "' . $message['content'] . '" is verlengd.');
-		cancel();
-	}
-	else
-	{
-		$alert->error('Fout: ' . $ow_type_uc_the . ' is niet verlengd.');
-		cancel();
-	}
 }
 
 if ($post)
@@ -143,12 +217,7 @@ if ($post && $images && $id && $img
 			);
 			continue;
 		}
-/*
-		$imagine = new Imagine\Imagick\Imagine();
-		$image = $imagine->open($tmpfile);
-		$image->resize(new Box(400, 400), ImageInterface::FILTER_LANCZOS)
-		   ->save($tmpfile);
-*/
+
 		try {
 			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
 
@@ -166,7 +235,7 @@ if ($post && $images && $id && $img
 
 			// $size = $s3->get_object_filesize($bucket, $filename);
 
-			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . 'uploaded. Message: ' . $id);
+			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
 
 			unlink($tmpfile);
 
@@ -1108,6 +1177,77 @@ if ($id)
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
+$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'id';
+$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
+
+$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 'm.' . $orderby;
+$where = ($uid) ? ' where m.id_user = ? ' : '';
+$sql_params = ($uid) ? array($uid) : array();
+$query = 'select m.*
+	from messages m ' .
+	$where . '
+	order by ' . $query_orderby . ' ';
+$query .= ($asc) ? 'ASC ' : 'DESC ';
+$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
+
+$messages = $db->fetchAll($query, $sql_params);
+
+$row_count = $db->fetchColumn('select count(m.*)
+	from messages m ' . $where, $sql_params);
+
+$filter = ($uid) ? '&uid=' . $uid : '';
+
+$pagination = new pagination(array(
+	'limit' 		=> $limit,
+	'start' 		=> $start,
+	'base_url' 		=> $rootpath . 'messages.php?orderby=' . $orderby . '&asc=' . $asc . $filter,
+	'row_count'		=> $row_count,
+));
+
+$asc_preset_ary = array(
+	'asc'	=> 0,
+	'indicator' => '',
+);
+
+$tableheader_ary = array(
+	'description' => array_merge($asc_preset_ary, array(
+		'lang' => 'Omschrijving')),
+	'amount' => array_merge($asc_preset_ary, array(
+		'lang' => 'Bedrag')),
+	'cdate'	=> array_merge($asc_preset_ary, array(
+		'lang' 		=> 'Tijdstip',
+		'data_hide' => 'phone'))
+);
+
+if ($uid)
+{
+	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
+		'lang'			=> 'Tegenpartij',
+		'data_hide'		=> 'phone, tablet',
+		'no_sort'		=> true,
+	));
+}
+else
+{
+	$tableheader_ary += array(
+		'from_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Van',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+		'to_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Aan',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+	);
+}
+
+
+
+
+$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+
 $sql_and_where = ($uid) ? ' and u.id = ? ' : '';
 $sql_params = ($uid) ? array($uid) : array(); 
 
@@ -1227,7 +1367,8 @@ if (!$inline)
 {
 	$includejs = '<script src="' . $rootpath . 'js/combined_filter_msgs.js"></script>
 		<script src="' . $rootpath . 'js/msgs_sum.js"></script>
-		<script src="' . $rootpath . 'js/csv.js"></script>';
+		<script src="' . $rootpath . 'js/csv.js"></script>
+		<script src="' . $rootpath . 'js/table_sel.js"></script>';
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -1274,7 +1415,10 @@ if (!$inline)
 	echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
 	echo '<li><a href="#" class="bg-white" data-filter="34a9">Geldig</a></li>';
 	echo '<li><a href="#" class="bg-danger" data-filter="09e9">Vervallen</a></li>';
-	echo '</ul>';	
+	echo '</ul>';
+
+	echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
+
 }
 else
 {
@@ -1307,13 +1451,6 @@ if (!$s_guest)
 	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 }
 
-if ($s_admin || $s_owner)
-{
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true">';
-	echo ($s_admin) ? '[Admin] ' : '';
-	echo 'Verlengen</th>';
-}
-
 echo '</tr>';
 echo '</thead>';
 
@@ -1329,6 +1466,14 @@ foreach($msgs as $msg)
 
 	echo '<td ';
 	echo ' data-value="' . (($del) ? '09e9' : '34a9') . ' ' . $cats[$msg['id_category']]['hsh'] . '">';
+
+	if ($s_admin || $s_owner)
+	{
+		echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
+		echo ($selected_msgs[$id]) ? ' checked="checked"' : '';
+		echo '>&nbsp;';
+	}
+
 	echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 	echo '</td>';
 
@@ -1361,18 +1506,8 @@ foreach($msgs as $msg)
 
 	if (!$s_guest)
 	{
-		$access = $acc_ary[($message['local']) ? 1 : 2];
+		$access = $acc_ary[($msg['local']) ? 1 : 2];
 		echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
-	}
-
-	if ($s_admin || $s_owner)
-	{
-		echo '<td>';
-		echo '<a href="' . $rootpath . 'messages.php?extend=' . $msg['id'] . '&validity=12" class="btn btn-default btn-xs">';
-		echo '1 jaar</a>&nbsp;';
-		echo '<a href="' . $rootpath . 'messages.php?extend=' . $msg['id'] . '&validity=60" class="btn btn-default btn-xs">';
-		echo '5 jaar</a>';
-		echo '</td>';
 	}
 
 	echo '</tr>';
@@ -1388,14 +1523,88 @@ if ($inline)
 }
 else
 {
+
+	if ($s_admin || $s_owner)
+	{
+		$extend_options = array(
+			'7'		=> '1 week',
+			'14'	=> '2 weken',
+			'30'	=> '1 maand',
+			'60'	=> '2 maanden',
+			'180'	=> '6 maanden',
+			'365'	=> '1 jaar',
+			'730'	=> '2 jaar',
+			'1825'	=> '5 jaar',
+		);
+
+		unset($access_options[0]);
+
+		echo '<div class="panel panel-default" id="actions">';
+		echo '<div class="panel-heading">';
+		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
+		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
+		echo '</div></div>';
+		echo '<h3>Acties met geselecteerd vraag en aanbod</h3>';
+		echo '<div class="panel panel-info">';
+		echo '<div class="panel-heading">';
+
+		echo '<ul class="nav nav-tabs" role="tablist">';
+		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
+		echo '<li><a href="#access_tab" data-toggle="tab">Zichtbaarheid</a><li>';
+		echo '</ul>';
+
+		echo '<div class="tab-content">';
+
+		echo '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
+		echo '<h3>Vraag en aanbod verlengen</h3>';
+
+		echo '<div class="form-group">';
+		echo '<label for="extend" class="col-sm-2 control-label">Verlengen met</label>';
+		echo '<div class="col-sm-10">';
+		echo '<select name="extend" id="extend" class="form-control">';
+		render_select_options($extend_options, '30');
+		echo "</select>";
+		echo '</div>';
+		echo '</div>';
+
+		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
+
+		echo '</div>';
+
+		echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
+		echo '<h3>Zichtbaarheid instellen</h3>';
+
+		echo '<div class="form-group">';
+		echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
+		echo '<div class="col-sm-10">';
+		echo '<select name="access" id="access" class="form-control">';
+		render_select_options($access_options, 2);
+		echo "</select>";
+		echo '</div>';
+		echo '</div>';
+
+		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
+
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="clearfix"></div>';
+		echo '</div>';
+		echo '</div>';
+		echo '</div></div>';
+		echo '</form>';
+	}
+
 	include $rootpath . 'includes/inc_footer.php';
 }
 
 function cancel($id = null)
 {
-	global $rootpath;
+	global $rootpath, $uid;
 
-	header('Location: ' . $rootpath . 'messages.php' . (($id) ? '?id=' . $id : ''));
+	$param = ($uid && !$id) ? '?uid=' . $uid : (($id) ? '?id=' . $id : '');
+
+	header('Location: ' . $rootpath . 'messages.php' . $param);
 	exit;
 }
 

@@ -293,7 +293,6 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
  */
 if ($s_admin && !count($errors) && $field_submit && $post)
 {
-	
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
@@ -1901,7 +1900,7 @@ $fa = 'users';
 $includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
 	<script src="' . $rootpath . 'js/calc_sum.js"></script>
 	<script src="' . $rootpath . 'js/csv.js"></script>
-	<script src="' . $rootpath . 'js/users.js"></script>';
+	<script src="' . $rootpath . 'js/table_sel.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
