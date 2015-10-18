@@ -590,7 +590,7 @@ if (($edit || $add))
 
 		$validity = (int) $_POST['validity'];
 
-		$vtime = time() + ($validity * 30 * 86400);
+		$vtime = time() + ($validity * 86400);
 		$vtime =  gmdate('Y-m-d H:i:s', $vtime);
 
 		if ($s_admin)
@@ -648,8 +648,6 @@ if (($edit || $add))
 			$msg['cdate'] = gmdate('Y-m-d H:i:s');
 			$msg['validity'] = $msg['vtime'];
 
-//			$description = $msg['description'];
-
 			unset($msg['vtime'], $msg['description']);
 
 			if (empty($msg['amount']))
@@ -665,9 +663,6 @@ if (($edit || $add))
 				$stat_column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
 				$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', array($msg['id_category']));
-
-				// Description column is mixed case.
-//				$db->update('messages', array('"Description"' => $description), array('id' => $id));
 
 				$alert->success('Nieuw vraag of aanbod toegevoegd.');
 				cancel($id);
@@ -748,7 +743,7 @@ if (($edit || $add))
 		$msg['description'] = $msg['Description'];
 		unset($msg['Description']);
 
-		$rev = round((strtotime($msg['validity']) - time()) / (30 * 86400));
+		$rev = round((strtotime($msg['validity']) - time()) / (86400));
 		$msg['validity'] = ($rev < 1) ? 0 : $rev;
 
 		$user = readuser($msg['id_user']);
@@ -866,7 +861,7 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in maanden</label>';
+	echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in dagen</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="validity" name="validity" ';
 	echo 'value="' . $msg['validity'] . '" required>';
