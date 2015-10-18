@@ -134,11 +134,12 @@ function update_queue($transid,$count,$result)
 
 function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to)
 {
+	global $db;
 	//FIXME Add data validation and clear error message for bug #321
 	//FIXME output debug info when elasdebug = 1
 	echo 'Local commiting ' . $transid . "\t\t";
 	$ratio = readconfigfromdb('currencyratio');
-	$transaction['amount'] = $amount * $ratio;
+	$transaction['amount'] = round($amount * $ratio);
 	$transaction['description'] = $description;
 	$transaction['id_from'] = $id_from;
 	//Lookup id_to first
@@ -167,7 +168,8 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	}
 
 	//amount may not be empty
-	$var = trim($transaction['amount']);
+	$transaction['amount'] = trim($transaction['amount']);
+
 	if (!isset($transaction['amount']) || (trim($transaction['amount'] ) == '' || !$transaction['amount']))
 	{
 		$error_list['amount'] = 'Bedrag is niet ingevuld';

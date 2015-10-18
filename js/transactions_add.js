@@ -45,26 +45,31 @@ $('#letscode_from').typeahead({
 
 var selected_to_users = $('#letsgroup_id option:selected').data('users');
 selected_to_users.initialize();
+typeahead_to_users_init();
 
-$('#letscode_to').typeahead({
-	highLight: true
-},
-{
-	displayKey: function(user){ 
-		return user.value;
+function typeahead_to_users_init(){
+
+	$('#letscode_to').typeahead({
+		highLight: true
 	},
-	source: selected_to_users.ttAdapter(),
-	templates: {
-		suggestion: function(data) {
-			return '<p class="' + data.class + '"><strong>' + data.letscode +
-				'</strong> ' + data.name + '</p>';
+	{
+		displayKey: function(user){ 
+			return user.value;
+		},
+		source: selected_to_users.ttAdapter(),
+		templates: {
+			suggestion: function(data) {
+				return '<p class="' + data.class + '"><strong>' + data.letscode +
+					'</strong> ' + data.name + '</p>';
+			}
 		}
-	}
-}); 
+	});
+}
 
 $('#letsgroup_id').change(function(){
 	$('#letscode_to').typeahead('val', '');
 	selected_to_users = $('#letsgroup_id option:selected').data('users');
 	selected_to_users.initialize();
-	$('#letscode_to').data('ttTypeahead').dropdown.datasets[0].source = selected_to_users.ttAdapter(); 
+	$('#letscode_to').typeahead('destroy');
+	typeahead_to_users_init(); 
 });

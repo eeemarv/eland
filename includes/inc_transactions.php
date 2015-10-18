@@ -56,7 +56,7 @@ function insert_transaction($posted_list)
 	}
 	catch(Exception $e)
 	{
-		$conn->rollback();
+		$db->rollback();
 		throw $e;
 		return false;
 	}
