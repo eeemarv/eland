@@ -1425,6 +1425,8 @@ else
 	echo '</h3>';
 }
 
+$pagination->render();
+
 echo '<div class="panel panel-info">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-bordered footable csv"';
@@ -1511,6 +1513,8 @@ foreach($msgs as $msg)
 echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
+
+$pagination->render();
 
 if ($inline)
 {

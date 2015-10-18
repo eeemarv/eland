@@ -628,7 +628,7 @@ if ($uid)
 	{
 		echo '<tr>';
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'transactions/view.php?id=' . $t['id'] . '">';
+		echo '<a href="' . $rootpath . 'transactions.php?id=' . $t['id'] . '">';
 		echo htmlspecialchars($t['description'], ENT_QUOTES);
 		echo '</a>';
 		echo '</td>';

@@ -1605,6 +1605,9 @@ if ($id)
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user);
+	$h1 .= ($newusertreshold < strtotime($user['adate']) && $user['status'] == 1) ? ' <small><span class="text-success">Instapper</span></small>' : ''; 
+	$h1 .= ($user['status'] == 2) ? ' <small><span class="text-danger">Uitstapper</span></small>' : '';
+	
 	$fa = 'user';
 
 	include $rootpath . 'includes/inc_header.php';
