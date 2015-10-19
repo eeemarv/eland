@@ -20,6 +20,8 @@ $location = $_GET['location'];
 $location = ($location) ? urldecode($location) : 'index.php';
 $location = ($location == 'login.php') ? 'index.php' : $location;
 $location = ($location == 'logout.php') ? 'index.php' : $location;
+$admin_modus = (strpos($location, '&admin=1') === false) ? false : true;
+$location = str_replace('&admin=1', '', $location);
 $error_location = 'login.php?location=' . urlencode($location);
 
 if(!empty($token))
@@ -119,6 +121,18 @@ if ($_POST['zend'])
 			exit;
 		}
 
+		$accountrole = $user['accountrole'];
+
+		if ($accountrole == 'admin')
+		{
+			$accountrole = 'user';
+
+			if ($admin_modus)
+			{
+				$accountrole = 'admin';
+			}
+		}
+
 		session_start();
 		$_SESSION['id'] = $user['id'];
 		$_SESSION['name'] = $user['name'];
@@ -126,7 +140,7 @@ if ($_POST['zend'])
 		$_SESSION['login'] = $user['login'];
 		$_SESSION['user_postcode'] = $user['postcode'];
 		$_SESSION['letscode'] = $user['letscode'];
-		$_SESSION['accountrole'] = ($user['accountrole'] == 'admin') ? 'user' : $user['accountrole'];
+		$_SESSION['accountrole'] = $accountrole;
 		$_SESSION['rights'] = $user['accountrole'];
 		$_SESSION['userstatus'] = $user['status'];
 		$_SESSION['email'] = $user['emailaddress'];

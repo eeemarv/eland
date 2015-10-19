@@ -120,6 +120,17 @@ if ($token = $_GET['token'])
 			throw $e;
 		}
 
+		$systemtag = readconfigfromdb('systemtag');
+		$subject = '[' . $systemtag . '] nieuwe inschrijving: ' . $user['fullname'];
+		$content = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
+		$content .= "De volgende persoon schreef zich in via de website: \n\n";
+		$content .= 'Volledige naam: ' . $user['fullname'] . "\n";
+		$content .= 'Postcode: ' . $user['fullname'] . "\n";
+		$content .= 'Email: ' . $data['mail'] . "\n\n";
+		$content .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
+
+		sendemail(readconfigfromdb('from_address'), readconfigfromdb('admin'), $subject, $content);
+
 		$alert->success('Inschrijving voltooid.');
 
 		require_once $rootpath . 'includes/inc_header.php';
@@ -133,6 +144,7 @@ if ($token = $_GET['token'])
 		echo '</div>';
 */
 		require_once $rootpath . 'includes/inc_footer.php';
+
 		exit;
 	}
 
@@ -184,7 +196,7 @@ if ($_POST['zend'])
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', array($reg['email'])))
 	{
-		$alert->error('Er bestaat reeds een bevestigde inschrijving met dit mailadres.');
+		$alert->error('Er bestaat reeds een inschrijving met dit mailadres.');
 	}
 	else if (!$reg['first_name'])
 	{
@@ -208,9 +220,7 @@ if ($_POST['zend'])
 		$redis->set($key, '1');
 		$redis->expire($key, 86400);
 		$subject = '[' . readconfigfromdb('systemtag') . '] Bevestig je inschrijving';
-		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-		$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-		$url = $http . $_SERVER['SERVER_NAME'] . $port . '/register.php?token=' . $token;
+		$url = $base_url . '/register.php?token=' . $token;
 		$message = 'Inschrijven voor ' . readconfigfromdb('systemname') . "\n\n";
 		$message .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$message .= "Deze link blijft 1 dag geldig.\n\n";

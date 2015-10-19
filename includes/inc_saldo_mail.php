@@ -134,9 +134,9 @@ function saldo()
 	$news_url = $base_url . '/news.php?id=';
 	$user_url = $base_url . '/users.php?&id=';
 	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
-	$new_message_url = $base_url . '/messages/edit.php?mode=new';
-	$new_transaction_url = $base_url . '/transactions/add.php';
-	$mydetails_url = $base_url . '/userdetails/mydetails_edit.php';
+	$new_message_url = $base_url . '/messages.php?add=1';
+	$new_transaction_url = $base_url . '/transactions.php?add=1';
+	$mydetails_url = $base_url . '/users.php?id=*|ID|*';
 
 	$rs = $db->prepare('select m.id, count(p.id)
 		from msgpictures p, messages m

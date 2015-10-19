@@ -48,9 +48,8 @@ if ($token & $user_id)
 					$to[] = $row['value'];
 				}
 				error_log(implode(' ---- ', $to));
-				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/login.php?login=' . $user['login'];
+
+				$url = $base_url . '/login.php?login=' . $user['login'];
 
 				$subj = '[' . readconfigfromdb('systemtag') . '] nieuw paswoord.';
 				$body = 'Beste ' . $user['name'] . ",\n\n";
@@ -133,9 +132,7 @@ if ($_POST['zend'])
 					'validity' 	=> $validity,
 					'type'		=> 'pwreset'));
 				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
-				$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-				$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-				$url = $http . $_SERVER["SERVER_NAME"] . $port . '/pwreset.php?token=' . $token . '&u=' . $user_id;
+				$url = $base_url . '/pwreset.php?token=' . $token . '&u=' . $user_id;
 				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
 				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
 				$message .= "Je login is: ". $login . "\n\n";

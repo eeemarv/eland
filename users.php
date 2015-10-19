@@ -206,8 +206,6 @@ if ($s_admin)
 			'lbl'	=> 'Periodieke overzichtsmail (aan/uit)',
 			'type'	=> 'checkbox',
 		),
-
-		
 	);
 }
 
@@ -541,7 +539,7 @@ if ($pw)
 							$con .= "\n\n";
 							$con .= 'Veel letsgenot!';
 							sendemail($from, $to, $subj, $con);
-							log_event($s_id, 'Mail', 'Pasword change notification mail sent to ' . $to);
+							log_event($s_id, 'Mail', 'Password change notification mail sent to ' . $to);
 							$alert->success('Notificatie mail verzonden naar ' . $to);
 						}
 						else
@@ -2293,7 +2291,7 @@ function sendadminmail($user)
 	$subject .= readconfigfromdb('systemtag');
 	$subject .= "] eLAS account activatie";
 
-	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content  = "*** Dit is een automatische mail van ";
 	$content .= $systemtag;
 	$content .= " ***\r\n\n";
 	$content .= "De account ";
