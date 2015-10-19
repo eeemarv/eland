@@ -3,13 +3,6 @@ ob_start();
 $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_pagination.php';
-
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'id';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : '0';
-
-$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
-$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -1170,76 +1163,9 @@ if ($id)
 	exit;
 }
 
-$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
-
-$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'id';
-$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
-
-$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 'm.' . $orderby;
-$where = ($uid) ? ' where m.id_user = ? ' : '';
-$sql_params = ($uid) ? array($uid) : array();
-$query = 'select m.*
-	from messages m ' .
-	$where . '
-	order by ' . $query_orderby . ' ';
-$query .= ($asc) ? 'ASC ' : 'DESC ';
-$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
-
-$messages = $db->fetchAll($query, $sql_params);
-
-$row_count = $db->fetchColumn('select count(m.*)
-	from messages m ' . $where, $sql_params);
-
-$filter = ($uid) ? '&uid=' . $uid : '';
-
-$pagination = new pagination(array(
-	'limit' 		=> $limit,
-	'start' 		=> $start,
-	'base_url' 		=> $rootpath . 'messages.php?orderby=' . $orderby . '&asc=' . $asc . $filter,
-	'row_count'		=> $row_count,
-));
-
-$asc_preset_ary = array(
-	'asc'	=> 0,
-	'indicator' => '',
-);
-
-$tableheader_ary = array(
-	'description' => array_merge($asc_preset_ary, array(
-		'lang' => 'Omschrijving')),
-	'amount' => array_merge($asc_preset_ary, array(
-		'lang' => 'Bedrag')),
-	'cdate'	=> array_merge($asc_preset_ary, array(
-		'lang' 		=> 'Tijdstip',
-		'data_hide' => 'phone'))
-);
-
-if ($uid)
-{
-	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
-		'lang'			=> 'Tegenpartij',
-		'data_hide'		=> 'phone, tablet',
-		'no_sort'		=> true,
-	));
-}
-else
-{
-	$tableheader_ary += array(
-		'from_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Van',
-			'data_hide'	=> 'phone, tablet',
-			'no_sort'	=> true,
-		)),
-		'to_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Aan',
-			'data_hide'	=> 'phone, tablet',
-			'no_sort'	=> true,
-		)),
-	);
-}
-
-
-
+/*
+ * list messages
+ */
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
@@ -1413,7 +1339,6 @@ if (!$inline)
 	echo '</ul>';
 
 	echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
-
 }
 else
 {
@@ -1425,12 +1350,11 @@ else
 	echo '</h3>';
 }
 
-$pagination->render();
-
 echo '<div class="panel panel-info">';
 echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-bordered footable csv"';
-echo ' table-hover data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
+echo '<table class="table table-striped table-bordered footable csv" ';
+echo 'table-hover data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
+
 echo '<thead>';
 echo '<tr>';
 echo '<th>V/A</th>';
@@ -1512,9 +1436,11 @@ foreach($msgs as $msg)
 
 echo '</tbody>';
 echo '</table>';
-echo '</div></div>';
 
-$pagination->render();
+echo '</div>';
+echo '</div>';
+
+
 
 if ($inline)
 {
@@ -1522,7 +1448,6 @@ if ($inline)
 }
 else
 {
-
 	if ($s_admin || $s_owner)
 	{
 		$extend_options = array(
