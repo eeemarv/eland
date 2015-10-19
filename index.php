@@ -20,7 +20,8 @@ $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$news = $db->fetchAll('select * from news where approved = True order by cdate desc');
+$news_where = ($s_admin) ? '' : ' where approved = True ';
+$news = $db->fetchAll('select * from news ' . $news_where . ' order by cdate desc');
 
 $newusertreshold = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400);
 
