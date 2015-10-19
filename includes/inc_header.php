@@ -89,7 +89,8 @@ if ($s_letscode)
 		);
 
 		echo '<li class="dropdown">';
-		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" ';
+		echo 'role="button" aria-expanded="false">';
 		echo '<span class="fa fa-cog"></span> ';
 		echo 'Admin modus';
 		echo '<span class="caret"></span></a>'; 
@@ -112,7 +113,8 @@ if ($s_letscode)
 	else if ($_SESSION['rights'] == 'admin')
 	{
 		echo '<li class="dropdown">';
-		echo '<a href="' . $rootpath . 'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) . '">';
+		echo '<a href="' . $rootpath . 'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) . '" ';
+		echo 'title="Admin modus inschakelen">';
 		echo '<span class="fa fa-times text-danger"></span> ';
 		echo 'Admin';
 		echo '</a>'; 
