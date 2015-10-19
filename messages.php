@@ -1388,7 +1388,7 @@ foreach($msgs as $msg)
 	echo '<td ';
 	echo ' data-value="' . (($del) ? '09e9' : '34a9') . ' ' . $cats[$msg['id_category']]['hsh'] . '">';
 
-	if ($s_admin || $s_owner)
+	if (!$inline && ($s_admin || $s_owner))
 	{
 		echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
 		echo ($selected_msgs[$id]) ? ' checked="checked"' : '';
