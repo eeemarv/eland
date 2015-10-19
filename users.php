@@ -1901,6 +1901,10 @@ else
 	$h1 = 'Leden';
 }
 
+$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $s_id . '" class="btn btn-default"';
+$top_buttons .= ' title="Mijn gegevens"><i class="fa fa-user"></i>';
+$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn gegevens</span></a>';
+
 $fa = 'users';
 
 $includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
