@@ -1266,7 +1266,7 @@ if ($s_admin || $s_user)
 	else
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'messages.php?uid=' . $s_id . '" class="btn btn-default"';
-		$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+		$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
 	}
 }
