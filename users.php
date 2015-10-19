@@ -687,10 +687,13 @@ if ($del)
 
 				while ($row = $rs->fetch())
 				{
-					$result = $s3->deleteObject(array(
-						'Bucket' => $bucket,
-						'Key'    => $row['PictureFile'],
-					));
+					if ($row['PictureFile'])
+					{
+						$result = $s3->deleteObject(array(
+							'Bucket' => $bucket,
+							'Key'    => $row['PictureFile'],
+						));
+					}
 
 					$db->delete('msgpictures', array('id' => $row['id']));
 				}
@@ -757,7 +760,7 @@ if ($del)
 				$db->delete('contact', array('id_user' => $del));
 
 				//delete userimage from bucket;
-				if (isset($user['PictureFile']))
+				if ($user['PictureFile'])
 				{
 					$result = $s3->deleteObject(array(
 						'Bucket' => $bucket,
@@ -790,7 +793,7 @@ if ($del)
 		}
 	}
 
-	$h1 = 'Gebruiker ' . $user['letscode'] . ' ' . $user['name'] . ' verwijderen?';
+	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
 	$fa = 'user';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -811,7 +814,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'users.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<a href="' . $rootpath . 'users.php?id=' . $del . '" class="btn btn-default">Annuleren</a>&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';

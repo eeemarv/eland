@@ -96,7 +96,7 @@ if($s_guest)
 	echo '</div>';
 	echo '<div class="panel-body">';
 	echo 'Je bent ingelogd als LETS-gast, je kan informatie ';
-	echo 'raadplegen maar niets wijzigen of transacties invoeren. ';
+	echo 'raadplegen maar niets wijzigen. Transacties moet je ingeven in de installatie van je eigen groep.';
 	echo '</div>';
 	echo '</div>';
 }
