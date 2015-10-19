@@ -116,7 +116,7 @@ if ($_POST['zend'])
 
 		if(readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
 		{
-			$alert->error('eLAS is in onderhoud, probeer later opnieuw');
+			$alert->error('De website is in onderhoud, probeer later opnieuw');
 			header('Location: ' . $error_location);
 			exit;
 		}
@@ -161,7 +161,7 @@ if ($_POST['zend'])
 
 if(readconfigfromdb('maintenance'))
 {
-	$alert->warning('eLAS is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
+	$alert->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }
 
 $h1 = 'Login';

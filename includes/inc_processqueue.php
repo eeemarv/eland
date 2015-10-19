@@ -230,7 +230,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		log_event('','Trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 		$systemtag = readconfigfromdb('systemtag');
-		$subject .= '[eLAS-'.$systemtag.'] ' . 'Interlets FAILURE!';
+		$subject .= '[' . $systemtag . '] Interlets FAILURE!';
 		$from = readconfigfromdb('from_address_transactions');
 		$to = readconfigfromdb('admin');
 

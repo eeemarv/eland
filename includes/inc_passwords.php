@@ -16,7 +16,7 @@
 
 function sendactivationmail($password, $user)
 {
-	global $baseurl, $s_id, $alert;
+	global $base_url, $s_id, $alert;
 	
 	$from = readconfigfromdb("from_address");
 
@@ -31,20 +31,20 @@ function sendactivationmail($password, $user)
 	}
 
 	$systemtag = readconfigfromdb('systemtag');
-	$systemletsname = readconfigfromdb('systemname');
-	$subject = "[eLAS-";
+	$systemname = readconfigfromdb('systemname');
+	$subject = '[';
 	$subject .= $systemtag;
-	$subject .= "] eLAS account activatie voor $systemletsname";
+	$subject .= '] account activatie voor ' . $systemname;
 
-	$content  = "*** Dit is een automatische mail van het eLAS systeem van ";
+	$content  = "*** Dit is een automatische mail van ";
 	$content .= $systemtag;
 	$content .= " ***\r\n\n";
-	$content .= "Beste ";
-	$content .= $user["name"];
+	$content .= 'Beste ';
+	$content .= $user['name'];
 	$content .= "\n\n";
 
 	$content .= "Welkom bij Letsgroep $systemletsname";
-	$content .= '. Surf naar http://' . $baseurl;
+	$content .= '. Surf naar ' . $base_url;
 	$content .= " en meld je aan met onderstaande gegevens.\n";
 	$content .= "\n-- Account gegevens --\n";
 	$content .= "Login: ";

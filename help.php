@@ -167,9 +167,9 @@ function helpmail($help,$rootpath)
 		return false;
 	}
 
-	$subject = '[eLAS-' . readconfigfromdb('systemtag') . '] ' .$help['subject'];
+	$subject = '[' . readconfigfromdb('systemtag') . '] ' .$help['subject'];
 
-    $content  = "-- via de eLAS website werd het volgende probleem gemeld --\r\n";
+    $content  = "-- via de website werd het volgende probleem gemeld --\r\n";
 	$content .= "E-mail: {$help['email']}\r\n";
 	$content .= "Login:  {$help['login']}\r\n";
 	if ($s_id)
@@ -184,8 +184,7 @@ function helpmail($help,$rootpath)
 	$content .= "{$help['browser']}\r\n";
 	$content .= "\r\n";
 	$content .= "eLAS versie: Heroku \r\n";
-	$content .= "Webserver: " .gethostname() ."\r\n";
+	$content .= 'Webserver: ' . gethostname() . "\r\n";
 
 	return sendemail($from, $to, $subject, $content);
-
 }

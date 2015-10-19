@@ -1,7 +1,5 @@
 <?php
 
-$baseurl = $_SERVER['HTTP_HOST'];
-
 if(!isset($rootpath))
 {
 	$rootpath = '';

@@ -72,18 +72,16 @@ if ($add && $submit && !count($errors))
 		if(!$s_admin)
 		{
 			// Send a notice to ask for approval
-			$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-			$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-			$url = $http . $_SERVER["SERVER_NAME"] . $port . '/news.php?id=' . $id;
+			$url = $base_url . '/news.php?id=' . $id;
 
 			$from = readconfigfromdb('from_address');
 			$to = readconfigfromdb('newsadmin');
 			$systemtag = readconfigfromdb('systemtag');
-			$subject = "[eLAS-".$systemtag."] Nieuwsbericht wacht op goedkeuring";
-			$content .= "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+			$subject = '[' . $systemtag . '] Nieuwsbericht wacht op goedkeuring';
+			$content .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
 			$content .= "\nEen lid gaf een nieuwsbericht met titel [";
 			$content .= $news['headline'];
-			$content .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder op eLAS en ga naar nieuws om het bericht goed te keuren.\n";
+			$content .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
 			$content .= 'link: ' .  $url . "\n";
 			sendemail($from, $to, $subject, $content);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';

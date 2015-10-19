@@ -434,7 +434,7 @@ function saldo()
 	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $mydetails_url;
 	$html .= '<p>' . $t . 'Klik <a href="' . $mydetails_url . '">hier</a> om aan te passen</p>';
 
-	$subject = '[eLAS-'. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.';
+	$subject = '['. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.';
 
 	$message = array(
 		'subject'		=> $subject,

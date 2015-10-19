@@ -15,15 +15,6 @@ show_all_users($userrows);
 
 ///////////////////
 
-function get_contacts($userid){
-	global $db;
-	$query = "SELECT * FROM contact ";
-	$query .= " WHERE id_user =".$userid;
- 	$query .= " AND contact.flag_public = 1";
-	$contactrows = $db->fetchAll($query);
-	return $contactrows;
-}
-			
 function check_timestamp($cdate,$agelimit){
         // agelimit is the time after which it expired
         $now = time();
@@ -47,12 +38,12 @@ function show_all_users($userrows){
 	echo "<td><strong>";
 	echo "Naam";
 	echo "</strong></td>\n";
-	echo "<td><strong>Tel</strong></td>\n";
-	echo "<td><strong>gsm</strong></td>\n";
+	echo "<td><strong>xyz</strong></td>\n";
+	echo "<td><strong>xyz</strong></td>\n";
 	echo "<td><strong>";
 	echo "Postc";
 	echo "</strong></td>\n";
-	echo "<td><strong>Mail</strong></td>\n";
+	echo "<td><strong>xyz</strong></td>\n";
 	echo "<td><strong>Stand</strong></td>\n";
 	echo "</tr>\n\n";
 	$newuserdays = readconfigfromdb("newuserdays");
@@ -80,36 +71,17 @@ function show_all_users($userrows){
 
 		echo"</td>\n";
 		echo "<td valign='top'>";
-		echo link_user($value);
+		echo $value['name'];
 		echo '</td>';
 		echo "<td nowrap  valign='top'>";
-		$userid = $value["id"];
-		$contactrows = get_contacts($userid);
-		foreach($contactrows as $key2 => $value2)
-		{
-			if ($value2["id_type_contact"] == 1)
-			{
-				echo  $value2["value"];
-			break;
-			}
-		}
+
 		echo "</td>\n";
 		echo "<td nowrap valign='top'>";
-			foreach($contactrows as $key2 => $value2){
-				if ($value2["id_type_contact"] == 2){
-					echo $value2["value"];
-					break;
-				}
-			}
+
 		echo "</td>\n";
 		echo "<td nowrap valign='top'>".$value["postcode"]."</td>\n";
 		echo "<td nowrap valign='top'>";
-			foreach($contactrows as $key2 => $value2){
-				if ($value2["id_type_contact"] == 3){
-					echo "<a href='mailto:".$value2["value"]."'>".$value2["value"]."</a>";
-					break;
-				}
-			}
+
 		echo "</td>\n";
 		
 		echo "<td nowrap valign='top' align='right'>";

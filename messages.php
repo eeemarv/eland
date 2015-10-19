@@ -424,7 +424,7 @@ if ($mail && $post && $id)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', array($s_id));
 
-	$subject = '[eLAS-' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
+	$subject = '[' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
 
 	if($cc)
 	{

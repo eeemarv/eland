@@ -823,7 +823,7 @@ function mail_mass_transaction($mail_ary)
 	$text .= 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r;
 	$html .= '<p>Klik <a href="' . $new_transaction_url . '">hier</a> om een nieuwe transactie in te geven.</p>';
 
-	$subject = '[eLAS-'. readconfigfromdb('systemtag') .'] - Nieuwe transactie.';
+	$subject = '['. readconfigfromdb('systemtag') .'] - Nieuwe transactie.';
 
 	$message = array(
 		'subject'		=> $subject,
@@ -848,7 +848,7 @@ function mail_mass_transaction($mail_ary)
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
-	$subject = '[eLAS-'. readconfigfromdb('systemtag') .'] - Nieuwe massa transactie.';
+	$subject = '['. readconfigfromdb('systemtag') .'] - Nieuwe massa transactie.';
 
 	log_event($s_id, 'Mail', 'Massa transaction mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
 

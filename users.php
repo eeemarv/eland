@@ -518,24 +518,22 @@ if ($pw)
 					{
 						if ($to)
 						{
-							$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-							$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-							$url = $http . $_SERVER["SERVER_NAME"] . $port . '?login=' . $user['login'];
+							$url = $base_url . '\login.php?login=' . $user['login'];
 
-							$subj = '[eLAS-' . readconfigfromdb('systemtag');
+							$subj = '[' . readconfigfromdb('systemtag');
 							$subj .= '] nieuw paswoord voor je account';
 
-							$con = '*** Dit is een automatische mail van het eLAS systeem van ';
+							$con = '*** Dit is een automatische mail van ';
 							$con .= readconfigfromdb('systemname');
 							$con .= '. Niet beantwoorden astublieft. ';
 							$con .= "***\n\n";
 							$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
 							$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
 							$con .= "\n\n";
-							$con .= 'Je kan inloggen op eLAS met de volgende gegevens:';
+							$con .= 'Je kan inloggen met de volgende gegevens:';
 							$con .= "\n\nLogin: " . $user['login'];
 							$con .= "\nPaswoord: " .$password . "\n\n";
-							$con .= 'eLAS adres waar je kan inloggen: ' . $url;
+							$con .= 'link waar je kan inloggen: ' . $url;
 							$con .= "\n\n";
 							$con .= 'Veel letsgenot!';
 							sendemail($from, $to, $subj, $con);
@@ -2287,16 +2285,14 @@ function sendadminmail($user)
 	$to = readconfigfromdb('admin');
 	$systemtag = readconfigfromdb('systemtag');
 
-	$subject = "[eLAS-";
+	$subject = '[';
 	$subject .= readconfigfromdb('systemtag');
-	$subject .= "] eLAS account activatie";
+	$subject .= "] Account activatie";
 
 	$content  = "*** Dit is een automatische mail van ";
 	$content .= $systemtag;
 	$content .= " ***\r\n\n";
-	$content .= "De account ";
-	$content .= $user["login"];
-	$content .= ' ( ' . $user['letscode'] . ' ) ';
+	$content .= "De account " . link_user($user, null, false) ;
 	$content .= " werd geactiveerd met een nieuw paswoord.\n";
 	if ($user['mail'])
 	{
@@ -2310,7 +2306,6 @@ function sendadminmail($user)
 	}
 
 	$content .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
-	$content .= "Met vriendelijke groeten\n\nDe eLAS account robot\n";
 
 	sendemail($from, $to, $subject, $content);
 }

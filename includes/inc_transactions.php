@@ -17,8 +17,8 @@
 
 function generate_transid()
 {
-	global $baseurl, $s_id;
-	return sha1($s_id .microtime()) .$_SESSION['id'] .'@' . $baseurl;
+	global $base_url, $s_id;
+	return sha1($s_id .microtime()) .$_SESSION['id'] .'@' . $base_url;
 }
 
 function sign_transaction($posted_list, $sharedsecret)
@@ -87,24 +87,24 @@ function mail_interlets_transaction($posted_list)
 	$systemtag = readconfigfromdb('systemtag');
 	$currency = readconfigfromdb('currency');
 
-	$subject .= "[eLAS-".$systemtag."] " . "Interlets transactie";
+	$subject .= '[' . $systemtag . '] Interlets transactie';
 
 	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
 
-	$content  = "Er werd een interlets transactie ingegeven op de eLAS installatie van $systemname met de volgende gegevens:\r\n\r\n";
+	$content  = 'Er werd een interlets transactie ingegeven op de eLAS installatie van ' . $systemname  . " met de volgende gegevens:\r\n\r\n";
 
 	if(!empty($posted_list["real_from"]))
 	{
-		$content .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
+		$content .= "Van: \t\t". $posted_list['real_from'] ."\r\n";
 	}
 	else
 	{
-		$content .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
+		$content .= "Van: \t\t". $userfrom['fullname'] ."\r\n";
 	}
 
-	$content .= "Aan: \t\t". $posted_list["letscode_to"] ."\r\n";
+	$content .= "Aan: \t\t". $posted_list['letscode_to'] ."\r\n";
 
-	$content .= "Voor: \t\t".$posted_list["description"]."\r\n";
+	$content .= "Voor: \t\t".$posted_list['description']."\r\n";
 
 	$currencyratio = readconfigfromdb('currencyratio');
 	$meta = round($posted_list["amount"] / $currencyratio, 4);
@@ -143,7 +143,7 @@ function mail_transaction($posted_list)
 	$systemtag = readconfigfromdb('systemtag');
 	$currency = readconfigfromdb('currency');
 
-	$subject .= "[eLAS-".$systemtag."] " . $posted_list["amount"] . " " .$currency;
+	$subject .= '[' . $systemtag . '] ' . $posted_list['amount'] . ' ' .$currency;
 	if(!empty($posted_list["real_from"]))
 	{
 		$subject .= " van " . $posted_list["real_from"];
@@ -157,7 +157,7 @@ function mail_transaction($posted_list)
 		$subject .= " aan " . $userto["fullname"] ;
 	}
 
-	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
 
 	if(!empty($posted_list["real_from"]))
 	{
@@ -193,7 +193,7 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$systemtag = readconfigfromdb("systemtag");
 	$currency = readconfigfromdb("currency");
 
-	$subject .= "[eLAS-".$systemtag."] Gefaalde transactie $transid" ;
+	$subject .= '['. $systemtag . '] Gefaalde transactie ' . $transid;
 
 	$userfrom = readuser($id_from);
 
@@ -209,7 +209,7 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	}
 
 	//$content .= "Datum: \t\t$timestamp\r\n";
-	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
 	$content .= "Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:\r\n";
 	$content .= "\r\n";
 
@@ -236,7 +236,7 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$content .= "\r\nTransactieID: \t\t$transid\r\n";
 	$content .= "--\r\n";
 
-	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
+	$content .= "\r\n--\nDe transactie robot\r\n";
 
 	sendemail($from,$to,$subject,$content);
 	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);

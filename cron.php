@@ -294,16 +294,16 @@ function admin_exp_msg()
 		return 0;
 	}
 
-	$systemtag = readconfigfromdb("systemtag");
-	$subject = "[eLAS-".$systemtag ."] - Rapport vervallen V/A";
+	$systemtag = readconfigfromdb('systemtag');
+	$subject = '[' . $systemtag . '] - Rapport vervallen V/A';
 
-	$content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --" . $r;
+	$content = "-- Dit is een automatische mail, niet beantwoorden aub --" . $r;
 	$content .= "ID\tUser\tMessage\n";
 	
 	foreach($messages as $key => $value)
 	{
-		$content .=  $value["mid"] ."\t" .$value["username"] ."\t" .$value["message"] ."\t" .$value["validity"] ."\n";
-		$content .= $base_url . '\messages\view?id=' . $value['mid'] . " \n";
+		$content .=  $value["mid"] ."\t" .$value['username'] ."\t" .$value['message'] ."\t" .$value["validity"] ."\n";
+		$content .= $base_url . '\messages.php?id=' . $value['mid'] . " \n";
 	}
 
 	$content .=  $r;
@@ -361,15 +361,14 @@ function user_exp_msgs()
 		}
 
 		$systemtag = readconfigfromdb("systemtag");
-		$subject = "[eLAS-".$systemtag ."] - " . $subject;
+		$subject = '[' . $systemtag . '] ' . $subject;
 
-		$content = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n\n";
+		$content = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\n";
 		$content .= "$content\n\n";
 
 		$content .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
 		$content .= readconfigfromdb('support');
 
-		$content .= "\n\nDe eLAS Robot\n";
 		sendemail($from, $to, $subject, $content);
 		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
 	}
