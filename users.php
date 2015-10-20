@@ -1356,7 +1356,7 @@ if ($add || $edit)
 	echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum (jjjj-mm-dd)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
-	echo 'value="' . $user['birthday'] . '" required ';
+	echo 'value="' . $user['birthday'] . '" ';
 	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 	echo 'data-date-default-view="2" ';
 	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
