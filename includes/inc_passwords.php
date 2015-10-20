@@ -17,7 +17,7 @@
 function sendactivationmail($password, $user)
 {
 	global $base_url, $s_id, $alert;
-	
+
 	$from = readconfigfromdb("from_address");
 
 	if (!empty($user["mail"]))

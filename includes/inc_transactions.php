@@ -283,7 +283,7 @@ function get_mailaddresses($uid)
 
 function check_auto_minlimit($to_user_id, $from_user_id, $amount)
 {
-	global $elas_mongo, $db;
+	global $elas_mongo, $db, $s_id;
 
 	if (!$to_user_id || !$from_user_id)
 	{
@@ -337,9 +337,7 @@ function check_auto_minlimit($to_user_id, $from_user_id, $amount)
 		|| ($a['account_base'] >= $user['saldo']) 
 	)
 	{
-		error_log('----------------- start -----------------');
-		error_log(implode(' | -- | ', $a));
-		error_log(' | ++ | ' . implode(' | ++ | ', array_keys($a)));
+		error_log('auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . "\n");
 		return;
 	}
 
@@ -354,7 +352,7 @@ function check_auto_minlimit($to_user_id, $from_user_id, $amount)
 	$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
 
 	write_new_limit($to_user_id, $new_minlimit);
-	log_event('','auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . $user['letscode'] . ' ' . $user['fullname'] . ' (id:' . $to_user_id . ') ');	
+	log_event($s_id, 'auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . $user['letscode'] . ' ' . $user['fullname'] . ' (id:' . $to_user_id . ') ');	
 }
 
 function write_new_limit($user_id, $new_limit, $type = 'min')

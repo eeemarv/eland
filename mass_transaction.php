@@ -316,21 +316,7 @@ if ($_POST['zend'])
 			}
 		} 
 
-		$users = array();
-
-		$users = $db->prepare(
-			'SELECT id, name, letscode,
-				accountrole, status, saldo, minlimit, maxlimit, adate
-			FROM users
-			WHERE status IN (0, 1, 2, 5, 6)
-			ORDER BY letscode');
-
-		$rs->execute();
-
-		while($row = $rs->fetch())
-		{
-			$users[$row['id']] = $row;
-		}
+		cancel();
 	}
 }
 
@@ -647,7 +633,7 @@ function mail_mass_transaction($mail_ary)
 
 	$rs->execute();
 
-	while ($row = fetch())
+	while ($row = $rs->fetch())
 	{
 		$mailaddr[$row['id']] = $row['value'];
 	}
@@ -661,8 +647,8 @@ function mail_mass_transaction($mail_ary)
 	$to = $merge_vars  = array();
 	$to_log = '';
 	$total = 0;
-	$t = 'Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.';
-	$t_one = $one_user['letscode'] . ' ' . $one_user['name'];
+	$t = '*** Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b. ***';
+	$t_one = link_user($one_user, null, false);
 
 	$one_msg = $t . $r . $r;
 
@@ -676,35 +662,21 @@ function mail_mass_transaction($mail_ary)
 		$one_msg .= 'Van' . $r;
 	}
 
-	$query = 'SELECT u.id,
+	$users = $db->executeQuery('SELECT u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.name, u.letscode, u.login
 		FROM users u
 		WHERE u.status in (1, 2)
-			AND u.id';
-	$query .= (count($many_user_ids) > 1) ? ' IN (' . implode(', ', $many_user_ids) . ')' : ' = ' . $many_user_ids[0];
+			AND u.id IN (?)',
+		array($many_user_ids),
+		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
 
-	if (count($many_user_ids) > 1)
-	{
-		$query .= ' IN (?)';
-		$st = $db->prepare($query);
-		$st->bindValue(1, $many_user_ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
-	}
-	else
-	{
-		$query .= ' = ?';
-		$st = $db->prepare($query);
-		$st->bindValue(1, $many_user_ids[0]);
-	}
-
-	$st->execute();
-
-	while ($user = $st->fetch())
+	foreach ($users as $user)
 	{
 		$amount = $many_ary[$user['id']]['amount'];
 		$transid = $many_ary[$user['id']]['transid'];
 
-		$one_msg .= link_user($user) . ': ';
+		$one_msg .= link_user($user, null, false) . ': ';
 		$one_msg .= $amount . ' ' . $currency;
 		$one_msg .= ', transactie-id: ' . $transid . $r;
 
@@ -773,7 +745,7 @@ function mail_mass_transaction($mail_ary)
 	$text = $t . $r . $r;
 	$html = $t . '<br>';
 
-	$text .= 'Notificatie transactie' . $r;
+	$text .= 'Notificatie transactie' . $r . $r;
 	$html .= '<h2>Notificatie transactie</h2>';
 
 	$t_many = '*|LETSCODE|* *|NAME|*';
@@ -882,4 +854,10 @@ function mail_mass_transaction($mail_ary)
 	$mandrill->messages->send($message, true);
 
 	return true;
+}
+
+function cancel()
+{
+	header('Location: ' . $rootpath . 'mass_transaction.php');
+	exit;
 }
