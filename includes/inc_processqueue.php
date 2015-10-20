@@ -5,7 +5,7 @@ require_once $rootpath . 'includes/inc_transactions.php';
 function processqueue()
 {
 	global $db;
-	echo "Running eLAS Interlets System\n\n";
+	echo "Running Interlets System\n\n";
 
 	$transactions = $db->fetchAll('SELECT * FROM interletsq');
 
@@ -69,7 +69,7 @@ function processqueue()
 					case 'OFFLINE':
 						//Do nothing
 						update_queue($transid,$count,$result);
-						log_event('', 'Soap', 'Remote eLAS offline ' . $transid);
+						log_event('', 'Soap', 'Remote site offline ' . $transid);
 						break;
 					case 'FAILED':
 						//Handle error and remove transaction

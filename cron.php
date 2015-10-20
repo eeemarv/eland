@@ -336,17 +336,22 @@ function user_exp_msgs()
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', array($value['id_user']));
 		$username = $user["name"];
-		$extend_url = $base_url . '/userdetails/mymsg_extend.php?id=' . $value['id'] . '&validity=';
+		$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&validity=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
-		$content = "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'];
-		$content .= " in eLAS is vervallen en zal over " . $msgcleanupdays . ' dagen verwijderd worden. ';
-		$content .= "Om dit te voorkomen kan je inloggen op eLAS en onder de optie 'Mijn Vraag & Aanbod' voor verlengen kiezen. ";
-		$content .= "\n Verlengen met één maand: " . $extend_url . "1 \n";
-		$content .= "\n Verlengen met één jaar: " . $extend_url . "12 \n";
-		$content .= "\n Verlengen met vijf jaar: " . $extend_url . "60 \n";
-		$content .= "\n Nieuw vraag of aanbod ingeven: " . $base_url . "/messages/edit.php?mode=new \n";
+		$content = "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
+		$content .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
+		$content .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
+		$content .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
+		$content .= "\n\n Verlengen met \n\n"
+		$content .= "één maand: " . $extend_url . "30 \n";
+		$content .= "twee maanden: " . $extend_url . "60 \n";
+		$content .= "zes maanden: " . $extend_url . "180 \n";
+		$content .= "één jaar: " . $extend_url . "365 \n";
+		$content .= "twee jaar: " . $extend_url . "730 \n";
+		$content .= "vijf jaar: " . $extend_url . "1825 \n\n";
+		$content .= "Nieuw vraag of aanbod ingeven: " . $base_url . "/messages.php?add=1 \n";
 
-		$subject = 'Je ' . $va . ' in eLAS is vervallen.';
+		$subject = 'Je ' . $va . ' is vervallen.';
 
 		$from_address_transactions = readconfigfromdb("from_address_transactions");
 

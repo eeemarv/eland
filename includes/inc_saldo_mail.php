@@ -303,11 +303,11 @@ function saldo()
 	if (count($msgs))
 	{
 		$t = 'Deze lijst bevat LETS vraag en aanbod dat de afgelopen ' . readconfigfromdb('saldofreqdays') .
-			' dagen in eLAS is geplaatst. ';
+			' dagen online is geplaatst. ';
 	}
 	else
 	{
-		$t = 'Er werd geen nieuw vraag of aanbod in eLAS geplaatst afgelopen ' .
+		$t = 'Er werd geen nieuw vraag of aanbod online geplaatst afgelopen ' .
 			readconfigfromdb('saldofreqdays') . ' dagen. ';
 	}
 
@@ -403,7 +403,7 @@ function saldo()
 	}
 	else
 	{
-		$t = 'Er werden geen nieuwe transacties in eLAS gedaan afgelopen ' .
+		$t = 'Er werden geen nieuwe transacties gedaan afgelopen ' .
 		readconfigfromdb('saldofreqdays') . ' dagen. ';
 	}
 	$text .= $t . $r;

@@ -53,14 +53,14 @@ function sendactivationmail($password, $user)
 	$content .= $password;
 	$content .= "\n-- --\n\n";
 
-	$content .= "Met eLAS kan je je gebruikersgevens, vraag&aanbod en lets-transacties";
+	$content .= "Je kan je gebruikersgevens, vraag&aanbod en lets-transacties";
 	$content .= " zelf bijwerken op het Internet.";
 	$content .= "\n\n";
 
 	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
 	$content .= readconfigfromdb('support');
 	$content .= "\n\n";
-	$content .= "Veel plezier bij het letsen! \n\n De eLAS Account robot\n";
+	$content .= "Veel plezier bij het letsen! \n";
 
 	sendemail($from,$to,$subject,$content);
 

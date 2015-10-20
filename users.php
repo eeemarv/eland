@@ -2103,7 +2103,7 @@ echo '</div></div>';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
-echo '<p>Totaal saldo van zichtbare gebruikers: <span id="sum"></span> ' . $currency . '</p>';
+echo '<p>Totaal saldo: <span id="sum"></span> ' . $currency . '</p>';
 echo '</div></div>';
 
 if ($s_admin)

@@ -34,6 +34,11 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
+if (!$post)
+{
+	$extend = (isset($_GET['extend'])) ? $_GET['extend'] : false;
+}
+
 /*
  * bulk actions (set access or validity)
  */
@@ -80,8 +85,6 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 				$alert->error('Fout: ' . $row['content'] . ' is niet verlengd.');
 				cancel();
 			}
-
-			error_log('--- update validity ---- id: ' . $id . ' validity: ' . $validity . ' ---- ');
 		}
 		if (count($validity_ary) > 1)
 		{
@@ -163,6 +166,36 @@ if ($id || $edit || $del)
 	$ow_type_the = ($message['msg_type']) ? 'het aanbod' : 'de vraag';
 	$ow_type_uc = ucfirst($ow_type);
 	$ow_type_uc_the = ucfirst($ow_type_the);
+}
+
+/*
+ * extend (link from notification mail)
+ */
+
+if ($id && $extend)
+{
+	if (!($s_owner || $s_admin))
+	{
+		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
+		cancel($id);
+	}
+
+	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $extend));
+
+	$m = array(
+		'validity'		=> $validity,
+		'mdate'			=> gmdate('Y-m-d H:i:s'),
+		'exp_user_warn'	=> 'f',
+	);
+
+	if (!$db->update('messages', $m, array('id' => $id)))
+	{
+		$alert->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
+		cancel($id);
+	}
+
+	$alert->success($ow_type_uc_the . ' is verlengd.');
+	cancel($id);
 }
 
 if ($post)
@@ -432,7 +465,7 @@ if ($mail && $post && $id)
 	}
 
 	$mailcontent = 'Beste ' . $user['name'] . "\r\n\n";
-	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $ow_type . " verstuurd via eLAS --\r\n\n";
+	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $ow_type . " verstuurd via de webtoepassing --\r\n\n";
 	$mailcontent .= $content . "\n\n";
 	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
 	$mailcontent .= 'Contactgegevens van ' . $me['name'] . ":\n";

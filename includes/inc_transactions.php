@@ -89,9 +89,9 @@ function mail_interlets_transaction($posted_list)
 
 	$subject .= '[' . $systemtag . '] Interlets transactie';
 
-	$content  = "-- Dit is een automatische mail van het eLAS systeem, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
 
-	$content  = 'Er werd een interlets transactie ingegeven op de eLAS installatie van ' . $systemname  . " met de volgende gegevens:\r\n\r\n";
+	$content  = 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname  . " met de volgende gegevens:\r\n\r\n";
 
 	if(!empty($posted_list["real_from"]))
 	{
@@ -114,8 +114,6 @@ function mail_interlets_transaction($posted_list)
 
 	$content .= "\r\nJe moet deze in je eigen systeem verder verwerken.\r\n";
 	$content .= "\r\nAls dit niet mogelijk is moet je de kern van de andere groep verwittigen zodat ze de transactie aan hun kant annuleren.\r\n";
-
-	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
 
 	sendemail($from, $to, $subject, $content);
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
@@ -180,8 +178,6 @@ function mail_transaction($posted_list)
 	$content .= "Aantal: \t".$posted_list["amount"]."\r\n";
 	$content .= "\r\nTransactieID: \t\t".$posted_list['transid'] . "\r\n";
 
-	$content .= "\r\n--\nDe eLAS transactie robot\r\n";
-
 	sendemail($from, $to, $subject, $content);
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
@@ -215,10 +211,10 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 
 	switch ($result){
 		case "SIGFAIL":
-			$content .= "De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de 2 eLAS installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.\r\n";
+			$content .= "De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.\r\n";
 			break;
 		case "EXPIRED":
-			$content .= "Na 4 dagen kon geen contact met de andere eLAS installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.\r\n";
+			$content .= "Na 4 dagen kon geen contact met de andere installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.\r\n";
 			break;
 		case "NOUSER":
 			$content .= "De gebruiker met die letscode bestaat niet in de andere groep.  Controleer de letscode via de interlets-functies en probeer het eventueel opnieuw.\r\n";

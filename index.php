@@ -57,7 +57,7 @@ if($s_admin)
 	{
 		echo '<div class="panel panel-danger">';
 		echo '<div class="panel-heading">';
-		echo 'eLAS status (amdin)';
+		echo 'eLAS status (admin)';
 		echo '</div>';
 
 		echo '<ul class="list-group">';

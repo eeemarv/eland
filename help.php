@@ -17,7 +17,7 @@ if(isset($_POST['zend']))
    
 	if(empty($help['login']))
 	{
-		$errors[] = 'Vul een eLAS login in';
+		$errors[] = 'Vul je login in';
 	}
 
 	if(empty($help['email']))
@@ -31,7 +31,7 @@ if(isset($_POST['zend']))
 			and tc.abbrev = \'mail\'
 			and c.value = ?', array($help['email']))))
 	{
-		$errors[] = 'Dit mailadres is niet gekend in eLAS';
+		$errors[] = 'Dit mailadres is niet gekend in deze installatie';
 	}
 
 	if(empty($help['subject']))
@@ -109,7 +109,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in eLAS geregistreerd bent)</label>';
+echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="' . $help['email'] . '" required' . $readonly . '>';
