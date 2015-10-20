@@ -43,11 +43,14 @@ if ($add)
 		$transaction['date'] = date('Y-m-d H:i:s');
 		$letsgroup_id = $_POST['letsgroup_id'];
 
-		$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
-
-		if (!isset($letsgroup))
+		if ($letsgroup_id != 'self')
 		{
-			$alert->error('Letsgroep niet gevonden.');
+			$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
+
+			if (!isset($letsgroup))
+			{
+				$alert->error('Letsgroep niet gevonden.');
+			}
 		}
 
 		if ($s_user)
@@ -59,7 +62,7 @@ if ($add)
 			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_from));
 		}
 
-		$letscode_touser = ($letsgroup['apimethod'] == 'internal') ? $letscode_to : $letsgroup['localletscode'];
+		$letscode_touser = ($letsgroup_id == 'self') ? $letscode_to : $letsgroup['localletscode'];
 		$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_touser));
 
 		$transaction['id_from'] = $fromuser['id'];
@@ -106,11 +109,11 @@ if ($add)
 
 		if($touser['saldo'] > $touser['maxlimit'] && !$s_admin)
 		{
-			$t_account = ($letsgroup['apimethod'] == 'internal') ? 'bestemmeling' : 'interletsrekening';
+			$t_account = ($letsgroup_id == 'self') ? 'bestemmeling' : 'interletsrekening';
 			$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 		}
 
-		if($letsgroup['apimethod'] == 'internal'
+		if($letsgroup_id == 'self'
 			&& !$s_admin
 			&& !($touser['status'] == '1' || $touser['status'] == '2'))
 		{
@@ -130,23 +133,28 @@ if ($add)
 		{
 			$alert->error(implode('<br>', $errors));
 		}
+		else if ($letsgroup_id == 'self')
+		{
+			if (insert_transaction($transaction))
+			{
+				mail_transaction($transaction);
+				$alert->success('Transactie opgeslagen');
+			}
+			else
+			{
+				$alert->error('Gefaalde transactie');
+			}
+			cancel();
+		}
 		else
 		{
 			switch($letsgroup['apimethod'])
 			{
-				case 'internal':
 				case 'mail':
 
 					if (insert_transaction($transaction))
 					{
-						if ($letsgroup['apimethod'] == 'internal')
-						{
-							mail_transaction($transaction);
-						}
-						else
-						{
-							mail_interlets_transaction($transaction);
-						}
+						mail_interlets_transaction($transaction);
 						$alert->success('Transactie opgeslagen');
 					}
 					else
@@ -228,36 +236,9 @@ if ($add)
 		}
 	}
 
-	$internal_letsgroup_prefixes = array();
-
-	$rs = $db->prepare('SELECT id, prefix
-		FROM letsgroups
-		WHERE apimethod = \'internal\'
-		ORDER BY prefix asc');
-
-	$rs->execute();
-
-	while ($row = $rs->fetch())
-	{
-		$internal_letsgroup_prefixes[$row['id']] = $row['prefix'];
-	}
-
-	foreach ($internal_letsgroup_prefixes as $letsgroup_id => $letsgroup_prefix)
-	{
-		if (!$letsgroup_prefix)
-		{
-			break;
-		}
-
-		if (strpos(strtolower($s_letscode), strtolower($letsgroup_prefix) === 0))
-		{
-			break;
-		}
-	}
-
 	if (!isset($_POST['zend']))
 	{
-		$letsgroup['id'] = $letsgroup_id;
+		$letsgroup['id'] = 'self';
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -266,7 +247,11 @@ if ($add)
 	$user = readuser($s_id);
 	$balance = $user['saldo'];
 
-	$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups');
+	$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+	$letsgroups = array_merge(array(array(
+			'groupname' => readconfigfromdb('systemname'),
+			'id'		=> 'self',
+		)), $letsgroups);
 
 	$currency = readconfigfromdb('currency');
 
@@ -317,11 +302,11 @@ if ($add)
 	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
 	foreach ($letsgroups as $l)
 	{
-		$thumbprint = (getenv('ELAS_DEBUG')) ? time() : $redis->get($l['url'] . '_typeahead_thumbprint');
+		$thumbprint = time();//(getenv('ELAS_DEBUG')) ? time() : $redis->get($l['url'] . '_typeahead_thumbprint');
 		echo '<option value="' . $l['id'] . '" ';
 		echo 'data-thumbprint="' . $thumbprint . '"';
 		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
-		echo ($l['id'] == $letsgroup_id) ? ' data-this-letsgroup="1"' : '';
+		echo ($l['id'] == 'self') ? ' data-this-letsgroup="1"' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 	echo '</select>';

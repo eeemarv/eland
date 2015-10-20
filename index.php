@@ -51,9 +51,8 @@ if($s_admin)
 	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 	$db_update = ($version == $schemaversion) ? false : true;
 	$default_config = $db->fetchColumn('select setting from config where "default" = True');
-	$group_internal = $db->fetchColumn('select id from letsgroups where apimethod = \'internal\'');
 
-	if ($db_update || $default_config || !$group_internal)
+	if ($db_update || $default_config)
 	{
 		echo '<div class="panel panel-danger">';
 		echo '<div class="panel-heading">';
@@ -75,13 +74,7 @@ if($s_admin)
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
-		if ($group_internal)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er bestaat geen LETS groep met type intern voor je eigen groep.  ';
-			echo 'Voeg die toe onder <a href="' . $rootpath . 'interlets/overview.php">LETS Groepen</a>.';
-			echo '</li>';
-		}
+
 		echo '</ul>';
 		echo '</div>';
 	}

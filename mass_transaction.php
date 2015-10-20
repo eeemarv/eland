@@ -324,8 +324,6 @@ $transid = generate_transid();
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-$letsgroup_id = $db->fetchColumn('select id from letsgroups where apimethod = \'internal\'');
-
 if ($to_letscode)
 {
 	if ($to_name = $db->fetchColumn('select name from users where letscode = ?', array($to_letscode)))
@@ -454,7 +452,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
-echo 'data-letsgroup-id="' . $letsgroup_id . '">';
+echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '">';
 echo '</div>';
 echo '</div>';
 
@@ -546,7 +544,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="' . $to_letscode . '" ';
-echo 'data-letsgroup-id="' . $letsgroup_id . '">';
+echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '">';
 echo '</div>';
 echo '</div>';
 

@@ -8,10 +8,6 @@ $q = $_GET['q'];
 $letscode = $_GET['letscode'];
 $type = $_GET['type'];
 
-$letsgroup_id = $db->fetchColumn('SELECT id
-	FROM letsgroups
-	WHERE apimethod = \'internal\'');
-
 $find = array();
 
 if ($letscode)
@@ -67,7 +63,7 @@ echo '<div class="form-group">';
 echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo ' data-letsgroup-id="' . $letsgroup_id . '" ';
+echo ' data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';

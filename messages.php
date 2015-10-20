@@ -797,10 +797,6 @@ if (($edit || $add))
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 	}
 
-	$letsgroup_id = $db->fetchColumn('SELECT id
-		FROM letsgroups
-		WHERE apimethod = \'internal\'');
-
 	$cat_list = array('' => '');
 
 	$rs = $db->prepare('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
@@ -871,7 +867,7 @@ if (($edit || $add))
 		echo '<span class="label label-default">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-letsgroup-id="' . $letsgroup_id . '" ';
+		echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';

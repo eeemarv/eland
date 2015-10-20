@@ -149,14 +149,12 @@ div.tt-cursor p.inactive
 	background-color: transparent;
 } 
 
-.tt-suggestion:hover
+p.tt-suggestion:hover
 {
 	background-color: blue;
 	color: white;
 	cursor: pointer;
 }
-
-
 
 /**/
 

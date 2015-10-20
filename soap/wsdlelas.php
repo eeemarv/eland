@@ -80,12 +80,12 @@ $server->register('dopayment',
 
 function gettoken($apikey)
 {
-	global $db;
+	global $db, $schema;
 	log_event('', 'debug', 'Token request');
 	if(check_apikey($apikey, 'interlets'))
 	{
 		$token = array(
-			'token'		=> 'elasv2' . md5(microtime()),
+			'token'		=> md5(microtime() . $schema),
 			'validity'	=> date('Y-m-d H:i:s', time() + (10 * 60)),
 			'type'		=> 'guestlogin'
 		);
@@ -223,7 +223,7 @@ function getstatus($apikey)
 {
 	global $elasversion;
 
-	if (check_apikey($apikey,'interlets'))
+	if (check_apikey($apikey, 'interlets'))
 	{
 		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAS ' . $elasversion;
 	}
@@ -235,7 +235,7 @@ function getstatus($apikey)
 
 function apiversion($apikey)
 {
-	if(check_apikey($apikey,'interlets'))
+	if(check_apikey($apikey, 'interlets'))
 	{
 		global $soapversion;
 		return $soapversion;

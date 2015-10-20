@@ -89,7 +89,7 @@ function mail_interlets_transaction($posted_list)
 
 	$subject .= '[' . $systemtag . '] Interlets transactie';
 
-	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\n\r\n\r";
 
 	$content  = 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname  . " met de volgende gegevens:\r\n\r\n";
 
@@ -155,7 +155,7 @@ function mail_transaction($posted_list)
 		$subject .= " aan " . $userto["fullname"] ;
 	}
 
-	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
+	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
 
 	if(!empty($posted_list["real_from"]))
 	{
