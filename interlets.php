@@ -376,6 +376,31 @@ $groups = $db->fetchAll('SELECT * FROM letsgroups');
 
 if ($s_admin)
 {
+	list($schemas, $domains) = get_schemas_domains();
+
+	$letscodes = array();
+
+	foreach ($groups as $key => $g)
+	{
+		$letscodes[] = $g['localletscode'];
+		$groups[$key]['server'] = ($schemas[str_replace(array('http://', 'https://', '//'), $g['url'])]) ? true : false;
+	}
+
+	$users_letscode = array();
+
+	$users = $db->executeQuery('select id, status, letscode from users where letscode in (?)',
+		array($letscodes),
+		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+	foreach ($users as $u)
+	{
+		$users_letscode[$u['letscode']] = array(
+			'id'		=> $u['id'],
+			'status'	=> $u['status'],
+		);
+	}
+
+
 	$top_buttons = '<a href="' . $rootpath . 'interlets.php?add=1" class="btn btn-success"';
 	$top_buttons .= ' title="Groep toevoegen"><i class="fa fa-plus"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
@@ -398,9 +423,8 @@ echo '<th data-hide="phone">leden</th>';
 
 if ($s_admin)
 {
+	echo '<th data-hide="phone, tablet">Admin</th>';	
 	echo '<th data-hide="phone, tablet">api</th>';
-	echo '<th data-hide="phone, tablet">Admin</th>';
-	echo '<th data-hide="phone, tablet">Account</th>';
 }
 
 echo '</tr>';
@@ -412,20 +436,57 @@ $param = ($s_admin) ? 'id' : 'login';
 
 foreach($groups as $g)
 {
-	$a = '<a href="' . $rootpath . 'interlets.php?' . $param . '=' . $g['id'] . '">';
+	$error = false;
+	$a = '<a href="' . $rootpath . 'interlets.php?login=' . $g['id'] . '">';
 	echo '<tr>';
-	echo ($s_admin) ? '<td>' . $a . $g['localletscode'] . '</a></td>' : '';
+	if ($s_admin)
+	{
+		echo '<td>';
+		$user = $users_letscode[$g['localletscode']];
+		if ($user)
+		{
+			echo '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '" ';
+			echo 'class="btn btn-default btn-xs" title="verbonden gebruikers account">';
+			echo $g['localletscode'] . '</a>';
+			if (!in_array($user['status'], array(1, 2, 7)))
+			{
+				echo ' <span title="Het verbonden gebruikersaccount heeft een ongeldige status. De status moet ';
+				echo 'van het type extern, actief of uitstapper zijn." class="text-danger">';
+				echo '<span class="fa fa-exclamation-triangle"></span> Status!</span>';
+				$error = true;
+			}
+		}
+		else
+		{
+			echo $g['localletscode'];
+
+			if ($g['apimethod'] != 'internal' && !$user)
+			{
+				echo ' <span title="Geen verbonden gebruikersaccount. Maak een gebruikersaccount met status extern ';
+				echo 'aan met een gelijke letscode." class="text-danger"><span class="fa fa-exclamation-triangle"></span> ';
+				echo ' Geen account!</span>';
+				$error = true;
+			}
+		}
+		echo '</td>';
+	}
 	echo '<td>' . $a . $g['groupname'] . '</a></td>';
 	echo '<td>' . $a . $redis->get($g['url'] . '_active_user_count') . '</a></td>';
 	if ($s_admin)
 	{
-		echo '<td>' . $g['apimethod'] . '</td>';
 		echo '<td><a href="' . $rootpath . 'interlets.php?id=' . $g['id'] . '" class="btn btn-default btn-xs">';
-		echo 'Admin</a></td>';
-
-		echo '<td>';
-
+		echo 'Instellingen</a>';
+		if ($error)
+		{
+			echo ' <span class="fa fa-exclamation-triangle text-danger"></span>';
+		}
+		if ($g['server'])
+		{
+			echo ' <span class="label label-success">server</span>';
+		}
+		echo $g['url'];
 		echo '</td>';
+		echo '<td>' . $g['apimethod'] . '</td>';
 	}
 	echo '</tr>';
 }
@@ -443,6 +504,36 @@ if ($s_admin)
 }
 
 include $rootpath . 'includes/inc_footer.php';
+
+function get_schemas_domains()
+{
+	global $db;
+
+	$schemas = $domains = array();
+
+	$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
+	$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+	$schemas_db = array_fill_keys($schemas_db, true);
+
+	foreach ($_ENV as $key => $schema)
+	{
+		if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema])))
+		{
+			continue;
+		}
+
+		$domain = str_replace('ELAS_SCHEMA_', '', $key);
+		$domain = str_replace('____', ':', $domain);
+		$domain = str_replace('___', '-', $domain);
+		$domain = str_replace('__', '.', $domain);
+		$domain = strtolower($domain);
+
+		$schemas[$domain] = $schema;
+		$domains[$schema] = $domain;
+	}
+
+	return array($schemas, $domains);
+}
 
 function cancel($id = null)
 {

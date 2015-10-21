@@ -860,7 +860,7 @@ if ($add || $edit)
 	{
 		$user = array(
 			'postcode'		=> $_POST['postcode'],
-			'birthday'		=> $_POST['birthday'],
+			'birthday'		=> $_POST['birthday'] ?: null,
 			'hobbies'		=> $_POST['hobbies'],
 			'comments'		=> $_POST['comments'],
 			'login'			=> $_POST['login'],
@@ -1123,11 +1123,11 @@ if ($add || $edit)
 			{
 				$user_stored = readuser($edit);
 
-				$user['mdate'] = date('Y-m-d H:i:s');
+				$user['mdate'] = gmdate('Y-m-d H:i:s');
 
 				if (!$user_stored['adate'] && $user['status'] == 1)
 				{
-					$user['adate'] = date('Y-m-d H:i:s');
+					$user['adate'] = gmdate('Y-m-d H:i:s');
 				}
 
 				if($db->update('users', $user, array('id' => $edit)))
