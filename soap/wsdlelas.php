@@ -221,11 +221,11 @@ function userbyname($apikey, $name)
 
 function getstatus($apikey)
 {
-	global $elasversion;
+	//global $elasversion;
 
 	if (check_apikey($apikey, 'interlets'))
 	{
-		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAS ' . $elasversion;
+		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAS-Heroku'; //  . $elasversion;
 	}
 	else
 	{
@@ -237,8 +237,8 @@ function apiversion($apikey)
 {
 	if(check_apikey($apikey, 'interlets'))
 	{
-		global $soapversion;
-		return $soapversion;
+		//global $soapversion;
+		return 1200; //$soapversion;
 	}
 }
 

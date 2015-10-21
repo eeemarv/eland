@@ -97,8 +97,7 @@ foreach($rows as $value)
 	echo '<td>' . $value['ts_tz'] .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
-	echo '<td><a href="' . $rootpath . 'users/view.php?id=' . $value['user_id'] . '">';
-	echo $value['letscode'] . ' ' . $value['username'] . '</a></td>';
+	echo '<td>' . link_user($value['user_id']) . '</td>';
 	echo '<td>' . $value['event'] . '</td>';
 	echo '</tr>';
 }

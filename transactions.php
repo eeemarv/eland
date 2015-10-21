@@ -286,7 +286,7 @@ if ($add)
 	echo ($s_admin) ? '' : ' disabled="disabled" ';
 	echo '>';
 	echo '<label for="letscode_from" class="col-sm-2 control-label">';
-	echo '<span class="label label-default">Admin</span> ';
+	echo '<span class="label label-info">Admin</span> ';
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
@@ -712,7 +712,93 @@ if ($inline)
 {
 	echo '</div></div>';
 }
+
+if ($uid)
+{
+	$interletsq = $db->fetchAll('select q.*, l.groupname
+		from interletsq q, letsgroups l
+		where q.id_from = ?
+			and q.letsgroup_id = l.id', array($uid));
+	$from = ' van ' . link_user($uid);
+}
 else
+{
+	$interletsq = $db->fetchAll('select q.*, l.groupname
+		from interletsq q, letsgroups l
+		where q.letsgroup_id = l.id');
+	$from = '';
+}
+
+if (count($interletsq))
+{
+	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking</h3>';
+
+	echo '<div class="panel panel-warning">';
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-hover table-striped table-bordered footable">';
+
+	echo '<thead>';
+	echo '<tr class="warning">';
+	echo '<th>Omschrijving</th>';
+	echo '<th>Bedrag</th>';
+	echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
+	echo '<th data-hide="phone, tablet">Van</th>';
+	echo '<th data-hide="phone, tablet">Aan letscode</th>';
+	echo '<th data-hide="phone, tablet">Groep</th>';
+	echo '<th data-hide="phone, tablet">Pogingen</th>';
+	echo '<th data-hide="phone, tablet">Status</th>';
+	echo '<th data-hide="phone, tablet">trans id</th>';
+	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	foreach($interletsq as $q)
+	{
+		echo '<tr class="warning">';
+
+		echo '<td>';
+		echo htmlspecialchars($q['description'], ENT_QUOTES);
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['amount'] * readconfigfromdb('currencyratio');
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['date_created'];
+		echo '</td>';
+
+		echo '<td>';
+		echo link_user($q['id_from']);
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['letscode_to'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['groupname'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['retry_count'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['last_status'];
+		echo '</td>';
+
+		echo '<td>';
+		echo $q['transid'];
+		echo '</td>';
+
+		echo '</tr>';
+	}
+	echo '</table></div></div>';
+}
+
+if (!$inline)
 {
 	include $rootpath . 'includes/inc_footer.php';
 }

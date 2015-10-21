@@ -538,7 +538,7 @@ echo '</div>';
 
 if ($s_admin)
 {
-	echo '<h3><span class="label label-default">Admin</span> Nieuw document opladen</h3>';
+	echo '<h3><span class="label label-info">Admin</span> Nieuw document opladen</h3>';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';

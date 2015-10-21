@@ -125,7 +125,7 @@ $access_ary = array(
 );
 
 $acc_ary = array(
-	0	=> array('admin', 'default'),
+	0	=> array('admin', 'info'),
 	1	=> array('leden', 'warning'),
 	2	=> array('interlets', 'success'),
 );
@@ -192,10 +192,10 @@ date_default_timezone_set($elas_timezone);
 $elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
 
 // release file (xml) not loaded anymore.
-$elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
+// $elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
 $schemaversion= 31000;  // no new versions anymore, release file is not read anymore.
-$soapversion = 1200;
-$restversion = 1;
+// $soapversion = 1200;
+// $restversion = 1;
 
 // database connection
 

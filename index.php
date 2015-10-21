@@ -70,7 +70,7 @@ if($s_admin)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Er zijn nog settings met standaardwaarden, ';
-			echo 'klik op <a href="' . $rootpath . 'preferences/config.php">instellingen</a> ';
+			echo 'klik op <a href="' . $rootpath . 'config.php">instellingen</a> ';
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}

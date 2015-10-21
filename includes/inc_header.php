@@ -74,7 +74,6 @@ if ($s_letscode)
 	{
 		$menu = array(
 			'categories.php'	 				=> array('clone', 'Categorieën'),
-			'interlets/overview.php'			=> array('share-alt', 'LETS Groepen'),
 			'apikeys.php'						=> array('key', 'Apikeys'),
 			'type_contact.php'					=> array('circle-o-notch', 'Contact types'),
 			'reports/overview.php'				=> array('calculator', 'Rapporten'),
@@ -116,7 +115,7 @@ if ($s_letscode)
 		echo '<a href="' . $rootpath . 'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) . '" ';
 		echo 'title="Admin modus inschakelen">';
 		echo '<span class="fa fa-times text-danger"></span> ';
-		echo 'Admin';
+		echo 'Admin modus';
 		echo '</a>'; 
 	}
 	echo '</ul>';
@@ -155,7 +154,7 @@ else
 
 	if ($s_user || $s_admin)
 	{
-		$menu['interlets/userview.php'] = array('share-alt', 'Interlets');
+		$menu['interlets.php'] = array('share-alt', 'InterLETS');
 	}
 
 	if (readconfigfromdb('docs_en'))
@@ -214,8 +213,7 @@ if (isset($top_right))
 if (isset($h1))
 {
 	echo '<h1>';
-	echo ($role == 'admin' || $s_admin) ? '<span class="label label-default">Admin</span> ' : '';
+	echo ($role == 'admin' || $s_admin) ? '<small><span class="label label-info">Admin</span></small> ' : '';
 	echo (isset($fa)) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
 	echo $h1 . '</h1>';
-	echo ($role == 'admin') ? '<p>&nbsp;</p>' : '';
 }

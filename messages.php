@@ -864,7 +864,7 @@ if (($edit || $add))
 	{
 		echo '<div class="form-group">';
 		echo '<label for="user_letscode" class="col-sm-2 control-label">';
-		echo '<span class="label label-default">Admin</span> Gebruiker</label>';
+		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
@@ -1103,7 +1103,7 @@ if ($id)
 	echo '</dt>';
 	echo '<dd>';
 	echo link_user($user);
-	echo ' (saldo: <span class="label label-default">' . $balance . '</span> ' .$currency . ')';
+	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .$currency . ')';
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';
