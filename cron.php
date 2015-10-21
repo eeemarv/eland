@@ -342,7 +342,7 @@ function user_exp_msgs()
 		$content .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
 		$content .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
 		$content .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
-		$content .= "\n\n Verlengen met \n\n"
+		$content .= "\n\n Verlengen met \n\n";
 		$content .= "één maand: " . $extend_url . "30 \n";
 		$content .= "twee maanden: " . $extend_url . "60 \n";
 		$content .= "zes maanden: " . $extend_url . "180 \n";
