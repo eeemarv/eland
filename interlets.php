@@ -373,7 +373,6 @@ if ($login)
 	}
 
 	echo '<script>setTimeout(function(){location.href = "' . $rootpath . 'interlets.php";}, 1000);</script>';
-//	cancel();
 	exit;
 }
 
@@ -445,7 +444,15 @@ $param = ($s_admin) ? 'id' : 'login';
 foreach($groups as $g)
 {
 	$error = false;
-	$a = '<a href="' . $rootpath . 'interlets.php?login=' . $g['id'] . '">';
+	if($g['apimethod'] == 'elassoap')
+	{
+		$a1 = '<a href="' . $rootpath . 'interlets.php?login=' . $g['id'] . '">';
+		$a2 = '</a>';
+	}
+	else
+	{
+		$a1 = $a2 = '';
+	}
 	echo '<tr>';
 	if ($s_admin)
 	{
@@ -454,11 +461,11 @@ foreach($groups as $g)
 		if ($user)
 		{
 			echo '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '" ';
-			echo 'class="btn btn-default btn-xs" title="verbonden gebruikers account">';
+			echo 'class="btn btn-default btn-xs" title="gebruikers account">';
 			echo $g['localletscode'] . '</a>';
 			if (!in_array($user['status'], array(1, 2, 7)))
 			{
-				echo ' <span title="Het verbonden gebruikersaccount heeft een ongeldige status. De status moet ';
+				echo ' <span title="Het gebruikersaccount heeft een ongeldige status. De status moet ';
 				echo 'van het type extern, actief of uitstapper zijn." class="text-danger">';
 				echo '<span class="fa fa-exclamation-triangle"></span> Status!</span>';
 				$error = true;
@@ -470,7 +477,7 @@ foreach($groups as $g)
 
 			if ($g['apimethod'] != 'internal' && !$user)
 			{
-				echo ' <span title="Geen verbonden gebruikersaccount. Maak een gebruikersaccount met status extern ';
+				echo ' <span title="Geen gebruikersaccount. Maak een gebruikersaccount met status extern ';
 				echo 'aan met een gelijke letscode." class="text-danger"><span class="fa fa-exclamation-triangle"></span> ';
 				echo ' Geen account!</span>';
 				$error = true;
@@ -478,8 +485,8 @@ foreach($groups as $g)
 		}
 		echo '</td>';
 	}
-	echo '<td>' . $a . $g['groupname'] . '</a></td>';
-	echo '<td>' . $a . $redis->get($g['url'] . '_active_user_count') . '</a></td>';
+	echo '<td>' . $a1 . $g['groupname'] . $a2 . '</td>';
+	echo '<td>' . $a1 . $redis->get($g['url'] . '_active_user_count') . $a2 . '</td>';
 	if ($s_admin)
 	{
 		echo '<td><a href="' . $rootpath . 'interlets.php?id=' . $g['id'] . '" class="btn btn-default btn-xs">';

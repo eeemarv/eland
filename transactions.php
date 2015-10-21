@@ -19,11 +19,96 @@ $tuid = ($_GET['tuid']) ?: false;
 $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
+$del_q = ($_GET['del_q']) ? true : false;
 
 $submit = ($_POST['zend']) ? true : false;
 
 $currency = readconfigfromdb('currency');
 
+/**
+ * delete interlets queue
+ */
+if ($del_q)
+{
+	$s_owner = ($uid && $uid == $s_id) ? true : false;
+
+	if (!($s_admin || $s_owner))
+	{
+		$alert->error('Je hebt onvoldoende rechten voor deze actie.');
+		cancel();
+	}
+
+	if ($uid)
+	{
+		if (!$db->fetchColumn('select transid from interletsq where id_from = ?', array($uid)))
+		{
+			$alert->error('Er zijn geen interlets tranacties van ' . link_user($uid, null, false) . ' in verwerking.');
+			cancel();
+		}
+	}
+	else
+	{
+		if (!$db->fetchColumn('select transid from interletsq'))
+		{
+			$alert->error('Er zijn geen interlets transacties in verwerking.');
+			cancel();
+		}
+	}
+
+	if ($submit)
+	{
+		if ($uid)
+		{
+			if ($db->delete('interletsq', array('id_from' => $uid)))
+			{
+				$alert->success('De interlets transacties in verwerking van ' . link_user($uid, null, false) . ' zijn verwijderd.');
+			}
+			else
+			{
+				$alert->error('Fout bij het verwijderen van de interlets transacties in verwerking van ' . link_user($uid, null, false));
+			}
+		}
+		else
+		{
+			if ($db->executeUpdate('delete from interletsq'))
+			{
+				$alert->success('De interlets transacties in verwerking zijn verwijderd.');
+			}
+			else
+			{
+				$alert->error('Fout bij het verwijderen van de interlets transacties in verwerking.
+					Mogelijks werd de laatste transactie in verwerking reeds uitgevoerd.');
+			}
+		}
+		cancel();
+	}
+
+	$from = ($uid) ? ' van ' . link_user($uid) : '';
+
+	$h1 = 'Verwijderen interlets transacties' . $from . ' in verwerking?';
+	$fa = 'times';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<form method="post">';
+
+	echo '<a href="' . $rootpath . 'transactions.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo '<input type="submit" name="zend" value="Verwijderen" class="btn btn-danger">';
+
+	echo '</form>';
+	echo '</div>';
+	echo '</div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+/**
+ * add
+ */
 if ($add)
 {
 	if ($s_guest)
@@ -731,7 +816,19 @@ else
 
 if (count($interletsq))
 {
-	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking</h3>';
+	if ($s_admin || ($uid && ($uid == $s_id)))
+	{
+		$and_uid = ($uid) ? '&uid=' . $uid : '';
+
+		$q_buttons .= '<a href="' . $rootpath . 'transactions.php?del_q=1' . $and_uid . '" ';
+		$q_buttons .= 'class="btn btn-danger"';
+		$q_buttons .= ' title="Verwijder interlets transacties in verwerking"><i class="fa fa-times"></i>';
+		$q_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+	}
+
+	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking';
+	echo '<span class="inline-buttons"> ' . $q_buttons . '</span>';
+	echo '</h3>';
 
 	echo '<div class="panel panel-warning">';
 	echo '<div class="table-responsive">';
