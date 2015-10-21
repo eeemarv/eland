@@ -1,5 +1,5 @@
 <?php
-ob_start();
+
 $rootpath = './';
 $role = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';

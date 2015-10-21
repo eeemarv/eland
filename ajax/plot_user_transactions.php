@@ -1,5 +1,4 @@
 <?php
-ob_start();
 
 $rootpath = '../';
 $role = 'guest';
@@ -88,8 +87,6 @@ foreach ($_users as $code => $ary)
 unset($_users);
 
 $transactions = array_reverse($transactions);
-
-ob_end_clean();
 
 echo json_encode(array(
 	'user_id' => $user_id,

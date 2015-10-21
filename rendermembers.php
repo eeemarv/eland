@@ -98,5 +98,3 @@ function show_all_users($userrows){
 	}
 	echo "</table></div>";
 }
-
-?>

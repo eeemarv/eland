@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ob_start();
 $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';

@@ -1,5 +1,4 @@
 <?php
-ob_start();
 $rootpath = '../';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
@@ -58,7 +57,6 @@ foreach ($balance as $user_id => $b)
 	$weighted[$user_id] = round($acc[$user_id] / ($days * 86400));
 }
 
-ob_clean();
 header('Content-type: application/json');
 echo json_encode($weighted);
 exit;

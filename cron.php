@@ -1,5 +1,4 @@
 <?php
-ob_start();
 
 $r = "<br>\r\n";
 $now = gmdate('Y-m-d H:i:s');

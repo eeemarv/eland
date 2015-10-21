@@ -1,5 +1,4 @@
 <?php
-ob_start();
 $rootpath = './';
 $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 

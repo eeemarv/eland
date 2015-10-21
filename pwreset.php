@@ -1,5 +1,4 @@
 <?php
-ob_start();
 $rootpath = './';
 $role = 'anonymous';
 $allow_anonymous_post = true;

@@ -1,5 +1,4 @@
 <?php
-ob_start();
 $rootpath = '../';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
@@ -19,8 +18,6 @@ if (!$letsgroup_id || $letsgroup_id == 'self')
 	);
 
 	$new_user_seconds = readconfigfromdb('newuserdays') * 86400;
-
-	ob_clean();
 
 	$now = time();
 	$active_users = array();

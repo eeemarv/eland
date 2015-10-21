@@ -1,5 +1,5 @@
 <?php
-ob_start();
+
 $rootpath = './';
 
 $uid = ($_GET['uid']) ?: false;

@@ -1,5 +1,4 @@
 <?php
-ob_start();
 $rootpath = './';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
@@ -362,7 +361,9 @@ if ($login)
 			}
 			else
 			{
-				echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");</script>';
+				echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");';
+				echo 'window.focus();';
+				echo 'location.href = "' . $rootpath . 'interlets.php"; </script>';
 			}
 		}
 	}
@@ -370,8 +371,13 @@ if ($login)
 	{
 		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
 	}
+
+	cancel();
 }
 
+/**
+ * list
+ */
 $groups = $db->fetchAll('SELECT * FROM letsgroups');
 
 if ($s_admin)
@@ -383,7 +389,7 @@ if ($s_admin)
 	foreach ($groups as $key => $g)
 	{
 		$letscodes[] = $g['localletscode'];
-		$groups[$key]['server'] = ($schemas[str_replace(array('http://', 'https://', '//'), $g['url'])]) ? true : false;
+		$groups[$key]['server'] = ($schemas[str_replace(array('http://', 'https://', '//'), '', $g['url'])]) ? true : false;
 	}
 
 	$users_letscode = array();
@@ -484,7 +490,6 @@ foreach($groups as $g)
 		{
 			echo ' <span class="label label-success">server</span>';
 		}
-		echo $g['url'];
 		echo '</td>';
 		echo '<td>' . $g['apimethod'] . '</td>';
 	}
@@ -501,6 +506,45 @@ if ($s_admin)
 	echo '<li>In eLAS-Heroku is het niet langer nodig een \'internal\' groep aan te maken ';
 	echo 'voor de eigen groep zoals dat in eLAS het geval is.</li>';
 	echo '</ul></i></small></p>';
+
+	echo '<div class="panel panel-warning">';
+	echo '<div class="panel-heading">';
+
+	echo '<button class="btn btn-default" title="Toon letsgroepen op deze server" data-toggle="collapse" ';
+	echo 'data-target="#server">';
+	echo '<i class="fa fa-question"></i>';
+	echo ' Letsgroepen op deze server</button>';
+	echo '</div>';
+	echo '<div class=" collapse" id="server">';
+
+	echo '<table class="table table-bordered table-hover table-striped">';
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th data-sort-initial="true">tag</th>';
+	echo '<th>groepsnaam</th>';
+	echo '<th>url</th>';
+	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	foreach($schemas as $domain => $s)
+	{
+		echo '<tr>';
+		echo '<td>';
+		echo $redis->get($s . '_config_systemtag');
+		echo '</td>';
+		echo '<td>';
+		echo $redis->get($s . '_config_systemname');
+		echo '</td>';
+		echo '<td>';
+		echo 'http://' . $domain;
+		echo '</td>';
+		echo '</tr>';
+	}
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div></div></div>';
 }
 
 include $rootpath . 'includes/inc_footer.php';
@@ -515,9 +559,9 @@ function get_schemas_domains()
 	$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
 	$schemas_db = array_fill_keys($schemas_db, true);
 
-	foreach ($_ENV as $key => $schema)
+	foreach ($_ENV as $key => $s)
 	{
-		if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema])))
+		if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
 		{
 			continue;
 		}
@@ -528,8 +572,8 @@ function get_schemas_domains()
 		$domain = str_replace('__', '.', $domain);
 		$domain = strtolower($domain);
 
-		$schemas[$domain] = $schema;
-		$domains[$schema] = $domain;
+		$schemas[$domain] = $s;
+		$domains[$s] = $domain;
 	}
 
 	return array($schemas, $domains);
