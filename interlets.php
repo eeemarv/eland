@@ -363,7 +363,7 @@ if ($login)
 			{
 				echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");';
 				echo 'window.focus();';
-				echo 'location.href = "' . $rootpath . 'interlets.php"; </script>';
+				echo '</script>';
 			}
 		}
 	}
@@ -372,7 +372,9 @@ if ($login)
 		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
 	}
 
-	cancel();
+	echo '<script>setTimeout(function(){location.href = "' . $rootpath . 'interlets.php";}, 1000);</script>';
+//	cancel();
+	exit;
 }
 
 /**
