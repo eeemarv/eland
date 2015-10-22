@@ -6,13 +6,15 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-function log_event($user_id, $type, $event)
+function log_event($user_id, $type, $event, $remote_schema = null)
 {
 	global $elasdebug, $schema, $elas_log;
 
 	$type = strtolower($type);
 
-	$domain = array_search($schema, $_ENV);
+	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
+
+	$domain = array_search($sch, $_ENV);
 	$domain = str_replace('ELAS_SCHEMA_', '', $domain);
 	$domain = str_replace('____', ':', $domain);
 	$domain = str_replace('___', '-', $domain);
@@ -22,14 +24,14 @@ function log_event($user_id, $type, $event)
 
 	$formatter = new ColoredLineFormatter();
 
-	$log = new Logger($schema);
+	$log = new Logger($sch);
 	$streamHandler = new StreamHandler('php://stdout', Logger::NOTICE);
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
 	if ($user_id)
 	{
-		$user = readuser($user_id);
+		$user = readuser($user_id, false, $sch);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
 	}
@@ -38,7 +40,7 @@ function log_event($user_id, $type, $event)
 		$username = $letscode = '';
 	}
 
-	$log->addNotice('eLAS-Heroku: ' . $schema . ': ' . $domain . ': ' .
+	$log->addNotice('eLAS-Heroku: ' . $sch . ': ' . $domain . ': ' .
 		$type . ': ' . $event . ' user id:' . $user_id .
 		' user: ' . $letscode . ' ' . $name . "\n\r");
 
@@ -53,13 +55,21 @@ function log_event($user_id, $type, $event)
 		'event'		=> $event,
 	);
 
-	register_shutdown_function('insert_log', $item);	
+	register_shutdown_function('insert_log', $item, $sch);
 }
 
-function insert_log($item)
+function insert_log($item, $remote_schema = null)
 {
 	global $elas_mongo;
 
 	$elas_mongo->connect();
+
+	if ($remote_schema)
+	{
+		$logs = $remote_schema . '_logs';
+		$elas_mongo->get_client()->$logs->insert($item);
+		return;
+	}
+
 	$elas_mongo->logs->insert($item);
 }

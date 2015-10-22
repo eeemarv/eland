@@ -124,7 +124,7 @@ if ($add)
 		$transaction['description'] = $_POST['description'];
 		list($letscode_from) = explode(' ', $_POST['letscode_from']);
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
-		$transaction['amount'] = $_POST['amount'];
+		$transaction['amount'] = $amount = $_POST['amount'];
 		$transaction['date'] = date('Y-m-d H:i:s');
 		$letsgroup_id = $_POST['letsgroup_id'];
 
@@ -154,6 +154,8 @@ if ($add)
 		$transaction['id_to'] = $touser['id'];
 
 		$transaction['transid'] = generate_transid();
+
+		list($schemas, $domains) = get_schemas_domains(true);
 
 		$errors = array();
 
@@ -231,8 +233,7 @@ if ($add)
 			}
 			cancel();
 		}
-
-		if ($letsgroup['apimethod'] == 'mail')
+		else if ($letsgroup['apimethod'] == 'mail')
 		{
 			if (insert_transaction($transaction))
 			{
@@ -245,23 +246,18 @@ if ($add)
 			}
 			cancel();
 		}
-
-		if ($letsgroup['apimethod'] != 'elassoap')
+		else if ($letsgroup['apimethod'] != 'elassoap')
 		{
 			$msg = ($s_admin) ? '' : 'Contacteer een admin.';
 			$alert->error('Deze interlets groep heeft geen geldige api methode. ' . $msg);
 			cancel();
 		}
-
-		if (!$letsgroup['url'])
+		else if (!$letsgroup['url'])
 		{
 			$alert->error('Geen url voor deze interlets groep.');
 			cancel();
 		}
-
-		list($schemas, $domains) = get_schemas_domains(true);
-
-		if (!($remote_schema = $schemas[$letsgroup['url']]))
+		else if (!($remote_schema = $schemas[$letsgroup['url']]))
 		{
 			// The letsgroup is on another server, use elassoap; queue the transaction.
 
@@ -287,85 +283,150 @@ if ($add)
 
 			cancel();
 		}
-
-		// the letsgroup is on the same server
-
-		$to_remote_user = $db->fetchAssoc('select *
-			from ' . $remote_schema . '.users
-			where letscode = ?', array($letscode_to));
-
-		if (!$to_remote_user)
+		else
 		{
-			$alert->error('De interlets gebruiker bestaat niet.');
+			// the letsgroup is on the same server
+
+			$to_remote_user = $db->fetchAssoc('select *
+				from ' . $remote_schema . '.users
+				where letscode = ?', array($letscode_to));
+
+			if (!$to_remote_user)
+			{
+				$alert->error('De interlets gebruiker bestaat niet.');
+				cancel();
+			}
+
+			if (!in_array($to_remote_user['status'], array('1', '2')))
+			{
+				$alert->error('De interlets gebruiker is niet actief.');
+				cancel();
+			}
+
+			$remote_letsgroup = $db->fetchAssoc('select *
+				from ' . $remote_schema . '.letsgroups
+				where url = ?', array($base_url));
+
+			$systemname = readconfigfromdb('systemname');
+
+			if (!$remote_letsgroup)
+			{
+				$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
+				cancel();
+			}
+
+			if (!$remote_letsgroup['localletscode'])
+			{
+				$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
+				cancel();
+			}
+
+			$remote_interlets_account = $db->fetchAssoc('select *
+				from ' . $remote_schema . '.users
+				where letscode = ?', array($remote_letsgroup['localletscode']));
+
+			if (!$remote_interlets_account)
+			{
+				$alert->error('Er is geen interlets account in de remote interlets group.');
+				cancel();
+			}
+
+			if ($remote_interlets_account['accountrole'] != 'interlets')
+			{
+				$alert->error('Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.');
+				cancel();
+			}
+
+			if (!in_array($remote_interlets_account['status'], array(1, 2, 7)))
+			{
+				$alert->error('Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.');
+				cancel();
+			}
+
+			$remote_currency = readconfigfromschema('currency', $remote_schema);
+			$remote_currencyratio = readconfigfromschema('currencyratio', $remote_schema);
+			$currencyratio = readconfigfromdb('currencyratio');
+
+			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
+
+			if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+			{
+				$alert->error('De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.');
+				cancel();
+			}
+
+			if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+			{
+				$alert->error('De interlets gebruiker heeft zijn maximum limiet bereikt.');
+				cancel();
+			}
+
+			//
+			$transaction['creator'] = (empty($s_id)) ? 0 : $s_id;
+			$transaction['cdate'] = date('Y-m-d H:i:s');
+			$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
+
+			$db->beginTransaction();
+			try
+			{
+				$db->insert('transactions', $transaction);
+				$db->executeUpdate('update users
+					set saldo = saldo + ? where id = ?',
+					array($transaction['amount'], $transaction['id_to']));
+				$db->executeUpdate('update users
+					set saldo = saldo - ? where id = ?',
+					array($transaction['amount'], $transaction['id_from']));
+
+				$transaction['creator'] = 0;
+				$transaction['amount'] = $remote_amount;
+				$transaction['id_from'] = $remote_interlets_account['id'];
+				$transaction['id_to'] = $to_remote_user['id'];
+				$transaction['real_from'] = link_user($fromuser['id'], null, false);
+				unset($transaction['real_to']);
+
+				$db->insert($remote_schema . '.transactions', $transaction);
+				$db->executeUpdate('update ' . $remote_schema . '.users
+					set saldo = saldo + ? where id = ?',
+					array($remote_amount, $transaction['id_to']));
+				$db->executeUpdate('update ' . $remote_schema . '.users
+					set saldo = saldo - ? where id = ?',
+					array($transaction['amount'], $transaction['id_from']));
+
+				$db->commit();
+
+			}
+			catch(Exception $e)
+			{
+				$db->rollback();
+				$alert->error('Transactie niet gelukt.');
+				throw $e;
+				exit;
+			}
+
+			$to_user = readuser($fromuser['id'], true);
+			$from_user = readuser($touser['id'], true);
+
+	/*
+			register_shutdown_function('check_auto_minlimit',
+				$to_user['id'], $from_user['id'], $transaction['amount']);
+	*/
+
+/// mail
+			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+				$amoount . ' from user: ' .  link_user($fromuser['id'], null, false) .
+				' to user: ' . link_user($touser['id'], null, false));
+
+			log_event('', 'trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
+				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
+				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
+				$to_remote_user['name'], $remote_schema);
+
+			readuser($remote_interlets_account['id'], true, $remote_schema);
+			readuser($to_remote_user['id'], true, $remote_schema);
+
+			$alert->success('Interlets transactie uitgevoerd.');
 			cancel();
 		}
-
-		if (!in_array($to_remote_user['status'], array('1', '2'))
-		{
-			$alert->error('De interlets gebruiker is niet actief.');
-			cancel();
-		}
-
-		$remote_letsgroup = $db->fetchAssoc('select *
-			from ' . $remote_schema . '.letsgroups
-			where url = ?', array($base_url));
-
-		$systemname = readconfigfromdb('systemname');
-
-		if (!$remote_letsgroup)
-		{
-			$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
-			cancel();
-		}
-
-		if (!$remote_letsgroup['localletscode'])
-		{
-			$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
-			cancel();
-		}
-
-		$remote_interlets_account = $db->getAssoc('select *
-			from ' . $remote_schema . '.users
-			where letscode = ?', array($remote_letsgroup['localletscode'])
-
-		if (!$remote_interlets_account)
-		{
-			$alert->error('Er is geen interlets account in de remote interlets group.');
-			cancel();
-		}
-
-		if ($remote_interlets_account['accountrole'] != 'interlets')
-		{
-			$alert->error('Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.');
-			cancel();
-		}
-
-		if (!in_array($remote_interlets_account['status'], array(1, 2, 7)))
-		{
-			$alert->error('Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.');
-			cancel();
-		}
-
-		$remote_currency = readconfigfromschema('currency', $remote_schema);
-		$remote_currencyratio = readconfigfromschema('currencyratio', $remote_schema);
-		$currencyratio = readconfigfromdb('currencyratio');
-
-		$remote_amount = round(($amount * $remote_currencyratio) / $currencyratio);
-
-		if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
-		{
-			$alert->error('De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.');
-			cancel();
-		}
-
-		if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
-		{
-			$alert->error('De interlets gebruiker heeft zijn maximum limiet bereikt.');
-			cancel();
-		}
-
-		
-
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
 		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;

@@ -38,19 +38,19 @@ function check_duplicate_transaction($transid)
 	return ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid))) ? 1 : 0;
 }
 
-function insert_transaction($posted_list)
+function insert_transaction($transaction)
 {
     global $db, $s_id;
 
-	$posted_list['creator'] = (empty($s_id)) ? 0 : $s_id;
-    $posted_list['cdate'] = date('Y-m-d H:i:s');
+	$transaction['creator'] = (empty($s_id)) ? 0 : $s_id;
+    $transaction['cdate'] = date('Y-m-d H:i:s');
 
 	$db->beginTransaction();
 	try
 	{
-		$db->insert('transactions', $posted_list);
-		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', array($posted_list['amount'], $posted_list['id_to']));
-		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', array($posted_list['amount'], $posted_list['id_from']));
+		$db->insert('transactions', $transaction);
+		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', array($transaction['amount'], $transaction['id_to']));
+		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', array($transaction['amount'], $transaction['id_from']));
 		$db->commit();
 
 	}
@@ -60,28 +60,28 @@ function insert_transaction($posted_list)
 		throw $e;
 		return false;
 	}
-	$to_user = readuser($posted_list['id_to'], true);
-	$from_user = readuser($posted_list['id_from'], true);
+	$to_user = readuser($transaction['id_to'], true);
+	$from_user = readuser($transaction['id_from'], true);
 
 	register_shutdown_function('check_auto_minlimit',
-		$to_user['id'], $from_user['id'], $posted_list['amount']);
+		$to_user['id'], $from_user['id'], $transaction['amount']);
 
-	log_event($s_id, 'Trans', 'Transaction ' . $posted_list['transid'] . ' saved: ' .
-		$posted_list['amount'] . ' from user id ' . $posted_list['id_from'] . ' to user id ' . $posted_list['id_to']);
+	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
+		$transaction['amount'] . ' from user id ' . $transaction['id_from'] . ' to user id ' . $transaction['id_to']);
 
 	return true;
 
 }
 
-function mail_interlets_transaction($posted_list)
+function mail_interlets_transaction($transaction)
 {
 	global $s_id;
 
 	$from = readconfigfromdb("from_address_transactions");
 
-	$userfrom = readuser($posted_list['id_from']);
+	$userfrom = readuser($transaction['id_from']);
 
-	$to = get_mailaddresses($posted_list['id_to']);
+	$to = get_mailaddresses($transaction['id_to']);
 
 	$systemname = readconfigfromdb('systemname');
 	$systemtag = readconfigfromdb('systemtag');
@@ -93,24 +93,24 @@ function mail_interlets_transaction($posted_list)
 
 	$content  = 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname  . " met de volgende gegevens:\r\n\r\n";
 
-	if(!empty($posted_list["real_from"]))
+	if(!empty($transaction["real_from"]))
 	{
-		$content .= "Van: \t\t". $posted_list['real_from'] ."\r\n";
+		$content .= "Van: \t\t". $transaction['real_from'] ."\r\n";
 	}
 	else
 	{
 		$content .= "Van: \t\t". $userfrom['fullname'] ."\r\n";
 	}
 
-	$content .= "Aan: \t\t". $posted_list['letscode_to'] ."\r\n";
+	$content .= "Aan: \t\t". $transaction['letscode_to'] ."\r\n";
 
-	$content .= "Voor: \t\t".$posted_list['description']."\r\n";
+	$content .= "Voor: \t\t".$transaction['description']."\r\n";
 
 	$currencyratio = readconfigfromdb('currencyratio');
-	$meta = round($posted_list["amount"] / $currencyratio, 4);
+	$meta = round($transaction["amount"] / $currencyratio, 4);
 
-	$content .= "Aantal: \t".$posted_list["amount"]. " $currency ($meta LETS uren*, $currencyratio $currency = 1 uur)\r\n";
-	$content .= "\r\nTransactieID: \t\t" . $posted_list['transid'] . "\r\n";
+	$content .= "Aantal: \t".$transaction["amount"]. " $currency ($meta LETS uren*, $currencyratio $currency = 1 uur)\r\n";
+	$content .= "\r\nTransactieID: \t\t" . $transaction['transid'] . "\r\n";
 
 	$content .= "\r\nJe moet deze in je eigen systeem verder verwerken.\r\n";
 	$content .= "\r\nAls dit niet mogelijk is moet je de kern van de andere groep verwittigen zodat ze de transactie aan hun kant annuleren.\r\n";
@@ -119,64 +119,64 @@ function mail_interlets_transaction($posted_list)
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
 
-function mail_transaction($posted_list)
+function mail_transaction($transaction)
 {
 	global $s_id;
 
 	$from = readconfigfromdb("from_address_transactions");
 
-	$userfrom = readuser($posted_list['id_from']);
+	$userfrom = readuser($transaction['id_from']);
 	
 	if($userfrom['accountrole'] != 'interlets')
 	{
-		$to = get_mailaddresses($posted_list['id_from']);
+		$to = get_mailaddresses($transaction['id_from']);
 	}
 
-	$userto = readuser($posted_list['id_to']);
+	$userto = readuser($transaction['id_to']);
 
-	$userto_mail = get_mailaddresses($posted_list['id_to']);
+	$userto_mail = get_mailaddresses($transaction['id_to']);
 
 	$to .= ",". $userto_mail;
 
 	$systemtag = readconfigfromdb('systemtag');
 	$currency = readconfigfromdb('currency');
 
-	$subject .= '[' . $systemtag . '] ' . $posted_list['amount'] . ' ' .$currency;
-	if(!empty($posted_list["real_from"]))
+	$subject .= '[' . $systemtag . '] ' . $transaction['amount'] . ' ' .$currency;
+	if(!empty($transaction["real_from"]))
 	{
-		$subject .= " van " . $posted_list["real_from"];
+		$subject .= " van " . $transaction["real_from"];
 	} else {
 		$subject .= " van " . $userfrom["fullname"] ;
 	}
-	if(!empty($posted_list["real_to"]))
+	if(!empty($transaction["real_to"]))
 	{
-		$subject .= " aan " . $posted_list["real_to"];
+		$subject .= " aan " . $transaction["real_to"];
 	} else {
 		$subject .= " aan " . $userto["fullname"] ;
 	}
 
 	$content  = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
 
-	if(!empty($posted_list["real_from"]))
+	if(!empty($transaction["real_from"]))
 	{
-		$content .= "Van: \t\t". $posted_list["real_from"] ."\r\n";
+		$content .= "Van: \t\t". $transaction["real_from"] ."\r\n";
 	}
 	else
 	{
 		$content .= "Van: \t\t". $userfrom["fullname"] ."\r\n";
 	}
-	if(!empty($posted_list["real_to"]))
+	if(!empty($transaction["real_to"]))
 	{
-		$content .= "Aan: \t\t". $posted_list["real_to"] ."\r\n";
+		$content .= "Aan: \t\t". $transaction["real_to"] ."\r\n";
     }
     else
     {
 		$content .= "Aan: \t\t". $userto["fullname"] ."\r\n";
 	}
 
-	$content .= "Voor: \t\t".$posted_list["description"]."\r\n";
-	$content .= "Aantal: \t".$posted_list["amount"]."\r\n";
-	$content .= "\r\nTransactieID: \t\t".$posted_list['transid'] . "\r\n";
+	$content .= "Voor: \t\t".$transaction["description"]."\r\n";
+	$content .= "Aantal: \t".$transaction["amount"]."\r\n";
+	$content .= "\r\nTransactieID: \t\t".$transaction['transid'] . "\r\n";
 
 	sendemail($from, $to, $subject, $content);
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);

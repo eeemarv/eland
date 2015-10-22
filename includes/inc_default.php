@@ -360,7 +360,7 @@ function readparameter($key, $refresh = false)
 /**
  *
  */
-function readuser($id, $refresh = false)
+function readuser($id, $refresh = false, $remote_schema = false)
 {
     global $db, $schema, $redis, $elas_mongo;
     static $cache;
@@ -370,35 +370,42 @@ function readuser($id, $refresh = false)
 		return array();
 	}
 
-	$redis_key = $schema . '_user_' . $id;	
+	$s = ($remote_schema) ?: $schema;
+
+	$redis_key = $s . '_user_' . $id;
 
 	if (!$refresh)
 	{
-		if (isset($cache[$id]))
+		if (isset($cache[$s][$id]))
 		{
-			return $cache[$id];
+			return $cache[$s][$id];
 		}
 
 		if ($redis->exists($redis_key))
 		{
-			return $cache[$id] = unserialize($redis->get($redis_key));
+			return $cache[$s][$id] = unserialize($redis->get($redis_key));
 		} 
 	}
 
-	$user = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($id));
+	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', array($id));
 
 	$elas_mongo->connect();
-	$user += (is_array($ary = $elas_mongo->users->findOne(array('id' => (int) $id)))) ? $ary : array();
+
+	$remote_users = $s . '_users';
+	$users = ($remote_schema) ? $elas_mongo->get_client()->$remote_users : $elas_mongo->users;
+
+	$user += (is_array($ary = $users->findOne(array('id' => (int) $id)))) ? $ary : array();
 
 	if (isset($user))
 	{
 		$redis->set($redis_key, serialize($user));
 		$redis->expire($redis_key, 2592000);
-		$cache[$id] = $user;
+		$cache[$s][$id] = $user;
 	}
 
 	return $user;
 }
+
 
 /*
  *

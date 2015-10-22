@@ -3,6 +3,7 @@
 class elas_mongo
 {
 	private $schema;
+	private $mdb;
 	public $logs;
 	public $limit_events;
 	public $settings;
@@ -30,22 +31,27 @@ class elas_mongo
 		$url = getenv('MONGOLAB_URI');
 		$mongo_client = new MongoClient($url);
 		$path = parse_url($url, PHP_URL_PATH);
-		$mdb = $mongo_client->selectDB(trim($path, '/'));
+		$this->mdb = $mongo_client->selectDB(trim($path, '/'));
 
-		$log_collection = $this->schema . '_logs';
-		$limit_events_collection = $this->schema . '_limit_events';
-		$settings_collection = $this->schema . '_settings';
+		$logs = $this->schema . '_logs';
+		$limit_events = $this->schema . '_limit_events';
+		$settings = $this->schema . '_settings';
 		$docs = $this->schema . '_docs';
 		$forum = $this->schema . '_forum';
 		$users = $this->schema . '_users';
 
-		$this->logs = $mdb->$log_collection;
-		$this->limit_events = $mdb->$limit_events_collection;
-		$this->settings = $mdb->$settings_collection;
-		$this->docs = $mdb->$docs;
-		$this->forum = $mdb->$forum;
-		$this->users = $mdb->$users;
+		$this->logs = $this->mdb->$logs;
+		$this->limit_events = $this->mdb->$limit_events;
+		$this->settings = $this->mdb->$settings;
+		$this->docs = $this->mdb->$docs;
+		$this->forum = $this->mdb->$forum;
+		$this->users = $this->mdb->$users;
 
 		return $this;
+	}
+
+	public function get_client()
+	{
+		return $this->mdb;
 	}
 }
