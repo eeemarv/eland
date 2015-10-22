@@ -192,7 +192,7 @@ if ($add)
 			$errors[] = 'Van en Aan letscode zijn hetzelfde';
 		}
 
-		if($touser['saldo'] > $touser['maxlimit'] && !$s_admin)
+		if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'] && !$s_admin)
 		{
 			$t_account = ($letsgroup_id == 'self') ? 'bestemmeling' : 'interletsrekening';
 			$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
@@ -231,73 +231,141 @@ if ($add)
 			}
 			cancel();
 		}
-		else
+
+		if ($letsgroup['apimethod'] == 'mail')
 		{
-			switch($letsgroup['apimethod'])
+			if (insert_transaction($transaction))
 			{
-				case 'mail':
-
-					if (insert_transaction($transaction))
-					{
-						mail_interlets_transaction($transaction);
-						$alert->success('Transactie opgeslagen');
-					}
-					else
-					{
-						$alert->error('Gefaalde transactie');
-					}
-					cancel();
-
-					break;
-
-				case 'elassoap':
-
-					if (!$letsgroup['url'])
-					{
-						$alert->errors('Geen url voor deze letsgroep.');
-						cancel();
-					}
-
-					list($schemas, $domains) = get_schemas_domains(true);
-
-					if ($remote_schema = $schemas[$letsgroup['url']])
-					{
-						// the letsgroup is on the same server;
-
-
-					}
-
-					$transaction['letscode_to'] = $letscode_to;
-					$transaction['letsgroup_id'] = $letsgroup_id;
-					$currencyratio = readconfigfromdb('currencyratio');
-					$transaction['amount'] = $transaction['amount'] / $currencyratio;
-					$transaction['amount'] = (float) $transaction['amount'];
-					$transaction['amount'] = round($transaction['amount'], 5);
-					$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
-					$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
-
-					$transid = queuetransaction($transaction, $fromuser, $touser);
-
-					if($transaction['transid'] == $transid)
-					{
-						$alert->success('Interlets transactie in verwerking');
-					}
-					else
-					{
-						$alert->error('Gefaalde transactie');
-					}
-
-					cancel();
-
-					break;
-
-				default:
-
-					$alert->error('Geen geldige apimethode geselecteerd voor deze letsgroep. (contacteer een admin)');
-
-					break;
+				mail_interlets_transaction($transaction);
+				$alert->success('Transactie opgeslagen');
 			}
+			else
+			{
+				$alert->error('Gefaalde transactie');
+			}
+			cancel();
 		}
+
+		if ($letsgroup['apimethod'] != 'elassoap')
+		{
+			$msg = ($s_admin) ? '' : 'Contacteer een admin.';
+			$alert->error('Deze interlets groep heeft geen geldige api methode. ' . $msg);
+			cancel();
+		}
+
+		if (!$letsgroup['url'])
+		{
+			$alert->error('Geen url voor deze interlets groep.');
+			cancel();
+		}
+
+		list($schemas, $domains) = get_schemas_domains(true);
+
+		if (!($remote_schema = $schemas[$letsgroup['url']]))
+		{
+			// The letsgroup is on another server, use elassoap; queue the transaction.
+
+			$transaction['letscode_to'] = $letscode_to;
+			$transaction['letsgroup_id'] = $letsgroup_id;
+			$currencyratio = readconfigfromdb('currencyratio');
+			$transaction['amount'] = $transaction['amount'] / $currencyratio;
+			$transaction['amount'] = (float) $transaction['amount'];
+			$transaction['amount'] = round($transaction['amount'], 5);
+			$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
+			$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
+
+			$transid = queuetransaction($transaction, $fromuser, $touser);
+
+			if($transaction['transid'] == $transid)
+			{
+				$alert->success('Interlets transactie in verwerking');
+			}
+			else
+			{
+				$alert->error('Gefaalde transactie');
+			}
+
+			cancel();
+		}
+
+		// the letsgroup is on the same server
+
+		$to_remote_user = $db->fetchAssoc('select *
+			from ' . $remote_schema . '.users
+			where letscode = ?', array($letscode_to));
+
+		if (!$to_remote_user)
+		{
+			$alert->error('De interlets gebruiker bestaat niet.');
+			cancel();
+		}
+
+		if (!in_array($to_remote_user['status'], array('1', '2'))
+		{
+			$alert->error('De interlets gebruiker is niet actief.');
+			cancel();
+		}
+
+		$remote_letsgroup = $db->fetchAssoc('select *
+			from ' . $remote_schema . '.letsgroups
+			where url = ?', array($base_url));
+
+		$systemname = readconfigfromdb('systemname');
+
+		if (!$remote_letsgroup)
+		{
+			$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
+			cancel();
+		}
+
+		if (!$remote_letsgroup['localletscode'])
+		{
+			$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
+			cancel();
+		}
+
+		$remote_interlets_account = $db->getAssoc('select *
+			from ' . $remote_schema . '.users
+			where letscode = ?', array($remote_letsgroup['localletscode'])
+
+		if (!$remote_interlets_account)
+		{
+			$alert->error('Er is geen interlets account in de remote interlets group.');
+			cancel();
+		}
+
+		if ($remote_interlets_account['accountrole'] != 'interlets')
+		{
+			$alert->error('Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.');
+			cancel();
+		}
+
+		if (!in_array($remote_interlets_account['status'], array(1, 2, 7)))
+		{
+			$alert->error('Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.');
+			cancel();
+		}
+
+		$remote_currency = readconfigfromschema('currency', $remote_schema);
+		$remote_currencyratio = readconfigfromschema('currencyratio', $remote_schema);
+		$currencyratio = readconfigfromdb('currencyratio');
+
+		$remote_amount = round(($amount * $remote_currencyratio) / $currencyratio);
+
+		if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+		{
+			$alert->error('De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.');
+			cancel();
+		}
+
+		if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+		{
+			$alert->error('De interlets gebruiker heeft zijn maximum limiet bereikt.');
+			cancel();
+		}
+
+		
+
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
 		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;
