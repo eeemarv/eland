@@ -130,7 +130,7 @@ function saldo()
 	$r = "\r\n";
 	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
-	$msg_url = $base_url . '/messages/view.php?id=';
+	$msg_url = $base_url . '/messages.php?id=';
 	$news_url = $base_url . '/news.php?id=';
 	$user_url = $base_url . '/users.php?&id=';
 	$login_url = $base_url . '/login.php?login=*|LOGIN|*';

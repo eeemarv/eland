@@ -9,6 +9,7 @@ $add = ($_GET['add']) ?: false;
 $pw = ($_GET['pw']) ?: false;
 $img = ($_GET['img']) ? true : false;
 $img_del = ($_GET['img_del']) ? true : false;
+$interlets = ($_GET['interlets']) ?: false;
 $password = ($_POST['password']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
@@ -1272,6 +1273,47 @@ if ($add || $edit)
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
 			);
+
+			if ($interlets)
+			{
+				list($schemas, $domains) = get_schemas_domains(true);
+
+				if ($letsgroup = $db->fetchAssoc('select *
+					from letsgroups
+					where localletscode = ?
+						and apimethod <> \'internal\'', array($interlets)))
+				{
+					$user['name'] = $user['fullname'] = $letsgroup['groupname'];
+
+					if ($letsgroup['url'] && ($remote_schema = $schemas[$letsgroup['url']]))
+					{
+						$admin_mail = readconfigfromschema('admin', $remote_schema);
+
+						foreach ($contact as $k => $c)
+						{
+							if ($c['abbrev'] == 'mail')
+							{
+								$contact[$k]['value'] = $admin_mail;
+								break;
+							}
+						}
+
+						// name from source is preferable
+						$user['name'] = $user['fullname'] = readconfigfromschema('systemname', $remote_schema);
+					}
+				}
+
+				$user['cron_saldo'] = 0;
+				$user['status'] = '7';
+				$user['accountrole'] = 'interlets';
+				$user['letscode'] = $interlets;
+			}
+			else
+			{
+				$user['cron_saldo'] = 1;
+				$user['status'] = '1';
+				$user['accountrole'] = 'user';
+			}
 		}
 	}
 
@@ -1388,7 +1430,7 @@ if ($add || $edit)
 	if ($s_admin)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="accountrole" class="col-sm-2 control-label">Rechten</label>';
+		echo '<label for="accountrole" class="col-sm-2 control-label">Rechten / Rol</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select id="accountrole" name="accountrole" class="form-control">';
 		render_select_options($role_ary, $user['accountrole']);

@@ -267,6 +267,31 @@ function readconfigfromdb($key)
 }
 
 /**
+ * read config from other schemas
+ */
+function readconfigfromschema($key, $schema)
+{
+    global $db, $redis;
+
+	$redis_key = $schema . '_config_' . $key;
+
+	if ($redis->exists($redis_key))
+	{
+		return $redis->get($redis_key);
+	}
+
+	$value = $db->fetchColumn('SELECT value FROM ' . $schema . '.config WHERE setting = ?', array($key));
+
+	if (isset($value))
+	{
+		$redis->set($redis_key, $value);
+		$redis->expire($redis_key, 2592000);
+	}
+
+	return $value;
+}
+
+/**
  *
  */
 function writeconfig($key, $value)
@@ -471,4 +496,38 @@ function redirect_index()
 	global $rootpath;
 	header ('Location: ' . $rootpath . 'index.php');
 	exit;
+}
+
+/**
+ *
+ */
+function get_schemas_domains($http = false)
+{
+	global $db;
+
+	$schemas = $domains = array();
+
+	$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
+	$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+	$schemas_db = array_fill_keys($schemas_db, true);
+
+	foreach ($_ENV as $key => $s)
+	{
+		if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+		{
+			continue;
+		}
+
+		$domain = str_replace('ELAS_SCHEMA_', '', $key);
+		$domain = str_replace('____', ':', $domain);
+		$domain = str_replace('___', '-', $domain);
+		$domain = str_replace('__', '.', $domain);
+		$domain = strtolower($domain);
+		$domain = (($http) ? 'http://' : '') . $domain;
+
+		$schemas[$domain] = $s;
+		$domains[$s] = $domain;
+	}
+
+	return array($schemas, $domains);
 }

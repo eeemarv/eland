@@ -252,6 +252,21 @@ if ($add)
 
 				case 'elassoap':
 
+					if (!$letsgroup['url'])
+					{
+						$alert->errors('Geen url voor deze letsgroep.');
+						cancel();
+					}
+
+					list($schemas, $domains) = get_schemas_domains(true);
+
+					if ($remote_schema = $schemas[$letsgroup['url']])
+					{
+						// the letsgroup is on the same server;
+
+
+					}
+
 					$transaction['letscode_to'] = $letscode_to;
 					$transaction['letsgroup_id'] = $letsgroup_id;
 					$currencyratio = readconfigfromdb('currencyratio');
