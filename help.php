@@ -6,32 +6,50 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$help = array(); 
-	$help['login'] = $_POST["login"];
-	$help['email'] = $_POST["email"];
-	$help['subject'] = $_POST["subject"];
-	$help['description'] = $_POST["description"];
+	$help = array();
+	$help['letscode'] = $_POST['letscode'];
+	$help['mail'] = $_POST['mail'];
+	$help['subject'] = $_POST['subject'];
+	$help['description'] = $_POST['description'];
 	$help['browser'] = $_SERVER['HTTP_USER_AGENT'];
 
     $errors = array();
-   
-	if(empty($help['login']))
-	{
-		$errors[] = 'Vul je login in';
-	}
 
-	if(empty($help['email']))
+	if (!$s_id)
 	{
-		$errors[] = 'Vul een E-mail adres in';
-	}
+		if(empty($help['letscode']))
+		{
+			$errors[] = 'Vul je letscode in';
+		}
 
-	if(!($db->fetchColumn('select c.value
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'
-			and c.value = ?', array($help['email']))))
+		if(empty($help['mail']))
+		{
+			$errors[] = 'Vul een E-mail adres in';
+		}
+
+		if(!($db->fetchColumn('select c.value
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c.value = ?', array($help['mail']))))
+		{
+			$errors[] = 'Dit mailadres is niet gekend in deze installatie';
+		}
+
+		if (!($help['user_id'] = $db->fetchColumn('select c.id_user
+			from contact c, type_contact tc, users u
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c.value = ?
+				and c.id_user = u.id
+				and u.letscode = ?', array($help['mail'], $help['letscode']))))
+		{
+			$errors[] = 'Gebruiker niet gevonden.';
+		}
+	}
+	else
 	{
-		$errors[] = 'Dit mailadres is niet gekend in deze installatie';
+		$help['user_id'] = $s_id;
 	}
 
 	if(empty($help['subject']))
@@ -41,7 +59,7 @@ if(isset($_POST['zend']))
 
 	if(empty($help['description']))
 	{
-		$errors[] = 'Geef een omschrijving van je probleem<.';
+		$errors[] = 'Geef een omschrijving van je probleem.';
 	}
 
 	if(empty($errors))
@@ -57,7 +75,7 @@ if(isset($_POST['zend']))
 	}
 	else
 	{
-		$alert->error('Fouten in het mail formulier.');
+		$alert->error(implode('<br>', $errors));
 	}
 }
 else
@@ -65,18 +83,20 @@ else
 	if(isset($s_id))
 	{
 		$user = readuser($s_id);
-		$help['login'] = $user['login'];
-		$help['email'] = $db->fetchColumn('select c.value
+
+		$help['mail'] = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', array($s_id));
+
+		$help['letscode'] = $user['letscode'];
 	}
 }
 
-if (!readconfigfromdb("mailenabled"))
+if (!readconfigfromdb('mailenabled'))
 {
-	$alert->warning("E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken");
+	$alert->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!readconfigfromdb('support'))
 {
@@ -101,18 +121,18 @@ if ($s_id)
 }
 
 echo '<div class="form-group">';
-echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="login" name="login" ';
-echo 'value="' . $help['login'] . '" required' . $readonly . '>';
+echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+echo 'value="' . $help['letscode'] . '" required' . $readonly . '>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="login" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
+echo '<label for="mail" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $help['email'] . '" required' . $readonly . '>';
+echo '<input type="email" class="form-control" id="mail" name="mail" ';
+echo 'value="' . $help['mail'] . '" required' . $readonly . '>';
 echo '</div>';
 echo '</div>';
 
@@ -154,34 +174,36 @@ include $rootpath . 'includes/inc_footer.php';
 
 
 
-function helpmail($help,$rootpath)
+function helpmail($help)
 {
 
-	global $rootpath, $s_id;
+	global $rootpath, $s_id, $db;
 
-	$from = trim($help['email']);
+	$from = $help['mail'];
 
 	$to = trim(readconfigfromdb('support'));
+
 	if (empty($to))
 	{
-		return false;
+		return 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
 	$subject = '[' . readconfigfromdb('systemtag') . '] ' .$help['subject'];
 
     $content  = "-- via de website werd het volgende probleem gemeld --\r\n";
-	$content .= "E-mail: {$help['email']}\r\n";
-	$content .= "Login:  {$help['login']}\r\n";
-	if ($s_id)
-	{
-		$user = readuser($s_id);
-		$content .= "Letscode:  {$user['letscode']}\r\n";
-	}
+	$content .= 'E-mail: ' . $help['mail'] . "\r\n";
+
+	$content .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
+
+	$content .= 'Gebruiker ingelogd: ';
+	$content .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is, ';
+	$content .= ($s_id) ? '' : 'iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
+	$content .= "\r\n\r\n";
 	$content .= "Omschrijving:\r\n";
-	$content .= "{$help['description']}\r\n";
+	$content .= $help['description'] . "\r\n";
 	$content .= "\r\n";
 	$content .= "User Agent:\r\n";
-	$content .= "{$help['browser']}\r\n";
+	$content .= $help['browser'] . "\r\n";
 	$content .= "\r\n";
 	$content .= "eLAS versie: Heroku \r\n";
 	$content .= 'Webserver: ' . gethostname() . "\r\n";

@@ -128,8 +128,6 @@ echo '</div>';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
-$menu = array();
-
 if (!$s_accountrole)
 {
 	$menu = array(
