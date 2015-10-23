@@ -213,15 +213,16 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	}
 	else
 	{
-		$r = insert_transaction($transaction);
+		$id = insert_transaction($transaction);
 	}
 
-	if($r)
+	if($id)
 	{
 		$result = 'SUCCESS';
 		log_event('', 'Trans', 'Local commit of interlets transaction succeeded');
 		$transaction['amount'] = round($transaction['amount']);
-		mail_transaction($transaction, $mytransid);
+		$transaction['id'] = $id;
+		mail_transaction($transaction);
 		unqueue($transid);
 	}
 	else

@@ -643,7 +643,7 @@ function mail_mass_transaction($mail_ary)
 	$to = $merge_vars  = array();
 	$to_log = '';
 	$total = 0;
-	$t = '*** Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b. ***';
+	$t = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***';
 	$t_one = link_user($one_user, null, false);
 
 	$one_msg = $t . $r . $r;
@@ -763,18 +763,13 @@ function mail_mass_transaction($mail_ary)
 
 	$t = 'Voor: ' . $mail_ary['description'];
 
-	$text .=  $t . $r;
-	$html .= '<p>' . $t . '</p>';
+	$text .=  $t . $r . $r;
+	$html .= '<p>' . $t . '</p><br>';
 
 	$t = 'Transactie id: *|TRANSID|*';
 
 	$text .=  $t . $r;
 	$html .= '<p>' . $t . '</p>';
-
-	$t = 'Tijdstip: ' . $mail_ary['date'];
-
-	$text .=  $t . $r . $r;
-	$html .= '<p>' . $t . '</p><br>';
 
 	$text .= 'Je huidig saldo bedraagt nu *|BALANCE|* ' . $currency . $r;
 	$html .= '<p>Je huidig saldo bedraagt nu <b>*|BALANCE|* </b> ' . $currency . '</p>';

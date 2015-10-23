@@ -21,6 +21,10 @@ function generate_transid()
 	return substr(sha1($s_id .microtime()), 0, 12) . '_' . $s_id . '@' . $base_url;
 }
 
+/*
+ *
+ */
+
 function sign_transaction($transaction, $sharedsecret)
 {
 	$signamount = (float) $transaction['amount'];
@@ -31,6 +35,10 @@ function sign_transaction($transaction, $sharedsecret)
 	log_event('','debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
 }
+
+/*
+ *
+ */
 
 function insert_transaction($transaction)
 {
@@ -69,7 +77,10 @@ function insert_transaction($transaction)
 	return $id;
 }
 
-function mail_interlets_transaction($transaction)
+/*
+ *
+ */
+function mail_mail_interlets_transaction($transaction)
 {
 	global $s_id;
 
@@ -123,52 +134,82 @@ function mail_interlets_transaction($transaction)
 	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
 }
 
-function mail_transaction($transaction)
+/*
+ *
+ */
+function mail_transaction($transaction, $remote_schema = null)
 {
-	global $s_id, $base_url;
+	global $s_id, $base_url, $schema;
 
 	$r = "\r\n";
 	$t = "\t";
 
-	$from = readconfigfromdb('from_address_transactions');
-	$currency = readconfigfromdb('currency');
+	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
 
-	$userfrom = readuser($transaction['id_from']);
-	
-	if($userfrom['accountrole'] != 'interlets')
+	$from = readconfigfromschema('from_address_transactions', $sch);
+	$currency = readconfigfromschema('currency', $sch);
+
+	$userfrom = readuser($transaction['id_from'], false, $sch);
+
+	$to = array();
+
+	if ($userfrom['accountrole'] != 'interlets')
 	{
-		$to = get_mailaddresses($transaction['id_from']);
+		$to[] = get_mailaddresses($transaction['id_from'], $sch);
 	}
 
-	$userto = readuser($transaction['id_to']);
+	$userto = readuser($transaction['id_to'], false, $sch);
 
-	$userto_mail = get_mailaddresses($transaction['id_to']);
+	if ($userto['accountrole'] != 'interlets')
+	{
+		$to[] = get_mailaddresses($transaction['id_to'], $sch);
+	}
 
-	$to .= ',' . $userto_mail;
+	$interlets = ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? 'interlets ' : '';
 
-	$systemtag = readconfigfromdb('systemtag');
-	$currency = readconfigfromdb('currency');
+	$to = implode(',', $to);
 
-	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], null, false);
-	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], null, false);
+	$systemtag = readconfigfromschema('systemtag', $sch);
+	$currency = readconfigfromschema('currency', $sch);
 
-	$subject .= '[' . $systemtag . '] ' . $transaction['amount'] . ' ' . $currency . ' van ';
+	$real_from = $transaction['real_from'];
+	$real_to = $transaction['real_to'];
+
+	$u_from = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
+	$u_to = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];
+
+	$subject .= '[' . $systemtag . '] ' . $interlets . 'transactie, ' . $transaction['amount'] . ' ' . $currency . ' van ';
 	$subject .= $u_from . ' aan ' . $u_to;
 
 	$content = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
-	$content .= 'Notificatie nieuwe transactie' . $r . $r;
+	$content .= 'Notificatie ' . $interlets . 'transactie' . $r . $r;
 	$content .= 'Van: ' . $t . $t . $u_from . $r;
 	$content .= 'Aan: ' . $t . $t . $u_to . $r;
 
 	$content .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
 	$content .= 'Aantal: ' . $t . $t . $transaction['amount'] . ' ' . $currency . $r . $r;
 	$content .= 'Transactie id:' . $t . $t .$transaction['transid'] . $r;
-	$content .= 'link: ' . $base_url . '/transactions.php?id=' . $transaction['id'] . $r;
+
+	if (isset($remote_schema))
+	{
+		list($schemas, $domains) = get_schemas_domains(true);
+		$url = $domains[$sch];
+	}
+	else
+	{
+		$url = $base_url;
+	}
+
+	$content .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
 
 	sendemail($from, $to, $subject, $content);
 
-	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
+	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
 }
+
+/*
+ *
+ */
 
 function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,$admincc)
 {
@@ -224,13 +265,15 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
 }
 
-function get_mailaddresses($uid)
+function get_mailaddresses($uid, $remote_schema = null)
 {
 	global $db;
 
+	$s = ($remote_schema) ? $remote_schema . '.' : '';
+
 	$addr = array();
 	$st = $db->prepare('select c.value
-		from contact c, type_contact tc
+		from ' . $s . 'contact c, ' . $s . 'type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'');

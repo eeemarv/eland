@@ -261,7 +261,7 @@ if ($add)
 				$transaction['id'] = $id;
 				$transaction['letscode_to'] = $letscode_to;
 
-				mail_interlets_transaction($transaction);
+				mail_mail_interlets_transaction($transaction);
 
 				$alert->success('Interlets transactie opgeslagen (verwerking per mail).');
 			}
@@ -312,9 +312,7 @@ if ($add)
 			$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
 			$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
 
-			$transid = queuetransaction($transaction, $fromuser, $touser);
-
-			unset($transaction['date'],$transaction['id_to']);
+			unset($transaction['date'], $transaction['id_to']);
 
 			$transaction['retry_count'] = 0;
 			$transaction['last_status'] = 'NEW';
@@ -419,12 +417,16 @@ if ($add)
 			try
 			{
 				$db->insert('transactions', $transaction);
+				$id = $db->lastInsertId('transactions_id_seq');
 				$db->executeUpdate('update users
 					set saldo = saldo + ? where id = ?',
 					array($transaction['amount'], $transaction['id_to']));
 				$db->executeUpdate('update users
 					set saldo = saldo - ? where id = ?',
 					array($transaction['amount'], $transaction['id_from']));
+
+				$trans_org = $transaction;
+				$trans_org['id'] = $id;
 
 				$transaction['creator'] = 0;
 				$transaction['amount'] = $remote_amount;
@@ -434,12 +436,14 @@ if ($add)
 				unset($transaction['real_to']);
 
 				$db->insert($remote_schema . '.transactions', $transaction);
+				$id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
 				$db->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo + ? where id = ?',
 					array($remote_amount, $transaction['id_to']));
 				$db->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo - ? where id = ?',
 					array($transaction['amount'], $transaction['id_from']));
+				$transaction['id'] = $id;
 
 				$db->commit();
 
@@ -458,10 +462,11 @@ if ($add)
 			readuser($remote_interlets_account['id'], true, $remote_schema);
 			readuser($to_remote_user['id'], true, $remote_schema);
 
-//mail
+			mail_transaction($trans_org);
+			mail_transaction($transaction, $remote_schema);
 
 			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
-				$amoount . ' from user: ' .  link_user($fromuser['id'], null, false) .
+				$amount . ' from user: ' .  link_user($fromuser['id'], null, false) .
 				' to user: ' . link_user($touser['id'], null, false));
 
 			log_event('', 'trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
@@ -469,7 +474,7 @@ if ($add)
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], $remote_schema);
 
-			autominlimit_queue($from_id, $to_id, $remote_amount, $remote_schema);
+			autominlimit_queue($transaction['id_from'], $transaction['id_to'], $remote_amount, $remote_schema);
 
 			$alert->success('Interlets transactie uitgevoerd.');
 			cancel();

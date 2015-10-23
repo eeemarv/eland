@@ -85,7 +85,7 @@ function gettoken($apikey)
 	if(check_apikey($apikey, 'interlets'))
 	{
 		$token = array(
-			'token'		=> md5(microtime() . $schema),
+			'token'		=> substr(md5(microtime() . $schema), 0, 12),
 			'validity'	=> date('Y-m-d H:i:s', time() + (10 * 60)),
 			'type'		=> 'guestlogin'
 		);
@@ -159,14 +159,14 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				return 'SIGFAIL';
 			}
 
-			$transaction['amount'] = $amount * readconfigfromdb('currencyratio');
+			$transaction['amount'] = round($amount * readconfigfromdb('currencyratio'));
 
-			if(insert_transaction($transaction))
+			if($id = insert_transaction($transaction))
 			{
 				$result = 'SUCCESS';
 				log_event('','Soap','Transaction ' . $transid . ' processed');
-				$transaction['amount'] = round($transaction['amount']);
-				mail_transaction($transaction, $transid);
+				$transaction['id'] = $id;
+				mail_transaction($transaction);
 			}
 			else
 			{

@@ -285,7 +285,7 @@ if ($autominlimit_queue)
 			|| !$from_user['letscode']
 		)
 		{
-			return;
+			continue;
 		}
 
 		$elas_mongo->connect();
@@ -307,7 +307,7 @@ if ($autominlimit_queue)
 		$exclusive = array_fill_keys($exclusive, true);
 		$trans_exclusive = array_fill_keys($trans_exclusive, true);
 
-		$inc = $inclusive[strtolower($user['letscode'])] ? true :false; 
+		$inc = (isset($inclusive[strtolower($user['letscode'])])) ? true :false; 
 
 		if (!is_array($a)
 			|| !$a['enabled']
@@ -321,7 +321,7 @@ if ($autominlimit_queue)
 		)
 		{
 			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . $r;
-			return;
+			continue;
 		}
 
 		$extract = round(($a['trans_percentage'] / 100) * $amount);
@@ -344,10 +344,11 @@ if ($autominlimit_queue)
 		$elas_mongo->connect();
 		$elas_mongo->limit_events->insert($e);
 		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
-		readuser($to_id);
+		readuser($to_id, true);
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, null, false) .  $r;
-		log_event($s_id, 'auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, null, false) . ' (id:' . $to_id . ') ');
+
+		log_event('', 'cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, null, false) . ' (id:' . $to_id . ') ');
 	}
 
 	$redis->expire($schema . '_autominlimit_queue', 0);

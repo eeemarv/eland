@@ -55,7 +55,7 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 		'event'		=> $event,
 	);
 
-	register_shutdown_function('insert_log', $item, $sch);
+	register_shutdown_function('insert_log', $item, $remote_schema);
 }
 
 function insert_log($item, $remote_schema = null)
@@ -64,7 +64,7 @@ function insert_log($item, $remote_schema = null)
 
 	$elas_mongo->connect();
 
-	if ($remote_schema)
+	if (isset($remote_schema))
 	{
 		$logs = $remote_schema . '_logs';
 		$elas_mongo->get_client()->$logs->insert($item);
