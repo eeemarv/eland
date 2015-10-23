@@ -147,7 +147,7 @@ if ($add)
 
 		if ($db->fetchColumn('select transid from transactions where transid = ?', array($stored_transid)))
 		{
-			$errors[] = 'Een herinvoer van het transactie formulier werd voorkomen.';
+			$errors[] = 'Een herinvoer van de transactie werd voorkomen.';
 		}
 
 		if ($letsgroup_id != 'self')
@@ -259,12 +259,15 @@ if ($add)
 			if ($id = insert_transaction($transaction))
 			{
 				$transaction['id'] = $id;
+				$transaction['letscode_to'] = $letscode_to;
+
 				mail_interlets_transaction($transaction);
-				$alert->success('Transactie opgeslagen');
+
+				$alert->success('Interlets transactie opgeslagen (verwerking per mail).');
 			}
 			else
 			{
-				$alert->error('Gefaalde transactie');
+				$alert->error('Gefaalde interlets transactie');
 			}
 			cancel();
 		}

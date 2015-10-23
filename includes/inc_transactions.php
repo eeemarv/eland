@@ -97,18 +97,26 @@ function mail_interlets_transaction($transaction)
 	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], null, false);
 
 	$content .= 'Van: ' . $t . $t . $u_from . $r;
-	$content .= 'Aan: ' . $t . $t . $u_from . $r;
+	$content .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;
 
-	$content .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
+	$content .= 'Omschrijving: ' . $t . $transaction['description'] . $r;
 
 	$currencyratio = readconfigfromdb('currencyratio');
 	$meta = round($transaction['amount'] / $currencyratio, 4);
 
-	$content .= 'Aantal: ' . $t . $transaction['amount'] . $currency . ', ofwel ' . $meta . ' LETS uren*, ' . $currencyratio . ' ' . $currency ' = 1 uur)' . $r . $r;
-	$content .= 'Transactie id: ' . $t . $t . $transaction['transid'] . $r . $r;
+	$content .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . $currency . ', ofwel ';
+	$content .= $meta . ' LETS uren* (' . $currencyratio . ' ' . $currency . ' = 1 uur)' . $r . $r;
+	$content .= 'Transactie id: ' . $t . $transaction['transid'] . $r . $r;
 
-	$content .= 'Je moet deze in je eigen systeem verder verwerken. ' . $r;
-	$content .= 'Als dit niet mogelijk is moet je de kern van de andere groep verwittigen zodat ze de transactie aan hun kant annuleren.';
+	$content .= 'Je moet deze in je eigen systeem verder verwerken.' . $r;
+	$content .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
+	$content .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
+
+	sendemail($from, $to, $subject, $content);
+
+	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
+	$content .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
+	$to = get_mailaddresses($transaction['id_from']);
 
 	sendemail($from, $to, $subject, $content);
 
