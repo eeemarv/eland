@@ -19,6 +19,7 @@ class elas_mongo
 	public function set_schema($schema)
 	{
 		$this->schema = $schema;
+		unset($this->logs);
 	}
 
 	public function connect()

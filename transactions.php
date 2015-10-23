@@ -119,14 +119,36 @@ if ($add)
 
 	$transaction = array();
 
+	$redis_transid_key = $schema . '_transid_u_' . $s_id;
+
 	if ($submit)
 	{
+		$errors = array();
+
+		$stored_transid = $redis->get($redis_transid_key);
+
+		if (!$stored_transid)
+		{
+			$errors[] = 'Formulier verlopen.';
+		}
+
+		$transaction['transid'] = $_POST['transid'];
 		$transaction['description'] = $_POST['description'];
 		list($letscode_from) = explode(' ', $_POST['letscode_from']);
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
 		$transaction['amount'] = $amount = $_POST['amount'];
 		$transaction['date'] = date('Y-m-d H:i:s');
 		$letsgroup_id = $_POST['letsgroup_id'];
+
+		if ($stored_transid != $transaction['transid'])
+		{
+			$errors[] = 'Fout transactie id.';
+		}
+
+		if ($db->fetchColumn('select transid from transactions where transid = ?', array($stored_transid)))
+		{
+			$errors[] = 'Een herinvoer van het transactie formulier werd voorkomen.';
+		}
 
 		if ($letsgroup_id != 'self')
 		{
@@ -153,11 +175,7 @@ if ($add)
 		$transaction['id_from'] = $fromuser['id'];
 		$transaction['id_to'] = $touser['id'];
 
-		$transaction['transid'] = generate_transid();
-
 		list($schemas, $domains) = get_schemas_domains(true);
-
-		$errors = array();
 
 		if (!$transaction['description'])
 		{
@@ -216,6 +234,8 @@ if ($add)
 			$errors[] = 'Fout in datumformaat (jjjj-mm-dd)';
 		}
 
+		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
+
 		if(!empty($errors))
 		{
 			$alert->error(implode('<br>', $errors));
@@ -248,18 +268,35 @@ if ($add)
 		}
 		else if ($letsgroup['apimethod'] != 'elassoap')
 		{
-			$msg = ($s_admin) ? '' : 'Contacteer een admin.';
-			$alert->error('Deze interlets groep heeft geen geldige api methode. ' . $msg);
+			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 			cancel();
 		}
 		else if (!$letsgroup['url'])
 		{
-			$alert->error('Geen url voor deze interlets groep.');
+			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
 			cancel();
 		}
 		else if (!($remote_schema = $schemas[$letsgroup['url']]))
 		{
-			// The letsgroup is on another server, use elassoap; queue the transaction.
+			// The interlets letsgroup is on another server, use elassoap; queue the transaction.
+
+			if (!$letsgroup['remoteapikey'])
+			{
+				$alert->error('Geen apikey voor deze interlets groep ingesteld.' . $contact_admin);
+				cancel();
+			}
+
+			if (!$letsgroup['presharedkey'])
+			{
+				$alert->error('Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin);
+				cancel();
+			}
+
+			if (!$letsgroup['myremoteletscode'])
+			{
+				$alert->error('Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin);
+				cancel();
+			}
 
 			$transaction['letscode_to'] = $letscode_to;
 			$transaction['letsgroup_id'] = $letsgroup_id;
@@ -272,20 +309,27 @@ if ($add)
 
 			$transid = queuetransaction($transaction, $fromuser, $touser);
 
-			if($transaction['transid'] == $transid)
+			unset($transaction['date'],$transaction['id_to']);
+
+			$transaction['retry_count'] = 0;
+			$transaction['last_status'] = 'NEW';
+
+			if ($db->insert('interletsq', $transaction))
 			{
+				if (!$redis->get($schema . '_interletsq'))
+				{
+					$redis->set($schema . '_interletsq', time());
+				}
 				$alert->success('Interlets transactie in verwerking');
-			}
-			else
-			{
-				$alert->error('Gefaalde transactie');
+				cancel();
 			}
 
+			$alert->error('Gefaalde queue interlets transactie');
 			cancel();
 		}
 		else
 		{
-			// the letsgroup is on the same server
+			// the interlets letsgroup is on the same server
 
 			$to_remote_user = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -403,15 +447,14 @@ if ($add)
 				exit;
 			}
 
-			$to_user = readuser($fromuser['id'], true);
-			$from_user = readuser($touser['id'], true);
+			readuser($fromuser['id'], true);
+			readuser($touser['id'], true);
 
-	/*
-			register_shutdown_function('check_auto_minlimit',
-				$to_user['id'], $from_user['id'], $transaction['amount']);
-	*/
+			readuser($remote_interlets_account['id'], true, $remote_schema);
+			readuser($to_remote_user['id'], true, $remote_schema);
 
-/// mail
+//mail
+
 			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
 				$amoount . ' from user: ' .  link_user($fromuser['id'], null, false) .
 				' to user: ' . link_user($touser['id'], null, false));
@@ -421,8 +464,7 @@ if ($add)
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], $remote_schema);
 
-			readuser($remote_interlets_account['id'], true, $remote_schema);
-			readuser($to_remote_user['id'], true, $remote_schema);
+			autominlimit_queue($from_id, $to_id, $remote_amount, $remote_schema);
 
 			$alert->success('Interlets transactie uitgevoerd.');
 			cancel();
@@ -433,12 +475,20 @@ if ($add)
 	}
 	else
 	{
+		//GET form
+
+		$transid = generate_transid();
+
+		$redis->set($redis_transid_key, $transid);
+		$redis->expire($redis_transid_key, 3600);
+
 		$transaction = array(
 			'date'			=> date('Y-m-d'),
 			'letscode_from'	=> $s_letscode . ' ' . $s_name,
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
+			'transid'		=> $transid,
 		);
 
 		if ($mid)
@@ -470,6 +520,8 @@ if ($add)
 		$letsgroup['id'] = 'self';
 	}
 
+	$thumbprint = getenv('ELAS_DEBUG') ? time() : round((time() / 900) * 900);
+
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/transactions_add.js"></script>';
 
@@ -489,7 +541,7 @@ if ($add)
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
 	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
-	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-exchange"></i>';
+	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
 	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
 
 	$h1 = 'Nieuwe transactie';
@@ -531,7 +583,6 @@ if ($add)
 	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
 	foreach ($letsgroups as $l)
 	{
-		$thumbprint = time();//(getenv('ELAS_DEBUG')) ? time() : $redis->get($l['url'] . '_typeahead_thumbprint');
 		echo '<option value="' . $l['id'] . '" ';
 		echo 'data-thumbprint="' . $thumbprint . '"';
 		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
@@ -568,6 +619,8 @@ if ($add)
 
 	echo '<a href="' . $rootpath . 'transactions.php" class="btn btn-default">Annuleren</a>&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
+
+	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';
 	echo '</div>';

@@ -18,15 +18,15 @@
 function generate_transid()
 {
 	global $base_url, $s_id;
-	return sha1($s_id .microtime()) .$_SESSION['id'] .'@' . $base_url;
+	return substr(sha1($s_id .microtime()), 0, 12) . '_' . $s_id . '@' . $base_url;
 }
 
-function sign_transaction($posted_list, $sharedsecret)
+function sign_transaction($transaction, $sharedsecret)
 {
-	$signamount = (float) $posted_list['amount'];
+	$signamount = (float) $transaction['amount'];
 	$signamount = $signamount * 100;
 	$signamount = round($signamount);
-	$tosign = $sharedsecret .$posted_list['transid'] .strtolower($posted_list['letscode_to']) .$signamount;
+	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $signamount;
 	$signature = sha1($tosign);
 	log_event('','debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
@@ -63,8 +63,7 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
-	register_shutdown_function('check_auto_minlimit',
-		$to_user['id'], $from_user['id'], $transaction['amount']);
+	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' from user id ' . $transaction['id_from'] . ' to user id ' . $transaction['id_to']);
@@ -238,24 +237,6 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
 }
 
-function queuetransaction($posted_list,$fromuser,$touser)
-{
-	global $db, $redis, $schema;
-
-	unset($posted_list['date'],$posted_list['id_to']);
-	$posted_list["retry_count"] = 0;
-	$posted_list["last_status"] = "NEW";
-	if ($db->insert("interletsq", $posted_list))
-	{
-		if (!$redis->get($schema . '_interletsq'))
-		{
-			$redis->set($schema . '_interletsq', time());
-		}
-		return $posted_list['transid'];
-	}
-	return '';
-}
-
 function get_mailaddresses($uid)
 {
 	global $db;
@@ -275,95 +256,4 @@ function get_mailaddresses($uid)
 		$addr[] = $row['value'];
 	}
 	return implode(', ', $addr);
-}
-
-function check_auto_minlimit($to_user_id, $from_user_id, $amount)
-{
-	global $elas_mongo, $db, $s_id;
-
-	if (!$to_user_id || !$from_user_id)
-	{
-		return;
-	}
-
-	$user = readuser($to_user_id);
-	$from_user = readuser($from_user_id);
-
-	if (!$user
-		|| !$amount
-		|| !is_array($user)
-		|| !in_array($user['status'], array(1, 2))
-		|| !$from_user
-		|| !is_array($from_user)
-		|| !$from_user['letscode']
-	)
-	{
-		return;
-	}
-
-	$elas_mongo->connect();
-	$a = $elas_mongo->settings->findOne(array('name' => 'autominlimit'));
-
-	$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
-	$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
-
-	$inclusive = explode(',', $a['inclusive']);
-	$exclusive = explode(',', $a['exclusive']);
-	$trans_exclusive = explode(',', $a['trans_exclusive']);
-
-	array_walk($inclusive, function(&$val){ return strtolower(trim($val)); });	
-	array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
-	array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
-
-	$inclusive = array_fill_keys($inclusive, true);
-	$exclusive = array_fill_keys($exclusive, true);
-	$trans_exclusive = array_fill_keys($trans_exclusive, true);
-
-	$inc = $inclusive[strtolower($user['letscode'])] ? true :false; 
-
-	if (!is_array($a)
-		|| !$a['enabled']
-		|| ($user['status'] == 1 && !$a['active_no_new_or_leaving'] && !$inc)
-		|| ($user['status'] == 2 && !$a['leaving'] && !$inc)
-		|| ($user['status'] == 3 && !$a['new'] && !$inc) 
-		|| (isset($exclusive[trim(strtolower($user['letscode']))]))
-		|| (isset($trans_exclusive[trim(strtolower($from_user['letscode']))]))
-		|| ($a['min'] >= $user['minlimit'])
-		|| ($a['account_base'] >= $user['saldo']) 
-	)
-	{
-		error_log('auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . "\n");
-		return;
-	}
-
-	$extract = round(($a['trans_percentage'] / 100) * $amount);
-
-	if (!$extract)
-	{
-		return;
-	}
-
-	$new_minlimit = $user['minlimit'] - $extract;
-	$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
-
-	write_new_limit($to_user_id, $new_minlimit);
-	log_event($s_id, 'auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . $user['letscode'] . ' ' . $user['fullname'] . ' (id:' . $to_user_id . ') ');	
-}
-
-function write_new_limit($user_id, $new_limit, $type = 'min')
-{
-	global $elas_mongo, $db;
-
-	$e = array(
-		'user_id'	=> $user_id,
-		'limit'		=> $new_limit,
-		'type'		=> $type,
-		'ts'		=> new MongoDate(),
-	);
-
-	$elas_mongo->connect();
-	$elas_mongo->limit_events->insert($e);
-	$db->update('users', array($type . 'limit' => $new_limit), array('id' => $user_id));
-	readuser($user_id, true);
 }

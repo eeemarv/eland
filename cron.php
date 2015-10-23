@@ -254,6 +254,111 @@ else
 	run_cronjob('processqueue');
 }
 
+$autominlimit_queue = $redis->get($schema . '_autominlimit_queue');
+
+if ($autominlimit_queue)
+{
+	echo '-- processing autominlimit queue -- ' . $r;
+
+	$queue = unserialize($autominlimit_queue);
+
+	foreach ($queue as $q)
+	{
+		$to_id = $q['to_id'];
+		$from_id = $q['from_id'];
+		$amount = $q['amount'];
+
+		if (!$to_id || !$from_id || !$amount)
+		{
+			continue;
+		}
+
+		$user = readuser($to_id);
+		$from_user = readuser($from_id);
+
+		if (!$user
+			|| !$amount
+			|| !is_array($user)
+			|| !in_array($user['status'], array(1, 2))
+			|| !$from_user
+			|| !is_array($from_user)
+			|| !$from_user['letscode']
+		)
+		{
+			return;
+		}
+
+		$elas_mongo->connect();
+		$a = $elas_mongo->settings->findOne(array('name' => 'autominlimit'));
+
+		$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
+		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
+
+		$inclusive = explode(',', $a['inclusive']);
+		$exclusive = explode(',', $a['exclusive']);
+		$trans_exclusive = explode(',', $a['trans_exclusive']);
+
+		array_walk($inclusive, function(&$val){ return strtolower(trim($val)); });	
+		array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
+		array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
+
+		$inclusive = array_fill_keys($inclusive, true);
+		$exclusive = array_fill_keys($exclusive, true);
+		$trans_exclusive = array_fill_keys($trans_exclusive, true);
+
+		$inc = $inclusive[strtolower($user['letscode'])] ? true :false; 
+
+		if (!is_array($a)
+			|| !$a['enabled']
+			|| ($user['status'] == 1 && !$a['active_no_new_or_leaving'] && !$inc)
+			|| ($user['status'] == 2 && !$a['leaving'] && !$inc)
+			|| ($user['status'] == 3 && !$a['new'] && !$inc) 
+			|| (isset($exclusive[trim(strtolower($user['letscode']))]))
+			|| (isset($trans_exclusive[trim(strtolower($from_user['letscode']))]))
+			|| ($a['min'] >= $user['minlimit'])
+			|| ($a['account_base'] >= $user['saldo']) 
+		)
+		{
+			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . $r;
+			return;
+		}
+
+		$extract = round(($a['trans_percentage'] / 100) * $amount);
+
+		if (!$extract)
+		{
+			return;
+		}
+
+		$new_minlimit = $user['minlimit'] - $extract;
+		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
+
+		$e = array(
+			'user_id'	=> $to_id,
+			'limit'		=> $new_minlimit,
+			'type'		=> 'min',
+			'ts'		=> new MongoDate(),
+		);
+
+		$elas_mongo->connect();
+		$elas_mongo->limit_events->insert($e);
+		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
+		readuser($to_id);
+
+		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, null, false) .  $r;
+		log_event($s_id, 'auto_minlimit', 'new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, null, false) . ' (id:' . $to_id . ') ');
+	}
+
+	$redis->expire($schema . '_autominlimit_queue', 0);
+
+	echo '--- end queue autominlimit --- ' . $r;
+}
+else
+{
+	echo '-- autominlimit queue is empty --' . $r;
+}
+
 run_cronjob('saldo', 86400 *  readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));

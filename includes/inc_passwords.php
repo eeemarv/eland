@@ -37,13 +37,13 @@ function sendactivationmail($password, $user)
 	$subject .= '] account activatie voor ' . $systemname;
 
 	$content  = "*** Dit is een automatische mail van ";
-	$content .= $systemtag;
+	$content .= $systemname;
 	$content .= " ***\r\n\n";
 	$content .= 'Beste ';
 	$content .= $user['name'];
 	$content .= "\n\n";
 
-	$content .= "Welkom bij Letsgroep $systemletsname";
+	$content .= "Welkom bij Letsgroep $systemname";
 	$content .= '. Surf naar ' . $base_url;
 	$content .= " en meld je aan met onderstaande gegevens.\n";
 	$content .= "\n-- Account gegevens --\n";

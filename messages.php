@@ -1196,6 +1196,14 @@ if ($id)
  * list messages
  */
 
+// todo etag
+/*
+if (!$uid)
+{
+	$etag = $redis->get($schema . '_msgs_etag');
+}
+*/
+
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
 $sql_and_where = ($uid) ? ' and u.id = ? ' : '';

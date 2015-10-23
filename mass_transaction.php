@@ -287,8 +287,7 @@ if ($_POST['zend'])
 
 		foreach($transactions as $t)
 		{
-			register_shutdown_function('check_auto_minlimit',
-				$t['id_to'], $t['id_from'], $t['amount']);
+			autominlimit_queue($t['id_from'], $t['id_to'], $t['amount']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
