@@ -106,10 +106,10 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 {
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 	log_event('','debug','Transaction request');
-	
-	if (check_duplicate_transaction($transid))
+
+	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid)))
 	{
-		log_event('','Soap','Transaction ' . $transid . ' is a duplicate');
+		log_event('', 'Soap', 'Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
 	}
 

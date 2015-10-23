@@ -242,8 +242,9 @@ if ($add)
 		}
 		else if ($letsgroup_id == 'self')
 		{
-			if (insert_transaction($transaction))
+			if ($id = insert_transaction($transaction))
 			{
+				$transaction['id'] = $id;
 				mail_transaction($transaction);
 				$alert->success('Transactie opgeslagen');
 			}
@@ -255,8 +256,9 @@ if ($add)
 		}
 		else if ($letsgroup['apimethod'] == 'mail')
 		{
-			if (insert_transaction($transaction))
+			if ($id = insert_transaction($transaction))
 			{
+				$transaction['id'] = $id;
 				mail_interlets_transaction($transaction);
 				$alert->success('Transactie opgeslagen');
 			}

@@ -486,13 +486,15 @@ function render_select_options($option_ary, $selected, $print = true)
  *
  */
 
-function link_user($user, $render = null, $link = true)
+function link_user($user, $render = null, $link = true, $show_id = false)
 {
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = htmlspecialchars($str, ENT_QUOTES);
-	return ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
+	$str = ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
+	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
+	return $str;
 }
 
 /**
