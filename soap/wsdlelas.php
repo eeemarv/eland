@@ -80,26 +80,23 @@ $server->register('dopayment',
 
 function gettoken($apikey)
 {
-	global $db, $schema;
+	global $db, $schema, $redis;
 	log_event('', 'debug', 'Token request');
+
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = array(
-			'token'		=> substr(md5(microtime() . $schema), 0, 12),
-			'validity'	=> date('Y-m-d H:i:s', time() + (10 * 60)),
-			'type'		=> 'guestlogin'
-		);
+		$token = substr(md5(microtime() . $schema), 0, 12);
+		$key = $schema . '_token_' . $token;
+		$redis->set($key, '1');
+		$redis->expire($key, 600);
 
-		$db->insert('tokens', $token);
+		log_event('' ,'Soap' ,'Token ' . $token . ' generated');
+		return $token;
+	}
 
-		log_event('' ,'Soap' ,'Token ' . $token['token'] . ' generated');
-	}
-	else
-	{
-		$token = '---';
-		log_event('','Soap','APIkey rejected, no token generated');
-	}
-	return $token['token'];
+	log_event('','Soap','APIkey rejected, no token generated');
+	return '---';
+
 }
 
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)

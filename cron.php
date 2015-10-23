@@ -700,7 +700,9 @@ function cleanup_news()
 	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', array($now))) ? true : false;
 }
 
-run_cronjob('cleanup_tokens', 3600);
+run_cronjob('cleanup_tokens', 604800);
+
+// tokens are stored in redis now, not anymore in db
 
 function cleanup_tokens()
 {

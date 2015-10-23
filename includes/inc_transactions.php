@@ -265,6 +265,10 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
 }
 
+/*
+ *
+ */
+
 function get_mailaddresses($uid, $remote_schema = null)
 {
 	global $db;

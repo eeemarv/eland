@@ -25,13 +25,7 @@ $error_location = 'login.php?location=' . urlencode($location);
 
 if(!empty($token))
 {
-	$query = 'select token
-		from tokens
-		where token = ?
-		and validity > ? 
-		and type = \'guestlogin\'';
-
-	if($db->fetchColumn($query, array($token, date('Y-m-d H:i:s'))))
+	if($result = $redis->get($schema . '_token_' . $token))
 	{
         session_start();
         $_SESSION['id'] = 0;

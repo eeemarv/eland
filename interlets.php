@@ -360,9 +360,75 @@ if ($id && !$login)
  */
 if ($login)
 {
+	if (!$group['url'])
+	{
+		$alert->error('De url van de interLETS groep is niet ingesteld.');
+		cancel();
+	}
+
+	if ($group['apimethod'] != 'elassoap')
+	{
+		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
+		cancel();
+	}
+
 	$err_group = $group['groupname'] . ': ';
 
-	if($group['apimethod'] == 'elassoap')
+	list($schemas, $domains) = get_schemas_domains(true);
+
+	$remote_schema = (isset($schemas[$group['url']])) ? $schemas[$group['url']] : false;
+
+	if ($remote_schema)
+	{
+		// the letsgroup is on the same server
+
+		$remote_group = $db->fetchAssoc('select * from ' . $remote_schema . '.letsgroups where url = ?', array($base_url));
+
+		if (!$remote_group)
+		{
+			$alert->error('Deze interLETS groep heeft geen verbinding geconfirmeerd met deze groep. ');
+			cancel();
+		}
+
+		if (!$remote_group['localletscode'])
+		{
+			$alert->error('Er is geen letscode ingesteld bij de interLETS groep voor deze groep.');
+			cancel();
+		}
+
+		$remote_user = $db->fetchAssoc('select * from ' . $remote_schema . '.users where letscode = ?', array($remote_group['localletscode']));
+
+		if (!$remote_user)
+		{
+			$alert->error('Geen interlets account aanwezig bij deze interLETS groep voor deze groep.');
+			cancel();
+		}
+
+		if (!in_array($remote_user['status'], array(1, 2, 7)))
+		{
+			$alert->error('Geen correcte status van het interlets account bij deze interlets groep.');
+			cancel();
+		}
+
+		if ($remote_user['accountrole'] != 'interlets')
+		{
+			$alert->error('Geen correcte rol van het interlets account bij deze interlets groep.');
+			cancel();
+		}
+
+		$token = substr(md5(microtime() . $remote_schema), 0, 12);
+		$key = $remote_schema . '_token_' . $token;
+		$redis->set($key, '1');
+		$redis->expire($key, 600);
+
+		log_event('' ,'Soap' ,'Token ' . $token . ' generated');
+
+		echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");';
+		echo 'window.focus();';
+		echo '</script>';
+
+	}
+	else
 	{
 		$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
 		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
@@ -388,10 +454,6 @@ if ($login)
 				echo '</script>';
 			}
 		}
-	}
-	else
-	{
-		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
 	}
 
 	echo '<script>setTimeout(function(){location.href = "' . $rootpath . 'interlets.php";}, 1000);</script>';
