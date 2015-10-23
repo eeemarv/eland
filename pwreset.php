@@ -11,7 +11,6 @@ if ($s_id)
 	exit;
 }
 
-$user_id = $_GET['u'];
 $token = $_GET['token'];
 
 if ($token & $user_id)
@@ -22,12 +21,7 @@ if ($token & $user_id)
 
 		if (!(password_strength($password) < 50)) // ignored readconfigfromdb('pwscore')
 		{
-			if ($db->fetchColumn('select token
-				from tokens
-					where token = ?
-						and validity > ?
-						and type = \'pwreset\'', 
-				array($token . '_' . $user_id, gmdate('Y-m-d H:i:s'))))
+			if ($user_id = $redis->get($schema . '_token_' . $token))
 			{
 				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
 				$user = readuser($user_id, true);
@@ -46,15 +40,14 @@ if ($token & $user_id)
 				{
 					$to[] = $row['value'];
 				}
-				error_log(implode(' ---- ', $to));
 
-				$url = $base_url . '/login.php?login=' . $user['login'];
+				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
 				$subj = '[' . readconfigfromdb('systemtag') . '] nieuw paswoord.';
 				$body = 'Beste ' . $user['name'] . ",\n\n";
 				$body .= 'Er werd een nieuw paswoord voor je account ingesteld.';
 				$body .= "\n\npaswoord: " . $password . "\n";
-				$body .= 'login: ' . $user['login'] . "\n\n";
+				$body .= 'login (letscode): ' . $user['letscode'] . "\n\n";
 				$body .= 'Inloggen: ' . $url;
 
 				sendemail(readconfigfromdb('from_address'), $to, $subj, $body);
@@ -110,7 +103,7 @@ if ($_POST['zend'])
 	if($email)
 	{
 		log_event($s_id, 'System', 'Activation request for ' . $email);
-		$mail_ary = $db->fetchAll('SELECT c.id_user, u.login
+		$mail_ary = $db->fetchAll('SELECT c.id_user, u.letscode
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
 				AND tc.id = c.id_type_contact
@@ -120,25 +113,28 @@ if ($_POST['zend'])
 		if (count($mail_ary) < 2)
 		{
 			$user_id = $mail_ary[0]['id_user'];
-			$login = $mail_ary[0]['login'];
+			$letscode = $mail_ary[0]['letscode'];
 
 			if ($user_id)
 			{
-				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 10);
-				$validity = gmdate('Y-m-d H:i:s', time() + 3600);
-				$db->insert('tokens', array(
-					'token'		=> $token . '_' . $user_id,
-					'validity' 	=> $validity,
-					'type'		=> 'pwreset'));
-				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
+				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 12);
+				$key = $schema . '_token_' . $token;
+				$redis->set($key, $user_id);
+				$redis->expire($key, 3600);
+
 				$url = $base_url . '/pwreset.php?token=' . $token . '&u=' . $user_id;
+
+				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
+
 				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
 				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
-				$message .= "Je login is: ". $login . "\n\n";
-				$message .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, gelieve deze mail te negeren.';
+				$message .= 'Je letscode is: ' . $letscode . "\n\n";
+				$message .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
+				$message .= 'gelieve deze mail te negeren.';
+
 				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
-				log_event($s_id,"System","Paswoord reset link verstuurd naar " . $email);
+				log_event($s_id, 'System', 'Paswoord reset link verstuurd naar ' . $email);
 				header('Location: login.php');
 				exit;
 			}
@@ -159,11 +155,11 @@ if ($_POST['zend'])
 	}
 }
 
-$h1 = 'Login of paswoord vergeten';
+$h1 = 'Paswoord vergeten';
 
 require_once $rootpath . 'includes/inc_header.php';
 
-echo '<p>Met onderstaand formulier stuur je je login en een link om je paswoord te resetten naar je mailbox. </p>';
+echo '<p>Met onderstaand formulier stuur je een link om je paswoord te resetten naar je mailbox. </p>';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';

@@ -425,10 +425,6 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 					'name'		=> 'max_limiet',
 					'content'	=> $user['maxlimit'],
 				),
-				array(
-					'name'		=> 'login',
-					'content'	=> $user['login'],
-				),
 			),
 		);
 	}
@@ -514,40 +510,33 @@ if ($pw)
 							and tc.abbrev = \'mail\'
 							and c.id_user = ?', array($pw));
 
-					if ($user['login'])
+					if ($to)
 					{
-						if ($to)
-						{
-							$url = $base_url . '\login.php?login=' . $user['login'];
+						$url = $base_url . '\login.php?login=' . $user['letscode'];
 
-							$subj = '[' . readconfigfromdb('systemtag');
-							$subj .= '] nieuw paswoord voor je account';
+						$subj = '[' . readconfigfromdb('systemtag');
+						$subj .= '] nieuw paswoord voor je account';
 
-							$con = '*** Dit is een automatische mail van ';
-							$con .= readconfigfromdb('systemname');
-							$con .= '. Niet beantwoorden astublieft. ';
-							$con .= "***\n\n";
-							$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
-							$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
-							$con .= "\n\n";
-							$con .= 'Je kan inloggen met de volgende gegevens:';
-							$con .= "\n\nLogin: " . $user['login'];
-							$con .= "\nPaswoord: " .$password . "\n\n";
-							$con .= 'link waar je kan inloggen: ' . $url;
-							$con .= "\n\n";
-							$con .= 'Veel letsgenot!';
-							sendemail($from, $to, $subj, $con);
-							log_event($s_id, 'Mail', 'Password change notification mail sent to ' . $to);
-							$alert->success('Notificatie mail verzonden naar ' . $to);
-						}
-						else
-						{
-							$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
-						}
+						$con = '*** Dit is een automatische mail van ';
+						$con .= readconfigfromdb('systemname');
+						$con .= '. Niet beantwoorden a.u.b. ';
+						$con .= "***\n\n";
+						$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
+						$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
+						$con .= "\n\n";
+						$con .= 'Je kan inloggen met de volgende gegevens:';
+						$con .= "\n\nLogin (letscode): " . $user['letscode'];
+						$con .= "\nPaswoord: " .$password . "\n\n";
+						$con .= 'link waar je kan inloggen: ' . $url;
+						$con .= "\n\n";
+						$con .= 'Veel letsgenot!';
+						sendemail($from, $to, $subj, $con);
+						log_event($s_id, 'Mail', 'Password change notification mail sent to ' . $to);
+						$alert->success('Notificatie mail verzonden naar ' . $to);
 					}
 					else
 					{
-						$alert->warning('Deze gebruiker heeft geen login! Er werd geen notificatie email verstuurd.');
+						$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
 					}
 				}
 				cancel($pw);
@@ -591,10 +580,10 @@ if ($pw)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief en login ingesteld is)</label>';
+	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief is)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="notify" id="notify"';
-	echo (($user['status'] == 1 || $user['status'] == 2) && $user['login']) ? ' checked="checked"' : ' readonly';
+	echo ($user['status'] == 1 || $user['status'] == 2) ? ' checked="checked"' : ' readonly';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -863,7 +852,6 @@ if ($add || $edit)
 			'birthday'		=> $_POST['birthday'] ?: null,
 			'hobbies'		=> $_POST['hobbies'],
 			'comments'		=> $_POST['comments'],
-			'login'			=> $_POST['login'],
 			'cron_saldo'	=> $_POST['cron_saldo'] ? 1 : 0,
 			'lang'			=> 'nl'
 		);
@@ -908,7 +896,7 @@ if ($add || $edit)
 
 		if ($username_edit)
 		{
-			$user['name'] = $_POST['name'];
+			$user['login'] = $user['name'] = $_POST['name'];
 		}
 		if ($fullname_edit)
 		{
@@ -979,11 +967,11 @@ if ($add || $edit)
 
 		if (!$user['login'])
 		{
-			$errors[] = 'Vul een login in';
+			$errors[] = 'Vul een login in. (gebruikersnaam)';
 		}
 		else if ($db->fetchColumn($login_sql, $login_sql_params))
 		{
-			$errors[] = 'De login bestaat al!';
+			$errors[] = 'De login bestaat al! (gebruikersnaam)';
 		}
 
 		if ($s_admin)
@@ -1049,6 +1037,7 @@ if ($add || $edit)
 			if ($add)
 			{
 				$user['creator'] = $s_id;
+
 				$user['cdate'] = date('Y-m-d H:i:s');
 
 				if ($user['status'] == 1)
@@ -1091,7 +1080,7 @@ if ($add || $edit)
 							'id_type_contact'	=> $contact_types[$value['abbrev']],
 							'id_user'			=> $id,
 						);
-						error_log(implode('|',$insert) . ' ---- ' . $id);
+
 						$db->insert('contact', $insert);
 					}
 
@@ -1200,6 +1189,7 @@ if ($add || $edit)
 							}
 
 							$contact_update = $value;
+
 							unset($contact_update['id'], $contact_update['abbrev'],
 								$contact_update['name'], $contact_update['main_mail']);
 
@@ -1419,6 +1409,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
+/*
 	echo '<div class="form-group">';
 	echo '<label for="login" class="col-sm-2 control-label">Login</label>';
 	echo '<div class="col-sm-10">';
@@ -1426,6 +1417,7 @@ if ($add || $edit)
 	echo 'value="' . $user['login'] . '" required>';
 	echo '</div>';
 	echo '</div>';
+*/
 
 	if ($s_admin)
 	{
@@ -1739,6 +1731,7 @@ if ($id)
 	echo '</dt>';
 	dd_render($user['comments']);
 
+/*
 	if ($s_admin || $s_owner)
 	{
 		echo '<dt>';
@@ -1746,6 +1739,7 @@ if ($id)
 		echo '</dt>';
 		dd_render($user['login']);
 	}
+*/
 
 	if ($s_admin)
 	{
@@ -2225,7 +2219,6 @@ if ($s_admin)
 	echo '<tr><td>{{naam}}</td><td>Gebruikersnaam</td></tr>';
 	echo '<tr><td>{{volledige_naam}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
 	echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
-	echo '<tr><td>{{login}}</td><td>Login</td></tr>';
 	echo '<tr><td>{{status}}</td><td>Status</td></tr>';
 	echo '<tr><td>{{min_limiet}}</td><td>Minimum limiet</td></tr>';
 	echo '<tr><td>{{max_limiet}}</td><td>Maximum limiet</td></tr>';

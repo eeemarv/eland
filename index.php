@@ -40,6 +40,45 @@ $msgs = $db->fetchAll('SELECT m.*,
 	order by m.cdate DESC
 	limit 100');
 
+if ($s_admin)
+{
+	$dup_letscode = $db->fetchColumn('select u1.letscode
+		from users u1, users u2
+		where u1.letscode = u2.letscode
+			and u1.id <> u2.id');
+
+	$dup_mail = $db->fetchColumn('select c1.value
+		from contact c1, contact c2, type_contact tc
+		where c1.id_type_contact = tc.id
+			and c2.id_type_contact = tc.id
+			and tc.abbrev = \'mail\'
+			and c1.id <> c2.id
+			and c1.value = c2.value');
+
+	$dup_name = $db->fetchColumn('select u1.name
+		from users u1, users u2
+		where u1.name = u2.name
+			and u1.id <> u2.id');
+
+	$emp_letscode = $db->fetchColumn('select id
+		from users
+		where letscode = \'\'');
+
+	$emp_name = $db->fetchColumn('select id
+		from users
+		where letscode = \'\'');
+
+	$emp_mail = $db->fetchColumn('select c.id_user
+		from contact c, type_contact tc
+		where c.id_type_contact = tc.id
+			and tc.abbrev = \'mail\'
+			and c.value = \'\'');
+
+	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
+	$db_update = ($version == $schemaversion) ? false : true;
+	$default_config = $db->fetchColumn('select setting from config where "default" = True');
+}
+
 $h1 = 'Overzicht';
 $fa = 'home';
 
@@ -47,15 +86,13 @@ include $rootpath . 'includes/inc_header.php';
 
 if($s_admin)
 {
-	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
-	$db_update = ($version == $schemaversion) ? false : true;
-	$default_config = $db->fetchColumn('select setting from config where "default" = True');
-
-	if ($db_update || $default_config)
+	if ($db_update || $default_config || $dup_letscode || $dup_name || $dup_mail
+		|| $emp_mail || $emp_name || $emp_letscode)
 	{
 		echo '<div class="panel panel-danger">';
 		echo '<div class="panel-heading">';
-		echo 'eLAS status (admin)';
+		echo '<span class="label label-info">Admin</span> ';
+		echo '<i class="fa fa-exclamation-triangle"></i> Status';
 		echo '</div>';
 
 		echo '<ul class="list-group">';
@@ -69,11 +106,46 @@ if($s_admin)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Er zijn nog settings met standaardwaarden, ';
-			echo 'klik op <a href="' . $rootpath . 'config.php">instellingen</a> ';
+			echo 'Kijk in de <a href="' . $rootpath . 'config.php">instellingen</a> ';
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
-
+		if ($dup_mail)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicaat mail adres onder de gebruikers: ' . $dup_mail;
+			echo '</li>';
+		}
+		if ($dup_letscode)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicate letscode onder de gebruikers: ' . $dup_letscode;
+			echo '</li>';
+		}
+		if ($dup_name)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicate gebruikersnaam onder de gebruikers: ' . $dup_name;
+			echo '</li>';
+		}
+		if ($emp_mail)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicaat mailadres onder de gebruikers: ' . link_user($emp_mail);
+			echo '</li>';
+		}
+		if ($emp_letscode)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicate letscode onder de gebruikers: ' . link_user($emp_letscode);
+			echo '</li>';
+		}
+		if ($emp_name)
+		{
+			echo '<li class="list-group-item">';
+			echo 'Er is een duplicate gebruikersnaam onder de gebruikers: ' . link_user($emp_name);
+			echo '</li>';
+		}
 		echo '</ul>';
 		echo '</div>';
 	}

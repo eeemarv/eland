@@ -74,7 +74,7 @@ if ($map_edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post">';	
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
@@ -276,9 +276,12 @@ if ($submit)
 		'image/gif'					=> 1,
 		'image/bmp'					=> 1,
 		'image/tiff'				=> 1,
+		'image/svg+xml'				=> 1,
 		'text/plain'				=> 1,
 		'text/rtf'					=> 1,
 		'text/css'					=> 1,
+		'text/html'					=> 1,
+		'text/markdown'				=> 1,
 		'application/msword'		=> 1,
 		'application/zip'			=> 1,
 		'audio/mpeg'				=> 1,

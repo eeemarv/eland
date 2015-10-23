@@ -14,7 +14,6 @@ if ($s_id)
 
 $token = $_GET['token'];
 $login = $_GET['login'];
-$openid = $_GET['openid_identity'];
 $location = $_GET['location'];
 $location = ($location) ? urldecode($location) : 'index.php';
 $location = ($location == 'login.php') ? 'index.php' : $location;
@@ -51,11 +50,11 @@ if ($_POST['zend'])
 	$login = trim($_POST['login']);
 	$password = trim($_POST['password']);
 
+	$errors = array();
+
 	if (!($login && $password))
 	{
-		$alert->error('Login gefaald. Vul login en paswoord in.');
-		header('Location: ' . $error_location);
-		exit;
+		$errors[] = 'Login gefaald. Vul login en paswoord in.';
 	}
 
 	$master_password = getenv('ELAS_MASTER_PASSWORD');
@@ -81,75 +80,135 @@ if ($_POST['zend'])
 		exit;
 	}
 
-	$user = $db->fetchAssoc('SELECT * FROM users WHERE login = ?', array($login));
-	if (!$user)
+	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
-		$alert->error('Login gefaald. Onbekende gebruiker.');
-		header('Location: ' . $error_location);
-		exit;
+		if ($db->fetchColumn('select c1.value
+			from contact c1, contact c2, type_contact tc
+			where c1.id_type_contact = tc.id
+				and c2.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c1.id <> c2.id
+				and c1.value = c2.value'))
+		{
+			$errors[] = 'Je kan niet inloggen met email. Deze installatie bevat duplicate email adressen.';
+		}
+		else
+		{
+			$user = $db->fetchAssoc('select u.*
+				from users u, contact c, type_contact tc
+				where u.id = c.id_user
+					and tc.id = c.id_type_contact
+					and tc.abbrev = \'mail\'
+					and c.value = ?', array($login));
+		}
+	}
+
+	if (!$user && !count($errors))
+	{
+		if ($db->fetchColumn('select u1.letscode
+			from users u1, users u2
+			where u1.letscode = u2.letscode
+				and u1.id <> u2.id
+				and u1.letscode = ?', array($login)))
+		{
+			$errors[] = 'Je kan niet inloggen met je letscode. Deze installatie bevat duplicate letscodes.';
+		}
+		else
+		{
+			$user = $db->fetchAssoc('select * from users where letscode = ?', array($login));
+		}
+	}
+
+	if (!$user && !count($errors))
+	{
+		if ($db->fetchColumn('select u1.name
+			from users u1, users u2
+			where u1.name = u2.name
+				and u1.id <> u2.id
+				and u1.name = ?', array($login)))
+		{
+			$errors[] = 'Je kan niet inloggen met je gebruikersnaam. Deze installatie bevat duplicate gebruikersnamen.';
+		}
+		else
+		{
+			$user = $db->fetchAssoc('select * from users where name = ?', array($login));
+		}
+	}
+
+	if (!$user && !count($errors))
+	{
+		$errors[] = 'Login gefaald. Onbekende gebruiker.';
 	}
 
 	$sha512 = hash('sha512', $password);
 	$sha1 = sha1($password);
 	$md5 = md5($password);
-	
-	if (in_array($user['password'], array($sha512, $sha1, $md5)))
+
+	if (!count($errors) && in_array($user['password'], array($sha512, $sha1, $md5)))
 	{
 		if ($user['password'] != $sha512)
 		{
 			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
 		}
 
-		if ($user['status'] == 0)
+		if (!count($errors) && !in_array($user['status'], array(1, 2)))
 		{
-			$alert->error('Account is gedesactiveerd.');
-			header('Location; ' . $error_location);
-			exit;
+			$errors[] = 'Het account is niet actief.';
 		}
 
-		if(readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
+		if (!count($errors) && !in_array($user['accountrole'], array('user', 'admin')))
 		{
-			$alert->error('De website is in onderhoud, probeer later opnieuw');
-			header('Location: ' . $error_location);
-			exit;
+			$alert->error('Het account beschikt niet over de juiste rechten.');
 		}
 
-		$accountrole = $user['accountrole'];
-
-		if ($accountrole == 'admin')
+		if(!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
 		{
-			$accountrole = 'user';
+			$errors[] = 'De website is in onderhoud, probeer later opnieuw';
+		}
 
-			if ($admin_modus)
+		if (!count($errors))
+		{
+			$accountrole = $user['accountrole'];
+
+			if ($accountrole == 'admin')
 			{
-				$accountrole = 'admin';
+				$accountrole = 'user';
+
+				if ($admin_modus)
+				{
+					$accountrole = 'admin';
+				}
 			}
+
+			session_start();
+			$_SESSION['id'] = $user['id'];
+			$_SESSION['name'] = $user['name'];
+			$_SESSION['fullname'] = $user['fullname'];
+			$_SESSION['login'] = $user['login'];
+			$_SESSION['user_postcode'] = $user['postcode'];
+			$_SESSION['letscode'] = $user['letscode'];
+			$_SESSION['accountrole'] = $accountrole;
+			$_SESSION['rights'] = $user['accountrole'];
+			$_SESSION['userstatus'] = $user['status'];
+			$_SESSION['email'] = $user['emailaddress'];
+			$_SESSION['lang'] = $user['lang'];
+			$_SESSION['type'] = 'local';
+
+			$browser = $_SERVER['HTTP_USER_AGENT'];
+			log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
+			log_event($user['id'],'Agent', $browser);
+			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $s_id));
+			$alert->success('Je bent ingelogd.');
+			header('Location: ' . $location);
+			exit;
 		}
-
-		session_start();
-		$_SESSION['id'] = $user['id'];
-		$_SESSION['name'] = $user['name'];
-		$_SESSION['fullname'] = $user['fullname'];
-		$_SESSION['login'] = $user['login'];
-		$_SESSION['user_postcode'] = $user['postcode'];
-		$_SESSION['letscode'] = $user['letscode'];
-		$_SESSION['accountrole'] = $accountrole;
-		$_SESSION['rights'] = $user['accountrole'];
-		$_SESSION['userstatus'] = $user['status'];
-		$_SESSION['email'] = $user['emailaddress'];
-		$_SESSION['lang'] = $user['lang'];
-		$_SESSION['type'] = 'local';
-
-		$browser = $_SERVER['HTTP_USER_AGENT'];
-		log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
-		log_event($user['id'],'Agent', $browser);
-		$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $s_id));
-		$alert->success('Je bent ingelogd.');
-		header('Location: ' . $location);
-		exit;
+	}
+	else
+	{
+		$errors[] = 'Login gefaald.';
 	}
 
-	$alert->error('Login gefaald.');
+	$alert->error(implode('<br>', $errors));
 }
 
 if(readconfigfromdb('maintenance'))
@@ -170,7 +229,7 @@ if(empty($token))
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-    echo '<label for="login" class="col-sm-2 control-label">Login</label>';
+    echo '<label for="login" class="col-sm-2 control-label">Email, letscode of gebruikersnaam</label>';
     echo '<div class="col-sm-10">';
     echo '<input type="text" class="form-control" id="login" name="login" ';
     echo 'value="' . $login . '" required>';
@@ -192,8 +251,7 @@ if(empty($token))
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord en/of login vergeten.</a>';
+	echo '<a href="' . $rootpath . 'pwreset.php">Ik ben mijn paswoord vergeten.</a>';
 }
 
 include $rootpath . 'includes/inc_footer.php';
-

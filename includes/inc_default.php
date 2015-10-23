@@ -406,7 +406,6 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	return $user;
 }
 
-
 /*
  *
  */
@@ -492,6 +491,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = htmlspecialchars($str, ENT_QUOTES);
+	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
 	$str = ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
 	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
 	return $str;
