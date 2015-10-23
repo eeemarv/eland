@@ -13,7 +13,7 @@ if ($s_id)
 
 $token = $_GET['token'];
 
-if ($token & $user_id)
+if ($token)
 {
 	if ($_POST['zend'])
 	{
@@ -122,7 +122,7 @@ if ($_POST['zend'])
 				$redis->set($key, $user_id);
 				$redis->expire($key, 3600);
 
-				$url = $base_url . '/pwreset.php?token=' . $token . '&u=' . $user_id;
+				$url = $base_url . '/pwreset.php?token=' . $token;
 
 				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
 
