@@ -562,8 +562,9 @@ if ($add)
 	$minlimit = $user['minlimit'];
 
 	echo '<div>';
-	echo '<p><strong>' . link_user($user) . ' huidige ' . $currency . ' stand: ' . $balance . '</strong> || ';
-	echo '<strong>Limiet minstand: ' . $minlimit . '</strong></p>';
+	echo '<p><strong>' . link_user($user) . ' huidige ' . $currency . ' stand: ';
+	echo '<span class="label label-info">' . $balance . '</span></strong> ';
+	echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
 	echo '</div>';
 
 	echo '<div class="panel panel-info">';

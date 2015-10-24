@@ -1579,6 +1579,28 @@ if ($id)
 
 	$user = readuser($id);
 
+	if (!$s_admin && !in_array($user['status'], array(1, 2)))
+	{
+		$alert->error('Je hebt geen toegang tot deze gebruiker.');
+		cancel();
+	}
+
+	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
+
+	$next = $db->fetchColumn('select id
+		from users
+		where letscode > ?
+		' . $and_status . '
+		order by letscode asc
+		limit 1', array($user['letscode']));
+
+	$prev = $db->fetchColumn('select id
+		from users
+		where letscode < ?
+		' . $and_status . '
+		order by letscode desc
+		limit 1', array($user['letscode']));
+
 	$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
 		var user_link_location = \'' . $rootpath . 'users.php?id=\'; </script>
 		<script src="' . $rootpath . 'js/user.js"></script>
@@ -1634,6 +1656,20 @@ if ($id)
 		$top_buttons .= ' title="gebruiker verwijderen">';
 		$top_buttons .= '<i class="fa fa-times"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+	}
+
+	if ($prev)
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $prev . '" class="btn btn-default"';
+		$top_buttons .= ' title="Vorige"><i class="fa fa-chevron-up"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Vorige</span></a>';
+	}
+
+	if ($next)
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $next . '" class="btn btn-default"';
+		$top_buttons .= ' title="Volgende"><i class="fa fa-chevron-down"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Volgende</span></a>';
 	}
 
 	$top_buttons .= '<a href="' . $rootpath . 'users.php" class="btn btn-default"';
@@ -1782,7 +1818,7 @@ if ($id)
 	echo 'Saldo, limiet min, limiet max (' . $currency . ')';
 	echo '</dt>';
 	echo '<dd>';
-	echo '<span class="label label-default">' . $user['saldo'] . '</span>&nbsp;';
+	echo '<span class="label label-info">' . $user['saldo'] . '</span>&nbsp;';
 	echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
 	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
 	echo '</dd>';
@@ -1802,7 +1838,7 @@ if ($id)
 
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
-	echo '<h3>Saldo: <span class="label label-default">' . $user['saldo'] . '</span> ';
+	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
 	echo $currency . '</h3>';
 	echo '</div></div>';
 

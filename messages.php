@@ -954,6 +954,22 @@ if ($id)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
+	$and_local = ($s_guest) ? ' and local = false ' : '';
+
+	$prev = $db->fetchColumn('select id
+		from messages
+		where id > ?
+		' . $and_local . '
+		order by id asc
+		limit 1', array($id));
+
+	$next = $db->fetchColumn('select id
+		from messages
+		where id < ?
+		' . $and_local . '
+		order by id desc
+		limit 1', array($id));
+
 	$currency = readconfigfromdb('currency');
 
 	$title = $message['content'];
@@ -1009,11 +1025,28 @@ if ($id)
 			$top_buttons .= ' title="Transactie voor dit aanbod toevoegen"><i class="fa fa-exchange"></i>';
 			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
 		}
+	}
 
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php" class="btn btn-default"';
-		$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= '<a href="' . $rootpath . 'messages.php" class="btn btn-default"';
+	$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
+	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
 
+	if ($prev)
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'messages.php?id=' . $prev . '" class="btn btn-default"';
+		$top_buttons .= ' title="Vorige"><i class="fa fa-chevron-up"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Vorige</span></a>';
+	}
+
+	if ($next)
+	{
+		$top_buttons .= '<a href="' . $rootpath . 'messages.php?id=' . $next . '" class="btn btn-default"';
+		$top_buttons .= ' title="Volgende"><i class="fa fa-chevron-down"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Volgende</span></a>';
+	}
+
+	if ($s_user || $s_admin)
+	{
 		$top_buttons .= '<a href="' . $rootpath . 'messages.php?uid=' . $s_id . '" class="btn btn-default"';
 		$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
@@ -1021,6 +1054,7 @@ if ($id)
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
+	$h1 .= (strtotime($message['validity']) < time()) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 	$fa = 'newspaper-o';
 
 	include $rootpath . 'includes/inc_header.php';
