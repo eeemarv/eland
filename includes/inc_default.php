@@ -58,10 +58,6 @@ if(!empty($redis_url))
 	}
 }
 
-require_once $rootpath . 'includes/inc_alert.php';
-
-$alert = new alert();
-
 /*
  * get session name from environment variable ELAS_SCHEMA_<domain>
  * dots in <domain> are replaced by double underscore __
@@ -96,6 +92,10 @@ if (!$schema)
 
 session_name($schema);
 session_start();
+
+require_once $rootpath . 'includes/inc_alert.php';
+
+$alert = new alert();
 
 $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
