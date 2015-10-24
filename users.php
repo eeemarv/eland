@@ -12,6 +12,7 @@ $img_del = ($_GET['img_del']) ? true : false;
 $interlets = ($_GET['interlets']) ?: false;
 $password = ($_POST['password']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
+$user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 
 $inline = ($_GET['inline']) ? true : false;
 
@@ -23,7 +24,9 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
-$role = ($edit || $del || $add || $pw || $post) ? 'user' : 'guest';
+$role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
+$role = ($add || $del) ? 'admin' : $role;
+$allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
 
 if (!$inline)
 {
@@ -34,6 +37,110 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 $currency = readconfigfromdb('currency');
+
+/**
+ * mail to user
+ */
+if ($user_mail_submit && $id && $post)
+{
+	$content = $_POST['content'];
+	$cc = $_POST['cc'];
+
+	$systemtag = readconfigfromdb('systemtag');
+	$systemname = readconfigfromdb('systemname');
+
+	$user = readuser($id);
+
+	$to = $db->fetchColumn('select c.value
+		from contact c, type_contact tc
+		where c.id_type_contact = tc.id
+			and c.id_user = ?
+			and tc.abbrev = \'mail\'', array($id));
+
+	if (isset($s_interlets['schema']))
+	{
+		$t_schema =  $s_interlets['schema'] . '.';
+		$remote_schema = $s_interlets['schema'];
+		$me_id = $s_interlets['id'];
+	}
+	else
+	{
+		$t_schema = '';
+		$remote_schema = false;
+		$me_id = $s_id;
+	}
+
+	$me = readuser($me_id, false, $remote_schema);
+
+	$user_me = (isset($s_interlets['schema'])) ? readconfigfromschema('systemtag', $remote_schema) . '.' : '';
+	$user_me .= $me['letscode'] . ' ' . $me['name'];
+	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromschema('systemname', $remote_schema) : '';
+
+	$from = $db->fetchColumn('select c.value
+		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		where c.id_type_contact = tc.id
+			and c.id_user = ?
+			and tc.abbrev = \'mail\'', array($me_id));
+
+	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
+		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		where c.flag_public = 1
+			and c.id_user = ?
+			and c.id_type_contact = tc.id', array($me_id));
+
+	$subject = '[' . $systemtag . '] - Bericht van ' . $systemname;
+
+	$mailcontent = 'Beste ' . $user['name'] . "\r\n\r\n";
+	$mailcontent .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
+	$mailcontent .= '--------------------bericht--------------------' . "\r\n\r\n";
+	$mailcontent .= $content . "\r\n\r\n";
+	$mailcontent .= '-----------------------------------------------' . "\r\n\r\n";
+	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
+	$mailcontent .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
+
+	foreach($my_contacts as $value)
+	{
+		$mailcontent .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+	}
+
+	if ($content)
+	{
+		if ($cc)
+		{
+			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
+			$msg .= $user['name'];
+			$msg .= ($s_interlets) ? ' van letsgroep ' . readconfigfromdb('systemname') : '';
+			$msg .= ' verzonden hebt. ';
+			$msg .= "\r\n\r\n\r\n";
+			$status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
+		}
+
+		$mailcontent .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+
+		if (!$status)
+		{
+			$status = sendemail($from, $to, $subject, $mailcontent);
+		}
+
+		if ($status)
+		{
+			$alert->error($status);
+		}
+		else
+		{
+			$alert->success('Mail verzonden.');
+		}
+	}
+	else
+	{
+		$alert->error('Fout: leeg bericht. Mail niet verzonden.');
+	}
+	cancel($id);
+}
+
+/*
+ *
+ */
 
 if ($post)
 {
@@ -1585,6 +1692,12 @@ if ($id)
 		cancel();
 	}
 
+	$to = $db->fetchColumn('select c.value
+		from contact c, type_contact tc
+		where c.id_type_contact = tc.id
+			and c.id_user = ?
+			and tc.abbrev = \'mail\'', array($user['id']));
+
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 
 	$next = $db->fetchColumn('select id
@@ -1835,6 +1948,61 @@ if ($id)
 	echo '</div></div></div></div>';
 
 	echo '<div id="contacts" data-uid="' . $id . '"></div>';
+
+	// response form
+
+	if ($s_guest && !isset($s_interlets['mail']))
+	{
+		$placeholder = 'Als gast kan je niet het mail formulier gebruiken.';
+	}
+	else if ($s_owner)
+	{
+		$placeholder = 'Je kan geen berichten naar jezelf mailen.';
+	}
+	else if (!$to)
+	{
+		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+	}
+	else
+	{
+		$placeholder = '';
+	}
+
+	$disabled = (empty($to) || ($s_guest && !isset($s_interlets['mail'])) || $s_owner) ? true : false;
+
+	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een bericht naar ';
+	echo  link_user($id) . '</h3>';
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<form method="post" class="form-horizontal">';
+
+	echo '<div class="form-group">';
+	echo '<div class="col-sm-12">';
+	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
+	echo 'class="form-control" required';
+	echo ($disabled) ? ' disabled' : '';
+	echo '>' . $content . '</textarea>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<div class="col-sm-12">';
+	echo '<input type="checkbox" name="cc"';
+	echo (isset($cc)) ? ' checked="checked"' : '';
+	echo ' value="1" >Stuur een kopie naar mijzelf';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<input type="submit" name="user_mail_submit" value="Versturen" class="btn btn-default"';
+	echo ($disabled) ? ' disabled' : '';
+	echo '>';
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	//
 
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';

@@ -2,6 +2,7 @@
 
 $rootpath = './';
 $role = 'guest';
+$allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
@@ -33,6 +34,13 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
+
+if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
+	|| $extend_submit || $access_submit || $extend || $access))
+{
+	$alert->error('Geen toegang als gast tot deze actie');
+	cancel($id);
+}
 
 if (!$post)
 {
@@ -443,32 +451,54 @@ if ($mail && $post && $id)
 
 	$systemtag = readconfigfromdb('systemtag');
 
-	$me = readuser($s_id);
+	$user = readuser($message['id_user']);
 
-	$from = $db->fetchColumn('select c.value
+	$to = $db->fetchColumn('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($s_id));
+			and tc.abbrev = \'mail\'', array($user['id']));
+
+	if (isset($s_interlets['schema']))
+	{
+		$t_schema =  $s_interlets['schema'] . '.';
+		$remote_schema = $s_interlets['schema'];
+		$me_id = $s_interlets['id'];
+	}
+	else
+	{
+		$t_schema = '';
+		$remote_schema = false;
+		$me_id = $s_id;
+	}
+
+	$me = readuser($me_id, false, $remote_schema);
+
+	$user_me = (isset($s_interlets['schema'])) ? readconfigfromschema('systemtag', $remote_schema) . '.' : '';
+	$user_me .= $me['letscode'] . ' ' . $me['name'];
+	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromschema('systemname', $remote_schema) : '';
+
+	$from = $db->fetchColumn('select c.value
+		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		where c.id_type_contact = tc.id
+			and c.id_user = ?
+			and tc.abbrev = \'mail\'', array($me_id));
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
-		from contact c, type_contact tc
+		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
 		where c.flag_public = 1
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($s_id));
+			and c.id_type_contact = tc.id', array($me_id));
 
 	$subject = '[' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
 
-	if($cc)
-	{
-		$to =  $to . ', ' . $from;
-	}
-
-	$mailcontent = 'Beste ' . $user['name'] . "\r\n\n";
-	$mailcontent .= '-- ' . $me['name'] . ' heeft een reactie op je ' . $ow_type . " verstuurd via de webtoepassing --\r\n\n";
-	$mailcontent .= $content . "\n\n";
-	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\n";
-	$mailcontent .= 'Contactgegevens van ' . $me['name'] . ":\n";
+	$mailcontent = 'Beste ' . $user['name'] . "\r\n\r\n";
+	$mailcontent .= 'Gebruiker ' . $user_me . ' heeft een reactie op je ' . $ow_type . " verstuurd via de webtoepassing\r\n\r\n";
+	$mailcontent .= '--------------------bericht--------------------' . "\r\n\r\n";
+	$mailcontent .= $content . "\r\n\r\n";
+	$mailcontent .= '-----------------------------------------------' . "\r\n\r\n";
+	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
+	$mailcontent .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
 
 	foreach($my_contacts as $value)
 	{
@@ -477,7 +507,22 @@ if ($mail && $post && $id)
 
 	if ($content)
 	{
-		$status = sendemail($from, $to, $subject, $mailcontent, 1);
+		if ($cc)
+		{
+			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
+			$msg .= $user['name'];
+			$msg .= ($s_interlets) ? ' van letsgroep ' . readconfigfromdb('systemname') : '';
+			$msg .= ' verzonden hebt. ';
+			$msg .= "\r\n\r\n\r\n";
+			$status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
+		}
+
+		$mailcontent .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+
+		if (!$status)
+		{
+			$status = sendemail($from, $to, $subject, $mailcontent);
+		}
 
 		if ($status)
 		{
@@ -486,7 +531,6 @@ if ($mail && $post && $id)
 		else
 		{
 			$alert->success('Mail verzonden.');
-			$content = '';
 		}
 	}
 	else
@@ -1166,7 +1210,7 @@ if ($id)
 
 	// response form
 
-	if ($s_guest)
+	if ($s_guest && !isset($s_interlets['mail']))
 	{
 		$placeholder = 'Als gast kan je niet het reactieformulier gebruiken.';
 	}
@@ -1183,6 +1227,8 @@ if ($id)
 		$placeholder = '';
 	}
 
+	$disabled = (empty($to) || ($s_guest && !isset($s_interlets['mail'])) || $s_owner) ? true : false;
+
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
 	echo  link_user($message['id_user']) . '</h3>';
 	echo '<div class="panel panel-info">';
@@ -1194,10 +1240,7 @@ if ($id)
 	echo '<div class="col-sm-12">';
 	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
-	if(empty($to) || $s_guest || $s_owner)
-	{
-		echo ' disabled';
-	}
+	echo ($disabled) ? ' disabled' : '';
 	echo '>' . $content . '</textarea>';
 	echo '</div>';
 	echo '</div>';
@@ -1211,10 +1254,7 @@ if ($id)
 	echo '</div>';
 
 	echo '<input type="submit" name="mail" value="Versturen" class="btn btn-default"';
-	if(empty($to) || $s_guest || $s_owner)
-	{
-		echo ' disabled';
-	}
+	echo ($disabled) ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
 

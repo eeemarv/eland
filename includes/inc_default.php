@@ -58,6 +58,10 @@ if(!empty($redis_url))
 	}
 }
 
+require_once $rootpath . 'includes/inc_alert.php';
+
+$alert = new alert();
+
 /*
  * get session name from environment variable ELAS_SCHEMA_<domain>
  * dots in <domain> are replaced by double underscore __
@@ -98,6 +102,7 @@ $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
 $s_accountrole = $_SESSION['accountrole'];
 $s_rights = $_SESSION['rights'];
+$s_interlets = $_SESSION['interlets'];
 
 $role_ary = array(
 	'admin'		=> 'Admin',
@@ -152,13 +157,19 @@ if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest',
 
 if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name))
 {
-	header('Location: ../login.php?location=' . urlencode($_SERVER['REQUEST_URI']));
+	header('Location: ' . $rootpath . 'login.php?location=' . urlencode($_SERVER['REQUEST_URI']));
+	exit;
+}
+
+if ($role == 'admin' && !$s_admin)
+{
+	$alert->error('Je hebt onvoldoende rechten voor deze pagina');
+	header('Location: ' . $rootpath);
 	exit;
 }
 
 if ((!isset($allow_anonymous_post) && $s_anonymous && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| ($s_guest && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| ($role == 'admin' && !$s_admin)
+	|| (!isset($allow_guest_post) && $s_guest && $_SERVER['REQUEST_METHOD'] != 'GET')
 	|| ($role == 'user' && !($s_admin || $s_user))
 	|| ($role == 'guest' && !($s_admin || $s_user || $s_guest)))
 {
@@ -180,9 +191,6 @@ require_once $rootpath . 'includes/elas_mongo.php';
 $elas_mongo = new elas_mongo($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
-require_once $rootpath . 'includes/inc_alert.php';
-
-$alert = new alert();
 
 // default timezone to Europe/Brussels (read from config file removed, use env var instead)
 
