@@ -504,7 +504,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = htmlspecialchars($str, ENT_QUOTES);
 	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
-	$str = ($link) ? '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '">' . $str . '</a>' : $str;
+	$str = ($link) ? aphp('users', 'id=' . $user['id'], $str) : $str;
 	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
 	return $str;
 }
@@ -576,4 +576,25 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 
 	$redis->set($key, serialize($ary));
 	$redis->expire($key, 86400);
+}
+
+/*
+ *
+ */
+
+function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false)
+{
+	global $rootpath, $s_admin;
+	$params = (is_array($params)) ? implode('&', $params) : $params;
+	$params .= ($params == '') ? (($s_admin == true) ? 'a=1' : '') : (($s_admin == true) ? '&a=1' : '');
+	$out = '<a href="' . $rootpath . $entity . '.php?' . $params . '"';
+	$out .= ($class) ? ' class="' . $class . '"' : '';
+	$out .= ($title) ? ' title="' . $title . '"' : '';
+	$out .= '>';
+	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
+	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
+	$out .= htmlspecialchars($label, ENT_QUOTES);
+	$out .= ($collapse) ? '</span>' : '';
+	$out .= '</a>';
+	return $out;
 }

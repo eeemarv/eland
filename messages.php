@@ -386,7 +386,7 @@ if ($img_del == 'all' && $id)
 		cancel($id);
 	}
 
-	$str_this_ow = $ow_type . ' "<a href="' . $rootpath . 'messages.php?id=' . $id . '">' . $message['content'] . '</a>"';
+	$str_this_ow = $ow_type . ' "' . aphp('messages', 'id=' . $id, $message['content']) . '"';
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
@@ -428,7 +428,7 @@ if ($img_del == 'all' && $id)
 
 	echo '<h3>Alle afbeeldingen verwijderen voor ' . $str_this_ow . '?</h3>';
 
-	echo '<a href="' . $rootpath . 'messages.php?id=' . $id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('messages', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -581,9 +581,8 @@ if ($del)
 		$alert->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
 	}
 
-	$h1 = ucfirst($ow_type_this);
-	$h1 .= ' <a href="' . $rootpath . 'messages.php?id=' . $del . '">';
-	$h1 .= htmlspecialchars($message['content'], ENT_QUOTES) . '</a>';
+	$h1 = ucfirst($ow_type_this) . ' ';
+	$h1 .= aphp('messages', 'id=' . $del, $message['content']);
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
@@ -626,9 +625,10 @@ if ($del)
 	echo '</h3>';
 
 	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'messages.php?id=' . $del . '" class="btn btn-default">Annuleren</a>&nbsp;';
+
+	echo aphp('messages', 'id=' . $del, 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo "</form></p>";
+	echo '</form></p>';
 
 	echo '</div>';
 	echo '</div>';
@@ -856,13 +856,8 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons = '<a href="' . $rootpath . 'messages.php" class="btn btn-default"';
-	$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
-
-	$top_buttons .= '<a href="' . $rootpath . 'messages.php?uid=' . $s_id . '" class="btn btn-default"';
-	$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 
 	$includejs = '
 		<script src="' . $cdn_typeahead . '"></script>
@@ -960,7 +955,8 @@ if (($edit || $add))
 	echo '</div>';
 
 	$btn = ($edit) ? 'primary' : 'success';
-	echo '<a href="' . $rootpath . 'messages.php" class="btn btn-default">Annuleren</a>&nbsp;';
+
+	echo aphp('messages', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -1042,8 +1038,6 @@ if ($id)
 			<script src="' . $rootpath . 'js/msg_img.js"></script>';
 	}
 
-	$top_buttons = '';
-
 	if ($s_user || $s_admin)
 	{
 		$top_buttons .= '<a href="' . $rootpath . 'messages.php?add=1" class="btn btn-success"';
@@ -1071,29 +1065,21 @@ if ($id)
 		}
 	}
 
-	$top_buttons .= '<a href="' . $rootpath . 'messages.php" class="btn btn-default"';
-	$top_buttons .= ' title="Alle Vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($prev)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?id=' . $prev . '" class="btn btn-default"';
-		$top_buttons .= ' title="Vorige"><i class="fa fa-chevron-up"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Vorige</span></a>';
+		$top_buttons .= aphp('messages', 'id=' . $prev, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?id=' . $next . '" class="btn btn-default"';
-		$top_buttons .= ' title="Volgende"><i class="fa fa-chevron-down"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Volgende</span></a>';
+		$top_buttons .= aphp('messages', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?uid=' . $s_id . '" class="btn btn-default"';
-		$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+		$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 
 	$h1 = $ow_type_uc;

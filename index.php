@@ -106,7 +106,7 @@ if($s_admin)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Er zijn nog settings met standaardwaarden, ';
-			echo 'Kijk in de <a href="' . $rootpath . 'config.php">instellingen</a> ';
+			echo 'Kijk in de ' . aphp('config', '', 'instellingen') . ' ';
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
@@ -168,8 +168,9 @@ if($s_guest)
 
 if($news)
 {
-	echo '<h3><i class="fa fa-calendar"></i> ';
-	echo '<a href="' . $rootpath . 'news.php">Nieuws</a></h3>';	
+	echo '<h3>';
+	echo aphp('news', '', 'Nieuws', false, false, 'calendar');
+	echo '</h3>';
 
 	echo '<div class="panel panel-warning">';
 
@@ -182,9 +183,7 @@ if($news)
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'news.php?id=' . $value['id'] . '">';
-		echo htmlspecialchars($value['headline'],ENT_QUOTES);
-		echo '</a>';
+		echo aphp('news', 'id=' . $value['id'], $value['headline']);
 		echo '</td>';
 
 		echo '<td>';
@@ -210,8 +209,9 @@ if($news)
 
 if($newusers)
 {
-	echo '<h3><i class="fa fa-users"></i> ';
-	echo '<a href="' . $rootpath . 'users.php">Nieuwe leden</a></h3>';
+	echo '<h3>';
+	echo aphp('users', '', 'Nieuwe leden', false, false, 'users');
+	echo '</h3>';
 
 	echo '<div class="panel panel-success">';
 
@@ -239,8 +239,7 @@ if($newusers)
 if($msgs)
 {
 	echo '<h3>';
-	echo '<i class="fa fa-newspaper-o"></i> ';
-	echo '<a href="' . $rootpath . 'messages.php">Recent vraag en aanbod</a>';
+	echo aphp('messages', '', 'Recent vraag en aanbod', false, false, 'newspaper-o');
 	echo '</h3>';
 
 	echo '<div class="panel panel-info">';
@@ -273,9 +272,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' .$rootpath . 'messages.php?id=' . $msg['id']. '">';
-		echo htmlspecialchars($msg['content'],ENT_QUOTES);
-		echo '</a>';
+		echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
 		echo '</td>';
 
 		echo '<td>';
@@ -287,9 +284,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'messages.php?cid=' . $msg['cid'] . '">';
-		echo htmlspecialchars($msg['cat'],ENT_QUOTES);
-		echo '</a>';
+		echo aphp('messages', 'cid=' . $msg['cid'], $msg['cat']);
 		echo '</td>';
 
 		echo '<td>';

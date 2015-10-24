@@ -7,5 +7,3 @@
 </IfModule>
 
 SetOutputFilter DEFLATE
-
-FileETag MTime Size

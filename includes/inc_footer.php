@@ -8,12 +8,11 @@ echo '<div class="container-fluid">';
 echo '<footer class="footer">';
 echo '<p><a href="https://github.com/eeemarv/elas-heroku">eLAS-Heroku ';
 echo '</a>&nbsp;<i class="fa fa-github"></i></p>';
-if ($s_admin)
-{
-	echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/elas-heroku/issues">Github issue tracker</a>.';
-	echo '</b>';
-	echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>';
-}
+
+echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/elas-heroku/issues">Github issue tracker</a>.';
+echo '</b>';
+echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>';
+
 echo '</footer>';
 echo '</div>'; 
 

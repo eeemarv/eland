@@ -202,7 +202,8 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($edit) ? 'primary' : 'success';
-	echo '<a href="' . $rootpath . 'interlets.php" class="btn btn-default">Annuleren</a>&nbsp;';
+
+	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -244,8 +245,10 @@ if ($del)
 	echo ' moet verwijderd worden?</p>';
 	echo '<div><p>';
 	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'interlets.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	
+	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+
 	echo "</form></p>";
 	echo "</div>";
 
@@ -261,22 +264,10 @@ if ($del)
  */
 if ($id && !$login)
 {
-	$top_buttons = '<a href="' . $rootpath . 'interlets.php?add=1" class="btn btn-success"';
-	$top_buttons .= ' title="Letsgroep toevoegen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
-
-	$top_buttons .= '<a href="' . $rootpath . 'interlets.php?edit=' . $id . '" class="btn btn-primary"';
-	$top_buttons .= ' title="Letsgroep aanpassen"><i class="fa fa-pencil"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
-
-	$top_buttons .= '<a href="' . $rootpath . 'interlets.php?del=' . $id . '" class="btn btn-danger"';
-	$top_buttons .= ' title="Letsgroep verwijderen">';
-	$top_buttons .= '<i class="fa fa-times"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
-
-	$top_buttons .= '<a href="' . $rootpath . 'interlets.php" class="btn btn-default"';
-	$top_buttons .= ' title="Lijst letsgroepen"><i class="fa fa-share-alt"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
+	$top_buttons .= aphp('interlets', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
+	$top_buttons .= aphp('interlets', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
+	$top_buttons .= aphp('interlets', '', 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';
@@ -557,16 +548,6 @@ $param = ($s_admin) ? 'id' : 'login';
 foreach($groups as $g)
 {
 	$error = false;
-	if($g['apimethod'] == 'elassoap')
-	{
-		$a1 = '<a href="' . $rootpath . 'interlets.php?login=' . $g['id'] . '" ';
-		$a1 .= 'title="login als gast op deze letsgroep">';
-		$a2 = '</a>';
-	}
-	else
-	{
-		$a1 = $a2 = '';
-	}
 	echo '<tr>';
 	if ($s_admin)
 	{
@@ -587,11 +568,9 @@ foreach($groups as $g)
 			}
 			if ($user['accountrole'] != 'interlets')
 			{
-				echo ' <a title="Het interlets-account heeft een ongeldige rol. De rol moet ';
-				echo 'van het type interlets zijn." ';
-				echo 'href="' . $rootpath . 'users.php?edit=' . $user['id'] . '" ';
-				echo 'class="btn btn-default btn-xs text-danger">';
-				echo '<span class="fa fa-exclamation-triangle"></span> Rol!</a>';
+				echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
+					'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+					'fa-exclamation-triangle');
 			}
 		}
 		else
@@ -600,20 +579,36 @@ foreach($groups as $g)
 
 			if ($g['apimethod'] != 'internal' && !$user)
 			{
-				echo ' <a title="Creëer een interlets-account met gelijke letscode en status extern." ';
-				echo 'href="' . $rootpath . 'users.php?add=1&interlets=' . $g['localletscode'] . '" ';
-				echo 'class="btn btn-default btn-xs text-danger"><span class="fa fa-exclamation-triangle"></span> ';
-				echo ' Account!</span>';
+				echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
+					'Creëer een interlets-account met gelijke letscode en status extern.',
+					'exclamation-triangle');
 			}
 		}
 		echo '</td>';
 	}
-	echo '<td>' . $a1 . $g['groupname'] . $a2 . '</td>';
-	echo '<td>' . $a1 . $redis->get($g['url'] . '_active_user_count') . $a2 . '</td>';
+
+	$user_count = $redis->get($g['url'] . '_active_user_count');
+
+	if ($g['apimethod'] == 'elassoap')
+	{
+		echo '<td>';
+		echo aphp('interlets', 'login=' . $g['id'], $g['groupname'], false, 'login als gast op deze letsgroep');
+		echo '</td>';
+		echo '<td>';
+		echo aphp('interlets', 'login=' . $g['id'], $user_count, false, 'login als gast op deze letsgroep');
+		echo '</td>';
+	}
+	else
+	{
+		echo '<td>' . $g['groupname'] . '</td>';
+		echo '<td>' . $user_count . '</td>';
+	}
+
 	if ($s_admin)
 	{
-		echo '<td><a href="' . $rootpath . 'interlets.php?id=' . $g['id'] . '" class="btn btn-default btn-xs">';
-		echo 'Instellingen</a>';
+		echo '<td>';
+		echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
+
 		if ($error)
 		{
 			echo ' <span class="fa fa-exclamation-triangle text-danger"></span>';
@@ -733,14 +728,11 @@ function render_schemas_groups()
 			if (is_array($loc_url_ary[$url]))
 			{
 				$loc = $loc_url_ary[$url];
-				echo '<a href="' . $rootpath . 'interlets.php?id=' . $loc['id'] . '" class="btn btn-success btn-xs">';
-				echo 'OK';
-				echo '</a>';
+				echo aphp('interlets', 'id=' . $loc['id'], 'OK', 'btn btn-success btn-xs');
 			}
 			else
 			{
-				echo '<a href="' . $rootpath . 'interlets.php?add=1&add_schema=' . $s . '" ';
-				echo 'class="btn btn-default btn-xs">Creëer</a>';
+				echo aphp('interlets', 'add=1&add_schema=' . $s, 'Creëer', 'btn btn-default btn-xs');
 			}
 			echo '</td>';
 			echo '<td>';

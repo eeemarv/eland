@@ -487,13 +487,12 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
-	echo $user['letscode'];
-	echo '</a></td>';
+	echo link_user($user, 'letscode');
+	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'users/view.php?id=' .$user_id .'">';
-	echo htmlspecialchars($user['name'],ENT_QUOTES).'</a></td>';
+	echo link_user($user, 'name');
+	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
@@ -572,7 +571,7 @@ echo 'value="" autocomplete="false" required>';
 echo '</div>';
 echo '</div>';
 
-echo '<a href="' . $rootpath . 'transactions/alltrans.php" class="btn btn-default">Annuleren</a>&nbsp;';
+echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
 
 echo '</div>';

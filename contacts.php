@@ -87,7 +87,7 @@ if ($del)
 
 	echo '<form method="post" class="form-horizontal">';
 
-	echo '<a href="' . $rootpath . 'users.php?id=' . $uid . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -261,7 +261,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'users.php?id=' . $uid . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
 
 	echo '</form>';
@@ -286,13 +286,7 @@ if ($uid)
 
 	if ($s_admin || $s_owner)
 	{
-		$top_buttons = '<a href="' . $rootpath . 'contacts.php?add=1&uid=' . $uid . '" class="btn btn-success"';
-		$top_buttons .= ' title="Contact toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
-	}
-	else
-	{
-		$top_buttons = '';
+		$top_buttons .= aphp('contacts', 'add=1&uid=' . $uid, 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 	}
 
 	if (!$inline)
@@ -338,55 +332,37 @@ if ($uid)
 	{
 		$access = $acc_ary[$c['flag_public']];
 
+		echo '<tr>';
+		echo '<td>' . $c['abbrev'] . '</td>';
+
 		if (($c['flag_public'] < $access_level) && !$s_owner)
 		{
-			$a1 = $a2 = '';
+			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
+			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
 		}
-		else if ($s_admin || $s_owner)
+		else if ($s_owner || $s_admin)
 		{
-			$a1 = '<a href="' . $rootpath . 'contacts.php?edit=' . $c['id'] . '">';
-			$a2 = '</';
+			echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['value']) . '</td>';
+			echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['comments']) . '</td>';
 		}
 		else if ($c['abbrev'] == 'mail')
 		{
-			$a1 = '<a href="mailto:' . $c['value'] . '">';
-			$a2 = '</a>';
+			echo '<td><a href="mailto:' . $c['value'] . '">' . $c['value'] . '</a></td>';
+			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 		else if ($c['abbrev'] == 'adr')
 		{
-			$a1 = '<a href="https://www.google.com/maps/place/' . str_replace(' ', '+', $c['value']) . '">';
-			$a2 = '</a>';
-		}
-		else
-		{
-			$a1 = $a2 = '';
-		}
-
-		echo '<tr>';
-		echo '<td>' . $a1 . $c['abbrev'] . $a2 . '</td>';
-
-		if (($c['flag_public'] < $access_level) && !$s_owner)
-		{
-			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
-			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
-		}
-		else
-		{
-			echo '<td>' . $a1 . htmlspecialchars($c['value'], ENT_QUOTES) . $a2 . '</td>';
-			echo '<td>' . $a1 . htmlspecialchars($c['comments'],ENT_QUOTES) . $a2 . '</td>';
+			echo '<td>' . htmlspecialchars($c['value'], ENT_QUOTES) . '</td>';
+			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 
 		if ($s_admin || $s_owner)
 		{
-			echo '<td>' . $a1;
-			echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
-			echo $a2 . '</td>';
+			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
 
 			echo '<td>';
-			echo '<a href="' . $rootpath . 'contacts.php?del='.$c['id'];
-			echo '" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>';
-			echo ' Verwijderen</a></td>';
-
+			echo aphp('contacts', 'del=' . $c['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo '</td>';
 		}
 		echo '</tr>';
 	}

@@ -35,7 +35,7 @@ if ($del)
 	echo '<dt>Comment</dt>';
 	echo '<dd>' . $apikey['comment'] .  '</dd>';
 	echo '</dl>';
-	echo '<a href="' . $rootpath . 'apikeys.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('apikeys', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo '</form>';
 
@@ -101,8 +101,9 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['comment'] . '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
 	echo '<td>' . $a['created'] . '</td>';
-	echo '<td><a href="' . $rootpath . 'apikeys.php?del=' . $a['id'] . '" class="btn btn-danger btn-xs">';
-	echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
+	echo '<td>';
+	echo aphp('apikeys', 'del=' . $a['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	echo '</td>';
 	echo '</tr>';
 }
 

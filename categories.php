@@ -89,7 +89,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'categories.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('categories', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
 	echo '</form>';
 
@@ -199,7 +199,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' .$rootpath . 'categories.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('categories', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
 	echo '</form>';
@@ -238,8 +238,8 @@ if ($del)
 	echo "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";
 	echo " moet verwijderd worden?</strong></font></p>";
 	echo '<form method="POST">';
-	echo '<a href="' . $rootpath . 'categories.php" class="btn btn-default">Annuleren</a>&nbsp;';
 
+	echo aphp('categories', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo '</form>';
 
@@ -259,9 +259,7 @@ foreach ($cats as $cat)
 	$child_count_ary[$cat['id_parent']]++;
 }
 
-$top_buttons = '<a href="' . $rootpath . 'categories.php?add=1" class="btn btn-success"';
-$top_buttons .= ' title="Categorie toevoegen"><i class="fa fa-plus"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+$top_buttons .= aphp('categories', 'add=1', 'Toevoegen', 'btn btn-success', 'Categorie toevoegen', 'plus', true);
 
 $h1 = 'Categorieën';
 $fa = 'clone';
@@ -293,18 +291,17 @@ foreach($cats as $cat)
 	if (!$cat['id_parent'])
 	{
 		echo '<tr class="info">';
-		echo '<td><strong><a href="' . $rootpath . 'categories.php?edit=' . $cat['id'] . '">';
-		echo htmlspecialchars($cat['name'],ENT_QUOTES);
-		echo '</a></strong></td>';
+		echo '<td><strong>';
+		echo aphp('categories', 'edit=' . $cat['id'], $cat['name']);
+		echo '</strong></td>';
 	}
 	else
 	{
 		echo '<tr>';
 		echo '<td>';
 		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		echo '<a href="' . $rootpath . 'categories.php?edit=' . $cat['id'] . '">';
-		echo htmlspecialchars($cat['name'],ENT_QUOTES);
-		echo '</a></td>';
+		echo aphp('categories', 'edit=' . $cat['id'], $cat['name']);
+		echo '</td>';
 	}
 
 	echo '<td>' . (($count_wanted) ?: '') . '</td>';
@@ -313,8 +310,7 @@ foreach($cats as $cat)
 	echo '<td>';
 	if (!$count)
 	{
-		echo '<a href="' . $rootpath . 'categories.php?del=' . $cat['id'] . '" class="btn btn-danger btn-xs">';
-		echo '<i class="fa fa-times"></i> Verwijderen</a>';
+		echo aphp('categories', 'del=' . $cat['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	}
 	echo '</td>';
 	echo '</tr>';

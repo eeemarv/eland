@@ -151,8 +151,7 @@ if ($submit)
 
 if ($del)
 {
-	$a = '<a href="forum.php?t=' . $post['_id'] . '">' . $post['subject'] . '</a>';
-	$h1 = ($post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . $a;
+	$h1 = ($post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', 't=' . $post['id'], $post['subject']);
 	$h1 .= ' verwijderen?';
 
 	$t = ($post['parent_id']) ?: $post['_id'];
@@ -165,7 +164,8 @@ if ($del)
 	echo '<p>' . $post['content'] . '</p>';
 
 	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'forum.php?t=' . $t . '" class="btn btn-default">Annuleren</a>&nbsp;';
+
+	echo aphp('forum', 't=' . $t, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo '</form>';
 
@@ -204,16 +204,12 @@ if (!$edit)
 
 	if (($s_admin || $s_owner) && $topic)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'forum.php?del=' . $topic . '" class="btn btn-danger"';
-		$top_buttons .= ' title="Onderwerp verwijderen"><i class="fa fa-times"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Onderwerp verwijderen</span></a>';
+		$top_buttons .= aphp('forum', 'del=' . $topic, 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
 
 	if ($topic)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'forum.php" class="btn btn-default"';
-		$top_buttons .= ' title="Forum onderwerpen"><i class="fa fa-comments-o"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Forum onderwerpen</span></a>';
+		$top_buttons .= aphp('forum', '', 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 	}
 
 	$h1 = ($topic) ? $posts[$topic]['subject'] : 'Forum';
@@ -251,11 +247,8 @@ if (!$edit)
 			if ($s_admin || $s_owner)
 			{
 				echo '<span class="inline-buttons pull-right">';
-				echo '<a href="' . $rootpath . 'forum.php?edit=' . $p['_id'] . '" ';
-				echo 'class="btn btn-primary btn-xs">Aanpassen</a>';
-
-				echo '<a href="' . $rootpath . 'forum.php?del=' . $p['_id'] . '" ';
-				echo 'class="btn btn-danger btn-xs">Verwijderen</a>';
+				echo aphp('forum', 'edit=' . $p['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+				echo aphp('forum', 'del=' . $p['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 				echo '</span>';
 			}
 			echo '</p>';
@@ -312,9 +305,7 @@ if (!$edit)
 			echo '<tr>';
 
 			echo '<td>';
-			echo '<a href="' . $rootpath . 'forum.php?t=' . $p['_id'] . '">';
-			echo $p['subject'];
-			echo '</a>';
+			echo aphp('forum', 't=' . $p['_id'], $p['subject']);
 			echo '</td>';
 			echo '<td>' . link_user($p['uid']) . '</td>';
 			echo '<td data-value="' . strtotime($p['ts']) . '">' . $p['ts'] . '</td>';
@@ -327,8 +318,9 @@ if (!$edit)
 
 			if ($s_admin)
 			{
-				echo '<td><a href="'. $rootpath . 'forum.php?del=' . $p['_id'] . '" class="btn btn-danger btn-xs">';
-				echo '<i class="fa fa-times"></i> Verwijderen</a></td>';
+				echo '<td>';
+				echo aphp('forum', 'del=' . $p['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+				echo '</td>';
 			}
 			echo '</tr>';
 

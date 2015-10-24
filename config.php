@@ -61,7 +61,7 @@ if ($setting)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'config.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('config', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 	echo '</form>';
 
@@ -136,8 +136,8 @@ foreach($config as $c)
 	echo '>';
 	echo '<td>' . $c['category'] . '</td>';
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'config.php?edit=' . $c['setting'] . '">';
-	echo  $c['setting'] . '</a></td>';
+	echo aphp('config', 'edit=' . $c['setting'], $c['setting']);
+	echo '</td>';
 	echo '<td>' . $c['value'] . '</td>';
 	echo '<td>' . $c['description'] . '</td>';
 	echo '</tr>';

@@ -66,8 +66,7 @@ if ($map_edit)
 		$alert->error('Geen map naam ingevuld!');
 	}
 
-	$h1 = 'Map aanpassen: <a href="'. $rootpath . 'docs.php?map=' . $map_edit . '">';
-	$h1 .= $map_name . '</a>';
+	$h1 = 'Map aanpassen: ' . aphp('docs', 'map=' . $map_edit, $map_name);
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -83,7 +82,7 @@ if ($map_edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
 	echo '</form>';
@@ -185,7 +184,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
 	echo '</form>';
@@ -247,7 +246,7 @@ if (isset($del))
 		echo '</a>';
 		echo '</p>';
 
-		echo '<a href="' . $rootpath . 'docs.php" class="btn btn-default">Annuleren</a>&nbsp;';
+		echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
 		echo '</form>';
 
@@ -421,22 +420,18 @@ if ($s_admin)
 
 	if ($map)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'docs.php?map_edit=' . $map . '" class="btn btn-primary" ';
-		$top_buttons .= 'title="Map aanpassen"><i class="fa fa-files-o"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Map aanpassen</span></a>';
+		$top_buttons .= aphp('docs', 'map_edit=' . $map, 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'files-o', true);
 	}
 }
 if ($map)
 {
-	$top_buttons .= '<a href="' . $rootpath . 'docs.php" class="btn btn-default" ';
-	$top_buttons .= 'title="Lijst"><i class="fa fa-files-o"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 }
 
 $includejs = '<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/docs.js"></script>';
 
-$h1 = '<a href="' . $rootpath . 'docs.php">Documenten</a>';
+$h1 = aphp('docs', '', 'Documenten');
 $h1 .= ($map) ? ': ' . $map_name : '';
 
 include $rootpath . 'includes/inc_header.php';
@@ -482,17 +477,17 @@ foreach($docs as $d)
 	if ($d['count'])
 	{
 		echo '<tr class="info">';
-		echo '<td><a href="' . $rootpath . 'docs.php?map=' . $d['_id'] . '">';
-		echo '<i class="fa fa-file"></i> ';
-		echo $d['map_name'] . ' (' . $d['count'] . ')';
-		echo '</a></td>';
+		echo '<td>';
+		echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')', false, 'file');
+		echo '</td>';
 
 		echo ($s_guest) ? '' : '<td></td><td></td>';
 
 		if ($s_admin)
 		{
-			echo '<td><a href="' . $rootpath . 'docs.php?map_edit=' . $d['_id'] . '" ';
-			echo 'class="btn btn-primary btn-xs">Aanpassen</a></td>';
+			echo '<td>';
+			echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs');
+			echo '</td>';
 		}
 		echo '</tr>';
 
@@ -524,10 +519,9 @@ foreach($docs as $d)
 	if ($s_admin)
 	{
 		echo '<td>';
-		echo '<a href="'. $rootpath . 'docs.php?edit=' . $d['_id'] . '" class="btn btn-primary btn-xs">';
-		echo 'Aanpassen</a>&nbsp;';
-		echo '<a href="'. $rootpath . 'docs.php?del=' . $d['_id'] . '" class="btn btn-danger btn-xs">';
-		echo '<i class="fa fa-times"></i> Verwijderen</a>';
+		echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+		echo '&nbsp;';
+		echo aphp('docs', 'del=' . $d['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 		echo '</td>';
 	}
 	echo '</tr>';
