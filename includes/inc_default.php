@@ -396,12 +396,17 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', array($id));
 
+	if (!is_array($user))
+	{
+		return array();
+	}
+
 	$elas_mongo->connect();
 
 	$remote_users = $s . '_users';
 	$users = ($remote_schema) ? $elas_mongo->get_client()->$remote_users : $elas_mongo->users;
-
-	$user += (is_array($ary = $users->findOne(array('id' => (int) $id)))) ? $ary : array();
+	$ary = $users->findOne(array('id' => (int) $id));
+	$user += (is_array($ary)) ? $ary : array();
 
 	if (isset($user))
 	{

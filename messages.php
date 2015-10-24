@@ -1389,7 +1389,9 @@ if ($s_admin)
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$h1 = 'Vraag & Aanbod';
+$h1 = ($uid && $inline) ? '<a href="' . $rootpath . 'messages.php?uid=' . $uid . '">' : '';
+$h1 .= 'Vraag & Aanbod';
+$h1 .= ($uid && $inline) ? '</a>' : '';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn vraag en aanbod' : $h1;
 
