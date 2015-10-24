@@ -334,34 +334,36 @@ if ($uid)
 
 	echo '<tbody>';
 
-	$a2 = ($s_admin || $s_owner) ? '</a>' : '';
-
 	foreach ($contacts as $c)
 	{
 		$access = $acc_ary[$c['flag_public']];
 
-		if ($s_admin || $s_owner)
+		if (($c['flag_public'] < $access_level) && !$s_owner)
+		{
+			$a1 = $a2 = '';
+		}
+		else if ($s_admin || $s_owner)
 		{
 			$a1 = '<a href="' . $rootpath . 'contacts.php?edit=' . $c['id'] . '">';
-			$a3 = '';
+			$a2 = '</';
 		}
 		else if ($c['abbrev'] == 'mail')
 		{
 			$a1 = '<a href="mailto:' . $c['value'] . '">';
-			$a3 = '</a>';
+			$a2 = '</a>';
 		}
 		else if ($c['abbrev'] == 'adr')
 		{
 			$a1 = '<a href="https://www.google.com/maps/place/' . str_replace(' ', '+', $c['value']) . '">';
-			$a3 = '</a>';
+			$a2 = '</a>';
 		}
 		else
 		{
-			$a1 = $a3 = '';
+			$a1 = $a2 = '';
 		}
 
 		echo '<tr>';
-		echo '<td>' . $a1 . $c['abbrev'] . $a2 . $a3 . '</td>';
+		echo '<td>' . $a1 . $c['abbrev'] . $a2 . '</td>';
 
 		if (($c['flag_public'] < $access_level) && !$s_owner)
 		{
@@ -370,8 +372,8 @@ if ($uid)
 		}
 		else
 		{
-			echo '<td>' . $a1 . htmlspecialchars($c['value'], ENT_QUOTES) . $a2 . $a3 . '</td>';
-			echo '<td>' . $a1 . htmlspecialchars($c['comments'],ENT_QUOTES) . $a2 . $a3 . '</td>';
+			echo '<td>' . $a1 . htmlspecialchars($c['value'], ENT_QUOTES) . $a2 . '</td>';
+			echo '<td>' . $a1 . htmlspecialchars($c['comments'],ENT_QUOTES) . $a2 . '</td>';
 		}
 
 		if ($s_admin || $s_owner)
@@ -384,8 +386,9 @@ if ($uid)
 			echo '<a href="' . $rootpath . 'contacts.php?del='.$c['id'];
 			echo '" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>';
 			echo ' Verwijderen</a></td>';
-			echo '</tr>';
+
 		}
+		echo '</tr>';
 	}
 
 	echo '</tbody>';
