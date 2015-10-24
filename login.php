@@ -24,16 +24,28 @@ $error_location = 'login.php?location=' . urlencode($location);
 
 if(!empty($token))
 {
-	if($result = $redis->get($schema . '_token_' . $token))
+	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
-        session_start();
-        $_SESSION['id'] = 0;
-        $_SESSION['name'] = 'letsguest';
-        $_SESSION['letscode'] = 'X000';
-        $_SESSION['accountrole'] = 'guest';
-        $_SESSION['rights'] = 'guest';
+		session_start();
+		$_SESSION['id'] = 0;
+		$_SESSION['letscode'] = '-';
+		$_SESSION['accountrole'] = 'guest';
+		$_SESSION['rights'] = 'guest';
 		$_SESSION['type'] = 'interlets';
-		log_event($_SESSION['id'], 'Login', 'Guest login using token succeeded');
+
+		if ($interlets != '1')
+		{
+			$interlets = unserialize($interlets);
+
+			$_SESSION['interlets'] = $interlets;
+			$_SESSION['name'] = 'letsgast: ' . $interlets['systemtag'] . '.' . $interlets['letscode'] . ' ' . $interlets['name'];
+		}
+		else
+		{
+			$_SESSION['name'] = 'letsgast';
+		}
+
+		log_event(0, 'Login', 'Guest login (' . $_SESSION['name'] . ') using token ' . $token . ' succeeded');
 		$alert->success($_SESSION['name'] . ' ingelogd');
 		header('Location: ' . $location);
 		exit;
@@ -185,12 +197,11 @@ if ($_POST['zend'])
 			$_SESSION['name'] = $user['name'];
 			$_SESSION['fullname'] = $user['fullname'];
 			$_SESSION['login'] = $user['login'];
-			$_SESSION['user_postcode'] = $user['postcode'];
+			$_SESSION['postcode'] = $user['postcode'];
 			$_SESSION['letscode'] = $user['letscode'];
 			$_SESSION['accountrole'] = $accountrole;
 			$_SESSION['rights'] = $user['accountrole'];
 			$_SESSION['userstatus'] = $user['status'];
-			$_SESSION['email'] = $user['emailaddress'];
 			$_SESSION['lang'] = $user['lang'];
 			$_SESSION['type'] = 'local';
 

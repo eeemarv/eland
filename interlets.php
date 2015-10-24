@@ -416,9 +416,28 @@ if ($login)
 			cancel();
 		}
 
+		$user = readuser($s_id);
+
+		$mail = $db->fetchColumn('select c.value
+			from contact c, type_contact tc
+			where c.id_user = ?
+				and tc.id = c.id_type_contact
+				and tc.abbrev = \'mail\'', array($s_id));
+
+		$ary = array(
+			'id'			=> $s_id,
+			'name'			=> $user['name'],
+			'letscode'		=> $user['letscode'],
+			'mail'			=> $mail,
+			'systemtag'		=> readconfigfromdb('systemtag'),
+			'systemname'	=> readconfigfromdb('systemname'),
+			'url'			=> $base_url,
+			'schema'		=> $schema,
+		);
+
 		$token = substr(md5(microtime() . $remote_schema), 0, 12);
 		$key = $remote_schema . '_token_' . $token;
-		$redis->set($key, '1');
+		$redis->set($key, serialize($ary));
 		$redis->expire($key, 600);
 
 		log_event('' ,'Soap' ,'Token ' . $token . ' generated');

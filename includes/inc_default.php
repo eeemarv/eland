@@ -185,9 +185,8 @@ require_once $rootpath . 'includes/inc_alert.php';
 $alert = new alert();
 
 // default timezone to Europe/Brussels (read from config file removed, use env var instead)
-$elas_timezone = getenv('ELAS_TIMEZONE');
-$elas_timezone = ($elas_timezone) ? $elas_timezone : 'Europe/Brussels';
-date_default_timezone_set($elas_timezone);
+
+date_default_timezone_set((getenv('ELAS_TIMEZONE')) ?: 'Europe/Brussels');
 
 $elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
 

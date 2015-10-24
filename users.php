@@ -995,7 +995,11 @@ if ($add || $edit)
 			}
 			else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
 			{
-				$errors[]= 'De letscode bestaat al!';
+				$errors[] = 'De letscode bestaat al!';
+			}
+			else if ($user['letscode'] == '-')
+			{
+				$errors[] = 'Letscode - is gereserveerd voor de interlets gast gebruikers';
 			}
 
 			if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))

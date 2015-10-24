@@ -53,7 +53,7 @@ if ($s_letscode)
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
-	echo $s_letscode . ' ' . $s_name;
+	echo (($s_letscode == '-') ? '' : $s_letscode . ' ') . $s_name;
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_user || $s_admin)
