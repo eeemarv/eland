@@ -5,3 +5,5 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule .* dispatch.php [L,QSA]
 </IfModule>
+
+SetOutputFilter DEFLATE
