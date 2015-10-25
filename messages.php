@@ -1040,28 +1040,17 @@ if ($id)
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('messages', 'add=1', 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 
 		if ($s_admin || $s_owner)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'messages.php?edit=' . $id . '" ';
-			$top_buttons .= 'class="btn btn-primary"';
-			$top_buttons .= ' title="' . $ow_type_uc . ' aanpassen"><i class="fa fa-pencil"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
-
-			$top_buttons .= '<a href="' . $rootpath . 'messages.php?del=' . $id . '" ';
-			$top_buttons .= 'class="btn btn-danger"';
-			$top_buttons .= ' title="' . $ow_type_uc . ' verwijderen"><i class="fa fa-times"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+			$top_buttons .= aphp('messages', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
+			$top_buttons .= aphp('messages', 'del=' . $id, 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 		}
 
 		if ($message['msg_type'] == 1 && !$s_owner)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1&mid=' . $id . '" class="btn btn-warning"';
-			$top_buttons .= ' title="Transactie voor dit aanbod toevoegen"><i class="fa fa-exchange"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie</span></a>';
+			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie voor dit aanbod', 'exchange', true);
 		}
 	}
 
@@ -1118,9 +1107,10 @@ if ($id)
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
-		echo '<a href="' . $rootpath . 'messages.php?img_del=all&id=' . $id . '" class="btn btn-danger" ';
-		echo 'id="btn_remove" style="display:none;">';
-		echo '<i class="fa fa-times"></i> Afbeeldingen verwijderen</a>';
+
+		echo aphp('messages', 'img_del=all&id=' . $id, 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
+			array('id' => 'btn_remove', 'style' => 'display:none;'));
+
 		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 		echo '</div>';
@@ -1336,9 +1326,7 @@ if ($s_admin || $s_user)
 {
 	if (!$inline)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="Vraag of aanbod toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('messages', 'add=1', 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 	}
 
 	if ($uid)
@@ -1346,25 +1334,17 @@ if ($s_admin || $s_user)
 		if ($s_admin && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ' . link_user($uid, null, false);
-			$top_buttons .= '<a href="' . $rootpath . 'messages.php?add=1&uid=' . $uid . '" ';
-			$top_buttons .= 'class="btn btn-success" ';
-			$top_buttons .= 'title="' . $str . '">';
-			$top_buttons .= '<i class="fa fa-plus"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> ' . $str . '</span></a>';
+			$top_buttons .= aphp('messages', 'add=1&uid=' . $uid, $str, 'btn btn-success', $str, 'plus', true);
 		}
 
 		if (!$inline)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'messages.php" class="btn btn-default"';
-			$top_buttons .= ' title="Lijst alle vraag en aanbod"><i class="fa fa-newspaper-o"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+			$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
 	}
 	else
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'messages.php?uid=' . $s_id . '" class="btn btn-default"';
-		$top_buttons .= ' title="Mijn vraag en aanbod"><i class="fa fa-user"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn vraag en aanbod</span></a>';
+		$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 }
 
@@ -1375,9 +1355,7 @@ if ($s_admin)
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$h1 = ($uid && $inline) ? '<a href="' . $rootpath . 'messages.php?uid=' . $uid . '">' : '';
-$h1 .= 'Vraag & Aanbod';
-$h1 .= ($uid && $inline) ? '</a>' : '';
+$h1 = ($uid && $inline) ? aphp('messages', 'uid=' . $uid,  'Vraag en aanbod') : 'Vraag en aanbod';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn vraag en aanbod' : $h1;
 
@@ -1498,9 +1476,7 @@ foreach($msgs as $msg)
 	echo '</td>';
 
 	echo '<td>';
-	echo '<a href="' .$rootpath . 'messages.php?id=' . $msg['id']. '">';
-	echo htmlspecialchars($msg['content'],ENT_QUOTES);
-	echo '</a>';
+	echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
 	echo '</td>';
 
 	if (!$uid)
@@ -1515,9 +1491,7 @@ foreach($msgs as $msg)
 	}
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'messages.php?cid=' . $msg['id_category'] . '">';
-	echo htmlspecialchars($cats[$msg['id_category']]['fullname'], ENT_QUOTES);
-	echo '</a>';
+	echo aphp('messages', 'cid=' . $msg['id_category'], $cats[$msg['id_category']]['fullname']);
 	echo '</td>';
 
 	echo '<td>';

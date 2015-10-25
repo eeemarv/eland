@@ -69,7 +69,7 @@ if ($_POST['zend'])
 
 $apikeys = $db->fetchAll('select * from apikeys');
 
-$top_buttons = '<a href="#add" class="btn btn-success"';
+$top_buttons .= '<a href="#add" class="btn btn-success"';
 $top_buttons .= ' title="Apikey toevoegen"><i class="fa fa-plus"></i>';
 $top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
 

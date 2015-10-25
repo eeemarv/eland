@@ -511,10 +511,7 @@ if ($s_admin)
 		);
 	}
 
-
-	$top_buttons = '<a href="' . $rootpath . 'interlets.php?add=1" class="btn btn-success"';
-	$top_buttons .= ' title="Groep toevoegen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 }
 
 $h1 = 'InterLETS groepen';
@@ -555,16 +552,12 @@ foreach($groups as $g)
 		$user = $users_letscode[$g['localletscode']];
 		if ($user)
 		{
-			echo '<a href="' . $rootpath . 'users.php?id=' . $user['id'] . '" ';
-			echo 'class="btn btn-default btn-xs" title="Ga naar het interlets account">';
-			echo $g['localletscode'] . '</a>';
+			echo aphp('users', 'id=' . $users['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
 			if (!in_array($user['status'], array(1, 2, 7)))
 			{
-				echo ' <a title="Het interlets-account heeft een ongeldige status. De status moet ';
-				echo 'van het type extern, actief of uitstapper zijn." ';
-				echo 'href="' . $rootpath . 'users.php?edit=' . $user['id'] . '" '; 
-				echo 'class="btn btn-default btn-xs text-danger">';
-				echo '<span class="fa fa-exclamation-triangle"></span> Status!</a';
+				echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
+					'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+					'exclamation-triangle');
 			}
 			if ($user['accountrole'] != 'interlets')
 			{

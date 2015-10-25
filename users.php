@@ -695,7 +695,7 @@ if ($pw)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'users.php?id=' . $pw . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('users', 'id=' . $pw, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 
 	echo '</form>';
@@ -906,7 +906,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'users.php?id=' . $del . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('users', 'id=' . $del, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -1421,9 +1421,7 @@ if ($add || $edit)
 	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= '<a href="' . $rootpath . 'users.php" class="btn btn-default"';
-	$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -1664,7 +1662,7 @@ if ($add || $edit)
 
 	$cancel_id = ($edit) ? '?id=' . $edit : '';
 	$btn = ($edit) ? 'primary' : 'success';
-	echo '<a href="' . $rootpath . 'users.php' . $cancel_id . '" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -1746,48 +1744,32 @@ if ($id)
 
 	if ($s_admin)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="gebruiker toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 	}
 
 	if ($s_admin || $s_owner)
 	{
 		$title = ($s_admin) ? 'Gebruiker' : 'Mijn gegevens';
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?edit=' . $id . '" class="btn btn-primary"';
-		$top_buttons .= ' title="' . $title . ' aanpassen"><i class="fa fa-pencil"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
-
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?pw='. $id . '" class="btn btn-info"';
-		$top_buttons .= ' title="Paswoord aanpassen"><i class="fa fa-key"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Paswoord aanpassen</span></a>';
+		$top_buttons .= aphp('users', 'id=' . $id, 'Aanpassen', 'btn btn-primary', $title, 'pencil', true);
+		$top_buttons .= aphp('users', 'pw=' . $id, 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
 	}
 
 	if ($s_admin && !count($transactions) && !$s_owner)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?del=' . $id . '" class="btn btn-danger"';
-		$top_buttons .= ' title="gebruiker verwijderen">';
-		$top_buttons .= '<i class="fa fa-times"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
 	if ($prev)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $prev . '" class="btn btn-default"';
-		$top_buttons .= ' title="Vorige"><i class="fa fa-chevron-up"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Vorige</span></a>';
+		$top_buttons .= aphp('users', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $next . '" class="btn btn-default"';
-		$top_buttons .= ' title="Volgende"><i class="fa fa-chevron-down"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Volgende</span></a>';
+		$top_buttons .= aphp('users', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= '<a href="' . $rootpath . 'users.php" class="btn btn-default"';
-	$top_buttons .= ' title="Lijst"><i class="fa fa-users"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user);
 	$h1 .= ($newusertreshold < strtotime($user['adate']) && $user['status'] == 1) ? ' <small><span class="text-success">Instapper</span></small>' : ''; 
@@ -2125,9 +2107,7 @@ if ($s_admin)
 	$top_right .= '<i class="fa fa-file"></i>';
 	$top_right .= '&nbsp;csv adres</a>';
 
-	$top_buttons = '<a href="' . $rootpath . 'users.php?add=1" class="btn btn-success"';
-	$top_buttons .= ' title="Gebruiker toevoegen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+	$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
 	$top_buttons .= '<a href="#actions" class="btn btn-default"';
 	$top_buttons .= ' title="Acties"><i class="fa fa-envelope-o"></i>';
@@ -2140,9 +2120,7 @@ else
 	$h1 = 'Leden';
 }
 
-$top_buttons .= '<a href="' . $rootpath . 'users.php?id=' . $s_id . '" class="btn btn-default"';
-$top_buttons .= ' title="Mijn gegevens"><i class="fa fa-user"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn gegevens</span></a>';
+$top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
 $fa = 'users';
 
@@ -2332,8 +2310,7 @@ foreach($users as $u)
 		echo '</td>';
 
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'users.php?edit=' . $id . '" ';
-		echo 'class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Aanpassen</a>';
+		echo aphp('users', 'edit=' . $id, 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 		echo '</td>';
 	}
 

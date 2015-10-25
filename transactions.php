@@ -95,7 +95,7 @@ if ($del_q)
 
 	echo '<form method="post">';
 
-	echo '<a href="' . $rootpath . 'transactions.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Verwijderen" class="btn btn-danger">';
 
 	echo '</form>';
@@ -546,13 +546,9 @@ if ($add)
 
 	$currency = readconfigfromdb('currency');
 
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php" class="btn btn-default"';
-	$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
-	$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+	$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
 
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
@@ -628,7 +624,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'transactions.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
 
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
@@ -652,14 +648,10 @@ if ($id)
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('transactions', 'add=1', 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 	}
 
-	$top_buttons .= '<a href="' . $rootpath . 'transactions.php" class="btn btn-default"';
-	$top_buttons .= ' title="Transactielijst"><i class="fa fa-exchange"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';
@@ -749,12 +741,21 @@ $transactions = $db->fetchAll($query, $sql_params);
 $row_count = $db->fetchColumn('select count(t.*)
 	from transactions t ' . $where, $sql_params);
 
-$filter = ($uid) ? '&uid=' . $uid : '';
+$params = array(
+	'orderby'	=> $orderby,
+	'asc'		=> $asc,
+);
+
+if ($uid)
+{
+	$params['uid']	= $uid;
+}
 
 $pagination = new pagination(array(
 	'limit' 		=> $limit,
 	'start' 		=> $start,
-	'base_url' 		=> $rootpath . 'transactions.php?orderby=' . $orderby . '&asc=' . $asc . $filter,
+	'entity'		=> 'transactions',
+	'params'		=> $params,
 	'row_count'		=> $row_count,
 ));
 
@@ -808,34 +809,24 @@ if ($s_admin || $s_user)
 
 		if ($s_admin)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1&fuid=' . $uid . '" class="btn btn-success"';
-			$top_buttons .= ' title="Transactie van ' . $user_str . '"><i class="fa fa-plus"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie van ' . $user_str . '</span></a>';
+			$top_buttons .= aphp('transactions', 'add=1&fuid=' . $uid, 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
 		}
 
 		if ($s_admin || ($s_user && !$s_owner))
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1&tuid=' . $uid . '" class="btn btn-success"';
-			$top_buttons .= ' title="Transactie naar ' . $user_str . '"><i class="fa fa-plus"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Transactie naar ' . $user_str . '</span></a>';
+			$top_buttons .= aphp('transactions', 'add=1&tuid=' . $uid, 'Transactie naar ' . $user_str, 'btn btn-success', 'Transactie naar ' . $user_str, 'plus', true);
 		}
 
 		if (!$inline)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'transactions.php" class="btn btn-default"';
-			$top_buttons .= ' title="Lijst"><i class="fa fa-exchange"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+			$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 		}
 	}
 	else
 	{
-		$top_buttons .= '<a href="' . $rootpath . 'transactions.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="Transactie toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('transactions', 'add=1', 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 
-		$top_buttons .= '<a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '" class="btn btn-default"';
-		$top_buttons .= ' title="Mijn transacties"><i class="fa fa-user"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Mijn transacties</span></a>';
+		$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
 	}
 }
 
@@ -846,9 +837,7 @@ if ($s_admin)
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$h1 = ($uid && $inline) ? '<a href="' . $rootpath . 'transactions.php?uid=' . $uid . '">' : '';
-$h1 .= 'Transacties';
-$h1 .= ($uid && $inline) ? '</a>' : '';
+$h1 = ($uid && $inline) ? aphp('transactions', 'uid=' . $uid, 'Transacties') : 'Transacties';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn transacties' : $h1;
 $fa = 'exchange';
@@ -889,10 +878,15 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	}
 	else
 	{
-		echo '<a href="' . $rootpath . 'transactions.php?orderby=' . $key_orderby . '&asc=' . $data['asc'] . $filter . '">';
-		echo $data['lang'];
-		echo '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
-		echo '</a>';
+		$params = array(
+			'orderby'		=> $key_orderby,
+			'asc'			=> $data['asc'],
+		);
+		if ($uid)
+		{
+			$params['uid'] = 'uid';
+		}
+		echo aphp('transactions', $params, array($data['lang'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
 	echo '</th>';
 }
@@ -907,9 +901,7 @@ if ($uid)
 	{
 		echo '<tr>';
 		echo '<td>';
-		echo '<a href="' . $rootpath . 'transactions.php?id=' . $t['id'] . '">';
-		echo htmlspecialchars($t['description'], ENT_QUOTES);
-		echo '</a>';
+		echo aphp('transactions', 'id=' . $t['id'], $t['description']);
 		echo '</td>';
 
 		echo '<td>';
@@ -956,9 +948,8 @@ else
 	foreach($transactions as $t)
 	{
 		echo '<tr>';
-		echo '<td><a href="' . $rootpath . 'transactions.php?id=' . $t['id'] . '">';
-		echo htmlspecialchars($t['description'],ENT_QUOTES);
-		echo '</a>';
+		echo '<td>';
+		echo aphp('transactions', 'id=' . $t['id'], $t['description']);
 		echo '</td>';
 
 		echo '<td>';
@@ -1029,10 +1020,8 @@ if (count($interletsq))
 	{
 		$and_uid = ($uid) ? '&uid=' . $uid : '';
 
-		$q_buttons .= '<a href="' . $rootpath . 'transactions.php?del_q=1' . $and_uid . '" ';
-		$q_buttons .= 'class="btn btn-danger"';
-		$q_buttons .= ' title="Verwijder interlets transacties in verwerking"><i class="fa fa-times"></i>';
-		$q_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+		$q_buttons .= aphp('transactions', 'del_q=1' . $and_uid, 'Verwijderen', 'btn btn-danger',
+			'Verwijder interlets transacties in verwerking', 'times');
 	}
 
 	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking';

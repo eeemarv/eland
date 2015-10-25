@@ -62,7 +62,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'type_contact.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 
 	echo '</form>';
@@ -143,7 +143,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<a href="' . $rootpath . 'type_contact.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 
 	echo '</form>';
@@ -196,7 +196,7 @@ if ($del)
 	echo '<div class="panel-heading">';
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'type_contact.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo '</form>';
 	echo '</div>';
@@ -220,9 +220,7 @@ while($row = $rs->fetch())
 	$contact_count[$row['id_type_contact']] = $row['count'];
 }
 
-$top_buttons = '<a href="' . $rootpath . 'type_contact.php?add=1" class="btn btn-success"';
-$top_buttons .= ' title="Contact type toevoegen"><i class="fa fa-plus"></i>';
-$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+$top_buttons .= aphp('type_contact', 'add=1', 'Toevoegen', 'btn btn-success', 'Contact type toevoegen', 'plus', true);
 
 $h1 = 'Contact types';
 $fa = 'circle-o-notch';
@@ -252,15 +250,11 @@ foreach($types as $t)
 	echo '<tr>';
 
 	echo '<td>';
-	echo ($protected) ? '' : '<a href="' . $rootpath . 'type_contact.php?edit=' . $t['id'] . '">';
-	echo htmlspecialchars($t['abbrev'],ENT_QUOTES);
-	echo ($protected) ? '*' : '</a>';
+	echo ($protected) ? htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*' : aphp('type_contact', 'edit=' . $t['id'], $t['abbrev']);
 	echo '</td>';
 
 	echo '<td>';
-	echo ($protected) ? '' : '<a href="' . $rootpath . 'type_contact.php?edit=' . $t['id'] . '">';
-	echo htmlspecialchars($t['name'],ENT_QUOTES);
-	echo ($protected) ? '*' : '</a>';
+	echo ($protected) ? htmlspecialchars($t['name'],ENT_QUOTES) . '*' : aphp('type_contact', 'edit=' . $t['id'], $t['name']);
 	echo '</td>';
 
 	echo '<td>';
@@ -270,9 +264,7 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo '<a href="' . $rootpath . 'type_contact.php?del=' . $t['id'] . '" ';
-		echo 'class="btn btn-danger btn-xs"><i class="fa fa-times"></i> ';
-		echo 'Verwijderen</a>';
+		echo aphp('type_contact', 'del=' . $t['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	}
 	echo '</td>';
 

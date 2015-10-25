@@ -582,18 +582,35 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  *
  */
 
-function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false)
+function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
 {
 	global $rootpath, $s_admin;
-	$params = (is_array($params)) ? implode('&', $params) : $params;
+
+	if (is_array($params))
+	{
+		$p = '';
+		foreach ($params as $k => $v)
+		{
+			$p .= $k . '=' . $v . '&';
+		}
+		$params = rtrim($p, '&');
+	}
+
 	$params .= ($params == '') ? (($s_admin == true) ? 'a=1' : '') : (($s_admin == true) ? '&a=1' : '');
 	$out = '<a href="' . $rootpath . $entity . '.php?' . $params . '"';
 	$out .= ($class) ? ' class="' . $class . '"' : '';
 	$out .= ($title) ? ' title="' . $title . '"' : '';
+	if (is_array($attr))
+	{
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
+	}
 	$out .= '>';
 	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
 	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-	$out .= htmlspecialchars($label, ENT_QUOTES);
+	$out .= (is_array($label)) ? $label[0] : htmlspecialchars($label, ENT_QUOTES);
 	$out .= ($collapse) ? '</span>' : '';
 	$out .= '</a>';
 	return $out;

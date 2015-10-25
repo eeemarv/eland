@@ -160,7 +160,7 @@ if ($token = $_GET['token'])
 	echo '</div>';
 	echo '<div class="panel-body">';
 
-	echo '<a href="' . $rootpath . 'register.php" class="btn btn-default">Opnieuw proberen.</a>';
+	echo aphp('register', '', 'Opnieuw proberen', 'btn btn-default');
 
 	echo '</div>';
 	echo '</div>';

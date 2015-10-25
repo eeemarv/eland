@@ -190,7 +190,7 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($add) ? 'success' : 'primary';
-	echo '<a href="' . $rootpath . 'news.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('news', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -261,7 +261,7 @@ if ($del)
 	echo '<div class="panel-heading">';
 
 	echo '<form method="post">';
-	echo '<a href="' . $rootpath . 'news.php" class="btn btn-default">Annuleren</a>&nbsp;';
+	echo aphp('news', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo '</form>';
 
@@ -285,34 +285,21 @@ if ($id)
 
 	if($s_user || $s_admin)
 	{
-		$top_buttons .= '<a href="' .$rootpath . 'news.php?add=1" class="btn btn-success"';
-		$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+		$top_buttons .= aphp('news', 'add=1', 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
 
 		if($s_admin)
 		{
-			$top_buttons .= '<a href="' . $rootpath . 'news.php?edit=' . $id . '" class="btn btn-primary"';
-			$top_buttons .= ' title="Nieuwsbericht aanpassen"><i class="fa fa-pencil"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Aanpassen</span></a>';
-
-			$top_buttons .= '<a href="' . $rootpath . 'news.php?del=' . $id . '" class="btn btn-danger"';
-			$top_buttons .= ' title="Nieuwsbericht verwijderen">';
-			$top_buttons .= '<i class="fa fa-times"></i>';
-			$top_buttons .= '<span class="hidden-xs hidden-sm"> Verwijderen</span></a>';
+			$top_buttons .= aphp('news', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
+			$top_buttons .= aphp('news', 'del=' . $id, 'Verwijderen', 'btn btn-default', 'Nieuwsbericht verwijderen', 'times', true);
 
 			if (!$news['approved'])
 			{
-				$top_buttons .= '<a href="' . $rootpath . 'news.php?approve=' . $id . '" class="btn btn-warning"';
-				$top_buttons .= ' title="Nieuwsbericht goedkeuren">';
-				$top_buttons .= '<i class="fa fa-check"></i>';
-				$top_buttons .= '<span class="hidden-xs hidden-sm"> Goedkeuren</span></a>';
+				$top_buttons .= aphp('news', 'approve=' . $id, 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren', 'check', true);
 			}
 		}
 	}
 
-	$top_buttons .= '<a href="' .$rootpath . 'news.php" class="btn btn-default"';
-	$top_buttons .= ' title="Lijst"><i class="fa fa-calendar"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Lijst</span></a>';
+	$top_buttons .= aphp('news', '', 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
 
 	$h1 = 'Nieuwsbericht: ' . $news['headline'];
 	$fa = 'calendar';
@@ -381,9 +368,7 @@ $news = $db->fetchAll($query);
 
 if($s_user || $s_admin)
 {
-	$top_buttons = '<a href="' .$rootpath . 'news.php?add=1" class="btn btn-success"';
-	$top_buttons .= ' title="nieuws toevoegen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Toevoegen</span></a>';
+	$top_buttons .= aphp('news', 'add=1', 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
 }
 
 $h1 = 'Nieuws';
@@ -410,9 +395,7 @@ foreach ($news as $value)
 	echo '<tr>';
 
 	echo '<td>';
-	echo '<a href="' . $rootpath . 'news.php?id=' . $value['id'] . '">';
-	echo htmlspecialchars($value['headline'],ENT_QUOTES);
-	echo '</a>';
+	echo aphp('news', 'id=' . $value['id'], $value['headline']);
 	echo '</td>';
 
 	echo '<td>';

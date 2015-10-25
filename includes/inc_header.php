@@ -1,12 +1,13 @@
 <?php
 
-$name = readconfigfromdb('systemname');
+$systemname = readconfigfromdb('systemname');
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
+$script_name = str_replace('.php', '', $script_name);
 
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
-echo '<title>' . $name .'</title>';
+echo '<title>' . $systemname .'</title>';
 
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '" media="screen">';
 echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '" media="screen">';
@@ -40,9 +41,9 @@ echo '<span class="icon-bar"></span>';
 echo '<span class="icon-bar"></span>';
 echo '</button>';
 
-echo '<a href="' . $rootpath . '" class="pull-left hidden-xs"><div class="logo"></div></a>';
+echo aphp('index', '', array('<div class="logo"></div>'), 'pull-left hidden-xs');
 echo '<a class="navbar-brand" href="' . $rootpath . '">';
-echo $name . '</a>';
+echo $systemname . '</a>';
 
 echo '</div>';
 
@@ -58,33 +59,26 @@ if ($s_letscode)
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_user || $s_admin)
 	{
-		echo '<li><a href="' . $rootpath . 'users.php?id=' . $s_id . '">';
-		echo '<span class="fa fa-user"></span> Mijn gegevens</a></li>';
-		echo '<li><a href="' . $rootpath . 'messages.php?uid=' . $s_id . '">';
-		echo '<span class="fa fa-newspaper-o"></span> Mijn vraag en aanbod</a></li>';
-		echo '<li><a href="' . $rootpath . 'transactions.php?uid=' . $s_id . '">';
-		echo '<span class="fa fa-exchange"></span> Mijn transacties</a></li>';
+		echo '<li>' . aphp('users', 'id=' . $s_id, 'Mijn gegevens', false, false, 'user') . '</li>';
+		echo '<li>' . aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', false, false, 'newspaper-o') . '</li>';
+		echo '<li>' . aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', false, false, 'exchange') . '</li>';
 		echo '<li class="divider"></li>';
 	}
-	echo '<li><a href="' . $rootpath . 'logout.php">';
-	echo '<span class="fa fa-sign-out"></span> Uitloggen</a></li>';
+	echo '<li>' . aphp('logout', '', 'Uitloggen', false, false, 'sign-out') . '</li>';
 	echo '</ul>';
 	echo '</li>';
 	if ($s_admin)
 	{
 		$menu = array(
-			'categories.php'	 				=> array('clone', 'Categorieën'),
-			'apikeys.php'						=> array('key', 'Apikeys'),
-			'type_contact.php'					=> array('circle-o-notch', 'Contact types'),
-			'reports/overview.php'				=> array('calculator', 'Rapporten'),
-			'config.php'						=> array('gears', 'Instellingen'),
-			'export.php'						=> array('download', 'Export'),
-			'autominlimit.php'					=> array('arrows-v', 'Auto min limiet'),
-			'mass_transaction.php'				=> array('exchange', 'Massa-Transactie'),
-			'logs.php'							=> array('list', 'Logs'),
-			'divider_1'							=> 'divider',
-			'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) =>
-													array('times text-danger', 'Admin modus uit'),
+			'categories'	 				=> array('clone', 'Categorieën'),
+			'apikeys'						=> array('key', 'Apikeys'),
+			'type_contact'					=> array('circle-o-notch', 'Contact types'),
+			'reports/overview'				=> array('calculator', 'Rapporten'),
+			'config'						=> array('gears', 'Instellingen'),
+			'export'						=> array('download', 'Export'),
+			'autominlimit'					=> array('arrows-v', 'Auto min limiet'),
+			'mass_transaction'				=> array('exchange', 'Massa-Transactie'),
+			'logs'							=> array('list', 'Logs'),
 		);
 
 		echo '<li class="dropdown">';
@@ -96,23 +90,27 @@ if ($s_letscode)
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $label)
 		{
-			if ($label == 'divider')
-			{
-				echo '<li class="divider"></li>';
-				continue;
-			}
-			$active_class = ($script_name == $link) ? ' class="active"' : '';
-			echo '<li' . $active_class . '><a href="' . $rootpath . $link .'">';
-			echo '<span class="fa fa-' . $label[0] . '"></span> ' . $label[1] . '</a></li>';
+			$active = ($script_name == $link) ? ' class="active"' : '';
+			echo '<li' . $active . '>';
+			echo aphp($link, '', $label[1], false, false, $label[0]);
+			echo '</li>';
 		}
+		$user_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$get_params = $_GET;
+		$get_params['r'] = 'user';
+		echo '<a href="' . $user_url . '?' . http_build_query($get_params) . '"><i class="fa fa-times"></i>';
+		echo ' Admin modus uit</a>';
 		echo '</ul>';
 		echo '</li>';
-
 	}
 	else if ($_SESSION['rights'] == 'admin')
 	{
 		echo '<li class="dropdown">';
-		echo '<a href="' . $rootpath . 'admin.php?location=' . urlencode($_SERVER['REQUEST_URI']) . '" ';
+		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$get_params = $_GET;
+		$get_params['r'] = 'admin';
+
+		echo '<a href="' . $admin_url . '?' . http_build_query($get_params) . '" ';
 		echo 'title="Admin modus inschakelen">';
 		echo '<span class="fa fa-times text-danger"></span> ';
 		echo 'Admin modus';
@@ -131,42 +129,42 @@ echo '<div id="sidebar" class="sidebar-offcanvas">';
 if (!$s_accountrole)
 {
 	$menu = array(
-		'login.php'		=> array('sign-in', 'Login'),
-		'help.php'		=> array('ambulance', 'Help'),
+		'login'		=> array('sign-in', 'Login'),
+		'help'		=> array('ambulance', 'Help'),
 	);
 
 	if (readconfigfromdb('registration_en'))
 	{
-		$menu['register.php'] = array('check-square-o', 'Inschrijven');
+		$menu['register'] = array('check-square-o', 'Inschrijven');
 	}
 }
 else
 {
 	$menu = array(
-		'index.php'					=> array('home', 'Overzicht'),
-		'messages.php'				=> array('newspaper-o', 'Vraag & Aanbod'),
-		'users.php'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
-		'transactions.php'			=> array('exchange', 'Transacties'),
-		'news.php'					=> array('calendar-o', 'Nieuws'),
+		'index'					=> array('home', 'Overzicht'),
+		'messages'				=> array('newspaper-o', 'Vraag & Aanbod'),
+		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
+		'transactions'			=> array('exchange', 'Transacties'),
+		'news'					=> array('calendar-o', 'Nieuws'),
 	);
 
 	if ($s_user || $s_admin)
 	{
-		$menu['interlets.php'] = array('share-alt', 'InterLETS');
+		$menu['interlets'] = array('share-alt', 'InterLETS');
 	}
 
 	if (readconfigfromdb('docs_en'))
 	{
-		$menu['docs.php'] = array('files-o', 'Documenten');
+		$menu['docs'] = array('files-o', 'Documenten');
 	}
 	if (readconfigfromdb('forum_en'))
 	{
-		$menu['forum.php'] = array('comments-o', 'Forum');
+		$menu['forum'] = array('comments-o', 'Forum');
 	}
 
 	if ($s_user || $s_admin)
 	{
-		$menu['help.php'] = array('ambulance', 'Probleem melden');
+		$menu['help'] = array('ambulance', 'Probleem melden');
 	}
 }
 
@@ -175,11 +173,10 @@ echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $link => $label)
 {
-	$active_class = ($script_name == $link) ? ' class="active"' : '';
-	echo '<li' . $active_class . ' role="presentation">';
-	echo '<a href="' . $rootpath . $link . '">';
-	echo '<span class="fa fa-' . $label[0] . '"></span> ';
-	echo  $label[1] . '</a></li>';
+	$active = ($script_name == $link) ? ' class="active"' : '';
+	echo '<li' . $active . '>';
+	echo aphp($link, '', $label[1], false, false, $label[0], false, array('role' => 'presentation'));
+	echo '</li>';
 }
 echo '</ul>';
 
