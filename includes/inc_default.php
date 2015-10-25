@@ -97,6 +97,10 @@ require_once $rootpath . 'includes/inc_alert.php';
 
 $alert = new alert();
 
+$p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
+$p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
+$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false; 
+
 $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
@@ -579,25 +583,36 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 }
 
 /*
- *
+ * this function creates the links with correct query parameters (depending on user and role)
  */
 
 function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
 {
-	global $rootpath, $s_admin;
+	global $rootpath, $s_id, $s_interlets, $s_accountrole;
 
 	if (is_array($params))
 	{
-		$p = '';
-		foreach ($params as $k => $v)
-		{
-			$p .= $k . '=' . $v . '&';
-		}
-		$params = rtrim($p, '&');
+		$params = http_build_query($params);
 	}
+	$q = array();
+	if ($s_accountrole != 'anonymous')
+	{
+		$q['r'] = $s_accountrole;
 
-	$params .= ($params == '') ? (($s_admin == true) ? 'a=1' : '') : (($s_admin == true) ? '&a=1' : '');
-	$out = '<a href="' . $rootpath . $entity . '.php?' . $params . '"';
+		if ($s_id)
+		{
+			$q['u'] = $s_id;
+		}
+		else if ($s_interlets)
+		{
+			$q['u'] = $s_interlets['id'];
+			$q['s'] = $s_interlets['schema'];
+		}
+	}
+	$q = http_build_query($q);
+	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
+
+	$out = '<a href="' . $rootpath . $entity . '.php' . $params . '"';
 	$out .= ($class) ? ' class="' . $class . '"' : '';
 	$out .= ($title) ? ' title="' . $title . '"' : '';
 	if (is_array($attr))
