@@ -67,7 +67,7 @@ if(isset($_POST['zend']))
 		if (!($return_message = helpmail($help)))
 		{
 			$alert->success('De support mail is verzonden.');
-			header('Location: index.php');
+			header('Location: ' . generate_url('index'));
 			exit;
 		}
 

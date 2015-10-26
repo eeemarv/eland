@@ -1712,8 +1712,7 @@ if ($id)
 		order by letscode desc
 		limit 1', array($user['letscode']));
 
-	$includejs = '<script type="text/javascript">var user_id = ' . $id . ';
-		var user_link_location = \'' . $rootpath . 'users.php?id=\'; </script>
+	$includejs = '
 		<script src="' . $rootpath . 'js/user.js"></script>
 		<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 		<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
@@ -1929,7 +1928,9 @@ if ($id)
 
 	echo '</div></div></div></div>';
 
-	echo '<div id="contacts" data-uid="' . $id . '"></div>';
+	echo '<div id="contacts" data-uid="' . $id . '" ';
+	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $id;
+	echo '&' . get_session_query_param() . '"></div>';
 
 	// response form
 
@@ -1994,7 +1995,12 @@ if ($id)
 
 	echo '<div class="row">';
 	echo '<div class="col-md-6">';
-	echo '<div id="chartdiv1" data-height="480px" data-width="960px"></div>';
+	echo '<div id="chartdiv1" data-height="480px" data-width="960px" ';
+	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
+	echo '&' . get_session_query_param() . '" ';
+	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
+	echo 'data-session-query-param="' . get_session_query_param() . '" ';
+	echo 'data-user-id="' . $id . '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
@@ -2002,9 +2008,13 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div id="messages" data-uid="' . $id . '"></div>';
+	echo '<div id="messages" data-uid="' . $id . '" ';
+	echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
+	echo '&' . get_session_query_param() . '"></div>';
 
-	echo '<div id="transactions" data-uid="' . $id . '"></div>';
+	echo '<div id="transactions" data-uid="' . $id . '" ';
+	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
+	echo '&' . get_session_query_param() . '"></div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
@@ -2485,9 +2495,7 @@ function render_contacts($contacts, $abbrev = null)
 
 function cancel($id = null)
 {
-	global $rootpath;
-
-	header('Location: ' . $rootpath . 'users.php' . (($id) ? '?id=' . $id : ''));
+	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : '')));
 	exit;
 }
 

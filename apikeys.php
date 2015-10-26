@@ -13,8 +13,7 @@ if ($del)
 		if ($db->delete('apikeys', array('id' => $del)))
 		{
 			$alert->success('Apikey verwijderd.');
-			header('Location: ' . $rootpath . 'apikeys.php');
-			exit;
+			cancel();
 		}
 		$alert->error('Apikey niet verwijderd.');
 	}
@@ -61,8 +60,7 @@ if ($_POST['zend'])
 	if($db->insert('apikeys', $apikey))
 	{
 		$alert->success('Apikey opgeslagen.');
-		header('Location: '.$rootpath.'apikeys.php');
-		exit;
+		cancel();
 	}
 	$alert->error('Apikey niet opgeslagen.');
 }
@@ -144,3 +142,10 @@ echo '</div>';
 echo '</div>';
 
 include $rootpath.'includes/inc_footer.php';
+
+function cancel($id = '')
+{
+	$id = ($id) ? 'id=' . $id : '';
+	header('Location: ' . generate_url('apikeys', $id));
+	exit;
+}

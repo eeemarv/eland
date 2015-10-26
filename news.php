@@ -21,8 +21,7 @@ if ($approve)
 	{
 		$alert->error('Goedkeuren nieuwsbericht mislukt.');
 	}
-	header('Location: news.php?id=' . $approve);
-	exit;
+	cancel($approve);
 }
 
 if ($add || $edit)
@@ -85,11 +84,9 @@ if ($add && $submit && !count($errors))
 			sendemail($from, $to, $subject, $content);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
 			$alert->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
-			header('Location: ' . $rootpath . 'news.php');
-			exit;
+			cancel();
 		}
-		header('Location: news.php?id=' . $id);
-		exit;
+		cancel($id);
 	}
 	else
 	{
@@ -102,8 +99,7 @@ if ($edit && $submit && !count($errors))
 	if($db->update('news', $news, array('id' => $edit)))
 	{
 		$alert->success('Nieuwsbericht aangepast.');
-		header('Location: ' . $rootpath . 'news.php?id=' . $edit);
-		exit;
+		cancel($edit);
 	}
 	else
 	{
@@ -190,7 +186,7 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($add) ? 'success' : 'primary';
-	echo aphp('news', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('news', ($edit) ? 'id=' . $edit : '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -212,8 +208,7 @@ if ($del)
 		if($db->delete('news', array('id' => $del)))
 		{
 			$alert->success('Nieuwsbericht verwijderd.');
-			header('Location: ' . $rootpath . 'news.php');
-			exit;
+			cancel();
 		}
 		$alert->error('Nieuwsbericht niet verwijderd.');
 	}
@@ -357,7 +352,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $query = 'SELECT * FROM news';
 
-if($s_accountrole != 'admin')
+if(!$s_admin)
 {
 	$query .= ' where approved = \'t\'';
 }
@@ -418,3 +413,10 @@ echo '</tbody>';
 echo '</table></div></div>';
 
 include $rootpath . 'includes/inc_footer.php';
+
+function cancel($id = '')
+{
+	$id = ($id) ? 'id=' . $id : '';
+	header('Location: ' . generate_url('news', $id));
+	exit;
+}

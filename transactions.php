@@ -591,8 +591,10 @@ if ($add)
 	foreach ($letsgroups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
-		echo 'data-thumbprint="' . $thumbprint . '"';
-		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected"' : '';
+		echo 'data-thumbprint="' . $thumbprint . '" ';
+		echo 'data-url="' . $rootpath . 'ajax/active_users.php?letsgroup_id=' . $l['id'];
+		echo '&' . get_session_query_param() . '"';
+		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';
 		echo ($l['id'] == 'self') ? ' data-this-letsgroup="1"' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
@@ -1100,8 +1102,6 @@ if (!$inline)
 
 function cancel($id = null)
 {
-	global $rootpath;
-
-	header('Location: ' . $rootpath . 'transactions.php' . (($id) ? '?id=' . $id : ''));
+	header('Location: ' . generate_url('transactions', (($id) ? 'id=' . $id : '')));
 	exit;
 }

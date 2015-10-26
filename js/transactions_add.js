@@ -1,9 +1,9 @@
 $("#letsgroup_id").find('option').each(function(){
 	$(this).data('users', new Bloodhound({
 		prefetch: {
-			url: './ajax/active_users.php?letsgroup_id=' + $(this).val(),
+			url: $(this).data('url'),
 			ttl: 4320000,	// 50 days
-			thumbprint: $(this).attr('data-thumbprint'),
+			thumbprint: $(this).data('thumbprint'),
 			filter: function(users){
 				return $.map(users, function(user){
 					return { 

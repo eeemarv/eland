@@ -541,7 +541,8 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="' . $to_letscode . '" ';
-echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '">';
+echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
+echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '">';
 echo '</div>';
 echo '</div>';
 
@@ -848,6 +849,6 @@ function mail_mass_transaction($mail_ary)
 
 function cancel()
 {
-	header('Location: ' . $rootpath . 'mass_transaction.php');
+	header('Location: ' . generate_url('mass_transaction.php'));
 	exit;
 }

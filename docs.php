@@ -218,8 +218,7 @@ if ($confirm_del && $del)
 		);
 
 		$alert->success('Het document werd verwijderd.');
-		header('Location: ' . $rootpath . 'docs.php');
-		exit;
+		cancel();
 	}
 	$alert->error('Document niet gevonden.');
 }
@@ -374,7 +373,7 @@ $redis->set($schema . '_d_' . $token, '1');
 $redis->expire($schema . '_d_' . $token, 3600);
 
 $find = array(
-	'access'	=> array('$gte'	=> $access_ary[$s_accountrole])
+	'access'	=> array('$gte'	=> $access_level)
 );
 
 if ($map)
@@ -570,7 +569,8 @@ if ($s_admin)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
+	echo 'data-url="' . $rootpath . 'ajax/doc_map_names.php?' . get_session_query_param() . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -587,7 +587,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($map = null)
 {
-	$map = ($map) ? '?map=' . $map : '';
-	header('Location: ' . $rootpath . 'docs.php' . $map);
+	$map = ($map) ? 'map=' . $map : '';
+	header('Location: ' . generate_url('docs', $map));
 	exit;
 }

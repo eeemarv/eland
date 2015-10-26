@@ -1,8 +1,8 @@
 ;jQuery(document).ready(function($){
 	$.ajax({
-		url: './ajax/plot_user_transactions.php',
+		url: $('#chartdiv1').data('url'),
 		dataType: 'json',
-		data: { user_id: user_id },
+		data: { user_id: $('#chartdiv1').data('user-id') },
 		success:function(data){
 
 			var transactions = data.transactions;
@@ -192,7 +192,7 @@
 			$('#chartdiv2').bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.linkable){
-					window.location.href = user_link_location + user.id;
+					window.location.href = $('#chartdiv1').data('users-url') + user.id + '&' + $('#chartdiv1').data('session-query-param');
 				}
 			});
 

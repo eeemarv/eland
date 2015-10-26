@@ -30,8 +30,6 @@ $extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
 $access_submit = (isset($_POST['access_submit'])) ? true : false;
 $access = (isset($_POST['access'])) ? $_POST['access'] : false;
 
-$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
-
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
 
@@ -907,6 +905,7 @@ if (($edit || $add))
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
+		echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';
@@ -1182,7 +1181,9 @@ if ($id)
 	echo '</div>'; //col-md-6
 	echo '</div>'; //row
 
-	echo '<div id="contacts" data-uid="' . $message['id_user'] . '"></div>';
+	echo '<div id="contacts" data-uid="' . $message['id_user'] . '" ';
+	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
+	echo '&' . get_session_query_param() . '"></div>';
 
 	// response form
 
@@ -1597,11 +1598,11 @@ else
 
 function cancel($id = null)
 {
-	global $rootpath, $uid;
+	global $uid;
 
-	$param = ($uid && !$id) ? '?uid=' . $uid : (($id) ? '?id=' . $id : '');
+	$param = ($uid && !$id) ? 'uid=' . $uid : (($id) ? 'id=' . $id : '');
 
-	header('Location: ' . $rootpath . 'messages.php' . $param);
+	header('Location: ' . generate_url('messages', $param));
 	exit;
 }
 

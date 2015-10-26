@@ -37,7 +37,7 @@ function saldo()
 
 	$rs = $db->prepare('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.fullname, u.letscode, u.login
+			u.letscode, u.login
 		FROM users u
 		WHERE u.status in (1, 2)
 		AND u.cron_saldo = \'t\'');
@@ -96,10 +96,6 @@ function saldo()
 					'content'	=> $user['letscode'],
 				),
 				array(
-					'name'		=> 'FULLNAME',
-					'content'	=> $user['fullname'],
-				),
-				array(
 					'name'		=> 'ID',
 					'content'	=> $user['id'],
 				),
@@ -153,7 +149,7 @@ function saldo()
 	}
 
 	$rs = $db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
-		u.fullname, u.letscode
+		u.name, u.letscode
 		FROM messages m, users u
 		WHERE m.id_user = u.id
 			AND u.status IN (1, 2)
@@ -177,16 +173,16 @@ function saldo()
 
 		$msgs[] = array(
 			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
-				'Ingegeven door: ' . $msg['fullname'] . ' (' . $msg['letscode'] . ') ' . $user_url . $msg['id_user'] . $r . $r,
+				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . $user_url . $msg['id_user'] . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
-				$msg['fullname'] . ' (' . $msg['letscode'] . ')</a> | <a href="mailto:' . $mailto .
+				 . $msg['letscode'] . ' ' . $msg['name']'</a> | <a href="mailto:' . $mailto .
 				'">email</a> | <a href="' . $google_maps . '">route</a> ' .
 				'</li><br>',
 		);
 	}
 
-	$rs = $db->prepare('select n.*, u.fullname, u.letscode
+	$rs = $db->prepare('select n.*, u.name, u.letscode
 		from news n, users u
 		where n.approved = \'t\'
 			and n.published = \'t\'
@@ -206,19 +202,19 @@ function saldo()
 			'text'	=> '*** ' . $row['headline'] . ' ***' . $r  .
 				$location_text .
 				'Datum: ' . $itemdate . $r .
-				'Ingegeven door: ' . $row['fullname'] . ' (' . $row['letscode'] . ')' . $r .
+				'Ingegeven door: ' . $row['letscode'] . ' ' . $row['name'] . $r .
 				$row['newsitem'] . $r . $r,
 				
  			'html'	=> '<li><a href="' . $news_url . $row['id'] . '">' . $row['headline'] . '</a><br>' .
 				$location_html .
 				'Datum: <b>' . $itemdate . '</b>' .
 				'Ingegeven door: <a href="' . $user_url . $row['id_user'] . '">' .
-				$row['fullname'] . ' (' . $row['letscode'] . ')</a><br>' .
+				$row['name'] . ' (' . $row['letscode'] . ')</a><br>' .
 				$row['newsitem'] . '</li><br>',
 		);
 	}
 
-	$rs = $db->prepare('select u.id, u.fullname, u.letscode
+	$rs = $db->prepare('select u.id, u.name, u.letscode
 		from users u
 		where u.status = 1
 			and u.adate > ?');
@@ -229,12 +225,12 @@ function saldo()
 	while ($row = $rs->fetch())
 	{
 		$new_users[] = array(
-			'text'	=> $row['fullname'] . ' (' . $row['letscode'] . ') ' . $user_url . $row['id'] . $r,
-			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['fullname'] . ' (' . $row['letscode'] . ')</a></li>',
+			'text'	=> $row['letscode'] . ' ' . $row['name'] . ' ' . $user_url . $row['id'] . $r,
+			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['letscode'] . ' ' . $row['name'] . '</a></li>',
 		);
 	}
 
-	$rs = $db->prepare('select u.id, u.fullname, u.letscode
+	$rs = $db->prepare('select u.id, u.name, u.letscode
 		from users u
 		where u.status = 2');
 
@@ -243,15 +239,15 @@ function saldo()
 	while ($row = $rs->fetch())
 	{
 		$leaving_users[] = array(
-			'text'	=> $row['fullname'] . ' (' . $row['letscode'] . ') ' . $user_url . $row['id'] . $r,
-			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['fullname'] . ' (' . $row['letscode'] . ')</a></li>',
+			'text'	=> $row['letscode'] . ' ' . $row['name'] . ' ' . $user_url . $row['id'] . $r,
+			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['letscode'] . ' ' . $row['name'] . '</a></li>',
 		);
 	}
 
 	$rs = $db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
 			t.amount, t.cdate, t.description,
-			uf.fullname as fullname_from, uf.letscode as letscode_from,
-			ut.fullname as fullname_to, ut.letscode as letscode_to
+			uf.name as name_from, uf.letscode as letscode_from,
+			ut.name as name_to, ut.letscode as letscode_to
 		from transactions t, users uf, users ut
 		where t.id_from = uf.id
 			and t.id_to = ut.id
@@ -262,8 +258,8 @@ function saldo()
 
 	while ($row = $rs->fetch())
 	{
-		$tr_from_text = ($row['real_from']) ? $row['fullname_from'] . ': ' . $row['real_from'] : $row['fullname_from'] . ' (' . $row['letscode_from'] . ')';
-		$tr_to_text = ($row['real_to']) ? $row['fullname_to'] . ': ' . $row['real_to'] : $row['fullname_to'] . ' (' . $row['letscode_to'] . ')';
+		$tr_from_text = ($row['real_from']) ? $row['name_from'] . ': ' . $row['real_from'] : $row['letscode_from'] . ' ' . $row['name_from'];
+		$tr_to_text = ($row['real_to']) ? $row['name_to'] . ': ' . $row['real_to'] : $row['letscode_to'] . ' ' .$row['name_to'];
 
 		$tr_from_html = ($row['real_from']) ? $tr_from_text : '<a href="' . $user_url . $row['id_from'] . '">' . $tr_from_text . '</a>';
 		$tr_to_html = ($row['real_to']) ? $tr_to_text : '<a href="' . $user_url . $row['id_to'] . '">' . $tr_to_text . '</a>';
@@ -280,8 +276,8 @@ function saldo()
 	$text = $t . $r . $r;
 	$html = $t . '<br>';
 
-	$text .= 'Beste *|FULLNAME|* (*|LETSCODE|*)' . $r . $r;
-	$html .= '<p>Beste <b>*|FULLNAME|* (*|LETSCODE|*)</b>,</p>';
+	$text .= 'Beste *|NAME|* (*|LETSCODE|*)' . $r . $r;
+	$html .= '<p>Beste <b>*|NAME|* (*|LETSCODE|*)</b>,</p>';
 
 	$text .= 'Je huidig saldo bedraagt *|BALANCE|* ' . $currency . $r;
 	$html .= '<p>Je huidig saldo bedraagt <b>*|BALANCE|* </b> ' . $currency . '</p>';

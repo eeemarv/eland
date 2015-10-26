@@ -746,10 +746,8 @@ function render_schemas_groups()
 
 function cancel($id = null)
 {
-	global $rootpath;
+	$id = ($id) ? 'id=' . $id : '';
 
-	$param = ($id) ? '?id=' . $id : '';
-
-	header('Location: ' . $rootpath . 'interlets.php' . $param);
+	header('Location: ' . generate_url('interlets', $id));
 	exit;
 }

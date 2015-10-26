@@ -153,6 +153,6 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel()
 {
-	header('Location: ' . $rootpath . 'config.php');
+	header('Location: ' . generate_url('config'));
 	exit;
 }

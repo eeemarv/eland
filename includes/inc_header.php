@@ -42,8 +42,7 @@ echo '<span class="icon-bar"></span>';
 echo '</button>';
 
 echo aphp('index', '', array('<div class="logo"></div>'), 'pull-left hidden-xs');
-echo '<a class="navbar-brand" href="' . $rootpath . '">';
-echo $systemname . '</a>';
+echo aphp('index', '', $systemname, 'navbar-brand');
 
 echo '</div>';
 
@@ -64,7 +63,7 @@ if ($s_letscode)
 		echo '<li>' . aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', false, false, 'exchange') . '</li>';
 		echo '<li class="divider"></li>';
 	}
-	echo '<li>' . aphp('logout', '', 'Uitloggen', false, false, 'sign-out') . '</li>';
+	echo '<li><a href="' . $rootpath . 'login.php"><i class="fa fa-sign-out"></i> Uitloggen</a></li>';
 	echo '</ul>';
 	echo '</li>';
 	if ($s_admin)
@@ -95,15 +94,18 @@ if ($s_letscode)
 			echo aphp($link, '', $label[1], false, false, $label[0]);
 			echo '</li>';
 		}
+		echo '<li class="divider"></li>';
 		$user_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		$get_params = $_GET;
 		$get_params['r'] = 'user';
+		echo '<li>';
 		echo '<a href="' . $user_url . '?' . http_build_query($get_params) . '"><i class="fa fa-times"></i>';
 		echo ' Admin modus uit</a>';
+		echo '</li>';
 		echo '</ul>';
 		echo '</li>';
 	}
-	else if ($_SESSION['rights'] == 'admin')
+	else if ($_SESSION['accountrole'] == 'admin')
 	{
 		echo '<li class="dropdown">';
 		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -126,7 +128,7 @@ echo '</div>';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
-if (!$s_accountrole)
+if ($s_anonymous)
 {
 	$menu = array(
 		'login'		=> array('sign-in', 'Login'),

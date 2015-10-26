@@ -24,19 +24,19 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$post = $elas_mongo->forum->findOne(array('_id' => new MongoId($t)));
+	$forum_post = $elas_mongo->forum->findOne(array('_id' => new MongoId($t)));
 
-	if (!$post)
+	if (!$forum_post)
 	{
 		$alert->error('Post niet gevonden.');
 		cancel();
 	}
 
-	$s_owner = ($post['uid'] == $s_id) ? true : false;
+	$s_owner = ($forum_post['uid'] == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
-		$str = ($post['parent_id']) ? 'deze reactie' : 'dit onderwerp';
+		$str = ($forum_post['parent_id']) ? 'deze reactie' : 'dit onderwerp';
 
 		if ($del)
 		{
@@ -47,10 +47,10 @@ if ($del || $edit)
 			$alert->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
 		}
 
-		cancel(($post['parent_id']) ?: $t);
+		cancel(($forum_post['parent_id']) ?: $t);
 	}
 
-	$topic = ($post['parent_id']) ?: false;
+	$topic = ($forum_post['parent_id']) ?: false;
 }
 
 if ($submit)
@@ -62,7 +62,7 @@ if ($submit)
 			array('justOne'	=> true)
 		);
 
-		if (!$post['parent_id'])
+		if (!$forum_post['parent_id'])
 		{
 			$elas_mongo->forum->remove(
 				array('parent_id' => $del)
@@ -73,7 +73,7 @@ if ($submit)
 		}
 
 		$alert->success('De reactie is verwijderd.');
-		cancel($post['parent_id']);
+		cancel($forum_post['parent_id']);
 	}
 
 	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
@@ -85,44 +85,44 @@ if ($submit)
 		$content = $c;
 	}
 
-	$post = array(
+	$forum_post = array(
 		'content'	=> $content,
 	);
 
 	if ($topic)
 	{
-		$post['parent_id'] = $topic;
+		$forum_post['parent_id'] = $topic;
 	}
 	else
 	{
-		$post['subject'] = $_POST['subject'];
-		$post['access']	= $_POST['access'];
+		$forum_post['subject'] = $_POST['subject'];
+		$forum_post['access']	= $_POST['access'];
 	}
 
 	if ($edit)
 	{
-		$post['modified'] = gmdate('Y-m-d H:i:s');
+		$forum_post['modified'] = gmdate('Y-m-d H:i:s');
 	}
 	else
 	{
-		$post['ts'] = gmdate('Y-m-d H:i:s');
-		$post['uid'] = $s_id;
-//		$post['edit_count'] = 0;
+		$forum_post['ts'] = gmdate('Y-m-d H:i:s');
+		$forum_post['uid'] = $s_id;
+//		$forum_post['edit_count'] = 0;
 	}
 
     $errors = array();
 
- 	if (!($post['subject'] || $topic))
+ 	if (!($forum_post['subject'] || $topic))
 	{
 		 $errors[] = 'Vul een onderwerp in.';
 	}
 
- 	if (strlen($post['content']) < 2)
+ 	if (strlen($forum_post['content']) < 2)
 	{
 		 $errors[] = 'De inhoud van je bericht is te kort.';
 	}
 
-	if (!$topic && ($post['access'] < $access_level || $post['access'] > 2))
+	if (!$topic && ($forum_post['access'] < $access_level || $forum_post['access'] > 2))
 	{
 		$errors[] = 'Ongeldige zichtbaarheid';
 	}
@@ -134,7 +134,7 @@ if ($submit)
 	else if ($edit)
 	{
 		$elas_mongo->forum->update(array('_id' => new MongoId($edit)),
-			array('$set'	=> $post, '$inc' => array('edit_count' => 1)),
+			array('$set'	=> $forum_post, '$inc' => array('edit_count' => 1)),
 			array('upsert'	=> true));
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
@@ -142,7 +142,7 @@ if ($submit)
 	}
 	else
 	{
-		$elas_mongo->forum->insert($post);
+		$elas_mongo->forum->insert($forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -151,17 +151,17 @@ if ($submit)
 
 if ($del)
 {
-	$h1 = ($post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', 't=' . $post['id'], $post['subject']);
+	$h1 = ($forum_post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', 't=' . $forum_post['id'], $forum_post['subject']);
 	$h1 .= ' verwijderen?';
 
-	$t = ($post['parent_id']) ?: $post['_id'];
+	$t = ($forum_post['parent_id']) ?: $forum_post['_id'];
 
 	require_once $rootpath . 'includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<p>' . $post['content'] . '</p>';
+	echo '<p>' . $forum_post['content'] . '</p>';
 
 	echo '<form method="post">';
 
@@ -186,12 +186,12 @@ if (!$edit)
 		$find = array('parent_id' => array('$exists' => false));
 	}
 
-	$posts = $elas_mongo->forum->find($find);
-	$posts->sort(array('ts' => (($topic) ? 1 : -1)));
+	$forum_posts = $elas_mongo->forum->find($find);
+	$forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
-	$posts = iterator_to_array($posts);
+	$forum_posts = iterator_to_array($forum_posts);
 
-	$s_owner = ($posts && is_array($posts[0]) && $posts[0]['iud'] == $s_id) ? true : false;
+	$s_owner = ($forum_posts && is_array($forum_posts[0]) && $forum_posts[0]['iud'] == $s_id) ? true : false;
 
 	if ($s_admin || $s_user)
 	{
@@ -212,7 +212,7 @@ if (!$edit)
 		$top_buttons .= aphp('forum', '', 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 	}
 
-	$h1 = ($topic) ? $posts[$topic]['subject'] : 'Forum';
+	$h1 = ($topic) ? $forum_posts[$topic]['subject'] : 'Forum';
 }
 else
 {
@@ -229,7 +229,7 @@ if (!$edit)
 {
 	if ($topic)
 	{
-		foreach ($posts as $p)
+		foreach ($forum_posts as $p)
 		{
 			$s_owner = (($p['uid'] == $s_id) && $s_id) ? true : false;
 
@@ -237,7 +237,7 @@ if (!$edit)
 
 			echo '<div class="panel-body">';
 			echo $p['content'];
-			link_user($post['uid']);
+			link_user($forum_post['uid']);
 			echo '</div>';
 
 			echo '<div class="panel-footer">';
@@ -298,7 +298,7 @@ if (!$edit)
 		echo '</thead>';
 		echo '<tbody>';
 
-		foreach($posts as $p)
+		foreach($forum_posts as $p)
 		{
 			$s_owner = ($s_id == $p['uid']) ? true : false;
 
@@ -360,7 +360,7 @@ if (!$s_guest)
 		echo '<div class="col-sm-12">';
 		echo '<input type="text" class="form-control" id="subject" name="subject" ';
 		echo 'placeholder="Onderwerp" ';
-		echo 'value="' . $post['subject'] . '" required>';
+		echo 'value="' . $forum_post['subject'] . '" required>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -368,7 +368,7 @@ if (!$s_guest)
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
 	echo '<textarea name="content" class="form-control" id="content" rows="4" required>';
-	echo $post['content'];
+	echo $forum_post['content'];
 	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';
@@ -377,13 +377,13 @@ if (!$s_guest)
 	{
 		if (!$edit)
 		{
-			$post['access'] = 0;
+			$forum_post['access'] = 0;
 		}
 
 		if ($s_user)
 		{
 			unset($access_options[0]);
-			$post['access'] = ($post['access']) ?: 1;
+			$forum_post['access'] = ($forum_post['access']) ?: 1;
 		}
 
 		echo '<div class="form-group">';
@@ -391,7 +391,7 @@ if (!$s_guest)
 		echo '<div class="col-sm-10">';
 		echo '<select type="file" class="form-control" id="access" name="access" ';
 		echo 'required>';
-		render_select_options($access_options, $post['access']);
+		render_select_options($access_options, $forum_post['access']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -413,7 +413,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($topic = null)
 {
-	$topic = ($topic) ? '?t=' . $topic : '';
-	header('Location: ' . $rootpath . 'forum.php' . $topic);
+	$topic = ($topic) ? 't=' . $topic : '';
+	header('Location: ' . generate_url('forum', $topic));
 	exit;
 }

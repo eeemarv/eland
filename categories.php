@@ -37,8 +37,7 @@ if ($add)
 			if ($db->insert('categories', $cat))
 			{
 				$alert->success('Categorie toegevoegd.');
-				header('Location: ' . $rootpath . 'categories.php');
-				exit;
+				cancel();
 			}
 
 			$alert->error('Categorie niet toegevoegd.');
@@ -150,8 +149,7 @@ if ($edit)
 			{
 				$alert->success('Categorie aangepast.');
 				$db->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', array($cat['name'], $edit));
-				header('Location: ' . $rootpath . 'categories.php');
-				exit;
+				cancel();
 			}
 
 			$alert->error('Categorie niet aangepast.');
@@ -218,8 +216,7 @@ if ($del)
 		if ($db->delete('categories', array('id' => $del)))
 		{
 			$alert->success('Categorie verwijderd.');
-			header('Location: ' . $rootpath . 'categories.php');
-			exit;
+			cancel();
 		}
 
 		$alert->error('Categorie niet verwijderd.');
@@ -324,3 +321,9 @@ echo '<p>Categorieën met berichten of hoofdcategorieën met subcategorieën kan
 
 include $rootpath . 'includes/inc_footer.php';
 
+function cancel($id = '')
+{
+	$id = ($id) ? 'id=' . $id : '';
+	header('Location: ' . generate_url('categories', $id));
+	exit;
+}

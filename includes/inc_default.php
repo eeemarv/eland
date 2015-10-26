@@ -5,6 +5,12 @@ if(!isset($rootpath))
 	$rootpath = '';
 }
 
+$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
+$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
+
+$post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
+
 $cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
 $cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
 $cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
@@ -58,6 +64,57 @@ if(!empty($redis_url))
 	}
 }
 
+/* vars */
+
+$elas_heroku_config = array(
+	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
+	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
+	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
+	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
+	'docs_en'					=> array('0', 'Documenten ingeschakeld [0, 1]'),
+	'css'						=> array('', 'Extra stijl: url van .css bestand'),
+);
+
+$top_right = '';
+$top_buttons = '';
+
+$role_ary = array(
+	'admin'		=> 'Admin',
+	'user'		=> 'User',
+	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
+	'interlets'	=> 'Interlets', 
+);
+
+$status_ary = array(
+	0	=> 'Gedesactiveerd',
+	1	=> 'Actief',
+	2	=> 'Uitstapper',
+	//3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
+	//4 => 'Secretariaat, // not used 
+	5	=> 'Info-pakket',
+	6	=> 'Info-moment',
+	7	=> 'Extern',
+);
+
+$access_ary = array(
+	'admin'		=> 0,
+	'user'		=> 1,
+	'guest'		=> 2,
+	'anonymous'	=> 3,
+);
+
+$acc_ary = array(
+	0	=> array('admin', 'info'),
+	1	=> array('leden', 'warning'),
+	2	=> array('interlets', 'success'),
+);
+
+$access_options = array(
+	'0'	=> 'admin',
+	'1'	=> 'leden',
+	'2' => 'interlets',
+);
+
 /*
  * get session name from environment variable ELAS_SCHEMA_<domain>
  * dots in <domain> are replaced by double underscore __
@@ -101,95 +158,98 @@ $p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
 $p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
 $p_schema = (isset($_GET['s'])) ? $_GET['s'] : false; 
 
+$access_request = $access_ary[$p_role];
+$access_page = $access_ary[$role];
+
+if (!isset($access_page))
+{
+	http_response_code(500);
+	include $rootpath . 'tpl/500.html';
+	exit;
+}
+
+$access_session = (isset($_SESSION['accountrole'])) ? $access_ary[$_SESSION['accountrole']] : 3;
+
+if ($access_request < $access_session)
+{
+	// redirect : set params to session level
+	$access_level = $access_session;
+	$level_ary = array_flip($access_ary);
+	$p_role = $level_ary[$access_level];
+	$p_user = ($access_level < 2) ? $_SESSION['id'] : false;
+	if ($p_role == 'guest' && isset($_SESSION['interlets']))
+	{
+		$p_user = $_SESSION['interlets']['id'];
+		$p_schema = $_SESSION['interlets']['schema'];
+	}
+
+	if ($access_level > 2)
+	{
+		redirect_login();
+	}
+
+	if ($access_level < $access_page)
+	{
+		redirect_index();
+	}
+
+	redirect();
+}
+else
+{
+	$access_level = $access_request;
+}
+
+if ((!isset($allow_anonymous_post) && ($access_level > 2) && $post)
+	|| (!isset($allow_guest_post) && ($access_level > 3) && $post))
+{
+	http_response_code(403);
+	include $rootpath . 'tpl/403.html';
+	exit;
+}
+
+if ((($access_level > 2) && ($access_session < 3))
+	|| (($access_level > 2) && ($access_page < 3))
+	|| (($access_level < 3) && ($access_page > 2))
+	|| (($access_session < 3) && ($access_page > 2))
+	|| (($access_level < 2) && (!$p_user || ($p_user != $_SESSION['id'])))
+	|| (($access_level == 2) && ($p_user || $p_schema)
+		&& (!$p_user || !$p_schema
+			|| $p_user != $_SESSION['interlets']['id']
+			|| $p_schema != $_SESSION['interlets']['schema']))
+	|| (($access_level < 2) && $p_schema))
+{
+	session_destroy();
+	$cookie_params = session_get_cookie_params();
+	setcookie(session_name(), '', 0, $cookie_params['path'], $cookie_params['domain'],
+		$cookie_params['secure'], $cookie_params['httponly']);
+	$_SESSION = array();
+	redirect_login();
+} 
+
+if ($access_level > $access_page)
+{
+	$alert->error('Je hebt geen toegang tot deze pagina.');
+	redirect_index();
+	$q = get_session_query_param();
+	header ('Location: ' . $rootpath . 'index.php' . (($q) ? '?' . $q : ''));
+	exit;
+}
+
 $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
 $s_letscode = $_SESSION['letscode'];
-$s_accountrole = $_SESSION['accountrole'];
-$s_rights = $_SESSION['rights'];
+$s_accountrole = $p_role;
 $s_interlets = $_SESSION['interlets'];
-
-$role_ary = array(
-	'admin'		=> 'Admin',
-	'user'		=> 'User',
-	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
-	'interlets'	=> 'Interlets', 
-);
-
-$status_ary = array(
-	0	=> 'Gedesactiveerd',
-	1	=> 'Actief',
-	2	=> 'Uitstapper',
-	//3	=> 'Instapper', // not used, determine new users with adate and config 'newuserdays'
-	//4 => 'Secretariaat, // not used 
-	5	=> 'Info-pakket',
-	6	=> 'Info-moment',
-	7	=> 'Extern',
-);
-
-$access_ary = array(
-	'admin'		=> 0,
-	'user'		=> 1,
-	'guest'		=> 2,
-	'anonymous'	=> 3,
-);
-
-$acc_ary = array(
-	0	=> array('admin', 'info'),
-	1	=> array('leden', 'warning'),
-	2	=> array('interlets', 'success'),
-);
-
-$access_options = array(
-	'0'	=> 'admin',
-	'1'	=> 'leden',
-	'2' => 'interlets',
-);
-
-$access_level = (isset($access_ary[$s_accountrole])) ? $access_ary[$s_accountrole] : 3;
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
-$s_anonymous = ($s_accountrole == 'anonymous') ? true : false;
+$s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
-if (!isset($role) || !$role || (!in_array($role, array('admin', 'user', 'guest', 'anonymous'))))
-{
-	http_response_code(500);
-	include $rootpath . '500.html';
-	exit;
-}
-
-if ($role != 'anonymous' && (!isset($s_id) || !$s_accountrole || !$s_name))
-{
-	header('Location: ' . $rootpath . 'login.php?location=' . urlencode($_SERVER['REQUEST_URI']));
-	exit;
-}
-
-if ($role == 'admin' && !$s_admin)
-{
-	$alert->error('Je hebt onvoldoende rechten voor deze pagina');
-	header('Location: ' . $rootpath);
-	exit;
-}
-
-if ((!isset($allow_anonymous_post) && $s_anonymous && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| (!isset($allow_guest_post) && $s_guest && $_SERVER['REQUEST_METHOD'] != 'GET')
-	|| ($role == 'user' && !($s_admin || $s_user))
-	|| ($role == 'guest' && !($s_admin || $s_user || $s_guest)))
-{
-	http_response_code(403);
-	include $rootpath . '403.html';
-	exit;
-}
-
-/*
+/**
  *
  */
-
-$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
-$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
-
 require_once $rootpath . 'includes/elas_mongo.php';
 
 $elas_mongo = new elas_mongo($schema);
@@ -219,25 +279,150 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
 /*
- * vars
+ * create links with query parameters depending on user and role
  */
 
-$elas_heroku_config = array(
-	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
-	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
-	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
-	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
-	'docs_en'					=> array('0', 'Documenten ingeschakeld [0, 1]'),
-	'css'						=> array('', 'Extra stijl: url van .css bestand'),
-);
+function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
+{
+	$out = '<a href="' .  generate_url($entity, $params) . '"';
+	$out .= ($class) ? ' class="' . $class . '"' : '';
+	$out .= ($title) ? ' title="' . $title . '"' : '';
+	if (is_array($attr))
+	{
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
+	}
+	$out .= '>';
+	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
+	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
+	$out .= (is_array($label)) ? $label[0] : htmlspecialchars($label, ENT_QUOTES);
+	$out .= ($collapse) ? '</span>' : '';
+	$out .= '</a>';
+	return $out;
+}
 
-$top_right = '';
-$top_buttons = '';
+/**
+ * generate session url
+ */
+function generate_url($entity = '', $params = '')
+{
+	global $rootpath;
+
+	if (is_array($params))
+	{
+		$params = http_build_query($params);
+	}
+
+	$q = get_session_query_param();
+	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
+
+	return $rootpath . $entity . '.php' . $params;
+}
+
+/**
+ * get session query param
+ */
+
+function get_session_query_param()
+{
+	global $p_role, $p_user, $p_schema, $access_level;
+	static $q;
+
+	if (isset($q))
+	{
+		return $q;
+	}
+
+	$q = array();
+
+	if ($p_role != 'anonymous')
+	{
+		$q['r'] = $p_role;
+
+		if ($access_level < 2)
+		{
+			$q['u'] = $p_user;
+		}
+		else if ($access_level == 2 && $p_schema)
+		{
+			$q['u'] = $p_user;
+			$q['s'] = $p_schema;
+		}
+	}
+
+	return $q = http_build_query($q);
+}
+
+/**
+ *
+ */
+function redirect_index()
+{
+	global $rootpath;
+	$q = get_session_query_param();
+	header ('Location: ' . $rootpath . 'index.php' . (($q) ? '?' . $q : ''));
+	exit;
+}
+
+/**
+ *
+ */
+function redirect_login()
+{
+	global $rootpath;
+	$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+	$get = $_GET;
+	unset($get['u'], $get['s'], $get['r']);
+	$query_string = http_build_query($get);
+	$location .= ($query_string == '') ? '' : '?' . $query_string;
+	header('Location: ' . $rootpath . 'login.php?location=' . urlencode($location));
+	exit;
+}
+
+/**
+ *
+ */
+function redirect($location = false)
+{
+	if ($location)
+	{
+		parse_str(parse_url($location, PHP_URL_QUERY), $get);
+	}
+	else
+	{
+		$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$get = $_GET;
+	}
+	unset($get['u'], $get['s'], $get['r']);
+	$get = http_build_query($get);
+	$q = get_session_query_param();
+	$get = ($get == '') ? (($q == '') ? '' : '?' . $q) : '?' . $get . (($q == '') ? '' : '&' . $q);
+	header('Location: ' . $location . $get);
+	exit;
+}
+
+/**
+ *
+ */
+
+function link_user($user, $render = null, $link = true, $show_id = false)
+{
+	global $rootpath;
+	$user = (is_array($user)) ? $user : readuser($user);
+	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
+	$str = htmlspecialchars($str, ENT_QUOTES);
+	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
+	$str = ($link) ? aphp('users', 'id=' . $user['id'], $str) : $str;
+	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
+	return $str;
+}
 
 /*
- * functions
+ *
  */
- 
+
 function readconfigfromdb($key)
 {
     global $db, $schema, $redis;
@@ -500,32 +685,6 @@ function render_select_options($option_ary, $selected, $print = true)
 /**
  *
  */
-
-function link_user($user, $render = null, $link = true, $show_id = false)
-{
-	global $rootpath;
-	$user = (is_array($user)) ? $user : readuser($user);
-	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
-	$str = htmlspecialchars($str, ENT_QUOTES);
-	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
-	$str = ($link) ? aphp('users', 'id=' . $user['id'], $str) : $str;
-	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
-	return $str;
-}
-
-/**
- *
- */
-function redirect_index()
-{
-	global $rootpath;
-	header ('Location: ' . $rootpath . 'index.php');
-	exit;
-}
-
-/**
- *
- */
 function get_schemas_domains($http = false)
 {
 	global $db;
@@ -580,53 +739,4 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 
 	$redis->set($key, serialize($ary));
 	$redis->expire($key, 86400);
-}
-
-/*
- * this function creates the links with correct query parameters (depending on user and role)
- */
-
-function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
-{
-	global $rootpath, $s_id, $s_interlets, $s_accountrole;
-
-	if (is_array($params))
-	{
-		$params = http_build_query($params);
-	}
-	$q = array();
-	if ($s_accountrole != 'anonymous')
-	{
-		$q['r'] = $s_accountrole;
-
-		if ($s_id)
-		{
-			$q['u'] = $s_id;
-		}
-		else if ($s_interlets)
-		{
-			$q['u'] = $s_interlets['id'];
-			$q['s'] = $s_interlets['schema'];
-		}
-	}
-	$q = http_build_query($q);
-	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
-
-	$out = '<a href="' . $rootpath . $entity . '.php' . $params . '"';
-	$out .= ($class) ? ' class="' . $class . '"' : '';
-	$out .= ($title) ? ' title="' . $title . '"' : '';
-	if (is_array($attr))
-	{
-		foreach ($attr as $name => $val)
-		{
-			$out .= ' ' . $name . '="' . $val . '"';
-		}
-	}
-	$out .= '>';
-	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
-	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-	$out .= (is_array($label)) ? $label[0] : htmlspecialchars($label, ENT_QUOTES);
-	$out .= ($collapse) ? '</span>' : '';
-	$out .= '</a>';
-	return $out;
 }

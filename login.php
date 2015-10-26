@@ -8,7 +8,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if ($s_id)
 {
-	header('Location: index.php');
+	header('Location: ' . generate_url('index'));
 	exit;
 }
 
@@ -16,10 +16,8 @@ $token = $_GET['token'];
 $login = $_GET['login'];
 $location = $_GET['location'];
 $location = ($location) ? urldecode($location) : 'index.php';
-$location = ($location == 'login.php') ? 'index.php' : $location;
+$location = (strpos($location, 'login.php')) ? 'index.php' : $location;
 $location = ($location == 'logout.php') ? 'index.php' : $location;
-$admin_modus = (strpos($location, '&admin=1') === false) ? false : true;
-$location = str_replace('&admin=1', '', $location);
 $error_location = 'login.php?location=' . urlencode($location);
 
 if(!empty($token))
@@ -30,8 +28,9 @@ if(!empty($token))
 		$_SESSION['id'] = 0;
 		$_SESSION['letscode'] = '-';
 		$_SESSION['accountrole'] = 'guest';
-		$_SESSION['rights'] = 'guest';
 		$_SESSION['type'] = 'interlets';
+
+		$param = 'r=guest';
 
 		if ($interlets != '1')
 		{
@@ -39,6 +38,7 @@ if(!empty($token))
 
 			$_SESSION['interlets'] = $interlets;
 			$_SESSION['name'] = 'letsgast: ' . $interlets['systemtag'] . '.' . $interlets['letscode'] . ' ' . $interlets['name'];
+			$param .= '&u=' . $interlets['id'] . '&schema=' . $interlets['schema'];
 		}
 		else
 		{
@@ -47,7 +47,8 @@ if(!empty($token))
 
 		log_event(0, 'Login', 'Guest login (' . $_SESSION['name'] . ') using token ' . $token . ' succeeded');
 		$alert->success($_SESSION['name'] . ' ingelogd');
-		header('Location: ' . $location);
+		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		header('Location: ' . $location . $glue . $param);
 		exit;
 	}
 	else
@@ -81,14 +82,14 @@ if ($_POST['zend'])
 		$_SESSION['user_postcode'] = '0000';
 		$_SESSION['letscode'] = '000000';
 		$_SESSION['accountrole'] = 'admin';
-		$_SESSION['rights'] = 'admin';
 		$_SESSION['userstatus'] = 1;
 		$_SESSION['email'] = '';
 		$_SESSION['lang'] = 'nl';
 		$_SESSION['type'] = 'master';
 		log_event(0,'Login','Master user ' . $user['login'] . ' logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
-		header('Location: ' . $location);
+		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		header('Location: ' . $location . $glue . 'r=admin&u=0');
 		exit;
 	}
 
@@ -173,25 +174,13 @@ if ($_POST['zend'])
 			$alert->error('Het account beschikt niet over de juiste rechten.');
 		}
 
-		if(!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
+		if (!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
 		{
 			$errors[] = 'De website is in onderhoud, probeer later opnieuw';
 		}
 
 		if (!count($errors))
 		{
-			$accountrole = $user['accountrole'];
-
-			if ($accountrole == 'admin')
-			{
-				$accountrole = 'user';
-
-				if ($admin_modus)
-				{
-					$accountrole = 'admin';
-				}
-			}
-
 			session_start();
 			$_SESSION['id'] = $user['id'];
 			$_SESSION['name'] = $user['name'];
@@ -199,8 +188,7 @@ if ($_POST['zend'])
 			$_SESSION['login'] = $user['login'];
 			$_SESSION['postcode'] = $user['postcode'];
 			$_SESSION['letscode'] = $user['letscode'];
-			$_SESSION['accountrole'] = $accountrole;
-			$_SESSION['rights'] = $user['accountrole'];
+			$_SESSION['accountrole'] = $user['accountrole'];
 			$_SESSION['userstatus'] = $user['status'];
 			$_SESSION['lang'] = $user['lang'];
 			$_SESSION['type'] = 'local';
@@ -208,15 +196,13 @@ if ($_POST['zend'])
 			$browser = $_SERVER['HTTP_USER_AGENT'];
 			log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
 			log_event($user['id'],'Agent', $browser);
-			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $s_id));
+			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
 			$alert->success('Je bent ingelogd.');
-			header('Location: ' . $location);
+			$glue = (strpos($location, '?') === false) ? '?' : '&';
+			//$role = (($user['accountrole'] == 'admin') && $redis->get($schema . '_admin_modus_' . $user['id'])) ? 'admin' : 'user';
+			header('Location: ' . $location . $glue . 'r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
 			exit;
 		}
-	}
-	else
-	{
-		$errors[] = 'Login gefaald.';
 	}
 
 	$alert->error(implode('<br>', $errors));

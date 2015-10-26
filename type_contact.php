@@ -30,8 +30,7 @@ if ($add)
 				$alert->error('Fout bij het opslaan');
 			}
 
-			header('Location: ' . $rootpath . 'type_contact.php');
-			exit;
+			cancel();
 		}
 
 		$alert->error('Corrigeer één of meerdere velden.');
@@ -80,8 +79,8 @@ if ($edit)
 	if (in_array($tc_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 	{
 		$alert->warning('Beschermd contact type.');
-		header('Location: ' . $rootpath . 'type_contact.php');
-		exit;	
+
+		cancel();
 	}
 
 	if(isset($_POST['zend']))
@@ -100,8 +99,8 @@ if ($edit)
 			if ($db->update('type_contact', $tc, array('id' => $edit)))
 			{
 				$alert->success('Contact type aangepast.');
-				header('Location: ' . $rootpath . 'type_contact.php');
-				exit;
+
+				cancel();
 			}
 			else
 			{
@@ -161,15 +160,13 @@ if ($del)
 	if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
 	{
 		$alert->warning('Beschermd contact type.');
-		header('Location: ' . $rootpath . 'type_contact.php');
-		exit;
+		cancel();
 	}
 
 	if ($db->fetchColumn('select id from contact where id_type_contact = ?', array($del)))
 	{
 		$alert->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
-		header('Location: ' . $rootpath . 'type_contact.php');
-		exit;
+		cancel();
 	}
 
 	if(isset($_POST['zend']))
@@ -182,9 +179,8 @@ if ($del)
 		{
 			$db->error('Fout bij het verwijderen.');
 		}
-		
-		header('Location: ' . $rootpath . 'type_contact.php');
-		exit;
+
+		cancel();
 	}
 
 	$h1 = 'Contact type verwijderen: ' . $ct['name'];
@@ -283,3 +279,10 @@ echo '<p>Kunnen niet verwijderd worden: ';
 echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</p>';
 
 include $rootpath . 'includes/inc_footer.php';
+
+function cancel($id = '')
+{
+	$id = ($id) ? 'id=' . $id : '';
+	header('Location: ' . generate_url('type_contact', $id));
+	exit;
+}

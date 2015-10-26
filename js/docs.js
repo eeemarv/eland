@@ -1,6 +1,6 @@
 var map_names = new Bloodhound({
 	prefetch: {
-		url : './ajax/doc_map_names.php',
+		url : $('#map_name').data('url'),
 		cache : false
 	},
 	datumTokenizer: Bloodhound.tokenizers.whitespace,
