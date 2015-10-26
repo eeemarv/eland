@@ -170,7 +170,9 @@ if (!isset($access_page))
 
 $access_session = (isset($_SESSION['accountrole'])) ? $access_ary[$_SESSION['accountrole']] : 3;
 
-if ($access_request < $access_session)
+if (($access_request < $access_session)
+	|| (($access_request > 2) && ($access_session < 3) && ($access_page < 3))
+)
 {
 	// redirect : set params to session level
 	$access_level = $access_session;
@@ -188,7 +190,7 @@ if ($access_request < $access_session)
 		redirect_login();
 	}
 
-	if ($access_level < $access_page)
+	if ($access_level > $access_page)
 	{
 		redirect_index();
 	}
@@ -210,7 +212,7 @@ if ((!isset($allow_anonymous_post) && ($access_level > 2) && $post)
 
 if ((($access_level > 2) && ($access_session < 3))
 	|| (($access_level > 2) && ($access_page < 3))
-	|| (($access_level < 3) && ($access_page > 2))
+	|| (($access_level < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
 	|| (($access_session < 3) && ($access_page > 2))
 	|| (($access_level < 2) && (!$p_user || ($p_user != $_SESSION['id'])))
 	|| (($access_level == 2) && ($p_user || $p_schema)
@@ -360,9 +362,7 @@ function get_session_query_param()
  */
 function redirect_index()
 {
-	global $rootpath;
-	$q = get_session_query_param();
-	header ('Location: ' . $rootpath . 'index.php' . (($q) ? '?' . $q : ''));
+	header ('Location: ' . generate_url('index'));
 	exit;
 }
 

@@ -1,6 +1,5 @@
 <?php
 $rootpath = './';
-$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $id = ($_GET['id']) ?: false;
 $del = ($_GET['del']) ?: false;
@@ -18,8 +17,6 @@ $inline = ($_GET['inline']) ? true : false;
 
 $q = ($_GET['q']) ?: '';
 $hsh = ($_GET['hsh']) ?: '';
-
-$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
@@ -1789,8 +1786,9 @@ if ($id)
 	$user_img = ($show_img) ? '' : ' style="display:none;"';
 	$no_user_img = ($show_img) ? ' style="display:none;"' : '';
 
+	$img_src = ($user['PictureFile']) ? $bucket_url . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
 	echo '<img id="user_img"' . $user_img . ' class="img-rounded img-responsive center-block" ';
-	echo 'src="' . $bucket_url . $user['PictureFile'] . '" ';
+	echo 'src="' . $img_src . '" ';
 	echo 'data-bucket-url="' . $bucket_url . '"></img>';
 
 	echo '<div id="no_user_img"' . $no_user_img . '>';
@@ -1804,13 +1802,13 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
 		echo '<input id="fileupload" type="file" name="image" ';
-		echo 'data-url="' . $rootpath . 'users.php?img=1&id=' . $id . '" ';
+		echo 'data-url="' . generate_url('users', 'img=1&id=' . $id) . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" data-image-max-width="400" ';
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
-		echo '<span data-url="' . $rootpath . 'users.php?img_del=1&id=' . $id . '" class="btn btn-danger" ';
+		echo '<span data-url="' . generate_url('users', 'img_del=1&id=' . $id) . '" class="btn btn-danger" ';
 		echo 'id="btn_remove"' . $user_img . '>';
 		echo '<i class="fa fa-times"></i> Foto verwijderen</span>';
 		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';

@@ -408,7 +408,8 @@ if ($img_del == 'all' && $id)
 		echo '<img src="' . $a_img . '" class="img-rounded">';
 
 		echo '<div class="caption">';
-        echo '<span class="btn btn-danger" data-img-del="' . $img_id . '" role="button">';
+        echo '<span class="btn btn-danger" data-img-del="' . $img_id . '" ';
+        echo 'data-url="' . generate_url('messages', 'img_del=' . $img_id) . '" role="button">';
         echo '<i class="fa fa-times"></i> ';
         echo 'Verwijderen</span>';
 		echo '</div>';
@@ -1101,7 +1102,7 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
-		echo 'data-url="' . $rootpath . 'messages.php?img=1&id=' . $id . '" ';
+		echo 'data-url="' . generate_url('messages', 'img=1&id=' . $id) . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';

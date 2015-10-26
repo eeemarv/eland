@@ -11,8 +11,6 @@ $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $add = (isset($_GET['add'])) ? true : false;
 $add_schema = (isset($_GET['add_schema'])) ? $_GET['add_schema'] : false;
 
-$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
-
 $submit = (isset($_POST['zend'])) ? true : false;
 
 if (($id || $edit || $del || $add) && !$s_admin)
@@ -466,7 +464,7 @@ if ($login)
 		}
 	}
 
-	echo '<script>setTimeout(function(){location.href = "' . $rootpath . 'interlets.php";}, 1000);</script>';
+	echo '<script>setTimeout(function(){location.href = "' . generate_url('interlets') . '";}, 1000);</script>';
 	exit;
 }
 
@@ -489,8 +487,6 @@ if ($s_admin)
 		if ($schemas[$g['url']])
 		{
 			$groups[$key]['server'] = true;
-//			$groups_domains[$domain] = $sch;
-//			$groups_schemas[$sch] = $domain;
 		}
 	}
 
@@ -634,7 +630,7 @@ function render_schemas_groups()
 
 	list($schemas, $domains) = get_schemas_domains(true);
 
-	$loc_url_ary = $loc_letscode_ary = array();
+	$loc_url_ary = $loc_letscode_ary = $loc_interlets_account_ary = array();
 
 	$letsgroups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
@@ -645,23 +641,18 @@ function render_schemas_groups()
 	foreach ($letsgroups as $l)
 	{
 		$loc_letscode_ary[] = $l['localletscode'];
-		$loc_url_ary[$l['url']] = array(
-			'id'		=> $l['id'],
-			'letscode'	=> $l['localletscode'],
-		);
+		$loc_url_ary[$l['url']] = $l;
 	}
 
-	$interlets_accounts = $db->executeQuery('select id, letscode, accountrole, status
+	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
 		from users
-		where status in (1, 2, 7)
-			and accountrole = \'interlets\'
-			and letscode in (?)',
+		where letscode in (?)',
 		array($loc_letscode_ary),
 		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
 
 	foreach ($interlets_accounts as $u)
 	{
-
+		$loc_interlets_account_ary[$u['letscode']] = $u;
 	}
 
 
@@ -718,10 +709,9 @@ function render_schemas_groups()
 		else
 		{
 			echo '<td>';
-			if (is_array($loc_url_ary[$url]))
+			if (is_array($loc_group =  $loc_url_ary[$d]))
 			{
-				$loc = $loc_url_ary[$url];
-				echo aphp('interlets', 'id=' . $loc['id'], 'OK', 'btn btn-success btn-xs');
+				echo aphp('interlets', 'id=' . $loc_group['id'], 'OK', 'btn btn-success btn-xs');
 			}
 			else
 			{
@@ -729,6 +719,35 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
+			if ($loc_group)
+			{
+				if (is_array($loc_acc = $loc_interlets_account_ary[$loc['localletscode']]))
+				{
+					if ($loc_acc['accountrole'] != 'interlets')
+					{
+						echo aphp('users', 'edit=' . $loc_account['id'], 'rol', 'btn btn-warning btn-xs',
+							'De rol van het account moet van het type interlets zijn.');
+					}
+					else if (!in_array($loc_acc['status'], array(1, 2, 7)))
+					{
+						echo aphp('users', 'edit=' . $loc_account['id'], 'status', 'btn btn-warning btn-xs',
+							'De status van het account moet actief, uitstapper of extern zijn.');
+					}
+					else
+					{
+						echo aphp('users', 'id=' . $loc_account['id'], 'OK', 'btn btn-success btn-xs');
+					}
+				}
+				else
+				{
+					echo aphp('users', 'add=1&interlets=' . $loc_group['localletscode'], 'Creëer', 'btn btn-default btn-xs text-danger',
+						'Creëer een interlets-account met gelijke letscode en status extern.');
+				}
+			}
+			else
+			{
+				echo '<i class="fa fa-times"></i>';
+			}
 			echo '</td>';
 			echo '<td>';
 			echo '</td>';

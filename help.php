@@ -2,6 +2,9 @@
 
 $rootpath = './';
 $role = 'anonymous';
+$allow_session_on_anonymous_page = true;
+$allow_anonymous_post = true;
+
 require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))

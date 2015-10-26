@@ -6,7 +6,7 @@ $(function () {
 
 		btn.find('i').removeClass('fa-times').addClass('fa-spin fa-spinner');
 
-		$.post('messages.php?img_del=' + $(this).data('img-del'), {}, function(data) {
+		$.post(btn.data('url'), {}, function(data) {
 
 			if (data.success)
 			{

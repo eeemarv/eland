@@ -17,8 +17,6 @@ $map_edit = $_GET['map_edit'];
 $submit = ($_POST['zend']) ? true : false;
 $confirm_del = ($_POST['confirm_del']) ? true : false;
 
-$post = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
-
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
 if (!readconfigfromdb('docs_en'))
