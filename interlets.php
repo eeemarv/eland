@@ -548,7 +548,7 @@ foreach($groups as $g)
 		$user = $users_letscode[$g['localletscode']];
 		if ($user)
 		{
-			echo aphp('users', 'id=' . $users['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+			echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
 			if (!in_array($user['status'], array(1, 2, 7)))
 			{
 				echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
@@ -626,11 +626,12 @@ include $rootpath . 'includes/inc_footer.php';
 
 function render_schemas_groups()
 {
-	global $schema, $db;
+	global $schema, $db, $base_url;
 
 	list($schemas, $domains) = get_schemas_domains(true);
 
-	$loc_url_ary = $loc_letscode_ary = $loc_interlets_account_ary = array();
+	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
+	$rem_group_ary =  $rem_account_ary = array();
 
 	$letsgroups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
@@ -641,7 +642,7 @@ function render_schemas_groups()
 	foreach ($letsgroups as $l)
 	{
 		$loc_letscode_ary[] = $l['localletscode'];
-		$loc_url_ary[$l['url']] = $l;
+		$loc_group_ary[$l['url']] = $l;
 	}
 
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
@@ -652,9 +653,31 @@ function render_schemas_groups()
 
 	foreach ($interlets_accounts as $u)
 	{
-		$loc_interlets_account_ary[$u['letscode']] = $u;
+		$loc_account_ary[$u['letscode']] = $u;
 	}
 
+	foreach ($schemas as $d => $s)
+	{
+		$rem_group = $db->fetchAssoc('select localletscode, url, id
+			from ' . $s . '.letsgroups
+			where url = ?', array($base_url));
+
+		if ($rem_group)
+		{
+			$rem_group_ary[$d] = $rem_group;
+
+			if ($rem_group['localletscode'])
+			{
+				$rem_account = $db->fetchAssoc('select id, letscode, status, accountrole
+					from ' . $s . '.users where letscode = ?', array($rem_group['localletscode']));
+
+				if ($rem_account)
+				{
+					$rem_account_ary[$d] = $rem_account;
+				}
+			}
+		}
+	}
 
 	echo '<p><small><i><ul>';
 	echo '<li>In eLAS-Heroku is het niet langer nodig een \'internal\' groep aan te maken ';
@@ -709,7 +732,7 @@ function render_schemas_groups()
 		else
 		{
 			echo '<td>';
-			if (is_array($loc_group =  $loc_url_ary[$d]))
+			if (is_array($loc_group =  $loc_group_ary[$d]))
 			{
 				echo aphp('interlets', 'id=' . $loc_group['id'], 'OK', 'btn btn-success btn-xs');
 			}
@@ -721,21 +744,21 @@ function render_schemas_groups()
 			echo '<td>';
 			if ($loc_group)
 			{
-				if (is_array($loc_acc = $loc_interlets_account_ary[$loc['localletscode']]))
+				if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
-						echo aphp('users', 'edit=' . $loc_account['id'], 'rol', 'btn btn-warning btn-xs',
+						echo aphp('users', 'edit=' . $loc_acc['id'], 'rol', 'btn btn-warning btn-xs',
 							'De rol van het account moet van het type interlets zijn.');
 					}
 					else if (!in_array($loc_acc['status'], array(1, 2, 7)))
 					{
-						echo aphp('users', 'edit=' . $loc_account['id'], 'status', 'btn btn-warning btn-xs',
+						echo aphp('users', 'edit=' . $loc_acc['id'], 'status', 'btn btn-warning btn-xs',
 							'De status van het account moet actief, uitstapper of extern zijn.');
 					}
 					else
 					{
-						echo aphp('users', 'id=' . $loc_account['id'], 'OK', 'btn btn-success btn-xs');
+						echo aphp('users', 'id=' . $loc_acc['id'], 'OK', 'btn btn-success btn-xs');
 					}
 				}
 				else
@@ -746,16 +769,45 @@ function render_schemas_groups()
 			}
 			else
 			{
-				echo '<i class="fa fa-times"></i>';
+				echo '<i class="fa fa-times text-danger"></i>';
 			}
 			echo '</td>';
 			echo '<td>';
+			if ($rem_group_ary[$d])
+			{
+				echo '<span class="btn btn-success btn-xs">OK</span>';
+			}
+			else
+			{
+				echo '<i class="fa fa-times text-danger"></i>';
+			}
 			echo '</td>';
 			echo '<td>';
+			if ($rem_acc = $rem_account_ary[$d])
+			{
+				if ($loc_acc['accountrole'] != 'interlets')
+				{
+					echo '<span class="btn btn-warning btn-xs" title="De rol van het account ';
+					echo 'moet van het type interlets zijn.">rol</span>';
+				}
+				else if (!in_array($rem_acc['status'], array(1, 2, 7)))
+				{
+					echo '<span class="btn btn-warning btn-xs" title="De status van het account ';
+					echo 'moet actief, uitstapper of extern zijn.">rol</span>';
+				}
+				else
+				{
+					echo '<span class="btn btn-success btn-xs">OK</span>';
+				}
+			}
+			else
+			{
+				echo '<i class="fa fa-times text-danger"></i>';
+			}
 			echo '</td>';
-		}
 
-		echo '</tr>';
+			echo '</tr>';
+		}
 	}
 	echo '</tbody>';
 	echo '</table>';
