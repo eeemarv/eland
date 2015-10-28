@@ -10,17 +10,7 @@ body,html
 }
 
 span, div.alert, ul, div.panel, .footer, div.navbar,
-#sidebar, .print-hide, button, a.csv
-{
-	display: none;
-}
-
-td > span
-{
-	display: inherit;
-}
-
-td > span.label
+#sidebar, .print-hide, button, a.csv, h3, h2, table td input, p
 {
 	display: none;
 }
@@ -36,9 +26,23 @@ table, th, td
 	border: 1px solid black;
 }
 
+table td
+{
+	padding: 5px;
+}
+
 table
 {
 	border-collapse: collapse;
 	width: 100%;
 }
 
+div.panel.printview, h3.printview, div.panel.printview > p
+{
+	display: block;
+}
+
+dd > span, dt > span, td > span
+{
+	display: inline;
+}

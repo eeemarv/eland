@@ -75,7 +75,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="panel panel-default">';
+echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-hover table-bordered table-striped footable">';

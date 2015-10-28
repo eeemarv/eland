@@ -301,7 +301,7 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
 	echo '<p>Bericht</p>';
@@ -310,7 +310,7 @@ if ($id)
 	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
 	echo '</div></div>';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 	
 	echo '<dl>';
@@ -371,7 +371,7 @@ $fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-warning">';
+echo '<div class="panel panel-warning printview">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable">';
 

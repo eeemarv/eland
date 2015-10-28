@@ -69,23 +69,20 @@ if (isset($_GET['zend']))
 $includejs = '
 	<script src="' . $cdn_datepicker . '"></script>
 	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $cdn_typeahead . '"></script>';
+	<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/csv.js"></script>';
 
 $includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
-$top_right = '<a href="' . $rootpath . 'reports/print_balance.php?date=';
-$top_right .= $date . '">';
-$top_right .= '<i class="fa fa-print"></i>&nbsp;print</a>&nbsp;&nbsp;';
-$top_right .= '<a href="' . $rootpath . 'reports/csv_balance.php?date=';
-$top_right .= $date . '" target="new">';
+$top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
-$top_right .= '&nbsp;csv</a>';
+$top_right .= '&nbsp;csv</a>&nbsp;';
 
 $h1 = 'Saldo op datum';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-info">';
+echo '<div class="panel panel-info printview">';
 echo '<div class="panel-heading">';
 
 echo '<form method="get">';
@@ -132,8 +129,10 @@ echo '</div>';
 echo '</div>';
 
 //show table
+echo '<div class="panel panel-info printview">';
+
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable"';
+echo '<table class="table table-bordered table-striped table-hover footable csv"';
 echo ' data-filter="#filter" data-filter-minimum="1">';
 echo '<thead>';
 
@@ -183,11 +182,6 @@ echo '</tbody>';
 echo '</table>';
 echo '</div>';
 echo '</div>';
-echo '</div>';
-
-
-
-
 
 //show_user_balance($users,$user_date,$user_prefix);
 

@@ -660,7 +660,7 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
 	echo '<dl class="dl-horizontal">';
@@ -862,7 +862,7 @@ else
 
 $pagination->render();
 
-echo '<div class="panel panel-primary">';
+echo '<div class="panel panel-primary printview">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable csv transactions" ';
 echo 'data-sort="false">';
@@ -1030,7 +1030,7 @@ if (count($interletsq))
 	echo '<span class="inline-buttons"> ' . $q_buttons . '</span>';
 	echo '</h3>';
 
-	echo '<div class="panel panel-warning">';
+	echo '<div class="panel panel-warning printview">';
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-hover table-striped table-bordered footable">';
 

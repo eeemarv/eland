@@ -233,7 +233,7 @@ if (!$edit)
 		{
 			$s_owner = (($p['uid'] == $s_id) && $s_id) ? true : false;
 
-			echo '<div class="panel panel-default">';
+			echo '<div class="panel panel-default printview">';
 
 			echo '<div class="panel-body">';
 			echo $p['content'];
@@ -279,7 +279,7 @@ if (!$edit)
 		echo '</div>';
 		echo '</div>';
 
-		echo '<div class="panel panel-default">';
+		echo '<div class="panel panel-default printview">';
 
 		echo '<div class="table-responsive">';
 		echo '<table class="table table-bordered table-striped table-hover footable"';

@@ -587,7 +587,7 @@ if ($del)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-info">';
+	echo '<div class="panel panel-info printview">';
 
 	echo '<div class="panel-heading">';
 
@@ -1123,7 +1123,7 @@ if ($id)
 //	echo '</div></div>';
 	echo '<div class="col-md-6">';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 	
 	echo '<p><b>Omschrijving</b></p>';
@@ -1141,7 +1141,7 @@ if ($id)
 	echo '</p>';
 	echo '</div></div>';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
 	echo '<dl>';
@@ -1429,7 +1429,8 @@ else
 	echo '</h3>';
 }
 
-echo '<div class="panel panel-info">';
+echo '<div class="panel panel-info printview">';
+
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-bordered footable csv" ';
 echo 'table-hover data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';

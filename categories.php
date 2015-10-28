@@ -263,7 +263,7 @@ $fa = 'clone';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-default">';
+echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';

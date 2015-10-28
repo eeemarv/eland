@@ -168,11 +168,11 @@ if($s_guest)
 
 if($news)
 {
-	echo '<h3>';
+	echo '<h3 class="printview">';
 	echo aphp('news', '', 'Nieuws', false, false, 'calendar');
 	echo '</h3>';
 
-	echo '<div class="panel panel-warning">';
+	echo '<div class="panel panel-warning printview">';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered">';
@@ -209,11 +209,11 @@ if($news)
 
 if($newusers)
 {
-	echo '<h3>';
+	echo '<h3 class="printview">';
 	echo aphp('users', '', 'Nieuwe leden', false, false, 'users');
 	echo '</h3>';
 
-	echo '<div class="panel panel-success">';
+	echo '<div class="panel panel-success printview">';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-bordered table-striped table-hover">';
@@ -238,11 +238,11 @@ if($newusers)
 
 if($msgs)
 {
-	echo '<h3>';
+	echo '<h3 class="printview">';
 	echo aphp('messages', '', 'Recent vraag en aanbod', false, false, 'newspaper-o');
 	echo '</h3>';
 
-	echo '<div class="panel panel-info">';
+	echo '<div class="panel panel-info printview">';
 
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-hover table-striped table-bordered footable">';

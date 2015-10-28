@@ -272,7 +272,7 @@ if ($id && !$login)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
 	echo '<dl class="dl-horizontal">';
@@ -515,7 +515,7 @@ $fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-primary">';
+echo '<div class="panel panel-primary printview">';
 
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';

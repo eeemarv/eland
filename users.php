@@ -1820,7 +1820,7 @@ if ($id)
 
 	echo '<div class="col-md-6">';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 	echo '<dl>';
 
@@ -1991,7 +1991,7 @@ if ($id)
 	echo $currency . '</h3>';
 	echo '</div></div>';
 
-	echo '<div class="row">';
+	echo '<div class="row print-hide">';
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv1" data-height="480px" data-width="960px" ';
 	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
@@ -2008,11 +2008,11 @@ if ($id)
 
 	echo '<div id="messages" data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
-	echo '&' . get_session_query_param() . '"></div>';
+	echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 
 	echo '<div id="transactions" data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
-	echo '&' . get_session_query_param() . '"></div>';
+	echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
@@ -2183,8 +2183,9 @@ echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<form method="post" class="form-horizontal">';
 
-echo '<div class="panel panel-success">';
+echo '<div class="panel panel-success printview">';
 echo '<div class="table-responsive">';
+
 echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr"';
 echo ' data-filter="#combined-filter" data-filter-minimum="1">';
 echo '<thead>';
@@ -2193,16 +2194,16 @@ echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
 echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
-echo '<th data-hide="phone, tablet">Rol</th>';
+echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
 echo '<th data-hide="phone">Saldo</th>';
 
 if ($s_admin)
 {
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
 	echo '<th data-hide="all">Min</th>';
 	echo '<th data-hide="all">Max</th>';
 	echo '<th data-hide="all">Ingeschreven</th>';
@@ -2252,11 +2253,11 @@ foreach($users as $u)
 		echo '<td>';
 		echo link_user($u, 'fullname');
 		echo '</td>';
-	}
 
-	echo '<td>';
-	echo $u['accountrole'];
-	echo '</td>';
+		echo '<td>';
+		echo $u['accountrole'];
+		echo '</td>';
+	}
 
 	echo '<td data-value="' . $hsh . '">';
 	echo render_contacts($contacts[$id]['tel']);
@@ -2273,10 +2274,6 @@ foreach($users as $u)
 	echo '</td>';
 
 	echo '<td>';
-	echo render_contacts($contacts[$id]['adr'], 'adr');
-	echo '</td>';
-
-	echo '<td>';
 	$balance = $u['saldo'];
 	$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
 	echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
@@ -2284,6 +2281,9 @@ foreach($users as $u)
 
 	if ($s_admin)
 	{
+		echo '<td>';
+		echo render_contacts($contacts[$id]['adr'], 'adr');
+		echo '</td>';
 
 		echo '<td>';
 		echo '<span class="label label-danger">' . $u['minlimit'] . '</span>';
