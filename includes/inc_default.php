@@ -310,11 +310,22 @@ function aphp($entity = '', $params = '', $label = '*link*', $class = false, $ti
  */
 function generate_url($entity = '', $params = '')
 {
-	global $rootpath;
+	global $rootpath, $alert;
 
 	if (is_array($params))
 	{
+		if ($alert->is_set())
+		{
+			$params['a'] = '1';
+		}
 		$params = http_build_query($params);
+	}
+	else
+	{
+		if ($alert->is_set())
+		{
+			$params .= ($params == '') ? 'a=1' : '&a=1'; 
+		}
 	}
 
 	$q = get_session_query_param();

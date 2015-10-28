@@ -2,6 +2,8 @@
 
 class alert
 {
+	private $send_once;
+
 	function add($type, $string)
 	{
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
@@ -48,6 +50,14 @@ class alert
 			echo '<span aria-hidden="true">&times;</span></button>';
 			echo $alert[1] . '</div></div></div>';
 		}
+	}
+
+	function is_set()
+	{
+		$is_set = (!isset($this->send_once) && isset($_SESSION['alert'])
+			&& is_array($_SESSION['alert']) && count($_SESSION['alert'])) ? true : false;
+		$this->send_once = true;
+		return $is_set;
 	}
 }
 
