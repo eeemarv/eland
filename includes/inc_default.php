@@ -213,7 +213,7 @@ if ((!isset($allow_anonymous_post) && ($access_level > 2) && $post)
 if ((($access_level > 2) && ($access_session < 3))
 	|| (($access_level > 2) && ($access_page < 3))
 	|| (($access_level < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
-	|| (($access_session < 3) && ($access_page > 2))
+	|| (($access_session < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
 	|| (($access_level < 2) && (!$p_user || ($p_user != $_SESSION['id'])))
 	|| (($access_level == 2) && ($p_user || $p_schema)
 		&& (!$p_user || !$p_schema
@@ -233,9 +233,6 @@ if ($access_level > $access_page)
 {
 	$alert->error('Je hebt geen toegang tot deze pagina.');
 	redirect_index();
-	$q = get_session_query_param();
-	header ('Location: ' . $rootpath . 'index.php' . (($q) ? '?' . $q : ''));
-	exit;
 }
 
 $s_id = $_SESSION['id'];

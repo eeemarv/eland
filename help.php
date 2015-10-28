@@ -70,7 +70,7 @@ if(isset($_POST['zend']))
 		if (!($return_message = helpmail($help)))
 		{
 			$alert->success('De support mail is verzonden.');
-			header('Location: ' . generate_url('index'));
+			header('Location: ' . generate_url(($s_anonymous) ? 'login' : 'index'));
 			exit;
 		}
 
@@ -175,11 +175,8 @@ if (!$s_id)
 
 include $rootpath . 'includes/inc_footer.php';
 
-
-
 function helpmail($help)
 {
-
 	global $rootpath, $s_id, $db;
 
 	$from = $help['mail'];

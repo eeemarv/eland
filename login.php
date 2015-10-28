@@ -24,13 +24,14 @@ if(!empty($token))
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
-		session_start();
-		$_SESSION['id'] = 0;
-		$_SESSION['letscode'] = '-';
-		$_SESSION['accountrole'] = 'guest';
-		$_SESSION['type'] = 'interlets';
+		$_SESSION = array(
+			'id'			=> 0,
+			'letscode'		=> '-',
+			'accountrole'	=> 'guest',
+			'type'			=> 'interlets',
+		);
 
-		$param = 'r=guest';
+		$param = 'a=1&r=guest';
 
 		if ($interlets != '1')
 		{
@@ -38,7 +39,7 @@ if(!empty($token))
 
 			$_SESSION['interlets'] = $interlets;
 			$_SESSION['name'] = 'letsgast: ' . $interlets['systemtag'] . '.' . $interlets['letscode'] . ' ' . $interlets['name'];
-			$param .= '&u=' . $interlets['id'] . '&schema=' . $interlets['schema'];
+			$param .= '&u=' . $interlets['id'] . '&s=' . $interlets['schema'];
 		}
 		else
 		{
@@ -47,6 +48,7 @@ if(!empty($token))
 
 		log_event(0, 'Login', 'Guest login (' . $_SESSION['name'] . ') using token ' . $token . ' succeeded');
 		$alert->success($_SESSION['name'] . ' ingelogd');
+
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
 		exit;
@@ -74,22 +76,23 @@ if ($_POST['zend'])
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
-		session_start();
-		$_SESSION['id'] = 0;
-		$_SESSION['name'] = 'master';
-		$_SESSION['fullname'] = 'eLAS Master';
-		$_SESSION['login'] = 'master';
-		$_SESSION['user_postcode'] = '0000';
-		$_SESSION['letscode'] = '000000';
-		$_SESSION['accountrole'] = 'admin';
-		$_SESSION['userstatus'] = 1;
-		$_SESSION['email'] = '';
-		$_SESSION['lang'] = 'nl';
-		$_SESSION['type'] = 'master';
+		$_SESSION = array(
+			'id'				=> 0,
+			'name'				=> 'master',
+			'fullname'			=> 'eLAS Master',
+			'login'				=> 'master',
+			'user_postcode'		=> '0000',
+			'letscode'			=> '000000',
+			'accountrole'		=> 'admin',
+			'userstatus'		=> 1,
+			'email'				=> '',
+			'lang'				=> 'nl',
+			'type'				=> 'master',
+		);
 		log_event(0,'Login','Master user ' . $user['login'] . ' logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
-		header('Location: ' . $location . $glue . 'r=admin&u=0');
+		header('Location: ' . $location . $glue . 'a=1&r=admin&u=0');
 		exit;
 	}
 
@@ -181,17 +184,18 @@ if ($_POST['zend'])
 
 		if (!count($errors))
 		{
-			session_start();
-			$_SESSION['id'] = $user['id'];
-			$_SESSION['name'] = $user['name'];
-			$_SESSION['fullname'] = $user['fullname'];
-			$_SESSION['login'] = $user['login'];
-			$_SESSION['postcode'] = $user['postcode'];
-			$_SESSION['letscode'] = $user['letscode'];
-			$_SESSION['accountrole'] = $user['accountrole'];
-			$_SESSION['userstatus'] = $user['status'];
-			$_SESSION['lang'] = $user['lang'];
-			$_SESSION['type'] = 'local';
+			$_SESSION = array(
+				'id'			=> $user['id'],
+				'name'			=> $user['name'],
+				'fullname'		=> $user['fullname'],
+				'login'			=> $user['login'],
+				'postcode'		=> $user['postcode'],
+				'letscode'		=> $user['letscode'],
+				'accountrole'	=> $user['accountrole'],
+				'userstatus'	=> $user['status'],
+				'lang'			=> $user['lang'],
+				'type'			=> 'local',
+			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];
 			log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
@@ -200,7 +204,7 @@ if ($_POST['zend'])
 			$alert->success('Je bent ingelogd.');
 			$glue = (strpos($location, '?') === false) ? '?' : '&';
 			//$role = (($user['accountrole'] == 'admin') && $redis->get($schema . '_admin_modus_' . $user['id'])) ? 'admin' : 'user';
-			header('Location: ' . $location . $glue . 'r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
+			header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
 			exit;
 		}
 	}
