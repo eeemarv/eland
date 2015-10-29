@@ -397,13 +397,13 @@ $docs = iterator_to_array($elas_mongo->docs->find($find));
 
 if (!$map)
 {
-	$docs = array_merge($maps, $docs);
+	//$docs = array_merge($maps, $docs);
 
 	foreach ($docs as &$d)
 	{
 		if ($d['map_id'])
 		{
-			$docs[$d['map_id']]['count']++;
+			$maps[$d['map_id']]['count']++;
 			unset($d);
 		}
 	}
@@ -429,7 +429,7 @@ $includejs = '<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/docs.js"></script>';
 
 $h1 = aphp('docs', '', 'Documenten');
-$h1 .= ($map) ? ': ' . $map_name : '';
+$h1 .= ($map) ? ': map "' . $map_name . '"' : '';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -452,6 +452,52 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+if (!$map)
+{
+	echo '<div class="panel panel-default printview">';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-bordered table-striped table-hover footable"';
+	echo ' data-filter="#q" data-filter-minimum="1">';
+	echo '<thead>';
+
+	echo '<tr>';
+	echo '<th data-sort-initial="true">Map</th>';
+	echo ($s_admin) ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
+	echo '</tr>';
+
+	echo '</thead>';
+	echo '<tbody>';
+
+	foreach($maps as $d)
+	{
+		if ($d['count'])
+		{
+			echo '<tr class="info">';
+			echo '<td>';
+			echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')', false, 'file');
+			echo '</td>';
+
+			if ($s_admin)
+			{
+				echo '<td>';
+				echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs');
+				echo '</td>';
+			}
+			echo '</tr>';
+
+			continue;
+		}
+
+		echo '</tr>';
+	}
+	echo '</tbody>';
+	echo '</table>';
+
+	echo '</div>';
+	echo '</div>';
+}
+
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
@@ -471,30 +517,6 @@ echo '<tbody>';
 
 foreach($docs as $d)
 {
-	if ($d['count'])
-	{
-		echo '<tr class="info">';
-		echo '<td>';
-		echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')', false, 'file');
-		echo '</td>';
-
-		echo ($s_guest) ? '' : '<td></td><td></td>';
-
-		if ($s_admin)
-		{
-			echo '<td>';
-			echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs');
-			echo '</td>';
-		}
-		echo '</tr>';
-
-		continue;
-	}
-	else if ($d['map_name'] || ($d['map_id'] && !$map))
-	{
-		continue;
-	}
-
 	$access = $acc_ary[$d['access']];
 
 	echo '<tr>';
@@ -522,8 +544,8 @@ foreach($docs as $d)
 		echo '</td>';
 	}
 	echo '</tr>';
-
 }
+
 echo '</tbody>';
 echo '</table>';
 
