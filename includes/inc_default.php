@@ -756,7 +756,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  */
 function etag_buffer($content)
 {
-	$last_modified_time = time('- 1 year'); 
+	global $post;
+
+	if ($post)
+	{
+		return $content;
+	}
+
 	$etag = crc32($content);
 
 	header('Cache-Control: private, no-cache');
@@ -771,7 +777,7 @@ function etag_buffer($content)
 	if ($if_none_match == $etag)
 	{ 
 		http_response_code(304);
-		return $etag;
+		return '';
 	}
 
 	return $content;
