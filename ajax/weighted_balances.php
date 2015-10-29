@@ -58,5 +58,6 @@ foreach ($balance as $user_id => $b)
 }
 
 header('Content-type: application/json');
+
 echo json_encode($weighted);
 exit;
