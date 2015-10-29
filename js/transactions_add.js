@@ -2,8 +2,9 @@ $("#letsgroup_id").find('option').each(function(){
 	$(this).data('users', new Bloodhound({
 		prefetch: {
 			url: $(this).data('url'),
-			ttl: 4320000,	// 50 days
-			thumbprint: $(this).data('thumbprint'),
+			cache: false,
+//			ttl: 4320000,	// 50 days
+//			thumbprint: $(this).data('thumbprint'),
 			filter: function(users){
 				return $.map(users, function(user){
 					return { 

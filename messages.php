@@ -905,7 +905,7 @@ if (($edit || $add))
 		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
+		echo 'data-letsgroup-id="self" '; //data-thumbprint="' . time() . '" ';
 		echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';

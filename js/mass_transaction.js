@@ -1,8 +1,9 @@
 var users = new Bloodhound({
 	prefetch: {
 		url: $('#to_letscode').data('url'),
-		ttl: 4320000,	// 50 days
-		thumbprint: $('#to_letscode').data('thumbprint'),
+		cache: false,
+//		ttl: 4320000,	// 50 days
+//		thumbprint: $('#to_letscode').data('thumbprint'),
 		filter: function(users){
 			return $.map(users, function(user){
 				return { 

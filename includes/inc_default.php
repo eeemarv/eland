@@ -756,7 +756,7 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  */
 function etag_buffer($content)
 {
-	global $post;
+	global $post, $redis;
 
 	if ($post)
 	{

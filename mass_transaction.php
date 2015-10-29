@@ -450,7 +450,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
-echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '">';
+echo 'data-letsgroup-id="self">'; //data-thumbprint="' . time() . '">';
 echo '</div>';
 echo '</div>';
 

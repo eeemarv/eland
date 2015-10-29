@@ -530,7 +530,7 @@ if ($add)
 		$letsgroup['id'] = 'self';
 	}
 
-	$thumbprint = getenv('ELAS_DEBUG') ? time() : round((time() / 900) * 900);
+	//$thumbprint = getenv('ELAS_DEBUG') ? time() : round((time() / 900) * 900);
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/transactions_add.js"></script>';
@@ -591,7 +591,7 @@ if ($add)
 	foreach ($letsgroups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
-		echo 'data-thumbprint="' . $thumbprint . '" ';
+//		echo 'data-thumbprint="' . $thumbprint . '" ';
 		echo 'data-url="' . $rootpath . 'ajax/active_users.php?letsgroup_id=' . $l['id'];
 		echo '&' . get_session_query_param() . '"';
 		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';

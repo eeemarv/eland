@@ -62,7 +62,7 @@ echo '<div class="form-group">';
 echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo ' data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
+echo 'data-letsgroup-id="self" '; //data-thumbprint="' . time() . '" ';
 echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';

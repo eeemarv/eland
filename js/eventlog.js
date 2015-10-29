@@ -3,8 +3,9 @@ var inputLetscode = $('input[name="letscode"]');
 var users = new Bloodhound({
 	prefetch: {
 		url: $('#letscode').data('url'),
-		ttl: 4320000,	// 50 days
-		thumbprint: $('#letscode').attr('data-thumbprint'),
+		cache: false,
+//		ttl: 4320000,	// 50 days
+//		thumbprint: $('#letscode').attr('data-thumbprint'),
 		filter: function(users){
 			return $.map(users, function(user){
 				return { 
