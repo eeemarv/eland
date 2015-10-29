@@ -7,4 +7,7 @@
 </IfModule>
 
 SetOutputFilter DEFLATE
-FileETag MTime Size
+
+<ifModule mod_headers.c>
+	Header set Connection keep-alive
+</ifModule>

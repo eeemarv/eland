@@ -5,6 +5,8 @@ if(!isset($rootpath))
 	$rootpath = '';
 }
 
+ob_start('etag_buffer');
+
 $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
 $base_url = $http . $_SERVER['SERVER_NAME'] . $port;
@@ -747,4 +749,30 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 
 	$redis->set($key, serialize($ary));
 	$redis->expire($key, 86400);
+}
+
+/**
+ *
+ */
+function etag_buffer($content)
+{
+	$last_modified_time = time('- 1 year'); 
+	$etag = crc32($content);
+
+	header('Cache-Control: private, no-cache');
+	header('Expires:');
+	header('Vary: If-None-Match',false);
+	header('Etag: "' . $etag . '"'); 
+
+    $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
+        trim(stripslashes($_SERVER['HTTP_IF_NONE_MATCH']), '"') : 
+        false ;
+
+	if ($if_none_match == $etag)
+	{ 
+		http_response_code(304);
+		return $etag;
+	}
+
+	return $content;
 }
