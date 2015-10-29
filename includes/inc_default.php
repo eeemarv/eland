@@ -768,13 +768,16 @@ function etag_buffer($content)
 	header('Cache-Control: private, no-cache');
 	header('Expires:');
 	header('Vary: If-None-Match',false);
-	header('Etag: "' . $etag . '"'); 
+	if ($content != '')
+	{
+		header('Etag: "' . $etag . '"');
+	}
 
     $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
         trim(stripslashes($_SERVER['HTTP_IF_NONE_MATCH']), '"') : 
         false ;
 
-	if ($if_none_match == $etag)
+	if ($if_none_match == $etag && $content)
 	{ 
 		http_response_code(304);
 		return '';
