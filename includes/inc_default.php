@@ -7,6 +7,9 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
+$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
+$script_name = str_replace('.php', '', $script_name);
+
 $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
 $base_url = $http . $_SERVER['SERVER_NAME'] . $port;
@@ -133,14 +136,11 @@ $access_options = array(
  *
  */
 
-if (!isset($schema))
-{
-	$schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
-	$schema = str_replace('-', '___', $schema);
-	$schema = str_replace(':', '____', $schema);
-	$schema = strtoupper($schema);
-	$schema = getenv('ELAS_SCHEMA_' . $schema);
-}
+$schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
+$schema = str_replace('-', '___', $schema);
+$schema = str_replace(':', '____', $schema);
+$schema = strtoupper($schema);
+$schema = getenv('ELAS_SCHEMA_' . $schema);
 
 if (!$schema)
 {
@@ -172,15 +172,74 @@ if (!isset($access_page))
 
 $access_session = (isset($_SESSION['accountrole'])) ? $access_ary[$_SESSION['accountrole']] : 3;
 
-if (($access_request < $access_session)
-	|| (($access_request > 2) && ($access_session < 3) && ($access_page < 3))
-)
+if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
+{
+	set_request_to_session();
+	redirect_login();
+}
+else if (($access_session > $access_page)
+	|| (($access_page == 3) && ($access_session < 3) && !isset($allow_session)))
+{
+	set_request_to_session();
+	redirect_index();
+}
+
+if ((($access_request != $access_session) && ($access_session > 1))
+	|| (($access_session < 2) && ($access_request == 3))
+	|| (($access_session == 1) && ($access_request == 0)))
+{
+	set_request_to_session();
+	redirect();
+}
+
+if (($access_request > $access_page) && ($access_page < 3))
+{
+	set_request_to_session();
+
+	if ($access_request > $access_page)
+	{
+		if ($access_page == 2)
+		{
+			redirect_login();
+		}
+		else
+		{
+			redirect_index();
+		}
+	}
+
+	redirect();
+}
+
+if (($access_page == 3) && ($access_request < 3) && !isset($allow_session))
+{
+	redirect_index();
+}
+
+$access_level = $access_request;
+
+
+/*
+if ((($p_role == 'guest' && ($p_user || $p_schema) && (!($p_schema && $p_user)))
+	|| ($p_user && $_SESSION['id'] && ($p_user != $_SESSION['id']))
+	|| ($p_schema && ($p_user != 'guest'))))
+{
+	set_request_to_session();
+	redirect();
+}
+*/
+
+
+
+/*
+if ($access_request < $access_session)
 {
 	// redirect : set params to session level
 	$access_level = $access_session;
 	$level_ary = array_flip($access_ary);
 	$p_role = $level_ary[$access_level];
 	$p_user = ($access_level < 2) ? $_SESSION['id'] : false;
+
 	if ($p_role == 'guest' && isset($_SESSION['interlets']))
 	{
 		$p_user = $_SESSION['interlets']['id'];
@@ -205,7 +264,7 @@ else
 }
 
 if ((!isset($allow_anonymous_post) && ($access_level > 2) && $post)
-	|| (!isset($allow_guest_post) && ($access_level > 3) && $post))
+	|| (!isset($allow_guest_post) && ($access_level == 2) && $post))
 {
 	http_response_code(403);
 	include $rootpath . 'tpl/403.html';
@@ -214,8 +273,8 @@ if ((!isset($allow_anonymous_post) && ($access_level > 2) && $post)
 
 if ((($access_level > 2) && ($access_session < 3))
 	|| (($access_level > 2) && ($access_page < 3))
-	|| (($access_level < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
-	|| (($access_session < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
+//	|| (($access_level < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
+//	|| (($access_session < 3) && ($access_page > 2) && !isset($allow_session_on_anonymous_page))
 	|| (($access_level < 2) && (!$p_user || ($p_user != $_SESSION['id'])))
 	|| (($access_level == 2) && ($p_user || $p_schema)
 		&& (!$p_user || !$p_schema
@@ -236,6 +295,7 @@ if ($access_level > $access_page)
 	$alert->error('Je hebt geen toegang tot deze pagina.');
 	redirect_index();
 }
+*/
 
 $s_id = $_SESSION['id'];
 $s_name = $_SESSION['name'];
@@ -265,7 +325,7 @@ $elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
 
 // release file (xml) not loaded anymore.
 // $elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
-$schemaversion= 31000;  // no new versions anymore, release file is not read anymore.
+$schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
 // $soapversion = 1200;
 // $restversion = 1;
 
@@ -278,6 +338,10 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 ), $config);
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
+
+/**/
+
+$systemname = readconfigfromdb('systemname');
 
 /*
  * create links with query parameters depending on user and role
@@ -302,6 +366,26 @@ function aphp($entity = '', $params = '', $label = '*link*', $class = false, $ti
 	$out .= ($collapse) ? '</span>' : '';
 	$out .= '</a>';
 	return $out;
+}
+
+/**
+ *
+ */
+function set_request_to_session()
+{
+	global $p_role, $p_user, $p_schema, $access_level, $access_session;
+	global $access_ary;
+
+	$access_level = $access_session;
+	$level_ary = array_flip($access_ary);
+	$p_role = $level_ary[$access_level];
+	$p_user = ($access_level < 2) ? $_SESSION['id'] : false;
+
+	if ($p_role == 'guest' && isset($_SESSION['interlets']))
+	{
+		$p_user = $_SESSION['interlets']['id'];
+		$p_schema = $_SESSION['interlets']['schema'];
+	}
 }
 
 /**
@@ -336,7 +420,6 @@ function generate_url($entity = '', $params = '')
 /**
  * get session query param
  */
-
 function get_session_query_param()
 {
 	global $p_role, $p_user, $p_schema, $access_level;
@@ -422,7 +505,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
-	$str = htmlspecialchars($str, ENT_QUOTES);
+//	$str = htmlspecialchars($str, ENT_QUOTES);
 	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
 	$str = ($link) ? aphp('users', 'id=' . $user['id'], $str) : $str;
 	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;

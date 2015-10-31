@@ -521,7 +521,7 @@ echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-hover table-striped footable">';
 echo '<thead>';
 echo '<tr>';
-echo ($s_admin) ? '<th data-sort-initial="true">letscode</th>' : '';
+echo ($s_admin) ? '<th data-sort-initial="true">Account</th>' : '';
 echo '<th>groepsnaam</th>';
 echo '<th data-hide="phone">leden</th>';
 

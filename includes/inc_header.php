@@ -1,9 +1,5 @@
 <?php
 
-$systemname = readconfigfromdb('systemname');
-$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
-$script_name = str_replace('.php', '', $script_name);
-
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
@@ -34,12 +30,16 @@ echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
-echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">';
-echo '<span class="sr-only">Toggle navigation</span>';
-echo '<span class="icon-bar"></span>';
-echo '<span class="icon-bar"></span>';
-echo '<span class="icon-bar"></span>';
-echo '</button>';
+
+if ($s_letscode)
+{
+	echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">';
+	echo '<span class="sr-only">Toggle navigation</span>';
+	echo '<span class="icon-bar"></span>';
+	echo '<span class="icon-bar"></span>';
+	echo '<span class="icon-bar"></span>';
+	echo '</button>';
+}
 
 echo aphp('index', '', array('<div class="logo"></div>'), 'pull-left hidden-xs');
 echo aphp('index', '', $systemname, 'navbar-brand');
@@ -63,7 +63,7 @@ if ($s_letscode)
 		echo '<li>' . aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', false, false, 'exchange') . '</li>';
 		echo '<li class="divider"></li>';
 	}
-	echo '<li><a href="' . $rootpath . 'login.php"><i class="fa fa-sign-out"></i> Uitloggen</a></li>';
+	echo '<li>' . aphp('logout', '', 'Uitloggen', '', '', 'sign-out') . '</li>';
 	echo '</ul>';
 	echo '</li>';
 	if ($s_admin)

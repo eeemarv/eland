@@ -2,8 +2,8 @@
 
 $rootpath = './';
 $role = 'anonymous';
-$allow_session_on_anonymous_page = true;
 $allow_anonymous_post = true;
+$allow_session = true;
 
 require_once $rootpath . 'includes/inc_default.php';
 
@@ -196,8 +196,8 @@ function helpmail($help)
 	$content .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
 
 	$content .= 'Gebruiker ingelogd: ';
-	$content .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is, ';
-	$content .= ($s_id) ? '' : 'iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
+	$content .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
+	$content .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
 	$content .= "\r\n\r\n";
 	$content .= "Omschrijving:\r\n";
 	$content .= $help['description'] . "\r\n";

@@ -15,9 +15,9 @@ if ($s_id)
 $token = $_GET['token'];
 $login = $_GET['login'];
 $location = $_GET['location'];
-$location = ($location) ? urldecode($location) : 'index.php';
-$location = (strpos($location, 'login.php')) ? 'index.php' : $location;
-$location = ($location == 'logout.php') ? 'index.php' : $location;
+$location = ($location) ? urldecode($location) : '/index.php';
+$location = (strpos($location, 'login.php') === false) ? $location : 'index.php';
+$location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
 $error_location = 'login.php?location=' . urlencode($location);
 
 if(!empty($token))

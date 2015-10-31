@@ -129,7 +129,7 @@ function saldo()
 	$msg_url = $base_url . '/messages.php?id=';
 	$news_url = $base_url . '/news.php?id=';
 	$user_url = $base_url . '/users.php?&id=';
-	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
+	$login_url = $base_url . '/login.php?login=*|LETSCODE|*';
 	$new_message_url = $base_url . '/messages.php?add=1';
 	$new_transaction_url = $base_url . '/transactions.php?add=1';
 	$mydetails_url = $base_url . '/users.php?id=*|ID|*';
@@ -176,7 +176,7 @@ function saldo()
 				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . $user_url . $msg['id_user'] . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
-				 . $msg['letscode'] . ' ' . $msg['name']'</a> | <a href="mailto:' . $mailto .
+				$msg['letscode'] . ' ' . $msg['name'] . '</a> | <a href="mailto:' . $mailto .
 				'">email</a> | <a href="' . $google_maps . '">route</a> ' .
 				'</li><br>',
 		);
