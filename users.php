@@ -1746,7 +1746,7 @@ if ($id)
 	if ($s_admin || $s_owner)
 	{
 		$title = ($s_admin) ? 'Gebruiker' : 'Mijn gegevens';
-		$top_buttons .= aphp('users', 'id=' . $id, 'Aanpassen', 'btn btn-primary', $title, 'pencil', true);
+		$top_buttons .= aphp('users', 'id=' . $id, 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
 		$top_buttons .= aphp('users', 'pw=' . $id, 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
 	}
 
