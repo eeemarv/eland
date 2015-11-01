@@ -483,9 +483,22 @@ if ($s_admin)
 	{
 		$letscodes[] = $g['localletscode'];
 
-		if ($schemas[$g['url']])
+		if ($s = $schemas[$g['url']])
 		{
 			$groups[$key]['server'] = true;
+			$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+				from ' . $s . '.users
+				where status in (1, 2)');
+		}
+		else if ($g['apimethod'] == 'internal')
+		{
+			$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+				from users
+				where status in (1, 2)');
+		}
+		else
+		{
+			$groups[$key]['user_count'] = $redis->get($g['url'] . '_active_user_count');
 		}
 	}
 
@@ -578,22 +591,18 @@ foreach($groups as $g)
 		echo '</td>';
 	}
 
-	$user_count = $redis->get($g['url'] . '_active_user_count');
-
 	if ($g['apimethod'] == 'elassoap')
 	{
 		echo '<td>';
 		echo aphp('interlets', 'login=' . $g['id'], $g['groupname'], false, 'login als gast op deze letsgroep');
 		echo '</td>';
-		echo '<td>';
-		echo aphp('interlets', 'login=' . $g['id'], $user_count, false, 'login als gast op deze letsgroep');
-		echo '</td>';
 	}
 	else
 	{
 		echo '<td>' . $g['groupname'] . '</td>';
-		echo '<td>' . $user_count . '</td>';
 	}
+
+	echo '<td>' . $g['user_count'] . '</td>';
 
 	if ($s_admin)
 	{
