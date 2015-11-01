@@ -657,9 +657,14 @@ if (($edit || $add))
 	{
 		$errors = array();
 
-		$validity = (int) $_POST['validity'];
+		$validity = $_POST['validity'];
 
-		$vtime = time() + ($validity * 86400);
+		if (!ctype_digit($validity))
+		{
+			$errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+		}
+
+		$vtime = time() + ((int) $validity * 86400);
 		$vtime =  gmdate('Y-m-d H:i:s', $vtime);
 
 		if ($s_admin)
@@ -689,10 +694,16 @@ if (($edit || $add))
 			'local'			=> ($_POST['local']),
 		);
 
+		if (!ctype_digit($msg['amount']) && $msg['amount'] != '')
+		{
+			$errors[] = 'De (richt)prijs in ' . readconfigfromdb('currency') . ' moet nul of een positief getal zijn.';
+		}
+
 		if (!$msg['id_category'])
 		{
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
+
 		if (!$msg['content'])
 		{
 			$errors[] = 'Vul inhoud in!';
@@ -924,7 +935,7 @@ if (($edit || $add))
 	echo '<div class="form-group">';
 	echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in dagen</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="number" class="form-control" id="validity" name="validity" ';
+	echo '<input type="number" class="form-control" id="validity" name="validity" min="1" ';
 	echo 'value="' . $msg['validity'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -932,7 +943,7 @@ if (($edit || $add))
 	echo '<div class="form-group">';
 	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $currency . '</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="number" class="form-control" id="amount" name="amount" ';
+	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
 	echo 'value="' . $msg['amount'] . '">';
 	echo '</div>';
 	echo '</div>';
