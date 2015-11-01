@@ -544,32 +544,35 @@ foreach($groups as $g)
 	if ($s_admin)
 	{
 		echo '<td>';
-		$user = $users_letscode[$g['localletscode']];
-		if ($user)
+		if ($g['apimethod'] == 'elassoap')
 		{
-			echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
-			if (!in_array($user['status'], array(1, 2, 7)))
+			$user = $users_letscode[$g['localletscode']];
+			if ($user)
 			{
-				echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
-					'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
-					'exclamation-triangle');
+				echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+				if (!in_array($user['status'], array(1, 2, 7)))
+				{
+					echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
+						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+						'exclamation-triangle');
+				}
+				if ($user['accountrole'] != 'interlets')
+				{
+					echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
+						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+						'fa-exclamation-triangle');
+				}
 			}
-			if ($user['accountrole'] != 'interlets')
+			else
 			{
-				echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
-					'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
-					'fa-exclamation-triangle');
-			}
-		}
-		else
-		{
-			echo $g['localletscode'];
+				echo $g['localletscode'];
 
-			if ($g['apimethod'] != 'internal' && !$user)
-			{
-				echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
-					'Creëer een interlets-account met gelijke letscode en status extern.',
-					'exclamation-triangle');
+				if ($g['apimethod'] != 'internal' && !$user)
+				{
+					echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
+						'Creëer een interlets-account met gelijke letscode en status extern.',
+						'exclamation-triangle');
+				}
 			}
 		}
 		echo '</td>';
@@ -809,7 +812,7 @@ function render_schemas_groups()
 			echo '<td>';
 			if ($rem_acc = $rem_account_ary[$d])
 			{
-				if ($loc_acc['accountrole'] != 'interlets')
+				if ($rem_acc['accountrole'] != 'interlets')
 				{
 					echo '<span class="btn btn-warning btn-xs" title="De rol van het account ';
 					echo 'moet van het type interlets zijn.">rol</span>';
