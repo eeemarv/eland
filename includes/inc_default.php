@@ -426,9 +426,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
-//	$str = htmlspecialchars($str, ENT_QUOTES);
-	$str = ($str == '') ? '<i>** gebruiker **</i>' : $str;
-	$str = ($link) ? aphp('users', 'id=' . $user['id'], $str) : $str;
+	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
 	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
 	return $str;
 }
