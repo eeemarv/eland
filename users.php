@@ -616,7 +616,7 @@ if ($pw)
 
 					if ($to)
 					{
-						$url = $base_url . '\login.php?login=' . $user['letscode'];
+						$url = $base_url . '/login.php?login=' . $user['letscode'];
 
 						$subj = '[' . readconfigfromdb('systemtag');
 						$subj .= '] nieuw paswoord voor je account';
@@ -1687,6 +1687,14 @@ if ($id)
 		cancel();
 	}
 
+	if ($s_admin)
+	{
+		$count_transactions = $db->fetchColumn('select count(*)
+			from transactions
+			where id_from = ?
+				or id_to = ?', array($id, $id));
+	}
+
 	$to = $db->fetchColumn('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
@@ -1750,7 +1758,7 @@ if ($id)
 		$top_buttons .= aphp('users', 'pw=' . $id, 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
 	}
 
-	if ($s_admin && !count($transactions) && !$s_owner)
+	if ($s_admin && !$count_transactions && !$s_owner)
 	{
 		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
