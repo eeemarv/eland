@@ -399,12 +399,12 @@ if (!$map)
 {
 	//$docs = array_merge($maps, $docs);
 
-	foreach ($docs as &$d)
+	foreach ($docs as $k => $d)
 	{
-		if ($d['map_id'])
+		if (isset($d['map_id']))
 		{
 			$maps[$d['map_id']]['count']++;
-			unset($d);
+			unset($docs[$k]);
 		}
 	}
 }
@@ -417,7 +417,7 @@ if ($s_admin)
 
 	if ($map)
 	{
-		$top_buttons .= aphp('docs', 'map_edit=' . $map, 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'files-o', true);
+		$top_buttons .= aphp('docs', 'map_edit=' . $map, 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'pencil', true);
 	}
 }
 if ($map)
@@ -475,13 +475,13 @@ if (!$map)
 		{
 			echo '<tr class="info">';
 			echo '<td>';
-			echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')', false, 'file');
+			echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')');
 			echo '</td>';
 
 			if ($s_admin)
 			{
 				echo '<td>';
-				echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs');
+				echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 				echo '</td>';
 			}
 			echo '</tr>';

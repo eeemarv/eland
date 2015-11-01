@@ -1169,6 +1169,14 @@ if ($id)
 	echo '<dt>Geldig tot</dt>';
 	echo '<dd>' . $message['validity'] . '</dd>';
 
+	if ($s_admin || $s_owner)
+	{
+		echo '<dt>Verlengen</dt>';
+		echo '<dd>' . aphp('messages', 'id=' . $id . '&extend=30', '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
+		echo aphp('messages', 'id=' . $id . '&extend=180', '6 maanden', 'btn btn-default btn-xs') . '&nbsp;';
+		echo aphp('messages', 'id=' . $id . '&extend=365', '1 jaar', 'btn btn-default btn-xs') . '</dd>';
+	}
+
 	$access = $acc_ary[($message['local']) ? 1 : 2];
 
 	echo '<dt>Zichtbaarheid</dt>';
