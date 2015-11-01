@@ -663,7 +663,7 @@ function render_schemas_groups()
 	echo '<li>Alle eLAS-Heroku installaties bevinden zich op dezelfde server (zie onder voor lijst). </li>';
 	echo '<li>Met deze letsgroepen kan op een vereenvoudigde manier verbinding gelegd worden zonder het uitwisselen van apikeys, preshared keys en remote letscodes.</li>';
 	echo '<li>Voor het leggen van een verbinding, maak eerst een letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' onderaan te klikken en vervolgens toevoegen. Dan, klik op \'Creëer\' in \'Lok.account\', ';
-	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer';
+	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';
 	echo 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
 	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	echo '</ul>';
