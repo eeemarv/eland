@@ -191,7 +191,7 @@ if (!$edit)
 
 	$forum_posts = iterator_to_array($forum_posts);
 
-	$s_owner = ($forum_posts && is_array($forum_posts[0]) && $forum_posts[0]['iud'] == $s_id) ? true : false;
+	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
 
 	if ($s_admin || $s_user)
 	{
