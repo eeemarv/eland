@@ -200,8 +200,8 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($edit) ? 'primary' : 'success';
-
-	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	$canc = ($edit) ? 'id=' . $edit : '';
+	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 
 	echo '</form>';
@@ -262,6 +262,8 @@ if ($del)
  */
 if ($id && !$login)
 {
+	list($schemas, $domains) = get_schemas_domains(true);
+
 	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
 	$top_buttons .= aphp('interlets', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
 	$top_buttons .= aphp('interlets', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
@@ -278,21 +280,29 @@ if ($id && !$login)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>eLAS Soap status</dt>';
 
-	echo '<dd><i><div id="statusdiv">';
-
-	$soapurl = $group['elassoapurl'] .'/wsdlelas.php?wsdl';
-	$apikey = $group['remoteapikey'];
-	$client = new nusoap_client($soapurl, true);
-	$err = $client->getError();
-	if (!$err) {
-		$result = $client->call('getstatus', array('apikey' => $apikey));
-		$err = $client->getError();
-			if (!$err) {
-			echo $result;
-		}
+	if ($schemas[$group['url']])
+	{
+		echo '<dd><span class="btn btn-success btn-xs">server</span></dd>';
 	}
-	echo '</div></i>';
-	echo '</dd>';
+	else
+	{
+		echo '<dd><i><div id="statusdiv">';
+		$soapurl = $group['elassoapurl'] .'/wsdlelas.php?wsdl';
+		$apikey = $group['remoteapikey'];
+		$client = new nusoap_client($soapurl, true);
+		$err = $client->getError();
+		if (!$err)
+		{
+			$result = $client->call('getstatus', array('apikey' => $apikey));
+			$err = $client->getError();
+			if (!$err)
+			{
+				echo $result;
+			}
+		}
+		echo '</div></i>';
+		echo '</dd>';
+	}
 
 	echo '<dt>Groepnaam</dt>';
 	echo '<dd>' .$group['groupname'] .'</dd>';
@@ -326,17 +336,6 @@ if ($id && !$login)
 	echo '</dl>';
 
 	echo '</div></div>';
-
-	echo '<p><small><i>';
-	echo '<ul>';
-	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail (internal is niet van tel in eLAS-Heroku)</li>';
-	echo '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten</li>';
-	echo '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
-	echo '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn</li>';
-	echo '<li> URL is de weblocatie van de andere installatie';
-//	echo '<li> SOAP URL is de locatie voor de communicatie tussen eLAS en het andere systeem, voor een andere eLAS is dat de URL met /soap erachter</li>';
-	echo '<li> Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
-	echo '</ul></i></small></p>';
 
 	render_schemas_groups();
 
@@ -628,6 +627,36 @@ function render_schemas_groups()
 {
 	global $schema, $db, $base_url;
 
+	echo '<p><ul>';
+	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAS-Heroku (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
+	echo '</ul></p>';
+
+	echo '<div class="panel panel-default"><div class="panel-heading">';
+	echo '<p>Verbindingen met eLAS. Zie <a href="http://www.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling">hier</a> voor de procedure.</p>';
+	echo '</div>';
+	echo '<ul>';
+	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail. Internal wordt genegeerd in eLAS-Heroku.</li>';
+	echo '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
+	echo '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
+	echo '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
+	echo '<li> URL is de weblocatie van de andere installatie';
+	echo '<li> Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
+	echo '</ul>';
+	echo '</div>';
+
+	echo '<div class="panel panel-default"><div class="panel-heading">';
+	echo '<p>Verbindingen met eLAS-Heroku op deze server.</p>';
+	echo '</div>';
+	echo '<ul>';
+	echo '<li>Alle eLAS-Heroku installaties bevinden zich op dezelfde server (zie onder voor lijst). </li>';
+	echo '<li>Met deze letsgroepen kan op een vereenvoudigde manier verbinding gelegd worden zonder het uitwisselen van apikeys, preshared keys en remote letscodes.</li>';
+	echo '<li>Voor het leggen van een verbinding, maak eerst een letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' onderaan te klikken en vervolgens toevoegen. Dan, klik op \'Creëer\' in \'Lok.account\', ';
+	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer';
+	echo 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
+	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
+	echo '</ul>';
+	echo '</div>';
+
 	list($schemas, $domains) = get_schemas_domains(true);
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
@@ -678,11 +707,6 @@ function render_schemas_groups()
 			}
 		}
 	}
-
-	echo '<p><small><i><ul>';
-	echo '<li>In eLAS-Heroku is het niet langer nodig een \'internal\' groep aan te maken ';
-	echo 'voor de eigen groep zoals dat in eLAS het geval is.</li>';
-	echo '</ul></i></small></p>';
 
 	echo '<div class="panel panel-warning">';
 	echo '<div class="panel-heading">';
