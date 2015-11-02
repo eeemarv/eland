@@ -248,12 +248,13 @@ else
 
 echo '*** clear users cache ***';
 
-$users = $db->fetchArray('select id from users');
+$users = $db->fetchAll('select id from users');
 
 foreach ($users as $u)
 {
 	$redis->del($schema . '_user_' . $u['id']);
 }
+
 echo "\n";
 
 echo '** end **';
