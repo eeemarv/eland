@@ -6,11 +6,15 @@ $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_pagination.php';
 
-$orderby = $_GET['orderby'];
-$asc = $_GET['asc'];
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
 $limit = ($_GET['limit']) ?: 25;
 $start = ($_GET['start']) ?: 0;
+
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
+$valid = (isset($_GET['valid'])) ? $_GET['valid'] : 'all';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -22,11 +26,6 @@ $img = (isset($_GET['img'])) ? true : false;
 $img_del = (isset($_GET['img_del'])) ? $_GET['img_del'] : false;
 
 $images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
-
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$hsh = (isset($_GET['hsh'])) ? $_GET['hsh'] : '';
-$cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
-$cat_hsh = (isset($_GET['cat_hsh'])) ? $_GET['cat_hsh'] : '';
 
 $submit = (isset($_POST['zend'])) ? true : false;
 $mail = (isset($_POST['mail'])) ? true : false;
@@ -1274,56 +1273,67 @@ if ($id)
  * list messages
  */
 
-
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$sql_and_where = ($uid) ? ' and u.id = ? ' : '';
-$sql_params = ($uid) ? array($uid) : array(); 
+$sql_bind = array();
+$and_where = '';
+$params = array();
 
-$sql_and_where .= ($s_guest) ? ' and local = false ' : '';
-
-//
-
-/*
-$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
-$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
-
-$query_orderby = 'm.' . $orderby;
-$where = ($uid) ? ' where m.id_user = ? ' : '';
-
-$sql_params = ($uid) ? array($uid, $uid) : array();
-
-$query = 'select t.*
-	from transactions t ' .
-	$where . '
-	order by ' . $query_orderby . ' ';
-$query .= ($asc) ? 'ASC ' : 'DESC ';
-$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
-
-$transactions = $db->fetchAll($query, $sql_params);
-
-$row_count = $db->fetchColumn('select count(m.*)
-	from messages m ' . $where, $sql_params);
-
-$params = array(
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-);
+$gmdate = gmdate('Y-m-d H:i:s');
 
 if ($uid)
 {
-	$params['uid']	= $uid;
+	$and_where .= ' and u.id = ? ';
+	$sql_bind[] = $uid;
+	$params['uid'] = $uid;
+}
+
+if ($q)
+{
+	$and_where .= ' and m.content like ? ';
+	$sql_bind[] = '%' . $q . '%';
+	$params['q'] = $q;
 }
 
 if ($cid)
 {
+	$and_where .= ' and m.id_category = ? ';
+	$sql_bind[] = $cid;
 	$params['cid'] = $cid;
 }
 
-if ($valid)
+if ($valid && $valid != 'all')
 {
+	$operator_valid = ($valid == 'f') ? '<' : '>=';
+	$and_where .= ' and m.validity ' . $operator_valid . ' now()';
 	$params['valid'] = $valid;
 }
+
+if ($s_guest)
+{
+	$and_where = ' and local = false ';
+}
+
+$query = 'select m.*, u.postcode
+	from messages m, users u
+		where m.id_user = u.id
+			and u.status in (1, 2) ' .
+	$and_where . '
+	order by ' . $orderby . ' ';
+
+$row_count = $db->fetchColumn('select count(m.*)
+	from messages m, users u
+	where m.id_user = u.id
+		and u.status in (1, 2)
+		' . $and_where, $sql_bind);
+
+$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= ' limit ' . $limit . ' offset ' . $start;
+
+$messages = $db->fetchAll($query, $sql_bind);
+
+$params['orderby'] = $orderby;
+$params['asc'] = $asc;
 
 $pagination = new pagination(array(
 	'limit' 		=> $limit,
@@ -1338,90 +1348,56 @@ $asc_preset_ary = array(
 	'indicator' => '',
 );
 
-echo '<th>V/A</th>';
-echo '<th>Wat</th>';
-if (!$uid)
-{
-	echo '<th data-hide="phone, tablet">Wie</th>';
-	echo '<th>Postcode</th>';
-}
-echo '<th data-hide="phone, tablet">Categorie</th>';
-echo '<th data-hide="phone, tablet">Geldig tot</th>';
-
-if (!$s_guest)
-{
-	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
-}
-
-
 $tableheader_ary = array(
-	'description' => array_merge($asc_preset_ary, array(
-		'lang' => 'V/A')),
-	'amount' => array_merge($asc_preset_ary, array(
-		'lang' => 'Bedrag')),
-	'cdate'	=> array_merge($asc_preset_ary, array(
-		'lang' 		=> 'Tijdstip',
-		'data_hide' => 'phone'))
+	'm.msg_type' => array_merge($asc_preset_ary, array(
+		'lbl' => 'V/A')),
+	'm.content' => array_merge($asc_preset_ary, array(
+		'lbl' => 'Wat')),
 );
 
-if ($uid)
-{
-	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
-		'lang'			=> 'Tegenpartij',
-		'data_hide'		=> 'phone, tablet',
-		'no_sort'		=> true,
-	));
-}
-else
+if (!$uid)
 {
 	$tableheader_ary += array(
-		'from_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Van',
-			'data_hide'	=> 'phone, tablet',
-			'no_sort'	=> true,
+		'u.name'	=> array_merge($asc_preset_ary, array(
+			'lbl' 		=> 'Wie',
+			'data_hide' => 'phone,tablet',
 		)),
-		'to_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Aan',
-			'data_hide'	=> 'phone, tablet',
-			'no_sort'	=> true,
+		'u.postcode'	=> array_merge($asc_preset_ary, array(
+			'lbl' 		=> 'Postcode',
+			'data_hide'	=> 'phone,tablet',
 		)),
 	);
 }
 
+if (!$cid)
+{
+	$tableheader_ary += array(
+		'm.id_category' => array_merge($asc_preset_ary, array(
+			'lbl' 		=> 'Categorie',
+			'data_hide'	=> 'phone, tablet',
+		)),
+	);
+}
+
+$tableheader_ary += array(
+	'm.validity' => array_merge($asc_preset_ary, array(
+		'lbl' 	=> 'Geldig tot',
+		'data_hide'	=> 'phone, tablet',
+	)),
+	'm.local' => array_merge($asc_preset_ary, array(
+		'lbl' 	=> 'Zichtbaarheid',
+		'data_hide'	=> 'phone, tablet',
+	)),	
+);
+
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
+unset($tableheader_ary['m.cdate']);
 
+$cats = array('' => '-- alle categorieën --');
 
-
-
-
-
-
-*/
-
-//
-
-
-
-
-
-
-$msgs = $db->fetchAll('select m.*,
-		u.postcode
-	from messages m, users u
-	where m.id_user = u.id
-		and u.status in (1, 2)
-		' . $sql_and_where . '
-	order by id desc', $sql_params);
-
-$offer_sum = $want_sum = 0;
-
-$cats = $cats_hsh = array();
-
-$cats_hsh_name = array(
-	''	=> '-- Alle categorieën --',
-);
+$categories = $cat_params  = array();
 
 if ($uid)
 {
@@ -1436,37 +1412,23 @@ else
 	$st = $db->executeQuery('select * from categories order by fullname');
 }
 
-$ow_str = ' . . . . . . . V%1$s A%2$s';
-
 while ($row = $st->fetch())
 {
-	$cats[$row['id']] = $row;	
-	$c_hsh = substr(md5($row['id'] . $row['fullname']), 0, 4);
-	if ($row['id_parent'])
+	$cats[$row['id']] = ($row['id_parent']) ? ' . . . . . ' : '';
+	$cats[$row['id']] .= $row['name'];
+	$count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
+	if ($row['id_parent'] && $count_msgs)
 	{
-		$id_parent = $row['id_parent'];
-		$cats_hsh_name[$c_hsh] = '. . . . . ' . $row['name'];
-		$offer = $row['stat_msgs_offers'];
-		$want = $row['stat_msgs_wanted'];
-		$cats_hsh_name[$c_hsh] .= sprintf($ow_str, $want, $offer);
-		$offer_sum += $offer;
-		$want_sum += $want;
-		$cats[$row['id']]['hsh'] = $p_hsh . ' ' . $c_hsh;	
-	}
-	else
-	{
-		$cats_hsh_name[$p_hsh] .= ($p_hsh) ? sprintf($ow_str, $want_sum, $offer_sum) : ''; 
-		$cats_hsh_name[$c_hsh] = $row['name'];
-		$offer_sum = $want_sum = 0;
-		$p_hsh = $c_hsh;
-		$cats[$row['id']]['hsh'] = $c_hsh;
+		$cats[$row['id']] .= ' (' . $count_msgs . ')';
 	}
 
-	$cats_hsh[$row['id']] = $c_hsh;	
+	$categories[$row['id']] = $row['fullname'];
+	
+	$cat_params[$row['id']] = $params;
+	$cat_params[$row['id']]['cid'] = $row['id'];
+
+	$cat_names[$row['id']] = $row['name'];
 }
-$cats_hsh_name[$p_hsh] .= ($p_hsh) ? sprintf($ow_str, $want_sum, $offer_sum) : '';
-
-$cat_hsh = ($cat_hsh) ?: (($cats_hsh[$cid]) ?: '');
 
 if ($s_admin || $s_user)
 {
@@ -1504,14 +1466,14 @@ if ($s_admin)
 $h1 = ($uid && $inline) ? aphp('messages', 'uid=' . $uid,  'Vraag en aanbod') : 'Vraag en aanbod';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn vraag en aanbod' : $h1;
+$h1 .= ($cid) ? ', categorie "' . $cat_names[$cid] . '"' : '';
 
 $fa = 'newspaper-o';
 
 if (!$inline)
 {
-	$includejs = '<script src="' . $rootpath . 'js/combined_filter_msgs.js"></script>
-		<script src="' . $rootpath . 'js/msgs_sum.js"></script>
-		<script src="' . $rootpath . 'js/csv.js"></script>
+	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
+		<script src="' . $rootpath . 'js/msgs.js"></script>
 		<script src="' . $rootpath . 'js/table_sel.js"></script>';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -1537,28 +1499,56 @@ if (!$inline)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-clone"></i>';
 	echo '</span>';
-	echo '<select class="form-control" id="cat_hsh" value="' . $cat_hsh . '" name="cat_hsh">';
-	render_select_options($cats_hsh_name, $cat_hsh);
+	echo '<select class="form-control" id="cid" name="cid">';
+	render_select_options($cats, $cid);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 
-	echo '<input type="hidden" value="" id="combined-filter">';
-	echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
+	$params_form = $params;
+	unset($params_form['cid'], $params_form['q']);
+
+	foreach ($params_form as $name => $value)
+	{
+		if (isset($value))
+		{
+			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+		}
+	}
+
 	echo '</form>';
 
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="pull-right hidden-xs">';
-	echo 'Totaal: <span id="total"></span>';
-	echo '</div>';
+	$nav_tabs = array(
+		'all'	=> array(
+			'color'		=> 'white',
+			'lbl'		=> 'Alle',
+		),
+		't'		=> array(
+			'color'		=> 'white',
+			'lbl'		=> 'Geldig',
+		),
+		'f'		=> array(
+			'color'		=> 'danger',
+			'lbl'		=> 'Vervallen',
+		),
+	);
 
 	echo '<ul class="nav nav-tabs" id="nav-tabs">';
-	echo '<li class="active"><a href="#" class="bg-white" data-filter="">Alle</a></li>';
-	echo '<li><a href="#" class="bg-white" data-filter="34a9">Geldig</a></li>';
-	echo '<li><a href="#" class="bg-danger" data-filter="09e9">Vervallen</a></li>';
+
+	$nav_params = $params;
+	
+	foreach ($nav_tabs as $key => $tab)
+	{
+		$nav_params['valid'] = $key;
+		echo '<li';
+		echo ($valid == $key) ? ' class="active"' : '';
+		echo '>';
+		echo aphp('messages', $nav_params, $tab['lbl'], 'bg-' . $tab['color']) . '</li>';
+	}
 	echo '</ul>';
 
 	echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
@@ -1573,27 +1563,36 @@ else
 	echo '</h3>';
 }
 
+$pagination->render();
+
 echo '<div class="panel panel-info printview">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-bordered footable csv" ';
-echo 'table-hover data-filter="#combined-filter" data-filter-minimum="1" id="msgs">';
+echo '<table class="table table-striped table-bordered table-hover footable csv" ';
+echo 'id="msgs" data-sort="false">';
 
 echo '<thead>';
 echo '<tr>';
-echo '<th>V/A</th>';
-echo '<th>Wat</th>';
-if (!$uid)
-{
-	echo '<th data-hide="phone, tablet">Wie</th>';
-	echo '<th>Postcode</th>';
-}
-echo '<th data-hide="phone, tablet">Categorie</th>';
-echo '<th data-hide="phone, tablet">Geldig tot</th>';
 
-if (!$s_guest)
+$th_params = $params;
+
+foreach ($tableheader_ary as $key_orderby => $data)
 {
-	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+	echo '<th';
+	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo '>';
+	if ($data['no_sort'])
+	{
+		echo $data['lbl'];
+	}
+	else
+	{
+		$th_params['orderby'] = $key_orderby;
+		$th_params['asc'] = $data['asc'];
+
+		echo aphp('messages', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+	}
+	echo '</th>';
 }
 
 echo '</tr>';
@@ -1601,7 +1600,7 @@ echo '</thead>';
 
 echo '<tbody>';
 
-foreach($msgs as $msg)
+foreach($messages as $msg)
 {
 	$del = (strtotime($msg['validity']) < time()) ? true : false;
 
@@ -1637,9 +1636,12 @@ foreach($msgs as $msg)
 		echo '</td>';
 	}
 
-	echo '<td>';
-	echo aphp('messages', 'cid=' . $msg['id_category'], $cats[$msg['id_category']]['fullname']);
-	echo '</td>';
+	if (!$cid)
+	{
+		echo '<td>';
+		echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);
+		echo '</td>';
+	}
 
 	echo '<td>';
 	echo $msg['validity'];
@@ -1660,7 +1662,7 @@ echo '</table>';
 echo '</div>';
 echo '</div>';
 
-
+$pagination->render();
 
 if ($inline)
 {

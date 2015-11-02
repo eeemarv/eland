@@ -768,18 +768,18 @@ $asc_preset_ary = array(
 
 $tableheader_ary = array(
 	'description' => array_merge($asc_preset_ary, array(
-		'lang' => 'Omschrijving')),
+		'lbl' => 'Omschrijving')),
 	'amount' => array_merge($asc_preset_ary, array(
-		'lang' => 'Bedrag')),
+		'lbl' => 'Bedrag')),
 	'cdate'	=> array_merge($asc_preset_ary, array(
-		'lang' 		=> 'Tijdstip',
+		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'))
 );
 
 if ($uid)
 {
 	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
-		'lang'			=> 'Tegenpartij',
+		'lbl'			=> 'Tegenpartij',
 		'data_hide'		=> 'phone, tablet',
 		'no_sort'		=> true,
 	));
@@ -788,12 +788,12 @@ else
 {
 	$tableheader_ary += array(
 		'from_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Van',
+			'lbl' 		=> 'Van',
 			'data_hide'	=> 'phone, tablet',
 			'no_sort'	=> true,
 		)),
 		'to_user' => array_merge($asc_preset_ary, array(
-			'lang' 		=> 'Aan',
+			'lbl' 		=> 'Aan',
 			'data_hide'	=> 'phone, tablet',
 			'no_sort'	=> true,
 		)),
@@ -876,7 +876,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	echo '>';
 	if ($data['no_sort'])
 	{
-		echo $data['lang'];
+		echo $data['lbl'];
 	}
 	else
 	{
@@ -888,7 +888,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		{
 			$params['uid'] = 'uid';
 		}
-		echo aphp('transactions', $params, array($data['lang'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+		echo aphp('transactions', $params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
 	echo '</th>';
 }
