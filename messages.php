@@ -1076,7 +1076,7 @@ if ($id)
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('messages', 'id=' . $prev, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+		$top_buttons .= aphp('messages', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
 	}
 
 	if ($next)
@@ -1283,7 +1283,7 @@ $sql_params = ($uid) ? array($uid) : array();
 $sql_and_where .= ($s_guest) ? ' and local = false ' : '';
 
 //
-/*
+
 
 $orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
@@ -1338,9 +1338,25 @@ $asc_preset_ary = array(
 	'indicator' => '',
 );
 
+echo '<th>V/A</th>';
+echo '<th>Wat</th>';
+if (!$uid)
+{
+	echo '<th data-hide="phone, tablet">Wie</th>';
+	echo '<th>Postcode</th>';
+}
+echo '<th data-hide="phone, tablet">Categorie</th>';
+echo '<th data-hide="phone, tablet">Geldig tot</th>';
+
+if (!$s_guest)
+{
+	echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+}
+
+
 $tableheader_ary = array(
 	'description' => array_merge($asc_preset_ary, array(
-		'lang' => 'Omschrijving')),
+		'lang' => 'V/A')),
 	'amount' => array_merge($asc_preset_ary, array(
 		'lang' => 'Bedrag')),
 	'cdate'	=> array_merge($asc_preset_ary, array(
@@ -1384,18 +1400,7 @@ $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 
 
-
-
-
-
-*/
-
-
-
-
-
-
-
+//
 
 
 
