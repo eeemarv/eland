@@ -473,35 +473,35 @@ if ($login)
 $where = ($s_admin) ? '' : ' where apimethod <> \'internal\'';
 $groups = $db->fetchAll('SELECT * FROM letsgroups' . $where);
 
+list($schemas, $domains) = get_schemas_domains(true);
+
+$letscodes = $groups_domains = $group_schemas = array();
+
+foreach ($groups as $key => $g)
+{
+	$letscodes[] = $g['localletscode'];
+
+	if ($s = $schemas[$g['url']])
+	{
+		$groups[$key]['server'] = true;
+		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+			from ' . $s . '.users
+			where status in (1, 2)');
+	}
+	else if ($g['apimethod'] == 'internal')
+	{
+		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+			from users
+			where status in (1, 2)');
+	}
+	else
+	{
+		$groups[$key]['user_count'] = $redis->get($g['url'] . '_active_user_count');
+	}
+}
+
 if ($s_admin)
 {
-	list($schemas, $domains) = get_schemas_domains(true);
-
-	$letscodes = $groups_domains = $group_schemas = array();
-
-	foreach ($groups as $key => $g)
-	{
-		$letscodes[] = $g['localletscode'];
-
-		if ($s = $schemas[$g['url']])
-		{
-			$groups[$key]['server'] = true;
-			$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
-				from ' . $s . '.users
-				where status in (1, 2)');
-		}
-		else if ($g['apimethod'] == 'internal')
-		{
-			$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
-				from users
-				where status in (1, 2)');
-		}
-		else
-		{
-			$groups[$key]['user_count'] = $redis->get($g['url'] . '_active_user_count');
-		}
-	}
-
 	$users_letscode = array();
 
 	$interlets_users = $db->executeQuery('select id, status, letscode, accountrole
