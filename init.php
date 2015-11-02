@@ -246,6 +246,16 @@ else
 	echo 'none found.' . $r;
 }
 
+echo '*** clear users cache ***';
+
+$users = $db->fetchArray('select id from users');
+
+foreach ($users as $u)
+{
+	$redis->del($schema . '_user_' . $u['id']);
+}
+echo "\n";
+
 echo '** end **';
 
 
