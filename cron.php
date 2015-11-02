@@ -775,7 +775,12 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 	{
 		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
 	}
-	log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
+
+	if ($name != 'cronschedule')
+	{
+		log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
+	}
+
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
 
 	return $updated;
