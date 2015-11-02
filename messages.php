@@ -1284,7 +1284,7 @@ $sql_and_where .= ($s_guest) ? ' and local = false ' : '';
 
 //
 
-
+/*
 $orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
 $asc = (isset($asc) && ($asc != '')) ? $asc : 0;
 
@@ -1398,7 +1398,7 @@ $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 
 
-
+*/
 
 //
 

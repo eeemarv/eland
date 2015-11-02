@@ -1775,10 +1775,26 @@ if ($id)
 
 	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
+	$status = $user['status'];
+	$status = ($newusertreshold < strtotime($user['adate']) && $user['status'] == 1) ? 3 : $user['status'];
+
+	$status_style_ary = array(
+		0	=> 'default',
+		2	=> 'danger',
+		3	=> 'success',
+		5	=> 'warning',
+		6	=> 'info',
+		7	=> 'extern',
+	);
+
 	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user);
-	$h1 .= ($newusertreshold < strtotime($user['adate']) && $user['status'] == 1) ? ' <small><span class="text-success">Instapper</span></small>' : ''; 
-	$h1 .= ($user['status'] == 2) ? ' <small><span class="text-danger">Uitstapper</span></small>' : '';
-	
+
+	if ($status != 1)
+	{
+		$h1 .= ' <small><span class="text-' . $status_style_ary[$status] . '">';
+		$h1 .= $status_ary[$status] . '</span></small>';
+	}
+
 	$fa = 'user';
 
 	include $rootpath . 'includes/inc_header.php';
