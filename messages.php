@@ -1606,8 +1606,7 @@ foreach($messages as $msg)
 	echo ($del) ? ' class="danger"' : '';
 	echo '>';
 
-	echo '<td ';
-	echo ' data-value="' . (($del) ? '09e9' : '34a9') . ' ' . $cats[$msg['id_category']]['hsh'] . '">';
+	echo '<td>';
 
 	if (!$inline && ($s_admin || $s_owner))
 	{
