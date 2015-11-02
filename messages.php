@@ -1290,7 +1290,7 @@ if ($uid)
 
 if ($q)
 {
-	$and_where .= ' and m.content like ? ';
+	$and_where .= ' and m.content ilike ? ';
 	$sql_bind[] = '%' . $q . '%';
 	$params['q'] = $q;
 }
