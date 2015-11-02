@@ -1426,8 +1426,6 @@ while ($row = $st->fetch())
 	
 	$cat_params[$row['id']] = $params;
 	$cat_params[$row['id']]['cid'] = $row['id'];
-
-	$cat_names[$row['id']] = $row['name'];
 }
 
 if ($s_admin || $s_user)
@@ -1466,7 +1464,7 @@ if ($s_admin)
 $h1 = ($uid && $inline) ? aphp('messages', 'uid=' . $uid,  'Vraag en aanbod') : 'Vraag en aanbod';
 $h1 .= ($uid) ? ' van ' . link_user($uid) : '';
 $h1 = (!$s_admin && $s_owner) ? 'Mijn vraag en aanbod' : $h1;
-$h1 .= ($cid) ? ', categorie "' . $cat_names[$cid] . '"' : '';
+$h1 .= ($cid) ? ', categorie "' . $categories[$cid] . '"' : '';
 
 $fa = 'newspaper-o';
 
