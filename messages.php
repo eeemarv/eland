@@ -1670,7 +1670,7 @@ if ($inline)
 }
 else
 {
-	if (($s_admin || $s_owner) && count($msgs))
+	if (($s_admin || $s_owner) && count($messages))
 	{
 		$extend_options = array(
 			'7'		=> '1 week',
