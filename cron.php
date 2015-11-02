@@ -16,6 +16,7 @@ chdir(__DIR__);
 
 $rootpath = './';
 $role = 'anonymous';
+$allow_session = true;
 require_once $rootpath . 'includes/inc_default.php';
 
 require_once $rootpath . 'includes/inc_processqueue.php';
@@ -704,7 +705,8 @@ run_cronjob('cleanup_tokens', 604800);
 function cleanup_tokens()
 {
 	global $db, $now;
-	return ($db->executeQuery('delete from tokens where validity < ?', array($now))) ? true : false;
+	$db->executeQuery('delete from tokens where validity < ?', array($now)) ? true : false;
+	return true;
 }
 
 run_cronjob('cleanup_logs', 86400);
@@ -716,7 +718,14 @@ function cleanup_logs()
 	$elas_mongo->connect();	
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 	$elas_mongo->logs->remove(array('timestamp' => array('$lt' => $treshold)));
-	return $this;
+	return true;
+}
+
+run_cronjob('cronschedule', 300);
+
+function cronschedule()
+{
+	return true;
 }
 
 echo "*** Cron run finished ***" . $r;

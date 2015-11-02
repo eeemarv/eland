@@ -4,6 +4,13 @@ $rootpath = './';
 $role = 'guest';
 $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_pagination.php';
+
+$orderby = $_GET['orderby'];
+$asc = $_GET['asc'];
+
+$limit = ($_GET['limit']) ?: 25;
+$start = ($_GET['start']) ?: 0;
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -1267,13 +1274,6 @@ if ($id)
  * list messages
  */
 
-// todo etag
-/*
-if (!$uid)
-{
-	$etag = $redis->get($schema . '_msgs_etag');
-}
-*/
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
@@ -1281,6 +1281,126 @@ $sql_and_where = ($uid) ? ' and u.id = ? ' : '';
 $sql_params = ($uid) ? array($uid) : array(); 
 
 $sql_and_where .= ($s_guest) ? ' and local = false ' : '';
+
+//
+/*
+
+$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
+$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
+
+$query_orderby = 'm.' . $orderby;
+$where = ($uid) ? ' where m.id_user = ? ' : '';
+
+$sql_params = ($uid) ? array($uid, $uid) : array();
+
+$query = 'select t.*
+	from transactions t ' .
+	$where . '
+	order by ' . $query_orderby . ' ';
+$query .= ($asc) ? 'ASC ' : 'DESC ';
+$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
+
+$transactions = $db->fetchAll($query, $sql_params);
+
+$row_count = $db->fetchColumn('select count(m.*)
+	from messages m ' . $where, $sql_params);
+
+$params = array(
+	'orderby'	=> $orderby,
+	'asc'		=> $asc,
+);
+
+if ($uid)
+{
+	$params['uid']	= $uid;
+}
+
+if ($cid)
+{
+	$params['cid'] = $cid;
+}
+
+if ($valid)
+{
+	$params['valid'] = $valid;
+}
+
+$pagination = new pagination(array(
+	'limit' 		=> $limit,
+	'start' 		=> $start,
+	'entity'		=> 'messages',
+	'params'		=> $params,
+	'row_count'		=> $row_count,
+));
+
+$asc_preset_ary = array(
+	'asc'	=> 0,
+	'indicator' => '',
+);
+
+$tableheader_ary = array(
+	'description' => array_merge($asc_preset_ary, array(
+		'lang' => 'Omschrijving')),
+	'amount' => array_merge($asc_preset_ary, array(
+		'lang' => 'Bedrag')),
+	'cdate'	=> array_merge($asc_preset_ary, array(
+		'lang' 		=> 'Tijdstip',
+		'data_hide' => 'phone'))
+);
+
+if ($uid)
+{
+	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
+		'lang'			=> 'Tegenpartij',
+		'data_hide'		=> 'phone, tablet',
+		'no_sort'		=> true,
+	));
+}
+else
+{
+	$tableheader_ary += array(
+		'from_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Van',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+		'to_user' => array_merge($asc_preset_ary, array(
+			'lang' 		=> 'Aan',
+			'data_hide'	=> 'phone, tablet',
+			'no_sort'	=> true,
+		)),
+	);
+}
+
+$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 $msgs = $db->fetchAll('select m.*,
 		u.postcode
