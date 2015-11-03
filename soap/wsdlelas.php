@@ -85,7 +85,7 @@ function gettoken($apikey)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = substr(md5(microtime() . $schema), 0, 12);
+		$token = 'elasv2' . substr(md5(microtime() . $schema), 0, 12);
 		$key = $schema . '_token_' . $token;
 		$redis->set($key, '1');
 		$redis->expire($key, 600);
