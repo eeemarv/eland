@@ -169,11 +169,13 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if ($sigtest != $signature)
 			{
-				log_event('','Soap','Transaction ' . $transid . ', invalid signature');
+				log_event('', 'Soap', 'Transaction ' . $transid . ', invalid signature');
 				return 'SIGFAIL';
 			}
 
 			$transaction['amount'] = round($amount * readconfigfromdb('currencyratio'));
+
+			unset($transaction['letscode_to']);
 
 			if($id = insert_transaction($transaction))
 			{
