@@ -1744,8 +1744,6 @@ if ($id)
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
 	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
 
-	$top_buttons = '';
-
 	if ($s_admin)
 	{
 		$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
@@ -1787,12 +1785,15 @@ if ($id)
 		7	=> 'extern',
 	);
 
+	$h_status_ary = $status_ary;
+	$h_status_ary[3] = 'Instapper';
+
 	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user);
 
 	if ($status != 1)
 	{
 		$h1 .= ' <small><span class="text-' . $status_style_ary[$status] . '">';
-		$h1 .= $status_ary[$status] . '</span></small>';
+		$h1 .= $h_status_ary[$status] . '</span></small>';
 	}
 
 	$fa = 'user';
