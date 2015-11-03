@@ -229,7 +229,7 @@ function userbyname($apikey, $name)
 
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->fetchAssoc('SELECT * FROM users WHERE (LOWER(name)) LIKE \'%?%\'', array(strtolower($name)));
+		$user = $db->fetchAssoc('select * from users where name like ?', array('%' . $name . '%'));
 		return ($user['name']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
