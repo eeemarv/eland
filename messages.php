@@ -720,6 +720,11 @@ if (($edit || $add))
 			}
 		}
 
+		if(strlen($msg['units']) > 15)
+		{
+			$errors[] = '"Per (uur, stuk, ...)" mag maximaal 15 tekens lang zijn.';
+		}
+
 		if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
