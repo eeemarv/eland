@@ -156,7 +156,7 @@ if ($add)
 
 			if (!isset($letsgroup))
 			{
-				$alert->error('Letsgroep niet gevonden.');
+				$errors[] = 'Letsgroep niet gevonden.';
 			}
 		}
 
@@ -202,9 +202,16 @@ if ($add)
 			$errors[] = 'Gebruiker bestaat niet';
 		}
 
-		if(empty($touser) )
+		if(empty($touser))
 		{
-			$errors[] = 'Bestemmeling bestaat niet';
+			if ($letsgroup_id == 'self')
+			{
+				$errors[] = 'Bestemmeling bestaat niet';
+			}
+			else
+			{
+				$errors[] = 'De interletsrekening bestaat niet';
+			}
 		}
 
 		if($fromuser['letscode'] == $touser['letscode'])
