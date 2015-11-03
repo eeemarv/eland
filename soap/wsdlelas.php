@@ -102,7 +102,7 @@ function gettoken($apikey)
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
-	log_event('','debug','Transaction request');
+	log_event('','debug','Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
 	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid)))
 	{
