@@ -1657,7 +1657,7 @@ if ($add || $edit)
 		}
 	}
 
-	$cancel_id = ($edit) ? '?id=' . $edit : '';
+	$cancel_id = ($edit) ? 'id=' . $edit : '';
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
