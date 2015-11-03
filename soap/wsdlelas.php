@@ -175,8 +175,8 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	}
 	else
 	{
-		return 'APIKEYFAIL';
 		log_event('','Soap','APIKEY failed for Transaction ' . $transid);
+		return 'APIKEYFAIL';
 	}
 }
 
