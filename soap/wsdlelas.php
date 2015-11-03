@@ -94,7 +94,7 @@ function gettoken($apikey)
 		return $token;
 	}
 
-	log_event('','Soap','APIkey rejected, no token generated');
+	log_event('','Soap','apikey fail, apikey: ' . $apikey . ' no token generated');
 	return '---';
 
 }
@@ -119,11 +119,26 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		}
 		else
 		{
-			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from));
+			
 			log_event('','debug', 'Looking up Interlets user ' . $from);
-			log_event('','debug', 'Found Interlets fromuser ' . serialize($fromuser));
 
-			$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($to));
+			if ($fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from)))
+			{
+				log_event('','debug', 'Found Interlets fromuser ' . json_encode($fromuser));
+			}
+			else
+			{
+				log_event('', 'debug', 'NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
+			}
+
+			if ($touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($to)))
+			{
+				log_event('', 'debug', 'Found Interlets touser ' . json_encode($touser));
+			}
+			else
+			{
+				log_event('', 'debug', 'Not found Interlets touser ' . $to . ' transid: ' . $transid);
+			}				
 
 			$transaction = array(
 				'transid'		=> $transid,
@@ -138,7 +153,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 			{
-				log_event('','Soap','Transaction ' . $transid . ', unknown FROM user');
+				log_event('','Soap','Transaction ' . $transid . ', unknown FROM user (to:' . $to . ')');
 				return 'NOUSER';
 			}
 
@@ -175,7 +190,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	}
 	else
 	{
-		log_event('','Soap','APIKEY failed for Transaction ' . $transid);
+		log_event('','Soap','APIKEY failed for Transaction ' . $transid . ' apikey: ' . $apikey);
 		return 'APIKEYFAIL';
 	}
 }
@@ -197,6 +212,7 @@ function userbyletscode($apikey, $letscode)
 	}
 	else
 	{
+		log_event('', 'debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for letscode ' . $letscode . ')');
 		return '---';
 	}
 }
@@ -212,6 +228,7 @@ function userbyname($apikey, $name)
 	}
 	else
 	{
+		log_event('', 'debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for name ' . $name . ')');
 		return '---';
 	}
 }
@@ -226,6 +243,7 @@ function getstatus($apikey)
 	}
 	else
 	{
+		log_event('', 'debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for status)');
 		return 'APIKEYFAIL';
 	}
 }
@@ -236,6 +254,10 @@ function apiversion($apikey)
 	{
 		//global $soapversion;
 		return 1200; //$soapversion;
+	}
+	else
+	{
+		log_event('', 'debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for apiversion)');
 	}
 }
 
