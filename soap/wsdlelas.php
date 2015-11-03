@@ -81,6 +81,7 @@ $server->register('dopayment',
 function gettoken($apikey)
 {
 	global $db, $schema, $redis;
+
 	log_event('', 'debug', 'Token request');
 
 	if(check_apikey($apikey, 'interlets'))
@@ -101,6 +102,8 @@ function gettoken($apikey)
 
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
+	global $db;
+
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 	log_event('','debug','Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
@@ -119,7 +122,6 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		}
 		else
 		{
-			
 			log_event('','debug', 'Looking up Interlets user ' . $from);
 
 			if ($fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from)))
@@ -197,6 +199,8 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 function userbyletscode($apikey, $letscode)
 {
+	global $db;
+
 	log_event('','debug','Lookup request for ' . $letscode);
 	if(check_apikey($apikey,'interlets'))
 	{
@@ -219,6 +223,8 @@ function userbyletscode($apikey, $letscode)
 
 function userbyname($apikey, $name)
 {
+	global $db;
+
 	log_event('', 'debug', 'Lookup request for user ' . $name);
 
 	if(check_apikey($apikey,'interlets'))
