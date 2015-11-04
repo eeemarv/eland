@@ -95,7 +95,7 @@ if ($s_letscode)
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
-		$user_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$user_url = ($access_page == 0) ? 'index.php' : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		$get_params = $_GET;
 		$get_params['r'] = 'user';
 		echo '<li>';
