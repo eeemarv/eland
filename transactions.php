@@ -150,6 +150,11 @@ if ($add)
 			$errors[] = 'Een herinvoer van de transactie werd voorkomen.';
 		}
 
+		if (strlen($transaction['description']) > 60)
+		{
+			$errors[] = 'De omschrijving mag maximaal 60 tekens lang zijn.';
+		}
+
 		if ($letsgroup_id != 'self')
 		{
 			$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
