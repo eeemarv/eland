@@ -463,8 +463,8 @@ if ($login)
 		}
 	}
 
-	echo '<script>setTimeout(function(){location.href = "' . generate_url('interlets') . '";}, 1000);</script>';
-	exit;
+//	echo '<script>setTimeout(function(){location.href = "' . generate_url('interlets') . '";}, 3000);</script>';
+//	exit;
 }
 
 /**
