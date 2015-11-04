@@ -1025,6 +1025,7 @@ else
 
 if (count($interletsq))
 {
+	/* Removing transactions from queue gives a chance for sync problems
 	if ($s_admin || ($uid && ($uid == $s_id)))
 	{
 		$and_uid = ($uid) ? '&uid=' . $uid : '';
@@ -1032,6 +1033,7 @@ if (count($interletsq))
 		$q_buttons .= aphp('transactions', 'del_q=1' . $and_uid, 'Verwijderen', 'btn btn-danger',
 			'Verwijder interlets transacties in verwerking', 'times');
 	}
+	*/
 
 	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking';
 	echo '<span class="inline-buttons"> ' . $q_buttons . '</span>';
