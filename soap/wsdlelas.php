@@ -280,5 +280,8 @@ function check_apikey($apikey, $type)
 }
 
 // Use the request to (try to) invoke the service
-$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';
-$server->service($HTTP_RAW_POST_DATA);
+//$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';
+//$server->service($HTTP_RAW_POST_DATA);
+
+$post_data = file_get_contents('php://input');
+$server->service($post_data);
