@@ -29,15 +29,23 @@ if ($del)
 		cancel($uid);
 	}
 
-	if ($db->fetchColumn('select count(c.*)
+	$contact = $db->fetchAssoc('select c.*, tc.abbrev
 		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($uid)) == 1)
+		where c.id = ?
+			and tc.id = c.id_type_contact', array($del));
+
+	if ($contact['abbrev'] == 'mail')
 	{
-		$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een gebruiker';
-		$alert->error('Je kan niet ' . $err . ' verwijderen.');
-		cancel($uid);
+		if ($db->fetchColumn('select count(c.*)
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
+				and c.id_user = ?
+				and tc.abbrev = \'mail\'', array($uid)) == 1)
+		{
+			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een gebruiker';
+			$alert->error('Je kan niet ' . $err . ' verwijderen.');
+			cancel($uid);
+		}
 	}
 
 	if ($submit)
