@@ -145,7 +145,7 @@ $schema = getenv('ELAS_SCHEMA_' . $schema);
 if (!$schema)
 {
 	http_response_code(404);
-	include $rootpath. '404.html';
+	include $rootpath. 'tpl/404.html';
 	exit;
 }
 
