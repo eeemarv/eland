@@ -173,7 +173,7 @@ function saldo()
 
 		$msgs[] = array(
 			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
-				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . $user_url . $msg['id_user'] . $r . $r,
+				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
 				$msg['letscode'] . ' ' . $msg['name'] . '</a> | <a href="mailto:' . $mailto .
