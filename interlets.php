@@ -747,7 +747,6 @@ function render_schemas_groups()
 
 	foreach($schemas as $d => $s)
 	{
-		$url = 'http://' . $d;
 		echo '<tr>';
 		echo '<td>';
 		echo readconfigfromschema('systemtag', $s);
@@ -756,7 +755,7 @@ function render_schemas_groups()
 		echo readconfigfromschema('systemname', $s);
 		echo '</td>';
 		echo '<td>';
-		echo $url;
+		echo $d;
 		echo '</td>';
 
 		if ($schema == $s)
