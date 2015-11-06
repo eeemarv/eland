@@ -1076,8 +1076,6 @@ if ($id)
 		}
 	}
 
-	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-
 	if ($prev)
 	{
 		$top_buttons .= aphp('messages', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
@@ -1087,6 +1085,8 @@ if ($id)
 	{
 		$top_buttons .= aphp('messages', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
+
+	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($s_user || $s_admin)
 	{
