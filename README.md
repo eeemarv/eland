@@ -38,7 +38,7 @@ heroku addons:add redistogo
 heroku addons:add mandrill
 ```
 
-###Mongolab (logs are stored in mongodb)
+###Mongolab (logs, forum topics and document references are stored in mongodb)
 ```shell
 heroku addons:add mongolab
 ```
@@ -48,7 +48,7 @@ heroku addons:add mongolab
 * AWS_ACCESS_KEY
 * AWS_SECRET_ACCESS_KEY
 * S3_BUCKET (bucket for images of profiles and messages)
-* S3_BUCKET_DOC (buckets for documents)
+* S3_BUCKET_DOC (bucket for documents)
 * REDISTOGO_URL: addon redistogo (redis server)
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
