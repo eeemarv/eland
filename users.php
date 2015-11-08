@@ -1,22 +1,22 @@
 <?php
 $rootpath = './';
 
-$id = ($_GET['id']) ?: false;
-$del = ($_GET['del']) ?: false;
-$edit = ($_GET['edit']) ?: false;
-$add = ($_GET['add']) ?: false;
-$pw = ($_GET['pw']) ?: false;
-$img = ($_GET['img']) ? true : false;
-$img_del = ($_GET['img_del']) ? true : false;
-$interlets = ($_GET['interlets']) ?: false;
-$password = ($_POST['password']) ?: false;
-$submit = ($_POST['zend']) ? true : false;
+$id = (isset($_GET['id'])) ? $_GET['id'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$pw = (isset($_GET['pw'])) ? $_GET['pw'] : false;
+$img = (isset($_GET['img'])) ? true : false;
+$img_del = (isset($_GET['img_del'])) ? true : false;
+$interlets = (isset($_GET['interlets'])) ? $_GET['interlets'] : false;
+$password = (isset($_POST['password'])) ? $_POST['password'] : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 $user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 
-$inline = ($_GET['inline']) ? true : false;
+$inline = (isset($_GET['inline'])) ? true : false;
 
-$q = ($_GET['q']) ?: '';
-$hsh = ($_GET['hsh']) ?: '';
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$hsh = (isset($_GET['hsh'])) ? $_GET['hsh'] : '';
 
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
@@ -152,7 +152,7 @@ if ($post)
  * upload image
  */
 
-if ($post && ($img || $img_del) && $id )
+if ($post && $img && $id )
 {
 	$s_owner = ($s_id == $id) ? true : false;
 
@@ -163,29 +163,6 @@ if ($post && ($img || $img_del) && $id )
 	}
 
 	$user = readuser($id);
-
-	if ($img_del)
-	{
-		if ($user['PictureFile'])
-		{
-			$s3->deleteObject(array(
-				'Bucket'	=> $bucket,
-				'Key'		=> $user['PictureFile'],
-			));
-		}
-
-		if ($db->update('users', array('"PictureFile"' => ''), array('id' => $id)))
-		{
-			readuser($id, true);
-			echo json_encode(array('success' => 1));
-			exit;
-		}
-		else
-		{
-			echo json_encode(array('error' => 'Wissen Profielfoto niet gelukt.'));
-			exit;
-		}
-	}
 
 	$image = ($_FILES['image']) ?: null;
 
@@ -255,6 +232,79 @@ if ($post && ($img || $img_del) && $id )
 	header('Vary: Accept');
 
 	echo json_encode(array('success' => 1, 'filename' => $filename));
+	exit;
+}
+
+/**
+ * delete image
+ */
+if ($img_del && $id)
+{
+	$s_owner = ($s_id == $id) ? true : false;
+
+	if (!($s_owner || $s_admin))
+	{
+		$alert->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
+		cancel($id);
+	}
+
+	$user = readuser($id);
+
+	if (!$user)
+	{
+		$alert->error('De gebruiker bestaat niet.');
+		cancel();
+	}
+
+	$file = $user['PictureFile'];
+
+	if ($file == '' || !$file)
+	{
+		$alert->error('De gebruiker heeft geen foto.');
+		cancel($id);
+	} 
+
+	if ($post)
+	{
+		$s3->deleteObject(array(
+			'Bucket'	=> $bucket,
+			'Key'		=> $file,
+		));
+
+		$db->update('users', array('"PictureFile"' => ''), array('id' => $id));
+		readuser($id, true);
+		$alert->success('Profielfoto verwijderd.');
+		cancel($id);
+	}
+
+	$h1 = 'Profielfoto ' . (($s_admin) ? 'van ' . link_user($id) . ' ' : '') . 'verwijderen?';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="row">';
+	echo '<div class="col-xs-6">';
+	echo '<div class="thumbnail">';
+	echo '<img src="' . $bucket_url . $file . '" class="img-rounded">';
+	echo '</div>';     
+	echo '</div>';
+
+	echo '</div>';
+
+	echo '<form method="post" class="form-horizontal">';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo aphp('users', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+
 	exit;
 }
 
@@ -1823,6 +1873,11 @@ if ($id)
 
 	if ($s_admin || $s_owner)
 	{
+		$attr = array('id'	=> 'btn_remove');
+		if (!$user['PictureFile'])
+		{
+			$attr['style'] = 'display:none;';
+		}
 
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
@@ -1833,9 +1888,12 @@ if ($id)
 		echo 'data-max-file-size="999000" data-image-max-width="400" ';
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
-		echo '<span data-url="' . generate_url('users', 'img_del=1&id=' . $id) . '" class="btn btn-danger" ';
-		echo 'id="btn_remove"' . $user_img . '>';
-		echo '<i class="fa fa-times"></i> Foto verwijderen</span>';
+
+		echo aphp('users', 'img_del=1&id=' . $id, 'Foto verwijderen', 'btn btn-danger', false, 'times', false, $attr);
+
+//		echo '<span data-url="' . generate_url('users', 'img_del=1&id=' . $id) . '" class="btn btn-danger" ';
+//		echo 'id="btn_remove"' . $user_img . '>';
+//		echo '<i class="fa fa-times"></i> Foto verwijderen</span>';
 		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook een foto hierheen verslepen.</p>';
 		echo '</div>';

@@ -27,35 +27,5 @@ $(function () {
 		}
 	}).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
-
-	btn_remove.click(function(){
-
-		btn_remove.find('i').removeClass('fa-times').addClass('fa-spin fa-spinner');
-
-		$.post(btn_remove.data('url'), {}, function(data){
-
-			if (data.success)
-			{
-
-				no_user_img.css('display', 'inherit');
-				user_img.css('display', 'none');
-				btn_remove.css('display', 'none');
-
-			} else {
-
-				alert('Fout bij het verwijderen: ' + data.error);
-
-			}
-
-			btn_remove.find('i').removeClass('fa-spin fa-spinner').addClass('fa-times');			
-
-		}, 'json').fail(function() {
-
-			alert('Fout bij het verwijderen foto');
-			btn_remove.find('i').removeClass('fa-spin fa-spinner').addClass('fa-times');
-
-		});
-	});
-
 });
 

@@ -2,3 +2,7 @@ info.php
 vendor
 composer.phar
 components
+.sass-cache
+.jekyll-metadata
+_site
+_posts
