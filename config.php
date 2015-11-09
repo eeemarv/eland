@@ -81,6 +81,8 @@ $config = $db->fetchAll('select *
 		and setting <> \'pwscore\'
 		and setting <> \'msgexpwarningdays\'
 		and setting <> \'news_announce\'
+		and setting <> \'mailinglists_enabled\'
+		and setting <> \'from_address_transactions\'
 	order by category, setting');
 
 $eh_settings = array_keys($elas_heroku_config);

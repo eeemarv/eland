@@ -597,10 +597,10 @@ function mail_mass_transaction($mail_ary)
 		return;
 	}
 	
-	$from = readconfigfromdb('from_address_transactions');
+	$from = readconfigfromdb('from_address');
 	if (empty($from))
 	{
-		$alert->warning('Mail from_address_transactions is not set in configuration');
+		$alert->warning('Mail from_address is not set in configuration');
 		return;
 	}
 

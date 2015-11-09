@@ -10,10 +10,11 @@ function saldo()
 		return true;
 	}
 	
-	$from = readconfigfromdb("from_address_transactions");
+	$from = readconfigfromdb('from_address');
+
 	if (empty($from))
 	{
-		echo 'Mail from_address_transactions is not set in configuration' . "\n";
+		echo 'Mail from_address is not set in configuration' . "\n";
 		return true;
 	}
 

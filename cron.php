@@ -365,49 +365,40 @@ function admin_exp_msg()
 	// Fetch a list of all expired messages and mail them to the admin
 	global $db, $now, $r, $base_url;
 	
-	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
+	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
 		WHERE u.status <> 0
 			AND m.id_user = u.id
-			AND validity <= ?";
+			AND validity <= ?';
 	$messages = $db->fetchAll($query, array($now));
 
-	$admin = readconfigfromdb('admin');
-	if (empty($admin))
+	$to = readconfigfromdb('admin');
+
+	if (empty($to))
 	{
-		echo "No admin E-mail address specified in config" . $r;
+		echo 'No admin E-mail address specified in config' . $r;
 		return false;
 	}
-	else
-	{
-	   $to = $admin;
-	}
 
-	$from_address_transactions = readconfigfromdb('from_address_transactions');
+	$from = readconfigfromdb('from_address');
 
-	if (!empty($from_address_transactions))
+	if (empty($from))
 	{
-		$from .= "From: ".trim($from_address_transactions);
-	}
-	else
-	{
-		echo "Mail from address is not set in configuration" . $r;
-		return 0;
+		echo 'Mail from address is not set in configuration' . $r;
+		return false;
 	}
 
 	$systemtag = readconfigfromdb('systemtag');
-	$subject = '[' . $systemtag . '] - Rapport vervallen V/A';
+	$subject = '[' . $systemtag . '] Rapport vervallen Vraag en aanbod';
 
-	$content = "-- Dit is een automatische mail, niet beantwoorden aub --" . $r;
-	$content .= "ID\tUser\tMessage\n";
+	$content = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
+	$content .= "Gebruiker\t\tVervallen vraag of aanbod\t\tVervallen\n\n";
 	
 	foreach($messages as $key => $value)
 	{
-		$content .=  $value["mid"] ."\t" .$value['username'] ."\t" .$value['message'] ."\t" .$value["validity"] ."\n";
-		$content .= $base_url . '\messages.php?id=' . $value['mid'] . " \n\n";
+		$content .= link_user($value['id_user'], null, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
+		$content .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
-
-	$content .=  $r;
 
 	sendemail($from, $to, $subject, $content);
 
@@ -457,19 +448,15 @@ function user_exp_msgs()
 
 		$subject = 'Je ' . $va . ' is vervallen.';
 
-		$from_address_transactions = readconfigfromdb("from_address_transactions");
+		$from = readconfigfromdb('from_address');
 
-		if (!empty($from_address_transactions))
-		{
-			$from = trim($from_address_transactions);
-		}
-		else
+		if (!empty($from))
 		{
 			echo "Mail from address is not set in configuration\n";
 			return;
 		}
 
-		$systemtag = readconfigfromdb("systemtag");
+		$systemtag = readconfigfromdb('systemtag');
 		$subject = '[' . $systemtag . '] ' . $subject;
 
 		sendemail($from, $to, $subject, $content);

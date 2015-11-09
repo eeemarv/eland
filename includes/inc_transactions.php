@@ -87,7 +87,7 @@ function mail_mail_interlets_transaction($transaction)
 	$r = "\r\n";
 	$t = "\t";
 
-	$from = readconfigfromdb('from_address_transactions');
+	$from = readconfigfromdb('from_address');
 
 	$userfrom = readuser($transaction['id_from']);
 
@@ -146,7 +146,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
 
-	$from = readconfigfromschema('from_address_transactions', $sch);
+	$from = readconfigfromschema('from_address', $sch);
 	$currency = readconfigfromschema('currency', $sch);
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
@@ -216,7 +216,7 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$r = "\r\n";
 	$t = "\t";
 
-	$from = readconfigfromdb('from_address_transactions');
+	$from = readconfigfromdb('from_address');
 
 	$systemtag = readconfigfromdb('systemtag');
 	$currency = readconfigfromdb('currency');
