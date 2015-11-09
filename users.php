@@ -2275,21 +2275,7 @@ echo '</div>';
 echo '<div class="pull-right hidden-xs print-hide">';
 echo 'Totaal: <span id="total"></span>';
 echo '</div>';
-/*
-echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
-$default_tab = ($s_admin) ? 'all' : 'active';
-
-foreach ($st as $k => $s)
-{
-	$class_li = ($k == $default_tab) ? ' class="active"' : '';
-	$class_a  = ($s['cl']) ?: 'white';
-	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
-	echo 'data-filter="' . (($s['hsh']) ?: '') . '">' . $s['lbl'] . '</a></li>';
-}
-
-echo '</ul>';
-*/
 echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 $nav_params = $params;
@@ -2302,18 +2288,16 @@ foreach ($st as $k => $tab)
 	echo '>';
 	echo aphp('users', $nav_params, $tab['lbl'], 'bg-' . $tab['cl']) . '</li>';
 }
+
 echo '</ul>';
-
-
-echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="panel panel-success printview">';
 echo '<div class="table-responsive">';
 
-echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr"';
-echo ' data-filter="#q" data-filter-minimum="1">';
+echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr" ';
+echo 'data-filter="#q" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
@@ -2382,7 +2366,6 @@ foreach($users as $u)
 		echo '</td>';
 	}
 */
-
 
 	echo '<td>';
 	echo render_contacts($contacts[$id]['tel']);

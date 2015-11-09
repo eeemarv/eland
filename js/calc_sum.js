@@ -11,4 +11,6 @@ $(function() {
 			$('span#total').text(total);
 		}
 	});
+
+	$('#q').keyup();
 });

@@ -6,16 +6,13 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
 $q = ($_POST['q']) ?: (($_GET['q']) ?: '');
-$hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '');
+$hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '096024');
 $selected_users = $_POST['selected_users'];
 $selected_users = ltrim($selected_users, '.');
 $selected_users = explode('.', $selected_users);
 $selected_users = array_combine($selected_users, $selected_users);
 
 $st = array(
-	'all'		=> array(
-		'lbl'	=> 'Alle',
-	),
 	'active'	=> array(
 		'lbl'	=> 'Actief',
 		'st'	=> 1,
@@ -55,6 +52,9 @@ $st = array(
 		'st'	=> 6,
 		'hsh'	=> '065878',
 		'cl'	=> 'info',
+	),
+	'all'		=> array(
+		'lbl'	=> 'Alle',
 	),
 );
 
