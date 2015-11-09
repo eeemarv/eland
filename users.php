@@ -1,14 +1,17 @@
 <?php
 $rootpath = './';
+require_once $rootpath . 'includes/inc_pagination.php';
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'u.letscode';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 1;
 
 $limit = ($_GET['limit']) ?: 25;
 $start = ($_GET['start']) ?: 0;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $status = (isset($_GET['status'])) ? $_GET['status'] : 'active';
+
+$view = (isset($_GET['view'])) ? $_GET['view'] : 'list';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -25,7 +28,6 @@ $user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 $inline = (isset($_GET['inline'])) ? true : false;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$hsh = (isset($_GET['hsh'])) ? $_GET['hsh'] : '';
 
 $bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 $bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
@@ -2094,18 +2096,21 @@ if ($id)
 $st = array(
 	'active'	=> array(
 		'lbl'	=> 'Actief',
-		'sql'	=> 'in (1, 2)',
+		'sql'	=> 'u.status in (1, 2)',
+		'st'	=> array(1, 2),
 	),
 	'leaving'	=> array(
 		'lbl'	=> 'Uitstappers',
-		'st'	=> '= 2',
+		'sql'	=> 'u.status = 2',
 		'cl'	=> 'danger',
+		'st'	=> 2,
 	),
 	'new'		=> array(
 		'lbl'	=> 'Instappers',
-		'sql'	=> '= 1 and u.adate > ?',
+		'sql'	=> 'u.status = 1 and u.adate > ?',
 		'sql_bind'	=> date('Y-m-d H:i:s', $newusertreshold),
 		'cl'	=> 'success',
+		'st'	=> 3,
 	),
 );
 
@@ -2114,23 +2119,27 @@ if ($s_admin)
 	$st = $st + array(
 		'inactive'	=> array(
 			'lbl'	=> 'Inactief',
-			'sql'	=> '= 0',
+			'sql'	=> 'u.status = 0',
 			'cl'	=> 'inactive',
+			'st'	=> 0,
 		),
 		'ip'		=> array(
 			'lbl'	=> 'Info-pakket',
-			'sql'	=> '= 5',
+			'sql'	=> 'u.status = 5',
 			'cl'	=> 'warning',
+			'st'	=> 5,
 		),
 		'im'		=> array(
 			'lbl'	=> 'Info-moment',
-			'sql'	=> '= 6',
+			'sql'	=> 'u.status = 6',
 			'cl'	=> 'info',
+			'st'	=> 6
 		),
 		'extern'	=> array(
 			'lbl'	=> 'Extern',
-			'sql'	=> '= 7',
+			'sql'	=> 'u.status = 7',
 			'cl'	=> 'extern',
+			'st'	=> 7,
 		),
 		'all'		=> array(
 			'lbl'	=> 'Alle',
@@ -2139,11 +2148,21 @@ if ($s_admin)
 	);
 }
 
+$st_class_ary = array(
+	0 => 'inactive',
+	2 => 'danger',
+	3 => 'success',
+	5 => 'warning',
+	6 => 'info',
+	7 => 'extern',
+);
+	
+
 $sql_bind = array();
 $and_where = '';
 $params = array();
 
-if (!isset($st[$stat]))
+if (!isset($st[$status]))
 {
 	header('Location: ' . $rootpath . 'tpl/404.html');
 	exit;
@@ -2288,8 +2307,6 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="hidden" value="" id="combined-filter">';
-echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
 echo '</form>';
 
 echo '</div>';
@@ -2298,7 +2315,7 @@ echo '</div>';
 echo '<div class="pull-right hidden-xs print-hide">';
 echo 'Totaal: <span id="total"></span>';
 echo '</div>';
-
+/*
 echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 $default_tab = ($s_admin) ? 'all' : 'active';
@@ -2312,6 +2329,22 @@ foreach ($st as $k => $s)
 }
 
 echo '</ul>';
+*/
+echo '<ul class="nav nav-tabs" id="nav-tabs">';
+
+$nav_params = $params;
+
+foreach ($st as $k => $tab)
+{
+	$nav_params['status'] = $k;
+	echo '<li';
+	echo ($status == $k) ? ' class="active"' : '';
+	echo '>';
+	echo aphp('users', $nav_params, $tab['lbl'], 'bg-' . $tab['cl']) . '</li>';
+}
+echo '</ul>';
+
+
 echo '<input type="hidden" value="" id="combined-filter">';
 
 echo '<form method="post" class="form-horizontal">';
@@ -2320,21 +2353,21 @@ echo '<div class="panel panel-success printview">';
 echo '<div class="table-responsive">';
 
 echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr"';
-echo ' data-filter="#combined-filter" data-filter-minimum="1">';
+echo ' data-filter="#q" data-filter-minimum="1">';
 echo '<thead>';
 
 echo '<tr>';
 echo '<th data-sort-initial="true">Code</th>';
 echo '<th>Naam</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
-echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
+//echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
+//echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
 echo '<th data-hide="phone">Saldo</th>';
 
-if ($s_admin)
+/*if ($s_admin)
 {
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
 	echo '<th data-hide="all">Min</th>';
@@ -2346,7 +2379,7 @@ if ($s_admin)
 	echo '<th data-hide="all">Profielfoto</th>';
 	echo '<th data-hide="all">Admin commentaar</th>';
 	echo '<th data-hide="all" data-sort-ignore="true">Aanpassen</th>';
-}
+}*/
 
 echo '</tr>';
 
@@ -2357,13 +2390,9 @@ foreach($users as $u)
 {
 	$id = $u['id'];
 
-	$status_key = $st_ary[$u['status']];
-	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($u['adate'])) ? 'new' : $status_key;
-
-	$hsh = ($st[$status_key]['hsh']) ?: '';
-	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
-
-	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
+	$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+	$class = $st_class_ary[$row_stat];
+	$class = (isset($class)) ? ' class="' . $class . '"' : '';
 
 	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
@@ -2381,6 +2410,7 @@ foreach($users as $u)
 	echo link_user($u, 'name');
 	echo '</td>';
 
+/*
 	if ($s_admin)
 	{
 		echo '<td>';
@@ -2391,8 +2421,10 @@ foreach($users as $u)
 		echo $u['accountrole'];
 		echo '</td>';
 	}
+*/
 
-	echo '<td data-value="' . $hsh . '">';
+
+	echo '<td>';
 	echo render_contacts($contacts[$id]['tel']);
 	echo '</td>';
 	
@@ -2412,6 +2444,7 @@ foreach($users as $u)
 	echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
 	echo '</td>';
 
+/*
 	if ($s_admin)
 	{
 		echo '<td>';
@@ -2454,6 +2487,7 @@ foreach($users as $u)
 		echo aphp('users', 'edit=' . $id, 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 		echo '</td>';
 	}
+*/
 
 	echo '</tr>';
 
