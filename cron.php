@@ -35,30 +35,12 @@ echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
 // select in which schema to perform updates
-$schemas = $domains = $schema_lastrun_ary = $schema_interletsq_ary = array();
+$schema_lastrun_ary = $schema_interletsq_ary = array();
 
-$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
-$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
-$schemas_db = array_fill_keys($schemas_db, true);
+list($schemas, $domains) = get_schemas_domains(true);
 
-foreach ($_ENV as $key => $schema)
+foreach ($schemas as $url => $schema)
 {
-	if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$schema])))
-	{
-		continue;
-	}
-
-	$domain = str_replace('ELAS_SCHEMA_', '', $key);
-
-	$schemas[$domain] = $schema;
-
-	$domain = str_replace('____', ':', $domain);
-	$domain = str_replace('___', '-', $domain);
-	$domain = str_replace('__', '.', $domain);
-	$domain = strtolower($domain);
-
-	$domains[$schema] = $domain;
-
 	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
 
@@ -109,7 +91,7 @@ echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . rea
 
 $elas_mongo->set_schema($schema);
 
-$base_url = $http . $domains[$schema];
+$base_url = $domains[$schema];
 
 // begin typeahaed update (when interletsq is empty) for one group
 
@@ -123,6 +105,12 @@ if (!isset($schema_interletsq_min))
 
 	foreach ($letsgroups as $letsgroup)
 	{
+		if (isset($schemas[$letsgroup['url']]))
+		{
+			unset($letsgroup);
+			continue;
+		}
+
 		if ($redis->get($schema . '_typeahead_failed_' . $letsgroup['remoteapikey'])
 			|| $redis->get($schema . '_typeahead_failed_' . $letsgroup['url']))
 		{
@@ -150,7 +138,6 @@ if (!isset($schema_interletsq_min))
 		if ($err)
 		{
 			echo $err_group . 'Can not get connection.' . $r;
-
 			$redis_key = $schema . '_typeahead_failed_' . $letsgroup['url'];
 			$redis->set($redis_key, '1');
 			$redis->expire($redis_key, 21600);  // 6 hours
@@ -162,8 +149,15 @@ if (!isset($schema_interletsq_min))
 			if ($err)
 			{
 				echo $err_group . 'Can not get token.' . $r;
+			}
+			else if (!$token || $token = '---')
+			{
+				$err = 'invalid token';
+				echo $err_group . 'Invalid token.' . $r;
+			}
 
-				$unvalid_apikeys[$letsgroup['remoteapikey']] = 1;
+			if ($err)
+			{
 				$redis_key = $schema . '_typeahead_failed_' . $letsgroup['remoteapikey'];
 				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
@@ -240,6 +234,7 @@ if (!isset($schema_interletsq_min))
 		}
 		else
 		{
+			echo '-- retry after 6 hours --' . $r;
 			echo '-- continue --' . $r;
 		}
 	}
@@ -372,7 +367,7 @@ function admin_exp_msg()
 	
 	$query = "SELECT u.name AS username, m.content AS message, m.id AS mid, m.validity AS validity
 		FROM messages m, users u
-		WHERE users.status <> 0
+		WHERE u.status <> 0
 			AND m.id_user = u.id
 			AND validity <= ?";
 	$messages = $db->fetchAll($query, array($now));
@@ -409,7 +404,7 @@ function admin_exp_msg()
 	foreach($messages as $key => $value)
 	{
 		$content .=  $value["mid"] ."\t" .$value['username'] ."\t" .$value['message'] ."\t" .$value["validity"] ."\n";
-		$content .= $base_url . '\messages.php?id=' . $value['mid'] . " \n";
+		$content .= $base_url . '\messages.php?id=' . $value['mid'] . " \n\n";
 	}
 
 	$content .=  $r;

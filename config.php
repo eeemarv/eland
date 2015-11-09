@@ -80,6 +80,7 @@ $config = $db->fetchAll('select *
 		and setting <> \'share_enabled\'
 		and setting <> \'pwscore\'
 		and setting <> \'msgexpwarningdays\'
+		and setting <> \'news_announce\'
 	order by category, setting');
 
 $eh_settings = array_keys($elas_heroku_config);

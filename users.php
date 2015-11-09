@@ -1,6 +1,15 @@
 <?php
 $rootpath = './';
 
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+
+$limit = ($_GET['limit']) ?: 25;
+$start = ($_GET['start']) ?: 0;
+
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$status = (isset($_GET['status'])) ? $_GET['status'] : 'active';
+
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -109,19 +118,19 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ($s_interlets) ? ' van letsgroep ' . readconfigfromdb('systemname') : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
-			$status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
+			$mail_status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
 		}
 
 		$mailcontent .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		if (!$status)
+		if (!$mail_status)
 		{
-			$status = sendemail($from, $to, $subject, $mailcontent);
+			$mail_status = sendemail($from, $to, $subject, $mailcontent);
 		}
 
-		if ($status)
+		if ($mail_status)
 		{
-			$alert->error($status);
+			$alert->error($mail_status);
 		}
 		else
 		{
@@ -1270,11 +1279,11 @@ if ($add || $edit)
 			{
 				$user_stored = readuser($edit);
 
-				$user['mdate'] = gmdate('Y-m-d H:i:s');
+				$user['mdate'] = date('Y-m-d H:i:s');
 
 				if (!$user_stored['adate'] && $user['status'] == 1)
 				{
-					$user['adate'] = gmdate('Y-m-d H:i:s');
+					$user['adate'] = date('Y-m-d H:i:s');
 				}
 
 				if($db->update('users', $user, array('id' => $edit)))
@@ -1565,16 +1574,6 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-/*
-	echo '<div class="form-group">';
-	echo '<label for="login" class="col-sm-2 control-label">Login</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="login" name="login" ';
-	echo 'value="' . $user['login'] . '" required>';
-	echo '</div>';
-	echo '</div>';
-*/
-
 	if ($s_admin)
 	{
 		echo '<div class="form-group">';
@@ -1824,7 +1823,7 @@ if ($id)
 	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$status = $user['status'];
-	$status = ($newusertreshold < strtotime($user['adate']) && $user['status'] == 1) ? 3 : $user['status'];
+	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
 
 	$status_style_ary = array(
 		0	=> 'default',
@@ -1891,9 +1890,6 @@ if ($id)
 
 		echo aphp('users', 'img_del=1&id=' . $id, 'Foto verwijderen', 'btn btn-danger', false, 'times', false, $attr);
 
-//		echo '<span data-url="' . generate_url('users', 'img_del=1&id=' . $id) . '" class="btn btn-danger" ';
-//		echo 'id="btn_remove"' . $user_img . '>';
-//		echo '<i class="fa fa-times"></i> Foto verwijderen</span>';
 		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook een foto hierheen verslepen.</p>';
 		echo '</div>';
@@ -1945,16 +1941,6 @@ if ($id)
 	echo 'Commentaar';
 	echo '</dt>';
 	dd_render($user['comments']);
-
-/*
-	if ($s_admin || $s_owner)
-	{
-		echo '<dt>';
-		echo 'Login';
-		echo '</dt>';
-		dd_render($user['login']);
-	}
-*/
 
 	if ($s_admin)
 	{
@@ -2107,74 +2093,138 @@ if ($id)
 
 $st = array(
 	'active'	=> array(
-		'lbl'	=> ($s_admin) ? 'Actief' : 'Alle',
-		'st'	=> 1,
-		'hsh'	=> '58d267',
+		'lbl'	=> 'Actief',
+		'sql'	=> 'in (1, 2)',
 	),
 	'leaving'	=> array(
 		'lbl'	=> 'Uitstappers',
-		'st'	=> 2,
-		'hsh'	=> 'ea4d04',
+		'st'	=> '= 2',
 		'cl'	=> 'danger',
 	),
 	'new'		=> array(
 		'lbl'	=> 'Instappers',
-		'st'	=> 3,
-		'hsh'	=> 'e25b92',
+		'sql'	=> '= 1 and u.adate > ?',
+		'sql_bind'	=> date('Y-m-d H:i:s', $newusertreshold),
 		'cl'	=> 'success',
 	),
 );
 
 if ($s_admin)
 {
-	$st = array(
-		'all'		=> array(
-			'lbl'	=> 'Alle',
-		)
-	) + $st + array(
+	$st = $st + array(
 		'inactive'	=> array(
 			'lbl'	=> 'Inactief',
-			'st'	=> 0,
-			'hsh'	=> '79a240',
+			'sql'	=> '= 0',
 			'cl'	=> 'inactive',
 		),
-		'info-packet'	=> array(
+		'ip'		=> array(
 			'lbl'	=> 'Info-pakket',
-			'st'	=> 5,
-			'hsh'	=> '2ed157',
+			'sql'	=> '= 5',
 			'cl'	=> 'warning',
 		),
-		'info-moment'	=> array(
+		'im'		=> array(
 			'lbl'	=> 'Info-moment',
-			'st'	=> 6,
-			'hsh'	=> '065878',
+			'sql'	=> '= 6',
 			'cl'	=> 'info',
 		),
 		'extern'	=> array(
 			'lbl'	=> 'Extern',
-			'st'	=> 7,
-			'hsh'	=> '05306b',
+			'sql'	=> '= 7',
 			'cl'	=> 'extern',
+		),
+		'all'		=> array(
+			'lbl'	=> 'Alle',
+			'sql'	=> '1 = 1',
 		),
 	);
 }
 
-$st_ary = array(
-	0 	=> 'inactive',
-	1 	=> 'active',
-	2 	=> 'leaving',
-	3	=> 'new',
-	5	=> 'info-packet',
-	6	=> 'info-moment',
-	7	=> 'extern',
+$sql_bind = array();
+$and_where = '';
+$params = array();
+
+if (!isset($st[$stat]))
+{
+	header('Location: ' . $rootpath . 'tpl/404.html');
+	exit;
+}
+
+if (isset($st[$status]['sql_bind']))
+{
+	$sql_bind[] = $st[$status]['sql_bind'];
+}
+
+if ($q)
+{
+	$and_where .= ' and u.name ilike ? or u.postcode ilike ? or u.letscode ilike ? ';
+	$sql_bind[] = '%' . $q . '%';
+	$sql_bind[] = '%' . $q . '%';
+	$sql_bind[] = '%' . $q . '%';
+	$params['q'] = $q;
+}
+
+$params['status'] = $status;
+
+$query = 'select u.*
+	from users u
+	where ' . $st[$status]['sql'] . $and_where . '
+	order by ' . $orderby . ' ';
+
+$row_count = $db->fetchColumn('select count(u.*)
+	from users u
+	where ' . $st[$status]['sql'] . $and_where, $sql_bind);
+
+$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= ' limit ' . $limit . ' offset ' . $start;
+
+$users = $db->fetchAll($query, $sql_bind);
+
+$params['orderby'] = $orderby;
+$params['asc'] = $asc;
+
+$pagination = new pagination(array(
+	'limit' 		=> $limit,
+	'start' 		=> $start,
+	'entity'		=> 'users',
+	'params'		=> $params,
+	'row_count'		=> $row_count,
+));
+
+$asc_preset_ary = array(
+	'asc'	=> 0,
+	'indicator' => '',
 );
 
-$where = ($s_admin) ? '' : 'where u.status in (1, 2)';
+$tableheader_ary = array(
+	'u.letscode' => array_merge($asc_preset_ary, array(
+		'lbl' => 'Code'
+	)),
+	'u.name' => array_merge($asc_preset_ary, array(
+		'lbl' => 'Naam'
+	)),
+	'tel' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Tel',
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true,
+	)),
+	'gsm' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Gsm',
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true,
+	)),
+	'u.postcode' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Postc',
+	)),
+	'mail' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Mail',
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true,
+	)), 
+	'u.saldo' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Saldo',
+	)),
+);
 
-$users = $db->fetchAll('select u.*
-	from users u
-	' . $where . '
-	order by u.letscode asc');
 
 $c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 	FROM contact c, type_contact tc
