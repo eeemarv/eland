@@ -2,14 +2,8 @@
 $rootpath = './';
 require_once $rootpath . 'includes/inc_pagination.php';
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'u.letscode';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 1;
-
-$limit = ($_GET['limit']) ?: 25;
-$start = ($_GET['start']) ?: 0;
-
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$status = (isset($_GET['status'])) ? $_GET['status'] : 'active';
+$status = (isset($_GET['status'])) ? $_GET['status'] : false;
 
 $view = (isset($_GET['view'])) ? $_GET['view'] : 'list';
 
@@ -1479,7 +1473,7 @@ if ($add || $edit)
 	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', 'status=active', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -1708,7 +1702,7 @@ if ($add || $edit)
 		}
 	}
 
-	$cancel_id = ($edit) ? 'id=' . $edit : '';
+	$cancel_id = ($edit) ? 'id=' . $edit : 'status=active';
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
@@ -1822,7 +1816,7 @@ if ($id)
 		$top_buttons .= aphp('users', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('users', '', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', 'status=active', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
@@ -2156,16 +2150,13 @@ $st_class_ary = array(
 	6 => 'info',
 	7 => 'extern',
 );
-	
 
 $sql_bind = array();
-$and_where = '';
 $params = array();
 
 if (!isset($st[$status]))
 {
-	header('Location: ' . $rootpath . 'tpl/404.html');
-	exit;
+	cancel();
 }
 
 if (isset($st[$status]['sql_bind']))
@@ -2173,41 +2164,11 @@ if (isset($st[$status]['sql_bind']))
 	$sql_bind[] = $st[$status]['sql_bind'];
 }
 
-if ($q)
-{
-	$and_where .= ' and u.name ilike ? or u.postcode ilike ? or u.letscode ilike ? ';
-	$sql_bind[] = '%' . $q . '%';
-	$sql_bind[] = '%' . $q . '%';
-	$sql_bind[] = '%' . $q . '%';
-	$params['q'] = $q;
-}
-
 $params['status'] = $status;
 
-$query = 'select u.*
+$users = $db->fetchAll('select u.*
 	from users u
-	where ' . $st[$status]['sql'] . $and_where . '
-	order by ' . $orderby . ' ';
-
-$row_count = $db->fetchColumn('select count(u.*)
-	from users u
-	where ' . $st[$status]['sql'] . $and_where, $sql_bind);
-
-$query .= ($asc) ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
-
-$users = $db->fetchAll($query, $sql_bind);
-
-$params['orderby'] = $orderby;
-$params['asc'] = $asc;
-
-$pagination = new pagination(array(
-	'limit' 		=> $limit,
-	'start' 		=> $start,
-	'entity'		=> 'users',
-	'params'		=> $params,
-	'row_count'		=> $row_count,
-));
+	where ' . $st[$status]['sql'], $sql_bind);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -2284,8 +2245,7 @@ $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default',
 
 $fa = 'users';
 
-$includejs = '<script src="' . $rootpath . 'js/combined_filter.js"></script>
-	<script src="' . $rootpath . 'js/calc_sum.js"></script>
+$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>
 	<script src="' . $rootpath . 'js/csv.js"></script>
 	<script src="' . $rootpath . 'js/table_sel.js"></script>';
 
@@ -2660,7 +2620,7 @@ function render_contacts($contacts, $abbrev = null)
 
 function cancel($id = null)
 {
-	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : '')));
+	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : 'status=active')));
 	exit;
 }
 

@@ -145,7 +145,7 @@ else
 	$menu = array(
 		'index'					=> array('home', 'Overzicht'),
 		'messages'				=> array('newspaper-o', 'Vraag & Aanbod'),
-		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden')),
+		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active'),
 		'transactions'			=> array('exchange', 'Transacties'),
 		'news'					=> array('calendar-o', 'Nieuws'),
 	);
@@ -177,7 +177,9 @@ foreach ($menu as $link => $label)
 {
 	$active = ($script_name == $link) ? ' class="active"' : '';
 	echo '<li' . $active . '>';
-	echo aphp($link, '', $label[1], false, false, $label[0], false, array('role' => 'presentation'));
+	echo aphp($link, (isset($label[2])) ? $label[2] : '',
+		$label[1], false, false, $label[0], false,
+		array('role' => 'presentation'));
 	echo '</li>';
 }
 echo '</ul>';

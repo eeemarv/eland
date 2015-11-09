@@ -210,7 +210,7 @@ if($news)
 if($newusers)
 {
 	echo '<h3 class="printview">';
-	echo aphp('users', '', 'Nieuwe leden', false, false, 'users');
+	echo aphp('users', 'status=new', 'Nieuwe leden', false, false, 'users');
 	echo '</h3>';
 
 	echo '<div class="panel panel-success printview">';
