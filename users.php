@@ -2170,42 +2170,6 @@ $users = $db->fetchAll('select u.*
 	from users u
 	where ' . $st[$status]['sql'], $sql_bind);
 
-$asc_preset_ary = array(
-	'asc'	=> 0,
-	'indicator' => '',
-);
-
-$tableheader_ary = array(
-	'u.letscode' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Code'
-	)),
-	'u.name' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Naam'
-	)),
-	'tel' => array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Tel',
-		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true,
-	)),
-	'gsm' => array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Gsm',
-		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true,
-	)),
-	'u.postcode' => array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Postc',
-	)),
-	'mail' => array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Mail',
-		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true,
-	)), 
-	'u.saldo' => array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Saldo',
-	)),
-);
-
-
 $c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 	FROM contact c, type_contact tc
 	WHERE tc.id = c.id_type_contact
@@ -2223,11 +2187,11 @@ if ($s_admin)
 	$top_right .= '<a href="#" class="csv">';
 	$top_right .= '<i class="fa fa-file"></i>';
 	$top_right .= '&nbsp;csv</a>&nbsp;';
-
+/*
 	$top_right .= '<a href="#" class="csv-adr">';
 	$top_right .= '<i class="fa fa-file"></i>';
 	$top_right .= '&nbsp;csv adres</a>';
-
+*/
 	$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
 	$top_buttons .= '<a href="#actions" class="btn btn-default"';
@@ -2310,6 +2274,7 @@ echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
 echo '<th data-hide="phone">Postc</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
 echo '<th data-hide="phone">Saldo</th>';
+echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 
 /*if ($s_admin)
 {
@@ -2354,19 +2319,6 @@ foreach($users as $u)
 	echo link_user($u, 'name');
 	echo '</td>';
 
-/*
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo link_user($u, 'fullname');
-		echo '</td>';
-
-		echo '<td>';
-		echo $u['accountrole'];
-		echo '</td>';
-	}
-*/
-
 	echo '<td>';
 	echo render_contacts($contacts[$id]['tel']);
 	echo '</td>';
@@ -2387,50 +2339,12 @@ foreach($users as $u)
 	echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
 	echo '</td>';
 
-/*
 	if ($s_admin)
 	{
 		echo '<td>';
-		echo render_contacts($contacts[$id]['adr'], 'adr');
-		echo '</td>';
-
-		echo '<td>';
-		echo '<span class="label label-danger">' . $u['minlimit'] . '</span>';
-		echo '</td>';
-
-		echo '<td>';
-		echo '<span class="label label-success">' . $u['maxlimit'] . '</span>';
-		echo '</td>';
-
-		echo '<td>';
-		echo $u['cdate'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $u['adate'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $u['mdate'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $u['lastlogin'];
-		echo '</td>';
-		
-		echo '<td>';
-		echo ($u['PictureFile']) ? 'Ja' : 'Nee';
-		echo '</td>';
-
-		echo '<td>';
-		echo htmlspecialchars($u['admincomment'], ENT_QUOTES);
-		echo '</td>';
-
-		echo '<td>';
-		echo aphp('users', 'edit=' . $id, 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+		echo $u['accountrole'];
 		echo '</td>';
 	}
-*/
 
 	echo '</tr>';
 
@@ -2438,6 +2352,10 @@ foreach($users as $u)
 echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
+
+
+
+
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
