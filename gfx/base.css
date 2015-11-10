@@ -277,7 +277,8 @@ div.top-buttons a, span.inline-buttons a
 }
 
 .nav-tabs > li.active > a.bg-danger,
-.nav-tabs > li.active > a.bg-danger:focus
+.nav-tabs > li.active > a.bg-danger:focus,
+div.bg-danger > div.thumbnail
 {
   background-color: #f2dede;
 }
@@ -288,7 +289,8 @@ div.top-buttons a, span.inline-buttons a
 }
 
 .nav-tabs > li.active > a.bg-success,
-.nav-tabs > li.active > a.bg-success:focus
+.nav-tabs > li.active > a.bg-success:focus,
+div.bg-success > div.thumbnail
 {
   background-color: #dff0d8;
 }
@@ -299,7 +301,8 @@ div.top-buttons a, span.inline-buttons a
 }
 
 .nav-tabs > li.active > a.bg-warning,
-.nav-tabs > li.active > a.bg-warning:focus
+.nav-tabs > li.active > a.bg-warning:focus,
+div.bg-warning > div.thumbnail
 {
   background-color: #fcf8e3; 
 }
@@ -307,8 +310,10 @@ div.top-buttons a, span.inline-buttons a
 {
   background-color: #faf2cc; 
 }
+
 .nav-tabs > li.active > a.bg-info,
 .nav-tabs > li.active > a.bg-info:focus
+div.bg-info > div.thumbnail
 {
   background-color: #d9edf7;
 }
@@ -320,7 +325,8 @@ div.top-buttons a, span.inline-buttons a
 
 .nav-tabs > li > a.bg-extern,
 .nav-tabs > li > a.bg-extern:focus,
-table tr.extern > td
+table tr.extern > td,
+div.bg-extern > div.thumbnail
 {
   background-color: #ffdbfc;
 }
@@ -333,7 +339,8 @@ table tr.extern:hover > td
 
 .nav-tabs > li > a.bg-inactive,
 .nav-tabs > li > a.bg-inactive:focus,
-table tr.inactive > td
+table tr.inactive > td,
+div.bg-inactive > div.thumbnail
 {
   background-color: #d8d8d8;
 }
@@ -428,3 +435,8 @@ div.logo {
 	padding-top: 50px;
 }
 
+/*
+div.thumbnail {
+	background-color: transparent;
+}
+*/

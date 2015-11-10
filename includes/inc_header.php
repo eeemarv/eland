@@ -144,8 +144,8 @@ else
 {
 	$menu = array(
 		'index'					=> array('home', 'Overzicht'),
-		'messages'				=> array('newspaper-o', 'Vraag & Aanbod'),
-		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active'),
+		'messages'				=> array('newspaper-o', 'Vraag & Aanbod', 'view=' . $view_messages),
+		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active&view=' . $view_users),
 		'transactions'			=> array('exchange', 'Transacties'),
 		'news'					=> array('calendar-o', 'Nieuws'),
 	);

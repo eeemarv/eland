@@ -5,8 +5,6 @@ require_once $rootpath . 'includes/inc_pagination.php';
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $status = (isset($_GET['status'])) ? $_GET['status'] : false;
 
-$view = (isset($_GET['view'])) ? $_GET['view'] : 'list';
-
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -1473,7 +1471,7 @@ if ($add || $edit)
 	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= aphp('users', 'status=active', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', 'status=active&view=' . $view_users, 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -1702,7 +1700,7 @@ if ($add || $edit)
 		}
 	}
 
-	$cancel_id = ($edit) ? 'id=' . $edit : 'status=active';
+	$cancel_id = ($edit) ? 'id=' . $edit : 'status=active&view=' . $view_users;
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
@@ -1816,7 +1814,7 @@ if ($id)
 		$top_buttons .= aphp('users', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('users', 'status=active', 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', 'status=active&view=' . $view_users, 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
@@ -2087,6 +2085,14 @@ if ($id)
  * List all users
  */
 
+if (!$view)
+{
+	cancel();
+}
+
+$v_list = ($view == 'list') ? true : false;
+$v_tiles = ($view == 'tiles') ? true : false;
+
 $st = array(
 	'active'	=> array(
 		'lbl'	=> 'Actief',
@@ -2164,29 +2170,38 @@ if (isset($st[$status]['sql_bind']))
 	$sql_bind[] = $st[$status]['sql_bind'];
 }
 
-$params['status'] = $status;
+$params = array(
+	'status'	=> $status,
+	'view'		=> $view,
+);
 
 $users = $db->fetchAll('select u.*
 	from users u
 	where ' . $st[$status]['sql'], $sql_bind);
 
-$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
-	FROM contact c, type_contact tc
-	WHERE tc.id = c.id_type_contact
-		AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
-
-$contacts = array();
-
-foreach ($c_ary as $c)
+if ($v_list)
 {
-	$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+	$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
+		FROM contact c, type_contact tc
+		WHERE tc.id = c.id_type_contact
+			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
+
+	$contacts = array();
+
+	foreach ($c_ary as $c)
+	{
+		$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+	}
 }
 
 if ($s_admin)
 {
-	$top_right .= '<a href="#" class="csv">';
-	$top_right .= '<i class="fa fa-file"></i>';
-	$top_right .= '&nbsp;csv</a>&nbsp;';
+	if ($v_list)
+	{
+		$top_right .= '<a href="#" class="csv">';
+		$top_right .= '<i class="fa fa-file"></i>';
+		$top_right .= '&nbsp;csv</a>&nbsp;';
+	}
 /*
 	$top_right .= '<a href="#" class="csv-adr">';
 	$top_right .= '<i class="fa fa-file"></i>';
@@ -2194,9 +2209,12 @@ if ($s_admin)
 */
 	$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
-	$top_buttons .= '<a href="#actions" class="btn btn-default"';
-	$top_buttons .= ' title="Acties"><i class="fa fa-envelope-o"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Acties</span></a>';
+	if ($v_list)
+	{
+		$top_buttons .= '<a href="#actions" class="btn btn-default"';
+		$top_buttons .= ' title="Acties"><i class="fa fa-envelope-o"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Acties</span></a>';
+	}
 
 	$h1 = 'Gebruikers';
 }
@@ -2205,13 +2223,27 @@ else
 	$h1 = 'Leden';
 }
 
+$h1 .= '<span class="btn-group pull-right" role="group">';
+$active = ($v_tiles) ? ' active' : '';
+$h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, false, 'th');
+$active = ($v_list) ? ' active' : '';
+$h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, false, 'list');
+$h1 .= '</span>';
+
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
 $fa = 'users';
 
-$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>
-	<script src="' . $rootpath . 'js/csv.js"></script>
-	<script src="' . $rootpath . 'js/table_sel.js"></script>';
+if ($v_list)
+{
+	$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>
+		<script src="' . $rootpath . 'js/csv.js"></script>
+		<script src="' . $rootpath . 'js/table_sel.js"></script>';
+}
+else
+{
+	$includejs = '<script src="' . $rootpath . 'js/calc_sum_tiles.js"></script>';
+}
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -2236,7 +2268,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="pull-right hidden-xs print-hide">';
+echo '<div class="pull-right hidden-xs hidden-sm print-hide">';
 echo 'Totaal: <span id="total"></span>';
 echo '</div>';
 
@@ -2255,236 +2287,272 @@ foreach ($st as $k => $tab)
 
 echo '</ul>';
 
-echo '<form method="post" class="form-horizontal">';
-
-echo '<div class="panel panel-success printview">';
-echo '<div class="table-responsive">';
-
-echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr" ';
-echo 'data-filter="#q" data-filter-minimum="1">';
-echo '<thead>';
-
-echo '<tr>';
-echo '<th data-sort-initial="true">Code</th>';
-echo '<th>Naam</th>';
-//echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
-//echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
-echo '<th data-hide="phone">Postc</th>';
-echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
-echo '<th data-hide="phone">Saldo</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
-
-/*if ($s_admin)
+if ($v_list)
 {
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
-	echo '<th data-hide="all">Min</th>';
-	echo '<th data-hide="all">Max</th>';
-	echo '<th data-hide="all">Ingeschreven</th>';
-	echo '<th data-hide="all">Geactiveerd</th>';
-	echo '<th data-hide="all">Laatst aangepast</th>';
-	echo '<th data-hide="all">Laatst ingelogd</th>';
-	echo '<th data-hide="all">Profielfoto</th>';
-	echo '<th data-hide="all">Admin commentaar</th>';
-	echo '<th data-hide="all" data-sort-ignore="true">Aanpassen</th>';
-}*/
+	echo '<form method="post" class="form-horizontal">';
 
-echo '</tr>';
+	echo '<div class="panel panel-success printview">';
+	echo '<div class="table-responsive">';
 
-echo '</thead>';
-echo '<tbody>';
+	echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr" ';
+	echo 'data-filter="#q" data-filter-minimum="1">';
+	echo '<thead>';
 
-foreach($users as $u)
-{
-	$id = $u['id'];
+	echo '<tr>';
+	echo '<th data-sort-initial="true">Code</th>';
+	echo '<th>Naam</th>';
+	//echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
+	//echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
+	echo '<th data-hide="phone">Postc</th>';
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
+	echo '<th data-hide="phone">Saldo</th>';
+	echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 
-	$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-	$class = $st_class_ary[$row_stat];
-	$class = (isset($class)) ? ' class="' . $class . '"' : '';
-
-	echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
-
-	echo '<td>';
-	if ($s_admin)
+	/*if ($s_admin)
 	{
-		echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
-		echo ($selected_users[$id]) ? ' checked="checked"' : '';
-		echo '>&nbsp;';
-	}
-	echo link_user($u, 'letscode');
-	echo '</td>';
-
-	echo '<td>';
-	echo link_user($u, 'name');
-	echo '</td>';
-
-	echo '<td>';
-	echo render_contacts($contacts[$id]['tel']);
-	echo '</td>';
-	
-	echo '<td>';
-	echo render_contacts($contacts[$id]['gsm']);
-	echo '</td>';
-	
-	echo '<td>' . $u['postcode'] . '</td>';
-	
-	echo '<td>';
-	echo render_contacts($contacts[$id]['mail'], 'mail');
-	echo '</td>';
-
-	echo '<td>';
-	$balance = $u['saldo'];
-	$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
-	echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
-	echo '</td>';
-
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo $u['accountrole'];
-		echo '</td>';
-	}
+		echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
+		echo '<th data-hide="all">Min</th>';
+		echo '<th data-hide="all">Max</th>';
+		echo '<th data-hide="all">Ingeschreven</th>';
+		echo '<th data-hide="all">Geactiveerd</th>';
+		echo '<th data-hide="all">Laatst aangepast</th>';
+		echo '<th data-hide="all">Laatst ingelogd</th>';
+		echo '<th data-hide="all">Profielfoto</th>';
+		echo '<th data-hide="all">Admin commentaar</th>';
+		echo '<th data-hide="all" data-sort-ignore="true">Aanpassen</th>';
+	}*/
 
 	echo '</tr>';
 
-}
-echo '</tbody>';
-echo '</table>';
-echo '</div></div>';
-
-
-
-
-
-echo '<div class="panel panel-default">';
-echo '<div class="panel-heading">';
-echo '<p>Totaal saldo: <span id="sum"></span> ' . $currency . '</p>';
-echo '</div></div>';
-
-if ($s_admin)
-{
-	$inp =  '<div class="form-group">';
-	$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
-	$inp .=  '<div class="col-sm-10">';
-	$inp .=  '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
-	$inp .=  '</div>';
-	$inp .=  '</div>';
-
-	$acc_sel = '<div class="form-group">';
-	$acc_sel .= '<label for="%1$s" class="col-sm-2 control-label">';
-	$acc_sel .= '%2$s</label>';
-	$acc_sel .= '<div class="col-sm-10">';
-	$acc_sel .= '<select name="%1$s" id="%1$s" class="form-control">';
-	$acc_sel .= '%3$s';
-	$acc_sel .= '</select>';
-	$acc_sel .= '</div>';
-	$acc_sel .= '</div>';
-
-	echo '<div class="panel panel-default" id="actions">';
-	echo '<div class="panel-heading">';
-	echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
-	echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
-	echo '</div></div>';
-	echo '<h3>Acties met geselecteerde gebruikers</h3>';
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-
-	echo '<ul class="nav nav-tabs" role="tablist">';
-	echo '<li class="active"><a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-	echo '<li class="dropdown">';
-	echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
-	echo '<span class="caret"></span></a>';
-	echo '<ul class="dropdown-menu">';
-	foreach ($edit_fields_tabs as $k => $t)
-	{
-		echo '<li><a href="#' . $k . '_tab" data-toggle="tab">' . $t['lbl'] . '</a></li>';
-	}
-	echo '</ul>';
-	echo '</li>';
-	echo '</ul>';
-
-	echo '<div class="tab-content">';
-
-	echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
-	echo '<h3>Mail verzenden naar geselecteerde gebruikers</h3>';
-
-	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<input type="text" class="form-control" id="mail_subject" name="mail_subject" ';
-	echo 'placeholder="Onderwerp" ';
-	echo 'value="' . $mail_subject . '">';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<textarea name="mail_content" class="form-control" id="mail_content" rows="16">';
-	echo $mail_content;
-	echo '</textarea>';
-	echo '</div>';
-	echo '</div>';
-
-	echo sprintf($inp, 'mail_password', 'Paswoord', 'password', 'class="form-control"', 'mail_password');
-
-	echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
-	echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
-	echo '<p>*Om een test mail te verzenden moet je je paswoord niet invullen.</p>';
-	echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
-	echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
-	echo '<div class="table-responsive collapse" id="mail_variables">';
-	echo '<table class="table table-bordered table-hover" data-sort="false">';
-
+	echo '</thead>';
 	echo '<tbody>';
-	echo '<tr><td>{{letscode}}</td><td>Letscode</td></tr>';
-	echo '<tr><td>{{naam}}</td><td>Gebruikersnaam</td></tr>';
-	echo '<tr><td>{{volledige_naam}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
-	echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
-	echo '<tr><td>{{status}}</td><td>Status</td></tr>';
-	echo '<tr><td>{{min_limiet}}</td><td>Minimum limiet</td></tr>';
-	echo '<tr><td>{{max_limiet}}</td><td>Maximum limiet</td></tr>';
-	echo '<tr><td>{{saldo}}</td><td>Huidig saldo in ' . $currency . '</td></tr>';
-	echo '<tr><td>{{id}}</td><td>Gebruikers id (kan gebruikt worden om urls te vormen).</td></tr>';
-	echo '</body>';
-	echo '</table>';
 
-	echo '</div>';
-	echo '</div>';
-
-	foreach($edit_fields_tabs as $k => $t)
+	foreach($users as $u)
 	{
-		echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab">';
-		echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
+		$id = $u['id'];
 
-		if ($options = $t['options'])
+		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$class = $st_class_ary[$row_stat];
+		$class = (isset($class)) ? ' class="' . $class . '"' : '';
+
+		echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+
+		echo '<td>';
+		if ($s_admin)
 		{
-			echo sprintf($acc_sel, $k, $t['lbl'], render_select_options($$options, 0, false));
+			echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
+			echo ($selected_users[$id]) ? ' checked="checked"' : '';
+			echo '>&nbsp;';
 		}
-		else if ($t['type'] == 'checkbox')
+		echo link_user($u, 'letscode');
+		echo '</td>';
+
+		echo '<td>';
+		echo link_user($u, 'name');
+		echo '</td>';
+
+		echo '<td>';
+		echo render_contacts($contacts[$id]['tel']);
+		echo '</td>';
+		
+		echo '<td>';
+		echo render_contacts($contacts[$id]['gsm']);
+		echo '</td>';
+		
+		echo '<td>' . $u['postcode'] . '</td>';
+		
+		echo '<td>';
+		echo render_contacts($contacts[$id]['mail'], 'mail');
+		echo '</td>';
+
+		echo '<td>';
+		$balance = $u['saldo'];
+		$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
+		echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
+		echo '</td>';
+
+		if ($s_admin)
 		{
-			echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
+			echo '<td>';
+			echo $u['accountrole'];
+			echo '</td>';
 		}
-		else
+
+		echo '</tr>';
+
+	}
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div></div>';
+
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<p>Totaal saldo: <span id="sum"></span> ' . $currency . '</p>';
+	echo '</div></div>';
+
+	if ($s_admin)
+	{
+		$inp =  '<div class="form-group">';
+		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
+		$inp .=  '<div class="col-sm-10">';
+		$inp .=  '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
+		$inp .=  '</div>';
+		$inp .=  '</div>';
+
+		$acc_sel = '<div class="form-group">';
+		$acc_sel .= '<label for="%1$s" class="col-sm-2 control-label">';
+		$acc_sel .= '%2$s</label>';
+		$acc_sel .= '<div class="col-sm-10">';
+		$acc_sel .= '<select name="%1$s" id="%1$s" class="form-control">';
+		$acc_sel .= '%3$s';
+		$acc_sel .= '</select>';
+		$acc_sel .= '</div>';
+		$acc_sel .= '</div>';
+
+		echo '<div class="panel panel-default" id="actions">';
+		echo '<div class="panel-heading">';
+		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
+		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
+		echo '</div></div>';
+		echo '<h3>Acties met geselecteerde gebruikers</h3>';
+		echo '<div class="panel panel-info">';
+		echo '<div class="panel-heading">';
+
+		echo '<ul class="nav nav-tabs" role="tablist">';
+		echo '<li class="active"><a href="#mail_tab" data-toggle="tab">Mail</a></li>';
+		echo '<li class="dropdown">';
+		echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
+		echo '<span class="caret"></span></a>';
+		echo '<ul class="dropdown-menu">';
+		foreach ($edit_fields_tabs as $k => $t)
 		{
-			echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
+			echo '<li><a href="#' . $k . '_tab" data-toggle="tab">' . $t['lbl'] . '</a></li>';
+		}
+		echo '</ul>';
+		echo '</li>';
+		echo '</ul>';
+
+		echo '<div class="tab-content">';
+
+		echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
+		echo '<h3>Mail verzenden naar geselecteerde gebruikers</h3>';
+
+		echo '<div class="form-group">';
+		echo '<div class="col-sm-12">';
+		echo '<input type="text" class="form-control" id="mail_subject" name="mail_subject" ';
+		echo 'placeholder="Onderwerp" ';
+		echo 'value="' . $mail_subject . '">';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="form-group">';
+		echo '<div class="col-sm-12">';
+		echo '<textarea name="mail_content" class="form-control" id="mail_content" rows="16">';
+		echo $mail_content;
+		echo '</textarea>';
+		echo '</div>';
+		echo '</div>';
+
+		echo sprintf($inp, 'mail_password', 'Paswoord', 'password', 'class="form-control"', 'mail_password');
+
+		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
+		echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
+		echo '<p>*Om een test mail te verzenden moet je je paswoord niet invullen.</p>';
+		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
+		echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
+		echo '<div class="table-responsive collapse" id="mail_variables">';
+		echo '<table class="table table-bordered table-hover" data-sort="false">';
+
+		echo '<tbody>';
+		echo '<tr><td>{{letscode}}</td><td>Letscode</td></tr>';
+		echo '<tr><td>{{naam}}</td><td>Gebruikersnaam</td></tr>';
+		echo '<tr><td>{{volledige_naam}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
+		echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
+		echo '<tr><td>{{status}}</td><td>Status</td></tr>';
+		echo '<tr><td>{{min_limiet}}</td><td>Minimum limiet</td></tr>';
+		echo '<tr><td>{{max_limiet}}</td><td>Maximum limiet</td></tr>';
+		echo '<tr><td>{{saldo}}</td><td>Huidig saldo in ' . $currency . '</td></tr>';
+		echo '<tr><td>{{id}}</td><td>Gebruikers id (kan gebruikt worden om urls te vormen).</td></tr>';
+		echo '</body>';
+		echo '</table>';
+
+		echo '</div>';
+		echo '</div>';
+
+		foreach($edit_fields_tabs as $k => $t)
+		{
+			echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab">';
+			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
+
+			if ($options = $t['options'])
+			{
+				echo sprintf($acc_sel, $k, $t['lbl'], render_select_options($$options, 0, false));
+			}
+			else if ($t['type'] == 'checkbox')
+			{
+				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
+			}
+			else
+			{
+				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
+			}
+
+			echo sprintf($inp, $k . '_password', 'Paswoord', 'password', 'class="form-control"', $k . '_password');
+
+			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
+
+			echo '</div>';
 		}
 
-		echo sprintf($inp, $k . '_password', 'Paswoord', 'password', 'class="form-control"', $k . '_password');
-
-		echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
-
+		echo '<div class="clearfix"></div>';
+		echo '</div>'; 
+		echo '</div>';
 		echo '</div>';
 	}
 
-	echo '<div class="clearfix"></div>';
-	echo '</div>'; 
 	echo '</div>';
-	echo '</div>';
+
+	echo '</form>';
 }
 
-echo '</div>';
+if ($v_tiles)
+{
+	echo '<div class="row tiles">';
 
-echo '</form>';
+	foreach ($users as $u)
+	{
+		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$class = $st_class_ary[$row_stat];
+		$class = (isset($class)) ? ' class="bg-' . $class . '"' : '';
+
+		echo '<div class="col-xs-4 col-md-3 col-lg-2">';
+		echo '<div' . $class . '>';
+		echo '<div class="thumbnail text-center">';
+		echo '<a href="' . generate_url('users', 'id=' . $u['id']) . '">';
+
+		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
+		{
+			echo '<img src="' . $bucket_url . $u['PictureFile'] . '" class="img-rounded">';
+		}
+		else
+		{
+			echo '<div><i class="fa fa-user fa-5x text-muted"></i></div>';
+		}
+		echo '</a>';
+
+		echo '<div class="caption">';
+		echo link_user($u);
+		echo '<br>' . $u['postcode']; 
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+	}
+
+	echo '</div>';
+}
 
 include $rootpath . 'includes/inc_footer.php';
 
@@ -2521,7 +2589,8 @@ function render_contacts($contacts, $abbrev = null)
 
 function cancel($id = null)
 {
-	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : 'status=active')));
+	global $view_users;
+	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : 'status=active&view=' . $view_users)));
 	exit;
 }
 
