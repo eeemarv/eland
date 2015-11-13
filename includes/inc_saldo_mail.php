@@ -436,6 +436,7 @@ function saldo()
 	$message = array(
 		'subject'		=> $subject,
 		'text'			=> $text,
+		'html'			=> $html,
 		'from_email'	=> $from,
 		'to'			=> $to,
 		'merge_vars'	=> $merge_vars,
