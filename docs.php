@@ -481,7 +481,7 @@ if (!$map)
 			if ($s_admin)
 			{
 				echo '<td>';
-				echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+				echo aphp('docs', 'map_edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 				echo '</td>';
 			}
 			echo '</tr>';
