@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "918cc143c01734509c0b1e2b2a54ef675e0c11b9"
+                "reference": "a86c38a33541c0d9c623bd2c8950d66600e56d9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/918cc143c01734509c0b1e2b2a54ef675e0c11b9",
-                "reference": "918cc143c01734509c0b1e2b2a54ef675e0c11b9",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a86c38a33541c0d9c623bd2c8950d66600e56d9d",
+                "reference": "a86c38a33541c0d9c623bd2c8950d66600e56d9d",
                 "shasum": ""
             },
             "require": {
@@ -83,7 +83,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-11-10 01:40:17"
+            "time": "2015-11-13 23:27:55"
         },
         {
             "name": "blueimp/jquery-file-upload",
@@ -688,16 +688,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "1.2.10",
+            "version": "1.2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "de448a30fa78f2dc93889be529e875a13c6034ac"
+                "reference": "04c6cdf9871140b80947c87db7770c0dd9c75c7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/de448a30fa78f2dc93889be529e875a13c6034ac",
-                "reference": "de448a30fa78f2dc93889be529e875a13c6034ac",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/04c6cdf9871140b80947c87db7770c0dd9c75c7c",
+                "reference": "04c6cdf9871140b80947c87db7770c0dd9c75c7c",
                 "shasum": ""
             },
             "require": {
@@ -737,7 +737,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2015-10-11 22:34:23"
+            "time": "2015-11-11 03:28:32"
         },
         {
             "name": "fabpot/goutte",

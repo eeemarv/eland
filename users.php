@@ -2093,9 +2093,6 @@ if (!$view)
 $v_list = ($view == 'list') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
 
-$v_list = true;
-$v_tiles = false;
-
 $st = array(
 	'active'	=> array(
 		'lbl'	=> 'Actief',
@@ -2226,14 +2223,12 @@ else
 	$h1 = 'Leden';
 }
 
-/*
 $h1 .= '<span class="btn-group pull-right" role="group">';
 $active = ($v_tiles) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, false, 'th');
 $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, false, 'list');
 $h1 .= '</span>';
-*/
 
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
@@ -2248,7 +2243,7 @@ if ($v_list)
 else
 {
 	$includejs = '<script src="' . $cdn_isotope . '"></script>
-		<script src="' . $rootpath . 'js/calc_sum_tiles.js"></script>';
+		<script src="' . $rootpath . 'js/users_tiles.js"></script>';
 }
 
 include $rootpath . 'includes/inc_header.php';
@@ -2525,6 +2520,17 @@ if ($v_list)
 
 if ($v_tiles)
 {
+	echo '<p>';
+	echo '<span class="btn-group sort-by" role="group">';
+	echo '<button class="btn btn-default active" data-sort-by="letscode" data-asc="1">letscode ';
+	echo '<i class="fa fa-sort-asc"></i></button>';
+	echo '<button class="btn btn-default" data-sort-by="name" data-asc="1">naam ';
+	echo '<i class="fa fa-sort"></i></button>';
+	echo '<button class="btn btn-default" data-sort-by="postcode" data-asc="1">postcode ';
+	echo '<i class="fa fa-sort"></i></button>';
+	echo '</span>';
+	echo '</p>';
+
 	echo '<div class="row tiles">';
 
 	foreach ($users as $u)
@@ -2533,10 +2539,11 @@ if ($v_tiles)
 		$class = $st_class_ary[$row_stat];
 		$class = (isset($class)) ? ' class="bg-' . $class . '"' : '';
 
-		echo '<div class="col-xs-4 col-md-3 col-lg-2">';
+		$url = generate_url('users', 'id=' . $u['id']);
+		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
 		echo '<div' . $class . '>';
 		echo '<div class="thumbnail text-center">';
-		echo '<a href="' . generate_url('users', 'id=' . $u['id']) . '">';
+		echo '<a href="' . $url . '">';
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
@@ -2549,8 +2556,12 @@ if ($v_tiles)
 		echo '</a>';
 
 		echo '<div class="caption">';
-		echo link_user($u);
-		echo '<br>' . $u['postcode']; 
+
+		echo '<a href="' . $url . '">';
+		echo '<span class="letscode">' . $u['letscode'] . '</span> ';
+		echo '<span class="name">' . $u['name'] . '</span>';
+		echo '</a>';
+		echo '<br><span class="postcode">' . $u['postcode'] . '</span>'; 
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
