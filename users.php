@@ -2093,6 +2093,9 @@ if (!$view)
 $v_list = ($view == 'list') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
 
+$v_list = true;
+$v_tiles = false;
+
 $st = array(
 	'active'	=> array(
 		'lbl'	=> 'Actief',
@@ -2232,8 +2235,6 @@ $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' .
 $h1 .= '</span>';
 */
 
-$v_list = true; $v_tiles = false;
-
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
 $fa = 'users';
@@ -2246,7 +2247,8 @@ if ($v_list)
 }
 else
 {
-	$includejs = '<script src="' . $rootpath . 'js/calc_sum_tiles.js"></script>';
+	$includejs = '<script src="' . $cdn_isotope . '"></script>
+		<script src="' . $rootpath . 'js/calc_sum_tiles.js"></script>';
 }
 
 include $rootpath . 'includes/inc_header.php';
