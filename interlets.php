@@ -45,27 +45,66 @@ if ($add || $edit)
 
 		unset($group['zend']);
 
+		$errors = array();
+
 		if ($edit)
 		{
-			if ($db->update('letsgroups', $group, array('id' => $id)))
+			if ($db->fetchColumn('select id
+				from letsgroups
+				where url = ?
+					and id <> ?', array($group['url'], $edit)))
 			{
-				$alert->success('Letsgroep aangepast.');
-				cancel($edit);
+				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
 
-			$alert->error('Letsgroep niet aangepast.');
+			if ($db->fetchColumn('select id
+				from letsgroups
+				where localletscode = ?
+					and id <> ?', array($group['localletscode'], $edit)))
+			{
+				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
+			}
+
+			if (!count($errors))
+			{
+				if ($db->update('letsgroups', $group, array('id' => $id)))
+				{
+					$alert->success('Letsgroep aangepast.');
+					cancel($edit);
+				}
+
+				$alert->error('Letsgroep niet aangepast.');
+			}
 		}
 		else
 		{
-			if ($db->insert('letsgroups', $group))
+			if ($db->fetchColumn('select id from letsgroups where url = ?', array($group['url'])))
 			{
-				$alert->success('Letsgroep opgeslagen.');
-
-				$id = $db->lastInsertId('letsgroups_id_seq');
-				cancel($id);
+				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
 
-			$alert->error('Letsgroep niet opgeslagen.');
+			if ($db->fetchColumn('select id from letsgroups where localletscode = ?', array($group['localletscode'])))
+			{
+				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
+			}
+
+			if (!count($errors))
+			{
+				if ($db->insert('letsgroups', $group))
+				{
+					$alert->success('Letsgroep opgeslagen.');
+
+					$id = $db->lastInsertId('letsgroups_id_seq');
+					cancel($id);
+				}
+
+				$alert->error('Letsgroep niet opgeslagen.');
+			}
+		}
+
+		if (count($errors))
+		{
+			$alert->error(implode('<br>', $errors));
 		}
 	}
 
