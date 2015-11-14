@@ -150,7 +150,7 @@ if (!isset($schema_interletsq_min))
 			{
 				echo $err_group . 'Can not get token.' . $r;
 			}
-			else if (!$token || $token = '---')
+			else if (!$token || $token == '---')
 			{
 				$err = 'invalid token';
 				echo $err_group . 'Invalid token.' . $r;

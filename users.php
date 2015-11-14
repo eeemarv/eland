@@ -2223,12 +2223,16 @@ else
 	$h1 = 'Leden';
 }
 
+/*
 $h1 .= '<span class="btn-group pull-right" role="group">';
 $active = ($v_tiles) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, false, 'th');
 $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, false, 'list');
 $h1 .= '</span>';
+*/
+
+$v_list = true; $v_tiles = false;
 
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
