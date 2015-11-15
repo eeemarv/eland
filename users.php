@@ -2522,11 +2522,11 @@ if ($v_tiles)
 {
 	echo '<p>';
 	echo '<span class="btn-group sort-by" role="group">';
-	echo '<button class="btn btn-default active" data-sort-by="letscode" data-asc="1">letscode ';
+	echo '<button class="btn btn-default active" data-sort-by="letscode">letscode ';
 	echo '<i class="fa fa-sort-asc"></i></button>';
-	echo '<button class="btn btn-default" data-sort-by="name" data-asc="1">naam ';
+	echo '<button class="btn btn-default" data-sort-by="name">naam ';
 	echo '<i class="fa fa-sort"></i></button>';
-	echo '<button class="btn btn-default" data-sort-by="postcode" data-asc="1">postcode ';
+	echo '<button class="btn btn-default" data-sort-by="postcode">postcode ';
 	echo '<i class="fa fa-sort"></i></button>';
 	echo '</span>';
 	echo '</p>';

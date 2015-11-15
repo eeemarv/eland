@@ -14,15 +14,45 @@ $(function() {
 			name: '.name',
 			postcode: '.postcode'
 		},
-		sortBy: 'original-order'
+		sortBy: 'letscode',
+		sortAscending: true
 	});
 
 	$('.sort-by').on( 'click', 'button', function() {
-		$(this).siblings().removeClass('active');
-		$(this).siblings('.fa').removeClass('fa-sort-asc').removeClass('fa-sort-desc');
-		$(this).addClass('active');
+
+		var $prev_active = $(this).parent().find('.active');
+
 		var sortBy = $(this).attr('data-sort-by');
-		$grid.isotope({ sortBy: sortBy });
+
+		var $prev_i = $prev_active.find('i');
+		var $this_i = $(this).find('i');
+
+		if ($(this).hasClass('active')){
+
+			if ($this_i.hasClass('fa-sort-asc')){
+				$this_i.removeClass('fa-sort-asc').addClass('fa-sort-desc');
+				$grid.isotope({
+					sortAscending: false
+				});
+			} else {
+				$this_i.removeClass('fa-sort-desc').addClass('fa-sort-asc');
+				$grid.isotope({
+					sortAscending: true
+				});
+			}
+		}
+		else
+		{
+			$prev_active.removeClass('active');
+			$prev_i.removeClass('fa-sort-asc fa-sort-desc').addClass('fa-sort');
+			$(this).addClass('active');
+			$this_i.removeClass('fa-sort').addClass('fa-sort-asc');
+
+			$grid.isotope({
+				sortBy: sortBy,
+				sortAscending: true
+			});
+		}
 	});
 
 	$('#q').keyup(function(){
@@ -39,7 +69,7 @@ $(function() {
 	$grid.on('layoutComplete', function(e, items){
 		setTimeout(function(){
 			calcTotal();
-		}, 100);
+		}, 300);
 	});
 
 	function calcTotal(){
