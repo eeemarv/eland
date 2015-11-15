@@ -273,8 +273,8 @@ $view = (isset($_GET['view'])) ? $_GET['view'] : false;
 $key_view_users = $schema . '_u_' . $s_id . '_u_view';
 $key_view_messages = $schema . '_u_' . $s_id . '_m_view';
 
-$view_users = ($redis->get($key_view_users)) ?: 'tiles';
-$view_messages = ($redis->get($key_view_messages)) ?: 'tiles';
+$view_users = ($redis->get($key_view_users)) ?: 'list';
+$view_messages = ($redis->get($key_view_messages)) ?: 'list';
 
 if ($view)
 {
