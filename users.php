@@ -766,6 +766,7 @@ if ($del)
 	if (!$s_admin)
 	{
 		$alert->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
+		cancel($del);
 	}
 
 	if ($s_id == $del)
