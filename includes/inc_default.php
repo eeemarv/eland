@@ -51,7 +51,7 @@ $cdn_isotope = (getenv('CDN_ISOTOPE')) ?: '//cdnjs.cloudflare.com/ajax/libs/jque
 require_once $rootpath . 'vendor/autoload.php';
 
 // Connect to Redis
-$redis_url = getenv('REDISTOGO_URL');
+$redis_url = getenv('REDISCLOUD_URL');
 
 if(!empty($redis_url))
 {

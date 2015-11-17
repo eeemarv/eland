@@ -197,7 +197,7 @@ if ($add)
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}
 
-		if(($fromuser['saldo'] - $transaction['amount']) < $fromuser['minlimit'] && !$s_admin)
+		if(($fromuser['saldo'] - $amount) < $fromuser['minlimit'] && !$s_admin)
 		{
 			$errors[] = 'Je beschikbaar saldo laat deze transactie niet toe';
 		}
@@ -237,6 +237,17 @@ if ($add)
 			$errors[] = 'De bestemmeling is niet actief';
 		}
 
+		if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < 1))
+		{
+			$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $currency . ' uitgeven.';
+		}
+
+		if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > 0))
+		{
+			$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
+			$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
+		}
+
 		if (!$transaction['date'])
 		{
 			$errors[] = 'Datum is niet ingevuld';
@@ -250,6 +261,7 @@ if ($add)
 
 		if(!empty($errors))
 		{
+			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
 			$alert->error(implode('<br>', $errors));
 		}
 		else if ($letsgroup_id == 'self')
@@ -555,8 +567,6 @@ if ($add)
 			'groupname' => readconfigfromdb('systemname'),
 			'id'		=> 'self',
 		)), $letsgroups);
-
-	$currency = readconfigfromdb('currency');
 
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
