@@ -125,8 +125,8 @@ if ($token = $_GET['token'])
 		$content = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
 		$content .= "De volgende persoon schreef zich in via de website: \n\n";
 		$content .= 'Volledige naam: ' . $user['fullname'] . "\n";
-		$content .= 'Postcode: ' . $user['fullname'] . "\n";
-		$content .= 'Email: ' . $data['mail'] . "\n\n";
+		$content .= 'Postcode: ' . $user['postcode'] . "\n";
+		$content .= 'Email: ' . $data['email'] . "\n\n";
 		$content .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
 
 		sendemail(readconfigfromdb('from_address'), readconfigfromdb('admin'), $subject, $content);
