@@ -28,9 +28,9 @@ Create a file bucket (in your region) on Amazon S3 and put the config in environ
 heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb S3_BUCKET=ccc
 ```
 
-###Redistogo
+###Redis cloud
 ```shell
-heroku addons:add redistogo
+heroku addons:add rediscloud:30
 ```
 
 ###Mandrill
