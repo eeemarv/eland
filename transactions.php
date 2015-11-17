@@ -237,15 +237,18 @@ if ($add)
 			$errors[] = 'De bestemmeling is niet actief';
 		}
 
-		if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < 1))
+		if ($s_user)
 		{
-			$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $currency . ' uitgeven.';
-		}
+			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < 1))
+			{
+				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $currency . ' uitgeven.';
+			}
 
-		if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > 0))
-		{
-			$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
-			$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
+			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > 0))
+			{
+				$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
+				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
+			}
 		}
 
 		if (!$transaction['date'])
