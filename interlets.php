@@ -501,9 +501,6 @@ if ($login)
 			}
 		}
 	}
-
-//	echo '<script>setTimeout(function(){location.href = "' . generate_url('interlets') . '";}, 3000);</script>';
-//	exit;
 }
 
 /**
@@ -772,9 +769,9 @@ function render_schemas_groups()
 	echo '<table class="table table-bordered table-hover table-striped">';
 	echo '<thead>';
 	echo '<tr>';
-	echo '<th data-sort-initial="true">tag</th>';
+	echo '<th data-sort-initial="true" data-hide="phone, tablet">tag</th>';
 	echo '<th>groepsnaam</th>';
-	echo '<th>url</th>';
+	echo '<th data-hide="phone, tablet">url</th>';
 	echo '<th>lok.groep</th>';
 	echo '<th>lok.account</th>';
 	echo '<th>rem.groep</th>';

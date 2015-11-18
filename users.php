@@ -1615,7 +1615,8 @@ if ($add || $edit)
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="presharedkey" class="col-sm-2 control-label">Preshared key</label>';
+		echo '<label for="presharedkey" class="col-sm-2 control-label">';
+		echo 'Preshared key (enkel voor interletsaccount met eLAS-installatie)</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
 		echo 'value="' . $user['presharedkey'] . '">';
