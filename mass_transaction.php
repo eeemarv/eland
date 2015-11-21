@@ -565,7 +565,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="password" class="form-control" id="password" name="password" ';
 echo 'value="" autocomplete="false" required>';

@@ -950,7 +950,7 @@ if ($del)
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-	echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+	echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="password" class="form-control" id="password" name="password" ';
 	echo 'value="" required autocomplete="off">';
@@ -2458,7 +2458,7 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo sprintf($inp, 'mail_password', 'Paswoord', 'password', 'class="form-control"', 'mail_password');
+		echo sprintf($inp, 'mail_password', 'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
 
 		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
