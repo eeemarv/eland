@@ -116,15 +116,15 @@ $('#fill_in_aid').submit(function(e){
 function fill_in(data){
 	var ignore_letscode = $('#to_letscode').val().split(' ');
 	ignore_letscode = ignore_letscode[0];
-	var fixed = $('#fixed').val();
-	var perc = $('#percentage_balance').val() / 100;
-	var base = $('#percentage_balance_base').val();
-
+	var fixed = Number($('#fixed').val());
+	var perc = Number($('#percentage_balance').val() / 100);
+	var base = Number($('#percentage_balance_base').val());
     $('table input[type="number"]:visible').each(function() {
 		var am = (typeof data == 'object') ? data[$(this).attr('data-user-id')] : $(this).attr('data-balance');
-		am =  am - base;
-		var amount = +fixed + Math.round(am * perc);
+		am =  +am - base;
+		var amount = Math.round(am * perc);
 		amount = (amount < 0) ? 0 : amount;
+		amount = amount + fixed;
 		if ($(this).attr('data-letscode') != ignore_letscode){
 			if (amount == 0){
 				$(this).val('');
