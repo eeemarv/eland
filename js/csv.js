@@ -18,7 +18,7 @@ $(document).ready(function () {
 					var $col = $(col),
 						text = $col.text();
 
-					return text.replace(/"/g, '""');
+					return text.replace(/"/g, '""').trim();
 
 				}).get().join(tmpColDelim);
 
