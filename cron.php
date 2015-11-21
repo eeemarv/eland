@@ -412,15 +412,15 @@ function user_exp_msgs()
 	global $db, $now, $base_url;
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
-	$warn_messages  = $db->fetchAll("SELECT m.*
+	$warn_messages  = $db->fetchAll('SELECT m.*
 		FROM messages m
-			WHERE m.exp_user_warn = 'f'
-				AND m.validity < ?", array($now));
+			WHERE m.exp_user_warn = \'f\'
+				AND m.validity < ?', array($now));
 
 	foreach ($warn_messages AS $key => $value)
 	{
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
-		echo "Found new expired message " .$value['id'];
+		echo 'Found new expired message ' . $value['id'];
 		$user = readuser($value['id_user']);
 		$to = $db->fetchColumn('select c.value
 			from contact c, type_contact tc
@@ -450,7 +450,7 @@ function user_exp_msgs()
 
 		$from = readconfigfromdb('from_address');
 
-		if (!empty($from))
+		if (empty($from))
 		{
 			echo "Mail from address is not set in configuration\n";
 			return;

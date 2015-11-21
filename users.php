@@ -2232,6 +2232,11 @@ $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, false, 'list');
 $h1 .= '</span>';
 
+if ($s_admin)
+{
+//	$h1 .= '<button class="btn btn-info pull-right"><i class="fa fa-columns"></i></button>&nbsp;';
+}
+
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
 $fa = 'users';
@@ -2311,7 +2316,7 @@ if ($v_list)
 	echo '<th data-hide="phone">Postc</th>';
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
 	echo '<th data-hide="phone">Saldo</th>';
-	echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
+	// echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 
 	/*if ($s_admin)
 	{
@@ -2376,12 +2381,14 @@ if ($v_list)
 		echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
 		echo '</td>';
 
+/*
 		if ($s_admin)
 		{
 			echo '<td>';
 			echo $u['accountrole'];
 			echo '</td>';
 		}
+*/
 
 		echo '</tr>';
 
