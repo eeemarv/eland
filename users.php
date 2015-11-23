@@ -1569,6 +1569,14 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
+	echo '<div class="form-group">';
+	echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="comments" name="comments" ';
+	echo 'value="' . $user['comments'] . '">';
+	echo '</div>';
+	echo '</div>';
+
 	if ($s_admin)
 	{
 		echo '<div class="form-group">';
@@ -2194,6 +2202,48 @@ if ($v_list)
 	{
 		$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
 	}
+
+	if ($s_admin)
+	{
+		if (isset($_GET['sh']))
+		{
+			$show_columns = $_GET['sh'];
+		}
+		else
+		{
+			$show_columns = array(
+				'u.letscode'	=> 1,
+				'u.name'		=> 1,
+				'u.postcode'	=> 1,
+				'u.saldo'		=> 1,
+			);
+		}
+
+		$adr_split = isset($_GET['adr_split']) ? $_GET['adr_split'] : '';
+
+		$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
+
+		$columns = array(
+			'u.letscode'		=> 'Code',
+			'u.name'			=> 'Naam',
+			'u.fullname'		=> 'Volledige naam',
+			'u.postcode'		=> 'Postcode',
+			'u.accountrole'		=> 'Rol',
+			'u.saldo'			=> 'Saldo',
+			'u.minlimit'		=> 'Min',
+			'u.maxlimit'		=> 'Max',
+			'u.admincomment'	=> 'Admin commentaar',
+			'u.cdate'			=> 'Gecreëerd',
+			'u.mdate'			=> 'Aangepast',
+			'u.adate'			=> 'Geactiveerd',
+			'u.lastlogin'		=> 'Laatst ingelogd',
+		);
+
+		foreach ($type_contact as $tc)
+		{
+			$columns['c.' . $tc['abbrev']] = $tc['name'];
+		}
+	}
 }
 
 if ($s_admin)
@@ -2204,11 +2254,7 @@ if ($s_admin)
 		$top_right .= '<i class="fa fa-file"></i>';
 		$top_right .= '&nbsp;csv</a>&nbsp;';
 	}
-/*
-	$top_right .= '<a href="#" class="csv-adr">';
-	$top_right .= '<i class="fa fa-file"></i>';
-	$top_right .= '&nbsp;csv adres</a>';
-*/
+
 	$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
 	if ($v_list)
@@ -2225,17 +2271,24 @@ else
 	$h1 = 'Leden';
 }
 
-$h1 .= '<span class="btn-group pull-right" role="group">';
+$h1 .= '<span class="pull-right hidden-xs">';
+$h1 .= '<span class="btn-group" role="group">';
 $active = ($v_tiles) ? ' active' : '';
-$h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, false, 'th');
+$h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
 $active = ($v_list) ? ' active' : '';
-$h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, false, 'list');
+$h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, 'lijst', 'list');
 $h1 .= '</span>';
 
-if ($s_admin)
+/*
+if ($s_admin && $v_list)
 {
-//	$h1 .= '<button class="btn btn-info pull-right"><i class="fa fa-columns"></i></button>&nbsp;';
+	$h1 .= '&nbsp;<button class="btn btn-info" title="Toon kolommen" ';
+	$h1 .= 'data-toggle="collapse" data-target="#columns_show"';
+	$h1 .= '><i class="fa fa-columns"></i></button>';
 }
+*/
+
+$h1 .= '</span>';
 
 $top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 
@@ -2243,9 +2296,13 @@ $fa = 'users';
 
 if ($v_list)
 {
-	$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>
-		<script src="' . $rootpath . 'js/csv.js"></script>
-		<script src="' . $rootpath . 'js/table_sel.js"></script>';
+	$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>';
+
+	if ($s_admin)
+	{
+		$includejs .= '<script src="' . $rootpath . 'js/csv.js"></script>
+			<script src="' . $rootpath . 'js/table_sel.js"></script>';
+	}
 }
 else
 {
@@ -2255,11 +2312,47 @@ else
 
 include $rootpath . 'includes/inc_header.php';
 
+echo '<form method="get" action="' . generate_url('users', $params) . '">';
+
+$params_plus = array_merge($params, get_session_query_param(true));
+
+foreach ($params_plus as $k => $v)
+{
+	echo '<input type="hidden" name="' . $k . '" value="' . $v . '">';
+}
+
+if ($s_admin && $v_list)
+{
+	echo '<div class="panel panel-info collapse" id="columns_show">';
+	echo '<div class="panel-heading">';
+	echo '<h3>Toon kolommen</h3>';
+	echo '</div>';
+	echo '<div class="panel-body">';
+
+	foreach ($columns as $key => $lbl)
+	{
+		echo '<div class="checkbox">';
+		echo '<label>';
+		echo '<input type="checkbox" name="sh[' . $key . ']" value="1"';
+		echo (isset($show_columns[$key])) ? ' checked="checked"' : '';
+		echo '> ' . $lbl;
+		echo ($key == 'c.adr') ? ', split door teken: <input type="text" name="adr_split" size="1" value="' . $adr_split . '">' : '';
+		echo '</label>';
+		echo '</div>';
+	}
+
+	echo '</div>';
+	echo '<div class="panel-footer">';
+	echo '<input type="submit" name="show" class="btn btn-default" value="Toon">';
+	echo '</div>';
+	echo '</div>';
+}
+
 echo '<br>';
+
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="get">';
 echo '<div class="row">';
 echo '<div class="col-xs-12">';
 echo '<div class="input-group">';
@@ -2271,10 +2364,10 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-echo '</form>';
+echo '</div>';
+echo '</div>';
 
-echo '</div>';
-echo '</div>';
+echo '</form>';
 
 echo '<div class="pull-right hidden-xs hidden-sm print-hide">';
 echo 'Totaal: <span id="total"></span>';
@@ -2302,104 +2395,117 @@ if ($v_list)
 	echo '<div class="panel panel-success printview">';
 	echo '<div class="table-responsive">';
 
-	echo '<table class="table table-bordered table-striped table-hover footable csv csv-adr" ';
+	echo '<table class="table table-bordered table-striped table-hover footable csv" ';
 	echo 'data-filter="#q" data-filter-minimum="1">';
 	echo '<thead>';
 
 	echo '<tr>';
-	echo '<th data-sort-initial="true">Code</th>';
-	echo '<th>Naam</th>';
-	//echo ($s_admin) ? '<th data-hide="phone, tablet" data-content="fullname">Volledige naam</th>' : '';
-	//echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
-	echo '<th data-hide="phone">Postc</th>';
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
-	echo '<th data-hide="phone">Saldo</th>';
-	// echo ($s_admin) ? '<th data-hide="phone, tablet">Rol</th>' : '';
 
-	/*if ($s_admin)
+	if ($s_admin)
 	{
-		echo '<th data-hide="phone, tablet" data-sort-ignore="true" data-content="adr">Adres</th>';
-		echo '<th data-hide="all">Min</th>';
-		echo '<th data-hide="all">Max</th>';
-		echo '<th data-hide="all">Ingeschreven</th>';
-		echo '<th data-hide="all">Geactiveerd</th>';
-		echo '<th data-hide="all">Laatst aangepast</th>';
-		echo '<th data-hide="all">Laatst ingelogd</th>';
-		echo '<th data-hide="all">Profielfoto</th>';
-		echo '<th data-hide="all">Admin commentaar</th>';
-		echo '<th data-hide="all" data-sort-ignore="true">Aanpassen</th>';
-	}*/
-
-	echo '</tr>';
-
-	echo '</thead>';
-	echo '<tbody>';
-
-	foreach($users as $u)
-	{
-		$id = $u['id'];
-
-		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-		$class = $st_class_ary[$row_stat];
-		$class = (isset($class)) ? ' class="' . $class . '"' : '';
-
-		echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
-
-		echo '<td>';
-		if ($s_admin)
-		{
-			echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
-			echo ($selected_users[$id]) ? ' checked="checked"' : '';
-			echo '>&nbsp;';
-		}
-		echo link_user($u, 'letscode');
-		echo '</td>';
-
-		echo '<td>';
-		echo link_user($u, 'name');
-		echo '</td>';
-
-		echo '<td>';
-		echo render_contacts($contacts[$id]['tel']);
-		echo '</td>';
-		
-		echo '<td>';
-		echo render_contacts($contacts[$id]['gsm']);
-		echo '</td>';
-		
-		echo '<td>' . $u['postcode'] . '</td>';
-		
-		echo '<td>';
-		echo render_contacts($contacts[$id]['mail'], 'mail');
-		echo '</td>';
-
-		echo '<td>';
-		$balance = $u['saldo'];
-		$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
-		echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
-		echo '</td>';
-
-/*
-		if ($s_admin)
-		{
-			echo '<td>';
-			echo $u['accountrole'];
-			echo '</td>';
-		}
-*/
+		echo '<th data-sort-initial="true">Code</th>';
+		echo '<th>Naam</th>';
+		echo '<th data-sort-ignore="true">Tel</th>';
+		echo '<th data-sort-ignore="true">gsm</th>';
+		echo '<th>Postcode</th>';
+		echo '<th data-sort-ignore="true">Mail</th>';
+		echo '<th>Saldo</th>';
 
 		echo '</tr>';
 
+		echo '</thead>';
+		echo '<tbody>';
+
+		foreach($users as $u)
+		{
+			$id = $u['id'];
+
+			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+			$class = $st_class_ary[$row_stat];
+			$class = (isset($class)) ? ' class="' . $class . '"' : '';
+
+			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+
+			echo '<td>';
+
+			echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
+			echo ($selected_users[$id]) ? ' checked="checked"' : '';
+			echo '>&nbsp;';
+
+			echo link_user($u, 'letscode');
+			echo '</td>';
+
+			echo '<td>';
+			echo link_user($u, 'name');
+			echo '</td>';
+
+			echo '<td>';
+			echo render_contacts($contacts[$id]['tel']);
+			echo '</td>';
+			
+			echo '<td>';
+			echo render_contacts($contacts[$id]['gsm']);
+			echo '</td>';
+			
+			echo '<td>' . $u['postcode'] . '</td>';
+			
+			echo '<td>';
+			echo render_contacts($contacts[$id]['mail'], 'mail');
+			echo '</td>';
+
+			echo '<td>';
+			$balance = $u['saldo'];
+			$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
+			echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
+			echo '</td>';
+
+			echo '</tr>';
+		}
 	}
+	else
+	{
+		echo '<th data-sort-initial="true">Code</th>';
+		echo '<th>Naam</th>';
+		echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
+		echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
+		echo '<th data-hide="phone">Postcode</th>';
+		echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
+		echo '<th data-hide="phone">Saldo</th>';
+
+		echo '</tr>';
+
+		echo '</thead>';
+		echo '<tbody>';
+
+		foreach($users as $u)
+		{
+			$id = $u['id'];
+
+			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+			$class = $st_class_ary[$row_stat];
+			$class = (isset($class)) ? ' class="' . $class . '"' : '';
+
+			$balance = $u['saldo'];
+			$balance_class = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? ' class="text-danger"' : '';
+
+			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+			echo '<td>' . link_user($u, 'letscode') . '</td>';
+			echo '<td>' . link_user($u, 'name') . '</td>';
+			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
+			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
+			echo '<td>' . $u['postcode'] . '</td>';
+			echo '<td>' . render_contacts($contacts[$id]['mail'], 'mail') . '</td>';
+			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
+			echo '</tr>';
+		}
+	}
+
 	echo '</tbody>';
 	echo '</table>';
 	echo '</div></div>';
 
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading">';
-	echo '<p>Totaal saldo: <span id="sum"></span> ' . $currency . '</p>';
+	echo '<div class="row"><div class="col-md-12">';
+	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $currency . '</span></p>';
 	echo '</div></div>';
 
 	if ($s_admin)
@@ -2520,11 +2626,9 @@ if ($v_list)
 		echo '</div>'; 
 		echo '</div>';
 		echo '</div>';
+		echo '</div>';
+		echo '</form>';
 	}
-
-	echo '</div>';
-
-	echo '</form>';
 }
 
 if ($v_tiles)
@@ -2586,6 +2690,8 @@ function render_contacts($contacts, $abbrev = null)
 {
 	global $access_level;
 
+	$ret = '';
+
 	if (count($contacts))
 	{
 		end($contacts);
@@ -2597,20 +2703,22 @@ function render_contacts($contacts, $abbrev = null)
 		{
 			if ($contact[1] >= $access_level)
 			{
-				echo sprintf($f, htmlspecialchars($contact[0], ENT_QUOTES));
+				$ret .= sprintf($f, htmlspecialchars($contact[0], ENT_QUOTES));
 
 				if ($key == $end)
 				{
 					break;
 				}
-				echo '<br>';
+				$ret .= ',<br>';
 			}
 		}
 	}
 	else
 	{
-		echo '&nbsp;';
+		$ret .= '&nbsp;';
 	}
+
+	return $ret;
 }
 
 function cancel($id = null)

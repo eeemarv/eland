@@ -367,34 +367,36 @@ function generate_url($entity = '', $params = '')
 /**
  * get session query param
  */
-function get_session_query_param()
+function get_session_query_param($return_ary = false)
 {
 	global $p_role, $p_user, $p_schema, $access_level;
-	static $q;
+	static $ary, $q;
 
 	if (isset($q))
 	{
-		return $q;
+		return ($return_ary) ? $ary : $q;
 	}
 
-	$q = array();
+	$ary = array();
 
 	if ($p_role != 'anonymous')
 	{
-		$q['r'] = $p_role;
+		$ary['r'] = $p_role;
 
 		if ($access_level < 2)
 		{
-			$q['u'] = $p_user;
+			$ary['u'] = $p_user;
 		}
 		else if ($access_level == 2 && $p_schema)
 		{
-			$q['u'] = $p_user;
-			$q['s'] = $p_schema;
+			$ary['u'] = $p_user;
+			$ary['s'] = $p_schema;
 		}
 	}
 
-	return $q = http_build_query($q);
+	$q = http_build_query($ary);
+
+	return ($return_ary) ? $ary : $q;
 }
 
 /**
