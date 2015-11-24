@@ -4,6 +4,9 @@ function saldo()
 {
 	global $db, $base_url;
 
+	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
+	$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
+
 	if (!readconfigfromdb('mailenabled'))
 	{
 		echo 'Mail functions are not enabled. ' . "\n";
@@ -129,24 +132,23 @@ function saldo()
 	$support = readconfigfromdb('support');
 	$msg_url = $base_url . '/messages.php?id=';
 	$news_url = $base_url . '/news.php?id=';
-	$user_url = $base_url . '/users.php?&id=';
+	$user_url = $base_url . '/users.php?id=';
 	$login_url = $base_url . '/login.php?login=*|LETSCODE|*';
 	$new_message_url = $base_url . '/messages.php?add=1';
 	$new_transaction_url = $base_url . '/transactions.php?add=1';
-	$mydetails_url = $base_url . '/users.php?id=*|ID|*';
+	$my_account_edit_url = $base_url . '/users.php?edit=*|ID|*';
 
-	$rs = $db->prepare('select m.id, count(p.id)
+	$rs = $db->prepare('select m.id, p."PictureFile"
 		from msgpictures p, messages m
 		where p.msgid = m.id
-			and m.cdate >= ?
-		group by m.id', array($treshold_time));
+			and m.cdate >= ?', array($treshold_time));
 
 	$rs->bindValue(1, $treshold_time);
 	$rs->execute();
 
 	while ($row = $rs->fetch())
 	{
-		$image_count_ary[$row['id']] = $row['count'];
+		$image_ary[$row['id']][] = $row['PictureFile'];
 	}
 
 	$rs = $db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
@@ -164,9 +166,19 @@ function saldo()
 	{
 		$va = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
-		$image_count = ($image_count_ary[$msg['id']]) ? (($image_count_ary[$msg['id']] > 1) ? $image_count_ary[$msg['id']] . ' afbeeldingen' : '1 afbeelding') : 'Geen afbeeldingen';
+		if (isset($image_ary[$msg['id']]))
+		{
+			$image_count =  (count($image_ary[$msg['id']]) > 1) ? count($image_ary[$msg['id']]) . ' afbeeldingen' : '1 afbeelding';
+			$html_img = '<a href="' . $msg_url . $msg['id'] . '"><img src="' . $bucket_url . $image_ary[$msg['id']][0];
+			$html_img .= '" height="200" alt="afbeelding"></a><br>';
+		}
+		else
+		{
+			$image_count = 'Geen afbeeldingen';
+			$html_img = '';
+		}
 
-		$mailto = $mailaddr[$msg['id_user']];
+		$mailto = $mailaddr[$msg['id_user']][0];
 
 		$google_maps = 'https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]);
 
@@ -176,7 +188,7 @@ function saldo()
 			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
 				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
-				$image_count . ')<br>' . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
+				$image_count . ')<br>' . $html_img . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
 				$msg['letscode'] . ' ' . $msg['name'] . '</a> | <a href="mailto:' . $mailto .
 				'">email</a> | <a href="' . $google_maps . '">route</a> ' .
 				'</li><br>',
@@ -203,15 +215,14 @@ function saldo()
 			'text'	=> '*** ' . $row['headline'] . ' ***' . $r  .
 				$location_text .
 				'Datum: ' . $itemdate . $r .
-				'Ingegeven door: ' . $row['letscode'] . ' ' . $row['name'] . $r .
-				$row['newsitem'] . $r . $r,
-				
+				'Bericht: ' . $row['newsitem'] . $r,
+				'Ingegeven door: ' . $row['letscode'] . ' ' . $row['name'] . $r . $r,
  			'html'	=> '<li><a href="' . $news_url . $row['id'] . '">' . $row['headline'] . '</a><br>' .
 				$location_html .
-				'Datum: <b>' . $itemdate . '</b>' .
+				'Datum: <b>' . $itemdate . '</b><br>' .
+				'Bericht: ' . $row['newsitem'] . '<br>' .
 				'Ingegeven door: <a href="' . $user_url . $row['id_user'] . '">' .
-				$row['name'] . ' (' . $row['letscode'] . ')</a><br>' .
-				$row['newsitem'] . '</li><br>',
+				$row['letscode'] . ' ' . $row['name'] . '</a></li><br>',
 		);
 	}
 
@@ -273,29 +284,14 @@ function saldo()
 		);
 	}
 
-	$t = 'Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.';
+	$t = '** Dit is een automatische mail. Niet beantwoorden a.u.b. **';
 	$text = $t . $r . $r;
-	$html = $t . '<br>';
-
-	$text .= 'Beste *|NAME|* (*|LETSCODE|*)' . $r . $r;
-	$html .= '<p>Beste <b>*|NAME|* (*|LETSCODE|*)</b>,</p>';
-
-	$text .= 'Je huidig saldo bedraagt *|BALANCE|* ' . $currency . $r;
-	$html .= '<p>Je huidig saldo bedraagt <b>*|BALANCE|* </b> ' . $currency . '</p>';
-
-	$text .= 'Minimum limiet: *|MINLIMIT|* ' . $currency . ', Maximum limiet: *|MAXLIMIT|* ' . $currency . $r;
-	$html .= '<p>Minimum limiet: <b>*|MINLIMIT|*</b> ' . $currency . ', Maximum limiet: <b>*|MAXLIMIT|*</b> ' . $currency . '</p>';
-
-	$text .= 'Status: *|STATUS|*' . $r;
-	$html .= '<p>Status: <b>*|STATUS|*</b></p>';
-
-	$text .= 'Login: *|LOGIN|* ' . $login_url . $r . $r;
-	$html .= '<p>Login: <b>*|LOGIN|*</b> ' . $login_url . '</p>';
+	$html = '<p>' . $t . '</p>';
 
 	$t ='Recent LETS vraag en aanbod';
 	$u ='---------------------------';
 	$text .= $t . $r . $u . $r;
-	$html .= '<h1>' . $t . '</h1>';
+	$html .= '<h2>' . $t . '</h2>';
 
 	if (count($msgs))
 	{
@@ -323,7 +319,7 @@ function saldo()
 	$text .= 'Nieuws' . $r;
 	$text .= '------' . $r;
 	$text .= 'Bekijk online: ' . $base_url . '/news.php' . $r . $r;
-	$html .= '<h1>Nieuws</h1>';
+	$html .= '<h2>Nieuws</h2>';
 
 	if (count($news))
 	{
@@ -345,7 +341,7 @@ function saldo()
 
 	$text .= 'Nieuwe leden' . $r;
 	$text .= '------------' . $r . $r;
-	$html .= '<h1>Nieuwe leden</h1>';
+	$html .= '<h2>Nieuwe leden</h2>';
 	
 	if (count($new_users))
 	{
@@ -370,7 +366,7 @@ function saldo()
 
 	$text .= 'Uitstappers' . $r;
 	$text .= '-----------' . $r . $r;
-	$html .= '<h1>Uitstappers</h1>';
+	$html .= '<h2>Uitstappers</h2>';
 
 	if (count($leaving_users))
 	{
@@ -405,7 +401,7 @@ function saldo()
 	}
 	$text .= $t . $r;
 	$text .= 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r;
-	$html .= '<h1>Recente transacties</h1>';
+	$html .= '<h2>Recente transacties</h2>';
 	$html .= '<p>' . $t . '</p>';
 	$html .= '<p>Klik <a href="' . $new_transaction_url . '">hier</a> om een nieuwe transactie in te geven.</p>';
 	$html .= '<ul>';
@@ -419,19 +415,40 @@ function saldo()
 	$text .= $r;
 	$html .= '</ul>';
 
+	$t = 'Je account';
+	$u = '----------';
+
+	$text .= $t . $r . $u . $r . $r;
+	$html .= '<h2>' . $t . '</h2>';
+
+	$text .= 'Je letscode: *|LETSCODE|*' . $r . 'Je gebruikersnaam: *|NAME|*' . $r;
+	$html .= '<p>Je letscode: <b>*|LETSCODE|*</b></p><p>Je gebruikersnaam: <b>*|NAME|*</b></p>';
+
+	$text .= 'Je huidig saldo bedraagt momenteel *|BALANCE|* ' . $currency . $r;
+	$html .= '<p>Je huidig saldo bedraagt momenteel <b>*|BALANCE|* </b> ' . $currency . '</p>';
+
+	$text .= 'Minimum limiet: *|MINLIMIT|* ' . $currency . ', Maximum limiet: *|MAXLIMIT|* ' . $currency . $r;
+	$html .= '<p>Minimum limiet: <b>*|MINLIMIT|*</b> ' . $currency . ', Maximum limiet: <b>*|MAXLIMIT|*</b> ' . $currency . '</p>';
+
+	$text .= 'Status: *|STATUS|*' . $r;
+	$html .= '<p>Status: <b>*|STATUS|*</b></p>';
+
+	$text .= 'Login: *|LOGIN|* ' . $login_url . $r . $r;
+	$html .= '<p>Login: <b>*|LOGIN|*</b> ' . $login_url . '</p>';
+
 	$t = 'Support';
 	$u = '-------';
 
 	$text .= $t . $r . $u . $r . 'Als je een probleem ervaart, kan je mailen naar ' . $support . $r . $r;
-	$html .= '<h1>' . $t .'</h1><p>Neem <a href="mailto:' . $support .
+	$html .= '<h2>' . $t .'</h2><p>Neem <a href="mailto:' . $support .
 		'">contact</a> op met ons als je een probleem ervaart.</p>';
 
-	$t = 'Je ontvangt deze mail omdat de optie \'Saldo mail met recent vraag en aanbod\' aangevinkt staat ';
+	$t = 'Je ontvangt deze mail omdat de optie \'Periodieke mail met recent vraag en aanbod\' aangevinkt staat ';
 	$t .= 'in je instellingen. ';
-	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $mydetails_url;
-	$html .= '<p>' . $t . 'Klik <a href="' . $mydetails_url . '">hier</a> om aan te passen</p>';
+	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $my_account_edit_url;
+	$html .= '<p>' . $t . 'Klik <a href="' . $my_account_edit_url . '">hier</a> om aan te passen</p>';
 
-	$subject = '['. readconfigfromdb('systemtag') .'] - Saldo, recent vraag en aanbod en nieuws.';
+	$subject = '['. readconfigfromdb('systemtag') .'] - Recent vraag en aanbod';
 
 	$message = array(
 		'subject'		=> $subject,

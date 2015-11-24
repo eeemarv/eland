@@ -360,7 +360,7 @@ if ($s_admin)
 			'type'		=> 'number',
 		),
 		'cron_saldo'		=> array(
-			'lbl'	=> 'Periodieke overzichtsmail (aan/uit)',
+			'lbl'	=> 'Periodieke mail met recent vraag en aanbod (aan/uit)',
 			'type'	=> 'checkbox',
 		),
 	);
@@ -1633,7 +1633,7 @@ if ($add || $edit)
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke saldo mail met recent vraag en aanbod</label>';
+	echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke mail met recent vraag en aanbod</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
 	echo ($user['cron_saldo']) ? ' checked="checked"' : '';
@@ -1991,7 +1991,7 @@ if ($id)
 	if ($s_admin || $s_owner)
 	{
 		echo '<dt>';
-		echo 'Periodieke Saldo mail met recent vraag en aanbod';
+		echo 'Periodieke mail met recent vraag en aanbod';
 		echo '</dt>';
 		dd_render(($user['cron_saldo']) ? 'Aan' : 'Uit');
 		echo '</dl>';
