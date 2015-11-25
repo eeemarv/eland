@@ -153,6 +153,8 @@ if ($id || $edit || $del)
 	$id = ($id) ?: (($edit) ?: $del);
 
 	$message = $db->fetchAssoc('SELECT m.*,
+			to_char(m.validity, \'YYYY-MM-DD\') as validity_short,
+			to_char(m.cdate, \'YYYY-MM-DD\') as cdate_short,
 			c.id as cid,
 			c.fullname as catname
 		FROM messages m, categories c
@@ -1186,10 +1188,10 @@ if ($id)
 	echo '<dd>' . $user['postcode'] . '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
-	echo '<dd>' . $message['cdate'] . '</dd>';
+	echo '<dd>' . $message['cdate_short'] . '</dd>';
 
 	echo '<dt>Geldig tot</dt>';
-	echo '<dd>' . $message['validity'] . '</dd>';
+	echo '<dd>' . $message['validity_short'] . '</dd>';
 
 	if ($s_admin || $s_owner)
 	{
@@ -1319,7 +1321,7 @@ if ($s_guest)
 	$and_where = ' and local = false ';
 }
 
-$query = 'select m.*, u.postcode
+$query = 'select m.*, to_char(m.validity, \'YYYY-MM-DD\') as validity_short, u.postcode
 	from messages m, users u
 		where m.id_user = u.id
 			and u.status in (1, 2) ' .
@@ -1646,7 +1648,7 @@ foreach($messages as $msg)
 	}
 
 	echo '<td>';
-	echo $msg['validity'];
+	echo $msg['validity_short'];
 	echo '</td>';
 
 	if (!$s_guest)

@@ -30,6 +30,7 @@ $newusers = $db->fetchAll('select id, letscode, name
 		and adate > ?', array($newusertreshold));
 
 $msgs = $db->fetchAll('SELECT m.*,
+		to_char(m.validity, \'YYYY-MM-DD\') as validity_short,
 		u.postcode,
 		c.fullname as cat,
 		c.id as cid
@@ -276,7 +277,7 @@ if($msgs)
 		echo '</td>';
 
 		echo '<td>';
-		echo $msg['validity'];
+		echo $msg['validity_short'];
 		echo '</td>';
 
 		echo '<td>';

@@ -330,6 +330,8 @@ function saldo()
 			$text .= $item['text'];
 			$html .= $item['html'];
 		}
+
+		$text .= $r;
 		$html .= '</ul>';
 	}
 	else
