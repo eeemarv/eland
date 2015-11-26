@@ -312,7 +312,7 @@ div.bg-warning > div.thumbnail
 }
 
 .nav-tabs > li.active > a.bg-info,
-.nav-tabs > li.active > a.bg-info:focus
+.nav-tabs > li.active > a.bg-info:focus,
 div.bg-info > div.thumbnail
 {
   background-color: #d9edf7;

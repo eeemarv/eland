@@ -2185,64 +2185,193 @@ $params = array(
 	'view'		=> $view,
 );
 
-$users = $db->fetchAll('select u.*
-	from users u
-	where ' . $st[$status]['sql'], $sql_bind);
-
-if ($v_list)
+if ($v_list && $s_admin)
 {
+	if (isset($_GET['sh']))
+	{
+		$show_columns = $_GET['sh'];
+	}
+	else
+	{
+		$show_columns = array(
+			'u'	=> array(
+				'letscode'	=> 1,
+				'name'		=> 1,
+				'postcode'	=> 1,
+				'saldo'		=> 1,
+			),
+		);
+	}
+
+	$adr_split = isset($_GET['adr_split']) ? $_GET['adr_split'] : '';
+	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
+	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
+	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
+
+	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
+
+	$columns = array(
+		'u'		=> array(
+			'letscode'		=> 'Code',
+			'name'			=> 'Naam',
+			'fullname'		=> 'Volledige naam',
+			'postcode'		=> 'Postcode',
+			'accountrole'	=> 'Rol',
+			'saldo'			=> 'Saldo',
+			'minlimit'		=> 'Min',
+			'maxlimit'		=> 'Max',
+			'comments'		=> 'Commentaar',
+			'admincomment'	=> 'Admin commentaar',
+			'cdate'			=> 'Gecreëerd',
+			'mdate'			=> 'Aangepast',
+			'adate'			=> 'Geactiveerd',
+			'lastlogin'		=> 'Laatst ingelogd',
+		),
+	);
+
+	foreach ($type_contact as $tc)
+	{
+		$columns['c'][$tc['abbrev']] = $tc['name'];
+	}
+
+	$columns['m'] = array(
+		'demands'	=> 'Vraag',
+		'offers'	=> 'Aanbod',
+		'total'		=> 'Vraag en aanbod',
+	);
+
+	$columns['a'] = array(
+		'trans_in'		=> 'Transacties in',
+		'trans_out'		=> 'Transacties uit',
+		'trans_total'	=> 'Transacties totaal',
+		'amount_in'		=> $currency . ' in',
+		'amount_out'	=> $currency . ' uit',
+		'amount_total'	=> $currency . ' totaal',
+	);
+
+	$users = $db->fetchAll('select u.*
+		from users u
+		where ' . $st[$status]['sql'], $sql_bind);
+
+	if (isset($show_columns['c']))
+	{
+		$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
+			FROM contact c, type_contact tc, users u
+			WHERE tc.id = c.id_type_contact
+				and c.id_user = u.id
+				and ' . $st[$status]['sql'], $sql_bind);
+
+		$contacts = array();
+
+		foreach ($c_ary as $c)
+		{
+			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+		}
+	}
+
+	if (isset($show_columns['m']))
+	{
+		$msgs_count = array();
+
+		if (isset($show_columns['m']['offers']))
+		{
+			$ary = $db->fetchAll('select count(m.id), m.id_user
+				from messages m, users u
+				where msg_type = 1
+					and m.id_user = u.id
+					and ' . $st[$status]['sql'] . '
+				group by m.id_user', $sql_bind);
+
+			foreach ($ary as $a)
+			{
+				$msgs_count[$a['id_user']]['offers'] = $a['count'];
+			}
+		}
+
+		if (isset($show_columns['m']['demands']))
+		{
+			$ary = $db->fetchAll('select count(m.id), m.id_user
+				from messages m, users u
+				where msg_type = 0
+					and m.id_user = u.id
+					and ' . $st[$status]['sql'] . '
+				group by m.id_user', $sql_bind);
+
+			foreach ($ary as $a)
+			{
+				$msgs_count[$a['id_user']]['demands'] = $a['count'];
+			}
+		}
+
+		if (isset($show_columns['m']['total']))
+		{
+			$ary = $db->fetchAll('select count(m.id), m.id_user
+				from messages m, users u
+				where m.id_user = u.id
+					and ' . $st[$status]['sql'] . '
+				group by m.id_user', $sql_bind);
+
+			foreach ($ary as $a)
+			{
+				$msgs_count[$a['id_user']]['total'] = $a['count'];
+			}
+		}
+	}
+
+	if (isset($show_columns['a']))
+	{
+		$activity = array();
+
+		$ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
+		$sql_bind = array($ts);
+		$and = ' and u.letscode <> ? ';
+		$sql_bind[] = trim($activity_filter_letscode);
+
+		$in_ary = $db->fetchAll('select sum(t.amount), count(t.id), t.id_to
+			from transactions t, users u
+			where t.id_from = u.id
+				and t.cdate > ?' . $and . '
+			group by t.id_to', $sql_bind);
+
+		$out_ary = $db->fetchAll('select sum(t.amount), count(t.id), t.id_from
+			from transactions t, users u
+			where t.id_to = u.id
+				and t.cdate > ?' . $and . '
+			group by t.id_from', $sql_bind);
+
+		foreach ($in_ary as $in)
+		{
+			$activity[$in['id_to']]['trans_in'] = $in['count'];
+			$activity[$in['id_to']]['amount_in'] = $in['sum'];
+			$activity[$in['id_to']]['trans_total'] = $in['count'];
+			$activity[$in['id_to']]['amount_total'] = $in['sum'];
+		}
+
+		foreach ($out_ary as $out)
+		{
+			$activity[$out['id_from']]['trans_out'] = $out['count'];
+			$activity[$out['id_from']]['amount_out'] = $out['sum'];
+			$activity[$out['id_from']]['trans_total'] += $out['count'];
+			$activity[$out['id_from']]['amount_total'] += $out['sum'];
+		}
+	}
+}
+else
+{
+	$users = $db->fetchAll('select u.*
+		from users u
+		where ' . $st[$status]['sql'], $sql_bind);
+
 	$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 		FROM contact c, type_contact tc
 		WHERE tc.id = c.id_type_contact
-			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
+			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')');
 
 	$contacts = array();
 
 	foreach ($c_ary as $c)
 	{
 		$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
-	}
-
-	if ($s_admin)
-	{
-		if (isset($_GET['sh']))
-		{
-			$show_columns = $_GET['sh'];
-		}
-		else
-		{
-			$show_columns = array(
-				'u.letscode'	=> 1,
-				'u.name'		=> 1,
-				'u.postcode'	=> 1,
-				'u.saldo'		=> 1,
-			);
-		}
-
-		$adr_split = isset($_GET['adr_split']) ? $_GET['adr_split'] : '';
-
-		$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
-
-		$columns = array(
-			'u.letscode'		=> 'Code',
-			'u.name'			=> 'Naam',
-			'u.fullname'		=> 'Volledige naam',
-			'u.postcode'		=> 'Postcode',
-			'u.accountrole'		=> 'Rol',
-			'u.saldo'			=> 'Saldo',
-			'u.minlimit'		=> 'Min',
-			'u.maxlimit'		=> 'Max',
-			'u.admincomment'	=> 'Admin commentaar',
-			'u.cdate'			=> 'Gecreëerd',
-			'u.mdate'			=> 'Aangepast',
-			'u.adate'			=> 'Geactiveerd',
-			'u.lastlogin'		=> 'Laatst ingelogd',
-		);
-
-		foreach ($type_contact as $tc)
-		{
-			$columns['c.' . $tc['abbrev']] = $tc['name'];
-		}
 	}
 }
 
@@ -2279,14 +2408,12 @@ $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, 'lijst', 'list');
 $h1 .= '</span>';
 
-/*
 if ($s_admin && $v_list)
 {
 	$h1 .= '&nbsp;<button class="btn btn-info" title="Toon kolommen" ';
 	$h1 .= 'data-toggle="collapse" data-target="#columns_show"';
 	$h1 .= '><i class="fa fa-columns"></i></button>';
 }
-*/
 
 $h1 .= '</span>';
 
@@ -2329,16 +2456,35 @@ if ($s_admin && $v_list)
 	echo '</div>';
 	echo '<div class="panel-body">';
 
-	foreach ($columns as $key => $lbl)
+	foreach ($columns as $group => $ary)
 	{
-		echo '<div class="checkbox">';
-		echo '<label>';
-		echo '<input type="checkbox" name="sh[' . $key . ']" value="1"';
-		echo (isset($show_columns[$key])) ? ' checked="checked"' : '';
-		echo '> ' . $lbl;
-		echo ($key == 'c.adr') ? ', split door teken: <input type="text" name="adr_split" size="1" value="' . $adr_split . '">' : '';
-		echo '</label>';
-		echo '</div>';
+		if ($group == 'c')
+		{
+			echo '<h3>Contacten</h3>';
+		}
+		else if ($group == 'a')
+		{
+			echo '<h3>Activiteit</h3>';
+			echo '<p>In de laatste <input type="number" name="activity_days" value="' . $activity_days . '" ';
+			echo 'size="4" min="1"> dagen. Exclusief tegenpartij (letscode): <input type="text" name="activity_filter_letscode" ';
+			echo 'value="' . $activity_filter_letscode . '"></p>';
+		}
+		else if ($group == 'm')
+		{
+			echo '<h3>Vraag en aanbod</h3>';
+		}
+
+		foreach ($ary as $key => $lbl)
+		{
+			echo '<div class="checkbox">';
+			echo '<label>';
+			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" value="1"';
+			echo (isset($show_columns[$group][$key])) ? ' checked="checked"' : '';
+			echo '> ' . $lbl;
+			echo ($key == 'adr') ? ', split door teken: <input type="text" name="adr_split" size="1" value="' . $adr_split . '">' : '';
+			echo '</label>';
+			echo '</div>';
+		}
 	}
 
 	echo '</div>';
@@ -2403,13 +2549,26 @@ if ($v_list)
 
 	if ($s_admin)
 	{
-		echo '<th data-sort-initial="true">Code</th>';
-		echo '<th>Naam</th>';
-		echo '<th data-sort-ignore="true">Tel</th>';
-		echo '<th data-sort-ignore="true">gsm</th>';
-		echo '<th>Postcode</th>';
-		echo '<th data-sort-ignore="true">Mail</th>';
-		echo '<th>Saldo</th>';
+		foreach ($show_columns as $group => $ary)
+		{
+			$data_sort_ignore = ($group == 'c') ? ' data-sort-ignore="true"' : '';
+			$data_type = ($group == 'a' || $group == 'm') ? ' data-type="numeric"' : '';
+
+			foreach ($ary as $key => $one)
+			{
+				if ($key == 'adr' && $adr_split != '')
+				{
+					echo '<th data-sort-ignore="true">Adres (1)</th>';
+					echo '<th data-sort-ignore="true">Adres (2)</th>';
+					continue;
+				}
+
+				$data_type = ($key == 'saldo') ? ' data-type="numeric"' : $data_type;
+				$sort_initial = (isset($sort_initial)) ? '' : ' data-sort-initial="true"';
+
+				echo '<th' . $sort_initial . $data_sort_ignore . $data_type . '>' . $columns[$group][$key] . '</th>';
+			}
+		}
 
 		echo '</tr>';
 
@@ -2424,40 +2583,65 @@ if ($v_list)
 			$class = $st_class_ary[$row_stat];
 			$class = (isset($class)) ? ' class="' . $class . '"' : '';
 
+			$checkbox = '<input type="checkbox" name="sel[' . $id . ']" value="1"';
+			$checkbox .= ($selected_users[$id]) ? ' checked="checked"' : '';
+			$checkbox .= '>&nbsp;';
+
+			$first = true;
+
 			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
 
-			echo '<td>';
+			if (isset($show_columns['u']))
+			{
+				foreach ($show_columns['u'] as $key => $one)
+				{
+					echo '<td>';
+					echo ($first) ? $checkbox : '';
+					$first = false;
+					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, $key) : $u[$key];
+					echo '</td>';
+				}
+			}
 
-			echo '<input type="checkbox" name="sel[' . $id . ']" value="1"';
-			echo ($selected_users[$id]) ? ' checked="checked"' : '';
-			echo '>&nbsp;';
+			if (isset($show_columns['c']))
+			{
+				foreach ($show_columns['c'] as $key => $one)
+				{
+					echo '<td>';
+					if ($key == 'adr' && $adr_split != '')
+					{
+						list($adr_1, $adr_2) = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
+						echo $adr_1;
+						echo '</td><td>';
+						echo $adr_2;
+					}
+					else
+					{
+						echo render_contacts($contacts[$id][$key], $key);
+					}
+					echo '</td>';
+				}
+			}
 
-			echo link_user($u, 'letscode');
-			echo '</td>';
+			if (isset($show_columns['m']))
+			{
+				foreach($show_columns['m'] as $key => $one)
+				{
+					echo '<td>';
+					echo $msgs_count[$id][$key];
+					echo '</td>';
+				}
+			}
 
-			echo '<td>';
-			echo link_user($u, 'name');
-			echo '</td>';
-
-			echo '<td>';
-			echo render_contacts($contacts[$id]['tel']);
-			echo '</td>';
-			
-			echo '<td>';
-			echo render_contacts($contacts[$id]['gsm']);
-			echo '</td>';
-			
-			echo '<td>' . $u['postcode'] . '</td>';
-			
-			echo '<td>';
-			echo render_contacts($contacts[$id]['mail'], 'mail');
-			echo '</td>';
-
-			echo '<td>';
-			$balance = $u['saldo'];
-			$text_danger = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? 'text-danger ' : '';
-			echo '<span class="' . $text_danger  . '">' . $balance . '</span>';
-			echo '</td>';
+			if (isset($show_columns['a']))
+			{
+				foreach($show_columns['a'] as $key => $one)
+				{
+					echo '<td>';
+					echo $activity[$id][$key];
+					echo '</td>';
+				}
+			}
 
 			echo '</tr>';
 		}
@@ -2508,7 +2692,7 @@ if ($v_list)
 	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $currency . '</span></p>';
 	echo '</div></div>';
 
-	if ($s_admin)
+	if ($s_admin & isset($show_columns['u']))
 	{
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
