@@ -116,10 +116,6 @@ function saldo()
 					'content'	=> $user['maxlimit'],
 				),
 				array(
-					'name'		=> 'LOGIN',
-					'content'	=> $user['login'],
-				),
-				array(
 					'name'		=> 'GOOGLEADDR',
 					'content'	=> str_replace(' ', '+', $addr[$user_id]),
 				),
@@ -435,8 +431,8 @@ function saldo()
 	$text .= 'Status: *|STATUS|*' . $r;
 	$html .= '<p>Status: <b>*|STATUS|*</b></p>';
 
-	$text .= 'Login: *|LOGIN|* ' . $login_url . $r . $r;
-	$html .= '<p>Login: <b>*|LOGIN|*</b> ' . $login_url . '</p>';
+	$text .= 'Login: *|LETSCODE|* ' . $login_url . $r . $r;
+	$html .= '<p>Login: <b>*|LETSCODE|*</b> ' . $login_url . '</p>';
 
 	$t = 'Support';
 	$u = '-------';
