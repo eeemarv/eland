@@ -127,6 +127,7 @@ function saldo()
 	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$msg_url = $base_url . '/messages.php?id=';
+	$msgs_url = $base_url . '/messages.php';
 	$news_url = $base_url . '/news.php?id=';
 	$user_url = $base_url . '/users.php?id=';
 	$login_url = $base_url . '/login.php?login=*|LETSCODE|*';
@@ -311,6 +312,9 @@ function saldo()
 	}
 
 	$html .= '</ul>';
+
+	$text .= 'Bekijk alle vraag en aanbod online: ' . $msgs_url . $r . $r;
+	$html .= '<a href="' . $msgs_url . '">Bekijk alle vraag en aanbod online</a> .';
 
 	$text .= 'Nieuws' . $r;
 	$text .= '------' . $r;
