@@ -426,8 +426,8 @@ function saldo()
 	$text .= 'Je letscode: *|LETSCODE|*' . $r . 'Je gebruikersnaam: *|NAME|*' . $r;
 	$html .= '<p>Je letscode: <b>*|LETSCODE|*</b></p><p>Je gebruikersnaam: <b>*|NAME|*</b></p>';
 
-	$text .= 'Je huidig saldo bedraagt momenteel *|BALANCE|* ' . $currency . $r;
-	$html .= '<p>Je huidig saldo bedraagt momenteel <b>*|BALANCE|* </b> ' . $currency . '</p>';
+	$text .= 'Je saldo bedraagt momenteel *|BALANCE|* ' . $currency . $r;
+	$html .= '<p>Je saldo bedraagt momenteel <b>*|BALANCE|* </b> ' . $currency . '</p>';
 
 	$text .= 'Minimum limiet: *|MINLIMIT|* ' . $currency . ', Maximum limiet: *|MAXLIMIT|* ' . $currency . $r;
 	$html .= '<p>Minimum limiet: <b>*|MINLIMIT|*</b> ' . $currency . ', Maximum limiet: <b>*|MAXLIMIT|*</b> ' . $currency . '</p>';
