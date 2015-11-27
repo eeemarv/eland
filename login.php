@@ -80,7 +80,6 @@ if ($_POST['zend'])
 			'id'				=> 0,
 			'name'				=> 'master',
 			'fullname'			=> 'eLAS Master',
-			'login'				=> 'master',
 			'user_postcode'		=> '0000',
 			'letscode'			=> '000000',
 			'accountrole'		=> 'admin',
@@ -89,7 +88,7 @@ if ($_POST['zend'])
 			'lang'				=> 'nl',
 			'type'				=> 'master',
 		);
-		log_event(0,'Login','Master user ' . $user['login'] . ' logged in');
+		log_event(0,'Login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=0');
@@ -188,7 +187,6 @@ if ($_POST['zend'])
 				'id'			=> $user['id'],
 				'name'			=> $user['name'],
 				'fullname'		=> $user['fullname'],
-				'login'			=> $user['login'],
 				'postcode'		=> $user['postcode'],
 				'letscode'		=> $user['letscode'],
 				'accountrole'	=> $user['accountrole'],
@@ -198,7 +196,7 @@ if ($_POST['zend'])
 			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];
-			log_event($user['id'],'Login','User ' .$user['login'] .' logged in');
+			log_event($user['id'],'Login','User ' . link_user($user, null, false, true) . ' logged in');
 			log_event($user['id'],'Agent', $browser);
 			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
 			readuser($user['id'], true);
