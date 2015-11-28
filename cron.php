@@ -809,7 +809,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 	}
 
 	$time = time();
-	$lastrun = (isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name]) . ' UTC' : 0;
+	$lastrun = (isset($lastrun_ary[$name])) ? strtotime($lastrun_ary[$name] . ' UTC') : 0;
 
 	if (!((($time - $interval) > $lastrun) & ($enabled || !isset($enabled))))
 	{
