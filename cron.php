@@ -356,6 +356,87 @@ else
 	echo '-- autominlimit queue is empty --' . $r;
 }
 
+run_cronjob('users_geocode', 300);
+
+function users_geocode()
+{
+	global $db, $redis, $schema, $r;
+
+	$curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
+	$geocoder = new \Geocoder\ProviderAggregator();
+
+	$geocoder->registerProviders(array(
+		new \Geocoder\Provider\GoogleMaps(
+			$curl, 'nl', 'be', true
+		),
+	));
+
+	$geocoder->using('google_maps')
+		->limit(1);
+
+	$adr_ary = array();
+
+	$st = $db->prepare('select c.id, c.value, c.id_user
+		from contact c, type_contact tc, users u
+		where c.id_type_contact = tc.id
+			and tc.abbrev = \'adr\'
+			and c.id_user = u.id
+			and u.status in (1, 2)');
+
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$key = $schema . '_u_' . $row['id_user'] . '_c_adr_' . $row['id'];
+
+		if ($geo = $redis->get($key))
+		{
+			$geo = unserialize($geo);
+
+			if ($geo['adr'] == $row['value'])
+			{
+				continue;
+			}
+		}
+
+		try
+		{
+			$addressCollection = $geocoder->geocode($row['value']);
+
+			if (is_object($addressCollection))
+			{
+				$address = $addressCollection->first();
+
+				$ary = array(
+					'lng'	=> $address->getLongitude(),
+					'lat'	=> $address->getLatitude(),
+					'adr'	=> $row['value'],
+				);
+
+				$redis->set($key, serialize($ary));
+				echo 'Geocoded: ' . implode('|', $ary) . $r;
+				break;
+			}
+			else
+			{
+				echo '-- Geocode return NULL for: ' . $row['value'] . ' -- ' . $r;
+				log_event('', 'geocode', 'Geocode return NULL for ' . $row['value'] . ' from user ' . link_user($row['id_user'], null, false));
+			}
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage() . $r;
+			log_event('', 'geocode', 'Geocode ' . $row['value'] . ' from user ' . link_user($row['id_user'], null, false, true) . ' Exception: ' . $e->getMessage());
+
+			$redis->set($key, serialize(array('adr' => $row['value'])));
+			$redis->expire($key, 86400);
+		}
+	}
+
+	return true;
+}
+
+
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
@@ -700,13 +781,6 @@ function cleanup_logs()
 	$elas_mongo->connect();	
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 	$elas_mongo->logs->remove(array('timestamp' => array('$lt' => $treshold)));
-	return true;
-}
-
-run_cronjob('cronschedule', 300);
-
-function cronschedule()
-{
 	return true;
 }
 

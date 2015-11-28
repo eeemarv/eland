@@ -12,6 +12,7 @@
 		"ext-imagick": "*",
 		"blueimp/jquery-file-upload": "~9.11",
         "imagine/imagine": "~0.5.0",
-        "doctrine/dbal": "~2.5"
+        "doctrine/dbal": "~2.5",
+        "willdurand/geocoder": "^3.2"
 	}
 }
