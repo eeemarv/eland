@@ -262,8 +262,12 @@ if ($submit)
 	$tmpfile = $_FILES['file']['tmp_name'];
 	$file = $_FILES['file']['name'];
 	$file_size = $_FILES['file']['size'];
-	$type = $_FILES['file']['type'];
+//	$type = $_FILES['file']['type'];
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	$file_type = finfo_file($finfo, $tmpfile);
+	finfo_close($finfo);
 
 	$allowed_types = array(
 		'application/pdf'			=> 1,
@@ -284,6 +288,18 @@ if ($submit)
 		'application/x-gzip'		=> 1,
 		'application/x-compressed'	=> 1,
 		'application/zip'			=> 1,
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'			=> 1,
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.template'		=> 1,
+		'application/vnd.openxmlformats-officedocument.presentationml.template'		=> 1,
+		'application/vnd.openxmlformats-officedocument.presentationml.slideshow'	=> 1,
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation'	=> 1,
+		'application/vnd.openxmlformats-officedocument.presentationml.slide'		=> 1,
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document'	=> 1,
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.template'	=> 1,
+		'application/vnd.ms-excel.addin.macroEnabled.12'							=> 1,
+		'application/vnd.ms-excel.sheet.binary.macroEnabled.12'						=> 1,
+		'application/vnd.ms-excel'													=> 1,
+		'application/vnd.ms-powerpoint'												=> 1,
 	);
 
 	if ($file_size > 1024 * 1024 * 10)
@@ -350,11 +366,13 @@ if ($submit)
 
 		$params = array(
 			'CacheControl'	=> 'public, max-age=31536000',
+//			'ContentType'	=> $file_type,
 		);
 
-		if ($allowed_types[$type])
+
+		if ($allowed_types[$file_type])
 		{
-			$params['ContentType'] = $type;
+			$params['ContentType'] = $file_type;
 		}
 
 		$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(

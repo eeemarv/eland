@@ -26,7 +26,7 @@ if ($token)
 				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
 				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
-				log_event($s_id, 'System', 'password reset success user ' . $user_id);
+				log_event($s_id, 'System', 'password reset success user ' . link_user($user, null, false, true));
 
 				$to = array();
 				$st = $db->prepare('SELECT c.value

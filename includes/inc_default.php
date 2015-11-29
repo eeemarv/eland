@@ -561,41 +561,6 @@ function writeconfig($key, $value)
 /**
  *
  */
-function readparameter($key, $refresh = false)
-{
-    global $db, $schema, $redis;
-    static $cache;
-
-	if (!$refresh)
-	{
-		if (isset($cache[$key]))
-		{
-			return $cache[$key];
-		}
-
-		$redis_key = $schema . '_parameters_' . $key;
-
-		if ($redis->exists($redis_key))
-		{
-			return $cache[$key] = $redis->get($redis_key);
-		}
-	}
-
-	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', array($key));
-
-	if (isset($value))
-	{
-		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 2592000);
-		$cache[$key] = $value;
-	}
-
-	return $value;
-}
-
-/**
- *
- */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
     global $db, $schema, $redis, $elas_mongo;
@@ -759,7 +724,6 @@ function get_schemas_domains($http = false)
 /**
  *
  */
-
 function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 {
 	global $redis, $schema;
