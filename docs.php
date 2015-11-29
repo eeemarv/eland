@@ -262,45 +262,50 @@ if ($submit)
 	$tmpfile = $_FILES['file']['tmp_name'];
 	$file = $_FILES['file']['name'];
 	$file_size = $_FILES['file']['size'];
-//	$type = $_FILES['file']['type'];
+	$type = $_FILES['file']['type'];
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
 	$finfo = finfo_open(FILEINFO_MIME_TYPE);
 	$file_type = finfo_file($finfo, $tmpfile);
 	finfo_close($finfo);
 
-	$allowed_types = array(
-		'application/pdf'			=> 1,
-		'image/jpeg'				=> 1,
-		'image/png'					=> 1,
-		'image/gif'					=> 1,
-		'image/bmp'					=> 1,
-		'image/tiff'				=> 1,
-		'image/svg+xml'				=> 1,
-		'text/plain'				=> 1,
-		'text/rtf'					=> 1,
-		'text/css'					=> 1,
-		'text/html'					=> 1,
-		'text/markdown'				=> 1,
-		'application/msword'		=> 1,
-		'application/zip'			=> 1,
-		'audio/mpeg'				=> 1,
-		'application/x-gzip'		=> 1,
-		'application/x-compressed'	=> 1,
-		'application/zip'			=> 1,
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'			=> 1,
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.template'		=> 1,
-		'application/vnd.openxmlformats-officedocument.presentationml.template'		=> 1,
-		'application/vnd.openxmlformats-officedocument.presentationml.slideshow'	=> 1,
-		'application/vnd.openxmlformats-officedocument.presentationml.presentation'	=> 1,
-		'application/vnd.openxmlformats-officedocument.presentationml.slide'		=> 1,
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document'	=> 1,
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.template'	=> 1,
-		'application/vnd.ms-excel.addin.macroEnabled.12'							=> 1,
-		'application/vnd.ms-excel.sheet.binary.macroEnabled.12'						=> 1,
-		'application/vnd.ms-excel'													=> 1,
-		'application/vnd.ms-powerpoint'												=> 1,
+	$extension_types = array(
+		'docx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'docm'		=> 'application/vnd.ms-word.document.macroEnabled.12',
+		'dotx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+		'dotm'		=> 'application/vnd.ms-word.template.macroEnabled.12',
+		'xlsx'		=> 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'xlsm'		=> 'application/vnd.ms-excel.sheet.macroEnabled.12',
+		'xltx'		=> 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+		'xltm'		=> 'application/vnd.ms-excel.template.macroEnabled.12',
+		'xlsb'		=> 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+		'xlam'		=> 'application/vnd.ms-excel.addin.macroEnabled.12',
+		'pptx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+		'pptm'		=> 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+		'ppsx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+		'ppsm'		=> 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
+		'potx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.template',
+		'potm'		=> 'application/vnd.ms-powerpoint.template.macroEnabled.12',
+		'ppam'		=> 'application/vnd.ms-powerpoint.addin.macroEnabled.12',
+		'sldx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.slide',
+		'sldm'		=> 'application/vnd.ms-powerpoint.slide.macroEnabled.12',
+		'one'		=> 'application/msonenote',
+		'onetoc2'	=> 'application/msonenote',
+		'onetmp'	=> 'application/msonenote',
+		'onepkg'	=> 'application/msonenote',
+		'thmx'		=> 'application/vnd.ms-officetheme',
+		'doc'		=> 'application/msword',
+		'dot'		=> 'application/msword',
+		'xls'		=> 'application/vnd.ms-excel',
+		'xlt'		=> 'application/vnd.ms-excel',
+		'xla'		=> 'application/vnd.ms-excel',
+		'ppt' 		=> 'application/vnd.ms-powerpoint',
+		'pot'		=> 'application/vnd.ms-powerpoint',
+		'pps'		=> 'application/vnd.ms-powerpoint',
+		'ppa'		=> 'application/vnd.ms-powerpoint',
 	);
+
+	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
 
 	if ($file_size > 1024 * 1024 * 10)
 	{
@@ -365,15 +370,17 @@ if ($submit)
 		$elas_mongo->docs->insert($doc);
 
 		$params = array(
-			'CacheControl'	=> 'public, max-age=31536000',
-//			'ContentType'	=> $file_type,
+			'CacheControl'			=> 'public, max-age=31536000',
+			'ContentType'			=> $media_type,
+			'ContentDisposition'	=> 'inline', 
 		);
 
-
+/*
 		if ($allowed_types[$file_type])
 		{
 			$params['ContentType'] = $file_type;
 		}
+*/
 
 		$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 			'params'	=> $params
