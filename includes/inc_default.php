@@ -454,7 +454,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 	$user = (is_array($user)) ? $user : readuser($user);
 	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
-	$str = ($show_id) ? $str . ' (' . $user['id'] . ')' : $str;
+	$str = ($show_id) ? $str . ' (id: ' . $user['id'] . ')' : $str;
 	return $str;
 }
 
