@@ -208,6 +208,7 @@ if ($confirm_del && $del)
 		if (count(iterator_to_array($elas_mongo->docs->find(array('map_id' => $doc['map_id'])))) == 1)
 		{
 			$elas_mongo->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+			unset($doc['map_id']);
 		}
 
 		$elas_mongo->docs->remove(
@@ -216,7 +217,7 @@ if ($confirm_del && $del)
 		);
 
 		$alert->success('Het document werd verwijderd.');
-		cancel();
+		cancel($doc['map_id']);
 	}
 	$alert->error('Document niet gevonden.');
 }
@@ -477,7 +478,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-if (!$map)
+if (!$map && count($maps))
 {
 	echo '<div class="panel panel-default printview">';
 
@@ -523,59 +524,69 @@ if (!$map)
 	echo '</div>';
 }
 
-echo '<div class="panel panel-default printview">';
-
-echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable"';
-echo ' data-filter="#q" data-filter-minimum="1">';
-echo '<thead>';
-
-echo '<tr>';
-echo '<th data-sort-initial="true">Naam</th>';
-echo '<th data-hide="phone, tablet">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
-echo '</tr>';
-
-echo '</thead>';
-echo '<tbody>';
-
-foreach($docs as $d)
+if (count($docs))
 {
-	$access = $acc_ary[$d['access']];
+	echo '<div class="panel panel-default printview">';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-bordered table-striped table-hover footable"';
+	echo ' data-filter="#q" data-filter-minimum="1">';
+	echo '<thead>';
 
 	echo '<tr>';
-
-	echo '<td>';
-	echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $d['filename'] . '" target="_self">';
-	echo ($d['name']) ?: $d['org_filename'];
-	echo '</a>';
-	echo '</td>';
-	echo '<td>' . $d['ts'] . '</td>';
-
-	if (!$s_guest)
-	{
-		echo '<td>';
-		echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
-		echo '</td>';
-	}
-
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-		echo '&nbsp;';
-		echo aphp('docs', 'del=' . $d['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-		echo '</td>';
-	}
+	echo '<th data-sort-initial="true">Naam</th>';
+	echo '<th data-hide="phone, tablet">Tijdstip</th>';
+	echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+	echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 	echo '</tr>';
+
+	echo '</thead>';
+	echo '<tbody>';
+
+	foreach($docs as $d)
+	{
+		$access = $acc_ary[$d['access']];
+
+		echo '<tr>';
+
+		echo '<td>';
+		echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $d['filename'] . '" target="_self">';
+		echo ($d['name']) ?: $d['org_filename'];
+		echo '</a>';
+		echo '</td>';
+		echo '<td>' . $d['ts'] . '</td>';
+
+		if (!$s_guest)
+		{
+			echo '<td>';
+			echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
+			echo '</td>';
+		}
+
+		if ($s_admin)
+		{
+			echo '<td>';
+			echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo '&nbsp;';
+			echo aphp('docs', 'del=' . $d['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo '</td>';
+		}
+		echo '</tr>';
+	}
+
+	echo '</tbody>';
+	echo '</table>';
+
+	echo '</div>';
+	echo '</div>';
 }
-
-echo '</tbody>';
-echo '</table>';
-
-echo '</div>';
-echo '</div>';
+else if (!count($maps))
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<p>Er zijn nog geen documenten opgeladen.</p>';
+	echo '</div></div>';
+}
 
 if ($s_admin)
 {
