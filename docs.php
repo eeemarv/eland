@@ -19,12 +19,6 @@ $confirm_del = ($_POST['confirm_del']) ? true : false;
 
 $bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
 
-if (!readconfigfromdb('docs_en'))
-{
-	$alert->error('De documenten pagina is niet ingeschakeld.');
-	redirect_index();
-}
-
 if ($post)
 {
 	$s3 = Aws\S3\S3Client::factory(array(

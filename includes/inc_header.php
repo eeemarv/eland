@@ -155,14 +155,14 @@ else
 		$menu['interlets'] = array('share-alt', 'InterLETS');
 	}
 
-	if (readconfigfromdb('docs_en'))
-	{
-		$menu['docs'] = array('files-o', 'Documenten');
-	}
+	$menu['docs'] = array('files-o', 'Documenten');
+
+/*
 	if (readconfigfromdb('forum_en'))
 	{
 		$menu['forum'] = array('comments-o', 'Forum');
 	}
+*/
 
 	if ($s_user || $s_admin)
 	{

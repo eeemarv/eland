@@ -78,7 +78,6 @@ $elas_heroku_config = array(
 	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
 	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
 //	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
-	'docs_en'					=> array('0', 'Documenten ingeschakeld [0, 1]'),
 	'css'						=> array('', 'Extra stijl: url van .css bestand'),
 );
 
