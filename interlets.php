@@ -563,106 +563,116 @@ $fa = 'share-alt';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-primary printview">';
-
-echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-hover table-striped footable">';
-echo '<thead>';
-echo '<tr>';
-echo ($s_admin) ? '<th data-sort-initial="true">Account</th>' : '';
-echo '<th>groepsnaam</th>';
-echo '<th data-hide="phone">leden</th>';
-
-if ($s_admin)
+if (count($groups))
 {
-	echo '<th data-hide="phone, tablet">Admin</th>';	
-	echo '<th data-hide="phone, tablet">api</th>';
-}
+	echo '<div class="panel panel-primary printview">';
 
-echo '</tr>';
-echo '</thead>';
-
-echo '<tbody>';
-
-$param = ($s_admin) ? 'id' : 'login';
-
-foreach($groups as $g)
-{
-	$error = false;
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-bordered table-hover table-striped footable">';
+	echo '<thead>';
 	echo '<tr>';
+	echo ($s_admin) ? '<th data-sort-initial="true">Account</th>' : '';
+	echo '<th>groepsnaam</th>';
+	echo '<th data-hide="phone">leden</th>';
+
 	if ($s_admin)
 	{
-		echo '<td>';
+		echo '<th data-hide="phone, tablet">Admin</th>';	
+		echo '<th data-hide="phone, tablet">api</th>';
+	}
+
+	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	$param = ($s_admin) ? 'id' : 'login';
+
+	foreach($groups as $g)
+	{
+		$error = false;
+		echo '<tr>';
+		if ($s_admin)
+		{
+			echo '<td>';
+			if ($g['apimethod'] == 'elassoap')
+			{
+				$user = $users_letscode[$g['localletscode']];
+				if ($user)
+				{
+					echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+					if (!in_array($user['status'], array(1, 2, 7)))
+					{
+						echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
+							'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+							'exclamation-triangle');
+					}
+					if ($user['accountrole'] != 'interlets')
+					{
+						echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
+							'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+							'fa-exclamation-triangle');
+					}
+				}
+				else
+				{
+					echo $g['localletscode'];
+
+					if ($g['apimethod'] != 'internal' && !$user)
+					{
+						echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
+							'Creëer een interlets-account met gelijke letscode en status extern.',
+							'exclamation-triangle');
+					}
+				}
+			}
+			echo '</td>';
+		}
+
 		if ($g['apimethod'] == 'elassoap')
 		{
-			$user = $users_letscode[$g['localletscode']];
-			if ($user)
-			{
-				echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
-				if (!in_array($user['status'], array(1, 2, 7)))
-				{
-					echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
-						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
-						'exclamation-triangle');
-				}
-				if ($user['accountrole'] != 'interlets')
-				{
-					echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
-						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
-						'fa-exclamation-triangle');
-				}
-			}
-			else
-			{
-				echo $g['localletscode'];
-
-				if ($g['apimethod'] != 'internal' && !$user)
-				{
-					echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
-						'Creëer een interlets-account met gelijke letscode en status extern.',
-						'exclamation-triangle');
-				}
-			}
+			echo '<td>';
+			echo aphp('interlets', 'login=' . $g['id'], $g['groupname'], false, 'login als gast op deze letsgroep');
+			echo '</td>';
 		}
-		echo '</td>';
-	}
-
-	if ($g['apimethod'] == 'elassoap')
-	{
-		echo '<td>';
-		echo aphp('interlets', 'login=' . $g['id'], $g['groupname'], false, 'login als gast op deze letsgroep');
-		echo '</td>';
-	}
-	else
-	{
-		echo '<td>' . $g['groupname'] . '</td>';
-	}
-
-	echo '<td>' . $g['user_count'] . '</td>';
-
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
-
-		if ($error)
+		else
 		{
-			echo ' <span class="fa fa-exclamation-triangle text-danger"></span>';
+			echo '<td>' . $g['groupname'] . '</td>';
 		}
-		if ($g['server'])
+
+		echo '<td>' . $g['user_count'] . '</td>';
+
+		if ($s_admin)
 		{
-			echo ' <span class="label label-success" title="Deze letsgroep bevindt zich op dezelfde server">';
-			echo 'server</span>';
+			echo '<td>';
+			echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
+
+			if ($error)
+			{
+				echo ' <span class="fa fa-exclamation-triangle text-danger"></span>';
+			}
+			if ($g['server'])
+			{
+				echo ' <span class="label label-success" title="Deze letsgroep bevindt zich op dezelfde server">';
+				echo 'server</span>';
+			}
+			echo '</td>';
+			echo '<td>' . $g['apimethod'] . '</td>';
 		}
-		echo '</td>';
-		echo '<td>' . $g['apimethod'] . '</td>';
+		echo '</tr>';
 	}
-	echo '</tr>';
+
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div></div>';
 }
-
-echo '</tbody>';
-echo '</table>';
-echo '</div></div>';
+else
+{
+	echo '<div class="panel panel-primary">';
+	echo '<div class="panel-heading">';
+	echo '<p>Er zijn nog geen interletsgroepen.</p>';
+	echo '</div></div>';
+}
 
 if ($s_admin)
 {
