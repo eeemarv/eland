@@ -371,46 +371,56 @@ $fa = 'calendar';
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<div class="panel panel-warning printview">';
-echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-hover table-bordered footable">';
-
-echo '<thead>';
-echo '<tr>';
-echo '<th>Titel</th>';
-echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
-echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
-echo '</tr>';
-echo '</thead>';
-
-echo '<tbody>';
-
-foreach ($news as $value)
+if (count($news))
 {
+	echo '<div class="panel panel-warning printview">';
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-striped table-hover table-bordered footable">';
+
+	echo '<thead>';
 	echo '<tr>';
-
-	echo '<td>';
-	echo aphp('news', 'id=' . $value['id'], $value['headline']);
-	echo '</td>';
-
-	echo '<td>';
-	if(trim($value['itemdate']) != '00/00/00')
-	{
-		list($date) = explode(' ', $value['itemdate']);
-		echo $date;
-	}
-	echo '</td>';
-
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo ($value['approved']) ? 'Ja' : 'Nee';
-		echo '</td>';
-	}
+	echo '<th>Titel</th>';
+	echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
+	echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
 	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	foreach ($news as $value)
+	{
+		echo '<tr>';
+
+		echo '<td>';
+		echo aphp('news', 'id=' . $value['id'], $value['headline']);
+		echo '</td>';
+
+		echo '<td>';
+		if(trim($value['itemdate']) != '00/00/00')
+		{
+			list($date) = explode(' ', $value['itemdate']);
+			echo $date;
+		}
+		echo '</td>';
+
+		if ($s_admin)
+		{
+			echo '<td>';
+			echo ($value['approved']) ? 'Ja' : 'Nee';
+			echo '</td>';
+		}
+		echo '</tr>';
+	}
+	echo '</tbody>';
+	echo '</table></div></div>';
 }
-echo '</tbody>';
-echo '</table></div></div>';
+else
+{
+	echo '<div class="panel panel-warning">';
+	echo '<div class="panel-heading">';
+	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
+	echo '</div></div>';
+}
 
 include $rootpath . 'includes/inc_footer.php';
 
