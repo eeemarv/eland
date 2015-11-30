@@ -69,8 +69,6 @@ $status_ary = array(
 	123 => 'without-leaving-and-new',
 );
 
-$currency = readconfigfromdb('currency');
-
 $users = array();
 
 $rs = $db->prepare(
@@ -319,8 +317,6 @@ if ($_POST['zend'])
 }
 
 $transid = generate_transid();
-
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 if ($to_letscode)
 {
@@ -589,7 +585,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function mail_mass_transaction($mail_ary)
 {
-	global $db, $alert, $s_id, $base_url;
+	global $db, $alert, $s_id, $base_url, $systemtag, $currency;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
@@ -635,7 +631,6 @@ function mail_mass_transaction($mail_ary)
 	}
 
 	$r = "\r\n";
-	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
 	$new_transaction_url = $base_url . '/transactions/add.php';
@@ -786,7 +781,7 @@ function mail_mass_transaction($mail_ary)
 	$text .= 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r;
 	$html .= '<p>Klik <a href="' . $new_transaction_url . '">hier</a> om een nieuwe transactie in te geven.</p>';
 
-	$subject = '['. readconfigfromdb('systemtag') .'] - Nieuwe transactie.';
+	$subject = '['. $systemtag . '] - Nieuwe transactie.';
 
 	$message = array(
 		'subject'		=> $subject,
@@ -811,7 +806,7 @@ function mail_mass_transaction($mail_ary)
 
 	$to = (is_array($to)) ? implode(', ', $to) : $to;
 
-	$subject = '['. readconfigfromdb('systemtag') .'] - Nieuwe massa transactie.';
+	$subject = '['. $systemtag .'] - Nieuwe massa transactie.';
 
 	log_event($s_id, 'Mail', 'Massa transaction mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
 

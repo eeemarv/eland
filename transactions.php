@@ -23,8 +23,6 @@ $del_q = ($_GET['del_q']) ? true : false;
 
 $submit = ($_POST['zend']) ? true : false;
 
-$currency = readconfigfromdb('currency');
-
 /**
  * delete interlets queue
  */
@@ -381,8 +379,6 @@ if ($add)
 				from ' . $remote_schema . '.letsgroups
 				where url = ?', array($base_url));
 
-			$systemname = readconfigfromdb('systemname');
-
 			if (!$remote_letsgroup)
 			{
 				$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
@@ -567,7 +563,7 @@ if ($add)
 
 	$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
 	$letsgroups = array_merge(array(array(
-			'groupname' => readconfigfromdb('systemname'),
+			'groupname' => $systemname,
 			'id'		=> 'self',
 		)), $letsgroups);
 

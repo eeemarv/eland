@@ -120,7 +120,6 @@ if ($token = $_GET['token'])
 			throw $e;
 		}
 
-		$systemtag = readconfigfromdb('systemtag');
 		$subject = '[' . $systemtag . '] nieuwe inschrijving: ' . $user['fullname'];
 		$content = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
 		$content .= "De volgende persoon schreef zich in via de website: \n\n";
@@ -219,9 +218,9 @@ if ($_POST['zend'])
 		$key = $schema . '_register_email_' . $email;
 		$redis->set($key, '1');
 		$redis->expire($key, 86400);
-		$subject = '[' . readconfigfromdb('systemtag') . '] Bevestig je inschrijving';
+		$subject = '[' . $systemtag . '] Bevestig je inschrijving';
 		$url = $base_url . '/register.php?token=' . $token;
-		$message = 'Inschrijven voor ' . readconfigfromdb('systemname') . "\n\n";
+		$message = 'Inschrijven voor ' . $systemname . "\n\n";
 		$message .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$message .= "Deze link blijft 1 dag geldig.\n\n";
 		sendemail(readconfigfromdb('from_address'), $reg['email'], $subject, $message);

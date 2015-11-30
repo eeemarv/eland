@@ -177,7 +177,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function helpmail($help)
 {
-	global $rootpath, $s_id, $db;
+	global $rootpath, $s_id, $db, $systemtag;
 
 	$from = $help['mail'];
 
@@ -188,7 +188,7 @@ function helpmail($help)
 		return 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
-	$subject = '[' . readconfigfromdb('systemtag') . '] ' .$help['subject'];
+	$subject = '[' . $systemtag . '] ' .$help['subject'];
 
     $content  = "-- via de website werd het volgende probleem gemeld --\r\n";
 	$content .= 'E-mail: ' . $help['mail'] . "\r\n";

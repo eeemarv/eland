@@ -456,8 +456,8 @@ if ($login)
 			'name'			=> $user['name'],
 			'letscode'		=> $user['letscode'],
 			'mail'			=> $mail,
-			'systemtag'		=> readconfigfromdb('systemtag'),
-			'systemname'	=> readconfigfromdb('systemname'),
+			'systemtag'		=> $systemtag,
+			'systemname'	=> $systemname,
 			'url'			=> $base_url,
 			'schema'		=> $schema,
 		);

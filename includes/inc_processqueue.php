@@ -4,12 +4,11 @@ require_once $rootpath . 'includes/inc_transactions.php';
 
 function processqueue()
 {
-	global $db;
+	global $db, $systemtag;
+
 	echo "Running Interlets System\n\n";
 
 	$transactions = $db->fetchAll('SELECT * FROM interletsq');
-
-	$systemtag = readconfigfromdb('systemtag');
 
 	foreach ($transactions AS $key => $value)
 	{
@@ -134,7 +133,8 @@ function update_queue($transid,$count,$result)
 
 function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to)
 {
-	global $db;
+	global $db, $systemtag;
+
 	//FIXME Add data validation and clear error message for bug #321
 	//FIXME output debug info when elasdebug = 1
 	echo 'Local commiting ' . $transid . "\t\t";
@@ -230,15 +230,16 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		$result = 'FAILED';
 		log_event('','Trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
-		$systemtag = readconfigfromdb('systemtag');
+
 		$subject .= '[' . $systemtag . '] Interlets FAILURE!';
 		$from = readconfigfromdb('from_address');
 		$to = readconfigfromdb('admin');
 
 		$content = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
 
-		sendemail($from,$to,$subject,$content);
+		sendemail($from, $to, $subject, $content);
 	}
+
 	echo $result;
 	echo "\n";
 	return $result;

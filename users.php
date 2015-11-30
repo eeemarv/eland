@@ -35,9 +35,6 @@ if (!$inline)
 
 require_once $rootpath . 'includes/inc_default.php';
 
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-$currency = readconfigfromdb('currency');
-
 /**
  * mail to user
  */
@@ -45,9 +42,6 @@ if ($user_mail_submit && $id && $post)
 {
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
-
-	$systemtag = readconfigfromdb('systemtag');
-	$systemname = readconfigfromdb('systemname');
 
 	$user = readuser($id);
 
@@ -109,7 +103,7 @@ if ($user_mail_submit && $id && $post)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . readconfigfromdb('systemname') : '';
+			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 			$mail_status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
@@ -586,7 +580,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 		);
 	}
 
-	$subject = '['. readconfigfromdb('systemtag') .']' . $mail_subject;
+	$subject = '['. $systemtag .']' . $mail_subject;
 	$text = str_replace(array('{{', '}}'), array('*|', '|*'), $mail_content);
 
 	$message = array(
@@ -671,11 +665,11 @@ if ($pw)
 					{
 						$url = $base_url . '/login.php?login=' . $user['letscode'];
 
-						$subj = '[' . readconfigfromdb('systemtag');
+						$subj = '[' . $systemtag;
 						$subj .= '] nieuw paswoord voor je account';
 
 						$con = '*** Dit is een automatische mail van ';
-						$con .= readconfigfromdb('systemname');
+						$con .= $systemname;
 						$con .= '. Niet beantwoorden a.u.b. ';
 						$con .= "***\n\n";
 						$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
@@ -2921,12 +2915,13 @@ function dd_render($str)
 
 function sendadminmail($user)
 {
+	global $systemtag;
+
 	$from = readconfigfromdb('from_address');
 	$to = readconfigfromdb('admin');
-	$systemtag = readconfigfromdb('systemtag');
 
 	$subject = '[';
-	$subject .= readconfigfromdb('systemtag');
+	$subject .= $systemtag;
 	$subject .= "] Account activatie";
 
 	$content  = "*** Dit is een automatische mail van ";

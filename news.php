@@ -74,7 +74,7 @@ if ($add && $submit && !count($errors))
 
 			$from = readconfigfromdb('from_address');
 			$to = readconfigfromdb('newsadmin');
-			$systemtag = readconfigfromdb('systemtag');
+
 			$subject = '[' . $systemtag . '] Nieuwsbericht wacht op goedkeuring';
 			$content .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
 			$content .= "\nEen lid gaf een nieuwsbericht met titel [";

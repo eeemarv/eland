@@ -16,7 +16,7 @@
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $s_id, $alert;
+	global $base_url, $s_id, $alert, $systemname, $systemtag;
 
 	$from = readconfigfromdb("from_address");
 
@@ -30,8 +30,6 @@ function sendactivationmail($password, $user)
 		return 0;
 	}
 
-	$systemtag = readconfigfromdb('systemtag');
-	$systemname = readconfigfromdb('systemname');
 	$subject = '[';
 	$subject .= $systemtag;
 	$subject .= '] account activatie voor ' . $systemname;

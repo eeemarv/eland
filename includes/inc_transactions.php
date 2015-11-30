@@ -42,7 +42,7 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $db, $s_id;
+    global $db, $s_id, $currency;
 
 	$transaction['creator'] = (empty($s_id)) ? 0 : $s_id;
     $transaction['cdate'] = date('Y-m-d H:i:s');
@@ -70,7 +70,7 @@ function insert_transaction($transaction)
 	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
-		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
+		$transaction['amount'] . ' ' . $currency . ' from user ' .
 		link_user($transaction['id_from'], null, false, true) . ' to user ' .
 		link_user($transaction['id_to'], null, false, true));
 
@@ -82,7 +82,7 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
-	global $s_id;
+	global $s_id, $systemname, $systemtag, $currency;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -92,10 +92,6 @@ function mail_mail_interlets_transaction($transaction)
 	$userfrom = readuser($transaction['id_from']);
 
 	$to = get_mailaddresses($transaction['id_to']);
-
-	$systemname = readconfigfromdb('systemname');
-	$systemtag = readconfigfromdb('systemtag');
-	$currency = readconfigfromdb('currency');
 
 	$subject .= '[' . $systemtag . '] Interlets transactie';
 
@@ -213,13 +209,12 @@ function mail_transaction($transaction, $remote_schema = null)
 
 function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,$admincc)
 {
+	global $systemtag, $currency;
+
 	$r = "\r\n";
 	$t = "\t";
 
 	$from = readconfigfromdb('from_address');
-
-	$systemtag = readconfigfromdb('systemtag');
-	$currency = readconfigfromdb('currency');
 
 	$subject .= '['. $systemtag . '] Gefaalde interlets transactie ' . $transid;
 

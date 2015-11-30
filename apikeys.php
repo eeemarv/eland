@@ -114,7 +114,7 @@ echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interlets verbindinge
 echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAS-Heroku op ';
 echo 'dezelfde server moet je geen apikey aanmaken.</li></ul>';
 
-$key = sha1(readconfigfromdb('systemname') . microtime());
+$key = sha1($systemname . microtime());
 
 echo '<h3>Apikey toevoegen</h3>';
 

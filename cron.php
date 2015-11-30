@@ -87,7 +87,7 @@ else
 	exit;
 }
 
-echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
+echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $systemtag ."] ***" . $r;
 
 $elas_mongo->set_schema($schema);
 
@@ -287,8 +287,6 @@ if ($autominlimit_queue)
 		$elas_mongo->connect();
 		$a = $elas_mongo->settings->findOne(array('name' => 'autominlimit'));
 
-		$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
 		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
 
 		$inclusive = explode(',', $a['inclusive']);
@@ -444,7 +442,7 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), re
 function admin_exp_msg()
 {
 	// Fetch a list of all expired messages and mail them to the admin
-	global $db, $now, $r, $base_url;
+	global $db, $now, $r, $base_url, $systemtag;
 	
 	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
@@ -469,7 +467,6 @@ function admin_exp_msg()
 		return false;
 	}
 
-	$systemtag = readconfigfromdb('systemtag');
 	$subject = '[' . $systemtag . '] Rapport vervallen Vraag en aanbod';
 
 	$content = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
@@ -490,7 +487,8 @@ run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {
-	global $db, $now, $base_url;
+	global $db, $now, $base_url, $systemtag;
+
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
 	$warn_messages  = $db->fetchAll('SELECT m.*
@@ -537,7 +535,6 @@ function user_exp_msgs()
 			return;
 		}
 
-		$systemtag = readconfigfromdb('systemtag');
 		$subject = '[' . $systemtag . '] ' . $subject;
 
 		sendemail($from, $to, $subject, $content);

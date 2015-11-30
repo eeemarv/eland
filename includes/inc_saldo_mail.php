@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $db, $base_url;
+	global $db, $base_url, $systemtag, $currency;
 
 	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
 	$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
@@ -124,7 +124,6 @@ function saldo()
 	}
 
 	$r = "\r\n";
-	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$msg_url = $base_url . '/messages.php?id=';
 	$msgs_url = $base_url . '/messages.php';
@@ -450,7 +449,7 @@ function saldo()
 	$text .= $t . 'Wil je deze mail niet meer ontvangen, vink deze optie dan uit: ' . $my_account_edit_url;
 	$html .= '<p>' . $t . 'Klik <a href="' . $my_account_edit_url . '">hier</a> om aan te passen</p>';
 
-	$subject = '['. readconfigfromdb('systemtag') .'] - Recent vraag en aanbod';
+	$subject = '['. $systemtag .'] - Recent vraag en aanbod';
 
 	$message = array(
 		'subject'		=> $subject,

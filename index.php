@@ -22,12 +22,10 @@ require_once $rootpath . 'includes/inc_default.php';
 $news_where = ($s_admin) ? '' : ' where approved = True ';
 $news = $db->fetchAll('select * from news ' . $news_where . ' order by cdate desc');
 
-$newusertreshold = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400);
-
 $newusers = $db->fetchAll('select id, letscode, name
 	from users
 	where status = 1
-		and adate > ?', array($newusertreshold));
+		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
 
 $msgs = $db->fetchAll('SELECT m.*,
 		to_char(m.validity, \'YYYY-MM-DD\') as validity_short,
@@ -154,8 +152,6 @@ if($s_admin)
 
 if($s_guest)
 {
-	$systemname = readconfigfromdb('systemname');
-
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 	echo 'Welkom bij ' . $systemname;

@@ -91,14 +91,14 @@ $transactions = array_reverse($transactions);
 header('Content-type: application/json');
 
 echo json_encode(array(
-	'user_id' => $user_id,
-	'ticks' => ($days == 365) ? 12 : 4,
-	'currency' => readconfigfromdb('currency'),
-	'transactions' => $transactions,
-	'users' => $users,
-	'beginBalance' => $balance,
-	'begin' => $begin_date,
-	'end' => $end_date,
+	'user_id' 		=> $user_id,
+	'ticks' 		=> ($days == 365) ? 12 : 4,
+	'currency' 		=> $currency,
+	'transactions' 	=> $transactions,
+	'users' 		=> $users,
+	'beginBalance' 	=> $balance,
+	'begin' 		=> $begin_date,
+	'end' 			=> $end_date,
 ));
 
 

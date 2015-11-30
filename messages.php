@@ -456,8 +456,6 @@ if ($mail && $post && $id)
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
 
-	$systemtag = readconfigfromdb('systemtag');
-
 	$user = readuser($message['id_user']);
 
 	$to = $db->fetchColumn('select c.value
@@ -518,7 +516,7 @@ if ($mail && $post && $id)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . readconfigfromdb('systemname') : '';
+			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 			$status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
@@ -704,7 +702,7 @@ if (($edit || $add))
 
 		if (!ctype_digit($msg['amount']) && $msg['amount'] != '')
 		{
-			$errors[] = 'De (richt)prijs in ' . readconfigfromdb('currency') . ' moet nul of een positief getal zijn.';
+			$errors[] = 'De (richt)prijs in ' . $currency . ' moet nul of een positief getal zijn.';
 		}
 
 		if (!$msg['id_category'])
@@ -875,8 +873,6 @@ if (($edit || $add))
 		$cat_list[$row['id']] = $row['fullname'];
 	}
 
-	$currency = readconfigfromdb('currency');
-
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
 	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
@@ -1033,8 +1029,6 @@ if ($id)
 		' . $and_local . '
 		order by id desc
 		limit 1', array($id));
-
-	$currency = readconfigfromdb('currency');
 
 	$title = $message['content'];
 

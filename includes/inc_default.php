@@ -264,6 +264,9 @@ $db->exec('set search_path to ' . ($schema) ?: 'public');
 /**/
 
 $systemname = readconfigfromdb('systemname');
+$systemtag = readconfigfromdb('systemtag');
+$currency = readconfigfromdb('currency');
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view */
 

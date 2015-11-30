@@ -22,7 +22,7 @@ header('Content-Type:text/plain');
 echo '*** Init eLAS-Heroku ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
-echo "schema: " . $schema . ' systemtag: ' . readconfigfromdb('systemtag') . $r;
+echo "schema: " . $schema . ' systemtag: ' . $systemtag . $r;
 
 // Upgrade the DB first if required
 

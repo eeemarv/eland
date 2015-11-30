@@ -5,8 +5,6 @@ $rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$currency = readconfigfromdb('currency');
-
 $elas_mongo->connect();
 
 if (isset($_POST['zend']))
@@ -31,8 +29,6 @@ else
 {
 	$a = $elas_mongo->settings->findOne(array('name'=> 'autominlimit'));
 }
-
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 $h1 = 'Automatische minimum limiet';
 $fa = 'arrows-v';

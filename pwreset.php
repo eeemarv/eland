@@ -43,7 +43,7 @@ if ($token)
 
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
-				$subj = '[' . readconfigfromdb('systemtag') . '] nieuw paswoord.';
+				$subj = '[' . $systemtag . '] nieuw paswoord.';
 				$body = 'Beste ' . $user['name'] . ",\n\n";
 				$body .= 'Er werd een nieuw paswoord voor je account ingesteld.';
 				$body .= "\n\npaswoord: " . $password . "\n";
@@ -124,7 +124,7 @@ if ($_POST['zend'])
 
 				$url = $base_url . '/pwreset.php?token=' . $token;
 
-				$subject = '[' . readconfigfromdb('systemtag') . '] Paswoord reset link.';
+				$subject = '[' . $systemtag . '] Paswoord reset link.';
 
 				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
 				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
