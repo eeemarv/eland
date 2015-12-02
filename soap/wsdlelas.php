@@ -105,7 +105,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	global $db;
 
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
-	log_event('','debug','Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
+	log_event('', 'debug', 'Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
 	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid)))
 	{
@@ -140,7 +140,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			else
 			{
 				log_event('', 'debug', 'Not found Interlets touser ' . $to . ' transid: ' . $transid);
-			}				
+			}
 
 			$transaction = array(
 				'transid'		=> $transid,
@@ -203,7 +203,7 @@ function userbyletscode($apikey, $letscode)
 {
 	global $db;
 
-	log_event('','debug','Lookup request for ' . $letscode);
+	log_event('', 'debug', 'Lookup request for ' . $letscode);
 	if(check_apikey($apikey,'interlets'))
 	{
 		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode));
@@ -229,9 +229,9 @@ function userbyname($apikey, $name)
 
 	log_event('', 'debug', 'Lookup request for user ' . $name);
 
-	if(check_apikey($apikey,'interlets'))
+	if(check_apikey($apikey, 'interlets'))
 	{
-		$user = $db->fetchAssoc('select * from users where name like ?', array('%' . $name . '%'));
+		$user = $db->fetchAssoc('select * from users where name ilike ?', array('%' . $name . '%'));
 		return ($user['name']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
