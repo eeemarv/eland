@@ -11,7 +11,7 @@ $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
 $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];	
+$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 $base_url = $http . $_SERVER['SERVER_NAME'] . $port;
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
@@ -66,7 +66,7 @@ if(!empty($redis_url))
 	}
 	catch (Exception $e)
 	{
-	    echo "Couldn't connected to Redis: ";
+	    echo 'Couldn\'t connected to Redis: ';
 	    echo $e->getMessage();
 	}
 }
@@ -88,7 +88,7 @@ $role_ary = array(
 	'admin'		=> 'Admin',
 	'user'		=> 'User',
 	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
-	'interlets'	=> 'Interlets', 
+	'interlets'	=> 'Interlets',
 );
 
 $status_ary = array(
@@ -96,7 +96,7 @@ $status_ary = array(
 	1	=> 'Actief',
 	2	=> 'Uitstapper',
 	//3	=> 'Instapper',    // not used in selector
-	//4 => 'Secretariaat, // not used 
+	//4 => 'Secretariaat, // not used
 	5	=> 'Info-pakket',
 	6	=> 'Info-moment',
 	7	=> 'Extern',
@@ -150,6 +150,10 @@ if (!$schema)
 	exit;
 }
 
+require_once $rootpath . 'includes/redis_session.php';
+
+$redis_session = new redis_session($redis, $schema);
+session_set_save_handler($redis_session, $schema);
 session_name($schema);
 session_start();
 
@@ -159,7 +163,7 @@ $alert = new alert();
 
 $p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
 $p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
-$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false; 
+$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false;
 
 $access_request = $access_ary[$p_role];
 $access_page = $access_ary[$role];
@@ -356,7 +360,7 @@ function generate_url($entity = '', $params = '')
 	{
 		if ($alert->is_set())
 		{
-			$params .= ($params == '') ? 'a=1' : '&a=1'; 
+			$params .= ($params == '') ? 'a=1' : '&a=1';
 		}
 	}
 
@@ -587,7 +591,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		if ($redis->exists($redis_key))
 		{
 			return $cache[$s][$id] = unserialize($redis->get($redis_key));
-		} 
+		}
 	}
 
 	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', array($id));
@@ -651,7 +655,7 @@ function sendemail($from, $to, $subject, $content)
 	);
 
 	try {
-		$mandrill = new Mandrill(); 
+		$mandrill = new Mandrill();
 		$mandrill->messages->send($message, true);
 	}
 	catch (Mandrill_Error $e)
@@ -770,11 +774,11 @@ function etag_buffer($content)
 	}
 
     $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
-        trim(stripslashes($_SERVER['HTTP_IF_NONE_MATCH']), '"') : 
+        trim(stripslashes($_SERVER['HTTP_IF_NONE_MATCH']), '"') :
         false ;
 
 	if ($if_none_match == $etag && $content)
-	{ 
+	{
 		http_response_code(304);
 		return '';
 	}
