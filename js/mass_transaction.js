@@ -114,24 +114,28 @@ $('#fill_in_aid').submit(function(e){
 });
 
 function fill_in(data){
-	var ignore_letscode = $('#to_letscode').val().split(' ');
-	ignore_letscode = ignore_letscode[0];
+	var ignoreLetscode = $('#to_letscode').val().split(' ');
+	ignoreLetscode = ignoreLetscode[0];
 	var fixed = Number($('#fixed').val());
 	var perc = Number($('#percentage_balance').val() / 100);
 	var base = Number($('#percentage_balance_base').val());
     $('table input[type="number"]:visible').each(function() {
-		var am = (typeof data == 'object') ? data[$(this).attr('data-user-id')] : $(this).attr('data-balance');
+		var balance = $(this).data('balance');
+		var am = (typeof data == 'object') ? data[$(this).data('user-id')] : balance;
 		am =  +am - base;
 		var amount = Math.round(am * perc);
 		amount = (amount < 0) ? 0 : amount;
 		amount = amount + fixed;
-		if ($(this).attr('data-letscode') != ignore_letscode){
-			if (amount == 0){
-				$(this).val('');
-			} else {
-				$(this).val(amount);
-			}
+		var minlimit = $(this).data('minlimit');
+		var blockByMinlimit = ((minlimit > (balance - amount)) && $('#respect_minlimit').val()) ? true : false; 
+		var ignore = ($(this).attr('data-letscode') == ignoreLetscode) ? true : false;
+
+		if (amount == 0 || ignore || blockByMinlimit){
+			$(this).val('');
+		} else {
+			$(this).val(amount);
 		}
+
     });
 
     recalc_sum();

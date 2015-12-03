@@ -384,10 +384,10 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="respect_min_limit" class="col-sm-3 control-label">';
+echo '<label for="respect_minlimit" class="col-sm-3 control-label">';
 echo 'Respecteer minimum limieten</label>';
 echo '<div class="col-sm-9">';
-echo '<input type="checkbox" id="respect_min_limit" checked="checked">';
+echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo '</div>';
 echo '</div>';
 
@@ -496,6 +496,7 @@ foreach($users as $user_id => $user)
 	echo 'data-letscode="' . $user['letscode'] . '" ';
 	echo 'data-user-id="' . $user_id . '" ';
 	echo 'data-balance="' . $user['saldo'] . '" ';
+	echo 'data-minlimit="' . $user['minlimit'] . '"';
 	echo '>';
 	echo '</td>';
 
