@@ -2383,8 +2383,8 @@ if ($s_admin)
 	if ($v_list)
 	{
 		$top_buttons .= '<a href="#actions" class="btn btn-default"';
-		$top_buttons .= ' title="Acties"><i class="fa fa-envelope-o"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Acties</span></a>';
+		$top_buttons .= ' title="Bulk acties"><i class="fa fa-envelope-o"></i>';
+		$top_buttons .= '<span class="hidden-xs hidden-sm"> Bulk acties</span></a>';
 	}
 
 	$h1 = 'Gebruikers';
@@ -2710,7 +2710,7 @@ if ($v_list)
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
 		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
 		echo '</div></div>';
-		echo '<h3>Acties met geselecteerde gebruikers</h3>';
+		echo '<h3>Bulk acties met geselecteerde gebruikers</h3>';
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
 

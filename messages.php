@@ -1688,7 +1688,7 @@ else
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
 		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
 		echo '</div></div>';
-		echo '<h3>Acties met geselecteerd vraag en aanbod</h3>';
+		echo '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
 
