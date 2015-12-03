@@ -354,7 +354,7 @@ else
 	echo '-- autominlimit queue is empty --' . $r;
 }
 
-run_cronjob('users_geocode', 300);
+run_cronjob('users_geocode', 86400);
 
 function users_geocode()
 {
