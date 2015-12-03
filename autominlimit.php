@@ -127,8 +127,8 @@ echo '</div>';
 
 echo '<hr>';
 
-echo '<h3>Trigger voor verruiming van de minimum limiet.</h3>';
-echo '<h4>Ontvangen transacties verruimen de minimum limiet.</h4>';
+echo '<h3>Trigger voor daling van de minimum limiet.</h3>';
+echo '<h4>Ontvangen transacties laten de minimum limiet dalen.</h4>';
 
 echo '<div class="form-group">';
 echo '<label for="trans_percentage" class="col-sm-3 control-label">';
