@@ -289,7 +289,7 @@ if ($post && $images && $id && $img
 			);
 		}
 		catch(Exception $e)
-		{ 
+		{
 			echo $e->getMessage();
 			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
 		}
@@ -421,7 +421,7 @@ if ($img_del == 'all' && $id)
         echo '<i class="fa fa-times"></i> ';
         echo 'Verwijderen</span>';
 		echo '</div>';
- 		echo '</div>';     
+ 		echo '</div>';
 		echo '</div>';
 
 	}
@@ -480,7 +480,7 @@ if ($mail && $post && $id)
 	$me = readuser($me_id, false, $remote_schema);
 
 	$user_me = (isset($s_interlets['schema'])) ? readconfigfromschema('systemtag', $remote_schema) . '.' : '';
-	$user_me .= $me['letscode'] . ' ' . $me['name'];
+	$user_me .= link_user($me, null, false);
 	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromschema('systemname', $remote_schema) : '';
 
 	$from = $db->fetchColumn('select c.value
@@ -491,9 +491,9 @@ if ($mail && $post && $id)
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
-		where c.flag_public = 1
+		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($me_id));
+			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']],$me_id));
 
 	$subject = '[' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
 
@@ -1143,7 +1143,7 @@ if ($id)
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
-	
+
 	echo '<p><b>Omschrijving</b></p>';
 	echo '</div>';
 	echo '<div class="panel-body">';
@@ -1388,7 +1388,7 @@ $tableheader_ary += array(
 	'm.local' => array_merge($asc_preset_ary, array(
 		'lbl' 	=> 'Zichtbaarheid',
 		'data_hide'	=> 'phone, tablet',
-	)),	
+	)),
 );
 
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
@@ -1424,7 +1424,7 @@ while ($row = $st->fetch())
 	}
 
 	$categories[$row['id']] = $row['fullname'];
-	
+
 	$cat_params[$row['id']] = $params;
 	$cat_params[$row['id']]['cid'] = $row['id'];
 }
@@ -1539,7 +1539,7 @@ if (!$inline)
 	echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 	$nav_params = $params;
-	
+
 	foreach ($nav_tabs as $key => $tab)
 	{
 		$nav_params['valid'] = $key;
