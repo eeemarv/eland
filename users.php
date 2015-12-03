@@ -67,7 +67,7 @@ if ($user_mail_submit && $id && $post)
 	$me = readuser($me_id, false, $remote_schema);
 
 	$user_me = (isset($s_interlets['schema'])) ? readconfigfromschema('systemtag', $remote_schema) . '.' : '';
-	$user_me .= $me['letscode'] . ' ' . $me['name'];
+	$user_me .= link_user($me, null, false);
 	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromschema('systemname', $remote_schema) : '';
 
 	$from = $db->fetchColumn('select c.value
@@ -78,9 +78,9 @@ if ($user_mail_submit && $id && $post)
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
-		where c.flag_public = 1
+		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($me_id));
+			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $me_id));
 
 	$subject = '[' . $systemtag . '] - Bericht van ' . $systemname;
 
@@ -214,7 +214,7 @@ if ($post && $img && $id )
 		unlink($tmp_name);
 	}
 	catch(Exception $e)
-	{ 
+	{
 		echo json_encode(array('error' => $e->getMessage()));
 		log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
 		exit;
@@ -259,7 +259,7 @@ if ($img_del && $id)
 	{
 		$alert->error('De gebruiker heeft geen foto.');
 		cancel($id);
-	} 
+	}
 
 	if ($post)
 	{
@@ -282,7 +282,7 @@ if ($img_del && $id)
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
 	echo '<img src="' . $bucket_url . $file . '" class="img-rounded">';
-	echo '</div>';     
+	echo '</div>';
 	echo '</div>';
 
 	echo '</div>';
@@ -421,13 +421,13 @@ if ($post && $s_admin)
 }
 
 if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
-{ 
+{
 	if (!count($selected_users) && !$mail_test)
 	{
 		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
 	}
 
-	if (count($errors))	
+	if (count($errors))
 	{
 		$alert->error(implode('<br>', $errors));
 	}
@@ -447,7 +447,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . $row['letscode'] . ' ' . $row['name'] . ' (' . $row['id'] . ')'; 
+		$users_log .= ', ' . $row['letscode'] . ' ' . $row['name'] . ' (' . $row['id'] . ')';
 	}
 	$users_log = ltrim($users_log, ', ');
 
@@ -709,7 +709,7 @@ if ($pw)
 	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
 
 	$h1 = 'Paswoord aanpassen';
-	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user); 
+	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
 	$fa = 'key';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -889,7 +889,7 @@ if ($del)
 						'stat_msgs_offers'	=> ($offer_count[$cat_id]) ?: 0,
 						'stat_msgs_wanted'	=> ($want_count[$cat_id]) ?: 0,
 					);
-					
+
 					$db->update('categories', $stats, array('id' => $cat_id));
 				}
 
@@ -1402,7 +1402,7 @@ if ($add || $edit)
 			{
 				if (isset($contact_keys[$row['abbrev']]))
 				{
-					$contact[$contact_keys[$row['abbrev']]] = $row;				
+					$contact[$contact_keys[$row['abbrev']]] = $row;
 					unset($contact_keys[$row['abbrev']]);
 					continue;
 				}
@@ -2801,7 +2801,7 @@ if ($v_list)
 		}
 
 		echo '<div class="clearfix"></div>';
-		echo '</div>'; 
+		echo '</div>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -2852,7 +2852,7 @@ if ($v_tiles)
 		echo '<span class="letscode">' . $u['letscode'] . '</span> ';
 		echo '<span class="name">' . $u['name'] . '</span>';
 		echo '</a>';
-		echo '<br><span class="postcode">' . $u['postcode'] . '</span>'; 
+		echo '<br><span class="postcode">' . $u['postcode'] . '</span>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
