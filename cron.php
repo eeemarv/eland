@@ -440,7 +440,7 @@ function users_geocode()
 }
 
 
-run_cronjob('saldo', 300); //86400 * readconfigfromdb('saldofreqdays'));
+run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
 
@@ -831,17 +831,13 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	$lastrun = ($interval > 86400) ? $lastrun + $interval : $time;
 
-	if ($name != 'saldo')
+	if (isset($lastrun_ary[$name]))
 	{
-
-		if (isset($lastrun_ary[$name]))
-		{
-			$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s', $lastrun)), array('cronjob' => $name));
-		}
-		else
-		{
-			$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
-		}
+		$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s', $lastrun)), array('cronjob' => $name));
+	}
+	else
+	{
+		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
 	}
 
 	if ($name != 'cronschedule')
