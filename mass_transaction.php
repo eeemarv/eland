@@ -845,6 +845,6 @@ function mail_mass_transaction($mail_ary)
 
 function cancel()
 {
-	header('Location: ' . generate_url('mass_transaction.php'));
+	header('Location: ' . generate_url('mass_transaction'));
 	exit;
 }
