@@ -2458,7 +2458,7 @@ if ($s_admin && $v_list)
 		}
 		else if ($group == 'a')
 		{
-			echo '<h3>Transacties</h3>';
+			echo '<h3>Transacties/activiteit</h3>';
 			echo '<p>In de laatste <input type="number" name="activity_days" value="' . $activity_days . '" ';
 			echo 'size="4" min="1"> dagen. Exclusief tegenpartij (letscode): <input type="text" name="activity_filter_letscode" ';
 			echo 'value="' . $activity_filter_letscode . '"></p>';
