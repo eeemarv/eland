@@ -475,16 +475,16 @@ function readconfigfromdb($key)
     global $elas_mongo, $elas_heroku_config;
     static $cache;
 
-	if (isset($cache[$key]))
+	if (isset($cache[$schema][$key]))
 	{
-		return $cache[$key];
+		return $cache[$schema][$key];
 	}
 
 	$redis_key = $schema . '_config_' . $key;
 
 	if ($redis->exists($redis_key))
 	{
-		return $cache[$key] = $redis->get($redis_key);
+		return $cache[$schema][$key] = $redis->get($redis_key);
 	}
 
 	if (isset($elas_heroku_config[$key]))
@@ -502,7 +502,7 @@ function readconfigfromdb($key)
 	{
 		$redis->set($redis_key, $value);
 		$redis->expire($redis_key, 2592000);
-		$cache[$key] = $value;
+		$cache[$schema][$key] = $value;
 	}
 
 	return $value;

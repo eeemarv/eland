@@ -87,11 +87,16 @@ else
 	exit;
 }
 
+$systemname = readconfigfromdb('systemname');
+$systemtag = readconfigfromdb('systemtag');
+$currency = readconfigfromdb('currency');
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $systemtag ."] ***" . $r;
 
 $elas_mongo->set_schema($schema);
 
-$base_url = $domains[$schema];
+$base_url = $domains[$schema]; 
 
 // begin typeahaed update (when interletsq is empty) for one group
 
@@ -435,7 +440,7 @@ function users_geocode()
 }
 
 
-run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
+run_cronjob('saldo', 300); //86400 * readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
 
@@ -781,6 +786,12 @@ function cleanup_logs()
 	return true;
 }
 
+run_cronjob('cronschedule', 300);
+function cronschedule()
+{
+	return true;
+}
+
 echo "*** Cron run finished ***" . $r;
 exit;
 
@@ -820,13 +831,17 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	$lastrun = ($interval > 86400) ? $lastrun + $interval : $time;
 
-	if (isset($lastrun_ary[$name]))
+	if ($name != 'saldo')
 	{
-		$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s', $lastrun)), array('cronjob' => $name));
-	}
-	else
-	{
-		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
+
+		if (isset($lastrun_ary[$name]))
+		{
+			$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s', $lastrun)), array('cronjob' => $name));
+		}
+		else
+		{
+			$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
+		}
 	}
 
 	if ($name != 'cronschedule')
