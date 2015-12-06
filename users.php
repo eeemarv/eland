@@ -2216,6 +2216,7 @@ if ($v_list && $s_admin)
 			'maxlimit'		=> 'Max',
 			'comments'		=> 'Commentaar',
 			'admincomment'	=> 'Admin commentaar',
+			'cron_saldo'	=> 'Periodieke mail',
 			'cdate'			=> 'Gecreëerd',
 			'mdate'			=> 'Aangepast',
 			'adate'			=> 'Geactiveerd',
