@@ -257,11 +257,9 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
 
 // database connection
 
-$config = new \Doctrine\DBAL\Configuration();
-
 $db = \Doctrine\DBAL\DriverManager::getConnection(array(
 	'url' => getenv('DATABASE_URL'),
-), $config);
+), new \Doctrine\DBAL\Configuration());
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
