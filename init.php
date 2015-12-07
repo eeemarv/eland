@@ -102,7 +102,7 @@ while($row = $rs->fetch())
 			'CacheControl'	=> 'public, max-age=31536000',
 		));
 
-		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
+		if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
 		{
 			$db->update('users', array('PictureFile' => $new_filename), array('id' => $user_id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
@@ -157,7 +157,7 @@ foreach($message_images as $image)
 			'CacheControl'	=> 'public, max-age=31536000',
 		));
 
-		if ($result && $result instanceof \Guzzle\Service\Resource\Model)
+		if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
 		{
 			$db->update('msgpictures', array('PictureFile' => $new_filename), array('id' => $id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
