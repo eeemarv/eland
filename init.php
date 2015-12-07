@@ -210,6 +210,7 @@ foreach ($results as $result)
 
 echo 'Sync image files ready.' . $r;
 
+/*
 echo 'Cleanup orphaned contacts. ' . $r;
 
 $orphaned_contacts = array();
@@ -247,7 +248,7 @@ else
 {
 	echo 'none found.' . $r;
 }
-
+*/
 echo '*** clear users cache ***';
 
 $users = $db->fetchAll('select id from users');
