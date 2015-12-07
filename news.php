@@ -285,7 +285,7 @@ if ($id)
 		if($s_admin)
 		{
 			$top_buttons .= aphp('news', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
-			$top_buttons .= aphp('news', 'del=' . $id, 'Verwijderen', 'btn btn-default', 'Nieuwsbericht verwijderen', 'times', true);
+			$top_buttons .= aphp('news', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
 
 			if (!$news['approved'])
 			{
@@ -296,7 +296,7 @@ if ($id)
 
 	$top_buttons .= aphp('news', '', 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
 
-	$h1 = 'Nieuwsbericht: ' . $news['headline'];
+	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
 	$fa = 'calendar';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -312,14 +312,19 @@ if ($id)
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
-	
+
 	echo '<dl>';
+
 	echo '<dt>Agendadatum</dt>';
 	list($itemdate) = explode(' ', $news['itemdate']);
-	echo '<dd>' . $itemdate . '</dd>';
+	echo '<dd>';
+	echo ($itemdate) ? $itemdate : '<i class="fa fa-times"></i>';
+	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
-	echo '<dd>' . htmlspecialchars($news['location'], ENT_QUOTES) . '</dd>';
+	echo '<dd>';
+	echo ($news['location']) ? htmlspecialchars($news['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
@@ -337,8 +342,8 @@ if ($id)
 		echo '<dd>';
 		echo ($news['sticky']) ? 'Ja' : 'Nee';
 		echo '</dd>';
-		echo '</dl>';
 	}
+	echo '</dl>';
 
 	echo '</div>';
 	echo '</div>';
@@ -350,14 +355,14 @@ if ($id)
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$query = 'SELECT * FROM news';
+$query = 'SELECT *, to_char(itemdate, \'YYYY-MM-DD\') as idate FROM news';
 
 if(!$s_admin)
 {
 	$query .= ' where approved = \'t\'';
 }
 
-$query .= ' ORDER BY cdate DESC';
+$query .= ' ORDER BY itemdate DESC';
 
 $news = $db->fetchAll($query);
 
@@ -380,8 +385,8 @@ if (count($news))
 	echo '<thead>';
 	echo '<tr>';
 	echo '<th>Titel</th>';
-	echo '<th data-hide="phone" data-sort-initial="true">Agendadatum</th>';
-	echo ($s_admin) ? '<th data-hide="phone, tablet">Goedgekeurd</th>' : '';
+	echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
+	echo ($s_admin) ? '<th data-hide="phone">Goedgekeurd</th>' : '';
 	echo '</tr>';
 	echo '</thead>';
 
@@ -396,11 +401,7 @@ if (count($news))
 		echo '</td>';
 
 		echo '<td>';
-		if(trim($value['itemdate']) != '00/00/00')
-		{
-			list($date) = explode(' ', $value['itemdate']);
-			echo $date;
-		}
+		echo $value['idate'];
 		echo '</td>';
 
 		if ($s_admin)

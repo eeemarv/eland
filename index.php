@@ -20,7 +20,8 @@ $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
 $news_where = ($s_admin) ? '' : ' where approved = True ';
-$news = $db->fetchAll('select * from news ' . $news_where . ' order by cdate desc');
+$news = $db->fetchAll('select *, to_char(itemdate, \'YYYY-MM-DD\') as idate
+	from news ' . $news_where . ' order by itemdate desc');
 
 $newusers = $db->fetchAll('select id, letscode, name
 	from users
@@ -184,11 +185,7 @@ if($news)
 		echo '</td>';
 
 		echo '<td>';
-		if(trim($value['itemdate']) != '00/00/00')
-		{
-			list($date) = explode(' ', $value['itemdate']);
-			echo $date;
-		}
+		echo $value['idate'];
 		echo '</td>';
 
 		if ($s_admin)
