@@ -171,6 +171,7 @@ foreach($message_images as $image)
 	}
 }
 
+/*
 $schemas = $db->fetchAll('select schema_name from information_schema.schemata');
 
 $schemas = array_map(function($row){ return $row['schema_name']; }, $schemas);
@@ -205,6 +206,7 @@ foreach ($results as $result)
 		log_event($s_id, 'init', 'Image deleted from bucket: ' . $key);
 	}
 }
+*/
 
 echo 'Sync image files ready.' . $r;
 
