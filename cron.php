@@ -802,7 +802,7 @@ function cleanup_logs()
 	return true;
 }
 
-run_cronjob('cronschedule', 300);
+run_cronjob('cronschedule', 10);
 function cronschedule()
 {
 	return true;
