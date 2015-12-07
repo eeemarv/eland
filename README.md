@@ -112,6 +112,10 @@ You can truncate the city_distance table which is not used anymore and which is 
 ```sql
 TRUNCATE TABLE city_distance;
 ```
+In eLAS there are only 2 levels of access for contacts. Public and private. In eLAS-Heroku public is further divided in 'members' and 'interlets'. To keep consistent the 'public' access level of eLAS should be transformed into the 'interlets' access level of eLAS-Heroku.
+```sql
+UPDATE contact SET flag_public = 2 where flag_public = 1;
+```
 Rename then the public schema to the letsgroup code
 ```sql
 ALTER SCHEMA public RENAME TO abc;
