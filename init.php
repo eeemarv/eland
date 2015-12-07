@@ -113,6 +113,10 @@ while($row = $rs->fetch())
 				'Key'		=> $filename_bucket,
 			));
 		}
+		else
+		{
+			echo $result . $r;
+		}
 	}
 }
 
