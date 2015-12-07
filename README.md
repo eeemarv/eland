@@ -49,7 +49,7 @@ heroku addons:add mongolab
 * AWS_SECRET_ACCESS_KEY
 * S3_BUCKET (bucket for images of profiles and messages)
 * S3_BUCKET_DOC (bucket for documents)
-* REDISTOGO_URL: addon redistogo (redis server)
+* REDISCLOUD_URL: addon redis cloud (redis server)
 * MANDRILL_USERNAME: addon mandrill (smtp server)
 * MANDRILL_PASSWORD
 * MONGOLAB_URI (mongodb)
