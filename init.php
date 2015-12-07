@@ -87,7 +87,7 @@ while($row = $rs->fetch())
 
 	if (!$found)
 	{
-		$db->update('users', array('PictureFile' => null), array('id' => $user_id));
+		$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
 		echo 'Profile image not present, deleted in database: ' . $filename . $r;
 		log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 	}
@@ -104,7 +104,7 @@ while($row = $rs->fetch())
 
 		if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
 		{
-			$db->update('users', array('PictureFile' => $new_filename), array('id' => $user_id));
+			$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 			log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
@@ -159,7 +159,7 @@ foreach($message_images as $image)
 
 		if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
 		{
-			$db->update('msgpictures', array('PictureFile' => $new_filename), array('id' => $id));
+			$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 			log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
