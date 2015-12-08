@@ -1313,7 +1313,7 @@ if ($valid && $valid != 'all')
 
 if ($s_guest)
 {
-	$and_where = ' and local = false ';
+	$and_where = ' and local = \'f\' ';
 }
 
 $query = 'select m.*, to_char(m.validity, \'YYYY-MM-DD\') as validity_short, u.postcode
