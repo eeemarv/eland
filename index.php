@@ -28,7 +28,7 @@ $newusers = $db->fetchAll('select id, letscode, name
 	where status = 1
 		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
 
-$sql_local = ($s_guest) ? ' and local = \'f\' ' : '';
+$sql_local = ($s_guest) ? ' and m.local = \'f\' ' : '';
 
 $msgs = $db->fetchAll('SELECT m.*,
 		to_char(m.validity, \'YYYY-MM-DD\') as validity_short,
@@ -39,7 +39,7 @@ $msgs = $db->fetchAll('SELECT m.*,
 	where m.id_user = u.id
 		and u.status in (1, 2)
 		and m.id_category = c.id
-		' . $sql_and_local . '
+		' . $sql_local . '
 	order by m.cdate DESC
 	limit 100');
 
