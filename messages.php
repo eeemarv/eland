@@ -1388,7 +1388,7 @@ $tableheader_ary += array(
 	)),
 );
 
-if (!$guest)
+if (!$s_guest)
 {
 	$tableheader_ary += array(
 		'm.local' => array_merge($asc_preset_ary, array(
