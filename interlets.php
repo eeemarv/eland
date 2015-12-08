@@ -179,7 +179,8 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="remoteapikey" class="col-sm-2 control-label">Remote API key</label>';
+	echo '<label for="remoteapikey" class="col-sm-2 control-label">Remote API key ';
+	echo '<i><small>enkel voor eLAS</small></i></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
 	echo 'value="' . $group['remoteapikey'] . '">';
@@ -198,7 +199,7 @@ if ($add || $edit)
 
 	echo '<div class="form-group">';
 	echo '<label for="myremoteletscode" class="col-sm-2 control-label">';
-	echo 'Remote LETS code <small><i>(De letscode waarmee deze groep bij de andere bekend is)';
+	echo 'Remote LETS code <small><i>De letscode waarmee deze groep bij de andere bekend is, enkel voor eLAS';
 	echo '</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="myremoteletscode" name="myremoteletscode" ';

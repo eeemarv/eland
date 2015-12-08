@@ -264,6 +264,7 @@ if ($post && $images && $id && $img
 			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 				'params'	=> array(
 					'CacheControl'	=> 'public, max-age=31536000',
+					'ContentType'	=> 'image/jpeg',
 				),
 			));
 

@@ -100,6 +100,7 @@ while($row = $rs->fetch())
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
 			'CacheControl'	=> 'public, max-age=31536000',
+			'ContentType'	=> 'image/jpeg',
 		));
 
 		if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
@@ -155,6 +156,7 @@ foreach($message_images as $image)
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
 			'CacheControl'	=> 'public, max-age=31536000',
+			'ContentType'	=> 'image/jpeg',
 		));
 
 		if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
