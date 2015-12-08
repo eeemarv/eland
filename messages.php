@@ -1015,7 +1015,7 @@ if ($id)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
-	$and_local = ($s_guest) ? ' and local = false ' : '';
+	$and_local = ($s_guest) ? ' and local = \'f\' ' : '';
 
 	$prev = $db->fetchColumn('select id
 		from messages
