@@ -1386,11 +1386,17 @@ $tableheader_ary += array(
 		'lbl' 	=> 'Geldig tot',
 		'data_hide'	=> 'phone, tablet',
 	)),
-	'm.local' => array_merge($asc_preset_ary, array(
-		'lbl' 	=> 'Zichtbaarheid',
-		'data_hide'	=> 'phone, tablet',
-	)),
 );
+
+if (!$guest)
+{
+	$tableheader_ary += array(
+		'm.local' => array_merge($asc_preset_ary, array(
+			'lbl' 	=> 'Zichtbaarheid',
+			'data_hide'	=> 'phone, tablet',
+		)),
+	);
+}
 
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
