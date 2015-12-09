@@ -2071,9 +2071,12 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div id="messages" data-uid="' . $id . '" ';
-	echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
-	echo '&' . get_session_query_param() . '" class="print-hide"></div>';
+	if ($user['status'] == 1 || $user['status'] == 2)
+	{
+		echo '<div id="messages" data-uid="' . $id . '" ';
+		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
+		echo '&' . get_session_query_param() . '" class="print-hide"></div>';
+	}
 
 	echo '<div id="transactions" data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
