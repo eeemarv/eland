@@ -20,24 +20,24 @@ $cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com
 $cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
 $cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
 
-$cdn_footable_js = (getenv('CDN_FOOTABLE_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.js';
-$cdn_footable_sort_js = (getenv('CDN_FOOTABLE_SORT_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.sort.js';
-$cdn_footable_filter_js = (getenv('CDN_FOOTABLE_FILTER_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/js/footable.filter.js';
-$cdn_footable_css = (getenv('CDN_FOOTABLE_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/footable-2.0.3/css/footable.core.min.css';
-$cdn_jssor_slider_mini_js = (getenv('CDN_JSSOR_MINI_JS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jssor/js/jssor.slider.mini.js';
+$cdn_footable_js = (getenv('CDN_FOOTABLE_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.js';
+$cdn_footable_sort_js = (getenv('CDN_FOOTABLE_SORT_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.sort.js';
+$cdn_footable_filter_js = (getenv('CDN_FOOTABLE_FILTER_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.filter.js';
+$cdn_footable_css = (getenv('CDN_FOOTABLE_CSS')) ?: 'http://res.letsa.net/footable-2.0.3/css/footable.core.min.css';
+$cdn_jssor_slider_mini_js = (getenv('CDN_JSSOR_MINI_JS')) ?: 'http://res.letsa.net/jssor/js/jssor.slider.mini.js';
 
 $cdn_jqplot = (getenv('CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
 
-$cdn_jquery_ui_widget = (getenv('CDN_JQUERY_UI_WIDGET')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
-$cdn_jquery_iframe_transport = (getenv('CDN_JQUERY_IFRAME_TRANSPORT')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
-$cdn_load_image = (getenv('CDN_LOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
-$cdn_canvas_to_blob = (getenv('CDN_CANVAS_TO_BLOB')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
-$cdn_jquery_fileupload = (getenv('CDN_JQUERY_FILEUPLOAD')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
-$cdn_jquery_fileupload_process = (getenv('CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
-$cdn_jquery_fileupload_image = (getenv('CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
-$cdn_jquery_fileupload_validate = (getenv('CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
-$cdn_fileupload_css = (getenv('CDN_FILEUPLOAD_CSS')) ?: 'http://elas-c.s3-website.eu-central-1.amazonaws.com/jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
+$cdn_jquery_ui_widget = (getenv('CDN_JQUERY_UI_WIDGET')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
+$cdn_jquery_iframe_transport = (getenv('CDN_JQUERY_IFRAME_TRANSPORT')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
+$cdn_load_image = (getenv('CDN_LOAD_IMAGE')) ?: 'http://res.letsa.net/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
+$cdn_canvas_to_blob = (getenv('CDN_CANVAS_TO_BLOB')) ?: 'http://res.letsa.net/JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
+$cdn_jquery_fileupload = (getenv('CDN_JQUERY_FILEUPLOAD')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
+$cdn_jquery_fileupload_process = (getenv('CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
+$cdn_jquery_fileupload_image = (getenv('CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
+$cdn_jquery_fileupload_validate = (getenv('CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
+$cdn_fileupload_css = (getenv('CDN_FILEUPLOAD_CSS')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
 
 $cdn_typeahead = (getenv('CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
 $cdn_datepicker_css = (getenv('CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
