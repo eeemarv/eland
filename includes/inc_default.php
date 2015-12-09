@@ -32,6 +32,12 @@ $cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
 $cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
 $cdn_footable_filter_js = $s3_res_url . 'footable-2.0.3/js/footable.filter.js';
 $cdn_footable_css = $s3_res_url . 'footable-2.0.3/css/footable.core.css';
+
+/*
+$cdn_footable_js = $s3_res_url . 'footable-bootstrap-3.0.3/js/footable.js';
+$cdn_footable_css = $s3_res_url . 'footable-bootstrap-3.0.3/css/footable.bootstrap.css';
+*/
+
 $cdn_jssor_slider_mini_js = $s3_res_url . 'jssor/js/jssor.slider.mini.js';
 
 $cdn_jqplot = (getenv('CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';

@@ -2535,7 +2535,12 @@ if ($v_list)
 	echo '<div class="table-responsive">';
 
 	echo '<table class="table table-bordered table-striped table-hover footable csv" ';
-	echo 'data-filter="#q" data-filter-minimum="1">';
+	echo 'data-filtering="true" data-filter-delay="0" ';
+	echo 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
+	echo 'data-empty="Er zijn geen ' . (($s_admin) ? 'gebruikers' : 'leden') . ' volgens ';
+	echo 'de selectiecriteria" data-sorting="true" data-filter-placeholder="Zoeken" ';
+	echo 'data-filter-position="left"';
+	echo '>';
 	echo '<thead>';
 
 	echo '<tr>';
@@ -2643,10 +2648,10 @@ if ($v_list)
 	{
 		echo '<th data-sort-initial="true">Code</th>';
 		echo '<th>Naam</th>';
-		echo '<th data-hide="phone, tablet" data-sort-ignore="true">Tel</th>';
-		echo '<th data-hide="phone, tablet" data-sort-ignore="true">gsm</th>';
+		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
+		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
 		echo '<th data-hide="phone">Postcode</th>';
-		echo '<th data-hide="phone, tablet" data-sort-ignore="true">Mail</th>';
+		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
 		echo '<th data-hide="phone">Saldo</th>';
 
 		echo '</tr>';
