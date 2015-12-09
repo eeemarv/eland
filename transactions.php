@@ -744,6 +744,9 @@ if ($id)
 	exit;
 }
 
+/**
+ * list
+ */
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
 $orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
@@ -771,6 +774,7 @@ $params = array(
 
 if ($uid)
 {
+	$user = readuser($uid);
 	$params['uid']	= $uid;
 }
 
@@ -828,16 +832,19 @@ if ($s_admin || $s_user)
 {
 	if ($uid)
 	{
-		$user_str = link_user($uid, null, false);
+		$user_str = link_user($user, null, false);
 
-		if ($s_admin)
+		if ($user['status'] != 7)
 		{
-			$top_buttons .= aphp('transactions', 'add=1&fuid=' . $uid, 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
-		}
+			if ($s_admin)
+			{
+				$top_buttons .= aphp('transactions', 'add=1&fuid=' . $uid, 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
+			}
 
-		if ($s_admin || ($s_user && !$s_owner))
-		{
-			$top_buttons .= aphp('transactions', 'add=1&tuid=' . $uid, 'Transactie naar ' . $user_str, 'btn btn-success', 'Transactie naar ' . $user_str, 'plus', true);
+			if ($s_admin || ($s_user && !$s_owner))
+			{
+				$top_buttons .= aphp('transactions', 'add=1&tuid=' . $uid, 'Transactie naar ' . $user_str, 'btn btn-success', 'Transactie naar ' . $user_str, 'plus', true);
+			}
 		}
 
 		if (!$inline)
