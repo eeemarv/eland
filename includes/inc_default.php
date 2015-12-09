@@ -7,6 +7,14 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
+$s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
+$s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
+$s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
+
+$s3_res_url = 'http://' . $s3_res . '/';
+$s3_img_url = 'http://' . $s3_img . '/';
+$s3_doc_url = 'http://' . $s3_doc . '/';
+
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
@@ -20,24 +28,24 @@ $cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com
 $cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
 $cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
 
-$cdn_footable_js = (getenv('CDN_FOOTABLE_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.js';
-$cdn_footable_sort_js = (getenv('CDN_FOOTABLE_SORT_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.sort.js';
-$cdn_footable_filter_js = (getenv('CDN_FOOTABLE_FILTER_JS')) ?: 'http://res.letsa.net/footable-2.0.3/js/footable.filter.js';
-$cdn_footable_css = (getenv('CDN_FOOTABLE_CSS')) ?: 'http://res.letsa.net/footable-2.0.3/css/footable.core.min.css';
-$cdn_jssor_slider_mini_js = (getenv('CDN_JSSOR_MINI_JS')) ?: 'http://res.letsa.net/jssor/js/jssor.slider.mini.js';
+$cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
+$cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
+$cdn_footable_filter_js = $s3_res_url . 'footable-2.0.3/js/footable.filter.js';
+$cdn_footable_css = $s3_res_url . 'footable-2.0.3/css/footable.core.css';
+$cdn_jssor_slider_mini_js = $s3_res_url . 'jssor/js/jssor.slider.mini.js';
 
 $cdn_jqplot = (getenv('CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
 $cdn_jquery = (getenv('CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
 
-$cdn_jquery_ui_widget = (getenv('CDN_JQUERY_UI_WIDGET')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
-$cdn_jquery_iframe_transport = (getenv('CDN_JQUERY_IFRAME_TRANSPORT')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
-$cdn_load_image = (getenv('CDN_LOAD_IMAGE')) ?: 'http://res.letsa.net/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
-$cdn_canvas_to_blob = (getenv('CDN_CANVAS_TO_BLOB')) ?: 'http://res.letsa.net/JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
-$cdn_jquery_fileupload = (getenv('CDN_JQUERY_FILEUPLOAD')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
-$cdn_jquery_fileupload_process = (getenv('CDN_JQUERY_FILEUPLOAD_PROCESS')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
-$cdn_jquery_fileupload_image = (getenv('CDN_JQUERY_FILEUPLOAD_IMAGE')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
-$cdn_jquery_fileupload_validate = (getenv('CDN_JQUERY_FILEUPLOAD_VALIDATE')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
-$cdn_fileupload_css = (getenv('CDN_FILEUPLOAD_CSS')) ?: 'http://res.letsa.net/jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
+$cdn_jquery_ui_widget = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
+$cdn_jquery_iframe_transport = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
+$cdn_load_image = $s3_res_url . 'JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
+$cdn_canvas_to_blob = $s3_res_url . 'JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
+$cdn_jquery_fileupload = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
+$cdn_jquery_fileupload_process = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
+$cdn_jquery_fileupload_image = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
+$cdn_jquery_fileupload_validate = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
+$cdn_fileupload_css = $s3_res_url . 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
 
 $cdn_typeahead = (getenv('CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
 $cdn_datepicker_css = (getenv('CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';

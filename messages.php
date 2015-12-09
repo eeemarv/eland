@@ -36,9 +36,6 @@ $extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
 $access_submit = (isset($_POST['access_submit'])) ? true : false;
 $access = (isset($_POST['access'])) ? $_POST['access'] : false;
 
-$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
-$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
-
 if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
 	|| $extend_submit || $access_submit || $extend || $access))
 {
@@ -261,7 +258,7 @@ if ($post && $images && $id && $img
 		try {
 			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
 
-			$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 				'params'	=> array(
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> 'image/jpeg',
@@ -274,14 +271,14 @@ if ($post && $images && $id && $img
 
 			$img_id = $db->lastInsertId('msgpictures_id_seq');
 
-			// $size = $s3->get_object_filesize($bucket, $filename);
+			// $size = $s3->get_object_filesize($s3_img, $filename);
 
 			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
 
 			unlink($tmpfile);
 
 			$ret_ary[] = array(
-				'url'			=> $bucket_url . $filename,
+				'url'			=> $s3_img_url . $filename,
 				'filename'		=> $filename,
 				'name'			=> $name,
 				'size'			=> $size,
@@ -320,7 +317,7 @@ if ($img_del == 'all' && $id && $post)
 	foreach($imgs as $img)
 	{
 		$s3->deleteObject(array(
-			'Bucket'	=> $bucket,
+			'Bucket'	=> $s3_img,
 			'Key'		=> $img['PictureFile'],
 		));
 	}
@@ -357,7 +354,7 @@ if ($img_del && $post && ctype_digit($img_del))
 	$db->delete('msgpictures', array('id' => $img_del));
 
 	$s3->deleteObject(array(
-		'Bucket'	=> $bucket,
+		'Bucket'	=> $s3_img,
 		'Key'		=> $msg['PictureFile'],
 	));
 
@@ -410,7 +407,7 @@ if ($img_del == 'all' && $id)
 
 	foreach ($images as $img_id => $file)
 	{
-		$a_img = $bucket_url . $file;
+		$a_img = $s3_img_url . $file;
 
 		echo '<div class="col-xs-6 col-md-3">';
 		echo '<div class="thumbnail">';
@@ -564,7 +561,7 @@ if ($del)
 		foreach($pictures as $value)
 		{
 			$s3->deleteObject(array(
-				'Bucket' => $bucket,
+				'Bucket' => $s3_img,
 				'Key'    => $value['PictureFile'],
 			));
 		}
@@ -1110,7 +1107,7 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="images_con" ';
-	echo 'data-bucket-url="' . $bucket_url . '" ';
+	echo 'data-bucket-url="' . $s3_img_url . '" ';
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 

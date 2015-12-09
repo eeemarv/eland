@@ -17,8 +17,6 @@ $map_edit = $_GET['map_edit'];
 $submit = ($_POST['zend']) ? true : false;
 $confirm_del = ($_POST['confirm_del']) ? true : false;
 
-$bucket = getenv('S3_BUCKET_DOC') ?: die('No "S3_BUCKET_DOC" env config var in found!');
-
 if ($post)
 {
 	$s3 = Aws\S3\S3Client::factory(array(
@@ -195,7 +193,7 @@ if ($confirm_del && $del)
 	if ($doc = $elas_mongo->docs->findOne(array('_id' => $doc_id)))
 	{
 		$s3->deleteObject(array(
-			'Bucket'	=> $bucket,
+			'Bucket'	=> $s3_doc,
 			'Key'		=> $doc['filename'],
 		));
 
@@ -233,7 +231,7 @@ if (isset($del))
 		echo '<form method="post">';
 
 		echo '<p>';
-		echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $doc['filename'] . '" target="_self">';
+		echo '<a href="' . $s3_doc_url . $doc['filename'] . '" target="_self">';
 		echo ($doc['name']) ?: $doc['org_filename'];
 		echo '</a>';
 		echo '</p>';
@@ -377,7 +375,7 @@ if ($submit)
 		}
 */
 
-		$upload = $s3->upload($bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+		$upload = $s3->upload($s3_doc, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 			'params'	=> $params
 		));
 
@@ -544,7 +542,7 @@ if (count($docs))
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="https://s3.eu-central-1.amazonaws.com/' . $bucket . '/' . $d['filename'] . '" target="_self">';
+		echo '<a href="' . $s3_doc_url . $d['filename'] . '" target="_self">';
 		echo ($d['name']) ?: $d['org_filename'];
 		echo '</a>';
 		echo '</td>';

@@ -21,9 +21,6 @@ $inline = (isset($_GET['inline'])) ? true : false;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 
-$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
-$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
-
 $role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
 $role = ($add || $del) ? 'admin' : $role;
 $allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
@@ -190,14 +187,14 @@ if ($post && $img && $id )
 		if ($user['PictureFile'])
 		{
 			$s3->deleteObject(array(
-				'Bucket'	=> $bucket,
+				'Bucket'	=> $s3_img,
 				'Key'		=> $user['PictureFile'],
 			));
 		}
 
 		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
 
-		$upload = $s3->upload($bucket, $filename, fopen($tmp_name, 'rb'), 'public-read', array(
+		$upload = $s3->upload($s3_img, $filename, fopen($tmp_name, 'rb'), 'public-read', array(
 			'params'	=> array(
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
@@ -265,7 +262,7 @@ if ($img_del && $id)
 	if ($post)
 	{
 		$s3->deleteObject(array(
-			'Bucket'	=> $bucket,
+			'Bucket'	=> $s3_img,
 			'Key'		=> $file,
 		));
 
@@ -282,7 +279,7 @@ if ($img_del && $id)
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
-	echo '<img src="' . $bucket_url . $file . '" class="img-rounded">';
+	echo '<img src="' . $s3_img_url . $file . '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
 
@@ -828,7 +825,7 @@ if ($del)
 					if ($row['PictureFile'])
 					{
 						$result = $s3->deleteObject(array(
-							'Bucket' => $bucket,
+							'Bucket' => $s3_img,
 							'Key'    => $row['PictureFile'],
 						));
 					}
@@ -901,7 +898,7 @@ if ($del)
 				if ($user['PictureFile'])
 				{
 					$result = $s3->deleteObject(array(
-						'Bucket' => $bucket,
+						'Bucket' => $s3_img,
 						'Key'    => $user['PictureFile'],
 					));
 				}
@@ -1859,10 +1856,10 @@ if ($id)
 	$user_img = ($show_img) ? '' : ' style="display:none;"';
 	$no_user_img = ($show_img) ? ' style="display:none;"' : '';
 
-	$img_src = ($user['PictureFile']) ? $bucket_url . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
+	$img_src = ($user['PictureFile']) ? $s3_img_url . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
 	echo '<img id="user_img"' . $user_img . ' class="img-rounded img-responsive center-block" ';
 	echo 'src="' . $img_src . '" ';
-	echo 'data-bucket-url="' . $bucket_url . '"></img>';
+	echo 'data-bucket-url="' . $s3_img_url . '"></img>';
 
 	echo '<div id="no_user_img"' . $no_user_img . '>';
 	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto</div>';
@@ -2840,7 +2837,7 @@ if ($v_tiles)
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
-			echo '<img src="' . $bucket_url . $u['PictureFile'] . '" class="img-rounded">';
+			echo '<img src="' . $s3_img_url . $u['PictureFile'] . '" class="img-rounded">';
 		}
 		else
 		{

@@ -2,10 +2,7 @@
 
 function saldo()
 {
-	global $db, $base_url, $systemtag, $currency;
-
-	$bucket = getenv('S3_BUCKET') ?: die('No "S3_BUCKET" env config var in found!');
-	$bucket_url = 'https://s3.eu-central-1.amazonaws.com/' . $bucket . '/';
+	global $db, $base_url, $systemtag, $currency, $s3_img, $s3_img_url;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
@@ -165,7 +162,7 @@ function saldo()
 		if (isset($image_ary[$msg['id']]))
 		{
 			$image_count =  (count($image_ary[$msg['id']]) > 1) ? count($image_ary[$msg['id']]) . ' afbeeldingen' : '1 afbeelding';
-			$html_img = '<a href="' . $msg_url . $msg['id'] . '"><img src="' . $bucket_url . $image_ary[$msg['id']][0];
+			$html_img = '<a href="' . $msg_url . $msg['id'] . '"><img src="' . $s3_img_url . $image_ary[$msg['id']][0];
 			$html_img .= '" height="200" alt="afbeelding"></a><br>';
 		}
 		else
