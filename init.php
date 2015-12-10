@@ -78,7 +78,7 @@ while($row = $rs->fetch())
 	foreach ($possible_extensions as $extension)
 	{
 		$filename_bucket = $filename_no_ext . '.' . $extension;
-		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_bucket))
+		if($s3->doesObjectExist($s3_img, $filename_bucket))
 		{
 			$found = true;
 			break;
@@ -95,8 +95,8 @@ while($row = $rs->fetch())
 	{
 		$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 		$result = $s3->copyObject(array(
-			'Bucket'		=> getenv('S3_BUCKET'),
-			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
+			'Bucket'		=> $s3_img,
+			'CopySource'	=> $s3_img . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
 			'CacheControl'	=> 'public, max-age=31536000',
@@ -110,7 +110,7 @@ while($row = $rs->fetch())
 			log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
 			$s3->deleteObject(array(
-				'Bucket'	=> getenv('S3_BUCKET'),
+				'Bucket'	=> $s3_img,
 				'Key'		=> $filename_bucket,
 			));
 		}
@@ -134,7 +134,7 @@ foreach($message_images as $image)
 	foreach ($possible_extensions as $extension)
 	{
 		$filename_bucket = $filename_no_ext . '.' . $extension;
-		if($s3->doesObjectExist(getenv('S3_BUCKET'), $filename_bucket))
+		if($s3->doesObjectExist($s3_img, $filename_bucket))
 		{
 			$found = true;
 			break;
@@ -151,8 +151,8 @@ foreach($message_images as $image)
 	{
 		$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
 		$result = $s3->copyObject(array(
-			'Bucket'		=> getenv('S3_BUCKET'),
-			'CopySource'	=> getenv('S3_BUCKET') . '/' . $filename_bucket,
+			'Bucket'		=> $s3_img,
+			'CopySource'	=> $s3_img . '/' . $filename_bucket,
 			'Key'			=> $new_filename,
 			'ACL'			=> 'public-read',
 			'CacheControl'	=> 'public, max-age=31536000',
@@ -166,7 +166,7 @@ foreach($message_images as $image)
 			log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
 			$s3->deleteObject(array(
-				'Bucket'	=> getenv('S3_BUCKET'),
+				'Bucket'	=> $s3_img,
 				'Key'		=> $filename_bucket,
 			));
 		}
@@ -183,7 +183,7 @@ $schemas = array_fill_keys($schemas, true);
 echo '* Cleanup files in bucket without valid schema prefix *' . $r;
 
 $results = $s3->getPaginator('ListObjects', array(
-	'Bucket' => getenv('S3_BUCKET')
+	'Bucket' => $s3_img
 ));
 
 foreach ($results as $result)
@@ -201,7 +201,7 @@ foreach ($results as $result)
 
 		$s3->deleteObject(array(
 			'Key'		=> $key,
-			'Bucket'	=> getenv('S3_BUCKET'),
+			'Bucket'	=> $s3_img,
 		));
 
 		echo 'Image deleted from bucket: ' . $key . $r;

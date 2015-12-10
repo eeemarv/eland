@@ -573,7 +573,7 @@ run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
-	global $db, $now, $s3;
+	global $db, $now, $s3, $s3_img;
 
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
@@ -643,7 +643,7 @@ function cleanup_messages()
 	while ($row = $rs->fetch())
 	{
 		$result = $s3->deleteObject(array(
-			'Bucket' => getenv('S3_BUCKET'),
+			'Bucket' => $s3_img,
 			'Key'    => $row['PictureFile'],
 		));
 
