@@ -136,14 +136,14 @@ $access_options = array(
 );
 
 /*
- * get session name from environment variable ELAS_SCHEMA_<domain>
+ * get session name from environment variable SCHEMA_<domain>
  * dots in <domain> are replaced by double underscore __
  * hyphens in <domain> are replaced by triple underscore ___
  *
  * example:
  *
  * to link e-example.com to a session set environment variable
- * ELAS_SCHEMA_E___EXAMPLE__COM = <session_name>
+ * SCHEMA_E___EXAMPLE__COM = <session_name>
  *
  * + the session name is the schema name !
  * + session name is prefix of the image files.
@@ -155,7 +155,7 @@ $schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
 $schema = str_replace('-', '___', $schema);
 $schema = str_replace(':', '____', $schema);
 $schema = strtoupper($schema);
-$schema = getenv('ELAS_SCHEMA_' . $schema);
+$schema = getenv('SCHEMA_' . $schema);
 
 if (!$schema)
 {
@@ -259,9 +259,9 @@ require_once $rootpath . 'includes/inc_eventlog.php';
 
 // default timezone to Europe/Brussels (read from config file removed, use env var instead)
 
-date_default_timezone_set((getenv('ELAS_TIMEZONE')) ?: 'Europe/Brussels');
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
-$elasdebug = (getenv('ELAS_DEBUG'))? 1 : 0;
+$elasdebug = (getenv('DEBUG'))? 1 : 0;
 
 // release file (xml) not loaded anymore.
 // $elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
@@ -720,12 +720,12 @@ function get_schemas_domains($http = false)
 
 	foreach ($_ENV as $key => $s)
 	{
-		if (strpos($key, 'ELAS_SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+		if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
 		{
 			continue;
 		}
 
-		$domain = str_replace('ELAS_SCHEMA_', '', $key);
+		$domain = str_replace('SCHEMA_', '', $key);
 		$domain = str_replace('____', ':', $domain);
 		$domain = str_replace('___', '-', $domain);
 		$domain = str_replace('__', '.', $domain);

@@ -72,7 +72,7 @@ if ($_POST['zend'])
 		$errors[] = 'Login gefaald. Vul login en paswoord in.';
 	}
 
-	$master_password = getenv('ELAS_MASTER_PASSWORD');
+	$master_password = getenv('MASTER_PASSWORD');
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{

@@ -15,7 +15,7 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
 
 	$domain = array_search($sch, $_ENV);
-	$domain = str_replace('ELAS_SCHEMA_', '', $domain);
+	$domain = str_replace('SCHEMA_', '', $domain);
 	$domain = str_replace('____', ':', $domain);
 	$domain = str_replace('___', '-', $domain);
 	$domain = str_replace('__', '.', $domain);

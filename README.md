@@ -1,6 +1,11 @@
 #eLAS-Heroku
 
-Fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
+* Is a fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
+* is hosted for free for all letsgroups.
+* is only available in Dutch.
+* see the [documentation](http://letsa.net) in Dutch.
+
+Here some info following on how to set up the hosting.
 
 ##Checklist
 
@@ -18,15 +23,51 @@ Only one cronjob is needed for all installed domains (unlike eLAS). Just choose 
 Configure your domain with a CNAME to the Heroku app URL.
 set a config var for each domain to the name of the schema in the database
 ```shell
-heroku config:set ELAS_SCHEMA_EXAMPLE__COM=examplecom
+heroku config:set SCHEMA_EXAMPLE__COM=examplecom
 ```
-A good choice for a schema name is the `systemtag` or `letscode` of the letsgroup.
+The environment variable SCHEMA_domain: couples a domain to a schema
+
+    `Dots in domain are replaced by double underscore __`
+    `Hyphens in domain are replaced by triple underscore ___`
+    `Colons in domain are replaced by quadruple underscore ____`
+
+    i.e couple e-example.com with schema `eexample`
+    ```shell
+        heroku config:set SCHEMA_E___EXAMPLE__COM=eexample
+    ```
+    Also add the domain to Heroku:
+    ```shell
+    heroku domains:add e.example.com
+    ```
+
+    i.e localhost:40000 on php development server
+    ```shell
+        SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
+    ```
+
+The schema name is also:
+  * the name of the session
+  * prefix of the files in S3 cloud storage
+  * prefix of the keys in Redis.
+
+By convention the schema is named after the so called system tag or letscode of the letsgroup.
+
 
 ###AWS S3
-Create a file bucket (in your region) on Amazon S3 and put the config in environment vars.
+Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
+See [./includes/inc_default.php] for which libraries are to be uploaded. 
+The buckets should have the same name as the url.
+
 ```shell
-heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb S3_BUCKET=ccc
+heroku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net S3_RES=res.letsa.net
+heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
 ```
+
+Create CNAME records to these buckets
+
+img.letsa.net CNAME record for img.letsa.net.s3-eu-central-1.amazonaws.com
+
+See (http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
 
 ###Redis cloud
 ```shell
@@ -43,53 +84,17 @@ heroku addons:add mandrill
 heroku addons:add mongolab
 ```
 
-###Environment Vars
+###Other environment vars
 
-* AWS_ACCESS_KEY
-* AWS_SECRET_ACCESS_KEY
-* S3_BUCKET (bucket for images of profiles and messages)
-* S3_BUCKET_DOC (bucket for documents)
-* REDISCLOUD_URL: addon redis cloud (redis server)
-* MANDRILL_USERNAME: addon mandrill (smtp server)
-* MANDRILL_PASSWORD
-* MONGOLAB_URI (mongodb)
-* DATABASE_URL: postgres url
-* ELAS_SCHEMA_domain: couples a domain to a schema
-
-    `Dots in domain are replaced by double underscore __`
-    `Hyphens in domain are replaced by triple underscore ___`
-    `Colons in domain are replaced by quadruple underscore ____`
-
-    i.e couple e-example.com with schema `eexample`
-    ```shell
-        heroku config:set ELAS_SCHEMA_E___EXAMPLE__COM=eexample
-    ```
-    Also add the domain to Heroku:
-    ```shell
-    heroku domains:add e.example.com
-    ```
-
-    i.e localhost:40000 on php development server
-    ```shell
-        ELAS_SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
-    ```
-
-The schema name is also:
-  * the name of the session
-  * prefix of the files in S3 cloud storage
-  * prefix of the keys in Redis.
-
-By convention the schema is named after the so called system tag or letscode of the letsgroup.
-
-* ELAS_TIMEZONE: defaults to 'Europe/Brussels'
-* ELAS_DEBUG
-* ELAS_MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
+* TIMEZONE: defaults to 'Europe/Brussels'
+* DEBUG: [0, 1]
+* MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
 
 CDN urls of cdns see [includes/inc_default.php] for defaults
 
 ##Migrating a group from eLAS 3.1 to eLAS-Heroku
 
-For eLAS 2.6 see [here](https://eeemarv/elas-heroku/setup/migrate-eLAS-2.6.md)
+For eLAS 2.6 see [here](./setup/migrate-eLAS-2.6.md)
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command
@@ -134,7 +139,7 @@ Meta command list all tables from all schemas:
 \dt *.*
 ```
 
-* Match a domain to a schema with config variable `ELAS_SCHEMA_domain=schema`
+* Match a domain to a schema with config variable `SCHEMA_domain=schema`
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
 yphen must be converted to a triple underscore and a colon (for defining port number) with quadruple underscore.
 
