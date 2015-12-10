@@ -27,23 +27,24 @@ heroku config:set SCHEMA_EXAMPLE__COM=examplecom
 ```
 The environment variable SCHEMA_domain: couples a domain to a schema
 
-    `Dots in domain are replaced by double underscore __`
-    `Hyphens in domain are replaced by triple underscore ___`
-    `Colons in domain are replaced by quadruple underscore ____`
+* Dots in domain are replaced by double underscore __
+* Hyphens in domain are replaced by triple underscore ___
+* Colons in domain are replaced by quadruple underscore ____
+* all characters should be uppercase in the environment variable.
 
-    i.e couple e-example.com with schema `eexample`
-    ```shell
-        heroku config:set SCHEMA_E___EXAMPLE__COM=eexample
-    ```
-    Also add the domain to Heroku:
-    ```shell
-    heroku domains:add e.example.com
-    ```
+i.e couple e-example.com with schema `eexample`
+```shell
+	heroku config:set SCHEMA_E___EXAMPLE__COM=eexample
+```
+Also add the domain to Heroku:
+```shell
+heroku domains:add e.example.com
+```
 
-    i.e localhost:40000 on php development server
-    ```shell
-        SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
-    ```
+i.e localhost:40000 on php development server
+```shell
+	SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
+```
 
 The schema name is also:
   * the name of the session
@@ -55,7 +56,7 @@ By convention the schema is named after the so called system tag or letscode of 
 
 ###AWS S3
 Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
-See [./includes/inc_default.php] for which libraries are to be uploaded. 
+See (file inludes/defaults)[includes/inc_default.php] for which libraries are to be uploaded. 
 The buckets should have the same name as the url.
 
 ```shell
@@ -67,7 +68,7 @@ Create CNAME records to these buckets
 
 img.letsa.net CNAME record for img.letsa.net.s3-eu-central-1.amazonaws.com
 
-See (http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
+See [the AWS S3 docs](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
 
 You need to set up CORS configuration on bucket S3_RES for the fonts of footable 2.0.3 to load.
 
@@ -108,7 +109,7 @@ CDN urls of cdns see [includes/inc_default.php] for defaults
 
 ##Migrating a group from eLAS 3.1 to eLAS-Heroku
 
-For eLAS 2.6 see [here](./setup/migrate-eLAS-2.6.md)
+For eLAS 2.6 see [here](setup/migrate-eLAS-2.6.md)
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command
