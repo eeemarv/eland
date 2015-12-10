@@ -69,6 +69,20 @@ img.letsa.net CNAME record for img.letsa.net.s3-eu-central-1.amazonaws.com
 
 See (http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
 
+You need to set up CORS configuration on bucket S3_RES for the fonts of footable 2.0.3 to load.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <AllowedHeader>Authorization</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+
 ###Redis cloud
 ```shell
 heroku addons:add rediscloud:30
