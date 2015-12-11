@@ -76,7 +76,6 @@ if(!empty($redis_url))
 		$redis_con['password'] = $redis_con['pass'];
 		$redis_con['scheme'] = 'tcp';
 		$redis = new Predis\Client($redis_con);
-
 	}
 	catch (Exception $e)
 	{
