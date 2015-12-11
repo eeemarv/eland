@@ -206,6 +206,10 @@ if ($_POST['zend'])
 			exit;
 		}
 	}
+	else
+	{
+		$errors[] = 'Paswoord niet correct';
+	}
 
 	$alert->error(implode('<br>', $errors));
 }
