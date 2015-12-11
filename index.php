@@ -163,7 +163,7 @@ if($s_guest)
 	echo '<div class="panel-body">';
 	echo '<p>Je bent ingelogd als LETS-gast, je kan informatie ';
 	echo 'raadplegen maar niets wijzigen. Transacties moet je ingeven in de installatie van je eigen groep.</p>';
-	echo '<p>Waardering bij ' . $systemname . ' gebeurt met \'' . $currecy . '\'. ';
+	echo '<p>Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
 	echo  readconfigfromdb('currencyratio') . ' ' . $currency;
 	echo ' stemt overeen met 1 LETS uur.</p>';
 	echo '</div>';
