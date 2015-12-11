@@ -329,6 +329,11 @@ if ($s_admin)
 			'lbl'		=> 'Zichtbaarheid gsmnummer',
 			'options'	=> 'access_options',
 		),
+		'comments'			=> array(
+			'lbl'		=> 'Commentaar',
+			'type'		=> 'text',
+			'string'	=> true,
+		),
 		'accountrole'		=> array(
 			'lbl'		=> 'Rechten',
 			'options'	=> 'role_ary',
@@ -340,7 +345,7 @@ if ($s_admin)
 		),
 		'admincomment'		=> array(
 			'lbl'		=> 'Commentaar van de admin',
-			'tye'		=> 'text',
+			'type'		=> 'text',
 			'string'	=> true,
 		),
 		'minlimit'			=> array(
@@ -445,7 +450,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . $row['letscode'] . ' ' . $row['name'] . ' (' . $row['id'] . ')';
+		$users_log .= ', ' . link_user($row, null, false, true);
 	}
 	$users_log = ltrim($users_log, ', ');
 
@@ -468,7 +473,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
 		cancel();
 	}
-	else if (array('cron_saldo' => 1, 'accountrole' => 1, 'status' => 1,
+	else if (array('cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
 		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1)[$field])
 	{
 		$type = ($edit_fields_tabs[$field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
