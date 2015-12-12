@@ -7,6 +7,8 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
+header('Access-Control-Allow-Origin: http://doc.letsa.net, http://res.letsa.net, http://img.letsa.net');
+
 $s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
 $s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
@@ -421,7 +423,7 @@ function get_session_query_param($return_ary = false)
  */
 function redirect_index()
 {
-	header ('Location: ' . generate_url('index'));
+	header('Location: ' . generate_url('index'));
 	exit;
 }
 

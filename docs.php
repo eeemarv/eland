@@ -296,6 +296,9 @@ if ($submit)
 		'pot'		=> 'application/vnd.ms-powerpoint',
 		'pps'		=> 'application/vnd.ms-powerpoint',
 		'ppa'		=> 'application/vnd.ms-powerpoint',
+		'css'		=> 'text/css',
+		'html'		=> 'text/html',
+		'md'		=> 'text/markdown',
 	);
 
 	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
@@ -365,15 +368,7 @@ if ($submit)
 		$params = array(
 			'CacheControl'			=> 'public, max-age=31536000',
 			'ContentType'			=> $media_type,
-			'ContentDisposition'	=> 'inline', 
 		);
-
-/*
-		if ($allowed_types[$file_type])
-		{
-			$params['ContentType'] = $file_type;
-		}
-*/
 
 		$upload = $s3->upload($s3_doc, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 			'params'	=> $params
