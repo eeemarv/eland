@@ -102,7 +102,6 @@ heroku addons:add mongolab
 ###Other environment vars
 
 * TIMEZONE: defaults to 'Europe/Brussels'
-* DEBUG: [0, 1]
 * MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
 
 CDN urls of cdns see [includes/inc_default.php] for defaults

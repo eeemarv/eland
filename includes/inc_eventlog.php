@@ -8,7 +8,7 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 function log_event($user_id, $type, $event, $remote_schema = null)
 {
-	global $elasdebug, $schema, $elas_log;
+	global $schema, $elas_log;
 
 	$type = strtolower($type);
 

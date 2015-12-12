@@ -553,8 +553,6 @@ if ($add)
 		$letsgroup['id'] = 'self';
 	}
 
-	//$thumbprint = getenv('DEBUG') ? time() : round((time() / 900) * 900);
-
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/transactions_add.js"></script>';
 

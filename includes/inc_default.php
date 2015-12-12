@@ -258,17 +258,11 @@ $mdb = new mdb($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
-// default timezone to Europe/Brussels (read from config file removed, use env var instead)
+// default timezone to Europe/Brussels
 
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
-$elasdebug = (getenv('DEBUG'))? 1 : 0;
-
-// release file (xml) not loaded anymore.
-// $elasversion = '3.1.17';  // was eLAS 3.1.17 in release file.
 $schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
-// $soapversion = 1200;
-// $restversion = 1;
 
 // database connection
 
