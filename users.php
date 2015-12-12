@@ -456,11 +456,11 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 
 	if ($field == 'fullname_access')
 	{
-		$elas_mongo->connect();
+		$mdb->connect();
 
 		foreach ($user_ids as $user_id)
 		{
-			$elas_mongo->users->update(
+			$mdb->users->update(
 				array('id' => (int) $user_id),
 				array('$set' => array('id' => (int) $user_id, 'fullname_access' => (int) $value)),
 				array('upsert' => true)
@@ -909,8 +909,8 @@ if ($del)
 				}
 
 				//delete mongo record
-				$elas_mongo->connect();
-				$elas_mongo->users->remove(
+				$mdb->connect();
+				$mdb->users->remove(
 					array('id' => (int) $del),
 					array('justOne'	=> true)
 				);
@@ -988,10 +988,10 @@ if ($add || $edit)
 
 	if ($s_owner && !$s_admin)
 	{
-		$elas_mongo->connect();
-		$cursor = $elas_mongo->settings->findOne(array('name' => 'users_can_edit_username'));
+		$mdb->connect();
+		$cursor = $mdb->settings->findOne(array('name' => 'users_can_edit_username'));
 		$username_edit = ($cursor['value']) ? true : false;
-		$cursor = $elas_mongo->settings->findOne(array('name' => 'users_can_edit_fullname'));
+		$cursor = $mdb->settings->findOne(array('name' => 'users_can_edit_fullname'));
 		$fullname_edit = ($cursor['value']) ? true : false;
 	}
 
@@ -1210,8 +1210,8 @@ if ($add || $edit)
 				{
 					$id = $db->lastInsertId('users_id_seq');
 
-					$elas_mongo->connect();
-					$elas_mongo->users->update(array(
+					$mdb->connect();
+					$mdb->users->update(array(
 						'id'		=> (int) $id),
 						array(
 							'$set' => array(
@@ -1280,8 +1280,8 @@ if ($add || $edit)
 
 				if($db->update('users', $user, array('id' => $edit)))
 				{
-					$elas_mongo->connect();
-					$elas_mongo->users->update(array(
+					$mdb->connect();
+					$mdb->users->update(array(
 							'id'	=> (int) $edit,
 						),
 						array(

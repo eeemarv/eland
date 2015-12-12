@@ -88,7 +88,7 @@ if(!empty($redis_url))
 
 /* vars */
 
-$elas_heroku_config = array(
+$eland_config = array(
 	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
 	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
 	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
@@ -252,9 +252,9 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 /**
  *
  */
-require_once $rootpath . 'includes/elas_mongo.php';
+require_once $rootpath . 'includes/mdb.php';
 
-$elas_mongo = new elas_mongo($schema);
+$mdb = new mdb($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
@@ -485,7 +485,7 @@ function link_user($user, $render = null, $link = true, $show_id = false)
 function readconfigfromdb($key)
 {
     global $db, $schema, $redis;
-    global $elas_mongo, $elas_heroku_config;
+    global $mdb, $eland_config;
     static $cache;
 
 	if (isset($cache[$schema][$key]))
@@ -500,11 +500,11 @@ function readconfigfromdb($key)
 		return $cache[$schema][$key] = $redis->get($redis_key);
 	}
 
-	if (isset($elas_heroku_config[$key]))
+	if (isset($eland_config[$key]))
 	{
-		$elas_mongo->connect();
-		$s = $elas_mongo->settings->findOne(array('name' => $key));
-		$value = (isset($s['value'])) ? $s['value'] : $elas_heroku_config[$key][0];
+		$mdb->connect();
+		$s = $mdb->settings->findOne(array('name' => $key));
+		$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
 	}
 	else
 	{
@@ -552,15 +552,15 @@ function readconfigfromschema($key, $schema)
 function writeconfig($key, $value)
 {
 	global $db, $redis, $schema;
-	global $elas_heroku_config, $elas_mongo;
+	global $eland_config, $mdb;
 
-	if ($elas_heroku_config[$key])
+	if ($eland_config[$key])
 	{
 		$a = array(
 			'value' => $value,
 			'name'	=> $key
 		);
-		$elas_mongo->settings->update(array('name' => $key), $a, array('upsert' => true));
+		$mdb->settings->update(array('name' => $key), $a, array('upsert' => true));
 	}
 	else
 	{
@@ -582,7 +582,7 @@ function writeconfig($key, $value)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $db, $schema, $redis, $elas_mongo;
+    global $db, $schema, $redis, $mdb;
     static $cache;
 
 	if (!$id)
@@ -614,10 +614,10 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return array();
 	}
 
-	$elas_mongo->connect();
+	$mdb->connect();
 
 	$remote_users = $s . '_users';
-	$users = ($remote_schema) ? $elas_mongo->get_client()->$remote_users : $elas_mongo->users;
+	$users = ($remote_schema) ? $mdb->get_client()->$remote_users : $mdb->users;
 	$ary = $users->findOne(array('id' => (int) $id));
 	$user += (is_array($ary)) ? $ary : array();
 

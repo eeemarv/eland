@@ -5,9 +5,9 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $map_names = array();
 
-$elas_mongo->connect();
+$mdb->connect();
 
-$cursor = $elas_mongo->docs->find(array('map_name' => array('$exists' => true)));
+$cursor = $mdb->docs->find(array('map_name' => array('$exists' => true)));
 
 foreach ($cursor as $c)
 {

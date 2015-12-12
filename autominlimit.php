@@ -1,11 +1,10 @@
 <?php
 
-
 $rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$elas_mongo->connect();
+$mdb->connect();
 
 if (isset($_POST['zend']))
 {
@@ -23,11 +22,11 @@ if (isset($_POST['zend']))
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
-	$elas_mongo->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
+	$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
 }
 else
 {
-	$a = $elas_mongo->settings->findOne(array('name'=> 'autominlimit'));
+	$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
 }
 
 $h1 = 'Automatische minimum limiet';

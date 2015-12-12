@@ -6,7 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'comments-o';
 
-$elas_mongo->connect();
+$mdb->connect();
 
 $topic = $_GET['t'];
 $del = ($_GET['del']) ?: false;
@@ -24,7 +24,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$forum_post = $elas_mongo->forum->findOne(array('_id' => new MongoId($t)));
+	$forum_post = $mdb->forum->findOne(array('_id' => new MongoId($t)));
 
 	if (!$forum_post)
 	{
@@ -57,14 +57,14 @@ if ($submit)
 {
 	if ($del)
 	{
-		$elas_mongo->forum->remove(
+		$mdb->forum->remove(
 			array('_id' => new MongoId($del)),
 			array('justOne'	=> true)
 		);
 
 		if (!$forum_post['parent_id'])
 		{
-			$elas_mongo->forum->remove(
+			$mdb->forum->remove(
 				array('parent_id' => $del)
 			);
 
@@ -133,7 +133,7 @@ if ($submit)
 	}
 	else if ($edit)
 	{
-		$elas_mongo->forum->update(array('_id' => new MongoId($edit)),
+		$mdb->forum->update(array('_id' => new MongoId($edit)),
 			array('$set'	=> $forum_post, '$inc' => array('edit_count' => 1)),
 			array('upsert'	=> true));
 
@@ -142,7 +142,7 @@ if ($submit)
 	}
 	else
 	{
-		$elas_mongo->forum->insert($forum_post);
+		$mdb->forum->insert($forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -186,7 +186,7 @@ if (!$edit)
 		$find = array('parent_id' => array('$exists' => false));
 	}
 
-	$forum_posts = $elas_mongo->forum->find($find);
+	$forum_posts = $mdb->forum->find($find);
 	$forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
 	$forum_posts = iterator_to_array($forum_posts);

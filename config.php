@@ -4,13 +4,13 @@ $rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$elas_mongo->connect();
+$mdb->connect();
 
 $setting = ($_GET['edit']) ?: false;
 
 if ($setting)
 {
-	$eh_config = $elas_heroku_config[$setting];
+	$eh_config = $eland_config[$setting];
 
 	if ($_POST['zend'])
 	{
@@ -85,9 +85,9 @@ $config = $db->fetchAll('select *
 		and setting <> \'from_address_transactions\'
 	order by category, setting');
 
-$eh_settings = array_keys($elas_heroku_config);
+$eh_settings = array_keys($eland_config);
 
-$cursor = $elas_mongo->settings->find(array('name' => array('$in' => $eh_settings))); 
+$cursor = $mdb->settings->find(array('name' => array('$in' => $eh_settings))); 
 
 $eh_stored_settings = array();
 
@@ -101,10 +101,10 @@ foreach ($eh_settings as $setting)
 	$default = (isset($eh_stored_settings[$setting])) ? false : true;
 
 	$config[] = array(
-		'category'		=> 'eLAS-Heroku',
+		'category'		=> 'eLAND',
 		'setting'		=> $setting,
-		'value'			=> ($default) ? $elas_heroku_config[$setting][0] : $eh_stored_settings[$setting],
-		'description'	=> $elas_heroku_config[$setting][1],
+		'value'			=> ($default) ? $eland_config[$setting][0] : $eh_stored_settings[$setting],
+		'description'	=> $eland_config[$setting][1],
 		'default'		=> $default,
 	);
 }

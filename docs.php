@@ -6,7 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'files-o';
 
-$elas_mongo->connect();
+$mdb->connect();
 
 $q = ($_GET['q']) ?: '';
 $del = $_GET['del'];
@@ -34,7 +34,7 @@ if (($confirm_del || $submit || $edit || $del || $post || $map_edit) & !$s_admin
 
 if ($map_edit)
 {
-	$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($map_edit)));
+	$map = $mdb->docs->findOne(array('_id' => new MongoId($map_edit)));
 
 	$map_name = $map['map_name'];
 
@@ -48,7 +48,7 @@ if ($map_edit)
 	{
 		if ($map_name = $_POST['map_name'])
 		{
-			$elas_mongo->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
+			$mdb->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
 			$alert->success('Map naam aangepast.');
 			cancel($map_edit);
 		}
@@ -88,7 +88,7 @@ if ($edit)
 {
 	$edit_id = new MongoId($edit);
 
-	$doc = $elas_mongo->docs->findOne(array('_id' => $edit_id));
+	$doc = $mdb->docs->findOne(array('_id' => $edit_id));
 
 	if (!$doc)
 	{
@@ -109,25 +109,25 @@ if ($edit)
 
 		if ($map_name = $_POST['map_name'])
 		{
-			$map = $elas_mongo->docs->findOne(array('map_name' => $map_name));
+			$map = $mdb->docs->findOne(array('map_name' => $map_name));
 
 			if (!$map)
 			{
 				$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
-				$elas_mongo->docs->insert($map);
+				$mdb->docs->insert($map);
 			}
 			$update['map_id'] = (string) $map['_id'];
 		}
 
 		if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
 		{
-			if (count(iterator_to_array($elas_mongo->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+			if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
 			{
-				$elas_mongo->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+				$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
 			}
 		}
 
-		$elas_mongo->docs->update(array('_id' => $edit_id), $update);
+		$mdb->docs->update(array('_id' => $edit_id), $update);
 
 		$alert->success('Document aangepast');
 		cancel($update['map_id']);
@@ -135,7 +135,7 @@ if ($edit)
 
 	if ($map_id = $doc['map_id'])
 	{
-		$map = $elas_mongo->docs->findOne(array('_id' => new MongoId($map_id)));
+		$map = $mdb->docs->findOne(array('_id' => new MongoId($map_id)));
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -190,20 +190,20 @@ if ($confirm_del && $del)
 {
 	$doc_id = new MongoId($del);
 
-	if ($doc = $elas_mongo->docs->findOne(array('_id' => $doc_id)))
+	if ($doc = $mdb->docs->findOne(array('_id' => $doc_id)))
 	{
 		$s3->deleteObject(array(
 			'Bucket'	=> $s3_doc,
 			'Key'		=> $doc['filename'],
 		));
 
-		if (count(iterator_to_array($elas_mongo->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+		if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
 		{
-			$elas_mongo->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+			$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
 			unset($doc['map_id']);
 		}
 
-		$elas_mongo->docs->remove(
+		$mdb->docs->remove(
 			array('_id' => $doc_id),
 			array('justOne'	=> true)
 		);
@@ -218,7 +218,7 @@ if (isset($del))
 {
 	$doc_id = new MongoId($del);
 
-	$doc = $elas_mongo->docs->findOne(array('_id' => $doc_id));
+	$doc = $mdb->docs->findOne(array('_id' => $doc_id));
 
 	if ($doc)
 	{
@@ -340,7 +340,7 @@ if ($submit)
 
 		if ($map_name = $_POST['map_name'])
 		{
-			$m = $elas_mongo->docs->findOne(array('map_name' => $map_name));
+			$m = $mdb->docs->findOne(array('map_name' => $map_name));
 
 			$map_id = new MongoId($m['_id']);
 
@@ -352,7 +352,7 @@ if ($submit)
 					'map_name'	=> $map_name,
 				);
 
-				$elas_mongo->docs->insert($map);
+				$mdb->docs->insert($map);
 			}
 
 			$doc['map_id'] = (string) $map_id;
@@ -363,7 +363,7 @@ if ($submit)
 			$doc['name'] = $name;
 		}
 
-		$elas_mongo->docs->insert($doc);
+		$mdb->docs->insert($doc);
 
 		$params = array(
 			'CacheControl'			=> 'public, max-age=31536000',
@@ -389,7 +389,7 @@ $find = array(
 
 if ($map)
 {
-	$map_name = $elas_mongo->docs->findOne(array('_id' => new MongoId($map)));
+	$map_name = $mdb->docs->findOne(array('_id' => new MongoId($map)));
 	$map_name = $map_name['map_name'];
 
 	if (!$map_name)
@@ -403,10 +403,10 @@ if ($map)
 }
 else
 {
-	$maps = iterator_to_array($elas_mongo->docs->find(array('map_name' => array('$exists' => true))));
+	$maps = iterator_to_array($mdb->docs->find(array('map_name' => array('$exists' => true))));
 }
 
-$docs = iterator_to_array($elas_mongo->docs->find($find));
+$docs = iterator_to_array($mdb->docs->find($find));
 
 if (!$map)
 {

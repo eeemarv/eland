@@ -60,16 +60,16 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 
 function insert_log($item, $remote_schema = null)
 {
-	global $elas_mongo;
+	global $mdb;
 
-	$elas_mongo->connect();
+	$mdb->connect();
 
 	if (isset($remote_schema))
 	{
 		$logs = $remote_schema . '_logs';
-		$elas_mongo->get_client()->$logs->insert($item);
+		$mdb->get_client()->$logs->insert($item);
 		return;
 	}
 
-	$elas_mongo->logs->insert($item);
+	$mdb->logs->insert($item);
 }

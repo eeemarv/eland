@@ -94,7 +94,7 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $systemtag ."] ***" . $r;
 
-$elas_mongo->set_schema($schema);
+$mdb->set_schema($schema);
 
 $base_url = $domains[$schema]; 
 
@@ -305,8 +305,8 @@ if ($autominlimit_queue)
 			continue;
 		}
 
-		$elas_mongo->connect();
-		$a = $elas_mongo->settings->findOne(array('name' => 'autominlimit'));
+		$mdb->connect();
+		$a = $mdb->settings->findOne(array('name' => 'autominlimit'));
 
 		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
 
@@ -356,8 +356,8 @@ if ($autominlimit_queue)
 			'ts'		=> new MongoDate(),
 		);
 
-		$elas_mongo->connect();
-		$elas_mongo->limit_events->insert($e);
+		$mdb->connect();
+		$mdb->limit_events->insert($e);
 		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
 		readuser($to_id, true);
 
@@ -794,11 +794,11 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
-	global $elas_mongo;
+	global $mdb;
 
-	$elas_mongo->connect();	
+	$mdb->connect();	
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
-	$elas_mongo->logs->remove(array('timestamp' => array('$lt' => $treshold)));
+	$mdb->logs->remove(array('timestamp' => array('$lt' => $treshold)));
 	return true;
 }
 
