@@ -842,7 +842,7 @@ if (($edit || $add))
 	else if ($add)
 	{
 		$msg = array(
-			'validity'		=> '',
+			'validity'		=> readconfigfromdb('msgs_days_default'),
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> '1',

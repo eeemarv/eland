@@ -94,6 +94,7 @@ $eland_config = array(
 	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
 //	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
 	'css'						=> array('', 'Extra stijl: url van .css bestand'),
+	'msgs_days_default'			=> array('365', 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.'),
 );
 
 $top_right = '';
