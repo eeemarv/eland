@@ -2374,6 +2374,20 @@ else
 	{
 		$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
 	}
+
+	$my_adr = $contacts[$s_id]['adr'][0][0];
+
+	if (isset($my_adr))
+	{
+		$geo = $redis->get('geo_' . $my_adr);
+
+		if ($geo)
+		{
+			$geo = json_decode($geo, true);
+			$lat = $geo['lat'];
+			$lng = $geo['lng'];
+		}
+	}
 }
 
 if ($s_admin)
@@ -2425,6 +2439,7 @@ $fa = 'users';
 if ($v_list)
 {
 	$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>';
+	$includejs .= '<script src="' . $rootpath . 'js/users_distance.js"></script>';
 
 	if ($s_admin)
 	{
@@ -2548,6 +2563,10 @@ if ($v_list)
 	echo 'data-empty="Er zijn geen ' . (($s_admin) ? 'gebruikers' : 'leden') . ' volgens ';
 	echo 'de selectiecriteria" data-sorting="true" data-filter-placeholder="Zoeken" ';
 	echo 'data-filter-position="left"';
+	if ($lat && $lng)
+	{
+		echo ' data-lat="' . $lat . '" data-lng="' . $lng . '"';
+	}
 	echo '>';
 	echo '<thead>';
 
@@ -2659,6 +2678,7 @@ if ($v_list)
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
 		echo '<th data-hide="phone">Postcode</th>';
+		echo '<th data-hide="phone">Afstand</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
 		echo '<th data-hide="phone">Saldo</th>';
 
@@ -2681,6 +2701,13 @@ if ($v_list)
 
 			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
 
+			echo '>';
+			echo '<td>' . link_user($u, 'letscode') . '</td>';
+			echo '<td>' . link_user($u, 'name') . '</td>';
+			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
+			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
+			echo '<td>' . $u['postcode'] . '</td>';
+			echo '<td';
 			if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
 			{
 				$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
@@ -2690,13 +2717,7 @@ if ($v_list)
 					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
 				}
 			}
-
-			echo '>';
-			echo '<td>' . link_user($u, 'letscode') . '</td>';
-			echo '<td>' . link_user($u, 'name') . '</td>';
-			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
-			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
-			echo '<td>' . $u['postcode'] . '</td>';
+			echo '>x</td>';
 			echo '<td>' . render_contacts($contacts[$id]['mail'], 'mail') . '</td>';
 			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
 			echo '</tr>';
