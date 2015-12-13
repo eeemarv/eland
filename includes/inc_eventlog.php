@@ -42,7 +42,7 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 
 	$log->addNotice('eLAS-Heroku: ' . $sch . ': ' . $domain . ': ' .
 		$type . ': ' . $event . ' user id:' . $user_id .
-		' user: ' . $letscode . ' ' . $name . "\n\r");
+		' user: ' . $letscode . ' ' . $username . "\n\r");
 
 	$item = array(
 		'ts_tz'		=> date('Y-m-d H:i:s'),

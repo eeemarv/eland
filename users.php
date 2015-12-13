@@ -2366,7 +2366,7 @@ else
 	$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 		FROM contact c, type_contact tc
 		WHERE tc.id = c.id_type_contact
-			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\')');
+			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
 	$contacts = array();
 
@@ -2670,6 +2670,7 @@ if ($v_list)
 		foreach($users as $u)
 		{
 			$id = $u['id'];
+			$adr_ary = $contacts[$id]['adr'][0];
 
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
 			$class = $st_class_ary[$row_stat];
@@ -2678,7 +2679,19 @@ if ($v_list)
 			$balance = $u['saldo'];
 			$balance_class = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? ' class="text-danger"' : '';
 
-			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
+
+			if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
+			{
+				$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
+
+				if ($geo)
+				{
+					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+				}
+			}
+
+			echo '>';
 			echo '<td>' . link_user($u, 'letscode') . '</td>';
 			echo '<td>' . link_user($u, 'name') . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';

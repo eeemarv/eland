@@ -375,11 +375,54 @@ else
 	echo '-- autominlimit queue is empty --' . $r;
 }
 
-// run_cronjob('users_geocode', 86400);
+// queue addresses to geocode
 
-function users_geocode()
+$log_ary = array();
+
+$st = $db->prepare('select c.value, c.id_user
+	from contact c, type_contact tc, users u
+	where c.id_type_contact = tc.id
+		and tc.abbrev = \'adr\'
+		and c.id_user = u.id
+		and u.status in (1, 2)');
+
+$st->execute();
+
+while ($row = $st->fetch())
 {
-	global $db, $redis, $schema, $r;
+	$adr = $row['value'];
+
+	$key = 'geo_' . $adr;
+
+	if ($redis->exists($key))
+	{
+		continue;
+	}
+
+	$data = array(
+		'adr'	=> $adr,
+		'uid'	=> $row['id_user'],
+		'sch'	=> $schema,
+	);
+
+	$redis->set($key, 'q');
+	$redis->expire($key, 2592000);
+	$redis->lpush('geo_q', json_encode($data));
+	$log_ary[] = link_user($row['id_user'], null, false, true) . ': ' . $adr;
+}
+
+if (count($log_ary))
+{
+	log_event('', 'cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
+}
+
+// end queue addresses to geocode queue
+
+run_cronjob('geo_q_process', 600);
+
+function geo_q_process()
+{
+	global $redis, $r;
 
 	$curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 	$geocoder = new \Geocoder\ProviderAggregator();
@@ -393,61 +436,66 @@ function users_geocode()
 	$geocoder->using('google_maps')
 		->limit(1);
 
-	$adr_ary = array();
-
-	$st = $db->prepare('select c.id, c.value, c.id_user
-		from contact c, type_contact tc, users u
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'adr\'
-			and c.id_user = u.id
-			and u.status in (1, 2)');
-
-	$st->execute();
-
-	while ($row = $st->fetch())
+	for ($i = 0; $i < 8; $i++)
 	{
-		$key = $schema . '_u_' . $row['id_user'] . '_c_adr_' . $row['id'];
+		$data = $redis->rpop('geo_q');
 
-		if ($geo = $redis->get($key))
+		if (!$data)
 		{
-			$geo = unserialize($geo);
+			break;
+		}
 
-			if ($geo['adr'] == $row['value'])
-			{
-				continue;
-			}
+		$data = json_decode($data, true);
+		$adr = $data['adr'];
+		$uid = $data['uid'];
+		$sch = $data['sch'];
+
+		$user = readuser($uid, false, $sch);
+		$log_user = ' user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
+
+		$key = 'geo_' . $adr;
+
+		$status = $redis->get($key);
+
+		if ($status != 'q' && $status != 'f')
+		{
+			continue;
 		}
 
 		try
 		{
-			$addressCollection = $geocoder->geocode($row['value']);
+			$address_collection = $geocoder->geocode($adr);
 
-			if (is_object($addressCollection))
+			if (is_object($address_collection))
 			{
-				$address = $addressCollection->first();
+				$address = $address_collection->first();
 
 				$ary = array(
-					'lng'	=> $address->getLongitude(),
 					'lat'	=> $address->getLatitude(),
-					'adr'	=> $row['value'],
+					'lng'	=> $address->getLongitude(),
 				);
 
-				$redis->set($key, serialize($ary));
-				echo 'Geocoded: ' . implode('|', $ary) . $r;
-				break;
+				$redis->set($key, json_encode($ary));
+				$redis->expire($key, 2592000);
+				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary) . $log_user;
+				echo  $log . $r;
+				log_event('', 'cron geocode', $log, $sch);
+				continue;
 			}
-			else
-			{
-				echo '-- Geocode return NULL for: ' . $row['value'] . ' -- ' . $r;
-				log_event('', 'geocode', 'Geocode return NULL for ' . $row['value'] . ' from user ' . link_user($row['id_user'], null, false));
-			}
+
+			$log = '-- Geocode return NULL for: ' . $adr . $log_user . ' -- ';
+			echo  $log . $r;
+			log_event('', 'cron geocode', $log, $sch);
+			$redis->set($key, 'f');
+			$redis->expire($key, 86400);
 		}
+
 		catch (Exception $e)
 		{
-			echo $e->getMessage() . $r;
-			log_event('', 'geocode', 'Geocode ' . $row['value'] . ' from user ' . link_user($row['id_user'], null, false, true) . ' Exception: ' . $e->getMessage());
-
-			$redis->set($key, serialize(array('adr' => $row['value'])));
+			$log = 'Geocode adr: ' . $adr . $log_user . ' exception: ' . $e->getMessage();
+			echo $log . $r;
+			log_event('', 'cron geocode', $log, $sch);
+			$redis->set($key, 'f');
 			$redis->expire($key, 86400);
 		}
 	}
