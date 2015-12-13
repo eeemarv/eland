@@ -424,6 +424,12 @@ function geo_q_process()
 {
 	global $redis, $r;
 
+	if ($redis->exists('geo_sleep'))
+	{
+		echo 'geocoding sleep';
+		return true;
+	}
+
 	$curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 	$geocoder = new \Geocoder\ProviderAggregator();
 
@@ -436,7 +442,7 @@ function geo_q_process()
 	$geocoder->using('google_maps')
 		->limit(1);
 
-	for ($i = 0; $i < 8; $i++)
+	for ($i = 0; $i < 4; $i++)
 	{
 		$data = $redis->rpop('geo_q');
 
@@ -484,20 +490,21 @@ function geo_q_process()
 			}
 
 			$log = '-- Geocode return NULL for: ' . $adr . $log_user . ' -- ';
-			echo  $log . $r;
-			log_event('', 'cron geocode', $log, $sch);
-			$redis->set($key, 'f');
-			$redis->expire($key, 86400);
+
 		}
 
 		catch (Exception $e)
 		{
 			$log = 'Geocode adr: ' . $adr . $log_user . ' exception: ' . $e->getMessage();
-			echo $log . $r;
-			log_event('', 'cron geocode', $log, $sch);
-			$redis->set($key, 'f');
-			$redis->expire($key, 86400);
 		}
+
+		echo  $log . $r;
+		log_event('', 'cron geocode', $log, $sch);
+		$redis->set($key, 'f');
+		$redis->expire($key, 21600);
+
+		$redis->set('geo_sleep', '1');
+		$redis->expire('geo_sleep', 3600);
 	}
 
 	return true;
