@@ -2381,7 +2381,7 @@ else
 	{
 		$geo = $redis->get('geo_' . $my_adr);
 
-		if ($geo)
+		if ($geo && $geo != 'q' && $geo != 'f')
 		{
 			$geo = json_decode($geo, true);
 			$lat = $geo['lat'];
@@ -2712,7 +2712,7 @@ if ($v_list)
 			{
 				$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
 
-				if ($geo)
+				if ($geo && $geo != 'q' && $geo != 'f')
 				{
 					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
 				}

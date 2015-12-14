@@ -483,23 +483,23 @@ function geo_q_process()
 
 				$redis->set($key, json_encode($ary));
 				$redis->expire($key, 2592000);
-				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary) . $log_user;
+				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
-				log_event('', 'cron geocode', $log, $sch);
+				log_event('', 'cron geocode', $log . $log_user, $sch);
 				continue;
 			}
 
-			$log = '-- Geocode return NULL for: ' . $adr . $log_user . ' -- ';
+			$log_1 = 'Geocode return NULL for: ' . $adr;
 
 		}
 
 		catch (Exception $e)
 		{
-			$log = 'Geocode adr: ' . $adr . $log_user . ' exception: ' . $e->getMessage();
+			$log = 'Geocode adr: ' . $adr . ' exception: ' . $e->getMessage();
 		}
 
 		echo  $log . $r;
-		log_event('', 'cron geocode', $log, $sch);
+		log_event('', 'cron geocode', $log . $log_user, $sch);
 		$redis->set($key, 'f');
 		$redis->expire($key, 21600);
 
