@@ -2678,7 +2678,7 @@ if ($v_list)
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
 		echo '<th data-hide="phone">Postcode</th>';
-		echo '<th data-hide="phone">Afstand</th>';
+		echo '<th data-hide="phone" data-type="numeric">Afstand</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
 		echo '<th data-hide="phone">Saldo</th>';
 
@@ -2707,7 +2707,7 @@ if ($v_list)
 			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
-			echo '<td';
+			echo '<td data-value="5000"';
 			if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
 			{
 				$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
@@ -2717,7 +2717,7 @@ if ($v_list)
 					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
 				}
 			}
-			echo '>x</td>';
+			echo '><i class="fa fa-times"></i></td>';
 			echo '<td>' . render_contacts($contacts[$id]['mail'], 'mail') . '</td>';
 			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
 			echo '</tr>';

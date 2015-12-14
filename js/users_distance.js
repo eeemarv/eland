@@ -19,8 +19,18 @@ $(document).ready(function() {
 			distance = Math.acos(distance);
 	//		distance = distance * (180 / Math.PI) * 60 * 1.515 * 1.609344;
 			distance = distance * 8381.763465709408;
-			distance = (distance < 10) ? Math.round(distance * 10) / 10 : Math.round(distance);
-			$(this).text(distance + ' km');
+			$(this).data('value', (Math.round(distance * 100) / 100));
+			if (distance < 1){
+				distance = Math.round(distance * 10) * 100;
+				distance = distance + ' m';
+			} else if (distance < 10){
+				distance = Math.round(distance * 10) / 10;
+				distance = distance + ' km';
+			} else {
+				distance = Math.round(distance);
+				distance = distance + ' km';
+			}
+			$(this).text(distance);
 		});
 	}
 });
