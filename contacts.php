@@ -290,12 +290,23 @@ if ($uid)
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
-	$adr = $db->fetchColumn('select c.value
-		from contact c, type_contact tc
-		where c.id_user = ?
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'adr\'
-			and flag_public >= ?', array($uid, $access_level));
+	if ($s_owner)
+	{
+		$adr = $db->fetchColumn('select c.value
+			from contact c, type_contact tc
+			where c.id_user = ?
+				and c.id_type_contact = tc.id
+				and tc.abbrev = \'adr\'', array($uid));
+	}
+	else
+	{
+		$adr = $db->fetchColumn('select c.value
+			from contact c, type_contact tc
+			where c.id_user = ?
+				and c.id_type_contact = tc.id
+				and tc.abbrev = \'adr\'
+				and flag_public >= ?', array($uid, $access_level));
+	}
 
 	if ($adr)
 	{
