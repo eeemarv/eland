@@ -15,11 +15,14 @@ $(document).ready(function() {
 
 	$.each(users, function(id, user){
 		var m = L.marker([user.lat, user.lng], {
-			url: './users.php?id=' + id
-		})
-			.bindLabel(user.letscode + ' ' + user.name)
-			.addTo(map);
-		m.on('click', function(){ window.location.replace( this.options.url );});
+			url: './users.php?id=' + id,
+			riseOnHover: true
+		}).addTo(map);
+
+		m.on('click', function(){ window.location.replace( this.options.url );})
+			.bindLabel(user.letscode + ' ' + user.name, {
+				direction: 'auto',
+			});
 	});
 });
 
