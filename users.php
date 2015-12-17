@@ -2517,7 +2517,7 @@ if ($v_map)
 			}
 		}
 
-		$not_shown_count = 0;	
+		$not_shown_count++;
 	}
 
 	$shown_count = count($data_users);
@@ -2543,7 +2543,9 @@ if ($v_map)
 		echo '<div class="panel-heading">';
 		echo '<p>' . $not_shown_count . ' ';
 		echo ($s_admin) ? 'gebruikers' : 'leden';
-		echo ' worden niet getoond in de kaart wegens geen of verborgen adres.';
+		echo ' worden niet getoond in de kaart wegens verborgen of geen geldig adres. ';
+		echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer het zichtbaar is ';
+		echo 'in de kaart (maximum één dag).';
 		echo '</p>';
 		echo '</div>';
 		echo '</div>';	
