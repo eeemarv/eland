@@ -20,9 +20,6 @@ $(document).ready(function() {
 			.bindLabel(user.letscode + ' ' + user.name)
 			.addTo(map);
 		m.on('click', function(){ window.location.replace( this.options.url );});
-
-		
 	});
-
 });
 

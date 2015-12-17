@@ -1767,7 +1767,7 @@ if ($id)
 		order by letscode desc
 		limit 1', array($user['letscode']));
 
-	$includejs = '
+	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
 		<script src="' . $rootpath . 'js/user.js"></script>
 		<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
 		<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
@@ -1793,6 +1793,7 @@ if ($id)
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
 	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
 
 	if ($s_admin)
 	{

@@ -290,6 +290,23 @@ if ($uid)
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
+	$adr = $db->fetchColumn('select c.value
+		from contact c, type_contact tc
+		where c.id_user = ?
+			and c.id_type_contact = tc.id
+			and tc.abbrev = \'adr\'
+			and flag_public >= ?', array($uid, $access_level));
+
+	if ($adr)
+	{
+		$geo = $redis->get('geo_' . $adr);
+
+		if ($geo)
+		{
+			$geo = json_decode($geo, true);
+		}
+	}
+
 	$user = readuser($uid);
 
 	if ($s_admin || $s_owner)
@@ -384,12 +401,22 @@ if ($uid)
 	echo '</tbody>';
 
 	echo '</table>';
+
+	if ($geo)
+	{
+		echo '<div class="panel-footer">';
+		echo '<div class="user_map" id="map" data-lng="' . $geo['lng'] . '" data-lat="' . $geo['lat'] . '" ';
+		echo 'data-token="' . $mapbox_token . '"></div>';
+		echo '</div>';
+	}
+
 	echo '</div></div>';
 
 	echo '</div></div>';
 
 	if ($inline)
 	{
+		echo $includejs;
 		exit;
 	}
 

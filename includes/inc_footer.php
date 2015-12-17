@@ -1,4 +1,5 @@
 <?php
+
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -14,7 +15,7 @@ echo '</b>';
 echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>';
 
 echo '</footer>';
-echo '</div>'; 
+echo '</div>';
 
 echo '<script src="' . $cdn_jquery . '"></script>';
 echo '<script src="' . $cdn_bootstrap_js . '"></script>';
