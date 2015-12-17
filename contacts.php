@@ -386,12 +386,6 @@ if ($uid)
 			echo '<td><a href="mailto:' . $c['value'] . '">' . $c['value'] . '</a></td>';
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
-		else if ($c['abbrev'] == 'adr')
-		{
-			$a = '<a href="http://maps.google.be/maps?f=q&source=s_q&hl=nl&geocode=&q=' . $c['value'] . '" target="new">';
-			echo '<td>' . $a . htmlspecialchars($c['value'], ENT_QUOTES) . '</a></td>';
-			echo '<td>' . $a . htmlspecialchars($c['comments'], ENT_QUOTES) . '</a></td>';
-		}
 		else
 		{
 			echo '<td>' . htmlspecialchars($c['value'], ENT_QUOTES) . '</td>';
