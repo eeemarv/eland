@@ -2442,7 +2442,7 @@ $h1 .= '<span class="btn-group" role="group">';
 $active = ($v_tiles) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
 $active = ($v_map) ? ' active' : '';
-$h1 .= aphp('users', 'status=' . $status . '&view=map', '', 'btn btn-default' . $active, 'kaart', 'map-marker');
+$h1 .= aphp('users', 'status=active&view=map', '', 'btn btn-default' . $active, 'kaart', 'map-marker');
 $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, 'lijst', 'list');
 $h1 .= '</span>';
