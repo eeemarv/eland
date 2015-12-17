@@ -2533,7 +2533,8 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
-	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $mapbox_token . '"></div>';
+	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $mapbox_token . '" ';
+	echo 'data-session-param="' . get_session_query_param() . '"></div>';
 	echo '</div>';
 	echo '</div>';
 

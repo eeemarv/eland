@@ -3,6 +3,7 @@ $(document).ready(function() {
 	var lat = $map.data('lat');
 	var lng = $map.data('lng');
 	var users = $map.data('users');
+	var sessionParam = $map.data('session-param');
 
 	var map = L.map('map').setView([lat, lng], 14);
 
@@ -15,7 +16,7 @@ $(document).ready(function() {
 
 	$.each(users, function(id, user){
 		var m = L.marker([user.lat, user.lng], {
-			url: './users.php?id=' + id,
+			url: './users.php?id=' + id + '&' + sessionParam,
 			riseOnHover: true
 		}).addTo(map);
 
