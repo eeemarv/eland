@@ -435,8 +435,10 @@ div.logo {
 	padding-top: 50px;
 }
 
-/*
-div.thumbnail {
-	background-color: transparent;
+div.users_map {
+	height: 300px;
 }
-*/
+
+div.user_map {
+	height: 150px;
+}

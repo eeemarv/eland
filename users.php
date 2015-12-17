@@ -2102,6 +2102,7 @@ if (!$view)
 
 $v_list = ($view == 'list') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
+$v_map = ($view == 'map') ? true : false;
 
 $st = array(
 	'active'	=> array(
@@ -2363,29 +2364,49 @@ else
 		from users u
 		where ' . $st[$status]['sql'], $sql_bind);
 
-	$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
-		FROM contact c, type_contact tc
-		WHERE tc.id = c.id_type_contact
-			AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
-
-	$contacts = array();
-
-	foreach ($c_ary as $c)
+	if ($v_list || $v_map)
 	{
-		$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
-	}
+		$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
+			FROM contact c, type_contact tc
+			WHERE tc.id = c.id_type_contact
+				AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
-	$my_adr = $contacts[$s_id]['adr'][0][0];
+		$contacts = array();
 
-	if (isset($my_adr))
-	{
-		$geo = $redis->get('geo_' . $my_adr);
-
-		if ($geo && $geo != 'q' && $geo != 'f')
+		foreach ($c_ary as $c)
 		{
-			$geo = json_decode($geo, true);
-			$lat = $geo['lat'];
-			$lng = $geo['lng'];
+			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+		}
+
+		if (isset($s_interlets['schema']))
+		{
+			$t_schema =  $s_interlets['schema'] . '.';
+			$me_id = $s_interlets['id'];
+
+			$my_adr = $db->fetchColumn('select c.value
+				from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc, ' . $t_schema . 'users u
+				where c.id_user = ?
+					and c.id_type_contact = tc.id
+					and tc.abbrev = \'adr\'', array($me_id));
+		}
+		else if (!$s_guest)
+		{
+			$my_adr = $contacts[$s_id]['adr'][0][0];
+		}
+
+		$my_geo = false;
+
+		if (isset($my_adr))
+		{
+			$geo = $redis->get('geo_' . $my_adr);
+
+			if ($geo && $geo != 'q' && $geo != 'f')
+			{
+				$geo = json_decode($geo, true);
+				$lat = $geo['lat'];
+				$lng = $geo['lng'];
+				$my_geo = true;
+			}
 		}
 	}
 }
@@ -2419,6 +2440,8 @@ $h1 .= '<span class="pull-right hidden-xs">';
 $h1 .= '<span class="btn-group" role="group">';
 $active = ($v_tiles) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
+$active = ($v_map) ? ' active' : '';
+$h1 .= aphp('users', 'status=' . $status . '&view=map', '', 'btn btn-default' . $active, 'kaart', 'map-marker');
 $active = ($v_list) ? ' active' : '';
 $h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, 'lijst', 'list');
 $h1 .= '</span>';
@@ -2447,21 +2470,95 @@ if ($v_list)
 			<script src="' . $rootpath . 'js/table_sel.js"></script>';
 	}
 }
-else
+else if ($v_tiles)
 {
 	$includejs = '<script src="' . $cdn_isotope . '"></script>
 		<script src="' . $rootpath . 'js/users_tiles.js"></script>';
 }
+else if ($v_map)
+{
+	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
+		<script src="' . $cdn_leaflet_label_js . '"></script>
+		<script src="' . $rootpath . 'js/users_map.js"></script>';
+	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />
+		<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_label_css . '" />';
+
+}
 
 include $rootpath . 'includes/inc_header.php';
 
-echo '<form method="get" action="' . generate_url('users', $params) . '">';
-
-$params_plus = array_merge($params, get_session_query_param(true));
-
-foreach ($params_plus as $k => $v)
+if ($v_map)
 {
-	echo '<input type="hidden" name="' . $k . '" value="' . $v . '">';
+	$data_users = array();
+	$not_shown_count = 0;
+
+	foreach ($users as $user)
+	{
+		$adr = $contacts[$user['id']]['adr'][0];
+
+		if ($adr[1] >= $access_level)
+		{
+			$geo = json_decode($redis->get('geo_' . $adr[0]), true);
+
+			if ($geo)
+			{			
+				$data_users[$user['id']] = array(
+					'name'		=> $user['name'],
+					'letscode'	=> $user['letscode'],
+					'lat'		=> $geo['lat'],
+					'lng'		=> $geo['lng'],
+				);
+
+				$lat_add += $geo['lat'];
+				$lng_add += $geo['lng'];
+
+				continue;
+			}
+		}
+
+		$not_shown_count = 0;	
+	}
+
+	$shown_count = count($data_users);
+
+	if (!($lat && $lng) && $shown_count)
+	{
+		$lat = $lat_add / $shown_count;
+		$lng = $lng_add / $shown_count;
+	}
+
+	$data_users = json_encode($data_users);
+
+	echo '<div class="row">';
+	echo '<div class="col-md-12">';
+	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
+	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $mapbox_token . '"></div>';
+	echo '</div>';
+	echo '</div>';
+
+	if ($not_shown_count)
+	{
+		echo '<div class="panel panel-default">';
+		echo '<div class="panel-heading">';
+		echo '<p>' . $not_shown_count . ' ';
+		echo ($s_admin) ? 'gebruikers' : 'leden';
+		echo ' worden niet getoond in de kaart wegens geen of verborgen adres.';
+		echo '</p>';
+		echo '</div>';
+		echo '</div>';	
+	}
+}
+
+if ($v_list || $v_tiles)
+{
+	echo '<form method="get" action="' . generate_url('users', $params) . '">';
+
+	$params_plus = array_merge($params, get_session_query_param(true));
+
+	foreach ($params_plus as $k => $v)
+	{
+		echo '<input type="hidden" name="' . $k . '" value="' . $v . '">';
+	}
 }
 
 if ($s_admin && $v_list)
@@ -2510,45 +2607,48 @@ if ($s_admin && $v_list)
 	echo '</div>';
 }
 
-echo '<br>';
-
-echo '<div class="panel panel-info">';
-echo '<div class="panel-heading">';
-
-echo '<div class="row">';
-echo '<div class="col-xs-12">';
-echo '<div class="input-group">';
-echo '<span class="input-group-addon">';
-echo '<i class="fa fa-search"></i>';
-echo '</span>';
-echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
-echo '</div>';
-echo '</div>';
-echo '</div>';
-
-echo '</div>';
-echo '</div>';
-
-echo '</form>';
-
-echo '<div class="pull-right hidden-xs hidden-sm print-hide">';
-echo 'Totaal: <span id="total"></span>';
-echo '</div>';
-
-echo '<ul class="nav nav-tabs" id="nav-tabs">';
-
-$nav_params = $params;
-
-foreach ($st as $k => $tab)
+if ($v_list || $v_tiles)
 {
-	$nav_params['status'] = $k;
-	echo '<li';
-	echo ($status == $k) ? ' class="active"' : '';
-	echo '>';
-	echo aphp('users', $nav_params, $tab['lbl'], 'bg-' . $tab['cl']) . '</li>';
-}
+	echo '<br>';
 
-echo '</ul>';
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<div class="row">';
+	echo '<div class="col-xs-12">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-search"></i>';
+	echo '</span>';
+	echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+	echo '</div>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '</div>';
+	echo '</div>';
+
+	echo '</form>';
+
+	echo '<div class="pull-right hidden-xs hidden-sm print-hide">';
+	echo 'Totaal: <span id="total"></span>';
+	echo '</div>';
+
+	echo '<ul class="nav nav-tabs" id="nav-tabs">';
+
+	$nav_params = $params;
+
+	foreach ($st as $k => $tab)
+	{
+		$nav_params['status'] = $k;
+		echo '<li';
+		echo ($status == $k) ? ' class="active"' : '';
+		echo '>';
+		echo aphp('users', $nav_params, $tab['lbl'], 'bg-' . $tab['cl']) . '</li>';
+	}
+
+	echo '</ul>';
+}
 
 if ($v_list)
 {
@@ -2563,7 +2663,7 @@ if ($v_list)
 	echo 'data-empty="Er zijn geen ' . (($s_admin) ? 'gebruikers' : 'leden') . ' volgens ';
 	echo 'de selectiecriteria" data-sorting="true" data-filter-placeholder="Zoeken" ';
 	echo 'data-filter-position="left"';
-	if ($lat && $lng)
+	if ($my_geo)
 	{
 		echo ' data-lat="' . $lat . '" data-lng="' . $lng . '"';
 	}
@@ -2707,17 +2807,20 @@ if ($v_list)
 			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
-			echo '<td data-value="5000"';
-			if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
+			if ($my_geo)
 			{
-				$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
-
-				if ($geo && $geo != 'q' && $geo != 'f')
+				echo '<td data-value="5000"';
+				if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
-					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+					$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
+
+					if ($geo && $geo != 'q' && $geo != 'f')
+					{
+						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+					}
 				}
+				echo '><i class="fa fa-times"></i></td>';
 			}
-			echo '><i class="fa fa-times"></i></td>';
 			echo '<td>' . render_contacts($contacts[$id]['mail'], 'mail') . '</td>';
 			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
 			echo '</tr>';
@@ -2731,6 +2834,18 @@ if ($v_list)
 	echo '<div class="row"><div class="col-md-12">';
 	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $currency . '</span></p>';
 	echo '</div></div>';
+
+/*
+	echo '<ul>';
+	if ($s_user)
+	{
+		echo '<li>Je kan enkel de afstand tot andere leden waarvan de zichtbaarheid van het adres ';
+		echo 'staat ingesteld op <span class="label label-warning">leden</span> of ';
+		echo '<span class="label label-success">interlets</span> en als je zelf je adres in je contacten hebt staan.';
+		echo '</li>';
+	}
+	echo '</ul>';
+*/
 
 	if ($s_admin & isset($show_columns['u']))
 	{

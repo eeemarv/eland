@@ -64,6 +64,14 @@ $cdn_ckeditor = (getenv('CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/c
 
 $cdn_isotope = (getenv('CDN_ISOTOPE')) ?: '//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js';
 
+$cdn_leaflet_css = (getenv('CDN_LEAFLET_CSS')) ?: 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css';
+$cdn_leaflet_js = (getenv('CDN_LEAFLET_JS')) ?: 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js';
+
+$cdn_leaflet_label_css = (getenv('CDN_LEAFLET_LABEL_CSS')) ?: 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css';
+$cdn_leaflet_label_js = (getenv('CDN_LEAFLET_LABEL_JS')) ?: 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js';
+
+$mapbox_token = getenv('MAPBOX_TOKEN');
+
 require_once $rootpath . 'vendor/autoload.php';
 
 // Connect to Redis
