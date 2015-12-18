@@ -1037,8 +1037,10 @@ if ($id)
 			and c.flag_public = 1', array($user['id']));
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
 
-	$includejs = '<script src="' . $cdn_jssor_slider_mini_js . '"></script>
+	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
+		<script src="' . $cdn_jssor_slider_mini_js . '"></script>
 		<script src="' . $rootpath . 'js/msg.js"></script>';
 
 	if ($s_admin || $s_owner)
