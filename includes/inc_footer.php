@@ -7,10 +7,10 @@ echo '</div>';
 echo '<div class="clearfix"></div>';
 echo '<div class="container-fluid">';
 echo '<footer class="footer">';
-echo '<p><a href="https://github.com/eeemarv/elas-heroku">eLAS-Heroku ';
-echo '</a>&nbsp;<i class="fa fa-github"></i></p>';
+echo '<p><a href="http://letsa.net">eLAND';
+echo '</a>&nbsp; web app voor letsgroepen</p>';
 
-echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/elas-heroku/issues">Github issue tracker</a>.';
+echo '<p><b>Rapporteer bugs in de <a href="https://github.com/eeemarv/eland/issues">Github issue tracker</a>.';
 echo '</b>';
 echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>';
 
