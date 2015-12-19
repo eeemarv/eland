@@ -426,6 +426,7 @@ div.tooltip-div p {
   margin: 10px;
 }
 
+/*
 div.logo {
 	background-image: url('logo-inv.png');
 	background-size: 60%;
@@ -434,6 +435,7 @@ div.logo {
 	padding-left: 70px;
 	padding-top: 50px;
 }
+*/
 
 div.users_map {
 	height: 300px;
