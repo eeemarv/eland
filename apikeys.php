@@ -111,8 +111,8 @@ echo '</table>';
 echo '</div></div>';
 
 echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interlets verbindingen naar letsgroepen die ';
-echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAS-Heroku op ';
-echo 'dezelfde server moet je geen apikey aanmaken.</li></ul>';
+echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
+echo 'moet je geen apikey aanmaken.</li></ul>';
 
 $key = sha1($systemname . microtime());
 

@@ -19,7 +19,7 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_upgrade.php';
 
 header('Content-Type:text/plain');
-echo '*** Init eLAS-Heroku ***' . $r;
+echo '*** Init eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 echo "schema: " . $schema . ' systemtag: ' . $systemtag . $r;
@@ -34,7 +34,7 @@ if ($currentversion >= $schemaversion)
 }
 else
 {
-	echo "eLAS database needs to upgrade from $currentversion to $schemaversion\n";
+	echo "eLAS/eLAND database needs to upgrade from $currentversion to $schemaversion\n";
 	while($currentversion < $schemaversion)
 	{
 		$currentversion++;

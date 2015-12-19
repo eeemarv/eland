@@ -205,8 +205,7 @@ function helpmail($help)
 	$content .= "User Agent:\r\n";
 	$content .= $help['browser'] . "\r\n";
 	$content .= "\r\n";
-	$content .= "eLAS versie: Heroku \r\n";
-	$content .= 'Webserver: ' . gethostname() . "\r\n";
+	$content .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
 	return sendemail($from, $to, $subject, $content);
 }

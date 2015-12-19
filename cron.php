@@ -29,7 +29,7 @@ $s3 = Aws\S3\S3Client::factory(array(
 ));
 
 header('Content-Type:text/html');
-echo '*** Cron eLAS-Heroku ***' . $r;
+echo '*** Cron eLAND ***' . $r;
 
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
@@ -619,7 +619,7 @@ function user_exp_msgs()
 
 	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
 
-	//no double warn in eLAS-Heroku.
+	//no double warn in eLAND.
 
 	return true;
 }

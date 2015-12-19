@@ -170,8 +170,8 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
 	render_select_options(array(
-		'elassoap'	=> 'eLAS naar eLAS (elassoap)',
-		'internal'	=> 'Intern (eigen installatie)',
+		'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
+		'internal'	=> 'Intern (eigen installatie - niet gebruiken)',
 		'mail'		=> 'E-mail',
 	), $group['apimethod']);
 	echo '</select>';
@@ -231,7 +231,7 @@ if ($add || $edit)
 
 	echo '<div class="form-group">';
 	echo '<label for="presharedkey" class="col-sm-2 control-label">';
-	echo 'Preshared key';
+	echo 'Preshared key, enkel voor eLAS';
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
@@ -687,14 +687,14 @@ function render_schemas_groups()
 	global $schema, $db, $base_url;
 
 	echo '<p><ul>';
-	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAS-Heroku (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
+	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
 	echo '</ul></p>';
 
 	echo '<div class="panel panel-default"><div class="panel-heading">';
 	echo '<p>Verbindingen met eLAS. Zie <a href="http://www.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling">hier</a> voor de procedure.</p>';
 	echo '</div>';
 	echo '<ul>';
-	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail. Internal wordt genegeerd in eLAS-Heroku.</li>';
+	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail. Internal wordt genegeerd in eLAND.</li>';
 	echo '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
 	echo '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
 	echo '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
@@ -704,10 +704,10 @@ function render_schemas_groups()
 	echo '</div>';
 
 	echo '<div class="panel panel-default"><div class="panel-heading">';
-	echo '<p>Verbindingen met eLAS-Heroku op deze server.</p>';
+	echo '<p>Verbindingen met eLAND installaties.</p>';
 	echo '</div>';
 	echo '<ul>';
-	echo '<li>Alle eLAS-Heroku installaties bevinden zich op dezelfde server (zie onder voor lijst). </li>';
+	echo '<li>Alle eLAND installaties bevinden zich op dezelfde server (zie onder voor lijst). </li>';
 	echo '<li>Met deze letsgroepen kan op een vereenvoudigde manier verbinding gelegd worden zonder het uitwisselen van apikeys, preshared keys en remote letscodes.</li>';
 	echo '<li>Voor het leggen van een verbinding, maak eerst een letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' onderaan te klikken en vervolgens toevoegen. Dan, klik op \'Creëer\' in \'Lok.account\', ';
 	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';

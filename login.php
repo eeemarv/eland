@@ -79,7 +79,7 @@ if ($_POST['zend'])
 		$_SESSION = array(
 			'id'				=> 0,
 			'name'				=> 'master',
-			'fullname'			=> 'eLAS Master',
+			'fullname'			=> 'eLAND Master',
 			'user_postcode'		=> '0000',
 			'letscode'			=> '000000',
 			'accountrole'		=> 'admin',

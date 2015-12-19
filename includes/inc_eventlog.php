@@ -40,7 +40,7 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 		$username = $letscode = '';
 	}
 
-	$log->addNotice('eLAS-Heroku: ' . $sch . ': ' . $domain . ': ' .
+	$log->addNotice('eLAND: ' . $sch . ': ' . $domain . ': ' .
 		$type . ': ' . $event . ' user id:' . $user_id .
 		' user: ' . $letscode . ' ' . $username . "\n\r");
 

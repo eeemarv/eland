@@ -247,7 +247,7 @@ function getstatus($apikey)
 
 	if (check_apikey($apikey, 'interlets'))
 	{
-		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAS-Heroku'; //  . $elasversion;
+		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND'; //  . $elasversion;
 	}
 	else
 	{
