@@ -1,4 +1,4 @@
-#eLAS-Heroku
+#eLAND
 
 * Is a fork of [eLAS](http://www.elasproject.org/) (version 3.1.17) to run on Heroku.
 * is hosted for free for all letsgroups.
@@ -106,7 +106,7 @@ heroku addons:add mongolab
 
 CDN urls of cdns see [includes/inc_default.php] for defaults
 
-##Migrating a group from eLAS 3.1 to eLAS-Heroku
+##Migrating a group from eLAS 3.1 to eLAND
 
 For eLAS 2.6 see [here](setup/migrate-eLAS-2.6.md)
 
@@ -121,7 +121,7 @@ heroku domains:add *.example.com
 ```
 will add all subdomains of example.com
 * To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`. (or on the Heroku website)
-In eLAS-Heroku all letsgroups are stored as schemas in one database.
+In eLAND all letsgroups are stored as schemas in one database.
 You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).
 ```sql
 \i myletsgroupdumpfile.sql
@@ -131,7 +131,7 @@ You can truncate the city_distance table which is not used anymore and which is 
 ```sql
 TRUNCATE TABLE city_distance;
 ```
-In eLAS there are only 2 levels of access for contacts. Public and private. In eLAS-Heroku public is further divided in 'members' and 'interlets'. To keep consistent the 'public' access level of eLAS should be transformed into the 'interlets' access level of eLAS-Heroku.
+In eLAS there are only 2 levels of access for contacts. Public and private. In eLAND public is further divided in 'members' and 'interlets'. To keep consistent the 'public' access level of eLAS should be transformed into the 'interlets' access level of eLAND.
 ```sql
 UPDATE contact SET flag_public = 2 where flag_public = 1;
 ```
