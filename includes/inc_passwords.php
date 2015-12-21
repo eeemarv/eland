@@ -18,7 +18,7 @@ function sendactivationmail($password, $user)
 {
 	global $base_url, $s_id, $alert, $systemname, $systemtag;
 
-	$from = readconfigfromdb("from_address");
+	$from = readconfigfromdb('from_address');
 
 	if (!empty($user["mail"]))
 	{
@@ -46,7 +46,7 @@ function sendactivationmail($password, $user)
 	$content .= " en meld je aan met onderstaande gegevens.\n";
 	$content .= "\n-- Account gegevens --\n";
 	$content .= "Login: ";
-	$content .= $user["login"]; 
+	$content .= $user['letscode']; 
 	$content .= "\nPasswoord: ";
 	$content .= $password;
 	$content .= "\n-- --\n\n";
