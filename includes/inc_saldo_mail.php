@@ -26,6 +26,7 @@ function saldo()
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
+			and c.flag_public > 0
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'adr\'');
 
@@ -173,7 +174,14 @@ function saldo()
 
 		$mailto = $mailaddr[$msg['id_user']][0];
 
-		$google_maps = 'https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]);
+		if ($addr[$msg['id_user']] && $addr[)
+		{
+			$route = '| <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
+		}
+		else
+		{
+			$route = '';
+		}
 
 		$description = ($msg['Description']) ? $msg['Description'] . '<br>' : '';
 
@@ -183,8 +191,7 @@ function saldo()
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $html_img . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
 				$msg['letscode'] . ' ' . $msg['name'] . '</a> | <a href="mailto:' . $mailto .
-				'">email</a> | <a href="' . $google_maps . '">route</a> ' .
-				'</li><br>',
+				'">email</a> ' . $route . '</li><br>',
 		);
 	}
 
