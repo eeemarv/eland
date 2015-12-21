@@ -174,7 +174,7 @@ function saldo()
 
 		$mailto = $mailaddr[$msg['id_user']][0];
 
-		if ($addr[$msg['id_user']] && $addr[)
+		if ($addr[$msg['id_user']])
 		{
 			$route = '| <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
 		}
