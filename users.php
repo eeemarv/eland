@@ -2557,7 +2557,7 @@ if ($v_map)
 	{
 		echo '<div class="panel panel-default">';
 		echo '<div class="panel-heading">';
-		echo '<p>' . $hidden_count + $not_present_count + $not_geocoded_count . ' ';
+		echo '<p>' . ($hidden_count + $not_present_count + $not_geocoded_count) . ' ';
 		echo ($s_admin) ? 'gebruikers' : 'leden';
 		echo ' worden niet getoond in de kaart wegens: ';
 		echo '<ul>';
