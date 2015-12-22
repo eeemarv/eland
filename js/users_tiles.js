@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
 
 	var $grid = $('.tiles');
 
@@ -16,6 +16,10 @@ $(function() {
 		},
 		sortBy: 'letscode',
 		sortAscending: true
+	});
+
+	$grid.imagesLoaded().progress( function() {
+	  $grid.isotope('layout');
 	});
 
 	$('.sort-by').on( 'click', 'button', function() {
@@ -81,4 +85,5 @@ $(function() {
 	}
 
 	calcTotal();
+
 });

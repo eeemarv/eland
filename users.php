@@ -2474,6 +2474,7 @@ if ($v_list)
 else if ($v_tiles)
 {
 	$includejs = '<script src="' . $cdn_isotope . '"></script>
+		<script src="' . $cdn_images_loaded . '"></script>
 		<script src="' . $rootpath . 'js/users_tiles.js"></script>';
 }
 else if ($v_map)
