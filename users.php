@@ -2807,7 +2807,7 @@ if ($v_list)
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
 		echo '<th data-hide="phone">Postcode</th>';
-		echo '<th data-hide="phone" data-type="numeric">Afstand</th>';
+		echo ($my_geo) ? '<th data-hide="phone" data-type="numeric">Afstand</th>' : '';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
 		echo '<th data-hide="phone">Saldo</th>';
 
