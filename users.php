@@ -2492,33 +2492,47 @@ include $rootpath . 'includes/inc_header.php';
 if ($v_map)
 {
 	$data_users = array();
-	$not_shown_count = 0;
+	$hidden_count = $not_geocoded_count = $not_preset_count = 0;
 
 	foreach ($users as $user)
 	{
 		$adr = $contacts[$user['id']]['adr'][0];
 
-		if ($adr[1] >= $access_level)
+		if ($adr)
 		{
+
 			$geo = json_decode($redis->get('geo_' . $adr[0]), true);
 
-			if ($geo)
-			{			
-				$data_users[$user['id']] = array(
-					'name'		=> $user['name'],
-					'letscode'	=> $user['letscode'],
-					'lat'		=> $geo['lat'],
-					'lng'		=> $geo['lng'],
-				);
+			if ($adr[1] >= $access_level)
+			{
+				if ($geo)
+				{			
+					$data_users[$user['id']] = array(
+						'name'		=> $user['name'],
+						'letscode'	=> $user['letscode'],
+						'lat'		=> $geo['lat'],
+						'lng'		=> $geo['lng'],
+					);
 
-				$lat_add += $geo['lat'];
-				$lng_add += $geo['lng'];
+					$lat_add += $geo['lat'];
+					$lng_add += $geo['lng'];
 
-				continue;
+					continue;
+				}
+				else
+				{
+					$not_geocoded_count++;
+				}
+			}
+			else
+			{
+				$hidden_count++;
 			}
 		}
-
-		$not_shown_count++;
+		else
+		{
+			$not_present_count++;
+		}
 	}
 
 	$shown_count = count($data_users);
@@ -2539,15 +2553,23 @@ if ($v_map)
 	echo '</div>';
 	echo '</div>';
 
-	if ($not_shown_count)
+	if ($hidden_count || $not_preset_count || $not_geocoded_count)
 	{
 		echo '<div class="panel panel-default">';
 		echo '<div class="panel-heading">';
-		echo '<p>' . $not_shown_count . ' ';
+		echo '<p>' . $hidden_count + $not_present_count + $not_geocoded_count . ' ';
 		echo ($s_admin) ? 'gebruikers' : 'leden';
-		echo ' worden niet getoond in de kaart wegens verborgen of geen geldig adres. ';
-		echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer het zichtbaar is ';
-		echo 'in de kaart (maximum één dag).';
+		echo ' worden niet getoond in de kaart wegens: ';
+		echo '<ul>';
+		echo ($hidden_count) ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
+		echo ($not_present_count) ? '<li>' . $not_present_count . ' geen adres ingevuld</li>' : '';
+		echo ($not_geocoded_count) ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
+		echo '</ul>';
+		if ($not_geocoded_count)
+		{
+			echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer de coordinaten zijn opgezocht door de software ';
+			echo '(maximum één dag).';
+		}
 		echo '</p>';
 		echo '</div>';
 		echo '</div>';	
