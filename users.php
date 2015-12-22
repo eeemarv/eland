@@ -2564,7 +2564,7 @@ if ($v_map)
 		echo ' worden niet getoond in de kaart wegens: ';
 		echo '<ul>';
 		echo ($hidden_count) ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
-		echo ($not_present_count) ? '<li>' . $not_present_count . ' geen adres ingevuld</li>' : '';
+		echo ($not_present_count) ? '<li>' . $not_present_count . ' geen adres gekend</li>' : '';
 		echo ($not_geocoded_count) ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
 		echo '</ul>';
 		if ($not_geocoded_count)
