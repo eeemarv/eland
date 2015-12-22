@@ -3132,3 +3132,54 @@ function sendadminmail($user)
 
 	sendemail($from, $to, $subject, $content);
 }
+
+function sendactivationmail($password, $user)
+{
+	global $base_url, $s_id, $alert, $systemname, $systemtag;
+
+	$from = readconfigfromdb('from_address');
+
+	if (!empty($user["mail"]))
+	{
+		$to = $user["mail"];
+	}
+	else
+	{
+		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
+		return 0;
+	}
+
+	$subject = '[';
+	$subject .= $systemtag;
+	$subject .= '] account activatie voor ' . $systemname;
+
+	$content  = "*** Dit is een automatische mail van ";
+	$content .= $systemname;
+	$content .= " ***\r\n\n";
+	$content .= 'Beste ';
+	$content .= $user['name'];
+	$content .= "\n\n";
+
+	$content .= "Welkom bij Letsgroep $systemname";
+	$content .= '. Surf naar ' . $base_url;
+	$content .= " en meld je aan met onderstaande gegevens.\n";
+	$content .= "\n-- Account gegevens --\n";
+	$content .= "Login: ";
+	$content .= $user['letscode']; 
+	$content .= "\nPasswoord: ";
+	$content .= $password;
+	$content .= "\n-- --\n\n";
+
+	$content .= "Je kan je gebruikersgevens, vraag&aanbod en lets-transacties";
+	$content .= " zelf bijwerken op het Internet.";
+	$content .= "\n\n";
+
+	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
+	$content .= readconfigfromdb('support');
+	$content .= "\n\n";
+	$content .= "Veel plezier bij het letsen! \n";
+
+	sendemail($from,$to,$subject,$content);
+
+	log_event($s_id, 'Mail', 'Activation mail sent to ' . $to);
+}
