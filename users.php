@@ -2553,11 +2553,13 @@ if ($v_map)
 	echo '</div>';
 	echo '</div>';
 
-	if ($hidden_count || $not_preset_count || $not_geocoded_count)
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading"><p>';
+
+	if ($hidden_count || $not_present_count || $not_geocoded_count)
 	{
-		echo '<div class="panel panel-default">';
-		echo '<div class="panel-heading">';
-		echo '<p>' . ($hidden_count + $not_present_count + $not_geocoded_count) . ' ';
+
+		echo ($hidden_count + $not_present_count + $not_geocoded_count) . ' ';
 		echo ($s_admin) ? 'gebruikers' : 'leden';
 		echo ' worden niet getoond in de kaart wegens: ';
 		echo '<ul>';
@@ -2569,11 +2571,11 @@ if ($v_map)
 		{
 			echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer de coordinaten zijn opgezocht door de software ';
 			echo '(maximum één dag).';
-		}
-		echo '</p>';
-		echo '</div>';
-		echo '</div>';	
+		}	
 	}
+
+	echo '</p></div>';
+	echo '</div>';	
 }
 
 if ($v_list || $v_tiles)
