@@ -527,13 +527,14 @@ if ($add)
 		if ($mid)
 		{
 			$row = $db->fetchAssoc('SELECT
-					m.content, m.amount, u.letscode, u.name
+					m.content, m.amount, m.id_user, u.letscode, u.name
 				FROM messages m, users u
 				WHERE u.id = m.id_user
 					AND m.id = ?', array($mid));
 			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
 			$transaction['description'] =  '#m' . $mid . ' ' . $row['content'];
 			$transaction['amount'] = $row['amount'];
+			$tuid = $row['tuid'];
 		}
 		else if ($tuid)
 		{
@@ -541,11 +542,17 @@ if ($add)
 			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
 		}
 
-		if ($fuid && $s_admin)
+		if ($fuid && $s_admin && ($fuid != $tuid))
 		{
 			$row = readuser($fuid);
 			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
 		}
+/*
+		if ($tuid == $s_id)
+		{
+			$transaction['letscode_from'] = '';
+		}
+*/
 	}
 
 	if (!isset($_POST['zend']))
@@ -834,7 +841,11 @@ if ($s_admin || $s_user)
 
 		if ($user['status'] != 7)
 		{
-			if ($s_admin)
+			if ($s_owner)
+			{
+				$top_buttons .= aphp('transactions', 'add=1' . $uid, 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
+			}
+			else if ($s_admin)
 			{
 				$top_buttons .= aphp('transactions', 'add=1&fuid=' . $uid, 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
 			}
