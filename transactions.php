@@ -547,12 +547,11 @@ if ($add)
 			$row = readuser($fuid);
 			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
 		}
-/*
-		if ($tuid == $s_id)
+
+		if ($tuid == $s_id && !$fuid)
 		{
 			$transaction['letscode_from'] = '';
 		}
-*/
 	}
 
 	if (!isset($_POST['zend']))
@@ -843,7 +842,7 @@ if ($s_admin || $s_user)
 		{
 			if ($s_owner)
 			{
-				$top_buttons .= aphp('transactions', 'add=1' . $uid, 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
+				$top_buttons .= aphp('transactions', 'add=1', 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 			}
 			else if ($s_admin)
 			{
@@ -852,7 +851,7 @@ if ($s_admin || $s_user)
 
 			if ($s_admin || ($s_user && !$s_owner))
 			{
-				$top_buttons .= aphp('transactions', 'add=1&tuid=' . $uid, 'Transactie naar ' . $user_str, 'btn btn-success', 'Transactie naar ' . $user_str, 'plus', true);
+				$top_buttons .= aphp('transactions', 'add=1&tuid=' . $uid, 'Transactie naar ' . $user_str, 'btn btn-warning', 'Transactie naar ' . $user_str, 'exchange', true);
 			}
 		}
 
