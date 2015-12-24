@@ -41,7 +41,7 @@ function saldo()
 
 	$rs = $db->prepare('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.letscode, u.login
+			u.letscode, u.postcode
 		FROM users u
 		WHERE u.status in (1, 2)
 		AND u.cron_saldo = \'t\'');
@@ -200,12 +200,14 @@ function saldo()
 
 		$description = ($msg['Description']) ? $msg['Description'] . '<br>' : '';
 
+		$postcode = ($users[$msg['id_user']]['postcode']) ? ' | postcode: ' . $users[$msg['id_user']]['postcode'] : '';
+
 		$msgs[] = array(
 			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
-				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $r . $r,
+				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $postcode . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $html_img . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
-				$msg['letscode'] . ' ' . $msg['name'] . '</a>' . $maillinks . $route . '</li><br>',
+				$msg['letscode'] . ' ' . $msg['name'] . '</a>' . $postcode . $maillinks . $route . '</li><br>',
 		);
 	}
 
