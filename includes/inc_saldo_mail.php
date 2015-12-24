@@ -18,7 +18,7 @@ function saldo()
 		return true;
 	}
 
-	$addr = $addr_public = $mailaddr = $to = $merge_vars = array();
+	$addr = $addr_public = $mailaddr = $mailaddr_public = $to = $merge_vars = array();
 	$msgs = $news = $users = $image_count_ary = $new_users = array();
 	$leaving_users = $transactions = $to_mail = array();
 
@@ -53,7 +53,7 @@ function saldo()
 		$users[$row['id']] = $row;
 	}
 
-	$st = $db->prepare('select u.id, c.value
+	$st = $db->prepare('select u.id, c.value, c.flag_public
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
@@ -67,6 +67,7 @@ function saldo()
 		$user_id = $row['id'];
 		$mail = $row['value'];
 		$mailaddr[$user_id][] = $mail;
+		$mailaddr_public[$user_id][] = $row['flag_public'];
 
 		if (!$users[$user_id])
 		{
@@ -176,15 +177,25 @@ function saldo()
 
 		$mailto = $mailaddr[$msg['id_user']][0];
 
+		$route = '';
+
 		if ($addr_public[$msg['id_user']] > 0)
 		{
-			$route = '*|IF:GOOGLEADDR|* | <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/'
+			$route = '*|IF:GOOGLEADDR|* | <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/';
 			$route .= str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
 			$route .= '*|IF:END|*';
 		}
-		else
+
+		$maillinks = '';
+
+		foreach ($mailaddr[$msg['id_user']] as $k => $mailaddr_p)
 		{
-			$route = '';
+			if ($mailaddr_public[$msg['id_user']][$k] < 1)
+			{
+				continue;
+			}
+
+			$maillinks .= ' | <a href="mailto:' . $mailaddr_p . '">email</a>';	
 		}
 
 		$description = ($msg['Description']) ? $msg['Description'] . '<br>' : '';
@@ -194,8 +205,7 @@ function saldo()
 				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $r . $r,
 			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
 				$image_count . ')<br>' . $html_img . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
-				$msg['letscode'] . ' ' . $msg['name'] . '</a> | <a href="mailto:' . $mailto .
-				'">email</a> ' . $route . '</li><br>',
+				$msg['letscode'] . ' ' . $msg['name'] . '</a>' . $maillinks . $route . '</li><br>',
 		);
 	}
 
