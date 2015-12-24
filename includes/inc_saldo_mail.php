@@ -242,7 +242,7 @@ function saldo()
 		);
 	}
 
-	$rs = $db->prepare('select u.id, u.name, u.letscode
+	$rs = $db->prepare('select u.id, u.name, u.letscode, u.postcode
 		from users u
 		where u.status = 1
 			and u.adate > ?');
@@ -252,9 +252,11 @@ function saldo()
 
 	while ($row = $rs->fetch())
 	{
+		$postcode = ($row['postcode']) ? ' | postcode: ' . $row['postcode'] : '';
+
 		$new_users[] = array(
-			'text'	=> $row['letscode'] . ' ' . $row['name'] . ' ' . $user_url . $row['id'] . $r,
-			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['letscode'] . ' ' . $row['name'] . '</a></li>',
+			'text'	=> $row['letscode'] . ' ' . $row['name'] . ' ' . $user_url . $row['id'] . $postcode . $r,
+			'html'	=> '<li><a href="' . $user_url . $row['id'] . '">' . $row['letscode'] . ' ' . $row['name'] . '</a>' . $postcode . '</li>',
 		);
 	}
 
