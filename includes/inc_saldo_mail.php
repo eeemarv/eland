@@ -18,15 +18,16 @@ function saldo()
 		return true;
 	}
 
-	$addr = $mailaddr = $to = $merge_vars = $msgs = $news = $users = $image_count_ary = $new_users = $leaving_users = $transactions = $to_mail = array();
+	$addr = $addr_public = $mailaddr = $to = $merge_vars = array();
+	$msgs = $news = $users = $image_count_ary = $new_users = array();
+	$leaving_users = $transactions = $to_mail = array();
 
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 
 
-	$rs = $db->prepare('select u.id, c.value
+	$rs = $db->prepare('select u.id, c.value, flag_public
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
-			and c.flag_public > 0
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'adr\'');
 
@@ -35,6 +36,7 @@ function saldo()
 	while ($row = $rs->fetch())
 	{
 		$addr[$row['id']] = $row['value'];
+		$addr_public[$row['id']] = $row['flag_public'];
 	}
 
 	$rs = $db->prepare('SELECT u.id,
@@ -174,9 +176,11 @@ function saldo()
 
 		$mailto = $mailaddr[$msg['id_user']][0];
 
-		if ($addr[$msg['id_user']])
+		if ($addr_public[$msg['id_user']] > 0)
 		{
-			$route = '| <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/' . str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
+			$route = '*|IF:GOOGLEADDR|* | <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/'
+			$route .= str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
+			$route .= '*|IF:END|*';
 		}
 		else
 		{
