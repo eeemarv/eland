@@ -232,7 +232,7 @@ function saldo()
 				$location_text .
 				'Datum: ' . $itemdate . $r .
 				'Bericht: ' . $row['newsitem'] . $r,
-				'Ingegeven door: ' . $row['letscode'] . ' ' . $row['name'] . $r . $r,
+				'Ingegeven door: ' . $row['letscode'] . ' ' . $row['name'] . $r . $r . $r,
  			'html'	=> '<li><a href="' . $news_url . $row['id'] . '">' . $row['headline'] . '</a><br>' .
 				$location_html .
 				'Datum: <b>' . $itemdate . '</b><br>' .
