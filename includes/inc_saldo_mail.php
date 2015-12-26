@@ -44,7 +44,6 @@ function saldo()
 			u.letscode, u.postcode, u.cron_saldo
 		FROM users u
 		WHERE u.status in (1, 2)');
-//		AND u.cron_saldo = \'t\'');
 
 	$rs->execute();
 
