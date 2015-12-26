@@ -510,6 +510,10 @@ function geo_q_process()
 	return true;
 }
 
+saldo();
+
+echo '+++++++++++++++++++++++++++++++ SALDO MAIL ++++++++++++++++++++++++ ';
+
 
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 

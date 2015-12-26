@@ -41,10 +41,10 @@ function saldo()
 
 	$rs = $db->prepare('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.letscode, u.postcode
+			u.letscode, u.postcode, u.cron_saldo
 		FROM users u
-		WHERE u.status in (1, 2)
-		AND u.cron_saldo = \'t\'');
+		WHERE u.status in (1, 2)');
+//		AND u.cron_saldo = \'t\'');
 
 	$rs->execute();
 
@@ -69,12 +69,10 @@ function saldo()
 		$mailaddr[$user_id][] = $mail;
 		$mailaddr_public[$user_id][] = $row['flag_public'];
 
-		if (!$users[$user_id])
+		if (!$users[$user_id] || !$users[$user_id]['cron_saldo'])
 		{
 			continue;
 		}
-
-		$users[$user_id]['id'] = $user_id;
 
 		$user = $users[$user_id];
 
@@ -119,6 +117,10 @@ function saldo()
 				array(
 					'name'		=> 'GOOGLEADDR',
 					'content'	=> str_replace(' ', '+', $addr[$user_id]),
+				),
+				array(
+					'name'		=> 'ADDR_EN',
+					'content'	=> ($addr[$user_id]) ? true : false,
 				),
 			),
 		);
@@ -175,15 +177,17 @@ function saldo()
 			$html_img = '';
 		}
 
-		$mailto = $mailaddr[$msg['id_user']][0];
-
 		$route = '';
 
 		if ($addr_public[$msg['id_user']] > 0)
 		{
-			$route = '*|IF:GOOGLEADDR|* | <a href=https://www.google.be/maps/dir/*|GOOGLEADDR|*/';
-			$route .= str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>';
-			$route .= '*|IF:END|*';
+			$route = '*|IF:ADDR_EN|*';
+			$route .= ' | <a href="https://www.google.be/maps/dir/';
+			$route .= '*|GOOGLEADDR|*';
+			$route .= '/';
+			$route .= str_replace(' ', '+', $addr[$msg['id_user']]);
+			$route .= '">route</a>';
+			$route .= '*|END:IF|*';
 		}
 
 		$maillinks = '';
@@ -200,7 +204,8 @@ function saldo()
 
 		$description = ($msg['Description']) ? $msg['Description'] . '<br>' : '';
 
-		$postcode = ($users[$msg['id_user']]['postcode']) ? ' | postcode: ' . $users[$msg['id_user']]['postcode'] : '';
+		$postcode = $users[$msg['id_user']]['postcode'];
+		$postcode = ($postcode) ? ' | postcode: ' . $postcode : '';
 
 		$msgs[] = array(
 			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
