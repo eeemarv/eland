@@ -237,12 +237,14 @@ if ($add)
 
 		if ($s_user)
 		{
-			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < 1))
+			$balance_eq = readconfigfromdb('balance_equilibrium');
+
+			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
 				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $currency . ' uitgeven.';
 			}
 
-			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > 0))
+			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
 				$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
