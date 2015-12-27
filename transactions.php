@@ -417,6 +417,7 @@ if ($add)
 
 			$remote_currency = readconfigfromschema('currency', $remote_schema);
 			$remote_currencyratio = readconfigfromschema('currencyratio', $remote_schema);
+			$remote_balance_eq = readconfigfromschema('balance_equilibrium', $remote_schema);
 			$currencyratio = readconfigfromdb('currencyratio');
 
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
@@ -430,6 +431,18 @@ if ($add)
 			if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
 			{
 				$alert->error('De interlets gebruiker heeft zijn maximum limiet bereikt.');
+				cancel();
+			}
+
+			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
+			{
+				$alert->error('Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $currency . ').');
+				cancel();
+			}
+
+			if (($to_remote_user['status'] == 2) && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq))
+			{
+				$alert->error('De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $currency . ').');
 				cancel();
 			}
 
