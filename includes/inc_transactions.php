@@ -142,8 +142,8 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
 
-	$from = readconfigfromschema('from_address', $sch);
-	$currency = readconfigfromschema('currency', $sch);
+	$from = readconfigfromdb('from_address', $sch);
+	$currency = readconfigfromdb('currency', $sch);
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
 
@@ -165,8 +165,8 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$to = implode(',', $to);
 
-	$systemtag = readconfigfromschema('systemtag', $sch);
-	$currency = readconfigfromschema('currency', $sch);
+	$systemtag = readconfigfromdb('systemtag', $sch);
+	$currency = readconfigfromdb('currency', $sch);
 
 	$real_from = $transaction['real_from'];
 	$real_to = $transaction['real_to'];

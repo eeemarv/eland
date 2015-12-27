@@ -120,8 +120,8 @@ if ($add || $edit)
 		if ($url = $domains[$add_schema])
 		{
 			$group['url'] = $url;
-			$group['groupname'] = $group['shortname'] = readconfigfromschema('systemname', $add_schema);
-			$group['localletscode'] = readconfigfromschema('systemtag', $add_schema);
+			$group['groupname'] = $group['shortname'] = readconfigfromdb('systemname', $add_schema);
+			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
 	}
 
@@ -796,10 +796,10 @@ function render_schemas_groups()
 	{
 		echo '<tr>';
 		echo '<td>';
-		echo readconfigfromschema('systemtag', $s);
+		echo readconfigfromdb('systemtag', $s);
 		echo '</td>';
 		echo '<td>';
-		echo readconfigfromschema('systemname', $s);
+		echo readconfigfromdb('systemname', $s);
 		echo '</td>';
 		echo '<td>';
 		echo $d;

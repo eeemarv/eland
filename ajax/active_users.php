@@ -62,7 +62,7 @@ function users_to_json($remote_schema = null)
 
 	if (isset($remote_schema))
 	{
-		$new_user_seconds = readconfigfromschema('newuserdays', $remote_schema) * 86400;
+		$new_user_seconds = readconfigfromdb('newuserdays', $remote_schema) * 86400;
 	}
 	else
 	{

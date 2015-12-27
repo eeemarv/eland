@@ -415,9 +415,9 @@ if ($add)
 				cancel();
 			}
 
-			$remote_currency = readconfigfromschema('currency', $remote_schema);
-			$remote_currencyratio = readconfigfromschema('currencyratio', $remote_schema);
-			$remote_balance_eq = readconfigfromschema('balance_equilibrium', $remote_schema);
+			$remote_currency = readconfigfromdb('currency', $remote_schema);
+			$remote_currencyratio = readconfigfromdb('currencyratio', $remote_schema);
+			$remote_balance_eq = readconfigfromdb('balance_equilibrium', $remote_schema);
 			$currencyratio = readconfigfromdb('currencyratio');
 
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);

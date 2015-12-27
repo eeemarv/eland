@@ -63,9 +63,9 @@ if ($user_mail_submit && $id && $post)
 
 	$me = readuser($me_id, false, $remote_schema);
 
-	$user_me = (isset($s_interlets['schema'])) ? readconfigfromschema('systemtag', $remote_schema) . '.' : '';
+	$user_me = (isset($s_interlets['schema'])) ? readconfigfromdb('systemtag', $remote_schema) . '.' : '';
 	$user_me .= link_user($me, null, false);
-	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromschema('systemname', $remote_schema) : '';
+	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromdb('systemname', $remote_schema) : '';
 
 	$from = $db->fetchColumn('select c.value
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
@@ -1436,7 +1436,7 @@ if ($add || $edit)
 
 					if ($letsgroup['url'] && ($remote_schema = $schemas[$letsgroup['url']]))
 					{
-						$admin_mail = readconfigfromschema('admin', $remote_schema);
+						$admin_mail = readconfigfromdb('admin', $remote_schema);
 
 						foreach ($contact as $k => $c)
 						{
@@ -1448,7 +1448,7 @@ if ($add || $edit)
 						}
 
 						// name from source is preferable
-						$user['name'] = $user['fullname'] = readconfigfromschema('systemname', $remote_schema);
+						$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
 					}
 				}
 

@@ -19,11 +19,17 @@ class mdb
 	public function set_schema($schema)
 	{
 		$this->schema = $schema;
+		return this;
+	}
+
+	public function get_schema($schema)
+	{
+		return $this->schema;
 	}
 
 	public function connect()
 	{
-		if (is_object($this->logs))
+		if (is_object($this->mdb))
 		{
 			return $this;
 		}

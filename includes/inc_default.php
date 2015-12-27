@@ -487,40 +487,46 @@ function link_user($user, $render = null, $link = true, $show_id = false)
  *
  */
 
-function readconfigfromdb($key)
+function readconfigfromdb($key, $sch = null)
 {
     global $db, $schema, $redis;
     global $mdb, $eland_config;
     static $cache;
 
-	if (isset($cache[$schema][$key]))
-	{
-		return $cache[$schema][$key];
+    if (!isset($sch))
+    {
+		$sch = $schema;
 	}
 
-	$redis_key = $schema . '_config_' . $key;
+	if (isset($cache[$sch][$key]))
+	{
+		return $cache[$sch][$key];
+	}
+
+	$redis_key = $sch . '_config_' . $key;
 
 	if ($redis->exists($redis_key))
 	{
-		return $cache[$schema][$key] = $redis->get($redis_key);
+		return $cache[$sch][$key] = $redis->get($redis_key);
 	}
 
 	if (isset($eland_config[$key]))
 	{
-		$mdb->connect();
-		$s = $mdb->settings->findOne(array('name' => $key));
+		$mclient = $mdb->connect()->get_client();
+		$settings = $sch . '_settings';
+		$s = $mclient->$settings->findOne(array('name' => $key));
 		$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
 	}
 	else
 	{
-		$value = $db->fetchColumn('SELECT value FROM config WHERE setting = ?', array($key));
+		$value = $db->fetchColumn('SELECT value FROM ' . $sch . '.config WHERE setting = ?', array($key));
 	}
 
 	if (isset($value))
 	{
 		$redis->set($redis_key, $value);
 		$redis->expire($redis_key, 2592000);
-		$cache[$schema][$key] = $value;
+		$cache[$sch][$key] = $value;
 	}
 
 	return $value;
@@ -529,6 +535,7 @@ function readconfigfromdb($key)
 /**
  * read config from other schemas
  */
+/*
 function readconfigfromschema($key, $schema)
 {
     global $db, $redis;
@@ -550,6 +557,7 @@ function readconfigfromschema($key, $schema)
 
 	return $value;
 }
+*/
 
 /**
  *
