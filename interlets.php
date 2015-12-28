@@ -781,7 +781,7 @@ function render_schemas_groups()
 	echo '</div>';
 	echo '<div class=" collapse" id="server">';
 
-	echo '<table class="table table-bordered table-hover table-striped">';
+	echo '<table class="table table-bordered table-hover table-striped footable">';
 	echo '<thead>';
 	echo '<tr>';
 	echo '<th data-sort-initial="true" data-hide="phone, tablet">tag</th>';
