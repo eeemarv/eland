@@ -719,7 +719,7 @@ function render_schemas_groups()
 	list($schemas, $domains) = get_schemas_domains(true);
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
-	$rem_group_ary =  $rem_account_ary = array();
+	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = array();
 
 	$letsgroups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
@@ -749,6 +749,10 @@ function render_schemas_groups()
 		$rem_group = $db->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
 			where url = ?', array($base_url));
+
+		$group_user_count_ary[$s] = $db->fetchColumn('select count(*)
+			from ' . $s . '.users
+			where status in (1, 2)');
 
 		if ($rem_group)
 		{
@@ -783,6 +787,7 @@ function render_schemas_groups()
 	echo '<th data-sort-initial="true" data-hide="phone, tablet">tag</th>';
 	echo '<th>groepsnaam</th>';
 	echo '<th data-hide="phone, tablet">url</th>';
+	echo '<th data-hide="phone, tablet">leden</th>';
 	echo '<th>lok.groep</th>';
 	echo '<th>lok.account</th>';
 	echo '<th>rem.groep</th>';
@@ -795,14 +800,21 @@ function render_schemas_groups()
 	foreach($schemas as $d => $s)
 	{
 		echo '<tr>';
+
 		echo '<td>';
 		echo readconfigfromdb('systemtag', $s);
 		echo '</td>';
+
 		echo '<td>';
 		echo readconfigfromdb('systemname', $s);
 		echo '</td>';
+
 		echo '<td>';
 		echo $d;
+		echo '</td>';
+
+		echo '<td>';
+		echo $group_user_count_ary[$s];
 		echo '</td>';
 
 		if ($schema == $s)
