@@ -1087,6 +1087,8 @@ if ($add || $edit)
 			$name_sql_params[] = $edit;
 			$fullname_sql .= 'and id <> ?';
 			$fullname_sql_params[] = $edit;
+
+			$user_prefetch = readuser($edit);
 		}
 
 		$errors = array();
@@ -1168,7 +1170,7 @@ if ($add || $edit)
 			}
 		}
 
-		if ($add)
+		if (!$user_prefetch['adate'])
 		{
 			if (!$password)
 			{
@@ -1354,6 +1356,19 @@ if ($add || $edit)
 
 							$db->update('contact', $contact_update,
 								array('id' => $value['id'], 'id_user' => $edit));
+						}
+
+
+						if ($notify && !empty($mail) && $user['status'] == 1 && !$user_prefetch['adate'])
+						{
+							$user['mail'] = $mail;
+							sendactivationmail($password, $user);
+							sendadminmail($user);
+							$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+						}
+						else
+						{
+							$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 						}
 					}
 					cancel($edit);
@@ -1683,7 +1698,7 @@ if ($add || $edit)
 
 		echo '</div>';
 
-		if ($add)
+		if (!$user['adate'])
 		{
 			echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 			echo '<br><br>';
