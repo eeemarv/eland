@@ -9,6 +9,12 @@ Here some info following on how to set up the hosting.
 
 ##Checklist
 
+###Heroku buildpack
+Set multiple buildpacks.
+```shell
+heroku buildpacks:set https://github.com/ddollar/heroku-buildpack-multi.git
+```
+
 ###Cron
 ```shell
 heroku addons:add scheduler
