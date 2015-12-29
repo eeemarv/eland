@@ -1359,16 +1359,19 @@ if ($add || $edit)
 						}
 
 
-						if ($notify && !empty($mail) && $user['status'] == 1 && !$user_prefetch['adate'])
+						if ($user['status'] == 1 && !$user_prefetch['adate'])
 						{
-							$user['mail'] = $mail;
-							sendactivationmail($password, $user);
-							sendadminmail($user);
-							$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
-						}
-						else
-						{
-							$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+							if ($notify && !empty($mail))
+							{
+								$user['mail'] = $mail;
+								sendactivationmail($password, $user);
+								sendadminmail($user);
+								$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+							}
+							else
+							{
+								$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+							}
 						}
 					}
 					cancel($edit);
