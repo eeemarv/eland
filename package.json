@@ -1,0 +1,10 @@
+{
+	"name": "eLAND",
+	"engines": {
+		"node": "5.3.x"
+	},
+	"dependencies": {
+		"uglifycss": "*",
+		"uglify-js": "*"
+	}
+}
