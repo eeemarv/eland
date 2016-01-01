@@ -456,11 +456,22 @@ if ($mail && $post && $id)
 
 	$user = readuser($message['id_user']);
 
-	$to = $db->fetchColumn('select c.value
+	$to = array();	
+
+	$rs = $db->prepare('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($user['id']));
+			and tc.abbrev = \'mail\'');
+
+	$rs->bindValue(1, $user['id']);
+
+	$rs->execute();
+
+	while ($row = $rs->fetch())
+	{
+		$to[] = $row['value'];
+	}
 
 	if (isset($s_interlets['schema']))
 	{
