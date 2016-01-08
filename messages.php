@@ -255,10 +255,54 @@ if ($post && $images && $id && $img
 			continue;
 		}
 
+		//
+		$exif = exif_read_data($tmpfile);
+		$orientation = $exif['COMPUTED']['Orientation'];
+
+		$tmpfile2 = tempnam(sys_get_temp_dir(), 'img');
+
+		$imagine = new Imagine\Imagick\Imagine();
+
+		$image = $imagine->open($tmpfile);
+
+		$image->resize(new Imagine\Image\Box(400, 400));
+
+		switch ($orientation)
+		{
+			case 3:
+			case 4:
+				$image->rotate(180);
+				break;
+			case 5:
+			case 6:
+				$image->rotate(-90);
+				break;
+			case 7:
+			case 8:
+				$image->rotate(90);
+				break;
+			default:
+				break;
+		}
+
+		switch ($orientation)
+		{
+			case 2:
+			case 4:
+			case 6:
+			case 8:
+				// mirror (todo)
+				break;
+		}
+
+		$image->save($tmpfile2);
+
+		//
+
 		try {
 			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
 
-			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', array(
 				'params'	=> array(
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> 'image/jpeg',
