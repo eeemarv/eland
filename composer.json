@@ -9,6 +9,7 @@
 		"fabpot/goutte": "~2.0",
 		"ext-mongo": "*",
 		"ext-imagick": "*",
+		"ext-exif": "*",
 		"blueimp/jquery-file-upload": "~9.11",
         "imagine/imagine": "~0.6.0",
         "doctrine/dbal": "~2.5",

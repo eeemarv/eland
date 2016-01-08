@@ -256,7 +256,7 @@ if ($post && $images && $id && $img
 		}
 
 		//
-/*		$exif = exif_read_data($tmpfile);
+		$exif = exif_read_data($tmpfile);
 		$orientation = $exif['Orientation'];
 
 		$tmpfile2 = tempnam(sys_get_temp_dir(), 'img');
@@ -295,14 +295,14 @@ if ($post && $images && $id && $img
 				break;
 		}
 
-		$image->save($tmpfile2); */
+		$image->save($tmpfile2);
 
 		//
 
 		try {
 			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
 
-			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', array(
 				'params'	=> array(
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> 'image/jpeg',
