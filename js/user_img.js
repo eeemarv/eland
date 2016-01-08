@@ -6,6 +6,7 @@ $(function () {
 	$('#fileupload').fileupload({
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
+		imageOrientation: true
 
 	}).on('fileuploadadd', function (e, data) {
 

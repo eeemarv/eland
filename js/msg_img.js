@@ -4,7 +4,8 @@ $(function () {
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
-		imageMaxHeight: 400
+		imageMaxHeight: 400,
+		imageOrientation: true
 
 	}).on('fileuploadadd', function (e, data) {
 
