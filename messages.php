@@ -833,6 +833,8 @@ if (($edit || $add))
 			$alert->error('Fout: onbepaalde actie.');
 			cancel();
 		}
+
+		$msg['description'] = $msg['"Description"'];
 	}
 	else if ($edit)
 	{
