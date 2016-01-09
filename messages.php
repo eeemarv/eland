@@ -266,8 +266,6 @@ if ($post && $images && $id && $img
 
 		$image = $imagine->open($tmpfile);
 
-		$image->resize(new Imagine\Image\Box(400, 400));
-
 		switch ($orientation)
 		{
 			case 3:
@@ -295,6 +293,15 @@ if ($post && $images && $id && $img
 				// mirror (todo)
 				break;
 		}
+
+		$orgsize = $image->getSize();
+
+		$width = $orgsize->getWidth();
+		$height = $orgsize->getHeight();
+
+		$newsize = ($width > $height) ? $orgsize->widen(400) : $orgsize->heighten(400);
+
+		$image->resize($newsize);
 
 		$image->save($tmpfile2);
 
