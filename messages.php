@@ -256,8 +256,9 @@ if ($post && $images && $id && $img
 		}
 
 		//
-//		$exif = exif_read_data($tmpfile);
-//		$orientation = $exif['Orientation'];
+
+		$exif = exif_read_data($tmpfile);
+		$orientation = $exif['Orientation'];
 
 		$tmpfile2 = tempnam(sys_get_temp_dir(), 'img');
 
