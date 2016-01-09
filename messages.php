@@ -285,16 +285,6 @@ if ($post && $images && $id && $img
 				break;
 		}
 
-		switch ($orientation)
-		{
-			case 2:
-			case 4:
-			case 6:
-			case 8:
-				// mirror (todo)
-				break;
-		}
-
 		$orgsize = $image->getSize();
 
 		$width = $orgsize->getWidth();

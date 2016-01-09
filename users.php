@@ -193,6 +193,41 @@ if ($post && $img && $id )
 		exit;
 	}
 
+	//
+
+	$exif = exif_read_data($tmp_name);
+
+	$orientation = $exif['COMPUTED']['Orientation'];
+
+	$tmpfile = tempnam(sys_get_temp_dir(), 'img');
+
+	$imagine = new Imagine\Imagick\Imagine();
+
+	$image = $imagine->open($tmp_name);
+
+	switch ($orientation)
+	{
+		case 3:
+		case 4:
+			$image->rotate(180);
+			break;
+		case 5:
+		case 6:
+			$image->rotate(-90);
+			break;
+		case 7:
+		case 8:
+			$image->rotate(90);
+			break;
+		default:
+			break;
+	}
+
+	$image->thumbnail(new Imagine\Image\Box(400, 400), Imagine\Image\ImageInterface::THUMBNAIL_INSET);
+	$image->save($tmpfile);
+
+	//
+
 	try {
 
 		if ($user['PictureFile'])
@@ -205,7 +240,7 @@ if ($post && $img && $id )
 
 		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
 
-		$upload = $s3->upload($s3_img, $filename, fopen($tmp_name, 'rb'), 'public-read', array(
+		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
 			'params'	=> array(
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
