@@ -2128,7 +2128,7 @@ if ($id)
 
 	echo '<div class="row print-hide">';
 	echo '<div class="col-md-6">';
-	echo '<div id="chartdiv1" data-height="480px" data-width="960px" ';
+	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
 	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
 	echo '&' . get_session_query_param() . '" ';
 	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
@@ -2136,7 +2136,7 @@ if ($id)
 	echo 'data-user-id="' . $id . '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
-	echo '<div id="chartdiv2" data-height="480px" data-width="960px"></div>';
+	echo '<div id="donutdiv" data-height="480px" data-width="960px"></div>';
 	echo '<h4>Interacties laatste jaar</h4>';
 	echo '</div>';
 	echo '</div>';

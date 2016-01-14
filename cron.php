@@ -482,7 +482,7 @@ function geo_q_process()
 				);
 
 				$redis->set($key, json_encode($ary));
-				$redis->expire($key, 2592000);
+				$redis->expire($key, 31536000); // 1 year
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
 				log_event('', 'cron geocode', $log . $log_user, $sch);
@@ -501,7 +501,7 @@ function geo_q_process()
 		echo  $log . $r;
 		log_event('', 'cron geocode', $log . $log_user, $sch);
 		$redis->set($key, 'f');
-		$redis->expire($key, 21600);
+		$redis->expire($key, 31536000); // 1 year
 
 		$redis->set('geo_sleep', '1');
 		$redis->expire('geo_sleep', 3600);

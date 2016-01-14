@@ -1,8 +1,12 @@
 ;jQuery(document).ready(function($){
+
+	var $chart = $('#chartdiv');
+	var $donut = $('#donutdiv');
+
 	$.ajax({
-		url: $('#chartdiv1').data('url'),
+		url: $chart.data('url'),
 		dataType: 'json',
-		data: { user_id: $('#chartdiv1').data('user-id') },
+		data: { user_id: $chart.data('user-id') },
 		success:function(data){
 
 			var transactions = data.transactions;
@@ -86,7 +90,7 @@
 			graphTrans.push([0, 0]);
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
-			$.jqplot('chartdiv1', graph, {
+			$.jqplot('chartdiv', graph, {
 				grid: {shadow: false},
 				cursor: {
 					show: true,
@@ -127,8 +131,8 @@
 					1: {color: 'rgb(0, 0, 127)'},
 				},
 			});
-
-			$('#chartdiv1').bind('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, evData) {
+/*
+			$chart.bind('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, evData) {
 
 				if (!graphTrans[pointIndex][0] || seriesIndex != 1){
 					return;
@@ -150,11 +154,11 @@
 
 			});
 
-			$('#chartdiv1').bind('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
+			$chart.bind('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
 				$('div.tooltip-div').remove();
 			});
-
-			$.jqplot('chartdiv2', [donut] , {
+*/
+			$.jqplot('donutdiv', [donut] , {
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
 				  renderer:$.jqplot.DonutRenderer,
@@ -169,38 +173,70 @@
 				},
 
 			});
-
-			$('#chartdiv2').bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
+/*
+			$donut.children('span').each(function(index, el){
+				var dd = donutData[index];
+				var user = users[dd.userIndex];
+				
+				$(this).popover({
+					trigger: 'hover',
+					title: user.letscode + ' ' + user.name,
+					content: 'hello'
+					
+				});
+			});
+*/ /*
+			$donut.bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
 
 				if (user.linkable){
 					$(this).css('cursor', 'pointer');
 				}
-				var dddiv = '<div class="tooltip-div"><p>'+user.code+' '+user.name;
-				dddiv += (dd.out) ? '<br/><strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
+				// var dddiv = '<div class="tooltip-div" id="tooltip2"><p>'+user.code+' '+user.name;
+				var dddiv = (dd.out) ? '<strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
 				dddiv += (dd.in) ? '<br/><strong>+</strong> '+dd.in+' transacties, '+dd.amountIn+' '+data.currency : '';
-				dddiv += '</p></div>';
-				$(this).append(dddiv);
+				//dddiv += '</p></div>';
+				// $(this).append(dddiv); */
+
+
+//				console.log($(this).children('span')[pointIndex]);
+/*
+				$(this).children('span')[pointIndex].popover({
+					title: user.code + ' ' + user.name,
+					content: dddiv
+				});
+*/ /*
+				var mX = ev.pageX; //these are going to be how jquery knows where to put the div that will be our tooltip
+				var mY = ev.pageY;
+
+				mX = mX - 150; */
+
+				/*
+				var cssObj = {
+					  'left' : mX + 'px', //usually needs more offset here
+					  'top' : mY + 'px'
+					};
+				$('#tooltip2').css(cssObj); */ /*
 			});
 
-			$('#chartdiv2').bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
+			$donut.bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
 				$('div.tooltip-div').remove();
 				$(this).css('cursor', 'default');
 			});
-
-			$('#chartdiv2').bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
+*/
+			$donut.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.linkable){
-					window.location.href = $('#chartdiv1').data('users-url') + user.id + '&' + $('#chartdiv1').data('session-query-param');
+					window.location.href = $chart.data('users-url') + user.id + '&' + $chart.data('session-query-param');
 				}
 			});
 
-			$('#chartdiv1').bind('resize', function(event, ui) {
+			$chart.bind('resize', function(event, ui) {
 				plot1.replot( { resetAxes: true } );
 			});
 
-			$('#chartdiv2').bind('resize', function(event, ui) {
+			$donut.bind('resize', function(event, ui) {
 				plot1.replot( { resetAxes: true } );
 			});
 		}
