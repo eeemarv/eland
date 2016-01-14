@@ -505,6 +505,7 @@ function geo_q_process()
 
 		$redis->set('geo_sleep', '1');
 		$redis->expire('geo_sleep', 3600);
+		break;
 	}
 
 	return true;
