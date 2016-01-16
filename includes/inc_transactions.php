@@ -272,9 +272,11 @@ function get_mailaddresses($uid, $remote_schema = null)
 
 	$addr = array();
 	$st = $db->prepare('select c.value
-		from ' . $s . 'contact c, ' . $s . 'type_contact tc
+		from ' . $s . 'contact c, ' . $s . 'type_contact tc, ' . $s . 'users u
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
+			and u.id = c.id_user
+			and u.status in (1, 2)
 			and tc.abbrev = \'mail\'');
 
 	$st->bindValue(1, $uid);
