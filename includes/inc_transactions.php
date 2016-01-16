@@ -149,14 +149,14 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$to = array();
 
-	if ($userfrom['accountrole'] != 'interlets')
+	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
 		$to[] = get_mailaddresses($transaction['id_from'], $sch);
 	}
 
 	$userto = readuser($transaction['id_to'], false, $sch);
 
-	if ($userto['accountrole'] != 'interlets')
+	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
 		$to[] = get_mailaddresses($transaction['id_to'], $sch);
 	}

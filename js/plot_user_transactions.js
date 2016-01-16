@@ -28,14 +28,16 @@
 			}
 
 			donut.add = function(transaction, users){
-				var userCode = users[transaction.userIndex].code;
+				var user = users[transaction.userIndex];
+
 				for (i = 0; i < this.length; i++){
-					if (userCode == this[i][0]){
+					if (user.code == this[i][0]){
 						this[i][1]++;
 						return i;
 					}
 				}
-				this.push([userCode, 1]);
+
+				this.push([user.code, 1, user.name]);
 				return this.length - 1;
 			}
 
@@ -48,7 +50,7 @@
 						amountOut: 0,
 						transIndexes: [],
 						userIndex: null,
-						});
+					});
 				}
 				this[sliceIndex].in += (transaction.out) ? 0 : 1;
 				this[sliceIndex].out += (transaction.out) ? 1 : 0;
@@ -158,20 +160,31 @@
 				$('div.tooltip-div').remove();
 			});
 */
+
+	console.log(donut);
+
 			$.jqplot('donutdiv', [donut] , {
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
-				  renderer:$.jqplot.DonutRenderer,
-				  rendererOptions:{
-					padding: 0,
-					sliceMargin: 3,
-					startAngle: -90,
-					showDataLabels: true,
-					dataLabels: 'label',
-					shadow:false,
-				  }
+					renderer:$.jqplot.DonutRenderer,
+					rendererOptions:{
+						padding: 0,
+						sliceMargin: 3,
+						startAngle: -90,
+						showDataLabels: true,
+						dataLabels: 'label',
+						shadow:false,
+					},
 				},
-
+				highlighter : {
+					showTooltip: true,
+					tooltipFade: true,
+					show: true,
+					yvalues: 3,
+					formatString: '<table class="jqplot-highlighter"><tr><td>%1$s %3$s</td></tr><tr><td>%s</td></tr><tr><td>%s</td></tr></table>',
+					tooltipLocation:'sw', 
+					useAxesFormatters: false 
+				}
 			});
 /*
 			$donut.children('span').each(function(index, el){
@@ -185,46 +198,52 @@
 					
 				});
 			});
-*/ /*
+*/
 			$donut.bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
-
+/*
 				if (user.linkable){
 					$(this).css('cursor', 'pointer');
 				}
-				// var dddiv = '<div class="tooltip-div" id="tooltip2"><p>'+user.code+' '+user.name;
-				var dddiv = (dd.out) ? '<strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
+
+				$(this).find('div.tooltip-div').remove();
+
+				var dddiv = '<div class="tooltip-div" id="tooltip2"><p>'+user.code+' '+user.name;
+				dddiv = (dd.out) ? '<strong>-</strong> '+dd.out+' transacties, '+dd.amountOut+' '+data.currency : '';
 				dddiv += (dd.in) ? '<br/><strong>+</strong> '+dd.in+' transacties, '+dd.amountIn+' '+data.currency : '';
-				//dddiv += '</p></div>';
-				// $(this).append(dddiv); */
+				dddiv += '</p></div>';
+				$(this).append(dddiv);
 
+				$(this).find('.jqplot-highlighter-tooltip').attr('display', 'inherit').text(user.name);
 
-//				console.log($(this).children('span')[pointIndex]);
 /*
 				$(this).children('span')[pointIndex].popover({
 					title: user.code + ' ' + user.name,
 					content: dddiv
-				});
-*/ /*
+				}).popover('show'); 
+
 				var mX = ev.pageX; //these are going to be how jquery knows where to put the div that will be our tooltip
 				var mY = ev.pageY;
 
-				mX = mX - 150; */
+				mX = mX - 150;
 
-				/*
+				console.log(mX + ' ' + mY);
+
 				var cssObj = {
 					  'left' : mX + 'px', //usually needs more offset here
-					  'top' : mY + 'px'
+					  'top' : mY + 'px',
+					  'position' : 'absolute',
+					  'z-index'	: 24000
 					};
-				$('#tooltip2').css(cssObj); */ /*
-			});
+				$('#tooltip2').css(cssObj);*/
+			}); 
 
 			$donut.bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
-				$('div.tooltip-div').remove();
+//				$(this).find('div.tooltip-div').remove();
 				$(this).css('cursor', 'default');
 			});
-*/
+
 			$donut.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.linkable){
