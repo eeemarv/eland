@@ -39,7 +39,7 @@ $trans = $db->fetchAll($query, array($user_id, $user_id, $user_id, $begin_date, 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);
 
-$transactions = $users = $_users = array();
+$transactions = $users = $_users = $_groups = array();
 
 foreach ($trans as $t)
 {
@@ -73,9 +73,14 @@ foreach ($trans as $t)
 	$_users[(string) $code] = array(
 		'name' => strip_tags($name),
 		'linkable' => ($real || $t['status'] == 0) ? 0 : 1,
+		's'	=> $t['s'],
 		'id' => $t['id'],
 	);
 
+	if ($t['accountrole'] == 'interlets')
+	{
+
+	}
 }
 
 foreach ($_users as $code => $ary)
