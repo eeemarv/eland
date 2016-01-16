@@ -633,7 +633,7 @@ function mail_mass_transaction($mail_ary)
 
 	$r = "\r\n";
 	$support = readconfigfromdb('support');
-	$login_url = $base_url . '/login.php?login=*|LOGIN|*';
+	$login_url = $base_url . '/login.php?login=*|LETSCODE|*';
 	$new_transaction_url = $base_url . '/transactions/add.php';
 
 	$to = $merge_vars  = array();
@@ -656,7 +656,7 @@ function mail_mass_transaction($mail_ary)
 
 	$users = $db->executeQuery('SELECT u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.name, u.letscode, u.login
+			u.name, u.letscode
 		FROM users u
 		WHERE u.status in (1, 2)
 			AND u.id IN (?)',
@@ -709,10 +709,6 @@ function mail_mass_transaction($mail_ary)
 				array(
 					'name'		=> 'MAXLIMIT',
 					'content'	=> $user['maxlimit'],
-				),
-				array(
-					'name'		=> 'LOGIN',
-					'content'	=> $user['login'],
 				),
 				array(
 					'name'		=> 'AMOUNT',
