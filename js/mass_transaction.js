@@ -113,12 +113,13 @@ $('#fill_in_aid').submit(function(e){
 	e.preventDefault();
 });
 
-function fill_in(data){
+function fill_in(data){	
 	var ignoreLetscode = $('#to_letscode').val().split(' ');
 	ignoreLetscode = ignoreLetscode[0];
 	var fixed = Number($('#fixed').val());
 	var perc = Number($('#percentage_balance').val() / 100);
 	var base = Number($('#percentage_balance_base').val());
+	var respectMinlimit = $('#respect_minlimit').prop('checked');
     $('table input[type="number"]:visible').each(function() {
 		var balance = $(this).data('balance');
 		var am = (typeof data == 'object') ? data[$(this).data('user-id')] : balance;
@@ -127,7 +128,7 @@ function fill_in(data){
 		amount = (amount < 0) ? 0 : amount;
 		amount = amount + fixed;
 		var minlimit = $(this).data('minlimit');
-		var blockByMinlimit = ((minlimit > (balance - amount)) && $('#respect_minlimit').val()) ? true : false; 
+		var blockByMinlimit = ((minlimit > (balance - amount)) && respectMinlimit) ? true : false; 
 		var ignore = ($(this).attr('data-letscode') == ignoreLetscode) ? true : false;
 
 		if (amount == 0 || ignore || blockByMinlimit){
