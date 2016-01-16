@@ -288,6 +288,23 @@ if ($_POST['zend'])
 			autominlimit_queue($t['id_from'], $t['id_to'], $t['amount']);
 		}
 
+		if ($to_one)
+		{
+			foreach ($transactins as $t)
+			{
+				$redis->del($schema . '_user_' . $t['id_from']);
+			}
+			$redis->del($schema . '_user_' . $t['id_to']);
+		}
+		else
+		{
+			foreach ($transactins as $t)
+			{
+				$redis->del($schema . '_user_' . $t['id_to']);
+			}
+			$redis->del($schema . '_user_' . $t['id_from']);
+		}
+
 		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
 		$alert->success($alert_success);
 
