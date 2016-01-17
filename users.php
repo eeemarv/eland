@@ -1855,8 +1855,7 @@ if ($id)
 			<script src="' . $rootpath . 'js/user_img.js"></script>';
 	}
 
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_jqplot . 'jquery.jqplot.min.css" />';
-	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
+	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
 	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
 
 	if ($s_admin)
