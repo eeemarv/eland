@@ -77,8 +77,8 @@
 			graph.push([beginDate, balance, '']);
 			graphTrans.push([0, 0]);
 
-			for (var u = 0; u < transactions.length; u++){
-				var t = transactions[u];
+			for (var i2 = 0; i2 < transactions.length; i2++){
+				var t = transactions[i2];
 				var tDate = Number(t.date * 1000);
 				var amount = Number(t.a);
 
