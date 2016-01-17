@@ -21,7 +21,7 @@
 
 			users.getIndex = function(userCode){
 				for (var i = 0; i < this.length; i++){
-					if (userCode == this[i].code){
+					if (userCode == this[i].c){
 						return i;
 					}
 				}
@@ -42,13 +42,13 @@
 				var user = users[transaction.userIndex];
 
 				for (i = 0; i < this.length; i++){
-					if (user.code == this[i][0]){
+					if (user.c == this[i][0]){
 						this[i][1]++;
 						return i;
 					}
 				}
 
-				this.push([user.code, 1, user.name, '']);
+				this.push([user.c, 1, user.n, '']);
 				return this.length - 1;
 			}
 
@@ -66,36 +66,48 @@
 				}
 				this[sliceIndex].in += (transaction.out) ? 0 : 1;
 				this[sliceIndex].out += (transaction.out) ? 1 : 0;
-				this[sliceIndex].amountIn += (transaction.out) ? 0 : transaction.amount;
-				this[sliceIndex].amountOut += (transaction.out) ? transaction.amount : 0;
+				this[sliceIndex].amountIn += (transaction.out) ? 0 : transaction.a;
+				this[sliceIndex].amountOut += (transaction.out) ? transaction.a : 0;
 				this[sliceIndex].userIndex = transaction.userIndex;
 			}
 
 			var balance = Number(data.beginBalance);
 			var beginDate = Number(data.begin) * 1000;
 			var prevDate = beginDate;
-			graph.push([beginDate, balance]);
+			graph.push([beginDate, balance, '']);
 			graphTrans.push([0, 0]);
 
 			for (var u = 0; u < transactions.length; u++){
-				var tDate = Number(transactions[u].date * 1000);
-				var amount = Number(transactions[u].amount);
-				amount = (transactions[u].out) ? amount * -1 : amount;
+				var t = transactions[u];
+				var tDate = Number(t.date * 1000);
+				var amount = Number(t.a);
+
+				t.userIndex = users.getIndex(t.c);
+				var u = users[t.userIndex];
+
+				amount = (t.out) ? amount * -1 : amount;
 
 				if (tDate > prevDate){
-					graph.push([tDate, balance]);
+					graph.push([tDate, balance, '']);
 					graphTrans.push([1, u]);
 					prevDate = tDate;
 				}
 
 				balance += Number(amount);
 				tDate = prevDate + 1;
-				graph.push([tDate, balance]);
+				var d = new Date(tDate);
+				var plus = (amount > 0) ? '+' : '';
+				var str = '<tr><td>'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'</td></tr>';
+				str += '<tr><td>'+plus+amount+' '+data.currency+'</td></tr>';
+				str += '<tr><td>'+t.desc+'</td></tr>';
+				str += '<tr><td>'+u.c+' '+u.n+'</td></tr>';
+				str += (u.g) ? '<tr><td>'+groups.findById(u.g).n+'</td></tr>' : '';
+				graph.push([tDate, balance, str]);
 				graphTrans.push([1, u]);
 				prevDate++;
-				transactions[u].userIndex = users.getIndex(transactions[u].userCode);
-				sliceIndex = donut.add(transactions[u], users);
-				donutData.add(transactions[u], sliceIndex);
+
+				sliceIndex = donut.add(t, users);
+				donutData.add(t, sliceIndex);
 			}
 
 			$.each(donut, function(index, de){
@@ -109,7 +121,7 @@
 			});
 
 			var endDate = Number(data.end) * 1000;
-			graph.push([endDate, balance, 'kuku']);
+			graph.push([endDate, balance, '']);
 			graphTrans.push([0, 0]);
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
@@ -159,8 +171,9 @@
 							show: true,
 							tooltipAxes: 'y',
 							tooltipLocation: 'sw',
+							useAxesFormatters: false,
 							yvalues: 3,
-							formatString:'<table class="jqplot-highlighter"><tr><td>%s</td></tr><tr><td>%s</td></tr><tr><td>%s</td></tr></table>',
+							formatString:'<table class="jqplot-highlighter"><tr><td>%2$s '+data.currency+'</td></tr>%3$s</table>',
 						}
 					},
 				],
@@ -230,7 +243,7 @@
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
 
-				if (user.linkable){
+				if (user.l){
 					$(this).css('cursor', 'pointer');
 				}
 			}); 
@@ -241,7 +254,7 @@
 
 			$donut.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
-				if (user.linkable){
+				if (user.l){
 					window.location.href = $chart.data('users-url') + user.id + '&' + $chart.data('session-query-param');
 				}
 			});

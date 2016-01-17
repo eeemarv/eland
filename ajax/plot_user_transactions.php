@@ -82,17 +82,17 @@ foreach ($trans as $t)
 	}
 
 	$transactions[] = array(
-		'amount' 	=> (int) $t['amount'],
+		'a' 		=> (int) $t['amount'],
 		'date' 		=> $date,
-		'userCode' 	=> strip_tags($code),
+		'c' 		=> strip_tags($code),
 		'desc'		=> strip_tags($t['description']),
 		'out'		=> $out,
 		'id' 		=> $t['id'],
 	);
 
 	$_users[(string) $code] = array(
-		'name' 		=> strip_tags($name),
-		'linkable' 	=> ($real || $t['status'] == 0) ? 0 : 1,
+		'n' 		=> strip_tags($name),
+		'l' 		=> ($real || $t['status'] == 0) ? 0 : 1,
 		's'			=> $t['status'],
 		'id' 		=> $t['user_id'],
 		'g'			=> ($group['id']) ?: 0,
@@ -104,7 +104,7 @@ foreach ($trans as $t)
 foreach ($_users as $code => $ary)
 {
 	$users[] = array_merge($ary, array(
-		'code' => (string) $code,
+		'c' 		=> (string) $code,
 	));
 }
 
