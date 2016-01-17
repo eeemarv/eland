@@ -11,6 +11,7 @@
 
 			var transactions = data.transactions;
 			var users = data.users;
+			var groups = data.groups;
 
 			var graph = new Array();
 			var graphTrans = new Array();
@@ -22,6 +23,15 @@
 				for (var i = 0; i < this.length; i++){
 					if (userCode == this[i].code){
 						return i;
+					}
+				}
+				return null;
+			}
+
+			groups.findById = function(id){
+				for (var i = 0; i < this.length; i++){
+					if (id == this[i].id){
+						return this[i];
 					}
 				}
 				return null;
@@ -43,14 +53,16 @@
 			}
 
 			donutData.add = function(transaction, sliceIndex){
+				var slice = {
+					in:0,
+					out:0,
+					amountIn: 0,
+					amountOut: 0,
+					userIndex: null,
+				};
+
 				if (sliceIndex == this.length){
-					this.push({
-						in:0,
-						out:0,
-						amountIn: 0,
-						amountOut: 0,
-						userIndex: null,
-					});
+					this.push(slice);
 				}
 				this[sliceIndex].in += (transaction.out) ? 0 : 1;
 				this[sliceIndex].out += (transaction.out) ? 1 : 0;
@@ -88,13 +100,16 @@
 
 			$.each(donut, function(index, de){
 				var ddi = donutData[index];
-				var ddd = (ddi.out) ? '<tr><td><strong>-</strong> '+ddi.out+' transacties, <strong>-</strong> '+ddi.amountOut+' '+data.currency+'</td></tr>' : '';
+				var ui = ddi.userIndex;
+				
+				var ddd = (users[ui].g) ? '<tr><td>'+ groups.findById(users[ui].g).n +'</td></td>' : '';
+				ddd += (ddi.out) ? '<tr><td><strong>-</strong> '+ddi.out+' transacties, <strong>-</strong> '+ddi.amountOut+' '+data.currency+'</td></tr>' : '';
 				ddd += (ddi.in) ? '<tr><td><strong>+</strong> '+ddi.in+' transacties, <strong>+</strong> '+ddi.amountIn+' '+data.currency+'</td></tr>' : '';
 				de[3] = ddd;
 			});
 
 			var endDate = Number(data.end) * 1000;
-			graph.push([endDate, balance]);
+			graph.push([endDate, balance, 'kuku']);
 			graphTrans.push([0, 0]);
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
@@ -102,43 +117,63 @@
 				grid: {shadow: false},
 				cursor: {
 					show: true,
-					zoom: true,
+					zoom: true
 				},
 				axes: {
 					xaxis: {
 						renderer:$.jqplot.DateAxisRenderer,
 						numberTicks: data.ticks,
 						tickOptions:{
-							formatString: '%m',
+							formatString: '%m'
 						}
 					},
 					yaxis: {
 						tickOptions:{
 							formatString: '%.0f',
 					        fontFamily: 'Georgia',
-							fontSize: '10pt',
+							fontSize: '10pt'
 						},
 					},
 				},
 				axesDefaults: {
-					pad: 1,
+					pad: 1
 				},
 				fillBetween: {
 					series1: 0,
 					series2: 1,
 					color: 'rgba(0, 0, 255, 0.1)',
 					baseSeries: 0,
-					fill: true,
+					fill: true
 				},
 				seriesDefaults: {
 					showMarker: false,
 					color: 'rgb(225, 225, 255)',
-					shadow: false,
+					shadow: false
 				},
-				series: {
-					1: {color: 'rgb(0, 0, 127)'},
-				},
+				series: [
+					{
+					},
+					{
+						color: 'rgb(0, 0, 0)',
+						highlighter: {
+							show: true,
+							tooltipAxes: 'y',
+							tooltipLocation: 'sw',
+							yvalues: 3,
+							formatString:'<table class="jqplot-highlighter"><tr><td>%s</td></tr><tr><td>%s</td></tr><tr><td>%s</td></tr></table>',
+						}
+					},
+				],
+				highlighter: {
+					show: true
+				}
 			});
+
+			$('#chartdiv').bind('jqplotDataClick',
+				function (ev, seriesIndex, pointIndex, data) {                
+					alert('se: ' + seriesIndex + ' pi: ' + pointIndex + ' d: ' + data);
+				}
+			);
 /*
 			$chart.bind('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, evData) {
 
@@ -186,7 +221,7 @@
 					show: true,
 					yvalues: 4,
 					formatString: '<table class="jqplot-highlighter"><tr><td>%1$s %3$s</td></tr>%4$s</table>',
-					tooltipLocation:'sw', 
+					tooltipLocation: 'sw', 
 					useAxesFormatters: false 
 				}
 			});

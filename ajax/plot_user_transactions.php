@@ -19,14 +19,25 @@ if (!$user)
 	exit;
 }
 
+$groups = $_groups = $transactions = $users = $_users  = array();
+
+list($schemas, $domains) = get_schemas_domains(true);
+
+$groups = $db->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
+
+foreach ($groups as $g)
+{
+	$_groups[$g['c']] = $g;
+}
+
 $balance = (int) $user['saldo'];
 
 $begin_date = date('Y-m-d H:i:s', time() - (86400 * $days));
 $end_date = date('Y-m-d H:i:s');
 
-$query = 'SELECT t.amount, t.id_from, t.id_to, 
+$query = 'SELECT t.id, t.amount, t.id_from, t.id_to, 
 		t.real_from, t.real_to, t.date, t.description, 
-		u.id, u.name, u.letscode, u.accountrole, u.status 
+		u.id as user_id, u.name, u.letscode, u.accountrole, u.status 
 	FROM transactions t, users u
 	WHERE (t.id_to = ? OR t.id_from = ?) 
 		AND (u.id = t.id_to OR u.id = t.id_from) 
@@ -39,8 +50,6 @@ $trans = $db->fetchAll($query, array($user_id, $user_id, $user_id, $begin_date, 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);
 
-$transactions = $users = $_users = $_groups = array();
-
 foreach ($trans as $t)
 {
 	$date = strtotime($t['date']);
@@ -51,11 +60,21 @@ foreach ($trans as $t)
 	$name = $t['name'];
 	$real = ($t['real_from']) ? $t['real_from'] : null;
 	$real = ($t['real_to']) ? $t['real_to'] : null;
+
 	if ($real)
 	{
-		list($name, $code) = explode('(', $real);
-		$name = trim($name);
-		$code = $t['letscode'] . ' ' . trim($code, ' ()\t\n\r\0\x0B');
+		$group = $_groups[$t['letscode']];
+
+		if ($sch = $schemas[$group['url']])
+		{
+			list($code, $name) = explode(' ', $real);
+		}
+		else
+		{
+			list($name, $code) = explode('(', $real);
+			$name = trim($name);
+		}
+		$code = $t['letscode'] . '.' . trim($code, ' ()\t\n\r\0\x0B');
 	}
 	else
 	{
@@ -63,33 +82,33 @@ foreach ($trans as $t)
 	}
 
 	$transactions[] = array(
-		'amount' => (int) $t['amount'],
-		'date' => $date,
-		'userCode' => strip_tags($code),
-		'desc' => strip_tags($t['description']),
-		'out' => $out,
+		'amount' 	=> (int) $t['amount'],
+		'date' 		=> $date,
+		'userCode' 	=> strip_tags($code),
+		'desc'		=> strip_tags($t['description']),
+		'out'		=> $out,
+		'id' 		=> $t['id'],
 	);
 
 	$_users[(string) $code] = array(
-		'name' => strip_tags($name),
-		'linkable' => ($real || $t['status'] == 0) ? 0 : 1,
-		's'	=> $t['s'],
-		'id' => $t['id'],
+		'name' 		=> strip_tags($name),
+		'linkable' 	=> ($real || $t['status'] == 0) ? 0 : 1,
+		's'			=> $t['status'],
+		'id' 		=> $t['user_id'],
+		'g'			=> ($group['id']) ?: 0,
 	);
 
-	if ($t['accountrole'] == 'interlets')
-	{
-
-	}
+	unset($group);
 }
 
 foreach ($_users as $code => $ary)
 {
 	$users[] = array_merge($ary, array(
 		'code' => (string) $code,
-		));
+	));
 }
-unset($_users);
+
+unset($_users, $_groups);
 
 $transactions = array_reverse($transactions);
 
@@ -104,6 +123,7 @@ echo json_encode(array(
 	'beginBalance' 	=> $balance,
 	'begin' 		=> $begin_date,
 	'end' 			=> $end_date,
+	'groups'		=> $groups,
 ));
 
 
