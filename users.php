@@ -2131,6 +2131,7 @@ if ($id)
 	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
 	echo '&' . get_session_query_param() . '" ';
 	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
+	echo 'data-transactions-url="' . $rootpath . 'transactions.php?id=" ';
 	echo 'data-session-query-param="' . get_session_query_param() . '" ';
 	echo 'data-user-id="' . $id . '"></div>';
 	echo '</div>';

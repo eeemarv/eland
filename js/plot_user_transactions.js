@@ -75,7 +75,7 @@
 			var beginDate = Number(data.begin) * 1000;
 			var prevDate = beginDate;
 			graph.push([beginDate, balance, '']);
-			graphTrans.push([0, 0]);
+			graphTrans.push(0);
 
 			for (var i2 = 0; i2 < transactions.length; i2++){
 				var t = transactions[i2];
@@ -89,7 +89,7 @@
 
 				if (tDate > prevDate){
 					graph.push([tDate, balance, '']);
-					graphTrans.push([1, u]);
+					graphTrans.push(0);
 					prevDate = tDate;
 				}
 
@@ -103,7 +103,7 @@
 				str += '<tr><td>'+u.c+' '+u.n+'</td></tr>';
 				str += (u.g) ? '<tr><td>'+groups.findById(u.g).n+'</td></tr>' : '';
 				graph.push([tDate, balance, str]);
-				graphTrans.push([1, u]);
+				graphTrans.push(t.id);
 				prevDate++;
 
 				sliceIndex = donut.add(t, users);
@@ -122,10 +122,10 @@
 
 			var endDate = Number(data.end) * 1000;
 			graph.push([endDate, balance, '']);
-			graphTrans.push([0, 0]);
+			graphTrans.push(0);
 			graph = [[[beginDate, 0], [endDate, 0]], graph];
 
-			$.jqplot('chartdiv', graph, {
+			var chart_c = $.jqplot('chartdiv', graph, {
 				grid: {shadow: false},
 				cursor: {
 					show: true,
@@ -182,40 +182,37 @@
 				}
 			});
 
-			$('#chartdiv').bind('jqplotDataClick',
+			$chart.on('jqplotDataClick',
 				function (ev, seriesIndex, pointIndex, data) {                
-					alert('se: ' + seriesIndex + ' pi: ' + pointIndex + ' d: ' + data);
-				}
-			);
-/*
-			$chart.bind('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, evData) {
 
-				if (!graphTrans[pointIndex][0] || seriesIndex != 1){
+				if (seriesIndex != 1){
 					return;
 				}
 
-				var transactionData = transactions[graphTrans[pointIndex][1]];
-				var transDate = new Date(transactionData.date * 1000);
-				var transDateString = transDate.getDate() + '-' + (Number(transDate.getMonth()) + 1) + '-' + transDate.getFullYear();
-
-				var transdiv = '<div class="tooltip-div"><p>';
-				transdiv += transactionData.userCode + ' ' + users[transactionData.userIndex].name;
-				transdiv += '<br/><strong>';
-				transdiv += (transactionData.out) ? '-' : '+';
-				transdiv += '</strong>'+ transactionData.amount + ' ' + data.currency + ' ';
-				transdiv += transDateString;
-				transdiv += '<br/>'+transactionData.desc;
-				transdiv += '</p></div>';
-				$(this).append(transdiv);
-
+				var tid = graphTrans[pointIndex];
+				
+				if (tid){
+					window.location.href = $chart.data('transactions-url') + tid + '&' + $chart.data('session-query-param');
+				}
 			});
 
-			$chart.bind('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
-				$('div.tooltip-div').remove();
-			});
-*/
+			$chart.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
 
-			$.jqplot('donutdiv', [donut] , {
+				if (!graphTrans[pointIndex] || seriesIndex != 1){
+					//$(this).css('cursor', 'auto');
+					$('.jqplot-event-canvas').css('cursor', 'crosshair');
+					return;
+				}
+				$('.jqplot-event-canvas').css('cursor', 'pointer');
+				//$(this).css('cursor', 'pointer');
+			});
+
+			$chart.on('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
+				//$(this).css('cursor', 'default');
+				$('.jqplot-event-canvas').css('cursor', 'crosshair');			
+			});
+
+			var donut_c = $.jqplot('donutdiv', [donut] , {
 				grid: {borderWidth: 0, shadow: false},
 				seriesDefaults: {
 					renderer:$.jqplot.DonutRenderer,
@@ -239,32 +236,34 @@
 				}
 			});
 
-			$donut.bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
+			$donut.on('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
 
 				if (user.l){
 					$(this).css('cursor', 'pointer');
+				} else {
+					$(this).css('cursor', 'default');
 				}
 			}); 
 
-			$donut.bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
+			$donut.on('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
 				$(this).css('cursor', 'default');
 			});
 
-			$donut.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
+			$donut.on('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 				var user = users[donutData[pointIndex].userIndex];
 				if (user.l){
 					window.location.href = $chart.data('users-url') + user.id + '&' + $chart.data('session-query-param');
 				}
 			});
 
-			$chart.bind('resize', function(event, ui) {
-				plot1.replot( { resetAxes: true } );
+			$chart.on('resize', function(event, ui) {
+				chart_c.replot( { resetAxes: true } );
 			});
 
-			$donut.bind('resize', function(event, ui) {
-				plot1.replot( { resetAxes: true } );
+			$donut.on('resize', function(event, ui) {
+				donut_c.replot( { resetAxes: true } );
 			});
 		}
 	});
