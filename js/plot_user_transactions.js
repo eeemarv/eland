@@ -233,19 +233,31 @@
 				}
 			});
 
+			$donut.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
+				var dd = donutData[pointIndex];
+				var user = users[dd.userIndex];
+
+				if (user.l){
+					$('.jqplot-event-canvas').css('cursor', 'pointer');
+				} else {
+					$('.jqplot-event-canvas').css('cursor', 'default');
+				}
+		//		$('.jqplot-event-canvas').css('cursor', 'default');
+			});
+
 			$donut.on('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
 				var dd = donutData[pointIndex];
 				var user = users[dd.userIndex];
 
 				if (user.l){
-					$(this).css('cursor', 'pointer');
+					$('.jqplot-event-canvas').css('cursor', 'pointer');
 				} else {
-					$(this).css('cursor', 'default');
+					$('.jqplot-event-canvas').css('cursor', 'default');
 				}
 			}); 
 
 			$donut.on('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
-				$(this).css('cursor', 'default');
+				$('.jqplot-event-canvas').css('cursor', 'default');
 			});
 
 			$donut.on('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
