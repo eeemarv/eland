@@ -199,16 +199,13 @@
 			$chart.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
 
 				if (!graphTrans[pointIndex] || seriesIndex != 1){
-					//$(this).css('cursor', 'auto');
 					$('.jqplot-event-canvas').css('cursor', 'crosshair');
 					return;
 				}
 				$('.jqplot-event-canvas').css('cursor', 'pointer');
-				//$(this).css('cursor', 'pointer');
 			});
 
 			$chart.on('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
-				//$(this).css('cursor', 'default');
 				$('.jqplot-event-canvas').css('cursor', 'crosshair');			
 			});
 
