@@ -1,9 +1,7 @@
-
-Migrating from eLAS 2.x (MySQL to PostgreSQL)
+#Migrating from eLAS 2.x (MySQL to PostgreSQL)
 
 mysqldump -u username -p --default-character-set=utf8 --result-file=newgroup.sql database
 
----------------------
 
 create a local mysql database (newgroup)
 
@@ -129,4 +127,3 @@ rename the public schema
 psql> alter schema public rename to newgroup;
 
 (import images / bind schema to url as before.)
-

@@ -7,3 +7,5 @@ components
 _site
 _posts
 _pages
+_book
+node_modules
