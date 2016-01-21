@@ -176,7 +176,7 @@ body
   float: left;
   height: 100%;
   position: relative;
-  overflow-y: auto; 
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -244,8 +244,8 @@ div.navbar-header ul.nav
 
 .footer {
   position: relative;
-  margin-top: -70px; /* negative value of footer height */
-  height: 80px;
+  margin-top: -50px; /* negative value of footer height */
+  height: 100px;
   clear:both;
   padding-top: 20px;
   text-align: center;
@@ -258,7 +258,7 @@ div.navbar-header ul.nav
 }
 
 #main {
-  overflow:auto;
+  overflow: auto;
   padding-bottom: 150px; /* this needs to be bigger than footer height*/
 }
 
