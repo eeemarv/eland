@@ -188,7 +188,8 @@ echo '</div>';
 
 $class_admin = ($role == 'admin') ? ' admin' : '';
 
-echo '<div id="main" class="container-fluid' . $class_admin . '">';
+echo '<div id="wrap">';
+echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
 
 $alert->render();
 

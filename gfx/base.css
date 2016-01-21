@@ -176,7 +176,7 @@ body
   float: left;
   height: 100%;
   position: relative;
-  overflow-y: auto;
+  overflow-y: auto; 
   overflow-x: hidden;
 }
 
@@ -231,6 +231,7 @@ div.navbar-header ul.nav
 	margin-right: 20px;
 }
 
+/*
 .footer
 {
 	text-align: center;
@@ -238,6 +239,27 @@ div.navbar-header ul.nav
 	margin: 0 -15px 0 -15px;
 	border-top: 1px solid #e5e5e5;
 	background-color: #f5f5f5; 
+}
+*/
+
+.footer {
+  position: relative;
+  margin-top: -70px; /* negative value of footer height */
+  height: 80px;
+  clear:both;
+  padding-top: 20px;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f5f5f5;  
+}
+
+#wrap {
+  min-height: 100%;
+}
+
+#main {
+  overflow:auto;
+  padding-bottom: 150px; /* this needs to be bigger than footer height*/
 }
 
 div.alert
