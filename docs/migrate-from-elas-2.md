@@ -1,13 +1,17 @@
-#Migrating from eLAS 2.x (MySQL to PostgreSQL)
+## Migrating from eLAS 2.x (MySQL to PostgreSQL) to eLAND
 
+```shell
 mysqldump -u username -p --default-character-set=utf8 --result-file=newgroup.sql database
-
+```
 
 create a local mysql database (newgroup)
 
+```
 shell> mysql -u root -p
+```
 (enter password)
 
+```sql
 mysql> create database newgroup;
 mysql> use newgroup;
 mysql> \. newgroup.sql
@@ -68,41 +72,52 @@ alter table type_contact change protect protect varchar(1);
 update type_contact set protect = 'f' where protect = '0';
 update type_contact set protect = 't' where protect = '1';
 
+```
+Dump into a file
 
+```shell
 shell> mysqldump -u root -p --no-create-info --skip-triggers --no-create-db --compact --compatible=postgresql --default-character-set=utf8 --result-file=mysql.sql newgroup
+```
 
---------------
-download perl script: http://pgfoundry.org/frs/download.php/1535/mysql2pgsql.perl
 
+download perl script: [mysql2pgsql](http://pgfoundry.org/frs/download.php/1535/mysql2pgsql.perl)
+
+```shell
 shell> perl mysql2pgsql.perl mysql.sql data.sql
-
+```
 
 make a structure-only (tables and colummns) of an existing eLAS 3.1.17, use a test-group for safety (schema name is different than a schema name of a live group)
 
+```shell
 shell> pg_dump -d _database_ -U _user_ -h _hostname_ -p 5432 -W --no-owner --no-acl --schema=_schemaname_ --schema-only > structure.sql
+```
 (enter password)
 
 edit the schema name to 'public' in the dump you just made (structure.sql), so from line ~14 it will be:
 
+```sql
 CREATE SCHEMA public;
 SET search_path = public, pg_catalog;
-
+```
 
 log in the postgres database
-
+```shell
 shell> psql -d _database_ -U _user_ -h _hostname_ -p 5432
+```
 (enter password)
 
 The public schema should be empty but doesn't have to be present as it will be created by importing the structure.
 
+```sql
 psql> \i structure.sql
-
+```
 import data
-
+```sql
 psql> \i data.sql
-
+```
 restore sequence
 
+```sql
 psql>
 
 SELECT setval('transactions_id_seq', COALESCE((SELECT MAX(id)+1 FROM transactions), 1), false);
@@ -120,10 +135,12 @@ SELECT setval('regions_id_seq', COALESCE((SELECT MAX(id)+1 FROM regions), 1), fa
 SELECT setval('tokens_id_seq', COALESCE((SELECT MAX(id)+1 FROM tokens), 1), false);
 SELECT setval('type_contact_id_seq', COALESCE((SELECT MAX(id)+1 FROM type_contact), 1), false);
 SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
-
+```
 
 rename the public schema
-
+```sql
 psql> alter schema public rename to newgroup;
+```
 
-(import images / bind schema to url as before.)
+Now the database is converted to 3.x and you can continue with [Migrate from 3.x](migrate-from-elas-3.md)
+

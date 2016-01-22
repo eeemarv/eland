@@ -1,10 +1,4 @@
-
-# Migrate from eLAS
-
-
-##Migrating a group from eLAS 3.1 to eLAND
-
-For eLAS 2.6 see [here](setup/migrate-eLAS-2.6.md)
+##Migrating a group from eLAS 3.x to eLAND
 
 * Set your domain in DNS with CNAME to the domain of the Heroku app.
 * Add the domain in Heroku with command
@@ -39,14 +33,6 @@ This way of importing letsgroups leaves the already present letsgroups data unto
 Now there is no public schema anymore. this is no problem, but you need schema public to be present when you import the next letsgroup.
 ```sql
 CREATE SCHEMA public;
-```
-Meta command to list all schemas:
-```
-\dn
-```
-Meta command list all tables from all schemas:
-```
-\dt *.*
 ```
 
 * Match a domain to a schema with config variable `SCHEMA_domain=schema`

@@ -9,3 +9,7 @@ _posts
 _pages
 _book
 node_modules
+.grunt
+*.epub
+*.mobi
+*.pdf
