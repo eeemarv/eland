@@ -191,6 +191,8 @@ function saldo()
 
 		$maillinks = '';
 
+		$vacont = $va . ': ' . $msg['content'];
+
 		foreach ($mailaddr[$msg['id_user']] as $k => $mailaddr_p)
 		{
 			if ($mailaddr_public[$msg['id_user']][$k] < 1)
@@ -198,7 +200,7 @@ function saldo()
 				continue;
 			}
 
-			$maillinks .= ' | <a href="mailto:' . $mailaddr_p . '">email</a>';	
+			$maillinks .= ' | <a href="mailto:' . $mailaddr_p . '?subject=' . urlencode($vacont . ' (reaktie)') . '">email</a>';	
 		}
 
 		$description = ($msg['Description']) ? $msg['Description'] . '<br>' : '';
@@ -207,9 +209,9 @@ function saldo()
 		$postcode = ($postcode) ? ' | postcode: ' . $postcode : '';
 
 		$msgs[] = array(
-			'text'	=> $va . ': ' . $msg['content'] . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
+			'text'	=> $vacont . ' (' . $image_count . ')' . $r . $msg_url . $msg['id'] . $r .
 				'Ingegeven door: ' . $msg['letscode'] . ' ' . $msg['name'] . ' ' . $user_url . $msg['id_user'] . $postcode . $r . $r,
-			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $va . ': ' . $msg['content'] . '</a></b> (' .
+			'html'	=> '<li><b><a href="' . $msg_url . $msg['id'] . '">' . $vacont . '</a></b> (' .
 				$image_count . ')<br>' . $html_img . $description . 'Ingegeven door <a href="' . $user_url . $msg['id_user'] . '">' .
 				$msg['letscode'] . ' ' . $msg['name'] . '</a>' . $postcode . $maillinks . $route . '</li><br>',
 		);
