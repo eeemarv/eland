@@ -6,7 +6,7 @@ CKEDITOR.replace('content', {
 		{"name":"links","groups":["links"]},
 		{"name":"paragraph","groups":["list","blocks"]},
 		{"name":"document","groups":["mode"]},
-		{"name":"insert","groups":["insert"]}
+//		{"name":"insert","groups":["insert"]}
 	],
 	removeButtons: 'Anchor,Subscript,Superscript,Styles,Specialchar,Table'
 });
