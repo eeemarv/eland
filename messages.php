@@ -1720,7 +1720,7 @@ echo '</tbody>';
 echo '</table>';
 
 echo '</div>';
-echo '</div>';
+//echo '</div>';
 
 $pagination->render();
 
