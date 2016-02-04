@@ -1,4 +1,4 @@
-$(function () {
+$(document).ready(function () {
 	var btn_remove = $('#btn_remove');
 	var user_img = $('#user_img');
 	var no_user_img = $('#no_user_img');

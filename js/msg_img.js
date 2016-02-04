@@ -1,4 +1,4 @@
-$(function () {
+$(document).ready(function () {
 
     $('#fileupload').fileupload({
 		disableImageResize: /Android(?!.*Chrome)|Opera/
