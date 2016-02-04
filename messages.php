@@ -1720,7 +1720,7 @@ echo '</tbody>';
 echo '</table>';
 
 echo '</div>';
-//echo '</div>';
+echo '</div>';
 
 $pagination->render();
 
@@ -1795,7 +1795,6 @@ else
 		echo '</div>';
 
 		echo '<div class="clearfix"></div>';
-		echo '</div>';
 		echo '</div>';
 		echo '</div></div>';
 		echo '</form>';

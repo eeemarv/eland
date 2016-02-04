@@ -24,6 +24,9 @@
     * [Massa transactie](docs/admin-massa-transactie.md)
     * [Logs](docs/admin-logs.md)    
   * [Gebruikers beheren](docs/admin-gebruikers-beheren.md)
+  * [Stijl](docs/admin-stijl.md)
+    * [Achtergrond aanpassen](docs/admin-achtergrond-aanpassen.md)
+    * [Logo toevoegen](docs/admin-logo-toevoegen.md)
   * [Gratis-hosting](docs/gratis-hosting.md)
 
 * Server
