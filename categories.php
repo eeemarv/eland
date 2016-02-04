@@ -317,7 +317,8 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-echo '<p>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.</p>';
+echo '<p><ul><li>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.';
+echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></li></ul></p>';
 
 include $rootpath . 'includes/inc_footer.php';
 
