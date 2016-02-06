@@ -937,7 +937,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		);
 		if ($uid)
 		{
-			$params['uid'] = 'uid';
+			$params['uid'] = $uid;
 		}
 		echo aphp('transactions', $params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
