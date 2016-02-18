@@ -16,7 +16,19 @@ if ($setting)
 	{
 		$value = $_POST['value'];
 
-		if ($value != '')
+		$errors = array();
+
+		if (strlen($value) > 60)
+		{
+			$errors[] = 'De waarde mag maximaal 60 tekens lang zijn.';
+		}
+
+		if ($value == '')
+		{
+			$errors[] = 'De waarde mag niet leeg zijn.';
+		}
+
+		if (!count($errors))
 		{
 			if (writeconfig($setting, $value))
 			{
@@ -24,7 +36,8 @@ if ($setting)
 				cancel();
 			}
 		}
-		$alert->error('Instelling niet aangepast.');
+
+		$alert->error(implode('<br>', $errors));
 	}
 	else
 	{
@@ -57,7 +70,7 @@ if ($setting)
 	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="value" name="value" ';
-	echo 'value="' . $value . '" required>';
+	echo 'value="' . $value . '" required maxlength="60">';
 	echo '</div>';
 	echo '</div>';
 
