@@ -151,6 +151,16 @@ if ($edit || $add)
 			$errors[] = 'Vul waarde in!';
 		}
 
+		if (strlen($contact['value']) > 130)
+		{
+			$errors[] = 'De waarde mag maximaal 130 tekens lang zijn.';
+		}
+
+		if (strlen($contact['comments']) > 50)
+		{
+			$errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
+		}
+
 		if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
@@ -247,7 +257,7 @@ if ($edit || $add)
 	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="value" name="value" ';
-	echo 'value="' . $contact['value'] . '" required>';
+	echo 'value="' . $contact['value'] . '" required maxlength="130">';
 	echo '</div>';
 	echo '</div>';
 
@@ -255,7 +265,7 @@ if ($edit || $add)
 	echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
-	echo 'value="' . $contact['comments'] . '">';
+	echo 'value="' . $contact['comments'] . '" maxlength="50">';
 	echo '</div>';
 	echo '</div>';
 
