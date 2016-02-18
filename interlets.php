@@ -47,6 +47,51 @@ if ($add || $edit)
 
 		$errors = array();
 
+		if (strlen($group['groupname']) > 128)
+		{
+			$errors[] = 'De groepsnaam mag maximaal 128 tekens lang zijn.';
+		}
+
+		if (strlen($group['shortname']) > 50)
+		{
+			$errors[] = 'De korte naam mag maximaal 50 tekens lang zijn.';
+		}
+
+		if (strlen($group['prefix']) > 5)
+		{
+			$errors[] = 'Prefix mag maximaal 5 tekens lang zijn.';
+		}
+
+		if (strlen($group['remoteapikey']) > 80)
+		{
+			$errors[] = 'De Remote Apikey mag maximaal 80 tekens lang zijn.';
+		}
+
+		if (strlen($group['localletscode']) > 20)
+		{
+			$errors[] = 'De lokale letscode mag maximaal 20 tekens lang zijn.';
+		}
+
+		if (strlen($group['myremoteletscode']) > 20)
+		{
+			$errors[] = 'De remote letscode mag maximaal 20 tekens lang zijn.';
+		}
+
+		if (strlen($group['url']) > 256)
+		{
+			$errors[] = 'De url mag maximaal 256 tekens lang zijn.';
+		}
+
+		if (strlen($group['soapurl']) > 256)
+		{
+			$errors[] = 'De eLAS soap url mag maximaal 256 tekens lang zijn.';
+		}
+
+		if (strlen($group['presharedkey']) > 80)
+		{
+			$errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
+		}
+
 		if ($edit)
 		{
 			if ($db->fetchColumn('select id
@@ -140,7 +185,7 @@ if ($add || $edit)
 	echo '<label for="groupname" class="col-sm-2 control-label">Groepsnaam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="groupname" name="groupname" ';
-	echo 'value="' . $group['groupname'] . '" required>';
+	echo 'value="' . $group['groupname'] . '" required maxlength="128">';
 	echo '</div>';
 	echo '</div>';
 
@@ -149,7 +194,7 @@ if ($add || $edit)
 	echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="shortname" name="shortname" ';
-	echo 'value="' . $group['shortname'] . '">';
+	echo 'value="' . $group['shortname'] . '" maxlength="50">';
 	echo '</div>';
 	echo '</div>';
 
@@ -159,7 +204,7 @@ if ($add || $edit)
 	echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="prefix" name="prefix" ';
-	echo 'value="' . $group['prefix'] . '">';
+	echo 'value="' . $group['prefix'] . '" maxlength="5">';
 	echo '</div>';
 	echo '</div>';
 	*/
@@ -183,7 +228,7 @@ if ($add || $edit)
 	echo '<i><small>enkel voor eLAS</small></i></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
-	echo 'value="' . $group['remoteapikey'] . '">';
+	echo 'value="' . $group['remoteapikey'] . '" maxlength="80">';
 	echo '</div>';
 	echo '</div>';
 
@@ -193,7 +238,7 @@ if ($add || $edit)
 	echo 'groep op deze installatie bekend is.)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
-	echo 'value="' . $group['localletscode'] . '">';
+	echo 'value="' . $group['localletscode'] . '" maxlength="20">';
 	echo '</div>';
 	echo '</div>';
 
@@ -203,7 +248,7 @@ if ($add || $edit)
 	echo '</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="myremoteletscode" name="myremoteletscode" ';
-	echo 'value="' . $group['myremoteletscode'] . '">';
+	echo 'value="' . $group['myremoteletscode'] . '" maxlength="20">';
 	echo '</div>';
 	echo '</div>';
 
@@ -213,7 +258,7 @@ if ($add || $edit)
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="url" class="form-control" id="url" name="url" ';
-	echo 'value="' . $group['url'] . '">';
+	echo 'value="' . $group['url'] . '" maxlength="256">';
 	echo '</div>';
 	echo '</div>';
 
@@ -224,7 +269,7 @@ if ($add || $edit)
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="url" class="form-control" id="elassoapurl" name="elassoapurl" ';
-	echo 'value="' . $group['elassoapurl'] . '">';
+	echo 'value="' . $group['elassoapurl'] . '" maxlength="256">';
 	echo '</div>';
 	echo '</div>';
 	*/
@@ -235,7 +280,7 @@ if ($add || $edit)
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-	echo 'value="' . $group['presharedkey'] . '">';
+	echo 'value="' . $group['presharedkey'] . '" maxlength="80">';
 	echo '</div>';
 	echo '</div>';
 
