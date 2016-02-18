@@ -1099,6 +1099,7 @@ if ($add || $edit)
 		{
 			$user['login'] = $user['name'] = $_POST['name'];
 		}
+
 		if ($fullname_edit)
 		{
 			$user['fullname'] = $_POST['fullname'];
@@ -1154,6 +1155,10 @@ if ($add || $edit)
 			{
 				$errors[] = 'Deze gebruikersnaam is al in gebruik!';
 			}
+			else if (strlen($user['name']) > 50)
+			{
+				$errors[] = 'De gebruikersnaam mag maximaal 50 tekens lang zijn.';
+			}
 		}
 
 		if ($fullname_edit)
@@ -1166,8 +1171,12 @@ if ($add || $edit)
 			{
 				$errors[] = 'De volledige naam is al in gebruik!';
 			}
+			else if (strlen($user['fullname']) > 100)
+			{
+				$errors[] = 'De volledige naam mag maximaal 100 tekens lang zijn.';
+			}
 		}
-
+/*
 		if (!$user['login'])
 		{
 			$errors[] = 'Vul een login in. (gebruikersnaam)';
@@ -1176,7 +1185,7 @@ if ($add || $edit)
 		{
 			$errors[] = 'De login bestaat al! (gebruikersnaam)';
 		}
-
+*/
 		if ($s_admin)
 		{
 			if (!isset($mail))
@@ -1204,6 +1213,10 @@ if ($add || $edit)
 			{
 				$errors[] = 'Letscode - is gereserveerd voor de interlets gast gebruikers';
 			}
+			else if (strlen($user['letscode']) > 20)
+			{
+				$errors[] = 'De letscode mag maximaal 20 tekens lang zijn.';
+			} 
 
 			if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))
 			{
@@ -1214,6 +1227,21 @@ if ($add || $edit)
 			{
 				$errors[] = 'Geef getal op voor de maximum limiet.';
 			}
+
+			if (strlen($user['presharedkey']) > 80)
+			{
+				$errors[] = 'De preshared key mag maximaal 80 tekens lang zijn.';
+			}
+		}
+
+		if (strlen($user['comments']) > 100)
+		{
+			$errors[] = 'Commentaar mag maximaal 100 tekens lang zijn.';
+		}
+
+		if (strlen($user['postcode']) > 6)
+		{
+			$errors[] = 'De postcode mag maximaal 6 tekens lang zijn.';
 		}
 
 		if (!$user_prefetch['adate'])
@@ -1560,7 +1588,7 @@ if ($add || $edit)
 		echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-		echo 'value="' . $user['letscode'] . '" required>';
+		echo 'value="' . $user['letscode'] . '" required maxlength="20">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1571,7 +1599,7 @@ if ($add || $edit)
 		echo '<label for="name" class="col-sm-2 control-label">Gebruikersnaam</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="name" name="name" ';
-		echo 'value="' . $user['name'] . '" required>';
+		echo 'value="' . $user['name'] . '" required maxlength="50">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1582,7 +1610,7 @@ if ($add || $edit)
 		echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
-		echo 'value="' . $user['fullname'] . '" required>';
+		echo 'value="' . $user['fullname'] . '" required maxlength="100">';
 		echo '</div>';
 		echo '</div>';
 
@@ -1600,7 +1628,7 @@ if ($add || $edit)
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
-	echo 'value="' . $user['postcode'] . '" required>';
+	echo 'value="' . $user['postcode'] . '" required maxlength="6">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1661,7 +1689,7 @@ if ($add || $edit)
 		echo '<div class="form-group">';
 		echo '<label for="admincomment" class="col-sm-2 control-label">Commentaar van de admin</label>';
 		echo '<div class="col-sm-10">';
-		echo '<textarea name="admincomment" id="admincomment" class="form-control">';
+		echo '<textarea name="admincomment" id="admincomment" class="form-control" maxlength="200">';
 		echo $user['admincomment'];
 		echo '</textarea>';
 		echo '</div>';
@@ -1688,7 +1716,7 @@ if ($add || $edit)
 		echo 'Preshared key (enkel voor interletsaccount met eLAS-installatie)</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-		echo 'value="' . $user['presharedkey'] . '">';
+		echo 'value="' . $user['presharedkey'] . '" maxlength="80">';
 		echo '</div>';
 		echo '</div>';
 	}
