@@ -47,6 +47,16 @@ if ($add || $edit)
 		{
 			$errors[] = 'Titel is niet ingevuld';
 		}
+
+		if (strlen($news['headline']) > 200)
+		{
+			$errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
+		}
+
+		if (strlen($news['location']) > 128)
+		{
+			$errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
+		}
 	}
 
 	if (count($errors))
@@ -154,7 +164,7 @@ if ($add || $edit)
 	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="location" name="location" ';
-	echo 'value="' . $news['location'] . '">';
+	echo 'value="' . $news['location'] . '" maxlength="128">';
 	echo '</div>';
 	echo '</div>';
 
@@ -162,7 +172,7 @@ if ($add || $edit)
 	echo '<label for="headline" class="col-sm-2 control-label">Titel</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="headline" name="headline" ';
-	echo 'value="' . $news['headline'] . '" required>';
+	echo 'value="' . $news['headline'] . '" required maxlength="200">';
 	echo '</div>';
 	echo '</div>';
 
