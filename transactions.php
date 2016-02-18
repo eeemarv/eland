@@ -662,7 +662,7 @@ if ($add)
 	echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="description" name="description" ';
-	echo 'value="' . $transaction['description'] . '" required>';
+	echo 'value="' . $transaction['description'] . '" required maxlength="60">';
 	echo '</div>';
 	echo '</div>';
 
