@@ -22,6 +22,12 @@ if ($add)
 		{
 			$errors[] = 'Vul naam in!';
 		}
+
+		if (strlen($cat['name']) > 40)
+		{
+			$errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
+		}
+
 		if (!isset($cat['id_parent'])|| (trim($cat['id_parent']) == ''))
 		{
 			$errors[] = 'Vul hoofdrubriek in!';
@@ -75,7 +81,7 @@ if ($add)
 	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
-	echo 'value="' . $cat['name'] . '" required>';
+	echo 'value="' . $cat['name'] . '" required maxlength="40">';
 	echo '</div>';
 	echo '</div>';
 
