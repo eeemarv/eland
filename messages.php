@@ -15,6 +15,7 @@ $start = ($_GET['start']) ?: 0;
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
 $valid = (isset($_GET['valid'])) ? $_GET['valid'] : 'all';
+$nav = (isset($_GET['nav'])) ? $_GET['nav'] : 'all';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -1359,11 +1360,36 @@ if ($cid)
 	$params['cid'] = $cid;
 }
 
+/*
 if ($valid && $valid != 'all')
 {
 	$operator_valid = ($valid == 'f') ? '<' : '>=';
 	$and_where .= ' and m.validity ' . $operator_valid . ' now()';
 	$params['valid'] = $valid;
+}
+*/
+
+$params['nav'] = $nav;
+
+switch ($nav)
+{
+	case 'valid':
+		$and_where .= ' and m.validity >= now()';
+		break;
+	case 'expired':
+		$and_where .= ' and m.validity < now()';
+		break;
+	case 'fromnew':
+		$and_where .= ' and u.adate > ?';
+		$sql_bind[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		break;
+	case 'fromleaving':
+		$and_where .= ' and u.status = 2';
+		break;
+	case 'all':
+	default:
+		unset($params['nav']);
+		break;
 }
 
 if ($s_guest)
@@ -1588,13 +1614,21 @@ if (!$inline)
 			'color'		=> 'white',
 			'lbl'		=> 'Alle',
 		),
-		't'		=> array(
+		'valid'		=> array(
 			'color'		=> 'white',
 			'lbl'		=> 'Geldig',
 		),
-		'f'		=> array(
+		'expired'		=> array(
 			'color'		=> 'danger',
 			'lbl'		=> 'Vervallen',
+		),
+		'fromnew'	=> array(
+			'color'		=> 'white',
+			'lbl'		=> 'Van instappers',
+		),
+		'fromleaving'	=> array(
+			'color'		=> 'white',
+			'lbl'		=> 'Van uitstappers',
 		),
 	);
 
@@ -1604,9 +1638,9 @@ if (!$inline)
 
 	foreach ($nav_tabs as $key => $tab)
 	{
-		$nav_params['valid'] = $key;
+		$nav_params['nav'] = $key;
 		echo '<li';
-		echo ($valid == $key) ? ' class="active"' : '';
+		echo ($nav == $key) ? ' class="active"' : '';
 		echo '>';
 		echo aphp('messages', $nav_params, $tab['lbl'], 'bg-' . $tab['color']) . '</li>';
 	}
