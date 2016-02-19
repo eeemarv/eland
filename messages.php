@@ -14,7 +14,6 @@ $start = ($_GET['start']) ?: 0;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
-$valid = (isset($_GET['valid'])) ? $_GET['valid'] : 'all';
 $nav = (isset($_GET['nav'])) ? $_GET['nav'] : 'all';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
@@ -1359,15 +1358,6 @@ if ($cid)
 	$sql_bind[] = $cid;
 	$params['cid'] = $cid;
 }
-
-/*
-if ($valid && $valid != 'all')
-{
-	$operator_valid = ($valid == 'f') ? '<' : '>=';
-	$and_where .= ' and m.validity ' . $operator_valid . ' now()';
-	$params['valid'] = $valid;
-}
-*/
 
 $params['nav'] = $nav;
 
