@@ -2203,18 +2203,18 @@ $st = array(
 		'sql'	=> 'u.status in (1, 2)',
 		'st'	=> array(1, 2),
 	),
-	'leaving'	=> array(
-		'lbl'	=> 'Uitstappers',
-		'sql'	=> 'u.status = 2',
-		'cl'	=> 'danger',
-		'st'	=> 2,
-	),
 	'new'		=> array(
 		'lbl'	=> 'Instappers',
 		'sql'	=> 'u.status = 1 and u.adate > ?',
 		'sql_bind'	=> date('Y-m-d H:i:s', $newusertreshold),
 		'cl'	=> 'success',
 		'st'	=> 3,
+	),
+	'leaving'	=> array(
+		'lbl'	=> 'Uitstappers',
+		'sql'	=> 'u.status = 2',
+		'cl'	=> 'danger',
+		'st'	=> 2,
 	),
 );
 

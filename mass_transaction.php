@@ -18,22 +18,22 @@ $st = array(
 		'st'	=> 1,
 		'hsh'	=> '58d267',
 	),
-	'without-leaving-and-new' => array(
+	'without-new-and-leaving' => array(
 		'lbl'	=> 'Actief zonder uit- en instappers',
 		'st'	=> '123',
 		'hsh'	=> '096024',
-	),
-	'leaving'	=> array(
-		'lbl'	=> 'Uitstappers',
-		'st'	=> 2,
-		'hsh'	=> 'ea4d04',
-		'cl'	=> 'danger',
 	),
 	'new'		=> array(
 		'lbl'	=> 'Instappers',
 		'st'	=> 3,
 		'hsh'	=> 'e25b92',
 		'cl'	=> 'success',
+	),
+	'leaving'	=> array(
+		'lbl'	=> 'Uitstappers',
+		'st'	=> 2,
+		'hsh'	=> 'ea4d04',
+		'cl'	=> 'danger',
 	),
 	'inactive'	=> array(
 		'lbl'	=> 'Inactief',
@@ -66,7 +66,7 @@ $status_ary = array(
 	5	=> 'info-packet',
 	6	=> 'info-moment',
 	7	=> 'extern',
-	123 => 'without-leaving-and-new',
+	123 => 'without-new-and-leaving',
 );
 
 $users = array();
@@ -493,7 +493,7 @@ foreach($users as $user_id => $user)
 
 	$hsh = ($st[$status_key]['hsh']) ?: '';
 	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
-	$hsh .= ($status_key == 'active') ? $st['without-leaving-and-new']['hsh'] : '';
+	$hsh .= ($status_key == 'active') ? $st['without-new-and-leaving']['hsh'] : '';
 
 	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
