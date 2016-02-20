@@ -10,7 +10,7 @@ body,html
 }
 
 span, div.alert, ul, div.panel, .footer, div.navbar,
-#sidebar, .print-hide, button, a.csv, h3, h2, table td input, p
+#sidebar, .print-hide, button, a.csv, h3, h2, table td input, p, img
 {
 	display: none;
 }
@@ -37,7 +37,9 @@ table
 	width: 100%;
 }
 
-div.panel.printview, h3.printview, div.panel.printview > p
+div.panel.printview, h3.printview, div.panel.printview p,
+div.panel.printview h3, div.panel.printview a, div.panel.printview p a,
+div.panel.printview p i
 {
 	display: block;
 }
