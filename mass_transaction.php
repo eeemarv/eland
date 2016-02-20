@@ -593,7 +593,6 @@ echo '</div>';
 echo '</div>';
 
 echo '</div>';
-echo '</div>';
 
 echo '<input type="hidden" value="' . $transid . '" name="transid">';
 
