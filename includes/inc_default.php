@@ -290,30 +290,6 @@ $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-/* view */
-
-$view = (isset($_GET['view'])) ? $_GET['view'] : false;
-
-$key_view_users = $schema . '_u_' . $s_id . '_u_view';
-$key_view_messages = $schema . '_u_' . $s_id . '_m_view';
-
-$view_users = ($redis->get($key_view_users)) ?: 'list';
-$view_messages = ($redis->get($key_view_messages)) ?: 'list';
-
-if ($view)
-{
-	if ($script_name == 'users' && $view != $view_users)
-	{
-		$redis->set($key_view_users, $view);
-		$view_users = $view;
-	}
-	else if ($script_name == 'messages' && $view != $view_messages)
-	{
-		$redis->set($key_view_messages, $view);
-		$view_messages = $view;
-	}
-}
-
 /*
  * create links with query parameters depending on user and role
  */

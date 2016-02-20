@@ -8,20 +8,18 @@ require_once $rootpath . 'includes/inc_transactions.php';
 
 $orderby = $_GET['orderby'];
 $asc = $_GET['asc'];
-
 $limit = ($_GET['limit']) ?: 25;
 $start = ($_GET['start']) ?: 0;
-
 $id = ($_GET['id']) ?: false;
 $add = ($_GET['add']) ? true : false;
+$submit = ($_POST['zend']) ? true : false;
+
 $mid = ($_GET['mid']) ?: false;
 $tuid = ($_GET['tuid']) ?: false;
 $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
 $del_q = ($_GET['del_q']) ? true : false;
-
-$submit = ($_POST['zend']) ? true : false;
 
 /**
  * delete interlets queue

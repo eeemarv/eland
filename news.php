@@ -9,7 +9,7 @@ $id = ($_GET['id']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
 if ($approve)
-{	
+{
 	$role = 'admin';
 	require_once $rootpath . 'includes/inc_default.php';
 

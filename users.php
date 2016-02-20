@@ -15,6 +15,7 @@ $img_del = (isset($_GET['img_del'])) ? true : false;
 $interlets = (isset($_GET['interlets'])) ? $_GET['interlets'] : false;
 $password = (isset($_POST['password'])) ? $_POST['password'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
+$view = (isset($_GET['view'])) ? $_GET['view'] : false;
 $user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 
 $inline = (isset($_GET['inline'])) ? true : false;
@@ -2172,7 +2173,7 @@ if ($id)
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
 		echo '<div id="messages" data-uid="' . $id . '" ';
-		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
+		echo 'data-url="' . $rootpath . 'messages.php?inline=1&view=list&uid=' . $id;
 		echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 	}
 
@@ -2188,7 +2189,18 @@ if ($id)
  * List all users
  */
 
-if (!$view)
+$key_view_users = $schema . '_u_' . $s_id . '_u_view';
+$view_users = ($redis->get($key_view_users)) ?: 'list';
+
+if ($view)
+{
+	if ($view != $view_users)
+	{
+		$redis->set($key_view_users, $view);
+		$view_users = $view;
+	}
+}
+else
 {
 	cancel();
 }
@@ -2531,12 +2543,17 @@ else
 
 $h1 .= '<span class="pull-right hidden-xs">';
 $h1 .= '<span class="btn-group" role="group">';
-$active = ($v_tiles) ? ' active' : '';
-$h1 .= aphp('users', 'status=' . $status . '&view=tiles', '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
-$active = ($v_map) ? ' active' : '';
-$h1 .= aphp('users', 'status=active&view=map', '', 'btn btn-default' . $active, 'kaart', 'map-marker');
 $active = ($v_list) ? ' active' : '';
-$h1 .= aphp('users', 'status=' . $status . '&view=list', '', 'btn btn-default' . $active, 'lijst', 'list');
+$v_params = $params;
+$v_params['view'] = 'list';
+$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+$active = ($v_tiles) ? ' active' : '';
+$v_params['view'] = 'tiles';
+$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
+$active = ($v_map) ? ' active' : '';
+$v_params['view'] = 'map';
+unset($v_params['status']);
+$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'kaart', 'map-marker');
 $h1 .= '</span>';
 
 if ($s_admin && $v_list)

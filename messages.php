@@ -6,6 +6,16 @@ $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_pagination.php';
 
+$id = (isset($_GET['id'])) ? $_GET['id'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$add = (isset($_GET['add'])) ? true : false;
+$inline = (isset($_GET['inline'])) ? true : false;
+$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
+$submit = (isset($_POST['zend'])) ? true : false;
+
+$view = (isset($_GET['view'])) ? $_GET['view'] : false;
+
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
 $asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
@@ -16,18 +26,11 @@ $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
 $nav = (isset($_GET['nav'])) ? $_GET['nav'] : 'all';
 
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? true : false;
-$inline = (isset($_GET['inline'])) ? true : false;
-$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
 $img = (isset($_GET['img'])) ? true : false;
 $img_del = (isset($_GET['img_del'])) ? $_GET['img_del'] : false;
 
 $images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
 
-$submit = (isset($_POST['zend'])) ? true : false;
 $mail = (isset($_POST['mail'])) ? true : false;
 
 $selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : array();
@@ -1330,11 +1333,41 @@ if ($id)
  * list messages
  */
 
+$key_view_messages = $schema . '_u_' . $s_id . '_m_view';
+$view_messages = ($redis->get($key_view_messages)) ?: 'list';
+
+if ($inline)
+{
+	$view = 'list';
+}
+else
+{
+	if ($view)
+	{
+		if ($view != $view_messages)
+		{
+			$redis->set($key_view_messages, $view);
+			$view_messages = $view;
+		}
+	}
+	else
+	{
+		cancel();
+	}
+}
+
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+
+$v_list = ($view == 'list') ? true : false;
+$v_extended = ($view == 'extended') ? true : false;
+$v_map = ($view == 'map') ? true : false;
+
+$params = array(
+	'view'	=> $view,
+);
 
 $sql_bind = array();
 $and_where = '';
-$params = array();
 
 $gmdate = gmdate('Y-m-d H:i:s');
 
@@ -1404,6 +1437,32 @@ $query .= ($asc) ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $messages = $db->fetchAll($query, $sql_bind);
+
+if ($v_extended)  // to be improved
+{
+	$ids = $imgs = array();
+
+	foreach ($messages as $msg)
+	{
+		$ids[] = $msg['id'];
+	}
+
+	$_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
+		from msgpictures mp
+		where msgid in (?)',
+		array($ids),
+		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+	foreach ($_imgs as $_img)
+	{
+		if (isset($imgs[$_img['msgid']]))
+		{
+			continue;
+		}
+
+		$imgs[$_img['msgid']] = $_img['PictureFile'];
+	}
+}
 
 $params['orderby'] = $orderby;
 $params['asc'] = $asc;
@@ -1505,6 +1564,7 @@ while ($row = $st->fetch())
 
 	$cat_params[$row['id']] = $params;
 	$cat_params[$row['id']]['cid'] = $row['id'];
+	$cat_params[$row['id']]['view'] = $view_messages;
 }
 
 if ($s_admin || $s_user)
@@ -1533,7 +1593,7 @@ if ($s_admin || $s_user)
 	}
 }
 
-if ($s_admin)
+if ($s_admin && $v_list)
 {
 	$top_right .= '<a href="#" class="csv">';
 	$top_right .= '<i class="fa fa-file"></i>';
@@ -1549,6 +1609,17 @@ $fa = 'newspaper-o';
 
 if (!$inline)
 {
+	$v_params = $params;
+	$h1 .= '<span class="pull-right hidden-xs">';
+	$h1 .= '<span class="btn-group" role="group">';
+	$active = ($v_list) ? ' active' : '';
+	$v_params['view'] = 'list';
+	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$active = ($v_extended) ? ' active' : '';
+	$v_params['view'] = 'extended';
+	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$h1 .= '</span></span>';
+
 	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
 		<script src="' . $rootpath . 'js/msgs.js"></script>
 		<script src="' . $rootpath . 'js/table_sel.js"></script>';
@@ -1650,101 +1721,155 @@ else
 
 $pagination->render();
 
-echo '<div class="panel panel-info printview">';
-
-echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-bordered table-hover footable csv" ';
-echo 'id="msgs" data-sort="false">';
-
-echo '<thead>';
-echo '<tr>';
-
-$th_params = $params;
-
-foreach ($tableheader_ary as $key_orderby => $data)
+if ($v_list)
 {
-	echo '<th';
-	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
-	echo '>';
-	if ($data['no_sort'])
+	echo '<div class="panel panel-info printview">';
+
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-striped table-bordered table-hover footable csv" ';
+	echo 'id="msgs" data-sort="false">';
+
+	echo '<thead>';
+	echo '<tr>';
+
+	$th_params = $params;
+
+	foreach ($tableheader_ary as $key_orderby => $data)
 	{
-		echo $data['lbl'];
-	}
-	else
-	{
-		$th_params['orderby'] = $key_orderby;
-		$th_params['asc'] = $data['asc'];
+		echo '<th';
+		echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+		echo '>';
+		if ($data['no_sort'])
+		{
+			echo $data['lbl'];
+		}
+		else
+		{
+			$th_params['orderby'] = $key_orderby;
+			$th_params['asc'] = $data['asc'];
 
-		echo aphp('messages', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
-	}
-	echo '</th>';
-}
-
-echo '</tr>';
-echo '</thead>';
-
-echo '<tbody>';
-
-foreach($messages as $msg)
-{
-	$del = (strtotime($msg['validity']) < time()) ? true : false;
-
-	echo '<tr';
-	echo ($del) ? ' class="danger"' : '';
-	echo '>';
-
-	echo '<td>';
-
-	if (!$inline && ($s_admin || $s_owner))
-	{
-		echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
-		echo ($selected_msgs[$id]) ? ' checked="checked"' : '';
-		echo '>&nbsp;';
-	}
-
-	echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
-	echo '</td>';
-
-	echo '<td>';
-	echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
-	echo '</td>';
-
-	if (!$uid)
-	{
-		echo '<td>';
-		echo link_user($msg['id_user']);
-		echo '</td>';
-
-		echo '<td>';
-		echo $msg['postcode'];
-		echo '</td>';
-	}
-
-	if (!$cid)
-	{
-		echo '<td>';
-		echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);
-		echo '</td>';
-	}
-
-	echo '<td>';
-	echo $msg['validity_short'];
-	echo '</td>';
-
-	if (!$s_guest)
-	{
-		$access = $acc_ary[($msg['local']) ? 1 : 2];
-		echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+			echo aphp('messages', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+		}
+		echo '</th>';
 	}
 
 	echo '</tr>';
+	echo '</thead>';
+
+	echo '<tbody>';
+
+	foreach($messages as $msg)
+	{
+		echo '<tr';
+		echo (strtotime($msg['validity']) < time()) ? ' class="danger"' : '';
+		echo '>';
+
+		echo '<td>';
+
+		if (!$inline && ($s_admin || $s_owner))
+		{
+			echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
+			echo ($selected_msgs[$id]) ? ' checked="checked"' : '';
+			echo '>&nbsp;';
+		}
+
+		echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+		echo '</td>';
+
+		echo '<td>';
+		echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
+		echo '</td>';
+
+		if (!$uid)
+		{
+			echo '<td>';
+			echo link_user($msg['id_user']);
+			echo '</td>';
+
+			echo '<td>';
+			echo $msg['postcode'];
+			echo '</td>';
+		}
+
+		if (!$cid)
+		{
+			echo '<td>';
+			echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);
+			echo '</td>';
+		}
+
+		echo '<td>';
+		echo $msg['validity_short'];
+		echo '</td>';
+
+		if (!$s_guest)
+		{
+			$access = $acc_ary[($msg['local']) ? 1 : 2];
+			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+		}
+
+		echo '</tr>';
+	}
+
+	echo '</tbody>';
+	echo '</table>';
+
+	echo '</div>';
+	echo '</div>';
 }
+else if ($v_extended)
+{
+	foreach ($messages as $msg)
+	{
+		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag'; 
 
-echo '</tbody>';
-echo '</table>';
+		$sf_owner = ($msg['id_user'] == $s_id) ? true : false;
 
-echo '</div>';
-echo '</div>';
+		echo '<div class="panel panel-default printview">';
+		echo '<div class="panel-body';
+		echo (strtotime($msg['validity']) < time()) ? ' bg-danger' : '';
+		echo '">';
+
+		echo '<div class="media">';
+
+		if ($imgs[$msg['id']])
+		{
+			echo '<div class="media-left">';
+			echo '<a href="#">';
+			echo '<img class="media-object" src="' . $s3_img_url . $imgs[$msg['id']] . '" width="150">';
+			echo '</a>';
+			echo '</div>';
+		}
+		echo '<div class="media-body">';
+		echo '<h3 class="media-heading">';
+		echo aphp('messages', 'id=' . $msg['id'], $type_str . ': ' . $msg['content']);
+
+		echo '</h3>';
+		echo htmlspecialchars($msg['Description'], ENT_QUOTES);
+		echo '</div>';
+		echo '</div>';
+
+
+		echo '</div>';
+
+		echo '<div class="panel-footer">';
+		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user']);
+		echo ($msg['postcode']) ? ', postcode: ' . $msg['postcode'] : '';
+
+		if ($s_admin || $sf_owner)
+		{
+			echo '<span class="inline-buttons pull-right">';
+			echo aphp('messages', 'edit=' . $msg['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('messages', 'del=' . $msg['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo '</span>';
+		}
+		echo '</p>';
+		echo '</div>';
+
+		echo '</div>';
+	}
+
+}
 
 $pagination->render();
 
@@ -1752,7 +1877,7 @@ if ($inline)
 {
 	echo '</div></div>';
 }
-else
+else if ($v_list)
 {
 	if (($s_admin || $s_owner) && count($messages))
 	{
@@ -1826,12 +1951,17 @@ else
 
 	include $rootpath . 'includes/inc_footer.php';
 }
+else if ($v_extended)
+{
+	include $rootpath . 'includes/inc_footer.php';
+}
 
 function cancel($id = null)
 {
-	global $uid;
+	global $uid, $view_messages;
 
-	$param = ($uid && !$id) ? 'uid=' . $uid : (($id) ? 'id=' . $id : '');
+	$param = ($uid && !$id) ? 'uid=' . $uid . '&' : (($id) ? 'id=' . $id . '&' : '');
+	$param .= 'view=' . $view_messages;
 
 	header('Location: ' . generate_url('messages', $param));
 	exit;
