@@ -1835,7 +1835,7 @@ else if ($v_extended)
 		if ($imgs[$msg['id']])
 		{
 			echo '<div class="media-left">';
-			echo '<a href="#">';
+			echo '<a href="' . generate_url('messages', 'id=' . $msg['id']) . '">';
 			echo '<img class="media-object" src="' . $s3_img_url . $imgs[$msg['id']] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
