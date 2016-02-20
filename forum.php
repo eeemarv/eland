@@ -76,14 +76,13 @@ if ($submit)
 		cancel($forum_post['parent_id']);
 	}
 
+	$content = $_POST['content'];
+
 	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
 
-	$content = str_replace(array("\n", "\r"), '', $content);
+	$content = str_replace(array("\n", "\r", '<p>&nbsp;</p>'), '', $content);
 
-	while ($content != ($c = chop($content, '<p>&nbsp;</p>')))
-	{
-		$content = $c;
-	}
+	$content = trim($content);
 
 	$forum_post = array(
 		'content'	=> $content,
