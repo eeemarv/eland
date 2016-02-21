@@ -1825,7 +1825,7 @@ else if ($v_extended)
 
 		$sf_owner = ($msg['id_user'] == $s_id) ? true : false;
 
-		echo '<div class="panel panel-default printview">';
+		echo '<div class="panel panel-info printview">';
 		echo '<div class="panel-body';
 		echo (strtotime($msg['validity']) < time()) ? ' bg-danger' : '';
 		echo '">';
