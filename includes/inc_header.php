@@ -176,8 +176,7 @@ foreach ($menu as $link => $label)
 	$active = ($script_name == $link) ? ' class="active"' : '';
 	echo '<li' . $active . '>';
 	echo aphp($link, (isset($label[2])) ? $label[2] : '',
-		$label[1], false, false, $label[0], false,
-		array('role' => 'presentation'));
+		$label[1], false, false, $label[0]);
 	echo '</li>';
 }
 echo '</ul>';
