@@ -34,7 +34,7 @@ class mdb
 			return $this;
 		}
 
-		$url = getenv('MONGOLAB_URI');
+		$url = getenv('MONGO_URL') ?: getenv('MONGOLAB_URI');
 		$mongo_client = new MongoClient($url);
 		$path = parse_url($url, PHP_URL_PATH);
 		$this->mdb = $mongo_client->selectDB(trim($path, '/'));

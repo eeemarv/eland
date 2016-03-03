@@ -76,7 +76,7 @@ $mapbox_token = getenv('MAPBOX_TOKEN');
 require_once $rootpath . 'vendor/autoload.php';
 
 // Connect to Redis
-$redis_url = getenv('REDISCLOUD_URL');
+$redis_url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
 
 if(!empty($redis_url))
 {
