@@ -15,7 +15,7 @@ $img_del = (isset($_GET['img_del'])) ? true : false;
 $interlets = (isset($_GET['interlets'])) ? $_GET['interlets'] : false;
 $password = (isset($_POST['password'])) ? $_POST['password'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
-$view = (isset($_GET['view'])) ? $_GET['view'] : false;
+
 $user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 
 $inline = (isset($_GET['inline'])) ? true : false;
@@ -2189,18 +2189,7 @@ if ($id)
  * List all users
  */
 
-$key_view_users = $schema . '_u_' . $s_id . '_u_view';
-$view_users = ($redis->get($key_view_users)) ?: 'list';
-
-if ($view)
-{
-	if ($view != $view_users)
-	{
-		$redis->set($key_view_users, $view);
-		$view_users = $view;
-	}
-}
-else
+if (!$view)
 {
 	cancel();
 }

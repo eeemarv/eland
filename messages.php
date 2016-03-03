@@ -14,8 +14,6 @@ $inline = (isset($_GET['inline'])) ? true : false;
 $uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
-$view = (isset($_GET['view'])) ? $_GET['view'] : false;
-
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
 $asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
@@ -1333,8 +1331,6 @@ if ($id)
  * list messages
  */
 
-$key_view_messages = $schema . '_u_' . $s_id . '_m_view';
-$view_messages = ($redis->get($key_view_messages)) ?: 'list';
 
 if ($inline)
 {
@@ -1342,15 +1338,7 @@ if ($inline)
 }
 else
 {
-	if ($view)
-	{
-		if ($view != $view_messages)
-		{
-			$redis->set($key_view_messages, $view);
-			$view_messages = $view;
-		}
-	}
-	else
+	if (!$view)
 	{
 		cancel();
 	}
