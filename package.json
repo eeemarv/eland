@@ -1,7 +1,8 @@
 {
   "name": "eLAND",
   "engines": {
-    "node": "5.7.x"
+    "node": "5.7.x",
+    "npm": "3.8.x"
   },
   "dependencies": {
     "uglifycss": "*",
