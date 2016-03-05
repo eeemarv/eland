@@ -671,6 +671,43 @@ function sendemail($from, $to, $subject, $content)
 	return false;
 }
 
+/**
+ *
+ */
+
+function mail_q($mail = array(), $remote_schema = false)
+{
+	global $schema, $redis, $s_id;
+
+	$mail['schema'] = ($remote_schema) ?: $schema;
+
+	if (!$mail['to'])
+	{
+		$m = 'Mail "to" ontbreekt.';
+		log_event('', 'mail', $m, $mail['schema']);
+		return $m;
+	}
+
+	if (!$mail['subject'])
+	{
+		$m = 'Mail "subject" ontbreekt.';
+		log_event('', 'mail', $m, $mail['schema']);
+		return $m;
+	}
+
+	if (!$mail['text'])
+	{
+		$m = 'Mail "text body" ontbreekt.';
+		log_event('', 'mail', $m, $mail['schema']);
+		return $m;
+	}
+
+	if ($redis->lpush('mail_q', json_encode($mail)))
+	{
+		log_event($s_id, 'mail', 'Mail in queue, subject: ' . $mail['subject'] . ' to : ' . $mail['to'] . ' schema: ' . $mail['schema']);
+	}
+}
+
 /*
  *
  */

@@ -21,6 +21,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 require_once $rootpath . 'includes/inc_processqueue.php';
 require_once $rootpath . 'includes/inc_saldo_mail.php';
+require_once $rootpath . 'includes/inc_mail.php';
 
 $s3 = Aws\S3\S3Client::factory(array(
 	'signature'	=> 'v4',
@@ -510,6 +511,8 @@ function geo_q_process()
 
 	return true;
 }
+
+run_cronjob('sendmail', 60);
 
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 

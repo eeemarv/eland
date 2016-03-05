@@ -188,24 +188,22 @@ function helpmail($help)
 		return 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
-	$subject = '[' . $systemtag . '] ' .$help['subject'];
+    $text  = "-- via de website werd het volgende probleem gemeld --\r\n";
+	$text .= 'E-mail: ' . $help['mail'] . "\r\n";
 
-    $content  = "-- via de website werd het volgende probleem gemeld --\r\n";
-	$content .= 'E-mail: ' . $help['mail'] . "\r\n";
+	$text .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
 
-	$content .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
+	$text .= 'Gebruiker ingelogd: ';
+	$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
+	$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
+	$text .= "\r\n\r\n";
+	$text .= "Omschrijving:\r\n";
+	$text .= $help['description'] . "\r\n";
+	$text .= "\r\n";
+	$text .= "User Agent:\r\n";
+	$text .= $help['browser'] . "\r\n";
+	$text .= "\r\n";
+	$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
-	$content .= 'Gebruiker ingelogd: ';
-	$content .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
-	$content .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
-	$content .= "\r\n\r\n";
-	$content .= "Omschrijving:\r\n";
-	$content .= $help['description'] . "\r\n";
-	$content .= "\r\n";
-	$content .= "User Agent:\r\n";
-	$content .= $help['browser'] . "\r\n";
-	$content .= "\r\n";
-	$content .= 'eLAND webserver: ' . gethostname() . "\r\n";
-
-	return sendemail($from, $to, $subject, $content);
+	return mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['mail']));
 }
