@@ -1,19 +1,4 @@
 <?php
-/**
- * This file is part of eLAS http://elas.vsbnet.be
- *
- * Copyright(C) 2009 Guy Van Sanden <guy@vsbnet.be>
- *
- * eLAS is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-*/
 
 function generate_transid()
 {
@@ -87,9 +72,7 @@ function mail_mail_interlets_transaction($transaction)
 	$r = "\r\n";
 	$t = "\t";
 
-	$userfrom = readuser($transaction['id_from']);
-
-	$to = get_mailaddresses($transaction['id_to']);
+	$to = getmailadr($transaction['id_to']);
 
 	$subject .= '[' . $systemtag . '] Interlets transactie';
 
@@ -117,13 +100,12 @@ function mail_mail_interlets_transaction($transaction)
 	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
 	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'reply-to' => readconfigfromdb('admin')));
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin'));
 
 	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
 	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
-	$to = get_mailaddresses($transaction['id_from']);
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+	mail_q(array('to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin'));
 }
 
 /*
@@ -141,24 +123,9 @@ function mail_transaction($transaction, $remote_schema = null)
 	$currency = readconfigfromdb('currency', $sch);
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
-
-	$to = array();
-
-	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
-	{
-		$to[] = get_mailaddresses($transaction['id_from'], $sch);
-	}
-
 	$userto = readuser($transaction['id_to'], false, $sch);
 
-	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
-	{
-		$to[] = get_mailaddresses($transaction['id_to'], $sch);
-	}
-
 	$interlets = ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? 'interlets ' : '';
-
-	$to = implode(',', $to);
 
 	$systemtag = readconfigfromdb('systemtag', $sch);
 	$currency = readconfigfromdb('currency', $sch);
@@ -193,7 +160,15 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$text .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'from_schema' => $sch));
+	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
+	{
+		mail_q(array('to' => $userfrom['id'], 'subject' => $subject, 'text' => $text, 'to_schema' => $sch));
+	}
+
+	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
+	{
+		mail_q(array('to' => $userto['id'], 'subject' => $subject, 'text' => $text, 'to_schema' => $sch));
+	}
 
 	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
 }
@@ -202,7 +177,7 @@ function mail_transaction($transaction, $remote_schema = null)
  *
  */
 
-function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,$admincc)
+function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result)
 {
 	global $systemtag, $currency;
 
@@ -213,15 +188,16 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 
 	$userfrom = readuser($id_from);
 
+	$to = array();
 
 	if($userfrom['accountrole'] != 'interlets')
 	{
-		$to = get_mailaddresses($id_from);
+		$to[] = $id_from;
 	}
 
 	if($admincc)
 	{
-		$to .= ','. readconfigfromdb('admin');
+		$to[] = 'admin';
 	}
 
 	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
@@ -249,34 +225,6 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$text .= 'Aantal: ' . $t . $amount . $currency . $r . $r;
 	$text .= 'Transactie id:' . $t . $transid . $r . $r . '--';;
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'cc' => 'admin'));
 }
 
-/*
- *
- */
-
-function get_mailaddresses($uid, $remote_schema = null)
-{
-	global $db;
-
-	$s = ($remote_schema) ? $remote_schema . '.' : '';
-
-	$addr = array();
-	$st = $db->prepare('select c.value
-		from ' . $s . 'contact c, ' . $s . 'type_contact tc, ' . $s . 'users u
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and u.id = c.id_user
-			and u.status in (1, 2)
-			and tc.abbrev = \'mail\'');
-
-	$st->bindValue(1, $uid);
-	$st->execute();
-
-	while($row = $st->fetch())
-	{
-		$addr[] = $row['value'];
-	}
-	return implode(', ', $addr);
-}

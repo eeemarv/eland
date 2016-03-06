@@ -120,7 +120,7 @@ if ($token = $_GET['token'])
 			throw $e;
 		}
 
-		$subject = '[' . $systemtag . '] nieuwe inschrijving: ' . $user['fullname'];
+		$subject = 'nieuwe inschrijving: ' . $user['fullname'];
 		$text = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
 		$text .= "De volgende persoon schreef zich in via de website: \n\n";
 		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
@@ -128,7 +128,7 @@ if ($token = $_GET['token'])
 		$text .= 'Email: ' . $data['email'] . "\n\n";
 		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
 
-		mail_q(array('to' => readconfigfromdb('admin'), 'subject' => $subject, 'text' => $text));
+		mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
 
 		$alert->success('Inschrijving voltooid.');
 

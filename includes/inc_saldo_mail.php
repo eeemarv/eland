@@ -4,20 +4,6 @@ function saldo()
 {
 	global $db, $base_url, $systemtag, $currency, $s3_img, $s3_img_url;
 
-	if (!readconfigfromdb('mailenabled'))
-	{
-		echo 'Mail functions are not enabled. ' . "\n";
-		return true;
-	}
-	
-	$from = readconfigfromdb('from_address');
-
-	if (empty($from))
-	{
-		echo 'Mail from_address is not set in configuration' . "\n";
-		return true;
-	}
-
 	$addr = $addr_public = $mailaddr = $mailaddr_public = $to = $merge_vars = array();
 	$msgs = $news = $users = $image_count_ary = $new_users = array();
 	$leaving_users = $transactions = $to_mail = array();

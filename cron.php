@@ -530,8 +530,6 @@ function admin_exp_msg()
 			AND validity <= ?';
 	$messages = $db->fetchAll($query, array($now));
 
-	$to = readconfigfromdb('admin');
-
 	if (empty($to))
 	{
 		echo 'No admin E-mail address specified in config' . $r;
@@ -549,7 +547,7 @@ function admin_exp_msg()
 		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+	mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
 
 	return true;
 }
@@ -572,16 +570,11 @@ function user_exp_msgs()
 		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
 		echo 'Found new expired message ' . $value['id'];
 		$user = readuser($value['id_user']);
-		$to = $db->fetchColumn('select c.value
-			from contact c, type_contact tc
-			where c.id_type_contact = tc.id
-				and c.id_user = ?
-				and tc.abbrev = \'mail\'', array($value['id_user']));
-		$username = $user["name"];
+
 		$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&extend=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
 		$text = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
-		$text .= "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
+		$text .= "Beste " . $user['name'] . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
 		$text .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
 		$text .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
 		$text .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
@@ -604,7 +597,7 @@ function user_exp_msgs()
 			return;
 		}
 
-		mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+		mail_q(array('to' => $value['id_user'], 'subject' => $subject, 'text' => $text));
 
 		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
 	}

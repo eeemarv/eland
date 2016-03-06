@@ -500,51 +500,26 @@ if ($mail && $post && $id)
 
 	$user = readuser($message['id_user']);
 
-	$to = array();
-
-	$rs = $db->prepare('select c.value
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'');
-
-	$rs->bindValue(1, $user['id']);
-
-	$rs->execute();
-
-	while ($row = $rs->fetch())
-	{
-		$to[] = $row['value'];
-	}
-
 	if (isset($s_interlets['schema']))
 	{
 		$t_schema =  $s_interlets['schema'] . '.';
-		$remote_schema = $s_interlets['schema'];
+		$me_schema = $s_interlets['schema'];
 		$me_id = $s_interlets['id'];
+		$interlets = true;
 	}
 	else
 	{
 		$t_schema = '';
-		$remote_schema = false;
+		$me_schema = false;
 		$me_id = $s_id;
+		$interlets = false;
 	}
 
 	$me = readuser($me_id, false, $remote_schema);
 
-	$user_me = (isset($s_interlets['schema'])) ? readconfigfromdb('systemtag', $remote_schema) . '.' : '';
+	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
 	$user_me .= link_user($me, null, false);
-	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromdb('systemname', $remote_schema) : '';
-
-	$from = $db->prepare('select c.value
-		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($me_id));
-
-	$reply_to = array();
-
-	
+	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
@@ -576,24 +551,15 @@ if ($mail && $post && $id)
 			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
-			$status = mail_q(array('to' => $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text), );
+
+			mail_q(array('to' => $me_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text, 'to_schema' => $me_schema));
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		if (!$status)
-		{
-			$status = mail_q(array('to' => $to, 'reply_to' => $reply_to, 'subject' => $subject, 'text' => $text));
-		}
+		mail_q(array('to' => $user['id'], 'reply_to' => $me_id, 'subject' => $subject, 'text' => $text, 'from_schema' => $me_schema));
 
-		if ($status)
-		{
-			$alert->error($status);
-		}
-		else
-		{
-			$alert->success('Mail verzonden.');
-		}
+		$alert->success('Mail verzonden.');
 	}
 	else
 	{
@@ -1052,6 +1018,8 @@ if (($edit || $add))
  */
 if ($id)
 {
+	$cc = ($post) ? $cc : 1;
+
 	$user = readuser($message['id_user']);
 
 	$to = $db->fetchColumn('select c.value
@@ -1313,7 +1281,7 @@ if ($id)
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
 	echo '<input type="checkbox" name="cc"';
-	echo (isset($cc)) ? ' checked="checked"' : '';
+	echo ($cc) ? ' checked="checked"' : '';
 	echo ' value="1" >Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';

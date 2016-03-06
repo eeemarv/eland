@@ -43,47 +43,26 @@ if ($user_mail_submit && $id && $post)
 
 	$user = readuser($id);
 
-	$to = array();	
-
-	$rs = $db->prepare('select c.value
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'');
-
-	$rs->bindValue(1, $id);
-
-	$rs->execute();
-
-	while ($row = $rs->fetch())
-	{
-		$to[] = $row['value'];
-	}
-
 	if (isset($s_interlets['schema']))
 	{
 		$t_schema =  $s_interlets['schema'] . '.';
-		$remote_schema = $s_interlets['schema'];
+		$me_schema = $s_interlets['schema'];
 		$me_id = $s_interlets['id'];
+		$interlets = true;
 	}
 	else
 	{
 		$t_schema = '';
-		$remote_schema = false;
+		$me_schema = false;
 		$me_id = $s_id;
+		$interlets = false;
 	}
 
-	$me = readuser($me_id, false, $remote_schema);
+	$me = readuser($me_id, false, $me_schema);
 
-	$user_me = (isset($s_interlets['schema'])) ? readconfigfromdb('systemtag', $remote_schema) . '.' : '';
+	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
 	$user_me .= link_user($me, null, false);
-	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromdb('systemname', $remote_schema) : '';
-
-	$from = $db->fetchColumn('select c.value
-		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($me_id));
+	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
@@ -116,24 +95,14 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			$mail_status = sendemail($from, $from, $subject . ' (kopie)', $msg . $text);
+			mail_q(array('to' => $me_id, 'to_schema' => $me_schema, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		if (!$mail_status)
-		{
-			$mail_status = sendemail($from, $to, $subject, $text);
-		}
+		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $me_id, 'from_schema' => $me_schema));
 
-		if ($mail_status)
-		{
-			$alert->error($mail_status);
-		}
-		else
-		{
-			$alert->success('Mail verzonden.');
-		}
+		$alert->success('Mail verzonden.');
 	}
 	else
 	{
@@ -558,8 +527,19 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 
 if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 {
-	$to = $merge_vars = array();
 	$to_log = '';
+
+	$map = array(
+		'naam' 				=> 'name',
+		'volledige_naam'	=> 'fullname',
+		'saldo'				=> 'saldo',
+		'letscode'			=> 'letscode',
+		'postcode'			=> 'postcode',
+		'id'				=> 'id',
+		'status'			=> 'status',
+		'min_limiet'		=> 'minlimit',
+		'max_limiet'		=> 'maxlimit',
+	);
 
 	$sel_ary = ($mail_test) ? array($s_id => true) : $selected_users;
 
@@ -573,93 +553,29 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 
 	while ($user = $st->fetch())
 	{
-		if ($user['id'] == $s_id)
-		{
-			$from = $user['mail'];
-		}
-
 		if (!$sel_ary[$user['id']])
 		{
 			continue;
 		}
 
+		$search = $replace = array();
+
+		foreach ($map as $key => $val)
+		{
+			$search[] = '{{' . $key . '}}';
+			$replace[] = ($key == 'status') ? $status_ary[$user['status']] : $user[$val];
+		}
+
+		$text = str_replace($search, $replace, $mail_content);
+
+		mail_q(array('to' => $user['value'], 'subject' => $mail_subject, 'text' => $text, 'reply_to' => $s_id));
+
 		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
-
-		$to[] = array(
-			'email'	=> $user['mail'],
-			'name'	=> $user['name'],
-		);
-		$merge_vars[] = array(
-			'rcpt'	=> $user['mail'],
-			'vars'	=> array(
-				array(
-					'name'		=> 'naam',
-					'content'	=> $user['name'],
-				),
-				array(
-					'name'		=> 'volledige_naam',
-					'content'	=> $user['fullname'],
-				),
-				array(
-					'name'		=> 'saldo',
-					'content'	=> $user['saldo'],
-				),
-				array(
-					'name'		=> 'letscode',
-					'content'	=> $user['letscode'],
-				),
-				array(
-					'name'		=> 'postcode',
-					'content'	=> $user['postcode'],
-				),
-				array(
-					'name'		=> 'id',
-					'content'	=> $user['id'],
-				),
-				array(
-					'name'		=> 'status',
-					'content'	=> $status_ary[$user['status']],
-				),
-				array(
-					'name'		=> 'min_limiet',
-					'content'	=> $user['minlimit'],
-				),
-				array(
-					'name'		=> 'max_limiet',
-					'content'	=> $user['maxlimit'],
-				),
-			),
-		);
 	}
 
-	$subject = '['. $systemtag .']' . $mail_subject;
-	$text = str_replace(array('{{', '}}'), array('*|', '|*'), $mail_content);
+	log_event($s_id, 'Mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
 
-	$message = array(
-		'subject'		=> $subject,
-		'text'			=> $text,
-		'from_email'	=> $from,
-		'to'			=> $to,
-		'merge_vars'	=> $merge_vars,
-	);
-
-	try
-	{
-		$mandrill = new Mandrill();
-		$mandrill->messages->send($message, true);
-
-		$to_log = ltrim($to_log, ', ');
-
-		log_event($s_id, 'Mail', 'Multi mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
-
-		$alert->success('Mail verzonden.');
-	}
-	catch (Mandrill_Error $e)
-	{
-		// Mandrill errors are thrown as exceptions
-		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		$alert->error('Mail fout');
-	}
+	$alert->success('Mail verzonden.');
 }
 
 /**
@@ -1822,6 +1738,8 @@ if ($id)
 {
 	$s_owner = ($s_id == $id) ? true : false;
 
+	$cc = ($post) ? $cc : 1;
+
 	$user = readuser($id);
 
 	if (!$s_admin && !in_array($user['status'], array(1, 2)))
@@ -2133,7 +2051,7 @@ if ($id)
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
 	echo '<input type="checkbox" name="cc"';
-	echo (isset($cc)) ? ' checked="checked"' : '';
+	echo ($cc) ? ' checked="checked"' : '';
 	echo ' value="1" >Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';
@@ -3003,8 +2921,11 @@ if ($v_list)
 		echo '<div class="panel-heading">';
 
 		echo '<ul class="nav nav-tabs" role="tablist">';
-		echo '<li class="active"><a href="#mail_tab" data-toggle="tab">Mail</a></li>';
+
+		echo '<li class="active">';
+		echo '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
 		echo '<li class="dropdown">';
+
 		echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
 		echo '<span class="caret"></span></a>';
 		echo '<ul class="dropdown-menu">';
@@ -3205,8 +3126,6 @@ function sendadminmail($user)
 {
 	global $systemtag;
 
-	$to = readconfigfromdb('admin');
-
 	$subject .= 'Account activatie';
 
 	$text  = "*** Dit is een automatische mail van ";
@@ -3227,7 +3146,7 @@ function sendadminmail($user)
 
 	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+	mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
 }
 
 function sendactivationmail($password, $user)

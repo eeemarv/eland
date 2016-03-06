@@ -72,12 +72,12 @@ function processqueue()
 						break;
 					case 'FAILED':
 						//Handle error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,1);
+						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'SIGFAIL':
 						//Handle the error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result,1);
+						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'DUPLICATE':
@@ -88,7 +88,7 @@ function processqueue()
 						break;
 					case 'NOUSER':
 						//Handle the error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result, 0);
+						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'APIKEYFAIL':
@@ -232,11 +232,10 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 
 		$subject = 'Interlets FAILURE!';
-		$to = readconfigfromdb('admin');
 
 		$text = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
 
-		mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
+		mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
 	}
 
 	echo $result;

@@ -618,99 +618,138 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	return $user;
 }
 
-/*
- *
- */
-function sendemail($from, $to, $subject, $content)
-{
-	global $s_id;
-
-	if (!readconfigfromdb('mailenabled'))
-	{
-		log_event('', 'mail', 'Mail ' . $subject . ' not sent, mail functions are disabled');
-		return 'Mail functies zijn uitgeschakeld';
-	}
-
-	if(empty($from) || empty($to) || empty($subject) || empty($content))
-	{
-		$log = "Mail $subject not sent, missing fields\n";
-		$log .= "From: $from\nTo: $to\nSubject: $subject\nContent: $content";
-		log_event("", "mail", $log);
-		return 'Fout: mail niet verstuurd, ontbrekende velden';
-	}
-
-	$to = (is_array($to)) ? implode(',', $to) : $to;
-
-	$to = trim($to, ',');
-
-	$to = explode(',', $to);
-
-	$to_mandrill = array_map(function($email_address){return array('email' => $email_address);}, $to);
-
-	$message = array(
-		'subject'		=> $subject,
-		'text'			=> $content,
-		'from_email'	=> $from,
-		'to'			=> $to_mandrill,
-	);
-
-	try {
-		$mandrill = new Mandrill();
-		$mandrill->messages->send($message, true);
-	}
-	catch (Mandrill_Error $e)
-	{
-		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		return 'Mail niet verzonden. Fout in mail service.';
-	}
-
-	$to = (is_array($to)) ? implode(', ', $to) : $to;
-
-	log_event($s_id, 'mail', 'mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to);
-
-	return false;
-}
-
 /**
  *
  */
 
-function mail_q($mail = array(), $remote_schema = false)
+function mail_q($mail = array())
 {
 	global $schema, $redis, $s_id;
 
-	$mail['schema'] = ($remote_schema) ?: $schema;
+	if (!readconfigfromdb('mailenabled'))
+	{
+		$m = 'Mail functions are not enabled. ' . "\n";
+		echo $m;
+		log_event('', 'mail', $m);
+		return ;
+	}
+
+	$mail['to_schema'] = ($mail['to_schema']) ?: $schema;
+	$mail['from_schema'] = ($mail['from_schema']) ?: $schema;
 
 	if (!$mail['to'])
 	{
 		$m = 'Mail "to" ontbreekt.';
-		log_event('', 'mail', $m, $mail['schema']);
+		log_event('', 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if (!$mail['subject'])
 	{
 		$m = 'Mail "subject" ontbreekt.';
-		log_event('', 'mail', $m, $mail['schema']);
+		log_event('', 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if (!$mail['text'])
 	{
 		$m = 'Mail "text body" ontbreekt.';
-		log_event('', 'mail', $m, $mail['schema']);
+		log_event('', 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if ($redis->lpush('mail_q', json_encode($mail)))
 	{
-		log_event($s_id, 'mail', 'Mail in queue, subject: ' . $mail['subject'] . ' to : ' . $mail['to'] . ' schema: ' . $mail['schema']);
+		log_event($s_id, 'mail', 'Mail in queue, subject: ' . $mail['subject'] . ' to : ' . $mail['to'] .
+			' from schema: ' . $mail['from_schema'] . ' to schema: ' . $mail['to_schema']);
 	}
 }
 
 /*
- *
+ * param mail addr | int user id | array
+ * param string
+ * return array
  */
+
+function getmailadr($m, $remote_schema = false)
+{
+	global $schema, $db;
+
+	$sch = ($remote_schema) ?: $schema;
+
+	if (!is_array($m))
+	{
+		$m = explode(',', $m);
+	}
+
+	$out = array();
+
+	foreach ($m as $in)
+	{
+		$in = trim($in);
+
+		if ($in == 'admin')
+		{
+			$out[] = trim(readconfigfromdb('admin', $sch));
+		}
+		else if ($in == 'newsadmin')
+		{
+			$out[] = trim(readconfigfromdb('newsadmin', $sch));
+		}
+		else if ($in == 'support')
+		{
+			$out[] = trim(readconfigfromdb('support', $sch));
+		}
+		else if (ctype_digit($in))
+		{
+			$st = $db->prepare('select c.value
+				from ' . $sch . '.contact c,
+					' . $sch . '.type_contact tc,
+					' . $sch . '.users u
+				where c.id_type_contact = tc.id
+					and c.id_user = ?
+					and c.id_user = u.id
+					and u.status in (1,2)
+					and tc.abbrev = \'mail\'');
+
+			$st->bindValue(1, $in);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				if (!filter_var($row['value'], FILTER_VALIDATE_EMAIL))
+				{
+					log_event('', 'mail',
+						'error: invalid mail address : ' . $row['value'] . ', user id: ' . $in,
+						$sch);
+					continue;
+				}
+
+				$out[] = trim($row['value']);
+			}
+		}
+		else if (filter_var($in, FILTER_VALIDATE_EMAIL))
+		{
+			$out[] = trim($in);
+		}
+		else
+		{
+			log_event('', 'error: no valid input for mail adr: ' . $in, $sch);
+		}
+	}
+
+	if (!count($out))
+	{
+		log_event('', 'mail', 'no valid mail adress found for: ' . explode('|', $m), $sch);
+		continue;
+	} 
+
+	return $out;
+}
+
+ /*
+  *
+  */
 function render_select_options($option_ary, $selected, $print = true)
 {
 	$str = '';
