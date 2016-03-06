@@ -87,47 +87,43 @@ function mail_mail_interlets_transaction($transaction)
 	$r = "\r\n";
 	$t = "\t";
 
-	$from = readconfigfromdb('from_address');
-
 	$userfrom = readuser($transaction['id_from']);
 
 	$to = get_mailaddresses($transaction['id_to']);
 
 	$subject .= '[' . $systemtag . '] Interlets transactie';
 
-	$content  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
+	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
 
-	$content  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname;
-	$content  .= ' met de volgende gegevens:' . $r . $r;
+	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname;
+	$text  .= ' met de volgende gegevens:' . $r . $r;
 
 	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], null, false);
 	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], null, false);
 
-	$content .= 'Van: ' . $t . $t . $u_from . $r;
-	$content .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;
+	$text .= 'Van: ' . $t . $t . $u_from . $r;
+	$text .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;
 
-	$content .= 'Omschrijving: ' . $t . $transaction['description'] . $r;
+	$text .= 'Omschrijving: ' . $t . $transaction['description'] . $r;
 
 	$currencyratio = readconfigfromdb('currencyratio');
 	$meta = round($transaction['amount'] / $currencyratio, 4);
 
-	$content .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . $currency . ', ofwel ';
-	$content .= $meta . ' LETS uren* (' . $currencyratio . ' ' . $currency . ' = 1 uur)' . $r . $r;
-	$content .= 'Transactie id: ' . $t . $transaction['transid'] . $r . $r;
+	$text .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . $currency . ', ofwel ';
+	$text .= $meta . ' LETS uren* (' . $currencyratio . ' ' . $currency . ' = 1 uur)' . $r . $r;
+	$text .= 'Transactie id: ' . $t . $transaction['transid'] . $r . $r;
 
-	$content .= 'Je moet deze in je eigen systeem verder verwerken.' . $r;
-	$content .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
-	$content .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
+	$text .= 'Je moet deze in je eigen systeem verder verwerken.' . $r;
+	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
+	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
 
-	sendemail($from, $to, $subject, $content);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'reply-to' => readconfigfromdb('admin')));
 
 	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
-	$content .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
+	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
 	$to = get_mailaddresses($transaction['id_from']);
 
-	sendemail($from, $to, $subject, $content);
-
-	log_event($s_id, 'Mail', 'Transaction sent to ' . $to);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 }
 
 /*
@@ -142,7 +138,6 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
 
-	$from = readconfigfromdb('from_address', $sch);
 	$currency = readconfigfromdb('currency', $sch);
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
@@ -174,17 +169,17 @@ function mail_transaction($transaction, $remote_schema = null)
 	$u_from = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
 	$u_to = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];
 
-	$subject .= '[' . $systemtag . '] ' . $interlets . 'transactie, ' . $transaction['amount'] . ' ' . $currency . ' van ';
+	$subject = $interlets . 'transactie, ' . $transaction['amount'] . ' ' . $currency . ' van ';
 	$subject .= $u_from . ' aan ' . $u_to;
 
-	$content = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
-	$content .= 'Notificatie ' . $interlets . 'transactie' . $r . $r;
-	$content .= 'Van: ' . $t . $t . $u_from . $r;
-	$content .= 'Aan: ' . $t . $t . $u_to . $r;
+	$text = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
+	$text .= 'Notificatie ' . $interlets . 'transactie' . $r . $r;
+	$text .= 'Van: ' . $t . $t . $u_from . $r;
+	$text .= 'Aan: ' . $t . $t . $u_to . $r;
 
-	$content .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
-	$content .= 'Aantal: ' . $t . $t . $transaction['amount'] . ' ' . $currency . $r . $r;
-	$content .= 'Transactie id:' . $t . $t .$transaction['transid'] . $r;
+	$text .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
+	$text .= 'Aantal: ' . $t . $t . $transaction['amount'] . ' ' . $currency . $r . $r;
+	$text .= 'Transactie id:' . $t . $t .$transaction['transid'] . $r;
 
 	if (isset($remote_schema))
 	{
@@ -196,9 +191,9 @@ function mail_transaction($transaction, $remote_schema = null)
 		$url = $base_url;
 	}
 
-	$content .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
+	$text .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
 
-	sendemail($from, $to, $subject, $content);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'from_schema' => $sch));
 
 	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
 }
@@ -214,9 +209,7 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 	$r = "\r\n";
 	$t = "\t";
 
-	$from = readconfigfromdb('from_address');
-
-	$subject .= '['. $systemtag . '] Gefaalde interlets transactie ' . $transid;
+	$subject .= 'Gefaalde interlets transactie ' . $transid;
 
 	$userfrom = readuser($id_from);
 
@@ -231,33 +224,32 @@ function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $descr
 		$to .= ','. readconfigfromdb('admin');
 	}
 
-	$content  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
-	$content .= 'Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:' . $r . $r;
+	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
+	$text .= 'Je interlets transactie hieronder kon niet worden uitgevoerd om de volgende reden:' . $r . $r;
 
 	switch ($result)
 	{
 		case 'SIGFAIL':
-			$content .= 'De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.';
+			$text .= 'De digitale handtekening was ongeldig, dit wijst op een fout in de instellingen van de installlatie.  Deze melding werd ook naar de site-beheerder verstuurd.';
 			break;
 		case 'EXPIRED':
-			$content .= 'Na 4 dagen kon geen contact met de andere installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.';
+			$text .= 'Na 4 dagen kon geen contact met de andere installatie gemaakt worden, probeer de transactie later opnieuw of verwittig de beheerder als dit blijft.';
 			break;
 		case 'NOUSER':
-			$content .= 'De gebruiker met die letscode bestaat niet in de andere groep.  Controleer de letscode via de interlets-functies en probeer het eventueel opnieuw.';
+			$text .= 'De gebruiker met die letscode bestaat niet in de andere groep.  Controleer de letscode via de interlets-functies en probeer het eventueel opnieuw.';
 		break;
 	}
-	$content .=  $r . $r . '--' . $r;
+	$text .=  $r . $r . '--' . $r;
 
 	$amount = $amount * readconfigfromdb('currencyratio');
 	$amount = round($amount);
 
-	$content .= 'Letscode: ' . $t . $letscode_to . $r;
-	$content .= 'Voor: ' . $t . $description . $r;
-	$content .= 'Aantal: ' . $t . $amount . $currency . $r . $r;
-	$content .= 'Transactie id:' . $t . $transid . $r . $r . '--';;
+	$text .= 'Letscode: ' . $t . $letscode_to . $r;
+	$text .= 'Voor: ' . $t . $description . $r;
+	$text .= 'Aantal: ' . $t . $amount . $currency . $r . $r;
+	$text .= 'Transactie id:' . $t . $transid . $r . $r . '--';;
 
-	sendemail($from, $to, $subject, $content);
-	log_event($s_id, 'Mail', 'Interlets failure sent to ' . $to);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 }
 
 /*

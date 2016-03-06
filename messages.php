@@ -500,7 +500,7 @@ if ($mail && $post && $id)
 
 	$user = readuser($message['id_user']);
 
-	$to = array();	
+	$to = array();
 
 	$rs = $db->prepare('select c.value
 		from contact c, type_contact tc
@@ -536,11 +536,15 @@ if ($mail && $post && $id)
 	$user_me .= link_user($me, null, false);
 	$user_me .= (isset($s_interlets['schema'])) ? ' van interlets groep ' . readconfigfromdb('systemname', $remote_schema) : '';
 
-	$from = $db->fetchColumn('select c.value
+	$from = $db->prepare('select c.value
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', array($me_id));
+
+	$reply_to = array();
+
+	
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
@@ -548,19 +552,19 @@ if ($mail && $post && $id)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']],$me_id));
 
-	$subject = '[' . $systemtag . '] - Reactie op je ' . $ow_type . ' ' . $message['content'];
+	$subject = 'Reactie op je ' . $ow_type . ' ' . $message['content'];
 
-	$mailcontent = 'Beste ' . $user['name'] . "\r\n\r\n";
-	$mailcontent .= 'Gebruiker ' . $user_me . ' heeft een reactie op je ' . $ow_type . " verstuurd via de webtoepassing\r\n\r\n";
-	$mailcontent .= '--------------------bericht--------------------' . "\r\n\r\n";
-	$mailcontent .= $content . "\r\n\r\n";
-	$mailcontent .= '-----------------------------------------------' . "\r\n\r\n";
-	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
-	$mailcontent .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
+	$text = 'Beste ' . $user['name'] . "\r\n\r\n";
+	$text .= 'Gebruiker ' . $user_me . ' heeft een reactie op je ' . $ow_type . " verstuurd via de webtoepassing\r\n\r\n";
+	$text .= '--------------------bericht--------------------' . "\r\n\r\n";
+	$text .= $content . "\r\n\r\n";
+	$text .= '-----------------------------------------------' . "\r\n\r\n";
+	$text .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
+	$text .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
 
 	foreach($my_contacts as $value)
 	{
-		$mailcontent .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+		$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
 	}
 
 	if ($content)
@@ -572,14 +576,14 @@ if ($mail && $post && $id)
 			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
-			$status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
+			$status = mail_q(array('to' => $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text), );
 		}
 
-		$mailcontent .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
 		if (!$status)
 		{
-			$status = sendemail($from, $to, $subject, $mailcontent);
+			$status = mail_q(array('to' => $to, 'reply_to' => $reply_to, 'subject' => $subject, 'text' => $text));
 		}
 
 		if ($status)

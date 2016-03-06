@@ -21,7 +21,8 @@ function sendmail()
 
 		if (!isset($transport) || !isset($mailer))
 		{
-			$transport = Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'))
+			$enc = getenv('SMTP_ENC') ?: 'tls';
+			$transport = Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
 				->setUsername(getenv('SMTP_USERNAME'))
 				->setPassword(getenv('SMTP_PASSWORD'));
 

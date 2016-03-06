@@ -28,29 +28,16 @@ if ($token)
 				$alert->success('Paswoord opgeslagen.');
 				log_event($s_id, 'System', 'password reset success user ' . link_user($user, null, false, true));
 
-				$to = array();
-				$st = $db->prepare('SELECT c.value
-					FROM contact c, type_contact tc
-					WHERE tc.id = c.id_type_contact
-						AND tc.abbrev = \'mail\'
-						AND c.id_user = ?');
-				$st->bindValue(1, $user_id);
-				$st->execute();
-				while ($row = $st->fetch())
-				{
-					$to[] = $row['value'];
-				}
-
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
-				$subj = '[' . $systemtag . '] nieuw paswoord.';
-				$body = 'Beste ' . $user['name'] . ",\n\n";
-				$body .= 'Er werd een nieuw paswoord voor je account ingesteld.';
-				$body .= "\n\npaswoord: " . $password . "\n";
-				$body .= 'login (letscode): ' . $user['letscode'] . "\n\n";
-				$body .= 'Inloggen: ' . $url;
+				$subj = 'nieuw paswoord.';
+				$text = 'Beste ' . $user['name'] . ",\n\n";
+				$text .= 'Er werd een nieuw paswoord voor je account ingesteld.';
+				$text .= "\n\npaswoord: " . $password . "\n";
+				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
+				$text .= 'Inloggen: ' . $url;
 
-				sendemail(readconfigfromdb('from_address'), $to, $subj, $body);
+				mail_q(array('to' => $user_id, 'subject' => $subj, 'text' => $text));
 
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
@@ -124,15 +111,16 @@ if ($_POST['zend'])
 
 				$url = $base_url . '/pwreset.php?token=' . $token;
 
-				$subject = '[' . $systemtag . '] Paswoord reset link.';
+				$subject = 'Paswoord reset link.';
 
-				$message = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
-				$message .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
-				$message .= 'Je letscode is: ' . $letscode . "\n\n";
-				$message .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
-				$message .= 'gelieve deze mail te negeren.';
+				$text = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
+				$text .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
+				$text .= 'Je letscode is: ' . $letscode . "\n\n";
+				$text .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
+				$text .= 'gelieve deze mail te negeren.';
 
-				sendemail(readconfigfromdb('from_address'), $email, $subject, $message);
+				mail_q('to' => $email, 'text' => $text, 'subject' => $subject);
+
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event($s_id, 'System', 'Paswoord reset link verstuurd naar ' . $email);
 				header('Location: login.php');

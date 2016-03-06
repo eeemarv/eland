@@ -538,26 +538,18 @@ function admin_exp_msg()
 		return false;
 	}
 
-	$from = readconfigfromdb('from_address');
+	$subject = 'Rapport vervallen Vraag en aanbod';
 
-	if (empty($from))
-	{
-		echo 'Mail from address is not set in configuration' . $r;
-		return false;
-	}
-
-	$subject = '[' . $systemtag . '] Rapport vervallen Vraag en aanbod';
-
-	$content = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
-	$content .= "Gebruiker\t\tVervallen vraag of aanbod\t\tVervallen\n\n";
+	$text = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
+	$text .= "Gebruiker\t\tVervallen vraag of aanbod\t\tVervallen\n\n";
 	
 	foreach($messages as $key => $value)
 	{
-		$content .= link_user($value['id_user'], null, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
-		$content .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
+		$text .= link_user($value['id_user'], null, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
+		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
-	sendemail($from, $to, $subject, $content);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 
 	return true;
 }
@@ -588,25 +580,23 @@ function user_exp_msgs()
 		$username = $user["name"];
 		$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&extend=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
-		$content = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
-		$content .= "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
-		$content .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
-		$content .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
-		$content .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
-		$content .= "\n\n Verlengen met \n\n";
-		$content .= "één maand: " . $extend_url . "30 \n";
-		$content .= "twee maanden: " . $extend_url . "60 \n";
-		$content .= "zes maanden: " . $extend_url . "180 \n";
-		$content .= "één jaar: " . $extend_url . "365 \n";
-		$content .= "twee jaar: " . $extend_url . "730 \n";
-		$content .= "vijf jaar: " . $extend_url . "1825 \n\n";
-		$content .= "Nieuw vraag of aanbod ingeven: " . $base_url . "/messages.php?add=1 \n\n";
-		$content .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
-		$content .= readconfigfromdb('support');
+		$text = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
+		$text .= "Beste " . $username . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
+		$text .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
+		$text .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
+		$text .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
+		$text .= "\n\n Verlengen met \n\n";
+		$text .= "één maand: " . $extend_url . "30 \n";
+		$text .= "twee maanden: " . $extend_url . "60 \n";
+		$text .= "zes maanden: " . $extend_url . "180 \n";
+		$text .= "één jaar: " . $extend_url . "365 \n";
+		$text .= "twee jaar: " . $extend_url . "730 \n";
+		$text .= "vijf jaar: " . $extend_url . "1825 \n\n";
+		$text .= "Nieuw vraag of aanbod ingeven: " . $base_url . "/messages.php?add=1 \n\n";
+		$text .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
+		$text .= readconfigfromdb('support');
 
 		$subject = 'Je ' . $va . ' is vervallen.';
-
-		$from = readconfigfromdb('from_address');
 
 		if (empty($from))
 		{
@@ -614,9 +604,8 @@ function user_exp_msgs()
 			return;
 		}
 
-		$subject = '[' . $systemtag . '] ' . $subject;
+		mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 
-		sendemail($from, $to, $subject, $content);
 		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
 	}
 

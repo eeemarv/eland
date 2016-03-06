@@ -231,13 +231,12 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 		log_event('','Trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 
-		$subject .= '[' . $systemtag . '] Interlets FAILURE!';
-		$from = readconfigfromdb('from_address');
+		$subject = 'Interlets FAILURE!';
 		$to = readconfigfromdb('admin');
 
-		$content = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
+		$text = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
 
-		sendemail($from, $to, $subject, $content);
+		mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 	}
 
 	echo $result;

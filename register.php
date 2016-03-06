@@ -121,14 +121,14 @@ if ($token = $_GET['token'])
 		}
 
 		$subject = '[' . $systemtag . '] nieuwe inschrijving: ' . $user['fullname'];
-		$content = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
-		$content .= "De volgende persoon schreef zich in via de website: \n\n";
-		$content .= 'Volledige naam: ' . $user['fullname'] . "\n";
-		$content .= 'Postcode: ' . $user['postcode'] . "\n";
-		$content .= 'Email: ' . $data['email'] . "\n\n";
-		$content .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
+		$text = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
+		$text .= "De volgende persoon schreef zich in via de website: \n\n";
+		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
+		$text .= 'Postcode: ' . $user['postcode'] . "\n";
+		$text .= 'Email: ' . $data['email'] . "\n\n";
+		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
 
-		sendemail(readconfigfromdb('from_address'), readconfigfromdb('admin'), $subject, $content);
+		mail_q(array('to' => readconfigfromdb('admin'), 'subject' => $subject, 'text' => $text));
 
 		$alert->success('Inschrijving voltooid.');
 
@@ -220,12 +220,13 @@ if ($_POST['zend'])
 		$redis->expire($key, 86400);
 		$subject = '[' . $systemtag . '] Bevestig je inschrijving';
 		$url = $base_url . '/register.php?token=' . $token;
-		$message = 'Inschrijven voor ' . $systemname . "\n\n";
-		$message .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
-		$message .= "Deze link blijft 1 dag geldig.\n\n";
-		sendemail(readconfigfromdb('from_address'), $reg['email'], $subject, $message);
+		$text = 'Inschrijven voor ' . $systemname . "\n\n";
+		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
+		$text .= "Deze link blijft 1 dag geldig.\n\n";
+
+		mail_q(array('to' => $reg['email'], 'subject' => $subject, 'text' => $text));
+
 		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je verstuurd hebben om je inschrijving te voltooien.');
-		log_event('', 'System', 'Bevestigings email verstuurd naar ' . $email);
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}

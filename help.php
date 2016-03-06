@@ -197,9 +197,9 @@ function helpmail($help)
 	$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
 	$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
 	$text .= "\r\n\r\n";
-	$text .= "Omschrijving:\r\n";
-	$text .= $help['description'] . "\r\n";
-	$text .= "\r\n";
+	$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
+	$text .= $help['description'] . "\r\n\r\n";
+	$text .= "--------------------------------------------------------------------\r\n\r\n";
 	$text .= "User Agent:\r\n";
 	$text .= $help['browser'] . "\r\n";
 	$text .= "\r\n";

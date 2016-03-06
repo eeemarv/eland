@@ -91,19 +91,19 @@ if ($user_mail_submit && $id && $post)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $me_id));
 
-	$subject = '[' . $systemtag . '] - Bericht van ' . $systemname;
+	$subject = 'Bericht van ' . $systemname;
 
-	$mailcontent = 'Beste ' . $user['name'] . "\r\n\r\n";
-	$mailcontent .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
-	$mailcontent .= '--------------------bericht--------------------' . "\r\n\r\n";
-	$mailcontent .= $content . "\r\n\r\n";
-	$mailcontent .= '-----------------------------------------------' . "\r\n\r\n";
-	$mailcontent .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
-	$mailcontent .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
+	$text = 'Beste ' . $user['name'] . "\r\n\r\n";
+	$text .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
+	$text .= '--------------------bericht--------------------' . "\r\n\r\n";
+	$text .= $content . "\r\n\r\n";
+	$text .= '-----------------------------------------------' . "\r\n\r\n";
+	$text .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
+	$text .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
 
 	foreach($my_contacts as $value)
 	{
-		$mailcontent .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+		$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
 	}
 
 	if ($content)
@@ -115,14 +115,15 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
-			$mail_status = sendemail($from, $from, $subject . ' (kopie)', $msg . $mailcontent);
+
+			$mail_status = sendemail($from, $from, $subject . ' (kopie)', $msg . $text);
 		}
 
-		$mailcontent .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
 		if (!$mail_status)
 		{
-			$mail_status = sendemail($from, $to, $subject, $mailcontent);
+			$mail_status = sendemail($from, $to, $subject, $text);
 		}
 
 		if ($mail_status)
@@ -138,6 +139,7 @@ if ($user_mail_submit && $id && $post)
 	{
 		$alert->error('Fout: leeg bericht. Mail niet verzonden.');
 	}
+
 	cancel($id);
 }
 
@@ -704,7 +706,6 @@ if ($pw)
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
-					$from = readconfigfromdb('from_address');
 					$to = $db->fetchColumn('select c.value
 						from contact c, type_contact tc
 						where tc.id = c.id_type_contact
@@ -715,8 +716,7 @@ if ($pw)
 					{
 						$url = $base_url . '/login.php?login=' . $user['letscode'];
 
-						$subj = '[' . $systemtag;
-						$subj .= '] nieuw paswoord voor je account';
+						$subj = 'nieuw paswoord voor je account';
 
 						$con = '*** Dit is een automatische mail van ';
 						$con .= $systemname;
@@ -731,9 +731,9 @@ if ($pw)
 						$con .= 'link waar je kan inloggen: ' . $url;
 						$con .= "\n\n";
 						$con .= 'Veel letsgenot!';
-						sendemail($from, $to, $subj, $con);
-						log_event($s_id, 'Mail', 'Password change notification mail sent to ' . $to);
-						$alert->success('Notificatie mail verzonden naar ' . $to);
+						mail_q(array('to' => $pw, 'subject' => $subj, 'text' => $con));
+
+						$alert->success('Notificatie mail verzonden');
 					}
 					else
 					{
@@ -3205,81 +3205,68 @@ function sendadminmail($user)
 {
 	global $systemtag;
 
-	$from = readconfigfromdb('from_address');
 	$to = readconfigfromdb('admin');
 
-	$subject = '[';
-	$subject .= $systemtag;
-	$subject .= "] Account activatie";
+	$subject .= 'Account activatie';
 
-	$content  = "*** Dit is een automatische mail van ";
-	$content .= $systemtag;
-	$content .= " ***\r\n\n";
-	$content .= "De account " . link_user($user, null, false) ;
-	$content .= " werd geactiveerd met een nieuw paswoord.\n";
+	$text  = "*** Dit is een automatische mail van ";
+	$text .= $systemtag;
+	$text .= " ***\r\n\n";
+	$text .= "De account " . link_user($user, null, false) ;
+	$text .= " werd geactiveerd met een nieuw paswoord.\n";
+
 	if ($user['mail'])
 	{
-		$content .= "Er werd een mail verstuurd naar de gebruiker op ";
-		$content .= $user['mail'];
-		$content .= ".\n\n";
+		$text .= 'Er werd een mail verstuurd naar de gebruiker.';
+		$text .= ".\n\n";
 	}
 	else
 	{
-		$content .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
+		$text .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
 	}
 
-	$content .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
+	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 
-	sendemail($from, $to, $subject, $content);
+	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 }
 
 function sendactivationmail($password, $user)
 {
 	global $base_url, $s_id, $alert, $systemname, $systemtag;
 
-	$from = readconfigfromdb('from_address');
-
-	if (!empty($user["mail"]))
-	{
-		$to = $user["mail"];
-	}
-	else
+	if (empty($user["mail"]))
 	{
 		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
 		return 0;
 	}
 
-	$subject = '[';
-	$subject .= $systemtag;
-	$subject .= '] account activatie voor ' . $systemname;
+	$subject = 'account activatie voor ' . $systemname;
 
-	$content  = "*** Dit is een automatische mail van ";
-	$content .= $systemname;
-	$content .= " ***\r\n\n";
-	$content .= 'Beste ';
-	$content .= $user['name'];
-	$content .= "\n\n";
+	$text  = "*** Dit is een automatische mail van ";
+	$text .= $systemname;
+	$text .= " ***\r\n\n";
+	$text .= 'Beste ';
+	$text .= $user['name'];
+	$text .= "\n\n";
 
-	$content .= "Welkom bij Letsgroep $systemname";
-	$content .= '. Surf naar ' . $base_url;
-	$content .= " en meld je aan met onderstaande gegevens.\n";
-	$content .= "\n-- Account gegevens --\n";
-	$content .= "Login: ";
-	$content .= $user['letscode']; 
-	$content .= "\nPasswoord: ";
-	$content .= $password;
-	$content .= "\n-- --\n\n";
+	$text .= "Welkom bij Letsgroep $systemname";
+	$text .= '. Surf naar ' . $base_url;
+	$text .= " en meld je aan met onderstaande gegevens.\n";
+	$text .= "\n-- Account gegevens --\n";
+	$text .= "Login: ";
+	$text .= $user['letscode']; 
+	$text .= "\nPasswoord: ";
+	$text .= $password;
+	$text .= "\n-- --\n\n";
 
-	$content .= "Je kan je gebruikersgevens, vraag&aanbod en lets-transacties";
-	$content .= " zelf bijwerken op het Internet.";
-	$content .= "\n\n";
+	$text .= "Je kan je gebruikersgevens, vraag&aanbod en lets-transacties";
+	$text .= " zelf bijwerken op het Internet.";
+	$text .= "\n\n";
 
-	$content .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-	$content .= readconfigfromdb('support');
-	$content .= "\n\n";
-	$content .= "Veel plezier bij het letsen! \n";
+	$text .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
+	$text .= readconfigfromdb('support');
+	$text .= "\n\n";
+	$text .= "Veel plezier bij het letsen! \n";
 
-	sendemail($from,$to,$subject,$content);
-
-	log_event($s_id, 'Mail', 'Activation mail sent to ' . $to);
+	mail_q(array('to' => $user['id'], 'subject' => $subject, 'text' => $text));
 }

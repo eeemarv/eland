@@ -95,6 +95,7 @@ $config = $db->fetchAll('select *
 		and setting <> \'msgexpwarningdays\'
 		and setting <> \'news_announce\'
 		and setting <> \'mailinglists_enabled\'
+		and setting <> \'from_address\'
 		and setting <> \'from_address_transactions\'
 	order by category, setting');
 

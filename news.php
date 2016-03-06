@@ -82,16 +82,15 @@ if ($add && $submit && !count($errors))
 			// Send a notice to ask for approval
 			$url = $base_url . '/news.php?id=' . $id;
 
-			$from = readconfigfromdb('from_address');
 			$to = readconfigfromdb('newsadmin');
 
-			$subject = '[' . $systemtag . '] Nieuwsbericht wacht op goedkeuring';
-			$content .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
-			$content .= "\nEen lid gaf een nieuwsbericht met titel [";
-			$content .= $news['headline'];
-			$content .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
-			$content .= 'link: ' .  $url . "\n";
-			sendemail($from, $to, $subject, $content);
+			$subject = 'Nieuwsbericht wacht op goedkeuring';
+			$text .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
+			$text .= "\nEen lid gaf een nieuwsbericht met titel [";
+			$text .= $news['headline'];
+			$text .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
+			$text .= 'link: ' .  $url . "\n";
+			mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
 			$alert->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
