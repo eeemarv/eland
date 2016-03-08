@@ -515,7 +515,7 @@ function geo_q_process()
 
 run_cronjob('sendmail', 60);
 
-run_cronjob('saldo', 60); // 86400 * readconfigfromdb('saldofreqdays'));
+run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
 

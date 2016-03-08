@@ -192,7 +192,7 @@ function saldo()
 		{
 			$mm->add_html(' | <a href="https://www.google.be/maps/dir/', 'googleaddr');
 			$mm->add_html_var('googleaddr', 'googleaddr');
-			$mm->add_html(str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>', 'googleaddr');
+			$mm->add_html('/' . str_replace(' ', '+', $addr[$msg['id_user']]) . '">route</a>', 'googleaddr');
 		}
 
 		$mm->add_html('</li><br>');
