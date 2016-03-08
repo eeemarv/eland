@@ -558,6 +558,8 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 			continue;
 		}
 
+		unset($sel_ary[$user['id']]);
+
 		$search = $replace = array();
 
 		foreach ($map as $key => $val)
@@ -568,7 +570,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 
 		$text = str_replace($search, $replace, $mail_content);
 
-		mail_q(array('to' => $user['value'], 'subject' => $mail_subject, 'text' => $text, 'reply_to' => $s_id));
+		mail_q(array('to' => $user['mail'], 'subject' => $mail_subject, 'text' => $text, 'reply_to' => $s_id));
 
 		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
 	}
@@ -576,6 +578,18 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 	log_event($s_id, 'Mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
 
 	$alert->success('Mail verzonden.');
+
+	if (count($sel_ary))
+	{
+		$missing_users = '';
+
+		foreach ($sel_ary as $warning_user_id)
+		{
+			$warning_user = readuser($warning_user_id);
+			$missing_users .= $warning_user['letscode'] . ' ' . $warning_user['name'] . '<br>';
+		}
+		$alert->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mail adres: <br>' . $missing_users);
+	}
 }
 
 /**
@@ -3187,5 +3201,5 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 	$text .= "Veel plezier bij het letsen! \n";
 
-	mail_q(array('to' => $user['id'], 'subject' => $subject, 'text' => $text));
+	mail_q(array('to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support'));
 }

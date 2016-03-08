@@ -630,7 +630,7 @@ function mail_q($mail = array())
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
 		echo $m;
-		log_event('', 'mail', $m);
+		log_event($s_id, 'mail', $m);
 		return ;
 	}
 
@@ -639,22 +639,22 @@ function mail_q($mail = array())
 
 	if (!$mail['to'])
 	{
-		$m = 'Mail "to" ontbreekt.';
-		log_event('', 'mail', $m, $mail['from_schema']);
+		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
+		log_event($s_id, 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if (!$mail['subject'])
 	{
-		$m = 'Mail "subject" ontbreekt.';
-		log_event('', 'mail', $m, $mail['from_schema']);
+		$m = 'Mail "subject" is missing.';
+		log_event($s_id, 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if (!$mail['text'])
 	{
-		$m = 'Mail "text body" ontbreekt.';
-		log_event('', 'mail', $m, $mail['from_schema']);
+		$m = 'Mail "text body" is missing for "' . $mail['subject'] . '"';
+		log_event($s_id, 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
