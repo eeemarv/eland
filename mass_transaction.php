@@ -4,6 +4,7 @@ $rootpath = './';
 $role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
+require_once $rootpath . 'includes/multi_mail.php';
 
 $q = ($_POST['q']) ?: (($_GET['q']) ?: '');
 $hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '096024');
@@ -600,6 +601,9 @@ echo '</form>';
 
 include $rootpath . 'includes/inc_footer.php';
 
+/**
+ *
+ */
 function mail_mass_transaction($mail_ary)
 {
 	global $db, $alert, $s_id, $base_url, $systemtag, $currency;
@@ -609,25 +613,21 @@ function mail_mass_transaction($mail_ary)
 		$alert->warning('Mail functions are not enabled. ');
 		return;
 	}
-	
-	$from = readconfigfromdb('from_address');
-	if (empty($from))
-	{
-		$alert->warning('Mail from_address is not set in configuration');
-		return;
-	}
 
 	$from_many_bool = (is_array($mail_ary['from'])) ? true : false;
 
 	$many_ary = ($from_many_bool) ? $mail_ary['from'] : $mail_ary['to'];
+
 	$many_user_ids = array_keys($many_ary);
 
 	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
 
+/*
 	$one_user = $db->fetchAssoc('select u.id, u.name, u.letscode, c.value as mail
 		from users u, contact c, type_contact tc
 		where u.id = ?
 			and u.id = c.id_user
+			and u.status in (1, 2)
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'', array($one_user_id));
 
@@ -646,29 +646,50 @@ function mail_mass_transaction($mail_ary)
 	{
 		$mailaddr[$row['id']] = $row['value'];
 	}
+*/
+
 
 	$r = "\r\n";
+	$t = "\t";
 	$support = readconfigfromdb('support');
-	$login_url = $base_url . '/login.php?login=*|LETSCODE|*';
-	$new_transaction_url = $base_url . '/transactions/add.php';
+	$currency = readconfigfromdb('currency');
+	$login_url = $base_url . '/login.php?login=';
+	$new_transaction_url = $base_url . '/transactions.php?add=1';
+	$subject = 'Nieuwe transactie';
 
-	$to = $merge_vars  = array();
-	$to_log = '';
-	$total = 0;
-	$t = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***';
-	$t_one = link_user($one_user, null, false);
+// mail to active users
 
-	$one_msg = $t . $r . $r;
+	$mm = new multi_mail();
 
-	if (!$from_many_bool)
-	{
-		$one_msg .= 'Van ' . $t_one . $r;
-		$one_msg .= 'Aan' . $r; 
-	}
-	else
-	{
-		$one_msg .= 'Van' . $r;
-	}
+	$mm->add_text('*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r)
+		->add_text('Notificatie nieuwe transactie' . $r . $r)
+		->add_text('Bedrag: ')
+		->add_text_var('amount')
+		->add_text(' ' . $currency . $r)
+		->add_text('Omschrijving: ')
+		->add_text_var('description')
+		->add_text($r . 'Van: ')
+		->add_text_var('from_user')
+		->add_text($r . 'Naar: ')
+		->add_text_var('to_user')
+		->add_text($r . $r . 'Transactie id: ')
+		->add_text_var('transid')
+		->add_text($r . $r . 'Je huidige saldo bedraagt nu ')
+		->add_text_var('saldo')
+		->add_text(' ' . $currency . $r)
+		->add_text('Minimum limiet: ')
+		->add_text_var('minlimit')
+		->add_text(' ' . $currency)
+		->add_text(', Maximum limiet: ')
+		->add_text_var('maxlimit')
+		->add_text(' ' . $currency . $r)
+		->add_text('Status: ')
+		->add_text_var('status')
+		->add_text($r . 'Login: ' . $login_url)
+		->add_text_var('letscode')
+		->add_text($r . $r . 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r);
+
+	$from_user_id = $to_user_id = $one_user_id;
 
 	$users = $db->executeQuery('SELECT u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
@@ -681,176 +702,78 @@ function mail_mass_transaction($mail_ary)
 
 	foreach ($users as $user)
 	{
-		$amount = $many_ary[$user['id']]['amount'];
-		$transid = $many_ary[$user['id']]['transid'];
+		$user_id = $user['id'];
 
-		$one_msg .= link_user($user, null, false) . ': ';
-		$one_msg .= $amount . ' ' . $currency;
-		$one_msg .= ', transactie-id: ' . $transid . $r;
-
-		$total += $amount;
-		$to_log .= $user['letscode'] . ' ' . $user['name'] . ', ';
-
-		$to[] = array(
-			'email'	=> $mailaddr[$user['id']],
-			'name'	=> $user['name'],
+		if ($from_many_bool)
+		{
+			$from_user_id = $user_id;
+		}
+		else
+		{
+			$to_user_id = $user_id;
+		}
+		
+		$data = array(
+			'amount' 		=> $many_ary[$user_id]['amount'],
+			'transid' 		=> $many_ary[$user_id]['transid'],
+			'description'	=> $mail_ary['description'],
+			'from_user' 	=> link_user($from_user_id, null, false),
+			'to_user'		=> link_user($to_user_id, null, false),
 		);
-		$merge_vars[] = array(
-			'rcpt'	=> $mailaddr[$user['id']],
-			'vars'	=> array(
-				array(
-					'name'		=> 'NAME',
-					'content'	=> $user['name'],
-				),
-				array(
-					'name'		=> 'BALANCE',
-					'content'	=> $user['saldo'],
-				),
-				array(
-					'name'		=> 'LETSCODE',
-					'content'	=> $user['letscode'],
-				),
-				array(
-					'name'		=> 'ID',
-					'content'	=> $user['id'],
-				),
-				array(
-					'name'		=> 'STATUS',
-					'content'	=> ($user['status'] == 2) ? 'uitstapper' : 'actief',
-				),
-				array(
-					'name'		=> 'MINLIMIT',
-					'content'	=> $user['minlimit'],
-				),
-				array(
-					'name'		=> 'MAXLIMIT',
-					'content'	=> $user['maxlimit'],
-				),
-				array(
-					'name'		=> 'AMOUNT',
-					'content'	=> $many_ary[$user['id']]['amount'],
-				),
-				array(
-					'name'		=> 'TRANSID',
-					'content'	=> $many_ary[$user['id']]['transid'],
-				),
-			),
-		);
+
+		$data = array_merge($user, $data);
+
+		$mm->set_vars($data)
+			->set_var('status', ($user['status'] == 2) ? 'uitstapper' : 'actief')
+			->mail_q(array('to' => $user_id, 'subject' => $subject));
+	}
+
+// compilation mail
+
+	$subject = 'Nieuwe massa transactie';
+	$totaal = 0;
+
+	$text = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r;
+
+	$text = 'Notificatie nieuwe massa transactie' . $r . $r;
+
+	$t_one = link_user($one_user_id, null, false);
+
+	if (!$from_many_bool)
+	{
+		$text .= 'Van ' . $t_one . $r . $r;
+		$text .= 'Aan' . $r; 
+	}
+	else
+	{
+		$one_msg .= 'Van' . $r;
+	}	
+
+	$users = $db->executeQuery('SELECT u.id
+		FROM users u
+		WHERE u.id IN (?)',
+		array($many_user_ids),
+		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+	foreach ($users as $user)
+	{
+		$user_id = $user['id'];
+
+		$total += $many_ary[$user_id]['amount'];
+
+		$text .= link_user($user_id, null, false) . $t . $t . $many_ary[$user_id]['amount'];
+		$text .= ' ' . $currency . $r;
 	}
 
 	if ($from_many_bool)
 	{
-		$one_msg .= $r . 'Aan ' . $t_one . $r . $r;
+		$text .= $r . 'Aan ' . $t_one . $r . $r;
 	}
 
-	$one_msg .= 'Totaal: ' . $total . ' ' . $currency . $r . $r;
-	$one_msg .= 'Voor: ' . $mail_ary['description'];
+	$text .= 'Totaal: ' . $total . ' ' . $currency . $r . $r;
+	$text .= 'Voor: ' . $mail_ary['description'] . $r . $r;
 
-	$text = $t . $r . $r;
-	$html = $t . '<br>';
-
-	$text .= 'Notificatie transactie' . $r . $r;
-	$html .= '<h2>Notificatie transactie</h2>';
-
-	$t_many = '*|LETSCODE|* *|NAME|*';
-
-	$t = ($from_many_bool) ? $t_many : $t_one;
-
-	$text .= 'Van ' . $t. $r;
-	$html .= '<p>Van ' . $t . '</p>';
-
-	$t = ($from_many_bool) ? $t_one : $t_many;
-
-	$text .= 'Aan ' . $t . $r;
-	$html .= '<p>Aan ' . $t . '</p>';
-
-	$t = 'Bedrag: *|AMOUNT|* ' . $currency;
-
-	$text .=  $t . $r;
-	$html .= '<p>' . $t . '</p>';
-
-	$t = 'Voor: ' . $mail_ary['description'];
-
-	$text .=  $t . $r . $r;
-	$html .= '<p>' . $t . '</p><br>';
-
-	$t = 'Transactie id: *|TRANSID|*';
-
-	$text .=  $t . $r;
-	$html .= '<p>' . $t . '</p>';
-
-	$text .= 'Je huidig saldo bedraagt nu *|BALANCE|* ' . $currency . $r;
-	$html .= '<p>Je huidig saldo bedraagt nu <b>*|BALANCE|* </b> ' . $currency . '</p>';
-
-	$text .= 'Minimum limiet: *|MINLIMIT|* ' . $currency . ', Maximum limiet: *|MAXLIMIT|* ' . $currency . $r;
-	$html .= '<p>Minimum limiet: <b>*|MINLIMIT|*</b> ' . $currency . ', Maximum limiet: <b>*|MAXLIMIT|*</b> ' . $currency . '</p>';
-
-	$text .= 'Status: *|STATUS|*' . $r;
-	$html .= '<p>Status: <b>*|STATUS|*</b></p>';
-
-	$text .= 'Login:  ' . $login_url . $r . $r;
-	$html .= '<p>Login: ' . $login_url . '</p>';
-
-	$text .= 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r;
-	$html .= '<p>Klik <a href="' . $new_transaction_url . '">hier</a> om een nieuwe transactie in te geven.</p>';
-
-	$subject = '['. $systemtag . '] - Nieuwe transactie.';
-
-	$message = array(
-		'subject'		=> $subject,
-		'text'			=> $text,
-		'html'			=> $html,
-		'from_email'	=> $from,
-		'to'			=> $to,
-		'merge_vars'	=> $merge_vars,
-	);
-
-	try
-	{
-		$mandrill = new Mandrill();
-		$mandrill->messages->send($message, true);
-	}
-	catch (Mandrill_Error $e)
-	{
-		// Mandrill errors are thrown as exceptions
-		log_event($s_id, 'mail', 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage());
-		return false;
-	}
-
-	$to = (is_array($to)) ? implode(', ', $to) : $to;
-
-	$subject = '['. $systemtag .'] - Nieuwe massa transactie.';
-
-	log_event($s_id, 'Mail', 'Massa transaction mail sent, subject: ' . $subject . ', from: ' . $from . ', to: ' . $to_log);
-
-	$to = array(array(
-		'name' 	=> $one_user['name'],
-		'email'	=> $one_user['mail'],
-	));
-
-	if ($one_user_id != $s_id)
-	{
-		$s_user = $db->fetchAssoc('select u.name, c.value as mail
-			from users u, contact c, type_contact tc
-			where u.id = ?
-				and u.id = c.id_user
-				and c.id_type_contact = tc.id
-				and tc.abbrev = \'mail\'', array($s_id));
-		$to[] = array(
-			'name'	=> $s_user['name'],
-			'email' => $s_user['mail'],
-		);
-	}
-
-	$message = array(
-		'subject'		=> $subject,
-		'text'			=> $one_msg,
-		'from_email'	=> $from,
-		'to'			=> $to,
-		'merge_vars'	=> $merge_vars,
-	);
-
-	$mandrill->messages->send($message, true);
+	mail_q(array('to' => array('admin', $s_id, $one_user_id), 'subject' => $subject, 'text' => $text));
 
 	return true;
 }
