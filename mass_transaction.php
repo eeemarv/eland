@@ -622,33 +622,6 @@ function mail_mass_transaction($mail_ary)
 
 	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
 
-/*
-	$one_user = $db->fetchAssoc('select u.id, u.name, u.letscode, c.value as mail
-		from users u, contact c, type_contact tc
-		where u.id = ?
-			and u.id = c.id_user
-			and u.status in (1, 2)
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'', array($one_user_id));
-
-	$mailaddr = array();
-
-	$rs = $db->prepare('select u.id, c.value
-		from users u, contact c, type_contact tc
-		where u.status in (1, 2)
-			and u.id = c.id_user
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'');
-
-	$rs->execute();
-
-	while ($row = $rs->fetch())
-	{
-		$mailaddr[$row['id']] = $row['value'];
-	}
-*/
-
-
 	$r = "\r\n";
 	$t = "\t";
 	$support = readconfigfromdb('support');
