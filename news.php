@@ -90,7 +90,7 @@ if ($add && $submit && !count($errors))
 			$text .= $news['headline'];
 			$text .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
 			$text .= 'link: ' .  $url . "\n";
-			mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text);
+			mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text));
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
 			$alert->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
