@@ -1363,11 +1363,17 @@ switch ($nav)
 		$and_where .= ' and m.validity < now()';
 		break;
 	case 'fromnew':
-		$and_where .= ' and u.adate > ?';
-		$sql_bind[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		if (!$uid)
+		{
+			$and_where .= ' and u.adate > ?';
+			$sql_bind[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		}
 		break;
 	case 'fromleaving':
-		$and_where .= ' and u.status = 2';
+		if (!$uid)
+		{
+			$and_where .= ' and u.status = 2';
+		}
 		break;
 	case 'all':
 	default:
@@ -1643,15 +1649,22 @@ if (!$inline)
 			'color'		=> 'danger',
 			'lbl'		=> 'Vervallen',
 		),
-		'fromnew'	=> array(
-			'color'		=> 'white',
-			'lbl'		=> 'Van instappers',
-		),
-		'fromleaving'	=> array(
-			'color'		=> 'white',
-			'lbl'		=> 'Van uitstappers',
-		),
+
 	);
+
+	if (!$uid)
+	{
+		$nav_tabs = array_merge($nav_tabs, array(
+			'fromnew'	=> array(
+				'color'		=> 'white',
+				'lbl'		=> 'Van instappers',
+			),
+			'fromleaving'	=> array(
+				'color'		=> 'white',
+				'lbl'		=> 'Van uitstappers',
+			),
+		));
+	}
 
 	echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
