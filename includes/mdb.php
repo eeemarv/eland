@@ -19,7 +19,7 @@ class mdb
 	public function set_schema($schema)
 	{
 		$this->schema = $schema;
-		return this;
+		return $this;
 	}
 
 	public function get_schema($schema)
