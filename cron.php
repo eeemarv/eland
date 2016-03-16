@@ -513,7 +513,7 @@ function geo_q_process()
 	return true;
 }
 
-run_cronjob('sendmail', 60);
+run_cronjob('sendmail', 50);
 
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
 

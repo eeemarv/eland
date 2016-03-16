@@ -4,7 +4,7 @@ function sendmail()
 {
 	global $redis, $r, $db;
 
-	for ($i = 0; $i < 50; $i++)
+	for ($i = 0; $i < 20; $i++)
 	{
 		$mail = $redis->rpop('mail_q');
 
