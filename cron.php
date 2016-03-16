@@ -886,7 +886,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	$updated = call_user_func($name);
 
-	$lastrun = ($interval > 86400) ? $lastrun + $interval : $time;
+	$lastrun = (($lastrun + $interval - $time > 86400) || ($interval < 86401)) ? $time : $lastrun + $interval;
 
 	if (isset($lastrun_ary[$name]))
 	{
