@@ -897,10 +897,12 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
 	}
 
+/*
 	if ($name != 'cronschedule')
 	{
 		log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
 	}
+*/
 
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
 
