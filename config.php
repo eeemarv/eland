@@ -97,6 +97,7 @@ $config = $db->fetchAll('select *
 		and setting <> \'mailinglists_enabled\'
 		and setting <> \'from_address\'
 		and setting <> \'from_address_transactions\'
+		and setting <> \'ets_enabled\'
 	order by category, setting');
 
 $eh_settings = array_keys($eland_config);
