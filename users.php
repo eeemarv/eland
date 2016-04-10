@@ -1175,6 +1175,11 @@ if ($add || $edit)
 			$errors[] = 'De postcode mag maximaal 6 tekens lang zijn.';
 		}
 
+		if (strlen($user['hobbies']) > 500)
+		{
+			$errors[] = 'Het veld hobbies en interesses mag maximaal 500 tekens lang zijn.';
+		}
+
 		if (!$user_prefetch['adate'])
 		{
 			if (!$password)
@@ -1583,7 +1588,7 @@ if ($add || $edit)
 	echo '<div class="form-group">';
 	echo '<label for="hobbies" class="col-sm-2 control-label">Hobbies, interesses</label>';
 	echo '<div class="col-sm-10">';
-	echo '<textarea name="hobbies" id="hobbies" class="form-control">';
+	echo '<textarea name="hobbies" id="hobbies" class="form-control" maxlength="500">';
 	echo $user['hobbies'];
 	echo '</textarea>';
 	echo '</div>';
