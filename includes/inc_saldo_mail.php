@@ -434,7 +434,7 @@ function saldo()
 			$mm->set_var('googleaddr', str_replace(' ', '+', $addr[$user_id]));
 		}
 	
-		$mm->mail_q(array('to' => $user_id, 'subject' => $subject, 'reply_to' => 'support'));
+		$mm->mail_q(array('to' => $user_id, 'subject' => $subject));
 		$log_to[] = $users[$user_id]['letscode'] . ' ' . $users[$user_id]['name'] . ' (' . $user_id . ')';
 	}
 

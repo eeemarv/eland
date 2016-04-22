@@ -732,15 +732,24 @@ if (($edit || $add))
 		{
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
+		else if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
+		{
+			$errors[] = 'Categorie bestaat niet!';
+		}
 
 		if (!$msg['content'])
 		{
-			$errors[] = 'Vul inhoud in!';
+			$errors[] = 'De titel ontbreekt.';
+		}
 
-			if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
-			{
-				$errors[] = 'Categorie bestaat niet!';
-			}
+		if(strlen($msg['content']) > 200)
+		{
+			$errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
+		}
+
+		if(strlen($msg['"Description"']) > 2000)
+		{
+			$errors[] = 'De omschrijving mag maximaal 2000 tekens lang zijn.';
 		}
 
 		if(strlen($msg['units']) > 15)
@@ -762,7 +771,7 @@ if (($edit || $add))
 			$msg['cdate'] = gmdate('Y-m-d H:i:s');
 			$msg['validity'] = $msg['vtime'];
 
-			unset($msg['vtime'], $msg['description']);
+			unset($msg['vtime']);
 
 			if (empty($msg['amount']))
 			{
@@ -927,17 +936,17 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="content" class="col-sm-2 control-label">Wat</label>';
+	echo '<label for="content" class="col-sm-2 control-label">Titel</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="content" name="content" ';
-	echo 'value="' . $msg['content'] . '" required>';
+	echo 'value="' . $msg['content'] . '" maxlength="200" required>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
 	echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 	echo '<div class="col-sm-10">';
-	echo '<textarea name="description" class="form-control" id="description" rows="4">';
+	echo '<textarea name="description" class="form-control" id="description" rows="4" maxlength="2000">';
 	echo $msg['description'];
 	echo '</textarea>';
 	echo '</div>';

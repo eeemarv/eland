@@ -688,17 +688,22 @@ function getmailadr($m, $remote_schema = false)
 	{
 		$in = trim($in);
 
-		if ($in == 'admin')
+		if (in_array($in, array('admin', 'newsadmin', 'support')))
 		{
-			$out[] = trim(readconfigfromdb('admin', $sch));
-		}
-		else if ($in == 'newsadmin')
-		{
-			$out[] = trim(readconfigfromdb('newsadmin', $sch));
-		}
-		else if ($in == 'support')
-		{
-			$out[] = trim(readconfigfromdb('support', $sch));
+			$ary = explode(',', readconfigfromdb($in, $sch));
+
+			foreach ($ary as $mail)
+			{
+				$mail = trim($mail);
+
+				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+				{
+					log_event('', 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail, $sch);
+					continue;
+				}
+
+				$out[] = $mail;
+			}
 		}
 		else if (ctype_digit($in))
 		{
@@ -717,20 +722,22 @@ function getmailadr($m, $remote_schema = false)
 
 			while ($row = $st->fetch())
 			{
-				if (!filter_var($row['value'], FILTER_VALIDATE_EMAIL))
+				$mail = trim($row['value']);
+
+				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
 					log_event('', 'mail',
-						'error: invalid mail address : ' . $row['value'] . ', user id: ' . $in,
+						'error: invalid mail address : ' . $mail . ', user id: ' . $in,
 						$sch);
 					continue;
 				}
 
-				$out[] = trim($row['value']);
+				$out[] = $mail;
 			}
 		}
 		else if (filter_var($in, FILTER_VALIDATE_EMAIL))
 		{
-			$out[] = trim($in);
+			$out[] = $in;
 		}
 		else
 		{
@@ -741,7 +748,7 @@ function getmailadr($m, $remote_schema = false)
 	if (!count($out))
 	{
 		log_event('', 'mail', 'no valid mail adress found for: ' . explode('|', $m), $sch);
-		continue;
+		return $out;
 	} 
 
 	return $out;

@@ -26,7 +26,7 @@ if ($q)
 }
 
 $mdb->connect();
-$rows = $mdb->logs->find($find)->sort(array('timestamp' => -1))->limit(200);
+$rows = $mdb->logs->find($find)->sort(array('timestamp' => -1))->limit(300);
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
