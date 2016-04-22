@@ -2,7 +2,7 @@
 
 class redis_session implements SessionHandlerInterface
 {
-	public $ttl = 86400; // 1 day
+	public $ttl = 172800; // 1 day
 	protected $redis;
 	protected $schema;
 
