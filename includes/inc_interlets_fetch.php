@@ -34,7 +34,7 @@ function fetch_interlets_msgs($client, $url)
 
 			list($dummy, $msgid) = explode('=', $href);
 
-			$redis_msg_key = $letsgroup['url'] . '_interlets_msg_' . $msgid;
+			$redis_msg_key = $url . '_interlets_msg_' . $msgid;
 
 			echo '_' . $va . "_  id:" . $msgid . $r;
 			echo $content . $r . $user;
@@ -85,29 +85,29 @@ function fetch_interlets_typeahead_data($client, $url)
 		$users[] = $user;
 	}); 
 
-	$redis_data_key = $letsgroup['url'] . '_typeahead_data';
+	$redis_data_key = $url . '_typeahead_data';
 	$data_string = json_encode($users);
 
 	if ($data_string != $redis->get($redis_data_key))
 	{
-		$redis_thumbprint_key = $letsgroup['url'] . '_typeahead_thumbprint';
+		$redis_thumbprint_key = $url . '_typeahead_thumbprint';
 		$redis->set($redis_thumbprint_key, time());
 		$redis->expire($redis_thumbprint_key, 5184000);	// 60 days
 		$redis->set($redis_data_key, $data_string);
 	}
 	$redis->expire($redis_data_key, 86400);		// 1 day
 
-	$redis_refresh_key = $letsgroup['url'] . '_typeahead_updated';
+	$redis_refresh_key = $url . '_typeahead_updated';
 	$redis->set($redis_refresh_key, '1');
 	$redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 	$user_count = count($users);
 
-	$redis_user_count_key = $letsgroup['url'] . '_active_user_count';
+	$redis_user_count_key = $url . '_active_user_count';
 	$redis->set($redis_user_count_key, $user_count);
 	$redis->expire($redis_user_count_key, 86400); // 1 day
 
-	log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $letsgroup['groupname']);
+	log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $url);
 
 	echo '----------------------------------------------------' . $r;
 	echo $redis_data_key . $r;
