@@ -28,16 +28,6 @@ $server->register('userbyletscode',                // method name
     'Get the user'            // documentation
 );
 
-$server->register('userbylogin',                // method name
-    array('apikey' => 'xsd:string', 'login' => 'xsd:string', 'hash' => 'xsd:string'),        // input parameters
-    array('return' => 'xsd:string'),      // output parameters
-    'urn:interletswsdl',                      // namespace
-    'urn:interletswsdl#userbyletscode',                // soapaction
-    'rpc',                                // style
-    'encoded',                            // use
-    'Get the user'            // documentation
-);
-
 $server->register('userbyname',                // method name
     array('apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'),        // input parameters
     array('return' => 'xsd:string'),      // output parameters
@@ -278,10 +268,6 @@ function check_apikey($apikey, $type)
 		where apikey = ?
 		and type = ?', array($apikey, $type))) ? true : false;
 }
-
-// Use the request to (try to) invoke the service
-//$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';
-//$server->service($HTTP_RAW_POST_DATA);
 
 $post_data = file_get_contents('php://input');
 $server->service($post_data);
