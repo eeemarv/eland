@@ -200,7 +200,7 @@ if (!isset($schema_interletsq_min))
 
 				echo '----------------------------------------------------' . $r;
 				echo 'end Cron ' . "\n";
-				exit;	
+				exit;
 			}
 			catch (Exception $e)
 			{

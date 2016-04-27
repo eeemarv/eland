@@ -25,6 +25,19 @@ In eLAS there are only 2 levels of access for contacts. Public and private. In e
 ```sql
 UPDATE contact SET flag_public = 2 where flag_public = 1;
 ```
+
+Coming from eLAS +3.6 run also the following to undo some database changes:
+
+```sql
+alter table users add column "PictureFile" character varying(128);
+alter table msgpictures add column "PictureFile" character varying(128);
+
+update users u set "PictureFile" = trim(leading 'userpictures/' from f.path) from files f where f.fileid = u.pictureid;
+update msgpictures m set "PictureFile" = trim(leading 'msgpictures/' from f.path) from files f where f.fileid = m.pictureid;
+
+update parameters set value = '31000' where parameter = 'schemaversion';
+```
+
 Rename then the public schema to the letsgroup code
 ```sql
 ALTER SCHEMA public RENAME TO abc;

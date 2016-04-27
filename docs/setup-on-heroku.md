@@ -7,13 +7,15 @@ heroku buildpacks:set https://github.com/ddollar/heroku-buildpack-multi.git
 ```
 
 ###Cron
-```shell
-heroku addons:add scheduler
+
+Trigger the cronscript every minute from a remote server.
+
+crontab:
 ```
-Set every 10 min.  
-```shell
-$ php -r "echo file_get_contents('http://yourdomain.com/cron.php');"
+* * * * * wget -O /dev/null http://a.letsa.net/cron.php
+
 ```
+
 Only one cronjob is needed for all installed domains (unlike eLAS). Just choose one domain.
 
 ###Domain
@@ -47,8 +49,6 @@ The schema name is also:
   * the name of the session
   * prefix of the files in S3 cloud storage
   * prefix of the keys in Redis.
-
-By convention the schema is named after the so called system tag or letscode of the letsgroup.
 
 
 ###AWS S3
@@ -86,15 +86,24 @@ You need to set up CORS configuration on bucket S3_RES for the fonts of footable
 heroku addons:add rediscloud:30
 ```
 
-###Mandrill
-```shell
-heroku addons:add mandrill
-```
-
 ###Mongolab (logs, forum topics and document references are stored in mongodb)
 ```shell
 heroku addons:add mongolab
 ```
+
+###Email
+
+#### SMTP mailserver (e.i. Amazon Simple Email Service)
+* SMTP_HOST
+* SMTP_PORT
+* SMTP_PASSWORD
+* SMTP_USERNAME
+
+#### From mail addresses
+* MAIL_FROM_ADDRESS=a@letsa.net 
+* MAIL_NOREPLY_ADDRESS=noreply@letsa.net
+
+Mail is sent only from these two addresses. 
 
 ###Other environment vars
 
