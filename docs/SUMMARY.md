@@ -29,8 +29,10 @@
     * [Logo toevoegen](docs/admin-logo-toevoegen.md)
   * [Gratis-hosting](docs/gratis-hosting.md)
 
-* Server
-  * [Setup on Heroku](docs/setup-on-heroku.md)
+* [Server & Hosting](docs/hosting.md)
+  * [Option 1: Heroku](docs/setup-on-heroku.md)
+  * [Option 2: Dokku](docs/dokku.md)
   * [Migrate from eLAS 2.x](docs/migrate-from-elas-2.md)
   * [Migrate from eLAS 3.x](docs/migrate-from-elas-3.md)
+  * [Using Gitbook](docs/using-gitbook.md)
 

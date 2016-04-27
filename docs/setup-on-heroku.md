@@ -111,3 +111,10 @@ Mail is sent only from these two addresses.
 * MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
 
 CDN urls of cdns see [includes/inc_default.php] for defaults
+
+###Daily backups
+
+```shell
+heroku pg:backups schedule DATABASE_URL --at '02:00 Europe/Brussels'
+```
+
