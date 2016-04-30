@@ -2239,6 +2239,7 @@ if ($v_list && $s_admin)
 	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
 	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
+	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : gmdate('Y-m-d');
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
@@ -2250,6 +2251,7 @@ if ($v_list && $s_admin)
 			'postcode'		=> 'Postcode',
 			'accountrole'	=> 'Rol',
 			'saldo'			=> 'Saldo',
+			'saldo_date'	=> 'Saldo op ',
 			'minlimit'		=> 'Min',
 			'maxlimit'		=> 'Max',
 			'comments'		=> 'Commentaar',
@@ -2285,6 +2287,56 @@ if ($v_list && $s_admin)
 	$users = $db->fetchAll('select u.*
 		from users u
 		where ' . $st[$status]['sql'], $sql_bind);
+
+	if (isset($show_columns['u']['saldo_date']))
+	{
+		$split_saldo_date  = explode('-', $saldo_date);
+		if (!checkdate($split_saldo_date[1], $split_saldo_date[2], $split_saldo_date[0]))
+		{
+			$saldo_date = gmdate('Y-m-d');
+
+			array_walk($users, function(&$user, $user_id){
+				$user['saldo_date'] = $user['saldo'];
+			});
+		}
+		else
+		{
+			$in = $out = array();
+			$datetime = new \DateTime($saldo_date);
+
+			$rs = $db->prepare('select id_to, sum(amount)
+				from transactions
+				where date <= ?
+				group by id_to');
+
+			$rs->bindValue(1, $datetime, 'datetime');
+
+			$rs->execute();
+
+			while($row = $rs->fetch())
+			{
+				$in[$row['id_to']] = $row['sum'];
+			}
+
+			$rs = $db->prepare('select id_from, sum(amount)
+				from transactions
+				where date <= ?
+				group by id_from');
+			$rs->bindValue(1, $datetime, 'datetime');
+
+			$rs->execute();
+
+			while($row = $rs->fetch())
+			{
+				$out[$row['id_from']] = $row['sum'];
+			}
+
+			array_walk($users, function(&$user) use ($out, $in){
+				$user['saldo_date'] += $in[$user['id']];
+				$user['saldo_date'] -= $out[$user['id']];
+			});
+		}
+	}
 
 	if (isset($show_columns['c']))
 	{
@@ -2502,8 +2554,12 @@ if ($v_list)
 
 	if ($s_admin)
 	{
-		$includejs .= '<script src="' . $rootpath . 'js/csv.js"></script>
+		$includejs .= '	<script src="' . $cdn_datepicker . '"></script>
+			<script src="' . $cdn_datepicker_nl . '"></script>
+			<script src="' . $rootpath . 'js/csv.js"></script>
 			<script src="' . $rootpath . 'js/table_sel.js"></script>';
+
+		$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '">';
 	}
 }
 else if ($v_tiles)
@@ -2606,7 +2662,7 @@ if ($v_map)
 		{
 			echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer de coordinaten zijn opgezocht door de software ';
 			echo '(maximum één dag).';
-		}	
+		}
 	}
 
 	echo '</p></div>';
@@ -2659,6 +2715,21 @@ if ($s_admin && $v_list)
 			echo (isset($show_columns[$group][$key])) ? ' checked="checked"' : '';
 			echo '> ' . $lbl;
 			echo ($key == 'adr') ? ', split door teken: <input type="text" name="adr_split" size="1" value="' . $adr_split . '">' : '';
+
+			if ($key == 'saldo_date')
+			{
+				echo '<input type="text" name="saldo_date" ';
+				echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+				echo 'data-date-language="nl" ';
+				echo 'data-date-today-highlight="true" ';
+				echo 'data-date-autoclose="true" ';
+				echo 'data-date-enable-on-readonly="false" ';
+				echo 'placeholder="Datum jjjj-mm-dd" ';
+				echo 'value="' . $saldo_date . '">';
+
+				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
+			}
+
 			echo '</label>';
 			echo '</div>';
 		}

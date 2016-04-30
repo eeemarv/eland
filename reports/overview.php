@@ -10,7 +10,6 @@ $fa = 'calculator';
 include $rootpath . 'includes/inc_header.php';
 
 echo '<p><a href="transperuser.php">Transacties per gebruiker/datum</a></p>';
-echo '<p><a href="balance.php">Saldo op datum</a></p>';
 
 include $rootpath . 'includes/inc_footer.php';
 
