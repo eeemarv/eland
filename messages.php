@@ -1612,7 +1612,7 @@ if (!$inline)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q">';
+	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoeken">';
 	echo '</div>';
 	echo '</div></div><br>';
 
