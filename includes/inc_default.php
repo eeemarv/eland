@@ -295,22 +295,19 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 $view = (isset($_GET['view'])) ? $_GET['view'] : false;
 
-$key_view_users = $schema . '_u_' . $s_id . '_u_view';
-$key_view_messages = $schema . '_u_' . $s_id . '_m_view';
-
-$view_users = ($redis->get($key_view_users)) ?: 'list';
-$view_messages = ($redis->get($key_view_messages)) ?: 'list';
+$view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
+$view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
 
 if ($view)
 {
 	if ($script_name == 'users' && $view != $view_users)
 	{
-		$redis->set($key_view_users, $view);
+		$_SESSION['view']['users'] = $view;
 		$view_users = $view;
 	}
 	else if ($script_name == 'messages' && $view != $view_messages)
 	{
-		$redis->set($key_view_messages, $view);
+		$_SESSION['view']['messages'] = $view;
 		$view_messages = $view;
 	}
 }
