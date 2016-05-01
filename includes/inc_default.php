@@ -28,7 +28,7 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
 $cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
 $cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
+$cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
 
 $cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
 $cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
