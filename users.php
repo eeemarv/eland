@@ -2132,6 +2132,7 @@ if (!$view)
 }
 
 $v_list = ($view == 'list') ? true : false;
+$v_extended = ($view == 'extended') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
 $v_map = ($view == 'map') ? true : false;
 
@@ -2521,17 +2522,26 @@ else
 
 $h1 .= '<span class="pull-right hidden-xs">';
 $h1 .= '<span class="btn-group" role="group">';
+
 $active = ($v_list) ? ' active' : '';
 $v_params = $params;
 $v_params['view'] = 'list';
 $h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+
+$active = ($v_extended) ? ' active' : '';
+$v_params = $params;
+$v_params['view'] = 'extended';
+$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst met omschrijvingen', 'th-list');
+
 $active = ($v_tiles) ? ' active' : '';
 $v_params['view'] = 'tiles';
 $h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
+
 $active = ($v_map) ? ' active' : '';
 $v_params['view'] = 'map';
 unset($v_params['status']);
 $h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'kaart', 'map-marker');
+
 $h1 .= '</span>';
 
 if ($s_admin && $v_list)
@@ -2666,10 +2676,10 @@ if ($v_map)
 	}
 
 	echo '</p></div>';
-	echo '</div>';	
+	echo '</div>';
 }
 
-if ($v_list || $v_tiles)
+if ($v_list || $v_extended || $v_tiles)
 {
 	echo '<form method="get" action="' . generate_url('users', $params) . '">';
 
@@ -2743,7 +2753,7 @@ if ($s_admin && $v_list)
 	echo '</div>';
 }
 
-if ($v_list || $v_tiles)
+if ($v_list || $v_extended || $v_tiles)
 {
 	echo '<br>';
 
@@ -3108,8 +3118,61 @@ if ($v_list)
 		echo '</form>';
 	}
 }
+else if ($v_extended)
+{
+	foreach ($users as $u)
+	{
+		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$class = $st_class_ary[$row_stat];
+		$class = (isset($class)) ? ' bg-' . $class : '';
 
-if ($v_tiles)
+		echo '<div class="panel panel-info printview">';
+		echo '<div class="panel-body';
+		echo $class;
+		echo '">';
+
+		echo '<div class="media">';
+
+		if ($u['PictureFile'])
+		{
+			echo '<div class="media-left">';
+			echo '<a href="' . generate_url('users', 'id=' . $u['id']) . '">';
+			echo '<img class="media-object" src="' . $s3_img_url . $u['PictureFile'] . '" width="150">';
+			echo '</a>';
+			echo '</div>';
+		}
+		echo '<div class="media-body">';
+
+		echo '<h3 class="media-heading">';
+		echo link_user($u);
+		echo '</h3>';
+
+		echo htmlspecialchars($u['hobbies'], ENT_QUOTES);
+		echo htmlspecialchars($u['postcode'], ENT_QUOTES);
+		echo '</div>';
+		echo '</div>';
+
+
+		echo '</div>';
+
+		echo '<div class="panel-footer">';
+		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user']);
+		echo ($msg['postcode']) ? ', postcode: ' . $u['postcode'] : '';
+
+		if ($s_admin)
+		{
+			echo '<span class="inline-buttons pull-right">';
+			echo aphp('users', 'edit=' . $u['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('users', 'del=' . $u['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo '</span>';
+		}
+		echo '</p>';
+		echo '</div>';
+
+		echo '</div>';
+	}
+}
+else if ($v_tiles)
 {
 	echo '<p>';
 	echo '<span class="btn-group sort-by" role="group">';

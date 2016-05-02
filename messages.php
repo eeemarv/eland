@@ -1356,8 +1356,27 @@ if ($q)
 
 if ($cid)
 {
-	$and_where .= ' and m.id_category = ? ';
-	$sql_bind[] = $cid;
+	$ary = array();
+
+	$st = $db->prepare('select id from categories where id_parent = ?');
+	$st->bindValue(1, $cid);
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$ary[] = $row['id'];
+	}
+
+	if (count($ary))
+	{
+		$and_where .= ' and m.id_category in (' . implode(',', $ary) . ') ';
+	}
+	else
+	{
+		$and_where .= ' and m.id_category = ? ';
+		$sql_bind[] = $cid;
+	}
+
 	$params['cid'] = $cid;
 }
 
@@ -1587,12 +1606,15 @@ if (!$inline)
 	$v_params = $params;
 	$h1 .= '<span class="pull-right hidden-xs">';
 	$h1 .= '<span class="btn-group" role="group">';
+
 	$active = ($v_list) ? ' active' : '';
 	$v_params['view'] = 'list';
 	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+
 	$active = ($v_extended) ? ' active' : '';
 	$v_params['view'] = 'extended';
 	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+
 	$h1 .= '</span></span>';
 
 	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
@@ -1850,7 +1872,6 @@ else if ($v_extended)
 
 		echo '</div>';
 	}
-
 }
 
 $pagination->render();
