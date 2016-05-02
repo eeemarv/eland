@@ -2,6 +2,8 @@
 
 $r = "\r\n";
 
+$step = ($_GET['step']) ?: 1;
+
 $php_sapi_name = php_sapi_name();
 
 if ($php_sapi_name == 'cli')
@@ -24,153 +26,180 @@ echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 echo "schema: " . $schema . ' systemtag: ' . $systemtag . $r;
 
+if ($step == 2 || $step == 3)
+{
+	// sync the image files  
+	$s3 = Aws\S3\S3Client::factory(array(
+		'signature'	=> 'v4',
+		'region'	=> 'eu-central-1',
+		'version'	=> '2006-03-01',
+	));
+
+	echo 'Sync the image files.' . $r;
+
+	$possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
+}
+
 // Upgrade the DB first if required
 
-$currentversion = $dbversion = readparameter('schemaversion');
+if ($step == 1)
+{
+	$currentversion = $dbversion = readparameter('schemaversion');
 
-if ($currentversion >= $schemaversion)
-{
-	echo '-- Database already up to date -- ' . $r;
-}
-else
-{
-	echo "eLAS/eLAND database needs to upgrade from $currentversion to $schemaversion\n";
-	while($currentversion < $schemaversion)
+	if ($currentversion >= $schemaversion)
 	{
-		$currentversion++;
-		if(doupgrade($currentversion))
+		echo '-- Database already up to date -- ' . $r;
+	}
+	else
+	{
+		echo "eLAS/eLAND database needs to upgrade from $currentversion to $schemaversion\n";
+		while($currentversion < $schemaversion)
 		{
-			$doneversion = $currentversion;
+			$currentversion++;
+			if(doupgrade($currentversion))
+			{
+				$doneversion = $currentversion;
+			}
 		}
+		$currentversion = readparameter('schemaversion', true);	
+		echo "Upgraded database from schema version $dbversion to $currentversion\n";
+		log_event("","DB","Upgraded database from schema version $dbversion to $currentversion");	
 	}
-	$currentversion = readparameter('schemaversion', true);	
-	echo "Upgraded database from schema version $dbversion to $currentversion\n";
-	log_event("","DB","Upgraded database from schema version $dbversion to $currentversion");	
+
+	header('Location: ' . $rootpath . 'init.php?step=2');
+	exit;
 }
-
-
-// sync the image files  
-$s3 = Aws\S3\S3Client::factory(array(
-	'signature'	=> 'v4',
-	'region'	=> 'eu-central-1',
-	'version'	=> '2006-03-01',
-));
-
-echo 'Sync the image files.' . $r;
-
-$possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
-
-$rs = $db->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
-
-$rs->execute();
-
-while($row = $rs->fetch())
+else if ($step == 2)
 {
-	$filename = $row['PictureFile'];
-	$user_id = $row['id'];
+	$rs = $db->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
 
-	list($f_schema) = explode('_', $filename);
+	$rs->execute();
 
-	$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
-
-	$found = false;
-
-	foreach ($possible_extensions as $extension)
+	while($row = $rs->fetch())
 	{
-		$filename_bucket = $filename_no_ext . '.' . $extension;
-		if($s3->doesObjectExist($s3_img, $filename_bucket))
+		$filename = $row['PictureFile'];
+		$user_id = $row['id'];
+
+		list($f_schema) = explode('_', $filename);
+
+		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
+
+		$found = false;
+
+		foreach ($possible_extensions as $extension)
 		{
-			$found = true;
-			break;
+			$filename_bucket = $filename_no_ext . '.' . $extension;
+
+			if($s3->doesObjectExist($s3_img, $filename_bucket))
+			{
+				$found = true;
+				break;
+			}
 		}
-	}
 
-	if (!$found)
-	{
-		$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
-		echo 'Profile image not present, deleted in database: ' . $filename . $r;
-		log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
-	}
-	else if ($f_schema != $schema)
-	{
-		$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
-		$result = $s3->copyObject(array(
-			'Bucket'		=> $s3_img,
-			'CopySource'	=> $s3_img . '/' . $filename_bucket,
-			'Key'			=> $new_filename,
-			'ACL'			=> 'public-read',
-			'CacheControl'	=> 'public, max-age=31536000',
-			'ContentType'	=> 'image/jpeg',
-		));
-
-		if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
+		if (!$found)
 		{
-			$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
-			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-			log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+			$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
+			echo 'Profile image not present, deleted in database: ' . $filename . $r;
+			log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
+		}
+		else if ($f_schema != $schema)
+		{
+			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 
-			$s3->deleteObject(array(
-				'Bucket'	=> $s3_img,
-				'Key'		=> $filename_bucket,
+			$result = $s3->copyObject(array(
+				'Bucket'		=> $s3_img,
+				'CopySource'	=> $s3_img . '/' . $filename_bucket,
+				'Key'			=> $new_filename,
+				'ACL'			=> 'public-read',
+				'CacheControl'	=> 'public, max-age=31536000',
+				'ContentType'	=> 'image/jpeg',
 			));
+
+			if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
+			{
+				$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
+				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+				log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+
+/* Remove old images manually from s3 for now
+				$s3->deleteObject(array(
+					'Bucket'	=> $s3_img,
+					'Key'		=> $filename_bucket,
+				));
+				*/
+
+			}
 		}
 	}
+
+	header('Location: ' . $rootpath . 'init.php?step=3');
+	exit;
 }
-
-$message_images = $db->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
-
-foreach($message_images as $image)
+else if ($step == 3)
 {
-	$filename = $image['PictureFile'];
-	$msg_id = $image['msgid'];
-	$id = $image['id'];
 
-	list($f_schema) = explode('_', $filename);
+	$message_images = $db->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
 
-	$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
-
-	$found = false;
-
-	foreach ($possible_extensions as $extension)
+	foreach($message_images as $image)
 	{
-		$filename_bucket = $filename_no_ext . '.' . $extension;
-		if($s3->doesObjectExist($s3_img, $filename_bucket))
+		$filename = $image['PictureFile'];
+		$msg_id = $image['msgid'];
+		$id = $image['id'];
+
+		list($f_schema) = explode('_', $filename);
+
+		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
+
+		$found = false;
+
+		foreach ($possible_extensions as $extension)
 		{
-			$found = true;
-			break;
+			$filename_bucket = $filename_no_ext . '.' . $extension;
+			if($s3->doesObjectExist($s3_img, $filename_bucket))
+			{
+				$found = true;
+				break;
+			}
 		}
-	}
 
-	if (!$found)
-	{
-		$db->delete('msgpictures', array('id' => $id));
-		echo 'Message image not present, deleted in database: ' . $filename . $r;
-		log_event ($s_id, 'init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
-	}
-	else if ($f_schema != $schema)
-	{
-		$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
-		$result = $s3->copyObject(array(
-			'Bucket'		=> $s3_img,
-			'CopySource'	=> $s3_img . '/' . $filename_bucket,
-			'Key'			=> $new_filename,
-			'ACL'			=> 'public-read',
-			'CacheControl'	=> 'public, max-age=31536000',
-			'ContentType'	=> 'image/jpeg',
-		));
-
-		if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
+		if (!$found)
 		{
-			$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
-			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-			log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
-
-			$s3->deleteObject(array(
-				'Bucket'	=> $s3_img,
-				'Key'		=> $filename_bucket,
+			$db->delete('msgpictures', array('id' => $id));
+			echo 'Message image not present, deleted in database: ' . $filename . $r;
+			log_event ($s_id, 'init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
+		}
+		else if ($f_schema != $schema)
+		{
+			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
+			$result = $s3->copyObject(array(
+				'Bucket'		=> $s3_img,
+				'CopySource'	=> $s3_img . '/' . $filename_bucket,
+				'Key'			=> $new_filename,
+				'ACL'			=> 'public-read',
+				'CacheControl'	=> 'public, max-age=31536000',
+				'ContentType'	=> 'image/jpeg',
 			));
+
+			if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
+			{
+				$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
+				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+				log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+
+/* Remove old images manually from s3 for now
+				$s3->deleteObject(array(
+					'Bucket'	=> $s3_img,
+					'Key'		=> $filename_bucket,
+				)); */
+			}
 		}
 	}
+
+	echo 'Sync image files ready.' . $r;
+
+	header('Location: ' . $rootpath . 'init.php?step=4');
+	exit;
 }
 
 /*
@@ -210,7 +239,7 @@ foreach ($results as $result)
 }
 */
 
-echo 'Sync image files ready.' . $r;
+
 
 /*
 echo 'Cleanup orphaned contacts. ' . $r;
@@ -251,18 +280,23 @@ else
 	echo 'none found.' . $r;
 }
 */
-echo '*** clear users cache ***';
 
-$users = $db->fetchAll('select id from users');
-
-foreach ($users as $u)
+else if ($step == 4)
 {
-	$redis->del($schema . '_user_' . $u['id']);
+
+	echo '*** clear users cache ***';
+
+	$users = $db->fetchAll('select id from users');
+
+	foreach ($users as $u)
+	{
+		$redis->del($schema . '_user_' . $u['id']);
+	}
+
+	echo "\n";
+
+	echo '** end **';
 }
-
-echo "\n";
-
-echo '** end **';
 
 /**
  *
