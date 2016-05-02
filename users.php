@@ -18,8 +18,6 @@ $submit = (isset($_POST['zend'])) ? true : false;
 
 $user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
 
-$inline = (isset($_GET['inline'])) ? true : false;
-
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 
 $role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
@@ -2106,7 +2104,7 @@ if ($id)
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
 		echo '<div id="messages" data-uid="' . $id . '" ';
-		echo 'data-url="' . $rootpath . 'messages.php?inline=1&view=list&uid=' . $id;
+		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
 		echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 	}
 

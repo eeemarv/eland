@@ -10,7 +10,7 @@ $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $add = (isset($_GET['add'])) ? true : false;
-$inline = (isset($_GET['inline'])) ? true : false;
+
 $uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
@@ -1312,24 +1312,16 @@ if ($id)
  * list messages
  */
 
-
-if ($inline)
+if (!($view || $inline))
 {
-	$view = 'list';
-}
-else
-{
-	if (!$view)
-	{
-		cancel();
-	}
+	cancel();
 }
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$v_list = ($view == 'list') ? true : false;
-$v_extended = ($view == 'extended') ? true : false;
-$v_map = ($view == 'map') ? true : false;
+$v_list = ($view == 'list' || $inline) ? true : false;
+$v_extended = ($view == 'extended' && !$inline) ? true : false;
+$v_map = ($view == 'map' && !$inline) ? true : false;
 
 $params = array(
 	'view'	=> $view,

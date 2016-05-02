@@ -290,25 +290,26 @@ $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-
 /* view */
+
+$inline = (isset($_GET['inline'])) ? true : false;
 
 $view = (isset($_GET['view'])) ? $_GET['view'] : false;
 
 $view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
 $view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
 
-if ($view)
+if ($view || $inline)
 {
 	if ($script_name == 'users' && $view != $view_users)
 	{
-		$_SESSION['view']['users'] = $view;
-		$view_users = $view;
+		$view_users = ($view) ?: $view_users;
+		$_SESSION['view']['users'] = $view = $view_users;
 	}
 	else if ($script_name == 'messages' && $view != $view_messages)
 	{
-		$_SESSION['view']['messages'] = $view;
-		$view_messages = $view;
+		$view_messages = ($view) ?: $view_messages;
+		$_SESSION['view']['messages'] = $view = $view_messages;
 	}
 }
 
