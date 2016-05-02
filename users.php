@@ -2522,10 +2522,12 @@ $v_params = $params;
 $v_params['view'] = 'list';
 $h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
 
+/*
 $active = ($v_extended) ? ' active' : '';
 $v_params = $params;
 $v_params['view'] = 'extended';
 $h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst met omschrijvingen', 'th-list');
+*/
 
 $active = ($v_tiles) ? ' active' : '';
 $v_params['view'] = 'tiles';
