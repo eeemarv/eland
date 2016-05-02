@@ -269,7 +269,8 @@ if (!$edit)
 		echo '<span class="input-group-addon">';
 		echo '<i class="fa fa-search"></i>';
 		echo '</span>';
-		echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+		echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '" ';
+		echo 'placeholder="Zoeken">';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
