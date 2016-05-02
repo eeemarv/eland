@@ -1107,16 +1107,7 @@ if ($add || $edit)
 				$errors[] = 'De volledige naam mag maximaal 100 tekens lang zijn.';
 			}
 		}
-/*
-		if (!$user['login'])
-		{
-			$errors[] = 'Vul een login in. (gebruikersnaam)';
-		}
-		else if ($db->fetchColumn($login_sql, $login_sql_params))
-		{
-			$errors[] = 'De login bestaat al! (gebruikersnaam)';
-		}
-*/
+
 		if ($s_admin)
 		{
 			if (!isset($mail))
@@ -1839,6 +1830,11 @@ if ($id)
 	if ($s_admin && !$count_transactions && !$s_owner)
 	{
 		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
+	}
+
+	if ($s_admin || ($s_user && !$s_owner))
+	{
+		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, null, false), 'exchange', true);
 	}
 
 	if ($prev)
