@@ -2,7 +2,7 @@
 
 function sendmail()
 {
-	global $redis, $r, $db;
+	global $redis, $r;
 
 	for ($i = 0; $i < 20; $i++)
 	{
@@ -112,14 +112,16 @@ function sendmail()
 			$message->addPart($mail['html'], 'text/html');
 		}
 
+		$systemname = readconfigfromdb('systemname', $to_schema);
+
 		if (isset($mail['reply_to']))
 		{
-			$message->setFrom($from)
+			$message->setFrom(array($from => $systemname))
 				->setReplyTo($mail['reply_to']);
 		}
 		else
 		{
-			$message->setFrom($noreply);
+			$message->setFrom(array($noreply => $systemname));
 		}
 
 		if (isset($mail['cc']))
