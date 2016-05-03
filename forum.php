@@ -178,7 +178,16 @@ if (!$edit)
 {
 	if ($topic)
 	{
-		$find = array('$or'=> array(array('parent_id' => $topic), array('_id' => new MongoId($topic))));
+		$topic_id = new MongoId($topic);
+		$topic_post = $mdb->forum->findOne(array('_id' => $topic_id));
+
+		if ($topic_post['access'] < $access_level)
+		{
+			$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
+			cancel();
+		}
+
+		$find = array('$or'=> array(array('parent_id' => $topic), array('_id' => $topic_id)));
 	}
 	else
 	{
@@ -300,6 +309,11 @@ if (!$edit)
 
 		foreach($forum_posts as $p)
 		{
+			if ($p['access'] < $access_level)
+			{
+				continue;
+			}
+
 			$s_owner = ($s_id == $p['uid']) ? true : false;
 
 			echo '<tr>';
