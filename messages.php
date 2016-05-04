@@ -1946,11 +1946,6 @@ else if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 
-		foreach ($selected_msgs as $mid => $v)
-		{
-			echo '<input type="hidden" value="1" name="sel[' . $mid . ']">';
-		}
-
 		echo '</form>';
 
 		echo '</div></div>';
