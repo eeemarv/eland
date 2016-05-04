@@ -13,6 +13,17 @@ class pagination
 	private $entity = '';
 	private $params = array();
 
+	private $limit_options = array(
+		10 		=> 10,
+		25 		=> 25,
+		50 		=> 50,
+		100 	=> 100,
+		250		=> 250,
+		500		=> 500,
+		1000 	=> 1000,
+		2500	=> 2500,
+	);
+
 	public function __construct($param)
 	{
 		$this->limit = $param['limit'] ?: 25;
@@ -23,6 +34,12 @@ class pagination
 
 		$this->page_num = ceil($this->row_count / $this->limit);
 		$this->page = floor($this->start / $this->limit);
+
+		if (!$this->limit_options[$this->limit])
+		{
+			$this->limit_options[$this->limit] = $this->limit;
+			ksort($this->limit_options);
+		}
 	}
 
 	public function render(){
@@ -63,7 +80,33 @@ class pagination
 
 		echo '</ul>';
 
-		echo '<div class="pull-right">Totaal '.$this->row_count.', Pagina ' . ($this->page + 1).' van ' . $this->page_num;
+		echo '<div class="pull-right hidden-xs">';
+		echo '<div>';
+		echo 'Totaal '.$this->row_count.', Pagina ' . ($this->page + 1).' van ' . $this->page_num;
+		echo '</div>';
+		echo '<div>';
+
+		echo '<form action="' . $this->entity . '.php">';
+		echo 'Per pagina: ';
+		echo '<select name="limit" onchange="this.form.submit();">';
+		render_select_options($this->limit_options, $this->limit);
+		echo '</select>';
+
+		$action_params = $this->params;
+		unset($action_params['limit']);
+		$action_params['start'] = 0;
+		$action_params = array_merge($action_params,  get_session_query_param(true));
+
+		foreach ($action_params as $name => $value)
+		{
+			if (isset($value))
+			{
+				echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+			}
+		}
+
+		echo '</form>';
+		echo '</div>';
 		echo '</div>';
 
 		echo '</div></div>';

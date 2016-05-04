@@ -1452,6 +1452,7 @@ if ($v_extended)  // to be improved
 
 $params['orderby'] = $orderby;
 $params['asc'] = $asc;
+$params['limit'] = $limit;
 
 $pagination = new pagination(array(
 	'limit' 		=> $limit,
@@ -1703,7 +1704,7 @@ if (!$inline)
 	}
 	echo '</ul>';
 
-	echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
+	//echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
 }
 else
 {
@@ -1894,9 +1895,13 @@ else if ($v_list)
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
 		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
 		echo '</div></div>';
+
 		echo '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
+
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
+
+		echo '<form method="post" class="form-horizontal" id="bulk">';
 
 		echo '<ul class="nav nav-tabs" role="tablist">';
 		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
@@ -1940,8 +1945,15 @@ else if ($v_list)
 
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
-		echo '</div></div>';
+
+		foreach ($selected_msgs as $mid => $v)
+		{
+			echo '<input type="hidden" value="1" name="sel[' . $mid . ']">';
+		}
+
 		echo '</form>';
+
+		echo '</div></div>';
 	}
 
 	include $rootpath . 'includes/inc_footer.php';
