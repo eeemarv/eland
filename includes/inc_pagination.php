@@ -21,7 +21,6 @@ class pagination
 		250		=> 250,
 		500		=> 500,
 		1000 	=> 1000,
-		2500	=> 2500,
 	);
 
 	public function __construct($param)
