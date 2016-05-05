@@ -705,6 +705,8 @@ $row_count = $db->fetchColumn('select count(t.*)
 $params = array(
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
+	'limit'		=> $limit,
+	'start'		=> $start,	
 );
 
 if ($uid)
@@ -713,13 +715,7 @@ if ($uid)
 	$params['uid']	= $uid;
 }
 
-$pagination = new pagination(array(
-	'limit' 		=> $limit,
-	'start' 		=> $start,
-	'entity'		=> 'transactions',
-	'params'		=> $params,
-	'row_count'		=> $row_count,
-));
+$pagination = new pagination('transactions', $row_count, $params, $inline);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,

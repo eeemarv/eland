@@ -12,6 +12,7 @@ class pagination
 	private $page_num = 0;
 	private $entity = '';
 	private $params = array();
+	private $inline = false;
 
 	private $limit_options = array(
 		10 		=> 10,
@@ -23,13 +24,14 @@ class pagination
 		1000 	=> 1000,
 	);
 
-	public function __construct($param)
+	public function __construct($entity = '', $row_count = 0, $params = array(), $inline = false)
 	{
-		$this->limit = $param['limit'] ?: 25;
-		$this->start = $param['start'] ?: 0;
-		$this->row_count = $param['row_count'] ?: 0;
-		$this->entity = $param['entity'] ?: '';
-		$this->params = $param['params'] ?: array();
+		$this->limit = $params['limit'] ?: 25;
+		$this->start = $params['start'] ?: 0;
+		$this->row_count = $row_count;
+		$this->entity = $entity;
+		$this->params = $params;
+		$this->inline = $inline;
 
 		$this->page_num = ceil($this->row_count / $this->limit);
 		$this->page = floor($this->start / $this->limit);
@@ -83,29 +85,33 @@ class pagination
 		echo '<div>';
 		echo 'Totaal '.$this->row_count.', Pagina ' . ($this->page + 1).' van ' . $this->page_num;
 		echo '</div>';
-		echo '<div>';
 
-		echo '<form action="' . $this->entity . '.php">';
-		echo 'Per pagina: ';
-		echo '<select name="limit" onchange="this.form.submit();">';
-		render_select_options($this->limit_options, $this->limit);
-		echo '</select>';
-
-		$action_params = $this->params;
-		unset($action_params['limit']);
-		$action_params['start'] = 0;
-		$action_params = array_merge($action_params,  get_session_query_param(true));
-
-		foreach ($action_params as $name => $value)
+		if (!$this->inline)
 		{
-			if (isset($value))
-			{
-				echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
-			}
-		}
+			echo '<div>';
+			echo '<form action="' . $this->entity . '.php">';
 
-		echo '</form>';
-		echo '</div>';
+			echo 'Per pagina: ';
+			echo '<select name="limit" onchange="this.form.submit();">';
+			render_select_options($this->limit_options, $this->limit);
+			echo '</select>';
+
+			$action_params = $this->params;
+			unset($action_params['limit']);
+			$action_params['start'] = 0;
+			$action_params = array_merge($action_params,  get_session_query_param(true));
+
+			foreach ($action_params as $name => $value)
+			{
+				if (isset($value))
+				{
+					echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+				}
+			}
+
+			echo '</form>';
+			echo '</div>';
+		}
 		echo '</div>';
 
 		echo '</div></div>';

@@ -1453,14 +1453,9 @@ if ($v_extended)  // to be improved
 $params['orderby'] = $orderby;
 $params['asc'] = $asc;
 $params['limit'] = $limit;
+$params['start'] = $start;
 
-$pagination = new pagination(array(
-	'limit' 		=> $limit,
-	'start' 		=> $start,
-	'entity'		=> 'messages',
-	'params'		=> $params,
-	'row_count'		=> $row_count,
-));
+$pagination = new pagination('messages', $row_count, $params, $inline);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -1868,7 +1863,7 @@ else if ($v_extended)
 
 		if ($s_admin || $sf_owner)
 		{
-			echo '<span class="inline-buttons pull-right">';
+			echo '<span class="inline-buttons pull-right hidden-xs">';
 			echo aphp('messages', 'edit=' . $msg['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 			echo aphp('messages', 'del=' . $msg['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
