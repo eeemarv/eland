@@ -1682,10 +1682,12 @@ if (!$inline)
 			'fromnew'	=> array(
 				'color'		=> 'white',
 				'lbl'		=> 'Van instappers',
+				'hidden-xs'	=> true,
 			),
 			'fromleaving'	=> array(
 				'color'		=> 'white',
 				'lbl'		=> 'Van uitstappers',
+				'hidden-xs'	=> true,
 			),
 		));
 	}
@@ -1697,14 +1699,25 @@ if (!$inline)
 	foreach ($nav_tabs as $key => $tab)
 	{
 		$nav_params['nav'] = $key;
+
+		$class = array();
+
+		if ($nav == $key)
+		{
+			$class[] = 'active';
+		}
+
+		if ($tab['hidden-xs'])
+		{
+			$class[] = 'hidden-xs';
+		}
+
 		echo '<li';
-		echo ($nav == $key) ? ' class="active"' : '';
+		echo (count($class)) ? ' class="' . implode(' ', $class) . '"' : '';
 		echo '>';
 		echo aphp('messages', $nav_params, $tab['lbl'], 'bg-' . $tab['color']) . '</li>';
 	}
 	echo '</ul>';
-
-	//echo ($s_admin || $s_owner) ? '<form method="post" class="form-horizontal">' : '';
 }
 else
 {
