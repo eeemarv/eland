@@ -835,6 +835,39 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 /**
  *
  */
+
+function get_typeahead_thumbprint($letsgroup_id, $status = 'active')
+{
+	global $redis, $schema;
+
+	$redis_key = $schema . '_typeahead_thumbprint_' . $letsgroup_id . '_' . $status;
+
+	$thumbprint = $redis->get($redis_key);
+
+	if (!$thumbprint)
+	{
+		return sha1(microtime());
+	}
+
+	return $thumbprint;
+}
+
+/**
+ *
+ */
+
+function invalidate_typeahead_thumbprint($letsgroup_id, $status = 'active')
+{
+	global $redis, $schema;
+
+	$redis_key = $schema . '_typeahead_thumbprint_' . $letsgroup_id . '_' . $status;
+
+	$redis->del($redis_key);
+}
+
+/**
+ *
+ */
 function etag_buffer($content)
 {
 	global $post, $redis;
