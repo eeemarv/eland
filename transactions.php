@@ -811,44 +811,92 @@ $fa = 'exchange';
 if (!$inline)
 {
 	$h1 .= '<div class="pull-right">';
-	$h1 .= '&nbsp;<button class="btn btn-default hidden-xs" title="Zoeken" ';
-	$h1 .= 'data-toggle="collapse" data-target="#search"';
-	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Zoeken</span></button>';
+	$h1 .= '&nbsp;<button class="btn btn-default hidden-xs" title="Filters" ';
+	$h1 .= 'data-toggle="collapse" data-target="#filter"';
+	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
 
-	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>';
+	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
+		<script src="' . $cdn_typeahead . '"></script>
+	';
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-info collapse" id="search">';
+	echo '<div class="panel panel-info collapse" id="filter">';
 	echo '<div class="panel-heading">';
 
 	echo '<form method="get" class="form-horizontal">';
 
 	echo '<div class="row">';
 	echo '<div class="col-xs-12">';
-	echo '<div class="input-group col-xs-10">';
+
+	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoekterm">';
 	echo '</div>';
-	echo '<button class="btn btn-default col-xs-2">Geavanceerd</button>';
+
 	echo '</div>';
-	
 	echo '</div><br>';
 
 	echo '<div class="row">';
-	echo '<div class="col-xs-12">';
+
+	echo '<div class="col-md-5">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon">';
-	echo '<i class="fa fa-clone"></i>';
-	echo '</span>';
-	echo '<select class="form-control" id="cid" name="cid">';
-	render_select_options($cats, $cid);
+	echo '<span class="input-group-addon" id="from_letscode_addon">Van ';
+	echo '<span class="fa fa-user"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'placeholder="letscode" aria-describedby="from_letscode_addon" ';
+	echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
+	echo 'data-letsgroup-id="self" name="from_letscode" id="from_letscode" ';
+	echo 'value="' . $from_letscode . '">';
+	echo '</div>';
+	echo '</div>';
+
+	$or_and_options = array(
+		'and'	=> 'EN',
+		'or'	=> 'OF',
+	);
+
+	echo '<div class="col-md-2">';
+	echo '<div class="input-group col-md-12">';
+	echo '<select class="form-control">';
+	render_select_options($or_and_options, $or_and_letscode);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
+
+	echo '<div class="col-md-5">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="to_letscode">Naar ';
+	echo '<span class="fa fa-user"></span></span>';
+	echo '<input type="text" class="form-control" placeholder="letscode" aria-describedby="to_letscode">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '</div><br>';
+
+	echo '<div class="row">';
+
+	echo '<div class="col-md-6">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="from_date">Vanaf ';
+	echo '<span class="fa fa-calendar"></span></span>';
+	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
+	echo 'aria-describedby="from_date">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="col-md-6">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="to_date">Tot en met ';
+	echo '<span class="fa fa-calendar"></span></span>';
+	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
+	echo 'aria-describedby="to_date">';
+	echo '</div>';
+	echo '</div>';
+
 	echo '</div>';
 
 	$params_form = $params;
