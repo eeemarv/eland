@@ -414,7 +414,7 @@ function saldo()
 		->add_text_var('id')
 
 		->add_html('<p>Je ontvangt deze mail omdat de optie \'Periodieke mail met recent vraag en aanbod\' ')
-		->add_html('aangevinkt staat in je instellingen.</p>')
+		->add_html('aangevinkt staat in je instellingen. ')
 		->add_html('Klik <a href="' . $account_edit_url)
 		->add_html_var('id')
 		->add_html('">hier</a> om aan te passen</p>'); 
