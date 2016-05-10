@@ -89,7 +89,18 @@ if ($add)
 		}
 
 		$letscode_touser = ($letsgroup_id == 'self') ? $letscode_to : $letsgroup['localletscode'];
-		$touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_touser));
+
+		$touser = $db->fetchAssoc('select * from users where letscode = ?', array($letscode_touser));
+
+		if ($letsgroup_id == 'self' && $touser['status'] == 7)
+		{
+			$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+		}
+
+		if ($fromuser['status'] == 7)
+		{
+			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
+		}
 
 		$transaction['id_from'] = $fromuser['id'];
 		$transaction['id_to'] = $touser['id'];
