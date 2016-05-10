@@ -41,6 +41,12 @@ if ($user_mail_submit && $id && $post)
 
 	$user = readuser($id);
 
+	if (!$s_admin && !in_array($user['status'], [1, 2]))
+	{
+		$alert->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		cancel();
+	}
+
 	if (isset($s_interlets['schema']))
 	{
 		$t_schema =  $s_interlets['schema'] . '.';
@@ -93,12 +99,15 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $me_id, 'to_schema' => $me_schema, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
+			mail_q(array('to' => $t_schema . $me_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
 		}
 
-		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+		if ($user['status'] == 1 || $user['status'] == 2)
+		{
+			$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+		}
 
-		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $me_id, 'from_schema' => $me_schema));
+		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $t_schema . $me_id));
 
 		$alert->success('Mail verzonden.');
 	}

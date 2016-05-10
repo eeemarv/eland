@@ -6,27 +6,36 @@ function sendmail()
 
 	for ($i = 0; $i < 20; $i++)
 	{
-		$mail = $redis->rpop('mail_q');
+		$mail = $redis->rpop('mail_q1');
+
+		if (!$mail)
+		{
+			$mail = $redis->rpop('mail_q0');
+		}
 
 		if (!$mail)
 		{
 			break;
 		}
 
-		if (!readconfigfromdb('mailenabled'))
+		$mail = json_decode($mail, true);
+
+		$schema = $mail['schema'];
+		unset($mail['schema']);
+
+		if (!isset($schema))
+		{
+			log_event('', 'mail', 'error: mail in queue without schema');
+			continue;
+		}
+
+		if (!readconfigfromdb('mailenabled', $schema))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
 			log_event('', 'mail', $m);
 			return ;
 		}
-
-		$from = getenv('MAIL_FROM_ADDRESS');
-		$noreply = getenv('MAIL_NOREPLY_ADDRESS');
-
-		$mail = json_decode($mail, true);
-		$from_schema = $mail['from_schema'];
-		$to_schema = $mail['to_schema'];
 
 		if (!isset($transport) || !isset($mailer))
 		{
@@ -40,21 +49,9 @@ function sendmail()
 			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, 30));
 		}
 
-		if (!isset($from_schema))
-		{
-			log_event('', 'mail', 'error: mail in queue without "from" schema');
-			continue;
-		}
-
-		if (!isset($to_schema))
-		{
-			log_event('', 'mail', 'error: mail in queue without "to" schema');
-			continue;
-		}
-
 		if (!isset($mail['subject']))
 		{
-			log_event('', 'mail', 'error: mail without subject', $to_schema);
+			log_event('', 'mail', 'error: mail without subject', $schema);
 			continue;
 		}
 
@@ -66,62 +63,36 @@ function sendmail()
 			}
 			else
 			{
-				log_event('', 'mail', 'error: mail without body content', $to_schema);
+				log_event('', 'mail', 'error: mail without body content', $schema);
 			}
 		}
 
-		$mail['to'] = getmailadr($mail['to'], $to_schema);
-
-		if (!count($mail['to']))
+		if (!$mail['to'])
 		{
-			log_event('', 'mail', 'error: mail without "to" | subject: ' . $mail['subject'], $to_schema);
+			log_event('', 'mail', 'error: mail without "to" | subject: ' . $mail['subject'], $schema);
+			continue;
+		}
+
+		if (!$mail['from'])
+		{
+			log_event('', 'mail', 'error: mail without "from" | subject: ' . $mail['subject'], $schema);
 			continue;
 		} 
 
-		if (isset($mail['reply_to']))
-		{
-			$mail['reply_to'] = getmailadr($mail['reply_to'], $from_schema);
-
-			if (!count($mail['reply_to']))
-			{
-				log_event('', 'mail', 'error: invalid "reply to" : ' . $mail['subject'], $to_schema);
-				unset($mail['reply_to']);
-			}
-		}
-
-		if (isset($mail['cc']))
-		{
-			$mail['cc'] = getmailadr($mail['cc'], $to_schema);
-
-			if (!count($mail['cc']))
-			{
-				log_event('', 'mail', 'error: invalid "reply to" : ' . $mail['subject'], $to_schema);
-				unset($mail['cc']);
-			}
-		}
-
-		$subject = '[' . readconfigfromdb('systemtag', $to_schema) . '] ' . $mail['subject'];
-
 		$message = Swift_Message::newInstance()
-			->setSubject($subject)
+			->setSubject($mail['subject'])
 			->setBody($mail['text'])
-			->setTo($mail['to']);
+			->setTo($mail['to'])
+			->setFrom($mail['from']);
 
 		if (isset($mail['html']))
 		{
 			$message->addPart($mail['html'], 'text/html');
 		}
 
-		$systemname = readconfigfromdb('systemname', $to_schema);
-
 		if (isset($mail['reply_to']))
 		{
-			$message->setFrom(array($from => $systemname))
-				->setReplyTo($mail['reply_to']);
-		}
-		else
-		{
-			$message->setFrom(array($noreply => $systemname));
+			$message->setReplyTo($mail['reply_to']);
 		}
 
 		if (isset($mail['cc']))
@@ -131,16 +102,16 @@ function sendmail()
 
 		if ($mailer->send($message, $failed_recipients))
 		{
-			log_event('', 'mail', 'message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $to_schema);
+			log_event('', 'mail', 'message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
 		}
 		else
 		{
-			log_event('', 'mail', 'failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $to_schema);
+			log_event('', 'mail', 'failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
 		}
 
 		if ($failed_recipients)
 		{
-			log_event('', 'mail', 'failed recipients: ' . $failed_recipients, $to_schema);
+			log_event('', 'mail', 'failed recipients: ' . $failed_recipients, $schema);
 		}
 	}
 }

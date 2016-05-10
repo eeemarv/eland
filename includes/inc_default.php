@@ -620,60 +620,112 @@ function readuser($id, $refresh = false, $remote_schema = false)
  *
  */
 
-function mail_q($mail = array())
+function mail_q($mail = array(), $priority = false, $sending_schema = false)
 {
 	global $schema, $redis, $s_id;
+
+	$mail['schema'] = $sending_schema ?: $schema;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
 		echo $m;
 		log_event($s_id, 'mail', $m);
-		return ;
-	}
-
-	$mail['to_schema'] = ($mail['to_schema']) ?: $schema;
-	$mail['from_schema'] = ($mail['from_schema']) ?: $schema;
-
-	if (!$mail['to'])
-	{
-		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
-		log_event($s_id, 'mail', $m, $mail['from_schema']);
 		return $m;
 	}
 
 	if (!$mail['subject'])
 	{
 		$m = 'Mail "subject" is missing.';
-		log_event($s_id, 'mail', $m, $mail['from_schema']);
+		log_event($s_id, 'mail', $m);
 		return $m;
 	}
 
-	if (!$mail['text'])
+	if (!$mail['text'] && !$mail['html'])
 	{
-		$m = 'Mail "text body" is missing for "' . $mail['subject'] . '"';
-		log_event($s_id, 'mail', $m, $mail['from_schema']);
+		$m = 'Mail "body" (text or html) is missing.';
+		log_event($s_id, 'mail', $m);
 		return $m;
 	}
 
-	if ($redis->lpush('mail_q', json_encode($mail)))
+	if (!$mail['to'])
 	{
-		log_event($s_id, 'mail', 'Mail in queue, subject: ' . $mail['subject'] . ' to : ' . $mail['to'] .
-			' from schema: ' . $mail['from_schema'] . ' to schema: ' . $mail['to_schema']);
+		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
+		log_event($s_id, 'mail', $m);
+		return $m;
+	}
+
+	$mail['to'] = getmailadr($mail['to']);
+
+	if (!count($mail['to']))
+	{
+		$m = 'error: mail without "to" | subject: ' . $mail['subject'];
+		log_event($s_id, 'mail', $m);
+		return $m;
+	} 
+
+	if (isset($mail['reply_to']))
+	{
+		$mail['reply_to'] = getmailadr($mail['reply_to']);
+
+		if (!count($mail['reply_to']))
+		{
+			log_event($s_id, 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			unset($mail['reply_to']);
+		}
+
+		$mail['from'] = getmailadr('from', $mail['schema']);
+	}
+	else
+	{
+		$mail['from'] = getmailadr('noreply', $mail['schema']);
+	}
+
+	if (!count($mail['from']))
+	{
+		$m = 'error: mail without "from" | subject: ' . $mail['subject'];
+		log_event($s_id, 'mail', $m);
+		return $m;
+	}
+
+	if (isset($mail['cc']))
+	{
+		$mail['cc'] = getmailadr($mail['cc']);
+
+		if (!count($mail['cc']))
+		{
+			log_event('', 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			unset($mail['cc']);
+		}
+	}
+
+	$systemtag = readconfigfromdb('systemtag', $mail['schema']);
+
+	$mail['subject'] = '[' . $systemtag . '] ' . $mail['subject'];
+
+	$queue = ($priority) ? '1' : '0';
+
+	if ($redis->lpush('mail_q' . $queue, json_encode($mail)))
+	{
+		$reply = ($mail['reply_to']) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
+
+		log_event((($sending_schema) ? '' : $s_id), 'mail', 'Mail in queue, subject: ' .
+			$mail['subject'] . ', from : ' .
+			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, $mail['schema']);
 	}
 }
 
 /*
- * param mail addr | int user id | array
- * param string
+ * param string mail addr | [string.]int [schema.]user id | array
+ * param string sending_schema
  * return array
  */
 
-function getmailadr($m, $remote_schema = false)
+function getmailadr($m, $sending_schema = false)
 {
-	global $schema, $db;
+	global $schema, $db, $s_admin;
 
-	$sch = ($remote_schema) ?: $schema;
+	$sch = ($sending_schema) ?: $schema;
 
 	if (!is_array($m))
 	{
@@ -686,9 +738,14 @@ function getmailadr($m, $remote_schema = false)
 	{
 		$in = trim($in);
 
+		$remote_id = strrchr($in, '.');
+		$remote_schema = str_replace($remote_id, '', $in);
+		$remote_id = trim($remote_id, '.');
+
 		if (in_array($in, array('admin', 'newsadmin', 'support')))
 		{
-			$ary = explode(',', readconfigfromdb($in, $sch));
+			$ary = explode(',', readconfigfromdb($in));
+			$systemname = readconfigfromdb('systemname');
 
 			foreach ($ary as $mail)
 			{
@@ -696,24 +753,40 @@ function getmailadr($m, $remote_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event('', 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail, $sch);
+					log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
 					continue;
 				}
 
-				$out[] = $mail;
+				$out[$mail] = $systemname;
 			}
+		}
+		else if (in_array($in, array('from', 'noreply')))
+		{
+			$mail = getenv('MAIL_' . strtoupper($in) . '_ADDRESS');
+			$mail = trim($mail);
+			$systemname = readconfigfromdb('systemname', $sch);
+
+			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+			{
+				log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+				continue;
+			}
+
+			$out[$mail] = $systemname;
 		}
 		else if (ctype_digit($in))
 		{
-			$st = $db->prepare('select c.value
-				from ' . $sch . '.contact c,
-					' . $sch . '.type_contact tc,
-					' . $sch . '.users u
+			$status_sql = ($s_admin) ? '' : ' and u.status in (1,2)';
+
+			$st = $db->prepare('select c.value, u.name, u.letscode
+				from contact c,
+					type_contact tc,
+					users u
 				where c.id_type_contact = tc.id
 					and c.id_user = ?
 					and c.id_user = u.id
-					and u.status in (1,2)
-					and tc.abbrev = \'mail\'');
+					and tc.abbrev = \'mail\''
+					. $status_sql);
 
 			$st->bindValue(1, $in);
 			$st->execute();
@@ -724,13 +797,43 @@ function getmailadr($m, $remote_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event('', 'mail',
-						'error: invalid mail address : ' . $mail . ', user id: ' . $in,
-						$sch);
+					log_event($s_id, 'mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
 					continue;
 				}
 
-				$out[] = $mail;
+				$out[$mail] = $row['letscode'] . ' ' . $row['name'];
+			}
+		}
+		else if (ctype_digit($remote_id) && $remote_schema)
+		{
+			$st = $db->prepare('select c.value, u.name, u.letscode
+				from ' . $remote_schema . '.contact c,
+					' . $remote_schema . '.type_contact tc,
+					' . $remote_schema . '.users u
+				where c.id_type_contact = tc.id
+					and c.id_user = ?
+					and c.id_user = u.id
+					and u.status in (1, 2)
+					and tc.abbrev = \'mail\'');
+
+			$st->bindValue(1, $remote_id);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				$mail = trim($row['value']);
+				$letscode = trim($row['letscode']);
+				$name = trim($row['name']);
+
+				$user = $remote_schema . '.' . $letscode . ' ' . $name;
+
+				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+				{
+					log_event($s_id, 'mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
+					continue;
+				}
+
+				$out[$mail] = $user;
 			}
 		}
 		else if (filter_var($in, FILTER_VALIDATE_EMAIL))
@@ -739,13 +842,13 @@ function getmailadr($m, $remote_schema = false)
 		}
 		else
 		{
-			log_event('', 'error: no valid input for mail adr: ' . $in, $sch);
+			log_event($s_id, 'error: no valid input for mail adr: ' . $in);
 		}
 	}
 
 	if (!count($out))
 	{
-		log_event('', 'mail', 'no valid mail adress found for: ' . explode('|', $m), $sch);
+		log_event($s_id, 'mail', 'no valid mail adress found for: ' . implode('|', $m));
 		return $out;
 	} 
 

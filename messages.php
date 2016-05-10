@@ -552,12 +552,12 @@ if ($mail && $post && $id)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $me_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text, 'to_schema' => $me_schema));
+			mail_q(array('to' => $t_schema . $me_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		mail_q(array('to' => $user['id'], 'reply_to' => $me_id, 'subject' => $subject, 'text' => $text, 'from_schema' => $me_schema));
+		mail_q(array('to' => $user['id'], 'reply_to' => $t_schema . $me_id, 'subject' => $subject, 'text' => $text));
 
 		$alert->success('Mail verzonden.');
 	}

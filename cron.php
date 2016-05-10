@@ -207,7 +207,7 @@ if (!isset($schema_interletsq_min))
 				$err = $e->getMessage();
 				echo $err . $r;
 				$redis_key = $schema . '_token_failed_' . $letsgroup['remoteapikey'];
-//				$redis->set($redis_key, '1');
+				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
 
 			}

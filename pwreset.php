@@ -37,7 +37,7 @@ if ($token)
 				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
 				$text .= 'Inloggen: ' . $url;
 
-				mail_q(array('to' => $user_id, 'subject' => $subj, 'text' => $text));
+				mail_q(array('to' => $user_id, 'subject' => $subj, 'text' => $text), true);
 
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
@@ -73,7 +73,7 @@ if ($token)
 	echo 'value="' . $password . '" required>';
 	echo '</div>';
 	echo '</div>';
-	echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
+	echo '<input type="submit" class="btn btn-default" value="Bewaar paswoord" name="zend">';
 	echo '</form>';
 
 	echo '</div>';
@@ -119,7 +119,7 @@ if ($_POST['zend'])
 				$text .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
 				$text .= 'gelieve deze mail te negeren.';
 
-				mail_q(array('to' => $email, 'text' => $text, 'subject' => $subject));
+				mail_q(array('to' => $email, 'text' => $text, 'subject' => $subject), true);
 
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event($s_id, 'System', 'Paswoord reset link verstuurd naar ' . $email);

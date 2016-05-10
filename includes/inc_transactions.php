@@ -127,9 +127,6 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$interlets = ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? 'interlets ' : '';
 
-	$systemtag = readconfigfromdb('systemtag', $sch);
-	$currency = readconfigfromdb('currency', $sch);
-
 	$real_from = $transaction['real_from'];
 	$real_to = $transaction['real_to'];
 
@@ -160,14 +157,16 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$text .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
 
+	$t_schema = ($remote_schema) ? $remote_schema . '.' : '';
+
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		mail_q(array('to' => $userfrom['id'], 'subject' => $subject, 'text' => $text, 'to_schema' => $sch));
+		mail_q(array('to' => $userfrom['id'], 'subject' => $subject, 'text' => $text));
 	}
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		mail_q(array('to' => $userto['id'], 'subject' => $subject, 'text' => $text, 'to_schema' => $sch));
+		mail_q(array('to' => $t_schema . $userto['id'], 'subject' => $subject, 'text' => $text), false, $sch);
 	}
 
 	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
