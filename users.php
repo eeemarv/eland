@@ -1870,7 +1870,7 @@ if ($id)
 		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if ($s_admin || ($s_user && !$s_owner))
+	if (($s_admin || ($s_user && !$s_owner)) && $user['status'] != 7)
 	{
 		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, null, false), 'exchange', true);
 	}
