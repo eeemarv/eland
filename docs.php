@@ -157,6 +157,22 @@ if ($edit)
 	echo '<form method="post" class="form-horizontal">';	
 
 	echo '<div class="form-group">';
+	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="location" ';
+	echo 'name="location" value="' . $s3_doc_url . $doc['filename'] . '" readonly>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="org_filename" class="col-sm-2 control-label">Originele bestandsnaam</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="org_filename" ';
+	echo 'name="org_filename" value="' . $doc['org_filename'] . '" readonly>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
 	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="name" name="name" value="' . $doc['name'] . '">';
