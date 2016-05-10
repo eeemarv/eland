@@ -139,12 +139,17 @@ p.inactive.tt-suggestion
 {
 	background-color: #ddd;
 }
+p.extern.tt-suggestion 
+{
+  background-color: #ffdbfc;
+}
 
 div.tt-cursor p.success,
-div.tt-cursor p.error,
+div.tt-cursor p.danger,
 div.tt-cursor p.warning,
 div.tt-cursor p.info,
-div.tt-cursor p.inactive
+div.tt-cursor p.inactive,
+div.tt-cursor p.extern
 {
 	background-color: transparent;
 } 

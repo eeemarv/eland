@@ -25,14 +25,21 @@ $(document).ready(function(){
 
 				var filter = function(users){
 					return $.map(users, function(user){
+
 						var cl = (user.a && (user.a > (now - (user.nd * 86400)))) ? ' class="success"' : '';
 
-						if (user.s){
-							if (user.s == 3){
+						switch (user.s){
+							case 3:
 								cl = ' class="success"';
-							} else if (user.s = 2){
+								break;
+							case 2:
 								cl = ' class="danger"';
-							}
+								break;
+							case 7:
+								cl = ' class="extern"';
+								break;
+							default:
+								break;
 						}
 
 						return { 
