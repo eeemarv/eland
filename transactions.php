@@ -829,10 +829,15 @@ if (!$inline)
 	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
 
-	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
+	$includejs = '
+		<script src="' . $cdn_datepicker . '"></script>
+		<script src="' . $cdn_datepicker_nl . '"></script>
+		<script src="' . $rootpath . 'js/csv.js"></script>
 		<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>
 	';
+
+	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -905,19 +910,45 @@ if (!$inline)
 
 	echo '<div class="col-md-6">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="from_date">Vanaf ';
+	echo '<span class="input-group-addon" id="from_date_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
-	echo 'aria-describedby="from_date">';
+	echo 'aria-describedby="from_date_addon" ';
+
+	echo 'id="from_date" name="from_date" ';
+	echo 'value="' . $from_date . '" ';
+	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-date-default-view="2" ';
+	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+	echo 'data-date-language="nl" ';
+	echo 'data-date-start-view="2" ';
+	echo 'data-date-today-highlight="true" ';
+	echo 'data-date-autoclose="true" ';
+	echo 'data-date-immediate-updates="true" ';
+	echo '>';
+
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="col-md-6">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="to_date">Tot en met ';
+	echo '<span class="input-group-addon" id="to_date_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
-	echo 'aria-describedby="to_date">';
+	echo 'aria-describedby="to_date_addon" ';
+
+	echo 'id="to_date" name="to_date" ';
+	echo 'value="' . $to_date . '" ';
+	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-date-default-view="2" ';
+	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+	echo 'data-date-language="nl" ';
+	echo 'data-date-start-view="2" ';
+	echo 'data-date-today-highlight="true" ';
+	echo 'data-date-autoclose="true" ';
+	echo 'data-date-immediate-updates="true" ';
+	echo '>';
+
 	echo '</div>';
 	echo '</div>';
 
