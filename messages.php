@@ -912,9 +912,12 @@ if (($edit || $add))
 	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 	$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 
-	$includejs = '
-		<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/msg_edit.js"></script>';
+	if ($s_admin)
+	{
+		$includejs = '
+			<script src="' . $cdn_typeahead . '"></script>
+			<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	}
 
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
@@ -959,8 +962,8 @@ if (($edit || $add))
 		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-letsgroup-id="self" '; //data-thumbprint="' . time() . '" ';
-		echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
+		echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
+		echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';

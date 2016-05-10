@@ -491,7 +491,7 @@ if ($add)
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/transactions_add.js"></script>';
+		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
 	$user = readuser($s_id);
 	$balance = $user['saldo'];
@@ -534,6 +534,7 @@ if ($add)
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
+	echo 'data-typeahead-source="letsgroup_self" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -547,11 +548,11 @@ if ($add)
 	foreach ($letsgroups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
-//		echo 'data-thumbprint="' . $thumbprint . '" ';
-		echo 'data-url="' . $rootpath . 'ajax/active_users.php?letsgroup_id=' . $l['id'];
+		echo 'data-typeahead="' . get_typeahead_thumbprint('users_active', $l['url']) . '|';
+		echo $rootpath . 'ajax/typeahead_users.php?letsgroup_id=' . $l['id'];
 		echo '&' . get_session_query_param() . '"';
 		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';
-		echo ($l['id'] == 'self') ? ' data-this-letsgroup="1"' : '';
+		echo ($l['id'] == 'self') ? ' id="letsgroup_self" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 	echo '</select>';
@@ -562,6 +563,7 @@ if ($add)
 	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
+	echo 'data-typeahead-source="letsgroup_id" ';
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -818,6 +820,7 @@ if (!$inline)
 
 	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
 		<script src="' . $cdn_typeahead . '"></script>
+		<script src="' . $rootpath . 'js/typeahead.js"></script>
 	';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -846,11 +849,18 @@ if (!$inline)
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="from_letscode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
+
 	echo '<input type="text" class="form-control" ';
-	echo 'placeholder="letscode" aria-describedby="from_letscode_addon" ';
-	echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
-	echo 'data-letsgroup-id="self" name="from_letscode" id="from_letscode" ';
+	echo 'aria-describedby="from_letscode_addon" ';
+
+	echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
+	echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '|';
+	echo get_typeahead_thumbprint('extern') . '|';
+	echo $rootpath . 'ajax/typeahead_users.php?status=extern&' . get_session_query_param() . '" ';
+
+	echo 'name="from_letscode" id="from_letscode" placeholder="letscode" ';
 	echo 'value="' . $from_letscode . '">';
+
 	echo '</div>';
 	echo '</div>';
 
@@ -871,7 +881,10 @@ if (!$inline)
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="to_letscode">Naar ';
 	echo '<span class="fa fa-user"></span></span>';
-	echo '<input type="text" class="form-control" placeholder="letscode" aria-describedby="to_letscode">';
+	echo '<input type="text" class="form-control" ';
+	echo 'data-typeahead-source="from_letscode" ';
+	echo 'placeholder="letscode" ';
+	echo 'aria-describedby="to_letscode">';
 	echo '</div>';
 	echo '</div>';
 

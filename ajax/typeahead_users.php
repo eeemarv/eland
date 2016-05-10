@@ -6,7 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 $letsgroup_id = ($_GET['letsgroup_id']) ?: 'self';
 $status = ($_GET['status']) ?: 'active';
 
-if ($s_guest & $status != 'active')
+if ($s_guest && $status != 'active' && $letsgroup_id != 'self')
 {
 	http_reponse_code(403);
 	exit;
@@ -19,18 +19,21 @@ if ($letsgroup_id == 'self')
 		case 'extern':
 			$status_sql = '= 7';
 			break;
-		case 'active_and_extern':
-			$status_sql = 'in (1, 2, 7)';
-			break;
 		case 'active':
 			$status_sql = 'in (1, 2)';
+			break;
 		default:
 			http_response_code(404);
 			exit;
 	}
 
-	$users_json = users_to_json($schema, $status_sql);
-	set_thumbprint_and_response($users_json, $letsgroup_id, $status);
+	$users = users_to_json($schema, $status_sql);
+
+	invalidate_typeahead_thumbprint('users_' . $status, $base_url, crc32($users));
+
+	header('Content-type: application/json');
+	echo $users;
+	exit;
 }
 
 $group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
@@ -57,7 +60,12 @@ if ($schemas[$group['url']])
 	if ($db->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', array($base_url)))
 	{
 		$active_users = users_to_json($remote_schema);
-		set_thumbprint_and_response($active_users, $letsgroup_id);
+
+		invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
+
+		header('Content-type: application/json');
+		echo $active_users;
+		exit;
 	}
 
 	http_response_code(403);
@@ -65,39 +73,38 @@ if ($schemas[$group['url']])
 }
 
 $active_users = $redis->get($group['url'] . '_typeahead_data');
-set_thumbprint_and_response($active_users, $letsgroup_id);
+
+invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
+
+header('Content-type: application/json');
+echo $active_users;
+exit;
+
 
 /*
  *
  */
 function users_to_json($schema, $status_sql = 'in (1, 2)')
 {
-	global $db, $redis;
+	global $db;
 
 	$fetched_users = $db->fetchAll(
 		'SELECT letscode as c,
 			name as n,
-			extract(epoch from adate) as e,
+			extract(epoch from adate) as a,
 			status as s,
 			postcode as p
 		FROM ' . $schema . '.users
 		WHERE status ' . $status_sql
 	);
 
-	$new_user_seconds = readconfigfromdb('newuserdays', $schema) * 86400;
-
-	$now = time();
 	$users = array();
+
+	$new_user_days = readconfigfromdb('newuserdays', $schema);
 
 	foreach ($fetched_users as $user)
 	{
-		$e = $user['e'];
-		unset($user['e']);
-
-		if ($e + $new_user_seconds > $now && $user['s'] != 2)
-		{
-			$user['s'] = 3;
-		}
+		$user['nd'] = $new_user_days;
 
 		if ($user['s'] == 1)
 		{
@@ -110,21 +117,3 @@ function users_to_json($schema, $status_sql = 'in (1, 2)')
 	return json_encode($users);
 }
 
-/**
- *
- */
-
-function set_thumbprint_and_response($users, $letsgroup_id, $status)
-{
-	global $schema, $redis;
-
-	$redis_key = $schema . '_typeahead_thumbprint_' . $letsgroup_id . '_' . $status;
-	$crc32 = crc32($users);
-
-	$redis->set($redis_key, $crc32);
-	$redis->expire($redis_key, 5184000); // 60 days
-
-	header('Content-type: application/json');
-	echo $users;
-	exit;
-}

@@ -836,17 +836,19 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  *
  */
 
-function get_typeahead_thumbprint($letsgroup_id, $status = 'active')
+function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false)
 {
-	global $redis, $schema;
+	global $redis, $base_url;
 
-	$redis_key = $schema . '_typeahead_thumbprint_' . $letsgroup_id . '_' . $status;
+	$letsgroup_url = ($letsgroup_url) ?: $base_url;
+
+	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
 
 	$thumbprint = $redis->get($redis_key);
 
 	if (!$thumbprint)
 	{
-		return sha1(microtime());
+		return 'r-' . crc32(microtime());
 	}
 
 	return $thumbprint;
@@ -856,13 +858,30 @@ function get_typeahead_thumbprint($letsgroup_id, $status = 'active')
  *
  */
 
-function invalidate_typeahead_thumbprint($letsgroup_id, $status = 'active')
+function invalidate_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false, $new_thumbprint = false)
 {
-	global $redis, $schema;
+	global $redis, $base_url, $s_id;
 
-	$redis_key = $schema . '_typeahead_thumbprint_' . $letsgroup_id . '_' . $status;
+	$letsgroup_url = ($letsgroup_url) ?: $base_url;
 
-	$redis->del($redis_key);
+	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
+
+	if ($new_thumbprint)
+	{
+		if ($new_thumbprint != $redis->get($redis_key))
+		{
+			$redis->set($redis_key, $new_thumbprint);
+			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $letsgroup_url . ' : ' . $name);
+		}
+
+		$redis->expire($redis_key, 5184000); // 60 days
+	}
+	else
+	{
+		$redis->del($redis_key);
+
+		log_event($s_id, 'typeahead', 'typeahead thumbprint deleted for ' . $letsgroup_url . ' : ' . $name);
+	}
 }
 
 /**

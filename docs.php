@@ -50,6 +50,9 @@ if ($map_edit)
 		{
 			$mdb->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
 			$alert->success('Map naam aangepast.');
+
+			invalidate_typeahead_thumbprint('doc_map_names');
+
 			cancel($map_edit);
 		}
 
@@ -115,7 +118,10 @@ if ($edit)
 			{
 				$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
 				$mdb->docs->insert($map);
+
+				invalidate_typeahead_thumbprint('doc_map_names');
 			}
+
 			$update['map_id'] = (string) $map['_id'];
 		}
 
@@ -139,7 +145,7 @@ if ($edit)
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/docs.js"></script>';
+		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
 	$h1 = 'Document aanpassen';
 
@@ -171,7 +177,8 @@ if ($edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_name'] . '" ';
-	echo 'data-url="' . $rootpath . 'ajax/doc_map_names.php?' . get_session_query_param() . '">';
+	echo 'data-typeahead="' . get_typeahead_thumbprint('doc_map_names') . '|';
+	echo $rootpath . 'ajax/typeahead_doc_map_names.php?' . get_session_query_param() . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -202,6 +209,8 @@ if ($confirm_del && $del)
 		{
 			$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
 			unset($doc['map_id']);
+
+			invalidate_typeahead_thumbprint('doc_map_names');
 		}
 
 		$mdb->docs->remove(
@@ -356,6 +365,8 @@ if ($submit)
 				);
 
 				$mdb->docs->insert($map);
+
+				invalidate_typeahead_thumbprint('doc_map_names');
 			}
 
 			$doc['map_id'] = (string) $map_id;
@@ -442,7 +453,7 @@ if ($map)
 }
 
 $includejs = '<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/docs.js"></script>';
+	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
 $h1 = aphp('docs', '', 'Documenten');
 $h1 .= ($map) ? ': map "' . $map_name . '"' : '';
@@ -617,7 +628,8 @@ if ($s_admin)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-url="' . $rootpath . 'ajax/doc_map_names.php?' . get_session_query_param() . '">';
+	echo 'data-typeahead="' . get_typeahead_thumbprint('doc_map_names') . '|';
+	echo $rootpath . 'ajax/typeahead_doc_map_names.php?' . get_session_query_param() . '">';
 	echo '</div>';
 	echo '</div>';
 

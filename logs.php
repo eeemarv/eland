@@ -30,7 +30,8 @@ $rows = $mdb->logs->find($find)->sort(array('timestamp' => -1))->limit(300);
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/eventlog.js"></script>';
+	<script src="' . $rootpath . 'js/typeahead.js"></script>';
+//	<script src="' . $rootpath . 'js/eventlog.js"></script>';
 
 $h1 = 'Logs';
 $fa = 'list';
@@ -62,8 +63,8 @@ echo '<div class="form-group">';
 echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'data-letsgroup-id="self" '; //data-thumbprint="' . time() . '" ';
-echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '" ';
+echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
+echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';

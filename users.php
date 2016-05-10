@@ -503,6 +503,12 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			$redis->del($schema . '_user_' . $user_id);
 		}
 
+		if ($field == 'status')
+		{
+			invalidate_typeahead_thumbprint('users_active');
+			invalidate_typeahead_thumbprint('users_extern');
+		}
+
 		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
 		cancel();
@@ -895,6 +901,16 @@ if ($del)
 				$redis->expire($schema . '_user_' . $del, 0);
 
 				$alert->success('De gebruiker is verwijderd.');
+
+				if ($user['status'] == 1 || $user['status'] == 2)
+				{
+					invalidate_typeahead_thumbprint('users_active');
+				}
+				else if ($user['status'] == 7)
+				{
+					invalidate_typeahead_thumbprint('users_extern');
+				}
+
 				cancel();
 			}
 			else
@@ -1250,18 +1266,28 @@ if ($add || $edit)
 						sendactivationmail($password, $user);
 						sendadminmail($user);
 						$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+
+						if (!readconfigfromdb('mailenabled'))
+						{
+							$alert->warning('Mailfuncties zijn uitgeschakeld.');
+						}
 					}
 					else
 					{
 						$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 					}
 
-					cancel($id);
-
-					if (!readconfigfromdb('mailenabled'))
+					if ($user['status'] == 2 | $user['status'] == 1)
 					{
-						$alert->warning('Mailfuncties zijn uitgeschakeld.');
+						invalidate_typeahead_thumbprint('users_active');
 					}
+
+					if ($user['status'] == 7)
+					{
+						invalidate_typeahead_thumbprint('users_extern');
+					}
+
+					cancel($id);
 				}
 				else
 				{
@@ -1371,6 +1397,20 @@ if ($add || $edit)
 							{
 								$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 							}
+						}
+
+						if ($user['status'] == 1
+							|| $user['status'] == 2
+							|| $user_stored['status'] == 1
+							|| $user_stored['status'] == 2)
+						{
+							invalidate_typeahead_thumbprint('users_active');
+						}
+
+						if ($user['status'] == 7
+							|| $user_stored['status'] == 7)
+						{
+							invalidate_typeahead_thumbprint('users_extern');
 						}
 					}
 					cancel($edit);

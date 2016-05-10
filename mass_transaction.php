@@ -353,6 +353,7 @@ if ($from_letscode)
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/typeahead.js"></script>
 	<script src="' . $rootpath . 'js/mass_transaction.js"></script>
 	<script src="' . $rootpath . 'js/combined_filter.js"></script>';
 
@@ -464,7 +465,8 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
-echo 'data-letsgroup-id="self">'; //data-thumbprint="' . time() . '">';
+echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
+echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '">';
 echo '</div>';
 echo '</div>';
 
@@ -556,8 +558,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="' . $to_letscode . '" ';
-echo 'data-letsgroup-id="self" data-thumbprint="' . time() . '" ';
-echo 'data-url="' . $rootpath . 'ajax/active_users.php?' . get_session_query_param() . '">';
+echo 'data-typeahead-source="from_letscode">';
 echo '</div>';
 echo '</div>';
 

@@ -90,11 +90,11 @@ function fetch_interlets_typeahead_data($client, $url)
 
 	if ($data_string != $redis->get($redis_data_key))
 	{
-		$redis_thumbprint_key = $url . '_typeahead_thumbprint';
-		$redis->set($redis_thumbprint_key, time());
-		$redis->expire($redis_thumbprint_key, 5184000);	// 60 days
+		invalidate_typeahead_thumbprint('users_active', $url, crc32($data_string));
+
 		$redis->set($redis_data_key, $data_string);
 	}
+
 	$redis->expire($redis_data_key, 86400);		// 1 day
 
 	$redis_refresh_key = $url . '_typeahead_updated';
