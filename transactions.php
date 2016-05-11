@@ -50,7 +50,7 @@ if ($add)
 		$transaction['description'] = $_POST['description'];
 		list($letscode_from) = explode(' ', $_POST['letscode_from']);
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
-		$transaction['amount'] = $amount = $_POST['amount'];
+		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = date('Y-m-d H:i:s');
 		$letsgroup_id = $_POST['letsgroup_id'];
 
@@ -871,7 +871,7 @@ if (!$inline)
 
 	echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
 	echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '|';
-	echo get_typeahead_thumbprint('extern') . '|';
+	echo get_typeahead_thumbprint('users_extern') . '|';
 	echo $rootpath . 'ajax/typeahead_users.php?status=extern&' . get_session_query_param() . '" ';
 
 	echo 'name="from_letscode" id="from_letscode" placeholder="letscode" ';

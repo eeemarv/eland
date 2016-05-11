@@ -79,7 +79,7 @@ $(document).ready(function(){
 				prefetch: {
 					url: url,
 					cache: true,
-					ttl: 600,
+					ttl: 2592000000,	//30 days
 					thumbprint: thumbprint,
 					filter: filter
 				},

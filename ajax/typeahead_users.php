@@ -29,7 +29,7 @@ if ($letsgroup_id == 'self')
 
 	$users = users_to_json($schema, $status_sql);
 
-	invalidate_typeahead_thumbprint('users_' . $status, $base_url, crc32($users));
+	invalidate_typeahead_thumbprint('users_' . $status, false, crc32($users));
 
 	header('Content-type: application/json');
 	echo $users;
