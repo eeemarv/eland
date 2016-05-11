@@ -36,11 +36,6 @@
    'Mailadres van de site admin'  
    Vul een mailadres in.
 
-####from_address
-   'From adres op algemene mails'  
-   __Vanuit dit adres worden automatische mails verzonden.__  
-   Vul een mailadres in. (bvb. noreply@...)
-
 ####mailenabled
    'Mail functionaliteit aanzetten'  
    __Bij testen zet op 0__  
@@ -106,7 +101,6 @@
 ####forum_en
    'Forum ingeschakeld [0, 1]'  
    Mogelijke waarden: 0, 1 (0 = nee, 1 = ja)  
-   
 
 ####css
    'Extra stijl: url van .css bestand'  
