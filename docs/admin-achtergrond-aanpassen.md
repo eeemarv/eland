@@ -1,6 +1,6 @@
 ###Achtergrond aanpassen
 
-Begin in je tekst-editor naar keuze een nieuw bestand.
+Begin in je tekst-editor naar keuze een nieuw bestand. 
 
 ```css
 body {
