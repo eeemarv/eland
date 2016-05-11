@@ -1,11 +1,6 @@
 { 
-  "gitbook": "2.5.2",
-  "structure": { 
-    "summary": "docs/SUMMARY.md"
-  },
-  "styles": {
-    "website": "docs/website.css"
-  },
+  "gitbook": "3.0.0-pre.14",
   "title": "eLAND",
-  "description": "webtoepassing voor letsgroepen"
+  "description": "webtoepassing voor letsgroepen",
+  "root": "./docs"
 }

@@ -1,19 +1,13 @@
 (documentatie in opbouw)
 
-#eLAND
+##eLAND
 
-Webtoepassing voor letsgroepen
+Webapplication for LETS groups
 
-<img src="docs/img/eland-w200.png" width="120">
-
-* Voor letsgroepen, registreren van vraag en aanbod, leden en transacties.
-* Wordt gratis gehost.
-* Is een vork van [eLAS](http://www.elasproject.org) 3.1.17 De structuur van de database is identiek aan eLAS. Groepen die eLAS gebruiken kunnen gemakkelijk overgezet worden. 
-* Interlets is mogelijk tussen eLAND en eLAS op dezelfde wijze als tussen eLAS installaties.
-* Interlets verbindingen tussen eLAND installaties zijn eenvoudiger aan te maken (zonder uitwisseling van codes).
+[Documentation in Dutch for users and admins](http://letsa.net)
 
 
-[Documentatie](http://letsa.net)
+[Setup on Heroku](http://letsa.net/setup-on-heroku.html)
+[Dokku](http://letsa.net/dokku.html)
+[Migrate from eLAS 3.x](http://letsa.net/migrate-from-elas-3.html)
 
-
-[Code op Github](https://github.com/eeemarv/eland)

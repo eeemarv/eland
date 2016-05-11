@@ -15,7 +15,7 @@ Noot: tekst editors zijn voor tekstbestanden zonder opmaak.
 
 
 Wanneer éénmaal het css bestand klaar is (met extensie .css), moet het worden opgeladen naar een weblocatie.
-Hiervoor kunnen de [Documenten](docs/admin-documenten.md) van eLAND gebruikt worden. Laad het css bestand op in de Documenten met zichtbaarheid 'admin'.
-Kopiëer dan de url van het document naar de [instelling 'css'](docs/admin-instellingen).
+Hiervoor kunnen de [Documenten](admin-documenten.md) van eLAND gebruikt worden. Laad het css bestand op in de Documenten met zichtbaarheid 'admin'.
+Kopiëer dan de url van het document naar de [instelling 'css'](admin-instellingen).
 
 Op de volgende pagina's volgen twee voorbeelden.
