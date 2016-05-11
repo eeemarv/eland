@@ -988,6 +988,35 @@ function invalidate_typeahead_thumbprint($name = 'users_active', $letsgroup_url 
 }
 
 /**
+ * 
+ */
+function get_typeahead($name_ary)
+{
+	global $rootpath;
+
+	$out = '';
+
+	foreach($name_ary as $name)
+	{
+		$out .= get_typeahead_thumbprint($name) . '|';
+
+		if (strpos($name, 'users_') !== false)
+		{
+			$status = str_replace('users_', '', $name);
+			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status . '&' . get_session_query_param();
+		}
+		else
+		{
+			$out .= $rootpath . 'ajax/typeahead_' . $name . '.php?' . get_session_query_param();
+		}
+
+		$out .= '|';
+	}
+
+	return rtrim($out, '|');
+}
+
+/**
  *
  */
 function etag_buffer($content)

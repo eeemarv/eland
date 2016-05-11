@@ -6,13 +6,13 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_pagination.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
-$orderby = $_GET['orderby'];
-$asc = $_GET['asc'];
-$limit = ($_GET['limit']) ?: 25;
-$start = ($_GET['start']) ?: 0;
-$id = ($_GET['id']) ?: false;
-$add = ($_GET['add']) ? true : false;
-$submit = ($_POST['zend']) ? true : false;
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'cdate';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
+$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+$id = (isset($_GET['id'])) ? $_GET['id'] : false;
+$add = (isset($_GET['add'])) ? true : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 
 $mid = ($_GET['mid']) ?: false;
 $tuid = ($_GET['tuid']) ?: false;
@@ -25,7 +25,7 @@ $fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
 $tcode = (isset($_GET['tcode'])) ? $_GET['tcode'] : '';
 $andor = (isset($_GET['andor'])) ? $_GET['andor'] : 'and';
 $fdate = (isset($_GET['fdate'])) ? $_GET['fdate'] : '';
-$tdate = (isset($_GET['tdate'])) ? $_GET['tcode'] : '';
+$tdate = (isset($_GET['tdate'])) ? $_GET['tdate'] : '';
 
 /**
  * add
@@ -704,8 +704,7 @@ if ($id)
  */
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$where_sql = '';
-$params_sql = array();
+$params_sql = $where_sql = $where_code_sql = array();
 
 $params = array(
 	'orderby'	=> $orderby,
@@ -716,62 +715,94 @@ $params = array(
 
 if ($uid)
 {
-	$where_sql .= 't.id_from = ? or t.id_to = ? ';
+	$where_sql[] = 't.id_from = ? or t.id_to = ?';
 	$params_sql[] = $uid;
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 	$user = readuser($uid);
 }
 
-if ($code)
+if ($q)
 {
-
-	list($tcode) = explode(' ', trim($tcode));
-
-	$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
-	$where_sql .= 't.id_to = ? ';
-	$params_sql[] = $tuid;
-	$params['tcode'] = $tcode;
-	
+	$where_sql[] = 't.description ilike ?';
+	$params_sql[] = '%' . $q . '%';
+	$params['q'] = $q;
 }
 
 if ($fcode)
 {
-
 	list($fcode) = explode(' ', trim($fcode));
 
 	$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
-	$where_sql .= 't.id_from = ? ';
-	$params_sql[] = $fuid;
+
+	if ($fuid)
+	{
+		$where_code_sql[] = 't.id_from = ?';
+		$params_sql[] = $fuid;
+
+		$fcode = link_user($fuid, null, false);
+	}
+	else
+	{
+		$where_code_sql[] = '1 = 2';
+	}
+
 	$params['fcode'] = $fcode;
-	
 }
 
+if ($tcode)
+{
+	list($tcode) = explode(' ', trim($tcode));
 
-$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
-$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
+	$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
 
-$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 't.' . $orderby;
+	if ($tuid)
+	{
+		$where_code_sql[] = 't.id_to = ?';
+		$params_sql[] = $tuid;
 
+		$tcode = link_user($tuid, null, false);
+	}
+	else
+	{
+		$where_code_sql[] = '1 = 2';
+	}
 
+	$params['tcode'] = $tcode;
+}
 
+if (count($where_code_sql) > 1)
+{
+	if ($andor == 'or')
+	{
+		$where_code_sql = ['(' . implode(' or ', $where_code_sql) . ')'];
+	}
 
+	$params['andor'] = $andor;
+}
 
-$where = ($where) ? ' where ' . $where : '';
+$where_sql = array_merge($where_sql, $where_code_sql);
+
+if (count($where_sql))
+{
+	$where_sql = ' where ' . implode(' and ', $where_sql) . ' ';
+}
+else
+{
+	$where_sql = '';
+}
 
 $query = 'select t.*
 	from transactions t ' .
-	$where . '
-	order by ' . $query_orderby . ' ';
-$query .= ($asc) ? 'ASC ' : 'DESC ';
-$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
+	$where_sql . '
+	order by t.' . $orderby . ' ';
+$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= ' limit ' . $limit . ' offset ' . $start;
 
 $transactions = $db->fetchAll($query, $params_sql);
 
 $row_count = $db->fetchColumn('select count(t.*)
-	from transactions t ' . $where, $params_sql);
-
-
+	from transactions t ' . $where_sql, $params_sql);
 
 $pagination = new pagination('transactions', $row_count, $params, $inline);
 
@@ -911,14 +942,18 @@ if (!$inline)
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
+	$typeahead_name_ary = array('users_active', 'users_extern');
+
+	if ($s_admin)
+	{
+		$typeahead_name_ary = array_merge($typeahead_name_ary, array(
+			'users_inactive', 'users_im', 'users_ip',
+		));
+	}
+
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-
-	echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
-	echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '|';
-	echo get_typeahead_thumbprint('users_extern') . '|';
-	echo $rootpath . 'ajax/typeahead_users.php?status=extern&' . get_session_query_param() . '" ';
-
+	echo 'data-typeahead="' . get_typeahead($typeahead_name_ary) . '" '; 
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 
@@ -1001,7 +1036,8 @@ if (!$inline)
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['cid'], $params_form['q']);
+	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
+	unset($params_form['fdate'], $params_form['tdate']);
 
 	foreach ($params_form as $name => $value)
 	{
@@ -1048,6 +1084,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	}
 	else
 	{
+		/*
 		$params = array(
 			'orderby'		=> $key_orderby,
 			'asc'			=> $data['asc'],
@@ -1056,6 +1093,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		{
 			$params['uid'] = $uid;
 		}
+		*/
 		echo aphp('transactions', $params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
 	echo '</th>';

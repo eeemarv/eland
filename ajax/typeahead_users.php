@@ -12,13 +12,11 @@ if ($s_guest && $status != 'active')
 	exit;
 }
 
-if(!$s_admin && !in_array($status, ['active', 'extern'])
+if(!$s_admin && !in_array($status, ['active', 'extern']))
 {
 	http_response_code(403);
 	exit;
 }
-
-
 
 if ($letsgroup_id == 'self')
 {
@@ -30,7 +28,7 @@ if ($letsgroup_id == 'self')
 		case 'inactive':
 			$status_sql = '= 0';
 			break;
-		case 'ip'
+		case 'ip':
 			$status_sql = '= 5';
 			break;
 		case 'im':
