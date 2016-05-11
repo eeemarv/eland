@@ -47,7 +47,7 @@ if (!$group || $status != 'active')
 if ($group['apimethod'] != 'elassoap')
 {
 	header('Content-type: application/json');
-	echo json_encode(array());
+	echo '{}';
 	exit;
 }
 
@@ -74,11 +74,19 @@ if ($schemas[$group['url']])
 
 $active_users = $redis->get($group['url'] . '_typeahead_data');
 
-invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
+if ($active_users)
+{
+	invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
 
-header('Content-type: application/json');
-echo $active_users;
-exit;
+	header('Content-type: application/json');
+	echo $active_users;
+	exit;
+}
+else
+{
+	http_response_code(404);
+	exit;
+}
 
 
 /*
