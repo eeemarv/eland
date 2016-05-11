@@ -20,6 +20,13 @@ $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
 
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
+$tcode = (isset($_GET['tcode'])) ? $_GET['tcode'] : '';
+$andor = (isset($_GET['andor'])) ? $_GET['andor'] : 'and';
+$fdate = (isset($_GET['fdate'])) ? $_GET['fdate'] : '';
+$tdate = (isset($_GET['tdate'])) ? $_GET['tcode'] : '';
+
 /**
  * add
  */
@@ -697,23 +704,8 @@ if ($id)
  */
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
-$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
-
-$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 't.' . $orderby;
-$where = ($uid) ? ' where t.id_from = ? or t.id_to = ? ' : '';
-$sql_params = ($uid) ? array($uid, $uid) : array();
-$query = 'select t.*
-	from transactions t ' .
-	$where . '
-	order by ' . $query_orderby . ' ';
-$query .= ($asc) ? 'ASC ' : 'DESC ';
-$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
-
-$transactions = $db->fetchAll($query, $sql_params);
-
-$row_count = $db->fetchColumn('select count(t.*)
-	from transactions t ' . $where, $sql_params);
+$where_sql = '';
+$params_sql = array();
 
 $params = array(
 	'orderby'	=> $orderby,
@@ -724,9 +716,62 @@ $params = array(
 
 if ($uid)
 {
+	$where_sql .= 't.id_from = ? or t.id_to = ? ';
+	$params_sql[] = $uid;
+	$params_sql[] = $uid;
+	$params['uid'] = $uid;
 	$user = readuser($uid);
-	$params['uid']	= $uid;
 }
+
+if ($code)
+{
+
+	list($tcode) = explode(' ', trim($tcode));
+
+	$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
+	$where_sql .= 't.id_to = ? ';
+	$params_sql[] = $tuid;
+	$params['tcode'] = $tcode;
+	
+}
+
+if ($fcode)
+{
+
+	list($fcode) = explode(' ', trim($fcode));
+
+	$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
+	$where_sql .= 't.id_from = ? ';
+	$params_sql[] = $fuid;
+	$params['fcode'] = $fcode;
+	
+}
+
+
+$orderby = (isset($orderby) && ($orderby != '')) ? $orderby : 'cdate';
+$asc = (isset($asc) && ($asc != '')) ? $asc : 0;
+
+$query_orderby = ($orderby == 'fromusername' || $orderby == 'tousername') ? $orderby : 't.' . $orderby;
+
+
+
+
+
+$where = ($where) ? ' where ' . $where : '';
+
+$query = 'select t.*
+	from transactions t ' .
+	$where . '
+	order by ' . $query_orderby . ' ';
+$query .= ($asc) ? 'ASC ' : 'DESC ';
+$query .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
+
+$transactions = $db->fetchAll($query, $params_sql);
+
+$row_count = $db->fetchColumn('select count(t.*)
+	from transactions t ' . $where, $params_sql);
+
+
 
 $pagination = new pagination('transactions', $row_count, $params, $inline);
 
@@ -863,44 +908,45 @@ if (!$inline)
 
 	echo '<div class="col-md-5">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="from_letscode_addon">Van ';
+	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
 	echo '<input type="text" class="form-control" ';
-	echo 'aria-describedby="from_letscode_addon" ';
+	echo 'aria-describedby="fcode_addon" ';
 
 	echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
 	echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '|';
 	echo get_typeahead_thumbprint('users_extern') . '|';
 	echo $rootpath . 'ajax/typeahead_users.php?status=extern&' . get_session_query_param() . '" ';
 
-	echo 'name="from_letscode" id="from_letscode" placeholder="letscode" ';
-	echo 'value="' . $from_letscode . '">';
+	echo 'name="fcode" id="fcode" placeholder="letscode" ';
+	echo 'value="' . $fcode . '">';
 
 	echo '</div>';
 	echo '</div>';
 
-	$or_and_options = array(
+	$andor_options = array(
 		'and'	=> 'EN',
 		'or'	=> 'OF',
 	);
 
 	echo '<div class="col-md-2">';
 	echo '<div class="input-group col-md-12">';
-	echo '<select class="form-control">';
-	render_select_options($or_and_options, $or_and_letscode);
+	echo '<select class="form-control" name="andor">';
+	render_select_options($andor_options, $andor);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="col-md-5">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="to_letscode">Naar ';
+	echo '<span class="input-group-addon" id="tcode_addon">Naar ';
 	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control" ';
-	echo 'data-typeahead-source="from_letscode" ';
+	echo 'data-typeahead-source="fcode" ';
 	echo 'placeholder="letscode" ';
-	echo 'aria-describedby="to_letscode">';
+	echo 'aria-describedby="tcode_addon" ';
+	echo 'name="tcode" value="' . $tcode . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -910,13 +956,13 @@ if (!$inline)
 
 	echo '<div class="col-md-6">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="from_date_addon">Vanaf ';
+	echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
-	echo 'aria-describedby="from_date_addon" ';
+	echo 'aria-describedby="fdate_addon" ';
 
-	echo 'id="from_date" name="from_date" ';
-	echo 'value="' . $from_date . '" ';
+	echo 'id="fdate" name="fdate" ';
+	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 	echo 'data-date-default-view="2" ';
 	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
@@ -932,13 +978,13 @@ if (!$inline)
 
 	echo '<div class="col-md-6">';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="to_date_addon">Tot en met ';
+	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
-	echo 'aria-describedby="to_date_addon" ';
+	echo 'aria-describedby="tdate_addon" ';
 
-	echo 'id="to_date" name="to_date" ';
-	echo 'value="' . $to_date . '" ';
+	echo 'id="tdate" name="tdate" ';
+	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
 	echo 'data-date-default-view="2" ';
 	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
@@ -964,6 +1010,8 @@ if (!$inline)
 			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
 		}
 	}
+
+	echo '<input type="submit" value="zend" style="display: none;" >';
 
 	echo '</form>';
 

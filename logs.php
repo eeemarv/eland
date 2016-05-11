@@ -69,7 +69,7 @@ echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="submit" value="Zoeken" name="zend" class="btn btn-default">';
+echo '<input type="submit" value="Zoeken" name="zend" style="display: none;">';
 
 echo '</form>';
 

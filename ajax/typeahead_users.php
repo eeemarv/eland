@@ -6,11 +6,19 @@ require_once $rootpath . 'includes/inc_default.php';
 $letsgroup_id = ($_GET['letsgroup_id']) ?: 'self';
 $status = ($_GET['status']) ?: 'active';
 
-if ($s_guest && $status != 'active' && $letsgroup_id != 'self')
+if ($s_guest && $status != 'active')
 {
 	http_reponse_code(403);
 	exit;
 }
+
+if(!$s_admin && !in_array($status, ['active', 'extern'])
+{
+	http_response_code(403);
+	exit;
+}
+
+
 
 if ($letsgroup_id == 'self')
 {
@@ -18,6 +26,15 @@ if ($letsgroup_id == 'self')
 	{
 		case 'extern':
 			$status_sql = '= 7';
+			break;
+		case 'inactive':
+			$status_sql = '= 0';
+			break;
+		case 'ip'
+			$status_sql = '= 5';
+			break;
+		case 'im':
+			$status_sql = '= 6';
 			break;
 		case 'active':
 			$status_sql = 'in (1, 2)';
