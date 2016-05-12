@@ -908,7 +908,6 @@ if (!$inline)
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
 		<script src="' . $cdn_datepicker_nl . '"></script>
-		<script src="' . $rootpath . 'js/transactions.js"></script>
 		<script src="' . $rootpath . 'js/csv.js"></script>
 		<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>
@@ -999,7 +998,8 @@ if (!$inline)
 
 	echo 'id="fdate" name="fdate" ';
 	echo 'value="' . $fdate . '" ';
-	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-provide="datepicker" ';
+	echo 'data-date-format="yyyy-mm-dd" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
 	echo 'data-date-language="nl" ';
@@ -1020,7 +1020,8 @@ if (!$inline)
 
 	echo 'id="tdate" name="tdate" ';
 	echo 'value="' . $tdate . '" ';
-	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-provide="datepicker" ';
+	echo 'data-date-format="yyyy-mm-dd" ';
 	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';

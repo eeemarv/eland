@@ -29,11 +29,20 @@ $(document).ready(function(){
 						var cl = (user.a && (user.a > (now - (user.nd * 86400)))) ? ' class="success"' : '';
 
 						switch (user.s){
-							case 3:
-								cl = ' class="success"';
+							case 0:
+								cl = ' class="inactive"';
 								break;
 							case 2:
 								cl = ' class="danger"';
+								break;
+							case 3:
+								cl = ' class="success"';
+								break;
+							case 5:
+								cl = ' class="warning"';
+								break;
+							case 6:
+								cl = ' class="info"';
 								break;
 							case 7:
 								cl = ' class="extern"';
@@ -76,13 +85,13 @@ $(document).ready(function(){
 			}
 
 			datasets.push({data: new Bloodhound({
-				prefetch: {
-					url: url,
-					cache: true,
-					ttl: 2592000000,	//30 days
-					thumbprint: thumbprint,
-					filter: filter
-				},
+					prefetch: {
+						url: url,
+						cache: true,
+						ttl: 2592000000,	//30 days
+						thumbprint: thumbprint,
+						filter: filter
+					},
 					datumTokenizer: tokenizer,
 					queryTokenizer: Bloodhound.tokenizers.whitespace
 				}),
