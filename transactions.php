@@ -950,7 +950,9 @@ if (!$inline)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div class="panel panel-info collapse" id="filter">';
+	$panel_collapse = ($q || $fcode || $tcode || $fdate || $tdate) ? '' : ' collapse';
+
+	echo '<div class="panel panel-info' . $panel_collapse . '" id="filter">';
 	echo '<div class="panel-heading">';
 
 	echo '<form method="get" class="form-horizontal">';
@@ -1066,9 +1068,7 @@ if (!$inline)
 	echo '</div>';
 
 	echo '<div class="col-md-2">';
-//	echo '<div class="input-group btn-group">';
 	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
-//	echo '</div>';
 	echo '</div>';
 
 	echo '</div>';
