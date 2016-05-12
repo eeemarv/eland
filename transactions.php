@@ -734,11 +734,15 @@ $params = array(
 
 if ($uid)
 {
+	$user = readuser($uid);
+
 	$where_sql[] = 't.id_from = ? or t.id_to = ?';
 	$params_sql[] = $uid;
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
-	$user = readuser($uid);
+
+	$fcode = $tcode = link_user($user, null, false);
+	$andor = 'or';
 }
 
 if ($q)
@@ -748,56 +752,59 @@ if ($q)
 	$params['q'] = $q;
 }
 
-if ($fcode)
+if (!$uid)
 {
-	list($fcode) = explode(' ', trim($fcode));
-
-	$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
-
-	if ($fuid)
+	if ($fcode)
 	{
-		$where_code_sql[] = 't.id_from = ?';
-		$params_sql[] = $fuid;
+		list($fcode) = explode(' ', trim($fcode));
 
-		$fcode = link_user($fuid, null, false);
-	}
-	else
-	{
-		$where_code_sql[] = '1 = 2';
-	}
+		$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
 
-	$params['fcode'] = $fcode;
-}
+		if ($fuid)
+		{
+			$where_code_sql[] = 't.id_from = ?';
+			$params_sql[] = $fuid;
 
-if ($tcode)
-{
-	list($tcode) = explode(' ', trim($tcode));
+			$fcode = link_user($fuid, null, false);
+		}
+		else
+		{
+			$where_code_sql[] = '1 = 2';
+		}
 
-	$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
-
-	if ($tuid)
-	{
-		$where_code_sql[] = 't.id_to = ?';
-		$params_sql[] = $tuid;
-
-		$tcode = link_user($tuid, null, false);
-	}
-	else
-	{
-		$where_code_sql[] = '1 = 2';
+		$params['fcode'] = $fcode;
 	}
 
-	$params['tcode'] = $tcode;
-}
-
-if (count($where_code_sql) > 1)
-{
-	if ($andor == 'or')
+	if ($tcode)
 	{
-		$where_code_sql = ['(' . implode(' or ', $where_code_sql) . ')'];
+		list($tcode) = explode(' ', trim($tcode));
+
+		$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
+
+		if ($tuid)
+		{
+			$where_code_sql[] = 't.id_to = ?';
+			$params_sql[] = $tuid;
+
+			$tcode = link_user($tuid, null, false);
+		}
+		else
+		{
+			$where_code_sql[] = '1 = 2';
+		}
+
+		$params['tcode'] = $tcode;
 	}
 
-	$params['andor'] = $andor;
+	if (count($where_code_sql) > 1)
+	{
+		if ($andor == 'or')
+		{
+			$where_code_sql = ['(' . implode(' or ', $where_code_sql) . ')'];
+		}
+
+		$params['andor'] = $andor;
+	}
 }
 
 if ($fdate)
@@ -924,9 +931,25 @@ if ($s_admin)
 	$top_right .= '&nbsp;csv</a>';
 }
 
-$h1 = ($uid && $inline) ? aphp('transactions', 'uid=' . $uid, 'Transacties') : 'Transacties';
-$h1 .= ($uid) ? ' van ' . link_user($uid) : '';
-$h1 = (!$s_admin && $s_owner) ? 'Mijn transacties' : $h1;
+$filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
+
+if ($uid)
+{
+	if ($s_owner && !$inline)
+	{
+		$h1 = 'Mijn transacties';
+	}
+	else
+	{
+		$h1 = aphp('transactions', 'uid=' . $uid, 'Transacties');
+		$h1 .= ' van ' . link_user($uid);
+	}
+}
+else
+{
+	$h1 = 'Transacties';
+	$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+}
 
 $fa = 'exchange';
 
@@ -950,7 +973,7 @@ if (!$inline)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	$panel_collapse = ($q || $fcode || $tcode || $fdate || $tdate) ? '' : ' collapse';
+	$panel_collapse = ($filtered && !$uid) ? '' : ' collapse';
 
 	echo '<div class="panel panel-info' . $panel_collapse . '" id="filter">';
 	echo '<div class="panel-heading">';
@@ -1075,7 +1098,7 @@ if (!$inline)
 
 	$params_form = $params;
 	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
-	unset($params_form['fdate'], $params_form['tdate']);
+	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
 
 	foreach ($params_form as $name => $value)
 	{
