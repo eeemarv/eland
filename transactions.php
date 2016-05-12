@@ -1022,7 +1022,7 @@ if (!$inline)
 
 	echo '<div class="row">';
 
-	echo '<div class="col-md-6">';
+	echo '<div class="col-md-5">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
@@ -1044,7 +1044,7 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="col-md-6">';
+	echo '<div class="col-md-5">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
@@ -1065,6 +1065,12 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
+	echo '<div class="col-md-2">';
+//	echo '<div class="input-group btn-group">';
+	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+//	echo '</div>';
+	echo '</div>';
+
 	echo '</div>';
 
 	$params_form = $params;
@@ -1078,8 +1084,6 @@ if (!$inline)
 			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
 		}
 	}
-
-	echo '<input type="submit" value="zend" style="display: none;" >';
 
 	echo '</form>';
 
@@ -1120,17 +1124,6 @@ foreach ($tableheader_ary as $key_orderby => $data)
 
 		$h_params['orderby'] = $key_orderby;
 		$h_params['asc'] = $data['asc'];
-
-		/*
-		$params = array(
-			'orderby'		=> $key_orderby,
-			'asc'			=> $data['asc'],
-		);
-		if ($uid)
-		{
-			$params['uid'] = $uid;
-		}
-		*/
 
 		echo aphp('transactions', $h_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
