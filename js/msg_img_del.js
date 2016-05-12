@@ -1,4 +1,4 @@
-$(function () {
+$(document).ready(function () {
 
 	$('span[data-img-del]').click(function(){
 

@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
 	$('table').footable().bind({
 		'footable_filtered': function(e) {
 			var sum = 0;

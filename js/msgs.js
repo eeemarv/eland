@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
     $('#cid').change(function() {
         this.form.submit();
     });
