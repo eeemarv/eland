@@ -13,6 +13,8 @@ $s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for res
 $s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
+$typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
+
 $s3_res_url = 'http://' . $s3_res . '/';
 $s3_img_url = 'http://' . $s3_img . '/';
 $s3_doc_url = 'http://' . $s3_doc . '/';
@@ -941,13 +943,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 
 function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false)
 {
-	global $redis, $base_url;
+	global $redis, $base_url, $typeahead_thumbprint_version;
 
 	$letsgroup_url = ($letsgroup_url) ?: $base_url;
 
 	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
 
-	$thumbprint = $redis->get($redis_key);
+	$thumbprint = $typeahead_thumbprint_version . $redis->get($redis_key);
 
 	if (!$thumbprint)
 	{
