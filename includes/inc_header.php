@@ -72,7 +72,6 @@ if ($s_letscode)
 			'categories'	 				=> array('clone', 'Categorieën'),
 			'apikeys'						=> array('key', 'Apikeys'),
 			'type_contact'					=> array('circle-o-notch', 'Contact types'),
-			'reports/overview'				=> array('calculator', 'Rapporten'),
 			'config'						=> array('gears', 'Instellingen'),
 			'export'						=> array('download', 'Export'),
 			'autominlimit'					=> array('arrows-v', 'Auto min limiet'),
