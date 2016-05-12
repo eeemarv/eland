@@ -356,6 +356,12 @@ if ($add)
 
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
+			if ($remote_amount < 1)
+			{
+				$alert->error('Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.');
+				cancel();
+			} 
+
 			if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
 			{
 				$alert->error('De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.');
