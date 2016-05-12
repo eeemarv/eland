@@ -800,6 +800,20 @@ if (count($where_code_sql) > 1)
 	$params['andor'] = $andor;
 }
 
+if ($fdate)
+{
+	$where_sql[] = 't.date >= ?';
+	$params_sql[] = $fdate;
+	$params['fdate'] = $fdate;
+}
+
+if ($tdate)
+{
+	$where_sql[] = 't.date <= ?';
+	$params_sql[] = $tdate;
+	$params['tdate'] = $tdate;
+}
+
 $where_sql = array_merge($where_sql, $where_code_sql);
 
 if (count($where_sql))
@@ -1102,6 +1116,11 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	}
 	else
 	{
+		$h_params = $params;
+
+		$h_params['orderby'] = $key_orderby;
+		$h_params['asc'] = $data['asc'];
+
 		/*
 		$params = array(
 			'orderby'		=> $key_orderby,
@@ -1112,7 +1131,8 @@ foreach ($tableheader_ary as $key_orderby => $data)
 			$params['uid'] = $uid;
 		}
 		*/
-		echo aphp('transactions', $params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+
+		echo aphp('transactions', $h_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
 	}
 	echo '</th>';
 }
