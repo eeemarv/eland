@@ -45,7 +45,7 @@ class pagination
 
 	public function render(){
 
-		echo '<div class="row"><div class="col-md-12">';
+		echo '<div class="row print-hide"><div class="col-md-12">';
 		echo '<ul class="pagination">';
 
 		if ($this->page)
