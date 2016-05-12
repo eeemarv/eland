@@ -962,8 +962,7 @@ if (($edit || $add))
 		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
-		echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '" ';
+		echo 'data-typeahead="' . get_typeahead('users_active') . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';

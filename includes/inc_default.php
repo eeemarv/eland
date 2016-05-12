@@ -990,20 +990,27 @@ function invalidate_typeahead_thumbprint($name = 'users_active', $letsgroup_url 
 /**
  * 
  */
-function get_typeahead($name_ary)
+function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
 {
 	global $rootpath;
 
 	$out = '';
 
+	if (!is_array($name_ary))
+	{
+		$name_ary = array($name_ary);
+	}
+
 	foreach($name_ary as $name)
 	{
-		$out .= get_typeahead_thumbprint($name) . '|';
+		$out .= get_typeahead_thumbprint($name, $letsgroup_url) . '|';
 
 		if (strpos($name, 'users_') !== false)
 		{
 			$status = str_replace('users_', '', $name);
-			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status . '&' . get_session_query_param();
+			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
+			$out .= ($letsgroup_id) ? '&letsgroup_id=' . $letsgroup_id : '';
+			$out .= '&' . get_session_query_param();
 		}
 		else
 		{

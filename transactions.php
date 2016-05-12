@@ -563,14 +563,33 @@ if ($add)
 	echo '<label for="letsgroup_id" class="col-sm-2 control-label">Aan letsgroep</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
+
 	foreach ($letsgroups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
-		echo 'data-typeahead="' . get_typeahead_thumbprint('users_active', $l['url']) . '|';
-		echo $rootpath . 'ajax/typeahead_users.php?letsgroup_id=' . $l['id'];
-		echo '&' . get_session_query_param() . '"';
+
+		if ($l['id'] == 'self')
+		{
+			echo 'id="letsgroup_self" ';
+
+			if ($s_admin)
+			{
+				$typeahead = array('users_active', 'users_inactive', 'users_ip', 'users_im');
+			}
+			else
+			{
+				$typeahead = 'users_active';
+			}
+
+			$typeahead = get_typeahead($typeahead);
+		}
+		else
+		{
+			$typeahead = get_typeahead('users_active', $l['url'], $l['id']);
+		}
+
+		echo 'data-typeahead="' . $typeahead . '"';
 		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';
-		echo ($l['id'] == 'self') ? ' id="letsgroup_self" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 	echo '</select>';

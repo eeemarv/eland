@@ -193,8 +193,7 @@ if ($edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_name'] . '" ';
-	echo 'data-typeahead="' . get_typeahead_thumbprint('doc_map_names') . '|';
-	echo $rootpath . 'ajax/typeahead_doc_map_names.php?' . get_session_query_param() . '">';
+	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -644,8 +643,7 @@ if ($s_admin)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-typeahead="' . get_typeahead_thumbprint('doc_map_names') . '|';
-	echo $rootpath . 'ajax/typeahead_doc_map_names.php?' . get_session_query_param() . '">';
+	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';
 

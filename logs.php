@@ -59,12 +59,13 @@ echo 'value="' . $type . '">';
 echo '</div>';
 echo '</div>';
 
+$typeahead_name_ary = array('users_active', 'users_extern', 'users_inactive', 'users_im', 'users_ip');
+
 echo '<div class="form-group">';
 echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'data-typeahead="' . get_typeahead_thumbprint() . '|';
-echo $rootpath . 'ajax/typeahead_users.php?' . get_session_query_param() . '" ';
+echo 'data-typeahead="' . get_typeahead($typeahead_name_ary) . '" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';
