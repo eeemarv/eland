@@ -989,7 +989,7 @@ if (!$inline)
 	echo '<div class="row">';
 	echo '<div class="col-xs-12">';
 
-	echo '<div class="input-group">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
@@ -997,12 +997,12 @@ if (!$inline)
 	echo '</div>';
 
 	echo '</div>';
-	echo '</div><br>';
+	echo '</div>';
 
 	echo '<div class="row">';
 
 	echo '<div class="col-md-5">';
-	echo '<div class="input-group">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
@@ -1030,18 +1030,16 @@ if (!$inline)
 	);
 
 	echo '<div class="col-md-2">';
-	echo '<div class="input-group col-md-12">';
-	echo '<select class="form-control" name="andor">';
+	echo '<select class="form-control margin-bottom" name="andor">';
 	render_select_options($andor_options, $andor);
 	echo '</select>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="col-md-5">';
-	echo '<div class="input-group">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="tcode_addon">Naar ';
 	echo '<span class="fa fa-user"></span></span>';
-	echo '<input type="text" class="form-control" ';
+	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'data-typeahead-source="fcode" ';
 	echo 'placeholder="letscode" ';
 	echo 'aria-describedby="tcode_addon" ';
@@ -1049,15 +1047,15 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	echo '</div><br>';
+	echo '</div>';
 
 	echo '<div class="row">';
 
 	echo '<div class="col-md-5">';
-	echo '<div class="input-group">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
-	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
+	echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
 	echo 'aria-describedby="fdate_addon" ';
 
 	echo 'id="fdate" name="fdate" ';
@@ -1076,10 +1074,10 @@ if (!$inline)
 	echo '</div>';
 
 	echo '<div class="col-md-5">';
-	echo '<div class="input-group">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
-	echo '<input type="text" class="form-control" placeholder="datum: jjjj-mm-dd" ';
+	echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
 	echo 'aria-describedby="tdate_addon" ';
 
 	echo 'id="tdate" name="tdate" ';

@@ -363,6 +363,15 @@ div.pag
   color: #dfbbdc;
 }
 
+/***for inputs of horizontal form******/
+
+.margin-bottom
+{
+  margin-bottom: 10px;
+}
+
+/********************/
+
 /* jssor slider bullet navigator skin 01 css */
 
 .jssorb01 {
