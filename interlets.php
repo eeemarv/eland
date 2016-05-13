@@ -736,7 +736,8 @@ function render_schemas_groups()
 	echo '</ul></p>';
 
 	echo '<div class="panel panel-default"><div class="panel-heading">';
-	echo '<p>Verbindingen met eLAS. Zie <a href="http://www.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling">hier</a> voor de procedure.</p>';
+	echo '<h3>Verbindingen met eLAS. Zie <a href="http://www.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling">hier</a> voor de procedure.</h3>';
+	echo '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
 	echo '</div>';
 	echo '<ul>';
 	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail. Internal wordt genegeerd in eLAND.</li>';
@@ -748,18 +749,23 @@ function render_schemas_groups()
 	echo '</ul>';
 	echo '</div>';
 
-	echo '<div class="panel panel-default"><div class="panel-heading">';
-	echo '<p>Verbindingen met eLAND installaties.</p>';
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<h3>Verbindingen leggen met andere eLAND installaties.</h3>';
 	echo '</div>';
 	echo '<ul>';
-	echo '<li>Alle eLAND installaties bevinden zich op dezelfde server (zie onder voor lijst). </li>';
-	echo '<li>Met deze letsgroepen kan op een vereenvoudigde manier verbinding gelegd worden zonder het uitwisselen van apikeys, preshared keys en remote letscodes.</li>';
-	echo '<li>Voor het leggen van een verbinding, maak eerst een letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' onderaan te klikken en vervolgens toevoegen. Dan, klik op \'Creëer\' in \'Lok.account\', ';
+	echo '<li>Met letsgroepen die eLAND gebruiken kan op een vereenvoudigde manier verbinding gelegd worden zonder ';
+	echo 'het uitwisselen van apikeys, preshared keys en remote letscodes. Dit is mogelijk omdat alle eLAND installaties zich op ';
+	echo 'dezelfde server bevinden.</li>';
+	echo '<li>Contacteer altijd eerst vooraf de andere groep waarmee je wil interletsen. Vraag of zij ook geïnteresseerd zijn in een verbinding.</li>';
+	echo '<li>Voor het leggen van een verbinding, kijk in de tabel hieronder. ';
+	echo 'Maak de referentie naar de letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
+	echo 'klik je op knop \'Creëer\' in de kolom \'lok.account\'. ';
 	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';
 	echo 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
 	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	echo '</ul>';
-	echo '</div>';
+//	echo '</div>';
 
 	list($schemas, $domains) = get_schemas_domains(true);
 
@@ -816,15 +822,9 @@ function render_schemas_groups()
 		}
 	}
 
-	echo '<div class="panel panel-warning">';
 	echo '<div class="panel-heading">';
-
-	echo '<button class="btn btn-default" title="Toon letsgroepen op deze server" data-toggle="collapse" ';
-	echo 'data-target="#server">';
-	echo '<i class="fa fa-question"></i>';
-	echo ' Letsgroepen op deze server</button>';
+	echo '<h3>eLAND interlets groepen</h3>';
 	echo '</div>';
-	echo '<div class=" collapse" id="server">';
 
 	echo '<table class="table table-bordered table-hover table-striped footable">';
 	echo '<thead>';
@@ -950,7 +950,6 @@ function render_schemas_groups()
 	}
 	echo '</tbody>';
 	echo '</table>';
-	echo '</div>';
 	echo '</div></div>';
 }
 
