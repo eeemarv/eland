@@ -165,9 +165,7 @@ $access_options = array(
  *
  */
 
-$schema = str_replace('.', '__', $_SERVER['HTTP_HOST']);
-$schema = str_replace('-', '___', $schema);
-$schema = str_replace(':', '____', $schema);
+$schema = str_replace(['.', '-', ':'], ['__', '___', '____'], $_SERVER['HTTP_HOST']);
 $schema = strtoupper($schema);
 $schema = getenv('SCHEMA_' . $schema);
 
@@ -899,10 +897,8 @@ function get_schemas_domains($http = false)
 			continue;
 		}
 
-		$domain = str_replace('SCHEMA_', '', $key);
-		$domain = str_replace('____', ':', $domain);
-		$domain = str_replace('___', '-', $domain);
-		$domain = str_replace('__', '.', $domain);
+		$domain = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
+
 		$domain = strtolower($domain);
 		$domain = (($http) ? 'http://' : '') . $domain;
 
