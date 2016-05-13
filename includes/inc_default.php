@@ -959,7 +959,11 @@ function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false
  *
  */
 
-function invalidate_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false, $new_thumbprint = false)
+function invalidate_typeahead_thumbprint(
+	$name = 'users_active',
+	$letsgroup_url = false,
+	$new_thumbprint = false,
+	$ttl = 5184000)	// 60 days;
 {
 	global $redis, $base_url, $s_id;
 
@@ -975,7 +979,7 @@ function invalidate_typeahead_thumbprint($name = 'users_active', $letsgroup_url 
 			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $letsgroup_url . ' : ' . $name);
 		}
 
-		$redis->expire($redis_key, 5184000); // 60 days
+		$redis->expire($redis_key, $ttl);
 	}
 	else
 	{
