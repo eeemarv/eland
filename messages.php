@@ -376,7 +376,7 @@ if ($img_del == 'all' && $id && $post)
 /*
  * delete an image
  */
-if ($img_del && $post && ctype_digit($img_del))
+if ($img_del && $post && ctype_digit((string) $img_del))
 {
 	if (!($msg = $db->fetchAssoc('select m.id_user, p."PictureFile"
 		from msgpictures p, messages m
@@ -688,7 +688,7 @@ if (($edit || $add))
 
 		$validity = $_POST['validity'];
 
-		if (!ctype_digit($validity))
+		if (!ctype_digit((string) $validity))
 		{
 			$errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
 		}
@@ -723,7 +723,7 @@ if (($edit || $add))
 			'local'			=> ($_POST['local']),
 		);
 
-		if (!ctype_digit($msg['amount']) && $msg['amount'] != '')
+		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
 			$errors[] = 'De (richt)prijs in ' . $currency . ' moet nul of een positief getal zijn.';
 		}

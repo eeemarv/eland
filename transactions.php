@@ -124,7 +124,7 @@ if ($add)
 			$errors[] = 'Bedrag is niet ingevuld';
 		}
 
-		else if (!(ctype_digit($transaction['amount'])))
+		else if (!(ctype_digit((string) $transaction['amount'])))
 		{
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}

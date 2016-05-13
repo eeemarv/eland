@@ -774,7 +774,7 @@ function getmailadr($m, $sending_schema = false)
 
 			$out[$mail] = $systemname;
 		}
-		else if (ctype_digit($in))
+		else if (ctype_digit((string) $in))
 		{
 			$status_sql = ($s_admin) ? '' : ' and u.status in (1,2)';
 
@@ -804,7 +804,7 @@ function getmailadr($m, $sending_schema = false)
 				$out[$mail] = $row['letscode'] . ' ' . $row['name'];
 			}
 		}
-		else if (ctype_digit($remote_id) && $remote_schema)
+		else if (ctype_digit((string) $remote_id) && $remote_schema)
 		{
 			$st = $db->prepare('select c.value, u.name, u.letscode
 				from ' . $remote_schema . '.contact c,
@@ -949,7 +949,7 @@ function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false
 
 	if (!$thumbprint)
 	{
-		return 'r-' . crc32(microtime());
+		return 'renew-' . crc32(microtime());
 	}
 
 	return $thumbprint;
