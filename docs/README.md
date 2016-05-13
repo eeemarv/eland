@@ -1,10 +1,7 @@
 (documentatie in opbouw)
 
-#eLAND
-
+#<img src="img/eland-w200.png" width="120">eLAND
 Webtoepassing voor letsgroepen
-
-<img src="img/eland-w200.png" width="120">
 
 * Voor letsgroepen, registreren van vraag en aanbod, leden en transacties.
 * Wordt gratis gehost.
@@ -12,5 +9,6 @@ Webtoepassing voor letsgroepen
 * Interlets is mogelijk tussen eLAND en eLAS op dezelfde wijze als tussen eLAS installaties.
 * Interlets verbindingen tussen eLAND installaties zijn eenvoudiger aan te maken (zonder uitwisseling van codes).
 
+Deze documentatie wil niet volledig zijn. Enkel zaken die minder relevant zijn komen aan bod.
 
 [Code op Github](https://github.com/eeemarv/eland)
