@@ -148,6 +148,9 @@ include $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
+echo '<h3>Csv export zoals eLAS</h3>';
+echo '</div>';
+echo '<div class="panel-heading">';
 
 echo $buttons;
 
