@@ -11,7 +11,7 @@ $types = $mdb->logs->distinct('type');
 
 $output = json_encode($types);
 
-invalidate_typeahead_thumbprint('log_types', false, crc32($output), 86400);
+invalidate_typeahead_thumbprint('log_types', false, crc32($output), 345600); // 4 days
 
 header('Content-type: application/json');
 
