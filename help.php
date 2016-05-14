@@ -9,12 +9,13 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$help = array();
-	$help['letscode'] = $_POST['letscode'];
-	$help['mail'] = $_POST['mail'];
-	$help['subject'] = $_POST['subject'];
-	$help['description'] = $_POST['description'];
-	$help['browser'] = $_SERVER['HTTP_USER_AGENT'];
+	$help = array(
+		'letscode' 			=> $_POST['letscode'],
+		'mail'				=> $_POST['mail'],
+		'subject' 			=> $_POST['subject'],
+		'description' 		=> $_POST['description'],
+		'browser'			=> $_SERVER['HTTP_USER_AGENT'],
+	);
 
     $errors = array();
 
@@ -65,9 +66,35 @@ if(isset($_POST['zend']))
 		$errors[] = 'Geef een omschrijving van je probleem.';
 	}
 
+	$to = trim(readconfigfromdb('support'));
+
+	if (empty($to))
+	{
+		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
+	}
+
 	if(empty($errors))
 	{
-		if (!($return_message = helpmail($help)))
+		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
+		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
+
+		$text .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
+
+		$text .= 'Gebruiker ingelogd: ';
+		$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
+		$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
+		$text .= "\r\n\r\n";
+		$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
+		$text .= $help['description'] . "\r\n\r\n";
+		$text .= "--------------------------------------------------------------------\r\n\r\n";
+		$text .= "User Agent:\r\n";
+		$text .= $help['browser'] . "\r\n";
+		$text .= "\r\n";
+		$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
+
+		$return_message =  mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['mail']));
+
+		if (!$return_message)
 		{
 			$alert->success('De support mail is verzonden.');
 			header('Location: ' . generate_url(($s_anonymous) ? 'login' : 'index'));
@@ -174,36 +201,3 @@ if (!$s_id)
 }
 
 include $rootpath . 'includes/inc_footer.php';
-
-function helpmail($help)
-{
-	global $rootpath, $s_id, $db, $systemtag;
-
-	$from = $help['mail'];
-
-	$to = trim(readconfigfromdb('support'));
-
-	if (empty($to))
-	{
-		return 'Het support email adres is niet ingesteld op deze installatie';
-	}
-
-    $text  = "-- via de website werd het volgende probleem gemeld --\r\n";
-	$text .= 'E-mail: ' . $help['mail'] . "\r\n";
-
-	$text .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
-
-	$text .= 'Gebruiker ingelogd: ';
-	$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
-	$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
-	$text .= "\r\n\r\n";
-	$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
-	$text .= $help['description'] . "\r\n\r\n";
-	$text .= "--------------------------------------------------------------------\r\n\r\n";
-	$text .= "User Agent:\r\n";
-	$text .= $help['browser'] . "\r\n";
-	$text .= "\r\n";
-	$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
-
-	return mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['mail']));
-}

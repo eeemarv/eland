@@ -167,6 +167,14 @@ $access_options = array(
 
 $schema = str_replace(['.', '-', ':'], ['__', '___', '____'], $_SERVER['HTTP_HOST']);
 $schema = strtoupper($schema);
+
+if (getenv('HOSTING_FORM_' . $schema) && $script_name == 'index')
+{
+	$role = 'anonymous';
+	$hosting_form = true;
+	return;
+}
+
 $schema = getenv('SCHEMA_' . $schema);
 
 if (!$schema)

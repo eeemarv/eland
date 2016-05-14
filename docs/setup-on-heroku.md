@@ -100,10 +100,24 @@ heroku addons:add mongolab
 * SMTP_USERNAME
 
 #### From mail addresses
-* MAIL_FROM_ADDRESS=a@letsa.net 
-* MAIL_NOREPLY_ADDRESS=noreply@letsa.net
+* MAIL_FROM_ADDRESS: a mail address when a reply-to address has been set.
+* MAIL_NOREPLY_ADDRESS: a notification mail you can not reply to
+* MAIL_HOSTER_ADDRESS: used for request-hosting form.
 
-Mail is sent only from these two addresses. 
+Mail is sent only from these addresses. 
+
+### Request hosting form
+
+The Domain of a request-hosting form can be set with:
+
+* HOSTING_FORM_domain=1
+
+domain is formatted the same way as the schema domains.
+
+* Dots are replaced by double underscore __
+* Hyphens are replaced by triple underscore ___
+* Colons re replaced by quadruple underscore ____
+* all characters should be uppercase in the environment variable.
 
 ###Other environment vars
 

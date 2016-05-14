@@ -1,7 +1,6 @@
 ### Server & hosting
 
-Deze pagina's zijn een referentie om eLAND te hosten. eLAND hosting wordt gratis aangeboden. Het wordt afgeraden om eLAND zelf te installeren. 
+eLAND hosting wordt gratis aangeboden. Wil je eLAND voor je letsgroep, dan kan je hosting aanvragen via het <a href="http://hosting.letsa.net">contactformulier</a>. Het wordt afgeraden om eLAND zelf te installeren. 
 
-These pages are a reference for hosting eLAND.
-
-Hosting is possible on Heroku or on a VPS with Dokku.
+Volgende pagina's zijn een interne referentie om eLAND te hosten. 
+These pages are a internal reference for hosting eLAND.

@@ -17,7 +17,6 @@
     * [Categorieën](admin-categorieen.md)
     * [Apikeys](admin-apikeys.md)
     * [Contact types](admin-contact-types.md)
-    * [Rapporten](admin-rapporten.md)
     * [Instellingen](admin-instellingen.md)
     * [Export](admin-export.md)
     * [Automatische mimimum limiet](admin-automatische-minimum-limiet.md)
