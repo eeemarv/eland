@@ -120,6 +120,7 @@ if ($hosting_form)
 				echo '<p>' . $error . '</p>';
 			}
 			echo '</div></div>';
+			echo '<br>';
 
 		}
 
@@ -167,14 +168,16 @@ if ($hosting_form)
 		echo '</div>';
 		echo '</div>';
 
+		echo '<br>';
 		echo '<p>*Privacy: uw email adres wordt voor geen enkel ander doel gebruikt dan u terug te kunnen ';
 		echo 'contacteren.</p>';
+
 	}
 	echo '</div>';
 	echo '</div>';
 
 	echo '</div>';
-
+	echo '<br><br><br><br><br><br>';
 	echo '<footer class="footer">';
 
 	echo '<p><a href="http://letsa.net">eLAND';
