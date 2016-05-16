@@ -23,8 +23,6 @@ $start = ($_GET['start']) ?: 0;
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
 
-//$nav = (isset($_GET['nav'])) ? $_GET['nav'] : 'all';
-
 $ow = (isset($_GET['ow'])) ? $_GET['ow'] : 'all';
 $valid = (isset($_GET['valid'])) ? $_GET['valid'] : 'all';
 $ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'active';
@@ -1455,36 +1453,6 @@ switch ($ustatus)
 		$params['ustatus'] = 'active';
 		break;
 }
-/*
-$params['nav'] = $nav;
-
-switch ($nav)
-{
-	case 'valid':
-		$and_where .= ' and m.validity >= now()';
-		break;
-	case 'expired':
-		$and_where .= ' and m.validity < now()';
-		break;
-	case 'fromnew':
-		if (!$uid)
-		{
-			$and_where .= ' and u.adate > ?';
-			$sql_bind[] = gmdate('Y-m-d H:i:s', $newusertreshold);
-		}
-		break;
-	case 'fromleaving':
-		if (!$uid)
-		{
-			$and_where .= ' and u.status = 2';
-		}
-		break;
-	case 'all':
-	default:
-		unset($params['nav']);
-		break;
-}
-*/
 
 if ($s_guest)
 {
@@ -1852,66 +1820,6 @@ if (!$inline)
 
 	echo '</div>';
 	echo '</div>';
-/*
-	$nav_tabs = array(
-		'all'	=> array(
-			'color'		=> 'white',
-			'lbl'		=> 'Alle',
-		),
-		'valid'		=> array(
-			'color'		=> 'white',
-			'lbl'		=> 'Geldig',
-		),
-		'expired'		=> array(
-			'color'		=> 'danger',
-			'lbl'		=> 'Vervallen',
-		),
-
-	);
-
-	if (!$uid)
-	{
-		$nav_tabs = array_merge($nav_tabs, array(
-			'fromnew'	=> array(
-				'color'		=> 'white',
-				'lbl'		=> 'Van instappers',
-				'hidden-xs'	=> true,
-			),
-			'fromleaving'	=> array(
-				'color'		=> 'white',
-				'lbl'		=> 'Van uitstappers',
-				'hidden-xs'	=> true,
-			),
-		));
-	}
-
-	echo '<ul class="nav nav-tabs" id="nav-tabs">';
-
-	$nav_params = $params;
-
-	foreach ($nav_tabs as $key => $tab)
-	{
-		$nav_params['nav'] = $key;
-
-		$class = array();
-
-		if ($nav == $key)
-		{
-			$class[] = 'active';
-		}
-
-		if ($tab['hidden-xs'])
-		{
-			$class[] = 'hidden-xs';
-		}
-
-		echo '<li';
-		echo (count($class)) ? ' class="' . implode(' ', $class) . '"' : '';
-		echo '>';
-		echo aphp('messages', $nav_params, $tab['lbl'], 'bg-' . $tab['color']) . '</li>';
-	}
-	echo '</ul>';
-	*/
 }
 
 if ($inline)
@@ -1925,6 +1833,22 @@ if ($inline)
 }
 
 $pagination->render();
+
+if (!count($messages))
+{
+	echo '<br>';
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-body">';
+	echo '<p>Er zijn geen resultaten.</p>';
+	echo '</div></div>';
+	$pagination->render();
+
+	if (!$inline)
+	{
+		include $rootpath . 'includes/inc_footer.php';
+	}
+	exit;
+}
 
 if ($v_list)
 {
