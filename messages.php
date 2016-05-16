@@ -1619,18 +1619,18 @@ if (!$inline)
 	echo '<form method="get" class="form-horizontal">';
 
 	echo '<div class="row">';
-	echo '<div class="col-xs-12">';
-	echo '<div class="input-group">';
+
+	echo '<div class="col-sm-6">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoeken">';
 	echo '</div>';
-	echo '</div></div><br>';
+	echo '</div>';
 
-	echo '<div class="row">';
-	echo '<div class="col-xs-12">';
-	echo '<div class="input-group">';
+	echo '<div class="col-sm-6">';
+	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-clone"></i>';
 	echo '</span>';
@@ -1639,6 +1639,7 @@ if (!$inline)
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
+
 	echo '</div>';
 
 	$params_form = $params;
