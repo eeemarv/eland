@@ -987,21 +987,21 @@ if (!$inline)
 	echo '<form method="get" class="form-horizontal">';
 
 	echo '<div class="row">';
-	echo '<div class="col-xs-12">';
 
+	echo '<div class="col-sm-12">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoekterm">';
 	echo '</div>';
-
 	echo '</div>';
+
 	echo '</div>';
 
 	echo '<div class="row">';
 
-	echo '<div class="col-md-5">';
+	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
@@ -1029,13 +1029,13 @@ if (!$inline)
 		'or'	=> 'OF',
 	);
 
-	echo '<div class="col-md-2">';
+	echo '<div class="col-sm-2">';
 	echo '<select class="form-control margin-bottom" name="andor">';
 	render_select_options($andor_options, $andor);
 	echo '</select>';
 	echo '</div>';
 
-	echo '<div class="col-md-5">';
+	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="tcode_addon">Naar ';
 	echo '<span class="fa fa-user"></span></span>';
@@ -1051,7 +1051,7 @@ if (!$inline)
 
 	echo '<div class="row">';
 
-	echo '<div class="col-md-5">';
+	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
@@ -1073,7 +1073,7 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="col-md-5">';
+	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
@@ -1094,7 +1094,7 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="col-md-2">';
+	echo '<div class="col-sm-2">';
 	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
 	echo '</div>';
 
