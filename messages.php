@@ -1948,15 +1948,19 @@ if ($v_list)
 }
 else if ($v_extended)
 {
+	$time = time();
+
 	foreach ($messages as $msg)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag'; 
 
 		$sf_owner = ($msg['id_user'] == $s_id) ? true : false;
 
+		$exp = strtotime($msg['validity']) < $time;
+
 		echo '<div class="panel panel-info printview">';
 		echo '<div class="panel-body';
-		echo (strtotime($msg['validity']) < time()) ? ' bg-danger' : '';
+		echo ($exp) ? ' bg-danger' : '';
 		echo '">';
 
 		echo '<div class="media">';
@@ -1972,8 +1976,9 @@ else if ($v_extended)
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
 		echo aphp('messages', 'id=' . $msg['id'], $type_str . ': ' . $msg['content']);
-
+		echo ($exp) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 		echo '</h3>';
+
 		echo htmlspecialchars($msg['Description'], ENT_QUOTES);
 		echo '</div>';
 		echo '</div>';
