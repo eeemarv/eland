@@ -711,6 +711,10 @@ if (count($groups))
 	echo '</tbody>';
 	echo '</table>';
 	echo '</div></div>';
+
+	echo '<p><ul><li>Wanneer je op een groepsnaam klikt, zal je browser een nieuwe tab ';
+	echo 'proberen te openen. Het kan zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
+	echo 'deze popups toelaat voor deze site. </li></ul></p>';
 }
 else
 {
