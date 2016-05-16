@@ -1129,6 +1129,22 @@ else
 
 $pagination->render();
 
+if (!count($transactions))
+{
+	echo '<br>';
+	echo '<div class="panel panel-primary">';
+	echo '<div class="panel-body">';
+	echo '<p>Er zijn geen resultaten.</p>';
+	echo '</div></div>';
+	$pagination->render();
+
+	if (!$inline)
+	{
+		include $rootpath . 'includes/inc_footer.php';
+	}
+	exit;
+}
+
 echo '<div class="panel panel-primary printview">';
 echo '<div class="table-responsive">';
 echo '<table class="table table-bordered table-striped table-hover footable csv transactions" ';
