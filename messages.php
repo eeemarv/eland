@@ -1327,7 +1327,7 @@ if (!($view || $inline))
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$v_list = ($view == 'list' || ($inline && !$recent)) ? true : false;
+$v_list = (($view == 'list' || $inline) && !$recent) ? true : false;
 $v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;
 $v_map = ($view == 'map' && !($inline || $recent)) ? true : false;
 
