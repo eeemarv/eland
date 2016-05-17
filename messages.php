@@ -1649,13 +1649,13 @@ if ($uid)
 	}
 	else
 	{
-		$h1 = aphp('messages', 'uid=' . $uid, 'Vraag en aanbod');
+		$h1 = aphp('messages', 'uid=' . $uid . '&view=' . $view_messages, 'Vraag en aanbod');
 		$h1 .= ' van ' . link_user($uid);
 	}
 }
 else if ($recent)
 {
-	$h1 = aphp('messages', '', 'Recent Vraag en aanbod');
+	$h1 = aphp('messages', 'view=' . $view_messages, 'Recent Vraag en aanbod');
 }
 else
 {
