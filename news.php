@@ -92,9 +92,9 @@ if ($add && $submit && !count($errors))
 
 			$subject = 'Nieuwsbericht wacht op goedkeuring';
 			$text .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
-			$text .= "\nEen lid gaf een nieuwsbericht met titel [";
+			$text .= "\nEen lid gaf een nieuwsbericht met titel '";
 			$text .= $news['headline'];
-			$text .= "] in, dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
+			$text .= "' in. Dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
 			$text .= 'link: ' .  $url . "\n";
 			mail_q(array('to' => 'newsadmin', 'subject' => $subject, 'text' => $text));
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
