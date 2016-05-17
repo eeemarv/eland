@@ -244,32 +244,32 @@ if ($del)
 	echo '<div >';
 	echo '<strong>Agendadatum: ';
 	list($itemdate) = explode(' ', $news['itemdate']);
-	if(trim($itemdate) != "00/00/00")
+	if(trim($itemdate) != '00/00/00')
 	{
 		echo $itemdate;
 	}
-	echo "<br>Locatie: " .$news["location"];
-	echo "</strong>";
-	echo "<br><i>Ingegeven door : ";
+	echo '<br>Locatie: ' .$news['location'];
+	echo '</strong>';
+	echo '<br><i>Ingegeven door : ';
 	echo link_user($news['id_user']);
-	echo "</i>";
+	echo '</i>';
 	echo ($news['approved'] == 't') ? '<br><i>Goedgekeurd.</i>' : '<br><i>Nog niet goedgekeurd.</i>';
 	echo ($news['sticky'] == 't') ? '<br><i>Behoud na datum.</i>' : '<br><i>Wordt verwijderd na datum.</i>';
 
-	echo "<p>";
-	echo nl2br(htmlspecialchars($news["newsitem"],ENT_QUOTES));
-	echo "</p>";
+	echo '<p>';
+	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
+	echo '</p>';
 
-	echo "<table width='100%' border=0><tr><td>";
-	echo "<div id='navcontainer'>";
-	echo "</div>";
-	echo "</td></tr></table>";
+	echo '<table width="100%"><tr><td>';
+	echo '<div id="navcontainer">';
+	echo '</div>';
+	echo '</td></tr></table>';
 
-	echo "</p>";
-	echo "</div>";
+	echo '</p>';
+	echo '</div>';
 
-	echo "<p><font color='red'><strong>Ben je zeker dat dit nieuwsbericht";
-	echo " moet verwijderd worden?</strong></font></p>";
+	echo '<p><font color="red"><strong>Ben je zeker dat dit nieuwsbericht ';
+	echo 'moet verwijderd worden?</strong></font></p>';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -518,14 +518,38 @@ else if ($v_extended)
 		echo '</h3>';
 		echo nl2br(htmlspecialchars($n['newsitem'],ENT_QUOTES));
 
+		echo '<dl>';
 
+		if ($n['location'])
+		{
+			echo '<dt>';
+			echo 'Locatie';
+			echo '</dt>';
+			echo '<dd>';
+			echo htmlspecialchars($n['location'], ENT_QUOTES);
+			echo '</dd>';
+		}
 
+		if ($n['idate'])
+		{
+			echo '<dt>';
+			echo 'Agendadatum';
+			echo '</dt>';
+			echo '<dd>';
+			echo htmlspecialchars($n['idate'], ENT_QUOTES);
+
+			if ($n['sticky'])
+			{
+				echo ' <i>(Nieuwsbericht blijft behouden na datum)</i>';
+			}
+			echo '</dd>';
+		}
+
+		echo '</dl>';
 
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
-
-		
 
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i>' . link_user($n['id_user']);
