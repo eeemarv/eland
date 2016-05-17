@@ -17,6 +17,8 @@ $submit = (isset($_POST['zend'])) ? true : false;
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
 $asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
+$recent = (isset($_GET['recent'])) ? true : false;
+
 $limit = ($_GET['limit']) ?: 25;
 $start = ($_GET['start']) ?: 0;
 
@@ -1325,9 +1327,9 @@ if (!($view || $inline))
 
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
-$v_list = ($view == 'list' || $inline) ? true : false;
-$v_extended = ($view == 'extended' && !$inline) ? true : false;
-$v_map = ($view == 'map' && !$inline) ? true : false;
+$v_list = ($view == 'list' || ($inline && !$recent)) ? true : false;
+$v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;
+$v_map = ($view == 'map' && !($inline || $recent)) ? true : false;
 
 $params = array(
 	'view'		=> $view,
@@ -1651,6 +1653,10 @@ if ($uid)
 		$h1 .= ' van ' . link_user($uid);
 	}
 }
+else if ($recent)
+{
+	$h1 = aphp('messages', '', 'Recent Vraag en aanbod');
+}
 else
 {
 	$h1 = 'Vraag en aanbod';
@@ -1828,11 +1834,14 @@ if ($inline)
 	echo '<div class="col-md-12">';
 
 	echo '<h3><i class="fa fa-newspaper-o"></i> ' . $h1;
-	echo '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo ($recent) ? '' : '<span class="inline-buttons">' . $top_buttons . '</span>';
 	echo '</h3>';
 }
 
-$pagination->render();
+if (!$recent)
+{
+	$pagination->render();
+}
 
 if (!count($messages))
 {
@@ -1841,7 +1850,11 @@ if (!count($messages))
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
-	$pagination->render();
+
+	if (!$recent)
+	{
+		$pagination->render();
+	}
 
 	if (!$inline)
 	{
@@ -2004,7 +2017,10 @@ else if ($v_extended)
 	}
 }
 
-$pagination->render();
+if (!$recent)
+{
+	$pagination->render();
+}
 
 if ($inline)
 {

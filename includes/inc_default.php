@@ -306,6 +306,7 @@ $view = (isset($_GET['view'])) ? $_GET['view'] : false;
 
 $view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
 $view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
+$view_news = (isset($_SESSION['view']['news'])) ? $_SESSION['view']['news'] : 'extended';
 
 if ($view || $inline)
 {
@@ -318,6 +319,11 @@ if ($view || $inline)
 	{
 		$view_messages = ($view) ?: $view_messages;
 		$_SESSION['view']['messages'] = $view = $view_messages;
+	}
+	else if ($script_name == 'news' && $view != $view_news)
+	{
+		$view_news = ($view) ?: $view_news;
+		$_SESSION['view']['news'] = $view = $view_news;
 	}
 }
 

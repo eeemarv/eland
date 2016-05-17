@@ -203,21 +203,6 @@ $newusers = $db->fetchAll('select id, letscode, name
 	where status = 1
 		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
 
-$sql_local = ($s_guest) ? ' and m.local = \'f\' ' : '';
-
-$msgs = $db->fetchAll('SELECT m.*,
-		to_char(m.validity, \'YYYY-MM-DD\') as validity_short,
-		u.postcode,
-		c.fullname as cat,
-		c.id as cid
-	from messages m, users u, categories c
-	where m.id_user = u.id
-		and u.status in (1, 2)
-		and m.id_category = c.id
-		' . $sql_local . '
-	order by m.cdate DESC
-	limit 100');
-
 if ($s_admin)
 {
 	$dup_letscode = $db->fetchColumn('select u1.letscode
@@ -259,6 +244,8 @@ if ($s_admin)
 
 $h1 = 'Overzicht';
 $fa = 'home';
+
+$includejs = '<script src="' . $rootpath . 'js/index.js"></script>';
 
 include $rootpath . 'includes/inc_header.php';
 
@@ -411,68 +398,8 @@ if($newusers)
 	echo '</div>';
 }
 
-if($msgs)
-{
-	echo '<h3 class="printview">';
-	echo aphp('messages', '', 'Recent vraag en aanbod', false, false, 'newspaper-o');
-	echo '</h3>';
-
-	echo '<div class="panel panel-info printview">';
-
-	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable">';
-	echo '<thead>';
-	echo '<tr>';
-	echo '<th>V/A</th>';
-	echo '<th>Wat</th>';
-	echo '<th data-hide="phone, tablet">Geldig tot</th>';
-	echo '<th data-hide="phone, tablet">Wie</th>';
-	echo '<th data-hide="phone, tablet">Categorie</th>';
-	echo '<th data-hide="phone">Plaats</th>';
-	echo '</tr>';
-	echo '</thead>';
-
-	echo '<tbody>';
-
-	foreach($msgs as $msg)
-	{
-		$del = (strtotime($msg['validity']) < time()) ? true : false;
-
-		echo '<tr';
-		echo ($del) ? ' class="danger"' : '';
-		echo '>';
-		echo '<td>';
-
-		echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
-		echo '</td>';
-
-		echo '<td>';
-		echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
-		echo '</td>';
-
-		echo '<td>';
-		echo $msg['validity_short'];
-		echo '</td>';
-
-		echo '<td>';
-		echo link_user($msg['id_user']);
-		echo '</td>';
-
-		echo '<td>';
-		echo aphp('messages', 'cid=' . $msg['cid'], $msg['cat']);
-		echo '</td>';
-
-		echo '<td>';
-		echo $msg['postcode'];
-		echo '</td>';
-
-		echo '</tr>';
-	}
-
-	echo '</tbody>';
-	echo '</table>';
-	echo '</div>';
-	echo '</div>';
-}
+echo '<div id="messages" ';
+echo 'data-url="' . $rootpath . 'messages.php?inline=1&recent=1&limit=10';
+echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 
 include $rootpath . 'includes/inc_footer.php';
