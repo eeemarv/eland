@@ -193,10 +193,11 @@ if ($hosting_form)
 /**
  *
  **/
-
+/*
 $news_where = ($s_admin) ? '' : ' where approved = True ';
 $news = $db->fetchAll('select *, to_char(itemdate, \'YYYY-MM-DD\') as idate
 	from news ' . $news_where . ' order by itemdate desc');
+*/
 
 $newusers = $db->fetchAll('select id, letscode, name
 	from users
