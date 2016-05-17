@@ -1996,7 +1996,6 @@ else if ($v_extended)
 		echo '</div>';
 		echo '</div>';
 
-
 		echo '</div>';
 
 		echo '<div class="panel-footer">';

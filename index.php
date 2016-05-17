@@ -332,6 +332,7 @@ if($s_guest)
 	echo '</div>';
 }
 
+/*
 if($news)
 {
 	echo '<h3 class="printview">';
@@ -368,6 +369,11 @@ if($news)
 	echo '</table></div>';
 	echo '</div>';
 }
+*/
+
+echo '<div id="news" ';
+echo 'data-url="' . $rootpath . 'news.php?inline=1';
+echo '&' . get_session_query_param() . '" class="printview"></div>';
 
 if($newusers)
 {
@@ -400,6 +406,6 @@ if($newusers)
 
 echo '<div id="messages" ';
 echo 'data-url="' . $rootpath . 'messages.php?inline=1&recent=1&limit=10';
-echo '&' . get_session_query_param() . '" class="print-hide"></div>';
+echo '&' . get_session_query_param() . '" class="printview"></div>';
 
 include $rootpath . 'includes/inc_footer.php';

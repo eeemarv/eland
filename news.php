@@ -8,6 +8,10 @@ $del = ($_GET['del']) ?: false;
 $id = ($_GET['id']) ?: false;
 $submit = ($_POST['zend']) ? true : false;
 
+/**
+ * approve a newsitem
+ */
+
 if ($approve)
 {
 	$role = 'admin';
@@ -23,6 +27,10 @@ if ($approve)
 	}
 	cancel($approve);
 }
+
+/**
+ * add or edit a newsitem
+ */
 
 if ($add || $edit)
 {
@@ -205,6 +213,10 @@ if ($add || $edit)
 	exit;
 }
 
+/**
+ * delete a newsitem
+ */
+
 if ($del)
 {
 	$role = 'admin';
@@ -274,6 +286,10 @@ if ($del)
 	exit;
 }
 
+/**
+ * show a newsitem
+ */
+
 if ($id)
 {
 	$role = 'guest';
@@ -296,7 +312,7 @@ if ($id)
 
 			if (!$news['approved'])
 			{
-				$top_buttons .= aphp('news', 'approve=' . $id, 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren', 'check', true);
+				$top_buttons .= aphp('news', 'approve=' . $id, 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
 			}
 		}
 	}
@@ -308,12 +324,14 @@ if ($id)
 
 	include $rootpath . 'includes/inc_header.php';
 
+	$background = ($news['approved']) ? '' : ' bg-warning';
+
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
 	echo '<p>Bericht</p>';
 	echo '</div>';
-	echo '<div class="panel-body">';
+	echo '<div class="panel-body' . $background . '">';
 	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
 	echo '</div></div>';
 
@@ -359,8 +377,24 @@ if ($id)
 	exit;
 }
 
+/**
+ * show all newsitems
+ */
+
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
+
+if (!($view || $inline))
+{
+	cancel();
+}
+
+$v_list = ($view == 'list' || $inline) ? true : false;
+$v_extended = ($view == 'extended' && !$inline) ? true : false;
+
+$params = array(
+	'view'	=> $view,
+);
 
 $query = 'SELECT *, to_char(itemdate, \'YYYY-MM-DD\') as idate FROM news';
 
@@ -373,48 +407,94 @@ $query .= ' ORDER BY itemdate DESC';
 
 $news = $db->fetchAll($query);
 
-if($s_user || $s_admin)
+if(($s_user || $s_admin) && !$inline)
 {
 	$top_buttons .= aphp('news', 'add=1', 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
 }
 
-$h1 = 'Nieuws';
-$fa = 'calendar';
+if ($inline)
+{
+//	echo '<div class="row">';
+//	echo '<div class="col-md-12">';
 
-include $rootpath . 'includes/inc_header.php';
+	echo '<h3>';
+	echo aphp('news', 'view=' . $view_news, 'Nieuws', false, false, 'calendar');
+	echo '</h3>';
+}
+else
+{
+	$h1 = 'Nieuws';
 
-if (count($news))
+	$v_params = $params;
+	$h1 .= '<span class="pull-right hidden-xs">';
+	$h1 .= '<span class="btn-group" role="group">';
+
+	$active = ($v_list) ? ' active' : '';
+	$v_params['view'] = 'list';
+	$h1 .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+
+	$active = ($v_extended) ? ' active' : '';
+	$v_params['view'] = 'extended';
+	$h1 .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+
+	$h1 .= '</span></span>';
+
+	$fa = 'calendar';
+
+	include $rootpath . 'includes/inc_header.php';
+}
+
+if (!count($news))
+{
+	echo '<div class="panel panel-warning">';
+	echo '<div class="panel-heading">';
+	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
+	echo '</div></div>';
+
+	if (!$inline)
+	{
+		include $rootpath . 'includes/inc_footer.php';
+	}
+	exit;
+}
+
+if ($v_list)
 {
 	echo '<div class="panel panel-warning printview">';
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered footable">';
 
-	echo '<thead>';
-	echo '<tr>';
-	echo '<th>Titel</th>';
-	echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
-	echo ($s_admin) ? '<th data-hide="phone">Goedgekeurd</th>' : '';
-	echo '</tr>';
-	echo '</thead>';
+	if (!$inline)
+	{
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>Titel</th>';
+		echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
+		echo ($s_admin && !$inline) ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+		echo '</tr>';
+		echo '</thead>';
+	}
 
 	echo '<tbody>';
 
-	foreach ($news as $value)
+	foreach ($news as $n)
 	{
-		echo '<tr>';
+		echo '<tr';
+		echo ($n['approved']) ? '' : ' class="warning"';
+		echo '>';
 
 		echo '<td>';
-		echo aphp('news', 'id=' . $value['id'], $value['headline']);
+		echo aphp('news', 'id=' . $n['id'], $n['headline']);
 		echo '</td>';
 
 		echo '<td>';
-		echo $value['idate'];
+		echo $n['idate'];
 		echo '</td>';
 
-		if ($s_admin)
+		if ($s_admin && !$inline)
 		{
 			echo '<td>';
-			echo ($value['approved']) ? 'Ja' : 'Nee';
+			echo ($n['approved']) ? 'Ja' : 'Nee';
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -422,19 +502,64 @@ if (count($news))
 	echo '</tbody>';
 	echo '</table></div></div>';
 }
-else
+else if ($v_extended)
 {
-	echo '<div class="panel panel-warning">';
-	echo '<div class="panel-heading">';
-	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
-	echo '</div></div>';
+	foreach ($news as $n)
+	{
+		$background = ($n['approved']) ? '' : ' bg-warning';
+
+		echo '<div class="panel panel-info printview">';
+		echo '<div class="panel-body' . $background . '">';
+
+		echo '<div class="media">';
+		echo '<div class="media-body">';
+		echo '<h3 class="media-heading">';
+		echo aphp('news', 'id=' . $n['id'], $n['headline']);
+		echo '</h3>';
+		echo nl2br(htmlspecialchars($n['newsitem'],ENT_QUOTES));
+
+
+
+
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
+		
+
+		echo '<div class="panel-footer">';
+		echo '<p><i class="fa fa-user"></i>' . link_user($n['id_user']);
+
+		if ($s_admin)
+		{
+			echo '<span class="inline-buttons pull-right hidden-xs">';
+			if (!$n['approved'])
+			{
+				echo aphp('news', 'approve=' . $n['id'], 'Goedkeuren en publiceren', 'btn btn-warning btn-xs', false, 'check');
+			}
+			echo aphp('news', 'edit=' . $n['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('news', 'del=' . $n['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo '</span>';
+		}
+		echo '</p>';
+		echo '</div>';
+
+		echo '</div>';
+	}
 }
 
-include $rootpath . 'includes/inc_footer.php';
+if (!$inline)
+{
+	include $rootpath . 'includes/inc_footer.php';
+}
 
 function cancel($id = '')
 {
-	$id = ($id) ? 'id=' . $id : '';
-	header('Location: ' . generate_url('news', $id));
+	global $view_news;
+
+	$param = ($id) ? 'id=' . $id . '&' : '';
+	$param .= 'view=' . $view_news;
+
+	header('Location: ' . generate_url('news', $param));
 	exit;
 }

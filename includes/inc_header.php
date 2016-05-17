@@ -146,7 +146,7 @@ else
 		'messages'				=> array('newspaper-o', 'Vraag & Aanbod', 'view=' . $view_messages),
 		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active&view=' . $view_users),
 		'transactions'			=> array('exchange', 'Transacties'),
-		'news'					=> array('calendar-o', 'Nieuws'),
+		'news'					=> array('calendar-o', 'Nieuws', 'view=' . $view_news),
 	);
 
 	if ($s_user || $s_admin)
