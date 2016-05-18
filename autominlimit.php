@@ -8,23 +8,31 @@ $mdb->connect();
 
 if (isset($_POST['zend']))
 {
-	$a = array(
-		'name'							=> 'autominlimit',
-		'enabled'						=> ($_POST['enabled']) ? true : false,
-		'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
-		'new'							=> ($_POST['new']) ? true : false,
-		'leaving'						=> ($_POST['leaving']) ? true : false,
-		'inclusive'						=> $_POST['inclusive'],
-		'exclusive'						=> $_POST['exclusive'],
-		'min'							=> $_POST['min'],
-		'trans_percentage'				=> $_POST['trans_percentage'],
-		'account_base'					=> $_POST['account_base'],
-		'trans_exclusive'				=> $_POST['trans_exclusive'],
-	);
+	if ($error_token = get_error_form_token())
+	{
+		$alert->error($error_token);
+	}
+	else
+	{
+		$a = array(
+			'name'							=> 'autominlimit',
+			'enabled'						=> ($_POST['enabled']) ? true : false,
+			'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
+			'new'							=> ($_POST['new']) ? true : false,
+			'leaving'						=> ($_POST['leaving']) ? true : false,
+			'inclusive'						=> $_POST['inclusive'],
+			'exclusive'						=> $_POST['exclusive'],
+			'min'							=> $_POST['min'],
+			'trans_percentage'				=> $_POST['trans_percentage'],
+			'account_base'					=> $_POST['account_base'],
+			'trans_exclusive'				=> $_POST['trans_exclusive'],
+		);
 
-	$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
+		$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
+	}
 }
-else
+
+if (!$_POST['zend'] || $error_token) 
 {
 	$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
 }
@@ -33,7 +41,6 @@ $h1 = 'Automatische minimum limiet';
 $fa = 'arrows-v';
 
 include $rootpath . 'includes/inc_header.php';
-
 
 echo '<div class="panel panel-info">';
 
@@ -160,6 +167,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
+generate_form_token();
 
 echo '</form>';
 
