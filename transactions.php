@@ -194,6 +194,11 @@ if ($add)
 			$errors[] = 'Fout in datumformaat (jjjj-mm-dd)';
 		}
 
+		if ($error_token = get_error_form_token())
+		{
+			$errors[] = $error_token;
+		}
+
 		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
 
 		if(count($errors))
@@ -629,7 +634,7 @@ if ($add)
 
 	echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
-
+	generate_form_token();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';
