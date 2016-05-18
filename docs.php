@@ -451,6 +451,12 @@ if ($submit)
 
 if ($add)
 {
+	if ($map)
+	{
+		$map_id = new MongoId($map);
+		$map_name = $mdb->docs->findOne(array('_id' => $map_id))['map_name'];
+	}
+
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
@@ -498,7 +504,8 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	$map_context = ($map) ? 'map=' . $map : '';
+	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
 	generate_form_token();
 
@@ -554,7 +561,9 @@ if (!$map)
 
 if ($s_admin)
 {
-	$top_buttons .= aphp('docs', 'add=1', 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
+	$and_map = ($map) ? '&map=' . $map : '';
+
+	$top_buttons .= aphp('docs', 'add=1' . $and_map, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
 
 	if ($map)
 	{
