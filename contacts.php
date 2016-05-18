@@ -50,6 +50,12 @@ if ($del)
 
 	if ($submit)
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel($uid);
+		}
+
 		if ($db->delete('contact', array('id' => $del)))
 		{
 			$alert->success('Contact verwijderd.');
@@ -97,6 +103,7 @@ if ($del)
 
 	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	generate_form_token();
 
 	echo '</form>';
 
@@ -129,6 +136,12 @@ if ($edit || $add)
 
 	if($submit)
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel($uid);
+		}
+
 		$contact = array(
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> $_POST['value'],
@@ -281,6 +294,7 @@ if ($edit || $add)
 
 	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+	generate_form_token();
 
 	echo '</form>';
 
