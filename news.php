@@ -230,6 +230,12 @@ if ($del)
 
 	if(isset($_POST['zend']))
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel();
+		}
+
 		if($db->delete('news', array('id' => $del)))
 		{
 			$alert->success('Nieuwsbericht verwijderd.');
@@ -283,6 +289,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('news', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	generate_form_token();
 	echo '</form>';
 
 	echo '</div>';

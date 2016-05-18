@@ -290,6 +290,13 @@ if ($del)
 {
 	if ($submit)
 	{
+
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel();
+		}
+
 		if($db->delete('letsgroups', array('id' => $del)))
 		{
 			$alert->success('Letsgroep verwijderd.');
@@ -314,6 +321,7 @@ if ($del)
 	
 	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	generate_form_token();
 
 	echo "</form></p>";
 	echo "</div>";

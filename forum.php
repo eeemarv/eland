@@ -77,6 +77,12 @@ if ($submit)
 {
 	if ($del)
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel();
+		}
+
 		$mdb->forum->remove(
 			array('_id' => new MongoId($del)),
 			array('justOne'	=> true)
@@ -190,6 +196,8 @@ if ($del)
 
 	echo aphp('forum', 't=' . $t, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	generate_form_token();
+
 	echo '</form>';
 
 	echo '</div>';

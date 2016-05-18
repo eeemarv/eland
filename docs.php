@@ -225,6 +225,12 @@ if ($confirm_del && $del)
 {
 	$doc_id = new MongoId($del);
 
+	if ($error_token = get_error_form_token())
+	{
+		$alert->error($error_token);
+		cancel();
+	}
+
 	if ($doc = $mdb->docs->findOne(array('_id' => $doc_id)))
 	{
 		$s3->deleteObject(array(
@@ -275,6 +281,7 @@ if ($del)
 
 		echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
+		generate_form_token();
 		echo '</form>';
 
 		echo '</div>';
