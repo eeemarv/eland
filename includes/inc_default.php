@@ -894,6 +894,65 @@ function render_select_options($option_ary, $selected, $print = true)
 /**
  *
  */
+
+function generate_form_token($print = true)
+{
+	global $schema, $s_id, $redis;
+
+	$token = sha1(microtime() + $s_id + $schema);
+	$key = 'form_token_' . $token;
+	$redis->set($key, '1');
+	$redis->expire($key, 14400); // 4 hours
+
+	if ($print)
+	{
+		echo '<input type="hidden" name="form_token" value="' . $token . '">';
+	}
+
+	return $token;
+}
+
+/**
+ * return false|string (error message)
+ */
+
+function get_error_form_token()
+{
+	global $redis, $script_name, $s_id;
+
+	if (!isset($_POST['form_token']))
+	{
+		return 'Het formulier bevat geen token';
+	}
+
+	$token = $_POST['form_token'];
+	$key = 'form_token_' . $token;
+
+	$value = $redis->get($key);
+
+	if (!$value)
+	{
+		$m = 'Het formulier is verlopen';
+		log_event($s_id, 'form_token', $m . ': ' . $script_name);
+		return $m;
+	}
+
+	if ($value > 1)
+	{
+		$redis->inc($key);
+		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
+		log_event($s_id, 'form_token', $m . '(count: ' . $value . ') : ' . $script_name);
+		return $m;
+	}
+
+	$redis->inc($key);
+
+	return false;
+}
+
+/**
+ *
+ */
 function get_schemas_domains($http = false)
 {
 	global $db;
