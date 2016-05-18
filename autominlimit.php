@@ -11,28 +11,29 @@ if (isset($_POST['zend']))
 	if ($error_token = get_error_form_token())
 	{
 		$alert->error($error_token);
+		cancel();
 	}
-	else
-	{
-		$a = array(
-			'name'							=> 'autominlimit',
-			'enabled'						=> ($_POST['enabled']) ? true : false,
-			'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
-			'new'							=> ($_POST['new']) ? true : false,
-			'leaving'						=> ($_POST['leaving']) ? true : false,
-			'inclusive'						=> $_POST['inclusive'],
-			'exclusive'						=> $_POST['exclusive'],
-			'min'							=> $_POST['min'],
-			'trans_percentage'				=> $_POST['trans_percentage'],
-			'account_base'					=> $_POST['account_base'],
-			'trans_exclusive'				=> $_POST['trans_exclusive'],
-		);
 
-		$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
-	}
+	$a = array(
+		'name'							=> 'autominlimit',
+		'enabled'						=> ($_POST['enabled']) ? true : false,
+		'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
+		'new'							=> ($_POST['new']) ? true : false,
+		'leaving'						=> ($_POST['leaving']) ? true : false,
+		'inclusive'						=> $_POST['inclusive'],
+		'exclusive'						=> $_POST['exclusive'],
+		'min'							=> $_POST['min'],
+		'trans_percentage'				=> $_POST['trans_percentage'],
+		'account_base'					=> $_POST['account_base'],
+		'trans_exclusive'				=> $_POST['trans_exclusive'],
+	);
+
+	$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
+
+	$alert->success('De automatische minimum limiet instellingen zijn aangepast.');
+	cancel();
 }
-
-if (!$_POST['zend'] || $error_token) 
+else 
 {
 	$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
 }
@@ -175,3 +176,9 @@ echo '</div>';
 echo '</div>';
 
 include $rootpath . 'includes/inc_footer.php';
+
+function cancel()
+{
+	header('Location: ' . generate_url('autominlimit'));
+	exit;
+}
