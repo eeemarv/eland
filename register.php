@@ -209,6 +209,10 @@ if ($_POST['zend'])
 	{
 		$alert->error('Vul een postcode in.');
 	}
+	else if ($error_token = get_error_form_token())
+	{
+		$alert->error($error_token);
+	}
 	else
 	{
 		$token = substr(hash('sha512', $schema . time() . $reg['email'] . $reg['first_name']), 0, 10);
@@ -291,6 +295,8 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
+generate_form_token();
+
 echo '</form>';
 
 echo '</div>';
