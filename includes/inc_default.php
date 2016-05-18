@@ -899,7 +899,7 @@ function generate_form_token($print = true)
 {
 	global $schema, $s_id, $redis;
 
-	$token = sha1(microtime() + $s_id + $schema);
+	$token = sha1(microtime() . mt_rand(0, 1000000));
 	$key = 'form_token_' . $token;
 	$redis->set($key, '1');
 	$redis->expire($key, 14400); // 4 hours

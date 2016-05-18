@@ -4,33 +4,38 @@ class alert
 {
 	private $send_once;
 
-	function add($type, $string)
+	function add($type, $msg)
 	{
+		if (is_array($msg))
+		{
+			$msg = implode('<br>', $msg);
+		}
+
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
 		{
 			$_SESSION['alert'] = array();
 		}		
-		$_SESSION['alert'][] = array($type, $string);
+		$_SESSION['alert'][] = array($type, $msg);
 	}
 
-	function error($string)
+	function error($msg)
 	{
-		$this->add('error', $string);
+		$this->add('error', $msg);
 	}
 
-	function success($string)
+	function success($msg)
 	{
-		$this->add('success', $string);
+		$this->add('success', $msg);
 	}
 
-	function notice($string)
+	function notice($msg)
 	{
-		$this->add('notice', $string);
+		$this->add('notice', $msg);
 	}
 
-	function warning($string)
+	function warning($msg)
 	{
-		$this->add('warning', $string);
+		$this->add('warning', $msg);
 	}
 
 	function render()

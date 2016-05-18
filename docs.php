@@ -8,11 +8,12 @@ $fa = 'files-o';
 
 $mdb->connect();
 
-$q = ($_GET['q']) ?: '';
-$del = $_GET['del'];
-$edit = $_GET['edit'];
-$map = $_GET['map'];
-$map_edit = $_GET['map_edit'];
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$map = (isset($_GET['map'])) ? $_GET['map'] : false;
+$map_edit = (isset($_GET['map_edit'])) ? $_GET['map_edit'] : false;
+$add = (isset($_GET['add'])) ? true : false;
 
 $submit = ($_POST['zend']) ? true : false;
 $confirm_del = ($_POST['confirm_del']) ? true : false;
@@ -26,11 +27,15 @@ if ($post)
 	));
 }
 
-if (($confirm_del || $submit || $edit || $del || $post || $map_edit) & !$s_admin)
+if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
 {
 	$alert->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
 }
+
+/**
+ * edit map
+ */
 
 if ($map_edit)
 {
@@ -86,6 +91,10 @@ if ($map_edit)
 	require_once $rootpath . 'includes/inc_footer.php';
 	exit;
 }
+
+/**
+ * edit
+ */
 
 if ($edit)
 {
@@ -209,6 +218,9 @@ if ($edit)
 	exit;
 }
 
+/**
+ * del
+ */
 if ($confirm_del && $del)
 {
 	$doc_id = new MongoId($del);
@@ -275,6 +287,9 @@ if (isset($del))
 	$alert->error('Document niet gevonden.');
 }
 
+/**
+ * add
+ */
 if ($submit)
 {
 	$tmpfile = $_FILES['file']['tmp_name'];
@@ -408,9 +423,72 @@ if ($submit)
 	}
 }
 
-$token = sha1(time() . mt_rand(0, 1000000));
-$redis->set($schema . '_d_' . $token, '1');
-$redis->expire($schema . '_d_' . $token, 3600);
+/**
+ * add form
+ */
+
+if ($add)
+{
+	$includejs = '<script src="' . $cdn_typeahead . '"></script>
+		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+
+	$h1 = 'Nieuw document opladen';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	echo '<div class="panel panel-info" id="add">';
+	echo '<div class="panel-heading">';
+
+	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';	
+
+	echo '<div class="form-group">';
+	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="file" class="form-control" id="file" name="file" ';
+	echo 'required>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="name" name="name">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
+	echo '<div class="col-sm-10">';
+	echo '<select type="file" class="form-control" id="access" name="access" ';
+	echo 'required>';
+	render_select_options($access_options, 0);
+	echo '</select>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
+	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
+	generate_form_token();
+
+	echo '</form>';
+
+	echo '</div>';
+	echo '</div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+/**
+ * list all documents
+ */
 
 $find = array(
 	'access'	=> array('$gte'	=> $access_level)
@@ -439,8 +517,6 @@ $docs = iterator_to_array($mdb->docs->find($find));
 
 if (!$map)
 {
-	//$docs = array_merge($maps, $docs);
-
 	foreach ($docs as $k => $d)
 	{
 		if (isset($d['map_id']))
@@ -453,9 +529,7 @@ if (!$map)
 
 if ($s_admin)
 {
-	$top_buttons .= '<a href="#add" class="btn btn-success" ';
-	$top_buttons .= 'title="Document opladen"><i class="fa fa-plus"></i>';
-	$top_buttons .= '<span class="hidden-xs hidden-sm"> Document opladen</span></a>';
+	$top_buttons .= aphp('docs', 'add=1', 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
 
 	if ($map)
 	{
@@ -466,9 +540,6 @@ if ($map)
 {
 	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 }
-
-$includejs = '<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
 $h1 = aphp('docs', '', 'Documenten');
 $h1 .= ($map) ? ': map "' . $map_name . '"' : '';
@@ -603,57 +674,6 @@ else if (!count($maps))
 	echo '<div class="panel-heading">';
 	echo '<p>Er zijn nog geen documenten opgeladen.</p>';
 	echo '</div></div>';
-}
-
-if ($s_admin)
-{
-	echo '<h3><span class="label label-info">Admin</span> Nieuw document opladen</h3>';
-
-	echo '<div class="panel panel-info" id="add">';
-	echo '<div class="panel-heading">';
-
-	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';	
-
-	echo '<div class="form-group">';
-	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="file" class="form-control" id="file" name="file" ';
-	echo 'required>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name">';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select type="file" class="form-control" id="access" name="access" ';
-	echo 'required>';
-	render_select_options($access_options, 0);
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
-	echo '<input type="hidden" value="' . $token . '" name="token">';
-
-	echo '</form>';
-
-	echo '</div>';
-	echo '</div>';
 }
 
 include $rootpath . 'includes/inc_footer.php';
