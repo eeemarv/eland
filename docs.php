@@ -51,6 +51,12 @@ if ($map_edit)
 
 	if ($submit)
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+			cancel($map_edit);
+		}
+
 		if ($map_name = $_POST['map_name'])
 		{
 			$mdb->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
@@ -64,6 +70,9 @@ if ($map_edit)
 		$alert->error('Geen map naam ingevuld!');
 	}
 
+	$includejs = '<script src="' . $cdn_typeahead . '"></script>
+		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+
 	$h1 = 'Map aanpassen: ' . aphp('docs', 'map=' . $map_edit, $map_name);
 
 	require_once $rootpath . 'includes/inc_header.php';
@@ -71,17 +80,20 @@ if ($map_edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post">';
+	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" ';
+	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '" ';
+	echo 'value="' . $map_name . '">';
 	echo '</div>';
 	echo '</div>';
 
 	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+	generate_form_token();	
 
 	echo '</form>';
 
@@ -488,7 +500,6 @@ if ($add)
 
 	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
-
 	generate_form_token();
 
 	echo '</form>';
