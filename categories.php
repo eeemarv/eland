@@ -33,6 +33,11 @@ if ($add)
 			$errors[] = 'Vul hoofdrubriek in!';
 		}
 
+		if ($token_error = get_error_form_token())
+		{
+			$errors[] = $token_error;
+		}
+
 		if (!count($errors))
 		{
 			$cat['cdate'] = date('Y-m-d H:i:s');
@@ -96,6 +101,8 @@ if ($add)
 
 	echo aphp('categories', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
+	generate_form_token();
+
 	echo '</form>';
 
 	echo '</div>';
@@ -144,6 +151,10 @@ if ($edit)
 		else if ($cat['leafnote'] && $child_count_ary[$edit])
 		{
 			$alert->error('Subcategoriën kunnen geen categoriën bevatten.');
+		}
+		else if ($token_error = get_error_form_token())
+		{
+			$alert->error($token_error);
 		}
 		else
 		{
@@ -205,6 +216,7 @@ if ($edit)
 
 	echo aphp('categories', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
+	generate_form_token();
 
 	echo '</form>';
 

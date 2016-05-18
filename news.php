@@ -65,6 +65,11 @@ if ($add || $edit)
 		{
 			$errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
 		}
+
+		if ($token_error = get_error_form_token())
+		{
+			$errors[] = $token_error;
+		}
 	}
 
 	if (count($errors))
@@ -203,6 +208,7 @@ if ($add || $edit)
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? 'id=' . $edit : '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	generate_form_token();
 
 	echo '</form>';
 

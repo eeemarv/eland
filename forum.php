@@ -126,6 +126,11 @@ if ($submit)
 		$errors[] = 'Ongeldige zichtbaarheid';
 	}
 
+	if ($token_error = get_error_form_token())
+	{
+		$errors[] = $token_error;
+	}
+
 	if (count($errors))
 	{
 		$alert->error($errors);
