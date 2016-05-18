@@ -939,13 +939,13 @@ function get_error_form_token()
 
 	if ($value > 1)
 	{
-		$redis->inc($key);
+		$redis->incr($key);
 		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
 		log_event($s_id, 'form_token', $m . '(count: ' . $value . ') : ' . $script_name);
 		return $m;
 	}
 
-	$redis->inc($key);
+	$redis->incr($key);
 
 	return false;
 }

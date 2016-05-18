@@ -251,7 +251,7 @@ if ($confirm_del && $del)
 	$alert->error('Document niet gevonden.');
 }
 
-if (isset($del))
+if ($del)
 {
 	$doc_id = new MongoId($del);
 
@@ -343,26 +343,29 @@ if ($submit)
 
 	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
 
+	$errors = array();
+
 	if ($file_size > 1024 * 1024 * 10)
 	{
-		$alert->error('Het bestand is te groot. De maximum grootte is 10MB.');
+		$errors[] = 'Het bestand is te groot. De maximum grootte is 10MB.';
 	}
-	else if (!$file)
+
+	if (!$file)
 	{
-		$alert->error('Geen bestand geselecteerd.');
+		$errors[] = 'Geen bestand geselecteerd.';
 	}
-	else if (!($token = $_POST['token']))
+
+	if ($token_error = get_error_form_token())
 	{
-		$alert->error('Een token ontbreekt.');
+		$errors[] = $token_error;
 	}
-	else if (!$redis->get($schema . '_d_' . $token))
+
+	if ($errors)
 	{
-		$alert->error('Geen geldig token');
+		$alert->error($errors);
 	}
 	else
 	{
-		$redis->del($schema . '_d_' . $token);
-
 		$access = $_POST['access'];
 
 		$id_str = substr(sha1(time() . mt_rand(0, 1000000)), 0, 24);
@@ -432,6 +435,8 @@ if ($add)
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
+	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
+
 	$h1 = 'Nieuw document opladen';
 
 	include $rootpath . 'includes/inc_header.php';
@@ -474,7 +479,9 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
+	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
+
 	generate_form_token();
 
 	echo '</form>';
