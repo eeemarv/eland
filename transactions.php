@@ -196,10 +196,10 @@ if ($add)
 
 		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
 
-		if(!empty($errors))
+		if(count($errors))
 		{
 			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 		else if ($letsgroup_id == 'self')
 		{

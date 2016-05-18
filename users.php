@@ -457,7 +457,7 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 
 	if (count($errors))
 	{
-		$alert->error(implode('<br>', $errors));
+		$alert->error($errors);
 	}
 	else
 	{
@@ -692,7 +692,7 @@ if ($pw)
 		}
 		else
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 
 	}
@@ -1432,7 +1432,7 @@ if ($add || $edit)
 		}
 		else
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 	}
 	else

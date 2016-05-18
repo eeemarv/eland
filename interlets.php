@@ -149,7 +149,7 @@ if ($add || $edit)
 
 		if (count($errors))
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 	}
 

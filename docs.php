@@ -360,7 +360,7 @@ if ($submit)
 		$errors[] = $token_error;
 	}
 
-	if ($errors)
+	if (count($errors))
 	{
 		$alert->error($errors);
 	}

@@ -50,7 +50,7 @@ if ($add)
 		}
 		else
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 	}
 

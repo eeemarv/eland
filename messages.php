@@ -770,7 +770,7 @@ if (($edit || $add))
 
 		if (count($errors))
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 		else if ($add)
 		{

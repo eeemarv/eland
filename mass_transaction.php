@@ -192,7 +192,7 @@ if ($_POST['zend'])
 
 	if (count($errors))
 	{
-		$alert->error(implode('<br>', $errors));
+		$alert->error($errors);
 	}
 	else
 	{

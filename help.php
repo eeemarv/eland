@@ -105,7 +105,7 @@ if(isset($_POST['zend']))
 	}
 	else
 	{
-		$alert->error(implode('<br>', $errors));
+		$alert->error($errors);
 	}
 }
 else

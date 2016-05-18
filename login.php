@@ -211,7 +211,7 @@ if ($_POST['zend'])
 		$errors[] = 'Paswoord niet correct';
 	}
 
-	$alert->error(implode('<br>', $errors));
+	$alert->error($errors);
 }
 
 if(readconfigfromdb('maintenance'))

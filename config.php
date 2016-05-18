@@ -37,7 +37,7 @@ if ($setting)
 			}
 		}
 
-		$alert->error(implode('<br>', $errors));
+		$alert->error($errors);
 	}
 	else
 	{

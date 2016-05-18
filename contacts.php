@@ -215,7 +215,7 @@ if ($edit || $add)
 		}
 		else
 		{
-			$alert->error(implode('<br>', $errors));
+			$alert->error($errors);
 		}
 	}
 	else if ($edit)
