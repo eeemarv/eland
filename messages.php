@@ -581,12 +581,17 @@ if ($del)
 {
 	if (!($s_owner || $s_admin))
 	{
-		$alert->warning('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
+		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
 		cancel($del);
 	}
 
 	if($submit)
 	{
+		if ($error_token = get_error_form_token())
+		{
+			$alert->error($error_token);
+		}
+
 		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', array($del));
 
 		foreach($pictures as $value)
@@ -662,6 +667,7 @@ if ($del)
 
 	echo aphp('messages', 'id=' . $del, 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	generate_form_token();
 	echo '</form></p>';
 
 	echo '</div>';
@@ -766,6 +772,11 @@ if (($edit || $add))
 		if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
+		}
+
+		if ($error_form = get_error_form_token())
+		{
+			$errors[] = $error_form;
 		}
 
 		if (count($errors))
@@ -1020,6 +1031,7 @@ if (($edit || $add))
 
 	echo aphp('messages', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
+	generate_form_token();
 
 	echo '</form>';
 
