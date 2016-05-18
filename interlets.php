@@ -92,6 +92,11 @@ if ($add || $edit)
 			$errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
 		}
 
+		if ($error_token = get_error_form_token())
+		{
+			$errors[] = $error_token;
+		}
+
 		if ($edit)
 		{
 			if ($db->fetchColumn('select id
@@ -198,17 +203,6 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	/*
-	echo '<div class="form-group">';
-	echo '<label for="prefix" class="col-sm-2 control-label">Prefix ';
-	echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="prefix" name="prefix" ';
-	echo 'value="' . $group['prefix'] . '" maxlength="5">';
-	echo '</div>';
-	echo '</div>';
-	*/
-
 	echo '<div class="form-group">';
 	echo '<label for="apimethod" class="col-sm-2 control-label">';
 	echo 'API methode <small><i>(type connectie naar de andere installatie)</i></small></label>';
@@ -262,18 +256,6 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	/*
-	echo '<div class="form-group">';
-	echo '<label for="elassoapurl" class="col-sm-2 control-label">';
-	echo 'SOAP URL <small><i>(voor eLAS, de URL met /soap erachter)</i></small>';
-	echo '</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="url" class="form-control" id="elassoapurl" name="elassoapurl" ';
-	echo 'value="' . $group['elassoapurl'] . '" maxlength="256">';
-	echo '</div>';
-	echo '</div>';
-	*/
-
 	echo '<div class="form-group">';
 	echo '<label for="presharedkey" class="col-sm-2 control-label">';
 	echo 'Preshared key, enkel voor eLAS';
@@ -288,6 +270,7 @@ if ($add || $edit)
 	$canc = ($edit) ? 'id=' . $edit : '';
 	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	generate_form_token();
 
 	echo '</form>';
 
