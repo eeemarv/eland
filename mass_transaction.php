@@ -190,6 +190,11 @@ if ($_POST['zend'])
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
 
+	if ($error_token = get_error_form_token())
+	{
+		$errors[] = $error_token;
+	}
+
 	if (count($errors))
 	{
 		$alert->error($errors);
@@ -592,6 +597,7 @@ echo '</div>';
 
 echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
+generate_form_token();
 
 echo '</div>';
 echo '</div>';
