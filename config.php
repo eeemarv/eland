@@ -28,6 +28,11 @@ if ($setting)
 			$errors[] = 'De waarde mag niet leeg zijn.';
 		}
 
+		if ($error_token = get_error_form_token())
+		{
+			$errors[] = $error_token;
+		}
+
 		if (!count($errors))
 		{
 			if (writeconfig($setting, $value))
@@ -76,6 +81,8 @@ if ($setting)
 
 	echo aphp('config', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
+	generate_form_token();
+
 	echo '</form>';
 
 	echo '</div>';
