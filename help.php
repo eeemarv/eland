@@ -73,7 +73,12 @@ if(isset($_POST['zend']))
 		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
-	if(empty($errors))
+	if ($token_error = get_error_form_token())
+	{
+		$errors[] = $form_token;
+	}
+
+	if(!count($errors))
 	{
 		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
 		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
@@ -189,6 +194,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
+generate_form_token();
 
 echo '</form>';
 
