@@ -455,6 +455,11 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
 	}
 
+	if ($error_token = get_error_form_token())
+	{
+		$errors[] = $error_token;
+	}
+
 	if (count($errors))
 	{
 		$alert->error($errors);
@@ -635,6 +640,11 @@ if ($pw)
 			$errors[] = 'Te zwak paswoord.';
 		}
 
+		if ($error_token = get_error_form_token())
+		{
+			$errors[] = $error_token;
+		}
+
 		if (empty($errors))
 		{
 			$update = array(
@@ -734,6 +744,7 @@ if ($pw)
 
 	echo aphp('users', 'id=' . $pw, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
+	generate_form_token();
 
 	echo '</form>';
 
@@ -1204,6 +1215,11 @@ if ($add || $edit)
 			{
 				$errors[] = 'Het paswoord is niet sterk genoeg.';
 			}
+		}
+
+		if ($error_token = get_error_form_token())
+		{
+			$errors[] = $error_token;
 		}
 
 		if (!count($errors))
@@ -1777,6 +1793,7 @@ if ($add || $edit)
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	generate_form_token();
 
 	echo '</form>';
 
@@ -3161,6 +3178,7 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
+		generate_form_token();
 		echo '</form>';
 	}
 }
