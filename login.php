@@ -164,6 +164,7 @@ if ($_POST['zend'])
 		if ($user['password'] != $sha512)
 		{
 			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
+			log_event($s_id, 'password', 'Pasword encryption updated to sha512');
 		}
 
 		if (!count($errors) && !in_array($user['status'], array(1, 2)))
