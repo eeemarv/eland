@@ -72,6 +72,7 @@ if ($s_letscode)
 			'categories'	 				=> array('clone', 'Categorieën'),
 			'apikeys'						=> array('key', 'Apikeys'),
 			'type_contact'					=> array('circle-o-notch', 'Contact types'),
+			'contacts'						=> array('map-marker', 'Contacten'),
 			'config'						=> array('gears', 'Instellingen'),
 			'export'						=> array('download', 'Export'),
 			'autominlimit'					=> array('arrows-v', 'Auto min limiet'),

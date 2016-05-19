@@ -19,8 +19,8 @@ $asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
 $recent = (isset($_GET['recent'])) ? true : false;
 
-$limit = ($_GET['limit']) ?: 25;
-$start = ($_GET['start']) ?: 0;
+$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
+$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
@@ -1193,10 +1193,8 @@ if ($id)
 	}
 
 	echo '</div>';
-
 	echo '</div>';
 
-//	echo '</div></div>';
 	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default printview">';
@@ -1454,7 +1452,7 @@ switch ($ow)
 switch ($ustatus)
 {
 	case 'new':
-		$where_sql[] = 'u.adate > ?';
+		$where_sql[] = 'u.adate > ? and u.status = 1';
 		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
 		$params['ustatus'] = 'new';
 		break;

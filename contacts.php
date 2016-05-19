@@ -2,14 +2,26 @@
 
 $rootpath = './';
 
-$uid = ($_GET['uid']) ?: false;
-$del = ($_GET['del']) ?: false;
-$edit = ($_GET['edit']) ?: false;
-$add = ($_GET['add']) ?: false;
-$inline = ($_GET['inline']) ? true : false;
-$submit = ($_POST['zend']) ? true : false;
+$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
+$abbrev = (isset($_GET['abbrev'])) ? $_GET['abbrev'] : '';
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$letscode = (isset($_GET['letscode'])) ? $_GET['letscode'] : '';
+$access = (isset($_GET['access'])) ? $_GET['access'] : 'all';
+$ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'all';
+
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'c.id';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 1;
+$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
+$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$inline = (isset($_GET['inline'])) ? true : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 
 $role = ($del || $add || $edit) ? 'user' : 'guest';
+$role = ($abbrev || !$uid) ? 'admin' : $role;
 
 require_once $rootpath . 'includes/inc_default.php';
 
@@ -293,7 +305,14 @@ if ($edit || $add)
 	echo '</div>';
 
 	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+	if ($add)
+	{
+		echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+	}
+	else
+	{
+		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
+	}
 	generate_form_token();
 
 	echo '</form>';
@@ -369,10 +388,12 @@ if ($uid)
 
 	echo '<div class="panel panel-danger">';
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable">';
+	echo '<table class="table table-hover table-striped table-bordered footable" ';
+	echo 'data-sort="false">';
 
 	echo '<thead>';
 	echo '<tr>';
+
 	echo '<th>Type</th>';
 	echo '<th>Waarde</th>';
 	echo '<th data-hide="phone, tablet">Commentaar</th>';
@@ -431,7 +452,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($geo)
+	if ($geo && $inline)
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-lng="' . $geo['lng'] . '" data-lat="' . $geo['lat'] . '" ';
@@ -441,7 +462,7 @@ if ($uid)
 
 	echo '</div></div>';
 
-	echo '</div></div>';
+	echo '</div>';
 
 	if ($inline)
 	{
@@ -453,8 +474,427 @@ if ($uid)
 	exit;
 }
 
-echo 'parameter uid must be set.';
-exit;
+/**
+ *
+ */
+
+require_once $rootpath . 'includes/inc_pagination.php';
+
+if (!$s_admin)
+{
+	$alert->error('Je hebt geen toegang tot deze pagina.');
+	redirect_index();
+}
+
+$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+
+$params = array(
+	'view'		=> $view,
+	'orderby'	=> $orderby,
+	'asc'		=> $asc,
+	'limit'		=> $limit,
+	'start'		=> $start,
+);
+
+$params_sql = $where_sql = array();
+
+if ($uid)
+{
+	$user = readuser($uid);
+
+	$where_sql[] = 'c.id_user = ?';
+	$params_sql[] = $uid;
+	$params['uid'] = $uid;
+
+	$letscode = link_user($user, null, false);
+}
+
+if (!$uid)
+{
+	if ($letscode)
+	{
+		list($letscode) = explode(' ', trim($letscode));
+
+		$fuid = $db->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+
+		if ($fuid)
+		{
+			$where_sql[] = 'c.id_user = ?';
+			$params_sql[] = $fuid;
+
+			$letscode = link_user($fuid, null, false);
+		}
+		else
+		{
+			$where_sql[] = '1 = 2';
+		}
+
+		$params['letscode'] = $letscode;
+	}
+}
+
+if ($q)
+{
+	$where_sql[] = '(c.value ilike ? or c.comments ilike ?)';
+	$params_sql[] = '%' . $q . '%';
+	$params_sql[] = '%' . $q . '%';
+	$params['q'] = $q;
+}
+
+if ($abbrev)
+{
+	$where_sql[] = 'tc.abbrev = ?';
+	$params_sql[] = $abbrev;
+	$params['abbrev'] = $abbrev;
+}
+
+if ($access != 'all')
+{
+	switch ($access)
+	{
+		case 'admin':
+			$acc = 0;
+			break;
+		case 'users':
+			$acc = 1;
+			break;
+		case 'interlets':
+			$acc = 2;
+			break;
+		default:
+			$access = 'all';
+			break;
+	}
+
+	if ($access != 'all')
+	{
+		$where_sql[] = 'c.flag_public = ?';
+		$params_sql[] = $acc;
+		$params['access'] = $acc;
+	}
+}
+
+switch ($ustatus)
+{
+	case 'new':
+		$where_sql[] = 'u.adate > ? and u.status = 1';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		$params['ustatus'] = 'new';
+		break;
+	case 'leaving':
+		$where_sql[] = 'u.status = 2';
+		$params['ustatus'] = 'leaving';
+		break;
+	case 'active':
+		$where_sql[] = 'u.status in (1, 2)';
+		$params['ustatus'] = 'active';
+		break;
+	case 'inactive':
+		$where_sql[] = 'u.status = 0';
+		$params['ustatus'] = 'inactive';
+		break;
+	case 'ip':
+		$where_sql[] = 'u.status = 5';
+		$params['ustatus'] = 'ip';
+		break;
+	case 'im':
+		$where_sql[] = 'u.status = 6';
+		$params['ustatus'] = 'im';
+		break;
+	case 'extern':
+		$where_sql[] = 'u.status = 7';
+		$params['ustatus'] = 'extern';
+		break;
+	default:
+		break;
+}
+
+$user_table_sql = '';
+
+if ($ustatus != 'all' || $orderby == 'u.letscode')
+{
+	$user_table_sql = ', users u ';
+	$where_sql[] = 'u.id = c.id_user';
+}
+
+if (count($where_sql))
+{
+	$where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+}
+else
+{
+	$where_sql = '';
+}
+
+$query = 'select c.*, tc.abbrev
+	from contact c, type_contact tc' . $user_table_sql . '
+	where c.id_type_contact = tc.id' . $where_sql;
+
+$row_count = $db->fetchColumn('select count(c.*)
+	from contact c, type_contact tc' . $user_table_sql . '
+	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
+
+$query .= ' order by ' . $orderby . ' ';
+$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= ' limit ' . $limit . ' offset ' . $start;
+
+$contacts = $db->fetchAll($query, $params_sql);
+
+$pagination = new pagination('contacts', $row_count, $params, $inline);
+
+$asc_preset_ary = array(
+	'asc'	=> 0,
+	'indicator' => '',
+);
+
+$tableheader_ary = array(
+	'tc.abbrev' => array_merge($asc_preset_ary, array(
+		'lbl' => 'Type')),
+	'c.value' => array_merge($asc_preset_ary, array(
+		'lbl' => 'Waarde')),
+	'u.letscode'	=> array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Gebruiker')),
+	'c.comments'	=> array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Commentaar',
+		'data_hide'	=> 'phone,tablet')),
+	'c.flag_public' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Zichtbaar',
+		'data_hide'	=> 'phone, tablet')),
+	'del' => array_merge($asc_preset_ary, array(
+		'lbl' 		=> 'Verwijderen',
+		'data_hide'	=> 'phone, tablet',
+		'no_sort'	=> true)),
+);
+
+$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+
+unset($tableheader_ary['c.id']);
+
+$abbrev_ary = array();
+
+$rs = $db->prepare('select abbrev from type_contact');
+$rs->execute();
+while($row = $rs->fetch())
+{
+	$abbrev_ary[$row['abbrev']] = $row['abbrev'];
+}
+
+$top_right .= '<a href="#" class="csv">';
+$top_right .= '<i class="fa fa-file"></i>';
+$top_right .= '&nbsp;csv</a>';
+
+$panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
+$filtered = ($panel_collapse) ? false : true;
+
+$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
+	<script src="' . $cdn_typeahead . '"></script>
+	<script src="' . $rootpath . 'js/typeahead.js"></script>';
+
+
+$h1 = 'Contacten';
+$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+$h1 .= '<div class="pull-right">';
+$h1 .= '&nbsp;<button class="btn btn-default hidden-xs" title="Filters" ';
+$h1 .= 'data-toggle="collapse" data-target="#filters"';
+$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
+$h1 .= '</div>';
+
+$fa = 'map-marker';
+
+include $rootpath . 'includes/inc_header.php';
+
+echo '<div id="filters" class="panel panel-info';
+echo ($panel_collapse) ? ' collapse' : '';
+echo '">';
+
+echo '<div class="panel-heading">';
+
+echo '<form method="get" class="form-horizontal">';
+
+echo '<div class="row">';
+
+echo '<div class="col-sm-4">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-search"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoeken">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-4">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">';
+echo 'Type';
+echo '</span>';
+echo '<select class="form-control" id="abbrev" name="abbrev">';
+render_select_options(array_merge(array('' => ''), $abbrev_ary), $abbrev);
+echo '</select>';
+echo '</div>';
+echo '</div>';
+
+$access_options = array(
+	'all'		=> '',
+	'admin'		=> 'admin',
+	'users'		=> 'leden',
+	'interlets'	=> 'interlets',
+);
+
+echo '<div class="col-sm-4">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">';
+echo 'Zichtbaar';
+echo '</span>';
+echo '<select class="form-control" id="access" name="access">';
+render_select_options($access_options, $access);
+echo '</select>';
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+
+echo '<div class="row">';
+
+$user_status_options = array(
+	'all'		=> 'Alle',
+	'active'	=> 'Actief',
+	'new'		=> 'Enkel instappers',
+	'leaving'	=> 'Enkel uitstappers',
+	'inactive'	=> 'Inactief',
+	'ip'		=> 'Info-pakket',
+	'im'		=> 'Info-moment',
+	'extern'	=> 'Extern',
+);
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">';
+echo 'Status ';
+echo '<i class="fa fa-user"></i>';
+echo '</span>';
+echo '<select class="form-control" id="ustatus" name="ustatus">';
+render_select_options($user_status_options, $ustatus);
+echo '</select>';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="fcode_addon">Van ';
+echo '<span class="fa fa-user"></span></span>';
+
+$typeahead_name_ary = array('users_active', 'users_inactive', 'users_ip', 'users_im', 'users_extern');
+
+echo '<input type="text" class="form-control" ';
+echo 'aria-describedby="letscode_addon" ';
+echo 'data-typeahead="' . get_typeahead($typeahead_name_ary) . '" '; 
+echo 'name="letscode" id="letscode" placeholder="letscode" ';
+echo 'value="' . $letscode . '">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-2">';
+echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+echo '</div>';
+
+echo '</div>';
+
+$params_form = $params;
+unset($params_form['access'], $params_form['q'], $params_form['abbrev']);
+unset($params_form['letscode'], $params_form['ustatus']);
+
+foreach ($params_form as $name => $value)
+{
+	if (isset($value))
+	{
+		echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+	}
+}
+
+echo '</form>';
+
+echo '</div>';
+echo '</div>';
+
+$pagination->render();
+
+if (!count($contacts))
+{
+	echo '<br>';
+	echo '<div class="panel panel-danger">';
+	echo '<div class="panel-body">';
+	echo '<p>Er zijn geen resultaten.</p>';
+	echo '</div></div>';
+
+	$pagination->render();
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+echo '<div class="panel panel-danger">';
+echo '<div class="table-responsive">';
+echo '<table class="table table-hover table-striped table-bordered footable csv" ';
+echo 'data-sort="false">';
+
+echo '<thead>';
+echo '<tr>';
+
+$th_params = $params;
+
+foreach ($tableheader_ary as $key_orderby => $data)
+{
+	echo '<th';
+	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo '>';
+	if ($data['no_sort'])
+	{
+		echo $data['lbl'];
+	}
+	else
+	{
+		$th_params['orderby'] = $key_orderby;
+		$th_params['asc'] = $data['asc'];
+
+		echo aphp('contacts', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+	}
+	echo '</th>';
+}
+
+echo '</tr>';
+echo '</thead>';
+
+echo '<tbody>';
+
+foreach ($contacts as $c)
+{
+	$access = $acc_ary[$c['flag_public']];
+
+	echo '<tr>';
+	echo '<td>' . $c['abbrev'] . '</td>';
+
+	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['value']) . '</td>';
+	echo '<td>' . link_user($c['id_user']) . '</td>';
+	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['comments']) . '</td>';
+	echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+
+	echo '<td>';
+	echo aphp('contacts', 'del=' . $c['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	echo '</td>';
+
+	echo '</tr>';
+}
+
+echo '</tbody>';
+
+echo '</table>';
+
+echo '</div></div>';
+
+$pagination->render();
+
+include $rootpath . 'includes/inc_footer.php';
 
 function cancel($uid = null)
 {
