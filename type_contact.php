@@ -287,7 +287,7 @@ foreach($types as $t)
 	echo '</td>';
 
 	echo '<td>';
-	echo $count;
+	echo aphp('contacts', 'abbrev=' . $t['abbrev'], $count);
 	echo '</td>';
 
 	echo '</tr>';
