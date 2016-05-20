@@ -187,7 +187,7 @@ if (!$schema)
 require_once $rootpath . 'includes/redis_session.php';
 
 $redis_session = new redis_session($redis, $schema);
-session_set_save_handler($redis_session, $schema);
+session_set_save_handler($redis_session);
 session_name($schema);
 session_start();
 
