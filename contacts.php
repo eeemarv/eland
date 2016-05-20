@@ -160,8 +160,12 @@ if ($edit || $add)
 			cancel();
 		}
 	}
+	else
+	{
+		$user_id = false;
+	}
 
-	$user_id = ($uid) ? $uid : (($user_id) ? $user_id : $s_id);
+	$user_id = ($uid) ? $uid : $user_id;
 
 	$s_owner = ($user_id == $s_id) ? true : false;
 
@@ -174,10 +178,28 @@ if ($edit || $add)
 
 	if($submit)
 	{
+		$errors = array();
+
 		if ($error_token = get_error_form_token())
 		{
-			$alert->error($error_token);
-			cancel($uid);
+			$errors[] = $error_token;
+		}
+
+		if ($s_admin && $add && !$uid)
+		{
+			$letscode = $_POST['letscode'];
+			list($letscode) = explode(' ', trim($letscode));
+
+			$user_id = $db->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+
+			if ($user_id)
+			{
+				$letscode = link_user($user_id, null, false);
+			}
+			else
+			{
+				$errors[] = 'Ongeldige letscode.';
+			}	
 		}
 
 		$contact = array(
@@ -189,8 +211,6 @@ if ($edit || $add)
 		);
 
 		$mail_type_id = $db->fetchColumn('select id from type_contact where abbrev = \'mail\'');
-
-		$errors = array();
 
 		if ($contact['id_type_contact'] == $mail_type_id && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
 		{
@@ -285,8 +305,14 @@ if ($edit || $add)
 		$tc[$row['id']] = $row['name'];
 	}
 
+	if ($s_admin && $add && !$uid)
+	{
+		$includejs = '<script src="' . $cdn_typeahead . '"></script>
+			<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	}
+
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
-	$h1 .= ($s_owner && !$s_admin) ? '' : ' voor ' . link_user($user_id);
+	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id);
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -294,6 +320,21 @@ if ($edit || $add)
 	echo '<div class="panel-heading">';
 
 	echo '<form method="post" class="form-horizontal">';
+
+	if ($s_admin && $add && !$uid)
+	{
+		$typeahead_ary = array('users_active', 'users_inactive', 'users_ip', 'users_im', 'users_extern');
+
+		echo '<div class="form-group">';
+		echo '<label for="letscode" class="col-sm-2 control-label">Voor</label>';
+		echo '<div class="col-sm-10">';
+		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+		echo 'data-typeahead="' . get_typeahead($typeahead_ary) . '" ';
+		echo 'placeholder="letscode" ';
+		echo 'value="' . $letscode . '" required>';
+		echo '</div>';
+		echo '</div>';
+	}
 
 	echo '<div class="form-group">';
 	echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
@@ -724,13 +765,14 @@ $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
+$top_buttons .= aphp('contacts', 'add=1', 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
 
 $includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/typeahead.js"></script>';
-
 
 $h1 = 'Contacten';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
