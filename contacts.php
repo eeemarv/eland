@@ -10,7 +10,7 @@ $access = (isset($_GET['access'])) ? $_GET['access'] : 'all';
 $ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'all';
 
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'c.id';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 1;
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
 $start = (isset($_GET['start'])) ? $_GET['start'] : 0;
 
