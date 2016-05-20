@@ -27,13 +27,21 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if ($del)
 {
-	if (!($uid = $db->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
+	if (!($user_id = $db->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
 	{
 		$alert->error('Het contact bestaat niet.');
 		cancel();
 	}
 
-	$s_owner = ($uid == $s_id) ? true : false;
+	if ($uid && $uid != $user_id)
+	{
+		$alert->error('uid in url is niet de eigenaar van contact.');
+		cancel();
+	}
+
+	$user_id = ($uid) ? $uid : $user_id;
+
+	$s_owner = ($user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -52,7 +60,7 @@ if ($del)
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
-				and tc.abbrev = \'mail\'', array($uid)) == 1)
+				and tc.abbrev = \'mail\'', array($user_id)) == 1)
 		{
 			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een gebruiker';
 			$alert->error('Je kan niet ' . $err . ' verwijderen.');
@@ -79,10 +87,10 @@ if ($del)
 		cancel($uid);
 	}
 
-	$contact = $db->fetchAssoc('SELECT tc.abbrev, c.value, c.comments, c.flag_public
-		FROM type_contact tc, contact c
-		WHERE c.id_type_contact = tc.id
-			AND c.id = ?', array($del));
+	$contact = $db->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
+		from type_contact tc, contact c
+		where c.id_type_contact = tc.id
+			and c.id = ?', array($del));
 
 	$h1 = 'Contact verwijderen?';
 
@@ -99,7 +107,7 @@ if ($del)
 	if (!$s_owner)
 	{
 		echo '<dt>Gebruiker</dt>';
-		echo '<dd>' . link_user($uid) . '</dd>';
+		echo '<dd>' . link_user($user_id) . '</dd>';
 	}
 	echo '<dt>Type</dt>';
 	echo '<dd>' . $contact['abbrev'] . '</dd>';
@@ -113,7 +121,17 @@ if ($del)
 
 	echo '<form method="post" class="form-horizontal">';
 
-	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	if ($uid)
+	{
+		echo '<input type="hidden" name="uid" value="' . $uid . '">';
+		echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default');
+	}
+	else
+	{
+		echo aphp('contacts', '', 'Annuleren', 'btn btn-default');
+	}
+
+	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 
@@ -130,14 +148,22 @@ if ($edit || $add)
 {
 	if ($edit)
 	{
-		if (!($uid = $db->fetchColumn('select id_user from contact where id = ?', array($edit))))
+		if (!($user_id = $db->fetchColumn('select id_user from contact where id = ?', array($edit))))
 		{
 			$alert->error('Dit contact heeft geen eigenaar.');
 			cancel();
 		}
+
+		if ($uid && $uid != $user_id)
+		{
+			$alert->error('uid in url is niet de eigenaar van contact.');
+			cancel();
+		}
 	}
 
-	$s_owner = ($uid == $s_id) ? true : false;
+	$user_id = ($uid) ? $uid : (($user_id) ? $user_id : $s_id);
+
+	$s_owner = ($user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -159,7 +185,7 @@ if ($edit || $add)
 			'value'					=> $_POST['value'],
 			'comments' 				=> $_POST['comments'],
 			'flag_public'			=> $_POST['flag_public'],
-			'id_user'				=> $uid,
+			'id_user'				=> $user_id,
 		);
 
 		$mail_type_id = $db->fetchColumn('select id from type_contact where abbrev = \'mail\'');
@@ -197,13 +223,13 @@ if ($edit || $add)
 				from contact
 				where id_user = ?
 					and id_type_contact = ?',
-				array($uid, $mail_type_id));
+				array($user_id, $mail_type_id));
 
 			$mail_id = $db->fetchColumn('select id
 				from contact
 				where id_user = ?
 					and id_type_contact = ?',
-				array($uid, $mail_type_id));
+				array($user_id, $mail_type_id));
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
@@ -260,7 +286,7 @@ if ($edit || $add)
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
-	$h1 .= ($s_owner && !$s_admin) ? '' : ' voor ' . link_user($uid);
+	$h1 .= ($s_owner && !$s_admin) ? '' : ' voor ' . link_user($user_id);
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -304,7 +330,18 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	if ($uid)
+	{
+		echo '<input type="hidden" name="uid" value="' . $uid . '">';
+		echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default');
+	}
+	else
+	{
+		echo aphp('contacts', '', 'Annuleren', 'btn btn-default');
+	}
+
+	echo '&nbsp;';
+
 	if ($add)
 	{
 		echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
@@ -323,6 +360,10 @@ if ($edit || $add)
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
 }
+
+/**
+ * show contacts of a user
+ */
 
 if ($uid)
 {
@@ -423,8 +464,8 @@ if ($uid)
 		}
 		else if ($s_owner || $s_admin)
 		{
-			echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['value']) . '</td>';
-			echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['comments']) . '</td>';
+			echo '<td>' . aphp('contacts', 'edit=' . $c['id'] . '&uid=' . $uid, $c['value']) . '</td>';
+			echo '<td>' . aphp('contacts', 'edit=' . $c['id'] . '&uid=' . $uid, $c['comments']) . '</td>';
 		}
 		else if ($c['abbrev'] == 'mail')
 		{
@@ -442,7 +483,7 @@ if ($uid)
 			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
 
 			echo '<td>';
-			echo aphp('contacts', 'del=' . $c['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('contacts', 'del=' . $c['id'] . '&uid=' . $uid, 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -489,7 +530,6 @@ if (!$s_admin)
 $s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
 
 $params = array(
-	'view'		=> $view,
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
 	'limit'		=> $limit,
@@ -896,8 +936,15 @@ $pagination->render();
 
 include $rootpath . 'includes/inc_footer.php';
 
-function cancel($uid = null)
+function cancel($uid = false)
 {
-	header('Location: ' . generate_url('users', (($uid) ? 'id=' . $uid : '')));
+	if ($uid)
+	{
+		header('Location: ' . generate_url('users', (($uid) ? 'id=' . $uid : '')));
+	}
+	else
+	{
+		header('Location: ' . generate_url('contacts'));
+	} 
 	exit;
 }

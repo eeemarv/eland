@@ -2093,7 +2093,7 @@ if ($id)
 
 	echo '</div></div></div></div>';
 
-	echo '<div id="contacts" data-uid="' . $id . '" ';
+	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $id;
 	echo '&' . get_session_query_param() . '"></div>';
 

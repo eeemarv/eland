@@ -1264,7 +1264,7 @@ if ($id)
 	echo '</div>'; //col-md-6
 	echo '</div>'; //row
 
-	echo '<div id="contacts" data-uid="' . $message['id_user'] . '" ';
+	echo '<div id="contacts" '; // data-uid="' . $message['id_user'] . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
 	echo '&' . get_session_query_param() . '"></div>';
 
