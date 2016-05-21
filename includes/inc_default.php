@@ -573,37 +573,6 @@ function readconfigfromdb($key, $sch = null)
 /**
  *
  */
-function writeconfig($key, $value)
-{
-	global $db, $redis, $schema;
-	global $eland_config, $mdb;
-
-	if ($eland_config[$key])
-	{
-		$a = array(
-			'value' => $value,
-			'name'	=> $key
-		);
-		$mdb->settings->update(array('name' => $key), $a, array('upsert' => true));
-	}
-	else
-	{
-		if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
-		{
-			return false;
-		}
-	}
-
-	$redis_key = $schema . '_config_' . $key;
-	$redis->set($redis_key, $value);
-	$redis->expire($redis_key, 2592000);
-
-	return true;
-}
-
-/**
- *
- */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
     global $db, $schema, $redis, $mdb;
