@@ -39,7 +39,7 @@ echo 'php version: ' . phpversion() . $r;
 // select in which schema to perform updates
 $schema_lastrun_ary = $schema_interletsq_ary = array();
 
-foreach ($schemas as $domain => $schema)
+foreach ($schemas as $host => $schema)
 {
 	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
@@ -52,7 +52,7 @@ foreach ($schemas as $domain => $schema)
 	}
 }
 
-unset($schema, $domain);
+unset($schema, $host);
 
 if (count($schemas))
 {
@@ -67,7 +67,7 @@ if (count($schemas))
 	echo '---------------------------------------------------------------' . $r;
 	foreach ($schema_lastrun_ary as $schema_n => $time)
 	{
-		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $time;
+		echo $schema_n . ' (' . $hosts[$schema_n] . '): ' . $time;
 		echo (isset($schema_interletsq_ary[$schema_n])) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
 
 		if ((!isset($selected) && !isset($schema_interletsq_min))
@@ -92,11 +92,11 @@ $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $systemtag ."] ***" . $r;
+echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . $systemtag ."] ***" . $r;
 
 $mdb->set_schema($schema);
 
-$base_url = $app_protocol . $domains[$schema]; 
+$base_url = $app_protocol . $hosts[$schema]; 
 
 // begin typeahaed update (when interletsq is empty) for one group
 

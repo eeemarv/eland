@@ -165,9 +165,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if (isset($domains[$add_schema]))
+		if (isset($hosts[$add_schema]))
 		{
-			$group['url'] = $app_protocol . $domains[$add_schema];
+			$group['url'] = $app_protocol . $hosts[$add_schema];
 			$group['groupname'] = $group['shortname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
@@ -721,7 +721,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function render_schemas_groups()
 {
-	global $schema, $db, $base_url, $schemas, $domains, $app_protocol;
+	global $schema, $db, $base_url, $schemas, $hosts, $app_protocol;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -760,9 +760,9 @@ function render_schemas_groups()
 
 	$url_ary = array();
 
-	foreach ($domains as $d)
+	foreach ($hosts as $host)
 	{
-		$url_ary[] = $app_protocol . $d;
+		$url_ary[] = $app_protocol . $host;
 	}
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
@@ -774,11 +774,11 @@ function render_schemas_groups()
 		array($url_ary),
 		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
 
-	foreach ($groups as $g)
+	foreach ($groups as $group)
 	{
-		$loc_letscode_ary[] = $g['localletscode'];
-		$d = get_host($g);
-		$loc_group_ary[$d] = $g;
+		$loc_letscode_ary[] = $group['localletscode'];
+		$host = get_host($g);
+		$loc_group_ary[$host] = $group;
 	}
 
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
@@ -792,7 +792,7 @@ function render_schemas_groups()
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($schemas as $d => $s)
+	foreach ($schemas as $host => $s)
 	{
 		$rem_group = $db->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
@@ -804,7 +804,7 @@ function render_schemas_groups()
 
 		if ($rem_group)
 		{
-			$rem_group_ary[$d] = $rem_group;
+			$rem_group_ary[$host] = $rem_group;
 
 			if ($rem_group['localletscode'])
 			{
@@ -813,7 +813,7 @@ function render_schemas_groups()
 
 				if ($rem_account)
 				{
-					$rem_account_ary[$d] = $rem_account;
+					$rem_account_ary[$host] = $rem_account;
 				}
 			}
 		}
@@ -839,7 +839,7 @@ function render_schemas_groups()
 
 	echo '<tbody>';
 
-	foreach($schemas as $d => $s)
+	foreach($schemas as $host => $s)
 	{
 		echo '<tr>';
 
@@ -852,7 +852,7 @@ function render_schemas_groups()
 		echo '</td>';
 
 		echo '<td>';
-		echo $d;
+		echo $host;
 		echo '</td>';
 
 		echo '<td>';
@@ -868,7 +868,7 @@ function render_schemas_groups()
 		else
 		{
 			echo '<td>';
-			if (is_array($loc_group =  $loc_group_ary[$d]))
+			if (is_array($loc_group =  $loc_group_ary[$host]))
 			{
 				echo aphp('interlets', 'id=' . $loc_group['id'], 'OK', 'btn btn-success btn-xs');
 			}
@@ -909,7 +909,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_group_ary[$d])
+			if ($rem_group_ary[$host])
 			{
 				echo '<span class="btn btn-success btn-xs">OK</span>';
 			}
@@ -919,7 +919,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_acc = $rem_account_ary[$d])
+			if ($rem_acc = $rem_account_ary[$host])
 			{
 				if ($rem_acc['accountrole'] != 'interlets')
 				{

@@ -6,21 +6,15 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-function log_event($user_id, $type, $event, $remote_schema = null)
+function log_event($user_id, $type, $event, $remote_schema = false)
 {
-	global $schema, $elas_log;
+	global $schema, $elas_log, $hosts;
 
 	$type = strtolower($type);
 
-	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
+	$sch = ($remote_schema) ? $remote_schema : $schema;
 
-	$domain = array_search($sch, $_ENV);
-	$domain = str_replace('SCHEMA_', '', $domain);
-	$domain = str_replace('____', ':', $domain);
-	$domain = str_replace('___', '-', $domain);
-	$domain = str_replace('__', '.', $domain);
-	$domain = strtolower($domain);
-	$domain = $domain . ' / ' . $_SERVER['HTTP_HOST'];
+	$host = $hosts[$sch];
 
 	$formatter = new ColoredLineFormatter();
 
@@ -34,15 +28,15 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 		$user = readuser($user_id, false, $sch);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
+		$user_str = ' user: ' . link_user($user, $sch, false, true); 
 	}
 	else
 	{
-		$username = $letscode = '';
+		$username = $letscode = $user_str = '';
 	}
 
-	$log->addNotice('eLAND: ' . $sch . ': ' . $domain . ': ' .
-		$type . ': ' . $event . ' user id:' . $user_id .
-		' user: ' . $letscode . ' ' . $username . "\n\r");
+	$log->addNotice('eLAND: ' . $sch . ': ' . $host . ': ' .
+		$type . ': ' . $event . $user_str . "\n\r");
 
 	$item = array(
 		'ts_tz'		=> date('Y-m-d H:i:s'),

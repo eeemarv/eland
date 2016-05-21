@@ -173,7 +173,7 @@ $db = \Doctrine\DBAL\DriverManager::getConnection(array(
  * Get all eland schemas and domains
  */
 
-$schemas = $domains = array();
+$schemas = $hosts = array();
 
 $schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
 $schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
@@ -186,11 +186,11 @@ foreach ($_ENV as $key => $s)
 		continue;
 	}
 
-	$domain = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
-	$domain = strtolower($domain);
+	$host = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
+	$host = strtolower($host);
 
-	$schemas[$domain] = $s;
-	$domains[$s] = $domain;
+	$schemas[$host] = $s;
+	$hosts[$s] = $host;
 }
 
 /*
@@ -230,23 +230,29 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 
 if ($s_id && $s_schema)
 {
+	/*
 	$s_user = readuser($s_id, false, $s_schema);
+	*/
 	$s_accountrole = ($s_schema == $schema) ? $s_user['accountrole'] : 'guest';
 }
 else if ($_SESSION['elas_interlets'])
 {
+	/*
 	$s_user = array(
 		'letscode'		=> '',
 		'name'			=> 'eLAS interlets gast',
 	);
+	*/
 	$s_accountrole = 'guest';
 }
 else if ($_SESSION['master'])
 {
+	/*
 	$s_user = array(
 		'letscode'		=> '',
 		'name'			=> 'master',
 	);
+	*/
 	$s_id = 0;
 	$s_accountrole = 'admin';
 }
