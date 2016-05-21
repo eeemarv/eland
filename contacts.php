@@ -194,7 +194,7 @@ if ($edit || $add)
 
 			if ($user_id)
 			{
-				$letscode = link_user($user_id, null, false);
+				$letscode = link_user($user_id, false, false);
 			}
 			else
 			{
@@ -587,7 +587,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$letscode = link_user($user, null, false);
+	$letscode = link_user($user, false, false);
 }
 
 if (!$uid)
@@ -603,7 +603,7 @@ if (!$uid)
 			$where_sql[] = 'c.id_user = ?';
 			$params_sql[] = $fuid;
 
-			$letscode = link_user($fuid, null, false);
+			$letscode = link_user($fuid, false, false);
 		}
 		else
 		{

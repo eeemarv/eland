@@ -511,11 +511,11 @@ function redirect($location = false)
  *
  */
 
-function link_user($user, $render = null, $link = true, $show_id = false)
+function link_user($user, $schema = false, $link = true, $show_id = false, $field = false)
 {
 	global $rootpath;
-	$user = (is_array($user)) ? $user : readuser($user);
-	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
+	$user = (is_array($user)) ? $user : readuser($user, false, $schema);
+	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
 	$str = ($show_id) ? $str . ' (id: ' . $user['id'] . ')' : $str;
 	return $str;

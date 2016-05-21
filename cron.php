@@ -295,7 +295,7 @@ if ($autominlimit_queue)
 			|| ($a['account_base'] >= $user['saldo']) 
 		)
 		{
-			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . $r;
+			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, false, false) . $r;
 			continue;
 		}
 
@@ -321,9 +321,9 @@ if ($autominlimit_queue)
 		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
 		readuser($to_id, true);
 
-		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, null, false) .  $r;
+		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, false, false) .  $r;
 
-		log_event('', 'cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, null, false) . ' (id:' . $to_id . ') ');
+		log_event('', 'cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, false, false) . ' (id:' . $to_id . ') ');
 	}
 
 	$redis->expire($schema . '_autominlimit_queue', 0);
@@ -368,7 +368,7 @@ while ($row = $st->fetch())
 	$redis->set($key, 'q');
 	$redis->expire($key, 2592000);
 	$redis->lpush('geo_q', json_encode($data));
-	$log_ary[] = link_user($row['id_user'], null, false, true) . ': ' . $adr;
+	$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $adr;
 }
 
 if (count($log_ary))
@@ -502,7 +502,7 @@ function admin_exp_msg()
 	
 	foreach($messages as $key => $value)
 	{
-		$text .= link_user($value['id_user'], null, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
+		$text .= link_user($value['id_user'], false, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
 		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 

@@ -56,8 +56,8 @@ function insert_transaction($transaction)
 
 	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . $currency . ' from user ' .
-		link_user($transaction['id_from'], null, false, true) . ' to user ' .
-		link_user($transaction['id_to'], null, false, true));
+		link_user($transaction['id_from'], false, false, true) . ' to user ' .
+		link_user($transaction['id_to'], false, false, true));
 
 	return $id;
 }
@@ -81,8 +81,8 @@ function mail_mail_interlets_transaction($transaction)
 	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname;
 	$text  .= ' met de volgende gegevens:' . $r . $r;
 
-	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], null, false);
-	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], null, false);
+	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], false, false);
+	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], false, false);
 
 	$text .= 'Van: ' . $t . $t . $u_from . $r;
 	$text .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;

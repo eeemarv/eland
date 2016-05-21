@@ -83,7 +83,7 @@ if(isset($_POST['zend']))
 		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
 		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
 
-		$text .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
+		$text .= 'Gebruiker: ' . link_user($help['user_id'], false, false, true) . "\r\n";
 
 		$text .= 'Gebruiker ingelogd: ';
 		$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';

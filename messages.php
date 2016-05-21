@@ -524,7 +524,7 @@ if ($mail && $post && $id)
 	$me = readuser($me_id, false, $remote_schema);
 
 	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
-	$user_me .= link_user($me, null, false);
+	$user_me .= link_user($me, false, false);
 	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
@@ -1359,7 +1359,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = link_user($user, null, false);
+	$fcode = link_user($user, false, false);
 }
 
 if (!$uid)
@@ -1375,7 +1375,7 @@ if (!$uid)
 			$where_sql[] = 'u.id = ?';
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, null, false);
+			$fcode = link_user($fuid, false, false);
 		}
 		else
 		{
@@ -1625,7 +1625,7 @@ if ($s_admin || $s_user)
 	{
 		if ($s_admin && !$s_owner)
 		{
-			$str = 'Vraag of aanbod voor ' . link_user($uid, null, false);
+			$str = 'Vraag of aanbod voor ' . link_user($uid, false, false);
 			$top_buttons .= aphp('messages', 'add=1&uid=' . $uid, $str, 'btn btn-success', $str, 'plus', true);
 		}
 

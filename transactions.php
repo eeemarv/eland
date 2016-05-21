@@ -415,7 +415,7 @@ if ($add)
 				$transaction['amount'] = $remote_amount;
 				$transaction['id_from'] = $remote_interlets_account['id'];
 				$transaction['id_to'] = $to_remote_user['id'];
-				$transaction['real_from'] = link_user($fromuser['id'], null, false);
+				$transaction['real_from'] = link_user($fromuser['id'], false, false);
 				unset($transaction['real_to']);
 
 				$db->insert($remote_schema . '.transactions', $transaction);
@@ -449,8 +449,8 @@ if ($add)
 			mail_transaction($transaction, $remote_schema);
 
 			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
-				$amount . ' from user: ' .  link_user($fromuser['id'], null, false) .
-				' to user: ' . link_user($touser['id'], null, false));
+				$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
+				' to user: ' . link_user($touser['id'], false, false));
 
 			log_event('', 'trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
 				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
@@ -464,7 +464,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : link_user($s_id, null, false);
+		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : link_user($s_id, false, false);
 	}
 	else
 	{
@@ -477,7 +477,7 @@ if ($add)
 
 		$transaction = array(
 			'date'			=> date('Y-m-d'),
-			'letscode_from'	=> link_user($s_id, null, false),
+			'letscode_from'	=> link_user($s_id, false, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -752,7 +752,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = $tcode = link_user($user, null, false);
+	$fcode = $tcode = link_user($user, false, false);
 	$andor = 'or';
 }
 
@@ -776,7 +776,7 @@ if (!$uid)
 			$where_code_sql[] = 't.id_from = ?';
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, null, false);
+			$fcode = link_user($fuid, false, false);
 		}
 		else
 		{
@@ -797,7 +797,7 @@ if (!$uid)
 			$where_code_sql[] = 't.id_to = ?';
 			$params_sql[] = $tuid;
 
-			$tcode = link_user($tuid, null, false);
+			$tcode = link_user($tuid, false, false);
 		}
 		else
 		{
@@ -903,7 +903,7 @@ if ($s_admin || $s_user)
 {
 	if ($uid)
 	{
-		$user_str = link_user($user, null, false);
+		$user_str = link_user($user, false, false);
 
 		if ($user['status'] != 7)
 		{

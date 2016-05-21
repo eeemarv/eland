@@ -187,7 +187,7 @@ if ($_POST['zend'])
 			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];
-			log_event($user['id'],'Login','User ' . link_user($user, null, false, true) . ' logged in');
+			log_event($user['id'],'Login','User ' . link_user($user, false, false, true) . ' logged in');
 			log_event($user['id'],'Agent', $browser);
 			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
 			readuser($user['id'], true);

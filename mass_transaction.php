@@ -510,11 +510,11 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo link_user($user, 'letscode');
+	echo link_user($user, false, true, false, 'letscode');
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($user, 'name');
+	echo link_user($user, false, true, false, 'name');
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
@@ -699,8 +699,8 @@ function mail_mass_transaction($mail_ary)
 			'amount' 		=> $many_ary[$user_id]['amount'],
 			'transid' 		=> $many_ary[$user_id]['transid'],
 			'description'	=> $mail_ary['description'],
-			'from_user' 	=> link_user($from_user_id, null, false),
-			'to_user'		=> link_user($to_user_id, null, false),
+			'from_user' 	=> link_user($from_user_id, false, false),
+			'to_user'		=> link_user($to_user_id, false, false),
 		);
 
 		$data = array_merge($user, $data);
@@ -719,7 +719,7 @@ function mail_mass_transaction($mail_ary)
 
 	$text = 'Notificatie nieuwe massa transactie' . $r . $r;
 
-	$t_one = link_user($one_user_id, null, false);
+	$t_one = link_user($one_user_id, false, false);
 
 	if (!$from_many_bool)
 	{
@@ -743,7 +743,7 @@ function mail_mass_transaction($mail_ary)
 
 		$total += $many_ary[$user_id]['amount'];
 
-		$text .= link_user($user_id, null, false) . $t . $t . $many_ary[$user_id]['amount'];
+		$text .= link_user($user_id, false, false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
 	}
 

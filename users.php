@@ -65,7 +65,7 @@ if ($user_mail_submit && $id && $post)
 	$me = readuser($me_id, false, $me_schema);
 
 	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
-	$user_me .= link_user($me, null, false);
+	$user_me .= link_user($me, false, false);
 	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
@@ -480,7 +480,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . link_user($row, null, false, true);
+		$users_log .= ', ' . link_user($row, false, false, true);
 	}
 	$users_log = ltrim($users_log, ', ');
 
@@ -1905,7 +1905,7 @@ if ($id)
 
 	if (($s_admin || ($s_user && !$s_owner)) && $user['status'] != 7)
 	{
-		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, null, false), 'exchange', true);
+		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, false, false), 'exchange', true);
 	}
 
 	if ($prev)
@@ -2939,7 +2939,7 @@ if ($v_list)
 					echo '<td>';
 					echo ($first) ? $checkbox : '';
 					$first = false;
-					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, $key) : $u[$key];
+					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, false, true, false, $key) : $u[$key];
 					echo '</td>';
 				}
 			}
@@ -3018,8 +3018,8 @@ if ($v_list)
 			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
 
 			echo '>';
-			echo '<td>' . link_user($u, 'letscode') . '</td>';
-			echo '<td>' . link_user($u, 'name') . '</td>';
+			echo '<td>' . link_user($u, false, true, false, 'letscode') . '</td>';
+			echo '<td>' . link_user($u, false, true, false, 'name') . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
@@ -3356,7 +3356,7 @@ function sendadminmail($user)
 	$text  = "*** Dit is een automatische mail van ";
 	$text .= $systemtag;
 	$text .= " ***\r\n\n";
-	$text .= "De account " . link_user($user, null, false) ;
+	$text .= "De account " . link_user($user, false, false) ;
 	$text .= " werd geactiveerd met een nieuw paswoord.\n";
 
 	if ($user['mail'])

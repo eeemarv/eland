@@ -54,7 +54,7 @@ if (!$s_anonymous)
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 	echo ($s_group_self) ? '' : $s_schema . '.';
-	echo link_user($s_id, null, false);
+	echo link_user($s_id, $s_schema, false);
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_user || $s_admin)

@@ -26,7 +26,7 @@ if ($token)
 				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
 				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
-				log_event($s_id, 'System', 'password reset success user ' . link_user($user, null, false, true));
+				log_event($s_id, 'System', 'password reset success user ' . link_user($user, false, false, true));
 
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
