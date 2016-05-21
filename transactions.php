@@ -464,7 +464,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;
+		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : link_user($s_id, null, false);
 	}
 	else
 	{
@@ -477,7 +477,7 @@ if ($add)
 
 		$transaction = array(
 			'date'			=> date('Y-m-d'),
-			'letscode_from'	=> $s_letscode . ' ' . $s_name,
+			'letscode_from'	=> link_user($s_id, null, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',

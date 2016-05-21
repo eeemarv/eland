@@ -25,14 +25,11 @@ if(!empty($token))
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
 		$_SESSION = array(
-			'id'			=> 0,
-			'letscode'		=> '-',
-			'accountrole'	=> 'guest',
-			'type'			=> 'interlets',
+			'elas_interlets'	=> true
 		);
 
 		$param = 'a=1&r=guest';
-
+/*
 		if ($interlets != '1')
 		{
 			$interlets = unserialize($interlets);
@@ -45,9 +42,9 @@ if(!empty($token))
 		{
 			$_SESSION['name'] = 'letsgast';
 		}
-
-		log_event(0, 'Login', 'Guest login (' . $_SESSION['name'] . ') using token ' . $token . ' succeeded');
-		$alert->success($_SESSION['name'] . ' ingelogd');
+*/
+		log_event(0, 'Login', 'eLAS guest login using token ' . $token . ' succeeded');
+		$alert->success('Je bent als interlets gast ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -77,16 +74,8 @@ if ($_POST['zend'])
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
 		$_SESSION = array(
-			'id'				=> 0,
-			'name'				=> 'master',
-			'fullname'			=> 'eLAND Master',
-			'user_postcode'		=> '0000',
-			'letscode'			=> '000000',
-			'accountrole'		=> 'admin',
-			'userstatus'		=> 1,
-			'email'				=> '',
-			'lang'				=> 'nl',
-			'type'				=> 'master',
+			'master'	=> true,
+			'schema'	=> $schema,
 		);
 		log_event(0,'Login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
@@ -164,7 +153,7 @@ if ($_POST['zend'])
 		if ($user['password'] != $sha512)
 		{
 			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
-			log_event($s_id, 'password', 'Pasword encryption updated to sha512');
+			log_event($s_id, 'password', 'Password encryption updated to sha512');
 		}
 
 		if (!count($errors) && !in_array($user['status'], array(1, 2)))
@@ -186,14 +175,15 @@ if ($_POST['zend'])
 		{
 			$_SESSION = array(
 				'id'			=> $user['id'],
-				'name'			=> $user['name'],
+				'schema'		=> $schema,
+/*				'name'			=> $user['name'],
 				'fullname'		=> $user['fullname'],
 				'postcode'		=> $user['postcode'],
 				'letscode'		=> $user['letscode'],
 				'accountrole'	=> $user['accountrole'],
 				'userstatus'	=> $user['status'],
 				'lang'			=> $user['lang'],
-				'type'			=> 'local',
+				'type'			=> 'local', */
 			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];

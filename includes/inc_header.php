@@ -31,7 +31,7 @@ echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
 
-if ($s_letscode)
+if (!$s_anonymous)
 {
 	echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">';
 	echo '<span class="sr-only">Toggle navigation</span>';
@@ -46,14 +46,15 @@ echo aphp('index', '', $systemname, 'navbar-brand');
 
 echo '</div>';
 
-if ($s_letscode)
+if (!$s_anonymous)
 {
 	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 	echo '<ul class="nav navbar-nav navbar-right">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
-	echo (($s_letscode == '-') ? '' : $s_letscode . ' ') . $s_name;
+	echo ($s_group_self) ? '' : $s_schema . '.';
+	echo link_user($s_id, null, false);
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_user || $s_admin)

@@ -150,18 +150,18 @@ $access_options = array(
 );
 
 /*
- * get session name from environment variable SCHEMA_<domain>
+ * get schema from environment variable SCHEMA_<domain>
  * dots in <domain> are replaced by double underscore __
  * hyphens in <domain> are replaced by triple underscore ___
  *
  * example:
  *
  * to link e-example.com to a session set environment variable
- * SCHEMA_E___EXAMPLE__COM = <session_name>
+ * SCHEMA_E___EXAMPLE__COM = <schema>
  *
- * + the session name is the schema name !
- * + session name is prefix of the image files.
- * + session name is prefix of keys in Redis.
+ * + schema is the schema in the postgres database
+ * + schema is prefix of the image files.
+ * + schema name is prefix of keys in Redis.
  *
  */
 
@@ -186,10 +186,38 @@ if (!$schema)
 
 require_once $rootpath . 'includes/redis_session.php';
 
-$redis_session = new redis_session($redis, $schema);
+$redis_session = new redis_session($redis);
 session_set_save_handler($redis_session);
-session_name($schema);
+session_name('eland');
 session_start();
+
+$s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
+$s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
+
+$s_group_self = ($s_schema == $schema) ? true : false;
+
+if ($s_id && $s_schema)
+{
+	$s_user = readuser($s_id, false, $s_schema);
+	$s_accountrole = ($s_schema == $schema) ? $s_user['accountrole'] : 'guest';
+}
+else if ($_SESSION['elas_interlets'])
+{
+	$s_user = array(
+		'letscode'		=> '',
+		'name'			=> 'eLAS interlets gast',
+	);
+	$s_accountrole = 'guest';
+}
+else if ($_SESSION['master'])
+{
+	$s_user = array(
+		'letscode'		=> '',
+		'name'			=> 'master',
+	);
+	$s_id = 0;
+	$s_accountrole = 'admin';
+}
 
 require_once $rootpath . 'includes/inc_alert.php';
 
@@ -209,7 +237,7 @@ if (!isset($access_page))
 	exit;
 }
 
-$access_session = (isset($_SESSION['accountrole'])) ? $access_ary[$_SESSION['accountrole']] : 3;
+$access_session = (isset($s_accountrole)) ? $access_ary[$s_accountrole] : 3;
 
 if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
 {
@@ -257,11 +285,11 @@ if (($access_page == 3) && ($access_request < 3) && !isset($allow_session))
 
 $access_level = $access_request;
 
-$s_id = $_SESSION['id'];
-$s_name = $_SESSION['name'];
-$s_letscode = $_SESSION['letscode'];
+//$s_id = $_SESSION['id'];
+//$s_name = $_SESSION['name'];
+//$s_letscode = $_SESSION['letscode'];
 $s_accountrole = $p_role;
-$s_interlets = $_SESSION['interlets'];
+//$s_interlets = $_SESSION['interlets'];
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
@@ -327,6 +355,8 @@ if ($view || $inline)
 	}
 }
 
+/**************************** FUNCTIONS **************************/
+
 /*
  * create links with query parameters depending on user and role
  */
@@ -358,18 +388,13 @@ function aphp($entity = '', $params = '', $label = '*link*', $class = false, $ti
 function set_request_to_session()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $access_ary;
+	global $s_id, $s_accountrole, $s_schema;
 
 	$access_level = $access_session;
-	$level_ary = array_flip($access_ary);
-	$p_role = $level_ary[$access_level];
-	$p_user = ($access_level < 2) ? $_SESSION['id'] : false;
 
-	if ($p_role == 'guest' && isset($_SESSION['interlets']))
-	{
-		$p_user = $_SESSION['interlets']['id'];
-		$p_schema = $_SESSION['interlets']['schema'];
-	}
+	$p_schema = $s_schema;
+	$p_user = $s_id;
+	$p_role = $s_accountrole;
 }
 
 /**
