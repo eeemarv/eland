@@ -1018,13 +1018,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  *
  */
 
-function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false)
+function get_typeahead_thumbprint($name = 'users_active', $group_url = false)
 {
 	global $redis, $base_url, $typeahead_thumbprint_version;
 
-	$letsgroup_url = ($letsgroup_url) ?: $base_url;
+	$group_url = ($group_url) ?: $base_url;
 
-	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
+	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
 	$thumbprint = $typeahead_thumbprint_version . $redis->get($redis_key);
 
@@ -1042,22 +1042,22 @@ function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false
 
 function invalidate_typeahead_thumbprint(
 	$name = 'users_active',
-	$letsgroup_url = false,
+	$group_url = false,
 	$new_thumbprint = false,
 	$ttl = 5184000)	// 60 days;
 {
 	global $redis, $base_url, $s_id;
 
-	$letsgroup_url = ($letsgroup_url) ?: $base_url;
+	$group_url = ($group_url) ?: $base_url;
 
-	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
+	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
 	if ($new_thumbprint)
 	{
 		if ($new_thumbprint != $redis->get($redis_key))
 		{
 			$redis->set($redis_key, $new_thumbprint);
-			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $letsgroup_url . ' : ' . $name);
+			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 		}
 
 		$redis->expire($redis_key, $ttl);
@@ -1066,14 +1066,14 @@ function invalidate_typeahead_thumbprint(
 	{
 		$redis->del($redis_key);
 
-		log_event($s_id, 'typeahead', 'typeahead thumbprint deleted for ' . $letsgroup_url . ' : ' . $name);
+		log_event($s_id, 'typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 	}
 }
 
 /**
  * 
  */
-function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
+function get_typeahead($name_ary, $group_url = false, $group_id = false)
 {
 	global $rootpath;
 
@@ -1086,13 +1086,13 @@ function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
 
 	foreach($name_ary as $name)
 	{
-		$out .= get_typeahead_thumbprint($name, $letsgroup_url) . '|';
+		$out .= get_typeahead_thumbprint($name, $group_url) . '|';
 
 		if (strpos($name, 'users_') !== false)
 		{
 			$status = str_replace('users_', '', $name);
 			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
-			$out .= ($letsgroup_id) ? '&letsgroup_id=' . $letsgroup_id : '';
+			$out .= ($group_id) ? '&group_id=' . $group_id : '';
 			$out .= '&' . get_session_query_param();
 		}
 		else

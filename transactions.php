@@ -59,7 +59,7 @@ if ($add)
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = date('Y-m-d H:i:s');
-		$letsgroup_id = $_POST['letsgroup_id'];
+		$group_id = $_POST['group_id'];
 
 		if ($stored_transid != $transaction['transid'])
 		{
@@ -76,11 +76,11 @@ if ($add)
 			$errors[] = 'De omschrijving mag maximaal 60 tekens lang zijn.';
 		}
 
-		if ($letsgroup_id != 'self')
+		if ($group_id != 'self')
 		{
-			$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
+			$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
 
-			if (!isset($letsgroup))
+			if (!isset($group))
 			{
 				$errors[] = 'Letsgroep niet gevonden.';
 			}
@@ -95,11 +95,11 @@ if ($add)
 			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_from));
 		}
 
-		$letscode_touser = ($letsgroup_id == 'self') ? $letscode_to : $letsgroup['localletscode'];
+		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
 
 		$touser = $db->fetchAssoc('select * from users where letscode = ?', array($letscode_touser));
 
-		if ($letsgroup_id == 'self' && $touser['status'] == 7)
+		if ($group_id == 'self' && $touser['status'] == 7)
 		{
 			$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
 		}
@@ -139,7 +139,7 @@ if ($add)
 
 		if(empty($touser))
 		{
-			if ($letsgroup_id == 'self')
+			if ($group_id == 'self')
 			{
 				$errors[] = 'Bestemmeling bestaat niet';
 			}
@@ -156,11 +156,11 @@ if ($add)
 
 		if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'] && !$s_admin)
 		{
-			$t_account = ($letsgroup_id == 'self') ? 'bestemmeling' : 'interletsrekening';
+			$t_account = ($group_id == 'self') ? 'bestemmeling' : 'interletsrekening';
 			$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 		}
 
-		if($letsgroup_id == 'self'
+		if($group_id == 'self'
 			&& !$s_admin
 			&& !($touser['status'] == '1' || $touser['status'] == '2'))
 		{
@@ -178,7 +178,7 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
+				$dest = ($group_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
 			}
 		}
@@ -199,13 +199,13 @@ if ($add)
 
 		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
 
-		if (isset($letsgroup['url']))
+		if (isset($group['url']))
 		{
-			$letsgroup_domain = get_host($letsgroup);
+			$group_domain = get_host($group);
 		}
 		else
 		{
-			$letsgroup_domain = false;
+			$group_domain = false;
 		}
 
 		if(count($errors))
@@ -213,7 +213,7 @@ if ($add)
 			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
 			$alert->error($errors);
 		}
-		else if ($letsgroup_id == 'self')
+		else if ($group_id == 'self')
 		{
 			if ($id = insert_transaction($transaction))
 			{
@@ -227,7 +227,7 @@ if ($add)
 			}
 			cancel();
 		}
-		else if ($letsgroup['apimethod'] == 'mail')
+		else if ($group['apimethod'] == 'mail')
 		{
 			if ($id = insert_transaction($transaction))
 			{
@@ -244,45 +244,45 @@ if ($add)
 			}
 			cancel();
 		}
-		else if ($letsgroup['apimethod'] != 'elassoap')
+		else if ($group['apimethod'] != 'elassoap')
 		{
 			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 			cancel();
 		}
-		else if (!$letsgroup_domain)
+		else if (!$group_domain)
 		{
 			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
 			cancel();
 		}
-		else if (!(isset($schemas[$letsgroup_domain])))
+		else if (!(isset($schemas[$group_domain])))
 		{
-			// The interlets letsgroup uses eLAS; queue the transaction.
+			// The interlets group uses eLAS; queue the transaction.
 
-			if (!$letsgroup['remoteapikey'])
+			if (!$group['remoteapikey'])
 			{
 				$alert->error('Geen apikey voor deze interlets groep ingesteld.' . $contact_admin);
 				cancel();
 			}
 
-			if (!$letsgroup['presharedkey'])
+			if (!$group['presharedkey'])
 			{
 				$alert->error('Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin);
 				cancel();
 			}
 
-			if (!$letsgroup['myremoteletscode'])
+			if (!$group['myremoteletscode'])
 			{
 				$alert->error('Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin);
 				cancel();
 			}
 
 			$transaction['letscode_to'] = $letscode_to;
-			$transaction['letsgroup_id'] = $letsgroup_id;
+			$transaction['letsgroup_id'] = $group_id;
 			$currencyratio = readconfigfromdb('currencyratio');
 			$transaction['amount'] = $transaction['amount'] / $currencyratio;
 			$transaction['amount'] = (float) $transaction['amount'];
 			$transaction['amount'] = round($transaction['amount'], 5);
-			$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
+			$transaction['signature'] = sign_transaction($transaction, $group['presharedkey']);
 			$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
 
 			unset($transaction['date'], $transaction['id_to']);
@@ -305,9 +305,9 @@ if ($add)
 		}
 		else
 		{
-			// the interlets letsgroup is on the same server
+			// the interlets group is on the same server
 
-			$remote_schema = $schemas[$letsgroup_domain];
+			$remote_schema = $schemas[$group_domain];
 
 			$to_remote_user = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -325,17 +325,17 @@ if ($add)
 				cancel();
 			}
 
-			$remote_letsgroup = $db->fetchAssoc('select *
+			$remote_group = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
 				where url = ?', array($base_url));
 
-			if (!$remote_letsgroup)
+			if (!$remote_group)
 			{
 				$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
 				cancel();
 			}
 
-			if (!$remote_letsgroup['localletscode'])
+			if (!$remote_group['localletscode'])
 			{
 				$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
 				cancel();
@@ -343,7 +343,7 @@ if ($add)
 
 			$remote_interlets_account = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
-				where letscode = ?', array($remote_letsgroup['localletscode']));
+				where letscode = ?', array($remote_group['localletscode']));
 
 			if (!$remote_interlets_account)
 			{
@@ -525,7 +525,7 @@ if ($add)
 
 	if (!isset($_POST['zend']))
 	{
-		$letsgroup['id'] = 'self';
+		$group['id'] = 'self';
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -534,11 +534,11 @@ if ($add)
 	$user = readuser($s_id);
 	$balance = $user['saldo'];
 
-	$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
-	$letsgroups = array_merge(array(array(
+	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+	$groups = array_merge(array(array(
 			'groupname' => $systemname,
 			'id'		=> 'self',
-		)), $letsgroups);
+		)), $groups);
 
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -572,7 +572,7 @@ if ($add)
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
-	echo 'data-typeahead-source="letsgroup_self" ';
+	echo 'data-typeahead-source="group_self" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -580,17 +580,17 @@ if ($add)
 	echo ($s_admin) ? '' : '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="letsgroup_id" class="col-sm-2 control-label">Aan letsgroep</label>';
+	echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
 	echo '<div class="col-sm-10">';
-	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
+	echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
-	foreach ($letsgroups as $l)
+	foreach ($groups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
 
 		if ($l['id'] == 'self')
 		{
-			echo 'id="letsgroup_self" ';
+			echo 'id="group_self" ';
 
 			if ($s_admin)
 			{
@@ -609,7 +609,7 @@ if ($add)
 		}
 
 		echo 'data-typeahead="' . $typeahead . '"';
-		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';
+		echo ($l['id'] == $group['id']) ? ' selected="selected" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 	echo '</select>';
@@ -620,7 +620,7 @@ if ($add)
 	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
-	echo 'data-typeahead-source="letsgroup_id" ';
+	echo 'data-typeahead-source="group_id" ';
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 	echo '</div>';
 	echo '</div>';

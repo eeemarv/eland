@@ -103,56 +103,56 @@ $base_url = $app_protocol . $domains[$schema];
 if (!isset($schema_interletsq_min))
 {
 
-	$letsgroups = $db->fetchAll('select *
+	$groups = $db->fetchAll('select *
 		from letsgroups
 		where apimethod = \'elassoap\'
 			and remoteapikey IS NOT NULL
 			and url <> \'\'');
 
-	foreach ($letsgroups as $letsgroup)
+	foreach ($groups as $group)
 	{
-		$letsgroup['domain'] = get_host($letsgroup);
+		$group['domain'] = get_host($group);
 
-		if (isset($schemas[$letsgroup['domain']]))
+		if (isset($schemas[$group['domain']]))
 		{
-			unset($letsgroup);
+			unset($group);
 			continue;
 		}
 
-		if ($redis->get($schema . '_token_failed_' . $letsgroup['remoteapikey'])
-			|| $redis->get($schema . '_connection_failed_' . $letsgroup['domain']))
+		if ($redis->get($schema . '_token_failed_' . $group['remoteapikey'])
+			|| $redis->get($schema . '_connection_failed_' . $group['domain']))
 		{
-			unset($letsgroup);
+			unset($group);
 			continue;
 		}
 
-		if (!$redis->get($letsgroup['domain'] . '_typeahead_updated'))
+		if (!$redis->get($group['domain'] . '_typeahead_updated'))
 		{
 			break;
 		}
 /*
-		if (!$redis->get($letsgroup['domain'] . '_msgs_updated'))
+		if (!$redis->get($group['domain'] . '_msgs_updated'))
 		{
 			$update_msgs = true;
 			break;
 		}
 */
-		unset($letsgroup);
+		unset($group);
 	}
 
-	if (isset($letsgroup))
+	if (isset($group))
 	{
-		$err_group = $letsgroup['groupname'] . ': ';
+		$err_group = $group['groupname'] . ': ';
 
-		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
+		$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
 		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-		$apikey = $letsgroup['remoteapikey'];
+		$apikey = $group['remoteapikey'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if ($err)
 		{
 			echo $err_group . 'Can not get connection.' . $r;
-			$redis_key = $schema . '_connection_failed_' . $letsgroup['domain'];
+			$redis_key = $schema . '_connection_failed_' . $group['domain'];
 			$redis->set($redis_key, '1');
 			$redis->expire($redis_key, 21600);  // 6 hours
 		}
@@ -172,7 +172,7 @@ if (!isset($schema_interletsq_min))
 
 			if ($err)
 			{
-				$redis_key = $schema . '_token_failed_' . $letsgroup['remoteapikey'];
+				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
 			}
@@ -184,19 +184,19 @@ if (!isset($schema_interletsq_min))
 			{
 				$client = new Goutte\Client();
 
-				$crawler = $client->request('GET', $letsgroup['url'] . '/login.php?token=' . $token);
+				$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
 
 				require_once $rootpath . 'includes/inc_interlets_fetch.php';
 
 				if ($update_msgs)
 				{
 					echo 'fetch interlets messages' . $r;
-					fetch_interlets_msgs($client, $letsgroup);
+					fetch_interlets_msgs($client, $group);
 				}
 				else
 				{
 					echo 'fetch interlets typeahead data' . $r;
-					fetch_interlets_typeahead_data($client, $letsgroup);
+					fetch_interlets_typeahead_data($client, $group);
 				}
 
 				echo '----------------------------------------------------' . $r;
@@ -207,7 +207,7 @@ if (!isset($schema_interletsq_min))
 			{
 				$err = $e->getMessage();
 				echo $err . $r;
-				$redis_key = $schema . '_token_failed_' . $letsgroup['remoteapikey'];
+				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
 

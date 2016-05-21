@@ -175,7 +175,7 @@ function mail_transaction($transaction, $remote_schema = null)
  *
  */
 
-function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result)
+function mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result)
 {
 	global $systemtag, $currency;
 

@@ -1514,20 +1514,20 @@ if ($add || $edit)
 
 			if ($interlets)
 			{
-				if ($letsgroup = $db->fetchAssoc('select *
+				if ($group = $db->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
 						and apimethod <> \'internal\'', array($interlets)))
 				{
-					$user['name'] = $user['fullname'] = $letsgroup['groupname'];
+					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($letsgroup['url'] && ($remote_schema = $schemas[$letsgroup['url']]))
+					if ($group['url'] && ($remote_schema = $schemas[$group['url']]))
 					{
-						$letsgroup['domain'] = get_host($letsgroup);
+						$group['domain'] = get_host($group);
 
-						if (isset($schemas[$letsgroup['domain']]))
+						if (isset($schemas[$group['domain']]))
 						{
-							$remote_schema = $schemas[$letsgroup['domain']];
+							$remote_schema = $schemas[$group['domain']];
 
 							$admin_mail = readconfigfromdb('admin', $remote_schema);
 

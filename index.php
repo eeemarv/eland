@@ -9,7 +9,7 @@ if ($hosting_form)
 	if (isset($_POST['zend']))
 	{
 		$mail = $_POST['mail'];
-		$letsgroup_name = $_POST['letsgroup_name'];
+		$group_name = $_POST['group_name'];
 		$message = $_POST['message'];
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		$token = $_POST['token'];
@@ -26,7 +26,7 @@ if ($hosting_form)
 			$errors[] = 'Geen geldig mail adres ingevuld.';
 		}
 
-		if (!$letsgroup_name)
+		if (!$group_name)
 		{
 			$errors[] = 'De naam van de letsgroep is niet ingevuld.';
 		}
@@ -46,7 +46,7 @@ if ($hosting_form)
 
 		if (!count($errors))
 		{
-			$subject = 'Aanvraag hosting: ' . $letsgroup_name;
+			$subject = 'Aanvraag hosting: ' . $group_name;
 			$text = $message . "\r\n\r\n\r\n" . 'browser: ' . $browser . "\n" . 'token: ' . $token;
 
 			$enc = getenv('SMTP_ENC') ?: 'tls';
@@ -139,8 +139,8 @@ if ($hosting_form)
 		echo '<div class="form-group">';
 		echo '<label for="subject" class="col-sm-2 control-label">Naam letsgroep</label>';
 		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" name="letsgroup_name" ';
-		echo 'value="' . $letsgroup_name . '" required>';
+		echo '<input type="text" class="form-control" name="group_name" ';
+		echo 'value="' . $group_name . '" required>';
 		echo '</div>';
 		echo '</div>';
 

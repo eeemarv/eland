@@ -332,7 +332,7 @@ if ($del)
 }
 
 /**
- * See settings of a letsgroup (admin)
+ * See settings of a group (admin)
  */
 if ($id && !$login)
 {
@@ -439,7 +439,7 @@ if ($login)
 
 	if ($remote_schema)
 	{
-		// the letsgroup is on the same server
+		// the group is on the same server
 
 		$remote_group = $db->fetchAssoc('select * from ' . $remote_schema . '.letsgroups where url = ?', array($base_url));
 
@@ -768,20 +768,18 @@ function render_schemas_groups()
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
 	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = array();
 
-	$letsgroups = $db->executeQuery('select localletscode, url, id
+	$groups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
 		where url in (?)',
 		array($url_ary),
 		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
 
-	foreach ($letsgroups as $g)
+	foreach ($groups as $g)
 	{
 		$loc_letscode_ary[] = $g['localletscode'];
 		$d = get_host($g);
 		$loc_group_ary[$d] = $g;
 	}
-
-var_dump($letsgroups, $loc_group_ary, $url_ary);
 
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
 		from users
