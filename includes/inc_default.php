@@ -22,9 +22,9 @@ $s3_doc_url = 'http://' . $s3_doc . '/';
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
-$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
+$base_url = $app_protocol . $_SERVER['SERVER_NAME'] . $port;
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
@@ -150,14 +150,51 @@ $access_options = array(
 );
 
 /*
- * get schema from environment variable SCHEMA_<domain>
- * dots in <domain> are replaced by double underscore __
- * hyphens in <domain> are replaced by triple underscore ___
- *
- * example:
- *
- * to link e-example.com to a session set environment variable
- * SCHEMA_E___EXAMPLE__COM = <schema>
+ * check if we are on the request hosting url.
+ */
+$key_host_env = str_replace(['.', '-', ':'], ['__', '___', '____'], strtoupper($_SERVER['HTTP_HOST']));
+
+if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env) !== null)
+{
+	$role = 'anonymous';
+	$hosting_form = true;
+	return;
+}
+
+/**
+ *  database connection
+ */
+
+$db = \Doctrine\DBAL\DriverManager::getConnection(array(
+	'url' => getenv('DATABASE_URL'),
+), new \Doctrine\DBAL\Configuration());
+
+/**
+ * Get all eland schemas and domains
+ */
+
+$schemas = $domains = array();
+
+$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
+$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+$schemas_db = array_fill_keys($schemas_db, true);
+
+foreach ($_ENV as $key => $s)
+{
+	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+	{
+		continue;
+	}
+
+	$domain = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
+	$domain = strtolower($domain);
+
+	$schemas[$domain] = $s;
+	$domains[$s] = $domain;
+}
+
+/*
+ * Set schema
  *
  * + schema is the schema in the postgres database
  * + schema is prefix of the image files.
@@ -165,24 +202,19 @@ $access_options = array(
  *
  */
 
-$schema = str_replace(['.', '-', ':'], ['__', '___', '____'], $_SERVER['HTTP_HOST']);
-$schema = strtoupper($schema);
 
-if (getenv('HOSTING_FORM_' . $schema) && $script_name == 'index')
-{
-	$role = 'anonymous';
-	$hosting_form = true;
-	return;
-}
+$schema = getenv('SCHEMA_' . $key_host_env);
 
-$schema = getenv('SCHEMA_' . $schema);
-
-if (!$schema)
+if (!isset($schema))
 {
 	http_response_code(404);
 	include $rootpath. 'tpl/404.html';
 	exit;
 }
+
+/**
+ * start session
+ */
 
 require_once $rootpath . 'includes/redis_session.php';
 
@@ -311,11 +343,7 @@ date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
 
-// database connection
-
-$db = \Doctrine\DBAL\DriverManager::getConnection(array(
-	'url' => getenv('DATABASE_URL'),
-), new \Doctrine\DBAL\Configuration());
+// set search path
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
@@ -945,35 +973,21 @@ function get_error_form_token()
 }
 
 /**
- *
+*
  */
-function get_schemas_domains($http = false)
+
+function get_host($url)
 {
-	global $db;
-
-	$schemas = $domains = array();
-
-	$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
-	$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
-	$schemas_db = array_fill_keys($schemas_db, true);
-
-	foreach ($_ENV as $key => $s)
+	if (is_array($url))
 	{
-		if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
-		{
-			continue;
-		}
-
-		$domain = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
-
-		$domain = strtolower($domain);
-		$domain = (($http) ? 'http://' : '') . $domain;
-
-		$schemas[$domain] = $s;
-		$domains[$s] = $domain;
+		$url = $url['url'];
 	}
 
-	return array($schemas, $domains);
+	$port = parse_url($url, PHP_URL_PORT);
+
+	$host = parse_url($url, PHP_URL_HOST);
+
+	return strtolower($host . (($port) ? ':' . $port : ''));
 }
 
 /**
@@ -1097,7 +1111,7 @@ function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
  */
 function etag_buffer($content)
 {
-	global $post, $redis;
+	global $post;
 
 	if ($post)
 	{

@@ -21,12 +21,11 @@ if (!$user)
 
 $groups = $_groups = $transactions = $users = $_users  = array();
 
-list($schemas, $domains) = get_schemas_domains(true);
-
 $groups = $db->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
 
 foreach ($groups as $g)
 {
+	$g['domain'] = get_host($g);
 	$_groups[$g['c']] = $g;
 }
 
@@ -65,7 +64,7 @@ foreach ($trans as $t)
 	{
 		$group = $_groups[$t['letscode']];
 
-		if ($sch = $schemas[$group['url']])
+		if ($sch = $schemas[$group['domain']])
 		{
 			list($code, $name) = explode(' ', $real);
 		}

@@ -9,7 +9,7 @@ function fetch_interlets_msgs($client, $url)
 
 	$msgs = array();
 
-	$crawler = $client->request('GET', $url . '/renderindex.php');
+	$crawler = $client->request('GET', $letsgroup['url'] . '/renderindex.php');
 
 	echo $url . $r;
 
@@ -48,11 +48,11 @@ function fetch_interlets_msgs($client, $url)
 /*
  *
  */
-function fetch_interlets_typeahead_data($client, $url)
+function fetch_interlets_typeahead_data($client, $letsgroup)
 {
 	global $redis, $r;
 
-	$crawler = $client->request('GET', $url . '/rendermembers.php');
+	$crawler = $client->request('GET', $letsgroup['url'] . '/rendermembers.php');
 
 	echo $url;
 
@@ -85,29 +85,29 @@ function fetch_interlets_typeahead_data($client, $url)
 		$users[] = $user;
 	}); 
 
-	$redis_data_key = $url . '_typeahead_data';
+	$redis_data_key = $letsgroup['url'] . '_typeahead_data';
 	$data_string = json_encode($users);
 
 	if ($data_string != $redis->get($redis_data_key))
 	{
-		invalidate_typeahead_thumbprint('users_active', $url, crc32($data_string));
+		invalidate_typeahead_thumbprint('users_active', $letsgroup['url'], crc32($data_string));
 
 		$redis->set($redis_data_key, $data_string);
 	}
 
 	$redis->expire($redis_data_key, 86400);		// 1 day
 
-	$redis_refresh_key = $url . '_typeahead_updated';
+	$redis_refresh_key = $letsgroup['domain'] . '_typeahead_updated';
 	$redis->set($redis_refresh_key, '1');
 	$redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 	$user_count = count($users);
 
-	$redis_user_count_key = $url . '_active_user_count';
+	$redis_user_count_key = $letsgroup['url'] . '_active_user_count';
 	$redis->set($redis_user_count_key, $user_count);
 	$redis->expire($redis_user_count_key, 86400); // 1 day
 
-	log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $url);
+	log_event('', 'Cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain']);
 
 	echo '----------------------------------------------------' . $r;
 	echo $redis_data_key . $r;

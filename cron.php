@@ -39,9 +39,7 @@ echo 'php version: ' . phpversion() . $r;
 // select in which schema to perform updates
 $schema_lastrun_ary = $schema_interletsq_ary = array();
 
-list($schemas, $domains) = get_schemas_domains(true);
-
-foreach ($schemas as $url => $schema)
+foreach ($schemas as $domain => $schema)
 {
 	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
@@ -98,39 +96,42 @@ echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $sy
 
 $mdb->set_schema($schema);
 
-$base_url = $domains[$schema]; 
+$base_url = $app_protocol . $domains[$schema]; 
 
 // begin typeahaed update (when interletsq is empty) for one group
 
 if (!isset($schema_interletsq_min))
 {
 
-	$letsgroups = $db->fetchAll('SELECT *
-		FROM letsgroups
-		WHERE apimethod = \'elassoap\'
-			AND remoteapikey IS NOT NULL');
+	$letsgroups = $db->fetchAll('select *
+		from letsgroups
+		where apimethod = \'elassoap\'
+			and remoteapikey IS NOT NULL
+			and url <> \'\'');
 
 	foreach ($letsgroups as $letsgroup)
 	{
-		if (isset($schemas[$letsgroup['url']]))
+		$letsgroup['domain'] = get_host($letsgroup);
+
+		if (isset($schemas[$letsgroup['domain']]))
 		{
 			unset($letsgroup);
 			continue;
 		}
 
 		if ($redis->get($schema . '_token_failed_' . $letsgroup['remoteapikey'])
-			|| $redis->get($schema . '_connection_failed_' . $letsgroup['url']))
+			|| $redis->get($schema . '_connection_failed_' . $letsgroup['domain']))
 		{
 			unset($letsgroup);
 			continue;
 		}
 
-		if (!$redis->get($letsgroup['url'] . '_typeahead_updated'))
+		if (!$redis->get($letsgroup['domain'] . '_typeahead_updated'))
 		{
 			break;
 		}
 /*
-		if (!$redis->get($letsgroup['url'] . '_msgs_updated'))
+		if (!$redis->get($letsgroup['domain'] . '_msgs_updated'))
 		{
 			$update_msgs = true;
 			break;
@@ -151,7 +152,7 @@ if (!isset($schema_interletsq_min))
 		if ($err)
 		{
 			echo $err_group . 'Can not get connection.' . $r;
-			$redis_key = $schema . '_connection_failed_' . $letsgroup['url'];
+			$redis_key = $schema . '_connection_failed_' . $letsgroup['domain'];
 			$redis->set($redis_key, '1');
 			$redis->expire($redis_key, 21600);  // 6 hours
 		}
@@ -190,12 +191,12 @@ if (!isset($schema_interletsq_min))
 				if ($update_msgs)
 				{
 					echo 'fetch interlets messages' . $r;
-					fetch_interlets_msgs($client, $letsgroup['url']);
+					fetch_interlets_msgs($client, $letsgroup);
 				}
 				else
 				{
 					echo 'fetch interlets typeahead data' . $r;
-					fetch_interlets_typeahead_data($client, $letsgroup['url']);
+					fetch_interlets_typeahead_data($client, $letsgroup);
 				}
 
 				echo '----------------------------------------------------' . $r;

@@ -53,6 +53,8 @@ if ($letsgroup_id == 'self')
 
 $group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
 
+$group['domain'] = get_host($group);
+
 if (!$group || $status != 'active')
 {
 	http_response_code(404);
@@ -66,11 +68,9 @@ if ($group['apimethod'] != 'elassoap')
 	exit;
 }
 
-list($schemas, $domains) = get_schemas_domains(true);
-
-if ($schemas[$group['url']])
+if (isset($schemas[$group['domain']]))
 {
-	$remote_schema = $schemas[$group['url']];
+	$remote_schema = $schemas[$group['domain']];
 
 	if ($db->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', array($base_url)))
 	{

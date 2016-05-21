@@ -165,11 +165,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		list($schemas, $domains) = get_schemas_domains(true);
-
-		if ($url = $domains[$add_schema])
+		if (isset($domains[$add_schema]))
 		{
-			$group['url'] = $url;
+			$group['url'] = $app_protocol . $domains[$add_schema];
 			$group['groupname'] = $group['shortname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
@@ -338,7 +336,10 @@ if ($del)
  */
 if ($id && !$login)
 {
-	list($schemas, $domains) = get_schemas_domains(true);
+	if (isset($group['url']))
+	{
+		$group['domain'] = get_host($group);
+	}
 
 	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
 	$top_buttons .= aphp('interlets', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
@@ -356,7 +357,7 @@ if ($id && !$login)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>eLAS Soap status</dt>';
 
-	if ($schemas[$group['url']])
+	if ($schemas[$group['domain']])
 	{
 		echo '<dd><span class="btn btn-success btn-xs">server</span></dd>';
 	}
@@ -386,9 +387,6 @@ if ($id && !$login)
 	echo '<dt>Korte naam</dt>';
 	echo '<dd>' .$group['shortname'] .'</dd>';
 
-//	echo '<dt>Prefix</dt>';
-//	echo '<dd>' .$group['prefix'] .'</dd>';
-
 	echo '<dt>API methode</dt>';
 	echo '<dd>' .$group['apimethod'] .'</dd>';
 
@@ -403,9 +401,6 @@ if ($id && !$login)
 
 	echo '<dt>URL</dt>';
 	echo '<dd>' .$group['url'] .'</dd>';
-
-//	echo '<dt>SOAP URL</dt>';
-//	echo '<dd>' .$group['elassoapurl'] .'</dd>';
 
 	echo '<dt>Preshared Key</dt>';
 	echo '<dd>' .$group['presharedkey'].'</dd>';
@@ -438,9 +433,9 @@ if ($login)
 
 	$err_group = $group['groupname'] . ': ';
 
-	list($schemas, $domains) = get_schemas_domains(true);
+	$group['domain'] = get_host($group);
 
-	$remote_schema = (isset($schemas[$group['url']])) ? $schemas[$group['url']] : false;
+	$remote_schema = (isset($schemas[$group['domain']])) ? $schemas[$group['domain']] : false;
 
 	if ($remote_schema)
 	{
@@ -488,6 +483,8 @@ if ($login)
 				and tc.id = c.id_type_contact
 				and tc.abbrev = \'mail\'', array($s_id));
 
+
+		/** **/
 		$ary = array(
 			'id'			=> $s_id,
 			'name'			=> $user['name'],
@@ -546,15 +543,15 @@ if ($login)
 $where = ($s_admin) ? '' : ' where apimethod <> \'internal\'';
 $groups = $db->fetchAll('SELECT * FROM letsgroups' . $where);
 
-list($schemas, $domains) = get_schemas_domains(true);
-
 $letscodes = $groups_domains = $group_schemas = array();
 
 foreach ($groups as $key => $g)
 {
+	$groups[$key]['domain'] = $g['domain'] = get_host($g);
+
 	$letscodes[] = $g['localletscode'];
 
-	if ($s = $schemas[$g['url']])
+	if ($s = $schemas[$g['domain']])
 	{
 		$groups[$key]['server'] = true;
 		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
@@ -724,7 +721,7 @@ include $rootpath . 'includes/inc_footer.php';
 
 function render_schemas_groups()
 {
-	global $schema, $db, $base_url;
+	global $schema, $db, $base_url, $schemas, $domains, $app_protocol;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -760,9 +757,13 @@ function render_schemas_groups()
 	echo 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
 	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	echo '</ul>';
-//	echo '</div>';
 
-	list($schemas, $domains) = get_schemas_domains(true);
+	$url_ary = array();
+
+	foreach ($domains as $d)
+	{
+		$url_ary[] = $app_protocol . $d;
+	}
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
 	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = array();
@@ -770,14 +771,17 @@ function render_schemas_groups()
 	$letsgroups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
 		where url in (?)',
-		array(array_values($domains)),
+		array($url_ary),
 		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
 
-	foreach ($letsgroups as $l)
+	foreach ($letsgroups as $g)
 	{
-		$loc_letscode_ary[] = $l['localletscode'];
-		$loc_group_ary[$l['url']] = $l;
+		$loc_letscode_ary[] = $g['localletscode'];
+		$d = get_host($g);
+		$loc_group_ary[$d] = $g;
 	}
+
+var_dump($letsgroups, $loc_group_ary, $url_ary);
 
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
 		from users

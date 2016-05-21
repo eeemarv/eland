@@ -1514,8 +1514,6 @@ if ($add || $edit)
 
 			if ($interlets)
 			{
-				list($schemas, $domains) = get_schemas_domains(true);
-
 				if ($letsgroup = $db->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
@@ -1525,19 +1523,26 @@ if ($add || $edit)
 
 					if ($letsgroup['url'] && ($remote_schema = $schemas[$letsgroup['url']]))
 					{
-						$admin_mail = readconfigfromdb('admin', $remote_schema);
+						$letsgroup['domain'] = get_host($letsgroup);
 
-						foreach ($contact as $k => $c)
+						if (isset($schemas[$letsgroup['domain']]))
 						{
-							if ($c['abbrev'] == 'mail')
-							{
-								$contact[$k]['value'] = $admin_mail;
-								break;
-							}
-						}
+							$remote_schema = $schemas[$letsgroup['domain']];
 
-						// name from source is preferable
-						$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
+							$admin_mail = readconfigfromdb('admin', $remote_schema);
+
+							foreach ($contact as $k => $c)
+							{
+								if ($c['abbrev'] == 'mail')
+								{
+									$contact[$k]['value'] = $admin_mail;
+									break;
+								}
+							}
+
+							// name from source is preferable
+							$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
+						}
 					}
 				}
 

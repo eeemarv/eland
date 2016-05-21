@@ -147,8 +147,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if (isset($remote_schema))
 	{
-		list($schemas, $domains) = get_schemas_domains(true);
-		$url = $domains[$sch];
+		$url = $app_protocol . $domains[$sch];
 	}
 	else
 	{

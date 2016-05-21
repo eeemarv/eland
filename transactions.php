@@ -112,8 +112,6 @@ if ($add)
 		$transaction['id_from'] = $fromuser['id'];
 		$transaction['id_to'] = $touser['id'];
 
-		list($schemas, $domains) = get_schemas_domains(true);
-
 		if (!$transaction['description'])
 		{
 			$errors[]= 'De omschrijving is niet ingevuld';
@@ -201,6 +199,15 @@ if ($add)
 
 		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
 
+		if (isset($letsgroup['url']))
+		{
+			$letsgroup_domain = get_host($letsgroup);
+		}
+		else
+		{
+			$letsgroup_domain = false;
+		}
+
 		if(count($errors))
 		{
 			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
@@ -242,14 +249,14 @@ if ($add)
 			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 			cancel();
 		}
-		else if (!$letsgroup['url'])
+		else if (!$letsgroup_domain)
 		{
 			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
 			cancel();
 		}
-		else if (!($remote_schema = $schemas[$letsgroup['url']]))
+		else if (!(isset($schemas[$letsgroup_domain])))
 		{
-			// The interlets letsgroup is on another server, use elassoap; queue the transaction.
+			// The interlets letsgroup uses eLAS; queue the transaction.
 
 			if (!$letsgroup['remoteapikey'])
 			{
@@ -299,6 +306,8 @@ if ($add)
 		else
 		{
 			// the interlets letsgroup is on the same server
+
+			$remote_schema = $schemas[$letsgroup_domain];
 
 			$to_remote_user = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
