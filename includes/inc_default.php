@@ -154,13 +154,7 @@ $access_options = array(
  */
 $key_host_env = str_replace(['.', '-', ':'], ['__', '___', '____'], strtoupper($_SERVER['HTTP_HOST']));
 
-echo $key_host_env;
-echo '<br>';
-echo $base_url;
-echo '<br>';
-echo get_host($base_url);
-
-if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env) !== null)
+if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
 	$role = 'anonymous';
 	$hosting_form = true;
