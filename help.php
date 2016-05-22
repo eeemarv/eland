@@ -115,7 +115,7 @@ if(isset($_POST['zend']))
 }
 else
 {
-	if(isset($s_id))
+	if($s_id)
 	{
 		$user = readuser($s_id);
 

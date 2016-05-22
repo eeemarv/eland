@@ -216,6 +216,23 @@ if (!$schema)
 	exit;
 }
 
+/*
+ *
+ */
+
+if (isset($_GET['session']))
+{
+	if ($redis->exists('session_' . $_GET['session']))
+	{
+		setcookie('eland', $_GET['session'], time() + 31536000, '/');
+	}
+	else
+	{
+		setcookie('eland', sha1(microtime()));
+	}
+	exit;
+}
+
 /**
  * start session
  */
