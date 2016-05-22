@@ -7,6 +7,10 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
+$s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
+$s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
+$s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
+
 $s3_res_url = 'http://' . $s3_res;
 $s3_img_url = 'http://' . $s3_img;
 $s3_doc_url = 'http://' . $s3_doc;
@@ -16,10 +20,6 @@ header('Access-Control-Allow-Origin: ' . $s3_res_url . ', ' . $s3_img_url . ', '
 $s3_res_url .= '/';
 $s3_img_url .= '/';
 $s3_doc_url .= '/';
-
-$s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
-$s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
-$s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
 $typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
 
@@ -234,10 +234,8 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 
 if ($s_id && $s_schema)
 {
-	/*
-	$s_user = readuser($s_id, false, $s_schema);
-	*/
-	$s_accountrole = ($s_schema == $schema) ? $s_user['accountrole'] : 'guest';
+	$sess_user = readuser($s_id, false, $s_schema);
+	$s_accountrole = ($s_schema == $schema) ? $sess_user['accountrole'] : 'guest';
 }
 else if ($_SESSION['elas_interlets'])
 {
@@ -260,6 +258,10 @@ else if ($_SESSION['master'])
 	$s_id = 0;
 	$s_accountrole = 'admin';
 }
+else
+{
+	$s_accountrole = 'anonymous';
+}
 
 require_once $rootpath . 'includes/inc_alert.php';
 
@@ -279,7 +281,7 @@ if (!isset($access_page))
 	exit;
 }
 
-$access_session = (isset($s_accountrole)) ? $access_ary[$s_accountrole] : 3;
+$access_session = $access_ary[$s_accountrole];
 
 if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
 {
@@ -334,51 +336,77 @@ $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
-/*
-if ($s_schema)
-{
-	$user_interlets_hosts = array();
+var_dump($redis->hgetall('dqjmqsdfjmqsfdjmqsd'));
+var_dump($redis->exists('mlksjfdmlkqsjfdm'));
 
-	$st = $db->prepare('select g.url, g.localletscode
+get_interlets_hosts($s_schema, true);
+
+function get_interlets_hosts($s_schema, $refresh = false)
+{
+	global $redis, $db, $schemas, $base_url, $app_protocol;
+
+	if (!$s_schema)
+	{
+		return '';
+	}
+
+	$redis_key = $s_schema . '_interlets_hosts';
+
+	if (!$refresh && $redis->exists($redis_key))
+	{
+		$redis->expire($redis_key, 86400);
+		return $redis->get($redis_key);
+	}
+
+	$interlets_hosts = array();
+
+	$st = $db->prepare('select g.url
 		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
 			and u.letscode <> \'\'
-			and u.status = 7';
+			and u.status = 7');
 	$st->execute();
+
 	while($row = $st->fetch())
 	{
 		$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
 		if (isset($schemas[$host]))
 		{
-			$user_interlets_hosts[] = $host;
+			$interlets_hosts[] = $host;
 		}
 	}
 
-	$url = $app_protocol . $host;
+	var_dump($interlets_hosts);
 
-	foreach ($user_interlets_hosts as $host)
+	$s_url = $app_protocol . $hosts[$s_schema];
+
+	$out_ary = array();
+
+	foreach ($interlets_hosts as $host)
 	{
 		$s = $schemas[$host];
 
-		$host = $db->fetchColumn('select g.url
+		$url = $db->fetchColumn('select g.url
 			from ' . $s . '.letsgroups g, ' . $s . '.users u
 			where g.apimethod = \'elassoap\'
 				and u.letscode = g.localletscode
 				and u.letscode <> \'\'
 				and u.status = 7
-				and g.url = ?', array($url));
+				and g.url = ?', array($s_url));
 
-		if (!$host)
+		if (!$url)
 		{
 			continue;
 		}
 
-		$out_ary[] = $host;
+		$out_ary[] = get_host($url);
 	}
+
+	var_dump($out_ary);
 }
-*/
+
 
 /**
  *

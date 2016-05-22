@@ -777,7 +777,7 @@ function render_schemas_groups()
 	foreach ($groups as $group)
 	{
 		$loc_letscode_ary[] = $group['localletscode'];
-		$host = get_host($g);
+		$host = get_host($group);
 		$loc_group_ary[$host] = $group;
 	}
 
