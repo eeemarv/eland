@@ -27,8 +27,7 @@ $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
 $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-$base_url = $app_protocol . $_SERVER['SERVER_NAME'] . $port;
+$base_url = $app_protocol . $_SERVER['SERVER_NAME'];
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
@@ -156,7 +155,7 @@ $access_options = array(
 /*
  * check if we are on the request hosting url.
  */
-$key_host_env = str_replace(['.', '-', ':'], ['__', '___', '____'], strtoupper($_SERVER['HTTP_HOST']));
+$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper(get_host($base_url)));
 
 if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
@@ -190,7 +189,7 @@ foreach ($_ENV as $key => $s)
 		continue;
 	}
 
-	$host = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
+	$host = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
 	$host = strtolower($host);
 
 	$schemas[$host] = $s;
@@ -1081,11 +1080,7 @@ function get_host($url)
 		$url = $url['url'];
 	}
 
-	$port = parse_url($url, PHP_URL_PORT);
-
-	$host = parse_url($url, PHP_URL_HOST);
-
-	return strtolower($host . (($port) ? ':' . $port : ''));
+	return strtolower(parse_url($url, PHP_URL_HOST));
 }
 
 /**
