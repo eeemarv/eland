@@ -24,7 +24,7 @@ if ($css = readconfigfromdb('css'))
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
-echo '<body>';
+echo '<body' . get_interlets_hosts(true) . '>';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';

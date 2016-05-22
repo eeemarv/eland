@@ -336,14 +336,9 @@ $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
-var_dump($redis->hgetall('dqjmqsdfjmqsfdjmqsd'));
-var_dump($redis->exists('mlksjfdmlkqsjfdm'));
-
-get_interlets_hosts($s_schema, true);
-
-function get_interlets_hosts($s_schema, $refresh = false)
+function get_interlets_hosts($refresh = false)
 {
-	global $redis, $db, $schemas, $base_url, $app_protocol;
+	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
@@ -354,7 +349,7 @@ function get_interlets_hosts($s_schema, $refresh = false)
 
 	if (!$refresh && $redis->exists($redis_key))
 	{
-		$redis->expire($redis_key, 86400);
+		$redis->expire($redis_key, 600);
 		return $redis->get($redis_key);
 	}
 
@@ -365,20 +360,21 @@ function get_interlets_hosts($s_schema, $refresh = false)
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
 			and u.letscode <> \'\'
-			and u.status = 7');
+			and u.status = 7
+			and g.url <> ?');
+
+	$st->bindValue(1, $base_url);
 	$st->execute();
 
 	while($row = $st->fetch())
 	{
-		$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
+		$host = get_host($row['url']);
 
 		if (isset($schemas[$host]))
 		{
 			$interlets_hosts[] = $host;
 		}
 	}
-
-	var_dump($interlets_hosts);
 
 	$s_url = $app_protocol . $hosts[$s_schema];
 
@@ -401,10 +397,15 @@ function get_interlets_hosts($s_schema, $refresh = false)
 			continue;
 		}
 
-		$out_ary[] = get_host($url);
+		$out_ary[] = $host;
 	}
 
-	var_dump($out_ary);
+	$interlets_hosts = implode('|', $out_ary);
+
+	$redis->set($redis_key, $interlets_hosts);
+	$redis->expire($redis_key, 600);
+
+	return ($interlets_hosts) ? ' data-interlets-hosts="' . $interlets_hosts . '"' : '';
 }
 
 
