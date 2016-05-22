@@ -7,17 +7,21 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
-header('Access-Control-Allow-Origin: http://doc.letsa.net, http://res.letsa.net, http://img.letsa.net');
+$s3_res_url = 'http://' . $s3_res;
+$s3_img_url = 'http://' . $s3_img;
+$s3_doc_url = 'http://' . $s3_doc;
+
+header('Access-Control-Allow-Origin: ' . $s3_res_url . ', ' . $s3_img_url . ', ' . $s3_doc_url);
+
+$s3_res_url .= '/';
+$s3_img_url .= '/';
+$s3_doc_url .= '/';
 
 $s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
 $s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
 $typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
-
-$s3_res_url = 'http://' . $s3_res . '/';
-$s3_img_url = 'http://' . $s3_img . '/';
-$s3_doc_url = 'http://' . $s3_doc . '/';
 
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
@@ -323,16 +327,58 @@ if (($access_page == 3) && ($access_request < 3) && !isset($allow_session))
 
 $access_level = $access_request;
 
-//$s_id = $_SESSION['id'];
-//$s_name = $_SESSION['name'];
-//$s_letscode = $_SESSION['letscode'];
 $s_accountrole = $p_role;
-//$s_interlets = $_SESSION['interlets'];
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
+
+/*
+if ($s_schema)
+{
+	$user_interlets_hosts = array();
+
+	$st = $db->prepare('select g.url, g.localletscode
+		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+		where g.apimethod = \'elassoap\'
+			and u.letscode = g.localletscode
+			and u.letscode <> \'\'
+			and u.status = 7';
+	$st->execute();
+	while($row = $st->fetch())
+	{
+		$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
+
+		if (isset($schemas[$host]))
+		{
+			$user_interlets_hosts[] = $host;
+		}
+	}
+
+	$url = $app_protocol . $host;
+
+	foreach ($user_interlets_hosts as $host)
+	{
+		$s = $schemas[$host];
+
+		$host = $db->fetchColumn('select g.url
+			from ' . $s . '.letsgroups g, ' . $s . '.users u
+			where g.apimethod = \'elassoap\'
+				and u.letscode = g.localletscode
+				and u.letscode <> \'\'
+				and u.status = 7
+				and g.url = ?', array($url));
+
+		if (!$host)
+		{
+			continue;
+		}
+
+		$out_ary[] = $host;
+	}
+}
+*/
 
 /**
  *
