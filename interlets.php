@@ -43,7 +43,7 @@ if ($add || $edit)
 
 		$group['elassoapurl'] = $group['url'] . '/soap';
 
-		unset($group['zend']);
+		unset($group['zend'], $group['form_token']);
 
 		$errors = array();
 
