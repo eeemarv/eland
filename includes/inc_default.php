@@ -241,8 +241,10 @@ require_once $rootpath . 'includes/redis_session.php';
 $redis_session = new redis_session($redis);
 session_set_save_handler($redis_session);
 session_name('eland');
+$cookie_domain = substr($_SERVER['SERVER_NAME'], strpos($_SERVER['SERVER_NAME'], '.'));
+session_set_cookie_params(0, '/', $cookie_domain);
 session_start();
-
+ 
 $s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
 $s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
 
@@ -424,6 +426,10 @@ function get_interlets_hosts($refresh = false)
 	return ($interlets_hosts) ? ' data-interlets-hosts="' . $interlets_hosts . '"' : '';
 }
 
+
+$cookie_params = session_get_cookie_params();
+
+var_dump(session_name(), $cookie_params['path'], $cookie_params['domain']);
 
 /**
  *

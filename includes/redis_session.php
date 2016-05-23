@@ -24,7 +24,6 @@ class redis_session implements SessionHandlerInterface
 
 	public function read($id)
 	{
-		var_dump($id);
 		$id = 'session_' . $id;
 		$session_data = $this->redis->get($id);
 		$this->redis->expire($id, $this->ttl);
