@@ -27,7 +27,11 @@ $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
 $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$base_url = $app_protocol . $_SERVER['SERVER_NAME'];
+$host = $_SERVER['SERVER_NAME'];
+$base_url = $app_protocol . $host;
+$host_id = substr($host, 0, strpos($host, '.'));
+
+$overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
@@ -155,7 +159,7 @@ $access_options = array(
 /*
  * check if we are on the request hosting url.
  */
-$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper(get_host($base_url)));
+$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($host));
 
 if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
@@ -186,14 +190,34 @@ foreach ($_ENV as $key => $s)
 {
 	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
 	{
+		if ($s == $host && strpos($key, 'FORWARD_') === 0)
+		{
+			$forward = str_replace(['FORWARD_', '___', '__'], ['', '-', '.'], $key);
+			$forward = strtolower($forward);
+			$forward .= (strpos($forward, '.') === false) ? '.' . $overall_domain : '';
+			header('HTTP/1.1 301 Moved Permanently'); 
+			header('Location: ' . $app_protocol . $forward);
+			exit;
+		} 
 		continue;
 	}
 
-	$host = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
-	$host = strtolower($host);
+	$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
+	$h = strtolower($h);
 
-	$schemas[$host] = $s;
-	$hosts[$s] = $host;
+	if (strpos($h, 'localhost') === 0)
+	{
+		continue;
+	}
+
+	// temporal to allow change of schema env's to short version
+	if (strpos('.' . $overall_domain, $h))
+	{
+		$h = str_replace('.' . $overall_domain, '', $h);
+	}
+
+	$schemas[$h] = $s;
+	$hosts[$s] = $h;
 }
 
 /*
@@ -205,30 +229,12 @@ foreach ($_ENV as $key => $s)
  *
  */
 
-
 $schema = getenv('SCHEMA_' . $key_host_env);
 
 if (!$schema)
 {
 	http_response_code(404);
 	include $rootpath. 'tpl/404.html';
-	exit;
-}
-
-/*
- *
- */
-
-if (isset($_GET['session']))
-{
-	if ($redis->exists('session_' . $_GET['session']))
-	{
-		setcookie('eland', $_GET['session'], time() + 31536000, '/');
-	}
-	else
-	{
-		setcookie('eland', sha1(microtime()));
-	}
 	exit;
 }
 
@@ -241,10 +247,9 @@ require_once $rootpath . 'includes/redis_session.php';
 $redis_session = new redis_session($redis);
 session_set_save_handler($redis_session);
 session_name('eland');
-$cookie_domain = substr($_SERVER['SERVER_NAME'], strpos($_SERVER['SERVER_NAME'], '.'));
-session_set_cookie_params(0, '/', $cookie_domain);
+session_set_cookie_params(0, '/', '.' . $overall_domain);
 session_start();
- 
+
 $s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
 $s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
 
@@ -252,8 +257,8 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 
 if ($s_id && $s_schema)
 {
-	$sess_user = readuser($s_id, false, $s_schema);
-	$s_accountrole = ($s_schema == $schema) ? $sess_user['accountrole'] : 'guest';
+	$session_user = readuser($s_id, false, $s_schema);
+	$s_accountrole = ($s_schema == $schema) ? $session_user['accountrole'] : 'guest';
 }
 else if ($_SESSION['elas_interlets_access_' . $schema])
 {
@@ -263,6 +268,7 @@ else if ($_SESSION['master'])
 {
 	$s_id = 0;
 	$s_accountrole = 'admin';
+	$s_master = true;
 }
 else
 {
@@ -342,6 +348,7 @@ $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
+/*
 function get_interlets_hosts($refresh = false)
 {
 	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
@@ -374,11 +381,11 @@ function get_interlets_hosts($refresh = false)
 
 	while($row = $st->fetch())
 	{
-		$host = get_host($row['url']);
+		$h = get_host($row['url']);
 
-		if (isset($schemas[$host]))
+		if (isset($schemas[$h]))
 		{
-			$interlets_hosts[] = $host;
+			$interlets_hosts[] = $h;
 		}
 	}
 
@@ -386,9 +393,9 @@ function get_interlets_hosts($refresh = false)
 
 	$out_ary = array();
 
-	foreach ($interlets_hosts as $host)
+	foreach ($interlets_hosts as $h)
 	{
-		$s = $schemas[$host];
+		$s = $schemas[$h];
 
 		$url = $db->fetchColumn('select g.url
 			from ' . $s . '.letsgroups g, ' . $s . '.users u
@@ -403,7 +410,7 @@ function get_interlets_hosts($refresh = false)
 			continue;
 		}
 
-		$out_ary[] = $host;
+		$out_ary[] = $h;
 	}
 
 	$interlets_hosts = implode('|', $out_ary);
@@ -413,11 +420,8 @@ function get_interlets_hosts($refresh = false)
 
 	return ($interlets_hosts) ? ' data-interlets-hosts="' . $interlets_hosts . '"' : '';
 }
-
-
-$cookie_params = session_get_cookie_params();
-
-var_dump(session_name(), $cookie_params['path'], $cookie_params['domain']);
+*
+*/
 
 /**
  *

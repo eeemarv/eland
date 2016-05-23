@@ -24,7 +24,7 @@ if ($css = readconfigfromdb('css'))
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
-echo '<body' . get_interlets_hosts(true) . '>';
+echo '<body>';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
@@ -54,7 +54,7 @@ if (!$s_anonymous)
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 	echo ($s_group_self) ? '' : $s_schema . '.';
-	echo link_user($s_id, $s_schema, false);
+	echo ($s_master) ? 'master' : link_user($s_id, $s_schema, false);
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_user || $s_admin)

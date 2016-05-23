@@ -760,9 +760,9 @@ function render_schemas_groups()
 
 	$url_ary = array();
 
-	foreach ($hosts as $host)
+	foreach ($hosts as $h)
 	{
-		$url_ary[] = $app_protocol . $host;
+		$url_ary[] = $app_protocol . $h;
 	}
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
@@ -777,8 +777,8 @@ function render_schemas_groups()
 	foreach ($groups as $group)
 	{
 		$loc_letscode_ary[] = $group['localletscode'];
-		$host = get_host($group);
-		$loc_group_ary[$host] = $group;
+		$h = get_host($group);
+		$loc_group_ary[$h] = $group;
 	}
 
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
@@ -792,7 +792,7 @@ function render_schemas_groups()
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($schemas as $host => $s)
+	foreach ($schemas as $h => $s)
 	{
 		$rem_group = $db->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
@@ -804,7 +804,7 @@ function render_schemas_groups()
 
 		if ($rem_group)
 		{
-			$rem_group_ary[$host] = $rem_group;
+			$rem_group_ary[$h] = $rem_group;
 
 			if ($rem_group['localletscode'])
 			{
@@ -813,7 +813,7 @@ function render_schemas_groups()
 
 				if ($rem_account)
 				{
-					$rem_account_ary[$host] = $rem_account;
+					$rem_account_ary[$h] = $rem_account;
 				}
 			}
 		}
@@ -839,7 +839,7 @@ function render_schemas_groups()
 
 	echo '<tbody>';
 
-	foreach($schemas as $host => $s)
+	foreach($schemas as $h => $s)
 	{
 		echo '<tr>';
 
@@ -852,7 +852,7 @@ function render_schemas_groups()
 		echo '</td>';
 
 		echo '<td>';
-		echo $host;
+		echo $h;
 		echo '</td>';
 
 		echo '<td>';
@@ -868,7 +868,7 @@ function render_schemas_groups()
 		else
 		{
 			echo '<td>';
-			if (is_array($loc_group =  $loc_group_ary[$host]))
+			if (is_array($loc_group =  $loc_group_ary[$h]))
 			{
 				echo aphp('interlets', 'id=' . $loc_group['id'], 'OK', 'btn btn-success btn-xs');
 			}
@@ -909,7 +909,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_group_ary[$host])
+			if ($rem_group_ary[$h])
 			{
 				echo '<span class="btn btn-success btn-xs">OK</span>';
 			}
@@ -919,7 +919,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_acc = $rem_account_ary[$host])
+			if ($rem_acc = $rem_account_ary[$h])
 			{
 				if ($rem_acc['accountrole'] != 'interlets')
 				{

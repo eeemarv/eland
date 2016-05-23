@@ -18,7 +18,6 @@ class redis_session implements SessionHandlerInterface
 
 	public function close()
 	{
-		$this->redis = null;
 		unset($this->redis);
 	}
 

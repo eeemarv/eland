@@ -14,7 +14,7 @@ function log_event($user_id, $type, $event, $remote_schema = false)
 
 	$sch = ($remote_schema) ? $remote_schema : $schema;
 
-	$host = $hosts[$sch];
+	$h = $hosts[$sch];
 
 	$formatter = new ColoredLineFormatter();
 
@@ -35,7 +35,7 @@ function log_event($user_id, $type, $event, $remote_schema = false)
 		$username = $letscode = $user_str = '';
 	}
 
-	$log->addNotice('eLAND: ' . $sch . ': ' . $host . ': ' .
+	$log->addNotice('eLAND: ' . $sch . ': ' . $h . ': ' .
 		$type . ': ' . $event . $user_str . "\n\r");
 
 	$item = array(

@@ -39,7 +39,7 @@ echo 'php version: ' . phpversion() . $r;
 // select in which schema to perform updates
 $schema_lastrun_ary = $schema_interletsq_ary = array();
 
-foreach ($schemas as $host => $schema)
+foreach ($schemas as $h => $schema)
 {
 	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
@@ -52,7 +52,7 @@ foreach ($schemas as $host => $schema)
 	}
 }
 
-unset($schema, $host);
+unset($schema, $h);
 
 if (count($schemas))
 {
