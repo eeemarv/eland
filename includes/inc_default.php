@@ -255,24 +255,12 @@ if ($s_id && $s_schema)
 	$sess_user = readuser($s_id, false, $s_schema);
 	$s_accountrole = ($s_schema == $schema) ? $sess_user['accountrole'] : 'guest';
 }
-else if ($_SESSION['elas_interlets'])
+else if ($_SESSION['elas_interlets_access_' . $schema])
 {
-	/*
-	$s_user = array(
-		'letscode'		=> '',
-		'name'			=> 'eLAS interlets gast',
-	);
-	*/
 	$s_accountrole = 'guest';
 }
 else if ($_SESSION['master'])
 {
-	/*
-	$s_user = array(
-		'letscode'		=> '',
-		'name'			=> 'master',
-	);
-	*/
 	$s_id = 0;
 	$s_accountrole = 'admin';
 }

@@ -25,7 +25,7 @@ if(!empty($token))
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
 		$_SESSION = array(
-			'elas_interlets'	=> true
+			'elas_interlets_access_' . $schema	=> true,
 		);
 
 		$param = 'a=1&r=guest';
