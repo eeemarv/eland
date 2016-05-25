@@ -169,7 +169,8 @@ if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 }
 
 /**
- *  database connection
+ * database connection
+ * (search path not set yet)
  */
 
 $db = \Doctrine\DBAL\DriverManager::getConnection(array(
@@ -190,13 +191,13 @@ foreach ($_ENV as $key => $s)
 {
 	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
 	{
-		if ($s == $host && strpos($key, 'FORWARD_') === 0)
+		if ($s == $host && strpos($key, 'REDIRECT_') === 0)
 		{
-			$forward = str_replace(['FORWARD_', '___', '__'], ['', '-', '.'], $key);
-			$forward = strtolower($forward);
-			$forward .= (strpos($forward, '.') === false) ? '.' . $overall_domain : '';
-			header('HTTP/1.1 301 Moved Permanently'); 
-			header('Location: ' . $app_protocol . $forward);
+			$redirect = str_replace(['REDIRECT_', '___', '__'], ['', '-', '.'], $key);
+			$redirect = strtolower($redirect);
+			$redirect .= (strpos($redirect, '.') === false) ? '.' . $overall_domain : '';
+			header('HTTP/1.1 301 Moved Permanently');
+			header('Location: ' . $app_protocol . $redirect . '?' . $_SERVER['QUERY_STRING']);
 			exit;
 		} 
 		continue;
@@ -255,6 +256,18 @@ $s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
 
 $s_group_self = ($s_schema == $schema) ? true : false;
 
+/**
+ * alerts
+**/
+
+require_once $rootpath . 'includes/inc_alert.php';
+
+$alert = new alert();
+
+/**
+ * select role
+ **/
+
 if ($s_id && $s_schema)
 {
 	$session_user = readuser($s_id, false, $s_schema);
@@ -275,9 +288,9 @@ else
 	$s_accountrole = 'anonymous';
 }
 
-require_once $rootpath . 'includes/inc_alert.php';
-
-$alert = new alert();
+/**
+ * check role
+ **/
 
 $p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
 $p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
@@ -347,6 +360,81 @@ $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
+
+/**
+ * check access to groups
+ **/
+
+var_dump(get_interlets_hosts());
+
+function get_interlets_hosts($refresh = false)
+{
+	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+
+	if (!$s_schema)
+	{
+		return array();
+	}
+
+	$redis_key = $s_schema . '_interlets_hosts';
+
+	if (!$refresh && $redis->exists($redis_key))
+	{
+		$redis->expire($redis_key, 60);
+		return json_decode($redis->get($redis_key), true);
+	}
+
+	$interlets_hosts = array();
+
+	$st = $db->prepare('select g.url
+		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+		where g.apimethod = \'elassoap\'
+			and u.letscode = g.localletscode
+			and u.letscode <> \'\'
+			and u.status = 7');
+
+	$st->execute();
+
+	while($row = $st->fetch())
+	{
+		$h = get_host($row['url']);
+
+		if (isset($schemas[$h]))
+		{
+			$interlets_hosts[] = $h;
+		}
+	}
+
+	$s_url = $app_protocol . $hosts[$s_schema];
+
+	$out_ary = array();
+
+	foreach ($interlets_hosts as $h)
+	{
+		$s = $schemas[$h];
+
+		$url = $db->fetchColumn('select g.url
+			from ' . $s . '.letsgroups g, ' . $s . '.users u
+			where g.apimethod = \'elassoap\'
+				and u.letscode = g.localletscode
+				and u.letscode <> \'\'
+				and u.status = 7
+				and g.url = ?', array($s_url));
+
+		if (!$url)
+		{
+			continue;
+		}
+
+		$out_ary[$s] = $h;
+	}
+
+	$redis->set($redis_key, json_encode($out_ary));
+	$redis->expire($redis_key, 60);
+
+	return $out_ary;
+}
+
 
 /*
 function get_interlets_hosts($refresh = false)
@@ -424,7 +512,7 @@ function get_interlets_hosts($refresh = false)
 */
 
 /**
- *
+ * 
  */
 require_once $rootpath . 'includes/mdb.php';
 

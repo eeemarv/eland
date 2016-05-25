@@ -29,20 +29,7 @@ if(!empty($token))
 		);
 
 		$param = 'a=1&r=guest';
-/*
-		if ($interlets != '1')
-		{
-			$interlets = unserialize($interlets);
 
-			$_SESSION['interlets'] = $interlets;
-			$_SESSION['name'] = 'letsgast: ' . $interlets['systemtag'] . '.' . $interlets['letscode'] . ' ' . $interlets['name'];
-			$param .= '&u=' . $interlets['id'] . '&s=' . $interlets['schema'];
-		}
-		else
-		{
-			$_SESSION['name'] = 'letsgast';
-		}
-*/
 		log_event(0, 'Login', 'eLAS guest login using token ' . $token . ' succeeded');
 		$alert->success('Je bent als interlets gast ingelogd.');
 
@@ -176,14 +163,6 @@ if ($_POST['zend'])
 			$_SESSION = array(
 				'id'			=> $user['id'],
 				'schema'		=> $schema,
-/*				'name'			=> $user['name'],
-				'fullname'		=> $user['fullname'],
-				'postcode'		=> $user['postcode'],
-				'letscode'		=> $user['letscode'],
-				'accountrole'	=> $user['accountrole'],
-				'userstatus'	=> $user['status'],
-				'lang'			=> $user['lang'],
-				'type'			=> 'local', */
 			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];
