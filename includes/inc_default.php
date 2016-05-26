@@ -365,9 +365,10 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
  * check access to groups
  **/
 
-var_dump(get_interlets_hosts());
+$elas_interlets_groups = get_elas_interlets_groups();
+$eland_interlets_groups = get_eland_interlets_groups();
 
-function get_interlets_hosts($refresh = false)
+function get_eland_interlets_groups($refresh = false)
 {
 	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
 
@@ -376,7 +377,7 @@ function get_interlets_hosts($refresh = false)
 		return array();
 	}
 
-	$redis_key = $s_schema . '_interlets_hosts';
+	$redis_key = $s_schema . '_eland_interlets_groups';
 
 	if (!$refresh && $redis->exists($redis_key))
 	{
@@ -391,6 +392,7 @@ function get_interlets_hosts($refresh = false)
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
 			and u.letscode <> \'\'
+			and u.accountrole = \'interlets\'
 			and u.status = 7');
 
 	$st->execute();
@@ -407,7 +409,7 @@ function get_interlets_hosts($refresh = false)
 
 	$s_url = $app_protocol . $hosts[$s_schema];
 
-	$out_ary = array();
+	$eland_interlets_groups = array();
 
 	foreach ($interlets_hosts as $h)
 	{
@@ -419,6 +421,7 @@ function get_interlets_hosts($refresh = false)
 				and u.letscode = g.localletscode
 				and u.letscode <> \'\'
 				and u.status = 7
+				and u.accountrole = \'interlets\'
 				and g.url = ?', array($s_url));
 
 		if (!$url)
@@ -426,13 +429,68 @@ function get_interlets_hosts($refresh = false)
 			continue;
 		}
 
-		$out_ary[$s] = $h;
+		$eland_interlets_groups[$s] = $h;
 	}
 
-	$redis->set($redis_key, json_encode($out_ary));
+	$redis->set($redis_key, json_encode($eland_interlets_groups));
 	$redis->expire($redis_key, 60);
 
-	return $out_ary;
+	return $eland_interlets_groups;
+}
+
+
+/**
+ *
+ */
+function get_elas_interlets_groups($refresh = false)
+{
+	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+
+	if (!$s_schema)
+	{
+		return array();
+	}
+
+	$redis_key = $s_schema . '_elas_interlets_groups';
+
+	if (!$refresh && $redis->exists($redis_key))
+	{
+		$redis->expire($redis_key, 60);
+		return json_decode($redis->get($redis_key), true);
+	}
+
+	$elas_interlets_groups = array();
+
+	$st = $db->prepare('select g.id, g.groupname
+		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+		where g.apimethod = \'elassoap\'
+			and u.letscode = g.localletscode
+			and g.groupname <> \'\'
+			and g.url <> \'\'
+			and g.myremoteletscode <> \'\'
+			and g.remoteapikey <> \'\'
+			and g.presharedkey <> \'\'
+			and u.letscode <> \'\'
+			and u.name <> \'\'
+			and u.accountrole = \'interlets\'
+			and u.status = 7');
+
+	$st->execute();
+
+	while($row = $st->fetch())
+	{
+		$h = get_host($row['url']);
+
+		if (!$schemas[$h])
+		{
+			$elas_interlets_groups[$row['id']] = $row['groupname'];
+		}
+	}
+
+	$redis->set($redis_key, json_encode($elas_interlets_groups));
+	$redis->expire($redis_key, 60);
+
+	return $elas_interlets_groups;
 }
 
 

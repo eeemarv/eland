@@ -8,7 +8,7 @@ $status = ($_GET['status']) ?: 'active';
 
 if ($s_guest && $status != 'active')
 {
-	http_reponse_code(403);
+	http_response_code(403);
 	exit;
 }
 

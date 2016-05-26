@@ -50,6 +50,47 @@ if (!$s_anonymous)
 {
 	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 	echo '<ul class="nav navbar-nav navbar-right">';
+
+	if ($s_schema && (count($eland_interlets_groups) || count($elas_interlets_groups)))
+	{
+		echo '<li class="dropdown">';
+		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+		echo '<span class="fa fa-share-alt"></span> ';
+		echo 'Groep';
+		echo '<span class="caret"></span></a>'; 
+		echo '<ul class="dropdown-menu" role="menu">';
+		echo '<li';
+		echo ($s_group_self) ? ' class="active"' : '';
+		echo '>';
+		echo aphp($script_name, '', readconfigfromdb('systemname', $s_schema) . ' (eigen groep)');
+		echo '</li>';
+		echo '<li class="divider"></li>';
+
+		if (count($eland_interlets_groups))
+		{
+			foreach ($eland_interlets_groups as $sch => $ho)
+			{
+				echo '<li';
+				echo ($schema == $sch) ? ' class="active"' : '';
+				echo '>';
+				echo '<a href="' . $ho . '">' . readconfigfromdb('systemname', $sch) . '</a>';
+				echo '</li>';
+			}
+		}
+
+		if (count($elas_interlets_groups))
+		{
+			foreach ($elas_interlets_groups as $groupid => $name)
+			{
+				echo '<li>';
+				echo '<a href="#interletsgroup-' . $group_id . '">' . $name . '</a>';
+				echo '</li>';
+			}
+		}
+		echo '</ul>';
+		echo '</li>';
+	}
+
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
@@ -151,7 +192,7 @@ else
 		'news'					=> array('calendar-o', 'Nieuws', 'view=' . $view_news),
 	);
 
-	if ($s_user || $s_admin)
+	if (($s_user && (count($eland_interlets_groups) || count($elas_interlets_groups))) || $s_admin)
 	{
 		$menu['interlets'] = array('share-alt', 'InterLETS');
 	}
