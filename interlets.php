@@ -542,8 +542,92 @@ if ($login)
 /**
  * list
  */
-$where = ($s_admin) ? '' : ' where apimethod <> \'internal\'';
-$groups = $db->fetchAll('SELECT * FROM letsgroups' . $where);
+
+if ($s_user)
+{
+	$eland_user_count = array();
+
+	foreach ($eland_interlets_groups as $sch => $ho)
+	{
+		$eland_user_count[$sch] = $db->fetchColumn('select count(*)
+			from ' . $sch . '.users
+			where status in (1, 2)');
+	}
+
+	$h1 = 'InterLETS groepen';
+	$fa = 'share-alt';
+
+	include $rootpath . 'includes/inc_header.php';
+
+	if (count($eland_interlets_groups) || count($elas_interlets_groups))
+	{
+		echo '<div class="panel panel-primary printview">';
+		echo '<div class="table-responsive">';
+		echo '<table class="table table-bordered table-hover table-striped footable">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>groepsnaam</th>';
+		echo '<th data-hide="phone">leden</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+
+
+		if (count($eland_interlets_groups))
+		{
+			foreach ($eland_interlets_groups as $sch => $ho)
+			{
+				echo '<tr>';
+				echo '<td>';
+				echo '<a href="' . $app_protocol . $ho . '">' . readconfigfromdb('systemname', $sch) . '</a>';
+				echo '</td>';
+				echo '<td>';
+				echo $eland_user_count[$sch];
+				echo '</td>';
+				echo '</tr>';
+			}
+		}
+
+		if (count($elas_interlets_groups))
+		{
+			foreach ($elas_interlets_groups as $group_id => $group)
+			{
+				echo '<tr>';
+				echo '<td>';
+				echo '<a href="#" data-elas-group-id="' . $group_id . '" ';
+				echo 'data-elas-group-url="' . $group['url'] . '">' . $group['groupname'] . '</a>';
+				echo '</td>';
+				echo '<td>';
+				echo $redis->get($group['url'] . '_active_user_count');
+				echo '</td>';
+				echo '</tr>';
+			}
+		}
+		echo '</tbody>';
+		echo '</table>';
+		echo '</div></div>';
+
+		echo '<p><ul><li>Bij groepen die eLAS gebruiken zal je browser een nieuwe tab proberen te openen wanneer ';
+		echo 'je op de groepsnaam klikt. ';
+		echo 'Als er geen nieuwe tab opent, kan het zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
+		echo 'deze popups toelaat voor deze site (' . $overall_domain . ').</li></ul></p>';
+
+	}
+	else
+	{
+		echo '<div class="panel panel-default">';
+		echo '<div class="panel-heading">';
+		echo 'Er zijn geen interletsgroepen.';
+		echo '</div></div>';
+	}
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;
+}
+
+/* admin interlets groups list */
+
+$groups = $db->fetchAll('SELECT * FROM letsgroups');
 
 $letscodes = $groups_domains = $group_schemas = array();
 
@@ -555,7 +639,7 @@ foreach ($groups as $key => $g)
 
 	if ($s = $schemas[$g['domain']])
 	{
-		$groups[$key]['server'] = true;
+		$groups[$key]['eland'] = true;
 		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
 			from ' . $s . '.users
 			where status in (1, 2)');
@@ -572,27 +656,24 @@ foreach ($groups as $key => $g)
 	}
 }
 
-if ($s_admin)
+$users_letscode = array();
+
+$interlets_users = $db->executeQuery('select id, status, letscode, accountrole
+	from users
+	where letscode in (?)',
+	array($letscodes),
+	array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+foreach ($interlets_users as $u)
 {
-	$users_letscode = array();
-
-	$interlets_users = $db->executeQuery('select id, status, letscode, accountrole
-		from users
-		where letscode in (?)',
-		array($letscodes),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
-
-	foreach ($interlets_users as $u)
-	{
-		$users_letscode[$u['letscode']] = array(
-			'id'			=> $u['id'],
-			'status'		=> $u['status'],
-			'accountrole'	=> $u['accountrole'],
-		);
-	}
-
-	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
+	$users_letscode[$u['letscode']] = array(
+		'id'			=> $u['id'],
+		'status'		=> $u['status'],
+		'accountrole'	=> $u['accountrole'],
+	);
 }
+
+$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 
 $h1 = 'InterLETS groepen';
 $fa = 'share-alt';
@@ -607,105 +688,90 @@ if (count($groups))
 	echo '<table class="table table-bordered table-hover table-striped footable">';
 	echo '<thead>';
 	echo '<tr>';
-	echo ($s_admin) ? '<th data-sort-initial="true">Account</th>' : '';
+	echo '<th data-sort-initial="true">Account</th>';
 	echo '<th>groepsnaam</th>';
 	echo '<th data-hide="phone">leden</th>';
-
-	if ($s_admin)
-	{
-		echo '<th data-hide="phone, tablet">Admin</th>';	
-		echo '<th data-hide="phone, tablet">api</th>';
-	}
-
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Admin</th>';	
+	echo '<th data-hide="phone, tablet" data-sort-ignore="true">api</th>';
 	echo '</tr>';
 	echo '</thead>';
 
 	echo '<tbody>';
 
-	$param = ($s_admin) ? 'id' : 'login';
-
 	foreach($groups as $g)
 	{
-		$error = false;
 		echo '<tr>';
-		if ($s_admin)
-		{
-			echo '<td>';
-			if ($g['apimethod'] == 'elassoap')
-			{
-				$user = $users_letscode[$g['localletscode']];
-				if ($user)
-				{
-					echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
-					if (!in_array($user['status'], array(1, 2, 7)))
-					{
-						echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
-							'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
-							'exclamation-triangle');
-					}
-					if ($user['accountrole'] != 'interlets')
-					{
-						echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
-							'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
-							'fa-exclamation-triangle');
-					}
-				}
-				else
-				{
-					echo $g['localletscode'];
-
-					if ($g['apimethod'] != 'internal' && !$user)
-					{
-						echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
-							'Creëer een interlets-account met gelijke letscode en status extern.',
-							'exclamation-triangle');
-					}
-				}
-			}
-			echo '</td>';
-		}
+		echo '<td>';
 
 		if ($g['apimethod'] == 'elassoap')
 		{
-			echo '<td>';
-			echo aphp('interlets', 'login=' . $g['id'], $g['groupname'], false, 'login als gast op deze letsgroep');
-			echo '</td>';
+			$user = $users_letscode[$g['localletscode']];
+			if ($user)
+			{
+				echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+				if (!in_array($user['status'], array(1, 2, 7)))
+				{
+					echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
+						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+						'exclamation-triangle');
+				}
+				if ($user['accountrole'] != 'interlets')
+				{
+					echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
+						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+						'fa-exclamation-triangle');
+				}
+			}
+			else
+			{
+				echo $g['localletscode'];
+
+				if ($g['apimethod'] != 'internal' && !$user)
+				{
+					echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
+						'Creëer een interlets-account met gelijke letscode en status extern.',
+						'exclamation-triangle');
+				}
+			}
+		}
+		echo '</td>';
+
+		echo '<td>';
+
+		if ($g['eland'])
+		{
+			echo '<a href="#">' . $g['groupname'] . '</a>';
+
+			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
+			echo 'eLAND</span>';
+		}
+		else if ($g['apimethod'] == 'elassoap')
+		{
+			echo '<a href="#" ';
+			echo 'data-elas-group-id="' . $g['id'] . '" ';
+			echo 'data-elas-group-url="' . $g['url'] . '"';
+			echo '>' . $g['groupname'] . '</a>';
+
 		}
 		else
 		{
-			echo '<td>' . $g['groupname'] . '</td>';
+			echo $g['groupname'];
 		}
+
+		echo '</td>';
 
 		echo '<td>' . $g['user_count'] . '</td>';
 
-		if ($s_admin)
-		{
-			echo '<td>';
-			echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
-
-			if ($error)
-			{
-				echo ' <span class="fa fa-exclamation-triangle text-danger"></span>';
-			}
-			if ($g['server'])
-			{
-				echo ' <span class="label label-success" title="Deze letsgroep bevindt zich op dezelfde server">';
-				echo 'server</span>';
-			}
-			echo '</td>';
-			echo '<td>' . $g['apimethod'] . '</td>';
-		}
+		echo '<td>';
+		echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
+		echo '</td>';
+		echo '<td>' . $g['apimethod'] . '</td>';
 		echo '</tr>';
 	}
 
 	echo '</tbody>';
 	echo '</table>';
 	echo '</div></div>';
-
-	echo '<p><ul><li>Bij groepen die eLAS gebruiken zal je browser een nieuwe tab proberen te openen wanneer ';
-	echo 'je op de groepsnaam klikt. ';
-	echo 'Als er geen nieuwe tab opent, kan het zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
-	echo 'deze popups toelaat voor deze site. </li></ul></p>';
 }
 else
 {
@@ -715,12 +781,14 @@ else
 	echo '</div></div>';
 }
 
-if ($s_admin)
-{
-	render_schemas_groups($schemas);
-}
+render_schemas_groups($schemas);
 
 include $rootpath . 'includes/inc_footer.php';
+exit;
+
+/**
+ *
+ */
 
 function render_schemas_groups()
 {
