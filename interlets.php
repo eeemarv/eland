@@ -3,8 +3,8 @@ $rootpath = './';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 
-$login = (isset($_GET['login'])) ? $_GET['login'] : false;
-$location = (isset($_GET['location'])) ? $_GET['location'] : '';
+//$login = (isset($_GET['login'])) ? $_GET['login'] : false;
+//$location = (isset($_GET['location'])) ? $_GET['location'] : '';
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -417,6 +417,7 @@ if ($id && !$login)
 /*
  * login
  */
+/*
 if ($login)
 {
 	if (!$group['url'])
@@ -483,8 +484,6 @@ if ($login)
 				and tc.id = c.id_type_contact
 				and tc.abbrev = \'mail\'', array($s_id));
 
-
-		/** **/
 		$ary = array(
 			'id'			=> $s_id,
 			'name'			=> $user['name'],
@@ -536,6 +535,9 @@ if ($login)
 		}
 	}
 }
+
+*/
+
 
 /**
  * list
@@ -700,8 +702,9 @@ if (count($groups))
 	echo '</table>';
 	echo '</div></div>';
 
-	echo '<p><ul><li>Wanneer je op een groepsnaam klikt, zal je browser een nieuwe tab ';
-	echo 'proberen te openen. Het kan zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
+	echo '<p><ul><li>Bij groepen die eLAS gebruiken zal je browser een nieuwe tab proberen te openen wanneer ';
+	echo 'je op de groepsnaam klikt. ';
+	echo 'Als er geen nieuwe tab opent, kan het zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
 	echo 'deze popups toelaat voor deze site. </li></ul></p>';
 }
 else

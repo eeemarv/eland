@@ -368,6 +368,83 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 $elas_interlets_groups = get_elas_interlets_groups();
 $eland_interlets_groups = get_eland_interlets_groups();
 
+
+/**
+ * 
+ */
+require_once $rootpath . 'includes/mdb.php';
+
+$mdb = new mdb($schema);
+
+require_once $rootpath . 'includes/inc_eventlog.php';
+
+// default timezone to Europe/Brussels
+
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+
+$schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
+
+// set search path
+
+$db->exec('set search_path to ' . ($schema) ?: 'public');
+
+/**/
+
+$systemname = readconfigfromdb('systemname');
+$systemtag = readconfigfromdb('systemtag');
+$currency = readconfigfromdb('currency');
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
+/* view */
+
+$inline = (isset($_GET['inline'])) ? true : false;
+
+$view = (isset($_GET['view'])) ? $_GET['view'] : false;
+
+$view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
+$view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
+$view_news = (isset($_SESSION['view']['news'])) ? $_SESSION['view']['news'] : 'extended';
+
+if ($view || $inline)
+{
+	if ($script_name == 'users' && $view != $view_users)
+	{
+		$view_users = ($view) ?: $view_users;
+		$_SESSION['view']['users'] = $view = $view_users;
+	}
+	else if ($script_name == 'messages' && $view != $view_messages)
+	{
+		$view_messages = ($view) ?: $view_messages;
+		$_SESSION['view']['messages'] = $view = $view_messages;
+	}
+	else if ($script_name == 'news' && $view != $view_news)
+	{
+		$view_news = ($view) ?: $view_news;
+		$_SESSION['view']['news'] = $view = $view_news;
+	}
+}
+
+/**
+ * remember adapted role in own group (for links to own group)
+ */
+if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
+{
+	if ($s_group_self)
+	{
+		$_SESSION['user_params_own_group'] = 'r=' . $s_accountrole . '&u=' . $user_session['id'];
+	}
+
+	$s_user_params_own_group = $_SESSION['user_params_own_group'];
+}
+else
+{
+	$s_user_params_own_group = '';
+}
+
+/**************** FUNCTIONS ***************/
+/**
+ *
+ */
 function get_eland_interlets_groups($refresh = false)
 {
 	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
@@ -461,7 +538,7 @@ function get_elas_interlets_groups($refresh = false)
 
 	$elas_interlets_groups = array();
 
-	$st = $db->prepare('select g.id, g.groupname
+	$st = $db->prepare('select g.id, g.groupname, g.url
 		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
@@ -483,7 +560,7 @@ function get_elas_interlets_groups($refresh = false)
 
 		if (!$schemas[$h])
 		{
-			$elas_interlets_groups[$row['id']] = $row['groupname'];
+			$elas_interlets_groups[$row['id']] = $row;
 		}
 	}
 
@@ -492,139 +569,6 @@ function get_elas_interlets_groups($refresh = false)
 
 	return $elas_interlets_groups;
 }
-
-
-/*
-function get_interlets_hosts($refresh = false)
-{
-	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
-
-	if (!$s_schema)
-	{
-		return '';
-	}
-
-	$redis_key = $s_schema . '_interlets_hosts';
-
-	if (!$refresh && $redis->exists($redis_key))
-	{
-		$redis->expire($redis_key, 600);
-		return $redis->get($redis_key);
-	}
-
-	$interlets_hosts = array();
-
-	$st = $db->prepare('select g.url
-		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
-		where g.apimethod = \'elassoap\'
-			and u.letscode = g.localletscode
-			and u.letscode <> \'\'
-			and u.status = 7
-			and g.url <> ?');
-
-	$st->bindValue(1, $base_url);
-	$st->execute();
-
-	while($row = $st->fetch())
-	{
-		$h = get_host($row['url']);
-
-		if (isset($schemas[$h]))
-		{
-			$interlets_hosts[] = $h;
-		}
-	}
-
-	$s_url = $app_protocol . $hosts[$s_schema];
-
-	$out_ary = array();
-
-	foreach ($interlets_hosts as $h)
-	{
-		$s = $schemas[$h];
-
-		$url = $db->fetchColumn('select g.url
-			from ' . $s . '.letsgroups g, ' . $s . '.users u
-			where g.apimethod = \'elassoap\'
-				and u.letscode = g.localletscode
-				and u.letscode <> \'\'
-				and u.status = 7
-				and g.url = ?', array($s_url));
-
-		if (!$url)
-		{
-			continue;
-		}
-
-		$out_ary[] = $h;
-	}
-
-	$interlets_hosts = implode('|', $out_ary);
-
-	$redis->set($redis_key, $interlets_hosts);
-	$redis->expire($redis_key, 600);
-
-	return ($interlets_hosts) ? ' data-interlets-hosts="' . $interlets_hosts . '"' : '';
-}
-*
-*/
-
-/**
- * 
- */
-require_once $rootpath . 'includes/mdb.php';
-
-$mdb = new mdb($schema);
-
-require_once $rootpath . 'includes/inc_eventlog.php';
-
-// default timezone to Europe/Brussels
-
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
-
-$schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
-
-// set search path
-
-$db->exec('set search_path to ' . ($schema) ?: 'public');
-
-/**/
-
-$systemname = readconfigfromdb('systemname');
-$systemtag = readconfigfromdb('systemtag');
-$currency = readconfigfromdb('currency');
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
-/* view */
-
-$inline = (isset($_GET['inline'])) ? true : false;
-
-$view = (isset($_GET['view'])) ? $_GET['view'] : false;
-
-$view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
-$view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
-$view_news = (isset($_SESSION['view']['news'])) ? $_SESSION['view']['news'] : 'extended';
-
-if ($view || $inline)
-{
-	if ($script_name == 'users' && $view != $view_users)
-	{
-		$view_users = ($view) ?: $view_users;
-		$_SESSION['view']['users'] = $view = $view_users;
-	}
-	else if ($script_name == 'messages' && $view != $view_messages)
-	{
-		$view_messages = ($view) ?: $view_messages;
-		$_SESSION['view']['messages'] = $view = $view_messages;
-	}
-	else if ($script_name == 'news' && $view != $view_news)
-	{
-		$view_news = ($view) ?: $view_news;
-		$_SESSION['view']['news'] = $view = $view_news;
-	}
-}
-
-/**************************** FUNCTIONS **************************/
 
 /*
  * create links with query parameters depending on user and role

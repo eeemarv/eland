@@ -24,7 +24,14 @@ if ($css = readconfigfromdb('css'))
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
-echo '<body>';
+echo '<body';
+
+if ($s_user_params_own_group)
+{
+	echo ' data-user-param="r=' . $s_user_params_own_group . '&u=' . $s_id . '"';
+}
+
+echo '>';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
@@ -80,10 +87,11 @@ if (!$s_anonymous)
 
 		if (count($elas_interlets_groups))
 		{
-			foreach ($elas_interlets_groups as $groupid => $name)
+			foreach ($elas_interlets_groups as $group_id => $group)
 			{
 				echo '<li>';
-				echo '<a href="#interletsgroup-' . $group_id . '">' . $name . '</a>';
+				echo '<a href="#" data-elas-group-id="' . $group_id . '" ';
+				echo 'data-elas-group-url="' . $group['url'] . '">' . $group['groupname'] . '</a>';
 				echo '</li>';
 			}
 		}
@@ -236,7 +244,7 @@ echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';
 echo '<div class="visible-xs pull-left button-offcanvas">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"';
-echo ' title="Menu"><i class="glyphicon glyphicon-chevron-left"></i></button>';
+echo ' title="Menu"><i class="fa fa-chevron-left"></i></button>';
 echo '</div>';
 echo (isset($top_buttons)) ? $top_buttons : '';
 echo '</div>';
