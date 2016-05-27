@@ -28,9 +28,9 @@ class alert
 		$this->add('success', $msg);
 	}
 
-	function notice($msg)
+	function info($msg)
 	{
-		$this->add('notice', $msg);
+		$this->add('info', $msg);
 	}
 
 	function warning($msg)

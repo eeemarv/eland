@@ -441,6 +441,33 @@ else
 	$s_user_params_own_group = '';
 }
 
+/** welcome message **/
+
+if ($_GET['welcome'] && $s_guest)
+{
+	$msg = '<strong>Welkom bij ' . $systemname . '</strong><br>';
+	$msg .= 'Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
+	$msg .= readconfigfromdb('currencyratio') . ' ' . $currency;
+	$msg .= ' stemt overeen met 1 LETS uur.<br>';
+
+	if ($s_schema)
+	{
+		$msg .= 'Je kan steeds terug naar je eigen groep via het menu <strong>Groep</strong> ';
+		$msg .= 'boven in de navigatiebalk.';
+	}
+	else
+	{
+		$msg .= 'Je bent ingelogd als LETS-gast, je kan informatie ';
+		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
+		$msg .= 'ingeven in de installatie van je eigen groep.';
+	}
+
+	$alert->info($msg);
+}
+
+
+
+
 /**************** FUNCTIONS ***************/
 /**
  *

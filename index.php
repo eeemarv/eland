@@ -193,11 +193,6 @@ if ($hosting_form)
 /**
  *
  **/
-/*
-$news_where = ($s_admin) ? '' : ' where approved = True ';
-$news = $db->fetchAll('select *, to_char(itemdate, \'YYYY-MM-DD\') as idate
-	from news ' . $news_where . ' order by itemdate desc');
-*/
 
 $newusers = $db->fetchAll('select id, letscode, name
 	from users
@@ -317,6 +312,7 @@ if($s_admin)
 	}
 }
 
+/*
 if($s_guest)
 {
 	echo '<div class="panel panel-info">';
@@ -330,44 +326,6 @@ if($s_guest)
 	echo  readconfigfromdb('currencyratio') . ' ' . $currency;
 	echo ' stemt overeen met 1 LETS uur.</p>';
 	echo '</div>';
-	echo '</div>';
-}
-
-/*
-if($news)
-{
-	echo '<h3 class="printview">';
-	echo aphp('news', '', 'Nieuws', false, false, 'calendar');
-	echo '</h3>';
-
-	echo '<div class="panel panel-warning printview">';
-
-	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-hover table-bordered">';
-
-	echo '<tbody>';
-	foreach ($news as $value)
-	{
-		echo '<tr>';
-
-		echo '<td>';
-		echo aphp('news', 'id=' . $value['id'], $value['headline']);
-		echo '</td>';
-
-		echo '<td>';
-		echo $value['idate'];
-		echo '</td>';
-
-		if ($s_admin)
-		{
-			echo '<td>';
-			echo ($value['approved'] == 't') ? 'Ja' : 'Nee';
-			echo '</td>';
-		}
-		echo '</tr>';
-	}
-	echo '</tbody>';
-	echo '</table></div>';
 	echo '</div>';
 }
 */

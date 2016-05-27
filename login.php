@@ -28,10 +28,9 @@ if(!empty($token))
 			'elas_interlets_access_' . $schema	=> true,
 		);
 
-		$param = 'a=1&r=guest';
+		$param = 'welcome=1&r=guest';
 
 		log_event(0, 'Login', 'eLAS guest login using token ' . $token . ' succeeded');
-		$alert->success('Je bent als interlets gast ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -39,7 +38,7 @@ if(!empty($token))
 	}
 	else
 	{
-		$alert->error('Interlets login is mislukt.');
+		$alert->error('De interlets login is mislukt.');
 		log_event('', 'LogFail', 'Token login failed (' . $token . ')');
 	}
 }
