@@ -374,8 +374,8 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
  * check access to groups
  **/
 
-$elas_interlets_groups = get_elas_interlets_groups();
-$eland_interlets_groups = get_eland_interlets_groups();
+$elas_interlets_groups = get_elas_interlets_groups(true);
+$eland_interlets_groups = get_eland_interlets_groups(true);
 
 if ($role != 'anonymous' && !$s_group_self && !$eland_interlets_groups[$schema])
 {
