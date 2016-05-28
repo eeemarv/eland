@@ -374,8 +374,8 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
  * check access to groups
  **/
 
-$elas_interlets_groups = get_elas_interlets_groups(true);
-$eland_interlets_groups = get_eland_interlets_groups(true);
+$elas_interlets_groups = get_elas_interlets_groups();
+$eland_interlets_groups = get_eland_interlets_groups();
 
 if ($role != 'anonymous' && !$s_group_self && !$eland_interlets_groups[$schema])
 {
@@ -483,6 +483,21 @@ if ($_GET['welcome'] && $s_guest)
 /**
  *
  */
+function clear_interlets_groups_cache()
+{
+	global $redis, $s_schema, $schemas;
+
+	$redis->del($s_schema . '_elas_interlets_groups');
+
+	foreach ($schemas as $s)
+	{
+		$redis->del($s . '_eland_interlets_groups');
+	}
+}
+
+/**
+ *
+ */
 function get_eland_interlets_groups($refresh = false)
 {
 	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
@@ -496,7 +511,7 @@ function get_eland_interlets_groups($refresh = false)
 
 	if (!$refresh && $redis->exists($redis_key))
 	{
-		$redis->expire($redis_key, 60);
+		$redis->expire($redis_key, 3600);
 		return json_decode($redis->get($redis_key), true);
 	}
 
@@ -548,11 +563,10 @@ function get_eland_interlets_groups($refresh = false)
 	}
 
 	$redis->set($redis_key, json_encode($eland_interlets_groups));
-	$redis->expire($redis_key, 60);
+	$redis->expire($redis_key, 3600);
 
 	return $eland_interlets_groups;
 }
-
 
 /**
  *
@@ -570,7 +584,7 @@ function get_elas_interlets_groups($refresh = false)
 
 	if (!$refresh && $redis->exists($redis_key))
 	{
-		$redis->expire($redis_key, 60);
+		$redis->expire($redis_key, 3600);
 		return json_decode($redis->get($redis_key), true);
 	}
 
@@ -603,7 +617,7 @@ function get_elas_interlets_groups($refresh = false)
 	}
 
 	$redis->set($redis_key, json_encode($elas_interlets_groups));
-	$redis->expire($redis_key, 60);
+	$redis->expire($redis_key, 3600);
 
 	return $elas_interlets_groups;
 }
@@ -649,7 +663,7 @@ function set_request_to_session()
 }
 
 /**
- * generate session url
+ * generate url
  */
 function generate_url($entity = '', $params= '', $sch = false)
 {

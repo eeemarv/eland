@@ -118,6 +118,9 @@ if ($add || $edit)
 				if ($db->update('letsgroups', $group, array('id' => $id)))
 				{
 					$alert->success('Letsgroep aangepast.');
+
+					clear_interlets_groups_cache();
+					
 					cancel($edit);
 				}
 
@@ -143,6 +146,9 @@ if ($add || $edit)
 					$alert->success('Letsgroep opgeslagen.');
 
 					$id = $db->lastInsertId('letsgroups_id_seq');
+
+					clear_interlets_groups_cache();
+					
 					cancel($id);
 				}
 
@@ -296,6 +302,9 @@ if ($del)
 		if($db->delete('letsgroups', array('id' => $del)))
 		{
 			$alert->success('Letsgroep verwijderd.');
+
+			clear_interlets_groups_cache();
+			
 			cancel();
 		}
 

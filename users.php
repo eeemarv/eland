@@ -524,6 +524,9 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 		}
 
 		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+
+		clear_interlets_groups_cache();
+		
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -937,6 +940,8 @@ if ($del)
 					invalidate_typeahead_thumbprint('users_extern');
 				}
 
+				clear_interlets_groups_cache();
+
 				cancel();
 			}
 			else
@@ -1319,6 +1324,8 @@ if ($add || $edit)
 						invalidate_typeahead_thumbprint('users_extern');
 					}
 
+					clear_interlets_groups_cache();
+
 					cancel($id);
 				}
 				else
@@ -1444,6 +1451,8 @@ if ($add || $edit)
 						{
 							invalidate_typeahead_thumbprint('users_extern');
 						}
+
+						clear_interlets_groups_cache();
 					}
 					cancel($edit);
 				}
