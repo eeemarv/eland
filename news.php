@@ -330,7 +330,7 @@ if ($id)
 		}
 	}
 
-	$top_buttons .= aphp('news', '', 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
+	$top_buttons .= aphp('news', 'view=' . $view_news, 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
 	$fa = 'calendar';

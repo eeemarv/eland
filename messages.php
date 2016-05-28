@@ -926,8 +926,8 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-	$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 
 	if ($s_admin)
 	{
@@ -1140,11 +1140,11 @@ if ($id)
 		$top_buttons .= aphp('messages', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+		$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 
 	$h1 = $ow_type_uc;
@@ -1631,7 +1631,7 @@ if ($s_admin || $s_user)
 
 		if (!$inline)
 		{
-			$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
+			$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
 	}
 	else
