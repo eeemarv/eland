@@ -657,18 +657,46 @@ if ($add)
 	exit;
 }
 
+/**
+ * show a transaction
+ */
+
 if ($id)
 {
 	$transaction = $db->fetchAssoc('select t.*
 		from transactions t
 		where t.id = ?', array($id));
 
+	$next = $db->fetchColumn('select id
+		from transactions
+		where id > ?
+		order by id asc
+		limit 1', array($id));
+
+	$prev = $db->fetchColumn('select id
+		from transactions
+		where id < ?
+		order by id desc
+		limit 1', array($id));
+
 	if ($s_user || $s_admin)
 	{
 		$top_buttons .= aphp('transactions', 'add=1', 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 	}
 
+	if ($prev)
+	{
+		$top_buttons .= aphp('transactions', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+	}
+
+	if ($next)
+	{
+		$top_buttons .= aphp('transactions', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+	}
+
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
+
+	$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';
