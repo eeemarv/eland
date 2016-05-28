@@ -1,11 +1,17 @@
 <?php
 $rootpath = '../';
-$role = 'user';
+$role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
 $group_id = $_GET['group_id'];
 
 header('Content-type: application/json');
+
+if (!$s_schema)
+{
+	echo json_encode(array('error' => 'Onvoldoende rechten.'));
+	exit;
+}
 
 if (!$group_id)
 {
@@ -19,7 +25,7 @@ if (!$elas_interlets_groups[$group_id])
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
+$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', array($group_id));
 
 if (!$group)
 {

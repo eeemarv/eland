@@ -28,7 +28,7 @@ echo '<body';
 
 if ($s_schema)
 {
-	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', '', $s_schema) . '"';
+	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', '') . '"';
 }
 
 echo '>';
