@@ -1020,13 +1020,18 @@ if (!$inline)
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
-	$typeahead_name_ary = array('users_active', 'users_extern');
-
-	if ($s_admin)
+	if ($s_guest)
 	{
-		$typeahead_name_ary = array_merge($typeahead_name_ary, array(
-			'users_inactive', 'users_im', 'users_ip',
-		));
+		$typeahead_name_ary = ['users_active'];
+	}
+	else if ($s_user)
+	{
+		$typeahead_name_ary = ['users_active', 'users_extern'];
+	}
+	else if ($s_admin)
+	{
+		$typeahead_name_ary = ['users_active', 'users_extern',
+			'users_inactive', 'users_im', 'users_ip'];
 	}
 
 	echo '<input type="text" class="form-control" ';
