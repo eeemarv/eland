@@ -1,6 +1,6 @@
 <?php
 $rootpath = './';
-$role = 'user';
+$role = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
@@ -11,15 +11,9 @@ $add_schema = (isset($_GET['add_schema'])) ? $_GET['add_schema'] : false;
 
 $submit = (isset($_POST['zend'])) ? true : false;
 
-if (($id || $edit || $del || $add) && !$s_admin)
+if ($id || $edit || $del)
 {
-	$alert->error('Je hebt onvoldoende rechten voor deze pagina.');
-	cancel();
-}
-
-if ($id || $edit || $del || $login)
-{
-	$id = ($id) ?: (($edit) ?: (($del) ?: $login));
+	$id = ($id) ?: (($edit) ?: $del);
 
 	$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($id));
 
@@ -339,9 +333,9 @@ if ($del)
 }
 
 /**
- * See settings of a group (admin)
+ * See settings of a group
  */
-if ($id && !$login)
+if ($id)
 {
 	if (isset($group['url']))
 	{
@@ -424,90 +418,6 @@ if ($id && !$login)
 /**
  * list
  */
-
-if ($s_user)
-{
-	$eland_user_count = array();
-
-	foreach ($eland_interlets_groups as $sch => $ho)
-	{
-		$eland_user_count[$sch] = $db->fetchColumn('select count(*)
-			from ' . $sch . '.users
-			where status in (1, 2)');
-	}
-
-	$h1 = 'InterLETS groepen';
-	$fa = 'share-alt';
-
-	include $rootpath . 'includes/inc_header.php';
-
-	if (count($eland_interlets_groups) || count($elas_interlets_groups))
-	{
-		echo '<div class="panel panel-primary printview">';
-		echo '<div class="table-responsive">';
-		echo '<table class="table table-bordered table-hover table-striped footable">';
-		echo '<thead>';
-		echo '<tr>';
-		echo '<th>groepsnaam</th>';
-		echo '<th data-hide="phone">leden</th>';
-		echo '</tr>';
-		echo '</thead>';
-		echo '<tbody>';
-
-		if (count($eland_interlets_groups))
-		{
-			foreach ($eland_interlets_groups as $sch => $ho)
-			{
-				echo '<tr>';
-				echo '<td>';
-				echo '<a href="' . generate_url('index', 'welcome=1', $sch) . '">';
-				echo readconfigfromdb('systemname', $sch) . '</a>';
-				echo '</td>';
-				echo '<td>';
-				echo $eland_user_count[$sch];
-				echo '</td>';
-				echo '</tr>';
-			}
-		}
-
-		if (count($elas_interlets_groups))
-		{
-			foreach ($elas_interlets_groups as $group_id => $group)
-			{
-				echo '<tr>';
-				echo '<td>';
-				echo '<a href="#" data-elas-group-id="' . $group_id . '">';
-				echo $group['groupname'] . '</a>';
-				echo '</td>';
-				echo '<td>';
-				echo $redis->get($group['url'] . '_active_user_count');
-				echo '</td>';
-				echo '</tr>';
-			}
-		}
-		echo '</tbody>';
-		echo '</table>';
-		echo '</div></div>';
-
-		echo '<p><ul><li>Bij groepen die eLAS gebruiken zal je browser een nieuwe tab proberen te openen wanneer ';
-		echo 'je op de groepsnaam klikt. ';
-		echo 'Als er geen nieuwe tab opent, kan het zijn dat je browser popups blokkeert. Stel je browser zo in dat ';
-		echo 'deze popups toelaat voor deze site (' . $overall_domain . ').</li></ul></p>';
-
-	}
-	else
-	{
-		echo '<div class="panel panel-default">';
-		echo '<div class="panel-heading">';
-		echo 'Er zijn geen interletsgroepen.';
-		echo '</div></div>';
-	}
-
-	include $rootpath . 'includes/inc_footer.php';
-	exit;
-}
-
-/* admin interlets groups list */
 
 $groups = $db->fetchAll('SELECT * FROM letsgroups');
 
@@ -663,7 +573,7 @@ else
 	echo '</div></div>';
 }
 
-render_schemas_groups($schemas);
+render_schemas_groups();
 
 include $rootpath . 'includes/inc_footer.php';
 exit;

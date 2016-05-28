@@ -149,10 +149,11 @@ if (!$s_anonymous)
 	{
 		$menu = array(
 			'categories'	 				=> array('clone', 'Categorieën'),
-			'apikeys'						=> array('key', 'Apikeys'),
 			'type_contact'					=> array('circle-o-notch', 'Contact types'),
 			'contacts'						=> array('map-marker', 'Contacten'),
 			'config'						=> array('gears', 'Instellingen'),
+			'interlets'						=> array('share-alt', 'InterLETS'),
+			'apikeys'						=> array('key', 'Apikeys'),
 			'export'						=> array('download', 'Export'),
 			'autominlimit'					=> array('arrows-v', 'Auto min limiet'),
 			'mass_transaction'				=> array('exchange', 'Massa-Transactie'),
@@ -228,11 +229,6 @@ else
 		'transactions'			=> array('exchange', 'Transacties'),
 		'news'					=> array('calendar-o', 'Nieuws', 'view=' . $view_news),
 	);
-
-	if (($s_user && (count($eland_interlets_groups) || count($elas_interlets_groups))) || $s_admin)
-	{
-		$menu['interlets'] = array('share-alt', 'InterLETS');
-	}
 
 	$menu['docs'] = array('files-o', 'Documenten');
 
