@@ -377,7 +377,10 @@ $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 $elas_interlets_groups = get_elas_interlets_groups();
 $eland_interlets_groups = get_eland_interlets_groups();
 
-if ($role != 'anonymous' && !$s_group_self && !$eland_interlets_groups[$schema])
+if ($s_schema
+	&& $role != 'anonymous'
+	&& !$s_group_self
+	&& !$eland_interlets_groups[$schema])
 {
 	header('Location: ' . generate_url('index', '', $s_schema));
 	exit;
