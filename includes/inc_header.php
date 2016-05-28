@@ -33,6 +33,8 @@ if ($s_schema)
 
 echo '>';
 
+echo '<img src="/gfx/loading.gif" class="ajax-loader">';
+
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
 
