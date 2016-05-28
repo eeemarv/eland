@@ -5,12 +5,6 @@ $allow_anonymous_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_passwords.php';
 
-if ($s_id)
-{
-	header('Location: ' . $rootpath . 'index.php');
-	exit;
-}
-
 $token = $_GET['token'];
 
 if ($token)
