@@ -3,8 +3,6 @@ $rootpath = './';
 $role = 'user';
 require_once $rootpath . 'includes/inc_default.php';
 
-//$login = (isset($_GET['login'])) ? $_GET['login'] : false;
-//$location = (isset($_GET['location'])) ? $_GET['location'] : '';
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -338,7 +336,7 @@ if ($id && !$login)
 {
 	if (isset($group['url']))
 	{
-		$group['domain'] = get_host($group);
+		$group['host'] = get_host($group);
 	}
 
 	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
@@ -357,7 +355,7 @@ if ($id && !$login)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>eLAS Soap status</dt>';
 
-	if ($schemas[$group['domain']])
+	if ($schemas[$group['host']])
 	{
 		echo '<dd><span class="btn btn-success btn-xs">server</span></dd>';
 	}
@@ -381,7 +379,7 @@ if ($id && !$login)
 		echo '</dd>';
 	}
 
-	echo '<dt>Groepnaam</dt>';
+	echo '<dt>Groepsnaam</dt>';
 	echo '<dd>' .$group['groupname'] .'</dd>';
 
 	echo '<dt>Korte naam</dt>';
@@ -413,131 +411,6 @@ if ($id && !$login)
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
 }
-
-/*
- * login
- */
-/*
-if ($login)
-{
-	if (!$group['url'])
-	{
-		$alert->error('De url van de interLETS groep is niet ingesteld.');
-		cancel();
-	}
-
-	if ($group['apimethod'] != 'elassoap')
-	{
-		$alert->error($err_group . 'Deze groep draait geen eLAS-soap, kan geen connectie maken');
-		cancel();
-	}
-
-	$err_group = $group['groupname'] . ': ';
-
-	$group['domain'] = get_host($group);
-
-	$remote_schema = (isset($schemas[$group['domain']])) ? $schemas[$group['domain']] : false;
-
-	if ($remote_schema)
-	{
-		// the group is on the same server
-
-		$remote_group = $db->fetchAssoc('select * from ' . $remote_schema . '.letsgroups where url = ?', array($base_url));
-
-		if (!$remote_group)
-		{
-			$alert->error('Deze interLETS groep heeft geen verbinding geconfirmeerd met deze groep. ');
-			cancel();
-		}
-
-		if (!$remote_group['localletscode'])
-		{
-			$alert->error('Er is geen letscode ingesteld bij de interLETS groep voor deze groep.');
-			cancel();
-		}
-
-		$remote_user = $db->fetchAssoc('select * from ' . $remote_schema . '.users where letscode = ?', array($remote_group['localletscode']));
-
-		if (!$remote_user)
-		{
-			$alert->error('Geen interlets account aanwezig bij deze interLETS groep voor deze groep.');
-			cancel();
-		}
-
-		if (!in_array($remote_user['status'], array(1, 2, 7)))
-		{
-			$alert->error('Geen correcte status van het interlets account bij deze interlets groep.');
-			cancel();
-		}
-
-		if ($remote_user['accountrole'] != 'interlets')
-		{
-			$alert->error('Geen correcte rol van het interlets account bij deze interlets groep.');
-			cancel();
-		}
-
-		$user = readuser($s_id);
-
-		$mail = $db->fetchColumn('select c.value
-			from contact c, type_contact tc
-			where c.id_user = ?
-				and tc.id = c.id_type_contact
-				and tc.abbrev = \'mail\'', array($s_id));
-
-		$ary = array(
-			'id'			=> $s_id,
-			'name'			=> $user['name'],
-			'letscode'		=> $user['letscode'],
-			'mail'			=> $mail,
-			'systemtag'		=> $systemtag,
-			'systemname'	=> $systemname,
-			'url'			=> $base_url,
-			'schema'		=> $schema,
-		);
-
-		$token = substr(md5(microtime() . $remote_schema), 0, 12);
-		$key = $remote_schema . '_token_' . $token;
-		$redis->set($key, serialize($ary));
-		$redis->expire($key, 600);
-
-		log_event('' ,'Soap' ,'Token ' . $token . ' generated');
-
-		echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");';
-		echo 'window.focus();';
-		echo '</script>';
-
-	}
-	else
-	{
-		$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
-		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-		$apikey = $group['remoteapikey'];
-		$client = new nusoap_client($soapurl, true);
-		$err = $client->getError();
-		if ($err)
-		{
-			$alert->error($err_group . 'Kan geen verbinding maken.');
-		}
-		else
-		{
-			$token = $client->call('gettoken', array('apikey' => $apikey));
-			$err = $client->getError();
-			if ($err)
-			{
-				$alert->error($err_group . 'Kan geen token krijgen.');
-			}
-			else
-			{
-				echo '<script>window.open("' . $group['url'] . '/login.php?token=' . $token . '&location=' . $location . '");';
-				echo 'window.focus();';
-				echo '</script>';
-			}
-		}
-	}
-}
-
-*/
-
 
 /**
  * list
@@ -572,14 +445,14 @@ if ($s_user)
 		echo '</thead>';
 		echo '<tbody>';
 
-
 		if (count($eland_interlets_groups))
 		{
 			foreach ($eland_interlets_groups as $sch => $ho)
 			{
 				echo '<tr>';
 				echo '<td>';
-				echo '<a href="' . $app_protocol . $ho . '">' . readconfigfromdb('systemname', $sch) . '</a>';
+				echo '<a href="' . generate_url('index', 'welcome=1', $sch) . '">';
+				echo readconfigfromdb('systemname', $sch) . '</a>';
 				echo '</td>';
 				echo '<td>';
 				echo $eland_user_count[$sch];
@@ -594,8 +467,8 @@ if ($s_user)
 			{
 				echo '<tr>';
 				echo '<td>';
-				echo '<a href="#" data-elas-group-id="' . $group_id . '" ';
-				echo 'data-elas-group-url="' . $group['url'] . '">' . $group['groupname'] . '</a>';
+				echo '<a href="#" data-elas-group-id="' . $group_id . '">';
+				echo $group['groupname'] . '</a>';
 				echo '</td>';
 				echo '<td>';
 				echo $redis->get($group['url'] . '_active_user_count');
@@ -629,17 +502,18 @@ if ($s_user)
 
 $groups = $db->fetchAll('SELECT * FROM letsgroups');
 
-$letscodes = $groups_domains = $group_schemas = array();
+$letscodes = array();
 
 foreach ($groups as $key => $g)
 {
-	$groups[$key]['domain'] = $g['domain'] = get_host($g);
+	$h = get_host($g);
 
 	$letscodes[] = $g['localletscode'];
 
-	if ($s = $schemas[$g['domain']])
+	if ($s = $schemas[$h])
 	{
 		$groups[$key]['eland'] = true;
+		$groups[$key]['schema'] = $s;
 		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
 			from ' . $s . '.users
 			where status in (1, 2)');
@@ -740,7 +614,7 @@ if (count($groups))
 
 		if ($g['eland'])
 		{
-			echo '<a href="#">' . $g['groupname'] . '</a>';
+			echo '<a href="' . generate_url('index', 'welcome=1', $g['schema']) . '">' . $g['groupname'] . '</a>';
 
 			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
 			echo 'eLAND</span>';
@@ -748,9 +622,8 @@ if (count($groups))
 		else if ($g['apimethod'] == 'elassoap')
 		{
 			echo '<a href="#" ';
-			echo 'data-elas-group-id="' . $g['id'] . '" ';
-			echo 'data-elas-group-url="' . $g['url'] . '"';
-			echo '>' . $g['groupname'] . '</a>';
+			echo 'data-elas-group-id="' . $g['id'] . '">';
+			echo $g['groupname'] . '</a>';
 
 		}
 		else

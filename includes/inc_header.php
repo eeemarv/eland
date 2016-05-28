@@ -26,9 +26,9 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
 echo '<body';
 
-if ($s_user_params_own_group)
+if ($s_schema)
 {
-	echo ' data-user-param="r=' . $s_user_params_own_group . '&u=' . $s_id . '"';
+	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', '', $s_schema) . '"';
 }
 
 echo '>';
@@ -69,18 +69,24 @@ if (!$s_anonymous)
 		echo '<li';
 		echo ($s_group_self) ? ' class="active"' : '';
 		echo '>';
-		echo aphp($script_name, '', readconfigfromdb('systemname', $s_schema) . ' (eigen groep)');
+		echo '<a href="' . generate_url($script_name, '', $s_schema) . '">';
+		echo readconfigfromdb('systemname', $s_schema) . ' (eigen groep)';
+		echo '</a>';
 		echo '</li>';
 		echo '<li class="divider"></li>';
 
 		if (count($eland_interlets_groups))
 		{
-			foreach ($eland_interlets_groups as $sch => $ho)
+			foreach ($eland_interlets_groups as $sch => $h)
 			{
 				echo '<li';
 				echo ($schema == $sch) ? ' class="active"' : '';
 				echo '>';
-				echo '<a href="' . $ho . '">' . readconfigfromdb('systemname', $sch) . '</a>';
+
+				$page = ($allowed_interlets_landing_pages[$script_name]) ? $script_name : 'index';
+
+				echo '<a href="' . generate_url($page,  'welcome=1', $sch) . '">';
+				echo readconfigfromdb('systemname', $sch) . '</a>';
 				echo '</li>';
 			}
 		}
@@ -90,11 +96,12 @@ if (!$s_anonymous)
 			foreach ($elas_interlets_groups as $group_id => $group)
 			{
 				echo '<li>';
-				echo '<a href="#" data-elas-group-id="' . $group_id . '" ';
-				echo 'data-elas-group-url="' . $group['url'] . '">' . $group['groupname'] . '</a>';
+				echo '<a href="#" data-elas-group-id="' . $group_id . '">';
+				echo $group['groupname'] . '</a>';
 				echo '</li>';
 			}
 		}
+
 		echo '</ul>';
 		echo '</li>';
 	}
@@ -106,14 +113,27 @@ if (!$s_anonymous)
 	echo ($s_master) ? 'master' : link_user($s_id, $s_schema, false);
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($s_user || $s_admin)
+	if ($s_schema)
 	{
-		echo '<li>' . aphp('users', 'id=' . $s_id, 'Mijn gegevens', false, false, 'user') . '</li>';
-		echo '<li>' . aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', false, false, 'newspaper-o') . '</li>';
-		echo '<li>' . aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', false, false, 'exchange') . '</li>';
+		echo '<li><a href="' . generate_url('users', 'id=' . $s_id, $s_schema) . '">';
+		echo '<i class="fa fa-user"></i> Mijn gegevens';
+		echo '</a></li>';
+
+		echo '<li><a href="' . generate_url('messages', 'uid=' . $s_id, $s_schema) . '">';
+		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
+		echo '</a></li>';
+
+		echo '<li><a href="' . generate_url('transactions', 'uid=' . $s_id, $s_schema) . '">';
+		echo '<i class="fa fa-exchange"></i> Mijn transacties';
+		echo '</a></li>';
+
 		echo '<li class="divider"></li>';
 	}
-	echo '<li>' . aphp('logout', '', 'Uitloggen', '', '', 'sign-out') . '</li>';
+
+	echo '<li><a href="' . generate_url('logout', '', $s_schema) . '">';
+	echo '<i class="fa fa-sign-out"></i> Uitloggen';
+	echo '</a></li>';
+
 	echo '</ul>';
 	echo '</li>';
 	if ($s_admin)
@@ -155,7 +175,7 @@ if (!$s_anonymous)
 		echo '</ul>';
 		echo '</li>';
 	}
-	else if ($_SESSION['accountrole'] == 'admin')
+	else if ($s_group_self && $session_user['accountrole'] == 'admin')
 	{
 		echo '<li class="dropdown">';
 		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

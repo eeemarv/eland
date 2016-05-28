@@ -74,5 +74,7 @@ if ($err)
 	exit;
 }
 
-echo json_encode(array('token' => $token));
+echo json_encode(array(
+	'login_url'	=> $group['url'] . '/login.php?token=' . $token,
+));
 exit;

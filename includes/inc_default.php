@@ -156,6 +156,15 @@ $access_options = array(
 	'2' => 'interlets',
 );
 
+$allowed_interlets_landing_pages = array(
+	'index'			=> true,
+	'messages'		=> true,
+	'users'			=> true,
+	'transactions'	=> true,
+	'news'			=> true,
+	'docs'			=> true,
+);
+
 /*
  * check if we are on the request hosting url.
  */
@@ -431,7 +440,7 @@ if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == '
 {
 	if ($s_group_self)
 	{
-		$_SESSION['user_params_own_group'] = 'r=' . $s_accountrole . '&u=' . $user_session['id'];
+		$_SESSION['user_params_own_group'] = ['r' => $s_accountrole, 'u' => $session_user['id']];
 	}
 
 	$s_user_params_own_group = $_SESSION['user_params_own_group'];
@@ -464,9 +473,6 @@ if ($_GET['welcome'] && $s_guest)
 
 	$alert->info($msg);
 }
-
-
-
 
 /**************** FUNCTIONS ***************/
 /**
@@ -598,7 +604,7 @@ function get_elas_interlets_groups($refresh = false)
 }
 
 /*
- * create links with query parameters depending on user and role
+ * create link inside this group with query parameters depending on user and role
  */
 
 function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
@@ -640,9 +646,9 @@ function set_request_to_session()
 /**
  * generate session url
  */
-function generate_url($entity = '', $params = '')
+function generate_url($entity = '', $params= '', $sch = false)
 {
-	global $rootpath, $alert;
+	global $rootpath, $alert, $hosts, $app_protocol;
 
 	if (is_array($params))
 	{
@@ -660,19 +666,55 @@ function generate_url($entity = '', $params = '')
 		}
 	}
 
-	$q = get_session_query_param();
+	$q = get_session_query_param(false, $sch);
+
 	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
 
-	return $rootpath . $entity . '.php' . $params;
+	$path = ($sch) ? $app_protocol . $hosts[$sch] . '/' : $rootpath;
+
+	return $path . $entity . '.php' . $params;
 }
 
 /**
  * get session query param
  */
-function get_session_query_param($return_ary = false)
+function get_session_query_param($return_ary = false, $sch = false)
 {
 	global $p_role, $p_user, $p_schema, $access_level;
+	global $s_user_params_own_group, $s_id, $s_schema;
 	static $ary, $q;
+
+	if ($sch)
+	{
+		if ($sch == $s_schema)
+		{
+			if ($return_ary)
+			{
+				return  $s_user_params_own_group;
+			}
+
+			return http_build_query($s_user_params_own_group);
+		}
+
+		if ($s_schema)
+		{
+			$param_ary = ['r' => 'guest', 'u' => $s_id, 's' => $s_schema]; 
+
+			if ($return_ary)
+			{
+				return $param_ary;
+			}
+
+			return http_build_query($param_ary);
+		}
+
+		if ($return_ary)
+		{
+			return ['r' => 'guest'];
+		}
+
+		return 'r=guest';
+	}
 
 	if (isset($q))
 	{
