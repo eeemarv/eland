@@ -324,10 +324,41 @@ if ($topic)
 
 	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
 
+	$find = array(
+		'parent_id' => array('$exists' => false),
+		'access'	=> array('$gte'	=> (string) $access_level),
+		'ts' 		=> array('$lt' => $topic_post['ts']),
+	);
+
+	$prev = $mdb->forum->findOne($find);
+
+	$prev = ($prev) ? $prev['_id'] : false;
+
+	$find = array(
+		'parent_id' => array('$exists' => false),
+		'access' 	=> array('$gte'	=> (string) $access_level),
+		'ts' 		=> array('$gt' => $topic_post['ts']),
+	);
+
+	$next = $mdb->forum->findOne($find);
+
+	$next = ($next) ? $next['_id'] : false;
+
 	if ($s_admin || $s_owner)
 	{
 		$top_buttons .= aphp('forum', 'del=' . $topic, 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
+
+	if ($prev)
+	{
+		$top_buttons .= aphp('forum', 't=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+	}
+
+	if ($next)
+	{
+		$top_buttons .= aphp('forum', 't=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+	}
+
 
 	$top_buttons .= aphp('forum', '', 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
@@ -454,7 +485,7 @@ echo '<th>Onderwerp</th>';
 echo '<th data-hide="phone, tablet">Gebruiker</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="descending" ';
 echo 'data-type="numeric">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+echo ($s_guest) ? '' : '<th data-hide="phone">Zichtbaarheid</th>';
 echo ($s_admin) ? '<th data-hide="phone,tablet">Acties</th>' : '';
 echo '</tr>';
 
