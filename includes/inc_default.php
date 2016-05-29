@@ -206,7 +206,7 @@ foreach ($_ENV as $key => $s)
 			$redirect = strtolower($redirect);
 			$redirect .= (strpos($redirect, '.') === false) ? '.' . $overall_domain : '';
 			header('HTTP/1.1 301 Moved Permanently');
-			header('Location: ' . $app_protocol . $redirect . '?' . $_SERVER['QUERY_STRING']);
+			header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
 			exit;
 		} 
 		continue;
