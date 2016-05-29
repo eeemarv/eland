@@ -58,7 +58,7 @@ if ($user_mail_submit && $id && $post)
 	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
-		from ' . $s_schema . 'contact c, ' . $s_schema . 'type_contact tc
+		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
