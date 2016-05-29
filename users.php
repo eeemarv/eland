@@ -84,7 +84,7 @@ if ($user_mail_submit && $id && $post)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
@@ -2120,7 +2120,7 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een bericht naar ';
 	echo  link_user($id) . '</h3>';

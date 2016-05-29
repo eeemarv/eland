@@ -506,32 +506,27 @@ if ($mail && $post && $id)
 
 	$user = readuser($message['id_user']);
 
-	if (isset($s_interlets['schema']))
+	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$t_schema =  $s_interlets['schema'] . '.';
-		$me_schema = $s_interlets['schema'];
-		$me_id = $s_interlets['id'];
-		$interlets = true;
-	}
-	else
-	{
-		$t_schema = '';
-		$me_schema = false;
-		$me_id = $s_id;
-		$interlets = false;
+		$alert->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		cancel();
 	}
 
-	$me = readuser($me_id, false, $remote_schema);
+	if (!$s_schema)
+	{
+		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		cancel();
+	}
 
-	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
-	$user_me .= link_user($me, false, false);
-	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
+	$user_me = ($s_group_self) ? '' : readconfigfromdb('systemtag', $s_schema) . '.';
+	$user_me .= link_user($session_user, $s_schema, false);
+	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
-		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']],$me_id));
+			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
 
 	$subject = 'Reactie op je ' . $ow_type . ' ' . $message['content'];
 
@@ -554,16 +549,16 @@ if ($mail && $post && $id)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $t_schema . $me_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
+			mail_q(array('to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		mail_q(array('to' => $user['id'], 'reply_to' => $t_schema . $me_id, 'subject' => $subject, 'text' => $text));
+		mail_q(array('to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text));
 
 		$alert->success('Mail verzonden.');
 	}
@@ -1057,6 +1052,9 @@ if ($id)
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', array($user['id']));
 
+	$mail_to = getmailadr($user['id']);
+	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
+
 	$balance = $user['saldo'];
 
 	$images = array();
@@ -1268,26 +1266,30 @@ if ($id)
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
 	echo '&' . get_session_query_param() . '"></div>';
 
-	// response form
+// response form
 
-	if ($s_guest && !isset($s_interlets['mail']))
+	if ($s_guest && !$s_schema)
 	{
-		$placeholder = 'Als gast kan je niet het reactieformulier gebruiken.';
+		$placeholder = 'Als gast kan je niet het mail formulier gebruiken.';
 	}
 	else if ($s_owner)
 	{
 		$placeholder = 'Je kan geen reacties op je eigen berichten sturen.';
 	}
-	else if (!$to)
+	else if (!count($mail_to))
 	{
 		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+	}
+	else if (!count($mail_from))
+	{
+		$placeholder = 'Om het mail formulier te gebruiken moet een mail adres ingesteld zijn voor je eigen account.';
 	}
 	else
 	{
 		$placeholder = '';
 	}
 
-	$disabled = (empty($to) || ($s_guest && !isset($s_interlets['mail'])) || $s_owner) ? true : false;
+	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
 	echo  link_user($message['id_user']) . '</h3>';
