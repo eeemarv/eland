@@ -2533,16 +2533,13 @@ else
 			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
 		}
 
-		if (isset($s_interlets['schema']))
+		if ($s_guest && $s_schema)
 		{
-			$t_schema =  $s_interlets['schema'] . '.';
-			$me_id = $s_interlets['id'];
-
 			$my_adr = $db->fetchColumn('select c.value
-				from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc, ' . $t_schema . 'users u
+				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 				where c.id_user = ?
 					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', array($me_id));
+					and tc.abbrev = \'adr\'', array($s_id));
 		}
 		else if (!$s_guest)
 		{
