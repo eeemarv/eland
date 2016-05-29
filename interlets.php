@@ -482,9 +482,8 @@ if (count($groups))
 	echo '<thead>';
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Account</th>';
-	echo '<th>groepsnaam</th>';
+	echo '<th>Groep</th>';
 	echo '<th data-hide="phone">leden</th>';
-	echo '<th data-hide="phone, tablet" data-sort-ignore="true">Admin</th>';	
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true">api</th>';
 	echo '</tr>';
 	echo '</thead>';
@@ -531,32 +530,18 @@ if (count($groups))
 
 		echo '<td>';
 
+		echo aphp('interlets', 'id=' . $g['id'], $g['groupname']);
+
 		if ($g['eland'])
 		{
-			echo '<a href="' . generate_url('index', 'welcome=1', $g['schema']) . '">' . $g['groupname'] . '</a>';
-
 			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
 			echo 'eLAND</span>';
-		}
-		else if ($g['apimethod'] == 'elassoap')
-		{
-			echo '<a href="#" ';
-			echo 'data-elas-group-id="' . $g['id'] . '">';
-			echo $g['groupname'] . '</a>';
-
-		}
-		else
-		{
-			echo $g['groupname'];
 		}
 
 		echo '</td>';
 
 		echo '<td>' . $g['user_count'] . '</td>';
 
-		echo '<td>';
-		echo aphp('interlets', 'id=' . $g['id'], 'Instellingen', 'btn btn-default btn-xs');
-		echo '</td>';
 		echo '<td>' . $g['apimethod'] . '</td>';
 		echo '</tr>';
 	}
