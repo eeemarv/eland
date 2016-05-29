@@ -89,6 +89,10 @@ if ($add || $edit)
 			$errors[] = $error_token;
 		}
 
+		$shortname = str_replace(' ', '', $group['groupname']);
+		$shortname = substr($shortname, 0, 50);
+		$group['shortname'] = strtolower($shortname);
+
 		if ($edit)
 		{
 			if ($db->fetchColumn('select id
@@ -166,7 +170,7 @@ if ($add || $edit)
 		if (isset($hosts[$add_schema]))
 		{
 			$group['url'] = $app_protocol . $hosts[$add_schema];
-			$group['groupname'] = $group['shortname'] = readconfigfromdb('systemname', $add_schema);
+			$group['groupname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
 	}
@@ -187,15 +191,6 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="groupname" name="groupname" ';
 	echo 'value="' . $group['groupname'] . '" required maxlength="128">';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="shortname" class="col-sm-2 control-label">Korte naam / groepscode ';
-	echo '<small><i>(kleine letters zonder spaties)</i></small></label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="shortname" name="shortname" ';
-	echo 'value="' . $group['shortname'] . '" maxlength="50">';
 	echo '</div>';
 	echo '</div>';
 
@@ -317,7 +312,7 @@ if ($del)
 	echo ' moet verwijderd worden?</p>';
 	echo '<div><p>';
 	echo '<form method="post">';
-	
+
 	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
@@ -327,7 +322,7 @@ if ($del)
 
 	echo '</div>';
 	echo '</div>';
-		
+
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
 }
@@ -365,7 +360,7 @@ if ($id)
 	else
 	{
 		echo '<dd><i><div id="statusdiv">';
-		$soapurl = $group['elassoapurl'] .'/wsdlelas.php?wsdl';
+		$soapurl = $group['elassoapurl'] . '/wsdlelas.php?wsdl';
 		$apikey = $group['remoteapikey'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
@@ -379,32 +374,29 @@ if ($id)
 			}
 		}
 		echo '</div></i>';
-		echo '</dd>';
+		echo '</dd>'; 
 	}
 
 	echo '<dt>Groepsnaam</dt>';
-	echo '<dd>' .$group['groupname'] .'</dd>';
-
-	echo '<dt>Korte naam</dt>';
-	echo '<dd>' .$group['shortname'] .'</dd>';
+	echo '<dd>' . $group['groupname'] .'</dd>';
 
 	echo '<dt>API methode</dt>';
-	echo '<dd>' .$group['apimethod'] .'</dd>';
+	echo '<dd>' . $group['apimethod'] .'</dd>';
 
 	echo '<dt>API key</dt>';
-	echo '<dd>' .$group['remoteapikey'] .'</dd>';
+	echo '<dd>' . $group['remoteapikey'] .'</dd>';
 
 	echo '<dt>Lokale LETS code</dt>';
-	echo '<dd>' .$group['localletscode'] .'</dd>';
+	echo '<dd>' . $group['localletscode'] .'</dd>';
 
 	echo '<dt>Remote LETS code</dt>';
-	echo '<dd>' .$group['myremoteletscode'] .'</dd>';
+	echo '<dd>' . $group['myremoteletscode'] .'</dd>';
 
 	echo '<dt>URL</dt>';
-	echo '<dd>' .$group['url'] .'</dd>';
+	echo '<dd>' . $group['url'] .'</dd>';
 
 	echo '<dt>Preshared Key</dt>';
-	echo '<dd>' .$group['presharedkey'].'</dd>';
+	echo '<dd>' . $group['presharedkey'].'</dd>';
 	echo '</dl>';
 
 	echo '</div></div>';

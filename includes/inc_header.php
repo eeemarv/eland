@@ -95,11 +95,11 @@ if (!$s_anonymous)
 
 		if (count($elas_interlets_groups))
 		{
-			foreach ($elas_interlets_groups as $group_id => $group)
+			foreach ($elas_interlets_groups as $grp_id => $grp)
 			{
 				echo '<li>';
-				echo '<a href="#" data-elas-group-id="' . $group_id . '">';
-				echo $group['groupname'] . '</a>';
+				echo '<a href="#" data-elas-group-id="' . $grp_id . '">';
+				echo $grp['groupname'] . '</a>';
 				echo '</li>';
 			}
 		}
