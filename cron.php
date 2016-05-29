@@ -324,7 +324,7 @@ if ($autominlimit_queue)
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, false, false) .  $r;
 
-		log_event('', 'cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, false, false) . ' (id:' . $to_id . ') ');
+		log_event('cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, false, false) . ' (id:' . $to_id . ') ');
 	}
 
 	$redis->expire($schema . '_autominlimit_queue', 0);
@@ -374,7 +374,7 @@ while ($row = $st->fetch())
 
 if (count($log_ary))
 {
-	log_event('', 'cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
+	log_event('cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
 }
 
 // end queue addresses to geocode queue
@@ -446,7 +446,7 @@ function geo_q_process()
 				$redis->expire($key, 31536000); // 1 year
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
-				log_event('', 'cron geocode', $log . $log_user, $sch);
+				log_event('cron geocode', $log . $log_user, $sch);
 				continue;
 			}
 
@@ -460,7 +460,7 @@ function geo_q_process()
 		}
 
 		echo  $log . $r;
-		log_event('', 'cron geocode', $log . $log_user, $sch);
+		log_event('cron geocode', $log . $log_user, $sch);
 		$redis->set($key, 'f');
 		$redis->expire($key, 31536000); // 1 year
 
@@ -559,7 +559,7 @@ function user_exp_msgs()
 
 		mail_q(array('to' => $value['id_user'], 'subject' => $subject, 'text' => $text));
 
-		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
+		log_event('mail', 'Message expiration mail sent to ' . $to);
 	}
 
 	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
@@ -593,7 +593,7 @@ function cleanup_messages()
 
 	if ($msgs)
 	{
-		log_event('','Cron','Expired and deleted Messages ' . $msgs);
+		log_event('cron','Expired and deleted Messages ' . $msgs);
 
 		$db->executeQuery('delete from messages WHERE validity < ?', array($testdate));
 	}
@@ -617,7 +617,7 @@ function cleanup_messages()
 
 	if (count($ids))
 	{
-		log_event('','Cron','Cleanup messages from users: ' . $users);
+		log_event('cron','Cleanup messages from users: ' . $users);
 		echo 'Cleanup messages from users: ' . $users;
 
 		if (count($ids) == 1)
@@ -765,7 +765,7 @@ function saldo_update()
 		$db->update('users', array('saldo' => $calculated), array('id' => $id));
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
-		log_event('', 'Cron' , $m);
+		log_event('cron' , $m);
 	}
 
 	return true;
@@ -859,7 +859,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 /*
 	if ($name != 'cronschedule')
 	{
-		log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
+		log_event('cron', 'Cronjob ' . $name . ' finished.');
 	}
 */
 

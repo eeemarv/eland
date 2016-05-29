@@ -25,7 +25,7 @@ function sendmail()
 
 		if (!isset($schema))
 		{
-			log_event('', 'mail', 'error: mail in queue without schema');
+			log_event('mail', 'error: mail in queue without schema');
 			continue;
 		}
 
@@ -33,7 +33,7 @@ function sendmail()
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
-			log_event('', 'mail', $m);
+			log_event('mail', $m);
 			return ;
 		}
 
@@ -51,7 +51,7 @@ function sendmail()
 
 		if (!isset($mail['subject']))
 		{
-			log_event('', 'mail', 'error: mail without subject', $schema);
+			log_event('mail', 'error: mail without subject', $schema);
 			continue;
 		}
 
@@ -63,19 +63,19 @@ function sendmail()
 			}
 			else
 			{
-				log_event('', 'mail', 'error: mail without body content', $schema);
+				log_event('mail', 'error: mail without body content', $schema);
 			}
 		}
 
 		if (!$mail['to'])
 		{
-			log_event('', 'mail', 'error: mail without "to" | subject: ' . $mail['subject'], $schema);
+			log_event('mail', 'error: mail without "to" | subject: ' . $mail['subject'], $schema);
 			continue;
 		}
 
 		if (!$mail['from'])
 		{
-			log_event('', 'mail', 'error: mail without "from" | subject: ' . $mail['subject'], $schema);
+			log_event('mail', 'error: mail without "from" | subject: ' . $mail['subject'], $schema);
 			continue;
 		} 
 
@@ -102,16 +102,16 @@ function sendmail()
 
 		if ($mailer->send($message, $failed_recipients))
 		{
-			log_event('', 'mail', 'message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
+			log_event('mail', 'message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
 		}
 		else
 		{
-			log_event('', 'mail', 'failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
+			log_event('mail', 'failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
 		}
 
 		if ($failed_recipients)
 		{
-			log_event('', 'mail', 'failed recipients: ' . $failed_recipients, $schema);
+			log_event('mail', 'failed recipients: ' . $failed_recipients, $schema);
 		}
 	}
 }

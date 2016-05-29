@@ -6,9 +6,9 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-function log_event($user_id, $type, $event, $remote_schema = false)
+function log_event($type, $event, $remote_schema = false)
 {
-	global $schema, $elas_log, $hosts;
+	global $schema, $hosts, $s_schema, $s_id;
 
 	$type = strtolower($type);
 
@@ -23,9 +23,9 @@ function log_event($user_id, $type, $event, $remote_schema = false)
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	if ($user_id)
+	if ($s_id && $s_schema)
 	{
-		$user = readuser($user_id, false, $sch);
+		$user = readuser($s_id false, $s_schema);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
 		$user_str = ' user: ' . link_user($user, $sch, false, true); 
@@ -39,14 +39,15 @@ function log_event($user_id, $type, $event, $remote_schema = false)
 		$type . ': ' . $event . $user_str . "\n\r");
 
 	$item = array(
-		'ts_tz'		=> date('Y-m-d H:i:s'),
-		'timestamp'	=> gmdate('Y-m-d H:i:s'),
-		'user_id' 	=> $user_id,
-		'letscode'	=> strtolower($letscode),
-		'username'	=> $username,
-		'ip'		=> $_SERVER['REMOTE_ADDR'],
-		'type'		=> strtolower($type),
-		'event'		=> $event,
+		'ts_tz'			=> date('Y-m-d H:i:s'),
+		'timestamp'		=> gmdate('Y-m-d H:i:s'),
+		'user_id' 		=> $s_id,
+		'user_schema'	=> $s_schema,
+		'letscode'		=> strtolower($letscode),
+		'username'		=> $username,
+		'ip'			=> $_SERVER['REMOTE_ADDR'],
+		'type'			=> strtolower($type),
+		'event'			=> $event,
 	);
 
 	register_shutdown_function('insert_log', $item, $remote_schema);

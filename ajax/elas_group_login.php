@@ -64,7 +64,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen verbinding maken.';
 	echo json_encode(array('error' => $m));
-	log_event($s_id, 'token', $m . ' ' . $err);
+	log_event('token', $m . ' ' . $err);
 	exit;
 }
 
@@ -76,7 +76,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen token krijgen.';
 	echo json_encode(array('error' => $m));
-	log_event($s_id, 'token', $m . ' ' . $err);
+	log_event('token', $m . ' ' . $err);
 	exit;
 }
 

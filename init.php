@@ -61,9 +61,10 @@ if ($step == 1)
 				$doneversion = $currentversion;
 			}
 		}
-		$currentversion = readparameter('schemaversion', true);	
-		echo "Upgraded database from schema version $dbversion to $currentversion\n";
-		log_event("","DB","Upgraded database from schema version $dbversion to $currentversion");	
+		$currentversion = readparameter('schemaversion', true);
+		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
+		echo $m . "\n";
+		log_event('DB', $m);	
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=2');
@@ -101,7 +102,7 @@ else if ($step == 2)
 		{
 			$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
 			echo 'Profile image not present, deleted in database: ' . $filename . $r;
-			log_event ($s_id, 'cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
+			log_event ('cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
 		else if ($f_schema != $schema)
 		{
@@ -120,7 +121,7 @@ else if ($step == 2)
 			{
 				$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-				log_event($s_id, 'init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
 /* Remove old images manually from s3 for now
 				$s3->deleteObject(array(
@@ -167,7 +168,7 @@ else if ($step == 3)
 		{
 			$db->delete('msgpictures', array('id' => $id));
 			echo 'Message image not present, deleted in database: ' . $filename . $r;
-			log_event ($s_id, 'init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
+			log_event ('init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
 		else if ($f_schema != $schema)
 		{
@@ -185,7 +186,7 @@ else if ($step == 3)
 			{
 				$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-				log_event($s_id, 'init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
 /* Remove old images manually from s3 for now
 				$s3->deleteObject(array(
@@ -234,7 +235,7 @@ foreach ($results as $result)
 		));
 
 		echo 'Image deleted from bucket: ' . $key . $r;
-		log_event($s_id, 'init', 'Image deleted from bucket: ' . $key);
+		log_event('init', 'Image deleted from bucket: ' . $key);
 	}
 }
 */

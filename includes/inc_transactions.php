@@ -17,7 +17,7 @@ function sign_transaction($transaction, $sharedsecret)
 	$signamount = round($signamount);
 	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $signamount;
 	$signature = sha1($tosign);
-	log_event('','debug','Signing ' . $tosign . ' : ' . $signature);
+	log_event('debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
 }
 
@@ -54,7 +54,7 @@ function insert_transaction($transaction)
 
 	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
+	log_event('trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . $currency . ' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .
 		link_user($transaction['id_to'], false, false, true));
@@ -168,7 +168,7 @@ function mail_transaction($transaction, $remote_schema = null)
 		mail_q(array('to' => $t_schema . $userto['id'], 'subject' => $subject, 'text' => $text), false, $sch);
 	}
 
-	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
+	log_event('mail', $subject, $sch);
 }
 
 /*

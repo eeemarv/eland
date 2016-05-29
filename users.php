@@ -219,7 +219,7 @@ if ($post && $img && $id )
 			'"PictureFile"'	=> $filename
 		),array('id' => $id));
 
-		log_event($s_id, 'Pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
+		log_event('pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
 
 		readuser($id, true);
 
@@ -228,7 +228,7 @@ if ($post && $img && $id )
 	catch(Exception $e)
 	{
 		echo json_encode(array('error' => $e->getMessage()));
-		log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+		log_event('pict', 'Upload fail : ' . $e->getMessage());
 		exit;
 	}
 
@@ -488,7 +488,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			$redis->del($schema . '_user_' . $user_id);
 		}
 
-		log_event($s_id, 'bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
 		cancel();
 	}
@@ -512,7 +512,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			invalidate_typeahead_thumbprint('users_extern');
 		}
 
-		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
 
 		clear_interlets_groups_cache();
 		
@@ -529,7 +529,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($value, $user_ids, $id_type_contact),
 			array(\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT));
 
-		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -585,7 +585,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
 	}
 
-	log_event($s_id, 'Mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
+	log_event('mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
 
 	$alert->success('Mail verzonden.');
 
@@ -810,7 +810,7 @@ if ($del)
 
 				if ($msgs)
 				{
-					log_event('','user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
+					log_event('user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
 					$db->delete('messages', array('id_user' => $del));
 				}

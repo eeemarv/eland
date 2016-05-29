@@ -949,21 +949,21 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	if (!$mail['subject'])
 	{
 		$m = 'Mail "subject" is missing.';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
 	if (!$mail['text'] && !$mail['html'])
 	{
 		$m = 'Mail "body" (text or html) is missing.';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
 	if (!$mail['to'])
 	{
 		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
@@ -972,7 +972,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	if (!count($mail['to']))
 	{
 		$m = 'error: mail without "to" | subject: ' . $mail['subject'];
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	} 
 
@@ -982,7 +982,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 
 		if (!count($mail['reply_to']))
 		{
-			log_event($s_id, 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['reply_to']);
 		}
 
@@ -996,7 +996,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	if (!count($mail['from']))
 	{
 		$m = 'error: mail without "from" | subject: ' . $mail['subject'];
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
@@ -1006,7 +1006,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 
 		if (!count($mail['cc']))
 		{
-			log_event('', 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['cc']);
 		}
 	}
@@ -1021,7 +1021,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	{
 		$reply = ($mail['reply_to']) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
 
-		log_event((($sending_schema) ? '' : $s_id), 'mail', 'Mail in queue, subject: ' .
+		log_event('mail', 'Mail in queue, subject: ' .
 			$mail['subject'] . ', from : ' .
 			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, $mail['schema']);
 	}
@@ -1065,7 +1065,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+					log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
 					continue;
 				}
 
@@ -1080,7 +1080,7 @@ function getmailadr($m, $sending_schema = false)
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
-				log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+				log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
 				continue;
 			}
 
@@ -1109,7 +1109,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
+					log_event('mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
 					continue;
 				}
 
@@ -1141,7 +1141,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
+					log_event('mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
 					continue;
 				}
 
@@ -1154,13 +1154,13 @@ function getmailadr($m, $sending_schema = false)
 		}
 		else
 		{
-			log_event($s_id, 'error: no valid input for mail adr: ' . $in);
+			log_event('error: no valid input for mail adr: ' . $in);
 		}
 	}
 
 	if (!count($out))
 	{
-		log_event($s_id, 'mail', 'no valid mail adress found for: ' . implode('|', $m));
+		log_event('mail', 'no valid mail adress found for: ' . implode('|', $m));
 		return $out;
 	} 
 
@@ -1231,7 +1231,7 @@ function get_error_form_token()
 	if (!$value)
 	{
 		$m = 'Het formulier is verlopen';
-		log_event($s_id, 'form_token', $m . ': ' . $script_name);
+		log_event('form_token', $m . ': ' . $script_name);
 		return $m;
 	}
 
@@ -1239,7 +1239,7 @@ function get_error_form_token()
 	{
 		$redis->incr($key);
 		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-		log_event($s_id, 'form_token', $m . '(count: ' . $value . ') : ' . $script_name);
+		log_event('form_token', $m . '(count: ' . $value . ') : ' . $script_name);
 		return $m;
 	}
 
@@ -1329,7 +1329,7 @@ function invalidate_typeahead_thumbprint(
 		if ($new_thumbprint != $redis->get($redis_key))
 		{
 			$redis->set($redis_key, $new_thumbprint);
-			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
+			log_event('typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 		}
 
 		$redis->expire($redis_key, $ttl);
@@ -1338,7 +1338,7 @@ function invalidate_typeahead_thumbprint(
 	{
 		$redis->del($redis_key);
 
-		log_event($s_id, 'typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
+		log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 	}
 }
 

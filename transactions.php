@@ -222,7 +222,7 @@ if ($add)
 
 		if(count($errors))
 		{
-			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
+			log_event('transaction', 'form error(s): ' . implode(' | ', $errors));
 			$alert->error($errors);
 		}
 		else if ($group_id == 'self')
@@ -469,11 +469,11 @@ if ($add)
 			mail_transaction($trans_org);
 			mail_transaction($transaction, $remote_schema);
 
-			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+			log_event('trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
 				$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
 				' to user: ' . link_user($touser['id'], false, false));
 
-			log_event('', 'trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
+			log_event('trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
 				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], $remote_schema);

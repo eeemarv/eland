@@ -30,7 +30,7 @@ if(!empty($token))
 
 		$param = 'welcome=1&r=guest';
 
-		log_event(0, 'Login', 'eLAS guest login using token ' . $token . ' succeeded');
+		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -39,7 +39,7 @@ if(!empty($token))
 	else
 	{
 		$alert->error('De interlets login is mislukt.');
-		log_event('', 'LogFail', 'Token login failed (' . $token . ')');
+		log_event('', 'login-fail', 'Token login failed (' . $token . ')');
 	}
 }
 
@@ -63,7 +63,7 @@ if ($_POST['zend'])
 			'master'	=> true,
 			'schema'	=> $schema,
 		);
-		log_event(0,'Login','Master user logged in');
+		log_event('login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=0');
@@ -139,7 +139,7 @@ if ($_POST['zend'])
 		if ($user['password'] != $sha512)
 		{
 			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
-			log_event($s_id, 'password', 'Password encryption updated to sha512');
+			log_event('password', 'Password encryption updated to sha512');
 		}
 
 		if (!count($errors) && !in_array($user['status'], array(1, 2)))
@@ -165,8 +165,10 @@ if ($_POST['zend'])
 			);
 
 			$browser = $_SERVER['HTTP_USER_AGENT'];
-			log_event($user['id'],'Login','User ' . link_user($user, false, false, true) . ' logged in');
-			log_event($user['id'],'Agent', $browser);
+			$s_id = $user['id'];
+			$s_schema = $schema;
+			log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
+			log_event('agent', $browser);
 			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
 			readuser($user['id'], true);
 			$alert->success('Je bent ingelogd.');

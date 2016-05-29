@@ -68,7 +68,7 @@ function processqueue()
 					case 'OFFLINE':
 						//Do nothing
 						update_queue($transid,$count,$result);
-						log_event('', 'Soap', 'Remote site offline ' . $transid);
+						log_event('soap', 'Remote site offline ' . $transid);
 						break;
 					case 'FAILED':
 						//Handle error and remove transaction
@@ -121,7 +121,7 @@ function unqueue($transid)
 {
 	global $db;
 	$db->delete('interletsq', array('transid' => $transid));
-	log_event('','Trans','Removing ' . $transid . 'from queue');	
+	log_event('trans','Removing ' . $transid . 'from queue');	
 }
 
 function update_queue($transid,$count,$result)
@@ -219,7 +219,7 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 	if($id)
 	{
 		$result = 'SUCCESS';
-		log_event('', 'Trans', 'Local commit of interlets transaction succeeded');
+		log_event('trans', 'Local commit of interlets transaction succeeded');
 		$transaction['amount'] = round($transaction['amount']);
 		$transaction['id'] = $id;
 		mail_transaction($transaction);
@@ -228,7 +228,7 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 	else
 	{
 		$result = 'FAILED';
-		log_event('','Trans','Local commit of $transid failed');
+		log_event('trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 
 		$subject = 'Interlets FAILURE!';

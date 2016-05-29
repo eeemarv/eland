@@ -323,7 +323,7 @@ if ($post && $images && $id && $img
 
 			// $size = $s3->get_object_filesize($s3_img, $filename);
 
-			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
+			log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
 
 			unlink($tmpfile);
 
@@ -339,7 +339,7 @@ if ($post && $images && $id && $img
 		catch(Exception $e)
 		{
 			echo $e->getMessage();
-			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+			log_event('pict', 'Upload fail : ' . $e->getMessage());
 		}
 	}
 

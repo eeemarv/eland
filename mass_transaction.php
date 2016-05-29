@@ -321,7 +321,7 @@ if ($_POST['zend'])
 		$log_str .= ' to ';
 		$log_str .= ($to_one) ? $log_one : $log_many;
 
-		log_event($s_id, 'Trans', $log_str);
+		log_event('trans', $log_str);
 
 		if ($mail_en)
 		{
