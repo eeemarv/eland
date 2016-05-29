@@ -306,11 +306,34 @@ if ($del)
 if ($id)
 {
 	$role = 'guest';
+
 	require_once $rootpath . 'includes/inc_default.php';
 
 	$news = $db->fetchAssoc('SELECT n.*
 		FROM news n  
 		WHERE n.id = ?', array($id));
+
+	if (!$s_admin && !$news['approved'])
+	{
+		$alert->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		cancel();
+	}
+
+	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
+
+	$next = $db->fetchColumn('select id
+	from news
+	where id > ?
+		' . $and_approved_sql . '
+	order by id asc
+	limit 1', array($id));
+
+	$prev = $db->fetchColumn('select id
+		from news
+		where id < ?
+		' . $and_approved_sql . '
+		order by id desc
+		limit 1', array($id));
 
 	$top_buttons = '';
 
@@ -328,6 +351,16 @@ if ($id)
 				$top_buttons .= aphp('news', 'approve=' . $id, 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
 			}
 		}
+	}
+
+	if ($prev)
+	{
+		$top_buttons .= aphp('news', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+	}
+
+	if ($next)
+	{
+		$top_buttons .= aphp('news', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
 	}
 
 	$top_buttons .= aphp('news', 'view=' . $view_news, 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
