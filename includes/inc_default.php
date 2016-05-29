@@ -815,10 +815,10 @@ function redirect($location = false)
  *
  */
 
-function link_user($user, $schema = false, $link = true, $show_id = false, $field = false)
+function link_user($user, $sch = false, $link = true, $show_id = false, $field = false)
 {
 	global $rootpath;
-	$user = (is_array($user)) ? $user : readuser($user, false, $schema);
+	$user = (is_array($user)) ? $user : readuser($user, false, $sch);
 	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
 	$str = ($show_id) ? $str . ' (id: ' . $user['id'] . ')' : $str;
