@@ -4,6 +4,11 @@ $rootpath = './';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
+var_dump(getenv('TEST'));
+
+var_dump(getenv('HOSTING_FORM_Z__LETSA__NET'));
+
+
 if ($hosting_form)
 {
 	if (isset($_POST['zend']))
