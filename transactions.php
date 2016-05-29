@@ -99,12 +99,24 @@ if ($add)
 
 		$touser = $db->fetchAssoc('select * from users where letscode = ?', array($letscode_touser));
 
-		if ($group_id == 'self' && $touser['status'] == 7)
+		if ($group_id == 'self')
 		{
-			$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+			$to_apimethod_check = fetchColumn('select apimethod
+				from letsgroups
+				where localletscode = ?', array($letscode_to));
+
+			if ($to_apimethod_check != 'mail')
+			{
+				$errors[] = 'Je kan enkel rechtstreeks naar een interletsrekening met apimethod <strong>mail</strong> overschrijven';
+			}
+
+			if ($touser['status'] == 7)
+			{
+				$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+			}
 		}
 
-		if ($fromuser['status'] == 7)
+		if ($fromuser['status'] == 7 || $fromuser['accountrole'] == 'interlets')
 		{
 			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
 		}
