@@ -526,7 +526,7 @@ function get_eland_interlets_groups($refresh = false)
 			and u.letscode = g.localletscode
 			and u.letscode <> \'\'
 			and u.accountrole = \'interlets\'
-			and u.status = 7');
+			and u.status in (1, 2, 7)');
 
 	$st->execute();
 
@@ -553,7 +553,7 @@ function get_eland_interlets_groups($refresh = false)
 			where g.apimethod = \'elassoap\'
 				and u.letscode = g.localletscode
 				and u.letscode <> \'\'
-				and u.status = 7
+				and u.status in (1, 2, 7)
 				and u.accountrole = \'interlets\'
 				and g.url = ?', array($s_url));
 
@@ -605,7 +605,7 @@ function get_elas_interlets_groups($refresh = false)
 			and u.letscode <> \'\'
 			and u.name <> \'\'
 			and u.accountrole = \'interlets\'
-			and u.status = 7');
+			and u.status in (1, 2, 7)');
 
 	$st->execute();
 
