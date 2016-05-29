@@ -127,7 +127,7 @@ if ($post)
 
 if ($post && $img && $id )
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -249,7 +249,7 @@ if ($post && $img && $id )
  */
 if ($img_del && $id)
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -608,7 +608,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 
 if ($pw)
 {
-	$s_owner = ($pw == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $pw == $s_id) ? true : false;
 
 	if (!$s_admin && !$s_owner)
 	{
@@ -990,7 +990,7 @@ if ($add || $edit)
 		cancel();
 	}
 
-	$s_owner =  ($edit && $s_id && $edit == $s_id) ? true : false;
+	$s_owner =  ($s_group_self && $edit && $s_id && $edit == $s_id) ? true : false;
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
@@ -1820,7 +1820,7 @@ if ($add || $edit)
 
 if ($id)
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	$cc = ($post) ? $cc : 1;
 

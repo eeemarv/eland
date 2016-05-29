@@ -67,7 +67,7 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
-	global $s_id, $systemname, $systemtag, $currency;
+	global $systemname, $systemtag, $currency;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -113,7 +113,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $s_id, $base_url, $schema;
+	global $base_url, $schema;
 
 	$r = "\r\n";
 	$t = "\t";

@@ -52,7 +52,7 @@ if ($del || $edit)
 		cancel();
 	}
 
-	$s_owner = ($forum_post['uid'] == $s_id) ? true : false;
+	$s_owner = ($forum_post['uid'] == $s_id && $s_group_self) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -322,7 +322,7 @@ if ($topic)
 
 	$forum_posts = iterator_to_array($forum_posts);
 
-	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
+	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
 	$find = array(
 		'parent_id' => array('$exists' => false),
@@ -371,7 +371,7 @@ if ($topic)
 
 	foreach ($forum_posts as $p)
 	{
-		$s_owner = (($p['uid'] == $s_id) && $s_id) ? true : false;
+		$s_owner = (($p['uid'] == $s_id) && $s_id && $s_group_self) ? true : false;
 
 		echo '<div class="panel panel-default printview">';
 
@@ -442,7 +442,7 @@ $forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
 $forum_posts = iterator_to_array($forum_posts);
 
-$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
+$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
 if ($s_admin || $s_user)
 {
@@ -499,7 +499,7 @@ foreach($forum_posts as $p)
 		continue;
 	}
 
-	$s_owner = ($s_id == $p['uid']) ? true : false;
+	$s_owner = ($s_id == $p['uid'] && $s_group_self) ? true : false;
 
 	echo '<tr>';
 

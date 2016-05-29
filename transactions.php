@@ -543,8 +543,7 @@ if ($add)
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
-	$user = readuser($s_id);
-	$balance = $user['saldo'];
+	$balance = $session_user['saldo'];
 
 	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
 	$groups = array_merge(array(array(
@@ -561,10 +560,10 @@ if ($add)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	$minlimit = $user['minlimit'];
+	$minlimit = $session_user['minlimit'];
 
 	echo '<div>';
-	echo '<p><strong>' . link_user($user) . ' huidige ' . $currency . ' stand: ';
+	echo '<p><strong>' . link_user($session_user) . ' huidige ' . $currency . ' stand: ';
 	echo '<span class="label label-info">' . $balance . '</span></strong> ';
 	echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
 	echo '</div>';
@@ -624,6 +623,7 @@ if ($add)
 		echo ($l['id'] == $group['id']) ? ' selected="selected" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
+
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -708,7 +708,10 @@ if ($id)
 
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
-	$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+	if ($s_user || $s_admin)
+	{
+		$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+	}
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';
@@ -781,7 +784,7 @@ if ($id)
 /**
  * list
  */
-$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $params_sql = $where_sql = $where_code_sql = array();
 
@@ -1302,7 +1305,7 @@ else
 		echo '</td>';
 
 		echo '<td';
-		echo ($t['id_from'] == $s_id) ? ' class="me"' : '';
+		echo ($t['id_from'] == $s_id && $s_group_self) ? ' class="me"' : '';
 		echo '>';
 		if(!empty($t['real_from']))
 		{
@@ -1315,7 +1318,7 @@ else
 		echo '</td>';
 
 		echo '<td';
-		echo ($t['id_to'] == $s_id) ? ' class="me"' : '';
+		echo ($t['id_to'] == $s_id && $s_group_self) ? ' class="me"' : '';
 		echo '>';
 		if(!empty($t["real_to"]))
 		{

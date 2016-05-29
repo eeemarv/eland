@@ -934,7 +934,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 function mail_q($mail = array(), $priority = false, $sending_schema = false)
 {
-	global $schema, $redis, $s_id;
+	global $schema, $redis;
 
 	$mail['schema'] = $sending_schema ?: $schema;
 
@@ -942,7 +942,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
 		echo $m;
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
@@ -1195,7 +1195,7 @@ function render_select_options($option_ary, $selected, $print = true)
 
 function generate_form_token($print = true)
 {
-	global $schema, $s_id, $redis;
+	global $redis;
 
 	$token = sha1(microtime() . mt_rand(0, 1000000));
 	$key = 'form_token_' . $token;
@@ -1216,7 +1216,7 @@ function generate_form_token($print = true)
 
 function get_error_form_token()
 {
-	global $redis, $script_name, $s_id;
+	global $redis, $script_name;
 
 	if (!isset($_POST['form_token']))
 	{
@@ -1318,7 +1318,7 @@ function invalidate_typeahead_thumbprint(
 	$new_thumbprint = false,
 	$ttl = 5184000)	// 60 days;
 {
-	global $redis, $base_url, $s_id;
+	global $redis, $base_url;
 
 	$group_url = ($group_url) ?: $base_url;
 
