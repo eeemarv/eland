@@ -25,7 +25,7 @@ function log_event($type, $event, $remote_schema = false)
 
 	if ($s_id && $s_schema)
 	{
-		$user = readuser($s_id false, $s_schema);
+		$user = readuser($s_id, false, $s_schema);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
 		$user_str = ' user: ' . link_user($user, $sch, false, true); 
