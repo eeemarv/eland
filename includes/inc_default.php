@@ -177,6 +177,15 @@ if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 	return;
 }
 
+// redirects
+
+if ($redirect = getenv('REDIRECT_' . $key_host_env))
+{
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
+	exit;
+}
+
 /**
  * database connection
  * (search path not set yet)
@@ -200,15 +209,6 @@ foreach ($_ENV as $key => $s)
 {
 	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
 	{
-		if ($s == $host && strpos($key, 'REDIRECT_') === 0)
-		{
-			$redirect = str_replace(['REDIRECT_', '___', '__'], ['', '-', '.'], $key);
-			$redirect = strtolower($redirect);
-			$redirect .= (strpos($redirect, '.') === false) ? '.' . $overall_domain : '';
-			header('HTTP/1.1 301 Moved Permanently');
-			header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
-			exit;
-		} 
 		continue;
 	}
 
