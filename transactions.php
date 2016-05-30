@@ -693,6 +693,13 @@ if ($add)
 	exit;
 }
 
+/*
+ * interlets accounts schemas needed for interlinking users.
+ */
+
+$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+
+
 /**
  * show a transaction
  */
@@ -702,6 +709,28 @@ if ($id)
 	$transaction = $db->fetchAssoc('select t.*
 		from transactions t
 		where t.id = ?', array($id));
+
+	$inter_schema = false;
+
+	if ($interlets_accounts_schemas[$transaction['id_from']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$transaction['id_from']];
+	}
+	else if ($interlets_accounts_schemas[$transaction['id_to']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$transaction['id_to']];
+	}
+
+	if ($inter_schema)
+	{
+		$inter_transaction = $db->fetchAssoc('select t.*
+			from ' . $inter_schema . '.transactions t
+			where t.transid = ?', array($transaction['transid']));
+	}
+	else
+	{
+		$inter_transaction = false;
+	}
 
 	$next = $db->fetchColumn('select id
 		from transactions
@@ -769,7 +798,16 @@ if ($id)
 		echo '<dt>Van interlets gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-		echo $transaction['real_from'];
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_from'], $inter_schema, ($s_user || $s_admin || $inter_schema == $s_schema));
+		}
+		else
+		{
+			echo $transaction['real_from'];
+		}
+
 		echo '</dd>';
 	}
 	else
@@ -792,7 +830,16 @@ if ($id)
 		echo '<dt>Naar interlets gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-		echo $transaction['real_to'];
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_to'], $inter_schema, ($s_user || $s_admin || $inter_schema == $s_schema));
+		}
+		else
+		{
+			echo $transaction['real_to'];
+		}
+
 		echo '</dd>';
 	}
 	else

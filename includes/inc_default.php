@@ -518,9 +518,9 @@ function get_eland_interlets_groups($refresh = false)
 		return json_decode($redis->get($redis_key), true);
 	}
 
-	$interlets_hosts = array();
+	$interlets_hosts = $interlets_accounts_schemas = array();
 
-	$st = $db->prepare('select g.url
+	$st = $db->prepare('select g.url, u.id
 		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
@@ -537,8 +537,15 @@ function get_eland_interlets_groups($refresh = false)
 		if (isset($schemas[$h]))
 		{
 			$interlets_hosts[] = $h;
+
+			$interlets_accounts_schemas[$row['id']] = $schemas[$h];
 		}
 	}
+
+	// cache interlets account ids for user interlets linking. (in transactions)
+	$redis_key_interlets_accounts = $s_schema . '_interlets_accounts_schemas';
+	$redis->set($redis_key_interlets_accounts, json_encode($interlets_accounts_schemas));
+	$redis->expire($redis_key_interlets_accounts, 86400);
 
 	$s_url = $app_protocol . $hosts[$s_schema];
 
@@ -653,7 +660,7 @@ function aphp(
 	$out .= '>';
 	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
 	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-	$out .= (is_array($label)) ? $label[0] : htmlspecialchars($label, ENT_QUOTES);
+	$out .= htmlspecialchars($label, ENT_QUOTES);
 	$out .= ($collapse) ? '</span>' : '';
 	$out .= '</a>';
 	return $out;
@@ -829,9 +836,19 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	global $rootpath;
 	$user = (is_array($user)) ? $user : readuser($user, false, $sch);
 	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
-	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
-	$str = ($show_id) ? $str . ' (id: ' . $user['id'] . ')' : $str;
-	return $str;
+	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
+	if ($link)
+	{
+		$out = '<a href="';
+		$out .= generate_url('users', 'id=' . $user['id'], $sch);
+		$out .= '">' . $str . '</a>';
+	}
+	else
+	{
+		$out .= $str;
+	}
+	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
+	return $out;
 }
 
 /*
