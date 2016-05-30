@@ -16,6 +16,7 @@ $submit = (isset($_POST['zend'])) ? true : false;
 
 $mid = ($_GET['mid']) ?: false;
 $tuid = ($_GET['tuid']) ?: false;
+$tus = ($_GET['tus']) ?: false;
 $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
@@ -505,22 +506,45 @@ if ($add)
 			'transid'		=> $transid,
 		);
 
+		$group_id = 'self';
+		$to_schema_table = '';
+
+		if ($tus)
+		{
+			if ($host_from_tus = $hosts[$tus])
+			{
+				$group_id = $db->fetchColumn('select id
+					from letsgroups
+					where url = ?', array($app_protocol . $host_from_tus));
+				$to_schema_table = $tus . '.';
+			}
+		}
+
 		if ($mid)
 		{
 			$row = $db->fetchAssoc('SELECT
-					m.content, m.amount, m.id_user, u.letscode, u.name
-				FROM messages m, users u
-				WHERE u.id = m.id_user
-					AND m.id = ?', array($mid));
-			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
-			$transaction['description'] =  '#m' . $mid . ' ' . $row['content'];
-			$transaction['amount'] = $row['amount'];
-			$tuid = $row['tuid'];
+					m.content, m.amount, m.id_user, u.letscode, u.name, u.status
+				from ' . $to_schema_table . 'messages m,
+					'. $to_schema_table . 'users u
+				where u.id = m.id_user
+					and m.id = ?', array($mid));
+
+			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			{
+				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+				$transaction['description'] =  substr('#m.' . $to_schema_table . $mid . ' ' . $row['content'], 0, 60);
+				$transaction['amount'] = $row['amount'];
+				$tuid = $row['tuid'];
+			}
 		}
 		else if ($tuid)
 		{
-			$row = readuser($tuid);
-			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+			$row = readuser($tuid, false, (($host_from_tus) ? $tus : false));
+
+			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			{
+				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+			}
 		}
 
 		if ($fuid && $s_admin && ($fuid != $tuid))
@@ -533,11 +557,6 @@ if ($add)
 		{
 			$transaction['letscode_from'] = '';
 		}
-	}
-
-	if (!isset($_POST['zend']))
-	{
-		$group['id'] = 'self';
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -620,7 +639,7 @@ if ($add)
 		}
 
 		echo 'data-typeahead="' . $typeahead . '"';
-		echo ($l['id'] == $group['id']) ? ' selected="selected" ' : '';
+		echo ($l['id'] == $group_id) ? ' selected="selected" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
 
