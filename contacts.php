@@ -114,7 +114,9 @@ if ($del)
 	echo '<dt>Waarde</dt>';
 	echo '<dd>' . $contact['value'] . '</dd>';
 	echo '<dt>Commentaar</dt>';
-	echo '<dd>' . $contact['comments'] . '</dd>';
+	echo '<dd>';
+	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
+	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd><span class="label label-' . $acc[1] . '">' . $acc[0] . '</span></dd>';
 	echo '</dl>';
