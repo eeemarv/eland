@@ -595,7 +595,7 @@ if ($add)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form  method="post" class="form-horizontal">';
+	echo '<form  method="post" class="form-horizontal" autocomplete="off">';
 
 	echo ($s_admin) ? '' : '<div style="display:none;">';
 

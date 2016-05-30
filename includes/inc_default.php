@@ -1224,11 +1224,15 @@ function render_select_options($option_ary, $selected, $print = true)
 function generate_form_token($print = true)
 {
 	global $redis;
+	static $token;
 
-	$token = sha1(microtime() . mt_rand(0, 1000000));
-	$key = 'form_token_' . $token;
-	$redis->set($key, '1');
-	$redis->expire($key, 14400); // 4 hours
+	if (!isset($token))
+	{
+		$token = sha1(microtime() . mt_rand(0, 1000000));
+		$key = 'form_token_' . $token;
+		$redis->set($key, '1');
+		$redis->expire($key, 14400); // 4 hours
+	}
 
 	if ($print)
 	{

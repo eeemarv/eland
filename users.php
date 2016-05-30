@@ -400,7 +400,8 @@ if ($post && $s_admin)
 
 	if ($field_submit || $mail_submit)
 	{
-		$password = ($mail_submit) ? $_POST['mail_password'] : $_POST[$field . '_password'];
+		$password = ($mail_submit) ? 'mail_password' : $field . '_password';
+		$password = $_POST[$password];
 		$value = $_POST[$field];
 
 		$errors = array();
@@ -413,7 +414,7 @@ if ($post && $s_admin)
 
 		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
-			$errors[] = 'Paswoord is niet juist.';
+			$errors[] = 'Het paswoord is niet juist.';
 		}
 	}
 
@@ -3137,7 +3138,8 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo sprintf($inp, 'mail_password', 'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
+		echo sprintf($inp, 'mail_password',
+			'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
 
 		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
@@ -3181,7 +3183,8 @@ if ($v_list)
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
 			}
 
-			echo sprintf($inp, $k . '_password', 'Paswoord', 'password', 'class="form-control"', $k . '_password');
+			echo sprintf($inp, $k . '_password',
+				'Paswoord', 'password', 'class="form-control"', $k . '_password');
 
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
 
@@ -3191,7 +3194,7 @@ if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
+//		echo '</div>';
 		echo '</div>';
 		generate_form_token();
 		echo '</form>';

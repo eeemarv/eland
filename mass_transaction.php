@@ -455,7 +455,7 @@ foreach ($st as $k => $s)
 
 echo '</ul>';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post" class="form-horizontal" autocomplete="off">';
 
 echo '<input type="hidden" value="" id="combined-filter">';
 echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
@@ -572,8 +572,9 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="description" name="description" ';
-echo 'value="' . $description . '" required>';
+echo '<input type="text" class="form-control" id="description" ';
+echo 'name="description" ';
+echo 'value="' . $description . ' " required>';
 echo '</div>';
 echo '</div>';
 
@@ -590,8 +591,9 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="password" class="form-control" id="password" name="password" ';
-echo 'value="" autocomplete="false" required>';
+echo '<input type="password" class="form-control" id="password" ';
+echo 'name="password" ';
+echo 'autocomplete="off" required>';
 echo '</div>';
 echo '</div>';
 
