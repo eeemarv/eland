@@ -746,12 +746,8 @@ if ($id)
 	echo '<div class="panel-heading">';
 
 	echo '<dl class="dl-horizontal">';
-	echo '<dt>Tijdstip</dt>';
-	echo '<dd>';
-	echo $transaction['date'];
-	echo '</dd>';
 
-	echo '<dt>Creatietijdstip</dt>';
+	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
 	echo $transaction['cdate'];
 	echo '</dd>';
@@ -761,31 +757,53 @@ if ($id)
 	echo $transaction['transid'];
 	echo '</dd>';
 
-	echo '<dt>Van account</dt>';
-	echo '<dd>';
-	echo link_user($transaction['id_from']);
-	echo '</dd>';
+	echo '<br>';
 
 	if ($transaction['real_from'])
 	{
-		echo '<dt>Van remote gebruiker</dt>';
+		echo '<dt>Van interlets account</dt>';
 		echo '<dd>';
+		echo link_user($transaction['id_from'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Van interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 		echo $transaction['real_from'];
 		echo '</dd>';
 	}
+	else
+	{
+		echo '<dt>Van gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_from']);
+		echo '</dd>';
+	}
 
-	echo '<dt>Naar account</dt>';
-	echo '<dd>';
-	echo link_user($transaction['id_to']);
-	echo '</dd>';
+	echo '<br>';
 
 	if ($transaction['real_to'])
 	{
-		echo '<dt>Naar remote gebruiker</dt>';
+		echo '<dt>Naar interlets account</dt>';
 		echo '<dd>';
+		echo link_user($transaction['id_to'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Naar interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 		echo $transaction['real_to'];
 		echo '</dd>';
 	}
+	else
+	{
+		echo '<dt>Naar gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_to']);
+		echo '</dd>';
+	}
+
+	echo '<br>';
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
@@ -1288,6 +1306,7 @@ if ($uid)
 		{
 			if ($t['real_to'])
 			{
+				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 				echo htmlspecialchars($t['real_to'], ENT_QUOTES);
 			}
 			else
@@ -1299,6 +1318,7 @@ if ($uid)
 		{
 			if ($t['real_from'])
 			{
+				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 				echo htmlspecialchars($t['real_from'], ENT_QUOTES);
 			}
 			else
@@ -1328,11 +1348,11 @@ else
 		echo $t['cdate'];
 		echo '</td>';
 
-		echo '<td';
-		echo ($t['id_from'] == $s_id && $s_group_self) ? ' class="me"' : '';
-		echo '>';
+		echo '<td>';
+
 		if(!empty($t['real_from']))
 		{
+			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 			echo htmlspecialchars($t['real_from'],ENT_QUOTES);
 		}
 		else
@@ -1341,12 +1361,12 @@ else
 		}
 		echo '</td>';
 
-		echo '<td';
-		echo ($t['id_to'] == $s_id && $s_group_self) ? ' class="me"' : '';
-		echo '>';
-		if(!empty($t["real_to"]))
+		echo '<td>';
+
+		if(!empty($t['real_to']))
 		{
-			echo htmlspecialchars($t["real_to"],ENT_QUOTES);
+			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+			echo htmlspecialchars($t['real_to'],ENT_QUOTES);
 		}
 		else
 		{ 
