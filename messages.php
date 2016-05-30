@@ -1121,11 +1121,15 @@ if ($id)
 			$top_buttons .= aphp('messages', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
 			$top_buttons .= aphp('messages', 'del=' . $id, 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 		}
+	}
 
-		if ($message['msg_type'] == 1 && !$s_owner)
-		{
-			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie voor dit aanbod', 'exchange', true);
-		}
+	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
+	{
+			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+
+			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id . $tus, 'Transactie',
+				'btn btn-warning', 'Transactie voor dit aanbod',
+				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)

@@ -520,7 +520,7 @@ if ($add)
 			}
 		}
 
-		if ($mid)
+		if ($mid && !($tus xor $host_from_tus))
 		{
 			$row = $db->fetchAssoc('SELECT
 					m.content, m.amount, m.id_user, u.letscode, u.name, u.status
@@ -533,7 +533,12 @@ if ($add)
 			{
 				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
 				$transaction['description'] =  substr('#m.' . $to_schema_table . $mid . ' ' . $row['content'], 0, 60);
-				$transaction['amount'] = $row['amount'];
+				$amount = $row['amount'];
+				if ($tus)
+				{
+					$amount = round((readconfigfromdb('currencyratio') * $amount) / readconfigfromdb('currencyratio', $tus));
+				}
+				$transaction['amount'] = $amount;
 				$tuid = $row['tuid'];
 			}
 		}
@@ -553,7 +558,7 @@ if ($add)
 			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
 		}
 
-		if ($tuid == $s_id && !$fuid)
+		if ($tuid == $s_id && !$fuid && $tus != $schema)
 		{
 			$transaction['letscode_from'] = '';
 		}

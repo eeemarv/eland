@@ -1903,9 +1903,13 @@ if ($id)
 		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if (($s_admin || ($s_user && !$s_owner)) && $user['status'] != 7)
+	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
 	{
-		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, false, false), 'exchange', true);
+			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+
+			$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id . $tus, 'Transactie',
+				'btn btn-warning', 'Transactie naar ' . link_user($user, false, false),
+				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)

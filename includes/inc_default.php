@@ -626,12 +626,21 @@ function get_elas_interlets_groups($refresh = false)
 }
 
 /*
- * create link inside this group with query parameters depending on user and role
+ * create link within eland with query parameters depending on user and role
  */
 
-function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
+function aphp(
+	$entity = '',
+	$params = '',
+	$label = '*link*',
+	$class = false,
+	$title = false,
+	$fa = false,
+	$collapse = false,
+	$attr = false,
+	$sch = false)
 {
-	$out = '<a href="' .  generate_url($entity, $params) . '"';
+	$out = '<a href="' .  generate_url($entity, $params, $sch) . '"';
 	$out .= ($class) ? ' class="' . $class . '"' : '';
 	$out .= ($title) ? ' title="' . $title . '"' : '';
 	if (is_array($attr))
