@@ -993,6 +993,39 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $transactions = $db->fetchAll($query, $params_sql);
 
+foreach ($transactions as &$t)
+{
+	if (!($t['real_from'] || $t['real_to']))
+	{
+		continue;
+	}
+
+	$inter_schema = false;
+
+	if ($interlets_accounts_schemas[$t['id_from']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$t['id_from']];
+	}
+	else if ($interlets_accounts_schemas[$t['id_to']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$t['id_to']];
+	}
+
+	if ($inter_schema)
+	{
+		$inter_transaction = $db->fetchAssoc('select t.*
+			from ' . $inter_schema . '.transactions t
+			where t.transid = ?', array($t['transid']));
+
+		if ($inter_transaction)
+		{
+			$t['inter_schema'] = $inter_schema;
+			$t['inter_transaction'] = $inter_transaction;
+		}
+	}
+}
+
+
 $row_count = $db->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
@@ -1319,7 +1352,9 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$h_params['orderby'] = $key_orderby;
 		$h_params['asc'] = $data['asc'];
 
-		echo aphp('transactions', $h_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+		echo '<a href="' . generate_url('transactions', $h_params) . '">';
+		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '</a>';
 	}
 	echo '</th>';
 }
@@ -1354,7 +1389,17 @@ if ($uid)
 			if ($t['real_to'])
 			{
 				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-				echo htmlspecialchars($t['real_to'], ENT_QUOTES);
+
+				if ($t['inter_transaction'])
+				{
+					echo link_user($t['inter_transaction']['id_to'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+				}
+				else
+				{
+					echo $t['real_to'];
+				}
+
+				echo '</dd>';
 			}
 			else
 			{
@@ -1366,7 +1411,17 @@ if ($uid)
 			if ($t['real_from'])
 			{
 				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-				echo htmlspecialchars($t['real_from'], ENT_QUOTES);
+
+				if ($t['inter_transaction'])
+				{
+					echo link_user($t['inter_transaction']['id_from'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+				}
+				else
+				{
+					echo $t['real_from'];
+				}
+
+				echo '</dd>';
 			}
 			else
 			{
@@ -1397,28 +1452,50 @@ else
 
 		echo '<td>';
 
-		if(!empty($t['real_from']))
+		if ($t['real_from'])
 		{
 			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-			echo htmlspecialchars($t['real_from'],ENT_QUOTES);
+
+			if ($t['inter_transaction'])
+			{
+				echo link_user($t['inter_transaction']['id_from'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+			}
+			else
+			{
+				echo $t['real_from'];
+			}
+
+			echo '</dd>';
 		}
 		else
 		{
 			echo link_user($t['id_from']);
 		}
+
 		echo '</td>';
 
 		echo '<td>';
 
-		if(!empty($t['real_to']))
+		if ($t['real_to'])
 		{
 			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
-			echo htmlspecialchars($t['real_to'],ENT_QUOTES);
+
+			if ($t['inter_transaction'])
+			{
+				echo link_user($t['inter_transaction']['id_to'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+			}
+			else
+			{
+				echo $t['real_to'];
+			}
+
+			echo '</dd>';
 		}
 		else
-		{ 
+		{
 			echo link_user($t['id_to']);
 		}
+
 		echo '</td>';
 
 		echo '</tr>';

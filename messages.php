@@ -1906,7 +1906,9 @@ if ($v_list)
 			$th_params['orderby'] = $key_orderby;
 			$th_params['asc'] = $data['asc'];
 
-			echo aphp('messages', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+			echo '<a href="' . generate_url('messages', $th_params) . '">';
+			echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+			echo '</a>';
 		}
 		echo '</th>';
 	}
