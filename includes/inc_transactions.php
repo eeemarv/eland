@@ -113,7 +113,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $base_url, $schema;
+	global $base_url, $schema, $hosts;
 
 	$r = "\r\n";
 	$t = "\t";
