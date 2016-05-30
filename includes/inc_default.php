@@ -501,7 +501,7 @@ function clear_interlets_groups_cache()
 /**
  *
  */
-function get_eland_interlets_groups($refresh = false)
+function get_eland_interlets_groups($refresh = false, $sch = false)
 {
 	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
 
@@ -510,7 +510,9 @@ function get_eland_interlets_groups($refresh = false)
 		return array();
 	}
 
-	$redis_key = $s_schema . '_eland_interlets_groups';
+	$sch = ($sch) ?: $s_schema;
+
+	$redis_key = $sch . '_eland_interlets_groups';
 
 	if (!$refresh && $redis->exists($redis_key))
 	{
@@ -521,7 +523,7 @@ function get_eland_interlets_groups($refresh = false)
 	$interlets_hosts = $interlets_accounts_schemas = array();
 
 	$st = $db->prepare('select g.url, u.id
-		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+		from ' . $sch . '.letsgroups g, ' . $sch . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
 			and u.letscode <> \'\'
@@ -543,11 +545,11 @@ function get_eland_interlets_groups($refresh = false)
 	}
 
 	// cache interlets account ids for user interlets linking. (in transactions)
-	$redis_key_interlets_accounts = $s_schema . '_interlets_accounts_schemas';
+	$redis_key_interlets_accounts = $sch . '_interlets_accounts_schemas';
 	$redis->set($redis_key_interlets_accounts, json_encode($interlets_accounts_schemas));
 	$redis->expire($redis_key_interlets_accounts, 86400);
 
-	$s_url = $app_protocol . $hosts[$s_schema];
+	$s_url = $app_protocol . $hosts[$sch];
 
 	$eland_interlets_groups = array();
 

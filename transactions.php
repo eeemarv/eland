@@ -699,6 +699,13 @@ if ($add)
 
 $interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
 
+if (!is_array($interlets_accounts_schemas))
+{
+	get_eland_interlets_groups(false, $schema);
+	$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+}
+
+$s_inter_schema_check = array_merge($eland_interlets_groups, array($s_schema => true));
 
 /**
  * show a transaction
@@ -801,7 +808,9 @@ if ($id)
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_from'], $inter_schema, ($s_user || $s_admin || $inter_schema == $s_schema));
+			echo link_user($inter_transaction['id_from'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
 		}
 		else
 		{
@@ -833,7 +842,9 @@ if ($id)
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_to'], $inter_schema, ($s_user || $s_admin || $inter_schema == $s_schema));
+			echo link_user($inter_transaction['id_to'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
 		}
 		else
 		{
@@ -1392,7 +1403,9 @@ if ($uid)
 
 				if ($t['inter_transaction'])
 				{
-					echo link_user($t['inter_transaction']['id_to'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+					echo link_user($t['inter_transaction']['id_to'],
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']]);
 				}
 				else
 				{
@@ -1414,7 +1427,9 @@ if ($uid)
 
 				if ($t['inter_transaction'])
 				{
-					echo link_user($t['inter_transaction']['id_from'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+					echo link_user($t['inter_transaction']['id_from'],
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']]);
 				}
 				else
 				{
@@ -1458,7 +1473,9 @@ else
 
 			if ($t['inter_transaction'])
 			{
-				echo link_user($t['inter_transaction']['id_from'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+				echo link_user($t['inter_transaction']['id_from'],
+					$t['inter_schema'],
+					$s_inter_schema_check[$t['inter_schema']]);
 			}
 			else
 			{
@@ -1482,7 +1499,9 @@ else
 
 			if ($t['inter_transaction'])
 			{
-				echo link_user($t['inter_transaction']['id_to'], $t['inter_schema'], ($s_user || $s_admin || $inter_schema == $s_schema));
+				echo link_user($t['inter_transaction']['id_to'],
+					$t['inter_schema'],
+					$s_inter_schema_check[$t['inter_schema']]);
 			}
 			else
 			{
