@@ -179,12 +179,18 @@ if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 
 // redirects
 
+var_dump(getenv('REDIRECT_Y__LETSA__NET'));
+var_dump(getenv('SCHEMA_' . $key_host_env));
+
+
+/*
 if ($redirect = getenv('REDIRECT_' . $key_host_env))
 {
-	header('HTTP/1.1 301 Moved Permanently');
+//	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
 	exit;
 }
+*/
 
 /**
  * database connection
