@@ -177,20 +177,16 @@ if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 	return;
 }
 
-// redirects
-
-var_dump(getenv('REDIRECT_Y__LETSA__NET'));
-var_dump(getenv('SCHEMA_' . $key_host_env));
-
-
 /*
+ * permanent redirects
+ */
+
 if ($redirect = getenv('REDIRECT_' . $key_host_env))
 {
-//	header('HTTP/1.1 301 Moved Permanently');
+	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
 	exit;
 }
-*/
 
 /**
  * database connection
@@ -221,15 +217,14 @@ foreach ($_ENV as $key => $s)
 	$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
 	$h = strtolower($h);
 
+	if (!strpos($h, '.' . $overall_domain))
+	{
+		$h .= '.' . $overall_domain;
+	}
+
 	if (strpos($h, 'localhost') === 0)
 	{
 		continue;
-	}
-
-	// temporal to allow change of schema env's to short version
-	if (strpos('.' . $overall_domain, $h))
-	{
-		$h = str_replace('.' . $overall_domain, '', $h);
 	}
 
 	$schemas[$h] = $s;
@@ -591,7 +586,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
  */
 function get_elas_interlets_groups($refresh = false)
 {
-	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+	global $redis, $db, $schemas, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
