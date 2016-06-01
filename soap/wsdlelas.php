@@ -237,7 +237,7 @@ function getstatus($apikey)
 
 	if (check_apikey($apikey, 'interlets'))
 	{
-		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND'; //  . $elasversion;
+		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND';
 	}
 	else
 	{

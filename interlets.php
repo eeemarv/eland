@@ -342,6 +342,8 @@ if ($id)
 	$top_buttons .= aphp('interlets', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
 	$top_buttons .= aphp('interlets', '', 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
+	$includejs .= '<script src="' . $rootpath . 'js/elas_soap_status.js"></script>';
+
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';
 
@@ -351,30 +353,18 @@ if ($id)
 	echo '<div class="panel-heading">';
 
 	echo '<dl class="dl-horizontal">';
-	echo '<dt>eLAS Soap status</dt>';
+	echo '<dt>Status</dt>';
 
 	if ($schemas[$group['host']])
 	{
-		echo '<dd><span class="btn btn-success btn-xs">server</span></dd>';
+		echo '<dd><span class="btn btn-success btn-xs">eLAND server</span></dd>';
 	}
 	else
 	{
-		echo '<dd><i><div id="statusdiv">';
-		$soapurl = $group['elassoapurl'] . '/wsdlelas.php?wsdl';
-		$apikey = $group['remoteapikey'];
-		$client = new nusoap_client($soapurl, true);
-		$err = $client->getError();
-		if (!$err)
-		{
-			$result = $client->call('getstatus', array('apikey' => $apikey));
-			$err = $client->getError();
-			if (!$err)
-			{
-				echo $result;
-			}
-		}
-		echo '</div></i>';
-		echo '</dd>'; 
+		echo '<dd><i><span data-elas-soap-status="' . generate_url('ajax/elas_soap_status', 'group_id=' . $group['id']) . '">';
+		echo 'bezig met eLAS soap status te bekomen...</span></i>';
+		echo '</dd>';
+
 	}
 
 	echo '<dt>Groepsnaam</dt>';
