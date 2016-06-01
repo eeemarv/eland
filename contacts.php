@@ -41,7 +41,7 @@ if ($del)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = ($user_id == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -114,7 +114,9 @@ if ($del)
 	echo '<dt>Waarde</dt>';
 	echo '<dd>' . $contact['value'] . '</dd>';
 	echo '<dt>Commentaar</dt>';
-	echo '<dd>' . $contact['comments'] . '</dd>';
+	echo '<dd>';
+	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
+	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd><span class="label label-' . $acc[1] . '">' . $acc[0] . '</span></dd>';
 	echo '</dl>';
@@ -167,7 +169,7 @@ if ($edit || $add)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = ($user_id == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -194,7 +196,7 @@ if ($edit || $add)
 
 			if ($user_id)
 			{
-				$letscode = link_user($user_id, null, false);
+				$letscode = link_user($user_id, false, false);
 			}
 			else
 			{
@@ -408,7 +410,7 @@ if ($edit || $add)
 
 if ($uid)
 {
-	$s_owner = ($uid == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $uid == $s_id) ? true : false;
 
 	$contacts = $db->fetchAll('select c.*, tc.abbrev
 		from contact c, type_contact tc
@@ -568,7 +570,7 @@ if (!$s_admin)
 	redirect_index();
 }
 
-$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $params = array(
 	'orderby'	=> $orderby,
@@ -587,7 +589,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$letscode = link_user($user, null, false);
+	$letscode = link_user($user, false, false);
 }
 
 if (!$uid)
@@ -603,7 +605,7 @@ if (!$uid)
 			$where_sql[] = 'c.id_user = ?';
 			$params_sql[] = $fuid;
 
-			$letscode = link_user($fuid, null, false);
+			$letscode = link_user($fuid, false, false);
 		}
 		else
 		{

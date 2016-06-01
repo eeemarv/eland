@@ -52,7 +52,7 @@ if ($del || $edit)
 		cancel();
 	}
 
-	$s_owner = ($forum_post['uid'] == $s_id) ? true : false;
+	$s_owner = ($forum_post['uid'] == $s_id && $s_group_self) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -322,12 +322,43 @@ if ($topic)
 
 	$forum_posts = iterator_to_array($forum_posts);
 
-	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
+	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
+
+	$find = array(
+		'parent_id' => array('$exists' => false),
+		'access'	=> array('$gte'	=> (string) $access_level),
+		'ts' 		=> array('$lt' => $topic_post['ts']),
+	);
+
+	$prev = $mdb->forum->findOne($find);
+
+	$prev = ($prev) ? $prev['_id'] : false;
+
+	$find = array(
+		'parent_id' => array('$exists' => false),
+		'access' 	=> array('$gte'	=> (string) $access_level),
+		'ts' 		=> array('$gt' => $topic_post['ts']),
+	);
+
+	$next = $mdb->forum->findOne($find);
+
+	$next = ($next) ? $next['_id'] : false;
 
 	if ($s_admin || $s_owner)
 	{
 		$top_buttons .= aphp('forum', 'del=' . $topic, 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
+
+	if ($prev)
+	{
+		$top_buttons .= aphp('forum', 't=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+	}
+
+	if ($next)
+	{
+		$top_buttons .= aphp('forum', 't=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+	}
+
 
 	$top_buttons .= aphp('forum', '', 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
@@ -340,7 +371,7 @@ if ($topic)
 
 	foreach ($forum_posts as $p)
 	{
-		$s_owner = (($p['uid'] == $s_id) && $s_id) ? true : false;
+		$s_owner = (($p['uid'] == $s_id) && $s_id && $s_group_self) ? true : false;
 
 		echo '<div class="panel panel-default printview">';
 
@@ -411,7 +442,7 @@ $forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
 
 $forum_posts = iterator_to_array($forum_posts);
 
-$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id) ? true : false;
+$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
 if ($s_admin || $s_user)
 {
@@ -454,7 +485,7 @@ echo '<th>Onderwerp</th>';
 echo '<th data-hide="phone, tablet">Gebruiker</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="descending" ';
 echo 'data-type="numeric">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+echo ($s_guest) ? '' : '<th data-hide="phone">Zichtbaarheid</th>';
 echo ($s_admin) ? '<th data-hide="phone,tablet">Acties</th>' : '';
 echo '</tr>';
 
@@ -468,7 +499,7 @@ foreach($forum_posts as $p)
 		continue;
 	}
 
-	$s_owner = ($s_id == $p['uid']) ? true : false;
+	$s_owner = ($s_id == $p['uid'] && $s_group_self) ? true : false;
 
 	echo '<tr>';
 

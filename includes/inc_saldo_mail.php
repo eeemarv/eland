@@ -440,11 +440,11 @@ function saldo()
 
 	if (count($log_to))
 	{
-		log_event('', 'mail', 'Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to));
+		log_event('mail', 'Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to));
 	}
 	else
 	{
-		log_event('', 'mail', 'no saldomail queued');
+		log_event('mail', 'no saldomail queued');
 	}
 
 	return true;

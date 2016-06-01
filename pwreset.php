@@ -5,12 +5,6 @@ $allow_anonymous_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_passwords.php';
 
-if ($s_id)
-{
-	header('Location: ' . $rootpath . 'index.php');
-	exit;
-}
-
 $token = $_GET['token'];
 
 if ($token)
@@ -26,7 +20,7 @@ if ($token)
 				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
 				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
-				log_event($s_id, 'System', 'password reset success user ' . link_user($user, null, false, true));
+				log_event('system', 'password reset success user ' . link_user($user, false, false, true));
 
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
@@ -89,7 +83,7 @@ if ($_POST['zend'])
 
 	if($email)
 	{
-		log_event($s_id, 'System', 'Activation request for ' . $email);
+		log_event('system', 'Activation request for ' . $email);
 		$mail_ary = $db->fetchAll('SELECT c.id_user, u.letscode
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
@@ -122,7 +116,7 @@ if ($_POST['zend'])
 				mail_q(array('to' => $email, 'text' => $text, 'subject' => $subject), true);
 
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
-				log_event($s_id, 'System', 'Paswoord reset link verstuurd naar ' . $email);
+				log_event('system', 'Paswoord reset link verstuurd naar ' . $email);
 				header('Location: login.php');
 				exit;
 			}
@@ -139,7 +133,7 @@ if ($_POST['zend'])
 	else
 	{
 		$alert->error('Geef een mailadres op');
-		log_event($s_id, 'System', 'Empty activation request');
+		log_event('system', 'Empty activation request');
 	}
 }
 

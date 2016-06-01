@@ -3,12 +3,12 @@ $rootpath = '../';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$letsgroup_id = ($_GET['letsgroup_id']) ?: 'self';
+$group_id = ($_GET['group_id']) ?: 'self';
 $status = ($_GET['status']) ?: 'active';
 
 if ($s_guest && $status != 'active')
 {
-	http_reponse_code(403);
+	http_response_code(403);
 	exit;
 }
 
@@ -18,7 +18,7 @@ if(!$s_admin && !in_array($status, ['active', 'extern']))
 	exit;
 }
 
-if ($letsgroup_id == 'self')
+if ($group_id == 'self')
 {
 	switch($status)
 	{
@@ -51,7 +51,9 @@ if ($letsgroup_id == 'self')
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
+$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
+
+$group['domain'] = get_host($group);
 
 if (!$group || $status != 'active')
 {
@@ -66,11 +68,9 @@ if ($group['apimethod'] != 'elassoap')
 	exit;
 }
 
-list($schemas, $domains) = get_schemas_domains(true);
-
-if ($schemas[$group['url']])
+if (isset($schemas[$group['domain']]))
 {
-	$remote_schema = $schemas[$group['url']];
+	$remote_schema = $schemas[$group['domain']];
 
 	if ($db->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', array($base_url)))
 	{

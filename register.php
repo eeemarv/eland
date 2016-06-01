@@ -179,7 +179,7 @@ if ($_POST['zend'])
 		'gsm'			=> $_POST['gsm'],
 	);
 
-	log_event($s_id, 'System', 'Registration request for ' . $reg['email']);
+	log_event('system', 'Registration request for ' . $reg['email']);
 
 	if(!$reg['email'])
 	{

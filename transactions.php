@@ -16,6 +16,7 @@ $submit = (isset($_POST['zend'])) ? true : false;
 
 $mid = ($_GET['mid']) ?: false;
 $tuid = ($_GET['tuid']) ?: false;
+$tus = ($_GET['tus']) ?: false;
 $fuid = ($_GET['fuid']) ?: false;
 $uid = ($_GET['uid']) ?: false;
 $inline = ($_GET['inline']) ? true : false;
@@ -59,7 +60,7 @@ if ($add)
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = date('Y-m-d H:i:s');
-		$letsgroup_id = $_POST['letsgroup_id'];
+		$group_id = $_POST['group_id'];
 
 		if ($stored_transid != $transaction['transid'])
 		{
@@ -76,11 +77,11 @@ if ($add)
 			$errors[] = 'De omschrijving mag maximaal 60 tekens lang zijn.';
 		}
 
-		if ($letsgroup_id != 'self')
+		if ($group_id != 'self')
 		{
-			$letsgroup = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($letsgroup_id));
+			$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
 
-			if (!isset($letsgroup))
+			if (!isset($group))
 			{
 				$errors[] = 'Letsgroep niet gevonden.';
 			}
@@ -95,24 +96,34 @@ if ($add)
 			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_from));
 		}
 
-		$letscode_touser = ($letsgroup_id == 'self') ? $letscode_to : $letsgroup['localletscode'];
+		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
 
 		$touser = $db->fetchAssoc('select * from users where letscode = ?', array($letscode_touser));
 
-		if ($letsgroup_id == 'self' && $touser['status'] == 7)
+		if ($group_id == 'self')
 		{
-			$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+			$to_apimethod_check = fetchColumn('select apimethod
+				from letsgroups
+				where localletscode = ?', array($letscode_to));
+
+			if ($to_apimethod_check != 'mail')
+			{
+				$errors[] = 'Je kan enkel rechtstreeks naar een interletsrekening met apimethod <strong>mail</strong> overschrijven';
+			}
+
+			if ($touser['status'] == 7)
+			{
+				$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+			}
 		}
 
-		if ($fromuser['status'] == 7)
+		if ($fromuser['status'] == 7 || $fromuser['accountrole'] == 'interlets')
 		{
 			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
 		}
 
 		$transaction['id_from'] = $fromuser['id'];
 		$transaction['id_to'] = $touser['id'];
-
-		list($schemas, $domains) = get_schemas_domains(true);
 
 		if (!$transaction['description'])
 		{
@@ -141,7 +152,7 @@ if ($add)
 
 		if(empty($touser))
 		{
-			if ($letsgroup_id == 'self')
+			if ($group_id == 'self')
 			{
 				$errors[] = 'Bestemmeling bestaat niet';
 			}
@@ -158,11 +169,11 @@ if ($add)
 
 		if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'] && !$s_admin)
 		{
-			$t_account = ($letsgroup_id == 'self') ? 'bestemmeling' : 'interletsrekening';
+			$t_account = ($group_id == 'self') ? 'bestemmeling' : 'interletsrekening';
 			$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
 		}
 
-		if($letsgroup_id == 'self'
+		if($group_id == 'self'
 			&& !$s_admin
 			&& !($touser['status'] == '1' || $touser['status'] == '2'))
 		{
@@ -180,7 +191,7 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($letsgroup_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
+				$dest = ($group_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
 			}
 		}
@@ -201,12 +212,21 @@ if ($add)
 
 		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
 
+		if (isset($group['url']))
+		{
+			$group_domain = get_host($group);
+		}
+		else
+		{
+			$group_domain = false;
+		}
+
 		if(count($errors))
 		{
-			log_event($s_id, 'transaction', 'form error(s): ' . implode(' | ', $errors));
+			log_event('transaction', 'form error(s): ' . implode(' | ', $errors));
 			$alert->error($errors);
 		}
-		else if ($letsgroup_id == 'self')
+		else if ($group_id == 'self')
 		{
 			if ($id = insert_transaction($transaction))
 			{
@@ -220,7 +240,7 @@ if ($add)
 			}
 			cancel();
 		}
-		else if ($letsgroup['apimethod'] == 'mail')
+		else if ($group['apimethod'] == 'mail')
 		{
 			if ($id = insert_transaction($transaction))
 			{
@@ -237,45 +257,45 @@ if ($add)
 			}
 			cancel();
 		}
-		else if ($letsgroup['apimethod'] != 'elassoap')
+		else if ($group['apimethod'] != 'elassoap')
 		{
 			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 			cancel();
 		}
-		else if (!$letsgroup['url'])
+		else if (!$group_domain)
 		{
 			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
 			cancel();
 		}
-		else if (!($remote_schema = $schemas[$letsgroup['url']]))
+		else if (!(isset($schemas[$group_domain])))
 		{
-			// The interlets letsgroup is on another server, use elassoap; queue the transaction.
+			// The interlets group uses eLAS; queue the transaction.
 
-			if (!$letsgroup['remoteapikey'])
+			if (!$group['remoteapikey'])
 			{
 				$alert->error('Geen apikey voor deze interlets groep ingesteld.' . $contact_admin);
 				cancel();
 			}
 
-			if (!$letsgroup['presharedkey'])
+			if (!$group['presharedkey'])
 			{
 				$alert->error('Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin);
 				cancel();
 			}
 
-			if (!$letsgroup['myremoteletscode'])
+			if (!$group['myremoteletscode'])
 			{
 				$alert->error('Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin);
 				cancel();
 			}
 
 			$transaction['letscode_to'] = $letscode_to;
-			$transaction['letsgroup_id'] = $letsgroup_id;
+			$transaction['letsgroup_id'] = $group_id;
 			$currencyratio = readconfigfromdb('currencyratio');
 			$transaction['amount'] = $transaction['amount'] / $currencyratio;
 			$transaction['amount'] = (float) $transaction['amount'];
 			$transaction['amount'] = round($transaction['amount'], 5);
-			$transaction['signature'] = sign_transaction($transaction, $letsgroup['presharedkey']);
+			$transaction['signature'] = sign_transaction($transaction, $group['presharedkey']);
 			$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
 
 			unset($transaction['date'], $transaction['id_to']);
@@ -298,7 +318,9 @@ if ($add)
 		}
 		else
 		{
-			// the interlets letsgroup is on the same server
+			// the interlets group is on the same server
+
+			$remote_schema = $schemas[$group_domain];
 
 			$to_remote_user = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -316,17 +338,17 @@ if ($add)
 				cancel();
 			}
 
-			$remote_letsgroup = $db->fetchAssoc('select *
+			$remote_group = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
 				where url = ?', array($base_url));
 
-			if (!$remote_letsgroup)
+			if (!$remote_group)
 			{
 				$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
 				cancel();
 			}
 
-			if (!$remote_letsgroup['localletscode'])
+			if (!$remote_group['localletscode'])
 			{
 				$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
 				cancel();
@@ -334,7 +356,7 @@ if ($add)
 
 			$remote_interlets_account = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
-				where letscode = ?', array($remote_letsgroup['localletscode']));
+				where letscode = ?', array($remote_group['localletscode']));
 
 			if (!$remote_interlets_account)
 			{
@@ -415,7 +437,7 @@ if ($add)
 				$transaction['amount'] = $remote_amount;
 				$transaction['id_from'] = $remote_interlets_account['id'];
 				$transaction['id_to'] = $to_remote_user['id'];
-				$transaction['real_from'] = link_user($fromuser['id'], null, false);
+				$transaction['real_from'] = link_user($fromuser['id'], false, false);
 				unset($transaction['real_to']);
 
 				$db->insert($remote_schema . '.transactions', $transaction);
@@ -448,11 +470,11 @@ if ($add)
 			mail_transaction($trans_org);
 			mail_transaction($transaction, $remote_schema);
 
-			log_event($s_id, 'trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
-				$amount . ' from user: ' .  link_user($fromuser['id'], null, false) .
-				' to user: ' . link_user($touser['id'], null, false));
+			log_event('trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+				$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
+				' to user: ' . link_user($touser['id'], false, false));
 
-			log_event('', 'trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
+			log_event('trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
 				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], $remote_schema);
@@ -464,7 +486,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : $s_letscode . ' ' . $s_name;
+		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : link_user($s_id, false, false);
 	}
 	else
 	{
@@ -477,29 +499,57 @@ if ($add)
 
 		$transaction = array(
 			'date'			=> date('Y-m-d'),
-			'letscode_from'	=> $s_letscode . ' ' . $s_name,
+			'letscode_from'	=> link_user($s_id, false, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
 			'transid'		=> $transid,
 		);
 
-		if ($mid)
+		$group_id = 'self';
+		$to_schema_table = '';
+
+		if ($tus)
+		{
+			if ($host_from_tus = $hosts[$tus])
+			{
+				$group_id = $db->fetchColumn('select id
+					from letsgroups
+					where url = ?', array($app_protocol . $host_from_tus));
+				$to_schema_table = $tus . '.';
+			}
+		}
+
+		if ($mid && !($tus xor $host_from_tus))
 		{
 			$row = $db->fetchAssoc('SELECT
-					m.content, m.amount, m.id_user, u.letscode, u.name
-				FROM messages m, users u
-				WHERE u.id = m.id_user
-					AND m.id = ?', array($mid));
-			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
-			$transaction['description'] =  '#m' . $mid . ' ' . $row['content'];
-			$transaction['amount'] = $row['amount'];
-			$tuid = $row['tuid'];
+					m.content, m.amount, m.id_user, u.letscode, u.name, u.status
+				from ' . $to_schema_table . 'messages m,
+					'. $to_schema_table . 'users u
+				where u.id = m.id_user
+					and m.id = ?', array($mid));
+
+			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			{
+				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+				$transaction['description'] =  substr('#m.' . $to_schema_table . $mid . ' ' . $row['content'], 0, 60);
+				$amount = $row['amount'];
+				if ($tus)
+				{
+					$amount = round((readconfigfromdb('currencyratio') * $amount) / readconfigfromdb('currencyratio', $tus));
+				}
+				$transaction['amount'] = $amount;
+				$tuid = $row['tuid'];
+			}
 		}
 		else if ($tuid)
 		{
-			$row = readuser($tuid);
-			$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+			$row = readuser($tuid, false, (($host_from_tus) ? $tus : false));
+
+			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			{
+				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+			}
 		}
 
 		if ($fuid && $s_admin && ($fuid != $tuid))
@@ -508,28 +558,22 @@ if ($add)
 			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
 		}
 
-		if ($tuid == $s_id && !$fuid)
+		if ($tuid == $s_id && !$fuid && $tus != $schema)
 		{
 			$transaction['letscode_from'] = '';
 		}
 	}
 
-	if (!isset($_POST['zend']))
-	{
-		$letsgroup['id'] = 'self';
-	}
-
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
-	$user = readuser($s_id);
-	$balance = $user['saldo'];
+	$balance = $session_user['saldo'];
 
-	$letsgroups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
-	$letsgroups = array_merge(array(array(
+	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+	$groups = array_merge(array(array(
 			'groupname' => $systemname,
 			'id'		=> 'self',
-		)), $letsgroups);
+		)), $groups);
 
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -540,10 +584,10 @@ if ($add)
 
 	include $rootpath . 'includes/inc_header.php';
 
-	$minlimit = $user['minlimit'];
+	$minlimit = $session_user['minlimit'];
 
 	echo '<div>';
-	echo '<p><strong>' . link_user($user) . ' huidige ' . $currency . ' stand: ';
+	echo '<p><strong>' . link_user($session_user) . ' huidige ' . $currency . ' stand: ';
 	echo '<span class="label label-info">' . $balance . '</span></strong> ';
 	echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
 	echo '</div>';
@@ -551,7 +595,7 @@ if ($add)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form  method="post" class="form-horizontal">';
+	echo '<form  method="post" class="form-horizontal" autocomplete="off">';
 
 	echo ($s_admin) ? '' : '<div style="display:none;">';
 
@@ -563,7 +607,7 @@ if ($add)
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
-	echo 'data-typeahead-source="letsgroup_self" ';
+	echo 'data-typeahead-source="group_self" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -571,17 +615,17 @@ if ($add)
 	echo ($s_admin) ? '' : '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="letsgroup_id" class="col-sm-2 control-label">Aan letsgroep</label>';
+	echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
 	echo '<div class="col-sm-10">';
-	echo '<select type="text" class="form-control" id="letsgroup_id" name="letsgroup_id">';
+	echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
-	foreach ($letsgroups as $l)
+	foreach ($groups as $l)
 	{
 		echo '<option value="' . $l['id'] . '" ';
 
 		if ($l['id'] == 'self')
 		{
-			echo 'id="letsgroup_self" ';
+			echo 'id="group_self" ';
 
 			if ($s_admin)
 			{
@@ -600,9 +644,10 @@ if ($add)
 		}
 
 		echo 'data-typeahead="' . $typeahead . '"';
-		echo ($l['id'] == $letsgroup['id']) ? ' selected="selected" ' : '';
+		echo ($l['id'] == $group_id) ? ' selected="selected" ' : '';
 		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 	}
+
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -611,7 +656,7 @@ if ($add)
 	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
-	echo 'data-typeahead-source="letsgroup_id" ';
+	echo 'data-typeahead-source="group_id" ';
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -648,18 +693,85 @@ if ($add)
 	exit;
 }
 
+/*
+ * interlets accounts schemas needed for interlinking users.
+ */
+
+$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+
+if (!is_array($interlets_accounts_schemas))
+{
+	get_eland_interlets_groups(false, $schema);
+	$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+}
+
+$s_inter_schema_check = array_merge($eland_interlets_groups, array($s_schema => true));
+
+/**
+ * show a transaction
+ */
+
 if ($id)
 {
 	$transaction = $db->fetchAssoc('select t.*
 		from transactions t
 		where t.id = ?', array($id));
 
+	$inter_schema = false;
+
+	if ($interlets_accounts_schemas[$transaction['id_from']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$transaction['id_from']];
+	}
+	else if ($interlets_accounts_schemas[$transaction['id_to']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$transaction['id_to']];
+	}
+
+	if ($inter_schema)
+	{
+		$inter_transaction = $db->fetchAssoc('select t.*
+			from ' . $inter_schema . '.transactions t
+			where t.transid = ?', array($transaction['transid']));
+	}
+	else
+	{
+		$inter_transaction = false;
+	}
+
+	$next = $db->fetchColumn('select id
+		from transactions
+		where id > ?
+		order by id asc
+		limit 1', array($id));
+
+	$prev = $db->fetchColumn('select id
+		from transactions
+		where id < ?
+		order by id desc
+		limit 1', array($id));
+
 	if ($s_user || $s_admin)
 	{
 		$top_buttons .= aphp('transactions', 'add=1', 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 	}
 
+	if ($prev)
+	{
+		$top_buttons .= aphp('transactions', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+	}
+
+	if ($next)
+	{
+		$top_buttons .= aphp('transactions', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+	}
+
 	$top_buttons .= aphp('transactions', '', 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
+
+	if ($s_user || $s_admin)
+	{
+		$top_buttons .= aphp('transactions', 'uid=' . $s_id, 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+	}
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';
@@ -670,12 +782,8 @@ if ($id)
 	echo '<div class="panel-heading">';
 
 	echo '<dl class="dl-horizontal">';
-	echo '<dt>Tijdstip</dt>';
-	echo '<dd>';
-	echo $transaction['date'];
-	echo '</dd>';
 
-	echo '<dt>Creatietijdstip</dt>';
+	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
 	echo $transaction['cdate'];
 	echo '</dd>';
@@ -685,31 +793,75 @@ if ($id)
 	echo $transaction['transid'];
 	echo '</dd>';
 
-	echo '<dt>Van account</dt>';
-	echo '<dd>';
-	echo link_user($transaction['id_from']);
-	echo '</dd>';
+	echo '<br>';
 
 	if ($transaction['real_from'])
 	{
-		echo '<dt>Van remote gebruiker</dt>';
+		echo '<dt>Van interlets account</dt>';
 		echo '<dd>';
-		echo $transaction['real_from'];
+		echo link_user($transaction['id_from'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Van interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_from'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
+		}
+		else
+		{
+			echo $transaction['real_from'];
+		}
+
+		echo '</dd>';
+	}
+	else
+	{
+		echo '<dt>Van gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_from']);
 		echo '</dd>';
 	}
 
-	echo '<dt>Naar account</dt>';
-	echo '<dd>';
-	echo link_user($transaction['id_to']);
-	echo '</dd>';
+	echo '<br>';
 
 	if ($transaction['real_to'])
 	{
-		echo '<dt>Naar remote gebruiker</dt>';
+		echo '<dt>Naar interlets account</dt>';
 		echo '<dd>';
-		echo $transaction['real_to'];
+		echo link_user($transaction['id_to'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Naar interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_to'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
+		}
+		else
+		{
+			echo $transaction['real_to'];
+		}
+
 		echo '</dd>';
 	}
+	else
+	{
+		echo '<dt>Naar gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_to']);
+		echo '</dd>';
+	}
+
+	echo '<br>';
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
@@ -732,7 +884,7 @@ if ($id)
 /**
  * list
  */
-$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $params_sql = $where_sql = $where_code_sql = array();
 
@@ -752,7 +904,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = $tcode = link_user($user, null, false);
+	$fcode = $tcode = link_user($user, false, false);
 	$andor = 'or';
 }
 
@@ -776,7 +928,7 @@ if (!$uid)
 			$where_code_sql[] = 't.id_from = ?';
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, null, false);
+			$fcode = link_user($fuid, false, false);
 		}
 		else
 		{
@@ -797,7 +949,7 @@ if (!$uid)
 			$where_code_sql[] = 't.id_to = ?';
 			$params_sql[] = $tuid;
 
-			$tcode = link_user($tuid, null, false);
+			$tcode = link_user($tuid, false, false);
 		}
 		else
 		{
@@ -852,6 +1004,39 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $transactions = $db->fetchAll($query, $params_sql);
 
+foreach ($transactions as &$t)
+{
+	if (!($t['real_from'] || $t['real_to']))
+	{
+		continue;
+	}
+
+	$inter_schema = false;
+
+	if ($interlets_accounts_schemas[$t['id_from']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$t['id_from']];
+	}
+	else if ($interlets_accounts_schemas[$t['id_to']])
+	{
+		$inter_schema = $interlets_accounts_schemas[$t['id_to']];
+	}
+
+	if ($inter_schema)
+	{
+		$inter_transaction = $db->fetchAssoc('select t.*
+			from ' . $inter_schema . '.transactions t
+			where t.transid = ?', array($t['transid']));
+
+		if ($inter_transaction)
+		{
+			$t['inter_schema'] = $inter_schema;
+			$t['inter_transaction'] = $inter_transaction;
+		}
+	}
+}
+
+
 $row_count = $db->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
@@ -903,7 +1088,7 @@ if ($s_admin || $s_user)
 {
 	if ($uid)
 	{
-		$user_str = link_user($user, null, false);
+		$user_str = link_user($user, false, false);
 
 		if ($user['status'] != 7)
 		{
@@ -1011,13 +1196,18 @@ if (!$inline)
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
-	$typeahead_name_ary = array('users_active', 'users_extern');
-
-	if ($s_admin)
+	if ($s_guest)
 	{
-		$typeahead_name_ary = array_merge($typeahead_name_ary, array(
-			'users_inactive', 'users_im', 'users_ip',
-		));
+		$typeahead_name_ary = ['users_active'];
+	}
+	else if ($s_user)
+	{
+		$typeahead_name_ary = ['users_active', 'users_extern'];
+	}
+	else if ($s_admin)
+	{
+		$typeahead_name_ary = ['users_active', 'users_extern',
+			'users_inactive', 'users_im', 'users_ip'];
 	}
 
 	echo '<input type="text" class="form-control" ';
@@ -1173,7 +1363,9 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$h_params['orderby'] = $key_orderby;
 		$h_params['asc'] = $data['asc'];
 
-		echo aphp('transactions', $h_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+		echo '<a href="' . generate_url('transactions', $h_params) . '">';
+		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '</a>';
 	}
 	echo '</th>';
 }
@@ -1207,7 +1399,20 @@ if ($uid)
 		{
 			if ($t['real_to'])
 			{
-				echo htmlspecialchars($t['real_to'], ENT_QUOTES);
+				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+				if ($t['inter_transaction'])
+				{
+					echo link_user($t['inter_transaction']['id_to'],
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']]);
+				}
+				else
+				{
+					echo $t['real_to'];
+				}
+
+				echo '</dd>';
 			}
 			else
 			{
@@ -1218,7 +1423,20 @@ if ($uid)
 		{
 			if ($t['real_from'])
 			{
-				echo htmlspecialchars($t['real_from'], ENT_QUOTES);
+				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+				if ($t['inter_transaction'])
+				{
+					echo link_user($t['inter_transaction']['id_from'],
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']]);
+				}
+				else
+				{
+					echo $t['real_from'];
+				}
+
+				echo '</dd>';
 			}
 			else
 			{
@@ -1247,30 +1465,56 @@ else
 		echo $t['cdate'];
 		echo '</td>';
 
-		echo '<td';
-		echo ($t['id_from'] == $s_id) ? ' class="me"' : '';
-		echo '>';
-		if(!empty($t['real_from']))
+		echo '<td>';
+
+		if ($t['real_from'])
 		{
-			echo htmlspecialchars($t['real_from'],ENT_QUOTES);
+			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+			if ($t['inter_transaction'])
+			{
+				echo link_user($t['inter_transaction']['id_from'],
+					$t['inter_schema'],
+					$s_inter_schema_check[$t['inter_schema']]);
+			}
+			else
+			{
+				echo $t['real_from'];
+			}
+
+			echo '</dd>';
 		}
 		else
 		{
 			echo link_user($t['id_from']);
 		}
+
 		echo '</td>';
 
-		echo '<td';
-		echo ($t['id_to'] == $s_id) ? ' class="me"' : '';
-		echo '>';
-		if(!empty($t["real_to"]))
+		echo '<td>';
+
+		if ($t['real_to'])
 		{
-			echo htmlspecialchars($t["real_to"],ENT_QUOTES);
+			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+			if ($t['inter_transaction'])
+			{
+				echo link_user($t['inter_transaction']['id_to'],
+					$t['inter_schema'],
+					$s_inter_schema_check[$t['inter_schema']]);
+			}
+			else
+			{
+				echo $t['real_to'];
+			}
+
+			echo '</dd>';
 		}
 		else
-		{ 
+		{
 			echo link_user($t['id_to']);
 		}
+
 		echo '</td>';
 
 		echo '</tr>';

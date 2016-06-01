@@ -126,8 +126,10 @@ class pagination
 		$pag_link = '<li';
 		$pag_link .= ($page == $this->page) ? ' class="active"' : '';
 		$pag_link .= '>';
-		$pag_link .= aphp($this->entity, $params, array(($text == '') ? ($page + 1) : $text));
-		$pag_link .= '</li>';
+		$pag_link .= '<a href="' . generate_url($this->entity, $params) . '">';
+		$pag_link .= ($text == '') ? ($page + 1) : $text;
+		$pag_link .= '</a></li>';
+
 		return $pag_link;
 	}
 }

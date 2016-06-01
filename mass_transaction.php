@@ -321,7 +321,7 @@ if ($_POST['zend'])
 		$log_str .= ' to ';
 		$log_str .= ($to_one) ? $log_one : $log_many;
 
-		log_event($s_id, 'Trans', $log_str);
+		log_event('trans', $log_str);
 
 		if ($mail_en)
 		{
@@ -455,7 +455,7 @@ foreach ($st as $k => $s)
 
 echo '</ul>';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post" class="form-horizontal" autocomplete="off">';
 
 echo '<input type="hidden" value="" id="combined-filter">';
 echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
@@ -510,11 +510,11 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo link_user($user, 'letscode');
+	echo link_user($user, false, true, false, 'letscode');
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($user, 'name');
+	echo link_user($user, false, true, false, 'name');
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
@@ -572,8 +572,9 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="description" name="description" ';
-echo 'value="' . $description . '" required>';
+echo '<input type="text" class="form-control" id="description" ';
+echo 'name="description" ';
+echo 'value="' . $description . ' " required>';
 echo '</div>';
 echo '</div>';
 
@@ -590,8 +591,9 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 echo '<div class="col-sm-10">';
-echo '<input type="password" class="form-control" id="password" name="password" ';
-echo 'value="" autocomplete="false" required>';
+echo '<input type="password" class="form-control" id="password" ';
+echo 'name="password" ';
+echo 'autocomplete="off" required>';
 echo '</div>';
 echo '</div>';
 
@@ -699,8 +701,8 @@ function mail_mass_transaction($mail_ary)
 			'amount' 		=> $many_ary[$user_id]['amount'],
 			'transid' 		=> $many_ary[$user_id]['transid'],
 			'description'	=> $mail_ary['description'],
-			'from_user' 	=> link_user($from_user_id, null, false),
-			'to_user'		=> link_user($to_user_id, null, false),
+			'from_user' 	=> link_user($from_user_id, false, false),
+			'to_user'		=> link_user($to_user_id, false, false),
 		);
 
 		$data = array_merge($user, $data);
@@ -719,7 +721,7 @@ function mail_mass_transaction($mail_ary)
 
 	$text = 'Notificatie nieuwe massa transactie' . $r . $r;
 
-	$t_one = link_user($one_user_id, null, false);
+	$t_one = link_user($one_user_id, false, false);
 
 	if (!$from_many_bool)
 	{
@@ -743,7 +745,7 @@ function mail_mass_transaction($mail_ary)
 
 		$total += $many_ary[$user_id]['amount'];
 
-		$text .= link_user($user_id, null, false) . $t . $t . $many_ary[$user_id]['amount'];
+		$text .= link_user($user_id, false, false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
 	}
 

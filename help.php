@@ -19,7 +19,7 @@ if(isset($_POST['zend']))
 
     $errors = array();
 
-	if (!$s_id)
+	if (!$s_group_self)
 	{
 		if(empty($help['letscode']))
 		{
@@ -83,7 +83,7 @@ if(isset($_POST['zend']))
 		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
 		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
 
-		$text .= 'Gebruiker: ' . link_user($help['user_id'], null, false, true) . "\r\n";
+		$text .= 'Gebruiker: ' . link_user($help['user_id'], false, false, true) . "\r\n";
 
 		$text .= 'Gebruiker ingelogd: ';
 		$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
@@ -97,7 +97,7 @@ if(isset($_POST['zend']))
 		$text .= "\r\n";
 		$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
-		$return_message =  mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['mail']));
+		$return_message =  mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $user['id']));
 
 		if (!$return_message)
 		{
@@ -115,17 +115,21 @@ if(isset($_POST['zend']))
 }
 else
 {
-	if(isset($s_id))
+	$help = array(
+		'letscode' 			=> '',
+		'mail'				=> '',
+		'subject' 			=> '',
+		'description' 		=> '',
+	);
+
+	if($s_id && $s_group_self)
 	{
-		$user = readuser($s_id);
+		$mail = getmailadr($s_id);
 
-		$help['mail'] = $db->fetchColumn('select c.value
-			from contact c, type_contact tc
-			where c.id_type_contact = tc.id
-				and c.id_user = ?
-				and tc.abbrev = \'mail\'', array($s_id));
-
-		$help['letscode'] = $user['letscode'];
+		if (!count($mail))
+		{
+			$alert->warning('Je hebt geen email adres ingesteld voor je account.');
+		}
 	}
 }
 
@@ -137,8 +141,6 @@ else if (!readconfigfromdb('support'))
 {
 	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
- 
-$readonly = ($s_id) ? ' readonly' : '';
 
 $h1 = 'Help / Probleem melden';
 $fa = 'ambulance';
@@ -150,29 +152,22 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
-if ($s_id)
+if (!$s_group_self)
 {
-	echo '<div style="display:none;">';
-}
+	echo '<div class="form-group">';
+	echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+	echo 'value="' . $help['letscode'] . '" required>';
+	echo '</div>';
+	echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'value="' . $help['letscode'] . '" required' . $readonly . '>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="mail" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="mail" name="mail" ';
-echo 'value="' . $help['mail'] . '" required' . $readonly . '>';
-echo '</div>';
-echo '</div>';
-
-if ($s_id)
-{
+	echo '<div class="form-group">';
+	echo '<label for="mail" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="email" class="form-control" id="mail" name="mail" ';
+	echo 'value="' . $help['mail'] . '" required>';
+	echo '</div>';
 	echo '</div>';
 }
 

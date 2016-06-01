@@ -6,21 +6,15 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-function log_event($user_id, $type, $event, $remote_schema = null)
+function log_event($type, $event, $remote_schema = false)
 {
-	global $schema, $elas_log;
+	global $schema, $hosts, $s_schema, $s_id;
 
 	$type = strtolower($type);
 
-	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
+	$sch = ($remote_schema) ? $remote_schema : $schema;
 
-	$domain = array_search($sch, $_ENV);
-	$domain = str_replace('SCHEMA_', '', $domain);
-	$domain = str_replace('____', ':', $domain);
-	$domain = str_replace('___', '-', $domain);
-	$domain = str_replace('__', '.', $domain);
-	$domain = strtolower($domain);
-	$domain = $domain . ' / ' . $_SERVER['HTTP_HOST'];
+	$h = $hosts[$sch];
 
 	$formatter = new ColoredLineFormatter();
 
@@ -29,30 +23,31 @@ function log_event($user_id, $type, $event, $remote_schema = null)
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	if ($user_id)
+	if ($s_id && $s_schema)
 	{
-		$user = readuser($user_id, false, $sch);
+		$user = readuser($s_id, false, $s_schema);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
+		$user_str = ' user: ' . link_user($user, $sch, false, true); 
 	}
 	else
 	{
-		$username = $letscode = '';
+		$username = $letscode = $user_str = '';
 	}
 
-	$log->addNotice('eLAND: ' . $sch . ': ' . $domain . ': ' .
-		$type . ': ' . $event . ' user id:' . $user_id .
-		' user: ' . $letscode . ' ' . $username . "\n\r");
+	$log->addNotice('eLAND: ' . $sch . ': ' . $h . ': ' .
+		$type . ': ' . $event . $user_str . "\n\r");
 
 	$item = array(
-		'ts_tz'		=> date('Y-m-d H:i:s'),
-		'timestamp'	=> gmdate('Y-m-d H:i:s'),
-		'user_id' 	=> $user_id,
-		'letscode'	=> strtolower($letscode),
-		'username'	=> $username,
-		'ip'		=> $_SERVER['REMOTE_ADDR'],
-		'type'		=> strtolower($type),
-		'event'		=> $event,
+		'ts_tz'			=> date('Y-m-d H:i:s'),
+		'timestamp'		=> gmdate('Y-m-d H:i:s'),
+		'user_id' 		=> $s_id,
+		'user_schema'	=> $s_schema,
+		'letscode'		=> strtolower($letscode),
+		'username'		=> $username,
+		'ip'			=> $_SERVER['REMOTE_ADDR'],
+		'type'			=> strtolower($type),
+		'event'			=> $event,
 	);
 
 	register_shutdown_function('insert_log', $item, $remote_schema);

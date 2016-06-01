@@ -7,30 +7,37 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
-header('Access-Control-Allow-Origin: http://doc.letsa.net, http://res.letsa.net, http://img.letsa.net');
-
 $s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
 $s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
-$typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
+$s3_res_url = 'http://' . $s3_res;
+$s3_img_url = 'http://' . $s3_img;
+$s3_doc_url = 'http://' . $s3_doc;
 
-$s3_res_url = 'http://' . $s3_res . '/';
-$s3_img_url = 'http://' . $s3_img . '/';
-$s3_doc_url = 'http://' . $s3_doc . '/';
+header('Access-Control-Allow-Origin: ' . $s3_res_url . ', ' . $s3_img_url . ', ' . $s3_doc_url);
+
+$s3_res_url .= '/';
+$s3_img_url .= '/';
+$s3_doc_url .= '/';
+
+$typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
 
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
-$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
-$port = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
-$base_url = $http . $_SERVER['SERVER_NAME'] . $port;
+$app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$host = $_SERVER['SERVER_NAME'];
+$base_url = $app_protocol . $host;
+$host_id = substr($host, 0, strpos($host, '.'));
+
+$overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
-$cdn_bootstrap_css = (getenv('CDN_BOOTSTRAP_CSS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
-$cdn_bootstrap_js = (getenv('CDN_BOOTSTRAP_JS')) ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = (getenv('CDN_FONTAWESOME')) ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
+$cdn_bootstrap_css = getenv('CDN_BOOTSTRAP_CSS') ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
+$cdn_bootstrap_js = getenv('CDN_BOOTSTRAP_JS') ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
+$cdn_fontawesome = getenv('CDN_FONTAWESOME') ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
 
 $cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
 $cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
@@ -149,33 +156,91 @@ $access_options = array(
 	'2' => 'interlets',
 );
 
+$allowed_interlets_landing_pages = array(
+	'index'			=> true,
+	'messages'		=> true,
+	'users'			=> true,
+	'transactions'	=> true,
+	'news'			=> true,
+	'docs'			=> true,
+);
+
 /*
- * get session name from environment variable SCHEMA_<domain>
- * dots in <domain> are replaced by double underscore __
- * hyphens in <domain> are replaced by triple underscore ___
- *
- * example:
- *
- * to link e-example.com to a session set environment variable
- * SCHEMA_E___EXAMPLE__COM = <session_name>
- *
- * + the session name is the schema name !
- * + session name is prefix of the image files.
- * + session name is prefix of keys in Redis.
- *
+ * check if we are on the request hosting url.
  */
+$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($host));
 
-$schema = str_replace(['.', '-', ':'], ['__', '___', '____'], $_SERVER['HTTP_HOST']);
-$schema = strtoupper($schema);
-
-if (getenv('HOSTING_FORM_' . $schema) && $script_name == 'index')
+if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
 	$role = 'anonymous';
 	$hosting_form = true;
 	return;
 }
 
-$schema = getenv('SCHEMA_' . $schema);
+/*
+ * permanent redirects
+ */
+
+if ($redirect = getenv('REDIRECT_' . $key_host_env))
+{
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
+	exit;
+}
+
+/**
+ * database connection
+ * (search path not set yet)
+ */
+
+$db = \Doctrine\DBAL\DriverManager::getConnection(array(
+	'url' => getenv('DATABASE_URL'),
+), new \Doctrine\DBAL\Configuration());
+
+/**
+ * Get all eland schemas and domains
+ */
+
+$schemas = $hosts = array();
+
+$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
+$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+$schemas_db = array_fill_keys($schemas_db, true);
+
+foreach ($_ENV as $key => $s)
+{
+	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+	{
+		continue;
+	}
+
+	$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
+	$h = strtolower($h);
+
+	if (!strpos($h, '.' . $overall_domain))
+	{
+		$h .= '.' . $overall_domain;
+	}
+
+	if (strpos($h, 'localhost') === 0)
+	{
+		continue;
+	}
+
+	$schemas[$h] = $s;
+	$hosts[$s] = $h;
+}
+
+/*
+ * Set schema
+ *
+ * + schema is the schema in the postgres database
+ * + schema is prefix of the image files.
+ * + schema name is prefix of keys in Redis.
+ *
+ */
+
+$schema = $schemas[$host];
 
 if (!$schema)
 {
@@ -184,16 +249,58 @@ if (!$schema)
 	exit;
 }
 
+/**
+ * start session
+ */
+
 require_once $rootpath . 'includes/redis_session.php';
 
-$redis_session = new redis_session($redis, $schema);
+$redis_session = new redis_session($redis);
 session_set_save_handler($redis_session);
-session_name($schema);
+session_name('eland');
+session_set_cookie_params(0, '/', '.' . $overall_domain);
 session_start();
+
+$s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
+$s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
+
+$s_group_self = ($s_schema == $schema) ? true : false;
+
+/**
+ * alerts
+**/
 
 require_once $rootpath . 'includes/inc_alert.php';
 
 $alert = new alert();
+
+/**
+ * select role
+ **/
+
+if ($s_id && $s_schema)
+{
+	$session_user = readuser($s_id, false, $s_schema);
+	$s_accountrole = ($s_schema == $schema) ? $session_user['accountrole'] : 'guest';
+}
+else if ($_SESSION['elas_interlets_access_' . $schema])
+{
+	$s_accountrole = 'guest';
+}
+else if ($_SESSION['master'])
+{
+	$s_id = 0;
+	$s_accountrole = 'admin';
+	$s_master = true;
+}
+else
+{
+	$s_accountrole = 'anonymous';
+}
+
+/**
+ * check role
+ **/
 
 $p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
 $p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
@@ -209,7 +316,7 @@ if (!isset($access_page))
 	exit;
 }
 
-$access_session = (isset($_SESSION['accountrole'])) ? $access_ary[$_SESSION['accountrole']] : 3;
+$access_session = $access_ary[$s_accountrole];
 
 if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
 {
@@ -257,11 +364,7 @@ if (($access_page == 3) && ($access_request < 3) && !isset($allow_session))
 
 $access_level = $access_request;
 
-$s_id = $_SESSION['id'];
-$s_name = $_SESSION['name'];
-$s_letscode = $_SESSION['letscode'];
 $s_accountrole = $p_role;
-$s_interlets = $_SESSION['interlets'];
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
@@ -269,7 +372,23 @@ $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
 /**
- *
+ * check access to groups
+ **/
+
+$elas_interlets_groups = get_elas_interlets_groups();
+$eland_interlets_groups = get_eland_interlets_groups();
+
+if ($s_schema
+	&& $role != 'anonymous'
+	&& !$s_group_self
+	&& !$eland_interlets_groups[$schema])
+{
+	header('Location: ' . generate_url('index', '', $s_schema));
+	exit;
+}
+
+/**
+ * 
  */
 require_once $rootpath . 'includes/mdb.php';
 
@@ -283,11 +402,7 @@ date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
 
-// database connection
-
-$db = \Doctrine\DBAL\DriverManager::getConnection(array(
-	'url' => getenv('DATABASE_URL'),
-), new \Doctrine\DBAL\Configuration());
+// set search path
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
@@ -327,13 +442,215 @@ if ($view || $inline)
 	}
 }
 
+/**
+ * remember adapted role in own group (for links to own group)
+ */
+if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
+{
+	if ($s_group_self)
+	{
+		$_SESSION['user_params_own_group'] = ['r' => $s_accountrole, 'u' => $session_user['id']];
+	}
+
+	$s_user_params_own_group = $_SESSION['user_params_own_group'];
+}
+else
+{
+	$s_user_params_own_group = '';
+}
+
+/** welcome message **/
+
+if ($_GET['welcome'] && $s_guest)
+{
+	$msg = '<strong>Welkom bij ' . $systemname . '</strong><br>';
+	$msg .= 'Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
+	$msg .= readconfigfromdb('currencyratio') . ' ' . $currency;
+	$msg .= ' stemt overeen met 1 LETS uur.<br>';
+
+	if ($s_schema)
+	{
+		$msg .= 'Je kan steeds terug naar je eigen groep via het menu <strong>Groep</strong> ';
+		$msg .= 'boven in de navigatiebalk.';
+	}
+	else
+	{
+		$msg .= 'Je bent ingelogd als LETS-gast, je kan informatie ';
+		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
+		$msg .= 'ingeven in de installatie van je eigen groep.';
+	}
+
+	$alert->info($msg);
+}
+
+/**************** FUNCTIONS ***************/
+/**
+ *
+ */
+function clear_interlets_groups_cache()
+{
+	global $redis, $s_schema, $schemas;
+
+	$redis->del($s_schema . '_elas_interlets_groups');
+
+	foreach ($schemas as $s)
+	{
+		$redis->del($s . '_eland_interlets_groups');
+	}
+}
+
+/**
+ *
+ */
+function get_eland_interlets_groups($refresh = false, $sch = false)
+{
+	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+
+	if (!$s_schema)
+	{
+		return array();
+	}
+
+	$sch = ($sch) ?: $s_schema;
+
+	$redis_key = $sch . '_eland_interlets_groups';
+
+	if (!$refresh && $redis->exists($redis_key))
+	{
+		$redis->expire($redis_key, 3600);
+		return json_decode($redis->get($redis_key), true);
+	}
+
+	$interlets_hosts = $interlets_accounts_schemas = array();
+
+	$st = $db->prepare('select g.url, u.id
+		from ' . $sch . '.letsgroups g, ' . $sch . '.users u
+		where g.apimethod = \'elassoap\'
+			and u.letscode = g.localletscode
+			and u.letscode <> \'\'
+			and u.accountrole = \'interlets\'
+			and u.status in (1, 2, 7)');
+
+	$st->execute();
+
+	while($row = $st->fetch())
+	{
+		$h = get_host($row['url']);
+
+		if (isset($schemas[$h]))
+		{
+			$interlets_hosts[] = $h;
+
+			$interlets_accounts_schemas[$row['id']] = $schemas[$h];
+		}
+	}
+
+	// cache interlets account ids for user interlets linking. (in transactions)
+	$redis_key_interlets_accounts = $sch . '_interlets_accounts_schemas';
+	$redis->set($redis_key_interlets_accounts, json_encode($interlets_accounts_schemas));
+	$redis->expire($redis_key_interlets_accounts, 86400);
+
+	$s_url = $app_protocol . $hosts[$sch];
+
+	$eland_interlets_groups = array();
+
+	foreach ($interlets_hosts as $h)
+	{
+		$s = $schemas[$h];
+
+		$url = $db->fetchColumn('select g.url
+			from ' . $s . '.letsgroups g, ' . $s . '.users u
+			where g.apimethod = \'elassoap\'
+				and u.letscode = g.localletscode
+				and u.letscode <> \'\'
+				and u.status in (1, 2, 7)
+				and u.accountrole = \'interlets\'
+				and g.url = ?', array($s_url));
+
+		if (!$url)
+		{
+			continue;
+		}
+
+		$eland_interlets_groups[$s] = $h;
+	}
+
+	$redis->set($redis_key, json_encode($eland_interlets_groups));
+	$redis->expire($redis_key, 3600);
+
+	return $eland_interlets_groups;
+}
+
+/**
+ *
+ */
+function get_elas_interlets_groups($refresh = false)
+{
+	global $redis, $db, $schemas, $base_url, $app_protocol, $s_schema;
+
+	if (!$s_schema)
+	{
+		return array();
+	}
+
+	$redis_key = $s_schema . '_elas_interlets_groups';
+
+	if (!$refresh && $redis->exists($redis_key))
+	{
+		$redis->expire($redis_key, 3600);
+		return json_decode($redis->get($redis_key), true);
+	}
+
+	$elas_interlets_groups = array();
+
+	$st = $db->prepare('select g.id, g.groupname, g.url
+		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+		where g.apimethod = \'elassoap\'
+			and u.letscode = g.localletscode
+			and g.groupname <> \'\'
+			and g.url <> \'\'
+			and g.myremoteletscode <> \'\'
+			and g.remoteapikey <> \'\'
+			and g.presharedkey <> \'\'
+			and u.letscode <> \'\'
+			and u.name <> \'\'
+			and u.accountrole = \'interlets\'
+			and u.status in (1, 2, 7)');
+
+	$st->execute();
+
+	while($row = $st->fetch())
+	{
+		$h = get_host($row['url']);
+
+		if (!$schemas[$h])
+		{
+			$elas_interlets_groups[$row['id']] = $row;
+		}
+	}
+
+	$redis->set($redis_key, json_encode($elas_interlets_groups));
+	$redis->expire($redis_key, 3600);
+
+	return $elas_interlets_groups;
+}
+
 /*
- * create links with query parameters depending on user and role
+ * create link within eland with query parameters depending on user and role
  */
 
-function aphp($entity = '', $params = '', $label = '*link*', $class = false, $title = false, $fa = false, $collapse = false, $attr = false)
+function aphp(
+	$entity = '',
+	$params = '',
+	$label = '*link*',
+	$class = false,
+	$title = false,
+	$fa = false,
+	$collapse = false,
+	$attr = false,
+	$sch = false)
 {
-	$out = '<a href="' .  generate_url($entity, $params) . '"';
+	$out = '<a href="' .  generate_url($entity, $params, $sch) . '"';
 	$out .= ($class) ? ' class="' . $class . '"' : '';
 	$out .= ($title) ? ' title="' . $title . '"' : '';
 	if (is_array($attr))
@@ -346,7 +663,7 @@ function aphp($entity = '', $params = '', $label = '*link*', $class = false, $ti
 	$out .= '>';
 	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
 	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-	$out .= (is_array($label)) ? $label[0] : htmlspecialchars($label, ENT_QUOTES);
+	$out .= htmlspecialchars($label, ENT_QUOTES);
 	$out .= ($collapse) ? '</span>' : '';
 	$out .= '</a>';
 	return $out;
@@ -358,26 +675,21 @@ function aphp($entity = '', $params = '', $label = '*link*', $class = false, $ti
 function set_request_to_session()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $access_ary;
+	global $s_id, $s_accountrole, $s_schema;
 
 	$access_level = $access_session;
-	$level_ary = array_flip($access_ary);
-	$p_role = $level_ary[$access_level];
-	$p_user = ($access_level < 2) ? $_SESSION['id'] : false;
 
-	if ($p_role == 'guest' && isset($_SESSION['interlets']))
-	{
-		$p_user = $_SESSION['interlets']['id'];
-		$p_schema = $_SESSION['interlets']['schema'];
-	}
+	$p_schema = $s_schema;
+	$p_user = $s_id;
+	$p_role = $s_accountrole;
 }
 
 /**
- * generate session url
+ * generate url
  */
-function generate_url($entity = '', $params = '')
+function generate_url($entity = '', $params= '', $sch = false)
 {
-	global $rootpath, $alert;
+	global $rootpath, $alert, $hosts, $app_protocol;
 
 	if (is_array($params))
 	{
@@ -395,19 +707,55 @@ function generate_url($entity = '', $params = '')
 		}
 	}
 
-	$q = get_session_query_param();
+	$q = get_session_query_param(false, $sch);
+
 	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
 
-	return $rootpath . $entity . '.php' . $params;
+	$path = ($sch) ? $app_protocol . $hosts[$sch] . '/' : $rootpath;
+
+	return $path . $entity . '.php' . $params;
 }
 
 /**
  * get session query param
  */
-function get_session_query_param($return_ary = false)
+function get_session_query_param($return_ary = false, $sch = false)
 {
 	global $p_role, $p_user, $p_schema, $access_level;
+	global $s_user_params_own_group, $s_id, $s_schema;
 	static $ary, $q;
+
+	if ($sch)
+	{
+		if ($sch == $s_schema)
+		{
+			if ($return_ary)
+			{
+				return  $s_user_params_own_group;
+			}
+
+			return http_build_query($s_user_params_own_group);
+		}
+
+		if ($s_schema)
+		{
+			$param_ary = ['r' => 'guest', 'u' => $s_id, 's' => $s_schema]; 
+
+			if ($return_ary)
+			{
+				return $param_ary;
+			}
+
+			return http_build_query($param_ary);
+		}
+
+		if ($return_ary)
+		{
+			return ['r' => 'guest'];
+		}
+
+		return 'r=guest';
+	}
 
 	if (isset($q))
 	{
@@ -486,14 +834,24 @@ function redirect($location = false)
  *
  */
 
-function link_user($user, $render = null, $link = true, $show_id = false)
+function link_user($user, $sch = false, $link = true, $show_id = false, $field = false)
 {
 	global $rootpath;
-	$user = (is_array($user)) ? $user : readuser($user);
-	$str = (isset($render)) ? $user[$render] : $user['letscode'] . ' ' . $user['name'];
-	$str = ($link) ? aphp('users', 'id=' . $user['id'], ($str == '') ? array('<i>** leeg **</i>') : $str) : (($str == '') ? '<i>** leeg **</i>' : $str);
-	$str = ($show_id) ? $str . ' (id: ' . $user['id'] . ')' : $str;
-	return $str;
+	$user = (is_array($user)) ? $user : readuser($user, false, $sch);
+	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
+	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
+	if ($link)
+	{
+		$out = '<a href="';
+		$out .= generate_url('users', 'id=' . $user['id'], $sch);
+		$out .= '">' . $str . '</a>';
+	}
+	else
+	{
+		$out .= $str;
+	}
+	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
+	return $out;
 }
 
 /*
@@ -543,37 +901,6 @@ function readconfigfromdb($key, $sch = null)
 	}
 
 	return $value;
-}
-
-/**
- *
- */
-function writeconfig($key, $value)
-{
-	global $db, $redis, $schema;
-	global $eland_config, $mdb;
-
-	if ($eland_config[$key])
-	{
-		$a = array(
-			'value' => $value,
-			'name'	=> $key
-		);
-		$mdb->settings->update(array('name' => $key), $a, array('upsert' => true));
-	}
-	else
-	{
-		if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $key)))
-		{
-			return false;
-		}
-	}
-
-	$redis_key = $schema . '_config_' . $key;
-	$redis->set($redis_key, $value);
-	$redis->expire($redis_key, 2592000);
-
-	return true;
 }
 
 /**
@@ -636,7 +963,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 function mail_q($mail = array(), $priority = false, $sending_schema = false)
 {
-	global $schema, $redis, $s_id;
+	global $schema, $redis;
 
 	$mail['schema'] = $sending_schema ?: $schema;
 
@@ -644,28 +971,28 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
 		echo $m;
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
 	if (!$mail['subject'])
 	{
 		$m = 'Mail "subject" is missing.';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
 	if (!$mail['text'] && !$mail['html'])
 	{
 		$m = 'Mail "body" (text or html) is missing.';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
 	if (!$mail['to'])
 	{
 		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
@@ -674,7 +1001,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	if (!count($mail['to']))
 	{
 		$m = 'error: mail without "to" | subject: ' . $mail['subject'];
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	} 
 
@@ -684,7 +1011,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 
 		if (!count($mail['reply_to']))
 		{
-			log_event($s_id, 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['reply_to']);
 		}
 
@@ -698,7 +1025,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	if (!count($mail['from']))
 	{
 		$m = 'error: mail without "from" | subject: ' . $mail['subject'];
-		log_event($s_id, 'mail', $m);
+		log_event('mail', $m);
 		return $m;
 	}
 
@@ -708,7 +1035,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 
 		if (!count($mail['cc']))
 		{
-			log_event('', 'mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['cc']);
 		}
 	}
@@ -723,7 +1050,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 	{
 		$reply = ($mail['reply_to']) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
 
-		log_event((($sending_schema) ? '' : $s_id), 'mail', 'Mail in queue, subject: ' .
+		log_event('mail', 'Mail in queue, subject: ' .
 			$mail['subject'] . ', from : ' .
 			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, $mail['schema']);
 	}
@@ -767,7 +1094,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+					log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
 					continue;
 				}
 
@@ -782,7 +1109,7 @@ function getmailadr($m, $sending_schema = false)
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
-				log_event($s_id, 'mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+				log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
 				continue;
 			}
 
@@ -811,7 +1138,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
+					log_event('mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
 					continue;
 				}
 
@@ -843,7 +1170,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event($s_id, 'mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
+					log_event('mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
 					continue;
 				}
 
@@ -856,13 +1183,13 @@ function getmailadr($m, $sending_schema = false)
 		}
 		else
 		{
-			log_event($s_id, 'error: no valid input for mail adr: ' . $in);
+			log_event('error: no valid input for mail adr: ' . $in);
 		}
 	}
 
 	if (!count($out))
 	{
-		log_event($s_id, 'mail', 'no valid mail adress found for: ' . implode('|', $m));
+		log_event('mail', 'no valid mail adress found for: ' . implode('|', $m));
 		return $out;
 	} 
 
@@ -897,12 +1224,16 @@ function render_select_options($option_ary, $selected, $print = true)
 
 function generate_form_token($print = true)
 {
-	global $schema, $s_id, $redis;
+	global $redis;
+	static $token;
 
-	$token = sha1(microtime() . mt_rand(0, 1000000));
-	$key = 'form_token_' . $token;
-	$redis->set($key, '1');
-	$redis->expire($key, 14400); // 4 hours
+	if (!isset($token))
+	{
+		$token = sha1(microtime() . mt_rand(0, 1000000));
+		$key = 'form_token_' . $token;
+		$redis->set($key, '1');
+		$redis->expire($key, 14400); // 4 hours
+	}
 
 	if ($print)
 	{
@@ -918,7 +1249,7 @@ function generate_form_token($print = true)
 
 function get_error_form_token()
 {
-	global $redis, $script_name, $s_id;
+	global $redis, $script_name;
 
 	if (!isset($_POST['form_token']))
 	{
@@ -933,7 +1264,7 @@ function get_error_form_token()
 	if (!$value)
 	{
 		$m = 'Het formulier is verlopen';
-		log_event($s_id, 'form_token', $m . ': ' . $script_name);
+		log_event('form_token', $m . ': ' . $script_name);
 		return $m;
 	}
 
@@ -941,7 +1272,7 @@ function get_error_form_token()
 	{
 		$redis->incr($key);
 		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-		log_event($s_id, 'form_token', $m . '(count: ' . $value . ') : ' . $script_name);
+		log_event('form_token', $m . '(count: ' . $value . ') : ' . $script_name);
 		return $m;
 	}
 
@@ -951,35 +1282,17 @@ function get_error_form_token()
 }
 
 /**
- *
+*
  */
-function get_schemas_domains($http = false)
+
+function get_host($url)
 {
-	global $db;
-
-	$schemas = $domains = array();
-
-	$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
-	$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
-	$schemas_db = array_fill_keys($schemas_db, true);
-
-	foreach ($_ENV as $key => $s)
+	if (is_array($url))
 	{
-		if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
-		{
-			continue;
-		}
-
-		$domain = str_replace(['SCHEMA_', '____', '___', '__'], ['', ':', '-', '.'], $key);
-
-		$domain = strtolower($domain);
-		$domain = (($http) ? 'http://' : '') . $domain;
-
-		$schemas[$domain] = $s;
-		$domains[$s] = $domain;
+		$url = $url['url'];
 	}
 
-	return array($schemas, $domains);
+	return strtolower(parse_url($url, PHP_URL_HOST));
 }
 
 /**
@@ -1010,13 +1323,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
  *
  */
 
-function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false)
+function get_typeahead_thumbprint($name = 'users_active', $group_url = false)
 {
 	global $redis, $base_url, $typeahead_thumbprint_version;
 
-	$letsgroup_url = ($letsgroup_url) ?: $base_url;
+	$group_url = ($group_url) ?: $base_url;
 
-	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
+	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
 	$thumbprint = $typeahead_thumbprint_version . $redis->get($redis_key);
 
@@ -1034,22 +1347,22 @@ function get_typeahead_thumbprint($name = 'users_active', $letsgroup_url = false
 
 function invalidate_typeahead_thumbprint(
 	$name = 'users_active',
-	$letsgroup_url = false,
+	$group_url = false,
 	$new_thumbprint = false,
 	$ttl = 5184000)	// 60 days;
 {
-	global $redis, $base_url, $s_id;
+	global $redis, $base_url;
 
-	$letsgroup_url = ($letsgroup_url) ?: $base_url;
+	$group_url = ($group_url) ?: $base_url;
 
-	$redis_key = $letsgroup_url . '_typeahead_thumbprint_' . $name;
+	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
 	if ($new_thumbprint)
 	{
 		if ($new_thumbprint != $redis->get($redis_key))
 		{
 			$redis->set($redis_key, $new_thumbprint);
-			log_event($s_id, 'typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $letsgroup_url . ' : ' . $name);
+			log_event('typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 		}
 
 		$redis->expire($redis_key, $ttl);
@@ -1058,14 +1371,14 @@ function invalidate_typeahead_thumbprint(
 	{
 		$redis->del($redis_key);
 
-		log_event($s_id, 'typeahead', 'typeahead thumbprint deleted for ' . $letsgroup_url . ' : ' . $name);
+		log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 	}
 }
 
 /**
  * 
  */
-function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
+function get_typeahead($name_ary, $group_url = false, $group_id = false)
 {
 	global $rootpath;
 
@@ -1078,13 +1391,13 @@ function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
 
 	foreach($name_ary as $name)
 	{
-		$out .= get_typeahead_thumbprint($name, $letsgroup_url) . '|';
+		$out .= get_typeahead_thumbprint($name, $group_url) . '|';
 
 		if (strpos($name, 'users_') !== false)
 		{
 			$status = str_replace('users_', '', $name);
 			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
-			$out .= ($letsgroup_id) ? '&letsgroup_id=' . $letsgroup_id : '';
+			$out .= ($group_id) ? '&group_id=' . $group_id : '';
 			$out .= '&' . get_session_query_param();
 		}
 		else
@@ -1103,7 +1416,7 @@ function get_typeahead($name_ary, $letsgroup_url = false, $letsgroup_id = false)
  */
 function etag_buffer($content)
 {
-	global $post, $redis;
+	global $post;
 
 	if ($post)
 	{

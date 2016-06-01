@@ -17,7 +17,7 @@ function sign_transaction($transaction, $sharedsecret)
 	$signamount = round($signamount);
 	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $signamount;
 	$signature = sha1($tosign);
-	log_event('','debug','Signing ' . $tosign . ' : ' . $signature);
+	log_event('debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
 }
 
@@ -54,10 +54,10 @@ function insert_transaction($transaction)
 
 	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-	log_event($s_id, 'Trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
+	log_event('trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . $currency . ' from user ' .
-		link_user($transaction['id_from'], null, false, true) . ' to user ' .
-		link_user($transaction['id_to'], null, false, true));
+		link_user($transaction['id_from'], false, false, true) . ' to user ' .
+		link_user($transaction['id_to'], false, false, true));
 
 	return $id;
 }
@@ -67,7 +67,7 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
-	global $s_id, $systemname, $systemtag, $currency;
+	global $systemname, $systemtag, $currency;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -81,8 +81,8 @@ function mail_mail_interlets_transaction($transaction)
 	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname;
 	$text  .= ' met de volgende gegevens:' . $r . $r;
 
-	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], null, false);
-	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], null, false);
+	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], false, false);
+	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], false, false);
 
 	$text .= 'Van: ' . $t . $t . $u_from . $r;
 	$text .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;
@@ -113,7 +113,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $s_id, $base_url, $schema;
+	global $base_url, $schema, $hosts;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -147,8 +147,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if (isset($remote_schema))
 	{
-		list($schemas, $domains) = get_schemas_domains(true);
-		$url = $domains[$sch];
+		$url = $app_protocol . $hosts[$sch];
 	}
 	else
 	{
@@ -169,14 +168,14 @@ function mail_transaction($transaction, $remote_schema = null)
 		mail_q(array('to' => $t_schema . $userto['id'], 'subject' => $subject, 'text' => $text), false, $sch);
 	}
 
-	log_event(((isset($remote_schema)) ? '' : $s_id), 'mail', $subject, $sch);
+	log_event('mail', $subject, $sch);
 }
 
 /*
  *
  */
 
-function mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result)
+function mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result)
 {
 	global $systemtag, $currency;
 

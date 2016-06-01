@@ -35,11 +35,28 @@ if ($setting)
 
 		if (!count($errors))
 		{
-			if (writeconfig($setting, $value))
+			if ($eland_config[$setting])
 			{
-				$alert->success('Instelling aangepast.');
-				cancel();
+				$a = array(
+					'value' => $value,
+					'name'	=> $setting
+				);
+				$mdb->settings->update(array('name' => $setting), $a, array('upsert' => true));
 			}
+			else
+			{
+				if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $setting)))
+				{
+					return false;
+				}
+			}
+
+			$redis_key = $schema . '_config_' . $setting;
+			$redis->set($redis_key, $value);
+			$redis->expire($redis_key, 2592000);
+
+			$alert->success('Instelling aangepast.');
+			cancel();
 		}
 
 		$alert->error($errors);

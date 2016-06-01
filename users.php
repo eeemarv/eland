@@ -47,32 +47,21 @@ if ($user_mail_submit && $id && $post)
 		cancel();
 	}
 
-	if (isset($s_interlets['schema']))
+	if (!$s_schema)
 	{
-		$t_schema =  $s_interlets['schema'] . '.';
-		$me_schema = $s_interlets['schema'];
-		$me_id = $s_interlets['id'];
-		$interlets = true;
-	}
-	else
-	{
-		$t_schema = '';
-		$me_schema = false;
-		$me_id = $s_id;
-		$interlets = false;
+		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		cancel();
 	}
 
-	$me = readuser($me_id, false, $me_schema);
-
-	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
-	$user_me .= link_user($me, null, false);
-	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
+	$user_me = ($s_group_self) ? '' : readconfigfromdb('systemtag', $s_schema) . '.';
+	$user_me .= link_user($session_user, $s_schema, false);
+	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
-		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $me_id));
+			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
 
 	$subject = 'Bericht van ' . $systemname;
 
@@ -95,11 +84,11 @@ if ($user_mail_submit && $id && $post)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $t_schema . $me_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
+			mail_q(array('to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
 		}
 
 		if ($user['status'] == 1 || $user['status'] == 2)
@@ -107,7 +96,7 @@ if ($user_mail_submit && $id && $post)
 			$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 		}
 
-		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $t_schema . $me_id));
+		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id));
 
 		$alert->success('Mail verzonden.');
 	}
@@ -138,7 +127,7 @@ if ($post)
 
 if ($post && $img && $id )
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -230,7 +219,7 @@ if ($post && $img && $id )
 			'"PictureFile"'	=> $filename
 		),array('id' => $id));
 
-		log_event($s_id, 'Pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
+		log_event('pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
 
 		readuser($id, true);
 
@@ -239,7 +228,7 @@ if ($post && $img && $id )
 	catch(Exception $e)
 	{
 		echo json_encode(array('error' => $e->getMessage()));
-		log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+		log_event('pict', 'Upload fail : ' . $e->getMessage());
 		exit;
 	}
 
@@ -260,7 +249,7 @@ if ($post && $img && $id )
  */
 if ($img_del && $id)
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -411,7 +400,8 @@ if ($post && $s_admin)
 
 	if ($field_submit || $mail_submit)
 	{
-		$password = ($mail_submit) ? $_POST['mail_password'] : $_POST[$field . '_password'];
+		$password = ($mail_submit) ? 'mail_password' : $field . '_password';
+		$password = $_POST[$password];
 		$value = $_POST[$field];
 
 		$errors = array();
@@ -424,7 +414,7 @@ if ($post && $s_admin)
 
 		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
 		{
-			$errors[] = 'Paswoord is niet juist.';
+			$errors[] = 'Het paswoord is niet juist.';
 		}
 	}
 
@@ -480,7 +470,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . link_user($row, null, false, true);
+		$users_log .= ', ' . link_user($row, false, false, true);
 	}
 	$users_log = ltrim($users_log, ', ');
 
@@ -499,7 +489,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			$redis->del($schema . '_user_' . $user_id);
 		}
 
-		log_event($s_id, 'bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
 		cancel();
 	}
@@ -523,7 +513,10 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			invalidate_typeahead_thumbprint('users_extern');
 		}
 
-		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+
+		clear_interlets_groups_cache();
+		
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -537,7 +530,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 			array($value, $user_ids, $id_type_contact),
 			array(\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT));
 
-		log_event($s_id, 'bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -593,7 +586,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
 	}
 
-	log_event($s_id, 'Mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
+	log_event('mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
 
 	$alert->success('Mail verzonden.');
 
@@ -616,7 +609,7 @@ if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
 
 if ($pw)
 {
-	$s_owner = ($pw == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $pw == $s_id) ? true : false;
 
 	if (!$s_admin && !$s_owner)
 	{
@@ -818,7 +811,7 @@ if ($del)
 
 				if ($msgs)
 				{
-					log_event('','user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
+					log_event('user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
 					$db->delete('messages', array('id_user' => $del));
 				}
@@ -937,6 +930,8 @@ if ($del)
 					invalidate_typeahead_thumbprint('users_extern');
 				}
 
+				clear_interlets_groups_cache();
+
 				cancel();
 			}
 			else
@@ -996,7 +991,7 @@ if ($add || $edit)
 		cancel();
 	}
 
-	$s_owner =  ($edit && $s_id && $edit == $s_id) ? true : false;
+	$s_owner =  ($s_group_self && $edit && $s_id && $edit == $s_id) ? true : false;
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
@@ -1319,6 +1314,8 @@ if ($add || $edit)
 						invalidate_typeahead_thumbprint('users_extern');
 					}
 
+					clear_interlets_groups_cache();
+
 					cancel($id);
 				}
 				else
@@ -1444,6 +1441,8 @@ if ($add || $edit)
 						{
 							invalidate_typeahead_thumbprint('users_extern');
 						}
+
+						clear_interlets_groups_cache();
 					}
 					cancel($edit);
 				}
@@ -1514,30 +1513,35 @@ if ($add || $edit)
 
 			if ($interlets)
 			{
-				list($schemas, $domains) = get_schemas_domains(true);
-
-				if ($letsgroup = $db->fetchAssoc('select *
+				if ($group = $db->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
 						and apimethod <> \'internal\'', array($interlets)))
 				{
-					$user['name'] = $user['fullname'] = $letsgroup['groupname'];
+					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($letsgroup['url'] && ($remote_schema = $schemas[$letsgroup['url']]))
+					if ($group['url'] && ($remote_schema = $schemas[$group['url']]))
 					{
-						$admin_mail = readconfigfromdb('admin', $remote_schema);
+						$group['domain'] = get_host($group);
 
-						foreach ($contact as $k => $c)
+						if (isset($schemas[$group['domain']]))
 						{
-							if ($c['abbrev'] == 'mail')
-							{
-								$contact[$k]['value'] = $admin_mail;
-								break;
-							}
-						}
+							$remote_schema = $schemas[$group['domain']];
 
-						// name from source is preferable
-						$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
+							$admin_mail = readconfigfromdb('admin', $remote_schema);
+
+							foreach ($contact as $k => $c)
+							{
+								if ($c['abbrev'] == 'mail')
+								{
+									$contact[$k]['value'] = $admin_mail;
+									break;
+								}
+							}
+
+							// name from source is preferable
+							$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
+						}
 					}
 				}
 
@@ -1817,7 +1821,7 @@ if ($add || $edit)
 
 if ($id)
 {
-	$s_owner = ($s_id == $id) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
 	$cc = ($post) ? $cc : 1;
 
@@ -1837,11 +1841,8 @@ if ($id)
 				or id_to = ?', array($id, $id));
 	}
 
-	$to = $db->fetchColumn('select c.value
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($user['id']));
+	$mail_to = getmailadr($user['id']);
+	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 
@@ -1903,9 +1904,13 @@ if ($id)
 		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if (($s_admin || ($s_user && !$s_owner)) && $user['status'] != 7)
+	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
 	{
-		$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie naar ' . link_user($user, null, false), 'exchange', true);
+			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+
+			$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id . $tus, 'Transactie',
+				'btn btn-warning', 'Transactie naar ' . link_user($user, false, false),
+				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)
@@ -2099,7 +2104,7 @@ if ($id)
 
 	// response form
 
-	if ($s_guest && !isset($s_interlets['mail']))
+	if ($s_guest && !$s_schema)
 	{
 		$placeholder = 'Als gast kan je niet het mail formulier gebruiken.';
 	}
@@ -2107,16 +2112,20 @@ if ($id)
 	{
 		$placeholder = 'Je kan geen berichten naar jezelf mailen.';
 	}
-	else if (!$to)
+	else if (!count($mail_to))
 	{
 		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+	}
+	else if (!count($mail_from))
+	{
+		$placeholder = 'Om het mail formulier te gebruiken moet een mail adres ingesteld zijn voor je eigen account.';
 	}
 	else
 	{
 		$placeholder = '';
 	}
 
-	$disabled = (empty($to) || ($s_guest && !isset($s_interlets['mail'])) || $s_owner) ? true : false;
+	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een bericht naar ';
 	echo  link_user($id) . '</h3>';
@@ -2176,12 +2185,12 @@ if ($id)
 
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
-		echo '<div id="messages" '; //data-uid="' . $id . '" ';
+		echo '<div id="messages" ';
 		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
 		echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 	}
 
-	echo '<div id="transactions" '; //data-uid="' . $id . '" ';
+	echo '<div id="transactions" ';
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
 	echo '&' . get_session_query_param() . '" class="print-hide"></div>';
 
@@ -2529,16 +2538,13 @@ else
 			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
 		}
 
-		if (isset($s_interlets['schema']))
+		if ($s_guest && $s_schema)
 		{
-			$t_schema =  $s_interlets['schema'] . '.';
-			$me_id = $s_interlets['id'];
-
 			$my_adr = $db->fetchColumn('select c.value
-				from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc, ' . $t_schema . 'users u
+				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 				where c.id_user = ?
 					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', array($me_id));
+					and tc.abbrev = \'adr\'', array($s_id));
 		}
 		else if (!$s_guest)
 		{
@@ -2942,7 +2948,7 @@ if ($v_list)
 					echo '<td>';
 					echo ($first) ? $checkbox : '';
 					$first = false;
-					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, $key) : $u[$key];
+					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, false, true, false, $key) : $u[$key];
 					echo '</td>';
 				}
 			}
@@ -3021,8 +3027,8 @@ if ($v_list)
 			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
 
 			echo '>';
-			echo '<td>' . link_user($u, 'letscode') . '</td>';
-			echo '<td>' . link_user($u, 'name') . '</td>';
+			echo '<td>' . link_user($u, false, true, false, 'letscode') . '</td>';
+			echo '<td>' . link_user($u, false, true, false, 'name') . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['tel']) . '</td>';
 			echo '<td>' . render_contacts($contacts[$id]['gsm']) . '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
@@ -3132,7 +3138,8 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo sprintf($inp, 'mail_password', 'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
+		echo sprintf($inp, 'mail_password',
+			'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
 
 		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
@@ -3176,7 +3183,8 @@ if ($v_list)
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
 			}
 
-			echo sprintf($inp, $k . '_password', 'Paswoord', 'password', 'class="form-control"', $k . '_password');
+			echo sprintf($inp, $k . '_password',
+				'Paswoord', 'password', 'class="form-control"', $k . '_password');
 
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
 
@@ -3186,7 +3194,7 @@ if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
+//		echo '</div>';
 		echo '</div>';
 		generate_form_token();
 		echo '</form>';
@@ -3359,7 +3367,7 @@ function sendadminmail($user)
 	$text  = "*** Dit is een automatische mail van ";
 	$text .= $systemtag;
 	$text .= " ***\r\n\n";
-	$text .= "De account " . link_user($user, null, false) ;
+	$text .= "De account " . link_user($user, false, false) ;
 	$text .= " werd geactiveerd met een nieuw paswoord.\n";
 
 	if ($user['mail'])

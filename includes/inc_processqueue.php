@@ -13,7 +13,7 @@ function processqueue()
 	foreach ($transactions AS $key => $value)
 	{
 		$transid = $value['transid'];
-		$letsgroup_id = $value['letsgroup_id'];
+		$group_id = $value['letsgroup_id'];
 		$id_from = $value['id_from'];
 		$letscode_to = trim($value['letscode_to']);
 		$amount = $value['amount'];
@@ -24,17 +24,17 @@ function processqueue()
 
 		echo 'Processing transaction' .  $transid . "\t";
 
-		$myletsgroup = $db->fetchAssoc('select * from letsgroups where id = ?', array($letsgroup_id));
+		$my_group = $db->fetchAssoc('select * from letsgroups where id = ?', array($group_id));
 
 		$myuser = readuser($value['id_from']);
 		$real_from = $myuser['letscode'] . ' ' . $myuser['name'];
 
-		$soapurl = ($myletsgroup['elassoapurl']) ?: $myletsgroup['url'] . '/soap';
+		$soapurl = ($my_group['elassoapurl']) ?: $my_group['url'] . '/soap';
 		$soapurl .= '/wsdlelas.php?wsdl';
 
 		// Make the SOAP connection, send our API key and the transaction details
-		$myapikey = $myletsgroup['remoteapikey'];
-		$from = $myletsgroup['myremoteletscode'];
+		$myapikey = $my_group['remoteapikey'];
+		$from = $my_group['myremoteletscode'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if (!$err)
@@ -60,7 +60,7 @@ function processqueue()
 				{
 					case 'SUCCESS':
 						//Commit locally
-						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED')
+						if(localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED')
 						{
 							update_queue($transid, $count, 'LOCALFAIL');
 						}
@@ -68,27 +68,27 @@ function processqueue()
 					case 'OFFLINE':
 						//Do nothing
 						update_queue($transid,$count,$result);
-						log_event('', 'Soap', 'Remote site offline ' . $transid);
+						log_event('soap', 'Remote site offline ' . $transid);
 						break;
 					case 'FAILED':
 						//Handle error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
+						mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'SIGFAIL':
 						//Handle the error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
+						mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'DUPLICATE':
 						//Commit locally
-						if(localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED'){
+						if(localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED'){
 							update_queue($transid,$count,'LOCALFAIL');
 						}
 						break;
 					case 'NOUSER':
 						//Handle the error and remove transaction
-						mail_failed_interlets($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to, $result);
+						mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result);
 						unqueue($transid);
 						break;
 					case 'APIKEYFAIL':
@@ -121,7 +121,7 @@ function unqueue($transid)
 {
 	global $db;
 	$db->delete('interletsq', array('transid' => $transid));
-	log_event('','Trans','Removing ' . $transid . 'from queue');	
+	log_event('trans','Removing ' . $transid . 'from queue');	
 }
 
 function update_queue($transid,$count,$result)
@@ -131,7 +131,7 @@ function update_queue($transid,$count,$result)
 	$db->update('interletsq', array('retry_count' => $count, 'last_status' => $result), array('transid' => $transid));
 }
 
-function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $letscode_to)
+function localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to)
 {
 	global $db, $systemtag;
 
@@ -143,12 +143,12 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	$transaction['description'] = $description;
 	$transaction['id_from'] = $id_from;
 	//Lookup id_to first
-	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($myletsgroup['localletscode']));
+	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($my_group['localletscode']));
 
 	$transaction['id_to'] = $to_user['id'];
 	//Real_to has to be set by a soap call
-	$mysoapurl = $myletsgroup['elassoapurl'] .'/wsdlelas.php?wsdl';
-	$myapikey = $myletsgroup['remoteapikey'];
+	$mysoapurl = $my_group['elassoapurl'] .'/wsdlelas.php?wsdl';
+	$myapikey = $my_group['remoteapikey'];
 	$client = new nusoap_client($mysoapurl, true);
 	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));
 	$err = $client->getError();
@@ -219,7 +219,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	if($id)
 	{
 		$result = 'SUCCESS';
-		log_event('', 'Trans', 'Local commit of interlets transaction succeeded');
+		log_event('trans', 'Local commit of interlets transaction succeeded');
 		$transaction['amount'] = round($transaction['amount']);
 		$transaction['id'] = $id;
 		mail_transaction($transaction);
@@ -228,7 +228,7 @@ function localcommit($myletsgroup, $transid, $id_from, $amount, $description, $l
 	else
 	{
 		$result = 'FAILED';
-		log_event('','Trans','Local commit of $transid failed');
+		log_event('trans','Local commit of $transid failed');
 		//FIXME Replace with something less spammy (1 mail per 15 minutes);
 
 		$subject = 'Interlets FAILURE!';

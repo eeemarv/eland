@@ -39,9 +39,7 @@ echo 'php version: ' . phpversion() . $r;
 // select in which schema to perform updates
 $schema_lastrun_ary = $schema_interletsq_ary = array();
 
-list($schemas, $domains) = get_schemas_domains(true);
-
-foreach ($schemas as $url => $schema)
+foreach ($schemas as $h => $schema)
 {
 	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
 	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
@@ -54,7 +52,7 @@ foreach ($schemas as $url => $schema)
 	}
 }
 
-unset($schema, $domain);
+unset($schema, $h);
 
 if (count($schemas))
 {
@@ -69,7 +67,7 @@ if (count($schemas))
 	echo '---------------------------------------------------------------' . $r;
 	foreach ($schema_lastrun_ary as $schema_n => $time)
 	{
-		echo $schema_n . ' (' . $domains[$schema_n] . '): ' . $time;
+		echo $schema_n . ' (' . $hosts[$schema_n] . '): ' . $time;
 		echo (isset($schema_interletsq_ary[$schema_n])) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
 
 		if ((!isset($selected) && !isset($schema_interletsq_min))
@@ -94,64 +92,67 @@ $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo "*** Cron system running [" . $schema . ' ' . $domains[$schema] . ' ' . $systemtag ."] ***" . $r;
+echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . $systemtag ."] ***" . $r;
 
 $mdb->set_schema($schema);
 
-$base_url = $domains[$schema]; 
+$base_url = $app_protocol . $hosts[$schema]; 
 
 // begin typeahaed update (when interletsq is empty) for one group
 
 if (!isset($schema_interletsq_min))
 {
 
-	$letsgroups = $db->fetchAll('SELECT *
-		FROM letsgroups
-		WHERE apimethod = \'elassoap\'
-			AND remoteapikey IS NOT NULL');
+	$groups = $db->fetchAll('select *
+		from letsgroups
+		where apimethod = \'elassoap\'
+			and remoteapikey IS NOT NULL
+			and url <> \'\'');
 
-	foreach ($letsgroups as $letsgroup)
+	foreach ($groups as $group)
 	{
-		if (isset($schemas[$letsgroup['url']]))
+		$group['domain'] = get_host($group);
+
+		if (isset($schemas[$group['domain']]))
 		{
-			unset($letsgroup);
+			unset($group);
 			continue;
 		}
 
-		if ($redis->get($schema . '_token_failed_' . $letsgroup['remoteapikey'])
-			|| $redis->get($schema . '_connection_failed_' . $letsgroup['url']))
+		if ($redis->get($schema . '_token_failed_' . $group['remoteapikey'])
+			|| $redis->get($schema . '_connection_failed_' . $group['domain']))
 		{
-			unset($letsgroup);
+			unset($group);
 			continue;
 		}
 
-		if (!$redis->get($letsgroup['url'] . '_typeahead_updated'))
+		if (!$redis->get($group['domain'] . '_typeahead_updated'))
 		{
 			break;
 		}
 /*
-		if (!$redis->get($letsgroup['url'] . '_msgs_updated'))
+		if (!$redis->get($group['domain'] . '_msgs_updated'))
 		{
 			$update_msgs = true;
 			break;
 		}
 */
-		unset($letsgroup);
+		unset($group);
 	}
 
-	if (isset($letsgroup))
+	if (isset($group))
 	{
-		$err_group = $letsgroup['groupname'] . ': ';
+		$err_group = $group['groupname'] . ': ';
 
-		$soapurl = ($letsgroup['elassoapurl']) ? $letsgroup['elassoapurl'] : $letsgroup['url'] . '/soap';
+		$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
 		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-		$apikey = $letsgroup['remoteapikey'];
+		$apikey = $group['remoteapikey'];
 		$client = new nusoap_client($soapurl, true);
 		$err = $client->getError();
 		if ($err)
 		{
 			echo $err_group . 'Can not get connection.' . $r;
-			$redis_key = $schema . '_connection_failed_' . $letsgroup['url'];
+			$redis_key = $schema . '_connection_failed_' . $group['domain'];
 			$redis->set($redis_key, '1');
 			$redis->expire($redis_key, 21600);  // 6 hours
 		}
@@ -171,7 +172,7 @@ if (!isset($schema_interletsq_min))
 
 			if ($err)
 			{
-				$redis_key = $schema . '_token_failed_' . $letsgroup['remoteapikey'];
+				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
 			}
@@ -183,19 +184,19 @@ if (!isset($schema_interletsq_min))
 			{
 				$client = new Goutte\Client();
 
-				$crawler = $client->request('GET', $letsgroup['url'] . '/login.php?token=' . $token);
+				$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
 
 				require_once $rootpath . 'includes/inc_interlets_fetch.php';
 
 				if ($update_msgs)
 				{
 					echo 'fetch interlets messages' . $r;
-					fetch_interlets_msgs($client, $letsgroup['url']);
+					fetch_interlets_msgs($client, $group);
 				}
 				else
 				{
 					echo 'fetch interlets typeahead data' . $r;
-					fetch_interlets_typeahead_data($client, $letsgroup['url']);
+					fetch_interlets_typeahead_data($client, $group);
 				}
 
 				echo '----------------------------------------------------' . $r;
@@ -206,7 +207,7 @@ if (!isset($schema_interletsq_min))
 			{
 				$err = $e->getMessage();
 				echo $err . $r;
-				$redis_key = $schema . '_token_failed_' . $letsgroup['remoteapikey'];
+				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 				$redis->set($redis_key, '1');
 				$redis->expire($redis_key, 21600);  // 6 hours
 
@@ -295,7 +296,7 @@ if ($autominlimit_queue)
 			|| ($a['account_base'] >= $user['saldo']) 
 		)
 		{
-			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, null, false) . $r;
+			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, false, false) . $r;
 			continue;
 		}
 
@@ -321,9 +322,9 @@ if ($autominlimit_queue)
 		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
 		readuser($to_id, true);
 
-		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, null, false) .  $r;
+		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, false, false) .  $r;
 
-		log_event('', 'cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, null, false) . ' (id:' . $to_id . ') ');
+		log_event('cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, false, false) . ' (id:' . $to_id . ') ');
 	}
 
 	$redis->expire($schema . '_autominlimit_queue', 0);
@@ -368,12 +369,12 @@ while ($row = $st->fetch())
 	$redis->set($key, 'q');
 	$redis->expire($key, 2592000);
 	$redis->lpush('geo_q', json_encode($data));
-	$log_ary[] = link_user($row['id_user'], null, false, true) . ': ' . $adr;
+	$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $adr;
 }
 
 if (count($log_ary))
 {
-	log_event('', 'cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
+	log_event('cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
 }
 
 // end queue addresses to geocode queue
@@ -445,7 +446,7 @@ function geo_q_process()
 				$redis->expire($key, 31536000); // 1 year
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
-				log_event('', 'cron geocode', $log . $log_user, $sch);
+				log_event('cron geocode', $log . $log_user, $sch);
 				continue;
 			}
 
@@ -459,7 +460,7 @@ function geo_q_process()
 		}
 
 		echo  $log . $r;
-		log_event('', 'cron geocode', $log . $log_user, $sch);
+		log_event('cron geocode', $log . $log_user, $sch);
 		$redis->set($key, 'f');
 		$redis->expire($key, 31536000); // 1 year
 
@@ -502,7 +503,7 @@ function admin_exp_msg()
 	
 	foreach($messages as $key => $value)
 	{
-		$text .= link_user($value['id_user'], null, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
+		$text .= link_user($value['id_user'], false, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
 		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
@@ -558,7 +559,7 @@ function user_exp_msgs()
 
 		mail_q(array('to' => $value['id_user'], 'subject' => $subject, 'text' => $text));
 
-		log_event('', 'Mail', 'Message expiration mail sent to ' . $to);
+		log_event('mail', 'Message expiration mail sent to ' . $to);
 	}
 
 	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
@@ -592,7 +593,7 @@ function cleanup_messages()
 
 	if ($msgs)
 	{
-		log_event('','Cron','Expired and deleted Messages ' . $msgs);
+		log_event('cron','Expired and deleted Messages ' . $msgs);
 
 		$db->executeQuery('delete from messages WHERE validity < ?', array($testdate));
 	}
@@ -616,7 +617,7 @@ function cleanup_messages()
 
 	if (count($ids))
 	{
-		log_event('','Cron','Cleanup messages from users: ' . $users);
+		log_event('cron','Cleanup messages from users: ' . $users);
 		echo 'Cleanup messages from users: ' . $users;
 
 		if (count($ids) == 1)
@@ -764,7 +765,7 @@ function saldo_update()
 		$db->update('users', array('saldo' => $calculated), array('id' => $id));
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
-		log_event('', 'Cron' , $m);
+		log_event('cron' , $m);
 	}
 
 	return true;
@@ -854,13 +855,6 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 	{
 		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
 	}
-
-/*
-	if ($name != 'cronschedule')
-	{
-		log_event(0, 'cron', 'Cronjob ' . $name . ' finished.');
-	}
-*/
 
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
 

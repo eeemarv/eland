@@ -171,7 +171,7 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = ($s_id == $message['id_user']) ? true : false;
+	$s_owner = ($s_group_self && $s_id == $message['id_user']) ? true : false;
 
 	if ($message['local'] && $s_guest)
 	{
@@ -323,7 +323,7 @@ if ($post && $images && $id && $img
 
 			// $size = $s3->get_object_filesize($s3_img, $filename);
 
-			log_event($s_id, 'Pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
+			log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
 
 			unlink($tmpfile);
 
@@ -339,7 +339,7 @@ if ($post && $images && $id && $img
 		catch(Exception $e)
 		{
 			echo $e->getMessage();
-			log_event($s_id, 'Pict', 'Upload fail : ' . $e->getMessage());
+			log_event('pict', 'Upload fail : ' . $e->getMessage());
 		}
 	}
 
@@ -393,7 +393,7 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = ($msg['id_user'] == $s_id) ? true : false;
+	$s_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -506,32 +506,27 @@ if ($mail && $post && $id)
 
 	$user = readuser($message['id_user']);
 
-	if (isset($s_interlets['schema']))
+	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$t_schema =  $s_interlets['schema'] . '.';
-		$me_schema = $s_interlets['schema'];
-		$me_id = $s_interlets['id'];
-		$interlets = true;
-	}
-	else
-	{
-		$t_schema = '';
-		$me_schema = false;
-		$me_id = $s_id;
-		$interlets = false;
+		$alert->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		cancel();
 	}
 
-	$me = readuser($me_id, false, $remote_schema);
+	if (!$s_schema)
+	{
+		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		cancel();
+	}
 
-	$user_me = ($interlets) ? readconfigfromdb('systemtag', $me_schema) . '.' : '';
-	$user_me .= link_user($me, null, false);
-	$user_me .= ($interlets) ? ' van interlets groep ' . readconfigfromdb('systemname', $me_schema) : '';
+	$user_me = ($s_group_self) ? '' : readconfigfromdb('systemtag', $s_schema) . '.';
+	$user_me .= link_user($session_user, $s_schema, false);
+	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
-		from ' . $t_schema . 'contact c, ' . $t_schema . 'type_contact tc
+		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']],$me_id));
+			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
 
 	$subject = 'Reactie op je ' . $ow_type . ' ' . $message['content'];
 
@@ -554,16 +549,16 @@ if ($mail && $post && $id)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_interlets) ? ' van letsgroep ' . $systemname : '';
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $t_schema . $me_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
+			mail_q(array('to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		mail_q(array('to' => $user['id'], 'reply_to' => $t_schema . $me_id, 'subject' => $subject, 'text' => $text));
+		mail_q(array('to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text));
 
 		$alert->success('Mail verzonden.');
 	}
@@ -926,8 +921,8 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-	$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 
 	if ($s_admin)
 	{
@@ -1057,6 +1052,9 @@ if ($id)
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', array($user['id']));
 
+	$mail_to = getmailadr($user['id']);
+	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
+
 	$balance = $user['saldo'];
 
 	$images = array();
@@ -1123,11 +1121,15 @@ if ($id)
 			$top_buttons .= aphp('messages', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
 			$top_buttons .= aphp('messages', 'del=' . $id, 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 		}
+	}
 
-		if ($message['msg_type'] == 1 && !$s_owner)
-		{
-			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id, 'Transactie', 'btn btn-warning', 'Transactie voor dit aanbod', 'exchange', true);
-		}
+	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
+	{
+			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+
+			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id . $tus, 'Transactie',
+				'btn btn-warning', 'Transactie voor dit aanbod',
+				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)
@@ -1140,11 +1142,11 @@ if ($id)
 		$top_buttons .= aphp('messages', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+		$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 
 	$h1 = $ow_type_uc;
@@ -1268,26 +1270,30 @@ if ($id)
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
 	echo '&' . get_session_query_param() . '"></div>';
 
-	// response form
+// response form
 
-	if ($s_guest && !isset($s_interlets['mail']))
+	if ($s_guest && !$s_schema)
 	{
-		$placeholder = 'Als gast kan je niet het reactieformulier gebruiken.';
+		$placeholder = 'Als gast kan je niet het mail formulier gebruiken.';
 	}
 	else if ($s_owner)
 	{
 		$placeholder = 'Je kan geen reacties op je eigen berichten sturen.';
 	}
-	else if (!$to)
+	else if (!count($mail_to))
 	{
 		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+	}
+	else if (!count($mail_from))
+	{
+		$placeholder = 'Om het mail formulier te gebruiken moet een mail adres ingesteld zijn voor je eigen account.';
 	}
 	else
 	{
 		$placeholder = '';
 	}
 
-	$disabled = (empty($to) || ($s_guest && !isset($s_interlets['mail'])) || $s_owner) ? true : false;
+	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
 	echo  link_user($message['id_user']) . '</h3>';
@@ -1335,7 +1341,7 @@ if (!($view || $inline))
 	cancel();
 }
 
-$s_owner = ($s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $v_list = (($view == 'list' || $inline) && !$recent) ? true : false;
 $v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;
@@ -1359,7 +1365,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = link_user($user, null, false);
+	$fcode = link_user($user, false, false);
 }
 
 if (!$uid)
@@ -1375,7 +1381,7 @@ if (!$uid)
 			$where_sql[] = 'u.id = ?';
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, null, false);
+			$fcode = link_user($fuid, false, false);
 		}
 		else
 		{
@@ -1625,13 +1631,13 @@ if ($s_admin || $s_user)
 	{
 		if ($s_admin && !$s_owner)
 		{
-			$str = 'Vraag of aanbod voor ' . link_user($uid, null, false);
+			$str = 'Vraag of aanbod voor ' . link_user($uid, false, false);
 			$top_buttons .= aphp('messages', 'add=1&uid=' . $uid, $str, 'btn btn-success', $str, 'plus', true);
 		}
 
 		if (!$inline)
 		{
-			$top_buttons .= aphp('messages', '', 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
+			$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
 	}
 	else
@@ -1900,7 +1906,9 @@ if ($v_list)
 			$th_params['orderby'] = $key_orderby;
 			$th_params['asc'] = $data['asc'];
 
-			echo aphp('messages', $th_params, array($data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>'));
+			echo '<a href="' . generate_url('messages', $th_params) . '">';
+			echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+			echo '</a>';
 		}
 		echo '</th>';
 	}
@@ -1977,7 +1985,7 @@ else if ($v_extended)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag'; 
 
-		$sf_owner = ($msg['id_user'] == $s_id) ? true : false;
+		$sf_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
 
 		$exp = strtotime($msg['validity']) < $time;
 
