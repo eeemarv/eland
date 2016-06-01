@@ -102,14 +102,16 @@ if ($add)
 
 		if ($group_id == 'self')
 		{
-			$to_apimethod_check = $db->fetchColumn('select apimethod
+/*			$to_apimethod_check = $db->fetchColumn('select apimethod
 				from letsgroups
 				where localletscode = ?', array($letscode_to));
+
 
 			if ($to_apimethod_check != 'mail')
 			{
 				$errors[] = 'Je kan enkel rechtstreeks naar een interletsrekening met apimethod <strong>mail</strong> overschrijven';
 			}
+*/
 
 			if ($touser['status'] == 7)
 			{
