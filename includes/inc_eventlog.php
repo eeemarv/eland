@@ -53,13 +53,13 @@ function log_event($type, $event, $remote_schema = false)
 	register_shutdown_function('insert_log', $item, $remote_schema);
 }
 
-function insert_log($item, $remote_schema = null)
+function insert_log($item, $remote_schema = false)
 {
 	global $mdb;
 
 	$mdb->connect();
 
-	if (isset($remote_schema))
+	if ($remote_schema)
 	{
 		$logs = $remote_schema . '_logs';
 		$mdb->get_client()->$logs->insert($item);
