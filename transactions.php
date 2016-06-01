@@ -102,7 +102,7 @@ if ($add)
 
 		if ($group_id == 'self')
 		{
-			$to_apimethod_check = fetchColumn('select apimethod
+			$to_apimethod_check = $db->fetchColumn('select apimethod
 				from letsgroups
 				where localletscode = ?', array($letscode_to));
 
