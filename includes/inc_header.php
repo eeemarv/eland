@@ -50,7 +50,10 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-echo aphp('index', '', array('<div class="logo"></div>'), 'pull-left hidden-xs');
+echo '<a href="' . generate_url('index') . '" class="pull-left hidden-xs">';
+echo '<div class="logo"></div>';
+echo '</a>';
+
 echo aphp('index', '', $systemname, 'navbar-brand');
 
 echo '</div>';
