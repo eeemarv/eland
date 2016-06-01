@@ -240,7 +240,7 @@ foreach ($_ENV as $key => $s)
  *
  */
 
-$schema = getenv('SCHEMA_' . $key_host_env);
+$schema = $schemas[$host];
 
 if (!$schema)
 {
