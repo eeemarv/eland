@@ -357,7 +357,7 @@ if ($id)
 
 	if ($schemas[$group['host']])
 	{
-		echo '<dd><span class="btn btn-success btn-xs">eLAND server</span></dd>';
+		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span></dd>';
 	}
 	else
 	{
