@@ -97,7 +97,7 @@ if(isset($_POST['zend']))
 		$text .= "\r\n";
 		$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
-		$return_message =  mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $user['id']));
+		$return_message =  mail_q(array('to' => $to, 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['user_id']));
 
 		if (!$return_message)
 		{
