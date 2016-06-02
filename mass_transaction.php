@@ -723,7 +723,7 @@ function mail_mass_transaction($mail_ary)
 
 	$text = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r;
 
-	$text = 'Notificatie nieuwe massa transactie' . $r . $r;
+	$text .= 'Notificatie nieuwe massa transactie' . $r . $r;
 
 	$t_one = link_user($one_user_id, false, false);
 
