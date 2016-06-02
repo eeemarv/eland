@@ -379,6 +379,8 @@ if ($s_admin)
 
 if ($post && $s_admin)
 {
+	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
+
 	$field_submit = false;
 
 	$mail_submit = $_POST['mail_submit'];
@@ -400,8 +402,9 @@ if ($post && $s_admin)
 
 	if ($field_submit || $mail_submit)
 	{
-		$password = ($mail_submit) ? 'mail_password' : $field . '_password';
-		$password = $_POST[$password];
+		$password = ($mail_submit) ? 'mail_password_' : $field . '_password_';
+		$password = $_POST[$password . $pw_name_suffix];
+
 		$value = $_POST[$field];
 
 		$errors = array();
@@ -3074,6 +3077,9 @@ if ($v_list)
 
 	if ($s_admin & isset($show_columns['u']))
 	{
+		$form_token = generate_form_token(false);
+		$pw_name_suffix = substr($form_token, 0, 5);
+
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
 		$inp .=  '<div class="col-sm-10">';
@@ -3138,7 +3144,7 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo sprintf($inp, 'mail_password',
+		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
 			'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
 
 		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
@@ -3183,7 +3189,7 @@ if ($v_list)
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
 			}
 
-			echo sprintf($inp, $k . '_password',
+			echo sprintf($inp, $k . '_password_' . $pw_name_suffix,
 				'Paswoord', 'password', 'class="form-control"', $k . '_password');
 
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
@@ -3194,7 +3200,6 @@ if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 		echo '</div>';
-//		echo '</div>';
 		echo '</div>';
 		generate_form_token();
 		echo '</form>';
