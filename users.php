@@ -791,6 +791,9 @@ if ($del)
 			cancel();
 		}
 
+		$pw_name_suffix = substr($_POST['form_token'], 0, 5);
+		$password = $_POST['password_' . $pw_name_suffix];
+
 		if ($password)
 		{
 			$sha512 = hash('sha512', $password);
@@ -948,6 +951,9 @@ if ($del)
 		}
 	}
 
+	$form_token = generate_form_token(false);
+	$pw_name_suffix = substr($form_token, 0, 5);
+
 	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
 	$fa = 'user';
 
@@ -964,7 +970,7 @@ if ($del)
 	echo '<div class="form-group">';
 	echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="password" class="form-control" id="password" name="password" ';
+	echo '<input type="password" class="form-control" id="password" name="password_' . $pw_name_suffix . '" ';
 	echo 'value="" required autocomplete="off">';
 	echo '</div>';
 	echo '</div>';
