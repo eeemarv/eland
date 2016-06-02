@@ -1271,7 +1271,7 @@ if ($add || $edit)
 
 					$alert->success('Gebruiker opgeslagen.');
 
-					readuser($id, true);
+					$user = readuser($id, true);
 
 					foreach ($contact as $value)
 					{
@@ -1353,7 +1353,7 @@ if ($add || $edit)
 							'upsert'			=> true,
 					));
 
-					readuser($edit, true);
+					$user = readuser($edit, true);
 
 					$alert->success('Gebruiker aangepast.');
 
@@ -3394,7 +3394,7 @@ function sendactivationmail($password, $user)
 {
 	global $base_url, $s_id, $alert, $systemname, $systemtag;
 
-	if (empty($user["mail"]))
+	if (empty($user['mail']))
 	{
 		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
 		return 0;
