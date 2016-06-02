@@ -92,7 +92,8 @@ list($to_letscode) = explode(' ', $_POST['to_letscode']);
 list($from_letscode) = explode(' ', $_POST['from_letscode']);
 $amount = $_POST['amount'] ?: array();
 $description = $_POST['description'];
-$password = $_POST['password'];
+$pw_name_suffix = substr($_POST['form_token'], 0, 5);
+$password = $_POST['password_' . $pw_name_suffix];
 $transid = $_POST['transid'];
 $mail_en = ($_POST['mail_en']) ? true : false;
 $transid = $_POST['transid'];
@@ -588,11 +589,14 @@ echo '>';
 echo '</div>';
 echo '</div>';
 
+$form_token = generate_form_token(false);
+$pw_name_suffix = substr($form_token, 0, 5);
+
 echo '<div class="form-group">';
 echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="password" class="form-control" id="password" ';
-echo 'name="password" ';
+echo 'name="password_' . $pw_name_suffix . '" ';
 echo 'autocomplete="off" required>';
 echo '</div>';
 echo '</div>';
