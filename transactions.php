@@ -1004,7 +1004,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $transactions = $db->fetchAll($query, $params_sql);
 
-foreach ($transactions as &$t)
+foreach ($transactions as $key => $t)
 {
 	if (!($t['real_from'] || $t['real_to']))
 	{
@@ -1030,8 +1030,8 @@ foreach ($transactions as &$t)
 
 		if ($inter_transaction)
 		{
-			$t['inter_schema'] = $inter_schema;
-			$t['inter_transaction'] = $inter_transaction;
+			$transactions[$key]['inter_schema'] = $inter_schema;
+			$transactions[$key]['inter_transaction'] = $inter_transaction;
 		}
 	}
 }
