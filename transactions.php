@@ -14,12 +14,12 @@ $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $add = (isset($_GET['add'])) ? true : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
-$mid = ($_GET['mid']) ?: false;
-$tuid = ($_GET['tuid']) ?: false;
-$tus = ($_GET['tus']) ?: false;
-$fuid = ($_GET['fuid']) ?: false;
-$uid = ($_GET['uid']) ?: false;
-$inline = ($_GET['inline']) ? true : false;
+$mid = (isset($_GET['mid'])) ? $_GET['mid'] : false;
+$tuid = (isset($_GET['tuid'])) ? $_GET['tuid'] : false;
+$tus = (isset($_GET['tus'])) ? $_GET['tus'] : false;
+$fuid = (isset($_GET['fuid'])) ? $_GET['fuid'] : false;
+$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
+$inline = (isset($_GET['inline'])) ? true : false;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
