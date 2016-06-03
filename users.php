@@ -22,9 +22,22 @@ $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
 $selected_users = isset($_POST['sel']) ? $_POST['sel'] : array();
 
-/**
- * bulk actions
+/*
+ * general access
  */
+
+$role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
+$role = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $role;
+$allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
+
+require_once $rootpath . 'includes/inc_passwords.php';
+require_once $rootpath . 'includes/inc_default.php';
+
+/**
+ * selectors for bulk actions
+ */
+$bulk_field_submit = $bulk_submit = false;
+
 if ($s_admin)
 {
 	$edit_fields_tabs = array(
@@ -80,34 +93,25 @@ if ($s_admin)
 			'type'	=> 'checkbox',
 		),
 	);
-}
 
-$bulk_field_submit = false;
-
-if ($post && $s_admin && !($bulk_mail_test || $bulk_mail_submit))
-{
-	foreach ($edit_fields_tabs as $field => $t)
+	if ($post && !($bulk_mail_test
+		|| $bulk_mail_submit
+		|| $edit || $add || $id
+		|| $img || $img_del || $password
+		|| $submit))
 	{
-		if (isset($_POST[$field . '_bulk_submit']))
+		foreach ($edit_fields_tabs as $field => $t)
 		{
-			$bulk_field_submit = true;
-			break;
+			if (isset($_POST[$field . '_bulk_submit']))
+			{
+				$bulk_field_submit = true;
+				break;
+			}
 		}
 	}
+
+	$bulk_submit = $bulk_field_submit || $bulk_mail_submit || $bulk_mail_test;
 }
-
-$bulk_submit = $bulk_field_submit || $bulk_mail_submit || $bulk_mail_test;
-
-/*
- * general access
- */
-
-$role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
-$role = ($add || $del || $bulk_submit) ? 'admin' : $role;
-$allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
-
-require_once $rootpath . 'includes/inc_passwords.php';
-require_once $rootpath . 'includes/inc_default.php';
 
 /**
  * mail to user
@@ -3159,10 +3163,12 @@ if ($v_list)
 		echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
 		echo '<span class="caret"></span></a>';
 		echo '<ul class="dropdown-menu">';
+
 		foreach ($edit_fields_tabs as $k => $t)
 		{
 			echo '<li><a href="#' . $k . '_tab" data-toggle="tab">' . $t['lbl'] . '</a></li>';
 		}
+
 		echo '</ul>';
 		echo '</li>';
 		echo '</ul>';
