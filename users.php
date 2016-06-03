@@ -96,12 +96,14 @@ if ($post && $s_admin && !($bulk_mail_test || $bulk_mail_submit))
 	}
 }
 
+$bulk_submit = $bulk_field_submit || $bulk_mail_submit || $bulk_mail_test;
+
 /*
  * general access
  */
 
 $role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
-$role = ($add || $del || $bulk_mail_submit || $bulk_mail_test || $bulk_field_submit) ? 'admin' : $role;
+$role = ($add || $del || $bulk_submit) ? 'admin' : $role;
 $allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
 
 require_once $rootpath . 'includes/inc_passwords.php';
@@ -112,8 +114,8 @@ require_once $rootpath . 'includes/inc_default.php';
  */
 if ($user_mail_submit && $id && $post)
 {
-	$content = $_POST['content'];
-	$cc = $_POST['cc'];
+	$user_mail_content = $_POST['user_mail_content'];
+	$user_mail_cc = $_POST['user_mail_cc'];
 
 	$user = readuser($id);
 
@@ -144,7 +146,7 @@ if ($user_mail_submit && $id && $post)
 	$text = 'Beste ' . $user['name'] . "\r\n\r\n";
 	$text .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
 	$text .= '--------------------bericht--------------------' . "\r\n\r\n";
-	$text .= $content . "\r\n\r\n";
+	$text .= $user_mail_content . "\r\n\r\n";
 	$text .= '-----------------------------------------------' . "\r\n\r\n";
 	$text .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
 	$text .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
@@ -154,9 +156,9 @@ if ($user_mail_submit && $id && $post)
 		$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
 	}
 
-	if ($content)
+	if ($user_mail_content)
 	{
-		if ($cc)
+		if ($user_mail_cc)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
@@ -393,9 +395,10 @@ if ($img_del && $id)
 	exit;
 }
 
-
-
-if ($post && $s_admin)
+/**
+ * bulk actions
+ */
+if ($bulk_submit && $post && $s_admin)
 {
 	if ($bulk_field_submit || $bulk_mail_submit)
 	{
@@ -438,10 +441,7 @@ if ($post && $s_admin)
 			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
 	}
-}
 
-if ($s_admin && ($bulk_field_submit || $bulk_mail_test || $bulk_mail_submit) && $post)
-{
 	if (!count($selected_users) && !$bulk_mail_test)
 	{
 		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
@@ -463,17 +463,19 @@ if ($s_admin && ($bulk_field_submit || $bulk_mail_test || $bulk_mail_submit) && 
 }
 
 /**
- * change a field for multiple users
+ * bulk action: change a field for multiple users
  */
 if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
 			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
 	foreach ($rows as $row)
 	{
 		$users_log .= ', ' . link_user($row, false, false, true);
 	}
+
 	$users_log = ltrim($users_log, ', ');
 
 	if ($field == 'fullname_access')
@@ -538,6 +540,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	}
 }
 
+/**
+ * bulk action: mail
+ */
+
 if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
 {
 	$to_log = '';
@@ -554,54 +560,91 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		'max_limiet'		=> 'maxlimit',
 	);
 
-	$sel_ary = ($bulk_mail_test) ? array($s_id => true) : $selected_users;
-
-	$st = $db->prepare('select u.*, c.value as mail
-		from users u, contact c, type_contact tc
-		where u.id = c.id_user
-			and c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'');
-
-	$st->execute();
-
-	while ($user = $st->fetch())
+	if ($bulk_mail_test)
 	{
-		if (!$sel_ary[$user['id']])
-		{
-			continue;
-		}
+		$sel_ary = array($s_id => true);
+		$user_ids = array($s_id);
+	}
+	else
+	{
+		$sel_ary = $selected_users;
+	}
 
-		unset($sel_ary[$user['id']]);
+	$count = 0;
+	$users_log = $alert_msg_users = array();
+
+	$sel_users = $db->executeQuery('select u.*, c.value as mail
+		from users u, contact c, type_contact tc
+		where u.id in (?)
+			and u.id = c.id_user
+			and c.id_type_contact = tc.id
+			and tc.abbrev = \'mail\'',
+			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+	foreach ($sel_users as $sel_user)
+	{
+		if (!isset($sel_ary[$sel_user['id']]))
+		{
+			// avoid duplicate send when multiple mail addresses for one user.
+			continue;
+		}	
+
+		unset($sel_ary[$sel_user['id']]);
 
 		$search = $replace = array();
 
 		foreach ($map as $key => $val)
 		{
 			$search[] = '{{' . $key . '}}';
-			$replace[] = ($key == 'status') ? $status_ary[$user['status']] : $user[$val];
+			$replace[] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
 		}
 
 		$text = str_replace($search, $replace, $bulk_mail_content);
 
-		mail_q(array('to' => $user['mail'], 'subject' => $bulk_mail_subject, 'text' => $text, 'reply_to' => $s_id));
+		mail_q(array(
+			'to' => $sel_user['id'],
+			'subject' => $bulk_mail_subject,
+			'text' => $text,
+			'reply_to' => $s_id,
+		));
 
-		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
+		$to_log[] = link_user($sel_user, false, false);
+		$alert_msg_users[] = link_user($sel_user);
+
+		$count++;
 	}
 
-	log_event('mail', 'Multi mail queued, subject: ' . $subject . ', to: ' . $to_log);
+	if ($count)
+	{
+		log_event('mail', 'Bulk mail queued, subject: ' . $bulk_mail_subject . ', to: ' . implode(', ', $to_log));
 
-	$alert->success('Mail verzonden.');
+		$alert_msg = 'Mail verzonden naar ' . $count . ' ';
+		$alert_msg .= ($count > 1) ? 'accounts' : 'account';
+		$alert_msg .= '<br>';
+		$alert_msg .= implode('<br>', $alert_msg_users);
+		
+		$alert->success($alert_msg);
+	}
+	else
+	{
+		$alert->warning('Geen mails verzonden.');
+	}
 
 	if (count($sel_ary))
 	{
 		$missing_users = '';
 
-		foreach ($sel_ary as $warning_user_id)
+		foreach ($sel_ary as $warning_user_id => $dummy)
 		{
-			$warning_user = readuser($warning_user_id);
-			$missing_users .= $warning_user['letscode'] . ' ' . $warning_user['name'] . '<br>';
+			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
+
 		$alert->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mail adres: <br>' . $missing_users);
+	}
+
+	if ($bulk_mail_submit && $count)
+	{
+		cancel();
 	}
 }
 
@@ -1827,7 +1870,7 @@ if ($id)
 {
 	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
 
-	$cc = ($post) ? $cc : 1;
+	$user_mail_cc = ($post) ? $user_mail_cc : 1;
 
 	$user = readuser($id);
 
@@ -2140,17 +2183,17 @@ if ($id)
 
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
-	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
+	echo '<textarea name="user_mail_content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
 	echo ($disabled) ? ' disabled' : '';
-	echo '>' . ((isset($content)) ? $content : '') . '</textarea>';
+	echo '>' . ((isset($user_mail_content)) ? $user_mail_content : '') . '</textarea>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
-	echo '<input type="checkbox" name="cc"';
-	echo ($cc) ? ' checked="checked"' : '';
+	echo '<input type="checkbox" name="user_mail_cc"';
+	echo ($user_mail_cc) ? ' checked="checked"' : '';
 	echo ' value="1" >Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';
