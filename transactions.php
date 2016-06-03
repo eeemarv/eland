@@ -1015,11 +1015,11 @@ foreach ($transactions as &$t)
 
 	$inter_schema = false;
 
-	if ($interlets_accounts_schemas[$t['id_from']])
+	if (isset($interlets_accounts_schemas[$t['id_from']]))
 	{
 		$inter_schema = $interlets_accounts_schemas[$t['id_from']];
 	}
-	else if ($interlets_accounts_schemas[$t['id_to']])
+	else if (isset($interlets_accounts_schemas[$t['id_to']]))
 	{
 		$inter_schema = $interlets_accounts_schemas[$t['id_to']];
 	}
@@ -1352,9 +1352,9 @@ echo '<tr>';
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 	echo '>';
-	if ($data['no_sort'])
+	if (isset($data['no_sort']))
 	{
 		echo $data['lbl'];
 	}
@@ -1403,7 +1403,7 @@ if ($uid)
 			{
 				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
-				if ($t['inter_transaction'])
+				if (isset($t['inter_transaction']))
 				{
 					echo link_user($t['inter_transaction']['id_to'],
 						$t['inter_schema'],
@@ -1427,7 +1427,7 @@ if ($uid)
 			{
 				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
-				if ($t['inter_transaction'])
+				if (isset($t['inter_transaction']))
 				{
 					echo link_user($t['inter_transaction']['id_from'],
 						$t['inter_schema'],

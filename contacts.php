@@ -536,7 +536,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($geo && $inline)
+	if (isset($geo) && $inline)
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-lng="' . $geo['lng'] . '" data-lat="' . $geo['lat'] . '" ';
@@ -550,7 +550,6 @@ if ($uid)
 
 	if ($inline)
 	{
-		echo $includejs;
 		exit;
 	}
 

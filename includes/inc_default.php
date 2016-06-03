@@ -461,7 +461,7 @@ else
 
 /** welcome message **/
 
-if ($_GET['welcome'] && $s_guest)
+if (isset($_GET['welcome']) && $s_guest)
 {
 	$msg = '<strong>Welkom bij ' . $systemname . '</strong><br>';
 	$msg .= 'Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
@@ -623,7 +623,7 @@ function get_elas_interlets_groups($refresh = false)
 	{
 		$h = get_host($row['url']);
 
-		if (!$schemas[$h])
+		if (!(isset($schemas[$h])))
 		{
 			$elas_interlets_groups[$row['id']] = $row;
 		}
@@ -848,7 +848,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	}
 	else
 	{
-		$out .= $str;
+		$out = $str;
 	}
 	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
 	return $out;
@@ -975,21 +975,22 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 		return $m;
 	}
 
-	if (!$mail['subject'])
+	if (!isset($mail['subject']) || $mail['subject'] == '')
 	{
 		$m = 'Mail "subject" is missing.';
 		log_event('mail', $m);
 		return $m;
 	}
 
-	if (!$mail['text'] && !$mail['html'])
+	if ((!isset($mail['text']) || $mail['text'] == '')
+		&& (!isset($mail['html']) || $mail['html'] == ''))
 	{
 		$m = 'Mail "body" (text or html) is missing.';
 		log_event('mail', $m);
 		return $m;
 	}
 
-	if (!$mail['to'])
+	if (!isset($mail['to']) || !$mail['to'])
 	{
 		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
 		log_event('mail', $m);
@@ -1048,7 +1049,7 @@ function mail_q($mail = array(), $priority = false, $sending_schema = false)
 
 	if ($redis->lpush('mail_q' . $queue, json_encode($mail)))
 	{
-		$reply = ($mail['reply_to']) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
+		$reply = (isset($mail['reply_to'])) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
 
 		log_event('mail', 'Mail in queue, subject: ' .
 			$mail['subject'] . ', from : ' .

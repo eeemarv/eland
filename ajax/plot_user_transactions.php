@@ -4,8 +4,8 @@ $rootpath = '../';
 $role = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$days = ($_GET['days']) ?: 365;
-$user_id = ($_GET['user_id']) ?: 0;
+$days = (isset($_GET['days'])) ? $_GET['days'] : 365;
+$user_id = (isset($_GET['user_id'])) ? $_GET['user_id'] : false;
 
 if (!$user_id)
 {
@@ -94,7 +94,7 @@ foreach ($trans as $t)
 		'l' 		=> ($real || $t['status'] == 0) ? 0 : 1,
 		's'			=> $t['status'],
 		'id' 		=> $t['user_id'],
-		'g'			=> ($group['id']) ?: 0,
+		'g'			=> (isset($group['id'])) ? $group['id'] : 0,
 	);
 
 	unset($group);

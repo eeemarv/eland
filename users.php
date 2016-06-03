@@ -16,7 +16,7 @@ $interlets = (isset($_GET['interlets'])) ? $_GET['interlets'] : false;
 $password = (isset($_POST['password'])) ? $_POST['password'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
-$user_mail_submit = ($_POST['user_mail_submit']) ? true : false;
+$user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 
@@ -24,11 +24,7 @@ $role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'g
 $role = ($add || $del) ? 'admin' : $role;
 $allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
 
-if (!$inline)
-{
-	require_once $rootpath . 'includes/inc_passwords.php';
-}
-
+require_once $rootpath . 'includes/inc_passwords.php';
 require_once $rootpath . 'includes/inc_default.php';
 
 /**
@@ -382,7 +378,6 @@ if ($post && $s_admin)
 	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
 
 	$field_submit = false;
-
 	$mail_submit = $_POST['mail_submit'];
 	$mail_test = $_POST['mail_test'];
 
@@ -466,7 +461,7 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 /**
  * change a field for multiple users
  */
-if ($s_admin && !count($errors) && $field_submit && $post)
+if ($s_admin && !count($errors) && isset($field_submit) && $post)
 {
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
@@ -539,7 +534,7 @@ if ($s_admin && !count($errors) && $field_submit && $post)
 	}
 }
 
-if ($s_admin && !count($errors) && ($mail_submit || $mail_test) && $post)
+if ($s_admin && !count($errors) && (isset($mail_submit) || isset($mail_test)) && $post)
 {
 	$to_log = '';
 
@@ -2148,7 +2143,7 @@ if ($id)
 	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
 	echo ($disabled) ? ' disabled' : '';
-	echo '>' . $content . '</textarea>';
+	echo '>' . ((isset($content)) ? $content : '') . '</textarea>';
 	echo '</div>';
 	echo '</div>';
 

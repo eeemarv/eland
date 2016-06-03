@@ -117,7 +117,7 @@ if (!$s_anonymous)
 	if ($s_schema)
 	{
 		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo ($s_master) ? 'master' : link_user($s_id, $s_schema, false);
+		echo (isset($s_master)) ? 'master' : link_user($s_id, $s_schema, false);
 	}
 	else
 	{
