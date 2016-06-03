@@ -113,7 +113,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $base_url, $schema, $hosts;
+	global $base_url, $schema, $hosts, $app_protocol;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -165,7 +165,12 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		mail_q(array('to' => $t_schema . $userto['id'], 'subject' => $subject, 'text' => $text), false, $sch);
+		mail_q(array(
+			'to' => $t_schema . $userto['id'],
+			'subject' => $subject,
+			'text' => $text,
+			'schema'	=> $sch,
+		));
 	}
 
 	log_event('mail', $subject, $sch);

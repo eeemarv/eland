@@ -963,11 +963,13 @@ function readuser($id, $refresh = false, $remote_schema = false)
  *
  */
 
-function mail_q($mail = array(), $priority = false, $sending_schema = false)
+function mail_q($mail = array(), $priority = false)
 {
 	global $schema, $redis;
 
-	$mail['schema'] = $sending_schema ?: $schema;
+	// only the interlets transactions receiving side has a different schema
+
+	$mail['schema'] = isset($mail['schema']) ? $mail['schema'] : $schema;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
