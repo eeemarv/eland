@@ -362,8 +362,6 @@ if ($submit)
 
 	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
 
-	$errors = array();
-
 	if ($file_size > 1024 * 1024 * 10)
 	{
 		$errors[] = 'Het bestand is te groot. De maximum grootte is 10MB.';

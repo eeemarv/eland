@@ -16,8 +16,6 @@ if ($setting)
 	{
 		$value = $_POST['value'];
 
-		$errors = array();
-
 		if (strlen($value) > 60)
 		{
 			$errors[] = 'De waarde mag maximaal 60 tekens lang zijn.';

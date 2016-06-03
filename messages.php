@@ -691,8 +691,6 @@ if (($edit || $add))
 
 	if ($submit)
 	{
-		$errors = array();
-
 		$validity = $_POST['validity'];
 
 		if (!ctype_digit((string) $validity))

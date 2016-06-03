@@ -45,8 +45,6 @@ if ($add)
 
 	if ($submit)
 	{
-		$errors = array();
-
 		$stored_transid = $redis->get($redis_transid_key);
 
 		if (!$stored_transid)

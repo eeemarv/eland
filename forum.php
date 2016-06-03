@@ -134,8 +134,6 @@ if ($submit)
 		$forum_post['uid'] = $s_id;
 	}
 
-    $errors = array();
-
  	if (!($forum_post['subject'] || $topic))
 	{
 		 $errors[] = 'Vul een onderwerp in.';

@@ -48,8 +48,6 @@ if ($_POST['zend'])
 	$login = trim($_POST['login']);
 	$password = trim($_POST['password']);
 
-	$errors = array();
-
 	if (!($login && $password))
 	{
 		$errors[] = 'Login gefaald. Vul login en paswoord in.';

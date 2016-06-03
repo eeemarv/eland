@@ -37,8 +37,6 @@ if ($add || $edit)
 
 		unset($group['zend'], $group['form_token']);
 
-		$errors = array();
-
 		if (strlen($group['groupname']) > 128)
 		{
 			$errors[] = 'De groepsnaam mag maximaal 128 tekens lang zijn.';

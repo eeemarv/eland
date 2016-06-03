@@ -17,8 +17,6 @@ if(isset($_POST['zend']))
 		'browser'			=> $_SERVER['HTTP_USER_AGENT'],
 	);
 
-    $errors = array();
-
 	if (!$s_group_self)
 	{
 		if(empty($help['letscode']))

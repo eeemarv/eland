@@ -49,8 +49,6 @@ if ($add || $edit)
 			'headline'		=> $_POST['headline'],
 		);
 
-		$errors = array();
-
 		if (!isset($news['headline']) || (trim($news['headline']) == ''))
 		{
 			$errors[] = 'Titel is niet ingevuld';

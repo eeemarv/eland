@@ -17,7 +17,6 @@ if ($add)
 		$cat['id_parent'] = $_POST['id_parent'];
 		$cat['leafnote'] = ($_POST['id_parent'] == 0) ? 0 : 1;
 
-		$errors = array();
 		if (!isset($cat['name'])|| (trim($cat['name']) == ''))
 		{
 			$errors[] = 'Vul naam in!';

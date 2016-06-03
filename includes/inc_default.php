@@ -371,6 +371,8 @@ $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
+$errors = array();
+
 /**
  * check access to groups
  **/

@@ -14,8 +14,6 @@ if ($hosting_form)
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		$token = $_POST['token'];
 
-		$errors = array();
-
 		if (!$redis->get('hosting_form_' . $token))
 		{
 			$errors[] = 'Het formulier is verlopen.';

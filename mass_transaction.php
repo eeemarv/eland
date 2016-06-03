@@ -100,8 +100,6 @@ $transid = $_POST['transid'];
 
 if ($_POST['zend'])
 {
-	$errors = array();
-
 	if (!$password)
 	{
 		$errors[] = 'Paswoord is niet ingevuld.';

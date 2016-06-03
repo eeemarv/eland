@@ -18,10 +18,90 @@ $submit = (isset($_POST['zend'])) ? true : false;
 
 $user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
 
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
+$bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
+$selected_users = isset($_POST['sel']) ? $_POST['sel'] : array();
+
+/**
+ * bulk actions
+ */
+if ($s_admin)
+{
+	$edit_fields_tabs = array(
+		'fullname_access'	=> array(
+			'lbl'		=> 'Zichtbaarheid volledige naam',
+			'options'	=> 'access_options',
+		),
+		'adr_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid adres',
+			'options'	=> 'access_options',
+		),
+		'mail_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid email adres',
+			'options'	=> 'access_options',
+		),
+		'tel_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid telefoonnummer',
+			'options'	=> 'access_options',
+		),
+		'gsm_access'		=> array(
+			'lbl'		=> 'Zichtbaarheid gsmnummer',
+			'options'	=> 'access_options',
+		),
+		'comments'			=> array(
+			'lbl'		=> 'Commentaar',
+			'type'		=> 'text',
+			'string'	=> true,
+		),
+		'accountrole'		=> array(
+			'lbl'		=> 'Rechten',
+			'options'	=> 'role_ary',
+			'string'	=> true,
+		),
+		'status'			=> array(
+			'lbl'		=> 'Status',
+			'options'	=> 'status_ary',
+		),
+		'admincomment'		=> array(
+			'lbl'		=> 'Commentaar van de admin',
+			'type'		=> 'text',
+			'string'	=> true,
+		),
+		'minlimit'			=> array(
+			'lbl'		=> 'Minimum limiet saldo',
+			'type'		=> 'number',
+		),
+		'maxlimit'			=> array(
+			'lbl'		=> 'Maximum limiet saldo',
+			'type'		=> 'number',
+		),
+		'cron_saldo'		=> array(
+			'lbl'	=> 'Periodieke mail met recent vraag en aanbod (aan/uit)',
+			'type'	=> 'checkbox',
+		),
+	);
+}
+
+$bulk_field_submit = false;
+
+if ($post && $s_admin && !($bulk_mail_test || $bulk_mail_submit))
+{
+	foreach ($edit_fields_tabs as $field => $t)
+	{
+		if (isset($_POST[$field . '_bulk_submit']))
+		{
+			$bulk_field_submit = true;
+			break;
+		}
+	}
+}
+
+/*
+ * general access
+ */
 
 $role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
-$role = ($add || $del) ? 'admin' : $role;
+$role = ($add || $del || $bulk_mail_submit || $bulk_mail_test || $bulk_field_submit) ? 'admin' : $role;
 $allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
 
 require_once $rootpath . 'includes/inc_passwords.php';
@@ -313,101 +393,23 @@ if ($img_del && $id)
 	exit;
 }
 
-/**
- * bulk actions
- */
-if ($s_admin)
-{
-	$edit_fields_tabs = array(
-		'fullname_access'	=> array(
-			'lbl'		=> 'Zichtbaarheid volledige naam',
-			'options'	=> 'access_options',
-		),
-		'adr_access'		=> array(
-			'lbl'		=> 'Zichtbaarheid adres',
-			'options'	=> 'access_options',
-		),
-		'mail_access'		=> array(
-			'lbl'		=> 'Zichtbaarheid email adres',
-			'options'	=> 'access_options',
-		),
-		'tel_access'		=> array(
-			'lbl'		=> 'Zichtbaarheid telefoonnummer',
-			'options'	=> 'access_options',
-		),
-		'gsm_access'		=> array(
-			'lbl'		=> 'Zichtbaarheid gsmnummer',
-			'options'	=> 'access_options',
-		),
-		'comments'			=> array(
-			'lbl'		=> 'Commentaar',
-			'type'		=> 'text',
-			'string'	=> true,
-		),
-		'accountrole'		=> array(
-			'lbl'		=> 'Rechten',
-			'options'	=> 'role_ary',
-			'string'	=> true,
-		),
-		'status'			=> array(
-			'lbl'		=> 'Status',
-			'options'	=> 'status_ary',
-		),
-		'admincomment'		=> array(
-			'lbl'		=> 'Commentaar van de admin',
-			'type'		=> 'text',
-			'string'	=> true,
-		),
-		'minlimit'			=> array(
-			'lbl'		=> 'Minimum limiet saldo',
-			'type'		=> 'number',
-		),
-		'maxlimit'			=> array(
-			'lbl'		=> 'Maximum limiet saldo',
-			'type'		=> 'number',
-		),
-		'cron_saldo'		=> array(
-			'lbl'	=> 'Periodieke mail met recent vraag en aanbod (aan/uit)',
-			'type'	=> 'checkbox',
-		),
-	);
-}
+
 
 if ($post && $s_admin)
 {
-	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-
-	$field_submit = false;
-	$mail_submit = $_POST['mail_submit'];
-	$mail_test = $_POST['mail_test'];
-
-	$selected_users = $_POST['sel'];
-
-	if (!($mail_test || $mail_submit))
+	if ($bulk_field_submit || $bulk_mail_submit)
 	{
-		foreach ($edit_fields_tabs as $field => $t)
-		{
-			if (isset($_POST[$field . '_submit']))
-			{
-				$field_submit = true;
-				break;
-			}
-		}
-	}
-
-	if ($field_submit || $mail_submit)
-	{
-		$password = ($mail_submit) ? 'mail_password_' : $field . '_password_';
+		$pw_name_suffix = substr($_POST['form_token'], 0, 5);
+		$password = ($bulk_mail_submit) ? 'mail_password_' : $field . '_password_';
 		$password = $_POST[$password . $pw_name_suffix];
 
 		$value = $_POST[$field];
-
-		$errors = array();
 
 		if (!$password)
 		{
 			$errors[] = 'Vul je paswoord in.';
 		}
+
 		$password = hash('sha512', $password);
 
 		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
@@ -416,19 +418,21 @@ if ($post && $s_admin)
 		}
 	}
 
-	if ($mail_test || $mail_submit)
+	if ($bulk_mail_test || $bulk_mail_submit)
 	{
-		$mail_subject = $_POST['mail_subject'];
-		$mail_content = $_POST['mail_content'];
+		$bulk_mail_subject = $_POST['bulk_mail_subject'];
+		$bulk_mail_content = $_POST['bulk_mail_content'];
 
-		if (!$mail_subject)
+		if (!$bulk_mail_subject)
 		{
 			$errors[] = 'Gelieve een onderwerp in te vullen voor je mail.';
 		}
-		if (!$mail_content)
+
+		if (!$bulk_mail_content)
 		{
 			$errors[] = 'Het mail bericht is leeg.';
 		}
+
 		if (!readconfigfromdb('mailenabled'))
 		{
 			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
@@ -436,9 +440,9 @@ if ($post && $s_admin)
 	}
 }
 
-if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
+if ($s_admin && ($bulk_field_submit || $bulk_mail_test || $bulk_mail_submit) && $post)
 {
-	if (!count($selected_users) && !$mail_test)
+	if (!count($selected_users) && !$bulk_mail_test)
 	{
 		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
 	}
@@ -461,7 +465,7 @@ if ($s_admin && ($field_submit || $mail_test || $mail_submit) && $post)
 /**
  * change a field for multiple users
  */
-if ($s_admin && !count($errors) && isset($field_submit) && $post)
+if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
@@ -534,7 +538,7 @@ if ($s_admin && !count($errors) && isset($field_submit) && $post)
 	}
 }
 
-if ($s_admin && !count($errors) && (isset($mail_submit) || isset($mail_test)) && $post)
+if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
 {
 	$to_log = '';
 
@@ -550,7 +554,7 @@ if ($s_admin && !count($errors) && (isset($mail_submit) || isset($mail_test)) &&
 		'max_limiet'		=> 'maxlimit',
 	);
 
-	$sel_ary = ($mail_test) ? array($s_id => true) : $selected_users;
+	$sel_ary = ($bulk_mail_test) ? array($s_id => true) : $selected_users;
 
 	$st = $db->prepare('select u.*, c.value as mail
 		from users u, contact c, type_contact tc
@@ -577,9 +581,9 @@ if ($s_admin && !count($errors) && (isset($mail_submit) || isset($mail_test)) &&
 			$replace[] = ($key == 'status') ? $status_ary[$user['status']] : $user[$val];
 		}
 
-		$text = str_replace($search, $replace, $mail_content);
+		$text = str_replace($search, $replace, $bulk_mail_content);
 
-		mail_q(array('to' => $user['mail'], 'subject' => $mail_subject, 'text' => $text, 'reply_to' => $s_id));
+		mail_q(array('to' => $user['mail'], 'subject' => $bulk_mail_subject, 'text' => $text, 'reply_to' => $s_id));
 
 		$to_log .= ', ' . $user['letscode'] . ' ' . $user['name'] . ' (' . $user['id'] . ')';
 	}
@@ -618,8 +622,6 @@ if ($pw)
 	if($submit)
 	{
 		$password = trim($_POST['password']);
-
-		$errors = array();
 
 		if (empty($password) || (trim($password) == ''))
 		{
@@ -1108,8 +1110,6 @@ if ($add || $edit)
 
 			$user_prefetch = readuser($edit);
 		}
-
-		$errors = array();
 
 		if (!in_array($fullname_access, array(0, 1, 2)))
 		{
@@ -2155,7 +2155,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<input type="submit" name="user_mail_submit" value="Versturen" class="btn btn-default"';
+	echo '<input type="submit" name="user_bulk_mail_submit" value="Versturen" class="btn btn-default"';
 	echo ($disabled) ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
@@ -3131,16 +3131,16 @@ if ($v_list)
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<input type="text" class="form-control" id="mail_subject" name="mail_subject" ';
+		echo '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
 		echo 'placeholder="Onderwerp" ';
-		echo 'value="' . $mail_subject . '">';
+		echo 'value="' . $bulk_mail_subject . '">';
 		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<textarea name="mail_content" class="form-control" id="mail_content" rows="16">';
-		echo $mail_content;
+		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="16">';
+		echo $bulk_mail_content;
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
@@ -3148,8 +3148,8 @@ if ($v_list)
 		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
 			'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
 
-		echo '<input type="submit" value="Zend test mail naar jezelf*" name="mail_test" class="btn btn-default">&nbsp;';
-		echo '<input type="submit" value="Verzend" name="mail_submit" class="btn btn-default">';
+		echo '<input type="submit" value="Zend test mail naar jezelf*" name="bulk_mail_test" class="btn btn-default">&nbsp;';
+		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 		echo '<p>*Om een test mail te verzenden moet je je paswoord niet invullen.</p>';
 		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
 		echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
@@ -3193,7 +3193,7 @@ if ($v_list)
 			echo sprintf($inp, $k . '_password_' . $pw_name_suffix,
 				'Paswoord', 'password', 'class="form-control"', $k . '_password');
 
-			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_submit" class="btn btn-primary">';
+			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
 
 			echo '</div>';
 		}

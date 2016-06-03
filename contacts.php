@@ -180,8 +180,6 @@ if ($edit || $add)
 
 	if($submit)
 	{
-		$errors = array();
-
 		if ($error_token = get_error_form_token())
 		{
 			$errors[] = $error_token;
