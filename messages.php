@@ -2015,7 +2015,7 @@ else if ($v_extended)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user']);
+		echo '<p><i class="fa fa-user"></i> ' . link_user($msg['id_user']);
 		echo ($msg['postcode']) ? ', postcode: ' . $msg['postcode'] : '';
 
 		if ($s_admin || $sf_owner)
