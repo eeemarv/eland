@@ -419,7 +419,9 @@ if ($bulk_submit && $post && $s_admin)
 
 		$password = hash('sha512', $password);
 
-		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
+		$fetched_password = ($s_master) ? getenv('MASTER_PASSWORD') : $session_user['password'];
+
+		if ($password != $fetched_password)
 		{
 			$errors[] = 'Het paswoord is niet juist.';
 		}
