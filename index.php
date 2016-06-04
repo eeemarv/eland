@@ -388,6 +388,7 @@ if($s_admin)
 			echo '<ul>';
 			foreach ($non_unique_mailadr as $ary)
 			{
+				echo '<li>';
 				echo $ary['value'] . ' (' . $ary['count'] . '): ';
 
 				$user_ary = array();
@@ -398,6 +399,7 @@ if($s_admin)
 				}
 
 				echo implode(', ', $user_ary);
+				echo '</li>';
 			}
 			echo '</ul>';
 			echo '</li>';
@@ -423,6 +425,7 @@ if($s_admin)
 			echo '<ul>';
 			foreach ($non_unique_letscode as $ary)
 			{
+				echo '<li>';
 				echo $ary['letscode'] . ' (' . $ary['count'] . '): ';
 
 				$user_ary = array();
@@ -433,6 +436,7 @@ if($s_admin)
 				}
 
 				echo implode(', ', $user_ary);
+				echo '</li>';
 			}
 			echo '</ul>';
 			echo '</li>';
@@ -456,6 +460,7 @@ if($s_admin)
 			echo '<ul>';
 			foreach ($non_unique_name as $ary)
 			{
+				echo '<li>';
 				echo $ary['name'] . ' (' . $ary['count'] . '): ';
 
 				$user_ary = array();
@@ -466,6 +471,7 @@ if($s_admin)
 				}
 
 				echo implode(', ', $user_ary);
+				echo '</li>';
 			}
 			echo '</ul>';
 			echo '</li>';
