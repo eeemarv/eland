@@ -70,114 +70,131 @@ if ($_POST['zend'])
 
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
-		if ($db->fetchColumn('select c1.value
-			from contact c1, contact c2, type_contact tc
-			where c1.id_type_contact = tc.id
-				and c2.id_type_contact = tc.id
+		$count_email = $db->fetchColumn('select count(c.*)
+			from contact c, type_contact tc
+			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and c1.id <> c2.id
-				and c1.value = c2.value'))
+				and c.value = ?', array($login));
+
+		if ($count_email == 1)
 		{
-			$errors[] = 'Je kan niet inloggen met email. Deze installatie bevat duplicate email adressen.';
-		}
-		else
-		{
-			$user = $db->fetchAssoc('select u.*
-				from users u, contact c, type_contact tc
-				where u.id = c.id_user
-					and tc.id = c.id_type_contact
+			$user_id = $db->fetchColumn('select id_user
+				from contact c, type_contact tc
+				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.value = ?', array($login));
 		}
-	}
-
-	if (!$user && !count($errors))
-	{
-		if ($db->fetchColumn('select u1.letscode
-			from users u1, users u2
-			where u1.letscode = u2.letscode
-				and u1.id <> u2.id
-				and u1.letscode = ?', array($login)))
-		{
-			$errors[] = 'Je kan niet inloggen met je letscode. Deze installatie bevat duplicate letscodes.';
-		}
 		else
 		{
-			$user = $db->fetchAssoc('select * from users where letscode = ?', array($login));
+			$err = 'Je kan dit email adres niet gebruiken om in te loggen want het is niet ';
+			$err .= 'uniek aanwezig in deze installatie. Gebruik je letscode of gebruikersnaam.';
+			$errors[] = $err;
 		}
 	}
 
-	if (!$user && !count($errors))
+	if (!$user_id && !count($errors))
 	{
-		if ($db->fetchColumn('select u1.name
-			from users u1, users u2
-			where u1.name = u2.name
-				and u1.id <> u2.id
-				and u1.name = ?', array($login)))
+		$count_letscode = $db->fetchColumn('select count(u.*)
+			from users u
+			where letscode = ?', array($login));
+
+		if ($count_letscode > 1)
 		{
-			$errors[] = 'Je kan niet inloggen met je gebruikersnaam. Deze installatie bevat duplicate gebruikersnamen.';
+			$err = 'Je kan deze letscode niet gebruiken om in te loggen want deze is niet ';
+			$err .= 'uniek aanwezig in deze installatie. Gebruik je mailadres of gebruikersnaam.';
+			$errors[] = $err;
 		}
-		else
+		else if ($count_letscode == 1)
 		{
-			$user = $db->fetchAssoc('select * from users where name = ?', array($login));
+			$user_id = $db->fetchColumn('select id from users where letscode = ?', array($login));
 		}
 	}
 
-	if (!$user && !count($errors))
+	if (!$user_id && !count($errors))
+	{
+		$count_name = $db->fetchColumn('select count(u.*)
+			from users u
+			where name = ?', array($login));
+
+		if ($count_name > 1)
+		{
+			$err = 'Je kan deze gebruikersnaam niet gebruiken om in te loggen want deze is niet ';
+			$err .= 'uniek aanwezig in deze installatie. Gebruik je mailadres of letscode.';
+			$errors[] = $err;
+		}
+		else if ($count_name == 1)
+		{
+			$user_id = $db->fetchColumn('select id from users where name = ?', array($login));
+		}
+	}
+
+	if (!$user_id && !count($errors))
 	{
 		$errors[] = 'Login gefaald. Onbekende gebruiker.';
 	}
-
-	$sha512 = hash('sha512', $password);
-	$sha1 = sha1($password);
-	$md5 = md5($password);
-
-	if (!count($errors) && in_array($user['password'], array($sha512, $sha1, $md5)))
+	else if ($user_id && !count($errors))
 	{
-		if ($user['password'] != $sha512)
+		$user = readuser($user_id);
+
+		if (!$user)
 		{
-			$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
-			log_event('password', 'Password encryption updated to sha512');
+			$errors[] = 'Onbekende gebruiker.';
 		}
-
-		if (!count($errors) && !in_array($user['status'], array(1, 2)))
+		else
 		{
-			$errors[] = 'Het account is niet actief.';
-		}
+			$sha512 = hash('sha512', $password);
+			$sha1 = sha1($password);
+			$md5 = md5($password);
 
-		if (!count($errors) && !in_array($user['accountrole'], array('user', 'admin')))
-		{
-			$alert->error('Het account beschikt niet over de juiste rechten.');
-		}
-
-		if (!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
-		{
-			$errors[] = 'De website is in onderhoud, probeer later opnieuw';
-		}
-
-		if (!count($errors))
-		{
-			$_SESSION = array(
-				'id'			=> $user['id'],
-				'schema'		=> $schema,
-			);
-
-			$browser = $_SERVER['HTTP_USER_AGENT'];
-			$s_id = $user['id'];
-			$s_schema = $schema;
-			log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
-			log_event('agent', $browser);
-			$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
-			readuser($user['id'], true);
-			$alert->success('Je bent ingelogd.');
-			$glue = (strpos($location, '?') === false) ? '?' : '&';
-			header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
-			exit;
+			if (!in_array($user['password'], array($sha512, $sha1, $md5)))
+			{
+				$errors[] = 'Het paswoord is niet correct.';
+			}
+			else if ($user['password'] != $sha512)
+			{
+				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
+				log_event('password', 'Password encryption updated to sha512');
+			}
 		}
 	}
-	else
+
+	if (!count($errors) && !in_array($user['status'], array(1, 2)))
 	{
-		$errors[] = 'Paswoord niet correct';
+		$errors[] = 'Het account is niet actief.';
+	}
+
+	if (!count($errors) && !in_array($user['accountrole'], array('user', 'admin')))
+	{
+		$errors[] = 'Het account beschikt niet over de juiste rechten.';
+	}
+
+	if (!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
+	{
+		$errors[] = 'De website is in onderhoud, probeer later opnieuw';
+	}
+
+	if (!count($errors))
+	{
+		$_SESSION = array(
+			'id'			=> $user['id'],
+			'schema'		=> $schema,
+		);
+
+		$browser = $_SERVER['HTTP_USER_AGENT'];
+		$s_id = $user['id'];
+		$s_schema = $schema;
+
+		log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
+		log_event('agent', $browser);
+
+		$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
+		readuser($user['id'], true);
+
+		$alert->success('Je bent ingelogd.');
+
+		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
+		exit;
 	}
 
 	$alert->error($errors);
