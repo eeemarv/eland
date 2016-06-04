@@ -71,7 +71,7 @@ if ($_POST['zend'])
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
 		$count_email = $db->fetchColumn('select count(c.*)
-			from contact c, type_contact tc, user u
+			from contact c, type_contact tc, users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.id_user = u.id
@@ -81,7 +81,7 @@ if ($_POST['zend'])
 		if ($count_email == 1)
 		{
 			$user_id = $db->fetchColumn('select u.id
-				from contact c, type_contact tc, 
+				from contact c, type_contact tc, users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
