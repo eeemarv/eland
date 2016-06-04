@@ -197,29 +197,137 @@ $newusers = $db->fetchAll('select id, letscode, name
 	where status = 1
 		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
 
+$status_msgs = false;
+
 if ($s_admin)
 {
-	$dup_letscode = $db->fetchColumn('select u1.letscode
-		from users u1, users u2
-		where u1.letscode = u2.letscode
-			and u1.id <> u2.id');
-
-	$dup_mail = $db->fetchColumn('select c1.value
-		from contact c1, contact c2, type_contact tc
-		where c1.id_type_contact = tc.id
-			and c2.id_type_contact = tc.id
+	$non_unique_mailadr = $db->fetchAll('select c.value, count(c.*)
+		from contact c, type_contact tc, users u
+		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
-			and c1.id <> c2.id
-			and c1.value = c2.value');
+			and c.id_user = u.id
+			and u.status in (1, 2)
+		group by value
+		having count(*) > 1');
 
-	$dup_name = $db->fetchColumn('select u1.name
-		from users u1, users u2
-		where u1.name = u2.name
-			and u1.id <> u2.id');
+	if (count($non_unique_mailadr))
+	{
+		$st = $db->prepare('select id_user
+			from contact c
+			where c.value = ?');
 
-	$emp_letscode = $db->fetchColumn('select id
+		foreach ($non_unique_mailadr as $key => $ary)
+		{
+			$st->bindValue(1, $ary['value']);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				$non_unique_mailadr[$key]['users'][$row['id_user']] = true;
+			}
+		}
+
+		$status_msgs = true;
+	}
+
+//
+
+	$non_unique_letscode = $db->fetchAll('select letscode, count(*)
+		from users
+		group by letscode
+		having count(*) > 1');
+
+	if (count($non_unique_letscode))
+	{
+		$st = $db->prepare('select id
+			from users
+			where letscode = ?');
+
+		foreach ($non_unique_letscode as $key => $ary)
+		{
+			$st->bindValue(1, $ary['letscode']);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				$non_unique_letscode[$key]['users'][$row['id']] = true;
+			}
+		}
+
+		$status_msgs = true;
+	}
+
+//
+
+	$non_unique_name = $db->fetchAll('select name, count(*)
+		from users
+		group by name
+		having count(*) > 1');
+
+	if (count($non_unique_name))
+	{
+		$st = $db->prepare('select id
+			from users
+			where name = ?');
+
+		foreach ($non_unique_name as $key => $ary)
+		{
+			$st->bindValue(1, $ary['name']);
+			$st->execute();
+
+			while ($row = $st->fetch())
+			{
+				$non_unique_name[$key]['users'][$row['id']] = true;
+			}
+		}
+
+		$status_msgs = true;
+	}
+
+// 
+
+
+	$emp_letscode = array();
+
+	$st = $db->prepare('select id
 		from users
 		where letscode = \'\'');
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$emp_letscode[] = $row['id'];
+		$status_msgs = true;
+	}
+
+	$emp_name = array();
+
+	$st = $db->prepare('select id
+		from users
+		where name = \'\'');
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$emp_name[] = $row['id'];
+		$status_msgs = true;
+	}
+
+	$emp_mail = array();
+
+	$st = $db->prepare('select u.id
+		from users u
+		left join contact c on c.id_user = u.id
+		left join type_contact tc on c.id_type_contact = tc.id
+		where c.id is null
+			and tc.abbrev = \'mail\'');
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$emp_mail[] = $row['id'];
+		$status_msgs = true;
+	}
 
 	$emp_name = $db->fetchColumn('select id
 		from users
@@ -234,6 +342,11 @@ if ($s_admin)
 	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 	$db_update = ($version == $schemaversion) ? false : true;
 	$default_config = $db->fetchColumn('select setting from config where "default" = True');
+
+	if ($db_update || $default_config)
+	{
+		$status_msgs = true;
+	}
 }
 
 $h1 = 'Overzicht';
@@ -245,7 +358,7 @@ include $rootpath . 'includes/inc_header.php';
 
 if($s_admin)
 {
-	if ($db_update || $default_config || $dup_letscode || $dup_name || $dup_mail
+	if ($status_msgs || $db_update || $default_config || $dup_letscode || $dup_name || $dup_mail
 		|| $emp_mail || $emp_name || $emp_letscode)
 	{
 		echo '<div class="panel panel-danger">';
@@ -255,12 +368,118 @@ if($s_admin)
 		echo '</div>';
 
 		echo '<ul class="list-group">';
+
+		if (count($non_unique_mailadr))
+		{
+			echo '<li class="list-group-item">';
+
+			if (count($non_unique_mailadr) == 1)
+			{
+				echo 'Een mailadres komt meer dan eens voor onder de actieve gebruikers ';
+				echo 'in de installatie. ';
+				echo 'Gebruikers met dit mailadres kunnen niet inloggen met mailadres. ';
+			}
+			else
+			{
+				echo 'Meerdere mailadressen komen meer dan eens voor onder de actieve gebruikers in de installatie. ';
+				echo 'Gebruikers met een mailadres dat meer dan eens voorkomt, kunnen niet inloggen met mailadres.';
+			}
+
+			echo '<ul>';
+			foreach ($non_unique_mailadr as $ary)
+			{
+				echo $ary['value'] . ' (' . $ary['count'] . '): ';
+
+				$user_ary = array();
+
+				foreach($ary['users'] as $user_id => $dummy)
+				{
+					$user_ary[] = link_user($user_id);
+				}
+
+				echo implode(', ', $user_ary);
+			}
+			echo '</ul>';
+			echo '</li>';
+		}
+
+		if (count($non_unique_letscode))
+		{
+			echo '<li class="list-group-item">';
+
+			if (count($non_unique_letscode) == 1)
+			{
+				echo 'Een letscode komt meer dan eens voor in de installatie. ';
+				echo 'Gebruikers met deze letscode kunnen niet inloggen met letscode ';
+				echo 'en kunnen geen transacties ontvangen. ';
+			}
+			else
+			{
+				echo 'Meerdere letscodes komen meer dan eens voor in de installatie. ';
+				echo 'Gebruikers met een letscode die meer dan eens voorkomt, kunnen niet inloggen met letscode ';
+				echo 'en kunnen geen transacties ontvangen.';
+			}
+
+			echo '<ul>';
+			foreach ($non_unique_letscode as $ary)
+			{
+				echo $ary['letscode'] . ' (' . $ary['count'] . '): ';
+
+				$user_ary = array();
+
+				foreach($ary['users'] as $user_id => $dummy)
+				{
+					$user_ary[] = link_user($user_id);
+				}
+
+				echo implode(', ', $user_ary);
+			}
+			echo '</ul>';
+			echo '</li>';
+		}
+
+		if (count($non_unique_name))
+		{
+			echo '<li class="list-group-item">';
+
+			if (count($non_unique_name) == 1)
+			{
+				echo 'Een gebruikersnaam komt meer dan eens voor in de installatie. ';
+				echo 'Gebruikers met deze gebruikersnaam kunnen niet inloggen met gebruikersnaam. ';
+			}
+			else
+			{
+				echo 'Meerdere gebruikersnamen komen meer dan eens voor in de installatie. ';
+				echo 'Gebruikers met een gebruikersnaam die meer dan eens voorkomt, kunnen niet inloggen met gebruikersnaam.';
+			}
+
+			echo '<ul>';
+			foreach ($non_unique_name as $ary)
+			{
+				echo $ary['name'] . ' (' . $ary['count'] . '): ';
+
+				$user_ary = array();
+
+				foreach($ary['users'] as $user_id => $dummy)
+				{
+					$user_ary[] = link_user($user_id);
+				}
+
+				echo implode(', ', $user_ary);
+			}
+			echo '</ul>';
+			echo '</li>';
+		}
+
+
+
 		if ($db_update)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Een database update is nodig.';
 			echo '</li>';
 		}
+
 		if ($default_config)
 		{
 			echo '<li class="list-group-item">';
@@ -269,6 +488,8 @@ if($s_admin)
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
+
+/*
 		if ($dup_mail)
 		{
 			echo '<li class="list-group-item">';
@@ -305,6 +526,7 @@ if($s_admin)
 			echo 'Er is een duplicate gebruikersnaam onder de gebruikers: ' . link_user($emp_name);
 			echo '</li>';
 		}
+*/
 		echo '</ul>';
 		echo '</div>';
 	}
