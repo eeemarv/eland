@@ -1621,7 +1621,8 @@ if ($add || $edit)
 		<script src="' . $cdn_datepicker . '"></script>
 		<script src="' . $cdn_datepicker_nl . '"></script>
 		<script src="' . $rootpath . 'js/generate_password.js"></script>
-		<script src="' . $rootpath . 'js/generate_password_onload.js"></script>';
+		<script src="' . $rootpath . 'js/generate_password_onload.js"></script>
+		<script src="' . $rootpath . 'js/user_edit.js"></script>';
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 
@@ -1801,7 +1802,6 @@ if ($add || $edit)
 			echo '<div class="col-sm-10">';
 			echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
 			echo 'value="' . $c['value'] . '"';
-			echo ($c['abbrev'] == 'mail' && !$already_one_mail_input) ? ' required="required"' : '';
 			echo ($c['abbrev'] == 'mail') ? ' type="email"' : ' type="text"';
 			echo '>';
 			echo '</div>';
