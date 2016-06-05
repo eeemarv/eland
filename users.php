@@ -1269,7 +1269,7 @@ if ($add || $edit)
 			$errors[] = 'Het veld hobbies en interesses mag maximaal 500 tekens lang zijn.';
 		}
 
-		if (!$user_prefetch['adate'])
+		if ($s_admin && !$user_prefetch['adate'] && $user['status'] == 1)
 		{
 			if (!$password)
 			{
@@ -1308,9 +1308,12 @@ if ($add || $edit)
 				if ($user['status'] == 1)
 				{
 					$user['adate'] = date('Y-m-d H:i:s');
+					$user['password'] = hash('sha512', $password);	
 				}
-
-				$user['password'] = hash('sha512', $password);
+				else
+				{
+					$user['password'] = hash('sha512', sha1(microtime()));
+				}
 
 				if ($db->insert('users', $user))
 				{
@@ -1349,21 +1352,27 @@ if ($add || $edit)
 						$db->insert('contact', $insert);
 					}
 
-					if ($notify && !empty($mail) && $user['status'] == 1)
+					if ($user['status'] == 1)
 					{
-						$user['mail'] = $mail;
-						sendactivationmail($password, $user);
-						sendadminmail($user);
-						$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
-
-						if (!readconfigfromdb('mailenabled'))
+						if ($notify && !empty($mail) && $user['status'] == 1 && $password)
 						{
-							$alert->warning('Mailfuncties zijn uitgeschakeld.');
+							$user['mail'] = $mail;
+
+							if (readconfigfromdb('mailenabled'))
+							{
+								sendactivationmail($password, $user);
+								sendadminmail($user);
+								$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+							}
+							else
+							{
+								$alert->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+							}
 						}
-					}
-					else
-					{
-						$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+						else
+						{
+							$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+						}
 					}
 
 					if ($user['status'] == 2 | $user['status'] == 1)
@@ -1394,6 +1403,11 @@ if ($add || $edit)
 				if (!$user_stored['adate'] && $user['status'] == 1)
 				{
 					$user['adate'] = date('Y-m-d H:i:s');
+
+					if ($password)
+					{
+						$user['password'] = hash('sha512', $password);
+					}
 				}
 
 				if($db->update('users', $user, array('id' => $edit)))
@@ -1477,12 +1491,19 @@ if ($add || $edit)
 
 						if ($user['status'] == 1 && !$user_prefetch['adate'])
 						{
-							if ($notify && !empty($mail))
+							if ($notify && !empty($mail) && $password)
 							{
-								$user['mail'] = $mail;
-								sendactivationmail($password, $user);
-								sendadminmail($user);
-								$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+								if (readconfigfromdb('mailenabled'))
+								{
+									$user['mail'] = $mail;
+									sendactivationmail($password, $user);
+									sendadminmail($user);
+									$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+								}
+								else
+								{
+									$alert->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+								}
 							}
 							else
 							{
@@ -1846,7 +1867,7 @@ if ($add || $edit)
 
 		if (!$user['adate'] && $s_admin)
 		{
-			echo '<div>';
+			echo '<div id="activate" >';
 			echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 			echo '<br><br>';
 
