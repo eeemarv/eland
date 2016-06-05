@@ -1612,8 +1612,8 @@ if ($add || $edit)
 		}
 	}
 
-	array_walk($user, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
-	array_walk($contact, function(&$value, $key){ $value['value'] = htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8'); });
+	array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
+	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
 
 	$top_buttons .= aphp('users', 'status=active&view=' . $view_users, 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
