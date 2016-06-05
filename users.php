@@ -1867,7 +1867,7 @@ if ($add || $edit)
 
 		if (!$user['adate'] && $s_admin)
 		{
-			echo '<div id="activate" >';
+			echo '<div id="activate">';
 			echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 			echo '<br><br>';
 

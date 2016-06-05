@@ -1,17 +1,22 @@
 $(document).ready(function(){
 	var $status = $('#status');
 	var $mail = $('input[type="email"]');
+	var $activate = $('div#activate');
 
-	update_required();
+	status_change();
 
-	$status.change(update_required);
+	$status.change(status_change);
 
-	function update_required(){
+	function status_change(){
 		if ($status.val() == '1' || $status.val() == '2'){
 			$mail.eq(0).prop('required', true);
-			return;
-		}
 
-		$mail.eq(0).prop('required', false);
+			$activate.show();
+			return;
+		} else {
+			$mail.eq(0).prop('required', false);
+
+			$activate.hide();
+		}
 	}
 });
