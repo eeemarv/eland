@@ -33,7 +33,14 @@ $(document).ready(function(){
 			vc = (vc > 1) ? 0 : 1;
 		}
 
-		pw += (Math.floor(Math.random() * 9) + 1);
+		var before = Math.round(Math.random());
+		var number = (Math.floor(Math.random() * 9) + 1);
+
+		if (before){
+			pw = number + pw;
+		} else {
+			pw += number;
+		}
 
 		$('#password').val(pw);
 
