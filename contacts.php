@@ -259,6 +259,23 @@ if ($edit || $add)
 			} 
 		}
 
+		if ($contact['id_type_contact'] == $mail_type_id)
+		{
+			$mail_count = $db->fetchColumn('select count(c.*)
+				from contact c, type_contact tc, users u
+				where c.id_type_contact = tc.id
+					and tc.abbrev = \'mail\'
+					and c.id_user = u.id
+					and u.status in (1, 2)
+					and u.id <> ?
+					and c.value = ?', array($user_id, $contact['value']));
+
+			if ($mail_count)
+			{
+				$errors[] = 'Dit mailadres komt reeds voor onder de actieve gebruikers.';
+			}
+		}
+
 		if(!count($errors))
 		{
 			if ($edit)
