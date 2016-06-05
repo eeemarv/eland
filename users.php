@@ -1095,11 +1095,12 @@ if ($add || $edit)
 			$notify = $_POST['notify'];
 			$password = trim($_POST['password']);
 
-			foreach ($contact as $c)
+			foreach ($contact as $key => $c)
 			{
 				if ($c['abbrev'] == 'mail' && $c['main_mail'])
 				{
 					$mail = trim($c['value']);
+					$mail_contact_key = $key;
 					break;
 				}
 			}
@@ -1199,17 +1200,25 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
-			if (!isset($mail))
+			if ($user['status'] == 1 || $user['status'] == 2)
 			{
-				$errors[] = 'Geen mail adres ingevuld.';
+				if (!$mail)
+				{
+					$errors[] = 'Geen mailadres ingevuld. Bij een actieve gebruiker moet het mailadres ingevuld zijn.';
+					$contact[$mail_contact_key]['value'] = trim($_POST['stored_mail']);
+				}
 			}
-			else if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+
+			if ($mail)
 			{
-				$errors[] = 'Geen geldig email adres.';
-			}
-			else if ($db->fetchColumn($mail_sql, $mail_sql_params))
-			{
-				$errors[] = 'Het mailadres is al in gebruik.';
+				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+				{
+					$errors[] = 'Geen geldig email adres.';
+				}
+				else if ($db->fetchColumn($mail_sql, $mail_sql_params))
+				{
+					$errors[] = 'Het mailadres is al in gebruik.';
+				}
 			}
 
 			if (!$user['letscode'])
@@ -1430,7 +1439,7 @@ if ($add || $edit)
 
 							if (!$value['value'])
 							{
-								if ($stored_contact && !$value['main_mail'])
+								if ($stored_contact)
 								{
 									$db->delete('contact', array('id_user' => $edit, 'id' => $value['id']));
 								}
@@ -1819,6 +1828,7 @@ if ($add || $edit)
 			if ($c['abbrev'] == 'mail' && !$already_one_mail_input)
 			{
 				echo '<input type="hidden" name="contact['. $key . '][main_mail]" value="1">';
+				echo '<input type="hidden" name="stored_mail" value="' . $c['value'] . '">';
 			}
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
