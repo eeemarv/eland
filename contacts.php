@@ -204,8 +204,8 @@ if ($edit || $add)
 
 		$contact = array(
 			'id_type_contact'		=> $_POST['id_type_contact'],
-			'value'					=> $_POST['value'],
-			'comments' 				=> $_POST['comments'],
+			'value'					=> trim($_POST['value']),
+			'comments' 				=> trim($_POST['comments']),
 			'flag_public'			=> $_POST['flag_public'],
 			'id_user'				=> $user_id,
 		);
