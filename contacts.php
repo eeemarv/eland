@@ -54,7 +54,9 @@ if ($del)
 		where c.id = ?
 			and tc.id = c.id_type_contact', array($del));
 
-	if ($contact['abbrev'] == 'mail')
+	$owner = readuser($contact['id_user']);
+
+	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
 		if ($db->fetchColumn('select count(c.*)
 			from contact c, type_contact tc
@@ -62,7 +64,7 @@ if ($del)
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
 		{
-			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een gebruiker';
+			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een actieve gebruiker';
 			$alert->error('Je kan niet ' . $err . ' verwijderen.');
 			cancel($uid);
 		}
