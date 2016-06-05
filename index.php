@@ -292,7 +292,7 @@ if ($s_admin)
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
-			and c.value !~ \'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
+			and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~-.]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
 
 //
 	$no_mail = array();
