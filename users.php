@@ -1517,6 +1517,11 @@ if ($add || $edit)
 		else
 		{
 			$alert->error($errors);
+
+			if ($edit)
+			{
+				$user['adate'] = $user_prefetch['adate'];
+			}
 		}
 	}
 	else
@@ -1674,7 +1679,7 @@ if ($add || $edit)
 		echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
-		echo 'value="' . $user['fullname'] . '" required maxlength="100">';
+		echo 'value="' . $user['fullname'] . '" maxlength="100">';
 		echo '</div>';
 		echo '</div>';
 
@@ -1839,8 +1844,9 @@ if ($add || $edit)
 
 		echo '</div>';
 
-		if (!$user['adate'])
+		if (!$user['adate'] && $s_admin)
 		{
+			echo '<div>';
 			echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
 			echo '<br><br>';
 
@@ -1858,6 +1864,7 @@ if ($add || $edit)
 			echo '<input type="checkbox" name="notify" id="notify"';
 			echo ' checked="checked"';
 			echo '>';
+			echo '</div>';
 			echo '</div>';
 			echo '</div>';
 		}
