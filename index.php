@@ -201,7 +201,7 @@ $status_msgs = false;
 
 if ($s_admin)
 {
-	$non_unique_mailadr = $db->fetchAll('select c.value, count(c.*)
+	$non_unique_mail = $db->fetchAll('select c.value, count(c.*)
 		from contact c, type_contact tc, users u
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
@@ -210,20 +210,20 @@ if ($s_admin)
 		group by value
 		having count(*) > 1');
 
-	if (count($non_unique_mailadr))
+	if (count($non_unique_mail))
 	{
 		$st = $db->prepare('select id_user
 			from contact c
 			where c.value = ?');
 
-		foreach ($non_unique_mailadr as $key => $ary)
+		foreach ($non_unique_mail as $key => $ary)
 		{
 			$st->bindValue(1, $ary['value']);
 			$st->execute();
 
 			while ($row = $st->fetch())
 			{
-				$non_unique_mailadr[$key]['users'][$row['id_user']] = true;
+				$non_unique_mail[$key]['users'][$row['id_user']] = true;
 			}
 		}
 
@@ -234,6 +234,7 @@ if ($s_admin)
 
 	$non_unique_letscode = $db->fetchAll('select letscode, count(*)
 		from users
+		where letscode <> \'\'
 		group by letscode
 		having count(*) > 1');
 
@@ -261,6 +262,7 @@ if ($s_admin)
 
 	$non_unique_name = $db->fetchAll('select name, count(*)
 		from users
+		where name <> \'\'
 		group by name
 		having count(*) > 1');
 
@@ -284,66 +286,49 @@ if ($s_admin)
 		$status_msgs = true;
 	}
 
-// 
+//
 
-
-	$emp_letscode = array();
-
-	$st = $db->prepare('select id
-		from users
-		where letscode = \'\'');
-	$st->execute();
-
-	while ($row = $st->fetch())
-	{
-		$emp_letscode[] = $row['id'];
-		$status_msgs = true;
-	}
-
-	$emp_name = array();
-
-	$st = $db->prepare('select id
-		from users
-		where name = \'\'');
-	$st->execute();
-
-	while ($row = $st->fetch())
-	{
-		$emp_name[] = $row['id'];
-		$status_msgs = true;
-	}
-
-	$emp_mail = array();
-
-	$st = $db->prepare('select u.id
-		from users u
-		left join contact c on c.id_user = u.id
-		left join type_contact tc on c.id_type_contact = tc.id
-		where c.id is null
-			and tc.abbrev = \'mail\'');
-	$st->execute();
-
-	while ($row = $st->fetch())
-	{
-		$emp_mail[] = $row['id'];
-		$status_msgs = true;
-	}
-
-	$emp_name = $db->fetchColumn('select id
-		from users
-		where letscode = \'\'');
-
-	$emp_mail = $db->fetchColumn('select c.id_user
+	$unvalid_mail = $db->fetchAll('select c.id, c.value, c.id_user
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
-			and c.value = \'\'');
+			and c.value !~ \'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
 
+//
+	$no_mail = array();
+
+	$st = $db->prepare(' select u.id
+		from users u
+		where u.status in (1, 2)
+			and not exists (select c.id
+				from contact c, type_contact tc
+				where c.id_user = u.id
+					and c.id_type_contact = tc.id
+					and tc.abbrev = \'mail\')');
+
+	$st->execute();
+
+	while ($row = $st->fetch())
+	{
+		$no_mail[] = $row['id'];
+		$status_msgs = true;
+	}
+//
+
+	$empty_letscode = $db->fetchAll('select id
+		from users
+		where letscode = \'\'');
+
+//
+	$empty_name = $db->fetchAll('select id
+		from users
+		where name = \'\'');
+//
 	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 	$db_update = ($version == $schemaversion) ? false : true;
 	$default_config = $db->fetchColumn('select setting from config where "default" = True');
 
-	if ($db_update || $default_config)
+	if ($unvalid_mail || $empty_letscode || $empty_name || $db_update || $default_config)
 	{
 		$status_msgs = true;
 	}
@@ -358,8 +343,7 @@ include $rootpath . 'includes/inc_header.php';
 
 if($s_admin)
 {
-	if ($status_msgs || $db_update || $default_config || $dup_letscode || $dup_name || $dup_mail
-		|| $emp_mail || $emp_name || $emp_letscode)
+	if ($status_msgs)
 	{
 		echo '<div class="panel panel-danger">';
 		echo '<div class="panel-heading">';
@@ -369,11 +353,11 @@ if($s_admin)
 
 		echo '<ul class="list-group">';
 
-		if (count($non_unique_mailadr))
+		if (count($non_unique_mail))
 		{
 			echo '<li class="list-group-item">';
 
-			if (count($non_unique_mailadr) == 1)
+			if (count($non_unique_mail) == 1)
 			{
 				echo 'Een mailadres komt meer dan eens voor onder de actieve gebruikers ';
 				echo 'in de installatie. ';
@@ -386,7 +370,8 @@ if($s_admin)
 			}
 
 			echo '<ul>';
-			foreach ($non_unique_mailadr as $ary)
+
+			foreach ($non_unique_mail as $ary)
 			{
 				echo '<li>';
 				echo $ary['value'] . ' (' . $ary['count'] . '): ';
@@ -401,6 +386,7 @@ if($s_admin)
 				echo implode(', ', $user_ary);
 				echo '</li>';
 			}
+
 			echo '</ul>';
 			echo '</li>';
 		}
@@ -412,14 +398,14 @@ if($s_admin)
 			if (count($non_unique_letscode) == 1)
 			{
 				echo 'Een letscode komt meer dan eens voor in de installatie. ';
-				echo 'Gebruikers met deze letscode kunnen niet inloggen met letscode ';
-				echo 'en kunnen geen transacties ontvangen. ';
+				echo 'Actieve gebruikers met deze letscode kunnen niet inloggen met letscode ';
+				echo 'en kunnen geen transacties doen of transacties ontvangen. ';
 			}
 			else
 			{
 				echo 'Meerdere letscodes komen meer dan eens voor in de installatie. ';
 				echo 'Gebruikers met een letscode die meer dan eens voorkomt, kunnen niet inloggen met letscode ';
-				echo 'en kunnen geen transacties ontvangen.';
+				echo 'en kunnen geen transacties doen of transacties ontvangen.';
 			}
 
 			echo '<ul>';
@@ -449,12 +435,12 @@ if($s_admin)
 			if (count($non_unique_name) == 1)
 			{
 				echo 'Een gebruikersnaam komt meer dan eens voor in de installatie. ';
-				echo 'Gebruikers met deze gebruikersnaam kunnen niet inloggen met gebruikersnaam. ';
+				echo 'Actieve gebruikers met deze gebruikersnaam kunnen niet inloggen met gebruikersnaam. ';
 			}
 			else
 			{
 				echo 'Meerdere gebruikersnamen komen meer dan eens voor in de installatie. ';
-				echo 'Gebruikers met een gebruikersnaam die meer dan eens voorkomt, kunnen niet inloggen met gebruikersnaam.';
+				echo 'Actieve gebruikers met een gebruikersnaam die meer dan eens voorkomt, kunnen niet inloggen met gebruikersnaam.';
 			}
 
 			echo '<ul>';
@@ -477,7 +463,104 @@ if($s_admin)
 			echo '</li>';
 		}
 
+		if (count($unvalid_mail))
+		{
+			echo '<li class="list-group-item">';
+			if (count($unvalid_mail) == 1)
+			{
+				echo 'Deze installatie bevat een fout geformateerd email adres. Pas het aan of verwijder het!';
+			}
+			else
+			{
+				echo 'Deze installatie bevat fout geformateerde emails. Verwijder deze of pas deze aan!';
+			}
 
+			echo '<ul>';
+			foreach ($unvalid_mail as $ary)
+			{
+				echo '<li>';
+				echo $ary['value'] .  ' ';
+				echo aphp('contacts', 'edit=' . $ary['id'], 'Aanpassen', 'btn btn-default btn-xs') . ' ';
+				echo aphp('contacts', 'del=' . $ary['id'], 'Verwijderen', 'btn btn-danger btn-xs') . ' ';
+				echo ' : ' . link_user($ary['id_user']);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</li>';
+		}
+
+		if (count($no_mail))
+		{
+			echo '<li class="list-group-item">';
+			if (count($no_mail) == 1)
+			{
+				echo 'Eén actieve gebruiker heeft geen emailadres.';
+			}
+			else
+			{
+				echo count($no_mail) . ' actieve gebruikers hebben geen mailadres.';
+			}
+
+			echo '<ul>';
+			foreach ($no_mail as $user_id)
+			{
+				echo '<li>';
+				echo link_user($user_id);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</li>';
+		}
+
+		if (count($empty_name))
+		{
+			echo '<li class="list-group-item">';
+			if (count($empty_name) == 1)
+			{
+				echo 'Eén gebruiker heeft geen gebruikersnaam.';
+			}
+			else
+			{
+				echo count($empty_name) . ' gebruikers hebben geen gebruikersnaam.';
+			}
+
+			echo '<ul>';
+			foreach ($empty_name as $ary)
+			{
+				echo '<li>';
+				echo link_user($ary['id']);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</li>';
+		}
+
+		if (count($empty_letscode))
+		{
+			echo '<li class="list-group-item">';
+			if (count($empty_letscode) == 1)
+			{
+				echo 'Eén gebruiker heeft geen letscode.';
+			}
+			else
+			{
+				echo count($empty_letscode) . ' gebruikers hebben geen letscode.';
+			}
+
+			echo '<ul>';
+			foreach ($empty_letscode as $ary)
+			{
+				echo '<li>';
+				echo link_user($ary['id']);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</li>';
+		}
 
 		if ($db_update)
 		{
@@ -495,66 +578,10 @@ if($s_admin)
 			echo '</li>';
 		}
 
-/*
-		if ($dup_mail)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicaat mail adres onder de gebruikers: ' . $dup_mail;
-			echo '</li>';
-		}
-		if ($dup_letscode)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicate letscode onder de gebruikers: ' . $dup_letscode;
-			echo '</li>';
-		}
-		if ($dup_name)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicate gebruikersnaam onder de gebruikers: ' . $dup_name;
-			echo '</li>';
-		}
-		if ($emp_mail)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicaat mailadres onder de gebruikers: ' . link_user($emp_mail);
-			echo '</li>';
-		}
-		if ($emp_letscode)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicate letscode onder de gebruikers: ' . link_user($emp_letscode);
-			echo '</li>';
-		}
-		if ($emp_name)
-		{
-			echo '<li class="list-group-item">';
-			echo 'Er is een duplicate gebruikersnaam onder de gebruikers: ' . link_user($emp_name);
-			echo '</li>';
-		}
-*/
 		echo '</ul>';
 		echo '</div>';
 	}
 }
-
-/*
-if($s_guest)
-{
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-	echo 'Welkom bij ' . $systemname;
-	echo '</div>';
-	echo '<div class="panel-body">';
-	echo '<p>Je bent ingelogd als LETS-gast, je kan informatie ';
-	echo 'raadplegen maar niets wijzigen. Transacties moet je ingeven in de installatie van je eigen groep.</p>';
-	echo '<p>Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
-	echo  readconfigfromdb('currencyratio') . ' ' . $currency;
-	echo ' stemt overeen met 1 LETS uur.</p>';
-	echo '</div>';
-	echo '</div>';
-}
-*/
 
 echo '<div id="news" ';
 echo 'data-url="' . $rootpath . 'news.php?inline=1';
