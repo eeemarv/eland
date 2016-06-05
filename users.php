@@ -1071,10 +1071,10 @@ if ($add || $edit)
 	if ($submit)
 	{
 		$user = array(
-			'postcode'		=> $_POST['postcode'],
-			'birthday'		=> $_POST['birthday'] ?: null,
-			'hobbies'		=> $_POST['hobbies'],
-			'comments'		=> $_POST['comments'],
+			'postcode'		=> trim($_POST['postcode']),
+			'birthday'		=> trim($_POST['birthday']) ?: null,
+			'hobbies'		=> trim($_POST['hobbies']),
+			'comments'		=> trim($_POST['comments']),
 			'cron_saldo'	=> $_POST['cron_saldo'] ? 1 : 0,
 			'lang'			=> 'nl'
 		);
@@ -1082,24 +1082,24 @@ if ($add || $edit)
 		if ($s_admin)
 		{
 			$user += array(
-				'letscode'		=> $_POST['letscode'],
+				'letscode'		=> trim($_POST['letscode']),
 				'accountrole'	=> $_POST['accountrole'],
 				'status'		=> $_POST['status'],
-				'admincomment'	=> $_POST['admincomment'],
-				'minlimit'		=> $_POST['minlimit'],
-				'maxlimit'		=> $_POST['maxlimit'],
-				'presharedkey'	=> $_POST['presharedkey'],
+				'admincomment'	=> trim($_POST['admincomment']),
+				'minlimit'		=> trim($_POST['minlimit']),
+				'maxlimit'		=> trim($_POST['maxlimit']),
+				'presharedkey'	=> trim($_POST['presharedkey']),
 			);
 
 			$contact = $_POST['contact'];
 			$notify = $_POST['notify'];
-			$password = $_POST['password'];
+			$password = trim($_POST['password']);
 
 			foreach ($contact as $c)
 			{
 				if ($c['abbrev'] == 'mail' && $c['main_mail'])
 				{
-					$mail = $c['value'];
+					$mail = trim($c['value']);
 					break;
 				}
 			}
@@ -1119,12 +1119,12 @@ if ($add || $edit)
 
 		if ($username_edit)
 		{
-			$user['login'] = $user['name'] = $_POST['name'];
+			$user['login'] = $user['name'] = trim($_POST['name']);
 		}
 
 		if ($fullname_edit)
 		{
-			$user['fullname'] = $_POST['fullname'];
+			$user['fullname'] = trim($_POST['fullname']);
 		}
 
 		$fullname_access = $_POST['fullname_access'];
@@ -1331,7 +1331,7 @@ if ($add || $edit)
 						}
 
 						$insert = array(
-							'value'				=> $value['value'],
+							'value'				=> trim($value['value']),
 							'flag_public'		=> $value['flag_public'],
 							'id_type_contact'	=> $contact_types[$value['abbrev']],
 							'id_user'			=> $id,
@@ -1448,7 +1448,7 @@ if ($add || $edit)
 							{
 								$insert = array(
 									'id_type_contact'	=> $contact_types[$value['abbrev']],
-									'value'				=> $value['value'],
+									'value'				=> trim($value['value']),
 									'flag_public'		=> $value['flag_public'],
 									'id_user'			=> $edit,
 								);
