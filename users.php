@@ -1106,10 +1106,12 @@ if ($add || $edit)
 			}
 
 			$mail_sql = 'select c.value
-					from contact c, type_contact tc
+					from contact c, type_contact tc, users u
 					where c.id_type_contact = tc.id
 						and tc.abbrev = \'mail\'
-						and c.value = ?';
+						and c.value = ?
+						and c.id_user = u.id
+						and u.status in (1, 2)';
 			$mail_sql_params = array($mail);
 
 			$letscode_sql = 'select letscode
@@ -1217,7 +1219,7 @@ if ($add || $edit)
 				}
 				else if ($db->fetchColumn($mail_sql, $mail_sql_params))
 				{
-					$errors[] = 'Het mailadres is al in gebruik.';
+					$errors[] = 'Het mailadres is al in gebruik bij een actieve gebruiker.';
 				}
 			}
 
