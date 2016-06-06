@@ -144,12 +144,6 @@ $access_ary = array(
 	'anonymous'	=> 3,
 );
 
-$acc_ary = array(
-	0	=> array('admin', 'info'),
-	1	=> array('leden', 'warning'),
-	2	=> array('interlets', 'success'),
-);
-
 $access_options = array(
 	'0'	=> 'admin',
 	'1'	=> 'leden',
@@ -273,6 +267,14 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 require_once $rootpath . 'includes/inc_alert.php';
 
 $alert = new alert();
+
+/**
+ * access control
+ */
+
+require_once $rootpath . 'includes/access_control.php';
+
+$access_control = new access_control();
 
 /**
  * select role

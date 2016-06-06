@@ -103,8 +103,6 @@ if ($del)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	$acc = $acc_ary[$contact['flag_public']];
-
 	echo '<dl>';
 	if (!$s_owner)
 	{
@@ -120,7 +118,7 @@ if ($del)
 	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd><span class="label label-' . $acc[1] . '">' . $acc[0] . '</span></dd>';
+	echo '<dd>' . $access_control->get_label($contact['flag_public']) . '</dd>';
 	echo '</dl>';
 
 	echo '<form method="post" class="form-horizontal">';
@@ -208,7 +206,7 @@ if ($edit || $add)
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> trim($_POST['value']),
 			'comments' 				=> trim($_POST['comments']),
-			'flag_public'			=> $_POST['flag_public'],
+			'flag_public'			=> $access_control->get_post_value(), //$_POST['flag_public'],
 			'id_user'				=> $user_id,
 		);
 
@@ -237,6 +235,13 @@ if ($edit || $add)
 		if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
+		}
+
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
+		{
+			$errors[] = $access_error;
 		}
 
 		if ($edit)
@@ -313,15 +318,16 @@ if ($edit || $add)
 		$contact = $db->fetchAssoc('select * from contact where id = ?', array($edit));
 	}
 
-	$tc = array();
+	$tc = $tc_abbrev = array();
 
-	$rs = $db->prepare('SELECT id, name FROM type_contact');
+	$rs = $db->prepare('SELECT id, name, abbrev FROM type_contact');
 
 	$rs->execute();
 
 	while ($row = $rs->fetch())
 	{
 		$tc[$row['id']] = $row['name'];
+		$tc_abbrev[$row['id']] = $row['abbrev'];
 	}
 
 	if ($s_admin && $add && !$uid)
@@ -380,6 +386,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
+/*
 	echo '<div class="form-group">';
 	echo '<label for="flag_public" class="col-sm-2 control-label">';
 	echo 'Zichtbaarheid</label>';
@@ -389,6 +396,8 @@ if ($edit || $add)
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
+*/
+	echo $access_control->get_radio_buttons($tc_abbrev[$contact['id_type_contact']], $contact['flag_public']);
 
 	if ($uid)
 	{
@@ -512,8 +521,6 @@ if ($uid)
 
 	foreach ($contacts as $c)
 	{
-		$access = $acc_ary[$c['flag_public']];
-
 		echo '<tr>';
 		echo '<td>' . $c['abbrev'] . '</td>';
 
@@ -540,7 +547,7 @@ if ($uid)
 
 		if ($s_admin || $s_owner)
 		{
-			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+			echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
 
 			echo '<td>';
 			echo aphp('contacts', 'del=' . $c['id'] . '&uid=' . $uid, 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
@@ -971,15 +978,13 @@ echo '<tbody>';
 
 foreach ($contacts as $c)
 {
-	$access = $acc_ary[$c['flag_public']];
-
 	echo '<tr>';
 	echo '<td>' . $c['abbrev'] . '</td>';
 
 	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['value']) . '</td>';
 	echo '<td>' . link_user($c['id_user']) . '</td>';
 	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['comments']) . '</td>';
-	echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+	echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
 
 	echo '<td>';
 	echo aphp('contacts', 'del=' . $c['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');

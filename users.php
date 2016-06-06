@@ -1095,29 +1095,72 @@ if ($add || $edit)
 			$notify = $_POST['notify'];
 			$password = trim($_POST['password']);
 
-			foreach ($contact as $key => $c)
-			{
-				if ($c['abbrev'] == 'mail' && $c['main_mail'])
-				{
-					$mail = trim($c['value']);
-					$mail_contact_key = $key;
-					break;
-				}
-			}
-
-			$mail_sql = 'select c.value
+			$mail_unique_check_sql = 'select count(c.value)
 					from contact c, type_contact tc, users u
 					where c.id_type_contact = tc.id
 						and tc.abbrev = \'mail\'
 						and c.value = ?
 						and c.id_user = u.id
 						and u.status in (1, 2)';
-			$mail_sql_params = array($mail);
+
+			if ($edit)
+			{
+				$mail_unique_check_sql .= ' and u.id <> ?';
+			}
+
+			$mailadr = false;
+
+			$st = $db->prepare($mail_unique_check_sql);
+
+			foreach ($contact as $key => $c)
+			{
+				if ($c['abbrev'] == 'mail')
+				{
+					$mailadr = trim($c['value']);
+
+					if ($mailadr)
+					{
+						if (!filter_var($mailadr, FILTER_VALIDATE_EMAIL))
+						{
+							$errors[] =  $mailadr . ' is geen geldig email adres.';
+						}
+
+						$st->bindValue(1, $mailadr);
+
+						if ($edit)
+						{
+							$st->bindValue(2, $edit);
+						}
+
+						$st->execute();
+
+						$row = $st->fetch();
+
+						if ($row['count'] == 1)
+						{
+							$errors[] = 'Emailadres ' . $mailadr . ' bestaat al onder de actieve gebruikers.';
+						}
+						else if ($row['count'] > 1)
+						{
+							$errors[] = 'Emailadres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers.';
+						}
+					}
+				}
+			}
+
+			if ($user['status'] == 1 || $user['status'] == 2)
+			{
+				if (!$mailadr)
+				{
+					$alert->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
+				}
+			}
 
 			$letscode_sql = 'select letscode
 				from users
 				where letscode = ?';
 			$letscode_sql_params = array($user['letscode']);
+			
 		}
 
 		if ($username_edit)
@@ -1132,11 +1175,6 @@ if ($add || $edit)
 
 		$fullname_access = $_POST['fullname_access'];
 
-		$login_sql = 'select login
-			from users
-			where login = ?';
-		$login_sql_params = array($user['login']);
-
 		$name_sql = 'select name
 			from users
 			where name = ?';
@@ -1149,10 +1187,6 @@ if ($add || $edit)
 
 		if ($edit)
 		{
-			$mail_sql .= ' and c.id_user <> ?';
-			$mail_sql_params[] = $edit;
-			$login_sql .= ' and id <> ?';
-			$login_sql_params[] = $edit;
 			$letscode_sql .= ' and id <> ?';
 			$letscode_sql_params[] = $edit;
 			$name_sql .= 'and id <> ?';
@@ -1190,11 +1224,13 @@ if ($add || $edit)
 			{
 				$errors[] = 'Vul de volledige naam in!';
 			}
-			else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+
+			if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
 			{
 				$errors[] = 'De volledige naam is al in gebruik!';
 			}
-			else if (strlen($user['fullname']) > 100)
+
+			if (strlen($user['fullname']) > 100)
 			{
 				$errors[] = 'De volledige naam mag maximaal 100 tekens lang zijn.';
 			}
@@ -1202,27 +1238,6 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
-			if ($user['status'] == 1 || $user['status'] == 2)
-			{
-				if (!$mail)
-				{
-					$errors[] = 'Geen mailadres ingevuld. Bij een actieve gebruiker moet het mailadres ingevuld zijn.';
-					$contact[$mail_contact_key]['value'] = trim($_POST['stored_mail']);
-				}
-			}
-
-			if ($mail)
-			{
-				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-				{
-					$errors[] = 'Geen geldig email adres.';
-				}
-				else if ($db->fetchColumn($mail_sql, $mail_sql_params))
-				{
-					$errors[] = 'Het mailadres is al in gebruik bij een actieve gebruiker.';
-				}
-			}
-
 			if (!$user['letscode'])
 			{
 				$errors[] = 'Vul een letscode in!';
@@ -1827,8 +1842,6 @@ if ($add || $edit)
 		echo '<div class="bg-warning">';
 		echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
-		$already_one_mail_input = false;
-
 		foreach ($contact as $key => $c)
 		{
 			$name = 'contact[' . $key . '][value]';
@@ -1853,16 +1866,33 @@ if ($add || $edit)
 			echo '</div>';
 			echo '</div>';
 
-			if ($c['abbrev'] == 'mail' && !$already_one_mail_input)
-			{
-				echo '<input type="hidden" name="contact['. $key . '][main_mail]" value="1">';
-				echo '<input type="hidden" name="stored_mail" value="' . $c['value'] . '">';
-			}
+			echo '<div class="form-group">';
+			echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
+			echo '<div class="col-sm-10">';
+
+			echo '<label class="radio-inline">';
+			echo '<input type="radio" name="' . $public . '" value="admin"> ';
+			echo '<span class="btn btn-info btn-xs">admin</span>';
+			echo '</label>';
+
+			echo '<label class="radio-inline">';
+			echo '<input type="radio" name="' . $public . '" value="users"> ';
+			echo '<span class="btn btn-warning btn-xs">leden</span>';
+			echo '</label>';
+
+
+			echo '<label class="radio-inline">';
+			echo '<input type="radio" name="' . $public . '" value="interlets"> ';
+			echo '<span class="btn btn-success btn-xs">interlets</span>';
+			echo '</label>';
+
+			echo '</div>';
+			echo '</div>';
+
+
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
-
-			$already_one_mail_input = ($c['abbrev'] == 'mail') ? true : $already_one_mail_input;
 		}
 
 		echo '</div>';
@@ -2103,10 +2133,9 @@ if ($id)
 
 	if ($s_admin || $s_owner || $fullname_access >= $access_level)
 	{
-		$access = $acc_ary[$fullname_access];
 		echo '<dt>';
 		echo 'Volledige naam, zichtbaarheid: ';
-		echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
+		echo $access_control->get_label($fullname_access);
 		echo '</dt>';
 		echo '<dd>';
 		echo htmlspecialchars($user['fullname'], ENT_QUOTES);

@@ -665,8 +665,6 @@ if (count($docs))
 
 	foreach($docs as $d)
 	{
-		$access = $acc_ary[$d['access']];
-
 		echo '<tr>';
 
 		echo '<td>';
@@ -678,9 +676,7 @@ if (count($docs))
 
 		if (!$s_guest)
 		{
-			echo '<td>';
-			echo '<span class="label label-' . $access[1] . '">' . $access[0] . '</span>';
-			echo '</td>';
+			echo '<td>' . $access_control->get_label($d['access']) . '</td>';
 		}
 
 		if ($s_admin)

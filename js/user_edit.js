@@ -9,12 +9,13 @@ $(document).ready(function(){
 
 	function status_change(){
 		if ($status.val() == '1' || $status.val() == '2'){
-			$mail.eq(0).prop('required', true);
+
+//			$mail.eq(0).prop('required', true);
 
 			$activate.show();
 			return;
 		} else {
-			$mail.eq(0).prop('required', false);
+//			$mail.eq(0).prop('required', false);
 
 			$activate.hide();
 		}

@@ -121,7 +121,7 @@ if ($submit)
 	else
 	{
 		$forum_post['subject'] = $_POST['subject'];
-		$forum_post['access']	= $_POST['access'];
+		$forum_post['access']	= $access_control->get_post_value(); // $_POST['access'];
 	}
 
 	if ($edit)
@@ -142,6 +142,13 @@ if ($submit)
  	if (strlen($forum_post['content']) < 2)
 	{
 		 $errors[] = 'De inhoud van je bericht is te kort.';
+	}
+
+	$access_error = $access_control->get_post_error();
+
+	if ($access_error)
+	{
+		$errors[] = $access_error;
 	}
 
 	if (!$topic && ($forum_post['access'] < $access_level || $forum_post['access'] > 2))
@@ -265,19 +272,15 @@ if ($add || $edit)
 
 		if ($s_user)
 		{
-			unset($access_options[0]);
+			$omit_access = 'admin';
 			$forum_post['access'] = ($forum_post['access']) ?: 1;
 		}
+		else
+		{
+			$omit_access = false;
+		}
 
-		echo '<div class="form-group">';
-		echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
-		echo '<div class="col-sm-10">';
-		echo '<select type="file" class="form-control" id="access" name="access" ';
-		echo 'required>';
-		render_select_options($access_options, $forum_post['access']);
-		echo '</select>';
-		echo '</div>';
-		echo '</div>';
+		echo $access_control->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
 	}
 
 	$str = ($topic) ? 'Reactie' : 'Onderwerp';
@@ -509,8 +512,7 @@ foreach($forum_posts as $p)
 
 	if (!$s_guest)
 	{
-		$access = $acc_ary[$p['access']];
-		echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+		echo '<td>' . $access_control->get_label($p['access']) . '</td>';
 	}
 
 	if ($s_admin)

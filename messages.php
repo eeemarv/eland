@@ -1251,10 +1251,8 @@ if ($id)
 		echo aphp('messages', 'id=' . $id . '&extend=365', '1 jaar', 'btn btn-default btn-xs') . '</dd>';
 	}
 
-	$access = $acc_ary[($message['local']) ? 1 : 2];
-
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd><span class="label label-' . $access[1] . '">' . $access[0] . '</span></dd>';
+	echo '<dd>' . $access_control->get_label($message['local'] ? 'users' : 'interlets') . '</dd>';
 
 	echo '</dl>';
 
@@ -1962,8 +1960,7 @@ if ($v_list)
 
 		if (!$s_guest)
 		{
-			$access = $acc_ary[($msg['local']) ? 1 : 2];
-			echo '<td><span class="label label-' . $access[1] . '">' . $access[0] . '</span></td>';
+			echo '<td>' . $access_control->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
 		}
 
 		echo '</tr>';
