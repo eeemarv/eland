@@ -658,6 +658,12 @@ if ($del)
 	echo '<dd>';
 	echo $message['validity'];
 	echo '</dd>';
+
+	echo '<dt>Zichtbaarheid</dt>';
+	echo '<dd>';
+	echo $access_control->get_label($message['local'] ? 'users' : 'interlets');
+	echo '</dd>';
+
 	echo '</dl>';
 
 	echo '</div>';
