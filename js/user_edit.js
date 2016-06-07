@@ -1,12 +1,18 @@
 $(document).ready(function(){
 	var $status = $('#status');
+	var $accountrole = $('#accountrole');
 	var $mail = $('input[type="email"]');
 	var $activate = $('div#activate');
 	var $contact_input = $('input[data-access]');
+	var $presharedkey_formgroup = $('#presharedkey_formgroup');
 
 	status_change();
 
+	accountrole_change();
+
 	$status.change(status_change);
+
+	$accountrole.change(accountrole_change);
 	
 	$contact_input.each(access_required);
 
@@ -32,6 +38,16 @@ $(document).ready(function(){
 		} else {
 
 			$activate.hide();
+		}
+	}
+
+	function accountrole_change(){
+		if ($accountrole.val() == 'interlets'){
+
+			$presharedkey_formgroup.show();
+		} else {
+
+			$presharedkey_formgroup.hide();
 		}
 	}
 });
