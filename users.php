@@ -1695,7 +1695,8 @@ if ($add || $edit)
 		<script src="' . $cdn_datepicker_nl . '"></script>
 		<script src="' . $rootpath . 'js/generate_password.js"></script>
 		<script src="' . $rootpath . 'js/generate_password_onload.js"></script>
-		<script src="' . $rootpath . 'js/user_edit.js"></script>';
+		<script src="' . $rootpath . 'js/user_edit.js"></script>
+		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
 

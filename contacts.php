@@ -333,7 +333,8 @@ if ($edit || $add)
 	if ($s_admin && $add && !$uid)
 	{
 		$includejs = '<script src="' . $cdn_typeahead . '"></script>
-			<script src="' . $rootpath . 'js/typeahead.js"></script>';
+			<script src="' . $rootpath . 'js/typeahead.js"></script>
+			<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';

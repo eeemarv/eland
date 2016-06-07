@@ -949,7 +949,8 @@ if (($edit || $add))
 	{
 		$includejs = '
 			<script src="' . $cdn_typeahead . '"></script>
-			<script src="' . $rootpath . 'js/typeahead.js"></script>';
+			<script src="' . $rootpath . 'js/typeahead.js"></script>
+			<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 	}
 
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
