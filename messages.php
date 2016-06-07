@@ -41,7 +41,8 @@ $selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : array();
 $extend_submit = (isset($_POST['extend_submit'])) ? true : false;
 $extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
 $access_submit = (isset($_POST['access_submit'])) ? true : false;
-$access = (isset($_POST['access'])) ? $_POST['access'] : false;
+
+$access = $access_control->get_post_value();
 
 if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
 	|| $extend_submit || $access_submit || $extend || $access))
@@ -110,43 +111,58 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 		{
 			$alert->success('Het bericht is verlengd.');
 		}
+
+		cancel();
 	}
 
 	if ($access_submit)
 	{
-		$m = array(
-			'local' => ($access == '2') ? 'f' : 't',
-			'mdate' => gmdate('Y-m-d H:i:s')
-		);
+		$access_error = $access_control->get_post_error();
 
-		$db->beginTransaction();
-		try
+		if ($access_error)
 		{
-			foreach ($validity_ary as $id => $validity)
-			{
-				$db->update('messages', $m, array('id' => $id));
-			}
+			$errors[] = $access_error;
+		}
 
-			$db->commit();
+		if (!count($errors))
+		{
+			$m = array(
+				'local' => ($access == '2') ? 'f' : 't',
+				'mdate' => gmdate('Y-m-d H:i:s')
+			);
 
-			if (count($selected_msgs) > 1)
+			$db->beginTransaction();
+			try
 			{
-				$alert->success('De berichten zijn aangepast.');
+				foreach ($validity_ary as $id => $validity)
+				{
+					$db->update('messages', $m, array('id' => $id));
+				}
+
+				$db->commit();
+
+				if (count($selected_msgs) > 1)
+				{
+					$alert->success('De berichten zijn aangepast.');
+				}
+				else
+				{
+					$alert->success('Het bericht is aangepast.');
+				}
+
+				cancel();
 			}
-			else
+			catch(Exception $e)
 			{
-				$alert->success('Het bericht is aangepast.');
+				$db->rollback();
+				throw $e;
+				$alert->error('Fout bij het opslaan.');
+				cancel();
 			}
 		}
-		catch(Exception $e)
-		{
-			$db->rollback();
-			throw $e;
-			$alert->error('Fout bij het opslaan.');
-			exit;
-		}
+
+		$alert->error($errors);
 	}
-	cancel();
 }
 
 /*
@@ -725,8 +741,15 @@ if (($edit || $add))
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
-			'local'			=> ($_POST['local']),
+			'local'			=> ($access_control->get_post_value() == 2) ? 0 : 1,
 		);
+
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
+		{
+			$errors[] = $access_error;
+		}
 
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
@@ -1011,14 +1034,9 @@ if (($edit || $add))
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="form-group">';
-	echo '<label for="local" class="col-sm-2 control-label">Zichtbaarheid</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select name="local" id="local" class="form-control" required>';
-	render_select_options(array('1' => 'leden', '0' => 'interlets'), $msg['local']);
-	echo "</select>";
-	echo '</div>';
-	echo '</div>';
+	$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
+
+	echo $access_control->get_radio_buttons('messages', $access_value, 'admin');
 
 	$btn = ($edit) ? 'primary' : 'success';
 
@@ -2053,8 +2071,6 @@ else if ($v_list)
 			'1825'	=> '5 jaar',
 		);
 
-		unset($access_options[0]);
-
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
@@ -2094,14 +2110,7 @@ else if ($v_list)
 		echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 		echo '<h3>Zichtbaarheid instellen</h3>';
 
-		echo '<div class="form-group">';
-		echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
-		echo '<div class="col-sm-10">';
-		echo '<select name="access" id="access" class="form-control">';
-		render_select_options($access_options, 2);
-		echo "</select>";
-		echo '</div>';
-		echo '</div>';
+		echo $access_control->get_radio_buttons(false, false, 'admin');
 
 		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
 

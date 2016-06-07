@@ -1253,7 +1253,12 @@ if ($add || $edit)
 			else if (strlen($user['letscode']) > 20)
 			{
 				$errors[] = 'De letscode mag maximaal 20 tekens lang zijn.';
-			} 
+			}
+
+			if (!preg_match("/^[A-Za-z0-9-]+$/", $user['letscode']))
+			{
+				$errors[] = 'De letscode kan enkel uit letters, cijfers en koppeltekens bestaan.';
+			}
 
 			if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))
 			{

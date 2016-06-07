@@ -80,7 +80,7 @@ class access_control
 	 *
 	 */
 
-	public function get_radio_buttons($access_type_id = 'tel', $value = false, $omit_access = false, $name = 'access',$size = 'xs')
+	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access',$size = 'xs')
 	{
 		global $schema;
 
@@ -115,7 +115,7 @@ class access_control
 		$out = '<div class="form-group">';
 		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
 		$out .= '<div class="col-sm-10"';
-		$out .= ($access_type_id) ? ' data-access-type-id="' . $schema . '_' . $access_type_id . '"' : '';
+		$out .= ($access_cache_id) ? ' data-access-cache-id="' . $schema . '_' . $access_cache_id . '"' : '';
 		$out .= '>';
 
 		foreach ($acc_ary as $key => $ary)
