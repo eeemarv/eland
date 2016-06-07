@@ -1886,6 +1886,8 @@ if ($add || $edit)
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
+
+			echo '<hr>';
 		}
 
 		echo '</div>';
