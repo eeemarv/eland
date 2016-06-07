@@ -82,6 +82,8 @@ class access_control
 
 	public function get_radio_buttons($access_type_id = 'tel', $value = false, $omit_access = false, $name = 'access',$size = 'xs')
 	{
+		global $schema;
+
 		$acc_ary = $this->acc_ary;
 
 		if ($value === false)
@@ -113,7 +115,7 @@ class access_control
 		$out = '<div class="form-group">';
 		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
 		$out .= '<div class="col-sm-10"';
-		$out .= ($access_type_id) ? ' data-access-type-id="' . $access_type_id . '"' : '';
+		$out .= ($access_type_id) ? ' data-access-type-id="' . $schema . '_' . $access_type_id . '"' : '';
 		$out .= '>';
 
 		foreach ($acc_ary as $key => $ary)
@@ -122,7 +124,7 @@ class access_control
 			$out .= '<input type="radio" name="' . $name . '"';
 			$out .= ($key == 'admin') ? ' id="' . $name . '"' : '';
 			$out .= ($key === $selected) ? ' checked="checked"' : '';
-			$out .= ' value="' . $key . '"> ';
+			$out .= ' value="' . $key . '" required> ';
 			$out .= '<span class="btn btn-' . $ary['class'] . ' btn-' . $size . '">';
 			$out .= $ary['label'];
 			$out .= '</span>';
@@ -132,6 +134,6 @@ class access_control
 		$out .= '</div>';
 		$out .= '</div>';
 
-		return $out;		
+		return $out;
 	}
 }

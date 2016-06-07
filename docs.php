@@ -128,36 +128,48 @@ if ($edit)
 			'org_filename'	=> $doc['org_filename'],
 			'ts'			=> $doc['ts'],
 			'name'			=> $_POST['name'],
-			'access'		=> (int) $_POST['access'],
+			'access'		=> $access_control->get_post_value(),
 		);
 
-		if ($map_name = $_POST['map_name'])
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
 		{
-			$map = $mdb->docs->findOne(array('map_name' => $map_name));
-
-			if (!$map)
-			{
-				$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
-				$mdb->docs->insert($map);
-
-				invalidate_typeahead_thumbprint('doc_map_names');
-			}
-
-			$update['map_id'] = (string) $map['_id'];
+			$errors[] = $access_error;
 		}
 
-		if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
+		if (!count($errors))
 		{
-			if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+			if ($map_name = $_POST['map_name'])
 			{
-				$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+				$map = $mdb->docs->findOne(array('map_name' => $map_name));
+
+				if (!$map)
+				{
+					$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
+					$mdb->docs->insert($map);
+
+					invalidate_typeahead_thumbprint('doc_map_names');
+				}
+
+				$update['map_id'] = (string) $map['_id'];
 			}
+
+			if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
+			{
+				if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+				{
+					$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+				}
+			}
+
+			$mdb->docs->update(array('_id' => $edit_id), $update);
+
+			$alert->success('Document aangepast');
+			cancel($update['map_id']);
 		}
 
-		$mdb->docs->update(array('_id' => $edit_id), $update);
-
-		$alert->success('Document aangepast');
-		cancel($update['map_id']);
+		$alert->error($errors);
 	}
 
 	if ($map_id = $doc['map_id'])
@@ -200,15 +212,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="form-group">';
-	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select type="file" class="form-control" id="access" name="access" ';
-	echo 'required>';
-	render_select_options($access_options, $doc['access']);
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
+	echo $access_control->get_radio_buttons('docs', $doc['access']);
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
@@ -372,6 +376,13 @@ if ($submit)
 		$errors[] = 'Geen bestand geselecteerd.';
 	}
 
+	$access_error = $access_control->get_post_error();
+
+	if ($access_error)
+	{
+		$errors[] = $access_error;
+	}
+
 	if ($token_error = get_error_form_token())
 	{
 		$errors[] = $token_error;
@@ -383,7 +394,7 @@ if ($submit)
 	}
 	else
 	{
-		$access = $_POST['access'];
+		$access = $access_control->get_post_value();
 
 		$id_str = substr(sha1(time() . mt_rand(0, 1000000)), 0, 24);
 
@@ -484,15 +495,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<div class="form-group">';
-	echo '<label for="access" class="col-sm-2 control-label">Zichtbaarheid</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select type="file" class="form-control" id="access" name="access" ';
-	echo 'required>';
-	render_select_options($access_options, 0);
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
+	echo $access_control->get_radio_buttons('docs');
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
