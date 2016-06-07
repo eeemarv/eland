@@ -963,12 +963,14 @@ if (!$uid)
 	{
 		if ($andor == 'or')
 		{
-			$where_code_sql = ['(' . implode(' or ', $where_code_sql) . ')'];
+			$where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
 		}
 
 		$params['andor'] = $andor;
 	}
 }
+
+$where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
@@ -983,8 +985,6 @@ if ($tdate)
 	$params_sql[] = $tdate;
 	$params['tdate'] = $tdate;
 }
-
-$where_sql = array_merge($where_sql, $where_code_sql);
 
 if (count($where_sql))
 {
