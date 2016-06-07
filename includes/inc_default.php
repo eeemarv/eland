@@ -144,12 +144,6 @@ $access_ary = array(
 	'anonymous'	=> 3,
 );
 
-$access_options = array(
-	'0'	=> 'admin',
-	'1'	=> 'leden',
-	'2' => 'interlets',
-);
-
 $allowed_interlets_landing_pages = array(
 	'index'			=> true,
 	'messages'		=> true,

@@ -962,6 +962,19 @@ if (($edit || $add))
 
 	echo '<form method="post" class="form-horizontal">';
 
+	if($s_admin)
+	{
+		echo '<div class="form-group">';
+		echo '<label for="user_letscode" class="col-sm-2 control-label">';
+		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
+		echo '<div class="col-sm-10">';
+		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
+		echo 'data-typeahead="' . get_typeahead('users_active') . '" ';
+		echo 'value="' . $user_letscode . '" required>';
+		echo '</div>';
+		echo '</div>';
+	}
+
 	echo '<div class="form-group">';
 	echo '<label for="msg_type" class="col-sm-2 control-label">Vraag/Aanbod</label>';
 	echo '<div class="col-sm-10">';
@@ -987,19 +1000,6 @@ if (($edit || $add))
 	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';
-
-	if($s_admin)
-	{
-		echo '<div class="form-group">';
-		echo '<label for="user_letscode" class="col-sm-2 control-label">';
-		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-typeahead="' . get_typeahead('users_active') . '" ';
-		echo 'value="' . $user_letscode . '" required>';
-		echo '</div>';
-		echo '</div>';
-	}
 
 	echo '<div class="form-group">';
 	echo '<label for="id_category" class="col-sm-2 control-label">Categorie</label>';

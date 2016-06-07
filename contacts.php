@@ -386,17 +386,6 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-/*
-	echo '<div class="form-group">';
-	echo '<label for="flag_public" class="col-sm-2 control-label">';
-	echo 'Zichtbaarheid</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select name="flag_public" id="flag_public" class="form-control">';
-	render_select_options($access_options, $contact['flag_public']);
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
-*/
 	echo $access_control->get_radio_buttons($tc_abbrev[$contact['id_type_contact']], $contact['flag_public']);
 
 	if ($uid)

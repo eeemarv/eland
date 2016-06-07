@@ -80,7 +80,7 @@ class access_control
 	 *
 	 */
 
-	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access',$size = 'xs')
+	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access', $size = 'xs', $label = 'Zichtbaarheid')
 	{
 		global $schema;
 
@@ -113,16 +113,15 @@ class access_control
 		}
 
 		$out = '<div class="form-group">';
-		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
+		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">' . $label . '</label>';
 		$out .= '<div class="col-sm-10"';
 		$out .= ($access_cache_id) ? ' data-access-cache-id="' . $schema . '_' . $access_cache_id . '"' : '';
-		$out .= '>';
+		$out .= ' id="' . $name . '">';
 
 		foreach ($acc_ary as $key => $ary)
 		{
 			$out .= '<label class="radio-inline">';
 			$out .= '<input type="radio" name="' . $name . '"';
-			$out .= ($key == 'admin') ? ' id="' . $name . '"' : '';
 			$out .= ($key === $selected) ? ' checked="checked"' : '';
 			$out .= ' value="' . $key . '" required> ';
 			$out .= '<span class="btn btn-' . $ary['class'] . ' btn-' . $size . '">';

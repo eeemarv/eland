@@ -1114,6 +1114,21 @@ if ($add || $edit)
 
 			foreach ($contact as $key => $c)
 			{
+				$contact[$key]['flag_public'] = $access_control->get_post_value('contact_access_' . $key);
+
+				if ($c['value'])
+				{
+					$contact_post_error = $access_control->get_post_error('contact_access_' . $key);
+
+					if ($contact_post_error)
+					{
+						$errors[] = $contact_post_error;
+					}
+				}
+			}
+
+			foreach ($contact as $key => $c)
+			{
 				if ($c['abbrev'] == 'mail')
 				{
 					$mailadr = trim($c['value']);
@@ -1160,7 +1175,6 @@ if ($add || $edit)
 				from users
 				where letscode = ?';
 			$letscode_sql_params = array($user['letscode']);
-			
 		}
 
 		if ($username_edit)
@@ -1173,7 +1187,7 @@ if ($add || $edit)
 			$user['fullname'] = trim($_POST['fullname']);
 		}
 
-		$fullname_access = $_POST['fullname_access'];
+		$fullname_access = $access_control->get_post_value('fullname_access');
 
 		$name_sql = 'select name
 			from users
@@ -1197,9 +1211,11 @@ if ($add || $edit)
 			$user_prefetch = readuser($edit);
 		}
 
-		if (!in_array($fullname_access, array(0, 1, 2)))
+		$fullname_access_error = $access_control->get_post_error('fullname_access');
+
+		if ($fullname_access_error)
 		{
-			$errors[] = 'Ongeldige zichtbaarheid volledige naam.';
+			$errors[] = $fullname_access_error;
 		}
 
 		if ($username_edit)
@@ -1577,7 +1593,7 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
-			$contact = $db->fetchAll('select name, abbrev, \'\' as value, 0 as flag_public, 0 as id
+			$contact = $db->fetchAll('select name, abbrev, \'\' as value, 0 as id
 				from type_contact
 				where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 		}
@@ -1725,16 +1741,14 @@ if ($add || $edit)
 		echo 'value="' . $user['fullname'] . '" maxlength="100">';
 		echo '</div>';
 		echo '</div>';
-
-		echo '<div class="form-group">';
-		echo '<label for="fullname_access" class="col-sm-2 control-label">Zichtbaarheid volledige naam</label>';
-		echo '<div class="col-sm-10">';
-		echo '<select class="form-control" id="fullname_access" name="fullname_access" required>';
-		render_select_options($access_options, $user['fullname_access']);
-		echo '</select>';
-		echo '</div>';
-		echo '</div>';
 	}
+
+	if (!isset($fullname_access))
+	{
+		$fullname_access = ($add) ? false : 0;
+	}
+
+	echo $access_control->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
 
 	echo '<div class="form-group">';
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
@@ -1850,7 +1864,6 @@ if ($add || $edit)
 		foreach ($contact as $key => $c)
 		{
 			$name = 'contact[' . $key . '][value]';
-			$public = 'contact[' . $key . '][flag_public]';
 
 			echo '<div class="form-group">';
 			echo '<label for="' . $name . '" class="col-sm-2 control-label">' . $c['abbrev'] . '</label>';
@@ -1858,42 +1871,16 @@ if ($add || $edit)
 			echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
 			echo 'value="' . $c['value'] . '"';
 			echo ($c['abbrev'] == 'mail') ? ' type="email"' : ' type="text"';
-			echo '>';
+			echo ' data-access="contact_access_' . $key . '">';
 			echo '</div>';
 			echo '</div>';
 
-			echo '<div class="form-group">';
-			echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
-			echo '<div class="col-sm-10">';
-			echo '<select id="' . $public . '" name="' . $public . '" class="form-control">';
-			render_select_options($access_options, $c['flag_public']);
-			echo '</select>';
-			echo '</div>';
-			echo '</div>';
+			if (!isset($c['flag_public']))
+			{
+				$c['flag_public'] = false;
+			}
 
-			echo '<div class="form-group">';
-			echo '<label for="' . $public . '" class="col-sm-2 control-label">Zichtbaarheid</label>';
-			echo '<div class="col-sm-10">';
-
-			echo '<label class="radio-inline">';
-			echo '<input type="radio" name="' . $public . '" value="admin"> ';
-			echo '<span class="btn btn-info btn-xs">admin</span>';
-			echo '</label>';
-
-			echo '<label class="radio-inline">';
-			echo '<input type="radio" name="' . $public . '" value="users"> ';
-			echo '<span class="btn btn-warning btn-xs">leden</span>';
-			echo '</label>';
-
-
-			echo '<label class="radio-inline">';
-			echo '<input type="radio" name="' . $public . '" value="interlets"> ';
-			echo '<span class="btn btn-success btn-xs">interlets</span>';
-			echo '</label>';
-
-			echo '</div>';
-			echo '</div>';
-
+			echo $access_control->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
 
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';

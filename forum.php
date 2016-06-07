@@ -211,6 +211,10 @@ if ($del)
 	exit;
 }
 
+/**
+ * add / edit topic / reply
+ */
+
 if ($add || $edit)
 {
 	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
@@ -267,7 +271,7 @@ if ($add || $edit)
 	{
 		if (!$edit)
 		{
-			$forum_post['access'] = 0;
+			$forum_post['access'] = false;
 		}
 
 		if ($s_user)
