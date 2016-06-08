@@ -261,32 +261,32 @@ $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
 /** access user **/
 
-$login = $_SESSION['login'];
+$logins = $_SESSION['logins'];
 
-if (!$login[$s_schema])
+/*
+if (!$login[$s_schema]['id'])
 {
-	// redirect login schema
+	redirect_login(); // produces endless redirect
 }
+*/
 
-if ($login[$s_schema] == $s_id && $s_id)
+if ($logins[$s_schema] == $s_id && $s_id)
 {
 	$session_user = readuser($s_id, false, $s_schema);
 
-	if ($access_ary[$session_user['accountrole']] > $s_acountrole)
+	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
-		// not sufficient rights for requested.
+		redirect_index();
 	}
-
-	
 }
-else if ($login[$s_schema] == 'elas_guest')
+else if ($logins[$s_schema] == 'elas_guest')
 {
 	if ($s_accountrole != 'guest')
 	{
-		// redirect
+		redirect_index();
 	}
 }
-else if ($login[$s_schema] == 'master')
+else if ($logins[$s_schema] == 'master')
 {
 	$s_master = true;
 }
@@ -294,7 +294,7 @@ else
 {
 	if ($s_accountrole != 'anonymous')
 	{
-		// redirect login
+		redirect_login();
 	}
 }
 
@@ -307,62 +307,50 @@ if (!isset($page_access))
 	exit;
 }
 
-
-
-if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
+switch ($s_accountrole)
 {
-	set_request_to_session();
-	redirect_login();
+	case 'anonymous':
+
+		if ($page_access != 'anonymous')
+		{
+			redirect_login();
+		}
+
+		break;
+
+	case 'guest':
+
+		if ($page_access != 'guest')
+		{
+			redirect_index();
+		}
+
+		break;
+
+	case 'user':
+
+		if (!($page_access == 'user' || $page_access == 'guest'))
+		{
+			redirect_index();
+		}
+
+		break;
+
+	case 'admin':
+
+		if ($page_access == 'anonymous')
+		{
+			redirect_index();
+		}
+
+		break;
+
+	default:
+
+		redirect_login();
+
+		break;
 }
-else if (($access_session > $access_page)
-	|| (($access_page == 3) && ($access_session < 3) && !isset($allow_session)))
-{
-	set_request_to_session();
-	redirect_index();
-}
-
-
-
-
-if ($access_ary[$page_access] < $access_ary[$s_accountrole])
-{
-
-
-}
-
-
-
-
-if ($s_id && $s_schema)
-{
-	$session_user = readuser($s_id, false, $s_schema);
-	$s_accountrole = ($s_schema == $schema) ? $session_user['accountrole'] : 'guest';
-}
-else if ($_SESSION['elas_interlets_access_' . $schema])
-{
-	$s_accountrole = 'guest';
-}
-else if ($_SESSION['master'])
-{
-	$s_id = 0;
-	$s_accountrole = 'admin';
-	$s_master = true;
-}
-else
-{
-	$s_accountrole = 'anonymous';
-}
-
-//
-
-
-
-
-
-$s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
-$s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
-
-$s_group_self = ($s_schema == $schema) ? true : false;
 
 /**
  * alerts
@@ -381,93 +369,12 @@ require_once $rootpath . 'includes/access_control.php';
 $access_control = new access_control();
 
 /**
- * select role
+ * some vars
  **/
 
-if ($s_id && $s_schema)
-{
-	$session_user = readuser($s_id, false, $s_schema);
-	$s_accountrole = ($s_schema == $schema) ? $session_user['accountrole'] : 'guest';
-}
-else if ($_SESSION['elas_interlets_access_' . $schema])
-{
-	$s_accountrole = 'guest';
-}
-else if ($_SESSION['master'])
-{
-	$s_id = 0;
-	$s_accountrole = 'admin';
-	$s_master = true;
-}
-else
-{
-	$s_accountrole = 'anonymous';
-}
+$s_group_self = ($s_schema == $schema) ? true : false;
 
-/**
- * check role
- **/
-
-
-$access_request = $access_ary[$p_role];
-$access_page = $access_ary[$page_access];
-
-if (!isset($access_page))
-{
-	http_response_code(500);
-	include $rootpath . 'tpl/500.html';
-	exit;
-}
-
-$access_session = $access_ary[$s_accountrole];
-
-if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
-{
-	set_request_to_session();
-	redirect_login();
-}
-else if (($access_session > $access_page)
-	|| (($access_page == 3) && ($access_session < 3) && !isset($allow_session)))
-{
-	set_request_to_session();
-	redirect_index();
-}
-
-if ((($access_request != $access_session) && ($access_session > 1))
-	|| (($access_session < 2) && ($access_request == 3))
-	|| (($access_session == 1) && ($access_request == 0)))
-{
-	set_request_to_session();
-	redirect();
-}
-
-if (($access_request > $access_page) && ($access_page < 3))
-{
-	set_request_to_session();
-
-	if ($access_request > $access_page)
-	{
-		if ($access_page == 2)
-		{
-			redirect_login();
-		}
-		else
-		{
-			redirect_index();
-		}
-	}
-
-	redirect();
-}
-
-if (($access_page == 3) && ($access_request < 3) && !isset($allow_session))
-{
-	redirect_index();
-}
-
-$access_level = $access_request;
-
-$s_accountrole = $p_role;
+$access_level = $acces_ary[$s_accountrole];
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
@@ -488,7 +395,7 @@ if ($s_schema
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$schema])
 {
-	header('Location: ' . generate_url('index', '', $s_schema));
+	header('Location: ' . generate_url('index', [], $s_schema));
 	exit;
 }
 
@@ -511,14 +418,14 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
 
-/**/
+/* some more vars */
 
 $systemname = readconfigfromdb('systemname');
 $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-/* view */
+/* view (global for all groups) */
 
 $inline = (isset($_GET['inline'])) ? true : false;
 
@@ -552,16 +459,19 @@ if ($view || $inline)
  */
 if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 {
-	if ($s_group_self)
+	if ($logins[$schema])
 	{
-		$_SESSION['user_params_own_group'] = ['r' => $s_accountrole, 'u' => $session_user['id']];
+		$_SESSION['roles'][$schema] = $s_accountrole;
 	}
 
-	$s_user_params_own_group = $_SESSION['user_params_own_group'];
+	$s_user_params_own_group = array(
+		'r' => $_SESSION['roles'][$s_schema],
+		'u'	=> $s_id,
+	);
 }
 else
 {
-	$s_user_params_own_group = '';
+	$s_user_params_own_group = [];
 }
 
 /** welcome message **/
@@ -775,46 +685,22 @@ function aphp(
 }
 
 /**
- *
- */
-function set_request_to_session()
-{
-	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $s_id, $s_accountrole, $s_schema;
-
-	$access_level = $access_session;
-
-	$p_schema = $s_schema;
-	$p_user = $s_id;
-	$p_role = $s_accountrole;
-}
-
-/**
  * generate url
  */
-function generate_url($entity = '', $params= '', $sch = false)
+function generate_url($entity = '', $params = [], $sch = false)
 {
 	global $rootpath, $alert, $hosts, $app_protocol;
 
-	if (is_array($params))
+	if ($alert->is_set())
 	{
-		if ($alert->is_set())
-		{
-			$params['a'] = '1';
-		}
-		$params = http_build_query($params);
-	}
-	else
-	{
-		if ($alert->is_set())
-		{
-			$params .= ($params == '') ? 'a=1' : '&a=1';
-		}
+		$params['a'] = '1';
 	}
 
-	$q = get_session_query_param(false, $sch);
+	$params = array_merge($params, get_session_query_param());
 
-	$params = ($params == '') ? (($q == '') ? '' : '?' . $q) : '?' . $params . (($q == '') ? '' : '&' . $q);
+	$params = http_build_query($params);
+
+	$params = ($params) ? '?' . $params : '';
 
 	$path = ($sch) ? $app_protocol . $hosts[$sch] . '/' : $rootpath;
 
@@ -824,47 +710,32 @@ function generate_url($entity = '', $params= '', $sch = false)
 /**
  * get session query param
  */
-function get_session_query_param($return_ary = false, $sch = false)
+function get_session_query_param($sch = false)
 {
 	global $p_role, $p_user, $p_schema, $access_level;
 	global $s_user_params_own_group, $s_id, $s_schema;
-	static $ary, $q;
+	static $ary;
 
 	if ($sch)
 	{
 		if ($sch == $s_schema)
 		{
-			if ($return_ary)
-			{
-				return  $s_user_params_own_group;
-			}
-
-			return http_build_query($s_user_params_own_group);
+			return  $s_user_params_own_group;
 		}
 
 		if ($s_schema)
 		{
 			$param_ary = ['r' => 'guest', 'u' => $s_id, 's' => $s_schema]; 
 
-			if ($return_ary)
-			{
-				return $param_ary;
-			}
-
-			return http_build_query($param_ary);
+			return $param_ary;
 		}
 
-		if ($return_ary)
-		{
-			return ['r' => 'guest'];
-		}
-
-		return 'r=guest';
+		return ['r' => 'guest'];
 	}
 
-	if (isset($q))
+	if (isset($ary))
 	{
-		return ($return_ary) ? $ary : $q;
+		return $ary;
 	}
 
 	$ary = array();
@@ -884,9 +755,7 @@ function get_session_query_param($return_ary = false, $sch = false)
 		}
 	}
 
-	$q = http_build_query($ary);
-
-	return ($return_ary) ? $ary : $q;
+	return $ary;
 }
 
 /**
@@ -894,6 +763,15 @@ function get_session_query_param($return_ary = false, $sch = false)
  */
 function redirect_index()
 {
+	global $p_role, $p_user, $p_schema, $access_level, $access_session;
+	global $s_id, $s_accountrole, $s_schema;
+
+	$access_level = $access_session;
+
+	$p_schema = $s_schema;
+	$p_user = $s_id;
+	$p_role = $s_accountrole;
+
 	header('Location: ' . generate_url('index'));
 	exit;
 }
@@ -916,28 +794,6 @@ function redirect_login()
 /**
  *
  */
-function redirect($location = false)
-{
-	if ($location)
-	{
-		parse_str(parse_url($location, PHP_URL_QUERY), $get);
-	}
-	else
-	{
-		$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-		$get = $_GET;
-	}
-	unset($get['u'], $get['s'], $get['r']);
-	$get = http_build_query($get);
-	$q = get_session_query_param();
-	$get = ($get == '') ? (($q == '') ? '' : '?' . $q) : '?' . $get . (($q == '') ? '' : '&' . $q);
-	header('Location: ' . $location . $get);
-	exit;
-}
-
-/**
- *
- */
 
 function link_user($user, $sch = false, $link = true, $show_id = false, $field = false)
 {
@@ -948,7 +804,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	if ($link)
 	{
 		$out = '<a href="';
-		$out .= generate_url('users', 'id=' . $user['id'], $sch);
+		$out .= generate_url('users', ['id' => $user['id']], $sch);
 		$out .= '">' . $str . '</a>';
 	}
 	else
@@ -1506,11 +1362,12 @@ function get_typeahead($name_ary, $group_url = false, $group_id = false)
 			$status = str_replace('users_', '', $name);
 			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
 			$out .= ($group_id) ? '&group_id=' . $group_id : '';
-			$out .= '&' . get_session_query_param();
+			$out .= '&' . implode('&', get_session_query_param());
 		}
 		else
 		{
-			$out .= $rootpath . 'ajax/typeahead_' . $name . '.php?' . get_session_query_param();
+			$out .= $rootpath . 'ajax/typeahead_' . $name . '.php?';
+			$out .= implode('&', get_session_query_param());
 		}
 
 		$out .= '|';

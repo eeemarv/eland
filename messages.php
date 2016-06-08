@@ -481,7 +481,7 @@ if ($img_del == 'all' && $id)
 
 		echo '<div class="caption">';
         echo '<span class="btn btn-danger" data-img-del="' . $img_id . '" ';
-        echo 'data-url="' . generate_url('messages', 'img_del=' . $img_id) . '" role="button">';
+        echo 'data-url="' . generate_url('messages', ['img_del' => $img_id]) . '" role="button">';
         echo '<i class="fa fa-times"></i> ';
         echo 'Verwijderen</span>';
 		echo '</div>';
@@ -1203,7 +1203,7 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
-		echo 'data-url="' . generate_url('messages', 'img=1&id=' . $id) . '" ';
+		echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id]) . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
@@ -1289,7 +1289,7 @@ if ($id)
 
 	echo '<div id="contacts" '; // data-uid="' . $message['id_user'] . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
-	echo '&' . get_session_query_param() . '"></div>';
+	echo '&' . implode('&', get_session_query_param()) . '"></div>';
 
 // response form
 
@@ -2019,7 +2019,7 @@ else if ($v_extended)
 		if ($imgs[$msg['id']])
 		{
 			echo '<div class="media-left">';
-			echo '<a href="' . generate_url('messages', 'id=' . $msg['id']) . '">';
+			echo '<a href="' . generate_url('messages', ['id' => $msg['id']]) . '">';
 			echo '<img class="media-object" src="' . $s3_img_url . $imgs[$msg['id']] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
@@ -2143,10 +2143,21 @@ function cancel($id = null)
 {
 	global $uid, $view_messages;
 
-	$param = ($uid && !$id) ? 'uid=' . $uid . '&' : (($id) ? 'id=' . $id . '&' : '');
-	$param .= 'view=' . $view_messages;
+	if ($id)
+	{
+		$params = ['id' => $id];
+	}
+	else
+	{
+		$params = ['view' => $view_messages];		
 
-	header('Location: ' . generate_url('messages', $param));
+		if ($uid)
+		{
+			$params['uid'] = $uid;
+		}
+	}
+
+	header('Location: ' . generate_url('messages', $params));
 	exit;
 }
 

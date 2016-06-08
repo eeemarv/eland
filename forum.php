@@ -540,7 +540,13 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($topic = null)
 {
-	$topic = ($topic) ? 't=' . $topic : '';
-	header('Location: ' . generate_url('forum', $topic));
+	$params = [];
+
+	if ($topic)
+	{
+		$params['t'] = $topic;
+	}
+
+	header('Location: ' . generate_url('forum', $params));
 	exit;
 }

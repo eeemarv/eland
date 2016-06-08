@@ -2102,7 +2102,7 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
 		echo '<input id="fileupload" type="file" name="image" ';
-		echo 'data-url="' . generate_url('users', 'img=1&id=' . $id) . '" ';
+		echo 'data-url="' . generate_url('users', ['img' => 1, 'id' => $id]) . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" data-image-max-width="400" ';
@@ -2217,7 +2217,7 @@ if ($id)
 
 	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $id;
-	echo '&' . get_session_query_param() . '"></div>';
+	echo '&' . implode('&', get_session_query_param()) . '"></div>';
 
 	// response form
 
@@ -2288,10 +2288,10 @@ if ($id)
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
 	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
-	echo '&' . get_session_query_param() . '" ';
+	echo '&' . implode('&', get_session_query_param()) . '" ';
 	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
 	echo 'data-transactions-url="' . $rootpath . 'transactions.php?id=" ';
-	echo 'data-session-query-param="' . get_session_query_param() . '" ';
+	echo 'data-session-query-param="' . implode('&', get_session_query_param()) . '" ';
 	echo 'data-user-id="' . $id . '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
@@ -2878,7 +2878,7 @@ if ($v_list || $v_extended || $v_tiles)
 {
 	echo '<form method="get" action="' . generate_url('users', $params) . '">';
 
-	$params_plus = array_merge($params, get_session_query_param(true));
+	$params_plus = array_merge($params, get_session_query_param());
 
 	foreach ($params_plus as $k => $v)
 	{
@@ -3339,7 +3339,7 @@ else if ($v_extended)
 		if ($u['PictureFile'])
 		{
 			echo '<div class="media-left">';
-			echo '<a href="' . generate_url('users', 'id=' . $u['id']) . '">';
+			echo '<a href="' . generate_url('users', ['id' => $u['id']]) . '">';
 			echo '<img class="media-object" src="' . $s3_img_url . $u['PictureFile'] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
@@ -3396,7 +3396,7 @@ else if ($v_tiles)
 		$class = $st_class_ary[$row_stat];
 		$class = (isset($class)) ? ' class="bg-' . $class . '"' : '';
 
-		$url = generate_url('users', 'id=' . $u['id']);
+		$url = generate_url('users', ['id' => $u['id']]);
 		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
 		echo '<div' . $class . '>';
 		echo '<div class="thumbnail text-center">';
@@ -3468,7 +3468,20 @@ function render_contacts($contacts, $abbrev = null)
 function cancel($id = null)
 {
 	global $view_users;
-	header('Location: ' . generate_url('users', (($id) ? 'id=' . $id : 'status=active&view=' . $view_users)));
+
+	$params = [];
+
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+	else
+	{
+		$params['view'] = $view_users;
+		$params['status'] = 'active';
+	}	
+
+	header('Location: ' . generate_url('users', $params));
 	exit;
 }
 

@@ -1010,7 +1010,7 @@ function cancel($uid = false)
 {
 	if ($uid)
 	{
-		header('Location: ' . generate_url('users', (($uid) ? 'id=' . $uid : '')));
+		header('Location: ' . generate_url('users', ['id' => $uid]));
 	}
 	else
 	{

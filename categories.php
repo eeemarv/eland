@@ -348,7 +348,13 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($id = '')
 {
-	$id = ($id) ? 'id=' . $id : '';
-	header('Location: ' . generate_url('categories', $id));
+	$params = [];
+
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+	
+	header('Location: ' . generate_url('categories', $params));
 	exit;
 }

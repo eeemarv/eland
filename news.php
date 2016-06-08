@@ -625,9 +625,13 @@ function cancel($id = '')
 {
 	global $view_news;
 
-	$param = ($id) ? 'id=' . $id . '&' : '';
-	$param .= 'view=' . $view_news;
+	$params = ['view' => $view_news];
 
-	header('Location: ' . generate_url('news', $param));
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+
+	header('Location: ' . generate_url('news', $params));
 	exit;
 }

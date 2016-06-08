@@ -585,7 +585,7 @@ if($s_admin)
 
 echo '<div id="news" ';
 echo 'data-url="' . $rootpath . 'news.php?inline=1';
-echo '&' . get_session_query_param() . '" class="printview"></div>';
+echo '&' . implode('&', get_session_query_param()) . '" class="printview"></div>';
 
 if($newusers)
 {
@@ -618,6 +618,6 @@ if($newusers)
 
 echo '<div id="messages" ';
 echo 'data-url="' . $rootpath . 'messages.php?inline=1&recent=1&limit=10';
-echo '&' . get_session_query_param() . '" class="printview"></div>';
+echo '&' . implode('&', get_session_query_param()) . '" class="printview"></div>';
 
 include $rootpath . 'includes/inc_footer.php';

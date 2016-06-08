@@ -304,7 +304,13 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($id = '')
 {
-	$id = ($id) ? 'id=' . $id : '';
-	header('Location: ' . generate_url('type_contact', $id));
+	$params = [];
+
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+	
+	header('Location: ' . generate_url('type_contact', $params));
 	exit;
 }

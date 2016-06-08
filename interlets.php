@@ -359,7 +359,7 @@ if ($id)
 	}
 	else
 	{
-		echo '<dd><i><span data-elas-soap-status="' . generate_url('ajax/elas_soap_status', 'group_id=' . $group['id']) . '">';
+		echo '<dd><i><span data-elas-soap-status="' . generate_url('ajax/elas_soap_status', ['group_id' => $group['id']]) . '">';
 		echo 'bezig met eLAS soap status te bekomen...</span></i>';
 		echo '</dd>';
 
@@ -780,8 +780,13 @@ function render_schemas_groups()
 
 function cancel($id = null)
 {
-	$id = ($id) ? 'id=' . $id : '';
+	$params = [];
 
-	header('Location: ' . generate_url('interlets', $id));
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+
+	header('Location: ' . generate_url('interlets', $params));
 	exit;
 }

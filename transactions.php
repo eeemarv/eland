@@ -1623,6 +1623,13 @@ if (!$inline)
 
 function cancel($id = null)
 {
-	header('Location: ' . generate_url('transactions', (($id) ? 'id=' . $id : '')));
+	$params = [];
+
+	if ($id)
+	{
+		$params['id'] = $id;
+	}
+
+	header('Location: ' . generate_url('transactions', $params));
 	exit;
 }

@@ -28,7 +28,7 @@ echo '<body';
 
 if ($s_schema)
 {
-	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', '') . '"';
+	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', []) . '"';
 }
 
 echo '>';
@@ -74,7 +74,7 @@ if (!$s_anonymous)
 		echo '<li';
 		echo ($s_group_self) ? ' class="active"' : '';
 		echo '>';
-		echo '<a href="' . generate_url($script_name, '', $s_schema) . '">';
+		echo '<a href="' . generate_url($script_name, [], $s_schema) . '">';
 		echo readconfigfromdb('systemname', $s_schema) . ' (eigen groep)';
 		echo '</a>';
 		echo '</li>';
@@ -90,7 +90,7 @@ if (!$s_anonymous)
 
 				$page = ($allowed_interlets_landing_pages[$script_name]) ? $script_name : 'index';
 
-				echo '<a href="' . generate_url($page,  'welcome=1', $sch) . '">';
+				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
 				echo readconfigfromdb('systemname', $sch) . '</a>';
 				echo '</li>';
 			}
@@ -127,22 +127,22 @@ if (!$s_anonymous)
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_schema)
 	{
-		echo '<li><a href="' . generate_url('users', 'id=' . $s_id, $s_schema) . '">';
+		echo '<li><a href="' . generate_url('users', ['id' => $s_id], $s_schema) . '">';
 		echo '<i class="fa fa-user"></i> Mijn gegevens';
 		echo '</a></li>';
 
-		echo '<li><a href="' . generate_url('messages', 'uid=' . $s_id, $s_schema) . '">';
+		echo '<li><a href="' . generate_url('messages', ['uid' => $s_id], $s_schema) . '">';
 		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
 		echo '</a></li>';
 
-		echo '<li><a href="' . generate_url('transactions', 'uid=' . $s_id, $s_schema) . '">';
+		echo '<li><a href="' . generate_url('transactions', ['uid' => $s_id], $s_schema) . '">';
 		echo '<i class="fa fa-exchange"></i> Mijn transacties';
 		echo '</a></li>';
 
 		echo '<li class="divider"></li>';
 	}
 
-	echo '<li><a href="' . generate_url('logout', '', $s_schema) . '">';
+	echo '<li><a href="' . generate_url('logout', [], $s_schema) . '">';
 	echo '<i class="fa fa-sign-out"></i> Uitloggen';
 	echo '</a></li>';
 

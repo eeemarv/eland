@@ -99,7 +99,7 @@ class pagination
 			$action_params = $this->params;
 			unset($action_params['limit']);
 			$action_params['start'] = 0;
-			$action_params = array_merge($action_params,  get_session_query_param(true));
+			$action_params = array_merge($action_params,  get_session_query_param());
 
 			foreach ($action_params as $name => $value)
 			{

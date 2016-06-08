@@ -712,7 +712,13 @@ include $rootpath . 'includes/inc_footer.php';
 
 function cancel($map = null)
 {
-	$map = ($map) ? 'map=' . $map : '';
-	header('Location: ' . generate_url('docs', $map));
+	$params = [];
+
+	if ($map)
+	{
+		$params['map'] = $map;
+	}
+	
+	header('Location: ' . generate_url('docs', $params));
 	exit;
 }
