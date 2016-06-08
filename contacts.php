@@ -20,8 +20,8 @@ $add = (isset($_GET['add'])) ? $_GET['add'] : false;
 $inline = (isset($_GET['inline'])) ? true : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
-$role = ($del || $add || $edit) ? 'user' : 'guest';
-$role = ($abbrev || !$uid) ? 'admin' : $role;
+$page_access = ($del || $add || $edit) ? 'user' : 'guest';
+$page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
 
 require_once $rootpath . 'includes/inc_default.php';
 

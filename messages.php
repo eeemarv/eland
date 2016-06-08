@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = './';
-$role = 'guest';
+$page_access = 'guest';
 $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_pagination.php';

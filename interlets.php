@@ -1,6 +1,6 @@
 <?php
 $rootpath = './';
-$role = 'admin';
+$page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;

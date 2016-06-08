@@ -160,7 +160,7 @@ $key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($host));
 
 if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
-	$role = 'anonymous';
+	$page_access = 'anonymous';
 	$hosting_form = true;
 	return;
 }
@@ -249,6 +249,116 @@ session_name('eland');
 session_set_cookie_params(0, '/', '.' . $overall_domain);
 session_start();
 
+/** user **/
+
+$p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
+$p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
+$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false;
+
+$s_schema = ($p_schema) ?: $schema;
+$s_id = ctype_digit($p_user) ? $p_user : false;
+$s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
+
+/** access user **/
+
+$login = $_SESSION['login'];
+
+if (!$login[$s_schema])
+{
+	// redirect login schema
+}
+
+if ($login[$s_schema] == $s_id && $s_id)
+{
+	$session_user = readuser($s_id, false, $s_schema);
+
+	if ($access_ary[$session_user['accountrole']] > $s_acountrole)
+	{
+		// not sufficient rights for requested.
+	}
+
+	
+}
+else if ($login[$s_schema] == 'elas_guest')
+{
+	if ($s_accountrole != 'guest')
+	{
+		// redirect
+	}
+}
+else if ($login[$s_schema] == 'master')
+{
+	$s_master = true;
+}
+else
+{
+	if ($s_accountrole != 'anonymous')
+	{
+		// redirect login
+	}
+}
+
+/** access page **/
+
+if (!isset($page_access))
+{
+	http_response_code(500);
+	include $rootpath . 'tpl/500.html';
+	exit;
+}
+
+
+
+if (($access_session == 3) && ($access_page < 3) && ($script_name != 'login'))
+{
+	set_request_to_session();
+	redirect_login();
+}
+else if (($access_session > $access_page)
+	|| (($access_page == 3) && ($access_session < 3) && !isset($allow_session)))
+{
+	set_request_to_session();
+	redirect_index();
+}
+
+
+
+
+if ($access_ary[$page_access] < $access_ary[$s_accountrole])
+{
+
+
+}
+
+
+
+
+if ($s_id && $s_schema)
+{
+	$session_user = readuser($s_id, false, $s_schema);
+	$s_accountrole = ($s_schema == $schema) ? $session_user['accountrole'] : 'guest';
+}
+else if ($_SESSION['elas_interlets_access_' . $schema])
+{
+	$s_accountrole = 'guest';
+}
+else if ($_SESSION['master'])
+{
+	$s_id = 0;
+	$s_accountrole = 'admin';
+	$s_master = true;
+}
+else
+{
+	$s_accountrole = 'anonymous';
+}
+
+//
+
+
+
+
+
 $s_id = (isset($_SESSION['id'])) ? $_SESSION['id'] : false;
 $s_schema = (isset($_SESSION['schema'])) ? $_SESSION['schema'] : false;
 
@@ -298,12 +408,9 @@ else
  * check role
  **/
 
-$p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
-$p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
-$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false;
 
 $access_request = $access_ary[$p_role];
-$access_page = $access_ary[$role];
+$access_page = $access_ary[$page_access];
 
 if (!isset($access_page))
 {
@@ -377,7 +484,7 @@ $elas_interlets_groups = get_elas_interlets_groups();
 $eland_interlets_groups = get_eland_interlets_groups();
 
 if ($s_schema
-	&& $role != 'anonymous'
+	&& $page_access != 'anonymous'
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$schema])
 {

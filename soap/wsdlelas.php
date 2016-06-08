@@ -1,6 +1,6 @@
 <?php
 $rootpath='../';
-$role = 'anonymous';
+$page_access = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 

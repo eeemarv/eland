@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = './';
-$role = 'anonymous';
+$page_access = 'anonymous';
 $allow_anonymous_post = true;
 $allow_session = true;
 

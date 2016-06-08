@@ -1,6 +1,6 @@
 <?php
 $rootpath = '../';
-$role = 'admin';
+$page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
 $map_names = array();

@@ -14,7 +14,7 @@ $submit = ($_POST['zend']) ? true : false;
 
 if ($approve)
 {
-	$role = 'admin';
+	$page_access = 'admin';
 	require_once $rootpath . 'includes/inc_default.php';
 
 	if ($db->update('news', array('approved' => 't', 'published' => 't'), array('id' => $approve)))
@@ -34,7 +34,7 @@ if ($approve)
 
 if ($add || $edit)
 {
-	$role = 'user';
+	$page_access = 'user';
 	require_once $rootpath . 'includes/inc_default.php';
 
 	$news = array();
@@ -223,7 +223,7 @@ if ($add || $edit)
 
 if ($del)
 {
-	$role = 'admin';
+	$page_access = 'admin';
 	require_once $rootpath . 'includes/inc_default.php';
 
 	if(isset($_POST['zend']))
@@ -303,7 +303,7 @@ if ($del)
 
 if ($id)
 {
-	$role = 'guest';
+	$page_access = 'guest';
 
 	require_once $rootpath . 'includes/inc_default.php';
 
@@ -425,7 +425,7 @@ if ($id)
  * show all newsitems
  */
 
-$role = 'guest';
+$page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
 if (!($view || $inline))

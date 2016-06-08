@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = './';
-$role = 'anonymous';
+$page_access = 'anonymous';
 $allow_anonymous_post = true;
 
 require_once $rootpath . 'includes/inc_default.php';
@@ -24,9 +24,12 @@ if(!empty($token))
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
+/*
 		$_SESSION = array(
 			'elas_interlets_access_' . $schema	=> true,
 		);
+*/
+		$_SESSION['logins'][$schema] = 'elas_guest';
 
 		$param = 'welcome=1&r=guest';
 
@@ -57,10 +60,15 @@ if ($_POST['zend'])
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
+/*
 		$_SESSION = array(
 			'master'	=> true,
 			'schema'	=> $schema,
 		);
+*/
+
+		$_SESSION['logins'][$schema] = 'master';
+
 		log_event('login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
@@ -179,14 +187,19 @@ if ($_POST['zend'])
 
 	if (!count($errors))
 	{
+/*
 		$_SESSION = array(
 			'id'			=> $user['id'],
 			'schema'		=> $schema,
 		);
+*/
+
+		$_SESSION['logins'][$schema] = $user['id'];
+
+		$s_id = $user['id'];
+		$s_schema = $schema;		
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
-		$s_id = $user['id'];
-		$s_schema = $schema;
 
 		log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
 		log_event('agent', $browser);

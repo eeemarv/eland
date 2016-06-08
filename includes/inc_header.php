@@ -261,7 +261,7 @@ echo '</ul>';
 
 echo '</div>';
 
-$class_admin = ($role == 'admin') ? ' admin' : '';
+$class_admin = ($page_access == 'admin') ? ' admin' : '';
 
 echo '<div id="wrap">';
 echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
@@ -288,7 +288,7 @@ if (isset($top_right))
 if (isset($h1))
 {
 	echo '<h1>';
-	echo ($role == 'admin' || $s_admin) ? '<small><span class="label label-info">Admin</span></small> ' : '';
+	echo ($page_access == 'admin' || $s_admin) ? '<small><span class="label label-info">Admin</span></small> ' : '';
 	echo (isset($fa)) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
 	echo $h1 . '</h1>';
 }

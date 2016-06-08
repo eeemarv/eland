@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = '';
-$role = 'guest';
+$page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'files-o';

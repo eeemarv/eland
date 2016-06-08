@@ -26,9 +26,9 @@ $selected_users = isset($_POST['sel']) ? $_POST['sel'] : array();
  * general access
  */
 
-$role = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
-$role = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $role;
-$allow_guest_post = ($role == 'guest' && $user_mail_submit) ? true : false;
+$page_access = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
+$page_access = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $page_access;
+$allow_guest_post = ($page_access == 'guest' && $user_mail_submit) ? true : false;
 
 require_once $rootpath . 'includes/inc_passwords.php';
 require_once $rootpath . 'includes/inc_default.php';

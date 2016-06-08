@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = './';
-$role = 'admin';
+$page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 require_once $rootpath . 'includes/multi_mail.php';
