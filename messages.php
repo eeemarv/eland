@@ -456,7 +456,7 @@ if ($img_del == 'all' && $id)
 		cancel($id);
 	}
 
-	$str_this_ow = $ow_type . ' "' . aphp('messages', 'id=' . $id, $message['content']) . '"';
+	$str_this_ow = $ow_type . ' "' . aphp('messages', ['id' => $id], $message['content']) . '"';
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
@@ -499,7 +499,7 @@ if ($img_del == 'all' && $id)
 
 	echo '<h3>Alle afbeeldingen verwijderen voor ' . $str_this_ow . '?</h3>';
 
-	echo aphp('messages', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -632,7 +632,7 @@ if ($del)
 	}
 
 	$h1 = ucfirst($ow_type_this) . ' ';
-	$h1 .= aphp('messages', 'id=' . $del, $message['content']);
+	$h1 .= aphp('messages', ['id' => $del], $message['content']);
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
@@ -682,7 +682,7 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo aphp('messages', 'id=' . $del, 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo aphp('messages', ['id' => $del], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 	echo '</form></p>';
@@ -948,8 +948,8 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-	$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 
 	if ($s_admin)
 	{
@@ -1047,7 +1047,7 @@ if (($edit || $add))
 
 	$btn = ($edit) ? 'primary' : 'success';
 
-	echo aphp('messages', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	generate_form_token();
 
@@ -1137,39 +1137,44 @@ if ($id)
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= aphp('messages', 'add=1', 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
+		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 
 		if ($s_admin || $s_owner)
 		{
-			$top_buttons .= aphp('messages', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
-			$top_buttons .= aphp('messages', 'del=' . $id, 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
+			$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
+			$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 		}
 	}
 
 	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
 	{
-			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+			$tus = ['add' => 1, 'mid' => $id];
 
-			$top_buttons .= aphp('transactions', 'add=1&mid=' . $id . $tus, 'Transactie',
+			if ($s_group_self)
+			{
+				$tus['tus'] = $schema;
+			}
+
+			$top_buttons .= aphp('transactions', $tus, 'Transactie',
 				'btn btn-warning', 'Transactie voor dit aanbod',
 				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('messages', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
+		$top_buttons .= aphp('messages', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= aphp('messages', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
+		$top_buttons .= aphp('messages', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($s_user || $s_admin)
 	{
-		$top_buttons .= aphp('messages', 'uid=' . $s_id . '&view=' . $view_messages, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+		$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 
 	$h1 = $ow_type_uc;
@@ -1209,7 +1214,7 @@ if ($id)
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
 
-		echo aphp('messages', 'img_del=all&id=' . $id, 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
+		echo aphp('messages', ['img_del' => 'all', 'id' => $id], 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
 			array('id' => 'btn_remove', 'style' => 'display:none;'));
 
 		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
@@ -1271,9 +1276,9 @@ if ($id)
 	if ($s_admin || $s_owner)
 	{
 		echo '<dt>Verlengen</dt>';
-		echo '<dd>' . aphp('messages', 'id=' . $id . '&extend=30', '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', 'id=' . $id . '&extend=180', '6 maanden', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', 'id=' . $id . '&extend=365', '1 jaar', 'btn btn-default btn-xs') . '</dd>';
+		echo '<dd>' . aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs') . '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs') . '</dd>';
 	}
 
 	echo '<dt>Zichtbaarheid</dt>';
@@ -1645,7 +1650,7 @@ if ($s_admin || $s_user)
 {
 	if (!$inline)
 	{
-		$top_buttons .= aphp('messages', 'add=1', 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
+		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 	}
 
 	if ($uid)
@@ -1653,17 +1658,17 @@ if ($s_admin || $s_user)
 		if ($s_admin && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ' . link_user($uid, false, false);
-			$top_buttons .= aphp('messages', 'add=1&uid=' . $uid, $str, 'btn btn-success', $str, 'plus', true);
+			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
 		}
 
 		if (!$inline)
 		{
-			$top_buttons .= aphp('messages', 'view=' . $view_messages, 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
+			$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
 	}
 	else
 	{
-		$top_buttons .= aphp('messages', 'uid=' . $s_id, 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+		$top_buttons .= aphp('messages', ['uid' => $s_id], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 }
 
@@ -1686,13 +1691,13 @@ if ($uid)
 	}
 	else
 	{
-		$h1 = aphp('messages', 'uid=' . $uid . '&view=' . $view_messages, 'Vraag en aanbod');
+		$h1 = aphp('messages', ['uid' => $uid, 'view' => $view_messages], 'Vraag en aanbod');
 		$h1 .= ' van ' . link_user($uid);
 	}
 }
 else if ($recent)
 {
-	$h1 = aphp('messages', 'view=' . $view_messages, 'Recent Vraag en aanbod');
+	$h1 = aphp('messages', ['view' => $view_messages], 'Recent Vraag en aanbod');
 }
 else
 {
@@ -1958,7 +1963,7 @@ if ($v_list)
 		echo '</td>';
 
 		echo '<td>';
-		echo aphp('messages', 'id=' . $msg['id'], $msg['content']);
+		echo aphp('messages', ['id' => $msg['id']], $msg['content']);
 		echo '</td>';
 
 		if (!$uid)
@@ -2026,7 +2031,7 @@ else if ($v_extended)
 		}
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo aphp('messages', 'id=' . $msg['id'], $type_str . ': ' . $msg['content']);
+		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
 		echo ($exp) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 		echo '</h3>';
 
@@ -2043,8 +2048,8 @@ else if ($v_extended)
 		if ($s_admin || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
-			echo aphp('messages', 'edit=' . $msg['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('messages', 'del=' . $msg['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('messages', ['edit' => $msg['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('messages', ['del' => $msg['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
 		echo '</p>';

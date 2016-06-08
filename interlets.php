@@ -256,7 +256,7 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($edit) ? 'primary' : 'success';
-	$canc = ($edit) ? 'id=' . $edit : '';
+	$canc = ($edit) ? ['id' => $edit] : [];
 	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	generate_form_token();
@@ -311,7 +311,7 @@ if ($del)
 	echo '<div><p>';
 	echo '<form method="post">';
 
-	echo aphp('interlets', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('interlets', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 
@@ -335,10 +335,10 @@ if ($id)
 		$group['host'] = get_host($group);
 	}
 
-	$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
-	$top_buttons .= aphp('interlets', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
-	$top_buttons .= aphp('interlets', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
-	$top_buttons .= aphp('interlets', '', 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
+	$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
+	$top_buttons .= aphp('interlets', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
+	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
+	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
 	$includejs .= '<script src="' . $rootpath . 'js/elas_soap_status.js"></script>';
 
@@ -446,7 +446,7 @@ foreach ($interlets_users as $u)
 	);
 }
 
-$top_buttons .= aphp('interlets', 'add=1', 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
+$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 
 $h1 = 'InterLETS groepen';
 $fa = 'share-alt';
@@ -480,16 +480,16 @@ if (count($groups))
 			$user = $users_letscode[$g['localletscode']];
 			if ($user)
 			{
-				echo aphp('users', 'id=' . $user['id'], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
 				if (!in_array($user['status'], array(1, 2, 7)))
 				{
-					echo aphp('users', 'edit=' . $user['id'], 'Status!', 'btn btn-default btn-xs text-danger',
+					echo aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-default btn-xs text-danger',
 						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
 						'exclamation-triangle');
 				}
 				if ($user['accountrole'] != 'interlets')
 				{
-					echo aphp('users', 'edit=' . $user['id'], 'Rol!', 'btn btn-default btn-xs text-danger',
+					echo aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-default btn-xs text-danger',
 						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
 						'fa-exclamation-triangle');
 				}
@@ -500,7 +500,7 @@ if (count($groups))
 
 				if ($g['apimethod'] != 'internal' && !$user)
 				{
-					echo aphp('users', 'add=1&interlets=' . $g['localletscode'], 'Account!', 'btn btn-default btn-xs text-danger',
+					echo aphp('users', ['add' => 1, 'interlets' => $g['localletscode']], 'Account!', 'btn btn-default btn-xs text-danger',
 						'Creëer een interlets-account met gelijke letscode en status extern.',
 						'exclamation-triangle');
 				}
@@ -510,7 +510,7 @@ if (count($groups))
 
 		echo '<td>';
 
-		echo aphp('interlets', 'id=' . $g['id'], $g['groupname']);
+		echo aphp('interlets', ['id' => $g['id']], $g['groupname']);
 
 		if ($g['eland'])
 		{
@@ -698,11 +698,11 @@ function render_schemas_groups()
 			echo '<td>';
 			if (is_array($loc_group =  $loc_group_ary[$h]))
 			{
-				echo aphp('interlets', 'id=' . $loc_group['id'], 'OK', 'btn btn-success btn-xs');
+				echo aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
 			else
 			{
-				echo aphp('interlets', 'add=1&add_schema=' . $s, 'Creëer', 'btn btn-default btn-xs');
+				echo aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
 			}
 			echo '</td>';
 			echo '<td>';
@@ -712,17 +712,17 @@ function render_schemas_groups()
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
-						echo aphp('users', 'edit=' . $loc_acc['id'], 'rol', 'btn btn-warning btn-xs',
+						echo aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
 							'De rol van het account moet van het type interlets zijn.');
 					}
 					else if (!in_array($loc_acc['status'], array(1, 2, 7)))
 					{
-						echo aphp('users', 'edit=' . $loc_acc['id'], 'status', 'btn btn-warning btn-xs',
+						echo aphp('users', ['edit' => $loc_acc['id']], 'status', 'btn btn-warning btn-xs',
 							'De status van het account moet actief, uitstapper of extern zijn.');
 					}
 					else
 					{
-						echo aphp('users', 'id=' . $loc_acc['id'], 'OK', 'btn btn-success btn-xs');
+						echo aphp('users', ['id' => $loc_acc['id']], 'OK', 'btn btn-success btn-xs');
 					}
 				}
 				else

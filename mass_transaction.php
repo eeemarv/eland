@@ -599,7 +599,7 @@ echo 'autocomplete="off" required>';
 echo '</div>';
 echo '</div>';
 
-echo aphp('transactions', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
 generate_form_token();
 

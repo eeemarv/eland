@@ -41,7 +41,7 @@ if ($del)
 	echo '<dt>Comment</dt>';
 	echo '<dd>' . $apikey['comment'] .  '</dd>';
 	echo '</dl>';
-	echo aphp('apikeys', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 	echo '</form>';
@@ -83,7 +83,7 @@ if ($add)
 
 	$key = sha1($systemname . microtime());
 
-	$top_buttons .= aphp('apikeys', '', 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true); 
+	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true); 
 
 	$h1 = 'Apikey toevoegen';
 	$fa = 'key';
@@ -111,7 +111,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('apikeys', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 	generate_form_token();
 
@@ -130,7 +130,7 @@ if ($add)
 
 $apikeys = $db->fetchAll('select * from apikeys');
 
-$top_buttons .= aphp('apikeys', 'add=1', 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
+$top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
 
 $h1 = 'Apikeys';
 $fa = 'key';
@@ -161,7 +161,7 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['apikey'] . '</td>';
 	echo '<td>' . $a['created'] . '</td>';
 	echo '<td>';
-	echo aphp('apikeys', 'del=' . $a['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	echo aphp('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	echo '</td>';
 	echo '</tr>';
 }

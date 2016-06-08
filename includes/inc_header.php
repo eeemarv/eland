@@ -54,7 +54,7 @@ echo '<a href="' . generate_url('index') . '" class="pull-left hidden-xs">';
 echo '<div class="logo"></div>';
 echo '</a>';
 
-echo aphp('index', '', $systemname, 'navbar-brand');
+echo aphp('index', [], $systemname, 'navbar-brand');
 
 echo '</div>';
 
@@ -150,18 +150,18 @@ if (!$s_anonymous)
 	echo '</li>';
 	if ($s_admin)
 	{
-		$menu = array(
-			'categories'	 				=> array('clone', 'Categorieën'),
-			'type_contact'					=> array('circle-o-notch', 'Contact types'),
-			'contacts'						=> array('map-marker', 'Contacten'),
-			'config'						=> array('gears', 'Instellingen'),
-			'interlets'						=> array('share-alt', 'InterLETS'),
-			'apikeys'						=> array('key', 'Apikeys'),
-			'export'						=> array('download', 'Export'),
-			'autominlimit'					=> array('arrows-v', 'Auto min limiet'),
-			'mass_transaction'				=> array('exchange', 'Massa-Transactie'),
-			'logs'							=> array('list', 'Logs'),
-		);
+		$menu = [
+			'categories'	 				=> ['clone', 'Categorieën'],
+			'type_contact'					=> ['circle-o-notch', 'Contact types'],
+			'contacts'						=> ['map-marker', 'Contacten'],
+			'config'						=> ['gears', 'Instellingen'],
+			'interlets'						=> ['share-alt', 'InterLETS'],
+			'apikeys'						=> ['key', 'Apikeys'],
+			'export'						=> ['download', 'Export'],
+			'autominlimit'					=> ['arrows-v', 'Auto min limiet'],
+			'mass_transaction'				=> ['exchange', 'Massa-Transactie'],
+			'logs'							=> ['list', 'Logs'],
+		];
 
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" ';
@@ -170,11 +170,11 @@ if (!$s_anonymous)
 		echo 'Admin modus';
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
-		foreach ($menu as $link => $label)
+		foreach ($menu as $link => $item)
 		{
 			$active = ($script_name == $link) ? ' class="active"' : '';
 			echo '<li' . $active . '>';
-			echo aphp($link, '', $label[1], false, false, $label[0]);
+			echo aphp($link, [], $item[1], false, false, $item[0]);
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
@@ -213,48 +213,48 @@ echo '<div id="sidebar" class="sidebar-offcanvas">';
 
 if ($s_anonymous)
 {
-	$menu = array(
-		'login'		=> array('sign-in', 'Login'),
-		'help'		=> array('ambulance', 'Help'),
-	);
+	$menu = [
+		'login'		=> ['sign-in', 'Login', []],
+		'help'		=> ['ambulance', 'Help', []],
+	];
 
 	if (readconfigfromdb('registration_en'))
 	{
-		$menu['register'] = array('check-square-o', 'Inschrijven');
+		$menu['register'] = ['check-square-o', 'Inschrijven', []];
 	}
 }
 else
 {
-	$menu = array(
-		'index'					=> array('home', 'Overzicht'),
-		'messages'				=> array('newspaper-o', 'Vraag & Aanbod', 'view=' . $view_messages),
-		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active&view=' . $view_users),
-		'transactions'			=> array('exchange', 'Transacties'),
-		'news'					=> array('calendar-o', 'Nieuws', 'view=' . $view_news),
-	);
+	$menu = [
+		'index'					=> ['home', 'Overzicht', []],
+		'messages'				=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
+		'users'					=> ['users', (($s_admin) ? 'Gebruikers' : 'Leden'), ['status' => 'active', 'view' => $view_users]],
+		'transactions'			=> ['exchange', 'Transacties', []],
+		'news'					=> ['calendar-o', 'Nieuws', ['view' => $view_news]],
+	];
 
-	$menu['docs'] = array('files-o', 'Documenten');
+	$menu['docs'] = ['files-o', 'Documenten', []];
 
 	if (readconfigfromdb('forum_en'))
 	{
-		$menu['forum'] = array('comments-o', 'Forum');
+		$menu['forum'] = ['comments-o', 'Forum', []];
 	}
 
 	if ($s_user || $s_admin)
 	{
-		$menu['help'] = array('ambulance', 'Probleem melden');
+		$menu['help'] = ['ambulance', 'Probleem melden', []];
 	}
 }
 
 echo '<br>';
 echo '<ul class="nav nav-pills nav-stacked">';
 
-foreach ($menu as $link => $label)
+foreach ($menu as $link => $item)
 {
 	$active = ($script_name == $link) ? ' class="active"' : '';
 	echo '<li' . $active . '>';
-	echo aphp($link, (isset($label[2])) ? $label[2] : '',
-		$label[1], false, false, $label[0]);
+	echo aphp($link, $item[2],
+		$item[1], false, false, $item[0]);
 	echo '</li>';
 }
 echo '</ul>';

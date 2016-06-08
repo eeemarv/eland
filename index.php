@@ -480,8 +480,8 @@ if($s_admin)
 			{
 				echo '<li>';
 				echo $ary['value'] .  ' ';
-				echo aphp('contacts', 'edit=' . $ary['id'], 'Aanpassen', 'btn btn-default btn-xs') . ' ';
-				echo aphp('contacts', 'del=' . $ary['id'], 'Verwijderen', 'btn btn-danger btn-xs') . ' ';
+				echo aphp('contacts', ['edit' => $ary['id']], 'Aanpassen', 'btn btn-default btn-xs') . ' ';
+				echo aphp('contacts', ['del' => $ary['id']], 'Verwijderen', 'btn btn-danger btn-xs') . ' ';
 				echo ' : ' . link_user($ary['id_user']);
 				echo '</li>';
 			}
@@ -573,7 +573,7 @@ if($s_admin)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Er zijn nog settings met standaardwaarden, ';
-			echo 'Kijk in de ' . aphp('config', '', 'instellingen') . ' ';
+			echo 'Kijk in de ' . aphp('config', [], 'instellingen') . ' ';
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
@@ -590,7 +590,7 @@ echo '&' . implode('&', get_session_query_param()) . '" class="printview"></div>
 if($newusers)
 {
 	echo '<h3 class="printview">';
-	echo aphp('users', 'status=new', 'Nieuwe leden', false, false, 'users');
+	echo aphp('users', ['status' => 'new'], 'Nieuwe leden', false, false, 'users');
 	echo '</h3>';
 
 	echo '<div class="panel panel-success printview">';

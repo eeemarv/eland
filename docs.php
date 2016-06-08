@@ -73,7 +73,7 @@ if ($map_edit)
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
 		<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
-	$h1 = 'Map aanpassen: ' . aphp('docs', 'map=' . $map_edit, $map_name);
+	$h1 = 'Map aanpassen: ' . aphp('docs', ['map' => $map_edit], $map_name);
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -91,7 +91,7 @@ if ($map_edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 	generate_form_token();	
 
@@ -222,7 +222,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
 	echo '</form>';
@@ -295,7 +295,7 @@ if ($del)
 		echo '</a>';
 		echo '</p>';
 
-		echo aphp('docs', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+		echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
 		generate_form_token();
 		echo '</form>';
@@ -470,7 +470,7 @@ if ($add)
 		<script src="' . $rootpath . 'js/typeahead.js"></script>
 		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 
-	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
+	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 
 	$h1 = 'Nieuw document opladen';
 
@@ -506,7 +506,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	$map_context = ($map) ? 'map=' . $map : '';
+	$map_context = ($map) ? ['map' => $map] : [];
 	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
 	generate_form_token();
@@ -565,19 +565,19 @@ if ($s_admin)
 {
 	$and_map = ($map) ? '&map=' . $map : '';
 
-	$top_buttons .= aphp('docs', 'add=1' . $and_map, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
+	$top_buttons .= aphp('docs', ['add' => 1]. $and_map, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
 
 	if ($map)
 	{
-		$top_buttons .= aphp('docs', 'map_edit=' . $map, 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'pencil', true);
+		$top_buttons .= aphp('docs', ['map_edit' => $map], 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'pencil', true);
 	}
 }
 if ($map)
 {
-	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
+	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 }
 
-$h1 = aphp('docs', '', 'Documenten');
+$h1 = aphp('docs', [], 'Documenten');
 $h1 .= ($map) ? ': map "' . $map_name . '"' : '';
 
 include $rootpath . 'includes/inc_header.php';
@@ -625,13 +625,13 @@ if (!$map && count($maps))
 		{
 			echo '<tr class="info">';
 			echo '<td>';
-			echo aphp('docs', 'map=' . $d['_id'], $d['map_name'] . ' (' . $d['count'] . ')');
+			echo aphp('docs', ['map' => $d['_id']], $d['map_name'] . ' (' . $d['count'] . ')');
 			echo '</td>';
 
 			if ($s_admin)
 			{
 				echo '<td>';
-				echo aphp('docs', 'map_edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+				echo aphp('docs', ['map_edit' => $d['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 				echo '</td>';
 			}
 			echo '</tr>';
@@ -686,9 +686,9 @@ if (count($docs))
 		if ($s_admin)
 		{
 			echo '<td>';
-			echo aphp('docs', 'edit=' . $d['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('docs', ['edit' => $d['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 			echo '&nbsp;';
-			echo aphp('docs', 'del=' . $d['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('docs', ['del' => $d['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</td>';
 		}
 		echo '</tr>';

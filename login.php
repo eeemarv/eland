@@ -238,7 +238,7 @@ if(empty($token))
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('pwreset', '', 'Ik ben mijn paswoord vergeten');
+	echo aphp('pwreset', [], 'Ik ben mijn paswoord vergeten');
 }
 
 include $rootpath . 'includes/inc_footer.php';

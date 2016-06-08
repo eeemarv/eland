@@ -386,7 +386,7 @@ if ($img_del && $id)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo aphp('users', 'id=' . $id, 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo aphp('users', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -784,7 +784,7 @@ if ($pw)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('users', 'id=' . $pw, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('users', ['id' => $pw], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
 	generate_form_token();
 
@@ -1021,7 +1021,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('users', 'id=' . $del, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('users', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 
@@ -1688,7 +1688,7 @@ if ($add || $edit)
 	array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
 
-	$top_buttons .= aphp('users', 'status=active&view=' . $view_users, 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$includejs = '
 		<script src="' . $cdn_datepicker . '"></script>
@@ -1918,9 +1918,9 @@ if ($add || $edit)
 		}
 	}
 
-	$cancel_id = ($edit) ? 'id=' . $edit : 'status=active&view=' . $view_users;
+	$canc = ($edit) ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
 	$btn = ($edit) ? 'primary' : 'success';
-	echo aphp('users', $cancel_id, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('users', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	generate_form_token();
 
@@ -2007,41 +2007,46 @@ if ($id)
 
 	if ($s_admin)
 	{
-		$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
+		$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 	}
 
 	if ($s_admin || $s_owner)
 	{
 		$title = ($s_admin) ? 'Gebruiker' : 'Mijn gegevens';
-		$top_buttons .= aphp('users', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
-		$top_buttons .= aphp('users', 'pw=' . $id, 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
+		$top_buttons .= aphp('users', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
+		$top_buttons .= aphp('users', ['pw' => $id], 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
 	}
 
 	if ($s_admin && !$count_transactions && !$s_owner)
 	{
-		$top_buttons .= aphp('users', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
+		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
 	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
 	{
-			$tus = ($s_group_self) ? '' : '&tus=' . $schema;
+			$tus = ['add' => 1, 'tuid' => $id];
 
-			$top_buttons .= aphp('transactions', 'add=1&tuid=' . $id . $tus, 'Transactie',
+			if ($s_group_self)
+			{
+				$tus['tus'] => $schema;
+			}
+
+			$top_buttons .= aphp('transactions', $tus, 'Transactie',
 				'btn btn-warning', 'Transactie naar ' . link_user($user, false, false),
 				'exchange', true, false, $s_schema);
 	}
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('users', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
+		$top_buttons .= aphp('users', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= aphp('users', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
+		$top_buttons .= aphp('users', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('users', 'status=active&view=' . $view_users, 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
@@ -2109,7 +2114,7 @@ if ($id)
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
 
-		echo aphp('users', 'img_del=1&id=' . $id, 'Foto verwijderen', 'btn btn-danger', false, 'times', false, $attr);
+		echo aphp('users', ['img_del' => 1, 'id' => $id], 'Foto verwijderen', 'btn btn-danger', false, 'times', false, $attr);
 
 		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook een foto hierheen verslepen.</p>';
@@ -2694,7 +2699,7 @@ if ($s_admin)
 		$top_right .= '&nbsp;csv</a>&nbsp;';
 	}
 
-	$top_buttons .= aphp('users', 'add=1', 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
+	$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
 	if ($v_list)
 	{
@@ -2747,7 +2752,7 @@ $h1 .= '</span>';
 
 if ($s_user || $s_admin)
 {
-	$top_buttons .= aphp('users', 'id=' . $s_id, 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
+	$top_buttons .= aphp('users', ['id' => $s_id], 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 }
 
 $fa = 'users';
@@ -3365,8 +3370,8 @@ else if ($v_extended)
 		if ($s_admin)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo aphp('users', 'edit=' . $u['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('users', 'del=' . $u['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('users', ['edit' => $u['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('users', ['del' => $u['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
 		echo '</p>';

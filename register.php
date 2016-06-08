@@ -159,7 +159,7 @@ if ($token = $_GET['token'])
 	echo '</div>';
 	echo '<div class="panel-body">';
 
-	echo aphp('register', '', 'Opnieuw proberen', 'btn btn-default');
+	echo aphp('register', [], 'Opnieuw proberen', 'btn btn-default');
 
 	echo '</div>';
 	echo '</div>';

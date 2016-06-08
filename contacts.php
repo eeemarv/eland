@@ -126,11 +126,11 @@ if ($del)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default');
+		echo aphp('users', ['id' => $uid], 'Annuleren', 'btn btn-default');
 	}
 	else
 	{
-		echo aphp('contacts', '', 'Annuleren', 'btn btn-default');
+		echo aphp('contacts', [], 'Annuleren', 'btn btn-default');
 	}
 
 	echo '&nbsp;';
@@ -405,11 +405,11 @@ if ($edit || $add)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo aphp('users', 'id=' . $uid, 'Annuleren', 'btn btn-default');
+		echo aphp('users', ['id' => $uid], 'Annuleren', 'btn btn-default');
 	}
 	else
 	{
-		echo aphp('contacts', '', 'Annuleren', 'btn btn-default');
+		echo aphp('contacts', [], 'Annuleren', 'btn btn-default');
 	}
 
 	echo '&nbsp;';
@@ -478,7 +478,7 @@ if ($uid)
 
 	if ($s_admin || $s_owner)
 	{
-		$top_buttons .= aphp('contacts', 'add=1&uid=' . $uid, 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 	}
 
 	if (!$inline)
@@ -534,8 +534,8 @@ if ($uid)
 		}
 		else if ($s_owner || $s_admin)
 		{
-			echo '<td>' . aphp('contacts', 'edit=' . $c['id'] . '&uid=' . $uid, $c['value']) . '</td>';
-			echo '<td>' . aphp('contacts', 'edit=' . $c['id'] . '&uid=' . $uid, $c['comments']) . '</td>';
+			echo '<td>' . aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']) . '</td>';
+			echo '<td>' . aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) . '</td>';
 		}
 		else if ($c['abbrev'] == 'mail')
 		{
@@ -553,7 +553,7 @@ if ($uid)
 			echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
 
 			echo '<td>';
-			echo aphp('contacts', 'del=' . $c['id'] . '&uid=' . $uid, 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('contacts', ['del' => $c['id'], 'uid' => $uid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -793,7 +793,7 @@ $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
-$top_buttons .= aphp('contacts', 'add=1', 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+$top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
@@ -984,13 +984,13 @@ foreach ($contacts as $c)
 	echo '<tr>';
 	echo '<td>' . $c['abbrev'] . '</td>';
 
-	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['value']) . '</td>';
+	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['value']) . '</td>';
 	echo '<td>' . link_user($c['id_user']) . '</td>';
-	echo '<td>' . aphp('contacts', 'edit=' . $c['id'], $c['comments']) . '</td>';
+	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['comments']) . '</td>';
 	echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
 
 	echo '<td>';
-	echo aphp('contacts', 'del=' . $c['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	echo aphp('contacts', ['del' => $c['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	echo '</td>';
 
 	echo '</tr>';

@@ -67,7 +67,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
 	generate_form_token();
 
@@ -155,7 +155,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 	generate_form_token();
 
@@ -212,7 +212,7 @@ if ($del)
 	echo '<div class="panel-heading">';
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
-	echo aphp('type_contact', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 
@@ -238,7 +238,7 @@ while($row = $rs->fetch())
 	$contact_count[$row['id_type_contact']] = $row['count'];
 }
 
-$top_buttons .= aphp('type_contact', 'add=1', 'Toevoegen', 'btn btn-success', 'Contact type toevoegen', 'plus', true);
+$top_buttons .= aphp('type_contact', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact type toevoegen', 'plus', true);
 
 $h1 = 'Contact types';
 $fa = 'circle-o-notch';
@@ -268,11 +268,11 @@ foreach($types as $t)
 	echo '<tr>';
 
 	echo '<td>';
-	echo ($protected) ? htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*' : aphp('type_contact', 'edit=' . $t['id'], $t['abbrev']);
+	echo ($protected) ? htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*' : aphp('type_contact', ['edit' => $t['id']], $t['abbrev']);
 	echo '</td>';
 
 	echo '<td>';
-	echo ($protected) ? htmlspecialchars($t['name'],ENT_QUOTES) . '*' : aphp('type_contact', 'edit=' . $t['id'], $t['name']);
+	echo ($protected) ? htmlspecialchars($t['name'],ENT_QUOTES) . '*' : aphp('type_contact', ['edit' => $t['id']], $t['name']);
 	echo '</td>';
 
 	echo '<td>';
@@ -282,12 +282,12 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo aphp('type_contact', 'del=' . $t['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+		echo aphp('type_contact', ['del' => $t['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	}
 	echo '</td>';
 
 	echo '<td>';
-	echo aphp('contacts', 'abbrev=' . $t['abbrev'], $count);
+	echo aphp('contacts', ['abbrev' => $t['abbrev']], $count);
 	echo '</td>';
 
 	echo '</tr>';

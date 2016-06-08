@@ -94,7 +94,7 @@ if ($setting)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('config', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('config', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
 	generate_form_token();
 
@@ -176,7 +176,7 @@ foreach($config as $c)
 	echo '>';
 	echo '<td>' . $c['category'] . '</td>';
 	echo '<td>';
-	echo aphp('config', 'edit=' . $c['setting'], $c['setting']);
+	echo aphp('config', ['edit' => $c['setting']], $c['setting']);
 	echo '</td>';
 	echo '<td>' . $c['value'] . '</td>';
 	echo '<td>' . $c['description'] . '</td>';

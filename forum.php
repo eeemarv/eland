@@ -185,7 +185,7 @@ if ($submit)
 
 if ($del)
 {
-	$h1 = ($forum_post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', 't=' . $forum_post['id'], $forum_post['subject']);
+	$h1 = ($forum_post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', ['t' => $forum_post['id']], $forum_post['subject']);
 	$h1 .= ' verwijderen?';
 
 	$t = ($forum_post['parent_id']) ?: $forum_post['_id'];
@@ -199,7 +199,7 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo aphp('forum', 't=' . $t, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 
@@ -291,7 +291,7 @@ if ($add || $edit)
 	$str = ($topic) ? 'Reactie' : 'Onderwerp';
 	$btn = ($edit) ? 'primary' : 'success';
 	$action = ($edit) ? 'aanpassen' : 'toevoegen';
-	$cancel_dest = ($topic) ? 't=' . $topic : '';
+	$cancel_dest = ($topic) ? ['t' => $topic] : [];
 
 	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
@@ -352,21 +352,20 @@ if ($topic)
 
 	if ($s_admin || $s_owner)
 	{
-		$top_buttons .= aphp('forum', 'del=' . $topic, 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
+		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('forum', 't=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+		$top_buttons .= aphp('forum', ['t' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= aphp('forum', 't=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+		$top_buttons .= aphp('forum', ['t' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
 	}
 
-
-	$top_buttons .= aphp('forum', '', 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
+	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
 	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
 		<script src="' . $rootpath . 'js/forum.js"></script>';
@@ -393,8 +392,8 @@ if ($topic)
 		if ($s_admin || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo aphp('forum', 'edit=' . $p['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('forum', 'del=' . $p['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('forum', ['edit' => $p['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('forum', ['del' => $p['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
 		echo '</p>';
@@ -452,7 +451,7 @@ $s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? tr
 
 if ($s_admin || $s_user)
 {
-	$top_buttons .= aphp('forum', 'add=1', 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
+	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
 }
 
 $h1 = 'Forum';
@@ -510,7 +509,7 @@ foreach($forum_posts as $p)
 	echo '<tr>';
 
 	echo '<td>';
-	echo aphp('forum', 't=' . $p['_id'], $p['subject']);
+	echo aphp('forum', ['t' => $p['_id']], $p['subject']);
 	echo '</td>';
 	echo '<td>' . link_user($p['uid']) . '</td>';
 	echo '<td data-value="' . strtotime($p['ts']) . '">' . $p['ts'] . '</td>';
@@ -523,9 +522,9 @@ foreach($forum_posts as $p)
 	if ($s_admin)
 	{
 		echo '<td>';
-		echo aphp('forum', 'edit=' . $p['_id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+		echo aphp('forum', ['edit' => $p['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 		echo '&nbsp;';
-		echo aphp('forum', 'del=' . $p['_id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+		echo aphp('forum', ['del' => $p['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 		echo '</td>';
 	}
 	echo '</tr>';

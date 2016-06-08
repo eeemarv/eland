@@ -656,7 +656,7 @@ function get_elas_interlets_groups($refresh = false)
 
 function aphp(
 	$entity = '',
-	$params = '',
+	$params = [],
 	$label = '*link*',
 	$class = false,
 	$title = false,
@@ -687,7 +687,7 @@ function aphp(
 /**
  * generate url
  */
-function generate_url($entity = '', $params = [], $sch = false)
+function generate_url($entity = 'index', $params = [], $sch = false)
 {
 	global $rootpath, $alert, $hosts, $app_protocol;
 

@@ -204,7 +204,7 @@ if ($add || $edit)
 	echo '</div>';
 
 	$btn = ($add) ? 'success' : 'primary';
-	echo aphp('news', ($edit) ? 'id=' . $edit : '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	generate_form_token();
 
@@ -285,7 +285,7 @@ if ($del)
 	echo '<div class="panel-heading">';
 
 	echo '<form method="post">';
-	echo aphp('news', '', 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('news', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 	echo '</form>';
@@ -337,31 +337,31 @@ if ($id)
 
 	if($s_user || $s_admin)
 	{
-		$top_buttons .= aphp('news', 'add=1', 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
+		$top_buttons .= aphp('news', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
 
 		if($s_admin)
 		{
-			$top_buttons .= aphp('news', 'edit=' . $id, 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
-			$top_buttons .= aphp('news', 'del=' . $id, 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
+			$top_buttons .= aphp('news', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
+			$top_buttons .= aphp('news', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
 
 			if (!$news['approved'])
 			{
-				$top_buttons .= aphp('news', 'approve=' . $id, 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
+				$top_buttons .= aphp('news', ['approve' => $id], 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
 			}
 		}
 	}
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('news', 'id=' . $prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
+		$top_buttons .= aphp('news', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= aphp('news', 'id=' . $next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
+		$top_buttons .= aphp('news', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
 	}
 
-	$top_buttons .= aphp('news', 'view=' . $view_news, 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
+	$top_buttons .= aphp('news', ['view' => $view_news], 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
 	$fa = 'calendar';
@@ -453,7 +453,7 @@ $news = $db->fetchAll($query);
 
 if(($s_user || $s_admin) && !$inline)
 {
-	$top_buttons .= aphp('news', 'add=1', 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
+	$top_buttons .= aphp('news', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
 }
 
 if ($inline)
@@ -462,7 +462,7 @@ if ($inline)
 //	echo '<div class="col-md-12">';
 
 	echo '<h3>';
-	echo aphp('news', 'view=' . $view_news, 'Nieuws', false, false, 'calendar');
+	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar');
 	echo '</h3>';
 }
 else
@@ -528,7 +528,7 @@ if ($v_list)
 		echo '>';
 
 		echo '<td>';
-		echo aphp('news', 'id=' . $n['id'], $n['headline']);
+		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
 		echo '<td>';
@@ -558,7 +558,7 @@ else if ($v_extended)
 		echo '<div class="media">';
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo aphp('news', 'id=' . $n['id'], $n['headline']);
+		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</h3>';
 		echo nl2br(htmlspecialchars($n['newsitem'],ENT_QUOTES));
 
@@ -603,10 +603,10 @@ else if ($v_extended)
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 			if (!$n['approved'])
 			{
-				echo aphp('news', 'approve=' . $n['id'], 'Goedkeuren en publiceren', 'btn btn-warning btn-xs', false, 'check');
+				echo aphp('news', ['approve' => $n['id']], 'Goedkeuren en publiceren', 'btn btn-warning btn-xs', false, 'check');
 			}
-			echo aphp('news', 'edit=' . $n['id'], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('news', 'del=' . $n['id'], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('news', ['edit' => $n['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('news', ['del' => $n['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
 		echo '</p>';
