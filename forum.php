@@ -218,7 +218,8 @@ if ($del)
 if ($add || $edit)
 {
 	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
-		<script src="' . $rootpath . 'js/forum.js"></script>';
+		<script src="' . $rootpath . 'js/forum.js"></script>
+		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 
 	if ($topic)
 	{
