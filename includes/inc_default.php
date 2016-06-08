@@ -263,7 +263,7 @@ require_once $rootpath . 'includes/inc_alert.php';
 $alert = new alert();
 
 /**
- * access control
+ * access control rendering labels and selectors
  */
 
 require_once $rootpath . 'includes/access_control.php';
