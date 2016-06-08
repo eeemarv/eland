@@ -1294,7 +1294,7 @@ if ($id)
 
 	echo '<div id="contacts" '; // data-uid="' . $message['id_user'] . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
-	echo '&' . implode('&', get_session_query_param()) . '"></div>';
+	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
 
 // response form
 

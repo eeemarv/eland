@@ -1362,12 +1362,12 @@ function get_typeahead($name_ary, $group_url = false, $group_id = false)
 			$status = str_replace('users_', '', $name);
 			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
 			$out .= ($group_id) ? '&group_id=' . $group_id : '';
-			$out .= '&' . implode('&', get_session_query_param());
+			$out .= '&' . http_build_query(get_session_query_param());
 		}
 		else
 		{
 			$out .= $rootpath . 'ajax/typeahead_' . $name . '.php?';
-			$out .= implode('&', get_session_query_param());
+			$out .= http_build_query(get_session_query_param());
 		}
 
 		$out .= '|';

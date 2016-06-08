@@ -2028,7 +2028,7 @@ if ($id)
 
 			if ($s_group_self)
 			{
-				$tus['tus'] => $schema;
+				$tus['tus'] = $schema;
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
@@ -2222,7 +2222,7 @@ if ($id)
 
 	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $id;
-	echo '&' . implode('&', get_session_query_param()) . '"></div>';
+	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
 
 	// response form
 
@@ -2293,10 +2293,10 @@ if ($id)
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
 	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
-	echo '&' . implode('&', get_session_query_param()) . '" ';
+	echo '&' . http_build_query(get_session_query_param()) . '" ';
 	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
 	echo 'data-transactions-url="' . $rootpath . 'transactions.php?id=" ';
-	echo 'data-session-query-param="' . implode('&', get_session_query_param()) . '" ';
+	echo 'data-session-query-param="' . http_build_query(get_session_query_param()) . '" ';
 	echo 'data-user-id="' . $id . '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
@@ -2309,12 +2309,12 @@ if ($id)
 	{
 		echo '<div id="messages" ';
 		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
-		echo '&' . get_session_query_param() . '" class="print-hide"></div>';
+		echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
 	}
 
 	echo '<div id="transactions" ';
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
-	echo '&' . get_session_query_param() . '" class="print-hide"></div>';
+	echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
