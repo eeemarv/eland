@@ -317,24 +317,37 @@ if ($edit || $add)
 	{
 		$contact = $db->fetchAssoc('select * from contact where id = ?', array($edit));
 	}
+	else if ($add)
+	{
+		$contact = array(
+			'value'				=> '',
+			'comments'			=> '',
+			'flag_public'		=> false,
+		);
+	}
 
-	$tc = $tc_abbrev = array();
+	$tc = array();
 
-	$rs = $db->prepare('SELECT id, name, abbrev FROM type_contact');
+	$rs = $db->prepare('SELECT id, name FROM type_contact');
 
 	$rs->execute();
 
 	while ($row = $rs->fetch())
 	{
 		$tc[$row['id']] = $row['name'];
-		$tc_abbrev[$row['id']] = $row['abbrev'];
+
+		if (isset($contact['id_type_contact']))
+		{
+			continue;
+		}
+
+		$contact['id_type_contact'] = $row['id'];
 	}
 
 	if ($s_admin && $add && !$uid)
 	{
 		$includejs = '<script src="' . $cdn_typeahead . '"></script>
-			<script src="' . $rootpath . 'js/typeahead.js"></script>
-			<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
+			<script src="' . $rootpath . 'js/typeahead.js"></script>';
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
@@ -387,7 +400,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $access_control->get_radio_buttons($tc_abbrev[$contact['id_type_contact']], $contact['flag_public']);
+	echo $access_control->get_radio_buttons(false, $contact['flag_public']);
 
 	if ($uid)
 	{

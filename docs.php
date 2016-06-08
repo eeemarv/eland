@@ -467,7 +467,8 @@ if ($add)
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+		<script src="' . $rootpath . 'js/typeahead.js"></script>
+		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
 
 	$top_buttons .= aphp('docs', '', 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 
