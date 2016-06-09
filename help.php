@@ -8,13 +8,13 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$help = array(
+	$help = [
 		'letscode' 			=> $_POST['letscode'],
 		'mail'				=> $_POST['mail'],
 		'subject' 			=> $_POST['subject'],
 		'description' 		=> $_POST['description'],
 		'browser'			=> $_SERVER['HTTP_USER_AGENT'],
-	);
+	];
 
 	if(empty($help['letscode']))
 	{
@@ -30,7 +30,7 @@ if(isset($_POST['zend']))
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
-			and c.value = ?', array($help['mail']))))
+			and c.value = ?', [$help['mail']])))
 	{
 		$errors[] = 'Dit mailadres is niet gekend in deze installatie';
 	}
@@ -41,7 +41,7 @@ if(isset($_POST['zend']))
 			and tc.abbrev = \'mail\'
 			and c.value = ?
 			and c.id_user = u.id
-			and u.letscode = ?', array($help['mail'], $help['letscode']))))
+			and u.letscode = ?', [$help['mail'], $help['letscode']])))
 	{
 		$errors[] = 'Gebruiker niet gevonden.';
 	}
@@ -85,7 +85,7 @@ if(isset($_POST['zend']))
 		$text .= "\r\n";
 		$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
-		$return_message =  mail_q(array('to' => 'support', 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['user_id']));
+		$return_message =  mail_q(['to' => 'support', 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['user_id']]);
 
 		if (!$return_message)
 		{
@@ -103,12 +103,12 @@ if(isset($_POST['zend']))
 }
 else
 {
-	$help = array(
+	$help = [
 		'letscode' 			=> '',
 		'mail'				=> '',
 		'subject' 			=> '',
 		'description' 		=> '',
-	);
+	];
 }
 
 if (!readconfigfromdb('mailenabled'))
