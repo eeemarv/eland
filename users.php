@@ -1392,9 +1392,9 @@ if ($add || $edit)
 
 					if ($user['status'] == 1)
 					{
-						if ($notify && !empty($mail) && $user['status'] == 1 && $password)
+						if ($notify && $mailadr && $user['status'] == 1 && $password)
 						{
-							$user['mail'] = $mail;
+							$user['mail'] = $mailadr;
 
 							if (readconfigfromdb('mailenabled'))
 							{
