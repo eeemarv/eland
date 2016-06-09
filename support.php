@@ -7,10 +7,10 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$help = array(
+	$help = [
 		'subject' 			=> $_POST['subject'],
 		'description' 		=> $_POST['description'],
-	);
+	];
 
 	if(empty($help['subject']))
 	{
@@ -35,11 +35,11 @@ if(isset($_POST['zend']))
 	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
 		from contact c, type_contact tc
 		where c.id_user = ?
-			and c.id_type_contact = tc.id', array($s_id));
+			and c.id_type_contact = tc.id', [$s_id]);
 
 	$mailaddr = getmailadr($s_id);
 
-	$mail_ary = array('to' => 'support', 'subject' => $help['subject']);
+	$mail_ary = ['to' => 'support', 'subject' => $help['subject']];
 
 	foreach ($my_contacts as $my_contact)
 	{
@@ -98,10 +98,10 @@ if(isset($_POST['zend']))
 }
 else
 {
-	$help = array(
+	$help = [
 		'subject' 			=> '',
 		'description' 		=> '',
-	);
+	];
 
 	$mail = getmailadr($s_id);
 

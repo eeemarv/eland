@@ -39,7 +39,7 @@ if ($add)
 		cancel();
 	}
 
-	$transaction = array();
+	$transaction = [];
 
 	$redis_transid_key = $schema . '_transid_u_' . $s_id;
 
@@ -65,7 +65,7 @@ if ($add)
 			$errors[] = 'Fout transactie id.';
 		}
 
-		if ($db->fetchColumn('select transid from transactions where transid = ?', array($stored_transid)))
+		if ($db->fetchColumn('select transid from transactions where transid = ?', [$stored_transid]))
 		{
 			$errors[] = 'Een herinvoer van de transactie werd voorkomen.';
 		}
@@ -77,7 +77,7 @@ if ($add)
 
 		if ($group_id != 'self')
 		{
-			$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
+			$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
 
 			if (!isset($group))
 			{
@@ -87,22 +87,22 @@ if ($add)
 
 		if ($s_user)
 		{
-			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', array($s_id));
+			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', [$s_id]);
 		}
 		else
 		{
-			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode_from));
+			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode_from]);
 		}
 
 		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
 
-		$touser = $db->fetchAssoc('select * from users where letscode = ?', array($letscode_touser));
+		$touser = $db->fetchAssoc('select * from users where letscode = ?', [$letscode_touser]);
 
 		if ($group_id == 'self')
 		{
 /*			$to_apimethod_check = $db->fetchColumn('select apimethod
 				from letsgroups
-				where localletscode = ?', array($letscode_to));
+				where localletscode = ?', [$letscode_to]);
 
 
 			if ($to_apimethod_check != 'mail')
@@ -324,7 +324,7 @@ if ($add)
 
 			$to_remote_user = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
-				where letscode = ?', array($letscode_to));
+				where letscode = ?', [$letscode_to]);
 
 			if (!$to_remote_user)
 			{
@@ -332,7 +332,7 @@ if ($add)
 				cancel();
 			}
 
-			if (!in_array($to_remote_user['status'], array('1', '2')))
+			if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
 				$alert->error('De interlets gebruiker is niet actief.');
 				cancel();
@@ -340,7 +340,7 @@ if ($add)
 
 			$remote_group = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
-				where url = ?', array($base_url));
+				where url = ?', [$base_url]);
 
 			if (!$remote_group)
 			{
@@ -356,7 +356,7 @@ if ($add)
 
 			$remote_interlets_account = $db->fetchAssoc('select *
 				from ' . $remote_schema . '.users
-				where letscode = ?', array($remote_group['localletscode']));
+				where letscode = ?', [$remote_group['localletscode']]);
 
 			if (!$remote_interlets_account)
 			{
@@ -370,7 +370,7 @@ if ($add)
 				cancel();
 			}
 
-			if (!in_array($remote_interlets_account['status'], array(1, 2, 7)))
+			if (!in_array($remote_interlets_account['status'], [1, 2, 7]))
 			{
 				$alert->error('Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.');
 				cancel();
@@ -425,10 +425,10 @@ if ($add)
 				$id = $db->lastInsertId('transactions_id_seq');
 				$db->executeUpdate('update users
 					set saldo = saldo + ? where id = ?',
-					array($transaction['amount'], $transaction['id_to']));
+					[$transaction['amount'], $transaction['id_to']]);
 				$db->executeUpdate('update users
 					set saldo = saldo - ? where id = ?',
-					array($transaction['amount'], $transaction['id_from']));
+					[$transaction['amount'], $transaction['id_from']]);
 
 				$trans_org = $transaction;
 				$trans_org['id'] = $id;
@@ -444,10 +444,10 @@ if ($add)
 				$id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
 				$db->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo + ? where id = ?',
-					array($remote_amount, $transaction['id_to']));
+					[$remote_amount, $transaction['id_to']]);
 				$db->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo - ? where id = ?',
-					array($transaction['amount'], $transaction['id_from']));
+					[$transaction['amount'], $transaction['id_from']]);
 				$transaction['id'] = $id;
 
 				$db->commit();
@@ -497,14 +497,14 @@ if ($add)
 		$redis->set($redis_transid_key, $transid);
 		$redis->expire($redis_transid_key, 3600);
 
-		$transaction = array(
+		$transaction = [
 			'date'			=> date('Y-m-d'),
 			'letscode_from'	=> link_user($s_id, false, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
 			'transid'		=> $transid,
-		);
+		];
 
 		$group_id = 'self';
 		$to_schema_table = '';
@@ -515,7 +515,7 @@ if ($add)
 			{
 				$group_id = $db->fetchColumn('select id
 					from letsgroups
-					where url = ?', array($app_protocol . $host_from_tus));
+					where url = ?', [$app_protocol . $host_from_tus]);
 				$to_schema_table = $tus . '.';
 			}
 		}
@@ -527,7 +527,7 @@ if ($add)
 				from ' . $to_schema_table . 'messages m,
 					'. $to_schema_table . 'users u
 				where u.id = m.id_user
-					and m.id = ?', array($mid));
+					and m.id = ?', [$mid]);
 
 			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
 			{
@@ -570,10 +570,10 @@ if ($add)
 	$balance = $session_user['saldo'];
 
 	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
-	$groups = array_merge(array(array(
+	$groups = array_merge([[
 			'groupname' => $systemname,
 			'id'		=> 'self',
-		)), $groups);
+		]], $groups);
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -629,7 +629,7 @@ if ($add)
 
 			if ($s_admin)
 			{
-				$typeahead = array('users_active', 'users_inactive', 'users_ip', 'users_im');
+				$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
 			}
 			else
 			{
@@ -705,7 +705,7 @@ if (!is_array($interlets_accounts_schemas))
 	$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
 }
 
-$s_inter_schema_check = array_merge($eland_interlets_groups, array($s_schema => true));
+$s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 
 /**
  * show a transaction
@@ -715,7 +715,7 @@ if ($id)
 {
 	$transaction = $db->fetchAssoc('select t.*
 		from transactions t
-		where t.id = ?', array($id));
+		where t.id = ?', [$id]);
 
 	$inter_schema = false;
 
@@ -732,7 +732,7 @@ if ($id)
 	{
 		$inter_transaction = $db->fetchAssoc('select t.*
 			from ' . $inter_schema . '.transactions t
-			where t.transid = ?', array($transaction['transid']));
+			where t.transid = ?', [$transaction['transid']]);
 	}
 	else
 	{
@@ -743,13 +743,13 @@ if ($id)
 		from transactions
 		where id > ?
 		order by id asc
-		limit 1', array($id));
+		limit 1', [$id]);
 
 	$prev = $db->fetchColumn('select id
 		from transactions
 		where id < ?
 		order by id desc
-		limit 1', array($id));
+		limit 1', [$id]);
 
 	if ($s_user || $s_admin)
 	{
@@ -886,14 +886,14 @@ if ($id)
  */
 $s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
-$params_sql = $where_sql = $where_code_sql = array();
+$params_sql = $where_sql = $where_code_sql = [];
 
-$params = array(
+$params = [
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
 	'limit'		=> $limit,
 	'start'		=> $start,
-);
+];
 
 if ($uid)
 {
@@ -1026,7 +1026,7 @@ foreach ($transactions as $key => $t)
 	{
 		$inter_transaction = $db->fetchAssoc('select t.*
 			from ' . $inter_schema . '.transactions t
-			where t.transid = ?', array($t['transid']));
+			where t.transid = ?', [$t['transid']]);
 
 		if ($inter_transaction)
 		{
@@ -1042,43 +1042,43 @@ $row_count = $db->fetchColumn('select count(t.*)
 
 $pagination = new pagination('transactions', $row_count, $params, $inline);
 
-$asc_preset_ary = array(
+$asc_preset_ary = [
 	'asc'	=> 0,
 	'indicator' => '',
-);
+];
 
-$tableheader_ary = array(
-	'description' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Omschrijving')),
-	'amount' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Bedrag')),
-	'cdate'	=> array_merge($asc_preset_ary, array(
+$tableheader_ary = [
+	'description' => array_merge($asc_preset_ary, [
+		'lbl' => 'Omschrijving']),
+	'amount' => array_merge($asc_preset_ary, [
+		'lbl' => 'Bedrag']),
+	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
-		'data_hide' => 'phone'))
-);
+		'data_hide' => 'phone'])
+];
 
 if ($uid)
 {
-	$tableheader_ary['user'] = array_merge($asc_preset_ary, array(
+	$tableheader_ary['user'] = array_merge($asc_preset_ary, [
 		'lbl'			=> 'Tegenpartij',
 		'data_hide'		=> 'phone, tablet',
 		'no_sort'		=> true,
-	));
+	]);
 }
 else
 {
-	$tableheader_ary += array(
-		'from_user' => array_merge($asc_preset_ary, array(
+	$tableheader_ary += [
+		'from_user' => array_merge($asc_preset_ary, [
 			'lbl' 		=> 'Van',
 			'data_hide'	=> 'phone, tablet',
 			'no_sort'	=> true,
-		)),
-		'to_user' => array_merge($asc_preset_ary, array(
+		]),
+		'to_user' => array_merge($asc_preset_ary, [
 			'lbl' 		=> 'Aan',
 			'data_hide'	=> 'phone, tablet',
 			'no_sort'	=> true,
-		)),
-	);
+		]),
+	];
 }
 
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
@@ -1219,10 +1219,10 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	$andor_options = array(
+	$andor_options = [
 		'and'	=> 'EN',
 		'or'	=> 'OF',
-	);
+	];
 
 	echo '<div class="col-sm-2">';
 	echo '<select class="form-control margin-bottom" name="andor">';
@@ -1534,7 +1534,7 @@ if ($uid)
 	$interletsq = $db->fetchAll('select q.*, l.groupname
 		from interletsq q, letsgroups l
 		where q.id_from = ?
-			and q.letsgroup_id = l.id', array($uid));
+			and q.letsgroup_id = l.id', [$uid]);
 	$from = ' van ' . link_user($uid);
 }
 else
