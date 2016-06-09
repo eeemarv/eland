@@ -638,8 +638,6 @@ if (!$map && count($maps))
 
 			continue;
 		}
-
-		echo '</tr>';
 	}
 	echo '</tbody>';
 	echo '</table>';
@@ -647,7 +645,7 @@ if (!$map && count($maps))
 	echo '</div>';
 	echo '</div>';
 }
-
+var_dump($docs);
 if (count($docs))
 {
 	echo '<div class="panel panel-default printview">';
