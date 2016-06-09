@@ -44,7 +44,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$forum_post = $mdb->forum->findOne(array('_id' => new MongoId($t)));
+	$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
 
 	if (!$forum_post)
 	{
@@ -84,14 +84,14 @@ if ($submit)
 		}
 
 		$mdb->forum->remove(
-			array('_id' => new MongoId($del)),
-			array('justOne'	=> true)
+			['_id' => new MongoId($del)],
+			['justOne'	=> true]
 		);
 
 		if (!$forum_post['parent_id'])
 		{
 			$mdb->forum->remove(
-				array('parent_id' => $del)
+				['parent_id' => $del]
 			);
 
 			$alert->success('Het forum onderwerp is verwijderd.');
@@ -106,13 +106,11 @@ if ($submit)
 
 	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
 
-	$content = str_replace(array("\n", "\r", '<p>&nbsp;</p>'), '', $content);
+	$content = str_replace(["\n", "\r", '<p>&nbsp;</p>'], '', $content);
 
 	$content = trim($content);
 
-	$forum_post = array(
-		'content'	=> $content,
-	);
+	$forum_post = ['content'	=> $content];
 
 	if ($topic)
 	{
@@ -144,11 +142,14 @@ if ($submit)
 		 $errors[] = 'De inhoud van je bericht is te kort.';
 	}
 
-	$access_error = $access_control->get_post_error();
-
-	if ($access_error)
+	if (!$topic)
 	{
-		$errors[] = $access_error;
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
+		{
+			$errors[] = $access_error;
+		}
 	}
 
 	if (!$topic && ($forum_post['access'] < $access_level || $forum_post['access'] > 2))
@@ -167,9 +168,9 @@ if ($submit)
 	}
 	else if ($edit)
 	{
-		$mdb->forum->update(array('_id' => new MongoId($edit)),
-			array('$set'	=> $forum_post, '$inc' => array('edit_count' => 1)),
-			array('upsert'	=> true));
+		$mdb->forum->update(['_id' => new MongoId($edit)],
+			['$set'	=> $forum_post, '$inc' => ['edit_count' => 1]],
+			['upsert'	=> true]);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
@@ -224,7 +225,7 @@ if ($add || $edit)
 	if ($topic)
 	{
 		$topic_id = new MongoId($topic);
-		$topic_post = $mdb->forum->findOne(array('_id' => $topic_id));
+		$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
 
 		if ($topic_post['access'] < $access_level)
 		{
@@ -313,7 +314,7 @@ if ($add || $edit)
 if ($topic)
 {
 	$topic_id = new MongoId($topic);
-	$topic_post = $mdb->forum->findOne(array('_id' => $topic_id));
+	$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
 
 	if ($topic_post['access'] < $access_level)
 	{
@@ -321,34 +322,34 @@ if ($topic)
 		cancel();
 	}
 
-	$find = array('$or'=> array(array('parent_id' => $topic), array('_id' => $topic_id)));
+	$find = ['$or'=> [['parent_id' => $topic], ['_id' => $topic_id]]];
 
 	$forum_posts = $mdb->forum->find($find);
-	$forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
+	$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
 	$forum_posts = iterator_to_array($forum_posts);
 
 	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
-	$find = array(
-		'parent_id' => array('$exists' => false),
-		'access'	=> array('$gte'	=> (string) $access_level),
-		'ts' 		=> array('$lt' => $topic_post['ts']),
-	);
+	$find = [
+		'parent_id' => ['$exists' => false],
+		'access'	=> ['$gte'	=> (string) $access_level],
+		'ts' 		=> ['$lt' => $topic_post['ts']],
+	];
 
 	$prev = $mdb->forum->findOne($find);
 
-	$prev = ($prev) ? $prev['_id'] : false;
+	$prev = ($prev) ? $prev['_id']->__toString() : false;
 
-	$find = array(
-		'parent_id' => array('$exists' => false),
-		'access' 	=> array('$gte'	=> (string) $access_level),
-		'ts' 		=> array('$gt' => $topic_post['ts']),
-	);
+	$find = [
+		'parent_id' => ['$exists' => false],
+		'access' 	=> ['$gte'	=> (string) $access_level],
+		'ts' 		=> ['$gt' => $topic_post['ts']],
+	];
 
 	$next = $mdb->forum->findOne($find);
 
-	$next = ($next) ? $next['_id'] : false;
+	$next = ($next) ? $next['_id']->__toString() : false;
 
 	if ($s_admin || $s_owner)
 	{
@@ -378,6 +379,8 @@ if ($topic)
 	{
 		$s_owner = (($p['uid'] == $s_id) && $s_id && $s_group_self) ? true : false;
 
+		$pid = $p['_id']->__toString();
+
 		echo '<div class="panel panel-default printview">';
 
 		echo '<div class="panel-body">';
@@ -392,10 +395,11 @@ if ($topic)
 		if ($s_admin || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo aphp('forum', ['edit' => $p['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('forum', ['del' => $p['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('forum', ['del' => $pid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
+
 		echo '</p>';
 		echo '</div>';
 
@@ -440,10 +444,10 @@ if ($topic)
  * show topic list
  */
 
-$find = array('parent_id' => array('$exists' => false));
+$find = ['parent_id' => ['$exists' => false]];
 
 $forum_posts = $mdb->forum->find($find);
-$forum_posts->sort(array('ts' => (($topic) ? 1 : -1)));
+$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
 $forum_posts = iterator_to_array($forum_posts);
 
@@ -506,10 +510,12 @@ foreach($forum_posts as $p)
 
 	$s_owner = ($s_id == $p['uid'] && $s_group_self) ? true : false;
 
+	$pid = $p['_id']->__toString();
+
 	echo '<tr>';
 
 	echo '<td>';
-	echo aphp('forum', ['t' => $p['_id']], $p['subject']);
+	echo aphp('forum', ['t' => $pid], $p['subject']);
 	echo '</td>';
 	echo '<td>' . link_user($p['uid']) . '</td>';
 	echo '<td data-value="' . strtotime($p['ts']) . '">' . $p['ts'] . '</td>';
@@ -522,9 +528,9 @@ foreach($forum_posts as $p)
 	if ($s_admin)
 	{
 		echo '<td>';
-		echo aphp('forum', ['edit' => $p['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+		echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 		echo '&nbsp;';
-		echo aphp('forum', ['del' => $p['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+		echo aphp('forum', ['del' => $pid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 		echo '</td>';
 	}
 	echo '</tr>';
