@@ -63,7 +63,7 @@ if (!$s_anonymous)
 	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 	echo '<ul class="nav navbar-nav navbar-right">';
 
-	if ($s_schema && (count($eland_interlets_groups) || count($elas_interlets_groups)))
+	if ($s_schema && (count($eland_interlets_groups) || count($elas_interlets_groups) || count($logins)))
 	{
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
@@ -71,6 +71,21 @@ if (!$s_anonymous)
 		echo 'Groep';
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
+
+		foreach ($logins as $login_schema => $login_id)
+		{
+			echo '<li';
+			echo ($login_schema == $schema) ? ' class="active"' : '';
+			echo '>';
+			echo '<a href="' . generate_url($script_name, [], $login_schema) . '">';
+			echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
+			echo '</a>';
+			echo '</li>';
+
+		}
+
+		echo '<li class="divider"></li>';
+
 		echo '<li';
 		echo ($s_group_self) ? ' class="active"' : '';
 		echo '>';
