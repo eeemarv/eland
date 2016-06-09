@@ -376,7 +376,7 @@ $access_control = new access_control();
 
 $s_group_self = ($s_schema == $schema) ? true : false;
 
-$access_level = $acces_ary[$s_accountrole];
+$access_level = $access_ary[$s_accountrole];
 
 $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;

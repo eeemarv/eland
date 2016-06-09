@@ -20,11 +20,11 @@ $confirm_del = ($_POST['confirm_del']) ? true : false;
 
 if ($post)
 {
-	$s3 = Aws\S3\S3Client::factory(array(
+	$s3 = Aws\S3\S3Client::factory([
 		'signature'	=> 'v4',
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
-	));
+	]);
 }
 
 if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
@@ -39,7 +39,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$map = $mdb->docs->findOne(array('_id' => new MongoId($map_edit)));
+	$map = $mdb->docs->findOne(['_id' => new MongoId($map_edit)]);
 
 	$map_name = $map['map_name'];
 
@@ -59,7 +59,7 @@ if ($map_edit)
 
 		if ($map_name = $_POST['map_name'])
 		{
-			$mdb->docs->update(array('_id' => new MongoId($map_edit)), array('map_name' => $map_name));
+			$mdb->docs->update(['_id' => new MongoId($map_edit)], ['map_name' => $map_name]);
 			$alert->success('Map naam aangepast.');
 
 			invalidate_typeahead_thumbprint('doc_map_names');
@@ -112,7 +112,7 @@ if ($edit)
 {
 	$edit_id = new MongoId($edit);
 
-	$doc = $mdb->docs->findOne(array('_id' => $edit_id));
+	$doc = $mdb->docs->findOne(['_id' => $edit_id]);
 
 	if (!$doc)
 	{
@@ -122,14 +122,14 @@ if ($edit)
 
 	if ($submit)
 	{
-		$update = array(
+		$update = [
 			'user_id'		=> $doc['user_id'],
 			'filename'		=> $doc['filename'],
 			'org_filename'	=> $doc['org_filename'],
 			'ts'			=> $doc['ts'],
 			'name'			=> $_POST['name'],
 			'access'		=> $access_control->get_post_value(),
-		);
+		];
 
 		$access_error = $access_control->get_post_error();
 
@@ -142,11 +142,11 @@ if ($edit)
 		{
 			if ($map_name = $_POST['map_name'])
 			{
-				$map = $mdb->docs->findOne(array('map_name' => $map_name));
+				$map = $mdb->docs->findOne(['map_name' => $map_name]);
 
 				if (!$map)
 				{
-					$map = array('map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s'));
+					$map = ['map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s')];
 					$mdb->docs->insert($map);
 
 					invalidate_typeahead_thumbprint('doc_map_names');
@@ -157,9 +157,9 @@ if ($edit)
 
 			if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
 			{
-				if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+				if (count(iterator_to_array($mdb->docs->find(['map_id' => $doc['map_id']]))) == 1)
 				{
-					$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+					$mdb->docs->remove(['_id' => new MongoId($doc['map_id'])]);
 				}
 			}
 
@@ -247,24 +247,24 @@ if ($confirm_del && $del)
 		cancel();
 	}
 
-	if ($doc = $mdb->docs->findOne(array('_id' => $doc_id)))
+	if ($doc = $mdb->docs->findOne(['_id' => $doc_id]))
 	{
-		$s3->deleteObject(array(
+		$s3->deleteObject([
 			'Bucket'	=> $s3_doc,
 			'Key'		=> $doc['filename'],
-		));
+		]);
 
-		if (count(iterator_to_array($mdb->docs->find(array('map_id' => $doc['map_id'])))) == 1)
+		if (count(iterator_to_array($mdb->docs->find(['map_id' => $doc['map_id']]))) == 1)
 		{
-			$mdb->docs->remove(array('_id' => new MongoId($doc['map_id'])));
+			$mdb->docs->remove(['_id' => new MongoId($doc['map_id'])]);
 			unset($doc['map_id']);
 
 			invalidate_typeahead_thumbprint('doc_map_names');
 		}
 
 		$mdb->docs->remove(
-			array('_id' => $doc_id),
-			array('justOne'	=> true)
+			['_id' => $doc_id],
+			['justOne'	=> true]
 		);
 
 		$alert->success('Het document werd verwijderd.');
@@ -277,7 +277,7 @@ if ($del)
 {
 	$doc_id = new MongoId($del);
 
-	$doc = $mdb->docs->findOne(array('_id' => $doc_id));
+	$doc = $mdb->docs->findOne(['_id' => $doc_id]);
 
 	if ($doc)
 	{
@@ -325,7 +325,7 @@ if ($submit)
 	$file_type = finfo_file($finfo, $tmpfile);
 	finfo_close($finfo);
 
-	$extension_types = array(
+	$extension_types = [
 		'docx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 		'docm'		=> 'application/vnd.ms-word.document.macroEnabled.12',
 		'dotx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
@@ -362,7 +362,7 @@ if ($submit)
 		'css'		=> 'text/css',
 		'html'		=> 'text/html',
 		'md'		=> 'text/markdown',
-	);
+	];
 
 	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
 
@@ -402,28 +402,28 @@ if ($submit)
 
 		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
 
-		$doc = array(
+		$doc = [
 			'_id' 			=> $doc_id,
 			'filename'		=> $filename,
 			'org_filename'	=> $file,
 			'access'		=> (int) $access,
 			'ts'			=> gmdate('Y-m-d H:i:s'),
 			'user_id'		=> $s_id,
-		);
+		];
 
 		if ($map_name = $_POST['map_name'])
 		{
-			$m = $mdb->docs->findOne(array('map_name' => $map_name));
+			$m = $mdb->docs->findOne(['map_name' => $map_name]);
 
 			$map_id = new MongoId($m['_id']);
 
 			if (!$m)
 			{
-				$map = array(
+				$map = [
 					'_id'		=> $map_id,
 					'ts'		=> gmdate('Y-m-d H:i:s'),
 					'map_name'	=> $map_name,
-				);
+				];
 
 				$mdb->docs->insert($map);
 
@@ -440,14 +440,14 @@ if ($submit)
 
 		$mdb->docs->insert($doc);
 
-		$params = array(
+		$params = [
 			'CacheControl'			=> 'public, max-age=31536000',
 			'ContentType'			=> $media_type,
-		);
+		];
 
-		$upload = $s3->upload($s3_doc, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
+		$upload = $s3->upload($s3_doc, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 			'params'	=> $params
-		));
+		]);
 
 		$alert->success('Het bestand is opgeladen.');
 		cancel($doc['map_id']);
@@ -463,7 +463,7 @@ if ($add)
 	if ($map)
 	{
 		$map_id = new MongoId($map);
-		$map_name = $mdb->docs->findOne(array('_id' => $map_id))['map_name'];
+		$map_name = $mdb->docs->findOne(['_id' => $map_id])['map_name'];
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -524,13 +524,11 @@ if ($add)
  * list all documents
  */
 
-$find = array(
-	'access'	=> array('$gte'	=> $access_level)
-);
+$find = ['access'	=> ['$gte'	=> $access_level]];
 
 if ($map)
 {
-	$map_name = $mdb->docs->findOne(array('_id' => new MongoId($map)));
+	$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
 	$map_name = $map_name['map_name'];
 
 	if (!$map_name)
@@ -540,11 +538,11 @@ if ($map)
 	}
 
 	$find['map_id'] = $map;
-	$maps = array();
+	$maps = [];
 }
 else
 {
-	$maps = iterator_to_array($mdb->docs->find(array('map_name' => array('$exists' => true))));
+	$maps = iterator_to_array($mdb->docs->find(['map_name' => ['$exists' => true]]));
 }
 
 $docs = iterator_to_array($mdb->docs->find($find));
@@ -621,17 +619,19 @@ if (!$map && count($maps))
 
 	foreach($maps as $d)
 	{
+		$did = $d['_id']->__toString();
+
 		if ($d['count'])
 		{
 			echo '<tr class="info">';
 			echo '<td>';
-			echo aphp('docs', ['map' => $d['_id']], $d['map_name'] . ' (' . $d['count'] . ')');
+			echo aphp('docs', ['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
 			echo '</td>';
 
 			if ($s_admin)
 			{
 				echo '<td>';
-				echo aphp('docs', ['map_edit' => $d['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+				echo aphp('docs', ['map_edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 				echo '</td>';
 			}
 			echo '</tr>';
@@ -645,7 +645,7 @@ if (!$map && count($maps))
 	echo '</div>';
 	echo '</div>';
 }
-var_dump($docs);
+
 if (count($docs))
 {
 	echo '<div class="panel panel-default printview">';
@@ -667,6 +667,8 @@ if (count($docs))
 
 	foreach($docs as $d)
 	{
+		$did = $d['_id']->__toString();
+
 		echo '<tr>';
 
 		echo '<td>';
@@ -684,9 +686,9 @@ if (count($docs))
 		if ($s_admin)
 		{
 			echo '<td>';
-			echo aphp('docs', ['edit' => $d['_id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
+			echo aphp('docs', ['edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 			echo '&nbsp;';
-			echo aphp('docs', ['del' => $d['_id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp('docs', ['del' => $did], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</td>';
 		}
 		echo '</tr>';
