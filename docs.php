@@ -152,7 +152,7 @@ if ($edit)
 					invalidate_typeahead_thumbprint('doc_map_names');
 				}
 
-				$update['map_id'] = (string) $map['_id'];
+				$update['map_id'] = $map['_id']->__toString();
 			}
 
 			if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
@@ -163,7 +163,7 @@ if ($edit)
 				}
 			}
 
-			$mdb->docs->update(array('_id' => $edit_id), $update);
+			$mdb->docs->update(['_id' => $edit_id], $update);
 
 			$alert->success('Document aangepast');
 			cancel($update['map_id']);
@@ -174,7 +174,7 @@ if ($edit)
 
 	if ($map_id = $doc['map_id'])
 	{
-		$map = $mdb->docs->findOne(array('_id' => new MongoId($map_id)));
+		$map = $mdb->docs->findOne(['_id' => new MongoId($map_id)]);
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -430,7 +430,7 @@ if ($submit)
 				invalidate_typeahead_thumbprint('doc_map_names');
 			}
 
-			$doc['map_id'] = (string) $map_id;
+			$doc['map_id'] = $map_id->__toString();
 		}
 
 		if ($name = $_POST['name'])
@@ -450,7 +450,7 @@ if ($submit)
 		));
 
 		$alert->success('Het bestand is opgeladen.');
-		cancel($map_id);
+		cancel($doc['map_id']);
 	}
 }
 

@@ -189,7 +189,7 @@ if ($del)
 	$h1 = ($forum_post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', ['t' => $forum_post['id']], $forum_post['subject']);
 	$h1 .= ' verwijderen?';
 
-	$t = ($forum_post['parent_id']) ?: $forum_post['_id'];
+	$t = ($forum_post['parent_id']) ?: $forum_post['_id']->__toString();
 
 	require_once $rootpath . 'includes/inc_header.php';
 
