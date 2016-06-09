@@ -144,11 +144,14 @@ if ($submit)
 		 $errors[] = 'De inhoud van je bericht is te kort.';
 	}
 
-	$access_error = $access_control->get_post_error();
-
-	if ($access_error)
+	if (!$topic)
 	{
-		$errors[] = $access_error;
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
+		{
+			$errors[] = $access_error;
+		}
 	}
 
 	if (!$topic && ($forum_post['access'] < $access_level || $forum_post['access'] > 2))
