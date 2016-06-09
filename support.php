@@ -1,50 +1,16 @@
 <?php
 
 $rootpath = './';
-$page_access = 'anonymous';
-$allow_anonymous_post = true;
+$page_access = 'user';
 
 require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
 	$help = array(
-		'letscode' 			=> $_POST['letscode'],
-		'mail'				=> $_POST['mail'],
 		'subject' 			=> $_POST['subject'],
 		'description' 		=> $_POST['description'],
-		'browser'			=> $_SERVER['HTTP_USER_AGENT'],
 	);
-
-	if(empty($help['letscode']))
-	{
-		$errors[] = 'Vul je letscode in';
-	}
-
-	if(empty($help['mail']))
-	{
-		$errors[] = 'Vul een E-mail adres in';
-	}
-
-	if(!($db->fetchColumn('select c.value
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'
-			and c.value = ?', array($help['mail']))))
-	{
-		$errors[] = 'Dit mailadres is niet gekend in deze installatie';
-	}
-
-	if (!($help['user_id'] = $db->fetchColumn('select c.id_user
-		from contact c, type_contact tc, users u
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'
-			and c.value = ?
-			and c.id_user = u.id
-			and u.letscode = ?', array($help['mail'], $help['letscode']))))
-	{
-		$errors[] = 'Gebruiker niet gevonden.';
-	}
 
 	if(empty($help['subject']))
 	{
@@ -66,31 +32,60 @@ if(isset($_POST['zend']))
 		$errors[] = $token_error;
 	}
 
+	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
+		from contact c, type_contact tc
+		where c.id_user = ?
+			and c.id_type_contact = tc.id', array($s_id));
+
+	$mailaddr = getmailadr($s_id);
+
+	$mail_ary = array('to' => 'support', 'subject' => $help['subject']);
+
+	foreach ($my_contacts as $my_contact)
+	{
+		if ($my_contact['abbrev'] == 'mail')
+		{
+			$mail_ary['reply_to'] = $s_id;
+		}
+	}
+
 	if(!count($errors))
 	{
 		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
 		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
 
-		$text .= 'Gebruiker: ' . link_user($help['user_id'], false, false, true) . "\r\n";
+		$text .= 'Gebruiker: ' . link_user($s_id, false, false) . "\r\n";
 
-		$text .= 'Gebruiker ingelogd: ';
-		$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
-		$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
 		$text .= "\r\n\r\n";
 		$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
 		$text .= $help['description'] . "\r\n\r\n";
 		$text .= "--------------------------------------------------------------------\r\n\r\n";
-		$text .= "User Agent:\r\n";
-		$text .= $help['browser'] . "\r\n";
-		$text .= "\r\n";
-		$text .= 'eLAND webserver: ' . gethostname() . "\r\n";
 
-		$return_message =  mail_q(array('to' => 'support', 'subject' => $help['subject'], 'text' => $text, 'reply_to' => $help['user_id']));
+		if ($mail_ary['reply_to'])
+		{
+			$text .= 'Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken';
+		}
+		else
+		{
+			$text .= 'Er is geen mailadres gekend van ' . link_user($s_id, false, false);
+			$text .= '. Contacteer de gebruiker op andere wijze.';
+		}
+
+		$text .= 'Contactgegevens van ' . link_user($s_id, false, false) . ":\r\n\r\n";
+
+		foreach($my_contacts as $value)
+		{
+			$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+		}
+
+		$mail_ary['text'] = $text;
+
+		$return_message =  mail_q($mail_ary);
 
 		if (!$return_message)
 		{
 			$alert->success('De support mail is verzonden.');
-			header('Location: ' . generate_url('login'));
+			header('Location: ' . generate_url('index'));
 			exit;
 		}
 
@@ -104,11 +99,16 @@ if(isset($_POST['zend']))
 else
 {
 	$help = array(
-		'letscode' 			=> '',
-		'mail'				=> '',
 		'subject' 			=> '',
 		'description' 		=> '',
 	);
+
+	$mail = getmailadr($s_id);
+
+	if (!count($mail))
+	{
+		$alert->warning('Je hebt geen email adres ingesteld voor je account. ');
+	}
 }
 
 if (!readconfigfromdb('mailenabled'))
@@ -129,22 +129,6 @@ echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
-
-echo '<div class="form-group">';
-echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'value="' . $help['letscode'] . '" required>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="mail" class="col-sm-2 control-label">Email (waarmee je in deze installatie geregistreerd bent)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="mail" name="mail" ';
-echo 'value="' . $help['mail'] . '" required>';
-echo '</div>';
-echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
@@ -170,10 +154,5 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
-
-if (!$s_id)
-{
-	echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord aanvragen met je e-mail adres!</i></small>';
-}
 
 include $rootpath . 'includes/inc_footer.php';

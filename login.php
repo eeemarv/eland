@@ -24,7 +24,7 @@ if(!empty($token))
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
-		$_SESSION['logins'][$schema]['id'] = 'elas_guest';
+		$_SESSION['logins'][$schema] = 'elas_guest';
 
 		$param = 'welcome=1&r=guest';
 
@@ -55,7 +55,7 @@ if ($_POST['zend'])
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
-		$_SESSION['logins'][$schema]['id'] = 'master';
+		$_SESSION['logins'][$schema] = 'master';
 
 		log_event('login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
@@ -175,7 +175,7 @@ if ($_POST['zend'])
 
 	if (!count($errors))
 	{
-		$_SESSION['logins'][$schema]['id'] = $user['id'];
+		$_SESSION['logins'][$schema] = $user['id'];
 
 		$s_id = $user['id'];
 		$s_schema = $schema;		

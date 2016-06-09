@@ -270,6 +270,8 @@ if (!$login[$s_schema]['id'])
 }
 */
 
+var_dump($logins);
+
 if ($logins[$s_schema] == $s_id && $s_id)
 {
 	$session_user = readuser($s_id, false, $s_schema);

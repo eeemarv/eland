@@ -242,7 +242,7 @@ else
 
 	if ($s_user || $s_admin)
 	{
-		$menu['help'] = ['ambulance', 'Probleem melden', []];
+		$menu['support'] = ['ambulance', 'Probleem melden', []];
 	}
 }
 
