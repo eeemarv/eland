@@ -2268,7 +2268,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<input type="submit" name="user_bulk_mail_submit" value="Versturen" class="btn btn-default"';
+	echo '<input type="submit" name="user_mail_submit" value="Versturen" class="btn btn-default"';
 	echo ($disabled) ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
