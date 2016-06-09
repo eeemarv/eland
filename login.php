@@ -72,7 +72,7 @@ if ($_POST['zend'])
 				and tc.abbrev = \'mail\'
 				and c.id_user = u.id
 				and u.status in (1, 2)
-				and c.value = ?', array($login));
+				and c.value = ?', [$login]);
 
 		if ($count_email == 1)
 		{
@@ -82,7 +82,7 @@ if ($_POST['zend'])
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
 					and u.status in (1, 2)
-					and c.value = ?', array($login));
+					and c.value = ?', [$login]);
 		}
 		else
 		{
@@ -96,7 +96,7 @@ if ($_POST['zend'])
 	{
 		$count_letscode = $db->fetchColumn('select count(u.*)
 			from users u
-			where letscode = ?', array($login));
+			where letscode = ?', [$login]);
 
 		if ($count_letscode > 1)
 		{
@@ -106,7 +106,7 @@ if ($_POST['zend'])
 		}
 		else if ($count_letscode == 1)
 		{
-			$user_id = $db->fetchColumn('select id from users where letscode = ?', array($login));
+			$user_id = $db->fetchColumn('select id from users where letscode = ?', [$login]);
 		}
 	}
 
@@ -114,7 +114,7 @@ if ($_POST['zend'])
 	{
 		$count_name = $db->fetchColumn('select count(u.*)
 			from users u
-			where name = ?', array($login));
+			where name = ?', [$login]);
 
 		if ($count_name > 1)
 		{
@@ -124,7 +124,7 @@ if ($_POST['zend'])
 		}
 		else if ($count_name == 1)
 		{
-			$user_id = $db->fetchColumn('select id from users where name = ?', array($login));
+			$user_id = $db->fetchColumn('select id from users where name = ?', [$login]);
 		}
 	}
 
@@ -146,24 +146,24 @@ if ($_POST['zend'])
 			$sha1 = sha1($password);
 			$md5 = md5($password);
 
-			if (!in_array($user['password'], array($sha512, $sha1, $md5)))
+			if (!in_array($user['password'], [$sha512, $sha1, $md5]))
 			{
 				$errors[] = 'Het paswoord is niet correct.';
 			}
 			else if ($user['password'] != $sha512)
 			{
-				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user['id']));
+				$db->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
 				log_event('password', 'Password encryption updated to sha512');
 			}
 		}
 	}
 
-	if (!count($errors) && !in_array($user['status'], array(1, 2)))
+	if (!count($errors) && !in_array($user['status'], [1, 2]))
 	{
 		$errors[] = 'Het account is niet actief.';
 	}
 
-	if (!count($errors) && !in_array($user['accountrole'], array('user', 'admin')))
+	if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin']))
 	{
 		$errors[] = 'Het account beschikt niet over de juiste rechten.';
 	}
@@ -185,7 +185,7 @@ if ($_POST['zend'])
 		log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
 		log_event('agent', $browser);
 
-		$db->update('users', array('lastlogin' => gmdate('Y-m-d H:i:s')), array('id' => $user['id']));
+		$db->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);
 
 		$alert->success('Je bent ingelogd.');

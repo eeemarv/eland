@@ -10,7 +10,7 @@ if ($s_accountrole == 'guest' || count($logins) == 1)
 	setcookie(session_name(), '', 0, $cookie_params['path'], $cookie_params['domain'],
 		$cookie_params['secure'], $cookie_params['httponly']);
 
-	$_SESSION = array();
+	$_SESSION = [];
 }
 else
 {
