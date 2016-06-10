@@ -20,7 +20,7 @@ $user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
 
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
-$selected_users = isset($_POST['sel']) ? $_POST['sel'] : array();
+$selected_users = isset($_POST['sel']) ? $_POST['sel'] : [];
 
 /*
  * general access
@@ -40,59 +40,59 @@ $bulk_field_submit = $bulk_submit = false;
 
 if ($s_admin)
 {
-	$edit_fields_tabs = array(
-		'fullname_access'	=> array(
+	$edit_fields_tabs = [
+		'fullname_access'	=> [
 			'lbl'		=> 'Zichtbaarheid volledige naam',
 			'options'	=> 'access_options',
-		),
-		'adr_access'		=> array(
+		],
+		'adr_access'		=> [
 			'lbl'		=> 'Zichtbaarheid adres',
 			'options'	=> 'access_options',
-		),
-		'mail_access'		=> array(
+		],
+		'mail_access'		=> [
 			'lbl'		=> 'Zichtbaarheid email adres',
 			'options'	=> 'access_options',
-		),
-		'tel_access'		=> array(
+		],
+		'tel_access'		=> [
 			'lbl'		=> 'Zichtbaarheid telefoonnummer',
 			'options'	=> 'access_options',
-		),
-		'gsm_access'		=> array(
+		],
+		'gsm_access'		=> [
 			'lbl'		=> 'Zichtbaarheid gsmnummer',
 			'options'	=> 'access_options',
-		),
-		'comments'			=> array(
+		],
+		'comments'			=> [
 			'lbl'		=> 'Commentaar',
 			'type'		=> 'text',
 			'string'	=> true,
-		),
-		'accountrole'		=> array(
+		],
+		'accountrole'		=> [
 			'lbl'		=> 'Rechten',
 			'options'	=> 'role_ary',
 			'string'	=> true,
-		),
-		'status'			=> array(
+		],
+		'status'			=> [
 			'lbl'		=> 'Status',
 			'options'	=> 'status_ary',
-		),
-		'admincomment'		=> array(
+		],
+		'admincomment'		=> [
 			'lbl'		=> 'Commentaar van de admin',
 			'type'		=> 'text',
 			'string'	=> true,
-		),
-		'minlimit'			=> array(
+		],
+		'minlimit'			=> [
 			'lbl'		=> 'Minimum limiet saldo',
 			'type'		=> 'number',
-		),
-		'maxlimit'			=> array(
+		],
+		'maxlimit'			=> [
 			'lbl'		=> 'Maximum limiet saldo',
 			'type'		=> 'number',
-		),
-		'cron_saldo'		=> array(
+		],
+		'cron_saldo'		=> [
 			'lbl'	=> 'Periodieke mail met recent vraag en aanbod (aan/uit)',
 			'type'	=> 'checkbox',
-		),
-	);
+		],
+	];
 
 	if ($post && !($bulk_mail_test
 		|| $bulk_mail_submit
@@ -143,7 +143,7 @@ if ($user_mail_submit && $id && $post)
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
+			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
 	$subject = 'Bericht van ' . $systemname;
 
@@ -170,7 +170,7 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)'));
+			mail_q(['to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)']);
 		}
 
 		if ($user['status'] == 1 || $user['status'] == 2)
@@ -178,7 +178,7 @@ if ($user_mail_submit && $id && $post)
 			$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 		}
 
-		mail_q(array('to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id));
+		mail_q(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
 
 		$alert->success('Mail verzonden.');
 	}
@@ -196,11 +196,11 @@ if ($user_mail_submit && $id && $post)
 
 if ($post)
 {
-	$s3 = Aws\S3\S3Client::factory(array(
+	$s3 = Aws\S3\S3Client::factory([
 		'signature'	=> 'v4',
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
-	));
+	]);
 }
 
 /*
@@ -213,7 +213,7 @@ if ($post && $img && $id )
 
 	if (!($s_owner || $s_admin))
 	{
-		echo json_encode(array('error' => 'Je hebt onvoldoende rechten voor deze actie.'));
+		echo json_encode(['error' => 'Je hebt onvoldoende rechten voor deze actie.']);
 		exit;
 	}
 
@@ -223,7 +223,7 @@ if ($post && $img && $id )
 
 	if (!$image)
 	{
-		echo json_encode(array('error' => 'Afbeeldingsbestand ontbreekt.'));
+		echo json_encode(['error' => 'Afbeeldingsbestand ontbreekt.']);
 		exit;
 	}
 
@@ -233,13 +233,13 @@ if ($post && $img && $id )
 
 	if ($size > 200 * 1024)
 	{
-		echo json_encode(array('error' => 'Het bestand is te groot.'));
+		echo json_encode(['error' => 'Het bestand is te groot.']);
 		exit;
 	}
 
 	if ($type != 'image/jpeg')
 	{
-		echo json_encode(array('error' => 'Ongeldig bestandstype.'));
+		echo json_encode(['error' => 'Ongeldig bestandstype.']);
 		exit;
 	}
 
@@ -282,24 +282,24 @@ if ($post && $img && $id )
 
 		if ($user['PictureFile'])
 		{
-			$s3->deleteObject(array(
+			$s3->deleteObject([
 				'Bucket'	=> $s3_img,
 				'Key'		=> $user['PictureFile'],
-			));
+			]);
 		}
 
 		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
 
-		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', array(
-			'params'	=> array(
+		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+			'params'	=> [
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
-			),
-		));
+			],
+		]);
 
-		$db->update('users', array(
+		$db->update('users', [
 			'"PictureFile"'	=> $filename
-		),array('id' => $id));
+		],['id' => $id]);
 
 		log_event('pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
 
@@ -309,7 +309,7 @@ if ($post && $img && $id )
 	}
 	catch(Exception $e)
 	{
-		echo json_encode(array('error' => $e->getMessage()));
+		echo json_encode(['error' => $e->getMessage()]);
 		log_event('pict', 'Upload fail : ' . $e->getMessage());
 		exit;
 	}
@@ -322,7 +322,7 @@ if ($post && $img && $id )
 
 	header('Vary: Accept');
 
-	echo json_encode(array('success' => 1, 'filename' => $filename));
+	echo json_encode(['success' => 1, 'filename' => $filename]);
 	exit;
 }
 
@@ -357,12 +357,12 @@ if ($img_del && $id)
 
 	if ($post)
 	{
-		$s3->deleteObject(array(
+		$s3->deleteObject([
 			'Bucket'	=> $s3_img,
 			'Key'		=> $file,
-		));
+		]);
 
-		$db->update('users', array('"PictureFile"' => ''), array('id' => $id));
+		$db->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
 		$alert->success('Profielfoto verwijderd.');
 		cancel($id);
@@ -475,7 +475,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
-			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+			[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
 	{
@@ -491,9 +491,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		foreach ($user_ids as $user_id)
 		{
 			$mdb->users->update(
-				array('id' => (int) $user_id),
-				array('$set' => array('id' => (int) $user_id, 'fullname_access' => (int) $value)),
-				array('upsert' => true)
+				['id' => (int) $user_id],
+				['$set' => ['id' => (int) $user_id, 'fullname_access' => (int) $value]],
+				['upsert' => true]
 			);
 
 			$redis->del($schema . '_user_' . $user_id);
@@ -503,14 +503,14 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
 		cancel();
 	}
-	else if (array('cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
-		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1)[$field])
+	else if (['cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
+		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$field])
 	{
 		$type = ($edit_fields_tabs[$field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
 		$db->executeUpdate('update users set ' . $field . ' = ? where id in (?)',
-			array($value, $user_ids),
-			array($type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+			[$value, $user_ids],
+			[$type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 		foreach ($user_ids as $user_id)
 		{
@@ -530,15 +530,15 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
-	else if (array('adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1)[$field])
+	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$field])
 	{
 		list($abbrev) = explode('_', $field);
 
-		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', array($abbrev));
+		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
 
 		$db->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
-			array($value, $user_ids, $id_type_contact),
-			array(\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT));
+			[$value, $user_ids, $id_type_contact],
+			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
 		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
@@ -554,7 +554,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 {
 	$to_log = '';
 
-	$map = array(
+	$map = [
 		'naam' 				=> 'name',
 		'volledige_naam'	=> 'fullname',
 		'saldo'				=> 'saldo',
@@ -564,12 +564,12 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		'status'			=> 'status',
 		'min_limiet'		=> 'minlimit',
 		'max_limiet'		=> 'maxlimit',
-	);
+	];
 
 	if ($bulk_mail_test)
 	{
-		$sel_ary = array($s_id => true);
-		$user_ids = array($s_id);
+		$sel_ary = [$s_id => true];
+		$user_ids = [$s_id];
 	}
 	else
 	{
@@ -577,7 +577,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	}
 
 	$count = 0;
-	$users_log = $alert_msg_users = array();
+	$users_log = $alert_msg_users = [];
 
 	$sel_users = $db->executeQuery('select u.*, c.value as mail
 		from users u, contact c, type_contact tc
@@ -585,7 +585,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'',
-			array($user_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+			[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($sel_users as $sel_user)
 	{
@@ -597,7 +597,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		unset($sel_ary[$sel_user['id']]);
 
-		$search = $replace = array();
+		$search = $replace = [];
 
 		foreach ($map as $key => $val)
 		{
@@ -607,12 +607,12 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$text = str_replace($search, $replace, $bulk_mail_content);
 
-		mail_q(array(
+		mail_q([
 			'to' => $sel_user['id'],
 			'subject' => $bulk_mail_subject,
 			'text' => $text,
 			'reply_to' => $s_id,
-		));
+		]);
 
 		$to_log[] = link_user($sel_user, false, false);
 		$alert_msg_users[] = link_user($sel_user);
@@ -689,12 +689,12 @@ if ($pw)
 
 		if (empty($errors))
 		{
-			$update = array(
+			$update = [
 				'password'	=> hash('sha512', $password),
 				'mdate'		=> date('Y-m-d H:i:s'),
-			);
+			];
 
-			if ($db->update('users', $update, array('id' => $pw)))
+			if ($db->update('users', $update, ['id' => $pw]))
 			{
 				$user = readuser($pw, true);
 				$alert->success('Paswoord opgeslagen.');
@@ -705,7 +705,7 @@ if ($pw)
 						from contact c, type_contact tc
 						where tc.id = c.id_type_contact
 							and tc.abbrev = \'mail\'
-							and c.id_user = ?', array($pw));
+							and c.id_user = ?', [$pw]);
 
 					if ($to)
 					{
@@ -726,7 +726,7 @@ if ($pw)
 						$con .= 'link waar je kan inloggen: ' . $url;
 						$con .= "\n\n";
 						$con .= 'Veel letsgenot!';
-						mail_q(array('to' => $pw, 'subject' => $subj, 'text' => $con));
+						mail_q(['to' => $pw, 'subject' => $subj, 'text' => $con]);
 
 						$alert->success('Notificatie mail verzonden');
 					}
@@ -815,7 +815,7 @@ if ($del)
 		cancel($del);
 	}
 
-	if ($db->fetchColumn('select id from transactions where id_to = ? or id_from = ?', array($del, $del)))
+	if ($db->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
 	{
 		$alert->error('Een gebruiker met transacties kan niet worden verwijderd.');
 		cancel($del);
@@ -844,7 +844,7 @@ if ($del)
 		{
 			$sha512 = hash('sha512', $password);
 
-			if ($sha512 == $db->fetchColumn('select password from users where id = ?', array($s_id)))
+			if ($sha512 == $db->fetchColumn('select password from users where id = ?', [$s_id]))
 			{
 				$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 				$msgs = '';
@@ -865,7 +865,7 @@ if ($del)
 				{
 					log_event('user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
-					$db->delete('messages', array('id_user' => $del));
+					$db->delete('messages', ['id_user' => $del]);
 				}
 
 				// remove orphaned images.
@@ -881,18 +881,18 @@ if ($del)
 				{
 					if ($row['PictureFile'])
 					{
-						$result = $s3->deleteObject(array(
+						$result = $s3->deleteObject([
 							'Bucket' => $s3_img,
 							'Key'    => $row['PictureFile'],
-						));
+						]);
 					}
 
-					$db->delete('msgpictures', array('id' => $row['id']));
+					$db->delete('msgpictures', ['id' => $row['id']]);
 				}
 
 				// update counts for each category
 
-				$offer_count = $want_count = array();
+				$offer_count = $want_count = [];
 
 				$rs = $db->prepare('SELECT m.id_category, count(m.*)
 					FROM messages m, users u
@@ -940,35 +940,35 @@ if ($del)
 						continue;
 					}
 
-					$stats = array(
+					$stats = [
 						'stat_msgs_offers'	=> ($offer_count[$cat_id]) ?: 0,
 						'stat_msgs_wanted'	=> ($want_count[$cat_id]) ?: 0,
-					);
+					];
 
-					$db->update('categories', $stats, array('id' => $cat_id));
+					$db->update('categories', $stats, ['id' => $cat_id]);
 				}
 
 				//delete contacts
-				$db->delete('contact', array('id_user' => $del));
+				$db->delete('contact', ['id_user' => $del]);
 
 				//delete userimage from bucket;
 				if ($user['PictureFile'])
 				{
-					$result = $s3->deleteObject(array(
+					$result = $s3->deleteObject([
 						'Bucket' => $s3_img,
 						'Key'    => $user['PictureFile'],
-					));
+					]);
 				}
 
 				//delete mongo record
 				$mdb->connect();
 				$mdb->users->remove(
-					array('id' => (int) $del),
-					array('justOne'	=> true)
+					['id' => (int) $del],
+					['justOne'	=> true]
 				);
 
 				//finally, the user
-				$db->delete('users', array('id' => $del));
+				$db->delete('users', ['id' => $del]);
 				$redis->expire($schema . '_user_' . $del, 0);
 
 				$alert->success('De gebruiker is verwijderd.');
@@ -1057,9 +1057,9 @@ if ($add || $edit)
 	if ($s_owner && !$s_admin)
 	{
 		$mdb->connect();
-		$cursor = $mdb->settings->findOne(array('name' => 'users_can_edit_username'));
+		$cursor = $mdb->settings->findOne(['name' => 'users_can_edit_username']);
 		$username_edit = ($cursor['value']) ? true : false;
-		$cursor = $mdb->settings->findOne(array('name' => 'users_can_edit_fullname'));
+		$cursor = $mdb->settings->findOne(['name' => 'users_can_edit_fullname']);
 		$fullname_edit = ($cursor['value']) ? true : false;
 	}
 
@@ -1070,18 +1070,18 @@ if ($add || $edit)
 
 	if ($submit)
 	{
-		$user = array(
+		$user = [
 			'postcode'		=> trim($_POST['postcode']),
 			'birthday'		=> trim($_POST['birthday']) ?: null,
 			'hobbies'		=> trim($_POST['hobbies']),
 			'comments'		=> trim($_POST['comments']),
 			'cron_saldo'	=> $_POST['cron_saldo'] ? 1 : 0,
 			'lang'			=> 'nl'
-		);
+		];
 
 		if ($s_admin)
 		{
-			$user += array(
+			$user += [
 				'letscode'		=> trim($_POST['letscode']),
 				'accountrole'	=> $_POST['accountrole'],
 				'status'		=> $_POST['status'],
@@ -1089,7 +1089,7 @@ if ($add || $edit)
 				'minlimit'		=> trim($_POST['minlimit']),
 				'maxlimit'		=> trim($_POST['maxlimit']),
 				'presharedkey'	=> trim($_POST['presharedkey']),
-			);
+			];
 
 			$contact = $_POST['contact'];
 			$notify = $_POST['notify'];
@@ -1174,7 +1174,7 @@ if ($add || $edit)
 			$letscode_sql = 'select letscode
 				from users
 				where letscode = ?';
-			$letscode_sql_params = array($user['letscode']);
+			$letscode_sql_params = [$user['letscode']];
 		}
 
 		if ($username_edit)
@@ -1192,12 +1192,12 @@ if ($add || $edit)
 		$name_sql = 'select name
 			from users
 			where name = ?';
-		$name_sql_params = array($user['name']);
+		$name_sql_params = [$user['name']];
 
 		$fullname_sql = 'select fullname
 			from users
 			where fullname = ?';
-		$fullname_sql_params = array($user['fullname']);
+		$fullname_sql_params = [$user['fullname']];
 
 		if ($edit)
 		{
@@ -1326,7 +1326,7 @@ if ($add || $edit)
 
 		if (!count($errors))
 		{
-			$contact_types = array();
+			$contact_types = [];
 
 			$rs = $db->prepare('SELECT abbrev, id FROM type_contact');
 
@@ -1358,16 +1358,17 @@ if ($add || $edit)
 					$id = $db->lastInsertId('users_id_seq');
 
 					$mdb->connect();
-					$mdb->users->update(array(
-						'id'		=> (int) $id),
-						array(
-							'$set' => array(
+					$mdb->users->update([
+						'id'		=> (int) $id],
+						[
+							'$set' => [
 								'id'				=> (int) $id,
 								'fullname_access'	=> (int) $fullname_access,
-							)),
-						array(
+							],
+						],
+						[
 						'upsert'	=> true,
-					));
+					]);
 
 					$alert->success('Gebruiker opgeslagen.');
 
@@ -1380,12 +1381,12 @@ if ($add || $edit)
 							continue;
 						}
 
-						$insert = array(
+						$insert = [
 							'value'				=> trim($value['value']),
 							'flag_public'		=> $value['flag_public'],
 							'id_type_contact'	=> $contact_types[$value['abbrev']],
 							'id_user'			=> $id,
-						);
+						];
 
 						$db->insert('contact', $insert);
 					}
@@ -1448,21 +1449,21 @@ if ($add || $edit)
 					}
 				}
 
-				if($db->update('users', $user, array('id' => $edit)))
+				if($db->update('users', $user, ['id' => $edit]))
 				{
 					$mdb->connect();
-					$mdb->users->update(array(
+					$mdb->users->update([
 							'id'	=> (int) $edit,
-						),
-						array(
-							'$set'	=> array(
+						],
+						[
+							'$set'	=> [
 								'id'				=> (int) $edit,
 								'fullname_access'	=> (int) $fullname_access,
-							),
-						),
-						array(
+							],
+						],
+						[
 							'upsert'			=> true,
-					));
+					]);
 
 					$user = readuser($edit, true);
 
@@ -1470,7 +1471,7 @@ if ($add || $edit)
 
 					if ($s_admin)
 					{
-						$stored_contacts = array();
+						$stored_contacts = [];
 
 						$rs = $db->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
 							FROM type_contact tc, contact c
@@ -1493,7 +1494,7 @@ if ($add || $edit)
 							{
 								if ($stored_contact)
 								{
-									$db->delete('contact', array('id_user' => $edit, 'id' => $value['id']));
+									$db->delete('contact', ['id_user' => $edit, 'id' => $value['id']]);
 								}
 								continue;
 							}
@@ -1507,12 +1508,12 @@ if ($add || $edit)
 
 							if (!isset($stored_contact))
 							{
-								$insert = array(
+								$insert = [
 									'id_type_contact'	=> $contact_types[$value['abbrev']],
 									'value'				=> trim($value['value']),
 									'flag_public'		=> $value['flag_public'],
 									'id_user'			=> $edit,
-								);
+								];
 								$db->insert('contact', $insert);
 								continue;
 							}
@@ -1523,7 +1524,7 @@ if ($add || $edit)
 								$contact_update['name'], $contact_update['main_mail']);
 
 							$db->update('contact', $contact_update,
-								array('id' => $value['id'], 'id_user' => $edit));
+								['id' => $value['id'], 'id_user' => $edit]);
 						}
 
 
@@ -1600,7 +1601,7 @@ if ($add || $edit)
 
 		if ($edit && $s_admin)
 		{
-			$contact_keys = array();
+			$contact_keys = [];
 
 			foreach ($contact as $key => $c)
 			{
@@ -1629,20 +1630,20 @@ if ($add || $edit)
 		}
 		else if ($s_admin)
 		{
-			$user = array(
+			$user = [
 				'minlimit'		=> readconfigfromdb('minlimit'),
 				'maxlimit'		=> readconfigfromdb('maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
-			);
+			];
 
 			if ($interlets)
 			{
 				if ($group = $db->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
-						and apimethod <> \'internal\'', array($interlets)))
+						and apimethod <> \'internal\'', [$interlets]))
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
@@ -1945,7 +1946,7 @@ if ($id)
 
 	$user = readuser($id);
 
-	if (!$s_admin && !in_array($user['status'], array(1, 2)))
+	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
 		$alert->error('Je hebt geen toegang tot deze gebruiker.');
 		cancel();
@@ -1956,7 +1957,7 @@ if ($id)
 		$count_transactions = $db->fetchColumn('select count(*)
 			from transactions
 			where id_from = ?
-				or id_to = ?', array($id, $id));
+				or id_to = ?', [$id, $id]);
 	}
 
 	$mail_to = getmailadr($user['id']);
@@ -1969,14 +1970,14 @@ if ($id)
 		where letscode > ?
 		' . $and_status . '
 		order by letscode asc
-		limit 1', array($user['letscode']));
+		limit 1', [$user['letscode']]);
 
 	$prev = $db->fetchColumn('select id
 		from users
 		where letscode < ?
 		' . $and_status . '
 		order by letscode desc
-		limit 1', array($user['letscode']));
+		limit 1', [$user['letscode']]);
 
 	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
 		<script src="' . $rootpath . 'js/user.js"></script>
@@ -2046,14 +2047,14 @@ if ($id)
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
 
-	$status_style_ary = array(
+	$status_style_ary = [
 		0	=> 'default',
 		2	=> 'danger',
 		3	=> 'success',
 		5	=> 'warning',
 		6	=> 'info',
 		7	=> 'extern',
-	);
+	];
 
 	$h_status_ary = $status_ary;
 	$h_status_ary[3] = 'Instapper';
@@ -2093,7 +2094,7 @@ if ($id)
 
 	if ($s_admin || $s_owner)
 	{
-		$attr = array('id'	=> 'btn_remove');
+		$attr = ['id'	=> 'btn_remove'];
 		if (!$user['PictureFile'])
 		{
 			$attr['style'] = 'display:none;';
@@ -2329,72 +2330,72 @@ $v_extended = ($view == 'extended') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
 $v_map = ($view == 'map') ? true : false;
 
-$st = array(
-	'active'	=> array(
+$st = [
+	'active'	=> [
 		'lbl'	=> 'Actief',
 		'sql'	=> 'u.status in (1, 2)',
-		'st'	=> array(1, 2),
-	),
-	'new'		=> array(
+		'st'	=> [1, 2],
+	],
+	'new'		=> [
 		'lbl'	=> 'Instappers',
 		'sql'	=> 'u.status = 1 and u.adate > ?',
 		'sql_bind'	=> date('Y-m-d H:i:s', $newusertreshold),
 		'cl'	=> 'success',
 		'st'	=> 3,
-	),
-	'leaving'	=> array(
+	],
+	'leaving'	=> [
 		'lbl'	=> 'Uitstappers',
 		'sql'	=> 'u.status = 2',
 		'cl'	=> 'danger',
 		'st'	=> 2,
-	),
-);
+	],
+];
 
 if ($s_admin)
 {
-	$st = $st + array(
-		'inactive'	=> array(
+	$st = $st + [
+		'inactive'	=> [
 			'lbl'	=> 'Inactief',
 			'sql'	=> 'u.status = 0',
 			'cl'	=> 'inactive',
 			'st'	=> 0,
-		),
-		'ip'		=> array(
+		],
+		'ip'		=> [
 			'lbl'	=> 'Info-pakket',
 			'sql'	=> 'u.status = 5',
 			'cl'	=> 'warning',
 			'st'	=> 5,
-		),
-		'im'		=> array(
+		],
+		'im'		=> [
 			'lbl'	=> 'Info-moment',
 			'sql'	=> 'u.status = 6',
 			'cl'	=> 'info',
 			'st'	=> 6
-		),
-		'extern'	=> array(
+		],
+		'extern'	=> [
 			'lbl'	=> 'Extern',
 			'sql'	=> 'u.status = 7',
 			'cl'	=> 'extern',
 			'st'	=> 7,
-		),
-		'all'		=> array(
+		],
+		'all'		=> [
 			'lbl'	=> 'Alle',
 			'sql'	=> '1 = 1',
-		),
-	);
+		],
+	];
 }
 
-$st_class_ary = array(
+$st_class_ary = [
 	0 => 'inactive',
 	2 => 'danger',
 	3 => 'success',
 	5 => 'warning',
 	6 => 'info',
 	7 => 'extern',
-);
+];
 
-$sql_bind = array();
-$params = array();
+$sql_bind = [];
+$params = [];
 
 if (!isset($st[$status]))
 {
@@ -2406,10 +2407,10 @@ if (isset($st[$status]['sql_bind']))
 	$sql_bind[] = $st[$status]['sql_bind'];
 }
 
-$params = array(
+$params = [
 	'status'	=> $status,
 	'view'		=> $view,
-);
+];
 
 if ($v_list && $s_admin)
 {
@@ -2419,14 +2420,14 @@ if ($v_list && $s_admin)
 	}
 	else
 	{
-		$show_columns = array(
-			'u'	=> array(
+		$show_columns = [
+			'u'	=> [
 				'letscode'	=> 1,
 				'name'		=> 1,
 				'postcode'	=> 1,
 				'saldo'		=> 1,
-			),
-		);
+			],
+		];
 	}
 
 	$adr_split = isset($_GET['adr_split']) ? $_GET['adr_split'] : '';
@@ -2437,8 +2438,8 @@ if ($v_list && $s_admin)
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
-	$columns = array(
-		'u'		=> array(
+	$columns = [
+		'u'		=> [
 			'letscode'		=> 'Code',
 			'name'			=> 'Naam',
 			'fullname'		=> 'Volledige naam',
@@ -2455,28 +2456,28 @@ if ($v_list && $s_admin)
 			'mdate'			=> 'Aangepast',
 			'adate'			=> 'Geactiveerd',
 			'lastlogin'		=> 'Laatst ingelogd',
-		),
-	);
+		],
+	];
 
 	foreach ($type_contact as $tc)
 	{
 		$columns['c'][$tc['abbrev']] = $tc['name'];
 	}
 
-	$columns['m'] = array(
+	$columns['m'] = [
 		'demands'	=> 'Vraag',
 		'offers'	=> 'Aanbod',
 		'total'		=> 'Vraag en aanbod',
-	);
+	];
 
-	$columns['a'] = array(
+	$columns['a'] = [
 		'trans_in'		=> 'Transacties in',
 		'trans_out'		=> 'Transacties uit',
 		'trans_total'	=> 'Transacties totaal',
 		'amount_in'		=> $currency . ' in',
 		'amount_out'	=> $currency . ' uit',
 		'amount_total'	=> $currency . ' totaal',
-	);
+	];
 
 	$users = $db->fetchAll('select u.*
 		from users u
@@ -2495,7 +2496,7 @@ if ($v_list && $s_admin)
 		}
 		else
 		{
-			$in = $out = array();
+			$in = $out = [];
 			$datetime = new \DateTime($saldo_date);
 
 			$rs = $db->prepare('select id_to, sum(amount)
@@ -2540,17 +2541,17 @@ if ($v_list && $s_admin)
 				and c.id_user = u.id
 				and ' . $st[$status]['sql'], $sql_bind);
 
-		$contacts = array();
+		$contacts = [];
 
 		foreach ($c_ary as $c)
 		{
-			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
 		}
 	}
 
 	if (isset($show_columns['m']))
 	{
-		$msgs_count = array();
+		$msgs_count = [];
 
 		if (isset($show_columns['m']['offers']))
 		{
@@ -2599,10 +2600,10 @@ if ($v_list && $s_admin)
 
 	if (isset($show_columns['a']))
 	{
-		$activity = array();
+		$activity = [];
 
 		$ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
-		$sql_bind = array($ts);
+		$sql_bind = [$ts];
 		$and = ' and u.letscode <> ? ';
 		$sql_bind[] = trim($activity_filter_letscode);
 
@@ -2648,11 +2649,11 @@ else
 			WHERE tc.id = c.id_type_contact
 				AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
-		$contacts = array();
+		$contacts = [];
 
 		foreach ($c_ary as $c)
 		{
-			$contacts[$c['id_user']][$c['abbrev']][] = array($c['value'], $c['flag_public']);
+			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
 		}
 
 		if ($s_guest && $s_schema)
@@ -2661,7 +2662,7 @@ else
 				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 				where c.id_user = ?
 					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', array($s_id));
+					and tc.abbrev = \'adr\'', [$s_id]);
 		}
 		else if (!$s_guest)
 		{
@@ -2787,7 +2788,7 @@ include $rootpath . 'includes/inc_header.php';
 
 if ($v_map)
 {
-	$data_users = array();
+	$data_users = [];
 	$hidden_count = $not_geocoded_count = $not_preset_count = 0;
 
 	foreach ($users as $user)
@@ -2803,12 +2804,12 @@ if ($v_map)
 			{
 				if ($geo)
 				{			
-					$data_users[$user['id']] = array(
+					$data_users[$user['id']] = [
 						'name'		=> $user['name'],
 						'letscode'	=> $user['letscode'],
 						'lat'		=> $geo['lat'],
 						'lng'		=> $geo['lng'],
-					);
+					];
 
 					$lat_add += $geo['lat'];
 					$lng_add += $geo['lng'];
@@ -3503,7 +3504,7 @@ function sendadminmail($user)
 
 	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 
-	mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
+	mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 }
 
 function sendactivationmail($password, $user)
@@ -3544,5 +3545,5 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 	$text .= "Veel plezier bij het letsen! \n";
 
-	mail_q(array('to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support'));
+	mail_q(['to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support']);
 }
