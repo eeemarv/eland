@@ -37,7 +37,7 @@ $images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
 
 $mail = (isset($_POST['mail'])) ? true : false;
 
-$selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : array();
+$selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : [];
 $extend_submit = (isset($_POST['extend_submit'])) ? true : false;
 $extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
 $access_submit = (isset($_POST['access_submit'])) ? true : false;
@@ -69,10 +69,10 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 	$selected_msgs = array_keys($selected_msgs);
 
-	$validity_ary = array();
+	$validity_ary = [];
 
 	$rows = $db->executeQuery('select id_user, id, content, validity from messages where id in (?)',
-			array($selected_msgs), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+			[$selected_msgs], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
 	{
@@ -91,13 +91,13 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 		{
 			$validity = gmdate('Y-m-d H:i:s', strtotime($validity) + (86400 * $extend));
 
-			$m = array(
+			$m = [
 				'validity'		=> $validity,
 				'mdate'			=> gmdate('Y-m-d H:i:s'),
 				'exp_user_warn'	=> 'f',
-			);
+			];
 
-			if (!$db->update('messages', $m, array('id' => $id)))
+			if (!$db->update('messages', $m, ['id' => $id]))
 			{
 				$alert->error('Fout: ' . $row['content'] . ' is niet verlengd.');
 				cancel();
@@ -126,17 +126,17 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 		if (!count($errors))
 		{
-			$m = array(
+			$m = [
 				'local' => ($access == '2') ? 'f' : 't',
 				'mdate' => gmdate('Y-m-d H:i:s')
-			);
+			];
 
 			$db->beginTransaction();
 			try
 			{
 				foreach ($validity_ary as $id => $validity)
 				{
-					$db->update('messages', $m, array('id' => $id));
+					$db->update('messages', $m, ['id' => $id]);
 				}
 
 				$db->commit();
@@ -179,7 +179,7 @@ if ($id || $edit || $del)
 			c.fullname as catname
 		FROM messages m, categories c
 		WHERE m.id = ?
-			AND c.id = m.id_category', array($id));
+			AND c.id = m.id_category', [$id]);
 
 	if (!$message)
 	{
@@ -216,13 +216,13 @@ if ($id && $extend)
 
 	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $extend));
 
-	$m = array(
+	$m = [
 		'validity'		=> $validity,
 		'mdate'			=> gmdate('Y-m-d H:i:s'),
 		'exp_user_warn'	=> 'f',
-	);
+	];
 
-	if (!$db->update('messages', $m, array('id' => $id)))
+	if (!$db->update('messages', $m, ['id' => $id]))
 	{
 		$alert->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
 		cancel($id);
@@ -234,11 +234,11 @@ if ($id && $extend)
 
 if ($post)
 {
-	$s3 = Aws\S3\S3Client::factory(array(
+	$s3 = Aws\S3\S3Client::factory([
 		'signature'	=> 'v4',
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
-	));
+	]);
 }
 
 /**
@@ -247,7 +247,7 @@ if ($post)
 if ($post && $images && $id && $img
 	&& ($s_admin || $s_owner))
 {
-	$ret_ary = array();
+	$ret_ary = [];
 
 	$name = $images['name'];
 	$size = $images['size'];
@@ -260,21 +260,21 @@ if ($post && $images && $id && $img
 
 		if ($type != 'image/jpeg')
 		{
-			$ret_ary[] = array(
+			$ret_ary[] = [
 				'name'	=> $name,
 				'size'	=> $size,
 				'error' => 'ongeldig bestandstype',
-			);
+			];
 			continue;
 		}
 
 		if ($size > (200 * 1024))
 		{
-			$ret_ary[] = array(
+			$ret_ary[] = [
 				'name'	=> $name,
 				'size'	=> $size,
 				'error' => 'te groot bestand',
-			);
+			];
 			continue;
 		}
 
@@ -324,16 +324,16 @@ if ($post && $images && $id && $img
 		try {
 			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
 
-			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', array(
-				'params'	=> array(
+			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', [
+				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> 'image/jpeg',
-				),
-			));
+				],
+			]);
 
-			$db->insert('msgpictures', array(
+			$db->insert('msgpictures', [
 				'msgid'			=> $id,
-				'"PictureFile"'	=> $filename));
+				'"PictureFile"'	=> $filename]);
 
 			$img_id = $db->lastInsertId('msgpictures_id_seq');
 
@@ -343,14 +343,14 @@ if ($post && $images && $id && $img
 
 			unlink($tmpfile);
 
-			$ret_ary[] = array(
+			$ret_ary[] = [
 				'url'			=> $s3_img_url . $filename,
 				'filename'		=> $filename,
 				'name'			=> $name,
 				'size'			=> $size,
 				'delete_url'	=> 'messages.php?id=' . $id . '&img_del=' . $img_id,
 				'delete_type'	=> 'POST',
-			);
+			];
 		}
 		catch(Exception $e)
 		{
@@ -378,17 +378,17 @@ if ($img_del == 'all' && $id && $post)
 		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
-	$imgs = $db->fetchAll('select * from msgpictures where msgid = ?', array($id));
+	$imgs = $db->fetchAll('select * from msgpictures where msgid = ?', [$id]);
 
 	foreach($imgs as $img)
 	{
-		$s3->deleteObject(array(
+		$s3->deleteObject([
 			'Bucket'	=> $s3_img,
 			'Key'		=> $img['PictureFile'],
-		));
+		]);
 	}
 
-	$db->delete('msgpictures', array('msgid' => $id));
+	$db->delete('msgpictures', ['msgid' => $id]);
 
 	$alert->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
 
@@ -403,9 +403,9 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 	if (!($msg = $db->fetchAssoc('select m.id_user, p."PictureFile"
 		from msgpictures p, messages m
 		where p.msgid = m.id
-			and p.id = ?', array($img_del))))
+			and p.id = ?', [$img_del])))
 	{
-		echo json_encode(array('error' => 'Afbeelding niet gevonden.'));
+		echo json_encode(['error' => 'Afbeelding niet gevonden.']);
 		exit;
 	}
 
@@ -413,18 +413,18 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 
 	if (!($s_owner || $s_admin))
 	{
-		echo json_encode(array('error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.'));
+		echo json_encode(['error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.']);
 		exit;
 	}
 
-	$db->delete('msgpictures', array('id' => $img_del));
+	$db->delete('msgpictures', ['id' => $img_del]);
 
-	$s3->deleteObject(array(
+	$s3->deleteObject([
 		'Bucket'	=> $s3_img,
 		'Key'		=> $msg['PictureFile'],
-	));
+	]);
 
-	echo json_encode(array('success' => true));
+	echo json_encode(['success' => true]);
 	exit;
 }
 
@@ -439,7 +439,7 @@ if ($img_del == 'all' && $id)
 		cancel($id);
 	}
 
-	$images = array();
+	$images = [];
 
 	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
 	$st->bindValue(1, $id);
@@ -542,7 +542,7 @@ if ($mail && $post && $id)
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', array($access_ary[$user['accountrole']], $s_id));
+			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
 	$subject = 'Reactie op je ' . $ow_type . ' ' . $message['content'];
 
@@ -569,12 +569,12 @@ if ($mail && $post && $id)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(array('to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text));
+			mail_q(['to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text]);
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
 
-		mail_q(array('to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text]);
 
 		$alert->success('Mail verzonden.');
 	}
@@ -603,26 +603,26 @@ if ($del)
 			$alert->error($error_token);
 		}
 
-		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', array($del));
+		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', [$del]);
 
 		foreach($pictures as $value)
 		{
-			$s3->deleteObject(array(
+			$s3->deleteObject([
 				'Bucket' => $s3_img,
 				'Key'    => $value['PictureFile'],
-			));
+			]);
 		}
 
-		$db->delete('msgpictures', array('msgid' => $del));
+		$db->delete('msgpictures', ['msgid' => $del]);
 
-		if ($db->delete('messages', array('id' => $del)))
+		if ($db->delete('messages', ['id' => $del]))
 		{
 			$column = 'stat_msgs_';
 			$column .= ($message['msg_type']) ? 'offers' : 'wanted';
 
 			$db->executeUpdate('update categories
 				set ' . $column . ' = ' . $column . ' - 1
-				where id = ?', array($message['id_category']));
+				where id = ?', [$message['id_category']]);
 
 			$alert->success(ucfirst($ow_type_this) . ' is verwijderd.');
 			cancel();
@@ -730,14 +730,14 @@ if (($edit || $add))
 			$user = $db->fetchAssoc('select *
 				from users
 				where letscode = ?
-					and status in (1, 2)', array($user_letscode));
+					and status in (1, 2)', [$user_letscode]);
 			if (!$user)
 			{
 				$errors[] = 'Ongeldige letscode.' . $user_letscode;
 			}
 		}
 
-		$msg = array(
+		$msg = [
 			'validity'		=> $_POST['validity'],
 			'vtime'			=> $vtime,
 			'content'		=> $_POST['content'],
@@ -748,7 +748,7 @@ if (($edit || $add))
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
 			'local'			=> ($access_control->get_post_value() == 2) ? 0 : 1,
-		);
+		];
 
 		$access_error = $access_control->get_post_error();
 
@@ -766,7 +766,7 @@ if (($edit || $add))
 		{
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
-		else if(!$db->fetchColumn('select id from categories where id = ?', array($msg['id_category'])))
+		else if(!$db->fetchColumn('select id from categories where id = ?', [$msg['id_category']]))
 		{
 			$errors[] = 'Categorie bestaat niet!';
 		}
@@ -791,7 +791,7 @@ if (($edit || $add))
 			$errors[] = '"Per (uur, stuk, ...)" mag maximaal 15 tekens lang zijn.';
 		}
 
-		if(!($db->fetchColumn('select id from users where id = ? and status <> 0', array($msg['id_user']))))
+		if(!($db->fetchColumn('select id from users where id = ? and status <> 0', [$msg['id_user']])))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
 		}
@@ -824,7 +824,7 @@ if (($edit || $add))
 				$stat_column = 'stat_msgs_';
 				$stat_column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-				$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', array($msg['id_category']));
+				$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', [$msg['id_category']]);
 
 				$alert->success('Nieuw vraag of aanbod toegevoegd.');
 				cancel($id);
@@ -859,9 +859,9 @@ if (($edit || $add))
 
 			try
 			{
-				$db->update('messages', $msg, array('id' => $edit));
+				$db->update('messages', $msg, ['id' => $edit]);
 
-	//			$db->update('messages', array('"Description"' => $description), array('id' => $id));
+	//			$db->update('messages', ['"Description"' => $description, ['id' => $id]]);
 
 				if ($msg['msg_type'] != $msg['msg_type'] || $msg['id_category'] != $msg['id_category'])
 				{
@@ -870,14 +870,14 @@ if (($edit || $add))
 
 					$db->executeUpdate('update categories
 						set ' . $column . ' = ' . $column . ' - 1
-						where id = ?', array($msg['id_category']));
+						where id = ?', [$msg['id_category']]);
 
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
 					$db->executeUpdate('update categories
 						set ' . $column . ' = ' . $column . ' + 1
-						where id = ?', array($msg['id_category']));
+						where id = ?', [$msg['id_category']]);
 				}
 				$db->commit();
 				$alert->success('Vraag/aanbod aangepast');
@@ -903,7 +903,7 @@ if (($edit || $add))
 		$msg =  $db->fetchAssoc('select m.*,
 			m."Description" as description
 			from messages m
-			where m.id = ?', array($edit));
+			where m.id = ?', [$edit]);
 		$msg['description'] = $msg['Description'];
 		unset($msg['Description']);
 
@@ -916,7 +916,7 @@ if (($edit || $add))
 	}
 	else if ($add)
 	{
-		$msg = array(
+		$msg = [
 			'validity'		=> readconfigfromdb('msgs_days_default'),
 			'content'		=> '',
 			'description'	=> '',
@@ -926,7 +926,7 @@ if (($edit || $add))
 			'amount'		=> '',
 			'units'			=> '',
 			'local'			=> 0,
-		);
+		];
 
 		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : $s_id;
 
@@ -935,7 +935,7 @@ if (($edit || $add))
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 	}
 
-	$cat_list = array('' => '');
+	$cat_list = ['' => ''];
 
 	$rs = $db->prepare('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
 
@@ -986,7 +986,7 @@ if (($edit || $add))
 	echo '<label for="msg_type" class="col-sm-2 control-label">Vraag/Aanbod</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select name="msg_type" id="msg_type" class="form-control" required>';
-	render_select_options(array('1' => 'Aanbod', '0' => 'Vraag'), $msg['msg_type']);
+	render_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
@@ -1073,14 +1073,14 @@ if ($id)
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
-			and tc.abbrev = \'mail\'', array($user['id']));
+			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = getmailadr($user['id']);
 	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$balance = $user['saldo'];
 
-	$images = array();
+	$images = [];
 
 	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
 	$st->bindValue(1, $id);
@@ -1098,14 +1098,14 @@ if ($id)
 		where id > ?
 		' . $and_local . '
 		order by id asc
-		limit 1', array($id));
+		limit 1', [$id]);
 
 	$next = $db->fetchColumn('select id
 		from messages
 		where id < ?
 		' . $and_local . '
 		order by id desc
-		limit 1', array($id));
+		limit 1', [$id]);
 
 	$title = $message['content'];
 
@@ -1113,7 +1113,7 @@ if ($id)
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
-			and c.flag_public = 1', array($user['id']));
+			and c.flag_public = 1', [$user['id']]);
 
 	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
 	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
@@ -1215,7 +1215,7 @@ if ($id)
 		echo 'multiple></span>&nbsp;';
 
 		echo aphp('messages', ['img_del' => 'all', 'id' => $id], 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
-			array('id' => 'btn_remove', 'style' => 'display:none;'));
+			['id' => 'btn_remove', 'style' => 'display:none;']);
 
 		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
@@ -1373,15 +1373,15 @@ $v_list = (($view == 'list' || $inline) && !$recent) ? true : false;
 $v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;
 $v_map = ($view == 'map' && !($inline || $recent)) ? true : false;
 
-$params = array(
+$params = [
 	'view'		=> $view,
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
 	'limit'		=> $limit,
 	'start'		=> $start,
-);
+];
 
-$params_sql = $where_sql = array();
+$params_sql = $where_sql = [];
 
 if ($uid)
 {
@@ -1427,7 +1427,7 @@ if ($q)
 
 if ($cid)
 {
-	$cat_ary = array();
+	$cat_ary = [];
 
 	$st = $db->prepare('select id from categories where id_parent = ?');
 	$st->bindValue(1, $cid);
@@ -1528,7 +1528,7 @@ $messages = $db->fetchAll($query, $params_sql);
 
 if ($v_extended)
 {
-	$ids = $imgs = array();
+	$ids = $imgs = [];
 
 	foreach ($messages as $msg)
 	{
@@ -1538,8 +1538,8 @@ if ($v_extended)
 	$_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
 		from msgpictures mp
 		where msgid in (?)',
-		array($ids),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+		[$ids],
+		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($_imgs as $_img)
 	{
@@ -1554,57 +1554,57 @@ if ($v_extended)
 
 $pagination = new pagination('messages', $row_count, $params, $inline);
 
-$asc_preset_ary = array(
+$asc_preset_ary = [
 	'asc'	=> 0,
 	'indicator' => '',
-);
+];
 
-$tableheader_ary = array(
-	'm.msg_type' => array_merge($asc_preset_ary, array(
-		'lbl' => 'V/A')),
-	'm.content' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Wat')),
-);
+$tableheader_ary = [
+	'm.msg_type' => array_merge($asc_preset_ary, [
+		'lbl' => 'V/A']),
+	'm.content' => array_merge($asc_preset_ary, [
+		'lbl' => 'Wat']),
+];
 
 if (!$uid)
 {
-	$tableheader_ary += array(
-		'u.name'	=> array_merge($asc_preset_ary, array(
+	$tableheader_ary += [
+		'u.name'	=> array_merge($asc_preset_ary, [
 			'lbl' 		=> 'Wie',
 			'data_hide' => 'phone,tablet',
-		)),
-		'u.postcode'	=> array_merge($asc_preset_ary, array(
+		]),
+		'u.postcode'	=> array_merge($asc_preset_ary, [
 			'lbl' 		=> 'Postcode',
 			'data_hide'	=> 'phone,tablet',
-		)),
-	);
+		]),
+	];
 }
 
 if (!$cid)
 {
-	$tableheader_ary += array(
-		'm.id_category' => array_merge($asc_preset_ary, array(
+	$tableheader_ary += [
+		'm.id_category' => array_merge($asc_preset_ary, [
 			'lbl' 		=> 'Categorie',
 			'data_hide'	=> 'phone, tablet',
-		)),
-	);
+		]),
+	];
 }
 
-$tableheader_ary += array(
-	'm.validity' => array_merge($asc_preset_ary, array(
+$tableheader_ary += [
+	'm.validity' => array_merge($asc_preset_ary, [
 		'lbl' 	=> 'Geldig tot',
 		'data_hide'	=> 'phone, tablet',
-	)),
-);
+	]),
+];
 
 if (!$s_guest)
 {
-	$tableheader_ary += array(
-		'm.local' => array_merge($asc_preset_ary, array(
+	$tableheader_ary += [
+		'm.local' => array_merge($asc_preset_ary, [
 			'lbl' 	=> 'Zichtbaarheid',
 			'data_hide'	=> 'phone, tablet',
-		)),
-	);
+		]),
+	];
 }
 
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
@@ -1612,9 +1612,9 @@ $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
 unset($tableheader_ary['m.cdate']);
 
-$cats = array('' => '-- alle categorieën --');
+$cats = ['' => '-- alle categorieën --'];
 
-$categories = $cat_params  = array();
+$categories = $cat_params  = [];
 
 if ($uid)
 {
@@ -1622,7 +1622,7 @@ if ($uid)
 		from categories c, messages m
 		where m.id_category = c.id
 			and m.id_user = ?
-		order by c.fullname', array($uid));
+		order by c.fullname', [$uid]);
 }
 else
 {
@@ -1776,11 +1776,11 @@ if (!$inline)
 
 	echo '<div class="row">';
 
-	$offerwant_options = array(
+	$offerwant_options = [
 		'all'	=> 'Vraag en aanbod',
 		'o'		=> 'Enkel aanbod',
 		'w'		=> 'Enkel vraag',
-	);
+	];
 
 	echo '<div class="col-sm-6">';
 	echo '<div class="input-group margin-bottom">';
@@ -1793,11 +1793,11 @@ if (!$inline)
 	echo '</div>';
 	echo '</div>';
 
-	$valid_options = array(
+	$valid_options = [
 		'all'	=> 'Geldig en vervallen',
 		'y'		=> 'Enkel geldig',
 		'n'		=> 'Enkel vervallen',
-	);
+	];
 
 	echo '<div class="col-sm-6">';
 	echo '<div class="input-group margin-bottom">';
@@ -1814,11 +1814,11 @@ if (!$inline)
 
 	echo '<div class="row">';
 
-	$user_status_options = array(
+	$user_status_options = [
 		'active'	=> 'Alle leden',
 		'new'		=> 'Enkel instappers',
 		'leaving'	=> 'Enkel uitstappers',
-	);
+	];
 
 	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
@@ -2072,7 +2072,7 @@ else if ($v_list)
 {
 	if (($s_admin || $s_owner) && count($messages))
 	{
-		$extend_options = array(
+		$extend_options = [
 			'7'		=> '1 week',
 			'14'	=> '2 weken',
 			'30'	=> '1 maand',
@@ -2081,7 +2081,7 @@ else if ($v_list)
 			'365'	=> '1 jaar',
 			'730'	=> '2 jaar',
 			'1825'	=> '5 jaar',
-		);
+		];
 
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
