@@ -106,27 +106,27 @@ if(!empty($redis_url))
 
 /* vars */
 
-$eland_config = array(
-	'users_can_edit_username'	=> array('0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'),
-	'users_can_edit_fullname'	=> array('0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'),
-	'registration_en'			=> array('0', 'Inschrijvingsformulier ingeschakeld [0, 1]'),
-	'forum_en'					=> array('0', 'Forum ingeschakeld [0, 1]'),
-	'css'						=> array('0', 'Extra stijl: url van .css bestand (Vul 0 in wanneer niet gebruikt)'),
-	'msgs_days_default'			=> array('365', 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.'),
-	'balance_equilibrium'		=> array('0', 'Het uitstapsaldo voor actieve leden. Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'),
-);
+$eland_config = [
+	'users_can_edit_username'	=> ['0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'],
+	'users_can_edit_fullname'	=> ['0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'],
+	'registration_en'			=> ['0', 'Inschrijvingsformulier ingeschakeld [0, 1]'],
+	'forum_en'					=> ['0', 'Forum ingeschakeld [0, 1]'],
+	'css'						=> ['0', 'Extra stijl: url van .css bestand (Vul 0 in wanneer niet gebruikt)'],
+	'msgs_days_default'			=> ['365', 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.'],
+	'balance_equilibrium'		=> ['0', 'Het uitstapsaldo voor actieve leden. Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'],
+];
 
 $top_right = '';
 $top_buttons = '';
 
-$role_ary = array(
+$role_ary = [
 	'admin'		=> 'Admin',
 	'user'		=> 'User',
 	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
 	'interlets'	=> 'Interlets',
-);
+];
 
-$status_ary = array(
+$status_ary = [
 	0	=> 'Gedesactiveerd',
 	1	=> 'Actief',
 	2	=> 'Uitstapper',
@@ -135,23 +135,23 @@ $status_ary = array(
 	5	=> 'Info-pakket',
 	6	=> 'Info-moment',
 	7	=> 'Extern',
-);
+];
 
-$access_ary = array(
+$access_ary = [
 	'admin'		=> 0,
 	'user'		=> 1,
 	'guest'		=> 2,
 	'anonymous'	=> 3,
-);
+];
 
-$allowed_interlets_landing_pages = array(
+$allowed_interlets_landing_pages = [
 	'index'			=> true,
 	'messages'		=> true,
 	'users'			=> true,
 	'transactions'	=> true,
 	'news'			=> true,
 	'docs'			=> true,
-);
+];
 
 /*
  * check if we are on the request hosting url.
@@ -181,17 +181,17 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
  * (search path not set yet)
  */
 
-$db = \Doctrine\DBAL\DriverManager::getConnection(array(
+$db = \Doctrine\DBAL\DriverManager::getConnection([
 	'url' => getenv('DATABASE_URL'),
-), new \Doctrine\DBAL\Configuration());
+], new \Doctrine\DBAL\Configuration());
 
 /**
  * Get all eland schemas and domains
  */
 
-$schemas = $hosts = array();
+$schemas = $hosts = [];
 
-$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: array();
+$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: [];
 $schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
 $schemas_db = array_fill_keys($schemas_db, true);
 
@@ -270,7 +270,7 @@ if (!$login[$s_schema]['id'])
 }
 */
 
-var_dump($logins);
+// var_dump($logins);
 
 if ($logins[$s_schema] == $s_id && $s_id)
 {
@@ -383,7 +383,7 @@ $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
 
-$errors = array();
+$errors = [];
 
 /**
  * check access to groups
@@ -466,10 +466,10 @@ if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == '
 		$_SESSION['roles'][$schema] = $s_accountrole;
 	}
 
-	$s_user_params_own_group = array(
+	$s_user_params_own_group = [
 		'r' => $_SESSION['roles'][$s_schema],
 		'u'	=> $s_id,
-	);
+	];
 }
 else
 {
@@ -525,7 +525,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 
 	if (!$s_schema)
 	{
-		return array();
+		return [];
 	}
 
 	$sch = ($sch) ?: $s_schema;
@@ -538,7 +538,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 		return json_decode($redis->get($redis_key), true);
 	}
 
-	$interlets_hosts = $interlets_accounts_schemas = array();
+	$interlets_hosts = $interlets_accounts_schemas = [];
 
 	$st = $db->prepare('select g.url, u.id
 		from ' . $sch . '.letsgroups g, ' . $sch . '.users u
@@ -569,7 +569,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 
 	$s_url = $app_protocol . $hosts[$sch];
 
-	$eland_interlets_groups = array();
+	$eland_interlets_groups = [];
 
 	foreach ($interlets_hosts as $h)
 	{
@@ -582,7 +582,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 				and u.letscode <> \'\'
 				and u.status in (1, 2, 7)
 				and u.accountrole = \'interlets\'
-				and g.url = ?', array($s_url));
+				and g.url = ?', [$s_url]);
 
 		if (!$url)
 		{
@@ -607,7 +607,7 @@ function get_elas_interlets_groups($refresh = false)
 
 	if (!$s_schema)
 	{
-		return array();
+		return [];
 	}
 
 	$redis_key = $s_schema . '_elas_interlets_groups';
@@ -618,7 +618,7 @@ function get_elas_interlets_groups($refresh = false)
 		return json_decode($redis->get($redis_key), true);
 	}
 
-	$elas_interlets_groups = array();
+	$elas_interlets_groups = [];
 
 	$st = $db->prepare('select g.id, g.groupname, g.url
 		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
@@ -740,7 +740,7 @@ function get_session_query_param($sch = false)
 		return $ary;
 	}
 
-	$ary = array();
+	$ary = [];
 
 	if ($p_role != 'anonymous')
 	{
@@ -848,12 +848,12 @@ function readconfigfromdb($key, $sch = null)
 	{
 		$mclient = $mdb->connect()->get_client();
 		$settings = $sch . '_settings';
-		$s = $mclient->$settings->findOne(array('name' => $key));
+		$s = $mclient->$settings->findOne(['name' => $key]);
 		$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
 	}
 	else
 	{
-		$value = $db->fetchColumn('SELECT value FROM ' . $sch . '.config WHERE setting = ?', array($key));
+		$value = $db->fetchColumn('SELECT value FROM ' . $sch . '.config WHERE setting = ?', [$key]);
 	}
 
 	if (isset($value))
@@ -876,7 +876,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 	if (!$id)
 	{
-		return array();
+		return [];
 	}
 
 	$s = ($remote_schema) ?: $schema;
@@ -896,19 +896,19 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		}
 	}
 
-	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', array($id));
+	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', [$id]);
 
 	if (!is_array($user))
 	{
-		return array();
+		return [];
 	}
 
 	$mdb->connect();
 
 	$remote_users = $s . '_users';
 	$users = ($remote_schema) ? $mdb->get_client()->$remote_users : $mdb->users;
-	$ary = $users->findOne(array('id' => (int) $id));
-	$user += (is_array($ary)) ? $ary : array();
+	$ary = $users->findOne(['id' => (int) $id]);
+	$user += (is_array($ary)) ? $ary : [];
 
 	if (isset($user))
 	{
@@ -924,7 +924,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
  *
  */
 
-function mail_q($mail = array(), $priority = false)
+function mail_q($mail = [], $priority = false)
 {
 	global $schema, $redis;
 
@@ -1039,7 +1039,7 @@ function getmailadr($m, $sending_schema = false)
 		$m = explode(',', $m);
 	}
 
-	$out = array();
+	$out = [];
 
 	foreach ($m as $in)
 	{
@@ -1049,7 +1049,7 @@ function getmailadr($m, $sending_schema = false)
 		$remote_schema = str_replace($remote_id, '', $in);
 		$remote_id = trim($remote_id, '.');
 
-		if (in_array($in, array('admin', 'newsadmin', 'support')))
+		if (in_array($in, ['admin', 'newsadmin', 'support']))
 		{
 			$ary = explode(',', readconfigfromdb($in));
 			$systemname = readconfigfromdb('systemname');
@@ -1067,7 +1067,7 @@ function getmailadr($m, $sending_schema = false)
 				$out[$mail] = $systemname;
 			}
 		}
-		else if (in_array($in, array('from', 'noreply')))
+		else if (in_array($in, ['from', 'noreply']))
 		{
 			$mail = getenv('MAIL_' . strtoupper($in) . '_ADDRESS');
 			$mail = trim($mail);
@@ -1273,13 +1273,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 
 	$ary = $redis->get($key);
 
-	$ary = ($ary) ? unserialize($ary) : array();
+	$ary = ($ary) ? unserialize($ary) : [];
 
-	$ary[] = array(
+	$ary[] = [
 		'from_id'	=> $from_id,
 		'to_id'		=> $to_id,
 		'amount'	=> $amount,
-	);
+	];
 
 	$redis->set($key, serialize($ary));
 	$redis->expire($key, 86400);
@@ -1352,7 +1352,7 @@ function get_typeahead($name_ary, $group_url = false, $group_id = false)
 
 	if (!is_array($name_ary))
 	{
-		$name_ary = array($name_ary);
+		$name_ary = [$name_ary];
 	}
 
 	foreach($name_ary as $name)
