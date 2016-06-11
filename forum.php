@@ -482,6 +482,28 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+$forum_empty = true;
+
+foreach($forum_posts as $p)
+{
+	if ($p['access'] >= $access_level)
+	{
+		$forum_empty = false;
+		break;
+	}
+}
+
+if ($forum_empty)
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<p>Er zijn nog geen forum onderwerpen.</p>';
+	echo '</div></div>';
+
+	include $rootpath . 'includes/inc_footer.php';
+	exit;	
+}
+
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
@@ -534,6 +556,7 @@ foreach($forum_posts as $p)
 	echo '</tr>';
 
 }
+
 echo '</tbody>';
 echo '</table>';
 echo '</div>';
