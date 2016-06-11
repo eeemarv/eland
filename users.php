@@ -42,24 +42,24 @@ if ($s_admin)
 {
 	$edit_fields_tabs = [
 		'fullname_access'	=> [
-			'lbl'		=> 'Zichtbaarheid volledige naam',
-			'options'	=> 'access_options',
+			'lbl'				=> 'Zichtbaarheid volledige naam',
+			'access_control'	=> true,
 		],
 		'adr_access'		=> [
 			'lbl'		=> 'Zichtbaarheid adres',
-			'options'	=> 'access_options',
+			'access_control'	=> true,
 		],
 		'mail_access'		=> [
 			'lbl'		=> 'Zichtbaarheid email adres',
-			'options'	=> 'access_options',
+			'access_control'	=> true,
 		],
 		'tel_access'		=> [
 			'lbl'		=> 'Zichtbaarheid telefoonnummer',
-			'options'	=> 'access_options',
+			'access_control'	=> true,
 		],
 		'gsm_access'		=> [
 			'lbl'		=> 'Zichtbaarheid gsmnummer',
-			'options'	=> 'access_options',
+			'access_control'	=> true,
 		],
 		'comments'			=> [
 			'lbl'		=> 'Commentaar',
@@ -458,6 +458,17 @@ if ($bulk_submit && $post && $s_admin)
 		$errors[] = $error_token;
 	}
 
+	if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1,
+		'gsm_access' => 1, 'fullname_access' => 1][$field])
+	{
+		$access_value = $access_control->get_post_value();
+
+		if ($access_error = $access_control->get_post_error())
+		{
+			$errors[] = $access_error;
+		}
+	}
+
 	if (count($errors))
 	{
 		$alert->error($errors);
@@ -492,7 +503,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		{
 			$mdb->users->update(
 				['id' => (int) $user_id],
-				['$set' => ['id' => (int) $user_id, 'fullname_access' => (int) $value]],
+				['$set' => ['id' => (int) $user_id, 'fullname_access' => (int) $access_value]],
 				['upsert' => true]
 			);
 
@@ -537,7 +548,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
 
 		$db->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
-			[$value, $user_ids, $id_type_contact],
+			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
 		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
@@ -3300,6 +3311,10 @@ if ($v_list)
 			else if ($t['type'] == 'checkbox')
 			{
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
+			}
+			else if ($t['access_control'])
+			{
+				echo $access_control->get_radio_buttons();
 			}
 			else
 			{
