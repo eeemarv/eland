@@ -385,6 +385,13 @@ if ($s_schema
 	exit;
 }
 
+
+if ($role != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
+{
+	include $rootpath. 'tpl/maintenance.html';
+	exit;
+}
+
 /**
  * 
  */
