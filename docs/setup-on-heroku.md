@@ -19,37 +19,32 @@ crontab:
 Only one cronjob is needed for all installed domains (unlike eLAS). Just choose one domain.
 
 ###Domain
-Configure your domain with a CNAME to the Heroku app URL.
-set a config var for each domain to the name of the schema in the database
-```shell
-heroku config:set SCHEMA_EXAMPLE__COM=examplecom
-```
-The environment variable SCHEMA_domain: couples a domain to a schema
 
-* Dots in domain are replaced by double underscore __
+Every letsgroup is in its own subdomain of one overall domain.
+
+The overall domain is set by environment variable OVERALL_DOMAIN
+
+heroku config:set OVERALL_DOMAIN=letsa.net
+
+Also add the overall domain with wildcard to Heroku:
+```shell
+heroku domains:add *.letsa.net
+```
+
+A CNAME record with wildcard should point to the Heroku app url.
+
+set a config var for each subdomain to the name of the schema in the database
+```shell
+heroku config:set SCHEMA_MYGROUP=mygroup
+```
+
+Above example couples domain mygroup.letsa.net to database schema mygroup.
+
+The environment variable SCHEMA_domain: couples a subdomain to a schema
+
+* Dots in subdomain are replaced by double underscore __
 * Hyphens in domain are replaced by triple underscore ___
-* Colons in domain are replaced by quadruple underscore ____
 * all characters should be uppercase in the environment variable.
-
-i.e couple e-example.com with schema `eexample`
-```shell
-	heroku config:set SCHEMA_E___EXAMPLE__COM=eexample
-```
-Also add the domain to Heroku:
-```shell
-heroku domains:add e.example.com
-```
-
-i.e localhost:40000 on php development server
-```shell
-	SCHEMA_LOCALHOST____40000=abc (define here other environment variables like DATABASE_URL) php -d variables_order=EGPCS -S localhost:40000
-```
-
-The schema name is also:
-  * the name of the session
-  * prefix of the files in S3 cloud storage
-  * prefix of the keys in Redis.
-
 
 ###AWS S3
 Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
@@ -112,12 +107,16 @@ The Domain of a request-hosting form can be set with:
 
 * HOSTING_FORM_domain=1
 
-domain is formatted the same way as the schema domains.
+### Redirects
+
+* REDIRECT_fromdomain=to.domain.net
+
+domain of the hosting form and redirects is formatted the same way as the schema subdomains.
 
 * Dots are replaced by double underscore __
 * Hyphens are replaced by triple underscore ___
-* Colons re replaced by quadruple underscore ____
 * all characters should be uppercase in the environment variable.
+
 
 ###Other environment vars
 
