@@ -20,7 +20,7 @@ $user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
 
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
-$selected_users = isset($_POST['sel']) ? $_POST['sel'] : [];
+$selected_users = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
 
 /*
  * general access
@@ -475,8 +475,10 @@ if ($bulk_submit && $post && $s_admin)
 	}
 	else
 	{
-		$user_ids = array_keys($selected_users);
+		$user_ids = $selected_users;
 	}
+
+	$selected_users = array_combine($selected_users, $selected_users);	
 }
 
 /**
@@ -2774,8 +2776,7 @@ if ($v_list)
 		$includejs .= '	<script src="' . $cdn_datepicker . '"></script>
 			<script src="' . $cdn_datepicker_nl . '"></script>
 			<script src="' . $rootpath . 'js/csv.js"></script>
-			<script src="' . $rootpath . 'js/table_sel.js"></script>
-			<script src="' . $rootpath . 'js/users_bulk.js"></script>';
+			<script src="' . $rootpath . 'js/table_sel.js"></script>';
 
 		$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '">';
 	}
@@ -3007,8 +3008,6 @@ if ($v_list || $v_extended || $v_tiles)
 
 if ($v_list)
 {
-	echo '<form method="post" class="form-horizontal">';
-
 	echo '<div class="panel panel-success printview">';
 	echo '<div class="table-responsive">';
 
@@ -3063,7 +3062,7 @@ if ($v_list)
 			$class = $st_class_ary[$row_stat];
 			$class = (isset($class)) ? ' class="' . $class . '"' : '';
 
-			$checkbox = '<input type="checkbox" name="sel[' . $id . ']" value="1"';
+			$checkbox = '<input type="checkbox" name="sel_' . $id . '" value="1"';
 			$checkbox .= ($selected_users[$id]) ? ' checked="checked"' : '';
 			$checkbox .= '>&nbsp;';
 
@@ -3257,28 +3256,30 @@ if ($v_list)
 		echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
 		echo '<h3>Mail verzenden naar geselecteerde gebruikers</h3>';
 
+		echo '<form method="post" class="form-horizontal">';
+
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
 		echo 'placeholder="Onderwerp" ';
-		echo 'value="' . $bulk_mail_subject . '">';
+		echo 'value="' . $bulk_mail_subject . '" required>';
 		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="16">';
+		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="16" ';
+		echo 'required>';
 		echo $bulk_mail_content;
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
 
 		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
-			'Je paswoord (extra veiligheid)', 'password', 'class="form-control"', 'mail_password');
+			'Je paswoord (extra veiligheid)', 'password', 'class="form-control" required', 'mail_password');
 
-		echo '<input type="submit" value="Zend test mail naar jezelf*" name="bulk_mail_test" class="btn btn-default">&nbsp;';
+		echo '<input type="submit" value="Zend test mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
-		echo '<p>*Om een test mail te verzenden moet je je paswoord niet invullen.</p>';
 		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
 		echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
 		echo '<div class="table-responsive collapse" id="mail_variables">';
@@ -3299,6 +3300,8 @@ if ($v_list)
 
 		echo '</div>';
 		echo '</div>';
+		generate_form_token();
+		echo '</form>';
 
 		foreach($edit_fields_tabs as $k => $t)
 		{
@@ -3306,6 +3309,8 @@ if ($v_list)
 			echo ($t['access_control']) ? ' data-access-control="true"' : '';
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
+
+			echo '<form method="post" class="form-horizontal">';
 
 			if ($options = $t['options'])
 			{
@@ -3325,9 +3330,11 @@ if ($v_list)
 			}
 
 			echo sprintf($inp, $k . '_password_' . $pw_name_suffix,
-				'Paswoord', 'password', 'class="form-control"', $k . '_password');
+				'Paswoord', 'password', 'class="form-control" required', $k . '_password');
 
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
+			generate_form_token();
+			echo '</form>';
 
 			echo '</div>';
 		}
@@ -3336,8 +3343,6 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
-		generate_form_token();
-		echo '</form>';
 	}
 }
 else if ($v_extended)

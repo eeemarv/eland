@@ -16,8 +16,13 @@ $(document).ready(function() {
 	}
 
 	$('form[method="post"]').submit(function(event) {
-		$('table > tbody > tr > td > input[type="checkbox"]:hidden').each(function(){
-			$(this).prop('checked', false);
+
+		var sel_users = [];
+
+		$('table input[type="checkbox"]:visible:checked').each(function(){
+			sel_users.push($(this).attr('name').split('sel_')[1]);
 		});
+
+		$('<input type="hidden">').attr({"name": "sel", "value": sel_users.join()}).appendTo(this);
 	});	
 });
