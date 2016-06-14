@@ -596,7 +596,7 @@ else if ($v_extended)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>' . link_user($n['id_user']);
+		echo '<p><i class="fa fa-user"></i> ' . link_user($n['id_user']);
 
 		if ($s_admin)
 		{
