@@ -65,8 +65,8 @@ if ($del)
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
 		{
 			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een actieve gebruiker';
-			$alert->error('Je kan niet ' . $err . ' verwijderen.');
-			cancel($uid);
+			$alert->warning('Waarschuwing: dit is ' . $err);
+			//cancel($uid);
 		}
 	}
 
@@ -260,7 +260,7 @@ if ($edit || $add)
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
-				$errors[] = 'Een gebruiker moet tenminste één mailadres hebben.';
+				$alert->warning('Waarschuwing: de gebruiker heeft geen mailadres.');
 			} 
 		}
 
