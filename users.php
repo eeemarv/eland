@@ -2469,6 +2469,7 @@ if ($v_list && $s_admin)
 			'maxlimit'		=> 'Max',
 			'comments'		=> 'Commentaar',
 			'admincomment'	=> 'Admin commentaar',
+			'hobbies'		=> 'Hobbies/interesses',
 			'cron_saldo'	=> 'Periodieke mail',
 			'cdate'			=> 'Gecreëerd',
 			'mdate'			=> 'Aangepast',
