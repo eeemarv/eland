@@ -2675,7 +2675,7 @@ else
 			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
 		}
 
-		if ($s_guest && $s_schema)
+		if ($s_guest && $s_schema && $s_id)
 		{
 			$my_adr = $db->fetchColumn('select c.value
 				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
