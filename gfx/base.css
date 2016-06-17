@@ -363,6 +363,20 @@ div.pag
   color: #dfbbdc;
 }
 
+/*** group menu highlight ****/
+
+li.active-group a, li.active-group a:link,
+li.active-group a:visited, li.active-group a:hover
+{
+  background-color: #FFC765;
+}
+
+/*
+li.active-group a
+{
+  background-color: #FFC765;
+}
+*/
 /***for inputs of horizontal form******/
 
 .margin-bottom

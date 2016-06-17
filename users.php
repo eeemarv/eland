@@ -2040,7 +2040,7 @@ if ($id)
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 
-			if ($s_group_self)
+			if (!$s_group_self)
 			{
 				$tus['tus'] = $schema;
 			}

@@ -468,7 +468,7 @@ if ($view || $inline)
  */
 if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 {
-	if ($logins[$schema])
+	if ($logins[$schema] && $s_group_self)
 	{
 		$_SESSION['roles'][$schema] = $s_accountrole;
 	}
@@ -705,7 +705,7 @@ function generate_url($entity = 'index', $params = [], $sch = false)
 		$params['a'] = '1';
 	}
 
-	$params = array_merge($params, get_session_query_param());
+	$params = array_merge($params, get_session_query_param($sch));
 
 	$params = http_build_query($params);
 

@@ -72,8 +72,36 @@ if (!$s_anonymous)
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
 
-		foreach ($logins as $login_schema => $login_id)
+		if (count($logins) > 1)
 		{
+			foreach ($logins as $login_schema => $login_id)
+			{
+				$class = ($s_schema == $login_schema) ? ' class="active-group"' : '';
+				$class = ($login_schema == $schema && $login_schema == $s_schema) ? ' class="active"' : $class;
+
+				echo '<li';
+				echo $class;
+				echo '>';
+				
+				echo '<a href="';
+				echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
+				echo $_SESSION['roles'][$login_schema];
+				if (ctype_digit((string) $login_id))
+				{
+					echo '&u=' . $login_id;
+				}
+				// echo  generate_url($script_name, [], $login_schema);
+				echo '">';
+				echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
+				echo '</a>';
+				//echo $login_id;
+				echo '</li>';
+
+			}
+		}
+		else
+		{
+			$login_schema = key($logins);
 			echo '<li';
 			echo ($login_schema == $schema) ? ' class="active"' : '';
 			echo '>';
@@ -81,18 +109,8 @@ if (!$s_anonymous)
 			echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
 			echo '</a>';
 			echo '</li>';
-
 		}
 
-		echo '<li class="divider"></li>';
-
-		echo '<li';
-		echo ($s_group_self) ? ' class="active"' : '';
-		echo '>';
-		echo '<a href="' . generate_url($script_name, [], $s_schema) . '">';
-		echo readconfigfromdb('systemname', $s_schema) . ' (eigen groep)';
-		echo '</a>';
-		echo '</li>';
 		echo '<li class="divider"></li>';
 
 		if (count($eland_interlets_groups))

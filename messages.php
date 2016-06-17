@@ -1150,7 +1150,7 @@ if ($id)
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
-			if ($s_group_self)
+			if (!$s_group_self)
 			{
 				$tus['tus'] = $schema;
 			}
