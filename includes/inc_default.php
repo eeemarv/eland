@@ -238,6 +238,14 @@ if (!$schema)
 }
 
 /**
+ * alerts
+**/
+
+require_once $rootpath . 'includes/inc_alert.php';
+
+$alert = new alert();
+
+/**
  * start session
  */
 
@@ -353,14 +361,6 @@ switch ($s_accountrole)
 
 		break;
 }
-
-/**
- * alerts
-**/
-
-require_once $rootpath . 'includes/inc_alert.php';
-
-$alert = new alert();
 
 /**
  * access control rendering labels and selectors
