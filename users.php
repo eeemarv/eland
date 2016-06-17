@@ -2036,7 +2036,7 @@ if ($id)
 		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
+	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7 && $s_id)
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 

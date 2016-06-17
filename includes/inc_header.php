@@ -147,7 +147,8 @@ if (!$s_anonymous)
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
-	if ($s_schema)
+
+	if ($s_schema && $s_id)
 	{
 		echo ($s_group_self) ? '' : $s_schema . '.';
 		echo (isset($s_master)) ? 'master' : link_user($s_id, $s_schema, false);
@@ -156,6 +157,7 @@ if (!$s_anonymous)
 	{
 		echo 'Gast login';
 	}
+
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_schema)

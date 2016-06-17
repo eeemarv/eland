@@ -1146,7 +1146,7 @@ if ($id)
 		}
 	}
 
-	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7)
+	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7 && $s_id)
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
