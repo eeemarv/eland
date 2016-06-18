@@ -15,7 +15,7 @@ if ($id || $edit || $del)
 {
 	$id = ($id) ?: (($edit) ?: $del);
 
-	$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($id));
+	$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$id]);
 
 	if (!$group)
 	{
@@ -96,7 +96,7 @@ if ($add || $edit)
 			if ($db->fetchColumn('select id
 				from letsgroups
 				where url = ?
-					and id <> ?', array($group['url'], $edit)))
+					and id <> ?', [$group['url'], $edit]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
@@ -104,14 +104,14 @@ if ($add || $edit)
 			if ($db->fetchColumn('select id
 				from letsgroups
 				where localletscode = ?
-					and id <> ?', array($group['localletscode'], $edit)))
+					and id <> ?', [$group['localletscode'], $edit]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
 			}
 
 			if (!count($errors))
 			{
-				if ($db->update('letsgroups', $group, array('id' => $id)))
+				if ($db->update('letsgroups', $group, ['id' => $id]))
 				{
 					$alert->success('Letsgroep aangepast.');
 
@@ -125,12 +125,12 @@ if ($add || $edit)
 		}
 		else
 		{
-			if ($db->fetchColumn('select id from letsgroups where url = ?', array($group['url'])))
+			if ($db->fetchColumn('select id from letsgroups where url = ?', [$group['url']]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
 
-			if ($db->fetchColumn('select id from letsgroups where localletscode = ?', array($group['localletscode'])))
+			if ($db->fetchColumn('select id from letsgroups where localletscode = ?', [$group['localletscode']]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
 			}
@@ -160,7 +160,15 @@ if ($add || $edit)
 
 	if ($add)
 	{
-		$group = array();
+		$group = [
+			'groupname' 		=> '',
+			'apimethod'			=> 'elassoap',
+			'remoteapikey'		=> '',
+			'localletscode'		=> '',
+			'myremoteletscode'	=> '',
+			'url'				=> '',
+			'presharedkey'		=> '',
+		];
 	}
 
 	if ($add_schema && $add)
@@ -197,11 +205,11 @@ if ($add || $edit)
 	echo 'API methode <small><i>(type connectie naar de andere installatie)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
-	render_select_options(array(
+	render_select_options([
 		'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
 		'internal'	=> 'Intern (eigen installatie - niet gebruiken)',
 		'mail'		=> 'E-mail',
-	), $group['apimethod']);
+	], $group['apimethod']);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -286,7 +294,7 @@ if ($del)
 			cancel();
 		}
 
-		if($db->delete('letsgroups', array('id' => $del)))
+		if($db->delete('letsgroups', ['id' => $del]))
 		{
 			$alert->success('Letsgroep verwijderd.');
 
@@ -340,7 +348,7 @@ if ($id)
 	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
 	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
-	$includejs .= '<script src="' . $rootpath . 'js/elas_soap_status.js"></script>';
+	$includejs = '<script src="' . $rootpath . 'js/elas_soap_status.js"></script>';
 
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';
@@ -353,7 +361,7 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($schemas[$group['host']])
+	if (isset($schemas[$group['host']]))
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span></dd>';
 	}
@@ -401,7 +409,7 @@ if ($id)
 
 $groups = $db->fetchAll('SELECT * FROM letsgroups');
 
-$letscodes = array();
+$letscodes = [];
 
 foreach ($groups as $key => $g)
 {
@@ -409,8 +417,10 @@ foreach ($groups as $key => $g)
 
 	$letscodes[] = $g['localletscode'];
 
-	if ($s = $schemas[$h])
+	if (isset($schemas[$h]))
 	{
+		$s = $schemas[$h];
+
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
 		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
@@ -429,21 +439,21 @@ foreach ($groups as $key => $g)
 	}
 }
 
-$users_letscode = array();
+$users_letscode = [];
 
 $interlets_users = $db->executeQuery('select id, status, letscode, accountrole
 	from users
 	where letscode in (?)',
-	array($letscodes),
-	array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+	[$letscodes],
+	[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 foreach ($interlets_users as $u)
 {
-	$users_letscode[$u['letscode']] = array(
+	$users_letscode[$u['letscode']] = [
 		'id'			=> $u['id'],
 		'status'		=> $u['status'],
 		'accountrole'	=> $u['accountrole'],
-	);
+	];
 }
 
 $top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
@@ -481,7 +491,7 @@ if (count($groups))
 			if ($user)
 			{
 				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
-				if (!in_array($user['status'], array(1, 2, 7)))
+				if (!in_array($user['status'], [1, 2, 7]))
 				{
 					echo aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-default btn-xs text-danger',
 						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
@@ -512,7 +522,7 @@ if (count($groups))
 
 		echo aphp('interlets', ['id' => $g['id']], $g['groupname']);
 
-		if ($g['eland'])
+		if (isset($g['eland']))
 		{
 			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
 			echo 'eLAND</span>';
@@ -586,21 +596,21 @@ function render_schemas_groups()
 	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	echo '</ul>';
 
-	$url_ary = array();
+	$url_ary = [];
 
 	foreach ($hosts as $h)
 	{
 		$url_ary[] = $app_protocol . $h;
 	}
 
-	$loc_url_ary = $loc_group_ary = $loc_account_ary = array();
-	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = array();
+	$loc_url_ary = $loc_group_ary = $loc_account_ary = [];
+	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = [];
 
 	$groups = $db->executeQuery('select localletscode, url, id
 		from letsgroups
 		where url in (?)',
-		array($url_ary),
-		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
+		[$url_ary],
+		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
 	foreach ($groups as $group)
 	{
@@ -612,8 +622,8 @@ function render_schemas_groups()
 	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
 		from users
 		where letscode in (?)',
-		array($loc_letscode_ary),
-		array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY));
+		[$loc_letscode_ary],
+		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
 	foreach ($interlets_accounts as $u)
 	{
@@ -624,7 +634,7 @@ function render_schemas_groups()
 	{
 		$rem_group = $db->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
-			where url = ?', array($base_url));
+			where url = ?', [$base_url]);
 
 		$group_user_count_ary[$s] = $db->fetchColumn('select count(*)
 			from ' . $s . '.users
@@ -637,7 +647,7 @@ function render_schemas_groups()
 			if ($rem_group['localletscode'])
 			{
 				$rem_account = $db->fetchAssoc('select id, letscode, status, accountrole
-					from ' . $s . '.users where letscode = ?', array($rem_group['localletscode']));
+					from ' . $s . '.users where letscode = ?', [$rem_group['localletscode']]);
 
 				if ($rem_account)
 				{
@@ -696,7 +706,8 @@ function render_schemas_groups()
 		else
 		{
 			echo '<td>';
-			if (is_array($loc_group =  $loc_group_ary[$h]))
+
+			if (isset($loc_group_ary[$h]) && is_array($loc_group =  $loc_group_ary[$h]))
 			{
 				echo aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
@@ -704,9 +715,10 @@ function render_schemas_groups()
 			{
 				echo aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
 			}
+
 			echo '</td>';
 			echo '<td>';
-			if ($loc_group)
+			if (isset($loc_group))
 			{
 				if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
 				{
@@ -715,7 +727,7 @@ function render_schemas_groups()
 						echo aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
 							'De rol van het account moet van het type interlets zijn.');
 					}
-					else if (!in_array($loc_acc['status'], array(1, 2, 7)))
+					else if (!in_array($loc_acc['status'], [1, 2, 7]))
 					{
 						echo aphp('users', ['edit' => $loc_acc['id']], 'status', 'btn btn-warning btn-xs',
 							'De status van het account moet actief, uitstapper of extern zijn.');
@@ -737,7 +749,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_group_ary[$h])
+			if (isset($rem_group_ary[$h]))
 			{
 				echo '<span class="btn btn-success btn-xs">OK</span>';
 			}
@@ -747,14 +759,16 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
-			if ($rem_acc = $rem_account_ary[$h])
+			if (isset($rem_account_ary[$h]))
 			{
+				$rem_acc = $rem_account_ary[$h];
+
 				if ($rem_acc['accountrole'] != 'interlets')
 				{
 					echo '<span class="btn btn-warning btn-xs" title="De rol van het account ';
 					echo 'moet van het type interlets zijn.">rol</span>';
 				}
-				else if (!in_array($rem_acc['status'], array(1, 2, 7)))
+				else if (!in_array($rem_acc['status'], [1, 2, 7]))
 				{
 					echo '<span class="btn btn-warning btn-xs" title="De status van het account ';
 					echo 'moet actief, uitstapper of extern zijn.">rol</span>';
