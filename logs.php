@@ -42,37 +42,53 @@ echo '<div class="panel-heading">';
 
 echo '<form method="get" class="form-horizontal">';
 
-echo '<div class="form-group">';
-echo '<label for="q" class="col-sm-2 control-label">Zoek event</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="q" name="q" ';
+echo '<div class="row">';
+
+echo '<div class="col-sm-4">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="q_addon">';
+echo '<i class="fa fa-search"></i></span>';
+
+echo '<input type="text" class="form-control" ';
+echo 'aria-describedby="q_addon" ';
+echo 'name="q" id="q" placeholder="Zoek event" ';
 echo 'value="' . $q . '">';
-echo '<input type="hidden" value="admin" name="r">';
-echo '<input type="hidden" value="' . $s_id . '" name="u">';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label for="type" class="col-sm-2 control-label">Type</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="type" name="type" ';
-echo 'data-typeahead="' . get_typeahead('log_types') . '" ';
+echo '<div class="col-sm-3">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="type_addon">';
+echo 'Type</span>';
+
+echo '<input type="text" class="form-control" ';
+echo 'aria-describedby="type_addon" ';
+echo 'data-typeahead="' . get_typeahead('log_types') . '" '; 
+echo 'name="type" id="type" placeholder="Type" ';
 echo 'value="' . $type . '">';
 echo '</div>';
 echo '</div>';
 
 $typeahead_users_ary = ['users_active', 'users_extern', 'users_inactive', 'users_im', 'users_ip'];
 
-echo '<div class="form-group">';
-echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'data-typeahead="' . get_typeahead($typeahead_users_ary) . '" ';
+echo '<div class="col-sm-3">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="letscode_addon">';
+echo '<span class="fa fa-user"></span></span>';
+
+echo '<input type="text" class="form-control" ';
+echo 'aria-describedby="letscode_addon" ';
+echo 'data-typeahead="' . get_typeahead($typeahead_users_ary) . '" '; 
+echo 'name="letscode" id="letscode" placeholder="Letscode" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';
 
-echo '<input type="submit" value="Zoeken" name="zend" style="display: none;">';
+echo '<div class="col-sm-2">';
+echo '<input type="submit" value="Toon" class="btn btn-default btn-block" name="zend">';
+echo '</div>';
+
+echo '</div>';
 
 echo '</form>';
 
