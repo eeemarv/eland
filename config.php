@@ -6,13 +6,14 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $mdb->connect();
 
-$setting = ($_GET['edit']) ?: false;
+$setting = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 
 if ($setting)
 {
-	$eh_config = $eland_config[$setting];
+	$eh_config = isset($eland_config[$setting]) ? $eland_config[$setting] : false;
 
-	if ($_POST['zend'])
+	if ($submit)
 	{
 		$value = $_POST['value'];
 
@@ -64,7 +65,7 @@ if ($setting)
 		$value = readconfigfromdb($setting);
 	}
 
-	$description = ($eh_config[1]) ?: $db->fetchColumn('select description from config where setting = ?', array($setting));
+	$description = ($eh_config) ? $eh_config[1] : $db->fetchColumn('select description from config where setting = ?', array($setting));
 
 	$h1 = 'Instelling ' . $setting . ' aanpassen';
 	$fa = 'gears';
