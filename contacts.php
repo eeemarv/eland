@@ -956,9 +956,9 @@ $th_params = $params;
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 	echo '>';
-	if ($data['no_sort'])
+	if (isset($data['no_sort']))
 	{
 		echo $data['lbl'];
 	}

@@ -4,9 +4,9 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$edit = ($_GET['edit']) ?: false;
-$del = ($_GET['del']) ?: false;
-$add = ($_GET['add']) ?: false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$add = (isset($_GET['add'])) ? $_GET['add'] : false;
 
 if ($add)
 {
@@ -262,7 +262,8 @@ echo '<tbody>';
 
 foreach($types as $t)
 {
-	$count = $contact_count[$t['id']];
+	$count = isset($contact_count[$t['id']]) ? $contact_count[$t['id']] : 0;
+
 	$protected = (in_array($t['abbrev'], array('mail', 'gsm', 'tel', 'adr', 'web'))) ? true : false;
 
 	echo '<tr>';
@@ -276,6 +277,7 @@ foreach($types as $t)
 	echo '</td>';
 
 	echo '<td>';
+
 	if ($protected || $count)
 	{
 		echo '&nbsp;';
@@ -284,10 +286,20 @@ foreach($types as $t)
 	{
 		echo aphp('type_contact', ['del' => $t['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	}
+
 	echo '</td>';
 
 	echo '<td>';
-	echo aphp('contacts', ['abbrev' => $t['abbrev']], $count);
+
+	if ($count)
+	{
+		echo aphp('contacts', ['abbrev' => $t['abbrev']], $count);
+	}
+	else
+	{
+		echo '&nbsp;';
+	}
+
 	echo '</td>';
 
 	echo '</tr>';
