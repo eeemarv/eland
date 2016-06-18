@@ -16,10 +16,10 @@ if (isset($_POST['zend']))
 
 	$a = array(
 		'name'							=> 'autominlimit',
-		'enabled'						=> ($_POST['enabled']) ? true : false,
-		'active_no_new_or_leaving'		=> ($_POST['active_no_new_or_leaving']) ? true : false,
-		'new'							=> ($_POST['new']) ? true : false,
-		'leaving'						=> ($_POST['leaving']) ? true : false,
+		'enabled'						=> (isset($_POST['enabled'])) ? true : false,
+		'active_no_new_or_leaving'		=> (isset($_POST['active_no_new_or_leaving'])) ? true : false,
+		'new'							=> (isset($_POST['new'])) ? true : false,
+		'leaving'						=> (isset($_POST['leaving'])) ? true : false,
 		'inclusive'						=> $_POST['inclusive'],
 		'exclusive'						=> $_POST['exclusive'],
 		'min'							=> $_POST['min'],
