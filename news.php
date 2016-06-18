@@ -1,11 +1,11 @@
 <?php
 $rootpath = './';
 
-$approve = ($_GET['approve']) ?: false;
-$edit = ($_GET['edit']) ?: false;
-$add = ($_GET['add']) ?: false;
-$del = ($_GET['del']) ?: false;
-$id = ($_GET['id']) ?: false;
+$approve = (isset($_GET['approve'])) ? $_GET['approve'] : false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $submit = ($_POST['zend']) ? true : false;
 
 /**

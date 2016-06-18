@@ -278,6 +278,8 @@ if (!$login[$s_schema]['id'])
 }
 */
 
+error_log(http_build_query($logins));
+
 // var_dump($logins);
 
 if ($logins[$s_schema] == $s_id && $s_id)
@@ -434,10 +436,9 @@ if ($s_schema
 	exit;
 }
 
-
-if ($role != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
+if ($access_page != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 {
-	include $rootpath. 'tpl/maintenance.html';
+	include $rootpath . 'tpl/maintenance.html';
 	exit;
 }
 
