@@ -3,9 +3,9 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$edit = ($_GET['edit']) ?: false;
-$del = ($_GET['del']) ?: false;
-$add = ($_GET['add']) ?: false;
+$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
+$del = (isset($_GET['del'])) ? $_GET['del'] : false;
+$add = (isset($_GET['add'])) ? $_GET['add'] : false;
 
 if ($add)
 {
@@ -277,6 +277,11 @@ $child_count_ary = array();
 
 foreach ($cats as $cat)
 {
+	if (!isset($child_count_ary[$cat['id_parent']]))
+	{
+		$child_count_ary[$cat['id_parent']] = 0;
+	}
+
 	$child_count_ary[$cat['id_parent']]++;
 }
 
@@ -307,7 +312,11 @@ foreach($cats as $cat)
 	$count_wanted = $cat['stat_msgs_wanted'];
 	$count_offers = $cat['stat_msgs_offers'];
 	$count = $count_wanted + $count_offers;
-	$count += $child_count_ary[$cat['id']];
+
+	if (isset($child_count_ary[$cat['id']]))
+	{
+		$count += $child_count_ary[$cat['id']];
+	}
 
 	if (!$cat['id_parent'])
 	{
