@@ -19,14 +19,14 @@ if ($del)
 			cancel();
 		}
 
-		if ($db->delete('apikeys', array('id' => $del)))
+		if ($db->delete('apikeys', ['id' => $del]))
 		{
 			$alert->success('Apikey verwijderd.');
 			cancel();
 		}
 		$alert->error('Apikey niet verwijderd.');
 	}
-	$apikey = $db->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', array($del));
+	$apikey = $db->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', [$del]);
 
 	$h1 = 'Apikey verwijderen?';
 	$fa = 'key';
@@ -55,9 +55,9 @@ if ($del)
 	exit;
 }
 
-$apikey = array(
+$apikey = [
 	'comment'	=> '',
-);
+];
 
 if ($add)
 {
@@ -69,11 +69,11 @@ if ($add)
 			cancel();
 		}
 
-		$apikey = array(
+		$apikey = [
 			'apikey' 	=> $_POST['apikey'],
 			'comment'	=> $_POST['comment'],
 			'type'		=> 'interlets',
-		);
+		];
 
 		if($db->insert('apikeys', $apikey))
 		{
