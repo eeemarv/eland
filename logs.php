@@ -3,11 +3,11 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$q = $_GET['q'];
-$letscode = $_GET['letscode'];
-$type = $_GET['type'];
+$q = isset($_GET['q']) ? $_GET['q'] : '';
+$letscode = isset($_GET['letscode']) ? $_GET['letscode'] : '';
+$type = isset($_GET['type']) ? $_GET['type'] : '';
 
-$find = array();
+$find = [];
 
 if ($letscode)
 {
@@ -22,11 +22,11 @@ if ($type)
 
 if ($q)
 {
-	$find['event'] = array('$regex' => new MongoRegex('/' . $q . '/i'));
+	$find['event'] = ['$regex' => new MongoRegex('/' . $q . '/i')];
 }
 
 $mdb->connect();
-$rows = $mdb->logs->find($find)->sort(array('timestamp' => -1))->limit(300);
+$rows = $mdb->logs->find($find)->sort(['timestamp' => -1])->limit(300);
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
@@ -47,6 +47,8 @@ echo '<label for="q" class="col-sm-2 control-label">Zoek event</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="q" name="q" ';
 echo 'value="' . $q . '">';
+echo '<input type="hidden" value="admin" name="r">';
+echo '<input type="hidden" value="' . $s_id . '" name="u">';
 echo '</div>';
 echo '</div>';
 
@@ -59,7 +61,7 @@ echo 'value="' . $type . '">';
 echo '</div>';
 echo '</div>';
 
-$typeahead_users_ary = array('users_active', 'users_extern', 'users_inactive', 'users_im', 'users_ip');
+$typeahead_users_ary = ['users_active', 'users_extern', 'users_inactive', 'users_im', 'users_ip'];
 
 echo '<div class="form-group">';
 echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
@@ -99,7 +101,9 @@ foreach($rows as $value)
 	echo '<td>' . $value['ts_tz'] .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
-	echo '<td>' . link_user($value['user_id']) . '</td>';
+	echo '<td>';
+	echo (isset($value['user_id']) && $value['user_id']) ? link_user($value['user_id']) : 'geen';
+	echo '</td>';
 	echo '<td>' . $value['event'] . '</td>';
 	echo '</tr>';
 }
