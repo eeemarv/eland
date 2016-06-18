@@ -277,8 +277,10 @@ if (!$login[$s_schema]['id'])
 	redirect_login(); // produces endless redirect
 }
 */
-
-error_log('logins: ' . http_build_query($logins));
+if (isset($logins))
+{
+	error_log('logins: ' . http_build_query($logins));
+}
 
 // var_dump($logins);
 
