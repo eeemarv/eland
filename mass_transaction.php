@@ -6,60 +6,62 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 require_once $rootpath . 'includes/multi_mail.php';
 
-$q = ($_POST['q']) ?: (($_GET['q']) ?: '');
-$hsh = ($_POST['hsh']) ?: (($_GET['hsh']) ?: '096024');
-$selected_users = $_POST['selected_users'];
+$q = isset($_POST['q']) ? $_POST['q'] : (isset($_GET['q']) ? $_GET['q'] : '');
+$hsh = isset($_POST['hsh']) ? $_POST['hsh'] : (isset($_GET['hsh']) ? $_GET['hsh'] : '096024');
+$selected_users = isset($_POST['selected_users']) ? $_POST['selected_users'] : '';
 $selected_users = ltrim($selected_users, '.');
 $selected_users = explode('.', $selected_users);
 $selected_users = array_combine($selected_users, $selected_users);
 
-$st = array(
-	'active'	=> array(
+$submit = isset($_POST['zend']) ? true : false;
+
+$st = [
+	'active'	=> [
 		'lbl'	=> 'Actief',
 		'st'	=> 1,
 		'hsh'	=> '58d267',
-	),
-	'without-new-and-leaving' => array(
+	],
+	'without-new-and-leaving' => [
 		'lbl'	=> 'Actief zonder uit- en instappers',
 		'st'	=> '123',
 		'hsh'	=> '096024',
-	),
-	'new'		=> array(
+	],
+	'new'		=> [
 		'lbl'	=> 'Instappers',
 		'st'	=> 3,
 		'hsh'	=> 'e25b92',
 		'cl'	=> 'success',
-	),
-	'leaving'	=> array(
+	],
+	'leaving'	=> [
 		'lbl'	=> 'Uitstappers',
 		'st'	=> 2,
 		'hsh'	=> 'ea4d04',
 		'cl'	=> 'danger',
-	),
-	'inactive'	=> array(
+	],
+	'inactive'	=> [
 		'lbl'	=> 'Inactief',
 		'st'	=> 0,
 		'hsh'	=> '79a240',
 		'cl'	=> 'inactive',
-	),
-	'info-packet'	=> array(
+	],
+	'info-packet'	=> [
 		'lbl'	=> 'Info-pakket',
 		'st'	=> 5,
 		'hsh'	=> '2ed157',
 		'cl'	=> 'warning',
-	),
-	'info-moment'	=> array(
+	],
+	'info-moment'	=> [
 		'lbl'	=> 'Info-moment',
 		'st'	=> 6,
 		'hsh'	=> '065878',
 		'cl'	=> 'info',
-	),
-	'all'		=> array(
+	],
+	'all'		=> [
 		'lbl'	=> 'Alle',
-	),
-);
+	],
+];
 
-$status_ary = array(
+$status_ary = [
 	0 	=> 'inactive',
 	1 	=> 'active',
 	2 	=> 'leaving',
@@ -68,9 +70,9 @@ $status_ary = array(
 	6	=> 'info-moment',
 	7	=> 'extern',
 	123 => 'without-new-and-leaving',
-);
+];
 
-$users = array();
+$users = [];
 
 $rs = $db->prepare(
 	'SELECT id, name, letscode,
@@ -88,17 +90,16 @@ while ($row = $rs->fetch())
 	$users[$row['id']] = $row;
 }
 
-list($to_letscode) = explode(' ', $_POST['to_letscode']);
-list($from_letscode) = explode(' ', $_POST['from_letscode']);
-$amount = $_POST['amount'] ?: array();
-$description = $_POST['description'];
-$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-$password = $_POST['password_' . $pw_name_suffix];
-$transid = $_POST['transid'];
-$mail_en = ($_POST['mail_en']) ? true : false;
-$transid = $_POST['transid'];
+list($to_letscode) = isset($_POST['to_letscode']) ? explode(' ', $_POST['to_letscode']) : [''];
+list($from_letscode) = isset($_POST['from_letscode']) ? explode(' ', $_POST['from_letscode']) : [''];
+$amount = isset($_POST['amount']) ? $_POST['amount'] : [];
+$description = isset($_POST['description']) ? trim($_POST['description']) : '';
+$pw_name_suffix = substr(isset($_POST['form_token']) ? $_POST['form_token'] : '', 0, 5);
+$password = isset($_POST['password_' . $pw_name_suffix]) ? trim($_POST['password_' . $pw_name_suffix]) : '';
+$transid = isset($_POST['transid']) ? $_POST['transid'] : '';
+$mail_en = isset($_POST['mail_en']) ? true : false;
 
-if ($_POST['zend'])
+if ($submit)
 {
 	if (!$password)
 	{
@@ -108,7 +109,7 @@ if ($_POST['zend'])
 	{
 		$password = hash('sha512', $password);
 
-		if ($password != $db->fetchColumn('select password from users where id = ?', array($s_id)))
+		if ($password != $db->fetchColumn('select password from users where id = ?', [$s_id]))
 		{
 			$errors[] = 'Paswoord is niet juist.';
 		}
@@ -132,7 +133,7 @@ if ($_POST['zend'])
 		$to_one = ($to_letscode) ? true : false;
 		$letscode = ($to_one) ? $to_letscode : $from_letscode;
 
-		$one_uid = $db->fetchColumn('select id from users where letscode = ?', array($letscode));
+		$one_uid = $db->fetchColumn('select id from users where letscode = ?', [$letscode]);
 
 		if (!$one_uid)
 		{
@@ -145,17 +146,17 @@ if ($_POST['zend'])
 		}
 	}
 
-	$filter_options = array(
-		'options'	=> array(
+	$filter_options = [
+		'options'	=> [
 			'min_range' => 0,
-		),
-	);
+		],
+	];
 
 	$count = 0;
 
 	foreach ($amount as $uid => $amo)
 	{
-		if (!$selected_users[$uid])
+		if (!isset($selected_users[$uid]))
 		{
 			continue;
 		}
@@ -184,7 +185,7 @@ if ($_POST['zend'])
 		$errors[] = 'Geen geldig transactie id';
 	}
 
-	if ($db->fetchColumn('select id from transactions where transid = ?', array($transid)))
+	if ($db->fetchColumn('select id from transactions where transid = ?', [$transid]))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
@@ -200,7 +201,7 @@ if ($_POST['zend'])
 	}
 	else
 	{
-		$transactions = array();
+		$transactions = [];
 
 		$db->beginTransaction();
 
@@ -210,11 +211,11 @@ if ($_POST['zend'])
 		$one_field = ($to_one) ? 'to' : 'from';
 		$many_field = ($to_one) ? 'from' : 'to';
 
-		$mail_ary = array(
+		$mail_ary = [
 			$one_field 		=> $one_uid,
 			'description'	=> $description,
 			'date'			=> $date,
-		);
+		];
 
 		$alert_success = $log = '';
 		$total = 0;
@@ -224,7 +225,7 @@ if ($_POST['zend'])
 
 			foreach ($amount as $many_uid => $amo)
 			{
-				if (!$selected_users[$many_uid])
+				if (!isset($selected_users[$many_uid]))
 				{
 					continue;
 				}
@@ -246,12 +247,12 @@ if ($_POST['zend'])
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
-				$mail_ary[$many_field][$many_uid] = array(
+				$mail_ary[$many_field][$many_uid] = [
 					'amount'	=> $amo,
 					'transid' 	=> $transid,
-				);
+				];
 
-				$trans = array(
+				$trans = [
 					'id_to' 		=> $to_id,
 					'id_from' 		=> $from_id,
 					'amount' 		=> $amo,
@@ -260,13 +261,13 @@ if ($_POST['zend'])
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
 					'creator'		=> $s_id,
-				);
+				];
 
 				$db->insert('transactions', $trans);
 
 				$db->executeUpdate('update users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
-					where id = ?', array($amo, $many_uid));
+					where id = ?', [$amo, $many_uid]);
 
 				$total += $amo;
 
@@ -277,7 +278,7 @@ if ($_POST['zend'])
 
 			$db->executeUpdate('update users
 				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
-				where id = ?', array($total, $one_uid));
+				where id = ?', [$total, $one_uid]);
 
 			$db->commit();
 		}
@@ -295,18 +296,20 @@ if ($_POST['zend'])
 
 		if ($to_one)
 		{
-			foreach ($transactins as $t)
+			foreach ($transactions as $t)
 			{
 				$redis->del($schema . '_user_' . $t['id_from']);
 			}
+
 			$redis->del($schema . '_user_' . $t['id_to']);
 		}
 		else
 		{
-			foreach ($transactins as $t)
+			foreach ($transactions as $t)
 			{
 				$redis->del($schema . '_user_' . $t['id_to']);
 			}
+
 			$redis->del($schema . '_user_' . $t['id_from']);
 		}
 
@@ -342,14 +345,14 @@ $transid = generate_transid();
 
 if ($to_letscode)
 {
-	if ($to_name = $db->fetchColumn('select name from users where letscode = ?', array($to_letscode)))
+	if ($to_name = $db->fetchColumn('select name from users where letscode = ?', [$to_letscode]))
 	{
 		$to_letscode .= ' ' . $to_name;
 	}
 }
 if ($from_letscode)
 {
-	if ($from_name = $db->fetchColumn('select name from users where letscode = ?', array($from_letscode)))
+	if ($from_name = $db->fetchColumn('select name from users where letscode = ?', [$from_letscode]))
 	{
 		$from_letscode .= ' ' . $from_name;
 	}
@@ -445,9 +448,9 @@ echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 foreach ($st as $k => $s)
 {
-	$shsh = $s['hsh'] ?: '';
+	$shsh = isset($s['hsh']) ? $s['hsh'] : '';
 	$class_li = ($shsh == $hsh) ? ' class="active"' : '';
-	$class_a  = ($s['cl']) ?: 'white';
+	$class_a  = isset($s['cl']) ? $s['cl'] : 'white';
 	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
 	echo 'data-filter="' . $shsh . '">' . $s['lbl'] . '</a></li>';
 }
@@ -471,7 +474,7 @@ echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
 echo 'data-typeahead="';
-echo get_typeahead(array('users_active', 'users_inactive', 'users_ip', 'users_im'));
+echo get_typeahead(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
 echo '</div>';
 echo '</div>';
@@ -504,7 +507,7 @@ foreach($users as $user_id => $user)
 	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
 	$hsh .= ($status_key == 'active') ? $st['without-new-and-leaving']['hsh'] : '';
 
-	$class = ($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
+	$class = isset($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
@@ -518,7 +521,9 @@ foreach($users as $user_id => $user)
 
 	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
-	echo 'value="' . $amount[$user_id] . '" ';
+	echo 'value="';
+	echo  isset($amount[$user_id]) ? $amount[$user_id] : '';
+	echo  '" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
 	echo 'data-user-id="' . $user_id . '" ';
 	echo 'data-balance="' . $user['saldo'] . '" ';
@@ -573,7 +578,7 @@ echo '<label for="description" class="col-sm-2 control-label">Omschrijving</labe
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="description" ';
 echo 'name="description" ';
-echo 'value="' . $description . ' " required>';
+echo 'value="' . $description . '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -683,8 +688,8 @@ function mail_mass_transaction($mail_ary)
 		FROM users u
 		WHERE u.status in (1, 2)
 			AND u.id IN (?)',
-		array($many_user_ids),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+		[$many_user_ids],
+		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($users as $user)
 	{
@@ -699,25 +704,25 @@ function mail_mass_transaction($mail_ary)
 			$to_user_id = $user_id;
 		}
 		
-		$data = array(
+		$data = [
 			'amount' 		=> $many_ary[$user_id]['amount'],
 			'transid' 		=> $many_ary[$user_id]['transid'],
 			'description'	=> $mail_ary['description'],
 			'from_user' 	=> link_user($from_user_id, false, false),
 			'to_user'		=> link_user($to_user_id, false, false),
-		);
+		];
 
 		$data = array_merge($user, $data);
 
 		$mm->set_vars($data)
 			->set_var('status', ($user['status'] == 2) ? 'uitstapper' : 'actief')
-			->mail_q(array('to' => $user_id, 'subject' => $subject));
+			->mail_q(['to' => $user_id, 'subject' => $subject]);
 	}
 
 // compilation mail
 
 	$subject = 'Nieuwe massa transactie';
-	$totaal = 0;
+	$total = 0;
 
 	$text = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r;
 
@@ -732,14 +737,14 @@ function mail_mass_transaction($mail_ary)
 	}
 	else
 	{
-		$one_msg .= 'Van' . $r;
+		$text .= 'Van' . $r;
 	}	
 
 	$users = $db->executeQuery('SELECT u.id
 		FROM users u
 		WHERE u.id IN (?)',
-		array($many_user_ids),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+		[$many_user_ids],
+		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($users as $user)
 	{
@@ -759,7 +764,7 @@ function mail_mass_transaction($mail_ary)
 	$text .= 'Totaal: ' . $total . ' ' . $currency . $r . $r;
 	$text .= 'Voor: ' . $mail_ary['description'] . $r . $r;
 
-	mail_q(array('to' => array('admin', $s_id, $one_user_id), 'subject' => $subject, 'text' => $text));
+	mail_q(['to' => ['admin', $s_id, $one_user_id], 'subject' => $subject, 'text' => $text]);
 
 	return true;
 }
