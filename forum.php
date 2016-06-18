@@ -12,6 +12,7 @@ $topic = (isset($_GET['t'])) ? $_GET['t'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $add = (isset($_GET['add'])) ? true : false;
+$q = (isset($_GET['q'])) ? $_GET['q'] : '';
 
 if (!($s_user || $s_admin))
 {
@@ -32,7 +33,7 @@ if (!($s_user || $s_admin))
 	}
 }
 
-$submit = ($_POST['zend']) ? true : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 
 if (!readconfigfromdb('forum_en'))
 {
@@ -70,7 +71,7 @@ if ($del || $edit)
 		cancel(($forum_post['parent_id']) ?: $t);
 	}
 
-	$topic = ($forum_post['parent_id']) ?: false;
+	$topic = (isset($forum_post['parent_id'])) ? $forum_post['parent_id'] : false;
 }
 
 if ($submit)
@@ -186,10 +187,18 @@ if ($submit)
 
 if ($del)
 {
-	$h1 = ($forum_post['parent_id']) ? 'Reactie' : 'Forum onderwerp ' . aphp('forum', ['t' => $forum_post['id']], $forum_post['subject']);
-	$h1 .= ' verwijderen?';
+	if (isset($forum_post['parent_id']))
+	{
+		$h1 = 'Reactie';
+		$t = $forum_post['parent_id'];
+	}
+	else
+	{
+		$t = $forum_post['_id']->__toString();
+		$h1 = 'Forum onderwerp ' . aphp('forum', ['t' => $t], $forum_post['subject']);
+	}
 
-	$t = ($forum_post['parent_id']) ?: $forum_post['_id']->__toString();
+	$h1 .= ' verwijderen?';
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -385,12 +394,11 @@ if ($topic)
 
 		echo '<div class="panel-body">';
 		echo $p['content'];
-		link_user($forum_post['uid']);
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
 		echo '<p>' . link_user((int) $p['uid']) . ' @' . $p['ts'];
-		echo ($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
+		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
 		{
@@ -418,7 +426,7 @@ if ($topic)
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<textarea name="content" class="form-control" id="content" rows="4" required>';
-		echo $forum_post['content'];
+		echo isset($forum_post['content']) ? $forum_post['content'] : '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
@@ -451,7 +459,8 @@ $forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
 $forum_posts = iterator_to_array($forum_posts);
 
-$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
+$s_owner = ($s_id && isset($forum_posts[$topic]['uid'])
+	&& $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
 if ($s_admin || $s_user)
 {

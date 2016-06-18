@@ -121,7 +121,7 @@ if (!$s_anonymous)
 				echo ($schema == $sch) ? ' class="active"' : '';
 				echo '>';
 
-				$page = ($allowed_interlets_landing_pages[$script_name]) ? $script_name : 'index';
+				$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
 
 				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
 				echo readconfigfromdb('systemname', $sch) . '</a>';
