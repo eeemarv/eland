@@ -56,10 +56,16 @@ class access_control
 
 	public function get_post_value($name = 'access')
 	{
-		if ($this->acc_ary[$_POST[$name]])
+		if (!isset($_POST[$name]))
+		{
+			return false;
+		}
+ 
+		if (isset($this->acc_ary[$_POST[$name]]))
 		{
 			return $this->acc_ary[$_POST[$name]]['level'];
 		}
+
 		return false;
 	}
 

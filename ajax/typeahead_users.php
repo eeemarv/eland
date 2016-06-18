@@ -3,8 +3,8 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$group_id = ($_GET['group_id']) ?: 'self';
-$status = ($_GET['status']) ?: 'active';
+$group_id = isset($_GET['group_id']) ? $_GET['group_id'] : 'self';
+$status = isset($_GET['status']) ? $_GET['status'] : 'active';
 
 if ($s_guest && $status != 'active')
 {

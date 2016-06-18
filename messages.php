@@ -2021,7 +2021,7 @@ else if ($v_extended)
 
 		echo '<div class="media">';
 
-		if ($imgs[$msg['id']])
+		if (isset($imgs[$msg['id']]))
 		{
 			echo '<div class="media-left">';
 			echo '<a href="' . generate_url('messages', ['id' => $msg['id']]) . '">';
@@ -2029,6 +2029,7 @@ else if ($v_extended)
 			echo '</a>';
 			echo '</div>';
 		}
+
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
 		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);

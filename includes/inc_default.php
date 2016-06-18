@@ -278,7 +278,7 @@ if (!$login[$s_schema]['id'])
 }
 */
 
-error_log(http_build_query($logins));
+error_log('logins: ' . http_build_query($logins));
 
 // var_dump($logins);
 
@@ -436,7 +436,7 @@ if ($s_schema
 	exit;
 }
 
-if ($access_page != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
+if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 {
 	include $rootpath . 'tpl/maintenance.html';
 	exit;

@@ -3006,7 +3006,8 @@ if ($v_list || $v_extended || $v_tiles)
 		echo '<li';
 		echo ($status == $k) ? ' class="active"' : '';
 		echo '>';
-		echo aphp('users', $nav_params, $tab['lbl'], 'bg-' . $tab['cl']) . '</li>';
+		$class = (isset($tab['cl'])) ? 'bg-' . $tab['cl'] : false;
+		echo aphp('users', $nav_params, $tab['lbl'], $class) . '</li>';
 	}
 
 	echo '</ul>';
@@ -3023,10 +3024,12 @@ if ($v_list)
 	echo 'data-empty="Er zijn geen ' . (($s_admin) ? 'gebruikers' : 'leden') . ' volgens ';
 	echo 'de selectiecriteria" data-sorting="true" data-filter-placeholder="Zoeken" ';
 	echo 'data-filter-position="left"';
-	if ($my_geo)
+
+	if (isset($my_geo))
 	{
 		echo ' data-lat="' . $lat . '" data-lng="' . $lng . '"';
 	}
+
 	echo '>';
 	echo '<thead>';
 
@@ -3065,11 +3068,10 @@ if ($v_list)
 			$id = $u['id'];
 
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-			$class = $st_class_ary[$row_stat];
-			$class = (isset($class)) ? ' class="' . $class . '"' : '';
+			$class = (isset($st_class_ary[$row_stat])) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
 
 			$checkbox = '<input type="checkbox" name="sel_' . $id . '" value="1"';
-			$checkbox .= ($selected_users[$id]) ? ' checked="checked"' : '';
+			$checkbox .= (isset($selected_users[$id])) ? ' checked="checked"' : '';
 			$checkbox .= '>&nbsp;';
 
 			$first = true;
@@ -3153,8 +3155,7 @@ if ($v_list)
 			$adr_ary = $contacts[$id]['adr'][0];
 
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-			$class = $st_class_ary[$row_stat];
-			$class = (isset($class)) ? ' class="' . $class . '"' : '';
+			$class = (isset($st_class_ary[$row_stat])) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
 
 			$balance = $u['saldo'];
 			$balance_class = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? ' class="text-danger"' : '';
@@ -3268,7 +3269,9 @@ if ($v_list)
 		echo '<div class="col-sm-12">';
 		echo '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
 		echo 'placeholder="Onderwerp" ';
-		echo 'value="' . $bulk_mail_subject . '" required>';
+		echo 'value="';
+		echo isset($bulk_mail_subject) ? $bulk_mail_subject : '';
+		echo '" required>';
 		echo '</div>';
 		echo '</div>';
 
@@ -3276,7 +3279,7 @@ if ($v_list)
 		echo '<div class="col-sm-12">';
 		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="16" ';
 		echo 'required>';
-		echo $bulk_mail_content;
+		echo isset($bulk_mail_content) ? $bulk_mail_content : '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
@@ -3312,21 +3315,22 @@ if ($v_list)
 		foreach($edit_fields_tabs as $k => $t)
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab"';
-			echo ($t['access_control']) ? ' data-access-control="true"' : '';
+			echo (isset($t['access_control'])) ? ' data-access-control="true"' : '';
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
 			echo '<form method="post" class="form-horizontal">';
 
-			if ($options = $t['options'])
+			if (isset($t['options']))
 			{
+				$options = $t['options'];
 				echo sprintf($acc_sel, $k, $t['lbl'], render_select_options($$options, 0, false));
 			}
-			else if ($t['type'] == 'checkbox')
+			else if (isset($t['type']) && $t['type'] == 'checkbox')
 			{
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
 			}
-			else if ($t['access_control'])
+			else if (isset($t['access_control']))
 			{
 				echo $access_control->get_radio_buttons();
 			}
@@ -3356,8 +3360,7 @@ else if ($v_extended)
 	foreach ($users as $u)
 	{
 		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-		$class = $st_class_ary[$row_stat];
-		$class = (isset($class)) ? ' bg-' . $class : '';
+		$class = (isset($st_class_ary[$row_stat])) ? ' bg-' . $st_class_ary[$row_stat] : '';
 
 		echo '<div class="panel panel-info printview">';
 		echo '<div class="panel-body';
