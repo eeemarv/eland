@@ -284,6 +284,14 @@ if ($logins[$s_schema] == $s_id && $s_id)
 {
 	$session_user = readuser($s_id, false, $s_schema);
 
+	if ($s_schema != $schema && $s_accountrole != 'guest')
+	{
+		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=';
+		$location .= $session_user['accountrole'] . '&u=' . $s_id;
+		header('Location: ' . $location);
+		exit;
+	}
+
 	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
 		redirect_index();
@@ -300,12 +308,37 @@ else if ($logins[$s_schema] == 'master')
 {
 	$s_master = true;
 }
-else
+else if ($logins[$s_schema])
 {
-	if ($s_accountrole != 'anonymous')
+	$s_id = $logins[$s_schema];
+
+	if (ctype_digit((string) $s_id))
 	{
-		redirect_login();
+		$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$get = $_GET;
+
+		unset($get['u'], $get['s'], $get['r']);
+
+		$session_user = readuser($s_id, false, $s_schema);
+
+		$get['r'] = $session_user['accountrole'];
+		$get['u'] = $s_id;
+
+		if ($s_schema != $schema)
+		{
+			$get['s'] = $s_schema;
+		}
+
+		$get = http_build_query($get);
+		header('Location: ' . $location . '?' . $get);
+		exit;
 	}
+
+	redirect_login();
+}
+else if ($s_accountrole != 'anonymous')
+{
+	redirect_login();
 }
 
 /** access page **/
