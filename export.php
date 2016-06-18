@@ -4,11 +4,11 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$export_ary = array(
-	'users'		=> array(
+$export_ary = [
+	'users'		=> [
 		'label'		=> 'Gebruikers',
 		'sql'		=> 'select * from users order by letscode',
-		'columns'	=> array(
+		'columns'	=> [
 			'letscode',
 			'cdate',
 			'comments',
@@ -26,52 +26,52 @@ $export_ary = array(
 			'fullname',
 			'admincomment',
 			'adate' => 'activeringsdatum'
-		),
-	),
-	'contacts'	=> array(
+		],
+	],
+	'contacts'	=> [
 		'label'	=> 'Contactgegevens',
 		'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
 			from contact c, type_contact tc, users u
 			where c.id_type_contact = tc.id
 				and c.id_user = u.id',
-		'columns'	=> array(
+		'columns'	=> [
 			'letscode',
 			'username',
 			'abbrev',
 			'comments',
 			'value',
 			'flag_public',
-		),
-	),
-	'categories'	=> array(
+		],
+	],
+	'categories'	=> [
 		'label'		=> 'Categorieën',
 		'sql'		=> 'select * from categories',
-		'columns'	=> array(
+		'columns'	=> [
 			'name',
 			'id_parent',
 			'description',
 			'cdate',
 			'fullname',
 			'leafnote',
-		),
-	),
-	'messages'	=> array(
+		],
+	],
+	'messages'	=> [
 		'label'		=> 'Vraag en Aanbod',
 		'sql'		=> 'select m.*, u.name as username, u.letscode
 			from messages m, users u
 			where m.id_user = u.id
 				and validity > ?',
-		'sql_bind'	=> array(gmdate('Y-m-d H:i:s')),
-		'columns'	=> array(
+		'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
+		'columns'	=> [
 			'letscode',
 			'username',
 			'cdate',
 			'validity',
 			'content',
 			'msg_type',
-		),
-	),
-	'transactions'	=> array(
+		],
+	],
+	'transactions'	=> [
 		'label'		=> 'Transacties',
 		'sql'		=> 'select t.transid, t.description,
 							concat(fu.letscode, \' \', fu.name) as from_user,
@@ -81,7 +81,7 @@ $export_ary = array(
 						where t.id_to = tu.id
 							and t.id_from = fu.id
 						order by t.date desc',
-		'columns'	=> array(
+		'columns'	=> [
 			'cdate'			=> 'Datum',
 			'from_user'		=> 'Van',
 			'real_from'		=> 'interlets',
@@ -90,20 +90,22 @@ $export_ary = array(
 			'amount'		=> 'Bedrag',
 			'description'	=> 'Dienst',
 			'transid'		=> 'transactie id',
-		),
-	),
-);
+		],
+	],
+];
 
 $buttons = '';
 $r = "\r\n";
 
 foreach ($export_ary as $ex_key => $export)
 {
-	if ($_GET[$ex_key])
+	if (isset($_GET[$ex_key]))
 	{
-		$columns = $fields = array();
+		$columns = $fields = [];
 
-		$data = $db->fetchAll($export['sql'], $export['sql_bind'] ?: array());
+		$sql_bind = isset($export['sql_bind']) ? $export['sql_bind'] : [];
+
+		$data = $db->fetchAll($export['sql'], $sql_bind);
 
 		foreach($export['columns'] as $key => $name)
 		{
@@ -116,11 +118,11 @@ foreach ($export_ary as $ex_key => $export)
 
 		foreach($data as $row)
 		{
-			$fields = array();
+			$fields = [];
 
 			foreach($columns as $c)
 			{
-				$fields[] = $row[$c];
+				$fields[] = isset($row[$c]) ? $row[$c] : '';
 			}
 
 			$out .= '"' . implode('","', $fields) . '"' . $r;
@@ -138,6 +140,8 @@ foreach ($export_ary as $ex_key => $export)
 
 	$buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
 	$buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom">';
+	$buttons .= '<input type="hidden" value="admin" name="r">';	
+	$buttons .= '<input type="hidden" value="' . $s_id . '" name="u">';
 	$buttons .= '</form>';
 }
 
