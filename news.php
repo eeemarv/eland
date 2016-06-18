@@ -6,7 +6,7 @@ $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $add = (isset($_GET['add'])) ? $_GET['add'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$submit = ($_POST['zend']) ? true : false;
+$submit = (isset($_POST['zend'])) ? true : false;
 
 /**
  * approve a newsitem
@@ -226,7 +226,7 @@ if ($del)
 	$page_access = 'admin';
 	require_once $rootpath . 'includes/inc_default.php';
 
-	if(isset($_POST['zend']))
+	if ($submit)
 	{
 		if ($error_token = get_error_form_token())
 		{

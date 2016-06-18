@@ -15,8 +15,8 @@ $map = (isset($_GET['map'])) ? $_GET['map'] : false;
 $map_edit = (isset($_GET['map_edit'])) ? $_GET['map_edit'] : false;
 $add = (isset($_GET['add'])) ? true : false;
 
-$submit = ($_POST['zend']) ? true : false;
-$confirm_del = ($_POST['confirm_del']) ? true : false;
+$submit = (isset($_POST['zend'])) ? true : false;
+$confirm_del = (isset($_POST['confirm_del'])) ? true : false;
 
 if ($post)
 {
@@ -501,7 +501,9 @@ if ($add)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
+	echo (isset($map_name)) ? $map_name : '';
+	echo '" ';
 	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';
@@ -553,6 +555,11 @@ if (!$map)
 	{
 		if (isset($d['map_id']))
 		{
+			if (!isset($maps[$d['map_id']]['count']))
+			{
+				$maps[$d['map_id']]['count'] = 0;
+			}
+
 			$maps[$d['map_id']]['count']++;
 			unset($docs[$k]);
 		}
@@ -561,9 +568,14 @@ if (!$map)
 
 if ($s_admin)
 {
-	$and_map = ($map) ? '&map=' . $map : '';
+	$add_buttom_params = ['add' => 1];
 
-	$top_buttons .= aphp('docs', ['add' => 1]. $and_map, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
+	if ($map)
+	{
+		$add_buttom_params['map'] = $map;
+	}
+
+	$top_buttons .= aphp('docs', $add_buttom_params, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
 
 	if ($map)
 	{
@@ -621,7 +633,7 @@ if (!$map && count($maps))
 	{
 		$did = $d['_id']->__toString();
 
-		if ($d['count'])
+		if (isset($d['count']) && $d['count'])
 		{
 			echo '<tr class="info">';
 			echo '<td>';
@@ -673,7 +685,7 @@ if (count($docs))
 
 		echo '<td>';
 		echo '<a href="' . $s3_doc_url . $d['filename'] . '" target="_self">';
-		echo ($d['name']) ?: $d['org_filename'];
+		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';
 		echo '<td>' . $d['ts'] . '</td>';

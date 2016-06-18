@@ -4,7 +4,7 @@ $rootpath = './';
 $page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-if ($hosting_form)
+if (isset($hosting_form))
 {
 	if (isset($_POST['zend']))
 	{
