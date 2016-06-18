@@ -7,9 +7,11 @@ require_once $rootpath . 'includes/inc_default.php';
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $add = (isset($_GET['add'])) ? $_GET['add'] : false;
 
+$submit = (isset($_POST['zend'])) ? true : false;
+
 if ($del)
 {
-	if(isset($_POST['zend']))
+	if($submit)
 	{
 		if ($error_token = get_error_form_token())
 		{
@@ -59,7 +61,7 @@ $apikey = array(
 
 if ($add)
 {
-	if ($_POST['zend'])
+	if ($submit)
 	{
 		if ($error_token = get_error_form_token())
 		{
