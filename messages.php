@@ -1333,7 +1333,9 @@ if ($id)
 	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
 	echo ($disabled) ? ' disabled' : '';
-	echo '>' . $content . '</textarea>';
+	echo '>';
+	echo (isset($content)) ? $content : '';
+	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';
 

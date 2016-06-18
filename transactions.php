@@ -511,8 +511,10 @@ if ($add)
 
 		if ($tus)
 		{
-			if ($host_from_tus = $hosts[$tus])
+			if (isset($hosts[$tus]))
 			{
+				$host_from_tus = $hosts[$tus];
+
 				$group_id = $db->fetchColumn('select id
 					from letsgroups
 					where url = ?', [$app_protocol . $host_from_tus]);
@@ -544,7 +546,7 @@ if ($add)
 		}
 		else if ($tuid)
 		{
-			$row = readuser($tuid, false, (($host_from_tus) ? $tus : false));
+			$row = readuser($tuid, false, ((isset($host_from_tus)) ? $tus : false));
 
 			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
 			{

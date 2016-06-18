@@ -40,7 +40,7 @@ class access_control
 
 	public function get_label($access = 'admin', $size = 'xs')
 	{
-		if ($this->acc_ary_search[$access])
+		if (isset($this->acc_ary_search[$access]))
 		{
 			$access = $this->acc_ary_search[$access];
 		}
@@ -96,13 +96,17 @@ class access_control
 		{
 			$selected = false;
 		}
-		else if ($this->acc_ary[$value])
+		else if (isset($this->acc_ary[$value]))
 		{
 			$selected = $value;
 		}
-		else
+		else if (isset($this->acc_ary_search[$value]))
 		{
 			$selected = $this->acc_ary_search[$value];
+		}
+		else
+		{
+			$selected = false;
 		}
 
 		if ($omit_access)
