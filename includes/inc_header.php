@@ -72,11 +72,11 @@ if (!$s_anonymous)
 		echo '<span class="caret"></span></a>'; 
 		echo '<ul class="dropdown-menu" role="menu">';
 
-		if (count($logins) > 1)
-		{
+//		if (count($logins) > 1)
+//		{
 			foreach ($logins as $login_schema => $login_id)
 			{
-				$class = ($s_schema == $login_schema) ? ' class="active-group"' : '';
+				$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '';
 				$class = ($login_schema == $schema && $login_schema == $s_schema) ? ' class="active"' : $class;
 
 				echo '<li';
@@ -86,10 +86,10 @@ if (!$s_anonymous)
 				echo '<a href="';
 				echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
 				echo $_SESSION['roles'][$login_schema];
-				if (ctype_digit((string) $login_id))
-				{
+//				if (ctype_digit((string) $login_id))
+//				{
 					echo '&u=' . $login_id;
-				}
+//				}
 				// echo  generate_url($script_name, [], $login_schema);
 				echo '">';
 				echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
@@ -98,7 +98,7 @@ if (!$s_anonymous)
 				echo '</li>';
 
 			}
-		}
+/*		}
 		else
 		{
 			$login_schema = key($logins);
@@ -109,7 +109,7 @@ if (!$s_anonymous)
 			echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
 			echo '</a>';
 			echo '</li>';
-		}
+		} */
 
 		echo '<li class="divider"></li>';
 

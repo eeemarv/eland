@@ -6,11 +6,13 @@ $allow_anonymous_post = true;
 
 require_once $rootpath . 'includes/inc_default.php';
 
+/*
 if ($s_id)
 {
 	header('Location: ' . generate_url('index'));
 	exit;
 }
+*/
 
 $token = $_GET['token'];
 $login = $_GET['login'];
