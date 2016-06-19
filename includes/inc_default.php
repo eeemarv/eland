@@ -310,11 +310,13 @@ else if ($logins[$s_schema] == $s_id && $s_id)
 }
 else if ($logins[$s_schema] == 'elas_guest')
 {
-	$s_id = 'elas';
 	if ($s_accountrole != 'guest')
 	{
 		redirect_index();
 	}
+
+	$s_id = 'elas';
+	$s_elas_guest = true;
 }
 else if ($logins[$s_schema] == 'master')
 {

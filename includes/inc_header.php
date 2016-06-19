@@ -148,14 +148,18 @@ if (!$s_anonymous)
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 
-	if ($s_schema && $s_id)
+	if ($s_master)
+	{
+		echo 'Master';
+	}
+	else if ($s_elas_guest)
+	{
+		echo 'eLAS gast login';
+	}
+	else if ($s_schema && $s_id)
 	{
 		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo (isset($s_master)) ? 'Master' : link_user($s_id, $s_schema, false);
-	}
-	else
-	{
-		echo 'Gast login';
+		echo link_user($s_id, $s_schema, false);
 	}
 
 	echo '<span class="caret"></span></a>'; 
