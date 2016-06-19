@@ -28,7 +28,7 @@ if(!empty($token))
 	{
 		$_SESSION['logins'][$schema] = 'elas_guest';
 
-		$param = 'welcome=1&r=guest';
+		$param = 'welcome=1&r=guest&u=elas';
 
 		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded');
 
@@ -62,7 +62,7 @@ if ($submit)
 		log_event('login','Master user logged in');
 		$alert->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
-		header('Location: ' . $location . $glue . 'a=1&r=admin&u=0');
+		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
 		exit;
 	}
 

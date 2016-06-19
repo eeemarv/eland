@@ -151,7 +151,7 @@ if (!$s_anonymous)
 	if ($s_schema && $s_id)
 	{
 		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo (isset($s_master)) ? 'master' : link_user($s_id, $s_schema, false);
+		echo (isset($s_master)) ? 'Master' : link_user($s_id, $s_schema, false);
 	}
 	else
 	{
@@ -160,7 +160,7 @@ if (!$s_anonymous)
 
 	echo '<span class="caret"></span></a>'; 
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($s_schema)
+	if ($s_schema && !$s_master && !$s_guest)
 	{
 		echo '<li><a href="' . generate_url('users', ['id' => $s_id], $s_schema) . '">';
 		echo '<i class="fa fa-user"></i> Mijn gegevens';
