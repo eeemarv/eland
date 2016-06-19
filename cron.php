@@ -24,11 +24,11 @@ require_once $rootpath . 'includes/inc_saldo_mail.php';
 require_once $rootpath . 'includes/inc_mail.php';
 require_once $rootpath . 'includes/multi_mail.php';
 
-$s3 = Aws\S3\S3Client::factory(array(
+$s3 = Aws\S3\S3Client::factory([
 	'signature'	=> 'v4',
 	'region'	=> 'eu-central-1',
 	'version'	=> '2006-03-01',
-));
+]);
 
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;
@@ -37,7 +37,7 @@ echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
 // select in which schema to perform updates
-$schema_lastrun_ary = $schema_interletsq_ary = array();
+$schema_lastrun_ary = $schema_interletsq_ary = [];
 
 foreach ($schemas as $h => $schema)
 {
@@ -158,7 +158,7 @@ if (!isset($schema_interletsq_min))
 		}
 		else
 		{
-			$token = $client->call('gettoken', array('apikey' => $apikey));
+			$token = $client->call('gettoken', ['apikey' => $apikey]);
 			$err = $client->getError();
 			if ($err)
 			{
@@ -257,7 +257,7 @@ if ($autominlimit_queue)
 		if (!$user
 			|| !$amount
 			|| !is_array($user)
-			|| !in_array($user['status'], array(1, 2))
+			|| !in_array($user['status'], [1, 2])
 			|| !$from_user
 			|| !is_array($from_user)
 			|| !$from_user['letscode']
@@ -267,7 +267,7 @@ if ($autominlimit_queue)
 		}
 
 		$mdb->connect();
-		$a = $mdb->settings->findOne(array('name' => 'autominlimit'));
+		$a = $mdb->settings->findOne(['name' => 'autominlimit']);
 
 		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
 
@@ -310,16 +310,16 @@ if ($autominlimit_queue)
 		$new_minlimit = $user['minlimit'] - $extract;
 		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
 
-		$e = array(
+		$e = [
 			'user_id'	=> $to_id,
 			'limit'		=> $new_minlimit,
 			'type'		=> 'min',
 			'ts'		=> new MongoDate(),
-		);
+		];
 
 		$mdb->connect();
 		$mdb->limit_events->insert($e);
-		$db->update('users', array('minlimit' => $new_minlimit), array('id' => $to_id));
+		$db->update('users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
 		readuser($to_id, true);
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, false, false) .  $r;
@@ -338,7 +338,7 @@ else
 
 // queue addresses to geocode
 
-$log_ary = array();
+$log_ary = [];
 
 $st = $db->prepare('select c.value, c.id_user
 	from contact c, type_contact tc, users u
@@ -360,11 +360,11 @@ while ($row = $st->fetch())
 		continue;
 	}
 
-	$data = array(
+	$data = [
 		'adr'	=> $adr,
 		'uid'	=> $row['id_user'],
 		'sch'	=> $schema,
-	);
+	];
 
 	$redis->set($key, 'q');
 	$redis->expire($key, 2592000);
@@ -394,11 +394,11 @@ function geo_q_process()
 	$curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 	$geocoder = new \Geocoder\ProviderAggregator();
 
-	$geocoder->registerProviders(array(
+	$geocoder->registerProviders([
 		new \Geocoder\Provider\GoogleMaps(
 			$curl, 'nl', 'be', true
 		),
-	));
+	]);
 
 	$geocoder->using('google_maps')
 		->limit(1);
@@ -437,10 +437,10 @@ function geo_q_process()
 			{
 				$address = $address_collection->first();
 
-				$ary = array(
+				$ary = [
 					'lat'	=> $address->getLatitude(),
 					'lng'	=> $address->getLongitude(),
-				);
+				];
 
 				$redis->set($key, json_encode($ary));
 				$redis->expire($key, 31536000); // 1 year
@@ -488,7 +488,7 @@ function admin_exp_msg()
 		WHERE u.status <> 0
 			AND m.id_user = u.id
 			AND validity <= ?';
-	$messages = $db->fetchAll($query, array($now));
+	$messages = $db->fetchAll($query, [$now]);
 
 	if (empty($to))
 	{
@@ -507,7 +507,7 @@ function admin_exp_msg()
 		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
-	mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
+	mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 	return true;
 }
@@ -523,7 +523,7 @@ function user_exp_msgs()
 	$warn_messages  = $db->fetchAll('SELECT m.*
 		FROM messages m
 			WHERE m.exp_user_warn = \'f\'
-				AND m.validity < ?', array($now));
+				AND m.validity < ?', [$now]);
 
 	foreach ($warn_messages AS $key => $value)
 	{
@@ -557,12 +557,12 @@ function user_exp_msgs()
 			return;
 		}
 
-		mail_q(array('to' => $value['id_user'], 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
 
 		log_event('mail', 'Message expiration mail sent to ' . $to);
 	}
 
-	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', array($now));
+	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
 
 	//no double warn in eLAND.
 
@@ -595,11 +595,11 @@ function cleanup_messages()
 	{
 		log_event('cron','Expired and deleted Messages ' . $msgs);
 
-		$db->executeQuery('delete from messages WHERE validity < ?', array($testdate));
+		$db->executeQuery('delete from messages WHERE validity < ?', [$testdate]);
 	}
 
 	$users = '';
-	$ids = array();
+	$ids = [];
 
 	$st = $db->prepare('SELECT u.id, u.letscode, u.name
 		FROM users u, messages m
@@ -622,13 +622,13 @@ function cleanup_messages()
 
 		if (count($ids) == 1)
 		{
-			$db->delete('messages', array('id_user' => $ids[0]));
+			$db->delete('messages', ['id_user' => $ids[0]]);
 		}
 		else if (count($ids) > 1)
 		{
 			$db->executeQuery('delete from messages where id_user in (?)',
-				array($ids),
-				array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+				[$ids],
+				[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 		}
 	}
 
@@ -642,17 +642,17 @@ function cleanup_messages()
 
 	while ($row = $rs->fetch())
 	{
-		$result = $s3->deleteObject(array(
+		$result = $s3->deleteObject([
 			'Bucket' => $s3_img,
 			'Key'    => $row['PictureFile'],
-		));
+		]);
 
-		$db->delete('msgpictures', array('id' => $row['id']));
+		$db->delete('msgpictures', ['id' => $row['id']]);
 	}
 
 	// update counts for each category
 
-	$offer_count = $want_count = array();
+	$offer_count = $want_count = [];
 
 	$rs = $db->prepare('select m.id_category, count(m.*)
 		from messages m, users u
@@ -700,12 +700,12 @@ function cleanup_messages()
 			continue;
 		}
 
-		$stats = array(
+		$stats = [
 			'stat_msgs_offers'	=> ($offer_count[$id]) ?: 0,
 			'stat_msgs_wanted'	=> ($want_count[$id]) ?: 0,
-		);
+		];
 		
-		$db->update('categories', $stats, array('id' => $id));
+		$db->update('categories', $stats, ['id' => $id]);
 	}
 
 	return true;
@@ -717,7 +717,7 @@ function saldo_update()
 {
 	global $db, $r;
 
-	$user_balances = $min = $plus = array();
+	$user_balances = $min = $plus = [];
 
 	$rs = $db->prepare('select id, saldo from users');
 
@@ -762,7 +762,7 @@ function saldo_update()
 			continue;
 		}
 
-		$db->update('users', array('saldo' => $calculated), array('id' => $id));
+		$db->update('users', ['saldo' => $calculated], ['id' => $id]);
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
 		log_event('cron' , $m);
@@ -776,7 +776,7 @@ run_cronjob('cleanup_news', 86400);
 function cleanup_news()
 {
     global $db, $now;
-	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', array($now))) ? true : false;
+	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', [$now])) ? true : false;
 }
 
 run_cronjob('cleanup_tokens', 604800);
@@ -786,7 +786,7 @@ run_cronjob('cleanup_tokens', 604800);
 function cleanup_tokens()
 {
 	global $db, $now;
-	$db->executeQuery('delete from tokens where validity < ?', array($now)) ? true : false;
+	$db->executeQuery('delete from tokens where validity < ?', [$now]) ? true : false;
 	return true;
 }
 
@@ -798,7 +798,7 @@ function cleanup_logs()
 
 	$mdb->connect();	
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
-	$mdb->logs->remove(array('timestamp' => array('$lt' => $treshold)));
+	$mdb->logs->remove(['timestamp' => ['$lt' => $treshold]]);
 	return true;
 }
 
@@ -820,7 +820,7 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
 	{
-		$lastrun_ary = array();
+		$lastrun_ary = [];
 
 		$rs = $db->prepare('select cronjob, lastrun from cron');
 
@@ -849,11 +849,11 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (isset($lastrun_ary[$name]))
 	{
-		$db->update('cron', array('lastrun' => gmdate('Y-m-d H:i:s', $lastrun)), array('cronjob' => $name));
+		$db->update('cron', ['lastrun' => gmdate('Y-m-d H:i:s', $lastrun)], ['cronjob' => $name]);
 	}
 	else
 	{
-		$db->insert('cron', array('cronjob' => $name, 'lastrun'	=> $now));
+		$db->insert('cron', ['cronjob' => $name, 'lastrun'	=> $now]);
 	}
 
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;
