@@ -21,17 +21,17 @@ function doupgrade($version)
 				break;
 
 			case 31000:
-				$db->delete('letsgroups', array('id' => 0));
+				$db->delete('letsgroups', ['id' => 0]);
 				break;
 
 			case 31002:
 				$query = "INSERT INTO config (category,setting,value,description,default) VALUES('system','ets_enabled','0', '', 0)";
-				$db->insert('config', array(
+				$db->insert('config', [
 					'category' 		=> 'system',
 					'setting'		=> 'ets_enabled',
 					'value'			=> '0',
 					'description'	=> 'Enable ETS functionality',
-					'default'		=> 0));
+					'default'		=> 0]);
 				break;
 
 			case 31003:
@@ -42,7 +42,7 @@ function doupgrade($version)
 				break;
 					
 		}
-		$db->update('parameters', array('value' => $version), array('parameter' => 'schemaversion'));
+		$db->update('parameters', ['value' => $version), array('parameter' => 'schemaversion']);
 		$db->commit();
 		return true;
 	}

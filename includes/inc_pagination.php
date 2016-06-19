@@ -11,10 +11,10 @@ class pagination
 	private $row_count = 0;
 	private $page_num = 0;
 	private $entity = '';
-	private $params = array();
+	private $params = [];
 	private $inline = false;
 
-	private $limit_options = array(
+	private $limit_options = [
 		10 		=> 10,
 		25 		=> 25,
 		50 		=> 50,
@@ -22,9 +22,9 @@ class pagination
 		250		=> 250,
 		500		=> 500,
 		1000 	=> 1000,
-	);
+	];
 
-	public function __construct($entity = '', $row_count = 0, $params = array(), $inline = false)
+	public function __construct($entity = '', $row_count = 0, $params = [], $inline = false)
 	{
 		$this->limit = $params['limit'] ?: 25;
 		$this->start = $params['start'] ?: 0;
@@ -43,7 +43,8 @@ class pagination
 		}
 	}
 
-	public function render(){
+	public function render()
+	{
 
 		echo '<div class="row print-hide"><div class="col-md-12">';
 		echo '<ul class="pagination">';

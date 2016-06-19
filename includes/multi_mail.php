@@ -4,9 +4,9 @@ class multi_mail
 {
 	private $text = '';
 	private $html = '';
-	private $out = array();
-	private $vars = array();
-	private $cond = array();
+	private $out = [];
+	private $vars = [];
+	private $cond = [];
 
 	public function __construct()
 	{
@@ -14,7 +14,7 @@ class multi_mail
 
 	public function add($key, $value, $cond = true)
 	{
-		$out = array($key => $value);
+		$out = [$key => $value];
 
 		if (is_string($cond))
 		{
@@ -86,7 +86,7 @@ class multi_mail
 		return $this;
 	}
 
-	public function mail_q($mail_ary = array())
+	public function mail_q($mail_ary = [])
 	{
 		$html = $text = '';
 
@@ -122,7 +122,7 @@ class multi_mail
 			$html .= (isset($out['html_var']) && $cond) ? $this->vars[$out['html_var']] : '';
 		}
 
-		$out = array('text' => $text);
+		$out = ['text' => $text];
 
 		if ($html)
 		{
@@ -130,7 +130,7 @@ class multi_mail
 		}
 
 		mail_q(array_merge($mail_ary, $out));
-		$this->vars = array();
+		$this->vars = [];
 
 		return $this;
 	}

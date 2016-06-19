@@ -20,6 +20,8 @@ $location = (strpos($location, 'login.php') === false) ? $location : 'index.php'
 $location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
 $error_location = 'login.php?location=' . urlencode($location);
 
+$submit = isset($_POST['zend']) ? true : false;
+
 if(!empty($token))
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
@@ -41,7 +43,7 @@ if(!empty($token))
 	}
 }
 
-if ($_POST['zend'])
+if ($submit)
 {
 	$login = trim($_POST['login']);
 	$password = trim($_POST['password']);

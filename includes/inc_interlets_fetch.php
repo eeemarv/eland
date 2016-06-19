@@ -7,7 +7,7 @@ function fetch_interlets_msgs($client, $group)
 {
 	global $redis, $r;
 
-	$msgs = array();
+	$msgs = [];
 
 	$crawler = $client->request('GET', $group['url'] . '/renderindex.php');
 
@@ -56,14 +56,14 @@ function fetch_interlets_typeahead_data($client, $group)
 
 	echo $url;
 
-	$users = array();
+	$users = [];
 
 	$h = $crawler->filter('table tr')
 		->first()
 		->nextAll()
 		->each(function ($node) use (&$users)
 	{
-		$user = array();
+		$user = [];
 
 		$td = $node->filter('td')->first();
 		$bgcolor = $td->attr('bgcolor');

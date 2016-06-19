@@ -13,9 +13,9 @@ class alert
 
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
 		{
-			$_SESSION['alert'] = array();
+			$_SESSION['alert'] = [];
 		}		
-		$_SESSION['alert'][] = array($type, $msg);
+		$_SESSION['alert'][] = [$type, $msg];
 	}
 
 	function error($msg)

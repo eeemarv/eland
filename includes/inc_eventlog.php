@@ -38,7 +38,7 @@ function log_event($type, $event, $remote_schema = false)
 	$log->addNotice('eLAND: ' . $sch . ': ' . $h . ': ' .
 		$type . ': ' . $event . $user_str . "\n\r");
 
-	$item = array(
+	$item = [
 		'ts_tz'			=> date('Y-m-d H:i:s'),
 		'timestamp'		=> gmdate('Y-m-d H:i:s'),
 		'user_id' 		=> $s_id,
@@ -48,7 +48,7 @@ function log_event($type, $event, $remote_schema = false)
 		'ip'			=> $_SERVER['REMOTE_ADDR'],
 		'type'			=> strtolower($type),
 		'event'			=> $event,
-	);
+	];
 
 	register_shutdown_function('insert_log', $item, $remote_schema);
 }

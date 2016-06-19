@@ -284,7 +284,14 @@ if (isset($logins))
 
 // var_dump($logins);
 
-if ($logins[$s_schema] == $s_id && $s_id)
+if (!isset($logins))
+{
+	if ($s_accountrole != 'anonymous')
+	{
+		redirect_login();
+	}
+}
+else if ($logins[$s_schema] == $s_id && $s_id)
 {
 	$session_user = readuser($s_id, false, $s_schema);
 

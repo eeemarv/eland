@@ -2,29 +2,29 @@
 
 class access_control
 {
-	private $acc_ary = array(
-		'admin'	=> array(
+	private $acc_ary = [
+		'admin'	=> [
 			'level'	=> 0,
 			'label'	=> 'admin',
 			'class'	=> 'info',
-		),
-		'users'	=> array(
+		],
+		'users'	=> [
 			'level'	=> 1,
 			'label'	=> 'leden',
 			'class'	=> 'warning',
-		),
-		'interlets'	=> array(
+		],
+		'interlets'	=> [
 			'level'	=> 2,
 			'label'	=> 'interlets',
 			'class'	=> 'success',
-		),
-	);
+		],
+	];
 
-	private $acc_ary_search = array(
+	private $acc_ary_search = [
 		0 => 'admin',
 		1 => 'users',
 		2 => 'interlets',
-	);
+	];
 
 	/**
 	 *
@@ -113,7 +113,7 @@ class access_control
 		{
 			if (!is_array($omit_access))
 			{
-				$omit_access = array($omit_access);
+				$omit_access = [$omit_access];
 			}
 
 			foreach ($omit_access as $omit)

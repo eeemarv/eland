@@ -24,7 +24,7 @@ function processqueue()
 
 		echo 'Processing transaction' .  $transid . "\t";
 
-		$my_group = $db->fetchAssoc('select * from letsgroups where id = ?', array($group_id));
+		$my_group = $db->fetchAssoc('select * from letsgroups where id = ?', [$group_id]);
 
 		$myuser = readuser($value['id_from']);
 		$real_from = $myuser['letscode'] . ' ' . $myuser['name'];
@@ -39,7 +39,7 @@ function processqueue()
 		$err = $client->getError();
 		if (!$err)
 		{
-			$result = $client->call('dopayment', array(
+			$result = $client->call('dopayment', [
 				'apikey' => $myapikey,
 				'from' => $from,
 				'real_from' => $real_from,
@@ -48,7 +48,7 @@ function processqueue()
 				'amount' => $amount,
 				'transid' => $transid,
 				'signature' => $signature
-			));
+			]);
 			$err = $client->getError();
 			if (!$err)
 			{
@@ -120,7 +120,7 @@ function processqueue()
 function unqueue($transid)
 {
 	global $db;
-	$db->delete('interletsq', array('transid' => $transid));
+	$db->delete('interletsq', ['transid' => $transid]);
 	log_event('trans','Removing ' . $transid . 'from queue');	
 }
 
@@ -128,7 +128,7 @@ function update_queue($transid,$count,$result)
 {
 	global $db;
 	$count++;
-	$db->update('interletsq', array('retry_count' => $count, 'last_status' => $result), array('transid' => $transid));
+	$db->update('interletsq', ['retry_count' => $count, 'last_status' => $result], ['transid' => $transid]);
 }
 
 function localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to)
@@ -143,14 +143,14 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 	$transaction['description'] = $description;
 	$transaction['id_from'] = $id_from;
 	//Lookup id_to first
-	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($my_group['localletscode']));
+	$to_user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$my_group['localletscode']]);
 
 	$transaction['id_to'] = $to_user['id'];
 	//Real_to has to be set by a soap call
 	$mysoapurl = $my_group['elassoapurl'] .'/wsdlelas.php?wsdl';
 	$myapikey = $my_group['remoteapikey'];
 	$client = new nusoap_client($mysoapurl, true);
-	$result = $client->call('userbyletscode', array('apikey' => $myapikey, 'letscode' => $letscode_to));
+	$result = $client->call('userbyletscode', ['apikey' => $myapikey, 'letscode' => $letscode_to]);
 	$err = $client->getError();
 	if (!$err)
 	{
@@ -160,11 +160,11 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 	$transaction['transid'] = $transid;
 	$transaction['date'] = date('Y-m-d H:i:s');
 
-	$error_list = array();
+	$error_list = [];
 
-	if (!isset($transaction['description'])|| (trim($transaction['description'] ) == ''))
+	if (!isset($transaction['description']) || (trim($transaction['description'] ) == ''))
 	{
-		$error_list['description']='Dienst is niet ingevuld';
+		$error_list['description'] = 'Dienst is niet ingevuld';
 	}
 
 	//amount may not be empty
@@ -235,7 +235,7 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 
 		$text = 'WARNING: LOCAL COMMIT OF TRANSACTION $transid FAILED!!!  This means the transaction is not balanced now!';
 
-		mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 	}
 
 	echo $result;

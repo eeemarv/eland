@@ -20,7 +20,7 @@ function saldo()
 
 // fetch active users
 
-	$users = array();
+	$users = [];
 
 	$rs = $db->prepare('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
@@ -37,7 +37,7 @@ function saldo()
 
 // fetch mail addresses & cron_saldo
 
-	$mailaddr = $mailaddr_public = $saldo_mail = array();
+	$mailaddr = $mailaddr_public = $saldo_mail = [];
 
 	$st = $db->prepare('select u.id, c.value, c.flag_public
 		from users u, contact c, type_contact tc
@@ -94,12 +94,12 @@ function saldo()
 
 	// fetch images
 	
-	$image_ary = array();
+	$image_ary = [];
 
 	$rs = $db->prepare('select m.id, p."PictureFile"
 		from msgpictures p, messages m
 		where p.msgid = m.id
-			and m.cdate >= ?', array($treshold_time));
+			and m.cdate >= ?', [$treshold_time]);
 
 	$rs->bindValue(1, $treshold_time);
 	$rs->execute();
@@ -111,7 +111,7 @@ function saldo()
 
 	// fetch addresses
 
-	$addr = $addr_public = array();
+	$addr = $addr_public = [];
 
 	$rs = $db->prepare('select u.id, c.value, flag_public
 		from users u, contact c, type_contact tc
@@ -422,7 +422,7 @@ function saldo()
 //queue mail for sending
 
 	$subject = 'Recent vraag en aanbod';
-	$log_to = array();
+	$log_to = [];
 
 	foreach ($saldo_mail as $user_id => $d)
 	{
@@ -434,7 +434,7 @@ function saldo()
 			$mm->set_var('googleaddr', str_replace(' ', '+', $addr[$user_id]));
 		}
 
-		$mm->mail_q(array('to' => $user_id, 'subject' => $subject));
+		$mm->mail_q(['to' => $user_id, 'subject' => $subject]);
 		$log_to[] = $users[$user_id]['letscode'] . ' ' . $users[$user_id]['name'] . ' (' . $user_id . ')';
 	}
 

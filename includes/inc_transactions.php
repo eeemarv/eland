@@ -37,8 +37,8 @@ function insert_transaction($transaction)
 	{
 		$db->insert('transactions', $transaction);
 		$id = $db->lastInsertId('transactions_id_seq');
-		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', array($transaction['amount'], $transaction['id_to']));
-		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', array($transaction['amount'], $transaction['id_from']));
+		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
+		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
 		$db->commit();
 
 	}
@@ -100,12 +100,12 @@ function mail_mail_interlets_transaction($transaction)
 	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
 	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin'));
+	mail_q(['to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
 
 	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
 	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
 
-	mail_q(array('to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin'));
+	mail_q(['to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);
 }
 
 /*
@@ -160,17 +160,17 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		mail_q(array('to' => $userfrom['id'], 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => $userfrom['id'], 'subject' => $subject, 'text' => $text]);
 	}
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		mail_q(array(
+		mail_q([
 			'to' => $t_schema . $userto['id'],
 			'subject' => $subject,
 			'text' => $text,
 			'schema'	=> $sch,
-		));
+		]);
 	}
 
 	log_event('mail', $subject, $sch);
@@ -191,7 +191,7 @@ function mail_failed_interlets($transid, $id_from, $amount, $description, $letsc
 
 	$userfrom = readuser($id_from);
 
-	$to = array();
+	$to = [];
 
 	if($userfrom['accountrole'] != 'interlets')
 	{
@@ -228,6 +228,6 @@ function mail_failed_interlets($transid, $id_from, $amount, $description, $letsc
 	$text .= 'Aantal: ' . $t . $amount . $currency . $r . $r;
 	$text .= 'Transactie id:' . $t . $transid . $r . $r . '--';;
 
-	mail_q(array('to' => $to, 'subject' => $subject, 'text' => $text, 'cc' => 'admin'));
+	mail_q(['to' => $to, 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);
 }
 
