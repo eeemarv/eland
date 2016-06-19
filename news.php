@@ -80,7 +80,7 @@ if ($add && $submit && !count($errors))
 {
 	$news['approved'] = ($s_admin) ? 't' : 'f';
 	$news['published'] = ($s_admin) ? 't' : 'f';
-	$news['id_user'] = $s_id;
+	$news['id_user'] = ($s_master) ? 0 : $s_id;
 	$news['cdate'] = date('Y-m-d H:i:s');
 	
 	if ($db->insert('news', $news))

@@ -76,7 +76,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 	foreach ($rows as $row)
 	{
-		if ($s_user && ($row['id_user'] != $s_id))
+		if (!$s_master && $s_user && ($row['id_user'] != $s_id))
 		{
 			$alert->error('Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')');
 			cancel();
@@ -528,6 +528,12 @@ if ($mail && $post && $id)
 		cancel();
 	}
 
+	if ($s_master)
+	{
+		$alert->error('Het master account kan geen berichten versturen.');
+		cancel();
+	}
+
 	if (!$s_schema)
 	{
 		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
@@ -743,7 +749,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> ($s_admin) ? (int) $user['id'] : $s_id,
+			'id_user'		=> ($s_admin) ? (int) $user['id'] : (($s_master) ? 0 : $s_id),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -921,18 +927,25 @@ if (($edit || $add))
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> '1',
-			'id_user'		=> $s_id,
+			'id_user'		=> ($s_master) ? 0 : $s_id,
 			'id_category'	=> '',
 			'amount'		=> '',
 			'units'			=> '',
 			'local'			=> 0,
 		];
 
-		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : $s_id;
+		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : (($s_master) ? 0 : $s_id);
 
-		$user = readuser($uid);
+		if ($s_master)
+		{
+			$user_letscode = '';
+		}
+		else
+		{
+			$user = readuser($uid);
 
-		$user_letscode = $user['letscode'] . ' ' . $user['name'];
+			$user_letscode = $user['letscode'] . ' ' . $user['name'];
+		}
 	}
 
 	$cat_list = ['' => ''];
@@ -949,7 +962,11 @@ if (($edit || $add))
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
 	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-	$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+
+	if (!$s_master)
+	{
+		$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
+	}
 
 	if ($s_admin)
 	{
@@ -1076,7 +1093,7 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_from = ($s_schema && !$s_master) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$balance = $user['saldo'];
 
@@ -1146,7 +1163,10 @@ if ($id)
 		}
 	}
 
-	if ($message['msg_type'] == 1 && ($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7 && $s_id)
+	if ($message['msg_type'] == 1
+		&& ($s_admin || ($s_schema && !$s_owner))
+		&& $user['status'] != 7
+		&& !$s_elas_guest)
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1172,7 +1192,7 @@ if ($id)
 
 	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
-	if ($s_user || $s_admin)
+	if (($s_user || $s_admin) && !$s_master)
 	{
 		$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
@@ -1668,7 +1688,7 @@ if ($s_admin || $s_user)
 			$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
 	}
-	else
+	else if (!$s_master)
 	{
 		$top_buttons .= aphp('messages', ['uid' => $s_id], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
@@ -1857,6 +1877,14 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['cid'], $params_form['q'], $params_form['valid'], $params_form['ow']);
 	unset($params_form['fcode'], $params_form['ustatus'], $params_form['uid']);
+
+	$params_form['r'] = $s_accountrole;
+	$params_form['u'] = $s_id;
+
+	if (!$s_group_self)
+	{
+		$params_form['s'] = $s_schema;
+	}
 
 	foreach ($params_form as $name => $value)
 	{

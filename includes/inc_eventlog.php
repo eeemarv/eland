@@ -8,7 +8,7 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 function log_event($type, $event, $remote_schema = false)
 {
-	global $schema, $hosts, $s_schema, $s_id;
+	global $schema, $hosts, $s_schema, $s_id, $s_master;
 
 	$type = strtolower($type);
 
@@ -23,7 +23,17 @@ function log_event($type, $event, $remote_schema = false)
 	$streamHandler->setFormatter($formatter);
 	$log->pushHandler($streamHandler);
 
-	if ($s_id && $s_schema)
+	if ($s_master)
+	{
+		$username = $user_str = 'master';
+		$letscode = '';
+	}
+	else if ($s_elas_guest)
+	{
+		$username = $user_str = 'elas_guest';
+		$letscode = '';
+	}
+	else if ($s_id && $s_schema)
 	{
 		$user = readuser($s_id, false, $s_schema);
 		$username = $user['name'];
@@ -41,7 +51,7 @@ function log_event($type, $event, $remote_schema = false)
 	$item = [
 		'ts_tz'			=> date('Y-m-d H:i:s'),
 		'timestamp'		=> gmdate('Y-m-d H:i:s'),
-		'user_id' 		=> $s_id,
+		'user_id' 		=> ($s_master || $s_elas_guest) ? 0 : $s_id,
 		'user_schema'	=> $s_schema,
 		'letscode'		=> strtolower($letscode),
 		'username'		=> $username,

@@ -17,7 +17,7 @@ if ($token)
 		{
 			if ($user_id = $redis->get($schema . '_token_' . $token))
 			{
-				$db->update('users', array('password' => hash('sha512', $password)), array('id' => $user_id));
+				$db->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
 				log_event('system', 'password reset success user ' . link_user($user, false, false, true));
@@ -31,7 +31,7 @@ if ($token)
 				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
 				$text .= 'Inloggen: ' . $url;
 
-				mail_q(array('to' => $user_id, 'subject' => $subj, 'text' => $text), true);
+				mail_q(['to' => $user_id, 'subject' => $subj, 'text' => $text], true);
 
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
@@ -89,7 +89,7 @@ if ($_POST['zend'])
 			WHERE c. value = ?
 				AND tc.id = c.id_type_contact
 				AND tc.abbrev = \'mail\'
-				AND c.id_user = u.id', array($email));
+				AND c.id_user = u.id', [$email]);
 
 		if (count($mail_ary) < 2)
 		{
@@ -113,7 +113,7 @@ if ($_POST['zend'])
 				$text .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
 				$text .= 'gelieve deze mail te negeren.';
 
-				mail_q(array('to' => $email, 'text' => $text, 'subject' => $subject), true);
+				mail_q(['to' => $email, 'text' => $text, 'subject' => $subject], true);
 
 				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event('system', 'Paswoord reset link verstuurd naar ' . $email);

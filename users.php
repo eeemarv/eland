@@ -129,6 +129,12 @@ if ($user_mail_submit && $id && $post)
 		cancel();
 	}
 
+	if ($s_master)
+	{
+		$alert->error('Het master account kan geen berichten versturen.');
+		cancel();
+	}
+
 	if (!$s_schema)
 	{
 		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
@@ -445,6 +451,11 @@ if ($bulk_submit && $post && $s_admin)
 		if (!readconfigfromdb('mailenabled'))
 		{
 			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
+		}
+
+		if ($s_master)
+		{
+			$errors[] = 'Het master account kan geen berichten verzenden.';
 		}
 	}
 
@@ -857,7 +868,16 @@ if ($del)
 		{
 			$sha512 = hash('sha512', $password);
 
-			if ($sha512 == $db->fetchColumn('select password from users where id = ?', [$s_id]))
+			if ($s_master)
+			{
+				$enc_password = getenv('MASTER_PASSWORD');
+			}
+			else
+			{
+				$enc_password = $db->fetchColumn('select password from users where id = ?', [$s_id]);
+			}
+
+			if ($sha512 == $enc_password)
 			{
 				$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 				$msgs = '';
@@ -1352,7 +1372,7 @@ if ($add || $edit)
 
 			if ($add)
 			{
-				$user['creator'] = $s_id;
+				$user['creator'] = ($s_master) ? 0 : $s_id;
 
 				$user['cdate'] = date('Y-m-d H:i:s');
 
@@ -1974,7 +1994,7 @@ if ($id)
 	}
 
 	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_from = ($s_schema && !$s_master) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 
@@ -2036,7 +2056,8 @@ if ($id)
 		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if (($s_admin || ($s_schema && !$s_owner)) && $user['status'] != 7 && $s_id)
+	if (($s_admin
+		|| (($s_schema && !$s_owner)) && $user['status'] != 7 && !$s_elas_guest))
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 
@@ -2675,31 +2696,34 @@ else
 			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
 		}
 
-		if ($s_guest && $s_schema && $s_id)
+		if (!$s_master)
 		{
-			$my_adr = $db->fetchColumn('select c.value
-				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
-				where c.id_user = ?
-					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', [$s_id]);
-		}
-		else if (!$s_guest)
-		{
-			$my_adr = $contacts[$s_id]['adr'][0][0];
-		}
-
-		$my_geo = false;
-
-		if (isset($my_adr))
-		{
-			$geo = $redis->get('geo_' . $my_adr);
-
-			if ($geo && $geo != 'q' && $geo != 'f')
+			if ($s_guest && $s_schema && !$s_elas_guest)
 			{
-				$geo = json_decode($geo, true);
-				$lat = $geo['lat'];
-				$lng = $geo['lng'];
-				$my_geo = true;
+				$my_adr = $db->fetchColumn('select c.value
+					from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+					where c.id_user = ?
+						and c.id_type_contact = tc.id
+						and tc.abbrev = \'adr\'', [$s_id]);
+			}
+			else if (!$s_guest)
+			{
+				$my_adr = $contacts[$s_id]['adr'][0][0];
+			}
+
+			$my_geo = false;
+
+			if (isset($my_adr))
+			{
+				$geo = $redis->get('geo_' . $my_adr);
+
+				if ($geo && $geo != 'q' && $geo != 'f')
+				{
+					$geo = json_decode($geo, true);
+					$lat = $geo['lat'];
+					$lng = $geo['lng'];
+					$my_geo = true;
+				}
 			}
 		}
 	}
@@ -2765,7 +2789,7 @@ if ($s_admin && $v_list)
 
 $h1 .= '</span>';
 
-if ($s_user || $s_admin)
+if (($s_user || $s_admin) && !$s_master)
 {
 	$top_buttons .= aphp('users', ['id' => $s_id], 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
 }
@@ -3554,7 +3578,7 @@ function sendadminmail($user)
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $s_id, $alert, $systemname, $systemtag;
+	global $base_url, $alert, $systemname, $systemtag;
 
 	if (empty($user['mail']))
 	{

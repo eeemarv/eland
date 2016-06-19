@@ -68,14 +68,13 @@ if(isset($_POST['zend']))
 
 	if(!count($errors))
 	{
-		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
+		$text  = "-- via het publieke formulier van de website werd het volgende probleem gemeld --\r\n";
 		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
 
 		$text .= 'Gebruiker: ' . link_user($help['user_id'], false, false, true) . "\r\n";
 
-		$text .= 'Gebruiker ingelogd: ';
-		$text .= ($s_id) ? 'Ja' : 'Nee (Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
-		$text .= ($s_id) ? '' : 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben).';
+		$text .= 'Opmerking: het is niet geheel zeker dat dit is de gebruiker zelf is. ';
+		$text .= 'Iemand anders die het email adres en de letscode kent, kan dit bericht verzonden hebben.';
 		$text .= "\r\n\r\n";
 		$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
 		$text .= $help['description'] . "\r\n\r\n";
@@ -171,9 +170,6 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-if (!$s_id)
-{
-	echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord aanvragen met je e-mail adres!</i></small>';
-}
+echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord aanvragen met je e-mail adres!</i></small>';
 
 include $rootpath . 'includes/inc_footer.php';

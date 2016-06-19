@@ -109,7 +109,16 @@ if ($submit)
 	{
 		$password = hash('sha512', $password);
 
-		if ($password != $db->fetchColumn('select password from users where id = ?', [$s_id]))
+		if ($s_master)
+		{
+			$enc_password = getenv('MASTER_PASSWORD');
+		}
+		else
+		{
+			$enc_password = $db->fetchColumn('select password from users where id = ?', [$s_id]);
+		}
+
+		if ($password != $enc_password)
 		{
 			$errors[] = 'Paswoord is niet juist.';
 		}
@@ -260,7 +269,7 @@ if ($submit)
 					'date' 			=> $date,
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
-					'creator'		=> $s_id,
+					'creator'		=> ($s_master) ? 0 : $s_id,
 				];
 
 				$db->insert('transactions', $trans);
@@ -325,7 +334,11 @@ if ($submit)
 
 		log_event('trans', $log_str);
 
-		if ($mail_en)
+		if ($s_master)
+		{
+			$alert->warning('Master account: geen mails verzonden.');
+		} 
+		else if ($mail_en)
 		{
 			if (mail_mass_transaction($mail_ary))
 			{

@@ -40,7 +40,7 @@ if ($add)
 		if (!count($errors))
 		{
 			$cat['cdate'] = date('Y-m-d H:i:s');
-			$cat['id_creator'] = $s_id;
+			$cat['id_creator'] = ($s_master) ? 0 : $s_id;
 			$cat['fullname'] = ($cat['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array((int) $cat['id_parent'])) . ' - ' : '';
 			$cat['fullname'] .= $cat['name'];
 

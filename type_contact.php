@@ -18,7 +18,7 @@ if ($add)
 			cancel();
 		}
 
-		$tc = array();
+		$tc = [];
 		$tc['name'] = $_POST['name'];
 		$tc['abbrev'] = $_POST['abbrev'];
 		
@@ -81,9 +81,9 @@ if ($add)
 
 if ($edit)
 {
-	$tc_prefetch = $db->fetchAssoc('select * from type_contact where id = ?', array($edit));
+	$tc_prefetch = $db->fetchAssoc('select * from type_contact where id = ?', [$edit]);
 
-	if (in_array($tc_prefetch['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
+	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
 		$alert->warning('Beschermd contact type.');
 
@@ -98,18 +98,18 @@ if ($edit)
 			cancel();
 		}
 
-		$tc = array(
+		$tc = [
 			'name'		=> $_POST['name'],
 			'abbrev'	=> $_POST['abbrev'],
 			'id'		=> $edit,
-		);
+		];
 
 		$error = (empty($tc['name'])) ? 'Geen naam ingevuld! ' : '';
 		$error .= (empty($tc['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
 
 		if (!$error)
 		{
-			if ($db->update('type_contact', $tc, array('id' => $edit)))
+			if ($db->update('type_contact', $tc, ['id' => $edit]))
 			{
 				$alert->success('Contact type aangepast.');
 
@@ -169,15 +169,15 @@ if ($edit)
 
 if ($del)
 {
-	$ct = $db->fetchAssoc('select * from type_contact where id = ?', array($del));
+	$ct = $db->fetchAssoc('select * from type_contact where id = ?', [$del]);
 
-	if (in_array($ct['abbrev'], array('mail', 'tel', 'gsm', 'adr', 'web')))
+	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
 		$alert->warning('Beschermd contact type.');
 		cancel();
 	}
 
-	if ($db->fetchColumn('select id from contact where id_type_contact = ?', array($del)))
+	if ($db->fetchColumn('select id from contact where id_type_contact = ?', [$del]))
 	{
 		$alert->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
 		cancel();
@@ -191,7 +191,7 @@ if ($del)
 			cancel();
 		}
 
-		if ($db->delete('type_contact', array('id' => $del)))
+		if ($db->delete('type_contact', ['id' => $del]))
 		{
 			$alert->success('Contact type verwijderd.');
 		}
@@ -226,7 +226,7 @@ if ($del)
 
 $types = $db->fetchAll('select * from type_contact tc');
 
-$contact_count = array();
+$contact_count = [];
 
 $rs = $db->prepare('select id_type_contact, count(id)
 	from contact
@@ -264,7 +264,7 @@ foreach($types as $t)
 {
 	$count = isset($contact_count[$t['id']]) ? $contact_count[$t['id']] : 0;
 
-	$protected = (in_array($t['abbrev'], array('mail', 'gsm', 'tel', 'adr', 'web'))) ? true : false;
+	$protected = (in_array($t['abbrev'], ['mail', 'gsm', 'tel', 'adr', 'web'])) ? true : false;
 
 	echo '<tr>';
 

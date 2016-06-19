@@ -27,6 +27,11 @@ if(isset($_POST['zend']))
 		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
+	if ($s_master)
+	{
+		$errors[] = 'Het master account kan geen berichten versturen.';
+	}
+
 	if ($token_error = get_error_form_token())
 	{
 		$errors[] = $token_error;
@@ -103,11 +108,18 @@ else
 		'description' 		=> '',
 	];
 
-	$mail = getmailadr($s_id);
-
-	if (!count($mail))
+	if ($s_master)
 	{
-		$alert->warning('Je hebt geen email adres ingesteld voor je account. ');
+		$alert->warning('Het master account kan geen berichten versturen.');
+	}
+	else
+	{
+		$mail = getmailadr($s_id);
+
+		if (!count($mail))
+		{
+			$alert->warning('Je hebt geen email adres ingesteld voor je account. ');
+		}
 	}
 }
 

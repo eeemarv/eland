@@ -5,6 +5,8 @@ $page_access = 'anonymous';
 $allow_anonymous_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 
+$submit = isset($_POST['zend']) ? true : false;
+
 if ($s_id)
 {
 	header('Location: ' . $rootpath . 'index.php');
@@ -40,13 +42,13 @@ if ($token = $_GET['token'])
 				}
 			}
 
-			if (!$db->fetchColumn('select name from users where name = ?', array($name)))
+			if (!$db->fetchColumn('select name from users where name = ?', [$name]))
 			{
 				break;
 			}
 		}
 
-		$user = array(
+		$user = [
 			'name'			=> $name,
 			'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
 			'postcode'		=> $data['postcode'],
@@ -60,7 +62,7 @@ if ($token = $_GET['token'])
 			'lang'			=> 'nl',
 			'hobbies'		=> '',
 			'cdate'			=> gmdate('Y-m-d H:i:s'),
-		);
+		];
 
 		$db->beginTransaction();
 
@@ -69,7 +71,7 @@ if ($token = $_GET['token'])
 			$db->insert('users', $user);
 			$user_id = $db->lastInsertId('users_id_seq');
 
-			$tc = array();
+			$tc = [];
 
 			$rs = $db->prepare('select abbrev, id from type_contact');
 
@@ -80,35 +82,37 @@ if ($token = $_GET['token'])
 				$tc[$row['abbrev']] = $row['id'];
 			}
 
-			$mail = array(
+			$mail = [
 				'id_user'			=> $user_id,
 				'flag_public'		=> 0,
 				'value'				=> $data['email'],
 				'id_type_contact'	=> $tc['mail'],
-			);
+			];
+
 			$db->insert('contact', $mail);
 
 			if ($data['gsm'] || $data['tel'])
 			{
 				if ($data['gsm'])
 				{
-					$gsm = array(
+					$gsm = [
 						'id_user'			=> $user_id,
 						'flag_public'		=> 0,
 						'value'				=> $data['gsm'],
 						'id_type_contact'	=> $tc['gsm'],
-					);
+					];
+
 					$db->insert('contact', $gsm);
 				}
 
 				if ($data['tel'])
 				{
-					$tel = array(
+					$tel = [
 						'id_user'			=> $user_id,
 						'flag_public'		=> 0,
 						'value'				=> $data['tel'],
 						'id_type_contact'	=> $tc['tel'],
-					);
+					];
 					$db->insert('contact', $tel);
 				}
 			}
@@ -128,7 +132,7 @@ if ($token = $_GET['token'])
 		$text .= 'Email: ' . $data['email'] . "\n\n";
 		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
 
-		mail_q(array('to' => 'admin', 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 		$alert->success('Inschrijving voltooid.');
 
@@ -168,16 +172,16 @@ if ($token = $_GET['token'])
 	exit;
 }
 
-if ($_POST['zend'])
+if ($submit)
 {
-	$reg = array(
+	$reg = [
 		'email'			=> $_POST['email'],
 		'first_name'	=> $_POST['first_name'],
 		'last_name'		=> $_POST['last_name'],
 		'postcode'		=> $_POST['postcode'],
 		'tel'			=> $_POST['tel'],
 		'gsm'			=> $_POST['gsm'],
-	);
+	];
 
 	log_event('system', 'Registration request for ' . $reg['email']);
 
@@ -193,7 +197,7 @@ if ($_POST['zend'])
 		from contact c, type_contact tc
 		where c. value = ?
 			AND tc.id = c.id_type_contact
-			AND tc.abbrev = \'mail\'', array($reg['email'])))
+			AND tc.abbrev = \'mail\'', [$reg['email']]))
 	{
 		$alert->error('Er bestaat reeds een inschrijving met dit mailadres.');
 	}
@@ -228,7 +232,7 @@ if ($_POST['zend'])
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$text .= "Deze link blijft 1 dag geldig.\n\n";
 
-		mail_q(array('to' => $reg['email'], 'subject' => $subject, 'text' => $text));
+		mail_q(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
 
 		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je verstuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');

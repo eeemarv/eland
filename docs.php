@@ -408,7 +408,7 @@ if ($submit)
 			'org_filename'	=> $file,
 			'access'		=> (int) $access,
 			'ts'			=> gmdate('Y-m-d H:i:s'),
-			'user_id'		=> $s_id,
+			'user_id'		=> ($s_master) ? 0 : $s_id,
 		];
 
 		if ($map_name = $_POST['map_name'])

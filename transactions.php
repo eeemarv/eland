@@ -85,7 +85,7 @@ if ($add)
 			}
 		}
 
-		if ($s_user)
+		if ($s_user && !$s_master)
 		{
 			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', [$s_id]);
 		}
@@ -414,7 +414,7 @@ if ($add)
 			}
 
 			//
-			$transaction['creator'] = (empty($s_id)) ? 0 : $s_id;
+			$transaction['creator'] = ($s_master) ? 0 : $s_id;
 			$transaction['cdate'] = date('Y-m-d H:i:s');
 			$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
@@ -486,7 +486,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin) ? $_POST['letscode_from'] : link_user($s_id, false, false);
+		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, false, false);
 	}
 	else
 	{
@@ -499,7 +499,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> date('Y-m-d'),
-			'letscode_from'	=> link_user($s_id, false, false),
+			'letscode_from'	=> ($s_master) ? '' : link_user($s_id, false, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -579,7 +579,10 @@ if ($add)
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
-	$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+	if (!$s_master)
+	{
+		$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+	}
 
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
@@ -588,11 +591,14 @@ if ($add)
 
 	$minlimit = $session_user['minlimit'];
 
-	echo '<div>';
-	echo '<p><strong>' . link_user($session_user) . ' huidige ' . $currency . ' stand: ';
-	echo '<span class="label label-info">' . $balance . '</span></strong> ';
-	echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
-	echo '</div>';
+	if (!$s_master)
+	{
+		echo '<div>';
+		echo '<p><strong>' . link_user($session_user) . ' huidige ' . $currency . ' stand: ';
+		echo '<span class="label label-info">' . $balance . '</span></strong> ';
+		echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
+		echo '</div>';
+	}
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -886,7 +892,7 @@ if ($id)
 /**
  * list
  */
-$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = ($s_group_self && $s_id == $uid && $uid) ? true : false;
 
 $params_sql = $where_sql = $where_code_sql = [];
 
@@ -1118,7 +1124,10 @@ if ($s_admin || $s_user)
 	{
 		$top_buttons .= aphp('transactions', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 
-		$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+		if (!$s_master)
+		{
+			$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
+		}
 	}
 }
 
@@ -1300,6 +1309,14 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
 	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
+
+	$params_form['r'] = $s_accountrole;
+	$params_form['u'] = $s_id;
+
+	if (!$s_group_self)
+	{
+		$params_form['s'] = $s_schema;
+	}
 
 	foreach ($params_form as $name => $value)
 	{

@@ -27,9 +27,9 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $db, $s_id, $currency;
+    global $db, $s_id, $currency, $s_master;
 
-	$transaction['creator'] = (empty($s_id)) ? 0 : $s_id;
+	$transaction['creator'] = ($s_master) ? 0 : $s_id;
     $transaction['cdate'] = date('Y-m-d H:i:s');
 
 	$db->beginTransaction();

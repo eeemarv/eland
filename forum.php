@@ -130,7 +130,7 @@ if ($submit)
 	else
 	{
 		$forum_post['ts'] = gmdate('Y-m-d H:i:s');
-		$forum_post['uid'] = $s_id;
+		$forum_post['uid'] = ($s_master) ? 0 : $s_id;
 	}
 
  	if (!($forum_post['subject'] || $topic))
@@ -386,7 +386,7 @@ if ($topic)
 
 	foreach ($forum_posts as $p)
 	{
-		$s_owner = (($p['uid'] == $s_id) && $s_id && $s_group_self) ? true : false;
+		$s_owner = (($p['uid'] == $s_id) && $s_group_self) ? true : false;
 
 		$pid = $p['_id']->__toString();
 
@@ -459,7 +459,7 @@ $forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
 $forum_posts = iterator_to_array($forum_posts);
 
-$s_owner = ($s_id && isset($forum_posts[$topic]['uid'])
+$s_owner = (isset($forum_posts[$topic]['uid'])
 	&& $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
 
 if ($s_admin || $s_user)
