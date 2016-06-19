@@ -9,8 +9,8 @@ $server->configureWSDL('interletswsdl', 'urn:interletswsdl');
 
 // Register the method to expose
 $server->register('gettoken',                // method name
-    array('apikey' => 'xsd:string'),        // input parameters
-    array('return' => 'xsd:string'),      // output parameters
+    ['apikey' => 'xsd:string'],        // input parameters
+    ['return' => 'xsd:string'],      // output parameters
     'urn:interletswsdl',                      // namespace
     'urn:interletswsdl#gettoken',                // soapaction
     'rpc',                                // style
@@ -19,8 +19,8 @@ $server->register('gettoken',                // method name
 );
 
 $server->register('userbyletscode',                // method name
-    array('apikey' => 'xsd:string', 'letscode' => 'xsd:string'),        // input parameters
-    array('return' => 'xsd:string'),      // output parameters
+    ['apikey' => 'xsd:string', 'letscode' => 'xsd:string'],        // input parameters
+    ['return' => 'xsd:string'],      // output parameters
     'urn:interletswsdl',                      // namespace
     'urn:interletswsdl#userbyletscode',                // soapaction
     'rpc',                                // style
@@ -29,8 +29,8 @@ $server->register('userbyletscode',                // method name
 );
 
 $server->register('userbyname',                // method name
-    array('apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'),        // input parameters
-    array('return' => 'xsd:string'),      // output parameters
+    ['apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'],        // input parameters
+    ['return' => 'xsd:string'],      // output parameters
     'urn:interletswsdl',                      // namespace
     'urn:interletswsdl#userbyletscode',                // soapaction
     'rpc',                                // style
@@ -39,8 +39,8 @@ $server->register('userbyname',                // method name
 );
 
 $server->register('getstatus',                // method name
-   array('apikey' => 'xsd:string'),
-   array('return' => 'xsd:string'),
+   ['apikey' => 'xsd:string'],
+   ['return' => 'xsd:string'],
    'urn:interletswsdl',                      // namespace
    'urn:interletswsdl#getstatus',
    'rpc',                                // style
@@ -49,8 +49,8 @@ $server->register('getstatus',                // method name
 );
 
 $server->register('apiversion',                // method name
-   array('apikey' => 'xsd:string'),
-   array('return' => 'xsd:string'),
+   ['apikey' => 'xsd:string'],
+   ['return' => 'xsd:string'],
    'urn:interletswsdl',                      // namespace
    'urn:interletswsdl#apiversion',
    'rpc',                                // style
@@ -59,8 +59,8 @@ $server->register('apiversion',                // method name
 );
 
 $server->register('dopayment',
-   array('apikey' => 'xsd:string', 'from' => 'xsd:string', 'real_from' => 'xsd:string', 'to' => 'xsd:string', 'description' => 'xsd:string', 'amount' => 'xsd:float', 'transid' => 'xsd:string', 'signature' => 'xsd:string'),
-   array('return' => 'xsd:string'),
+   ['apikey' => 'xsd:string', 'from' => 'xsd:string', 'real_from' => 'xsd:string', 'to' => 'xsd:string', 'description' => 'xsd:string', 'amount' => 'xsd:float', 'transid' => 'xsd:string', 'signature' => 'xsd:string'],
+   ['return' => 'xsd:string'],
    'urn:interletswsdl',                      // namespace
    'urn:interletswsdl#dopayment',
    'rpc',                                // style
@@ -97,7 +97,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 	log_event('debug', 'Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
-	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', array($transid)))
+	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', [$transid]))
 	{
 		log_event('soap', 'Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
@@ -114,7 +114,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		{
 			log_event('debug', 'Looking up Interlets user ' . $from);
 
-			if ($fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($from)))
+			if ($fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$from]))
 			{
 				log_event('debug', 'Found Interlets fromuser ' . json_encode($fromuser));
 			}
@@ -123,7 +123,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				log_event('debug', 'NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
 			}
 
-			if ($touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($to)))
+			if ($touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$to]))
 			{
 				log_event('debug', 'Found Interlets touser ' . json_encode($touser));
 			}
@@ -132,7 +132,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				log_event('debug', 'Not found Interlets touser ' . $to . ' transid: ' . $transid);
 			}
 
-			$transaction = array(
+			$transaction = [
 				'transid'		=> $transid,
 				'date' 			=> date('Y-m-d H:i:s'),
 				'description' 	=> $description,
@@ -141,7 +141,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				'id_to' 		=> $touser['id'],
 				'amount' 		=> $amount,
 				'letscode_to' 	=> $touser['letscode'],
-			);
+			];
 
 			if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 			{
@@ -196,7 +196,7 @@ function userbyletscode($apikey, $letscode)
 	log_event('debug', 'Lookup request for ' . $letscode);
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', array($letscode));
+		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode]);
 		if($user['name'] == '')
 		{
 			return 'Onbekend';
@@ -221,7 +221,7 @@ function userbyname($apikey, $name)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$user = $db->fetchAssoc('select * from users where name ilike ?', array('%' . $name . '%'));
+		$user = $db->fetchAssoc('select * from users where name ilike ?', ['%' . $name . '%']);
 		return ($user['name']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
@@ -266,7 +266,7 @@ function check_apikey($apikey, $type)
 	return ($db->fetchColumn('select apikey
 		from apikeys
 		where apikey = ?
-		and type = ?', array($apikey, $type))) ? true : false;
+		and type = ?', [$apikey, $type])) ? true : false;
 }
 
 $post_data = file_get_contents('php://input');
