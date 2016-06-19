@@ -9,45 +9,45 @@ header('Content-type: application/json');
 
 if (!$s_schema)
 {
-	echo json_encode(array('error' => 'Onvoldoende rechten.'));
+	echo json_encode(['error' => 'Onvoldoende rechten.']);
 	exit;
 }
 
 if (!$group_id)
 {
-	echo json_encode(array('error' => 'Het groep id ontbreekt.'));
+	echo json_encode(['error' => 'Het groep id ontbreekt.']);
 	exit;
 }
 
 if (!$elas_interlets_groups[$group_id])
 {
-	echo json_encode(array('error' => 'Er is geen interletsconnectie met deze groep.'));
+	echo json_encode(['error' => 'Er is geen interletsconnectie met deze groep.']);
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', array($group_id));
+$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', [$group_id]);
 
 if (!$group)
 {
-	echo json_encode(array('error' => 'Groep niet gevonden.'));
+	echo json_encode(['error' => 'Groep niet gevonden.']);
 	exit;
 }
 
 if ($group['apimethod'] != 'elassoap')
 {
-	echo json_encode(array('error' => 'De apimethod voor deze groep is niet elassoap.'));
+	echo json_encode(['error' => 'De apimethod voor deze groep is niet elassoap.']);
 	exit;
 }
 
 if (!$group['remoteapikey'])
 {
-	echo json_encode(array('error' => 'De remote apikey is niet ingesteld voor deze groep.'));
+	echo json_encode(['error' => 'De remote apikey is niet ingesteld voor deze groep.']);
 	exit;
 }
 
 if (!$group['presharedkey'])
 {
-	echo json_encode(array('error' => 'De preshared key is niet ingesteld voor deze groep.'));
+	echo json_encode(['error' => 'De preshared key is niet ingesteld voor deze groep.']);
 	exit;
 }
 
@@ -63,24 +63,24 @@ $err = $client->getError();
 if ($err)
 {
 	$m = $err_group . ' Kan geen verbinding maken.';
-	echo json_encode(array('error' => $m));
+	echo json_encode(['error' => $m]);
 	log_event('token', $m . ' ' . $err);
 	exit;
 }
 
-$token = $client->call('gettoken', array('apikey' => $apikey));
+$token = $client->call('gettoken', ['apikey' => $apikey]);
 
 $err = $client->getError();
 
 if ($err)
 {
 	$m = $err_group . ' Kan geen token krijgen.';
-	echo json_encode(array('error' => $m));
+	echo json_encode(['error' => $m]);
 	log_event('token', $m . ' ' . $err);
 	exit;
 }
 
-echo json_encode(array(
+echo json_encode([
 	'login_url'	=> $group['url'] . '/login.php?token=' . $token,
-));
+]);
 exit;

@@ -15,7 +15,7 @@ $end_unix = time();
 $begin_unix = $end_unix - ($days * 86400);
 $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 
-$balance = array();
+$balance = [];
 
 $rs = $db->prepare('select id, saldo from users');
 
@@ -32,7 +32,7 @@ $acc = array_map(function (){ return 0; }, $balance);
 $trans = $db->fetchAll('select id_to, id_from, amount, date
 	from transactions
 	where date >= ?
-	order by date desc', array($begin));
+	order by date desc', [$begin]);
 	
 foreach ($trans as $t)
 {
@@ -49,7 +49,7 @@ foreach ($trans as $t)
 	$balance[$id_from] += $t['amount'];
 }
 
-$weighted = array();
+$weighted = [];
 
 foreach ($balance as $user_id => $b)
 {

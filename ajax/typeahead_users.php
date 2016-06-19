@@ -51,7 +51,7 @@ if ($group_id == 'self')
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', array($group_id));
+$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
 
 $group['domain'] = get_host($group);
 
@@ -72,7 +72,7 @@ if (isset($schemas[$group['domain']]))
 {
 	$remote_schema = $schemas[$group['domain']];
 
-	if ($db->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', array($base_url)))
+	if ($db->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$base_url]))
 	{
 		$active_users = users_to_json($remote_schema);
 
@@ -121,7 +121,7 @@ function users_to_json($schema, $status_sql = 'in (1, 2)')
 		WHERE status ' . $status_sql
 	);
 
-	$users = array();
+	$users = [];
 
 	$new_user_days = readconfigfromdb('newuserdays', $schema);
 

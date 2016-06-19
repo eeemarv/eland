@@ -19,7 +19,7 @@ if (!$user)
 	exit;
 }
 
-$groups = $_groups = $transactions = $users = $_users  = array();
+$groups = $_groups = $transactions = $users = $_users  = [];
 
 $groups = $db->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
 
@@ -44,7 +44,7 @@ $query = 'SELECT t.id, t.amount, t.id_from, t.id_to,
 		AND t.date >= ? 
 		AND t.date <= ? 
 	ORDER BY t.date DESC';
-$trans = $db->fetchAll($query, array($user_id, $user_id, $user_id, $begin_date, $end_date));
+$trans = $db->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);
@@ -80,31 +80,31 @@ foreach ($trans as $t)
 		$code = $t['letscode'];
 	}
 
-	$transactions[] = array(
+	$transactions[] = [
 		'a' 		=> (int) $t['amount'],
 		'date' 		=> $date,
 		'c' 		=> strip_tags($code),
 		'desc'		=> strip_tags($t['description']),
 		'out'		=> $out,
 		'id' 		=> $t['id'],
-	);
+	];
 
-	$_users[(string) $code] = array(
+	$_users[(string) $code] = [
 		'n' 		=> strip_tags($name),
 		'l' 		=> ($real || $t['status'] == 0) ? 0 : 1,
 		's'			=> $t['status'],
 		'id' 		=> $t['user_id'],
 		'g'			=> (isset($group['id'])) ? $group['id'] : 0,
-	);
+	];
 
 	unset($group);
 }
 
 foreach ($_users as $code => $ary)
 {
-	$users[] = array_merge($ary, array(
+	$users[] = array_merge($ary, [
 		'c' 		=> (string) $code,
-	));
+	]);
 }
 
 unset($_users, $_groups);
@@ -113,7 +113,7 @@ $transactions = array_reverse($transactions);
 
 header('Content-type: application/json');
 
-echo json_encode(array(
+echo json_encode([
 	'user_id' 		=> $user_id,
 	'ticks' 		=> ($days == 365) ? 12 : 4,
 	'currency' 		=> $currency,
@@ -123,6 +123,6 @@ echo json_encode(array(
 	'begin' 		=> $begin_date,
 	'end' 			=> $end_date,
 	'groups'		=> $groups,
-));
+]);
 
 

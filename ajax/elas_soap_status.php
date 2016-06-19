@@ -19,7 +19,7 @@ if (!$group_id)
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', array($group_id));
+$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', [$group_id]);
 
 if (!$group)
 {
@@ -56,7 +56,7 @@ if ($err)
 	exit;
 }
 
-$message = $client->call('getstatus', array('apikey' => $apikey));
+$message = $client->call('getstatus', ['apikey' => $apikey]);
 
 $err = $client->getError();
 

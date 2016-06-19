@@ -3,11 +3,11 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$map_names = array();
+$map_names = [];
 
 $mdb->connect();
 
-$cursor = $mdb->docs->find(array('map_name' => array('$exists' => true)));
+$cursor = $mdb->docs->find(['map_name' => ['$exists' => true]]);
 
 foreach ($cursor as $c)
 {
