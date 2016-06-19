@@ -30,7 +30,9 @@ if(!empty($token))
 
 		$param = 'welcome=1&r=guest&u=elas';
 
-		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded');
+		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'unknown';
+
+		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded. referer: ' . $referer);
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
