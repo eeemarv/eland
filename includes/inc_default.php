@@ -572,16 +572,16 @@ if (isset($_GET['welcome']) && $s_guest)
 	$msg .= readconfigfromdb('currencyratio') . ' ' . $currency;
 	$msg .= ' stemt overeen met 1 LETS uur.<br>';
 
-	if ($s_schema)
-	{
-		$msg .= 'Je kan steeds terug naar je eigen groep via het menu <strong>Groep</strong> ';
-		$msg .= 'boven in de navigatiebalk.';
-	}
-	else
+	if ($s_elas_guest)
 	{
 		$msg .= 'Je bent ingelogd als LETS-gast, je kan informatie ';
 		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
 		$msg .= 'ingeven in de installatie van je eigen groep.';
+	}
+	else
+	{
+		$msg .= 'Je kan steeds terug naar je eigen groep via het menu <strong>Groep</strong> ';
+		$msg .= 'boven in de navigatiebalk.';
 	}
 
 	$alert->info($msg);
