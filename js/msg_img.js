@@ -15,28 +15,42 @@ $(document).ready(function () {
 
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
 
+		var imgs = $images_con.data('imgs');
+
         $.each(data.result, function (index, file) {
+
             if (file.filename) {
 
 				if (imgs[0] == '')
 				{
+
 					imgs = new Array(file.filename);
+
 				} else {
+
 					imgs.push(file.filename);
 				}
 
 				$("#slider1_container").remove();
 
-				jssor_init();
+				jssor_init(imgs);
 
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);
 
 				$('#btn_remove').css('display', 'inline');
 
             } else {
+
 				alert('Fout bij het opladen van de afbeelding: ' + file.error);
+
             }
+
+            $images_con.data('imgs', imgs);
+            
         });
+
+		$images_con.data('imgs', imgs);
+        
      }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 
