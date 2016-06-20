@@ -362,6 +362,8 @@ if ($topic)
 
 	if ($s_admin || $s_owner)
 	{
+		$top_buttons .= aphp('forum', ['edit' => $topic], 'Onderwerp aanpassen', 'btn btn-primary', 'Onderwerp aanpassen', 'pencil', true);
+
 		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
 
