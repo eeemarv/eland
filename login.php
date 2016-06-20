@@ -22,8 +22,6 @@ $location = ($location) ? urldecode($location) : '/index.php';
 $location = (strpos($location, 'login.php') === false) ? $location : 'index.php';
 $location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
 
-$error_location = 'login.php?location=' . urlencode($location);
-
 $submit = isset($_POST['zend']) ? true : false;
 
 if($token)
