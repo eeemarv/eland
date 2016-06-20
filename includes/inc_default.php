@@ -269,7 +269,7 @@ $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
 /** access user **/
 
-$logins = $_SESSION['logins'];
+$logins = isset($_SESSION['logins']) ? $_SESSION['logins'] : [];
 
 /*
 if (!$login[$s_schema]['id'])
@@ -277,86 +277,101 @@ if (!$login[$s_schema]['id'])
 	redirect_login(); // produces endless redirect
 }
 */
-if (isset($logins))
+$s_master = $s_elas_guest = false;
+
+if (count($logins))
 {
 	error_log('logins: ' . http_build_query($logins));
 }
+else
+{
+	error_log('no logins');
+}
 
-// var_dump($logins);
+/**
+ *
+ */
 
-if (!isset($logins))
+if (!count($logins))
 {
 	if ($s_accountrole != 'anonymous')
 	{
 		redirect_login();
 	}
 }
-else if ($logins[$s_schema] == $s_id && $s_id)
+
+if (!isset($logins[$s_schema]))
 {
-	$session_user = readuser($s_id, false, $s_schema);
-
-	if ($s_schema != $schema && $s_accountrole != 'guest')
+	if ($s_accountrole != 'anonymous')
 	{
-		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=';
-		$location .= $session_user['accountrole'] . '&u=' . $s_id;
-		header('Location: ' . $location);
-		exit;
-	}
-
-	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
-	{
-		redirect_index();
+		redirect_login();
 	}
 }
-else if ($logins[$s_schema] == 'elas_guest')
+else
 {
-	if ($s_accountrole != 'guest')
+	if ($logins[$s_schema] == $s_id && $s_id)
 	{
-		redirect_index();
-	}
-
-	$s_id = 'elas';
-	$s_elas_guest = true;
-}
-else if ($logins[$s_schema] == 'master')
-{
-	$s_id = 'master';
-	$s_master = true;
-}
-else if ($logins[$s_schema])
-{
-	$s_id = $logins[$s_schema];
-
-	if (ctype_digit((string) $s_id))
-	{
-		$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-		$get = $_GET;
-
-		unset($get['u'], $get['s'], $get['r']);
-
 		$session_user = readuser($s_id, false, $s_schema);
 
-		$get['r'] = $session_user['accountrole'];
-		$get['u'] = $s_id;
-
-		if ($s_schema != $schema)
+		if ($s_schema != $schema && $s_accountrole != 'guest')
 		{
-			$get['s'] = $s_schema;
+			$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=';
+			$location .= $session_user['accountrole'] . '&u=' . $s_id;
+			header('Location: ' . $location);
+			exit;
 		}
 
-		$get = http_build_query($get);
-		header('Location: ' . $location . '?' . $get);
-		exit;
+		if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
+		{
+			redirect_index();
+		}
 	}
+	else if ($logins[$s_schema] == 'elas_guest')
+	{
+		if ($s_accountrole != 'guest')
+		{
+			redirect_index();
+		}
 
-	redirect_login();
-}
-else if ($s_accountrole != 'anonymous')
-{
-	redirect_login();
+		$s_id = 'elas';
+		$s_elas_guest = true;
+	}
+	else if ($logins[$s_schema] == 'master')
+	{
+		$s_id = 'master';
+		$s_master = true;
+	}
+	else
+	{
+		$s_id = $logins[$s_schema];
+
+		if (ctype_digit((string) $s_id))
+		{
+			$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+			$get = $_GET;
+
+			unset($get['u'], $get['s'], $get['r']);
+
+			$session_user = readuser($s_id, false, $s_schema);
+
+			$get['r'] = $session_user['accountrole'];
+			$get['u'] = $s_id;
+
+			if ($s_schema != $schema)
+			{
+				$get['s'] = $s_schema;
+			}
+
+			$get = http_build_query($get);
+			header('Location: ' . $location . '?' . $get);
+			exit;
+		}
+
+		redirect_login();
+	}
 }
 
-/** access page **/
+/** page access **/
 
 if (!isset($page_access))
 {
@@ -513,21 +528,24 @@ if ($view || $inline)
 /**
  * remember adapted role in own group (for links to own group)
  */
-if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
+if (!$s_anonymous)
 {
-	if ($logins[$schema] && $s_group_self)
+	if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		$_SESSION['roles'][$schema] = $s_accountrole;
-	}
+		if ($logins[$schema] && $s_group_self)
+		{
+			$_SESSION['roles'][$schema] = $s_accountrole;
+		}
 
-	$s_user_params_own_group = [
-		'r' => $_SESSION['roles'][$s_schema],
-		'u'	=> $s_id,
-	];
-}
-else
-{
-	$s_user_params_own_group = [];
+		$s_user_params_own_group = [
+			'r' => $_SESSION['roles'][$s_schema],
+			'u'	=> $s_id,
+		];
+	}
+	else
+	{
+		$s_user_params_own_group = [];
+	}
 }
 
 /** welcome message **/

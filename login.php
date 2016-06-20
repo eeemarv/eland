@@ -14,17 +14,19 @@ if ($s_id)
 }
 */
 
-$token = $_GET['token'];
-$login = $_GET['login'];
-$location = $_GET['location'];
+$token = isset($_GET['token']) ? $_GET['token'] : false;
+$login = isset($_GET['login']) ? $_GET['login'] : '';
+
+$location = isset($_GET['location']) ? $_GET['location'] : false;
 $location = ($location) ? urldecode($location) : '/index.php';
 $location = (strpos($location, 'login.php') === false) ? $location : 'index.php';
 $location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
+
 $error_location = 'login.php?location=' . urlencode($location);
 
 $submit = isset($_POST['zend']) ? true : false;
 
-if(!empty($token))
+if($token)
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
