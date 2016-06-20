@@ -267,16 +267,12 @@ $s_schema = ($p_schema) ?: $schema;
 $s_id = ctype_digit($p_user) ? $p_user : false;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
+$s_group_self = ($s_schema == $schema) ? true : false;
+
 /** access user **/
 
 $logins = isset($_SESSION['logins']) ? $_SESSION['logins'] : [];
 
-/*
-if (!$login[$s_schema]['id'])
-{
-	redirect_login(); // produces endless redirect
-}
-*/
 $s_master = $s_elas_guest = false;
 
 if (count($logins))
@@ -436,8 +432,6 @@ $access_control = new access_control();
 /**
  * some vars
  **/
-
-$s_group_self = ($s_schema == $schema) ? true : false;
 
 $access_level = $access_ary[$s_accountrole];
 
