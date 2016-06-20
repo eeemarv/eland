@@ -1952,9 +1952,9 @@ if ($v_list)
 	foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		echo '<th';
-		echo ($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+		echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 		echo '>';
-		if ($data['no_sort'])
+		if (isset($data['no_sort']))
 		{
 			echo $data['lbl'];
 		}
@@ -1986,7 +1986,7 @@ if ($v_list)
 		if (!$inline && ($s_admin || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
-			echo ($selected_msgs[$id]) ? ' checked="checked"' : '';
+			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
 			echo '>&nbsp;';
 		}
 

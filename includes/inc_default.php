@@ -348,7 +348,7 @@ else if (ctype_digit((string) $s_id))
 		redirect_index();
 	}
 }
-else if ($s_id == 'elas_guest')
+else if ($s_id == 'elas')
 {
 	if ($s_accountrole != 'guest' || !$s_group_self)
 	{

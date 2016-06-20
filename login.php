@@ -28,7 +28,7 @@ if($token)
 {
 	if($interlets = $redis->get($schema . '_token_' . $token))
 	{
-		$_SESSION['logins'][$schema] = 'elas_guest';
+		$_SESSION['logins'][$schema] = 'elas';
 
 		$param = 'welcome=1&r=guest&u=elas';
 

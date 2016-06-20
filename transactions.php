@@ -1492,7 +1492,7 @@ else
 		{
 			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
-			if ($t['inter_transaction'])
+			if (isset($t['inter_transaction']))
 			{
 				echo link_user($t['inter_transaction']['id_from'],
 					$t['inter_schema'],
@@ -1518,7 +1518,7 @@ else
 		{
 			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
-			if ($t['inter_transaction'])
+			if (isset($t['inter_transaction']))
 			{
 				echo link_user($t['inter_transaction']['id_to'],
 					$t['inter_schema'],
