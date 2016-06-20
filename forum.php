@@ -384,6 +384,13 @@ if ($topic)
 
 	require_once $rootpath . 'includes/inc_header.php';
 
+	if (!$s_guest)
+	{
+		echo '<p>Zichtbaarheid: ';
+		echo $access_control->get_label($topic_post['access']);
+		echo '</p>';
+	}
+
 	foreach ($forum_posts as $p)
 	{
 		$s_owner = (($p['uid'] == $s_id) && $s_group_self) ? true : false;
