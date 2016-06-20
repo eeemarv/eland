@@ -329,6 +329,7 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 		exit;
 	}
 
+	error_log('redirect 1');
 	redirect_login();
 }
 else if (ctype_digit((string) $s_id))
@@ -345,6 +346,7 @@ else if (ctype_digit((string) $s_id))
 
 	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
+		error_log('redirect 2');
 		redirect_index();
 	}
 }
@@ -352,19 +354,19 @@ else if ($s_id == 'elas')
 {
 	if ($s_accountrole != 'guest' || !$s_group_self)
 	{
+		error_log('redirect 3');
 		redirect_login();
 	}
 
-	$s_id = 'elas';
 	$s_elas_guest = true;
 }
 else if ($s_id == 'master')
 {
-	$s_id = 'master';
 	$s_master = true;
 }
 else
 {
+	error_log('redirect 4');
 	redirect_login();
 }
 
@@ -383,6 +385,7 @@ switch ($s_accountrole)
 
 		if ($page_access != 'anonymous')
 		{
+			error_log('redirect 5');
 			redirect_login();
 		}
 
