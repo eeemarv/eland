@@ -294,11 +294,26 @@ if (!count($logins))
 {
 	if ($s_accountrole != 'anonymous')
 	{
+		error_log('redirect a');
 		redirect_login();
 	}
 }
 
-if (!isset($logins[$s_schema]))
+if (!$s_id)
+{
+	if ($page_access != 'anonymous')
+	{
+		error_log('redirect b');
+		redirect_login();
+	}
+
+	if ($s_accountrole != 'anonymous')
+	{
+		error_log('redirect c');
+		redirect_login();
+	}
+}
+else if (!isset($logins[$s_schema]))
 {
 	if ($s_accountrole != 'anonymous')
 	{
