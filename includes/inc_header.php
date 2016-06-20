@@ -92,7 +92,8 @@ if (!$s_anonymous)
 //				}
 				// echo  generate_url($script_name, [], $login_schema);
 				echo '">';
-				echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
+				echo readconfigfromdb('systemname', $login_schema);
+				echo ' (eigen groep)';
 				echo '</a>';
 				//echo $login_id;
 				echo '</li>';

@@ -264,7 +264,7 @@ $p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
 $p_schema = (isset($_GET['s'])) ? $_GET['s'] : false;
 
 $s_schema = ($p_schema) ?: $schema;
-$s_id = ctype_digit($p_user) ? $p_user : false;
+$s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
 $s_group_self = ($s_schema == $schema) ? true : false;
