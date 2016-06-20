@@ -1,4 +1,12 @@
-$(document).ready(function(){
+
+
+var $images_con = $('#images_con');
+
+var jssor_slider1;
+
+function jssor_init(imgs)
+{
+	var bucket_url = $images_con.attr('data-bucket-url');
 
 	var html_sl = '<div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 800px; height: 600px;">';
 	html_sl = html_sl + '<div u="slides" id="slides_cont" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;" id="slides">';
@@ -10,71 +18,74 @@ $(document).ready(function(){
 	html_sl = html_sl + '<span u="arrowright" class="jssora02r" style="top: 123px; right: 8px;"></span>';
 	html_sl = html_sl + '</div>';
 
-	var images_con = $('#images_con');
-	var bucket_url = images_con.attr('data-bucket-url');
+	$('#no_images').css('display', 'none');
 
-	var imgs = images_con.data('images');
+	$images_con.append(html_sl);
+
+	var slides_cont = $('#slides_cont');
+
+	$.each(imgs, function(k, v){
+		slides_cont.append('<div><img src="' + bucket_url + v + '" u="image"/></div>');
+	});
+
+	$("#slider1_container").css("display", "block");
+
+	jssor_slider1 = new $JssorSlider$("slider1_container", {
+		$FillMode: 3,
+		$DragOrientation: 3,
+		$PlayOrientation: 1,
+		$ArrowKeyNavigation: 1,
+		$BulletNavigatorOptions: {
+			$Class: $JssorBulletNavigator$,
+			$AutoCenter: 1,
+			$ChanceToShow: 2,
+			$SpacingX: 10,
+			$SpacingY: 10   
+		},
+		$ArrowNavigatorOptions: {
+			$Class: $JssorArrowNavigator$,
+			$ChanceToShow: 2,
+			$AutoCenter: 2
+		}
+	});
+
+	ScaleSlider();
+
+	$(window).bind('load', ScaleSlider);
+	$(window).bind('resize', ScaleSlider);
+	$(window).bind('orientationchange', ScaleSlider);
+}
+
+function ScaleSlider() {
+	var parentWidth = $('#slider1_container').parent().width();
+	if (parentWidth) {
+		jssor_slider1.$ScaleWidth(parentWidth);
+	}
+	else
+	{
+		window.setTimeout(ScaleSlider, 30);
+	}
+}
+
+
+$(document).ready(function(){
+
+	var imgs = $images_con.data('images');
 	imgs = imgs.split(',');
+	$images_con.data('imgs', imgs);
 
 	if (imgs[0] != ''){
-		jssor_init();
+
+		jssor_init(imgs);
+
 		$('#btn_remove').css('display', 'inline');
+
 	} else {
+
 		$('#no_images').css('display', 'inherit');
 	}
 
-	var jssor_slider1;
-
-	function jssor_init()
-	{
-		$('#no_images').css('display', 'none');
-
-		images_con.append(html_sl);
-
-		var slides_cont = $('#slides_cont');
-
-		$.each(imgs, function(k, v){
-			slides_cont.append('<div><img src="' + bucket_url + v + '" u="image"/></div>');
-		});
-
-		$("#slider1_container").css("display", "block");
-
-		jssor_slider1 = new $JssorSlider$("slider1_container", {
-			$FillMode: 3,
-			$DragOrientation: 3,
-			$PlayOrientation: 1,
-			$ArrowKeyNavigation: 1,
-			$BulletNavigatorOptions: {
-				$Class: $JssorBulletNavigator$,
-				$AutoCenter: 1,
-				$ChanceToShow: 2,
-				$SpacingX: 10,
-				$SpacingY: 10   
-			},
-			$ArrowNavigatorOptions: {
-				$Class: $JssorArrowNavigator$,
-				$ChanceToShow: 2,
-				$AutoCenter: 2
-			}
-		});
-
-		ScaleSlider();
-
-		$(window).bind('load', ScaleSlider);
-		$(window).bind('resize', ScaleSlider);
-		$(window).bind('orientationchange', ScaleSlider);
-	}
-
-	function ScaleSlider() {
-		var parentWidth = $('#slider1_container').parent().width();
-		if (parentWidth) {
-			jssor_slider1.$ScaleWidth(parentWidth);
-		}
-		else
-		{
-			window.setTimeout(ScaleSlider, 30);
-		}
-	}
+	//
 
 	var contacts_div = $('#contacts');
 
