@@ -1877,6 +1877,7 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['cid'], $params_form['q'], $params_form['valid'], $params_form['ow']);
 	unset($params_form['fcode'], $params_form['ustatus'], $params_form['uid']);
+	unset($params_form['start']);
 
 	$params_form['r'] = $s_accountrole;
 	$params_form['u'] = $s_id;

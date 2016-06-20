@@ -572,10 +572,11 @@ if ($add)
 	$balance = $session_user['saldo'];
 
 	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+
 	$groups = array_merge([[
-			'groupname' => $systemname,
-			'id'		=> 'self',
-		]], $groups);
+		'groupname' => $systemname,
+		'id'		=> 'self',
+	]], $groups);
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -1309,6 +1310,7 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
 	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
+	unset($params_form['start']);
 
 	$params_form['r'] = $s_accountrole;
 	$params_form['u'] = $s_id;

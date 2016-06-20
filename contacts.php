@@ -913,6 +913,7 @@ echo '</div>';
 $params_form = $params;
 unset($params_form['access'], $params_form['q'], $params_form['abbrev']);
 unset($params_form['letscode'], $params_form['ustatus']);
+unset($params_form['start']);
 
 foreach ($params_form as $name => $value)
 {
