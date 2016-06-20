@@ -301,7 +301,7 @@ if ($add || $edit)
 	$str = ($topic) ? 'Reactie' : 'Onderwerp';
 	$btn = ($edit) ? 'primary' : 'success';
 	$action = ($edit) ? 'aanpassen' : 'toevoegen';
-	$cancel_dest = ($topic) ? ['t' => $topic] : [];
+	$cancel_dest = ($topic) ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
 
 	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
