@@ -85,15 +85,13 @@ if (!$s_anonymous)
 				
 				echo '<a href="';
 				echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
-				echo $_SESSION['roles'][$login_schema];
-//				if (ctype_digit((string) $login_id))
-//				{
-					echo '&u=' . $login_id;
-//				}
-				// echo  generate_url($script_name, [], $login_schema);
+				echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
+
+				echo '&u=' . $login_id;
+
 				echo '">';
 				echo readconfigfromdb('systemname', $login_schema);
-				echo ' (eigen groep)';
+				echo ($login_id == 'elas') ? ' (eLAS interlets gast)' : ' (eigen groep)';
 				echo '</a>';
 				//echo $login_id;
 				echo '</li>';
