@@ -832,14 +832,10 @@ function get_session_query_param($sch = false)
 	if ($p_role != 'anonymous')
 	{
 		$ary['r'] = $p_role;
+		$ary['u'] = $p_user;
 
-		if ($access_level < 2)
+		if ($access_level == 2 && $p_schema)
 		{
-			$ary['u'] = $p_user;
-		}
-		else if ($access_level == 2 && $p_schema)
-		{
-			$ary['u'] = $p_user;
 			$ary['s'] = $p_schema;
 		}
 	}
