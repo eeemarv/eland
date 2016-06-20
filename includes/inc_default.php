@@ -284,6 +284,8 @@ else
 	error_log('no logins');
 }
 
+error_log('s_id: ' . $s_id);
+
 /**
  *
  */
