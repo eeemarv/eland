@@ -330,7 +330,7 @@ else
 	{
 		if ($s_accountrole != 'guest' || !$s_group_self)
 		{
-			redirect_index();
+			redirect_login();
 		}
 
 		$s_id = 'elas';
