@@ -341,6 +341,8 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 			$get['s'] = $s_schema;
 		}
 
+		error_log('redirect d');
+
 		$get = http_build_query($get);
 		header('Location: ' . $location . '?' . $get);
 		exit;

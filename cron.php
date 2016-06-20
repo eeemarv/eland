@@ -15,7 +15,7 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $rootpath = './';
-$role = 'anonymous';
+$page_access = 'anonymous';
 $allow_session = true;
 require_once $rootpath . 'includes/inc_default.php';
 

@@ -91,7 +91,7 @@ if (!$s_anonymous)
 
 				echo '">';
 				echo readconfigfromdb('systemname', $login_schema);
-				echo ($login_id == 'elas') ? ' (eLAS interlets gast)' : ' (eigen groep)';
+				echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
 				echo '</a>';
 				//echo $login_id;
 				echo '</li>';
