@@ -8,7 +8,7 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 function log_event($type, $event, $remote_schema = false)
 {
-	global $schema, $hosts, $s_schema, $s_id, $s_master;
+	global $schema, $hosts, $s_schema, $s_id, $s_master, $s_elas_guest;
 
 	$type = strtolower($type);
 

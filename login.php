@@ -72,6 +72,8 @@ if ($submit)
 		exit;
 	}
 
+	$user_id = false;
+
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
 		$count_email = $db->fetchColumn('select count(c.*)

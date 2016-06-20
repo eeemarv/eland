@@ -328,7 +328,7 @@ else
 	}
 	else if ($logins[$s_schema] == 'elas_guest')
 	{
-		if ($s_accountrole != 'guest')
+		if ($s_accountrole != 'guest' || !$s_group_self)
 		{
 			redirect_index();
 		}
@@ -532,7 +532,7 @@ if (!$s_anonymous)
 {
 	if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		if ($logins[$schema] && $s_group_self)
+		if (isset($logins[$schema]) && $s_group_self)
 		{
 			$_SESSION['roles'][$schema] = $s_accountrole;
 		}
