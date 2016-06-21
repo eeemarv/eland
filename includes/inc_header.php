@@ -97,45 +97,37 @@ if (!$s_anonymous)
 				echo '</li>';
 
 			}
-/*		}
-		else
-		{
-			$login_schema = key($logins);
-			echo '<li';
-			echo ($login_schema == $schema) ? ' class="active"' : '';
-			echo '>';
-			echo '<a href="' . generate_url($script_name, [], $login_schema) . '">';
-			echo readconfigfromdb('systemname', $login_schema) . ' (eigen groep)';
-			echo '</a>';
-			echo '</li>';
-		} */
 
-		echo '<li class="divider"></li>';
 
-		if (count($eland_interlets_groups))
+		if (!$s_elas_guest)
 		{
-			foreach ($eland_interlets_groups as $sch => $h)
+			echo '<li class="divider"></li>';
+
+			if (count($eland_interlets_groups))
 			{
-				echo '<li';
-				echo ($schema == $sch) ? ' class="active"' : '';
-				echo '>';
+				foreach ($eland_interlets_groups as $sch => $h)
+				{
+					echo '<li';
+					echo ($schema == $sch) ? ' class="active"' : '';
+					echo '>';
 
-				$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
+					$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
 
-				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
-				echo readconfigfromdb('systemname', $sch) . '</a>';
-				echo '</li>';
+					echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
+					echo readconfigfromdb('systemname', $sch) . '</a>';
+					echo '</li>';
+				}
 			}
-		}
 
-		if (count($elas_interlets_groups))
-		{
-			foreach ($elas_interlets_groups as $grp_id => $grp)
+			if (count($elas_interlets_groups))
 			{
-				echo '<li>';
-				echo '<a href="#" data-elas-group-id="' . $grp_id . '">';
-				echo $grp['groupname'] . '</a>';
-				echo '</li>';
+				foreach ($elas_interlets_groups as $grp_id => $grp)
+				{
+					echo '<li>';
+					echo '<a href="#" data-elas-group-id="' . $grp_id . '">';
+					echo $grp['groupname'] . '</a>';
+					echo '</li>';
+				}
 			}
 		}
 
