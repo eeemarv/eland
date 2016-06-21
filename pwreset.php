@@ -56,17 +56,22 @@ if ($token)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<button class="btn btn-default" id="generate">Genereer automatisch</button>';
-	echo '<br><br>';
+	echo '<form method="post" class="form-horizontal" role="form">';
 
-	echo '<form method="post" class="form-horizontal">';
 	echo '<div class="form-group">';
 	echo '<label for="password" class="col-sm-2 control-label">Nieuw paswoord</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="col-sm-10 controls">';
+	echo '<div class="input-group">';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
 	echo 'value="' . $password . '" required>';
+	echo '
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" id="generate">Genereer</button>
+      </span>';
+    echo '</div>';
 	echo '</div>';
 	echo '</div>';
+
 	echo '<input type="submit" class="btn btn-default" value="Bewaar paswoord" name="zend">';
 	echo '</form>';
 
@@ -110,8 +115,8 @@ if ($_POST['zend'])
 				$text = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
 				$text .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
 				$text .= 'Je letscode is: ' . $letscode . "\n\n";
-				$text .= 'Indien je niet zelf deze paswoord reset hebt aangevraagd op de website, ';
-				$text .= 'gelieve deze mail te negeren.';
+				$text .= 'Gelieve deze mail te negeren indien je niet zelf deze paswoord ';
+				$text .= 'reset aangevraagd hebt op de website, ';
 
 				mail_q(['to' => $email, 'text' => $text, 'subject' => $subject], true);
 
@@ -147,6 +152,7 @@ echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
+
 echo '<div class="form-group">';
 echo '<label for="email" class="col-sm-2 control-label">Email</label>';
 echo '<div class="col-sm-10">';
@@ -154,6 +160,7 @@ echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="' . $email . '" required>';
 echo '</div>';
 echo '</div>';
+
 echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
 echo '</form>';
 
