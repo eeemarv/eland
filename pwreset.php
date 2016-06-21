@@ -64,10 +64,9 @@ if ($token)
 	echo '<div class="input-group">';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
 	echo 'value="' . $password . '" required>';
-	echo '
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="button" id="generate">Genereer</button>
-      </span>';
+	echo '<span class="input-group-btn">';
+    echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+    echo '</span>';
     echo '</div>';
 	echo '</div>';
 	echo '</div>';

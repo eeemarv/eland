@@ -786,16 +786,18 @@ if ($pw)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<button class="btn btn-default" id="generate">Genereer automatisch</button>';
-	echo '<br><br>';
-
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
 	echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="col-sm-10 controls">';
+	echo '<div class="input-group">';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
 	echo 'value="' . $password . '" required>';
+	echo '<span class="input-group-btn">';
+	echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+	echo '</span>';
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 
@@ -1929,14 +1931,17 @@ if ($add || $edit)
 		if (!$user['adate'] && $s_admin)
 		{
 			echo '<div id="activate">';
-			echo '<button class="btn btn-default" id="generate">Genereer automatisch ander paswoord</button>';
-			echo '<br><br>';
 
 			echo '<div class="form-group">';
 			echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
-			echo '<div class="col-sm-10">';
+			echo '<div class="col-sm-10 controls">';
+			echo '<div class="input-group">';
 			echo '<input type="text" class="form-control" id="password" name="password" ';
 			echo 'value="' . $password . '" required>';
+			echo '<span class="input-group-btn">';
+			echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+			echo '</span>';
+			echo '</div>';
 			echo '</div>';
 			echo '</div>';
 
