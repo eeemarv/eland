@@ -499,6 +499,21 @@ if ($uid)
 		echo '</h3>';
 	}
 
+	if (!count($contacts))
+	{
+		echo '<br>';
+		echo '<div class="panel panel-danger">';
+		echo '<div class="panel-body">';
+		echo '<p>Er is geen contactinfo voor deze gebruiker.</p>';
+		echo '</div></div>';
+
+		if (!$inline)
+		{
+			include $rootpath . 'includes/inc_footer.php';
+		}
+		exit;
+	}
+
 	echo '<div class="panel panel-danger">';
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-hover table-striped table-bordered footable" ';
