@@ -3,11 +3,11 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 
-$group_id = $_GET['group_id'];
+$group_id = isset($_GET['group_id']) ? $_GET['group_id'] : false;
 
 header('Content-type: application/json');
 
-if (!$s_schema)
+if (!$s_schema || $s_elas_guest)
 {
 	echo json_encode(['error' => 'Onvoldoende rechten.']);
 	exit;
@@ -19,7 +19,7 @@ if (!$group_id)
 	exit;
 }
 
-if (!$elas_interlets_groups[$group_id])
+if (!isset($elas_interlets_groups[$group_id]))
 {
 	echo json_encode(['error' => 'Er is geen interletsconnectie met deze groep.']);
 	exit;
