@@ -303,6 +303,33 @@ if (!$s_id)
 {
 	if ($page_access != 'anonymous')
 	{
+		if (isset($logins[$s_schema]) && ctype_digit((string) $logins[$s_schema]))
+		{
+			$s_id = $logins[$s_schema];
+
+			$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+			$get = $_GET;
+
+			unset($get['u'], $get['s'], $get['r']);
+
+			$session_user = readuser($s_id, false, $s_schema);
+
+			$get['r'] = $session_user['accountrole'];
+			$get['u'] = $s_id;
+
+			if (!$s_group_self)
+			{
+				$get['s'] = $s_schema;
+			}
+
+			error_log('redirect p');
+
+			$get = http_build_query($get);
+			header('Location: ' . $location . '?' . $get);
+			exit;
+
+		}
+
 		error_log('redirect b');
 		redirect_login();
 	}
@@ -336,7 +363,7 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 		$get['r'] = $session_user['accountrole'];
 		$get['u'] = $s_id;
 
-		if ($s_schema != $schema)
+		if (!$s_group_self)
 		{
 			$get['s'] = $s_schema;
 		}

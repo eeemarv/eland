@@ -1318,9 +1318,9 @@ if ($id)
 
 // response form
 
-	if ($s_guest && !$s_schema)
+	if ($s_elas_guest)
 	{
-		$placeholder = 'Als gast kan je niet het mail formulier gebruiken.';
+		$placeholder = 'Als eLAS gast kan je niet het mail formulier gebruiken.';
 	}
 	else if ($s_owner)
 	{
