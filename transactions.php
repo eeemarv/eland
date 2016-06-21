@@ -1425,8 +1425,8 @@ if ($uid)
 				if (isset($t['inter_transaction']))
 				{
 					echo link_user($t['inter_transaction']['id_to'],
-						$t['inter_schema'] && !$s_elas_guest,
-						$s_inter_schema_check[$t['inter_schema']]);
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
 				}
 				else
 				{
@@ -1449,8 +1449,8 @@ if ($uid)
 				if (isset($t['inter_transaction']))
 				{
 					echo link_user($t['inter_transaction']['id_from'],
-						$t['inter_schema'] && !$s_elas_guest,
-						$s_inter_schema_check[$t['inter_schema']]);
+						$t['inter_schema'],
+						$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
 				}
 				else
 				{
@@ -1496,7 +1496,7 @@ else
 			{
 				echo link_user($t['inter_transaction']['id_from'],
 					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']]);
+					$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
 			}
 			else
 			{
@@ -1522,7 +1522,7 @@ else
 			{
 				echo link_user($t['inter_transaction']['id_to'],
 					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']]);
+					$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
 			}
 			else
 			{
