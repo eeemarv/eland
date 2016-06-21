@@ -472,6 +472,11 @@ $errors = [];
 $elas_interlets_groups = get_elas_interlets_groups();
 $eland_interlets_groups = get_eland_interlets_groups();
 
+if ($s_group_self && $s_guest)
+{
+	$elas_interlets_groups = $eland_interlets_groups = [];
+}
+
 if ($s_schema
 	&& $page_access != 'anonymous'
 	&& !$s_group_self

@@ -187,7 +187,7 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = ($s_group_self && $s_id == $message['id_user']) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $s_id == $message['id_user']) ? true : false;
 
 	if ($message['local'] && $s_guest)
 	{
@@ -409,7 +409,7 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $msg['id_user'] == $s_id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -1164,9 +1164,9 @@ if ($id)
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($s_admin || ($s_schema && !$s_owner))
+		&& ($s_admin || (!$s_owner
 		&& $user['status'] != 7
-		&& !$s_elas_guest)
+		&& !($s_guest && $s_group_self))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1389,7 +1389,7 @@ if (!($view || $inline))
 	cancel();
 }
 
-$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $v_list = (($view == 'list' || $inline) && !$recent) ? true : false;
 $v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;

@@ -41,7 +41,7 @@ if ($del)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = ($s_group_self && $user_id == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -169,7 +169,7 @@ if ($edit || $add)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = ($s_group_self && $user_id == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -439,7 +439,7 @@ if ($edit || $add)
 
 if ($uid)
 {
-	$s_owner = ($s_group_self && $uid == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id) ? true : false;
 
 	$contacts = $db->fetchAll('select c.*, tc.abbrev
 		from contact c, type_contact tc
@@ -611,7 +611,7 @@ if (!$s_admin)
 	redirect_index();
 }
 
-$s_owner = ($s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
 $params = array(
 	'orderby'	=> $orderby,

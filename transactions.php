@@ -893,7 +893,7 @@ if ($id)
 /**
  * list
  */
-$s_owner = ($s_group_self && $s_id == $uid && $uid) ? true : false;
+$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $uid) ? true : false;
 
 $params_sql = $where_sql = $where_code_sql = [];
 
@@ -1426,7 +1426,7 @@ if ($uid)
 				{
 					echo link_user($t['inter_transaction']['id_to'],
 						$t['inter_schema'],
-						$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
+						$s_inter_schema_check[$t['inter_schema']]);
 				}
 				else
 				{
@@ -1450,7 +1450,7 @@ if ($uid)
 				{
 					echo link_user($t['inter_transaction']['id_from'],
 						$t['inter_schema'],
-						$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
+						$s_inter_schema_check[$t['inter_schema']]);
 				}
 				else
 				{
@@ -1496,7 +1496,7 @@ else
 			{
 				echo link_user($t['inter_transaction']['id_from'],
 					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
+					$s_inter_schema_check[$t['inter_schema']]);
 			}
 			else
 			{
@@ -1522,7 +1522,7 @@ else
 			{
 				echo link_user($t['inter_transaction']['id_to'],
 					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']] && !$s_elas_guest);
+					$s_inter_schema_check[$t['inter_schema']]);
 			}
 			else
 			{

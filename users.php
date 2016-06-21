@@ -215,7 +215,7 @@ if ($post)
 
 if ($post && $img && $id )
 {
-	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -337,7 +337,7 @@ if ($post && $img && $id )
  */
 if ($img_del && $id)
 {
-	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $s_id == $id) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -684,7 +684,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 if ($pw)
 {
-	$s_owner = ($s_group_self && $pw == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $pw == $s_id) ? true : false;
 
 	if (!$s_admin && !$s_owner)
 	{
@@ -1081,7 +1081,7 @@ if ($add || $edit)
 		cancel();
 	}
 
-	$s_owner =  ($s_group_self && $edit && $s_id && $edit == $s_id) ? true : false;
+	$s_owner =  (!$s_guest && $s_group_self && $edit && $s_id && $edit == $s_id) ? true : false;
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
@@ -1978,7 +1978,7 @@ if ($add || $edit)
 
 if ($id)
 {
-	$s_owner = ($s_group_self && $s_id == $id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $s_id == $id) ? true : false;
 
 	$user_mail_cc = ($post) ? $user_mail_cc : 1;
 
@@ -2061,8 +2061,8 @@ if ($id)
 		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if (($s_admin
-		|| (($s_schema && !$s_owner)) && $user['status'] != 7 && !$s_elas_guest))
+	if ($s_admin
+		|| (!$s_owner && $user['status'] != 7 && !($s_guest && $s_group_self)))
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 

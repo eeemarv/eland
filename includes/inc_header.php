@@ -58,83 +58,81 @@ echo aphp('index', [], $systemname, 'navbar-brand');
 
 echo '</div>';
 
-if (!$s_anonymous)
+echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
+echo '<ul class="nav navbar-nav navbar-right">';
+
+$count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
+
+if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 {
-	echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
-	echo '<ul class="nav navbar-nav navbar-right">';
+	echo '<li class="dropdown">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+	echo '<span class="fa fa-share-alt"></span> ';
+	echo 'Groep';
+	echo '<span class="caret"></span></a>'; 
+	echo '<ul class="dropdown-menu" role="menu">';
 
-	if ($s_schema && (count($eland_interlets_groups) || count($elas_interlets_groups) || count($logins)))
+	foreach ($logins as $login_schema => $login_id)
 	{
-		echo '<li class="dropdown">';
-		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
-		echo '<span class="fa fa-share-alt"></span> ';
-		echo 'Groep';
-		echo '<span class="caret"></span></a>'; 
-		echo '<ul class="dropdown-menu" role="menu">';
+		$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '';
+		$class = ($login_schema == $schema && $login_schema == $s_schema) ? ' class="active"' : $class;
 
-//		if (count($logins) > 1)
-//		{
-			foreach ($logins as $login_schema => $login_id)
-			{
-				$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '';
-				$class = ($login_schema == $schema && $login_schema == $s_schema) ? ' class="active"' : $class;
+		echo '<li';
+		echo $class;
+		echo '>';
+		
+		echo '<a href="';
+		echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
+		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
 
-				echo '<li';
-				echo $class;
-				echo '>';
-				
-				echo '<a href="';
-				echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
-				echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
+		echo '&u=' . $login_id;
 
-				echo '&u=' . $login_id;
+		echo '">';
+		echo readconfigfromdb('systemname', $login_schema);
+		echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
+		echo '</a>';
+		echo '</li>';
 
-				echo '">';
-				echo readconfigfromdb('systemname', $login_schema);
-				echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
-				echo '</a>';
-				//echo $login_id;
-				echo '</li>';
+	}
 
-			}
+	if ($count_interlets_groups)
+	{
+		echo '<li class="divider"></li>';
 
-
-		if (!$s_elas_guest)
+		if (count($eland_interlets_groups))
 		{
-			echo '<li class="divider"></li>';
-
-			if (count($eland_interlets_groups))
+			foreach ($eland_interlets_groups as $sch => $h)
 			{
-				foreach ($eland_interlets_groups as $sch => $h)
-				{
-					echo '<li';
-					echo ($schema == $sch) ? ' class="active"' : '';
-					echo '>';
+				echo '<li';
+				echo ($schema == $sch) ? ' class="active"' : '';
+				echo '>';
 
-					$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
+				$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
 
-					echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
-					echo readconfigfromdb('systemname', $sch) . '</a>';
-					echo '</li>';
-				}
-			}
-
-			if (count($elas_interlets_groups))
-			{
-				foreach ($elas_interlets_groups as $grp_id => $grp)
-				{
-					echo '<li>';
-					echo '<a href="#" data-elas-group-id="' . $grp_id . '">';
-					echo $grp['groupname'] . '</a>';
-					echo '</li>';
-				}
+				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
+				echo readconfigfromdb('systemname', $sch) . '</a>';
+				echo '</li>';
 			}
 		}
 
-		echo '</ul>';
-		echo '</li>';
+		if (count($elas_interlets_groups))
+		{
+			foreach ($elas_interlets_groups as $grp_id => $grp)
+			{
+				echo '<li>';
+				echo '<a href="#" data-elas-group-id="' . $grp_id . '">';
+				echo $grp['groupname'] . '</a>';
+				echo '</li>';
+			}
+		}
 	}
 
+	echo '</ul>';
+	echo '</li>';
+}
+
+if (!$s_anonymous)
+{
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
