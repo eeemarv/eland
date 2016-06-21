@@ -511,8 +511,7 @@ if ($s_group_self && $s_guest)
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
 
-if ($s_schema
-	&& $page_access != 'anonymous'
+if ($page_access != 'anonymous'
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$schema])
 {
