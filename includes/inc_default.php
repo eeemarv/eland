@@ -355,7 +355,7 @@ else if (ctype_digit((string) $s_id))
 {
 	$session_user = readuser($s_id, false, $s_schema);
 
-	if ($s_schema != $schema && $s_accountrole != 'guest')
+	if (!$s_group_self && $s_accountrole != 'guest')
 	{
 		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=';
 		$location .= $session_user['accountrole'] . '&u=' . $s_id;
@@ -367,6 +367,13 @@ else if (ctype_digit((string) $s_id))
 	{
 		error_log('redirect 2');
 		redirect_index();
+	}
+
+	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
+	{
+		error_log('redirect 2a');
+		$_SESSION = [];
+		redirect_login();
 	}
 }
 else if ($s_id == 'elas')
