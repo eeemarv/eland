@@ -2,7 +2,7 @@ Onderstaande tekst werd overgenomen van [de eLAS documentatie](http://old.elaspr
 
 Hier en daar werd een kleine aanpassing gedaan vanwege de eLAND context.
 
-## Hoe maak ik een interlets koppeling?
+## Hoe maak ik een eLAS interlets koppeling?
 (Ingezonden door gvansanden op do, 03/01/2012 - 12:46)
 
 ### admin 
