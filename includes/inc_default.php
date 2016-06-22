@@ -415,6 +415,15 @@ else if ($s_id == 'elas')
 }
 else if ($s_id == 'master')
 {
+	if (!$s_group_self && $s_accountrole != 'guest')
+	{
+		error_log('redirect 3a');
+
+		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=admin&u=master';
+		header('Location: ' . $location);
+		exit;
+	}
+
 	$s_master = true;
 }
 else
