@@ -215,7 +215,7 @@ if (!$s_anonymous)
 		echo '</ul>';
 		echo '</li>';
 	}
-	else if ($s_group_self && $session_user['accountrole'] == 'admin')
+	else if ($s_group_self && ($session_user['accountrole'] == 'admin' || $s_master))
 	{
 		echo '<li class="dropdown">';
 		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
