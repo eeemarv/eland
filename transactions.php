@@ -716,6 +716,8 @@ if (!is_array($interlets_accounts_schemas))
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 
+var_dump($s_inter_schema_check);
+
 /**
  * show a transaction
  */
