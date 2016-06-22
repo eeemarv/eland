@@ -228,9 +228,11 @@ if (!$s_anonymous)
 		echo 'Admin modus';
 		echo '</a>'; 
 	}
-	echo '</ul>';
-	echo '</div>';
+
 }
+
+echo '</ul>';
+echo '</div>';
 
 echo '</div>';
 echo '</div>';
