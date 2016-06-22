@@ -2039,7 +2039,7 @@ else if ($v_extended)
 
 	foreach ($messages as $msg)
 	{
-		$type_str .= ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
 		$sf_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
 
