@@ -83,7 +83,19 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		
 		echo '<a href="';
 		echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
-		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
+
+		switch ($login_id)
+		{
+			case 'elas':
+				echo 'guest';
+				break;
+			case 'master':
+				echo 'admin';
+				break;
+			default:
+				echo $_SESSION['roles'][$login_schema];
+				break;
+		}
 
 		echo '&u=' . $login_id;
 
