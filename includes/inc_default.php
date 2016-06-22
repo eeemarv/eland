@@ -448,6 +448,7 @@ switch ($s_accountrole)
 
 		if ($page_access != 'guest')
 		{
+			error_log('redirect 6');
 			redirect_index();
 		}
 
@@ -457,6 +458,7 @@ switch ($s_accountrole)
 
 		if (!($page_access == 'user' || $page_access == 'guest'))
 		{
+			error_log('redirect 7');
 			redirect_index();
 		}
 
@@ -466,6 +468,7 @@ switch ($s_accountrole)
 
 		if ($page_access == 'anonymous')
 		{
+			error_log('redirect 8');
 			redirect_index();
 		}
 
@@ -473,6 +476,7 @@ switch ($s_accountrole)
 
 	default:
 
+		error_log('redirect 9');
 		redirect_login();
 
 		break;
@@ -585,7 +589,7 @@ if ($view || $inline)
  */
 if (!$s_anonymous)
 {
-	if ($session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
+	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
 		if (isset($logins[$schema]) && $s_group_self)
 		{

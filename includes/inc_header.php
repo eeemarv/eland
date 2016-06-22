@@ -83,23 +83,10 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		
 		echo '<a href="';
 		echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
-
-		switch ($login_id)
-		{
-			case 'elas':
-				echo 'guest';
-				break;
-			case 'master':
-				echo 'admin';
-				break;
-			default:
-				echo $_SESSION['roles'][$login_schema];
-				break;
-		}
-
+		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
 		echo '&u=' . $login_id;
-
 		echo '">';
+
 		echo readconfigfromdb('systemname', $login_schema);
 		echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
 		echo '</a>';
