@@ -2039,7 +2039,7 @@ else if ($v_extended)
 
 	foreach ($messages as $msg)
 	{
-		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag'; 
+		$type_str .= ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
 		$sf_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
 
@@ -2063,6 +2063,7 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
+		echo $type_str;
 		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
 		echo ($exp) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 		echo '</h3>';

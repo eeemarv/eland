@@ -299,6 +299,7 @@ $alert->render();
 
 echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';
+
 echo '<div class="visible-xs pull-left button-offcanvas">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"';
 echo ' title="Menu"><i class="fa fa-chevron-left"></i></button>';
