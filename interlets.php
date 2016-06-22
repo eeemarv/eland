@@ -707,7 +707,7 @@ function render_schemas_groups()
 		{
 			echo '<td>';
 
-			if (isset($loc_group_ary[$h]) && is_array($loc_group =  $loc_group_ary[$h]))
+			if (isset($loc_group_ary[$h]) && is_array($loc_group_ary[$h]))
 			{
 				echo aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
@@ -718,8 +718,10 @@ function render_schemas_groups()
 
 			echo '</td>';
 			echo '<td>';
-			if (isset($loc_group))
+			if (isset($loc_group_ary[$h]))
 			{
+				$loc_group = $loc_group_ary[$h];
+
 				if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
