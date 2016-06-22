@@ -930,6 +930,9 @@ unset($params_form['access'], $params_form['q'], $params_form['abbrev']);
 unset($params_form['letscode'], $params_form['ustatus']);
 unset($params_form['start']);
 
+$params_form['r'] = 'admin';
+$params_form['u'] = $s_id;
+
 foreach ($params_form as $name => $value)
 {
 	if (isset($value))
