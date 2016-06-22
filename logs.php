@@ -90,6 +90,16 @@ echo '</div>';
 
 echo '</div>';
 
+$params_form = ['r' => 'admin', 'u' => $s_id];
+
+foreach ($params_form as $name => $value)
+{
+	if (isset($value))
+	{
+		echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+	}
+}
+
 echo '</form>';
 
 echo '</div>';
