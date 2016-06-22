@@ -26,6 +26,7 @@
   * [Stijl](admin-stijl.md)
     * [Achtergrond aanpassen](admin-achtergrond-aanpassen.md)
     * [Logo toevoegen](admin-logo-toevoegen.md)
+  * [eLAS interlets koppeling maken](admin-elas-interlets-koppeling-maken.md)
 
 * [Server & Hosting](hosting.md)
   * [Option 1: Heroku](setup-on-heroku.md)
