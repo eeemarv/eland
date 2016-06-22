@@ -2063,7 +2063,6 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo $type_str;
 		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
 		echo ($exp) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 		echo '</h3>';
