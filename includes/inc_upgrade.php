@@ -42,7 +42,7 @@ function doupgrade($version)
 				break;
 					
 		}
-		$db->update('parameters', ['value' => $version), array('parameter' => 'schemaversion']);
+		$db->update('parameters', ['value' => $version], ['parameter' => 'schemaversion']);
 		$db->commit();
 		return true;
 	}

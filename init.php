@@ -29,15 +29,15 @@ echo "schema: " . $schema . ' systemtag: ' . $systemtag . $r;
 if ($step == 2 || $step == 3)
 {
 	// sync the image files  
-	$s3 = Aws\S3\S3Client::factory(array(
+	$s3 = Aws\S3\S3Client::factory([
 		'signature'	=> 'v4',
 		'region'	=> 'eu-central-1',
 		'version'	=> '2006-03-01',
-	));
+	]);
 
 	echo 'Sync the image files.' . $r;
 
-	$possible_extensions = array('jpg', 'jpeg', 'JPG', 'JPEG');
+	$possible_extensions = ['jpg', 'jpeg', 'JPG', 'JPEG'];
 }
 
 // Upgrade the DB first if required
@@ -100,7 +100,7 @@ else if ($step == 2)
 
 		if (!$found)
 		{
-			$db->update('users', array('"PictureFile"' => null), array('id' => $user_id));
+			$db->update('users', ['"PictureFile"' => null], ['id' => $user_id]);
 			echo 'Profile image not present, deleted in database: ' . $filename . $r;
 			log_event ('cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
@@ -108,26 +108,26 @@ else if ($step == 2)
 		{
 			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 
-			$result = $s3->copyObject(array(
+			$result = $s3->copyObject([
 				'Bucket'		=> $s3_img,
 				'CopySource'	=> $s3_img . '/' . $filename_bucket,
 				'Key'			=> $new_filename,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
-			));
+			]);
 
 			if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
 			{
-				$db->update('users', array('"PictureFile"' => $new_filename), array('id' => $user_id));
+				$db->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
 /* Remove old images manually from s3 for now
-				$s3->deleteObject(array(
+				$s3->deleteObject([
 					'Bucket'	=> $s3_img,
 					'Key'		=> $filename_bucket,
-				));
+				]);
 				*/
 
 			}
@@ -166,33 +166,33 @@ else if ($step == 3)
 
 		if (!$found)
 		{
-			$db->delete('msgpictures', array('id' => $id));
+			$db->delete('msgpictures', ['id' => $id]);
 			echo 'Message image not present, deleted in database: ' . $filename . $r;
 			log_event ('init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
 		else if ($f_schema != $schema)
 		{
 			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
-			$result = $s3->copyObject(array(
+			$result = $s3->copyObject([
 				'Bucket'		=> $s3_img,
 				'CopySource'	=> $s3_img . '/' . $filename_bucket,
 				'Key'			=> $new_filename,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
-			));
+			]);
 
 			if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
 			{
-				$db->update('msgpictures', array('"PictureFile"' => $new_filename), array('id' => $id));
+				$db->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
 /* Remove old images manually from s3 for now
-				$s3->deleteObject(array(
+				$s3->deleteObject([
 					'Bucket'	=> $s3_img,
 					'Key'		=> $filename_bucket,
-				)); */
+				]); */
 			}
 		}
 	}
@@ -212,9 +212,9 @@ $schemas = array_fill_keys($schemas, true);
 
 echo '* Cleanup files in bucket without valid schema prefix *' . $r;
 
-$results = $s3->getPaginator('ListObjects', array(
+$results = $s3->getPaginator('ListObjects', [
 	'Bucket' => $s3_img
-));
+]);
 
 foreach ($results as $result)
 {
@@ -229,10 +229,10 @@ foreach ($results as $result)
 			continue;
 		}
 
-		$s3->deleteObject(array(
+		$s3->deleteObject([
 			'Key'		=> $key,
 			'Bucket'	=> $s3_img,
-		));
+		]);
 
 		echo 'Image deleted from bucket: ' . $key . $r;
 		log_event('init', 'Image deleted from bucket: ' . $key);
@@ -245,7 +245,7 @@ foreach ($results as $result)
 /*
 echo 'Cleanup orphaned contacts. ' . $r;
 
-$orphaned_contacts = array();
+$orphaned_contacts = [];
 
 $rs = $db->prepare('select c.id, c.value
 	from contact c
@@ -265,8 +265,8 @@ $count = count($orphaned_contacts);
 if ($count)
 {
 	$db->executeQuery('delete * from contact where id IN (?)',
-		array(implode(', ', array_keys($orphaned_contacts))),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+		[implode(', ', array_keys($orphaned_contacts))],
+		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
 	);
 
 	echo 'Found & deleted ' . $count . ' orphaned contacts.' . $r;
@@ -322,7 +322,7 @@ function readparameter($key, $refresh = false)
 		}
 	}
 
-	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', array($key));
+	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', [$key]);
 
 	if (isset($value))
 	{

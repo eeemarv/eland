@@ -17,7 +17,7 @@ if ($approve)
 	$page_access = 'admin';
 	require_once $rootpath . 'includes/inc_default.php';
 
-	if ($db->update('news', array('approved' => 't', 'published' => 't'), array('id' => $approve)))
+	if ($db->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
 		$alert->success('Nieuwsbericht goedgekeurd');
 	}
@@ -37,17 +37,17 @@ if ($add || $edit)
 	$page_access = 'user';
 	require_once $rootpath . 'includes/inc_default.php';
 
-	$news = array();
+	$news = [];
 
 	if ($submit)
 	{
-		$news = array(
+		$news = [
 			'itemdate'		=> $_POST['itemdate'],
 			'location'		=> $_POST['location'],
 			'sticky'		=> ($_POST['sticky']) ? 't' : 'f',
 			'newsitem'		=> $_POST['newsitem'],
 			'headline'		=> $_POST['headline'],
-		);
+		];
 
 		if (!isset($news['headline']) || (trim($news['headline']) == ''))
 		{
@@ -99,7 +99,7 @@ if ($add && $submit && !count($errors))
 			$text .= $news['headline'];
 			$text .= "' in. Dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
 			$text .= 'link: ' .  $url . "\n";
-			mail_q(array('to' => 'newsadmin', 'subject' => $subject, 'text' => $text));
+			mail_q(['to' => 'newsadmin', 'subject' => $subject, 'text' => $text]);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
 			$alert->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
@@ -114,7 +114,7 @@ if ($add && $submit && !count($errors))
 
 if ($edit && $submit && !count($errors))
 {
-	if($db->update('news', $news, array('id' => $edit)))
+	if($db->update('news', $news, ['id' => $edit]))
 	{
 		$alert->success('Nieuwsbericht aangepast.');
 		cancel($edit);
@@ -127,7 +127,7 @@ if ($edit && $submit && !count($errors))
 
 if ($edit)
 {
-	$news = $db->fetchAssoc('SELECT * FROM news WHERE id = ?', array($edit));
+	$news = $db->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	list($news['itemdate']) = explode(' ', $news['itemdate']);
 }
 
@@ -234,7 +234,7 @@ if ($del)
 			cancel();
 		}
 
-		if($db->delete('news', array('id' => $del)))
+		if($db->delete('news', ['id' => $del]))
 		{
 			$alert->success('Nieuwsbericht verwijderd.');
 			cancel();
@@ -244,7 +244,7 @@ if ($del)
 
 	$news = $db->fetchAssoc('SELECT n.*
 		FROM news n  
-		WHERE n.id = ?', array($del));
+		WHERE n.id = ?', [$del]);
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
@@ -309,7 +309,7 @@ if ($id)
 
 	$news = $db->fetchAssoc('SELECT n.*
 		FROM news n  
-		WHERE n.id = ?', array($id));
+		WHERE n.id = ?', [$id]);
 
 	if (!$s_admin && !$news['approved'])
 	{
@@ -324,14 +324,14 @@ if ($id)
 	where id > ?
 		' . $and_approved_sql . '
 	order by id asc
-	limit 1', array($id));
+	limit 1', [$id]);
 
 	$prev = $db->fetchColumn('select id
 		from news
 		where id < ?
 		' . $and_approved_sql . '
 		order by id desc
-		limit 1', array($id));
+		limit 1', [$id]);
 
 	$top_buttons = '';
 
@@ -436,9 +436,9 @@ if (!($view || $inline))
 $v_list = ($view == 'list' || $inline) ? true : false;
 $v_extended = ($view == 'extended' && !$inline) ? true : false;
 
-$params = array(
+$params = [
 	'view'	=> $view,
-);
+];
 
 $query = 'SELECT *, to_char(itemdate, \'YYYY-MM-DD\') as idate FROM news';
 

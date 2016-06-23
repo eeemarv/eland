@@ -9,7 +9,7 @@ $add = (isset($_GET['add'])) ? $_GET['add'] : false;
 
 if ($add)
 {
-	$cat = array();
+	$cat = [];
 
 	if (isset($_POST['zend']))
 	{
@@ -41,7 +41,7 @@ if ($add)
 		{
 			$cat['cdate'] = date('Y-m-d H:i:s');
 			$cat['id_creator'] = ($s_master) ? 0 : $s_id;
-			$cat['fullname'] = ($cat['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array((int) $cat['id_parent'])) . ' - ' : '';
+			$cat['fullname'] = ($cat['leafnote']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', [(int) $cat['id_parent']]) . ' - ' : '';
 			$cat['fullname'] .= $cat['name'];
 
 			if ($db->insert('categories', $cat))
@@ -58,7 +58,7 @@ if ($add)
 		}
 	}
 
-	$parent_cats = array(0 => '-- Hoofdcategorie --');
+	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
 	$rs = $db->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
 
@@ -113,7 +113,7 @@ if ($add)
 
 if ($edit)
 {
-	$cats = array();
+	$cats = [];
 
 	$rs = $db->prepare('SELECT id, * FROM categories ORDER BY fullname');
 
@@ -124,7 +124,7 @@ if ($edit)
 		$cats[$row['id']] = $row;
 	}
 
-	$child_count_ary = array();
+	$child_count_ary = [];
 
 	foreach ($cats as $cat)
 	{
@@ -157,14 +157,14 @@ if ($edit)
 		}
 		else
 		{
-			$prefix = ($cat['id_parent']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', array($cat['id_parent'])) . ' - ' : '';
+			$prefix = ($cat['id_parent']) ? $db->fetchColumn('SELECT name FROM categories WHERE id = ?', [$cat['id_parent']]) . ' - ' : '';
 			$cat['fullname'] = $prefix . $cat['name'];
 			unset($cat['id']);
 
-			if ($db->update('categories', $cat, array('id' => $edit)))
+			if ($db->update('categories', $cat, ['id' => $edit]))
 			{
 				$alert->success('Categorie aangepast.');
-				$db->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', array($cat['name'], $edit));
+				$db->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', [$cat['name'], $edit]);
 				cancel();
 			}
 
@@ -172,7 +172,7 @@ if ($edit)
 		}
 	}
 
-	$parent_cats = array(0 => '-- Hoofdcategorie --');
+	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
 	$rs = $db->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
 
@@ -236,7 +236,7 @@ if ($del)
 			cancel();
 		}
 
-		if ($db->delete('categories', array('id' => $del)))
+		if ($db->delete('categories', ['id' => $del]))
 		{
 			$alert->success('Categorie verwijderd.');
 			cancel();
@@ -245,7 +245,7 @@ if ($del)
 		$alert->error('Categorie niet verwijderd.');
 	}
 
-	$fullname = $db->fetchColumn('SELECT fullname FROM categories WHERE id = ?', array($del));
+	$fullname = $db->fetchColumn('SELECT fullname FROM categories WHERE id = ?', [$del]);
 
 	$h1 = 'Categorie verwijderen : ' . $fullname;
 	$fa = 'clone';
@@ -273,7 +273,7 @@ if ($del)
 
 $cats = $db->fetchAll('SELECT * FROM categories ORDER BY fullname');
 
-$child_count_ary = array();
+$child_count_ary = [];
 
 foreach ($cats as $cat)
 {
