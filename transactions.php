@@ -695,8 +695,16 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<small><p>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of letscode in te typen. ';
-	echo 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.</p></small>';
+	echo '<ul><small><i>';
+
+	echo '<li>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of letscode in te typen. ';
+	echo 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.</li>';
+
+	echo '<li>';
+	echo readconfigfromdb('currencyratio');
+	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+
+	echo '</i></small></ul>';
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
@@ -886,6 +894,12 @@ if ($id)
 
 	echo '</div></div>';
 
+	echo '<ul><small><i>';
+
+	echo '<li>' . readconfigfromdb('currencyratio');
+	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+	echo '</i></small></ul>';
+
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
 }
@@ -1060,7 +1074,7 @@ $tableheader_ary = [
 	'description' => array_merge($asc_preset_ary, [
 		'lbl' => 'Omschrijving']),
 	'amount' => array_merge($asc_preset_ary, [
-		'lbl' => 'Bedrag']),
+		'lbl' => $currency]),
 	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'])
@@ -1550,95 +1564,105 @@ if ($inline)
 	echo '</div></div>';
 }
 
-if ($uid)
+if (!$inline && !$s_guest)
 {
-	$interletsq = $db->fetchAll('select q.*, l.groupname
-		from interletsq q, letsgroups l
-		where q.id_from = ?
-			and q.letsgroup_id = l.id', [$uid]);
-	$from = ' van ' . link_user($uid);
-}
-else
-{
-	$interletsq = $db->fetchAll('select q.*, l.groupname
-		from interletsq q, letsgroups l
-		where q.letsgroup_id = l.id');
-	$from = '';
-}
-
-if (count($interletsq))
-{
-	echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking';
-	echo '<span class="inline-buttons"> ' . $q_buttons . '</span>';
-	echo '</h3>';
-
-	echo '<div class="panel panel-warning printview">';
-	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable">';
-
-	echo '<thead>';
-	echo '<tr class="warning">';
-	echo '<th>Omschrijving</th>';
-	echo '<th>Bedrag</th>';
-	echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
-	echo '<th data-hide="phone, tablet">Van</th>';
-	echo '<th data-hide="phone, tablet">Aan letscode</th>';
-	echo '<th data-hide="phone, tablet">Groep</th>';
-	echo '<th data-hide="phone, tablet">Pogingen</th>';
-	echo '<th data-hide="phone, tablet">Status</th>';
-	echo '<th data-hide="phone, tablet">trans id</th>';
-	echo '</tr>';
-	echo '</thead>';
-
-	echo '<tbody>';
-
-	foreach($interletsq as $q)
+	if ($uid)
 	{
-		echo '<tr class="warning">';
-
-		echo '<td>';
-		echo htmlspecialchars($q['description'], ENT_QUOTES);
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['amount'] * readconfigfromdb('currencyratio');
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['date_created'];
-		echo '</td>';
-
-		echo '<td>';
-		echo link_user($q['id_from']);
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['letscode_to'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['groupname'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['retry_count'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['last_status'];
-		echo '</td>';
-
-		echo '<td>';
-		echo $q['transid'];
-		echo '</td>';
-
-		echo '</tr>';
+		$interletsq = $db->fetchAll('select q.*, l.groupname
+			from interletsq q, letsgroups l
+			where q.id_from = ?
+				and q.letsgroup_id = l.id', [$uid]);
+		$from = ' van ' . link_user($uid);
 	}
-	echo '</table></div></div>';
+	else
+	{
+		$interletsq = $db->fetchAll('select q.*, l.groupname
+			from interletsq q, letsgroups l
+			where q.letsgroup_id = l.id');
+		$from = '';
+	}
+
+	if (count($interletsq))
+	{
+		echo '<h3><span class="fa fa-exchange"></span> InterLETS transacties' . $from . ' in verwerking';
+		echo '<span class="inline-buttons"> ' . $q_buttons . '</span>';
+		echo '</h3>';
+
+		echo '<div class="panel panel-warning printview">';
+		echo '<div class="table-responsive">';
+		echo '<table class="table table-hover table-striped table-bordered footable">';
+
+		echo '<thead>';
+		echo '<tr class="warning">';
+		echo '<th>Omschrijving</th>';
+		echo '<th>' . $currency . '</th>';
+		echo '<th data-hide="phone" data-sort-initial="descending">Tijdstip</th>';
+		echo '<th data-hide="phone, tablet">Van</th>';
+		echo '<th data-hide="phone, tablet">Aan letscode</th>';
+		echo '<th data-hide="phone, tablet">Groep</th>';
+		echo '<th data-hide="phone, tablet">Pogingen</th>';
+		echo '<th data-hide="phone, tablet">Status</th>';
+		echo '<th data-hide="phone, tablet">trans id</th>';
+		echo '</tr>';
+		echo '</thead>';
+
+		echo '<tbody>';
+
+		foreach($interletsq as $q)
+		{
+			echo '<tr class="warning">';
+
+			echo '<td>';
+			echo htmlspecialchars($q['description'], ENT_QUOTES);
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['amount'] * readconfigfromdb('currencyratio');
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['date_created'];
+			echo '</td>';
+
+			echo '<td>';
+			echo link_user($q['id_from']);
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['letscode_to'];
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['groupname'];
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['retry_count'];
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['last_status'];
+			echo '</td>';
+
+			echo '<td>';
+			echo $q['transid'];
+			echo '</td>';
+
+			echo '</tr>';
+		}
+		echo '</table></div></div>';
+	}
 }
 
 if (!$inline)
 {
+	echo '<ul><small><i>';
+
+	echo '<li>' . readconfigfromdb('currencyratio');
+	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+
+	echo '</i></small></ul>';
+
 	include $rootpath . 'includes/inc_footer.php';
 }
 
