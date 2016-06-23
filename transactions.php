@@ -805,6 +805,8 @@ if ($id)
 	echo $transaction['cdate'];
 	echo '</dd>';
 
+	echo '<br>';
+
 	echo '<dt>Transactie ID</dt>';
 	echo '<dd>';
 	echo $transaction['transid'];
@@ -884,6 +886,8 @@ if ($id)
 	echo '<dd>';
 	echo $transaction['amount'] . ' ' . $currency;
 	echo '</dd>';
+
+	echo '<br>';
 
 	echo '<dt>Omschrijving</dt>';
 	echo '<dd>';
