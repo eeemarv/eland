@@ -1808,6 +1808,7 @@ if ($add || $edit)
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
+	echo 'data-date-orientation="bottom" ';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -2979,6 +2980,7 @@ if ($s_admin && $v_list)
 				echo 'data-date-autoclose="true" ';
 				echo 'data-date-enable-on-readonly="false" ';
 				echo 'data-date-end-date="0d" ';
+				echo 'data-date-orientation="bottom" ';
 				echo 'placeholder="Datum jjjj-mm-dd" ';
 				echo 'value="' . $saldo_date . '">';
 

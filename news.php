@@ -164,6 +164,7 @@ if ($add || $edit)
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
+	echo 'data-date-orientation="bottom" ';
 	echo ' value="' . $news['itemdate'] . '" required>';
 	echo '</div>';
 	echo '</div>';

@@ -1293,6 +1293,7 @@ if (!$inline)
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
+	echo 'data-date-orientation="bottom" ';
 	echo '>';
 
 	echo '</div>';
@@ -1314,6 +1315,7 @@ if (!$inline)
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
+	echo 'data-date-orientation="bottom" ';
 	echo '>';
 
 	echo '</div>';
