@@ -35,9 +35,9 @@ $overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
-$cdn_bootstrap_css = getenv('CDN_BOOTSTRAP_CSS') ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
-$cdn_bootstrap_js = getenv('CDN_BOOTSTRAP_JS') ?: '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = getenv('CDN_FONTAWESOME') ?: '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
+$cdn_bootstrap_css = '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
+$cdn_bootstrap_js = '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
+$cdn_fontawesome = '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
 
 $cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
 $cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
@@ -51,8 +51,8 @@ $cdn_footable_css = $s3_res_url . 'footable-bootstrap-3.0.3/css/footable.bootstr
 
 $cdn_jssor_slider_mini_js = $s3_res_url . 'jssor/js/jssor.slider.mini.js';
 
-$cdn_jqplot = (getenv('CDN_JQPLOT')) ?: '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
-$cdn_jquery = (getenv('CDN_JQUERY')) ?: '//code.jquery.com/jquery-2.1.3.min.js';
+$cdn_jqplot = '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
+$cdn_jquery = '//code.jquery.com/jquery-2.1.3.min.js';
 
 $cdn_jquery_ui_widget = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
 $cdn_jquery_iframe_transport = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
@@ -64,21 +64,21 @@ $cdn_jquery_fileupload_image = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquer
 $cdn_jquery_fileupload_validate = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
 $cdn_fileupload_css = $s3_res_url . 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
 
-$cdn_typeahead = (getenv('CDN_TYPEAHEAD')) ?: '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
-$cdn_datepicker_css = (getenv('CDN_DATEPICKER_CSS')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
-$cdn_datepicker = (getenv('CDN_DATEPICKER')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
-$cdn_datepicker_nl = (getenv('CDN_DATEPICKER_NL')) ?: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
+$cdn_typeahead = '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
+$cdn_datepicker_css = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.standalone.min.css';
+$cdn_datepicker = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js';
+$cdn_datepicker_nl = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/locales/bootstrap-datepicker.nl.min.js';
 
-$cdn_ckeditor = (getenv('CDN_CKEDITOR')) ?: '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
+$cdn_ckeditor = '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
 
-$cdn_isotope = (getenv('CDN_ISOTOPE')) ?: '//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js';
-$cdn_images_loaded = (getenv('CDN_IMAGES_LOADED')) ?: '//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js';
+$cdn_isotope = '//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js';
+$cdn_images_loaded = '//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js';
 
-$cdn_leaflet_css = (getenv('CDN_LEAFLET_CSS')) ?: 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css';
-$cdn_leaflet_js = (getenv('CDN_LEAFLET_JS')) ?: 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js';
+$cdn_leaflet_css = 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css';
+$cdn_leaflet_js = 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js';
 
-$cdn_leaflet_label_css = (getenv('CDN_LEAFLET_LABEL_CSS')) ?: 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css';
-$cdn_leaflet_label_js = (getenv('CDN_LEAFLET_LABEL_JS')) ?: 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js';
+$cdn_leaflet_label_css = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css';
+$cdn_leaflet_label_js = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js';
 
 $mapbox_token = getenv('MAPBOX_TOKEN');
 
