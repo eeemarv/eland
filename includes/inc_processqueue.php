@@ -213,6 +213,7 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 	}
 	else
 	{
+		echo '---   ' . http_build_query($transaction) . ' ----';
 		$id = insert_transaction($transaction);
 	}
 
