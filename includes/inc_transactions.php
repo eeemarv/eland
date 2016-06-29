@@ -29,7 +29,7 @@ function insert_transaction($transaction)
 {
     global $db, $s_id, $currency, $s_master;
 
-	$transaction['creator'] = ($s_master) ? 0 : $s_id;
+	$transaction['creator'] = ($s_master) ? 0 : (isset($s_id) ? $s_id : 0);
     $transaction['cdate'] = date('Y-m-d H:i:s');
 
 	$db->beginTransaction();
