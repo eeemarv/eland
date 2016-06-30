@@ -1285,7 +1285,7 @@ function getmailadr($m, $sending_schema = false)
 		}
 		else
 		{
-			log_event('error: no valid input for mail adr: ' . $in);
+			log_event('mail', 'error: no valid input for mail adr: ' . $in);
 		}
 	}
 
