@@ -48,6 +48,8 @@ function log_event($type, $event, $remote_schema = false)
 	$log->addNotice('eLAND: ' . $sch . ': ' . $h . ': ' .
 		$type . ': ' . $event . $user_str . "\n\r");
 
+	$ip = $_SERVER['HTTP_CLIENT_IP']?:($_SERVER['HTTP_X_FORWARDE‌​D_FOR']?:$_SERVER['REMOTE_ADDR']);
+
 	$item = [
 		'ts_tz'			=> date('Y-m-d H:i:s'),
 		'timestamp'		=> gmdate('Y-m-d H:i:s'),
@@ -55,7 +57,7 @@ function log_event($type, $event, $remote_schema = false)
 		'user_schema'	=> $s_schema,
 		'letscode'		=> strtolower($letscode),
 		'username'		=> $username,
-		'ip'			=> $_SERVER['REMOTE_ADDR'],
+		'ip'			=> $ip,
 		'type'			=> strtolower($type),
 		'event'			=> $event,
 	];
@@ -66,7 +68,7 @@ function log_event($type, $event, $remote_schema = false)
 		'user_schema'	=> $s_schema,
 		'letscode'		=> strtolower($letscode),
 		'username'		=> $username,
-		'ip'			=> $_SERVER['REMOTE_ADDR'],
+		'ip'			=> $ip,
 		'type'			=> strtolower($type),
 		'event'			=> $event,
 	];
