@@ -69,7 +69,7 @@ function log_event($type, $event, $remote_schema = false)
 		'ip'			=> $_SERVER['REMOTE_ADDR'],
 		'type'			=> strtolower($type),
 		'event'			=> $event,
-	]
+	];
 
 	$db->insert('eland_extra.logs', $log_item);
 
