@@ -72,7 +72,7 @@ function gettoken($apikey)
 {
 	global $db, $schema, $redis;
 
-	log_event('', 'debug', 'Token request');
+	log_event('debug', 'Token request');
 
 	if(check_apikey($apikey, 'interlets'))
 	{
