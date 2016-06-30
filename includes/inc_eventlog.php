@@ -62,6 +62,7 @@ function log_event($type, $event, $remote_schema = false)
 		'event'			=> $event,
 	];
 
+/*
 	$log_item = [
 		'schema'		=> $sch,
 		'user_id'		=> ($s_master || $s_elas_guest) ? 0 : (($s_id) ?: 0),
@@ -74,7 +75,7 @@ function log_event($type, $event, $remote_schema = false)
 	];
 
 	$db->insert('eland_extra.logs', $log_item);
-
+*/
 	register_shutdown_function('insert_log', $item, $remote_schema);
 }
 
