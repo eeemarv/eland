@@ -8,7 +8,7 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 function log_event($type, $event, $remote_schema = false)
 {
-	global $schema, $hosts, $s_schema, $s_id, $s_master, $s_elas_guest;
+	global $db, $schema, $hosts, $s_schema, $s_id, $s_master, $s_elas_guest;
 
 	$type = strtolower($type);
 
@@ -59,6 +59,19 @@ function log_event($type, $event, $remote_schema = false)
 		'type'			=> strtolower($type),
 		'event'			=> $event,
 	];
+
+	$log_item = [
+		'schema'		=> $sch,
+		'user_id'		=> ($s_master || $s_elas_guest) ? 0 : $s_id,
+		'user_schema'	=> $s_schema,
+		'letscode'		=> strtolower($letscode),
+		'username'		=> $username,
+		'ip'			=> $_SERVER['REMOTE_ADDR'],
+		'type'			=> strtolower($type),
+		'event'			=> $event,
+	]
+
+	$db->insert('eland_extra.logs', $log_item);
 
 	register_shutdown_function('insert_log', $item, $remote_schema);
 }
