@@ -2009,6 +2009,10 @@ if ($add || $edit)
 			echo '<hr>';
 		}
 
+		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
+		echo 'Toevoegen bij de contactinfo ';
+		echo ($add) ? 'nadat de gebruiker gecreëerd is' : '';
+		echo '.</small></p>';
 		echo '</div>';
 
 		if (!$user['adate'] && $s_admin)
