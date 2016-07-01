@@ -38,6 +38,47 @@ class access_control
 	 *
 	 */
 
+	public function is_visible($role_or_level)
+	{
+		global $access_level;
+
+		$level = $this->get_level($role_or_level);
+
+		return $level >= $access_level;
+	}
+
+	/*
+	 *
+	 */
+
+	public function get_role($access)
+	{
+		if (isset($this->acc_ary_search[$access]))
+		{
+			return $this->acc_ary_search[$access];
+		}
+
+		return $access;
+	}
+
+	/*
+	 *
+	 */
+
+	public function get_level($access)
+	{
+		if (isset($this->acc_ary[$access]))
+		{
+			return $this->acc_ary[$access]['level'];
+		}
+
+		return $access;
+	}
+
+	/*
+	 *
+	 */
+
 	public function get_label($access = 'admin', $size = 'xs')
 	{
 		if (isset($this->acc_ary_search[$access]))

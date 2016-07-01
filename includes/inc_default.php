@@ -1039,12 +1039,36 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$mdb->connect();
+	$fullname_access = $db->fetchColumn('select data->>\'fullname_access\' as fullname_access
+		from eland_extra.events
+		where agg_id = ?
+		order by agg_version desc
+		limit 1', [$redis_key]);
 
-	$remote_users = $s . '_users';
-	$users = ($remote_schema) ? $mdb->get_client()->$remote_users : $mdb->users;
-	$ary = $users->findOne(['id' => (int) $id]);
-	$user += (is_array($ary)) ? $ary : [];
+	if ($fullname_access)
+	{
+		$user += ['fullname_access' => $fullname_access];
+	}
+	else
+	{
+		$mdb->connect();
+
+		$remote_users = $s . '_users';
+		$users = ($remote_schema) ? $mdb->get_client()->$remote_users : $mdb->users;
+		$ary = $users->findOne(['id' => (int) $id]);
+
+		$fullname_access = $ary['fullname_access'] ? $access_control->get_role($fullname_access) : 'admin';
+
+		$user += ['fullname_access' => $fullname_access];
+
+		$db->insert('eland_extra.events', [
+			'agg_id'		=> $redis_key,
+			'agg_type'		=> 'user',
+			'agg_version'	=> 1,
+			'data'			=> json_encode(['fullname_access' => $fullname_access]),
+			'event'			=> 'user_fullname_access_updated'
+		]);
+	}
 
 	if (isset($user))
 	{

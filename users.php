@@ -504,12 +504,62 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	foreach ($rows as $row)
 	{
 		$users_log .= ', ' . link_user($row, false, false, true);
+
 	}
 
 	$users_log = ltrim($users_log, ', ');
 
 	if ($field == 'fullname_access')
 	{
+		$fullname_access_role = $access_control->get_role($access_value);
+
+		$user_agg_ids = [];
+
+		foreach ($user_ids as $user_id)
+		{
+			$user_agg_ids[] = $schema . '_user_' . $user_id;
+		}
+
+		$user_agg_inserts = array_combine($user_agg_ids, $user_agg_ids);;
+
+		$rows = $db->executeQuery('select e1.agg_id,
+			e1.agg_version,
+			e1.data->>\'fullname_access\' as fullname_access
+			from eland_extra.events e1
+			where e1.agg_version = (select max(e2.agg_version)
+					from eland_extra.events e2
+					where e1.agg_id = e2.agg_id)
+				and e1.agg_type = \'user\'
+				and agg_id in (?)',
+				[$user_agg_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+		foreach ($rows as $row)
+		{
+			if ($fullname_access_role != $row['fullname_access'])
+			{
+				$db->insert('eland_extra.events', [
+					'agg_id'		=> $row['agg_id'],
+					'agg_type'		=> 'user',
+					'agg_version'	=> $row['agg_version'] + 1,
+					'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
+					'event'			=> 'user_fullname_access_updated'
+				]);
+			}
+
+			unset($user_agg_inserts[$row['agg_id']]);
+		}
+
+		foreach ($user_agg_inserts as $agg_id)
+		{
+			$db->insert('eland_extra.events', [
+				'agg_id'		=> $agg_id,
+				'agg_type'		=> 'user',
+				'agg_version'	=> 1,
+				'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
+				'event'			=> 'user_fullname_access_updated'
+			]);	
+		}
+
 		$mdb->connect();
 
 		foreach ($user_ids as $user_id)
@@ -523,7 +573,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$redis->del($schema . '_user_' . $user_id);
 		}
 
-		log_event('bulk', 'Set fullname_access to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
 		cancel();
 	}
@@ -1392,6 +1442,16 @@ if ($add || $edit)
 				{
 					$id = $db->lastInsertId('users_id_seq');
 
+					$fullname_access_role = $access_control->get_role($fullname_access_role);
+
+					$db->insert('eland_extra.events', [
+						'agg_id'		=> $s . '_user_' . $id,
+						'agg_type'		=> 'user',
+						'agg_version'	=> 1,
+						'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
+						'event'			=> 'user_fullname_access_updated'
+					]);
+
 					$mdb->connect();
 					$mdb->users->update([
 						'id'		=> (int) $id],
@@ -1486,6 +1546,28 @@ if ($add || $edit)
 
 				if($db->update('users', $user, ['id' => $edit]))
 				{
+
+					$fullname_access_role = $access_control->get_role($fullname_access);
+
+					if ($user_stored['fullname_access'] != $fullname_access_role)
+					{
+						$version = $db->fetchColumn('select agg_version
+							from eland_extra.events
+							where agg_id = ?
+							order by agg_version desc
+							limit 1', [$schema . '_user_' . $edit]);
+
+						$db->insert('eland_extra.events', [
+							'agg_id'		=> $schema . '_user_' . $edit,
+							'agg_type'		=> 'user',
+							'agg_version'	=> $version + 1,
+							'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
+							'event'			=> 'user_fullname_access_updated'
+						]);
+
+						log_event('debug', 'user_fullname_access_updated: ' . link_user($edit, false, false, true));
+					}
+
 					$mdb->connect();
 					$mdb->users->update([
 							'id'	=> (int) $edit,
@@ -1782,7 +1864,7 @@ if ($add || $edit)
 
 	if (!isset($fullname_access))
 	{
-		$fullname_access = ($add) ? false : 0;
+		$fullname_access = ($add) ? false : 'admin';
 	}
 
 	echo $access_control->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
@@ -2170,9 +2252,9 @@ if ($id)
 	echo '<div class="panel-heading">';
 	echo '<dl>';
 
-	$fullname_access = ($user['fullname_access']) ?: 0;
+	$fullname_access = ($user['fullname_access']) ?: 'admin';
 
-	if ($s_admin || $s_owner || $fullname_access >= $access_level)
+	if ($s_admin || $s_owner || $access_control->is_visible($fullname_access))
 	{
 		echo '<dt>';
 		echo 'Volledige naam, zichtbaarheid: ';
