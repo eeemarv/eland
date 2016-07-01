@@ -1007,7 +1007,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $db, $schema, $redis, $mdb;
+    global $db, $schema, $redis, $mdb, $access_control;
     static $cache;
 
 	if (!$id)
