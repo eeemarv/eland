@@ -27,13 +27,16 @@ if (!$type)
  ts          | timestamp without time zone | default timezone('utc'::text, now())
  user_id     | integer                     | default 0
  user_schema | character varying(60)       | 
- agg_id      | character varying(255)      | 
+ agg_id      | character varying(255)      | not null
  agg_type    | character varying(60)       | 
- agg_version | integer                     | 
+ agg_version | integer                     | not null
  data        | jsonb                       | 
  event_time  | timestamp without time zone | default timezone('utc'::text, now())
  ip          | character varying(60)       | 
  event       | character varying(128)      | 
+Indexes:
+    "events_pkey" PRIMARY KEY, btree (agg_id, agg_version)
+
 */
 
 $mdb->connect();

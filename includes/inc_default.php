@@ -1039,7 +1039,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$fullname_access = $db->fetchColumn('select data->>\'fullname_access\' as fullname_access
+	$fullname_access = $db->fetchColumn('select data->>\'fullname_access\'
 		from eland_extra.events
 		where agg_id = ?
 		order by agg_version desc

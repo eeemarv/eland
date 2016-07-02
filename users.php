@@ -1442,10 +1442,10 @@ if ($add || $edit)
 				{
 					$id = $db->lastInsertId('users_id_seq');
 
-					$fullname_access_role = $access_control->get_role($fullname_access_role);
+					$fullname_access_role = $access_control->get_role($fullname_access);
 
 					$db->insert('eland_extra.events', [
-						'agg_id'		=> $s . '_user_' . $id,
+						'agg_id'		=> $schema . '_user_' . $id,
 						'agg_type'		=> 'user',
 						'agg_version'	=> 1,
 						'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
@@ -1551,11 +1551,11 @@ if ($add || $edit)
 
 					if ($user_stored['fullname_access'] != $fullname_access_role)
 					{
-						$version = $db->fetchColumn('select agg_version
+						$version = $db->fetchColumn('select max(agg_version)
 							from eland_extra.events
-							where agg_id = ?
-							order by agg_version desc
-							limit 1', [$schema . '_user_' . $edit]);
+							where agg_id = ?', [$schema . '_user_' . $edit]);
+
+						$version = ($version) ?: 0;
 
 						$db->insert('eland_extra.events', [
 							'agg_id'		=> $schema . '_user_' . $edit,
