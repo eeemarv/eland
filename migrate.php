@@ -202,3 +202,88 @@ if ($type == 'setting')
 	echo '--- end ---' . $r;
 	exit;
 }
+
+if ($type == 'forum')
+{
+	$forum_agg_ids = [];
+	$forum_ary = [];
+
+	foreach ($schemas as $s)
+	{
+		$forum_collection = $s . '_forum';
+
+		$forum_posts = $mclient->$forum_collection->find();
+
+		foreach ($forum_posts as $forum_post)
+		{
+			$p = $forum_post['_id']->__toString();
+			$forum_agg_ids[] = $s . '_forum_' . $p;
+			$forum_post_data = $forum_post;
+			unset($forum_post_data['_id']);
+			$forum_post_data['id'] = $p;
+			$forum_ary[$s][$p] = $forum_post_data;
+		}
+	}
+
+	$stored_ary = [];
+
+	$rows = $db->executeQuery('select e1.agg_id,
+		e1.agg_version,
+		e1.data
+		from eland_extra.events e1
+		where e1.agg_version = (select max(e2.agg_version)
+				from eland_extra.events e2
+				where e1.agg_id = e2.agg_id)
+			and e1.agg_type = \'forum\'
+			and agg_id in (?)',
+			[$forum_agg_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+	foreach ($rows as $row)
+	{
+		$forum_post = json_decode($row['data'], true);
+
+		$stored_ary[$row['agg_id']] = [
+			'agg_version'			=> $row['agg_version'],
+			'forum_post'			=> $forum_post,
+		];
+	}
+
+	foreach ($forum_ary as $s => $forum_post_ary)
+	{
+		foreach ($forum_post_ary as $id => $forum_post)
+		{
+			echo $s . ' -- ';
+			echo ' forum_post: ' . $id;
+			echo ': ';
+			echo json_encode($forum_post);
+
+			$agg_id = $s . '_forum_' . $id;
+
+			if ($stored_ary[$agg_id])
+			{
+				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
+			}
+
+			if (!$stored_ary[$agg_id]
+				|| $forum_post != $stored_ary[$agg_id]['forum_post'])
+			{
+				$agg_version = (isset($stored_ary[$agg_id]['agg_version'])) ? $stored_ary[$agg_id]['agg_version'] + 1 : 1;
+
+				$db->insert('eland_extra.events', [
+					'agg_id'		=> $agg_id,
+					'agg_type'		=> 'forum',
+					'agg_version'	=> $agg_version,
+					'data'			=> json_encode($forum_post),
+					'event'			=> 'forum_updated'
+				]);
+
+				echo ' UPDATED';
+			}
+
+			echo $r . $r;
+		}
+	}
+
+	echo '--- end ---' . $r;
+	exit;
+}
