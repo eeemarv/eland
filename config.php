@@ -36,11 +36,33 @@ if ($setting)
 		{
 			if ($eland_config[$setting])
 			{
+				$stored_value = readconfigfromdb($setting);
+
 				$a = array(
 					'value' => $value,
 					'name'	=> $setting
 				);
+
 				$mdb->settings->update(array('name' => $setting), $a, array('upsert' => true));
+
+				if ($value != $stored_value)
+				{
+					$version = $db->fetchColumn('select max(agg_version)
+						from eland_extra.events
+						where agg_id = ?', [$schema . '_setting_' . $setting]);
+
+					$version = ($version) ?: 0;
+
+					$db->insert('eland_extra.events', [
+						'agg_id'		=> $schema . '_setting_' . $setting,
+						'agg_type'		=> 'setting',
+						'agg_version'	=> $version + 1,
+						'data'			=> json_encode($a),
+						'event'			=> 'setting_updated'
+					]);
+
+					log_event('debug', 'setting_updated: ' . $setting);
+				}
 			}
 			else
 			{

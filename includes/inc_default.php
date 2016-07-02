@@ -982,10 +982,29 @@ function readconfigfromdb($key, $sch = null)
 
 	if (isset($eland_config[$key]))
 	{
-		$mclient = $mdb->connect()->get_client();
-		$settings = $sch . '_settings';
-		$s = $mclient->$settings->findOne(['name' => $key]);
-		$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
+		$ev_key = $sch . '_setting_' . $key;
+
+		$value = $db->fetchColumn('select data->>\'value\'
+			from eland_extra.events
+			where agg_id = ?
+			order by agg_version desc
+			limit 1', [$ev_key]);
+
+		if (!isset($value))
+		{
+			$mclient = $mdb->connect()->get_client();
+			$settings = $sch . '_settings';
+			$s = $mclient->$settings->findOne(['name' => $key]);
+			$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
+
+			$db->insert('eland_extra.events', [
+				'agg_id'		=> $ev_key,
+				'agg_type'		=> 'setting',
+				'agg_version'	=> 1,
+				'data'			=> json_encode(['value' => $value, 'name' => $key]),
+				'event'			=> 'user_fullname_access_updated'
+			]);
+		}
 	}
 	else
 	{

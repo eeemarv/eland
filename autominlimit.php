@@ -30,12 +30,48 @@ if (isset($_POST['zend']))
 
 	$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
 
+	$row = $db->fetchAssoc('select data, agg_version
+		from eland_extra.events
+		where agg_id = ?
+		order by agg_version desc
+		limit 1', [$schema . '_setting_autominlimit']);
+
+	$stored_data = json_decode($row['data'], true);
+
+	if ($a != $stored_data)
+	{
+		$version = ($row['agg_version']) ?: 0;
+
+		$db->insert('eland_extra.events', [
+			'agg_id'		=> $schema . '_setting_autominlimit',
+			'agg_type'		=> 'setting',
+			'agg_version'	=> $version + 1,
+			'data'			=> json_encode($a),
+			'event'			=> 'setting_updated'
+		]);
+
+		log_event('debug', 'setting_updated: ' . $setting);
+	}
+
 	$alert->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
 else 
 {
-	$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
+	$a = $db->fetchColumn('select data
+		from eland_extra.events
+		where agg_id = ?
+		order by agg_version desc
+		limit 1', [$schema . '_setting_autominlimit']);
+
+	if (isset($a))
+	{
+		$a = json_decode($a, true);
+	}
+	else
+	{
+		$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
+	}
 }
 
 $h1 = 'Automatische minimum limiet';

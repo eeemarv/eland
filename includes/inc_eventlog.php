@@ -38,7 +38,7 @@ function log_event($type, $event, $remote_schema = false)
 		$user = readuser($s_id, false, $s_schema);
 		$username = $user['name'];
 		$letscode = $user['letscode'];
-		$user_str = ' user: ' . link_user($user, $sch, false, true); 
+		$user_str = 'user: ' . link_user($user, $sch, false, true); 
 	}
 	else
 	{
@@ -46,7 +46,7 @@ function log_event($type, $event, $remote_schema = false)
 	}
 
 	$log->addNotice('eLAND: ' . $sch . ': ' . $h . ': ' .
-		$type . ': ' . $event . $user_str . "\n\r");
+		$type . ': ' . $event . ' ' . $user_str . "\n\r");
 
 	$ip = $_SERVER['HTTP_CLIENT_IP']?:($_SERVER['HTTP_X_FORWARDE‌​D_FOR']?:$_SERVER['REMOTE_ADDR']);
 

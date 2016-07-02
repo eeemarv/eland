@@ -121,4 +121,84 @@ if ($type == 'user')
 	exit;
 }
 
+if ($type == 'setting')
+{
+	$setting_agg_ids = [];
+	$setting_ary = [];
 
+	foreach ($schemas as $s)
+	{
+		$settings_collection = $s . '_settings';
+
+		$settings = $mclient->$settings_collection->find();
+
+		foreach ($settings as $setting)
+		{
+			$setting_agg_ids[] = $s . '_setting_' . $setting['name'];
+			unset($setting['_id']);
+			$setting_ary[$s][$setting['name']] = $setting;
+		}
+	}
+
+	$stored_ary = [];
+
+	$rows = $db->executeQuery('select e1.agg_id,
+		e1.agg_version,
+		e1.data
+		from eland_extra.events e1
+		where e1.agg_version = (select max(e2.agg_version)
+				from eland_extra.events e2
+				where e1.agg_id = e2.agg_id)
+			and e1.agg_type = \'setting\'
+			and agg_id in (?)',
+			[$setting_agg_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+	foreach ($rows as $row)
+	{
+		$setting = json_decode($row['data'], true);
+
+		$stored_ary[$row['agg_id']] = [
+			'agg_version'		=> $row['agg_version'],
+			'setting'			=> $setting,
+		];
+	}
+
+	foreach ($setting_ary as $s => $schema_settings)
+	{
+		foreach ($schema_settings as $name => $setting)
+		{
+			echo $s . ' -- ';
+			echo ' setting: ' . $name;
+			echo ': ';
+			echo json_encode($setting);
+
+			$agg_id = $s . '_setting_' . $name;
+
+			if ($stored_ary[$agg_id])
+			{
+				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
+			}
+
+			if (!$stored_ary[$agg_id]
+				|| $setting != $stored_ary[$agg_id]['setting'])
+			{
+				$agg_version = (isset($stored_ary[$agg_id]['agg_version'])) ? $stored_ary[$agg_id]['agg_version'] + 1 : 1;
+
+				$db->insert('eland_extra.events', [
+					'agg_id'		=> $agg_id,
+					'agg_type'		=> 'setting',
+					'agg_version'	=> $agg_version,
+					'data'			=> json_encode($setting),
+					'event'			=> 'setting_updated'
+				]);
+
+				echo ' UPDATED';
+			}
+
+			echo $r . $r;
+		}
+	}
+
+	echo '--- end ---' . $r;
+	exit;
+}
