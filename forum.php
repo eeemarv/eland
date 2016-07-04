@@ -45,17 +45,11 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$ev_key = $schema . '_forum_' . $t;
-
-	$row = $db->fetchAssoc('select data, agg_version
-		from eland_extra.events
-		where agg_id = ?
-		order by agg_version desc
-		limit 1', [$ev_key]);
+	$row = $exdb->get('forum', $t);
 
 	if ($row)
 	{
-		$forum_post = json_decode($row['data'], true);
+		$forum_post = $row['data'];
 		$agg_version = $row['agg_version'];
 	}
 	else
@@ -65,26 +59,17 @@ if ($del || $edit)
 		if ($forum_post)
 		{
 			unset($forum_post['_id']);
-			$forum_post['id'] = $t;
 
 			if (isset($forum_post['access']))
 			{
 				$forum_post['access'] = $access_control->get_role($forum_post['access']);
 			}
 
-			$agg_version = 1;
-
-			$db->insert('eland_extra.events', [
-				'agg_id'		=> $schema . '_forum_' . $t,
-				'agg_type'		=> 'forum',
-				'agg_version'	=> $agg_version,
-				'data'			=> json_encode($forum_post),
-				'event'			=> 'forum_updated'
-			]);
+			$exdb->set('forum', $t, $forum_post);
 		}
 	}
 
-	if (!$forum_post)
+	if (!isset($forum_post))
 	{
 		$alert->error('Post niet gevonden.');
 		cancel();
@@ -126,15 +111,7 @@ if ($submit)
 			['justOne'	=> true]
 		);
 
-		$agg_version++;
-
-		$db->insert('eland_extra.events', [
-			'agg_id'		=> $schema . '_forum_' . $del,
-			'agg_type'		=> 'forum',
-			'agg_version'	=> $agg_version,
-			'data'			=> json_encode([]),
-			'event'			=> 'forum_deleted'
-		]);
+		$exdb->del('forum', $del);
 
 		if (!$forum_post['parent_id'])
 		{
@@ -142,26 +119,11 @@ if ($submit)
 				['parent_id' => $del]
 			);
 
-			$rows = $db->executeQuery('select e1.agg_id,
-				e1.agg_version,
-				e1.data
-				from eland_extra.events e1
-				where e1.agg_version = (select max(e2.agg_version)
-						from eland_extra.events e2
-						where e1.agg_id = e2.agg_id)
-					and e1.agg_type = \'forum\'
-					and e1.data->>\'parent_id\' = ?',
-					[$del]);
+			$rows = $exdb->get_many(['agg_type' => $forum, 'agg_schema' => $schema, 'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$db->insert('eland_extra.events', [
-					'agg_id'		=> $row['agg_id'],
-					'agg_type'		=> 'forum',
-					'agg_version'	=> $row['agg_version'] + 1,
-					'data'			=> json_encode([]),
-					'event'			=> 'forum_deleted'
-				]);
+				$exdb->del($row['agg_type'], $row['eland_id']); 
 			}
 
 			$alert->success('Het forum onderwerp is verwijderd.');
@@ -242,15 +204,12 @@ if ($submit)
 			['$set'	=> $forum_post, '$inc' => ['edit_count' => 1]],
 			['upsert'	=> true]);
 
-		$agg_version++;
+		if (isset($forum_post['access']))
+		{
+			$forum_post['access'] = $access_control->get_role($forum_post['access']);
+		}
 
-		$db->insert('eland_extra.events', [
-			'agg_id'		=> $schema . '_forum_' . $edit,
-			'agg_type'		=> 'forum',
-			'agg_version'	=> $agg_version,
-			'data'			=> json_encode($forum_post),
-			'event'			=> 'forum_updated'
-		]);
+		$exdb->set('forum', $edit, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
@@ -264,22 +223,13 @@ if ($submit)
 		$t = $forum_post['_id']->__toString();
 
 		unset($forum_post['_id']);
-		$forum_post['id'] = $t;
 
 		if (isset($forum_post['access']))
 		{
 			$forum_post['access'] = $access_control->get_role($forum_post['access']);
 		}
 
-		$agg_version = 1;
-
-		$db->insert('eland_extra.events', [
-			'agg_id'		=> $schema . '_forum_' . $t,
-			'agg_type'		=> 'forum',
-			'agg_version'	=> $agg_version,
-			'data'			=> json_encode($forum_post),
-			'event'			=> 'forum_updated'
-		]);
+		$exdb->set('forum', $t, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -334,17 +284,11 @@ if ($add || $edit)
 
 	if ($topic)
 	{
-		$ev_key = $schema . '_forum_' . $topic;
-
-		$row = $db->fetchAssoc('select data, agg_version
-			from eland_extra.events
-			where agg_id = ?
-			order by agg_version desc
-			limit 1', [$ev_key]);
+		$row = $exdb->get('forum', $topic);
 
 		if ($row)
 		{
-			$topic_post = json_decode($row['data'], true);
+			$topic_post = $row['data'];
 			$agg_version = $row['agg_version'];
 		}
 		else
@@ -354,28 +298,15 @@ if ($add || $edit)
 			if ($topic_post)
 			{
 				unset($topic_post['_id']);
-				$topic_post['id'] = $topic;
 
 				if (isset($topic_post['access']))
 				{
 					$topic_post['access'] = $access_control->get_role($topic_post['access']);
 				}
 
-				$db->insert('eland_extra.events', [
-					'agg_id'		=> $ev_key,
-					'agg_type'		=> 'forum',
-					'agg_version'	=> 1,
-					'data'			=> json_encode($forum_post),
-					'event'			=> 'forum_updated'
-				]);
+				$exdb->set('forum', $topic, $topic_post);
 			}
 		}
-
-/*
-		$topic_id = new MongoId($topic);
-		$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
-*/
-
 
 		if (!$access_control->is_visible($topic_post['access']))
 		{
@@ -463,17 +394,11 @@ if ($add || $edit)
  
 if ($topic)
 {
-	$ev_key = $schema . '_forum_' . $topic;
-
-	$row = $db->fetchAssoc('select data, agg_version
-		from eland_extra.events
-		where agg_id = ?
-		order by agg_version desc
-		limit 1', [$ev_key]);
+	$row = $exdb->get('forum', $topic);
 
 	if ($row)
 	{
-		$topic_post = json_decode($row['data'], true);
+		$topic_post = $row['data'];
 		$agg_version = $row['agg_version'];
 	}
 	else
@@ -483,20 +408,13 @@ if ($topic)
 		if ($topic_post)
 		{
 			unset($topic_post['_id']);
-			$topic_post['id'] = $topic;
 
 			if (isset($topic_post['access']))
 			{
 				$topic_post['access'] = $access_control->get_role($topic_post['access']);
 			}
 
-			$db->insert('eland_extra.events', [
-				'agg_id'		=> $ev_key,
-				'agg_type'		=> 'forum',
-				'agg_version'	=> 1,
-				'data'			=> json_encode($forum_post),
-				'event'			=> 'forum_updated'
-			]);
+			$exdb->set('forum', $topic, $topic_post);
 		}
 	}
 
@@ -516,6 +434,12 @@ if ($topic)
 		cancel();
 	}
 */
+
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'forum',
+		'data->>\'parent_id\'' => $topic]);
+
+
 	$find = ['$or'=> [['parent_id' => $topic], ['_id' => new MongoId($topic)]]];
 
 	$forum_posts = $mdb->forum->find($find);
@@ -645,6 +569,10 @@ if ($topic)
 /*
  * show topic list
  */
+
+$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'forum', 'access' => ['not null']]);
+
+var_dump($rows); 
 
 $find = ['parent_id' => ['$exists' => false]];
 

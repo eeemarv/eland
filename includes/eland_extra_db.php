@@ -97,7 +97,9 @@ class eland_extra_db
 
 		if ($row)
 		{
-			$data = array_diff_assoc($data, json_decode($row['data'], true));
+			$prev_data = json_decode($row['data'], true);
+
+			$data = array_diff_assoc($data, $prev_data);
 			$agg_version = $row['agg_version'] + 1;
 			$event = $agg_type . '_updated';
 			$ev = 'updated';
@@ -142,8 +144,9 @@ class eland_extra_db
 			{
 				unset($insert['data']);
 				$update = $insert;
-				$update['data'] = array_merge($row['data'], $data);
-				$db->update('eland_extra.aggs', $update);
+				$update['data'] = json_encode(array_merge($prev_data, $data));
+
+				$db->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
 			}
 
 			$db->commit();
@@ -208,7 +211,7 @@ class eland_extra_db
 			'eland_id'		=> $eland_id,
 			'agg_version'	=> $agg_version + 1,
 			'event'			=> $agg_type . '_deleted',
-			'data'			=> json_encode([]),
+			'data'			=> '{}',
 			'ip'			=> $this->ip,
 		];
 
@@ -284,13 +287,6 @@ class eland_extra_db
 		$sql_params = [];
 		$sql_types = [];
 
-		if (isset($filters['agg_type']))
-		{
-			$sql_where[] = 'agg_type = ?';
-			$sql_params[] = $filters['agg_type'];
-			$sql_types[] = \PDO::PARAM_STR;
-		}
-
 		if (isset($filters['agg_id_ary']))
 		{
 			$sql_where[] = 'agg_id in (?)';
@@ -298,11 +294,32 @@ class eland_extra_db
 			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
 		}
 
-		if (isset($filers['schema']))
+		unset($filters['agg_id_ary']);
+
+		foreach ($filters as $key => $value)
 		{
-			$sql_where[] = 'agg_schema = ?';
-			$sql_params[] = $filers['schema'];
-			$sql_types[] = \PDO::PARAM_STR;
+			if (is_array($value))
+			{
+				$v = reset($value);
+				$k = key($value);
+
+				if ($k == 0)
+				{
+					$sql_where = $key . ' ' . $v;
+				}
+				else
+				{
+					$sql_where[] = $key . ' ' . $k . ' ?';
+					$sql_params[] = $v;
+					$sql_types[] = \PDO::PARAM_STR;
+				}
+			}
+			else
+			{
+				$sql_where[] = $key . ' = ?';
+				$sql_params[] = $value;
+				$sql_types[] = \PDO::PARAM_STR;
+			}
 		}
 
 		$query = 'select * from eland_extra.aggs';

@@ -47,21 +47,7 @@ if ($setting)
 
 				if ($value != $stored_value)
 				{
-					$version = $db->fetchColumn('select max(agg_version)
-						from eland_extra.events
-						where agg_id = ?', [$schema . '_setting_' . $setting]);
-
-					$version = ($version) ?: 0;
-
-					$db->insert('eland_extra.events', [
-						'agg_id'		=> $schema . '_setting_' . $setting,
-						'agg_type'		=> 'setting',
-						'agg_version'	=> $version + 1,
-						'data'			=> json_encode($a),
-						'event'			=> 'setting_updated'
-					]);
-
-					log_event('debug', 'setting_updated: ' . $setting);
+					$exdb->set('setting', $setting, ['value' => $value]);
 				}
 			}
 			else
@@ -147,13 +133,32 @@ $config = $db->fetchAll('select *
 
 $eh_settings = array_keys($eland_config);
 
-$cursor = $mdb->settings->find(array('name' => array('$in' => $eh_settings))); 
+$rows = $exdb->get_many(['agg_type' => 'setting', 'agg_schema' => $schema]);
 
-$eh_stored_settings = array();
-
-foreach ($cursor as $c)
+if (count($rows))
 {
-	$eh_stored_settings[$c['name']] = $c['value'];
+	if ($row['eland_id'] == 'autominlimit')
+	{
+		continue;
+	}
+
+	foreach ($rows as $row)
+	{
+		$eh_stored_settings[$row['eland_id']] = $row['data']['value'];
+	}
+}
+else
+{
+	$cursor = $mdb->settings->find(array('name' => array('$in' => $eh_settings))); 
+
+	$eh_stored_settings = array();
+
+	foreach ($cursor as $c)
+	{
+		$eh_stored_settings[$c['name']] = $c['value'];
+
+		$exdb->set('setting', $c['name'], ['value' => $c['value']]);
+	}
 }
 
 foreach ($eh_settings as $setting)

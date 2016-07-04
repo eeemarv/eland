@@ -117,7 +117,7 @@ if ($type == 'user_fullname_access')
 
 				if ($err)
 				{
-					echo $err;
+					echo ' ' . $err;
 				}
 				else
 				{
@@ -146,11 +146,12 @@ if ($type == 'setting')
 
 		foreach ($settings as $setting)
 		{
-
-
 			$agg_id_ary[] = $s . '_setting_' . $setting['name'];
-			unset($setting['_id']);
-			$setting_ary[$s][$setting['name']] = $setting;
+
+			$data = $setting;
+			unset($data['_id'], $data['name']);
+
+			$setting_ary[$s][$setting['name']] = $data;
 		}
 	}
 
@@ -158,7 +159,7 @@ if ($type == 'setting')
 
 	foreach ($setting_ary as $s => $schema_settings)
 	{
-		foreach ($schema_settings as $setting_id => $value)
+		foreach ($schema_settings as $setting_id => $data)
 		{
 			echo $s . ' -- ';
 			echo ' setting: ' . $setting_id;
@@ -167,19 +168,19 @@ if ($type == 'setting')
 
 			$agg_id = $s . '_setting_' . $setting_id;
 
-			if ($stored_ary[$agg_id])
+			if (isset($stored_ary[$agg_id]))
 			{
 				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
 			}
 
-			if (!$stored_ary[$agg_id]
-				|| $setting != $stored_ary[$agg_id]['setting'])
+			if (!isset($stored_ary[$agg_id])
+				|| $data != $stored_ary[$agg_id]['data'])
 			{
-				$err = $exdb->set('setting', $setting_id, ['value' => $value], $s);
+				$err = $exdb->set('setting', $setting_id, $data, $s);
 
 				if ($err)
 				{
-					echo $err;
+					echo ' ' . $err;
 				}
 				else
 				{
@@ -197,7 +198,7 @@ if ($type == 'setting')
 
 if ($type == 'forum')
 {
-	$forum_agg_ids = [];
+	$agg_id_ary = [];
 	$forum_ary = [];
 
 	foreach ($schemas as $s)
@@ -209,71 +210,53 @@ if ($type == 'forum')
 		foreach ($forum_posts as $forum_post)
 		{
 			$p = $forum_post['_id']->__toString();
-			$forum_agg_ids[] = $s . '_forum_' . $p;
+
+			$agg_id_ary[] = $s . '_forum_' . $p;
+
 			$forum_post_data = $forum_post;
+	
 			unset($forum_post_data['_id']);
-			$forum_post_data['id'] = $p;
+
 			if (isset($forum_post_data['access']))
 			{
 				$forum_post_data['access'] = $access_control->get_role($forum_post_data['access']);
 			}
+
 			$forum_ary[$s][$p] = $forum_post_data;
 		}
 	}
 
-	$stored_ary = [];
-
-	$rows = $db->executeQuery('select e1.agg_id,
-		e1.agg_version,
-		e1.data
-		from eland_extra.events e1
-		where e1.agg_version = (select max(e2.agg_version)
-				from eland_extra.events e2
-				where e1.agg_id = e2.agg_id)
-			and e1.agg_type = \'forum\'
-			and e1.agg_id in (?)',
-			[$forum_agg_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
-
-	foreach ($rows as $row)
-	{
-		$forum_post = json_decode($row['data'], true);
-
-		$stored_ary[$row['agg_id']] = [
-			'agg_version'			=> $row['agg_version'],
-			'forum_post'			=> $forum_post,
-		];
-	}
+	$stored_ary = $exdb->get_many(['agg_type' => 'forum', 'agg_id_ary' => $agg_id_ary]);
 
 	foreach ($forum_ary as $s => $forum_post_ary)
 	{
-		foreach ($forum_post_ary as $id => $forum_post)
+		foreach ($forum_post_ary as $id => $data)
 		{
 			echo $s . ' -- ';
 			echo ' forum_post: ' . $id;
 			echo ': ';
-			echo json_encode($forum_post);
+			echo json_encode($data);
 
 			$agg_id = $s . '_forum_' . $id;
 
-			if ($stored_ary[$agg_id])
+			if (isset($stored_ary[$agg_id]))
 			{
 				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
 			}
 
-			if (!$stored_ary[$agg_id]
-				|| $forum_post != $stored_ary[$agg_id]['forum_post'])
+			if (!isset($stored_ary[$agg_id])
+				|| $data != $stored_ary[$agg_id]['data'])
 			{
-				$agg_version = (isset($stored_ary[$agg_id]['agg_version'])) ? $stored_ary[$agg_id]['agg_version'] + 1 : 1;
+				$err = $exdb->set('forum', $id, $data, $s);
 
-				$db->insert('eland_extra.events', [
-					'agg_id'		=> $agg_id,
-					'agg_type'		=> 'forum',
-					'agg_version'	=> $agg_version,
-					'data'			=> json_encode($forum_post),
-					'event'			=> 'forum_updated'
-				]);
-
-				echo ' UPDATED';
+				if ($err)
+				{
+					echo ' ' . $err;
+				}
+				else
+				{
+					echo ' UPDATED';
+				}
 			}
 
 			echo $r . $r;
