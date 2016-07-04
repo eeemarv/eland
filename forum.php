@@ -570,19 +570,51 @@ if ($topic)
  * show topic list
  */
 
-$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'forum', 'access' => ['not null']]);
+$rows = $exdb->get_many(['agg_schema' => $schema,
+	'agg_type' => 'forum',
+	'data->>\'access\'' => ['is not null']], 'order by data->>\'ts\' desc');
 
-var_dump($rows); 
+if (count($rows))
+{
+	$forum_posts = [];
 
-$find = ['parent_id' => ['$exists' => false]];
+	foreach ($rows as $row)
+	{
+		$forum_posts[] = $row['data'] + ['id' => $row['eland_id']];
+	}
+}
+else
+{
+	$find = ['parent_id' => ['$exists' => false]];
 
-$forum_posts = $mdb->forum->find($find);
-$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
+	$forum_posts = $mdb->forum->find($find);
+	$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
-$forum_posts = iterator_to_array($forum_posts);
+	$forum_posts = iterator_to_array($forum_posts);
 
+	foreach ($forum_posts as $key => $forum_post)
+	{
+		$topic_data = $forum_post;
+		unset($topic_data['_id']);
+		$pid = $forum_post['_id']->__toString();
+
+		if (isset($topic_data['access']))
+		{
+			$topic_data['access'] = $access_control->get_role($topic_data['access']);
+		}
+
+		$exdb->set('forum', $pid, $topic_data);
+
+		$forum_posts[$key]['id'] = $pid;
+	}
+}
+
+/*
+ * this makes no sense
 $s_owner = (isset($forum_posts[$topic]['uid'])
 	&& $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
+*/
+
 
 if ($s_admin || $s_user)
 {
@@ -617,7 +649,7 @@ $forum_empty = true;
 
 foreach($forum_posts as $p)
 {
-	if ($p['access'] >= $access_level)
+	if ($access_control->is_visible($p['access']))
 	{
 		$forum_empty = false;
 		break;
@@ -656,14 +688,14 @@ echo '<tbody>';
 
 foreach($forum_posts as $p)
 {
-	if ($p['access'] < $access_level)
+	if (!$access_control->is_visible($p['access']))
 	{
 		continue;
 	}
 
 	$s_owner = ($s_id == $p['uid'] && $s_group_self) ? true : false;
 
-	$pid = $p['_id']->__toString();
+	$pid = $p['id'];
 
 	echo '<tr>';
 

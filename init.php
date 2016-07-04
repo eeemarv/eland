@@ -16,7 +16,7 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $rootpath = './';
-$page_access = 'admin';
+$page_access = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_upgrade.php';
 

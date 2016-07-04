@@ -18,14 +18,14 @@ create index on eland_extra.logs(letscode);
 create index on eland_extra.logs(type);
 
 create table eland_extra.events (
-ts timestamp without time zone default (now() at time zone 'utc'),
+ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
 agg_id varchar(255),
 agg_type varchar(60),
 agg_version int,
 data jsonb,
-event_time timestamp without time zone default (now() at time zone 'utc'),
+event_time timestamp without time zone default timezone('utc'::text, now()),
 ip varchar(60),
 event varchar(128),
 agg_schema varchar(60),
@@ -35,7 +35,7 @@ eland_id varchar(40)
 alter table eland_extra.events add primary key (agg_id, agg_version);
 
 create table eland_extra.aggs (
-ts timestamp without time zone default (now() at time zone 'utc'),
+ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
 agg_id varchar(255) primary key not null,
@@ -45,7 +45,8 @@ data jsonb,
 ip varchar(60),
 event varchar(128),
 agg_schema varchar(60),
-eland_id varchar(40)
+eland_id varchar(40),
+event_time timestamp without time zone default timezone('utc'::text, now())
 );
 
 create index on eland_extra.aggs(agg_type, agg_schema);

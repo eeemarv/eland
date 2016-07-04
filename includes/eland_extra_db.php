@@ -64,7 +64,7 @@ class eland_extra_db
 	 *
 	 */
 
-	public function set($agg_type = '', $eland_id = '', $data = [], $sch = false)
+	public function set($agg_type = '', $eland_id = '', $data = [], $sch = false, $event_time = false)
 	{
 		global $schema, $s_schema, $s_id, $db;
 
@@ -279,7 +279,7 @@ class eland_extra_db
 	 *
 	 */
 
-	public function get_many($filters = [])
+	public function get_many($filters = [], $query_extra = false)
 	{
 		global $db;
 
@@ -305,7 +305,7 @@ class eland_extra_db
 
 				if ($k == 0)
 				{
-					$sql_where = $key . ' ' . $v;
+					$sql_where[] = $key . ' ' . $v;
 				}
 				else
 				{
@@ -328,6 +328,8 @@ class eland_extra_db
 		{
 			$query .= ' where ' . implode(' and ', $sql_where);
 		}
+
+		$query .= ($query_extra) ? ' ' . $query_extra : '';
 
 		$rows = $db->executeQuery($query, $sql_params, $sql_types);
 
