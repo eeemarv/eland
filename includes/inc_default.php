@@ -547,6 +547,14 @@ $mdb = new mdb($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
+/**
+ *
+ */
+
+require_once $rootpath . 'includes/eland_extra_db.php';
+
+$exdb = new eland_extra_db();
+
 // default timezone to Europe/Brussels
 
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
@@ -959,7 +967,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $db, $schema, $redis;
+    global $db, $schema, $redis, $exdbd;
     global $mdb, $eland_config;
     static $cache;
 
@@ -982,33 +990,21 @@ function readconfigfromdb($key, $sch = null)
 
 	if (isset($eland_config[$key]))
 	{
-		$ev_key = $sch . '_setting_' . $key;
+		$row = $exdb->get('setting', $key, $sch);
 
-		$value = $db->fetchColumn('select data->>\'value\'
-			from eland_extra.events
-			where agg_id = ?
-			order by agg_version desc
-			limit 1', [$ev_key]);
-
-		if (!isset($value))
+		if (!$row)
 		{
 			$mclient = $mdb->connect()->get_client();
 			$settings = $sch . '_settings';
 			$s = $mclient->$settings->findOne(['name' => $key]);
 			$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
 
-			$db->insert('eland_extra.events', [
-				'agg_id'		=> $ev_key,
-				'agg_type'		=> 'setting',
-				'agg_version'	=> 1,
-				'data'			=> json_encode(['value' => $value, 'name' => $key]),
-				'event'			=> 'user_fullname_access_updated'
-			]);
+			$exdb->set('setting', $key, ['value' => $value], $sch);
 		}
 	}
 	else
 	{
-		$value = $db->fetchColumn('SELECT value FROM ' . $sch . '.config WHERE setting = ?', [$key]);
+		$value = $row['data']['value'];
 	}
 
 	if (isset($value))
@@ -1026,7 +1022,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $db, $schema, $redis, $mdb, $access_control;
+    global $db, $schema, $redis, $mdb, $access_control, $exdb;
     static $cache;
 
 	if (!$id)
@@ -1058,15 +1054,11 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$fullname_access = $db->fetchColumn('select data->>\'fullname_access\'
-		from eland_extra.events
-		where agg_id = ?
-		order by agg_version desc
-		limit 1', [$redis_key]);
+	$row = $exdb->get('user_fullname_access', $id, $s);
 
-	if ($fullname_access)
+	if ($row)
 	{
-		$user += ['fullname_access' => $fullname_access];
+		$user += ['fullname_access' => $row['data']['fullname_access']];
 	}
 	else
 	{
@@ -1080,13 +1072,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 		$user += ['fullname_access' => $fullname_access];
 
-		$db->insert('eland_extra.events', [
-			'agg_id'		=> $redis_key,
-			'agg_type'		=> 'user',
-			'agg_version'	=> 1,
-			'data'			=> json_encode(['fullname_access' => $fullname_access]),
-			'event'			=> 'user_fullname_access_updated'
-		]);
+		$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access], $s);
 	}
 
 	if (isset($user))

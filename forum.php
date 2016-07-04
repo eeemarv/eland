@@ -45,7 +45,44 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
+	$ev_key = $schema . '_forum_' . $t;
+
+	$row = $db->fetchAssoc('select data, agg_version
+		from eland_extra.events
+		where agg_id = ?
+		order by agg_version desc
+		limit 1', [$ev_key]);
+
+	if ($row)
+	{
+		$forum_post = json_decode($row['data'], true);
+		$agg_version = $row['agg_version'];
+	}
+	else
+	{
+		$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
+
+		if ($forum_post)
+		{
+			unset($forum_post['_id']);
+			$forum_post['id'] = $t;
+
+			if (isset($forum_post['access']))
+			{
+				$forum_post['access'] = $access_control->get_role($forum_post['access']);
+			}
+
+			$agg_version = 1;
+
+			$db->insert('eland_extra.events', [
+				'agg_id'		=> $schema . '_forum_' . $t,
+				'agg_type'		=> 'forum',
+				'agg_version'	=> $agg_version,
+				'data'			=> json_encode($forum_post),
+				'event'			=> 'forum_updated'
+			]);
+		}
+	}
 
 	if (!$forum_post)
 	{
@@ -89,11 +126,43 @@ if ($submit)
 			['justOne'	=> true]
 		);
 
+		$agg_version++;
+
+		$db->insert('eland_extra.events', [
+			'agg_id'		=> $schema . '_forum_' . $del,
+			'agg_type'		=> 'forum',
+			'agg_version'	=> $agg_version,
+			'data'			=> json_encode([]),
+			'event'			=> 'forum_deleted'
+		]);
+
 		if (!$forum_post['parent_id'])
 		{
 			$mdb->forum->remove(
 				['parent_id' => $del]
 			);
+
+			$rows = $db->executeQuery('select e1.agg_id,
+				e1.agg_version,
+				e1.data
+				from eland_extra.events e1
+				where e1.agg_version = (select max(e2.agg_version)
+						from eland_extra.events e2
+						where e1.agg_id = e2.agg_id)
+					and e1.agg_type = \'forum\'
+					and e1.data->>\'parent_id\' = ?',
+					[$del]);
+
+			foreach ($rows as $row)
+			{
+				$db->insert('eland_extra.events', [
+					'agg_id'		=> $row['agg_id'],
+					'agg_type'		=> 'forum',
+					'agg_version'	=> $row['agg_version'] + 1,
+					'data'			=> json_encode([]),
+					'event'			=> 'forum_deleted'
+				]);
+			}
 
 			$alert->success('Het forum onderwerp is verwijderd.');
 			cancel();
@@ -120,7 +189,7 @@ if ($submit)
 	else
 	{
 		$forum_post['subject'] = $_POST['subject'];
-		$forum_post['access']	= $access_control->get_post_value(); // $_POST['access'];
+		$forum_post['access']	= $access_control->get_post_value();
 	}
 
 	if ($edit)
@@ -173,12 +242,44 @@ if ($submit)
 			['$set'	=> $forum_post, '$inc' => ['edit_count' => 1]],
 			['upsert'	=> true]);
 
+		$agg_version++;
+
+		$db->insert('eland_extra.events', [
+			'agg_id'		=> $schema . '_forum_' . $edit,
+			'agg_type'		=> 'forum',
+			'agg_version'	=> $agg_version,
+			'data'			=> json_encode($forum_post),
+			'event'			=> 'forum_updated'
+		]);
+
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
 	}
 	else
 	{
+		$forum_post['_id'] = new MongoId();
+
 		$mdb->forum->insert($forum_post);
+
+		$t = $forum_post['_id']->__toString();
+
+		unset($forum_post['_id']);
+		$forum_post['id'] = $t;
+
+		if (isset($forum_post['access']))
+		{
+			$forum_post['access'] = $access_control->get_role($forum_post['access']);
+		}
+
+		$agg_version = 1;
+
+		$db->insert('eland_extra.events', [
+			'agg_id'		=> $schema . '_forum_' . $t,
+			'agg_type'		=> 'forum',
+			'agg_version'	=> $agg_version,
+			'data'			=> json_encode($forum_post),
+			'event'			=> 'forum_updated'
+		]);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -194,7 +295,7 @@ if ($del)
 	}
 	else
 	{
-		$t = $forum_post['_id']->__toString();
+		$t = $forum_post['id'];
 		$h1 = 'Forum onderwerp ' . aphp('forum', ['t' => $t], $forum_post['subject']);
 	}
 
@@ -233,10 +334,50 @@ if ($add || $edit)
 
 	if ($topic)
 	{
+		$ev_key = $schema . '_forum_' . $topic;
+
+		$row = $db->fetchAssoc('select data, agg_version
+			from eland_extra.events
+			where agg_id = ?
+			order by agg_version desc
+			limit 1', [$ev_key]);
+
+		if ($row)
+		{
+			$topic_post = json_decode($row['data'], true);
+			$agg_version = $row['agg_version'];
+		}
+		else
+		{
+			$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
+
+			if ($topic_post)
+			{
+				unset($topic_post['_id']);
+				$topic_post['id'] = $topic;
+
+				if (isset($topic_post['access']))
+				{
+					$topic_post['access'] = $access_control->get_role($topic_post['access']);
+				}
+
+				$db->insert('eland_extra.events', [
+					'agg_id'		=> $ev_key,
+					'agg_type'		=> 'forum',
+					'agg_version'	=> 1,
+					'data'			=> json_encode($forum_post),
+					'event'			=> 'forum_updated'
+				]);
+			}
+		}
+
+/*
 		$topic_id = new MongoId($topic);
 		$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
+*/
 
-		if ($topic_post['access'] < $access_level)
+
+		if (!$access_control->is_visible($topic_post['access']))
 		{
 			$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
 			cancel();
@@ -322,6 +463,50 @@ if ($add || $edit)
  
 if ($topic)
 {
+	$ev_key = $schema . '_forum_' . $topic;
+
+	$row = $db->fetchAssoc('select data, agg_version
+		from eland_extra.events
+		where agg_id = ?
+		order by agg_version desc
+		limit 1', [$ev_key]);
+
+	if ($row)
+	{
+		$topic_post = json_decode($row['data'], true);
+		$agg_version = $row['agg_version'];
+	}
+	else
+	{
+		$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
+
+		if ($topic_post)
+		{
+			unset($topic_post['_id']);
+			$topic_post['id'] = $topic;
+
+			if (isset($topic_post['access']))
+			{
+				$topic_post['access'] = $access_control->get_role($topic_post['access']);
+			}
+
+			$db->insert('eland_extra.events', [
+				'agg_id'		=> $ev_key,
+				'agg_type'		=> 'forum',
+				'agg_version'	=> 1,
+				'data'			=> json_encode($forum_post),
+				'event'			=> 'forum_updated'
+			]);
+		}
+	}
+
+	if (!$access_control->is_visible($topic_post['access']))
+	{
+		$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
+		cancel();
+	}
+
+/*
 	$topic_id = new MongoId($topic);
 	$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
 
@@ -330,8 +515,8 @@ if ($topic)
 		$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
 		cancel();
 	}
-
-	$find = ['$or'=> [['parent_id' => $topic], ['_id' => $topic_id]]];
+*/
+	$find = ['$or'=> [['parent_id' => $topic], ['_id' => new MongoId($topic)]]];
 
 	$forum_posts = $mdb->forum->find($find);
 	$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
@@ -596,3 +781,4 @@ function cancel($topic = null)
 	header('Location: ' . generate_url('forum', $params));
 	exit;
 }
+
