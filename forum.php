@@ -392,7 +392,7 @@ if ($topic)
 		cancel();
 	}
 
-	$forum_post[] = $topic_post;
+	$forum_posts[] = $topic_post;
 
 	$rows = $exdb->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
@@ -412,40 +412,38 @@ if ($topic)
 			$forum_posts[] = $data;
 		}
 	}
-
-	/* else
+	else
 	{
-	
-		$find = ['$or'=> [['parent_id' => $topic], ['_id' => new MongoId($topic)]]];
+		$find = ['parent_id' => $topic];
 
-		$forum_posts = $mdb->forum->find($find);
-		$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
+		$f_posts = $mdb->forum->find($find);
+		$f_posts->sort(['ts' => (($topic) ? 1 : -1)]);
 
-		$forum_posts = iterator_to_array($forum_posts);
+		$f_posts = iterator_to_array($f_posts);
+
+		foreach ($f_posts as $f_post)
+		{
+			set_forum_post($f_post);
+
+			$f_post['id'] = $f_post['_id']->__toString();
+
+			$forum_posts[] = $f_post;
+		}
 	}
 
-	$find = [
-		'parent_id' => ['$exists' => false],
-		'access'	=> ['$gte'	=> (string) $access_level],
-		'ts' 		=> ['$lt' => $topic_post['ts']],
-	];
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'forum',
+		'event_time' => ['<' => $topic_post['ts']],
+		'access' => true], 'order by event_time desc limit 1');
 
-	$prev = $mdb->forum->findOne($find);
+	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$prev = ($prev) ? $prev['_id']->__toString() : false;
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'forum',
+		'event_time' => ['>' => $topic_post['ts']],
+		'access' => true], 'order by event_time asc limit 1');
 
-	$find = [
-		'parent_id' => ['$exists' => false],
-		'access' 	=> ['$gte'	=> (string) $access_level],
-		'ts' 		=> ['$gt' => $topic_post['ts']],
-	];
-
-	$next = $mdb->forum->findOne($find);
-
-	$next = ($next) ? $next['_id']->__toString() : false;
-
-*/
-
+	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	if ($s_admin || $s_owner)
 	{

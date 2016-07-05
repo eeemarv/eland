@@ -281,7 +281,7 @@ class eland_extra_db
 
 	public function get_many($filters = [], $query_extra = false)
 	{
-		global $db;
+		global $db, $access_control;
 
 		$sql_where = [];
 		$sql_params = [];
@@ -296,6 +296,15 @@ class eland_extra_db
 
 		unset($filters['agg_id_ary']);
 
+		if (isset($filters['access']))
+		{
+			$sql_where[] = 'data->>\'access\' in (?)';
+			$sql_params[] = $access_control->get_visible_ary();
+			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
+		}
+
+		unset($filters['access']);
+
 		foreach ($filters as $key => $value)
 		{
 			if (is_array($value))
@@ -303,7 +312,7 @@ class eland_extra_db
 				$v = reset($value);
 				$k = key($value);
 
-				if ($k == 0)
+				if ($k === 0)
 				{
 					$sql_where[] = $key . ' ' . $v;
 				}
