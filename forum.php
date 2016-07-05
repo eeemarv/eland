@@ -50,6 +50,7 @@ if ($del || $edit)
 	if ($row)
 	{
 		$forum_post = $row['data'];
+		$forum_post['id'] = $row['eland_id'];
 		$agg_version = $row['agg_version'];
 	}
 	else
@@ -103,17 +104,19 @@ if ($submit)
 
 		$exdb->del('forum', $del);
 
-		if (!$forum_post['parent_id'])
+		if (!isset($forum_post['parent_id']))
 		{
 			$mdb->forum->remove(
 				['parent_id' => $del]
 			);
 
-			$rows = $exdb->get_many(['agg_type' => $forum, 'agg_schema' => $schema, 'data->>\'parent_id\'' => $del]);
+			$rows = $exdb->get_many(['agg_type' => 'forum',
+				'agg_schema' => $schema,
+				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$exdb->del($row['agg_type'], $row['eland_id']); 
+				$exdb->del('forum', $row['eland_id']); 
 			}
 
 			$alert->success('Het forum onderwerp is verwijderd.');
@@ -551,7 +554,7 @@ if ($topic)
 
 $rows = $exdb->get_many(['agg_schema' => $schema,
 	'agg_type' => 'forum',
-	'data->>\'access\'' => ['is not null']], 'order by event_time');
+	'access' => true], 'order by event_time desc');
 
 if (count($rows))
 {
@@ -559,7 +562,7 @@ if (count($rows))
 
 	foreach ($rows as $row)
 	{
-		$forum_posts[] = $row['data'] + ['id' => $row['eland_id']];
+		$forum_posts[] = $row['data'] + ['id' => $row['eland_id'], 'ts' => $row['event_time']];
 	}
 }
 else
