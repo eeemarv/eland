@@ -102,7 +102,6 @@ class eland_extra_db
 
 			$data = array_diff_assoc($data, $prev_data);
 			$agg_version = $row['agg_version'] + 1;
-			$event = $agg_type . '_updated';
 			$ev = 'updated';
 		}
 		else

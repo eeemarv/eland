@@ -43,19 +43,16 @@ if ($map_edit)
 
 	if ($row)
 	{
-		$map = $row['data'];
+		$map_name = $row['data']['map_name'];
 	}
 	else
 	{
-		$map = $mdb->docs->findOne(['_id' => new MongoId($map_edit)]);
+		$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
 
-		if ($map)
-		{
+		set_exdb('doc', $map_name);
 
-		}
+		$map_name = $map_name['map_name'];
 	}
-
-	$map_name = $map['map_name'];
 
 	if (!$map_name)
 	{
@@ -74,6 +71,9 @@ if ($map_edit)
 		if ($map_name = $_POST['map_name'])
 		{
 			$mdb->docs->update(['_id' => new MongoId($map_edit)], ['map_name' => $map_name]);
+
+			set_exdb('doc', ['map_name' => $map_name, 'id' => $map_edit]);
+
 			$alert->success('Map naam aangepast.');
 
 			invalidate_typeahead_thumbprint('doc_map_names');
@@ -125,6 +125,9 @@ if ($map_edit)
 if ($edit)
 {
 	$edit_id = new MongoId($edit);
+
+	$row = $exdb->get('doc', $edit);
+
 
 	$doc = $mdb->docs->findOne(['_id' => $edit_id]);
 
