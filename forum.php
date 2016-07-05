@@ -65,7 +65,7 @@ if ($del || $edit)
 		cancel();
 	}
 
-	$s_owner = ($forum_post['uid'] == $s_id && $s_group_self) ? true : false;
+	$s_owner = ($forum_post['uid'] && $forum_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -384,7 +384,7 @@ if ($topic)
 
 	$topic_post['id'] = $topic;	
 
-	$s_owner = ($topic_post['uid'] == $s_id && $s_group_self) ? true : false;
+	$s_owner = ($topic_post['uid'] && $topic_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
 
 	if (!$access_control->is_visible($topic_post['access']) && !$s_owner)
 	{
@@ -482,9 +482,7 @@ if ($topic)
 
 	foreach ($forum_posts as $p)
 	{
-		$s_owner = (($p['uid'] == $s_id) && $s_group_self) ? true : false;
-
-		//$pid = $p['_id']->__toString();
+		$s_owner = ($p['uid'] && $p['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
 
 		$pid = $p['id'];
 
@@ -660,7 +658,7 @@ foreach($forum_posts as $p)
 		continue;
 	}
 
-	$s_owner = ($s_id == $p['uid'] && $s_group_self) ? true : false;
+	$s_owner = ($p['uid'] && $s_id == $p['uid'] && $s_group_self && !$s_guest) ? true : false;
 
 	$pid = $p['id'];
 

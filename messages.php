@@ -187,7 +187,7 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $message['id_user']) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $s_id == $message['id_user'] && $message['id_user']) ? true : false;
 
 	if ($message['local'] && $s_guest)
 	{
@@ -409,7 +409,7 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $msg['id_user'] == $s_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $msg['id_user'] == $s_id && $msg['id_user']) ? true : false;
 
 	if (!($s_owner || $s_admin))
 	{
