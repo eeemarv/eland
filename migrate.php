@@ -239,7 +239,7 @@ if ($type == 'forum')
 				|| $data != $stored_ary[$agg_id]['data'])
 			{
 
-				set_forum_post($data, $s);
+				set_exdb('forum', $data, $s);
 
 				echo ' UPDATED';
 			}

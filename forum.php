@@ -57,7 +57,7 @@ if ($del || $edit)
 	{
 		$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
 
-		set_forum_post($forum_post);
+		set_exdb('forum', $forum_post);
 	}
 
 	if (!isset($forum_post))
@@ -199,7 +199,7 @@ if ($submit)
 
 		$forum_post['id'] = $edit;
 
-		set_forum_post($forum_post);
+		set_exdb('forum', $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
@@ -210,7 +210,7 @@ if ($submit)
 
 		$mdb->forum->insert($forum_post);
 
-		set_forum_post($forum_post);
+		set_exdb('forum', $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -275,7 +275,7 @@ if ($add || $edit)
 		{
 			$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
 
-			set_forum_post($topic_post);
+			set_exdb('forum', $topic_post);
 		}
 
 		if (!$access_control->is_visible($topic_post['access']))
@@ -382,7 +382,7 @@ if ($topic)
 	{
 		$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
 
-		set_forum_post($topic_post);
+		set_exdb('forum', $topic_post);
 	}
 
 	$topic_post['id'] = $topic;	
@@ -426,7 +426,7 @@ if ($topic)
 
 		foreach ($f_posts as $f_post)
 		{
-			set_forum_post($f_post);
+			set_exdb('forum', $f_post);
 
 			$f_post['id'] = $f_post['_id']->__toString();
 
@@ -576,7 +576,7 @@ else
 
 	foreach ($forum_posts as $key => $forum_post)
 	{
-		set_forum_post($forum_post);
+		set_exdb('forum', $forum_post);
 
 		$forum_posts[$key]['id'] = $forum_post['_id']->__toString();
 	}

@@ -1582,13 +1582,18 @@ function etag_buffer($content)
  *
  */
 
-function set_forum_post($data = [], $sch = false)
+function set_exdb($agg_type = false, $data = [], $sch = false)
 {
 	global $exdb, $access_control, $schema;
 
 	$sch = $sch ?: $schema;
 
 	if (!$data)
+	{
+		return;
+	}
+
+	if (!$agg_type)
 	{
 		return;
 	}
@@ -1606,10 +1611,7 @@ function set_forum_post($data = [], $sch = false)
 		return;
 	}
 
-	if (isset($data['ts']))
-	{
-		$event_time = $data['ts'];
-	}
+	$event_time = (isset($data['ts'])) ? $data['ts'] : false;
 
 	unset($data['_id'], $data['id'], $data['ts'], $data['modified'], $data['edit_count']);
 
@@ -1618,5 +1620,6 @@ function set_forum_post($data = [], $sch = false)
 		$data['access'] = $access_control->get_role($data['access']);
 	}
 
-	$exdb->set('forum', $pid, $data);
+	$exdb->set($agg_type, $pid, $data, $sch, $event_time);
 }
+
