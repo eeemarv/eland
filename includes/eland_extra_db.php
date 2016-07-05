@@ -28,6 +28,7 @@ Indexes:
  user_id     | integer                     | default 0
  user_schema | character varying(60)       | default ''::character varying
  ts          | timestamp without time zone | default timezone('utc'::text, now())
+ event_time  | timestamp without time zone | default timezone('utc'::text, now())
  agg_type    | character varying(60)       | not null
  agg_schema  | character varying(60)       | not null
  ip          | character varying(60)       | 
@@ -129,6 +130,11 @@ class eland_extra_db
 			'data'			=> json_encode($data),
 			'ip'			=> $this->ip,
 		];
+
+		if ($event_time)
+		{
+			$insert['event_time'] = $event_time;
+		}
 
 		try
 		{
@@ -272,6 +278,8 @@ class eland_extra_db
 
 		$row['data'] = json_decode($row['data'], true);
 
+		error_log(' - eland_extra get ' . $agg_id . ' - ');
+
 		return $row;
 	}
 
@@ -350,6 +358,8 @@ class eland_extra_db
 
 			$ary[$row['agg_id']] = $row;
 		}
+
+		error_log(' - eland_extra get_many - ');
 
 		return $ary;
 	}

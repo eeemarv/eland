@@ -1582,18 +1582,11 @@ function etag_buffer($content)
  *
  */
 
-function set_exdb($agg_type = false, $data = [], $sch = false)
+function data_exdb($data = [])
 {
-	global $exdb, $access_control, $schema;
-
-	$sch = $sch ?: $schema;
+	global $access_control;
 
 	if (!$data)
-	{
-		return;
-	}
-
-	if (!$agg_type)
 	{
 		return;
 	}
@@ -1620,6 +1613,24 @@ function set_exdb($agg_type = false, $data = [], $sch = false)
 		$data['access'] = $access_control->get_role($data['access']);
 	}
 
+	return [$pid, $data, $event_time];
+}
+
+function set_exdb($agg_type = false, $data = [], $sch = false)
+{
+	global $exdb, $schema;
+
+	if (!$agg_type)
+	{
+		return;
+	}
+
+	$sch = $sch ?: $schema;
+
+	list($pid, $data, $event_time) = data_exdb($data);
+
 	$exdb->set($agg_type, $pid, $data, $sch, $event_time);
 }
+
+	
 

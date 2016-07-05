@@ -39,7 +39,21 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$map = $mdb->docs->findOne(['_id' => new MongoId($map_edit)]);
+	$row = $exdb->get('doc', $map_edit);
+
+	if ($row)
+	{
+		$map = $row['data'];
+	}
+	else
+	{
+		$map = $mdb->docs->findOne(['_id' => new MongoId($map_edit)]);
+
+		if ($map)
+		{
+
+		}
+	}
 
 	$map_name = $map['map_name'];
 
@@ -526,28 +540,137 @@ if ($add)
  * list all documents
  */
 
-$find = ['access'	=> ['$gte'	=> $access_level]];
-
 if ($map)
 {
-	$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
-	$map_name = $map_name['map_name'];
+	$row = $exdb->get('doc', $map);
+
+	if ($row)
+	{
+		$map_name = $row['data']['map_name'];
+	}
+	else
+	{
+		$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
+
+		set_exdb('doc', $map_name);
+
+		$map_name = $map_name['map_name'];
+	}
 
 	if (!$map_name)
 	{
 		$alert->error('Onbestaande map id.');
 		cancel();
 	}
+//
 
-	$find['map_id'] = $map;
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'doc',
+		'data->>\'map_id\'' => $map,
+		'access' => true], 'order by event_time asc');
+
+	$docs = [];
+
+	if (count($rows))
+	{
+		foreach ($rows as $row)
+		{
+			$data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
+
+			if ($row['agg_version'] > 1)
+			{
+				$data['edit_count'] = $row['agg_version'] - 1;
+			}
+
+			$docs[] = $data;
+		}
+	}
+	else
+	{
+		$find = ['map_id' => $map, 'access'	=> ['$gte'	=> $access_level]];
+
+		$docs = iterator_to_array($mdb->docs->find($find));
+
+		foreach ($docs as $k => $d)
+		{
+			set_exdb('doc', $d);
+
+			list($d1, $docs[$k]) = data_exdb($d);
+		}
+	}
+
 	$maps = [];
 }
 else
 {
-	$maps = iterator_to_array($mdb->docs->find(['map_name' => ['$exists' => true]]));
-}
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'doc',
+		'data->>\'map_name\'' => ['is not null']], 'order by event_time asc');
 
-$docs = iterator_to_array($mdb->docs->find($find));
+	$maps = [];
+
+	if (count($rows))
+	{
+		foreach ($rows as $row)
+		{
+			$data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
+
+			if ($row['agg_version'] > 1)
+			{
+				$data['edit_count'] = $row['agg_version'] - 1;
+			}
+
+			$maps[$row['eland_id']] = $data;
+		}
+	}
+	else
+	{
+		$maps = iterator_to_array($mdb->docs->find(['map_name' => ['$exists' => true]]));
+
+		foreach ($maps as $k => $m)
+		{
+			set_exdb('doc', $m);
+
+			list($d1, $maps[$k]) = data_exdb($m);
+		}
+	}
+
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'doc',
+		'data->>\'map_name\'' => ['is null'],
+		'access' => true], 'order by event_time asc');
+
+	$docs = [];
+
+	if (count($rows))
+	{
+		foreach ($rows as $row)
+		{
+			$data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
+
+			if ($row['agg_version'] > 1)
+			{
+				$data['edit_count'] = $row['agg_version'] - 1;
+			}
+
+			$docs[] = $data;
+		}
+	}
+	else
+	{
+		$find = ['access'	=> ['$gte'	=> $access_level]];
+		$docs = iterator_to_array($mdb->docs->find($find));
+
+		foreach ($docs as $k => $d)
+		{
+			set_exdb('doc', $d);
+
+			list($d1, $docs[$k]) = data_exdb($d);
+		}
+
+	}
+
+}
 
 if (!$map)
 {
@@ -631,7 +754,7 @@ if (!$map && count($maps))
 
 	foreach($maps as $d)
 	{
-		$did = $d['_id']->__toString();
+		$did = $d['id'];
 
 		if (isset($d['count']) && $d['count'])
 		{
@@ -679,7 +802,7 @@ if (count($docs))
 
 	foreach($docs as $d)
 	{
-		$did = $d['_id']->__toString();
+		$did = $d['id'];
 
 		echo '<tr>';
 

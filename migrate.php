@@ -223,10 +223,12 @@ if ($type == 'forum')
 	{
 		foreach ($forum_post_ary as $id => $data)
 		{
+			list($pid, $compare_data, $event_time) = data_exdb($data);
+
 			echo $s . ' -- ';
 			echo ' forum_post: ' . $id;
 			echo ': ';
-			echo json_encode($data);
+			echo json_encode($compare_data);
 
 			$agg_id = $s . '_forum_' . $id;
 
@@ -236,10 +238,68 @@ if ($type == 'forum')
 			}
 
 			if (!isset($stored_ary[$agg_id])
-				|| $data != $stored_ary[$agg_id]['data'])
+				|| $compare_data != $stored_ary[$agg_id]['data'])
 			{
 
 				set_exdb('forum', $data, $s);
+
+				echo ' UPDATED';
+			}
+
+			echo $r . $r;
+		}
+	}
+
+	echo '--- end ---' . $r;
+	exit;
+}
+
+if ($type == 'doc')
+{
+	$agg_id_ary = [];
+	$doc_ary = [];
+
+	foreach ($schemas as $s)
+	{
+		$docs_collection = $s . '_docs';
+
+		$docs = $mclient->$docs_collection->find();
+
+		foreach ($docs as $doc)
+		{
+			$d = $doc['_id']->__toString();
+
+			$agg_id_ary[] = $s . '_doc_' . $d;
+
+			$doc_ary[$s][$d] = $doc;
+		}
+	}
+
+	$stored_ary = $exdb->get_many(['agg_type' => 'doc', 'agg_id_ary' => $agg_id_ary]);
+
+	foreach ($doc_ary as $s => $doc_s_ary)
+	{
+		foreach ($doc_s_ary as $d => $data)
+		{
+			list($pid, $compare_data, $event_time) = data_exdb($data);
+
+			echo $s . ' -- ';
+			echo ' doc: ' . $d;
+			echo ': ';
+			echo json_encode($compare_data);
+
+			$agg_id = $s . '_doc_' . $d;
+
+			if (isset($stored_ary[$agg_id]))
+			{
+				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
+			}
+
+			if (!isset($stored_ary[$agg_id])
+				|| $compare_data != $stored_ary[$agg_id]['data'])
+			{
+
+				set_exdb('doc', $data, $s);
 
 				echo ' UPDATED';
 			}
