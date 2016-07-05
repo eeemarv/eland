@@ -1577,3 +1577,46 @@ function etag_buffer($content)
 
 	return $content;
 }
+
+/*
+ *
+ */
+
+function set_forum_post($data = [], $sch = false)
+{
+	global $exdb, $access_control, $schema;
+
+	$sch = $sch ?: $schema;
+
+	if (!$data)
+	{
+		return;
+	}
+
+	if (isset($data['_id']))
+	{
+		$pid = $data['_id']->__toString();
+	}
+	else if (isset($data['id']))
+	{
+		$pid = $data['id'];
+	}
+	else
+	{
+		return;
+	}
+
+	if (isset($data['ts']))
+	{
+		$event_time = $data['ts'];
+	}
+
+	unset($data['_id'], $data['id'], $data['ts'], $data['modified'], $data['edit_count']);
+
+	if (isset($data['access']))
+	{
+		$data['access'] = $access_control->get_role($data['access']);
+	}
+
+	$exdb->set('forum', $pid, $data);
+}

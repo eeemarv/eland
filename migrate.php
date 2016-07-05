@@ -213,16 +213,7 @@ if ($type == 'forum')
 
 			$agg_id_ary[] = $s . '_forum_' . $p;
 
-			$forum_post_data = $forum_post;
-	
-			unset($forum_post_data['_id']);
-
-			if (isset($forum_post_data['access']))
-			{
-				$forum_post_data['access'] = $access_control->get_role($forum_post_data['access']);
-			}
-
-			$forum_ary[$s][$p] = $forum_post_data;
+			$forum_ary[$s][$p] = $forum_post;
 		}
 	}
 
@@ -247,16 +238,10 @@ if ($type == 'forum')
 			if (!isset($stored_ary[$agg_id])
 				|| $data != $stored_ary[$agg_id]['data'])
 			{
-				$err = $exdb->set('forum', $id, $data, $s);
 
-				if ($err)
-				{
-					echo ' ' . $err;
-				}
-				else
-				{
-					echo ' UPDATED';
-				}
+				set_forum_post($data, $s);
+
+				echo ' UPDATED';
 			}
 
 			echo $r . $r;

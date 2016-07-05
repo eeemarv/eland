@@ -56,17 +56,7 @@ if ($del || $edit)
 	{
 		$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
 
-		if ($forum_post)
-		{
-			unset($forum_post['_id']);
-
-			if (isset($forum_post['access']))
-			{
-				$forum_post['access'] = $access_control->get_role($forum_post['access']);
-			}
-
-			$exdb->set('forum', $t, $forum_post);
-		}
+		set_forum_post($forum_post);
 	}
 
 	if (!isset($forum_post))
@@ -204,12 +194,9 @@ if ($submit)
 			['$set'	=> $forum_post, '$inc' => ['edit_count' => 1]],
 			['upsert'	=> true]);
 
-		if (isset($forum_post['access']))
-		{
-			$forum_post['access'] = $access_control->get_role($forum_post['access']);
-		}
+		$forum_post['id'] = $edit;
 
-		$exdb->set('forum', $edit, $forum_post);
+		set_forum_post($forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 		cancel($topic);
@@ -220,16 +207,7 @@ if ($submit)
 
 		$mdb->forum->insert($forum_post);
 
-		$t = $forum_post['_id']->__toString();
-
-		unset($forum_post['_id']);
-
-		if (isset($forum_post['access']))
-		{
-			$forum_post['access'] = $access_control->get_role($forum_post['access']);
-		}
-
-		$exdb->set('forum', $t, $forum_post);
+		set_forum_post($forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 		cancel($topic);
@@ -289,23 +267,12 @@ if ($add || $edit)
 		if ($row)
 		{
 			$topic_post = $row['data'];
-			$agg_version = $row['agg_version'];
 		}
 		else
 		{
 			$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
 
-			if ($topic_post)
-			{
-				unset($topic_post['_id']);
-
-				if (isset($topic_post['access']))
-				{
-					$topic_post['access'] = $access_control->get_role($topic_post['access']);
-				}
-
-				$exdb->set('forum', $topic, $topic_post);
-			}
+			set_forum_post($topic_post);
 		}
 
 		if (!$access_control->is_visible($topic_post['access']))
@@ -394,60 +361,68 @@ if ($add || $edit)
  
 if ($topic)
 {
+	$forum_posts = [];
+
 	$row = $exdb->get('forum', $topic);
 
 	if ($row)
 	{
 		$topic_post = $row['data'];
-		$agg_version = $row['agg_version'];
+		$topic_post['ts'] = $row['event_time'];
+
+		if ($row['agg_version'] > 1)
+		{
+			$topic_post['edit_count'] = $row['agg_version'] - 1;
+		}
 	}
 	else
 	{
 		$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
 
-		if ($topic_post)
-		{
-			unset($topic_post['_id']);
-
-			if (isset($topic_post['access']))
-			{
-				$topic_post['access'] = $access_control->get_role($topic_post['access']);
-			}
-
-			$exdb->set('forum', $topic, $topic_post);
-		}
+		set_forum_post($topic_post);
 	}
 
-	if (!$access_control->is_visible($topic_post['access']))
+	$topic_post['id'] = $topic;	
+
+	$s_owner = ($topic_post['uid'] == $s_id && $s_group_self) ? true : false;
+
+	if (!$access_control->is_visible($topic_post['access']) && !$s_owner)
 	{
 		$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
 		cancel();
 	}
 
-/*
-	$topic_id = new MongoId($topic);
-	$topic_post = $mdb->forum->findOne(['_id' => $topic_id]);
-
-	if ($topic_post['access'] < $access_level)
-	{
-		$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
-		cancel();
-	}
-*/
+	$forum_post[] = $topic_post;
 
 	$rows = $exdb->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
-		'data->>\'parent_id\'' => $topic]);
+		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
+	if (count($rows))
+	{
+		foreach ($rows as $row)
+		{
+			$data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
 
-	$find = ['$or'=> [['parent_id' => $topic], ['_id' => new MongoId($topic)]]];
+			if ($row['agg_version'] > 1)
+			{
+				$data['edit_count'] = $row['agg_version'] - 1;
+			}
 
-	$forum_posts = $mdb->forum->find($find);
-	$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
+			$forum_posts[] = $data;
+		}
+	}
 
-	$forum_posts = iterator_to_array($forum_posts);
+	/* else
+	{
+	
+		$find = ['$or'=> [['parent_id' => $topic], ['_id' => new MongoId($topic)]]];
 
-	$s_owner = ($s_id && $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
+		$forum_posts = $mdb->forum->find($find);
+		$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
+
+		$forum_posts = iterator_to_array($forum_posts);
+	}
 
 	$find = [
 		'parent_id' => ['$exists' => false],
@@ -468,6 +443,9 @@ if ($topic)
 	$next = $mdb->forum->findOne($find);
 
 	$next = ($next) ? $next['_id']->__toString() : false;
+
+*/
+
 
 	if ($s_admin || $s_owner)
 	{
@@ -491,7 +469,7 @@ if ($topic)
 	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
 		<script src="' . $rootpath . 'js/forum.js"></script>';
 
-	$h1 = $forum_posts[$topic]['subject'];
+	$h1 = $topic_post['subject'];
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -506,7 +484,9 @@ if ($topic)
 	{
 		$s_owner = (($p['uid'] == $s_id) && $s_group_self) ? true : false;
 
-		$pid = $p['_id']->__toString();
+		//$pid = $p['_id']->__toString();
+
+		$pid = $p['id'];
 
 		echo '<div class="panel panel-default printview">';
 
@@ -514,8 +494,11 @@ if ($topic)
 		echo $p['content'];
 		echo '</div>';
 
+		$time = strtotime($p['ts'] . ' UTC');
+		$time = date('Y-m-d H:i:s', $time);
+
 		echo '<div class="panel-footer">';
-		echo '<p>' . link_user((int) $p['uid']) . ' @' . $p['ts'];
+		echo '<p>' . link_user((int) $p['uid']) . ' @' . $time;
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
@@ -572,7 +555,7 @@ if ($topic)
 
 $rows = $exdb->get_many(['agg_schema' => $schema,
 	'agg_type' => 'forum',
-	'data->>\'access\'' => ['is not null']], 'order by data->>\'ts\' desc');
+	'data->>\'access\'' => ['is not null']], 'order by event_time');
 
 if (count($rows))
 {
@@ -594,27 +577,11 @@ else
 
 	foreach ($forum_posts as $key => $forum_post)
 	{
-		$topic_data = $forum_post;
-		unset($topic_data['_id']);
-		$pid = $forum_post['_id']->__toString();
+		set_forum_post($forum_post);
 
-		if (isset($topic_data['access']))
-		{
-			$topic_data['access'] = $access_control->get_role($topic_data['access']);
-		}
-
-		$exdb->set('forum', $pid, $topic_data);
-
-		$forum_posts[$key]['id'] = $pid;
+		$forum_posts[$key]['id'] = $forum_post['_id']->__toString();
 	}
 }
-
-/*
- * this makes no sense
-$s_owner = (isset($forum_posts[$topic]['uid'])
-	&& $forum_posts[$topic]['uid'] == $s_id && $s_group_self) ? true : false;
-*/
-
 
 if ($s_admin || $s_user)
 {
@@ -703,7 +670,11 @@ foreach($forum_posts as $p)
 	echo aphp('forum', ['t' => $pid], $p['subject']);
 	echo '</td>';
 	echo '<td>' . link_user($p['uid']) . '</td>';
-	echo '<td data-value="' . strtotime($p['ts']) . '">' . $p['ts'] . '</td>';
+
+	$time_unix = strtotime($p['ts'] . ' UTC');
+	$time = date('Y-m-d H:i:s', $time_unix);
+
+	echo '<td data-value="' . $time_unix . '">' . $time . '</td>';
 
 	if (!$s_guest)
 	{
