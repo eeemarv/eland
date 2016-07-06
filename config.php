@@ -134,13 +134,13 @@ $rows = $exdb->get_many(['agg_type' => 'setting', 'agg_schema' => $schema]);
 
 if (count($rows))
 {
-	if ($row['eland_id'] == 'autominlimit')
-	{
-		continue;
-	}
-
 	foreach ($rows as $row)
 	{
+		if ($row['eland_id'] == 'autominlimit')
+		{
+			continue;
+		}
+
 		$eh_stored_settings[$row['eland_id']] = $row['data']['value'];
 	}
 }
