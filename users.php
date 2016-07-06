@@ -513,51 +513,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		$fullname_access_role = $access_control->get_role($access_value);
 
-		$user_agg_ids = [];
-
 		foreach ($user_ids as $user_id)
 		{
-			$user_agg_ids[] = $schema . '_user_' . $user_id;
-		}
-
-		$user_agg_inserts = array_combine($user_agg_ids, $user_agg_ids);;
-
-		$rows = $db->executeQuery('select e1.agg_id,
-			e1.agg_version,
-			e1.data->>\'fullname_access\' as fullname_access
-			from eland_extra.events e1
-			where e1.agg_version = (select max(e2.agg_version)
-					from eland_extra.events e2
-					where e1.agg_id = e2.agg_id)
-				and e1.agg_type = \'user\'
-				and agg_id in (?)',
-				[$user_agg_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
-
-		foreach ($rows as $row)
-		{
-			if ($fullname_access_role != $row['fullname_access'])
-			{
-				$db->insert('eland_extra.events', [
-					'agg_id'		=> $row['agg_id'],
-					'agg_type'		=> 'user',
-					'agg_version'	=> $row['agg_version'] + 1,
-					'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
-					'event'			=> 'user_fullname_access_updated'
-				]);
-			}
-
-			unset($user_agg_inserts[$row['agg_id']]);
-		}
-
-		foreach ($user_agg_inserts as $agg_id)
-		{
-			$db->insert('eland_extra.events', [
-				'agg_id'		=> $agg_id,
-				'agg_type'		=> 'user',
-				'agg_version'	=> 1,
-				'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
-				'event'			=> 'user_fullname_access_updated'
-			]);	
+			$exdb->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
+			$redis->del($schema . '_user_' . $user_id);			
 		}
 
 		$mdb->connect();
@@ -569,8 +528,6 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 				['$set' => ['id' => (int) $user_id, 'fullname_access' => (int) $access_value]],
 				['upsert' => true]
 			);
-
-			$redis->del($schema . '_user_' . $user_id);
 		}
 
 		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
