@@ -145,7 +145,7 @@ if ($edit)
 
 		set_exdb('doc', $doc);
 
-		list($d1, $doc) = data_exdb($doc);
+		list($doc) = data_exdb($doc);
 	}
 
 	if ($submit)
@@ -187,7 +187,7 @@ if ($edit)
 					{
 						set_exdb('doc', $map);
 
-						list($m1, $map) = data_exdb($map);
+						list($map) = data_exdb($map);
 					}
 					else
 					{
@@ -195,7 +195,7 @@ if ($edit)
 						$mdb->docs->insert($map);
 						set_exdb('doc', $map);
 
-						list($m1, $map) = data_exdb($map);
+						list($map) = data_exdb($map);
 
 						invalidate_typeahead_thumbprint('doc_map_names');
 					}
@@ -241,7 +241,7 @@ if ($edit)
 		if (!$map)
 		{
 			$map = $mdb->docs->findOne(['_id' => new MongoId($map_id)]);
-			list($m1, $map) = data_exdb($map);
+			list($map) = data_exdb($map);
 		}
 	}
 
@@ -687,7 +687,7 @@ else
 		{
 			set_exdb('doc', $m);
 
-			list($d1, $maps[$k]) = data_exdb($m);
+			list($maps[$k]) = data_exdb($m);
 		}
 	}
 
@@ -721,7 +721,7 @@ else
 		{
 			set_exdb('doc', $d);
 
-			list($d1, $docs[$k]) = data_exdb($d);
+			list($docs[$k]) = data_exdb($d);
 		}
 
 	}

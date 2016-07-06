@@ -223,7 +223,7 @@ if ($type == 'forum')
 	{
 		foreach ($forum_post_ary as $id => $data)
 		{
-			list($pid, $compare_data, $event_time) = data_exdb($data);
+			list($compare_data, $pid, $event_time) = data_exdb($data);
 
 			echo $s . ' -- ';
 			echo ' forum_post: ' . $id;
@@ -281,7 +281,7 @@ if ($type == 'doc')
 	{
 		foreach ($doc_s_ary as $d => $data)
 		{
-			list($pid, $compare_data, $event_time) = data_exdb($data);
+			list($compare_data, $pid, $event_time) = data_exdb($data);
 
 			echo $s . ' -- ';
 			echo ' doc: ' . $d;

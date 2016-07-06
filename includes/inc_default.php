@@ -1613,7 +1613,7 @@ function data_exdb($data = [])
 		$data['access'] = $access_control->get_role($data['access']);
 	}
 
-	return [$pid, $data, $event_time];
+	return [$data, $pid, $event_time];
 }
 
 function set_exdb($agg_type = false, $data = [], $sch = false)
@@ -1627,7 +1627,7 @@ function set_exdb($agg_type = false, $data = [], $sch = false)
 
 	$sch = $sch ?: $schema;
 
-	list($pid, $data, $event_time) = data_exdb($data);
+	list($data, $pid, $event_time) = data_exdb($data);
 
 	$exdb->set($agg_type, $pid, $data, $sch, $event_time);
 }
