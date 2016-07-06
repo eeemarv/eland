@@ -140,7 +140,7 @@ foreach ($eland_config as $setting => $default)
 	}
 	else
 	{
-		$data = $mdb->findOne(['name' => $setting]);
+		$data = $mdb->settings->findOne(['name' => $setting]);
 
 		if ($data)
 		{
