@@ -128,46 +128,34 @@ $config = $db->fetchAll('select *
 		and setting <> \'ets_enabled\'
 	order by category, setting');
 
-$eh_settings = array_keys($eland_config);
-
-$rows = $exdb->get_many(['agg_type' => 'setting', 'agg_schema' => $schema]);
-
-if (count($rows))
+foreach ($eland_config as $setting => $default)
 {
-	foreach ($rows as $row)
+	unset($value);
+
+	$row = $exdb->get('setting', $setting);
+
+	if ($row)
 	{
-		if ($row['eland_id'] == 'autominlimit')
+		$value = $row['data']['value'];
+	}
+	else
+	{
+		$data = $mdb->findOne(['name' => $setting]);
+
+		if ($data)
 		{
-			continue;
+			$value = $data['value'];
+
+			$exdb->set('setting', $setting, ['value' => $value]);
 		}
-
-		$eh_stored_settings[$row['eland_id']] = $row['data']['value'];
 	}
-}
-else
-{
-	$cursor = $mdb->settings->find(array('name' => array('$in' => $eh_settings))); 
-
-	$eh_stored_settings = array();
-
-	foreach ($cursor as $c)
-	{
-		$eh_stored_settings[$c['name']] = $c['value'];
-
-		$exdb->set('setting', $c['name'], ['value' => $c['value']]);
-	}
-}
-
-foreach ($eh_settings as $setting)
-{
-	$default = (isset($eh_stored_settings[$setting])) ? false : true;
 
 	$config[] = array(
 		'category'		=> 'eLAND',
 		'setting'		=> $setting,
-		'value'			=> ($default) ? $eland_config[$setting][0] : $eh_stored_settings[$setting],
-		'description'	=> $eland_config[$setting][1],
-		'default'		=> $default,
+		'value'			=> isset($value) ? $value : $default[0],
+		'description'	=> $default[1],
+		'default'		=> isset($value) ? false : true,
 	);
 }
 
