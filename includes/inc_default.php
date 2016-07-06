@@ -1000,10 +1000,17 @@ function readconfigfromdb($key, $sch = null)
 		{
 			$mclient = $mdb->connect()->get_client();
 			$settings = $sch . '_settings';
-			$s = $mclient->$settings->findOne(['name' => $key]);
-			$value = (isset($s['value'])) ? $s['value'] : $eland_config[$key][0];
+			$conf = $mclient->$settings->findOne(['name' => $key]);
 
-			$exdb->set('setting', $key, ['value' => $value], $sch);
+			if (isset($conf['value']))
+			{
+				$value = $conf['value'];
+				$exdb->set('setting', $key, ['value' => $value], $sch);
+			}
+			else
+			{
+				$value = $eland_config[$key][0];
+			}
 		}
 	}
 	else
