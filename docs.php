@@ -128,13 +128,24 @@ if ($edit)
 
 	$row = $exdb->get('doc', $edit);
 
-
-	$doc = $mdb->docs->findOne(['_id' => $edit_id]);
-
-	if (!$doc)
+	if ($row)
 	{
-		$alert->error('Document niet gevonden.');
-		cancel();
+		$doc = $row['data'];
+		$doc['ts'] = $row['event_time'];
+	}
+	else
+	{
+		$doc = $mdb->docs->findOne(['_id' => $edit_id]);
+
+		if (!$doc)
+		{
+			$alert->error('Document niet gevonden.');
+			cancel();
+		}
+
+		set_exdb('doc', $doc);
+
+		list($d1, $doc) = data_exdb($doc);
 	}
 
 	if ($submit)
@@ -159,21 +170,51 @@ if ($edit)
 		{
 			if ($map_name = $_POST['map_name'])
 			{
-				$map = $mdb->docs->findOne(['map_name' => $map_name]);
+				$rows = $exdb->get_many(['agg_type' => 'doc',
+					'agg_schema' => $schema,
+					'data->>\'map_name\'' => $map_name], 'limit 1');
 
-				if (!$map)
+				if (count($rows))
 				{
-					$map = ['map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s')];
-					$mdb->docs->insert($map);
+					$map = reset($rows)['data'];
+					$map['id'] = reset($rows)['eland_id'];
+				}
+				else
+				{
+					$map = $mdb->docs->findOne(['map_name' => $map_name]);
 
-					invalidate_typeahead_thumbprint('doc_map_names');
+					if ($map)
+					{
+						set_exdb('doc', $map);
+
+						list($m1, $map) = data_exdb($map);
+					}
+					else
+					{
+						$map = ['map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s')];
+						$mdb->docs->insert($map);
+						set_exdb('doc', $map);
+
+						list($m1, $map) = data_exdb($map);
+
+						invalidate_typeahead_thumbprint('doc_map_names');
+					}
 				}
 
-				$update['map_id'] = $map['_id']->__toString();
+				$update['map_id'] = $map['id'];
 			}
 
-			if ($doc['map_id'] && $update['map_id'] != $doc['map_id'])
+			if (isset($doc['map_id']) && isset($update['map_id']) && $update['map_id'] != $doc['map_id'])
 			{
+				$rows = $exdb->get_many(['agg_type' => 'doc',
+					'agg_schema' => $schema,
+					'data->>\'map_id\'' => $doc['map_id']]);
+
+				if (count($rows) == 1)
+				{
+					$exdb->del('doc', $doc['map_id']);
+				}
+
 				if (count(iterator_to_array($mdb->docs->find(['map_id' => $doc['map_id']]))) == 1)
 				{
 					$mdb->docs->remove(['_id' => new MongoId($doc['map_id'])]);
@@ -182,6 +223,8 @@ if ($edit)
 
 			$mdb->docs->update(['_id' => $edit_id], $update);
 
+			set_exdb('doc', $update);
+
 			$alert->success('Document aangepast');
 			cancel($update['map_id']);
 		}
@@ -189,9 +232,17 @@ if ($edit)
 		$alert->error($errors);
 	}
 
-	if ($map_id = $doc['map_id'])
+	if (isset($doc['map_id']))
 	{
-		$map = $mdb->docs->findOne(['_id' => new MongoId($map_id)]);
+		$map_id = $doc['map_id'];
+
+		$map = $exdb->get('doc', $map_id)['data'];
+
+		if (!$map)
+		{
+			$map = $mdb->docs->findOne(['_id' => new MongoId($map_id)]);
+			list($m1, $map) = data_exdb($map);
+		}
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -231,10 +282,12 @@ if ($edit)
 
 	echo $access_control->get_radio_buttons('docs', $doc['access']);
 
+	$map_name = isset($map['map_name']) ? $map['map_name'] : '';
+
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map['map_name'] . '" ';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
 	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';

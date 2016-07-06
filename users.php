@@ -1444,13 +1444,7 @@ if ($add || $edit)
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
-					$db->insert('eland_extra.events', [
-						'agg_id'		=> $schema . '_user_' . $id,
-						'agg_type'		=> 'user',
-						'agg_version'	=> 1,
-						'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
-						'event'			=> 'user_fullname_access_updated'
-					]);
+					$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
 					$mdb->connect();
 					$mdb->users->update([
@@ -1549,24 +1543,7 @@ if ($add || $edit)
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
-					if ($user_stored['fullname_access'] != $fullname_access_role)
-					{
-						$version = $db->fetchColumn('select max(agg_version)
-							from eland_extra.events
-							where agg_id = ?', [$schema . '_user_' . $edit]);
-
-						$version = ($version) ?: 0;
-
-						$db->insert('eland_extra.events', [
-							'agg_id'		=> $schema . '_user_' . $edit,
-							'agg_type'		=> 'user',
-							'agg_version'	=> $version + 1,
-							'data'			=> json_encode(['fullname_access' => $fullname_access_role]),
-							'event'			=> 'user_fullname_access_updated'
-						]);
-
-						log_event('debug', 'user_fullname_access_updated: ' . link_user($edit, false, false, true));
-					}
+					$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
 					$mdb->connect();
 					$mdb->users->update([
