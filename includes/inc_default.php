@@ -1015,7 +1015,7 @@ function readconfigfromdb($key, $sch = null)
 	}
 	else
 	{
-		$value = $db->fetchColumn('select value from ' . $sch . '.config where setting = ' . $key);
+		$value = $db->fetchColumn('select value from ' . $sch . '.config where setting = ?' . $key);
 	}
 
 	if (isset($value))
