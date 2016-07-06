@@ -1500,7 +1500,7 @@ if ($add || $edit)
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
-					$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
+					$exdb->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
 
 					$mdb->connect();
 					$mdb->users->update([
