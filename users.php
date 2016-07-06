@@ -1096,19 +1096,19 @@ if ($add || $edit)
 		cancel($edit);
 	}
 
-	if ($s_owner && !$s_admin)
-	{
-		$mdb->connect();
-		$cursor = $mdb->settings->findOne(['name' => 'users_can_edit_username']);
-		$username_edit = ($cursor['value']) ? true : false;
-		$cursor = $mdb->settings->findOne(['name' => 'users_can_edit_fullname']);
-		$fullname_edit = ($cursor['value']) ? true : false;
-	}
-
 	if ($s_admin)
 	{
 		$username_edit = $fullname_edit = true;
 	}
+	else if ($s_owner)
+	{
+		$username_edit = readconfigfromdb('users_can_edit_username');
+		$fullname_edit = readconfigfromdb('users_can_edit_fullname');
+	}
+	else
+	{
+		$username_edit = $fullname_edit = false;
+	}	
 
 	if ($submit)
 	{
