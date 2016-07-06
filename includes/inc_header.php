@@ -187,7 +187,7 @@ if (!$s_anonymous)
 			'export'						=> ['download', 'Export'],
 			'autominlimit'					=> ['arrows-v', 'Auto min limiet'],
 			'mass_transaction'				=> ['exchange', 'Massa-Transactie'],
-			'logs'							=> ['list', 'Logs'],
+			'logs'							=> ['history', 'Logs'],
 		];
 
 		echo '<li class="dropdown">';

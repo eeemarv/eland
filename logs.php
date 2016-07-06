@@ -33,7 +33,7 @@ $includejs = '
 	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
 $h1 = 'Logs';
-$fa = 'list';
+$fa = 'history';
 
 include $rootpath . 'includes/inc_header.php';
 
