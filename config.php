@@ -45,10 +45,7 @@ if ($setting)
 
 				$mdb->settings->update(array('name' => $setting), $a, array('upsert' => true));
 
-				if ($value != $stored_value)
-				{
-					$exdb->set('setting', $setting, ['value' => $value]);
-				}
+				$exdb->set('setting', $setting, ['value' => $value]);
 			}
 			else
 			{

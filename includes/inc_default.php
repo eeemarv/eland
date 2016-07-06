@@ -992,7 +992,11 @@ function readconfigfromdb($key, $sch = null)
 	{
 		$row = $exdb->get('setting', $key, $sch);
 
-		if (!$row)
+		if ($row)
+		{
+			$value = $row['data']['value'];
+		}
+		else
 		{
 			$mclient = $mdb->connect()->get_client();
 			$settings = $sch . '_settings';
@@ -1004,7 +1008,7 @@ function readconfigfromdb($key, $sch = null)
 	}
 	else
 	{
-		$value = $row['data']['value'];
+		$value = $db->fetchColumn('select value from ' . $sch . '.config where setting = ' . $key);
 	}
 
 	if (isset($value))
