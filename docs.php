@@ -620,8 +620,24 @@ if ($add)
 {
 	if ($map)
 	{
-		$map_id = new MongoId($map);
-		$map_name = $mdb->docs->findOne(['_id' => $map_id])['map_name'];
+		$row = $exdb->get('doc', $map);
+
+		if ($row)
+		{
+			$map_name = $row['data']['map_name'];
+
+			if (!strlen($map_name))
+			{
+				$map_id = new MongoId($map);
+				$map_ary = $mdb->docs->findOne(['_id' => $map_id]);
+
+				if (strlen($map_ary['map_name']))
+				{
+					set_exdb('doc', $map_ary);
+					$map_name = $map_ary['map_name'];
+				}
+			}
+		}
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>

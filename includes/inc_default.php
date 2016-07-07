@@ -967,7 +967,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $db, $schema, $redis, $exdbd;
+    global $db, $schema, $redis, $exdb;
     global $mdb, $eland_config;
     static $cache;
 
@@ -1587,6 +1587,20 @@ function etag_buffer($content)
 	}
 
 	return $content;
+}
+
+/*
+ *
+ */
+
+function format_date($ts, $out_format = '')
+{
+	$month_abbrev_ary = ['Jan', 'Feb', 'Maa', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+
+	$time = strtotime($ts . ' UTC');
+	$time = date('Y-m-d H:i', $time);
+
+	return $time;
 }
 
 /*

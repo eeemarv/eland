@@ -347,8 +347,6 @@ class eland_extra_db
 
 		$query .= ($query_extra) ? ' ' . $query_extra : '';
 
-		error_log($query);
-
 		$rows = $db->executeQuery($query, $sql_params, $sql_types);
 
 		$ary = [];

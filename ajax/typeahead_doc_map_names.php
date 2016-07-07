@@ -5,13 +5,28 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $map_names = [];
 
-$mdb->connect();
+$rows = $exdb->get_many(['agg_schema' => $schema,
+	'agg_type' => 'doc',
+	'data->>\'map_name\'' => ['<>' => '']]);
 
-$cursor = $mdb->docs->find(['map_name' => ['$exists' => true]]);
-
-foreach ($cursor as $c)
+if (count($rows))
 {
-	$map_names[] = $c['map_name'];
+	foreach ($rows as $row)
+	{
+		$map_names[] = $row['data']['map_name'];
+	}
+}
+else
+{
+	$mdb->connect();
+
+	$cursor = $mdb->docs->find(['map_name' => ['$exists' => true]]);
+
+	foreach ($cursor as $c)
+	{
+		set_exdb('doc', $c);
+		$map_names[] = $c['map_name'];
+	}
 }
 
 $output = json_encode($map_names);
