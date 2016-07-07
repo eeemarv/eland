@@ -241,9 +241,18 @@ if (!$schema)
  * alerts
 **/
 
-require_once $rootpath . 'includes/inc_alert.php';
+require_once $rootpath . 'includes/alert.php';
 
 $alert = new alert();
+
+/**
+ * format dates
+ */
+
+require_once $rootpath . 'includes/date_format.php';
+
+$date_format = new date_format();
+
 
 /**
  * start session
@@ -1587,20 +1596,6 @@ function etag_buffer($content)
 	}
 
 	return $content;
-}
-
-/*
- *
- */
-
-function format_date($ts, $out_format = '')
-{
-	$month_abbrev_ary = ['Jan', 'Feb', 'Maa', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
-
-	$time = strtotime($ts . ' UTC');
-	$time = date('Y-m-d H:i', $time);
-
-	return $time;
 }
 
 /*

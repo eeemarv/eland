@@ -66,11 +66,30 @@ if ($map_edit)
 		{
 			$alert->error($error_token);
 			cancel($map_edit);
+
+			$errors[] = $error_token;
 		}
 
 		$posted_map_name = trim($_POST['map_name']);
 
-		if (strlen($posted_map_name))
+		if (!strlen($posted_map_name))
+		{
+			$errors[] = 'Geen map naam ingevuld!';
+		}
+
+		if (!count($errors))
+		{
+			$rows = $exdb->get_many(['agg_schema' => $schema,
+				'agg_type' => 'doc',
+				'eland_id' => ['<>' => $map_edit],
+				'data->>\'map_name\'' => $posted_map_name]); 		
+			if (count($rows))
+			{
+				$errors[] = 'Er bestaat al een map met deze naam!';
+			}
+		}
+
+		if (!count($errors))
 		{
 			$mdb->docs->update(['_id' => new MongoId($map_edit)], ['map_name' => $posted_map_name]);
 
@@ -83,7 +102,7 @@ if ($map_edit)
 			cancel($map_edit);
 		}
 
-		$alert->error('Geen map naam ingevuld!');
+		$alert->error($errors);
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
