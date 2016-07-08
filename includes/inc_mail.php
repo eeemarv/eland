@@ -2,24 +2,12 @@
 
 function sendmail()
 {
-	global $redis, $r;
+	global $r, $queue;
 
-	for ($i = 0; $i < 20; $i++)
+	$mail_ary = $queue->get('mail', 20);
+
+	foreach ($mail_ary as $mail)
 	{
-		$mail = $redis->rpop('mail_q1');
-
-		if (!$mail)
-		{
-			$mail = $redis->rpop('mail_q0');
-		}
-
-		if (!$mail)
-		{
-			break;
-		}
-
-		$mail = json_decode($mail, true);
-
 		$schema = $mail['schema'];
 		unset($mail['schema']);
 
