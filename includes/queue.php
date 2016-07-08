@@ -87,8 +87,11 @@ class queue
 
 			$st = $db->prepare('select data, id, priority
 				from eland_extra.queue
+				where topic = ?
 				order by priority desc, id asc
 				limit ' . $count);
+
+			$st->bindValue(1, $topic);
 
 			$st->execute();
 
