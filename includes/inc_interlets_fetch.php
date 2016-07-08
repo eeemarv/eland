@@ -11,7 +11,7 @@ function fetch_interlets_msgs($client, $group)
 
 	$crawler = $client->request('GET', $group['url'] . '/renderindex.php');
 
-	echo $url . $r;
+	echo $group['url'] . $r;
 
 	$msgs_table = $crawler->filter('table')
 		->last()
@@ -54,7 +54,7 @@ function fetch_interlets_typeahead_data($client, $group)
 
 	$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
-	echo $url;
+	echo $group['url'];
 
 	$users = [];
 

@@ -100,6 +100,8 @@ $base_url = $app_protocol . $hosts[$schema];
 
 // begin typeahaed update (when interletsq is empty) for one group
 
+$update_msgs = false;
+
 if (!isset($schema_interletsq_min))
 {
 
@@ -397,7 +399,11 @@ while ($row = $st->fetch())
 
 	$redis->set($key, 'q');
 	$redis->expire($key, 2592000);
-	$redis->lpush('geo_q', json_encode($data));
+
+	$queue->set('geo', $data);
+
+	//$redis->lpush('geo_q', json_encode($data));
+
 	$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $adr;
 }
 
@@ -412,7 +418,7 @@ run_cronjob('geo_q_process', 600);
 
 function geo_q_process()
 {
-	global $redis, $r;
+	global $redis, $queue, $r;
 
 	if ($redis->exists('geo_sleep'))
 	{
@@ -432,21 +438,16 @@ function geo_q_process()
 	$geocoder->using('google_maps')
 		->limit(1);
 
-	for ($i = 0; $i < 4; $i++)
+	$rows = $queue->get('geo', 4);
+
+	foreach ($rows as $data)
 	{
-		$data = $redis->rpop('geo_q');
-
-		if (!$data)
-		{
-			break;
-		}
-
-		$data = json_decode($data, true);
 		$adr = $data['adr'];
 		$uid = $data['uid'];
 		$sch = $data['sch'];
 
 		$user = readuser($uid, false, $sch);
+
 		$log_user = ' user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
 
 		$key = 'geo_' . $adr;
