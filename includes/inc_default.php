@@ -1459,7 +1459,7 @@ function get_host($url)
  */
 function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
 {
-	global $redis, $schema;
+	global $redis, $schema, $queue;
 
 	$key = (isset($remote_schema)) ? $remote_schema : $schema;
 	$key = $key . '_autominlimit_queue';

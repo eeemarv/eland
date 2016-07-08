@@ -266,8 +266,17 @@ if ($autominlimit_queue)
 			continue;
 		}
 
-		$mdb->connect();
-		$a = $mdb->settings->findOne(['name' => 'autominlimit']);
+		$row = $exdb->get('setting', 'autominlimit');
+
+		if ($row)
+		{
+			$a = $row['data'];
+		}
+		else
+		{
+			$mdb->connect();
+			$a = $mdb->settings->findOne(['name' => 'autominlimit']);
+		}	
 
 		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
 
