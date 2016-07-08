@@ -232,27 +232,27 @@ else
 	run_cronjob('processqueue');
 }
 
-$autominlimit_queue = $redis->get($schema . '_autominlimit_queue');
+$autominlimit_queue = $queue->get('autominlimit', 6);
 
-if ($autominlimit_queue)
+if (count($autominlimit_queue))
 {
 	echo '-- processing autominlimit queue -- ' . $r;
 
-	$queue_a = unserialize($autominlimit_queue);
-
-	foreach ($queue_a as $q)
+	foreach ($autominlimit_queue as $q)
 	{
 		$to_id = $q['to_id'];
 		$from_id = $q['from_id'];
 		$amount = $q['amount'];
+		$sch = $q['schema'];
 
-		if (!$to_id || !$from_id || !$amount)
+		if (!$to_id || !$from_id || !$amount || !$sch)
 		{
+			error_log('autominlimit 1');
 			continue;
 		}
 
-		$user = readuser($to_id);
-		$from_user = readuser($from_id);
+		$user = readuser($to_id, false, $sch);
+		$from_user = readuser($from_id, false, $sch);
 
 		if (!$user
 			|| !$amount
@@ -263,10 +263,11 @@ if ($autominlimit_queue)
 			|| !$from_user['letscode']
 		)
 		{
+			error_log('autominlimit 2');
 			continue;
 		}
 
-		$row = $exdb->get('setting', 'autominlimit');
+		$row = $exdb->get('setting', 'autominlimit', $sch);
 
 		if ($row)
 		{
@@ -275,10 +276,21 @@ if ($autominlimit_queue)
 		else
 		{
 			$mdb->connect();
-			$a = $mdb->settings->findOne(['name' => 'autominlimit']);
+
+			if ($sch == $schema)
+			{
+				$a = $mdb->settings->findOne(['name' => 'autominlimit']);
+			}
+			else
+			{
+				$settings_col = $sch . '_settings';
+				$a = $mdb->get_client()->$settings_col->findOne(['name' => 'autominlimit']);
+			}
 		}	
 
-		$user['status'] = ($newusertreshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
+		$new_user_time_treshold = time() - readconfigfromdb('newuserdays', $sch) * 86400;
+
+		$user['status'] = ($new_user_time_treshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
 
 		$inclusive = explode(',', $a['inclusive']);
 		$exclusive = explode(',', $a['exclusive']);
@@ -305,7 +317,7 @@ if ($autominlimit_queue)
 			|| ($a['account_base'] >= $user['saldo']) 
 		)
 		{
-			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, false, false) . $r;
+			echo 'auto_minlimit: no new minlimit for user ' . link_user($user, $sch, false) . $r;
 			continue;
 		}
 
@@ -313,7 +325,7 @@ if ($autominlimit_queue)
 
 		if (!$extract)
 		{
-			return;
+			continue;
 		}
 
 		$new_minlimit = $user['minlimit'] - $extract;
@@ -327,16 +339,24 @@ if ($autominlimit_queue)
 		];
 
 		$mdb->connect();
-		$mdb->limit_events->insert($e);
-		$db->update('users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
-		readuser($to_id, true);
 
-		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, false, false) .  $r;
+		if ($sch == $schema)
+		{
+			$a = $mdb->limit_events->insert($e);
+		}
+		else
+		{
+			$limit_events_col = $sch . '_limit_events';
+			$a = $mdb->get_client()->$limit_events_col->insert($e);
+		}
 
-		log_event('cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, false, false) . ' (id:' . $to_id . ') ');
+		$db->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
+		readuser($to_id, true, $sch);
+
+		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) .  $r;
+
+		log_event('cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', $sch);
 	}
-
-	$redis->expire($schema . '_autominlimit_queue', 0);
 
 	echo '--- end queue autominlimit --- ' . $r;
 }

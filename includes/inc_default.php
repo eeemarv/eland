@@ -1457,25 +1457,20 @@ function get_host($url)
 /**
  *
  */
-function autominlimit_queue($from_id, $to_id, $amount, $remote_schema = null)
+function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 {
-	global $redis, $schema, $queue;
+	global $schema, $queue;
 
-	$key = (isset($remote_schema)) ? $remote_schema : $schema;
-	$key = $key . '_autominlimit_queue';
+	$sch = ($sch) ?: $schema;
 
-	$ary = $redis->get($key);
-
-	$ary = ($ary) ? unserialize($ary) : [];
-
-	$ary[] = [
+	$data = [
 		'from_id'	=> $from_id,
 		'to_id'		=> $to_id,
 		'amount'	=> $amount,
+		'schema'	=> $sch,
 	];
 
-	$redis->set($key, serialize($ary));
-	$redis->expire($key, 86400);
+	$queue->set('autominlimit', $data);
 }
 
 /**

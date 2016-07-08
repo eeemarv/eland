@@ -118,5 +118,25 @@ class queue
 
 		return $data;
 	}
+
+	/**
+	 *
+	 */
+
+	public function count($topic = false)
+	{
+		global $db;
+
+		$topic = trim($topic);
+
+		if ($topic)
+		{
+			return $db->fetchColumn('select count(*)
+				from eland_extra.queue
+				where topic = ?', [$topic]);
+		}
+
+		return $db->fetchColumn('select count(*) from eland_extra.queue');
+	}
 }
 
