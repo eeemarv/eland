@@ -31,12 +31,16 @@ class queue
 
 		if (!strlen($topic))
 		{
-			return 'No topic set';
+			$error = 'No queue topic set for data ' . json_encode($data);
+			log_event('queue', $error);
+			return $error;
 		}
 
 		if (!$data)
 		{
-			return 'No data set';
+			$error = 'Queue topic: ' . $topic . ' -> No data set';
+			log_event('queue', $error);
+			return $error;
 		}
 
 		$insert = [

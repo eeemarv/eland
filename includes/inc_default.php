@@ -1119,7 +1119,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 function mail_q($mail = [], $priority = false)
 {
-	global $schema, $redis;
+	global $schema, $redis, $queue;
 
 	// only the interlets transactions receiving side has a different schema
 
@@ -1205,7 +1205,9 @@ function mail_q($mail = [], $priority = false)
 
 	$queue = ($priority) ? '1' : '0';
 
-	if ($redis->lpush('mail_q' . $queue, json_encode($mail)))
+	$error = $queue->set('mail', $mail, ($priority) ? 10 : 0);
+
+	if (!$error)
 	{
 		$reply = (isset($mail['reply_to'])) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
 
