@@ -1203,8 +1203,6 @@ function mail_q($mail = [], $priority = false)
 
 	$mail['subject'] = '[' . $systemtag . '] ' . $mail['subject'];
 
-	$queue = ($priority) ? '1' : '0';
-
 	$error = $queue->set('mail', $mail, ($priority) ? 10 : 0);
 
 	if (!$error)
