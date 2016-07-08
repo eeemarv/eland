@@ -238,9 +238,9 @@ if ($autominlimit_queue)
 {
 	echo '-- processing autominlimit queue -- ' . $r;
 
-	$queue = unserialize($autominlimit_queue);
+	$queue_a = unserialize($autominlimit_queue);
 
-	foreach ($queue as $q)
+	foreach ($queue_a as $q)
 	{
 		$to_id = $q['to_id'];
 		$from_id = $q['from_id'];

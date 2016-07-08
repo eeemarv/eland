@@ -53,3 +53,11 @@ create index on eland_extra.aggs(agg_type, agg_schema);
 create index on eland_extra.aggs(agg_schema);
 create index on eland_extra.logs(agg_type);
 
+create table eland_extra.queue (
+ts timestamp without time zone default timezone('utc'::text, now()),
+id bigserial primary key,
+topic varchar(60) not null,
+data jsonb,
+priority int default 0);
+
+create index on eland_extra.queue(id, priority);

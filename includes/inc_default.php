@@ -556,14 +556,6 @@ $mdb = new mdb($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
-/**
- *
- */
-
-require_once $rootpath . 'includes/eland_extra_db.php';
-
-$exdb = new eland_extra_db();
-
 // default timezone to Europe/Brussels
 
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
@@ -573,6 +565,22 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
 // set search path
 
 $db->exec('set search_path to ' . ($schema) ?: 'public');
+
+/**
+ *
+ */
+
+require_once $rootpath . 'includes/eland_extra_db.php';
+
+$exdb = new eland_extra_db();
+
+/**
+ *
+ */
+
+require_once $rootpath . 'includes/queue.php';
+
+$queue = new queue();
 
 /* some more vars */
 
