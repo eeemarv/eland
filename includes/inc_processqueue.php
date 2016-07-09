@@ -36,7 +36,9 @@ function processqueue()
 		$myapikey = $my_group['remoteapikey'];
 		$from = $my_group['myremoteletscode'];
 		$client = new nusoap_client($soapurl, true);
+
 		$err = $client->getError();
+
 		if (!$err)
 		{
 			$result = $client->call('dopayment', [
@@ -49,7 +51,9 @@ function processqueue()
 				'transid' => $transid,
 				'signature' => $signature
 			]);
+
 			$err = $client->getError();
+
 			if (!$err)
 			{
 				//return $result;
@@ -82,7 +86,8 @@ function processqueue()
 						break;
 					case 'DUPLICATE':
 						//Commit locally
-						if(localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED'){
+						if(localcommit($my_group, $transid, $id_from, $amount, $description, $letscode_to) == 'FAILED')
+						{
 							update_queue($transid,$count,'LOCALFAIL');
 						}
 						break;
@@ -92,7 +97,7 @@ function processqueue()
 						unqueue($transid);
 						break;
 					case 'APIKEYFAIL':
-						update_queue($transid,$count,$result);
+						update_queue($transid, $count, $result);
 						break;
 					default:
 						//Evaluate the date and pop the transaction if needed, handling the error.
@@ -107,6 +112,7 @@ function processqueue()
 					echo 'EXPIRED';
 					echo "\n";
 				}
+
 				update_queue($transid, $count, 'UNKNOWN');
 			}
 		}

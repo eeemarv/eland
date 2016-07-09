@@ -103,17 +103,6 @@ if ($add)
 
 		if ($group_id == 'self')
 		{
-/*			$to_apimethod_check = $db->fetchColumn('select apimethod
-				from letsgroups
-				where localletscode = ?', [$letscode_to]);
-
-
-			if ($to_apimethod_check != 'mail')
-			{
-				$errors[] = 'Je kan enkel rechtstreeks naar een interletsrekening met apimethod <strong>mail</strong> overschrijven';
-			}
-*/
-
 			if ($touser['status'] == 7)
 			{
 				$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
@@ -151,6 +140,11 @@ if ($add)
 		if(empty($fromuser))
 		{
 			$errors[] = 'Gebruiker bestaat niet';
+		}
+
+		if (!strlen($letscode_to))
+		{
+			$errors[] = 'Geen letscode ingevuld';
 		}
 
 		if(empty($touser))
@@ -227,6 +221,7 @@ if ($add)
 		if(count($errors))
 		{
 			log_event('transaction', 'form error(s): ' . implode(' | ', $errors));
+
 			$alert->error($errors);
 		}
 		else if ($group_id == 'self')
@@ -258,16 +253,19 @@ if ($add)
 			{
 				$alert->error('Gefaalde interlets transactie');
 			}
+
 			cancel();
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
 			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
+
 			cancel();
 		}
 		else if (!$group_domain)
 		{
 			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
+
 			cancel();
 		}
 		else if (!(isset($schemas[$group_domain])))
@@ -276,52 +274,176 @@ if ($add)
 
 			if (!$group['remoteapikey'])
 			{
-				$alert->error('Geen apikey voor deze interlets groep ingesteld.' . $contact_admin);
-				cancel();
+				$errors[] = 'Geen apikey voor deze interlets groep ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['presharedkey'])
 			{
-				$alert->error('Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin);
-				cancel();
+				$errors[] = 'Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['myremoteletscode'])
 			{
-				$alert->error('Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin);
-				cancel();
+				$errors[] = 'Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin;
 			}
 
-			$transaction['letscode_to'] = $letscode_to;
-			$transaction['letsgroup_id'] = $group_id;
 			$currencyratio = readconfigfromdb('currencyratio');
-			$transaction['amount'] = $transaction['amount'] / $currencyratio;
-			$transaction['amount'] = (float) $transaction['amount'];
-			$transaction['amount'] = round($transaction['amount'], 5);
-			$transaction['signature'] = sign_transaction($transaction, $group['presharedkey']);
-			$transaction['retry_until'] = gmdate('Y-m-d H:i:s', time() + 86400);
 
-			unset($transaction['date'], $transaction['id_to']);
-
-			$transaction['retry_count'] = 0;
-			$transaction['last_status'] = 'NEW';
-
-			if ($db->insert('interletsq', $transaction))
+			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 			{
-				if (!$redis->get($schema . '_interletsq'))
+				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
+			}
+
+			// needs to be enhanced!!
+			if (strlen($letscode_to))
+			{
+				$active_users = json_decode($redis->get($group['url'] . '_typeahead_data'), true);
+
+				$user_letscode_found = false;
+
+				foreach ($active_users as $active_user)
 				{
-					$redis->set($schema . '_interletsq', time());
+					if ($active_user['c'] == $letscode_to)
+					{
+						$real_name_to = $active_user['n'];
+						$user_letscode_found = true;
+						break;
+					}
 				}
-				$alert->success('Interlets transactie in verwerking');
+
+				if ($user_letscode_found)
+				{
+					if(!$real_name_to)
+					{
+						$errors[] = 'Er werd geen naam gevonden voor de gebruiker van de interlets groep.';
+					}
+				}
+				else
+				{
+					$errors[] = 'Er werd geen gebruiker gevonden met letsode ' . $letscode_to;
+				}
+			}
+
+			if (count($errors))
+			{
+				log_event('interlets', 'form errors eLAS transaction: ' . implode('<br>', $errors));
+				$alert->error($errors);
 				cancel();
 			}
 
-			$alert->error('Gefaalde queue interlets transactie');
+/*******************/
+
+			$trans = $transaction;
+
+			$trans['amount'] = $trans['amount'] / $currencyratio;
+			$trans['amount'] = (float) $trans['amount'];
+			$trans['amount'] = round($trans['amount'], 5);
+			
+
+/***/
+
+			$soapurl = ($my_group['elassoapurl']) ?: $my_group['url'] . '/soap';
+			$soapurl .= '/wsdlelas.php?wsdl';
+
+			$client = new nusoap_client($soapurl, true);
+
+			$error = $client->getError();
+
+			if ($error)
+			{
+				log_event('interlets', 'eLAS transaction soap error: ' . $error);
+				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				cancel();				
+			}
+
+			$result = $client->call('dopayment', [
+				'apikey' 		=> $group['remoteapikey'],
+				'from' 			=> $group['myremoteletscode'],
+				'real_from' 	=> link_user($from_user, false, false),
+				'to' 			=> $letscode_to,
+				'description' 	=> $trans['description'],
+				'amount' 		=> $trans['amount'],
+				'transid' 		=> $trans['transid'],
+				'signature' 	=> sign_transaction($trans, $group['presharedkey']),
+			]);
+
+			$error = $client->getError();
+
+			if ($error)
+			{
+				log_event('interlets', 'eLAS transaction soap error: ' . $error);
+				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				cancel();
+			}
+
+			if ($result == 'OFFLINE')
+			{
+				$errors[] = 'De andere letsgroep is offline. Probeer het later opnieuw. ';
+			}
+
+			if ($result == 'FAILED')
+			{
+				$errors[] = 'De interlets transactie is gefaald.' . $contact_admin;
+			}
+
+			if ($result == 'SIGFAIL')
+			{
+				$errors[] = 'De signatuur van de interlets transactie is gefaald. ' . $contact_admin;
+			}
+
+			if ($result == 'DUPLICATE')
+			{
+				$errors[] = 'De transactie bestaat reeds in de andere letsgroep. ' . $contact_admin;
+			}
+
+			if ($result == 'NOUSER')
+			{
+				$errors[] = 'De gebruiker in de interletsgroep werd niet gevonden. ';
+			}
+
+			if ($result == 'APIKEYFAIL')
+			{
+				$errors[] = 'De apikey is niet correct. ' . $contact_admin;
+			}
+
+			if (!count($errors) && $result != 'SUCCESS')
+			{
+				$errors[] = 'De interlets transactie kon niet verwerkt worden. ' . $contact_admin;
+			}
+				
+			if (count($errors))
+			{
+				log_event('interlets', 'soap errors eLAS transaction: ' . implode('<br>', $errors));
+				$alert->error($errors);
+				cancel();
+			}
+
+/*****/
+
+			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
+
+			error_log( '---   ' . http_build_query($transaction) . ' ----');
+			$id = insert_transaction($transaction);
+
+			if (!$id)
+			{
+				log_event('trans','Local commit of ' . $transid . ' failed');
+				
+				$subject = 'Interlets FAILURE!';
+				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transid . ' FAILED!!!  This means the transaction is not balanced now!';
+
+				mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+
+				$alert->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
+				cancel();
+			}
+
+			$alert->success('De interlets transactie werd verwerkt.');
 			cancel();
 		}
 		else
 		{
-			// the interlets group is on the same server
+			// the interlets group is on the same server (eLAND)
 
 			$remote_schema = $schemas[$group_domain];
 
@@ -331,14 +453,12 @@ if ($add)
 
 			if (!$to_remote_user)
 			{
-				$alert->error('De interlets gebruiker bestaat niet.');
-				cancel();
+				$errors[] = 'De interlets gebruiker bestaat niet.';
 			}
 
 			if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
-				$alert->error('De interlets gebruiker is niet actief.');
-				cancel();
+				$errors[] = 'De interlets gebruiker is niet actief.';
 			}
 
 			$remote_group = $db->fetchAssoc('select *
@@ -347,14 +467,12 @@ if ($add)
 
 			if (!$remote_group)
 			{
-				$alert->error('De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.');
-				cancel();
+				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.';
 			}
 
 			if (!$remote_group['localletscode'])
 			{
-				$alert->error('Er is geen interlets account gedefiniëerd in de remote interlets groep.');
-				cancel();
+				$errors[] = 'Er is geen interlets account gedefiniëerd in de remote interlets groep.';
 			}
 
 			$remote_interlets_account = $db->fetchAssoc('select *
@@ -363,20 +481,17 @@ if ($add)
 
 			if (!$remote_interlets_account)
 			{
-				$alert->error('Er is geen interlets account in de remote interlets group.');
-				cancel();
+				$errors[] = 'Er is geen interlets account in de remote interlets group.';
 			}
 
 			if ($remote_interlets_account['accountrole'] != 'interlets')
 			{
-				$alert->error('Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.');
-				cancel();
+				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.';
 			}
 
 			if (!in_array($remote_interlets_account['status'], [1, 2, 7]))
 			{
-				$alert->error('Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.');
-				cancel();
+				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
 			}
 
 			$remote_currency = readconfigfromdb('currency', $remote_schema);
@@ -384,35 +499,49 @@ if ($add)
 			$remote_balance_eq = readconfigfromdb('balance_equilibrium', $remote_schema);
 			$currencyratio = readconfigfromdb('currencyratio');
 
+			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
+			{
+				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
+			}
+
+			if (!$remote_currencyratio ||
+				!ctype_digit((string) $remote_currencyratio)
+				|| $remote_currencyratio < 1)
+			{
+				$errors[] = 'De currencyratio van de andere groep is niet correct ingesteld. ' . $contact_admin;
+			}
+
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
 			if ($remote_amount < 1)
 			{
-				$alert->error('Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.');
-				cancel();
+				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.';
 			} 
 
 			if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
 			{
-				$alert->error('De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.');
-				cancel();
+				$errors[] = 'De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.';
 			}
 
 			if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
 			{
-				$alert->error('De interlets gebruiker heeft zijn maximum limiet bereikt.');
-				cancel();
+				$errors[] = 'De interlets gebruiker heeft zijn maximum limiet bereikt.';
 			}
 
 			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
 			{
-				$alert->error('Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $currency . ').');
-				cancel();
+				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $currency . ').';
 			}
 
 			if (($to_remote_user['status'] == 2) && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq))
 			{
-				$alert->error('De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $currency . ').');
+				$errors[] = 'De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $currency . ').';
+			}
+
+			if (count($errors))
+			{
+				log_event('interlets', 'form errors eLAND transaction: ' . implode('<br>', $errors));
+				$alert->error($errors);
 				cancel();
 			}
 

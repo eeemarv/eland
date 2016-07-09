@@ -1,5 +1,9 @@
 <?php
 
+/**
+ *
+ */
+
 function generate_transid()
 {
 	global $base_url, $s_id;
@@ -12,10 +16,10 @@ function generate_transid()
 
 function sign_transaction($transaction, $sharedsecret)
 {
-	$signamount = (float) $transaction['amount'];
-	$signamount = $signamount * 100;
-	$signamount = round($signamount);
-	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $signamount;
+	$amount = (float) $transaction['amount'];
+	$amount = $amount * 100;
+	$amount = round($amount);
+	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $amount;
 	$signature = sha1($tosign);
 	log_event('debug','Signing ' . $tosign . ' : ' . $signature);
 	return $signature;
