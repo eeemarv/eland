@@ -333,8 +333,6 @@ if ($add)
 
 /*******************/
 
-			$transaction['transid'] = $transid;
-
 			$trans = $transaction;
 
 			$trans['amount'] = $trans['amount'] / $currencyratio;
@@ -431,10 +429,10 @@ if ($add)
 
 			if (!$id)
 			{
-				log_event('trans','Local commit of ' . $transid . ' failed');
+				log_event('trans','Local commit of ' . $transaction['transid'] . ' failed');
 				
 				$subject = 'Interlets FAILURE!';
-				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transid . ' FAILED!!!  This means the transaction is not balanced now!';
+				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 
 				mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 

@@ -155,6 +155,18 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				return 'NOUSER';
 			}
 
+			if (empty($transid))
+			{
+				log_event('soap', 'Transaction ' . $transid . ' missing trans id (failed).');
+				return 'FAILED';
+			}
+
+			if (empty($description))
+			{
+				log_event('soap', 'Transaction ' . $transid . ' missing description (failed).');
+				return 'FAILED';
+			}
+
 			$sigtest = sign_transaction($transaction, $fromuser['presharedkey']);
 
 			if ($sigtest != $signature)
@@ -165,21 +177,26 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			$transaction['amount'] = round($amount * readconfigfromdb('currencyratio'));
 
+			if ($transaction['amount'] < 1)
+			{
+				log_event('soap', 'Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' is lower than 1. (failed)');
+				return 'FAILED';
+			}
+
 			unset($transaction['letscode_to']);
 
 			if($id = insert_transaction($transaction))
 			{
-				$result = 'SUCCESS';
-				log_event('soap','Transaction ' . $transid . ' processed');
+				log_event('soap', 'Transaction ' . $transid . ' processed (success)');
 				$transaction['id'] = $id;
 				mail_transaction($transaction);
+
+				return 'SUCCESS';
 			}
-			else
-			{
-				log_event('soap','Transaction ' . $transid . ' FAILED');
-				$result = 'FAILED';
-			}
-			return $result;
+
+			log_event('soap', 'Transaction ' . $transid . ' failed');
+
+			return 'FAILED';
 		}
 	}
 	else
