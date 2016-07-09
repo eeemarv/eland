@@ -236,6 +236,7 @@ if ($add)
 			{
 				$alert->error('Gefaalde transactie');
 			}
+
 			cancel();
 		}
 		else if ($group['apimethod'] == 'mail')
@@ -258,12 +259,16 @@ if ($add)
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
+			log_event('transaction', 'Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.');
+
 			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$group_domain)
 		{
+			log_event('transaction', 'Geen url ingesteld voor ' . $group['groupname']);
+
 			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
 
 			cancel();
@@ -294,7 +299,8 @@ if ($add)
 				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
 			}
 
-			// needs to be enhanced!!
+			// This needs to be improved.
+
 			if (strlen($letscode_to))
 			{
 				$active_users = json_decode($redis->get($group['url'] . '_typeahead_data'), true);
@@ -326,7 +332,7 @@ if ($add)
 
 			if (count($errors))
 			{
-				log_event('interlets', 'form errors eLAS transaction: ' . implode('<br>', $errors));
+				log_event('interlets', 'form errors eLAS transaction, ' . $group['groupname'] . ': ' . implode('<br>', $errors));
 				$alert->error($errors);
 				cancel();
 			}
@@ -353,7 +359,7 @@ if ($add)
 
 			if ($error)
 			{
-				log_event('interlets', 'eLAS transaction soap error: ' . $error);
+				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
 				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();				
 			}
@@ -373,7 +379,7 @@ if ($add)
 
 			if ($error)
 			{
-				log_event('interlets', 'eLAS transaction soap error: ' . $error);
+				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
 				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();
 			}
@@ -415,7 +421,7 @@ if ($add)
 				
 			if (count($errors))
 			{
-				log_event('interlets', 'soap errors eLAS transaction: ' . implode('<br>', $errors));
+				log_event('interlets', 'soap errors eLAS transaction, ' . $group['groupname'] . ': ' . implode('<br>', $errors));
 				$alert->error($errors);
 				cancel();
 			}
@@ -425,20 +431,24 @@ if ($add)
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
 			error_log( '---   ' . http_build_query($transaction) . ' ----');
+
 			$id = insert_transaction($transaction);
 
 			if (!$id)
 			{
-				log_event('trans','Local commit of ' . $transaction['transid'] . ' failed');
+				log_event('transaction', $group['groupname'] . ', Local commit of ' . $transaction['transid'] . ' failed.');
 				
 				$subject = 'Interlets FAILURE!';
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
+				$text .= ' group:' . $group['groupname'];
 
 				mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 				$alert->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
 				cancel();
 			}
+
+			mail_transaction($transaction);
 
 			$alert->success('De interlets transactie werd verwerkt.');
 			cancel();
