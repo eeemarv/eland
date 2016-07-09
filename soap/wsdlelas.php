@@ -183,6 +183,12 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				return 'FAILED';
 			}
 
+			if (($transaction['amount'] + $touser['saldo']) > $touser['maxlimit'])
+			{
+				log_event('soap', 'Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' failed. ' . link_user($touser, false, false) . ' over maxlimit.');
+				return 'FAILED';
+			}
+
 			unset($transaction['letscode_to']);
 
 			if($id = insert_transaction($transaction))
