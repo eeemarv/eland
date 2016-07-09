@@ -333,16 +333,20 @@ if ($add)
 
 /*******************/
 
+			$transaction['transid'] = $transid;
+
 			$trans = $transaction;
 
 			$trans['amount'] = $trans['amount'] / $currencyratio;
 			$trans['amount'] = (float) $trans['amount'];
 			$trans['amount'] = round($trans['amount'], 5);
+
+			$trans['letscode_to'] = $letscode_to;
 			
 
 /***/
 
-			$soapurl = ($my_group['elassoapurl']) ?: $my_group['url'] . '/soap';
+			$soapurl = ($group['elassoapurl']) ?: $group['url'] . '/soap';
 			$soapurl .= '/wsdlelas.php?wsdl';
 
 			$client = new nusoap_client($soapurl, true);
@@ -359,12 +363,12 @@ if ($add)
 			$result = $client->call('dopayment', [
 				'apikey' 		=> $group['remoteapikey'],
 				'from' 			=> $group['myremoteletscode'],
-				'real_from' 	=> link_user($from_user, false, false),
+				'real_from' 	=> link_user($fromuser, false, false),
 				'to' 			=> $letscode_to,
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
 				'transid' 		=> $trans['transid'],
-				'signature' 	=> sign_transaction($trans, $group['presharedkey']),
+				'signature' 	=> sign_transaction($trans, trim($group['presharedkey'])),
 			]);
 
 			$error = $client->getError();
