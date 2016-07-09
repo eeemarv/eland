@@ -337,8 +337,6 @@ if ($add)
 				cancel();
 			}
 
-/*******************/
-
 			$trans = $transaction;
 
 			$trans['amount'] = $trans['amount'] / $currencyratio;
@@ -346,9 +344,6 @@ if ($add)
 			$trans['amount'] = round($trans['amount'], 5);
 
 			$trans['letscode_to'] = $letscode_to;
-			
-
-/***/
 
 			$soapurl = ($group['elassoapurl']) ?: $group['url'] . '/soap';
 			$soapurl .= '/wsdlelas.php?wsdl';
@@ -421,12 +416,10 @@ if ($add)
 				
 			if (count($errors))
 			{
-				log_event('interlets', 'soap errors eLAS transaction, ' . $group['groupname'] . ': ' . implode('<br>', $errors));
+				log_event('interlets', 'soap errors eLAS transaction ' . $trans['transid'] . ', ' . $group['groupname'] . ': ' . implode('<br>', $errors));
 				$alert->error($errors);
 				cancel();
 			}
-
-/*****/
 
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
