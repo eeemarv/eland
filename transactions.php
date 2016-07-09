@@ -54,10 +54,13 @@ if ($add)
 
 		$transaction['transid'] = $_POST['transid'];
 		$transaction['description'] = $_POST['description'];
+
 		list($letscode_from) = explode(' ', $_POST['letscode_from']);
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
+
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = date('Y-m-d H:i:s');
+
 		$group_id = $_POST['group_id'];
 
 		if ($stored_transid != $transaction['transid'])
@@ -117,7 +120,7 @@ if ($add)
 			}
 		}
 
-		if ($fromuser['status'] == 7 || $fromuser['accountrole'] == 'interlets')
+		if ($fromuser['status'] == 7)
 		{
 			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
 		}

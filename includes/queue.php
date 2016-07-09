@@ -67,7 +67,7 @@ class queue
 	 *
 	 */
 
-	public function get($topic, $count = 1)
+	public function get($topic, $count = 1, $call_func = false)
 	{
 		global $db;
 
@@ -83,7 +83,9 @@ class queue
 
 		try
 		{
-			$ids = $data = [];
+			$db->beginTransaction();
+
+			$del_ids = $data = [];
 
 			$st = $db->prepare('select data, id, priority
 				from eland_extra.queue
@@ -97,14 +99,29 @@ class queue
 
 			while ($row = $st->fetch())
 			{
-				$ids[] = $row['id'];
-				$data[] = json_decode($row['data'], true);
+				$d = json_decode($row['data'], true);
+
+				if ($call_func)
+				{
+					if (!call_user_func($call_func, $d))
+					{
+						$del_ids[] = $row['id'];
+					}
+				}
+				else
+				{
+					$del_ids[] = $row['id'];
+				}
+
+				$data[] = $d;
 
 				error_log('fetch queue id : ' . $row['id'] . ' priority: ' . $row['priority'] . ' data: ' . $row['data']);
 			}
 
 			$db->executeQuery('delete from eland_extra.queue where id in (?)',
-				[$ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+				[$del_ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+
+			$db->commit();
 		}
 		catch(Exception $e)
 		{

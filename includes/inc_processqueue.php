@@ -177,6 +177,7 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 
 	//userfrom must exist
 	$fromuser = readuser($transaction['id_from']);
+
 	if(!$fromuser)
 	{
 		$error_list['id_from'] = 'Gebruiker bestaat niet';
@@ -184,13 +185,15 @@ function localcommit($my_group, $transid, $id_from, $amount, $description, $lets
 
 	//userto must exist
 	$touser = readuser($transaction['id_to']);
+
 	if(!$touser)
 	{
 		$error_list['id_to'] = 'Gebruiker bestaat niet';
 	}
 
 	//userfrom and userto should not be the same
-	if($fromuser['letscode'] == $touser['letscode']){
+	if($fromuser['letscode'] == $touser['letscode'])
+	{
 		$error_list['id']='Van en Aan zijn hetzelfde';
 	}
 
