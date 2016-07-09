@@ -275,7 +275,7 @@ if ($add)
 		}
 		else if (!(isset($schemas[$group_domain])))
 		{
-			// The interlets group uses eLAS; queue the transaction.
+			// The interlets group uses eLAS or is on another server
 
 			if (!$group['remoteapikey'])
 			{
@@ -298,8 +298,6 @@ if ($add)
 			{
 				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
 			}
-
-			// This needs to be improved.
 
 			if (strlen($letscode_to))
 			{
