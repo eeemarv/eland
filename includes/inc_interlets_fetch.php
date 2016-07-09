@@ -54,36 +54,72 @@ function fetch_interlets_typeahead_data($client, $group)
 
 	$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
-	echo $group['url'];
+	$status_code = $client->getResponse()->getStatus();
 
-	$users = [];
-
-	$h = $crawler->filter('table tr')
-		->first()
-		->nextAll()
-		->each(function ($node) use (&$users)
+	if ($status_code != 200)
 	{
-		$user = [];
+		// for an eLAND group which is on another server (this is meant mainly for testing.)
 
-		$td = $node->filter('td')->first();
-		$bgcolor = $td->attr('bgcolor');
-		$postcode = $td->siblings()->eq(3)->text();
+		$crawler = $client->request('GET', $group['url'] . '/users.php?view=list&r=guest&u=elas');
 
-		$user['c'] = $td->text();
-		$user['n'] = $td->nextAll()->text();
+		$status_code = $client->getResponse()->getStatus();
 
-		if ($bgcolor)
+		if ($status_code != 200)
 		{
-			$user['s'] = (strtolower(substr($bgcolor, 1, 1)) > 'c') ? 2 : 3;
+			echo '-- letsgroup url not responsive --' . $r;
+			return;
 		}
 
-		if ($postcode)
-		{
-			$user['p'] = $postcode;
-		} 
+		$users = [];
 
-		$users[] = $user;
-	}); 
+		$crawler->filter('table tbody tr')
+			->each(function ($node) use (&$users)
+		{
+			$user = [];
+
+			$td = $node->filter('td')->first();
+
+			$user['c'] = $td->text();
+			$user['n'] = $td->nextAll()->text();
+
+			$users[] = $user;
+		});
+	}
+	else
+	{
+
+		echo $group['url'];
+
+		$users = [];
+
+		$crawler->filter('table tr')
+			->first()
+			->nextAll()
+			->each(function ($node) use (&$users)
+		{
+			$user = [];
+
+			$td = $node->filter('td')->first();
+			$bgcolor = $td->attr('bgcolor');
+			$postcode = $td->siblings()->eq(3)->text();
+
+			$user['c'] = $td->text();
+			$user['n'] = $td->nextAll()->text();
+
+			if ($bgcolor)
+			{
+				$user['s'] = (strtolower(substr($bgcolor, 1, 1)) > 'c') ? 2 : 3;
+			}
+
+			if ($postcode)
+			{
+				$user['p'] = $postcode;
+			} 
+
+			$users[] = $user;
+		}); 
+
+	}
 
 	$redis_data_key = $group['url'] . '_typeahead_data';
 	$data_string = json_encode($users);
