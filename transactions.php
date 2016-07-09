@@ -326,7 +326,7 @@ if ($add)
 				}
 				else
 				{
-					$errors[] = 'Er werd geen gebruiker gevonden met letsode ' . $letscode_to;
+					$errors[] = 'Er werd geen gebruiker gevonden met letscode ' . $letscode_to;
 				}
 			}
 
