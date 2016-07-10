@@ -74,6 +74,10 @@ Indexes:
 $mdb->connect();
 $mclient = $mdb->get_client();
 
+/**
+ *
+ */
+
 if ($type == 'user_fullname_access')
 {
 	$agg_id_ary = [];
@@ -132,6 +136,10 @@ if ($type == 'user_fullname_access')
 	echo '--- end ---' . $r;
 	exit;
 }
+
+/**
+ *
+ */
 
 if ($type == 'setting')
 {
@@ -196,6 +204,10 @@ if ($type == 'setting')
 	exit;
 }
 
+/**
+ *
+ */
+
 if ($type == 'forum')
 {
 	$agg_id_ary = [];
@@ -254,6 +266,10 @@ if ($type == 'forum')
 	exit;
 }
 
+/**
+ *
+ */
+
 if ($type == 'doc')
 {
 	$agg_id_ary = [];
@@ -300,6 +316,68 @@ if ($type == 'doc')
 			{
 
 				set_exdb('doc', $data, $s);
+
+				echo ' UPDATED';
+			}
+
+			echo $r . $r;
+		}
+	}
+
+	echo '--- end ---' . $r;
+	exit;
+}
+
+/**
+ *
+ */
+
+if ($type == 'autominlimit')
+{
+	$agg_id_ary = [];
+	$autominlimit_ary = [];
+	$ts_ary = [];
+
+	foreach ($schemas as $s)
+	{
+		$autominlimit_collection = $s . '_limit_events';
+
+		$autominlimits = $mclient->$autominlimit_collection->find();
+
+		foreach ($autominlimits as $amin)
+		{
+			$agg_id_ary[] = $s . '_autominlimit_' . $amin['user_id'];
+
+			$autominlimit_ary[$s][$amin['user_id']] = ['minlimit' => $amin['limit']];
+			$ts_ary[$s][$amin['user_id']] = $amin->__toString();
+		}
+	}
+
+	$stored_ary = $exdb->get_many(['agg_type' => 'autominlimit', 'agg_id_ary' => $agg_id_ary]);
+
+	foreach ($autominlimit_ary as $s => $autominlimit_s_ary)
+	{
+		foreach ($autominlimit_s_ary as $user_id => $data)
+		{
+			list($compare_data, $pid, $event_time) = data_exdb($data);
+
+			$agg_id = $s . '_autominlimit_' . $a;
+
+			echo $agg_id;
+			echo ': ';
+			echo json_encode($compare_data);
+
+			if (isset($stored_ary[$agg_id]))
+			{
+				echo ' (version: ' . $stored_ary[$agg_id]['agg_version'] . ') ';
+			}
+
+			if (!isset($stored_ary[$agg_id])
+				|| $compare_data != $stored_ary[$agg_id]['data'])
+			{
+				$ts = $ts_ary[$s][$user_id];
+
+				$exdb->set('autominlimit', $user_id, $data, $s, $ts);
 
 				echo ' UPDATED';
 			}

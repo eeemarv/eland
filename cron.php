@@ -338,6 +338,8 @@ if (count($autominlimit_queue))
 			$a = $mdb->get_client()->$limit_events_col->insert($e);
 		}
 
+		$exdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
+
 		$db->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
 		readuser($to_id, true, $sch);
 
