@@ -961,9 +961,16 @@ function redirect_login()
 function link_user($user, $sch = false, $link = true, $show_id = false, $field = false)
 {
 	global $rootpath;
+
+	if (!$user)
+	{
+		return '<i>** leeg **</i>';
+	}
+
 	$user = (is_array($user)) ? $user : readuser($user, false, $sch);
 	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
+
 	if ($link)
 	{
 		$out = '<a href="';
@@ -974,7 +981,9 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	{
 		$out = $str;
 	}
+
 	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
+
 	return $out;
 }
 
