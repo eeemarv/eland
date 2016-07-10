@@ -994,7 +994,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 function readconfigfromdb($key, $sch = null)
 {
     global $db, $schema, $redis, $exdb;
-    global $mdb, $eland_config;
+    global $eland_config;
     static $cache;
 
     if (!isset($sch))
@@ -1024,19 +1024,7 @@ function readconfigfromdb($key, $sch = null)
 		}
 		else
 		{
-			$mclient = $mdb->connect()->get_client();
-			$settings = $sch . '_settings';
-			$conf = $mclient->$settings->findOne(['name' => $key]);
-
-			if (isset($conf['value']))
-			{
-				$value = $conf['value'];
-				$exdb->set('setting', $key, ['value' => $value], $sch);
-			}
-			else
-			{
-				$value = $eland_config[$key][0];
-			}
+			$value = $eland_config[$key][0];
 		}
 	}
 	else

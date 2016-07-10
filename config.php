@@ -34,20 +34,9 @@ if ($setting)
 
 		if (!count($errors))
 		{
-			if ($eland_config[$setting])
-			{
-				$stored_value = readconfigfromdb($setting);
+			$exdb->set('setting', $setting, ['value' => $value]);
 
-				$a = array(
-					'value' => $value,
-					'name'	=> $setting
-				);
-
-				$mdb->settings->update(array('name' => $setting), $a, array('upsert' => true));
-
-				$exdb->set('setting', $setting, ['value' => $value]);
-			}
-			else
+			if (!$eland_config[$setting])			
 			{
 				if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $setting)))
 				{
@@ -138,17 +127,6 @@ foreach ($eland_config as $setting => $default)
 	{
 		$value = $row['data']['value'];
 	}
-	else
-	{
-		$data = $mdb->settings->findOne(['name' => $setting]);
-
-		if ($data)
-		{
-			$value = $data['value'];
-
-			$exdb->set('setting', $setting, ['value' => $value]);
-		}
-	}
 
 	$config[] = array(
 		'category'		=> 'eLAND',
@@ -158,7 +136,6 @@ foreach ($eland_config as $setting => $default)
 		'default'		=> isset($value) ? false : true,
 	);
 }
-
 
 $h1 = 'Instellingen';
 $fa = 'gears';
