@@ -84,8 +84,6 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . $systemtag ."] ***" . $r;
 
-$mdb->set_schema($schema);
-
 $base_url = $app_protocol . $hosts[$schema]; 
 
 /**
@@ -813,11 +811,6 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
-	global $mdb;
-
-	$mdb->connect();	
-	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
-	$mdb->logs->remove(['timestamp' => ['$lt' => $treshold]]);
 	return true;
 }
 
