@@ -4,8 +4,6 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$mdb->connect();
-
 if (isset($_POST['zend']))
 {
 	if ($error_token = get_error_form_token())
@@ -15,7 +13,6 @@ if (isset($_POST['zend']))
 	}
 
 	$a = array(
-		'name'							=> 'autominlimit',
 		'enabled'						=> (isset($_POST['enabled'])) ? true : false,
 		'active_no_new_or_leaving'		=> (isset($_POST['active_no_new_or_leaving'])) ? true : false,
 		'new'							=> (isset($_POST['new'])) ? true : false,
@@ -27,10 +24,6 @@ if (isset($_POST['zend']))
 		'account_base'					=> $_POST['account_base'],
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
-
-	$mdb->settings->update(array('name' => 'autominlimit'), $a, array('upsert' => true));
-
-	unset($a['_id'], $a['name']);
 
 	$exdb->set('setting', 'autominlimit', $a);
 
@@ -47,10 +40,18 @@ else
 	}
 	else
 	{
-		$a = $mdb->settings->findOne(array('name'=> 'autominlimit'));
-
-		unset($a['name'], $a['_id']);
-		$exdb->set('setting', 'autominlimit', $a);
+		$a = [
+			'enabled'					=> false,
+			'active_no_new_or_leaving'	=> false,
+			'new'						=> false,
+			'leaving'					=> false,
+			'inclusive'					=> '',
+			'exclusive'					=> '',
+			'min'						=> 0,
+			'trans_percentage'			=> 100,
+			'account_base'				=> 0,
+			'trans_exclusive'			=> '',
+		];
 	}
 }
 
