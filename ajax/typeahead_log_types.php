@@ -3,16 +3,26 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$map_names = [];
+$log_types = [];
 
-$mdb->connect();
+$st = $db->prepare('select distinct type
+	from eland_extra.logs
+	where schema = ?
+	order by type asc');
 
-$types = $mdb->logs->distinct('type');
+$st->bindValue(1, $schema);
 
-$output = json_encode($types);
+$st->execute();
 
-invalidate_typeahead_thumbprint('log_types', false, crc32($output), 345600); // 4 days
+while ($row = $st->fetch())
+{
+	$log_types[] = $row['type'];
+}
+
+$log_types = json_encode($log_types);
+
+invalidate_typeahead_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
 
 header('Content-type: application/json');
 
-echo $output;
+echo $log_types;
