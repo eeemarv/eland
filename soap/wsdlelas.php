@@ -7,66 +7,79 @@ require_once $rootpath . 'includes/inc_transactions.php';
 $server = new soap_server();
 $server->configureWSDL('interletswsdl', 'urn:interletswsdl');
 
-// Register the method to expose
-$server->register('gettoken',                // method name
-    ['apikey' => 'xsd:string'],        // input parameters
-    ['return' => 'xsd:string'],      // output parameters
-    'urn:interletswsdl',                      // namespace
-    'urn:interletswsdl#gettoken',                // soapaction
-    'rpc',                                // style
-    'encoded',                            // use
-    'Get a login token'            // documentation
+/*
+ *
+ */
+
+$server->register('gettoken',
+    ['apikey' => 'xsd:string'],
+    ['return' => 'xsd:string'],
+    'urn:interletswsdl',
+    'urn:interletswsdl#gettoken',
+    'rpc',
+    'encoded',
+    'Get a login token'
 );
 
-$server->register('userbyletscode',                // method name
-    ['apikey' => 'xsd:string', 'letscode' => 'xsd:string'],        // input parameters
-    ['return' => 'xsd:string'],      // output parameters
-    'urn:interletswsdl',                      // namespace
-    'urn:interletswsdl#userbyletscode',                // soapaction
-    'rpc',                                // style
-    'encoded',                            // use
-    'Get the user'            // documentation
+$server->register('userbyletscode',
+    ['apikey' => 'xsd:string', 'letscode' => 'xsd:string'],
+    ['return' => 'xsd:string'],
+    'urn:interletswsdl',
+    'urn:interletswsdl#userbyletscode',
+    'rpc',
+    'encoded',
+    'Get the user'
 );
 
-$server->register('userbyname',                // method name
-    ['apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'],        // input parameters
-    ['return' => 'xsd:string'],      // output parameters
-    'urn:interletswsdl',                      // namespace
-    'urn:interletswsdl#userbyletscode',                // soapaction
-    'rpc',                                // style
-    'encoded',                            // use
-    'Get the user'            // documentation
+$server->register('userbyname',
+    ['apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'],
+    ['return' => 'xsd:string'],
+    'urn:interletswsdl',
+    'urn:interletswsdl#userbyletscode',
+    'rpc',
+    'encoded',
+    'Get the user'
 );
 
-$server->register('getstatus',                // method name
+$server->register('getstatus',
    ['apikey' => 'xsd:string'],
    ['return' => 'xsd:string'],
-   'urn:interletswsdl',                      // namespace
+   'urn:interletswsdl',
    'urn:interletswsdl#getstatus',
-   'rpc',                                // style
-   'encoded',                            // use
+   'rpc',
+   'encoded',
    'Get the eLAS status'
 );
 
-$server->register('apiversion',                // method name
+$server->register('apiversion',
    ['apikey' => 'xsd:string'],
    ['return' => 'xsd:string'],
-   'urn:interletswsdl',                      // namespace
+   'urn:interletswsdl',
    'urn:interletswsdl#apiversion',
-   'rpc',                                // style
-   'encoded',                            // use
+   'rpc',
+   'encoded',
    'Get the eLAS SOAP API version'
 );
 
 $server->register('dopayment',
-   ['apikey' => 'xsd:string', 'from' => 'xsd:string', 'real_from' => 'xsd:string', 'to' => 'xsd:string', 'description' => 'xsd:string', 'amount' => 'xsd:float', 'transid' => 'xsd:string', 'signature' => 'xsd:string'],
+   ['apikey' => 'xsd:string', 'from' => 'xsd:string',
+		'real_from' => 'xsd:string', 'to' => 'xsd:string',
+		'description' => 'xsd:string', 'amount' => 'xsd:float',
+		'transid' => 'xsd:string', 'signature' => 'xsd:string'],
    ['return' => 'xsd:string'],
-   'urn:interletswsdl',                      // namespace
+   'urn:interletswsdl',
    'urn:interletswsdl#dopayment',
-   'rpc',                                // style
-   'encoded',                            // use
+   'rpc',
+   'encoded',
    'Commit an interlets transaction'
 );
+
+$post_data = file_get_contents('php://input');
+$server->service($post_data);
+
+/*
+ *
+ */
 
 function gettoken($apikey)
 {
@@ -90,11 +103,16 @@ function gettoken($apikey)
 
 }
 
+/*
+ *
+ */
+
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
 	global $db;
 
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
+
 	log_event('debug', 'Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
 	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', [$transid]))
@@ -212,6 +230,10 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	}
 }
 
+/*
+ *
+ */
+
 function userbyletscode($apikey, $letscode)
 {
 	global $db;
@@ -236,6 +258,10 @@ function userbyletscode($apikey, $letscode)
 	}
 }
 
+/*
+ *
+ */
+
 function userbyname($apikey, $name)
 {
 	global $db;
@@ -254,10 +280,12 @@ function userbyname($apikey, $name)
 	}
 }
 
+/*
+ *
+ */
+
 function getstatus($apikey)
 {
-	//global $elasversion;
-
 	if (check_apikey($apikey, 'interlets'))
 	{
 		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND';
@@ -269,18 +297,25 @@ function getstatus($apikey)
 	}
 }
 
+/**
+ *
+ */
+
 function apiversion($apikey)
 {
 	if(check_apikey($apikey, 'interlets'))
 	{
-		//global $soapversion;
-		return 1200; //$soapversion;
+		return 1200; //soapversion;
 	}
 	else
 	{
 		log_event('debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for apiversion)');
 	}
 }
+
+/**
+ *
+ */
 
 function check_apikey($apikey, $type)
 {
@@ -292,5 +327,3 @@ function check_apikey($apikey, $type)
 		and type = ?', [$apikey, $type])) ? true : false;
 }
 
-$post_data = file_get_contents('php://input');
-$server->service($post_data);

@@ -10,12 +10,10 @@
 		"ext-mongo": "*",
 		"ext-imagick": "*",
 		"ext-exif": "*",
-		"blueimp/jquery-file-upload": "~9.12",
         "imagine/imagine": "^0.6",
         "doctrine/dbal": "~2.5",
         "willdurand/geocoder": "^3",
-        "predis/predis": "~1.0",
-        "twig/twig": "^1",
-        "kriswallsmith/assetic": "^1.3"
+        "predis/predis": "~1.1",
+        "twig/twig": "^1"
 	}
 }
