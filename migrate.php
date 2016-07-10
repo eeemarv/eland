@@ -346,10 +346,15 @@ if ($type == 'autominlimit')
 
 		foreach ($autominlimits as $amin)
 		{
+			if (!isset($amin['ts']))
+			{
+				continue;
+			}
+
 			$agg_id_ary[] = $s . '_autominlimit_' . $amin['user_id'];
 
 			$autominlimit_ary[$s][$amin['user_id']] = ['minlimit' => $amin['limit']];
-			$ts_ary[$s][$amin['user_id']] = $amin->__toString();
+			$ts_ary[$s][$amin['user_id']] = $amin['ts']->toDateTime()->format('Y-m-d H:i:s');
 		}
 	}
 
@@ -359,13 +364,11 @@ if ($type == 'autominlimit')
 	{
 		foreach ($autominlimit_s_ary as $user_id => $data)
 		{
-			list($compare_data, $pid, $event_time) = data_exdb($data);
-
-			$agg_id = $s . '_autominlimit_' . $a;
+			$agg_id = $s . '_autominlimit_' . $user_id;
 
 			echo $agg_id;
 			echo ': ';
-			echo json_encode($compare_data);
+			echo json_encode($data);
 
 			if (isset($stored_ary[$agg_id]))
 			{
@@ -373,7 +376,7 @@ if ($type == 'autominlimit')
 			}
 
 			if (!isset($stored_ary[$agg_id])
-				|| $compare_data != $stored_ary[$agg_id]['data'])
+				|| $data != $stored_ary[$agg_id]['data'])
 			{
 				$ts = $ts_ary[$s][$user_id];
 
