@@ -61,18 +61,6 @@ function log_event($type, $event, $remote_schema = false)
 		$ip = $_SERVER['REMOTE_ADDR'];
 	}
 
-	$item = [
-		'ts_tz'			=> date('Y-m-d H:i:s'),
-		'timestamp'		=> gmdate('Y-m-d H:i:s'),
-		'user_id' 		=> ($s_master || $s_elas_guest) ? 0 : $s_id,
-		'user_schema'	=> $s_schema,
-		'letscode'		=> strtolower($letscode),
-		'username'		=> $username,
-		'ip'			=> $ip,
-		'type'			=> strtolower($type),
-		'event'			=> $event,
-	];
-
 	$log_item = [
 		'schema'		=> $sch,
 		'user_id'		=> ($s_master || $s_elas_guest) ? 0 : (($s_id) ?: 0),
@@ -85,22 +73,4 @@ function log_event($type, $event, $remote_schema = false)
 	];
 
 	$db->insert('eland_extra.logs', $log_item);
-
-	register_shutdown_function('insert_log', $item, $remote_schema);
-}
-
-function insert_log($item, $remote_schema = false)
-{
-	global $mdb;
-
-	$mdb->connect();
-
-	if ($remote_schema)
-	{
-		$logs = $remote_schema . '_logs';
-		$mdb->get_client()->$logs->insert($item);
-		return;
-	}
-
-	$mdb->logs->insert($item);
 }
