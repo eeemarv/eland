@@ -7,31 +7,14 @@ require_once $rootpath . 'includes/inc_pagination.php';
 $q = isset($_GET['q']) ? $_GET['q'] : '';
 $letscode = isset($_GET['letscode']) ? $_GET['letscode'] : '';
 $type = isset($_GET['type']) ? $_GET['type'] : '';
+$fdate = (isset($_GET['fdate'])) ? $_GET['fdate'] : '';
+$tdate = (isset($_GET['tdate'])) ? $_GET['tdate'] : '';
 
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'ts';
 $asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
 
 $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
 $start = (isset($_GET['start'])) ? $_GET['start'] : 0;
-
-
-/*
-$find = [];
-
-
-	$log_item = [
-		'schema'		=> $sch,
-		'user_id'		=> ($s_master || $s_elas_guest) ? 0 : (($s_id) ?: 0),
-		'user_schema'	=> $s_schema,
-		'letscode'		=> strtolower($letscode),
-		'username'		=> $username,
-		'ip'			=> $ip,
-		'type'			=> strtolower($type),
-		'event'			=> $event,
-	];
-
-	$db->insert('eland_extra.logs', $log_item);
-*/
 
 $params = [
 	'orderby'	=> $orderby,
@@ -67,33 +50,19 @@ if ($q)
 	$params['q'] = $q;
 }
 
-
-/*
-
-if ($letscode)
+if ($fdate)
 {
-	list($l) = explode(' ', $letscode);
-
-
-	$find['letscode'] = strtolower(trim($l));
+	$where_sql[] = 'ts >= ?';
+	$params_sql[] = $fdate;
+	$params['fdate'] = $fdate;
 }
 
-if ($type)
+if ($tdate)
 {
-	$find['type'] = strtolower(trim($type));
+	$where_sql[] = 'ts <= ?';
+	$params_sql[] = $tdate;
+	$params['tdate'] = $tdate;
 }
-
-if ($q)
-{
-	$find['event'] = ['$regex' => new MongoRegex('/' . $q . '/i')];
-}
-
-
-
-$mdb->connect();
-$rows = $mdb->logs->find($find)->sort(['timestamp' => -1])->limit(300);
-
-*/
 
 if (count($where_sql))
 {
@@ -154,11 +123,13 @@ $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
 $includejs = '
+	<script src="' . $cdn_datepicker . '"></script>
+	<script src="' . $cdn_datepicker_nl . '"></script>
 	<script src="' . $rootpath . 'js/csv.js"></script>
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
-$filtered = $q || $type || $letscode;
+$filtered = $q || $type || $letscode || $fdate || $tdate;
 
 $h1 = 'Logs';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
@@ -219,6 +190,57 @@ echo '<input type="submit" value="Toon" class="btn btn-default btn-block" name="
 echo '</div>';
 
 echo '</div>';
+
+/*
+echo '<div class="row">';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
+echo '<span class="fa fa-calendar"></span></span>';
+echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
+echo 'aria-describedby="fdate_addon" ';
+
+echo 'id="fdate" name="fdate" ';
+echo 'value="' . $fdate . '" ';
+echo 'data-provide="datepicker" ';
+echo 'data-date-format="yyyy-mm-dd" ';
+echo 'data-date-default-view-date="-1y" ';
+echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-immediate-updates="true" ';
+echo 'data-date-orientation="bottom" ';
+echo '>';
+
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
+echo '<span class="fa fa-calendar"></span></span>';
+echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
+echo 'aria-describedby="tdate_addon" ';
+
+echo 'id="tdate" name="tdate" ';
+echo 'value="' . $tdate . '" ';
+echo 'data-provide="datepicker" ';
+echo 'data-date-format="yyyy-mm-dd" ';
+echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+echo 'data-date-language="nl" ';
+echo 'data-date-today-highlight="true" ';
+echo 'data-date-autoclose="true" ';
+echo 'data-date-immediate-updates="true" ';
+echo 'data-date-orientation="bottom" ';
+echo '>';
+
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+*/
 
 $params_form = ['r' => 'admin', 'u' => $s_id];
 
