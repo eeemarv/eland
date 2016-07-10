@@ -516,18 +516,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		foreach ($user_ids as $user_id)
 		{
 			$exdb->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
-			$redis->del($schema . '_user_' . $user_id);			
-		}
-
-		$mdb->connect();
-
-		foreach ($user_ids as $user_id)
-		{
-			$mdb->users->update(
-				['id' => (int) $user_id],
-				['$set' => ['id' => (int) $user_id, 'fullname_access' => (int) $access_value]],
-				['upsert' => true]
-			);
+			$redis->del($schema . '_user_' . $user_id);
 		}
 
 		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
@@ -1002,12 +991,8 @@ if ($del)
 					]);
 				}
 
-				//delete mongo record
-				$mdb->connect();
-				$mdb->users->remove(
-					['id' => (int) $del],
-					['justOne'	=> true]
-				);
+				//delete fullname access record.
+				$exdb->del('user_fullname_access', $del);
 
 				//finally, the user
 				$db->delete('users', ['id' => $del]);
@@ -1403,19 +1388,6 @@ if ($add || $edit)
 
 					$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
-					$mdb->connect();
-					$mdb->users->update([
-						'id'		=> (int) $id],
-						[
-							'$set' => [
-								'id'				=> (int) $id,
-								'fullname_access'	=> (int) $fullname_access,
-							],
-						],
-						[
-						'upsert'	=> true,
-					]);
-
 					$alert->success('Gebruiker opgeslagen.');
 
 					$user = readuser($id, true);
@@ -1501,20 +1473,6 @@ if ($add || $edit)
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
 					$exdb->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
-
-					$mdb->connect();
-					$mdb->users->update([
-							'id'	=> (int) $edit,
-						],
-						[
-							'$set'	=> [
-								'id'				=> (int) $edit,
-								'fullname_access'	=> (int) $fullname_access,
-							],
-						],
-						[
-							'upsert'			=> true,
-					]);
 
 					$user = readuser($edit, true);
 

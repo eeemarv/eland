@@ -1059,7 +1059,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $db, $schema, $redis, $mdb, $access_control, $exdb;
+    global $db, $schema, $redis, $exdb;
     static $cache;
 
 	if (!$id)
@@ -1099,17 +1099,9 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	}
 	else
 	{
-		$mdb->connect();
+		$user += ['fullname_access' => 'admin'];
 
-		$remote_users = $s . '_users';
-		$users = ($remote_schema) ? $mdb->get_client()->$remote_users : $mdb->users;
-		$ary = $users->findOne(['id' => (int) $id]);
-
-		$fullname_access = $ary['fullname_access'] ? $access_control->get_role($fullname_access) : 'admin';
-
-		$user += ['fullname_access' => $fullname_access];
-
-		$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access], $s);
+		$exdb->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
 	}
 
 	if (isset($user))
