@@ -135,7 +135,7 @@ $tableheader_ary = [
 		'lbl' 		=> 'ip',
 		'data_hide' => 'phone, tablet',
 	]),
-	'user_id'	=> array_merge($asc_preset_ary, [
+	'letscode'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Gebruiker',
 		'data_hide'	=> 'phone, tablet',
 	]),
@@ -270,18 +270,6 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	echo '</th>';
 }
 
-
-
-
-
-/*
-echo '<th data-sort-initial="descending">Tijd</th>';
-echo '<th>Type</th>';
-echo '<th data-hide="phone, tablet">ip</th>';
-echo '<th data-hide="phone, tablet">gebruiker</th>';
-
-echo '<th data-hide="phone">Event</th>';
-*/
 echo '</tr>';
 echo '</thead>';
 
