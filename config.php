@@ -4,8 +4,6 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$mdb->connect();
-
 $setting = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 

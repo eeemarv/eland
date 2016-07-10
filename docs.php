@@ -6,8 +6,6 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'files-o';
 
-$mdb->connect();
-
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -45,14 +43,6 @@ if ($map_edit)
 	{
 		$map_name = $row['data']['map_name'];
 	}
-	else
-	{
-		$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
-
-		set_exdb('doc', $map_name);
-
-		$map_name = $map_name['map_name'];
-	}
 
 	if (!$map_name)
 	{
@@ -65,9 +55,8 @@ if ($map_edit)
 		if ($error_token = get_error_form_token())
 		{
 			$alert->error($error_token);
-			cancel($map_edit);
 
-			$errors[] = $error_token;
+			cancel($map_edit);
 		}
 
 		$posted_map_name = trim($_POST['map_name']);
@@ -91,9 +80,7 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
-			$mdb->docs->update(['_id' => new MongoId($map_edit)], ['map_name' => $posted_map_name]);
-
-			set_exdb('doc', ['map_name' => $posted_map_name, 'id' => $map_edit]);
+			$exdb->set('doc', $map_edit, ['map_name' => $posted_map_name]);
 
 			$alert->success('Map naam aangepast.');
 
@@ -145,28 +132,12 @@ if ($map_edit)
 
 if ($edit)
 {
-	$edit_id = new MongoId($edit);
-
 	$row = $exdb->get('doc', $edit);
 
 	if ($row)
 	{
 		$doc = $row['data'];
 		$doc['ts'] = $row['event_time'];
-	}
-	else
-	{
-		$doc = $mdb->docs->findOne(['_id' => $edit_id]);
-
-		if (!$doc)
-		{
-			$alert->error('Document niet gevonden.');
-			cancel();
-		}
-
-		set_exdb('doc', $doc);
-
-		list($doc) = data_exdb($doc);
 	}
 
 	if ($submit)
@@ -175,9 +146,8 @@ if ($edit)
 			'user_id'		=> $doc['user_id'],
 			'filename'		=> $doc['filename'],
 			'org_filename'	=> $doc['org_filename'],
-			'ts'			=> $doc['ts'],
 			'name'			=> trim($_POST['name']),
-			'access'		=> $access_control->get_post_value(),
+			'access'		=> $_POST['access'],
 		];
 
 		$access_error = $access_control->get_post_error();
@@ -204,26 +174,13 @@ if ($edit)
 				}
 				else
 				{
-					$map = $mdb->docs->findOne(['map_name' => $map_name]);
+					$map = ['map_name' => $map_name];
 
-					if ($map)
-					{
-						set_exdb('doc', $map);
+					$mid = substr(sha1(microtime() . $schema . $map_name), 0, 24);
 
-						list($map) = data_exdb($map);
-					}
-					else
-					{
-						$map = ['map_name' => $map_name, 'ts' => gmdate('Y-m-d H:i:s')];
+					$exdb->set('doc', $mid, $map);
 
-						$mdb->docs->insert($map);
-
-						set_exdb('doc', $map);
-
-						list($map, $mid) = data_exdb($map);
-
-						$map['id'] = $mid;
-					}
+					$map['id'] = $mid;
 				}
 
 				$update['map_id'] = $map['id'];
@@ -245,22 +202,14 @@ if ($edit)
 				{
 					$exdb->del('doc', $doc['map_id']);
 				}
-
-				if (count(iterator_to_array($mdb->docs->find(['map_id' => $doc['map_id']]))) < 2)
-				{
-					$mdb->docs->remove(['_id' => new MongoId($doc['map_id'])]);
-				}
 			}
 
-			$mdb->docs->update(['_id' => $edit_id], $update);
-
-			$update['id'] = $edit_id;
-
-			set_exdb('doc', $update);
+			$exdb->set('doc', $edit, $update);
 
 			invalidate_typeahead_thumbprint('doc_map_names');
 
 			$alert->success('Document aangepast');
+
 			cancel($update['map_id']);
 		}
 
@@ -272,12 +221,6 @@ if ($edit)
 		$map_id = $doc['map_id'];
 
 		$map = $exdb->get('doc', $map_id)['data'];
-
-		if (!$map)
-		{
-			$map = $mdb->docs->findOne(['_id' => new MongoId($map_id)]);
-			list($map) = data_exdb($map);
-		}
 	}
 
 	$includejs = '<script src="' . $cdn_typeahead . '"></script>
@@ -344,8 +287,6 @@ if ($edit)
  */
 if ($confirm_del && $del)
 {
-	$doc_id = new MongoId($del);
-
 	if ($error_token = get_error_form_token())
 	{
 		$alert->error($error_token);
@@ -357,10 +298,6 @@ if ($confirm_del && $del)
 	if ($row)
 	{
 		$doc = $row['data'];
-	}
-	else
-	{
-		$doc = $mdb->docs->findOne(['_id' => $doc_id]);
 	}
 
 	if ($doc)
@@ -374,36 +311,18 @@ if ($confirm_del && $del)
 			'agg_type'	=> 'doc',
 			'data->>\'map_id\'' => $doc['map_id']]);
 
-		$invalidate = false;
-
 		if (count($rows) < 2)
 		{
 			$exdb->del('doc', $doc['map_id']);
-
-			$invalidate = true;
-		}
-
-		if (count(iterator_to_array($mdb->docs->find(['map_id' => $doc['map_id']]))) < 2)
-		{
-			$mdb->docs->remove(['_id' => new MongoId($doc['map_id'])]);
-			unset($doc['map_id']);
-
-			$invalidate = true;
-		}
-
-		if ($invalidate)
-		{
 			invalidate_typeahead_thumbprint('doc_map_names');
+
+			unset($doc['map_id']);
 		}
 
 		$exdb->del('doc', $del);
 
-		$mdb->docs->remove(
-			['_id' => $doc_id],
-			['justOne'	=> true]
-		);
-
 		$alert->success('Het document werd verwijderd.');
+
 		cancel($doc['map_id']);
 	}
 
@@ -417,14 +336,6 @@ if ($del)
 	if ($row)
 	{
 		$doc = $row['data'];
-	}
-	else
-	{
-		$doc_id = new MongoId($del);
-
-		$doc = $mdb->docs->findOne(['_id' => $doc_id]);
-
-		set_exdb('doc', $doc);
 	}
 
 	if ($doc)
@@ -542,20 +453,14 @@ if ($submit)
 	}
 	else
 	{
-		$access = $access_control->get_post_value();
-
-		$id_str = substr(sha1(time() . mt_rand(0, 1000000)), 0, 24);
-
-		$doc_id = new MongoId($id_str);
+		$doc_id = substr(sha1(time() . mt_rand(0, 1000000)), 0, 24);
 
 		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
 
 		$doc = [
-			'_id' 			=> $doc_id,
 			'filename'		=> $filename,
 			'org_filename'	=> $file,
-			'access'		=> (int) $access,
-			'ts'			=> gmdate('Y-m-d H:i:s'),
+			'access'		=> $_POST['access'],
 			'user_id'		=> ($s_master) ? 0 : $s_id,
 		];
 
@@ -572,33 +477,14 @@ if ($submit)
 				$map = reset($rows)['data'];
 				$map_id = reset($rows)['eland_id'];
 			}
-			else
-			{
-				$map = $mdb->docs->findOne(['map_name' => $map_name]);
-
-				if ($map)
-				{
-					set_exdb('doc', $map);
-				}
-
-				list($map) = data_exdb($map);
-			}
 
 			if (!$map)
 			{
 				$map_id = substr(sha1(time() . mt_rand(0, 220000)), 0, 24);
 
-				$mid = new MongoId($map_id);
-			
-				$map = [
-					'_id'		=> $mid,
-					'ts'		=> gmdate('Y-m-d H:i:s'),
-					'map_name'	=> $map_name,
-				];
+				$map = ['map_name' => $map_name];
 
-				set_exdb('doc', $map);
-
-				$mdb->docs->insert($map);
+				$exdb->set('doc', $map_id, $map);
 
 				invalidate_typeahead_thumbprint('doc_map_names');
 			}
@@ -613,9 +499,7 @@ if ($submit)
 			$doc['name'] = $name;
 		}
 
-		$mdb->docs->insert($doc);
-
-		set_exdb('doc', $doc);
+		$exdb->set('doc', $doc_id, $doc);
 
 		$params = [
 			'CacheControl'			=> 'public, max-age=31536000',
@@ -627,6 +511,7 @@ if ($submit)
 		]);
 
 		$alert->success('Het bestand is opgeladen.');
+
 		cancel($doc['map_id']);
 	}
 }
@@ -644,18 +529,6 @@ if ($add)
 		if ($row)
 		{
 			$map_name = $row['data']['map_name'];
-
-			if (!strlen($map_name))
-			{
-				$map_id = new MongoId($map);
-				$map_ary = $mdb->docs->findOne(['_id' => $map_id]);
-
-				if (strlen($map_ary['map_name']))
-				{
-					set_exdb('doc', $map_ary);
-					$map_name = $map_ary['map_name'];
-				}
-			}
 		}
 	}
 
@@ -727,14 +600,6 @@ if ($map)
 	{
 		$map_name = $row['data']['map_name'];
 	}
-	else
-	{
-		$map_name = $mdb->docs->findOne(['_id' => new MongoId($map)]);
-
-		set_exdb('doc', $map_name);
-
-		$map_name = $map_name['map_name'];
-	}
 
 	if (!$map_name)
 	{
@@ -764,19 +629,6 @@ if ($map)
 			$docs[] = $data;
 		}
 	}
-	else
-	{
-		$find = ['map_id' => $map, 'access'	=> ['$gte'	=> $access_level]];
-
-		$docs = iterator_to_array($mdb->docs->find($find));
-
-		foreach ($docs as $k => $d)
-		{
-			set_exdb('doc', $d);
-
-			list($docs[$k]) = data_exdb($d);
-		}
-	}
 
 	$maps = [];
 }
@@ -802,17 +654,6 @@ else
 			$maps[$row['eland_id']] = $data;
 		}
 	}
-	else
-	{
-		$maps = iterator_to_array($mdb->docs->find(['map_name' => ['$exists' => true]]));
-
-		foreach ($maps as $k => $m)
-		{
-			set_exdb('doc', $m);
-
-			list($maps[$k]) = data_exdb($m);
-		}
-	}
 
 	$rows = $exdb->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
@@ -835,20 +676,6 @@ else
 			$docs[] = $data;
 		}
 	}
-	else
-	{
-		$find = ['access'	=> ['$gte'	=> $access_level]];
-		$docs = iterator_to_array($mdb->docs->find($find));
-
-		foreach ($docs as $k => $d)
-		{
-			set_exdb('doc', $d);
-
-			list($docs[$k]) = data_exdb($d);
-		}
-
-	}
-
 }
 
 if (!$map)
