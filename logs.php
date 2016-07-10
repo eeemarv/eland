@@ -120,7 +120,12 @@ $rows = $db->fetchAll($query, $params_sql);
 
 $pagination = new pagination('logs', $row_count, $params, $inline);
 
+$top_right .= '<a href="#" class="csv">';
+$top_right .= '<i class="fa fa-file"></i>';
+$top_right .= '&nbsp;csv</a>';
+
 $includejs = '
+	<script src="' . $rootpath . 'js/csv.js"></script>
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
@@ -206,7 +211,8 @@ $pagination->render();
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-hover table-bordered table-striped footable">';
+echo '<table class="table table-hover table-bordered table-striped footable csv" ';
+echo 'data-sort="false">';
 echo '<thead>';
 echo '<tr>';
 echo '<th data-sort-initial="descending">Tijd</th>';
