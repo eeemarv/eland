@@ -6,8 +6,6 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'comments-o';
 
-$mdb->connect();
-
 $topic = (isset($_GET['t'])) ? $_GET['t'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
 $edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
@@ -53,12 +51,6 @@ if ($del || $edit)
 		$forum_post['id'] = $row['eland_id'];
 		$agg_version = $row['agg_version'];
 	}
-	else
-	{
-		$forum_post = $mdb->forum->findOne(['_id' => new MongoId($t)]);
-
-		set_exdb('forum', $forum_post);
-	}
 
 	if (!isset($forum_post))
 	{
@@ -97,19 +89,10 @@ if ($submit)
 			cancel();
 		}
 
-		$mdb->forum->remove(
-			['_id' => new MongoId($del)],
-			['justOne'	=> true]
-		);
-
 		$exdb->del('forum', $del);
 
 		if (!isset($forum_post['parent_id']))
 		{
-			$mdb->forum->remove(
-				['parent_id' => $del]
-			);
-
 			$rows = $exdb->get_many(['agg_type' => 'forum',
 				'agg_schema' => $schema,
 				'data->>\'parent_id\'' => $del]);
@@ -124,6 +107,7 @@ if ($submit)
 		}
 
 		$alert->success('De reactie is verwijderd.');
+
 		cancel($forum_post['parent_id']);
 	}
 
@@ -144,16 +128,11 @@ if ($submit)
 	else
 	{
 		$forum_post['subject'] = $_POST['subject'];
-		$forum_post['access']	= $access_control->get_post_value();
+		$forum_post['access']	= $_POST['access'];
 	}
 
-	if ($edit)
+	if (!$edit)
 	{
-		$forum_post['modified'] = gmdate('Y-m-d H:i:s');
-	}
-	else
-	{
-		$forum_post['ts'] = gmdate('Y-m-d H:i:s');
 		$forum_post['uid'] = ($s_master) ? 0 : $s_id;
 	}
 
@@ -177,11 +156,6 @@ if ($submit)
 		}
 	}
 
-	if (!$topic && ($forum_post['access'] < $access_level || $forum_post['access'] > 2))
-	{
-		$errors[] = 'Ongeldige zichtbaarheid';
-	}
-
 	if ($token_error = get_error_form_token())
 	{
 		$errors[] = $token_error;
@@ -193,26 +167,20 @@ if ($submit)
 	}
 	else if ($edit)
 	{
-		$mdb->forum->update(['_id' => new MongoId($edit)],
-			['$set'	=> $forum_post, '$inc' => ['edit_count' => 1]],
-			['upsert'	=> true]);
-
-		$forum_post['id'] = $edit;
-
-		set_exdb('forum', $forum_post);
+		$exdb->set('forum', $edit, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
+
 		cancel($topic);
 	}
 	else
 	{
-		$forum_post['_id'] = new MongoId();
+		$new_id = substr(sha1(microtime() . $schema . $map_name), 0, 24);
 
-		$mdb->forum->insert($forum_post);
-
-		set_exdb('forum', $forum_post);
+		$exdb->set('forum', $new_id, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
+
 		cancel($topic);
 	}
 }
@@ -270,12 +238,6 @@ if ($add || $edit)
 		if ($row)
 		{
 			$topic_post = $row['data'];
-		}
-		else
-		{
-			$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
-
-			set_exdb('forum', $topic_post);
 		}
 
 		if (!$access_control->is_visible($topic_post['access']))
@@ -378,12 +340,6 @@ if ($topic)
 			$topic_post['edit_count'] = $row['agg_version'] - 1;
 		}
 	}
-	else
-	{
-		$topic_post = $mdb->forum->findOne(['_id' => new MongoId($topic)]);
-
-		set_exdb('forum', $topic_post);
-	}
 
 	$topic_post['id'] = $topic;	
 
@@ -413,24 +369,6 @@ if ($topic)
 			}
 
 			$forum_posts[] = $data;
-		}
-	}
-	else
-	{
-		$find = ['parent_id' => $topic];
-
-		$f_posts = $mdb->forum->find($find);
-		$f_posts->sort(['ts' => (($topic) ? 1 : -1)]);
-
-		$f_posts = iterator_to_array($f_posts);
-
-		foreach ($f_posts as $f_post)
-		{
-			set_exdb('forum', $f_post);
-
-			$f_post['id'] = $f_post['_id']->__toString();
-
-			$forum_posts[] = $f_post;
 		}
 	}
 
@@ -563,22 +501,6 @@ if (count($rows))
 	foreach ($rows as $row)
 	{
 		$forum_posts[] = $row['data'] + ['id' => $row['eland_id'], 'ts' => $row['event_time']];
-	}
-}
-else
-{
-	$find = ['parent_id' => ['$exists' => false]];
-
-	$forum_posts = $mdb->forum->find($find);
-	$forum_posts->sort(['ts' => (($topic) ? 1 : -1)]);
-
-	$forum_posts = iterator_to_array($forum_posts);
-
-	foreach ($forum_posts as $key => $forum_post)
-	{
-		set_exdb('forum', $forum_post);
-
-		$forum_posts[$key]['id'] = $forum_post['_id']->__toString();
 	}
 }
 
