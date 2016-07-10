@@ -120,6 +120,35 @@ $rows = $db->fetchAll($query, $params_sql);
 
 $pagination = new pagination('logs', $row_count, $params, $inline);
 
+$asc_preset_ary = [
+	'asc'	=> 0,
+	'indicator' => '',
+];
+
+$tableheader_ary = [
+	'ts' => array_merge($asc_preset_ary, [
+		'lbl' => 'Tijd']),
+	'type' => array_merge($asc_preset_ary, [
+		'lbl' => 'Type']),
+
+	'ip'	=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'ip',
+		'data_hide' => 'phone, tablet',
+	]),
+	'user_id'	=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'Gebruiker',
+		'data_hide'	=> 'phone, tablet',
+	]),
+	'event'	=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'Event',
+		'data_hide'	=> 'phone',
+	]),
+];
+
+$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+
+
 $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
@@ -215,12 +244,44 @@ echo '<table class="table table-hover table-bordered table-striped footable csv"
 echo 'data-sort="false">';
 echo '<thead>';
 echo '<tr>';
+
+$th_params = $params;
+
+$th_params['start'] = 0;
+
+foreach ($tableheader_ary as $key_orderby => $data)
+{
+	echo '<th';
+	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo '>';
+	if (isset($data['no_sort']))
+	{
+		echo $data['lbl'];
+	}
+	else
+	{
+		$th_params['orderby'] = $key_orderby;
+		$th_params['asc'] = $data['asc'];
+
+		echo '<a href="' . generate_url('logs', $th_params) . '">';
+		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '</a>';
+	}
+	echo '</th>';
+}
+
+
+
+
+
+/*
 echo '<th data-sort-initial="descending">Tijd</th>';
 echo '<th>Type</th>';
 echo '<th data-hide="phone, tablet">ip</th>';
 echo '<th data-hide="phone, tablet">gebruiker</th>';
 
 echo '<th data-hide="phone">Event</th>';
+*/
 echo '</tr>';
 echo '</thead>';
 
