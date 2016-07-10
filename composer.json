@@ -7,7 +7,6 @@
 		"bramus/monolog-colored-line-formatter": "2.0.*",
 		"fergusean/nusoap": "~0.9",
 		"fabpot/goutte": "^3",
-		"ext-mongo": "*",
 		"ext-imagick": "*",
 		"ext-exif": "*",
         "imagine/imagine": "^0.6",

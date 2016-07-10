@@ -550,9 +550,6 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 /**
  * 
  */
-require_once $rootpath . 'includes/mdb.php';
-
-$mdb = new mdb($schema);
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
