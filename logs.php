@@ -2,16 +2,79 @@
 $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
+require_once $rootpath . 'includes/inc_pagination.php';
 
 $q = isset($_GET['q']) ? $_GET['q'] : '';
 $letscode = isset($_GET['letscode']) ? $_GET['letscode'] : '';
 $type = isset($_GET['type']) ? $_GET['type'] : '';
 
+$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'ts';
+$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+
+$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
+$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+
+
+/*
 $find = [];
+
+
+	$log_item = [
+		'schema'		=> $sch,
+		'user_id'		=> ($s_master || $s_elas_guest) ? 0 : (($s_id) ?: 0),
+		'user_schema'	=> $s_schema,
+		'letscode'		=> strtolower($letscode),
+		'username'		=> $username,
+		'ip'			=> $ip,
+		'type'			=> strtolower($type),
+		'event'			=> $event,
+	];
+
+	$db->insert('eland_extra.logs', $log_item);
+*/
+
+$params = [
+	'orderby'	=> $orderby,
+	'asc'		=> $asc,
+	'limit'		=> $limit,
+	'start'		=> $start,
+];
+
+$params_sql = $where_sql = [];
+
+$params_sql[] = $schema;
 
 if ($letscode)
 {
 	list($l) = explode(' ', $letscode);
+
+	$where_sql[] = 'letscode = ?';
+	$params_sql[] = strtolower($l);
+	$params['letscode'] = $l;
+}
+
+if ($type)
+{
+	$where_sql[] = 'type = ?';
+	$params_sql[] = strtolower($type);
+	$params['type'] = $type;
+}
+
+if ($q)
+{
+	$where_sql[] = 'event ilike ?';
+	$params_sql[] = '%' . $q . '%';
+	$params['q'] = $q;
+}
+
+
+/*
+
+if ($letscode)
+{
+	list($l) = explode(' ', $letscode);
+
+
 	$find['letscode'] = strtolower(trim($l));
 }
 
@@ -25,14 +88,47 @@ if ($q)
 	$find['event'] = ['$regex' => new MongoRegex('/' . $q . '/i')];
 }
 
+
+
 $mdb->connect();
 $rows = $mdb->logs->find($find)->sort(['timestamp' => -1])->limit(300);
+
+*/
+
+if (count($where_sql))
+{
+	$where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+}
+else
+{
+	$where_sql = '';
+}
+
+$query = 'select *, to_char(ts, \'YYYY-MM-DD HH24:MI:SS\') as tss
+	from eland_extra.logs
+		where schema = ?' . $where_sql . '
+	order by ' . $orderby . ' ';
+
+$row_count = $db->fetchColumn('select count(*)
+	from eland_extra.logs
+	where schema = ?' . $where_sql, $params_sql);
+
+$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= ' limit ' . $limit . ' offset ' . $start;
+
+$rows = $db->fetchAll($query, $params_sql);
+
+$pagination = new pagination('logs', $row_count, $params, $inline);
 
 $includejs = '
 	<script src="' . $cdn_typeahead . '"></script>
 	<script src="' . $rootpath . 'js/typeahead.js"></script>';
 
+$filtered = $q || $type || $letscode;
+
 $h1 = 'Logs';
+$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+
 $fa = 'history';
 
 include $rootpath . 'includes/inc_header.php';
@@ -105,6 +201,8 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
+$pagination->render();
+
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
@@ -121,14 +219,15 @@ echo '</tr>';
 echo '</thead>';
 
 echo '<tbody>';
+
 foreach($rows as $value)
 {
 	echo '<tr>';
-	echo '<td>' . $value['ts_tz'] .'</td>';
+	echo '<td>' . $value['tss'] .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';
-	echo (isset($value['user_id']) && ctype_digit($value['user_id'])) ? link_user($value['user_id']) : 'geen';
+	echo (isset($value['user_id']) && ctype_digit((string) $value['user_id'])) ? link_user($value['user_id']) : 'geen';
 	echo '</td>';
 	echo '<td>' . $value['event'] . '</td>';
 	echo '</tr>';
@@ -137,5 +236,7 @@ foreach($rows as $value)
 echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
+
+$pagination->render();
 
 include $rootpath . 'includes/inc_footer.php';
