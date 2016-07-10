@@ -19,7 +19,6 @@ $page_access = 'anonymous';
 $allow_session = true;
 require_once $rootpath . 'includes/inc_default.php';
 
-require_once $rootpath . 'includes/inc_processqueue.php';
 require_once $rootpath . 'includes/inc_saldo_mail.php';
 require_once $rootpath . 'includes/inc_mail.php';
 require_once $rootpath . 'includes/multi_mail.php';
@@ -36,48 +35,39 @@ echo '*** Cron eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
-// select in which schema to perform updates
-$schema_lastrun_ary = $schema_interletsq_ary = [];
+/*
+ *  select in which schema to perform updates
+ */
 
-foreach ($schemas as $h => $schema)
+$schema_lastrun_ary = [];
+
+foreach ($schemas as $ho => $sch)
 {
-	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $schema . '.cron');
-	$schema_lastrun_ary[$schema] = ($lastrun) ?: 0;
-
-	if ($date_interletsq = $db->fetchColumn('select min(date_created)
-		from '. $schema . '.interletsq
-		where last_status = \'NEW\''))
-	{
-		$schema_interletsq_ary[$schema] = $date_interletsq;
-	}
+	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $sch . '.cron');
+	$schema_lastrun_ary[$sch] = ($lastrun) ?: 0;
 }
 
-unset($schema, $h);
+unset($sch, $ho, $selected);
 
 if (count($schemas))
 {
 	asort($schema_lastrun_ary);
 
-	if (count($schema_interletsq_ary))
-	{
-		list($schema_interletsq_min) = array_keys($schema_interletsq_ary, min($schema_interletsq_ary));
-	}
-
 	echo 'Schema (domain): last cron timestamp : interletsqueue timestamp' . $r;
 	echo '---------------------------------------------------------------' . $r;
-	foreach ($schema_lastrun_ary as $schema_n => $time)
-	{
-		echo $schema_n . ' (' . $hosts[$schema_n] . '): ' . $time;
-		echo (isset($schema_interletsq_ary[$schema_n])) ? ' interletsq: ' . $schema_interletsq_ary[$schema_n] : '';
 
-		if ((!isset($selected) && !isset($schema_interletsq_min))
-			|| (isset($schema_interletsq_min) && $schema_interletsq_min == $schema_n))
+	foreach ($schema_lastrun_ary as $sch => $time)
+	{
+		echo $sch . ' (' . $hosts[$sch] . '): ' . $time;
+
+		if (!isset($selected))
 		{
-			$schema = $schema_n;
+			$schema = $sch;
 			echo ' (selected)';
 			$db->exec('SET search_path TO ' . $schema);
 			$selected = true;
 		}
+
 		echo $r;
 	}
 }
@@ -98,141 +88,137 @@ $mdb->set_schema($schema);
 
 $base_url = $app_protocol . $hosts[$schema]; 
 
-// begin typeahaed update (when interletsq is empty) for one group
+/**
+ * typeahead && msgs from eLAS interlets update
+ */
 
 $update_msgs = false;
 
-if (!isset($schema_interletsq_min))
+$groups = $db->fetchAll('select *
+	from letsgroups
+	where apimethod = \'elassoap\'
+		and remoteapikey IS NOT NULL
+		and url <> \'\'');
+
+foreach ($groups as $group)
 {
+	$group['domain'] = get_host($group);
 
-	$groups = $db->fetchAll('select *
-		from letsgroups
-		where apimethod = \'elassoap\'
-			and remoteapikey IS NOT NULL
-			and url <> \'\'');
-
-	foreach ($groups as $group)
+	if (isset($schemas[$group['domain']]))
 	{
-		$group['domain'] = get_host($group);
-
-		if (isset($schemas[$group['domain']]))
-		{
-			unset($group);
-			continue;
-		}
-
-		if ($redis->get($schema . '_token_failed_' . $group['remoteapikey'])
-			|| $redis->get($schema . '_connection_failed_' . $group['domain']))
-		{
-			unset($group);
-			continue;
-		}
-
-		if (!$redis->get($group['domain'] . '_typeahead_updated'))
-		{
-			break;
-		}
-/*
-		if (!$redis->get($group['domain'] . '_msgs_updated'))
-		{
-			$update_msgs = true;
-			break;
-		}
-*/
 		unset($group);
+		continue;
 	}
 
-	if (isset($group))
+	if ($redis->get($schema . '_token_failed_' . $group['remoteapikey'])
+		|| $redis->get($schema . '_connection_failed_' . $group['domain']))
 	{
-		$err_group = $group['groupname'] . ': ';
+		unset($group);
+		continue;
+	}
 
-		$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
-		$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-		$apikey = $group['remoteapikey'];
-		$client = new nusoap_client($soapurl, true);
-		$err = $client->getError();
-		if ($err)
-		{
-			echo $err_group . 'Can not get connection.' . $r;
-			$redis_key = $schema . '_connection_failed_' . $group['domain'];
-			$redis->set($redis_key, '1');
-			$redis->expire($redis_key, 21600);  // 6 hours
-		}
-		else
-		{
-			$token = $client->call('gettoken', ['apikey' => $apikey]);
-			$err = $client->getError();
-			if ($err)
-			{
-				echo $err_group . 'Can not get token.' . $r;
-			}
-			else if (!$token || $token == '---')
-			{
-				$err = 'invalid token';
-				echo $err_group . 'Invalid token.' . $r;
-			}
+	if (!$redis->get($group['domain'] . '_typeahead_updated'))
+	{
+		break;
+	}
+/*
+	if (!$redis->get($group['domain'] . '_msgs_updated'))
+	{
+		$update_msgs = true;
+		break;
+	}
+*/
+	unset($group);
+}
 
-			if ($err)
-			{
-				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
-				$redis->set($redis_key, '1');
-				$redis->expire($redis_key, 21600);  // 6 hours
-			}
-		}
+if (isset($group))
+{
+	$err_group = $group['groupname'] . ': ';
 
-		if (!$err)
-		{
-			try
-			{
-				$client = new Goutte\Client();
-
-				$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
-
-				require_once $rootpath . 'includes/inc_interlets_fetch.php';
-
-				if ($update_msgs)
-				{
-					echo 'fetch interlets messages' . $r;
-					fetch_interlets_msgs($client, $group);
-				}
-				else
-				{
-					echo 'fetch interlets typeahead data' . $r;
-					fetch_interlets_typeahead_data($client, $group);
-				}
-
-				echo '----------------------------------------------------' . $r;
-				echo 'end Cron ' . "\n";
-				exit;
-			}
-			catch (Exception $e)
-			{
-				$err = $e->getMessage();
-				echo $err . $r;
-				$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
-				$redis->set($redis_key, '1');
-				$redis->expire($redis_key, 21600);  // 6 hours
-
-			}
-		}
-
-		if ($err)
-		{
-			echo '-- retry after 6 hours --' . $r;
-			echo '-- continue --' . $r;
-		}
+	$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
+	$soapurl = $soapurl . '/wsdlelas.php?wsdl';
+	$apikey = $group['remoteapikey'];
+	$client = new nusoap_client($soapurl, true);
+	$err = $client->getError();
+	if ($err)
+	{
+		echo $err_group . 'Can not get connection.' . $r;
+		$redis_key = $schema . '_connection_failed_' . $group['domain'];
+		$redis->set($redis_key, '1');
+		$redis->expire($redis_key, 21600);  // 6 hours
 	}
 	else
 	{
-		echo '-- no interlets data fetch needed -- ' . $r;
+		$token = $client->call('gettoken', ['apikey' => $apikey]);
+		$err = $client->getError();
+		if ($err)
+		{
+			echo $err_group . 'Can not get token.' . $r;
+		}
+		else if (!$token || $token == '---')
+		{
+			$err = 'invalid token';
+			echo $err_group . 'Invalid token.' . $r;
+		}
+
+		if ($err)
+		{
+			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+			$redis->set($redis_key, '1');
+			$redis->expire($redis_key, 21600);  // 6 hours
+		}
+	}
+
+	if (!$err)
+	{
+		try
+		{
+			$client = new Goutte\Client();
+
+			$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
+
+			require_once $rootpath . 'includes/inc_interlets_fetch.php';
+
+			if ($update_msgs)
+			{
+				echo 'fetch interlets messages' . $r;
+				fetch_interlets_msgs($client, $group);
+			}
+			else
+			{
+				echo 'fetch interlets typeahead data' . $r;
+				fetch_interlets_typeahead_data($client, $group);
+			}
+
+			echo '----------------------------------------------------' . $r;
+			echo 'end Cron ' . "\n";
+			exit;
+		}
+		catch (Exception $e)
+		{
+			$err = $e->getMessage();
+			echo $err . $r;
+			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+			$redis->set($redis_key, '1');
+			$redis->expire($redis_key, 21600);  // 6 hours
+
+		}
+	}
+
+	if ($err)
+	{
+		echo '-- retry after 6 hours --' . $r;
+		echo '-- continue --' . $r;
 	}
 }
 else
 {
-	echo '-- priority to interletsq (no interlets data updated) --' . $r;
-	
-	run_cronjob('processqueue');
+	echo '-- no interlets data fetch needed -- ' . $r;
 }
+
+/*
+ * Process autominlimits
+ */
 
 $autominlimit_queue = $queue->get('autominlimit', 6);
 
@@ -367,7 +353,9 @@ else
 	echo '-- autominlimit queue is empty --' . $r;
 }
 
-// queue addresses to geocode
+/**
+ * Geocoding queue
+ */ 
 
 $log_ary = [];
 
@@ -502,17 +490,28 @@ function geo_q_process()
 	return true;
 }
 
+/**
+ * Send emails
+ */
+
 run_cronjob('sendmail', 50);
 
+/**
+ * Periodic overview mail
+ */
+
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
+
+/**
+ * Report expired messages to the admin by mail
+ */
 
 run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), readconfigfromdb('adminmsgexp'));
 
 function admin_exp_msg()
 {
-	// Fetch a list of all expired messages and mail them to the admin
 	global $db, $now, $r, $base_url, $systemtag;
-	
+
 	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
 		WHERE u.status <> 0
@@ -541,6 +540,10 @@ function admin_exp_msg()
 
 	return true;
 }
+
+/**
+ * Notify users of expired messages
+ */
 
 run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
@@ -598,6 +601,10 @@ function user_exp_msgs()
 
 	return true;
 }
+
+/**
+ * Cleanup messages
+ */
 
 run_cronjob('cleanup_messages', 86400);
 
@@ -741,6 +748,10 @@ function cleanup_messages()
 	return true;
 }
 
+/**
+ * Resyncronize balances
+ */
+
 run_cronjob('saldo_update', 86400); 
 
 function saldo_update()
@@ -801,6 +812,10 @@ function saldo_update()
 	return true;
 }
 
+/**
+ * remove expired newsitems
+ */
+
 run_cronjob('cleanup_news', 86400);
 
 function cleanup_news()
@@ -809,9 +824,13 @@ function cleanup_news()
 	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', [$now])) ? true : false;
 }
 
+/**
+ *
+ */
+
 run_cronjob('cleanup_tokens', 604800);
 
-// tokens are stored in redis now, not anymore in db
+// tokens are stored in redis now, not anymore in db (cleaning up for new groups)
 
 function cleanup_tokens()
 {
@@ -819,6 +838,10 @@ function cleanup_tokens()
 	$db->executeQuery('delete from tokens where validity < ?', [$now]) ? true : false;
 	return true;
 }
+
+/**
+ * Cleanup old logs
+ */
 
 run_cronjob('cleanup_logs', 86400);
 
@@ -832,7 +855,12 @@ function cleanup_logs()
 	return true;
 }
 
+/**
+ * Dummy cronjob in order to keep rotating groups for cronjobs.
+ */
+
 run_cronjob('cronschedule', 10);
+
 function cronschedule()
 {
 	return true;
