@@ -257,24 +257,7 @@ if (count($autominlimit_queue))
 
 		$row = $exdb->get('setting', 'autominlimit', $sch);
 
-		if ($row)
-		{
-			$a = $row['data'];
-		}
-		else
-		{
-			$mdb->connect();
-
-			if ($sch == $schema)
-			{
-				$a = $mdb->settings->findOne(['name' => 'autominlimit']);
-			}
-			else
-			{
-				$settings_col = $sch . '_settings';
-				$a = $mdb->get_client()->$settings_col->findOne(['name' => 'autominlimit']);
-			}
-		}	
+		$a = $row['data'];
 
 		$new_user_time_treshold = time() - readconfigfromdb('newuserdays', $sch) * 86400;
 
@@ -318,25 +301,6 @@ if (count($autominlimit_queue))
 
 		$new_minlimit = $user['minlimit'] - $extract;
 		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
-
-		$e = [
-			'user_id'	=> $to_id,
-			'limit'		=> $new_minlimit,
-			'type'		=> 'min',
-			'ts'		=> new MongoDate(),
-		];
-
-		$mdb->connect();
-
-		if ($sch == $schema)
-		{
-			$a = $mdb->limit_events->insert($e);
-		}
-		else
-		{
-			$limit_events_col = $sch . '_limit_events';
-			$a = $mdb->get_client()->$limit_events_col->insert($e);
-		}
 
 		$exdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
 
