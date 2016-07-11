@@ -12,13 +12,13 @@ class redis_session implements SessionHandlerInterface
 
 	public function open($save_path, $session_name)
 	{
-		// No action necessary because connection is injected
-		// in constructor and arguments are not applicable.
+		return true;
 	}
 
 	public function close()
 	{
 		unset($this->redis);
+		return true;
 	}
 
 	public function read($id)
@@ -34,15 +34,17 @@ class redis_session implements SessionHandlerInterface
 		$id = 'session_' . $id;
 		$this->redis->set($id, $session_data);
 		$this->redis->expire($id, $this->ttl);
+		return true;
 	}
 
 	public function destroy($id)
 	{
 		$this->redis->del('session_' . $id);
+		return true;
 	}
 
 	public function gc($max_lifetime)
 	{
-		// no action necessary because using EXPIRE
+		return true;
 	}
 }
