@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $db, $base_url, $systemtag, $currency, $s3_img, $s3_img_url;
+	global $db, $base_url, $systemtag, $currency, $s3_img, $s3_img_url, $exdb;
 
 // vars
 
@@ -212,6 +212,16 @@ function saldo()
 		->add_text('Momenteel zijn er geen nieuwsberichten.' . $r . $r, 'news:none')
 		->add_html('<p>Momenteel zijn er geen nieuwsberichten.</p>', 'news:none');
 
+	$news_access_ary = [];
+
+	$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+
+	foreach ($rows as $row)
+	{
+		$access = $row['data']['access'];
+		$news_access_ary[$row['eland_id']] = $access;
+	}
+
 	$rs = $db->prepare('select n.*, u.name, u.letscode
 		from news n, users u
 		where n.approved = \'t\'
@@ -223,6 +233,21 @@ function saldo()
 
 	while ($row = $rs->fetch())
 	{
+		if (isset($news_access_ary[$row['id']]))
+		{
+			$news_access = $news_access_ary[$row['id']];	
+		}
+		else
+		{
+			$exdb->set('news_access', $news_id, ['access' => 'interlets']);
+			$news_access = 'interlets';
+		}
+
+		if (!in_array($news_access, ['users', 'interlets']))
+		{
+			continue;
+		} 
+
 		$location_text = ($row['location']) ? 'Locatie: ' . $row['location'] . $r : '';
 		$location_html = ($row['location']) ? 'Locatie: <b>' . $row['location'] . '</b><br>' : '';
 

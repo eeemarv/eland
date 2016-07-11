@@ -49,6 +49,13 @@ if ($add || $edit)
 			'headline'		=> $_POST['headline'],
 		];
 
+		$access_error = $access_control->get_post_error();
+
+		if ($access_error)
+		{
+			$errors[] = $access_error;
+		}
+
 		if (!isset($news['headline']) || (trim($news['headline']) == ''))
 		{
 			$errors[] = 'Titel is niet ingevuld';
@@ -85,9 +92,12 @@ if ($add && $submit && !count($errors))
 	
 	if ($db->insert('news', $news))
 	{
+		$id = $db->lastInsertId('news_id_seq');
+
+		$exdb->set('news_access', $id, ['access' => $_POST['access']]);
+
 		$alert->success('Nieuwsbericht opgeslagen.');
 
-		$id = $db->lastInsertId('news_id_seq');
 		if(!$s_admin)
 		{
 			// Send a notice to ask for approval
@@ -116,6 +126,8 @@ if ($edit && $submit && !count($errors))
 {
 	if($db->update('news', $news, ['id' => $edit]))
 	{
+		$exdb->set('news_access', $edit, ['access' => $_POST['access']]);
+
 		$alert->success('Nieuwsbericht aangepast.');
 		cancel($edit);
 	}
@@ -129,6 +141,8 @@ if ($edit)
 {
 	$news = $db->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	list($news['itemdate']) = explode(' ', $news['itemdate']);
+
+	$news_access = $exdb->get('news_access', $edit)['data']['access'];
 }
 
 if ($add)
@@ -204,6 +218,17 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
+	if ($s_user)
+	{
+		$omit_access = 'admin';
+	}
+	else
+	{
+		$omit_access = false;
+	}
+
+	echo $access_control->get_radio_buttons('news', $news_access, $omit_access);
+
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
@@ -237,6 +262,8 @@ if ($del)
 
 		if($db->delete('news', ['id' => $del]))
 		{
+			$exdb->del('news_access', $del);
+
 			$alert->success('Nieuwsbericht verwijderd.');
 			cancel();
 		}
@@ -247,46 +274,71 @@ if ($del)
 		FROM news n  
 		WHERE n.id = ?', [$del]);
 
+	$news_access = $exdb->get('news_access', $del)['data']['access'];
+
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
 
 	include $rootpath . 'includes/inc_header.php';
 
-	echo '<div >';
-	echo '<strong>Agendadatum: ';
-	list($itemdate) = explode(' ', $news['itemdate']);
-	if(trim($itemdate) != '00/00/00')
-	{
-		echo $itemdate;
-	}
-	echo '<br>Locatie: ' .$news['location'];
-	echo '</strong>';
-	echo '<br><i>Ingegeven door : ';
-	echo link_user($news['id_user']);
-	echo '</i>';
-	echo ($news['approved'] == 't') ? '<br><i>Goedgekeurd.</i>' : '<br><i>Nog niet goedgekeurd.</i>';
-	echo ($news['sticky'] == 't') ? '<br><i>Behoud na datum.</i>' : '<br><i>Wordt verwijderd na datum.</i>';
+	$background = ($news['approved']) ? '' : ' bg-warning';
 
-	echo '<p>';
+
+	echo '<div class="panel panel-default printview">';
+	echo '<div class="panel-heading">';
+
+	echo '<dl>';
+
+	echo '<dt>Bericht</dt>';
+	echo '<dd>';
 	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
-	echo '</p>';
+	echo '</dd>';
 
-	echo '<table width="100%"><tr><td>';
-	echo '<div id="navcontainer">';
-	echo '</div>';
-	echo '</td></tr></table>';
+	echo '<dt>Agendadatum</dt>';
 
-	echo '</p>';
-	echo '</div>';
+	list($itemdate) = explode(' ', $news['itemdate']);
 
-	echo '<p><font color="red"><strong>Ben je zeker dat dit nieuwsbericht ';
-	echo 'moet verwijderd worden?</strong></font></p>';
+	echo '<dd>';
+	echo ($itemdate) ? $itemdate : '<i class="fa fa-times"></i>';
+	echo '</dd>';
+
+	echo '<dt>Locatie</dt>';
+	echo '<dd>';
+	echo ($news['location']) ? htmlspecialchars($news['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+	echo '</dd>';
+
+	echo '<dt>Ingegeven door</dt>';
+	echo '<dd>';
+	echo link_user($news['id_user']);
+	echo '</dd>';
+
+	echo '<dt>Goedgekeurd</dt>';
+	echo '<dd>';
+	echo ($news['approved']) ? 'Ja' : 'Nee';
+	echo '</dd>';
+
+	echo '<dt>Behoud na datum?</dt>';
+	echo '<dd>';
+	echo ($news['sticky']) ? 'Ja' : 'Nee';
+	echo '</dd>';
+
+	echo '<dt>Zichtbaarheid</dt>';
+	echo '<dd>';
+	echo $access_control->get_label($news_access);
+	echo '</dd>';
+
+	echo '</dl>';
+
+	echo '</div></div>';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
+	echo '<p class="text-danger"><strong>Ben je zeker dat dit nieuwsbericht ';
+	echo 'moet verwijderd worden?</strong></p>';
+
 	echo '<form method="post">';
-	echo aphp('news', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	generate_form_token();
 	echo '</form>';
@@ -318,21 +370,29 @@ if ($id)
 		cancel();
 	}
 
+	$news_access = $exdb->get('news_access', $id)['data']['access'];
+
+	if (!$access_control->is_visible($news_access))
+	{
+		$alert->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		cancel();
+	}
+
 	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
 
-	$next = $db->fetchColumn('select id
-	from news
-	where id > ?
-		' . $and_approved_sql . '
-	order by id asc
-	limit 1', [$id]);
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'news_access',
+		'eland_id' => ['<' => $news['id']],
+		'access' => true], 'order by eland_id desc limit 1');
 
-	$prev = $db->fetchColumn('select id
-		from news
-		where id < ?
-		' . $and_approved_sql . '
-		order by id desc
-		limit 1', [$id]);
+	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
+
+	$rows = $exdb->get_many(['agg_schema' => $schema,
+		'agg_type' => 'news_access',
+		'eland_id' => ['>' => $news['id']],
+		'access' => true], 'order by eland_id asc limit 1');
+
+	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	$top_buttons = '';
 
@@ -368,6 +428,13 @@ if ($id)
 	$fa = 'calendar';
 
 	include $rootpath . 'includes/inc_header.php';
+
+	if (!$s_guest)
+	{
+		echo '<p>Zichtbaarheid: ';
+		echo $access_control->get_label($news_access);
+		echo '</p>';
+	}
 
 	$background = ($news['approved']) ? '' : ' bg-warning';
 
@@ -452,6 +519,35 @@ $query .= ' ORDER BY itemdate DESC';
 
 $news = $db->fetchAll($query);
 
+$news_access_ary = [];
+
+$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+
+foreach ($rows as $row)
+{
+	$access = $row['data']['access'];
+	$news_access_ary[$row['eland_id']] = $access;
+}
+
+foreach ($news as $k => $n)
+{
+	$news_id = $n['id'];
+
+	if (!isset($news_access_ary[$news_id]))
+	{
+		$exdb->set('news_access', $news_id, ['access' => 'interlets']);
+		$news[$k]['access'] = 'interlets';
+		continue;
+	}
+
+	$news[$k]['access'] = $news_access_ary[$news_id];
+
+	if (!$access_control->is_visible($news[$k]['access']))
+	{
+		unset($news[$k]);
+	}
+}
+
 if(($s_user || $s_admin) && !$inline)
 {
 	$top_buttons .= aphp('news', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
@@ -459,9 +555,6 @@ if(($s_user || $s_admin) && !$inline)
 
 if ($inline)
 {
-//	echo '<div class="row">';
-//	echo '<div class="col-md-12">';
-
 	echo '<h3>';
 	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar');
 	echo '</h3>';
@@ -516,6 +609,7 @@ if ($v_list)
 		echo '<th>Titel</th>';
 		echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
 		echo ($s_admin && !$inline) ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+		echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaar</th>';
 		echo '</tr>';
 		echo '</thead>';
 	}
@@ -542,6 +636,14 @@ if ($v_list)
 			echo ($n['approved']) ? 'Ja' : 'Nee';
 			echo '</td>';
 		}
+
+		if (!$s_guest)
+		{
+			echo '<td>';
+			echo $access_control->get_label($n['access']);
+			echo '</td>';
+		}
+
 		echo '</tr>';
 	}
 	echo '</tbody>';
@@ -587,6 +689,16 @@ else if ($v_extended)
 			{
 				echo ' <i>(Nieuwsbericht blijft behouden na datum)</i>';
 			}
+			echo '</dd>';
+		}
+
+		if (!$s_guest)
+		{
+			echo '<dt>';
+			echo 'Zichtbaarheid';
+			echo '</dt>';
+			echo '<dd>';
+			echo $access_control->get_label($n['access']);
 			echo '</dd>';
 		}
 

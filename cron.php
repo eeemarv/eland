@@ -784,8 +784,17 @@ run_cronjob('cleanup_news', 86400);
 
 function cleanup_news()
 {
-    global $db, $now;
-	return ($db->executeQuery('delete from news where itemdate < ? and sticky = \'f\'', [$now])) ? true : false;
+    global $db, $now, $exdb;
+
+	$news = $db->fetchAll('select id from news where itemdate < ? and sticky = \'f\'', [$now]);
+
+	foreach ($news as $n)
+	{
+		$exdb->del('news_access', $n['id']);
+		$db->delete('news', ['id' => $n['id']);
+	}
+
+	return true;
 }
 
 /**
