@@ -791,7 +791,7 @@ function cleanup_news()
 	foreach ($news as $n)
 	{
 		$exdb->del('news_access', $n['id']);
-		$db->delete('news', ['id' => $n['id']);
+		$db->delete('news', ['id' => $n['id']]);
 	}
 
 	return true;
