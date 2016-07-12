@@ -205,11 +205,13 @@ if ($add || $edit)
 	echo 'API methode <small><i>(type connectie naar de andere installatie)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
+
 	render_select_options([
 		'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
 		'internal'	=> 'Intern (eigen installatie - niet gebruiken)',
 		'mail'		=> 'E-mail',
 	], $group['apimethod']);
+
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -741,7 +743,7 @@ function render_schemas_groups()
 				}
 				else
 				{
-					echo aphp('users', 'add=1&interlets=' . $loc_group['localletscode'], 'Creëer', 'btn btn-default btn-xs text-danger',
+					echo aphp('users', ['add' => 1, 'interlets' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
 						'Creëer een interlets-account met gelijke letscode en status extern.');
 				}
 			}

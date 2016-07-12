@@ -1756,7 +1756,7 @@ if ($add || $edit)
 
 	if (!isset($fullname_access))
 	{
-		$fullname_access = ($add) ? false : 'admin';
+		$fullname_access = ($add && !$interlets) ? false : 'admin';
 	}
 
 	echo $access_control->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');

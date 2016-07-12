@@ -500,6 +500,12 @@ switch ($s_accountrole)
 		break;
 }
 
+if ($s_master)
+{
+	setlocale(LC_TIME, 'nl_NL');
+	echo strftime('%a %e %b %G');
+}
+
 /**
  * access control rendering labels and selectors
  */

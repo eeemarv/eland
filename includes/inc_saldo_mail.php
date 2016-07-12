@@ -235,7 +235,7 @@ function saldo()
 	{
 		if (isset($news_access_ary[$row['id']]))
 		{
-			$news_access = $news_access_ary[$row['id']];	
+			$news_access = $news_access_ary[$row['id']];
 		}
 		else
 		{

@@ -174,7 +174,7 @@ if ($add || $edit)
 	echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum (wanneer gaat dit door?)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
-	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'data-provide="datepicker" data-date-format="d M yyyy" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
