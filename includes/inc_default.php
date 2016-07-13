@@ -125,6 +125,7 @@ $eland_config = [
 	'css'						=> ['0', 'Extra stijl: url van .css bestand (Vul 0 in wanneer niet gebruikt)'],
 	'msgs_days_default'			=> ['365', 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.'],
 	'balance_equilibrium'		=> ['0', 'Het uitstapsaldo voor actieve leden. Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'],
+	'date_format'				=> ['%a %e %b %Y, %H:%M:%S', 'Datumformaat'],
 ];
 
 $top_right = '';

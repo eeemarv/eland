@@ -3,21 +3,25 @@
 class date_format
 {
 	private $formats = [
-		'Y-m-d H:i:s' => [
-			'date'	=> 'Y-m-d',
-			'min'	=> 'Y-m-d H:i',
+		'%Y-%m-%d %H:%M:%S' => [
+			'date'	=> '%Y-%m-%d',
+			'min'	=> '%Y-%m-%d %H:%M',
 		],
-		'd-m-Y H:i:s' => [
-			'date'	=> 'd-m-Y',
-			'min'	=> 'd-m-Y H:i',
+		'%d-%m-%Y %H:%M:%S' => [
+			'date'	=> '%d-%m-%Y',
+			'min'	=> '%d-%m-%Y %H:%M',
 		],
-		'j M Y, H:i:s' => [
-			'date'	=> 'j M Y',
-			'min'	=> 'j M Y H:i',
+		'%e %b %Y, %H:%M:%S' => [
+			'date'	=> '%e %b %Y',
+			'min'	=> '%e %b %Y, %H:%M',
 		],
-		'j F Y H:i:s'	=> [
-			'date'	=> 'j F Y',
-			'min'	=> 'j F Y H:i',
+		'%a %e %b %Y, %H:%M:%S' => [
+			'date'	=> '%a %e %b %Y',
+			'min'	=> '%a %e %b %Y, %H:%M',
+		],
+		'%e %B %Y, %H:%M:%S'	=> [
+			'date'	=> '%e %B %Y',
+			'min'	=> '%e %B %Y, %H:%M',
 		],
 	];
 
