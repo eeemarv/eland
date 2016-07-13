@@ -502,7 +502,7 @@ switch ($s_accountrole)
 
 if ($s_master)
 {
-	setlocale(LC_TIME, 'nl_NL');
+	setlocale(LC_TIME, 'nl_NL.UTF-8');
 	echo strftime('%a %e %b %G');
 }
 
