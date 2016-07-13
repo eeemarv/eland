@@ -84,7 +84,16 @@ $mapbox_token = getenv('MAPBOX_TOKEN');
 
 require_once $rootpath . 'vendor/autoload.php';
 
-// Connect to Redis
+/*
+ * The locale must be installed in the OS for formatting dates.
+ */
+
+setlocale(LC_TIME, 'nl_NL.UTF-8');
+
+/*
+ * Connect to Redis
+ */
+
 $redis_url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
 
 if(!empty($redis_url))
@@ -104,7 +113,9 @@ if(!empty($redis_url))
 	}
 }
 
-/* vars */
+/**
+ * vars
+ **/
 
 $eland_config = [
 	'users_can_edit_username'	=> ['0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'],
@@ -498,12 +509,6 @@ switch ($s_accountrole)
 		redirect_login();
 
 		break;
-}
-
-if ($s_master)
-{
-	setlocale(LC_TIME, 'nl_NL.UTF-8');
-	echo strftime('%a %e %b %G');
 }
 
 /**

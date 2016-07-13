@@ -2,42 +2,22 @@
 
 class date_format
 {
-	private $translate_ary = [
-		'M' => ['j' => ['jan', 'feb', 'maa', 'apr', 'mei', 'jun',
-				'jul', 'aug', 'sep', 'okt', 'nov', 'dec']],
-		'F'	=> ['j' => ['januari', 'februari', 'maart', 'april',
-				'mei', 'juni', 'juli', 'augustus',
-				'september', 'oktober', 'november', 'december']],
-		'l'	=> ['w' => ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag',
-				'vrijdag', 'zaterdag']],
-		'D'	=> ['w'	=> ['zon', 'maa', 'din', 'woe', 'don', 'vrij', 'zat']],
-	];
-
 	private $formats = [
-		'Y-m-d H:i' => [
+		'Y-m-d H:i:s' => [
 			'date'	=> 'Y-m-d',
 			'min'	=> 'Y-m-d H:i',
-			'sec'	=> 'Y-m-d H:i:s',
 		],
-		'd-m-Y H:i' => [
+		'd-m-Y H:i:s' => [
 			'date'	=> 'd-m-Y',
 			'min'	=> 'd-m-Y H:i',
-			'sec'	=> 'd-m-Y H:i:s',
 		],
-		'j M Y, H:i' => [
+		'j M Y, H:i:s' => [
 			'date'	=> 'j M Y',
 			'min'	=> 'j M Y H:i',
-			'sec'	=> 'j M Y H:i:s',
 		],
-		'§j M Y,§ H:i' => [
-			'date'	=> 'j M Y',
-			'min'	=> '§j M Y,§ H:i',
-			'sec'	=> '§j M Y,§ H:i:s',
-		],
-		'j F Y H:i'	=> [
+		'j F Y H:i:s'	=> [
 			'date'	=> 'j F Y',
 			'min'	=> 'j F Y H:i',
-			'sec'	=> 'j F Y H:i:s',
 		],
 	];
 
@@ -74,7 +54,6 @@ class date_format
 	{
 	}
 
-
 	/*
 	 *
 	 */
@@ -84,6 +63,8 @@ class date_format
 		$time = ($ts) ? strtotime($ts . ' UTC') : time();
 
 		$time = date('Y-m-d H:i', $time);
+
+		$time = strftime('%a %e %b %G');
 
 		return $time;
 	}
