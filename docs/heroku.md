@@ -2,6 +2,9 @@
 
 ###Heroku buildpack
 Set multiple buildpacks.
+
+(note: this is probably now outdated.)
+
 ```shell
 heroku buildpacks:set https://github.com/ddollar/heroku-buildpack-multi.git
 ```
@@ -77,13 +80,9 @@ You need to set up CORS configuration on bucket S3_RES for the fonts of footable
 ```
 
 ###Redis cloud
+
 ```shell
 heroku addons:add rediscloud:30
-```
-
-###Mongolab (logs, forum topics and document references are stored in mongodb)
-```shell
-heroku addons:add mongolab
 ```
 
 ###Email
@@ -95,6 +94,7 @@ heroku addons:add mongolab
 * SMTP_USERNAME
 
 #### From mail addresses
+
 * MAIL_FROM_ADDRESS: a mail address when a reply-to address has been set.
 * MAIL_NOREPLY_ADDRESS: a notification mail you can not reply to
 * MAIL_HOSTER_ADDRESS: used for request-hosting form.
