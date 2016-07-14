@@ -937,7 +937,7 @@ if ($id)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $transaction['cdate'];
+	echo $date_format->get($transaction['cdate']);
 	echo '</dd>';
 
 	echo '<br>';
@@ -1568,7 +1568,7 @@ if ($uid)
 		echo '</span></td>';
 
 		echo '<td>';
-		echo $t['cdate'];
+		echo $date_format->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';
@@ -1640,7 +1640,7 @@ else
 		echo '</td>';
 
 		echo '<td>';
-		echo $t['cdate'];
+		echo $date_format->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';
