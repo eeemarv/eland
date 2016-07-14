@@ -4,23 +4,23 @@ class date_format
 {
 	private $formats = [
 		'%Y-%m-%d %H:%M:%S' => [
-			'date'	=> '%Y-%m-%d',
+			'day'	=> '%Y-%m-%d',
 			'min'	=> '%Y-%m-%d %H:%M',
 		],
 		'%d-%m-%Y %H:%M:%S' => [
-			'date'	=> '%d-%m-%Y',
+			'day'	=> '%d-%m-%Y',
 			'min'	=> '%d-%m-%Y %H:%M',
 		],
 		'%e %b %Y, %H:%M:%S' => [
-			'date'	=> '%e %b %Y',
+			'day'	=> '%e %b %Y',
 			'min'	=> '%e %b %Y, %H:%M',
 		],
 		'%a %e %b %Y, %H:%M:%S' => [
-			'date'	=> '%a %e %b %Y',
+			'day'	=> '%a %e %b %Y',
 			'min'	=> '%a %e %b %Y, %H:%M',
 		],
 		'%e %B %Y, %H:%M:%S'	=> [
-			'date'	=> '%e %B %Y',
+			'day'	=> '%e %B %Y',
 			'min'	=> '%e %B %Y, %H:%M',
 		],
 	];
@@ -28,6 +28,13 @@ class date_format
 	private $format;
 
 	private $format_ary = [];
+
+	private $month_translate_ary = [
+		['jan', 'januari'], ['feb', 'februari'], ['maa', 'maart'],
+		['apr', 'april'], ['mei', 'mei'], ['jun', 'juni'],
+		['jul', 'juli'], ['aug', 'augustus'], ['sep', 'september'],
+		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
+	];
 
 	/**
 	 *
@@ -39,65 +46,133 @@ class date_format
 
 		if (!$this->format)
 		{
-			$this->format = '§j M Y,§ H:i';
+			$this->format = '%e %b %Y, %H:%M:%S';
 		}
 
-		$pos_m = strpos($this->format, 'M');
+		$sec = $this->format;
 
+		if (!isset($this->formats[$sec]))
+		{
+			$sec = '%e %b %Y, %H:%M:%S';
+		}
 
-		$pos_f = strpos($this->format, 'F');
-
-		$this->format_ary = $this->formats[$this->format];
+		$this->format_ary = $this->formats[$sec];
+		$this->format_ary['sec'] = $sec;
 	}
 
 	/*
 	 *
 	 */
 
-	function format_parse()
+	function datepicker_format()
 	{
+		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
+		$replace = ['d', 'dd', 'mm', 'yyyy', 'M', 'MM', 'D', 'DD'];
+
+		return trim(str_replace($search, $replace, $this->format_ary['day']));
 	}
 
-	/*
+	/**
 	 *
 	 */
 
-	function get($ts = false, $precision = 'min')
+	function datepicker_placeholder()
 	{
-		$time = ($ts) ? strtotime($ts . ' UTC') : time();
+		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
+		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', 'wd', 'weekdag'];
 
-		$time = date('Y-m-d H:i', $time);
-
-		$time = strftime('%a %e %b %G');
-
-		return $time;
+		return trim(str_replace($search, $replace, $this->format_ary['day']));
 	}
 
-	function convert_date_to_datepicker($date)
-	{
+	/**
+	 *
+	 */
 
+	function reverse($from_datepicker)
+	{
+		$from_datepicker = trim($from_datepicker);
+
+		$months_search = $months_replace = [];
+
+		foreach ($this->month_translate_ary as $k => $m)
+		{
+			$months_search[] = $m[0];
+			$months_search[] = $m[1];
+
+			$months_replace[] = $k + 1;
+			$months_replace[] = $k + 1;
+		}
+
+		$str = str_replace($months_search, $months_replace, $from_datepicker);
+
+		$format = $this->format_ary['day'];
+
+		$map = [
+			'%e' => '%d', '%d' => '%d', '%m' => '%m',
+			'%Y' => '%Y', '%b' => '%m', '%B' => '%m',
+			'%a' => '', '%A' => '',
+		];
+
+		$format = str_replace(array_keys($map), array_values($map), $format);
+
+		$digits_expected = [
+			'%d' => 2, '%m' => 2, '%Y' => 4,
+		];
+
+		$parts = [];
+		$key_part = false;
+
+		$str = str_split($str);
+		$format = str_split($format);
+
+		$s = reset($str);
+		$f = reset($format);
+
+		while ($s !== false)
+		{
+			if (ctype_digit((string) $s))
+			{
+				if (!$key_part)
+				{
+					while ($f != '%' && $f !== false)
+					{
+						$f = next($format);
+					}
+
+					$f = next($format);
+					$key_part = '%' . $f;
+				}
+
+				$parts[$key_part] .= $s;
+
+				$len = strlen($parts[$key_part]);
+
+				if ($len == $digits_expected[$key_part])
+				{
+					$key_part = false;
+				}
+			}
+			else
+			{
+				$key_part = false;
+			}
+
+			$s = next($str);
+		}
+
+		if (!isset($parts['%m']) || !isset($parts['%d']) || !isset($parts['%Y']))
+		{
+			return false;
+		}
+
+		$time = mktime(12, 0, 0, $parts['%m'], $parts['%d'], $parts['%Y']);
+
+		return gmdate('Y-m-d H:i:s', $time);
 	}
 
-	function convert_datepicker_to_date($picker)
-	{
-
-	}
-
-	function get_datepicker_format()
-	{
-		$search = ['j', 'd', 'n', 'm', 'Y', 'F'];
-		$replace = ['d', 'dd', 'm', 'mm', 'yyyy', 'MM'];
-
-		return str_replace($search, $replace, $this->format_ary['date']);
-	}
-
-	function get_datepicker_placeholder()
-	{
-		$search = ['j', 'd', 'n', 'm', 'Y', 'M', 'F'];
-		$replace = ['d', 'dd', 'm', 'mm', 'jjjj', 'mnd', 'maand'];
-
-		return str_replace($search, $replace, $this->format_ary['date']);
-	}
+	/**
+	 *
+	 */
 
 	function get_format_options()
 	{
@@ -105,10 +180,31 @@ class date_format
 
 		foreach ($this->formats as $format => $prec)
 		{
-			$options[$format] = date($format); // replace 
+			$options[$format] = strftime($format);
 		}
 
 		return $options;
 	}
-	
+
+	/**
+	 *
+	 */
+
+	function get($ts = false, $precision = 'min')
+	{
+		$time = strtotime($ts . ' UTC');
+
+		return strftime($this->format_ary[$precision], $time);
+	}
+
+	/**
+	 *
+	 */
+
+	function get_td($ts = false, $precision = 'min')
+	{
+		$time = strtotime($ts . ' UTC');
+
+		return '<td data-value="' . $time . '">' . strftime($this->format_ary[$precision], $time) . '</td>';
+	}
 }

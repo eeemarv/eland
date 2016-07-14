@@ -42,11 +42,11 @@ if ($add || $edit)
 	if ($submit)
 	{
 		$news = [
-			'itemdate'		=> $_POST['itemdate'],
-			'location'		=> $_POST['location'],
+			'itemdate'		=> trim($_POST['itemdate']),
+			'location'		=> trim($_POST['location']),
 			'sticky'		=> ($_POST['sticky']) ? 't' : 'f',
-			'newsitem'		=> $_POST['newsitem'],
-			'headline'		=> $_POST['headline'],
+			'newsitem'		=> trim($_POST['newsitem']),
+			'headline'		=> trim($_POST['headline']),
 		];
 
 		$access_error = $access_control->get_post_error();
@@ -54,6 +54,18 @@ if ($add || $edit)
 		if ($access_error)
 		{
 			$errors[] = $access_error;
+		}
+
+		if ($news['itemdate'])
+		{
+			$news['itemdate'] = $date_format->reverse($news['itemdate']);
+
+			if ($news['itemdate'] === false)
+			{
+				$errors[] = 'Fout formaat in agendadatum.';
+
+				$news['itemdate'] = '';
+			}
 		}
 
 		if (!isset($news['headline']) || (trim($news['headline']) == ''))
@@ -88,7 +100,7 @@ if ($add && $submit && !count($errors))
 	$news['approved'] = ($s_admin) ? 't' : 'f';
 	$news['published'] = ($s_admin) ? 't' : 'f';
 	$news['id_user'] = ($s_master) ? 0 : $s_id;
-	$news['cdate'] = date('Y-m-d H:i:s');
+	$news['cdate'] = gmdate('Y-m-d H:i:s');
 	
 	if ($db->insert('news', $news))
 	{
@@ -174,12 +186,14 @@ if ($add || $edit)
 	echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum (wanneer gaat dit door?)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
-	echo 'data-provide="datepicker" data-date-format="d M yyyy" ';
+	echo 'data-provide="datepicker" ';
+	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo ' value="' . $news['itemdate'] . '" required>';
+	echo 'value="' . $date_format->get($news['itemdate'], 'day') . '" ';
+	echo 'placeholder="' . $date_format->datepicker_placeholder() . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -296,10 +310,8 @@ if ($del)
 
 	echo '<dt>Agendadatum</dt>';
 
-	list($itemdate) = explode(' ', $news['itemdate']);
-
 	echo '<dd>';
-	echo ($itemdate) ? $itemdate : '<i class="fa fa-times"></i>';
+	echo ($itemdate) ? $date_format->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -453,9 +465,9 @@ if ($id)
 	echo '<dl>';
 
 	echo '<dt>Agendadatum</dt>';
-	list($itemdate) = explode(' ', $news['itemdate']);
+
 	echo '<dd>';
-	echo ($itemdate) ? $itemdate : '<i class="fa fa-times"></i>';
+	echo ($news['itemdate']) ? $date_format->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -626,9 +638,13 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
+/*
 		echo '<td>';
 		echo $n['idate'];
 		echo '</td>';
+*/
+
+		echo $date_format->get_td($n['itemdate'], 'day');
 
 		if ($s_admin && !$inline)
 		{
