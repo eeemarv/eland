@@ -1319,6 +1319,17 @@ if ($add || $edit)
 			}
 		}
 
+		if ($user['birthday'])
+		{
+			$user['birthday'] = $date_format->reverse($user['birthday']);
+
+			if ($user['birthday'] === false)
+			{
+				$errors[] = 'Fout in formaat geboortedag.';
+				$user['birthday'] = '';
+			}
+		}
+
 		if (strlen($user['comments']) > 100)
 		{
 			$errors[] = 'Commentaar mag maximaal 100 tekens lang zijn.';
@@ -1770,19 +1781,23 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum (jjjj-mm-dd)</label>';
+	echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
-	echo 'value="' . $user['birthday'] . '" ';
-	echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+	echo 'value="';
+	echo $user['birthday'] ? $date_format->get($user['birthday'], 'day') : '';
+	echo '" ';
+	echo 'data-provide="datepicker" ';
+	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
 	echo 'data-date-default-view="2" ';
-	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+	echo 'data-date-end-date="' . $date_format->get(false, 'day') . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-start-view="2" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
+	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -2153,11 +2168,13 @@ if ($id)
 	if ($s_admin || $s_owner || $access_control->is_visible($fullname_access))
 	{
 		echo '<dt>';
-		echo 'Volledige naam, zichtbaarheid: ';
-		echo $access_control->get_label($fullname_access);
+		echo 'Volledige naam';
 		echo '</dt>';
+		dd_render($user['fullname']);
+
+		echo '<dt>Zichtbaarheid volledige naam</dt>';
 		echo '<dd>';
-		echo htmlspecialchars($user['fullname'], ENT_QUOTES);
+		echo $access_control->get_label($fullname_access);
 		echo '</dd>';
 	}
 
@@ -2171,9 +2188,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Geboortedatum';
 		echo '</dt>';
-		echo '<dd>';
-		dd_render($user['birthday']);
-		echo '</dd>';
+		dd_render($date_format->get($user['birthday'], 'day'));
 	}
 
 	echo '<dt>';
@@ -2191,17 +2206,17 @@ if ($id)
 		echo '<dt>';
 		echo 'Tijdstip aanmaak';
 		echo '</dt>';
-		dd_render($user['cdate']);
+		dd_render($date_format->get($user['cdate']));
 
 		echo '<dt>';
 		echo 'Tijdstip activering';
 		echo '</dt>';
-		dd_render($user['adate']);
+		dd_render($date_format->get($user['adate']));
 
 		echo '<dt>';
 		echo 'Laatste login';
 		echo '</dt>';
-		dd_render($user['lastlogin']);
+		dd_render($date_format->get($user['lastlogin']));
 
 		echo '<dt>';
 		echo 'Rechten';
@@ -2219,13 +2234,22 @@ if ($id)
 		dd_render($user['admincomment']);
 	}
 
-	echo '<dt>';
-	echo 'Saldo, limiet min, limiet max (' . $currency . ')';
-	echo '</dt>';
+	echo '<dt>Saldo</dt>';
 	echo '<dd>';
 	echo '<span class="label label-info">' . $user['saldo'] . '</span>&nbsp;';
+	echo $currency;
+	echo '</dd>';
+
+	echo '<dt>Minimum limiet</dt>';
+	echo '<dd>';
 	echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
-	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>';
+	echo $currency;
+	echo '</dd>';
+
+	echo '<dt>Maximum limiet</dt>';
+	echo '<dd>';
+	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
+	echo $currency;
 	echo '</dd>';
 
 	if ($s_admin || $s_owner)
@@ -2457,7 +2481,7 @@ if ($v_list && $s_admin)
 	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
 	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
-	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : gmdate('Y-m-d');
+	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : '';
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
@@ -2951,18 +2975,21 @@ if ($s_admin && $v_list)
 
 			if ($key == 'saldo_date')
 			{
+				$formatted_date = $date_format->get($saldo_date, 'day');
+
 				echo '<input type="text" name="saldo_date" ';
-				echo 'data-provide="datepicker" data-date-format="yyyy-mm-dd" ';
+				echo 'data-provide="datepicker" ';
+				echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
 				echo 'data-date-language="nl" ';
 				echo 'data-date-today-highlight="true" ';
 				echo 'data-date-autoclose="true" ';
 				echo 'data-date-enable-on-readonly="false" ';
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
-				echo 'placeholder="Datum jjjj-mm-dd" ';
-				echo 'value="' . $saldo_date . '">';
+				echo 'placeholder="' . $date_format->datepicker_placeholder() . '" ';
+				echo 'value="' . $formatted_date . '">';
 
-				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
+				$columns['u']['saldo_date'] = 'Saldo op ' . $formatted_date;
 			}
 
 			echo '</label>';
