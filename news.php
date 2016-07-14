@@ -159,7 +159,7 @@ if ($edit)
 
 if ($add)
 {
-	$news['itemdate'] = date('Y-m-d');
+	$news['itemdate'] = gmdate('Y-m-d');
 }
 
 if ($add || $edit)

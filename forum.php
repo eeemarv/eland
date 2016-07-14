@@ -431,11 +431,8 @@ if ($topic)
 		echo $p['content'];
 		echo '</div>';
 
-		$time = strtotime($p['ts'] . ' UTC');
-		$time = date('Y-m-d H:i:s', $time);
-
 		echo '<div class="panel-footer">';
-		echo '<p>' . link_user((int) $p['uid']) . ' @' . $time;
+		echo '<p>' . link_user((int) $p['uid']) . ' @' . $date_format->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
@@ -592,11 +589,8 @@ foreach($forum_posts as $p)
 	echo '</td>';
 	echo '<td>' . link_user($p['uid']) . '</td>';
 
-	$time_unix = strtotime($p['ts'] . ' UTC');
-	$time = date('Y-m-d H:i:s', $time_unix);
-
-	echo '<td data-value="' . $time_unix . '">' . $time . '</td>';
-
+	echo $date_format->get_td($p['ts']);
+	
 	if (!$s_guest)
 	{
 		echo '<td>' . $access_control->get_label($p['access']) . '</td>';

@@ -711,7 +711,7 @@ if ($pw)
 		{
 			$update = [
 				'password'	=> hash('sha512', $password),
-				'mdate'		=> date('Y-m-d H:i:s'),
+				'mdate'		=> gmdate('Y-m-d H:i:s'),
 			];
 
 			if ($db->update('users', $update, ['id' => $pw]))
@@ -1379,11 +1379,11 @@ if ($add || $edit)
 			{
 				$user['creator'] = ($s_master) ? 0 : $s_id;
 
-				$user['cdate'] = date('Y-m-d H:i:s');
+				$user['cdate'] = gmdate('Y-m-d H:i:s');
 
 				if ($user['status'] == 1)
 				{
-					$user['adate'] = date('Y-m-d H:i:s');
+					$user['adate'] = gmdate('Y-m-d H:i:s');
 					$user['password'] = hash('sha512', $password);	
 				}
 				else
@@ -1466,11 +1466,11 @@ if ($add || $edit)
 			{
 				$user_stored = readuser($edit);
 
-				$user['mdate'] = date('Y-m-d H:i:s');
+				$user['mdate'] = gmdate('Y-m-d H:i:s');
 
 				if (!$user_stored['adate'] && $user['status'] == 1)
 				{
-					$user['adate'] = date('Y-m-d H:i:s');
+					$user['adate'] = gmdate('Y-m-d H:i:s');
 
 					if ($password)
 					{
@@ -2386,7 +2386,7 @@ $st = [
 	'new'		=> [
 		'lbl'	=> 'Instappers',
 		'sql'	=> 'u.status = 1 and u.adate > ?',
-		'sql_bind'	=> date('Y-m-d H:i:s', $newusertreshold),
+		'sql_bind'	=> gmdate('Y-m-d H:i:s', $newusertreshold),
 		'cl'	=> 'success',
 		'st'	=> 3,
 	],
@@ -2481,7 +2481,7 @@ if ($v_list && $s_admin)
 	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
 	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
-	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : '';
+	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : false;
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
@@ -2534,6 +2534,7 @@ if ($v_list && $s_admin)
 	if (isset($show_columns['u']['saldo_date']))
 	{
 		$split_saldo_date  = explode('-', $saldo_date);
+
 		if (!checkdate($split_saldo_date[1], $split_saldo_date[2], $split_saldo_date[0]))
 		{
 			$saldo_date = gmdate('Y-m-d');
@@ -3104,6 +3105,7 @@ if ($v_list)
 			$id = $u['id'];
 
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+
 			$class = (isset($st_class_ary[$row_stat])) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
 
 			$checkbox = '<input type="checkbox" name="sel_' . $id . '" value="1"';
@@ -3396,6 +3398,7 @@ else if ($v_extended)
 	foreach ($users as $u)
 	{
 		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+
 		$class = (isset($st_class_ary[$row_stat])) ? ' bg-' . $st_class_ary[$row_stat] : '';
 
 		echo '<div class="panel panel-info printview">';

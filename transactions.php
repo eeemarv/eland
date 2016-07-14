@@ -59,7 +59,7 @@ if ($add)
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
 
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
-		$transaction['date'] = date('Y-m-d H:i:s');
+		$transaction['date'] = gmdate('Y-m-d H:i:s');
 
 		$group_id = $_POST['group_id'];
 
@@ -550,7 +550,7 @@ if ($add)
 
 			//
 			$transaction['creator'] = ($s_master) ? 0 : $s_id;
-			$transaction['cdate'] = date('Y-m-d H:i:s');
+			$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 			$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
 			$db->beginTransaction();
@@ -633,7 +633,7 @@ if ($add)
 		$redis->expire($redis_transid_key, 3600);
 
 		$transaction = [
-			'date'			=> date('Y-m-d'),
+			'date'			=> gmdate('Y-m-d H:i:s'),
 			'letscode_from'	=> ($s_master) ? '' : link_user($s_id, false, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
@@ -1415,20 +1415,21 @@ if (!$inline)
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
 	echo '<span class="fa fa-calendar"></span></span>';
-	echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
+	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'aria-describedby="fdate_addon" ';
 
 	echo 'id="fdate" name="fdate" ';
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="yyyy-mm-dd" ';
+	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
 	echo 'data-date-default-view-date="-1y" ';
-	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
+	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -1438,19 +1439,20 @@ if (!$inline)
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
 	echo '<span class="fa fa-calendar"></span></span>';
-	echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
+	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'aria-describedby="tdate_addon" ';
 
 	echo 'id="tdate" name="tdate" ';
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="yyyy-mm-dd" ';
-	echo 'data-date-end-date="' . date('Y-m-d') . '" ';
+	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
+	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
