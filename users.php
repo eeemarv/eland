@@ -116,6 +116,7 @@ if ($s_admin)
 /**
  * mail to user
  */
+
 if ($user_mail_submit && $id && $post)
 {
 	$user_mail_content = $_POST['user_mail_content'];
@@ -335,6 +336,7 @@ if ($post && $img && $id )
 /**
  * delete image
  */
+
 if ($img_del && $id)
 {
 	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
@@ -408,6 +410,7 @@ if ($img_del && $id)
 /**
  * bulk actions
  */
+
 if ($bulk_submit && $post && $s_admin)
 {
 	if ($bulk_field_submit || $bulk_mail_submit)
@@ -498,13 +501,13 @@ if ($bulk_submit && $post && $s_admin)
 if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
+
 	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
 			[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
 	{
 		$users_log .= ', ' . link_user($row, false, false, true);
-
 	}
 
 	$users_log = ltrim($users_log, ', ');
@@ -520,7 +523,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		}
 
 		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
+
 		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
+
 		cancel();
 	}
 	else if (['cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
@@ -2481,7 +2486,7 @@ if ($v_list && $s_admin)
 	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
 	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
-	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : false;
+	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : '';
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
@@ -2533,11 +2538,14 @@ if ($v_list && $s_admin)
 
 	if (isset($show_columns['u']['saldo_date']))
 	{
-		$split_saldo_date  = explode('-', $saldo_date);
-
-		if (!checkdate($split_saldo_date[1], $split_saldo_date[2], $split_saldo_date[0]))
+		if ($saldo_date)
 		{
-			$saldo_date = gmdate('Y-m-d');
+			$saldo_date_rev = $date_format->reverse($saldo_date);
+		}
+
+		if ($saldo_date_rev === false || $saldo_date == '')
+		{
+			$saldo_date = $date_format->get(false, 'day');
 
 			array_walk($users, function(&$user, $user_id){
 				$user['saldo_date'] = $user['saldo'];
@@ -2546,7 +2554,7 @@ if ($v_list && $s_admin)
 		else
 		{
 			$in = $out = [];
-			$datetime = new \DateTime($saldo_date);
+			$datetime = new \DateTime($saldo_date_rev);
 
 			$rs = $db->prepare('select id_to, sum(amount)
 				from transactions
@@ -2976,8 +2984,6 @@ if ($s_admin && $v_list)
 
 			if ($key == 'saldo_date')
 			{
-				$formatted_date = $date_format->get($saldo_date, 'day');
-
 				echo '<input type="text" name="saldo_date" ';
 				echo 'data-provide="datepicker" ';
 				echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
@@ -2988,9 +2994,9 @@ if ($s_admin && $v_list)
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
 				echo 'placeholder="' . $date_format->datepicker_placeholder() . '" ';
-				echo 'value="' . $formatted_date . '">';
+				echo 'value="' . $saldo_date . '">';
 
-				$columns['u']['saldo_date'] = 'Saldo op ' . $formatted_date;
+				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
 			}
 
 			echo '</label>';
