@@ -30,7 +30,7 @@ class date_format
 	private $format_ary = [];
 
 	private $month_translate_ary = [
-		['jan', 'januari'], ['feb', 'februari'], ['maa', 'maart'],
+		['jan', 'januari'], ['feb', 'februari'], ['mrt', 'maart'],
 		['apr', 'april'], ['mei', 'mei'], ['jun', 'juni'],
 		['jul', 'juli'], ['aug', 'augustus'], ['sep', 'september'],
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
@@ -79,7 +79,7 @@ class date_format
 	function datepicker_placeholder()
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
-		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', 'wd', 'weekdag'];
+		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', '(wd)', '(weekdag)'];
 
 		return trim(str_replace($search, $replace, $this->format_ary['day']));
 	}

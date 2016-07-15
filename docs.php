@@ -822,7 +822,7 @@ if (count($docs))
 		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';
-		echo '<td>' . $d['ts'] . '</td>';
+		echo '<td>' . $date_format->get($d['ts']) . '</td>';
 
 		if (!$s_guest)
 		{

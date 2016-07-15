@@ -161,7 +161,7 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['id'] . '</td>';
 	echo '<td>' . $a['comment'] . '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
-	echo '<td>' . $a['created'] . '</td>';
+	echo $date_format->get_td($a['created']);
 	echo '<td>';
 	echo aphp('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	echo '</td>';

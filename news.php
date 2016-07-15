@@ -520,14 +520,14 @@ $params = [
 	'view'	=> $view,
 ];
 
-$query = 'SELECT *, to_char(itemdate, \'YYYY-MM-DD\') as idate FROM news';
+$query = 'select * from news';
 
 if(!$s_admin)
 {
 	$query .= ' where approved = \'t\'';
 }
 
-$query .= ' ORDER BY itemdate DESC';
+$query .= ' order by itemdate desc';
 
 $news = $db->fetchAll($query);
 
@@ -638,12 +638,6 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
-/*
-		echo '<td>';
-		echo $n['idate'];
-		echo '</td>';
-*/
-
 		echo $date_format->get_td($n['itemdate'], 'day');
 
 		if ($s_admin && !$inline)
@@ -693,13 +687,13 @@ else if ($v_extended)
 			echo '</dd>';
 		}
 
-		if ($n['idate'])
+		if ($n['itemdate'])
 		{
 			echo '<dt>';
 			echo 'Agendadatum';
 			echo '</dt>';
 			echo '<dd>';
-			echo htmlspecialchars($n['idate'], ENT_QUOTES);
+			echo $date_format->get($n['itemdate'], 'day');
 
 			if ($n['sticky'])
 			{

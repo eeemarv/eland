@@ -1136,16 +1136,34 @@ $where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
-	$where_sql[] = 't.date >= ?';
-	$params_sql[] = $fdate;
-	$params['fdate'] = $fdate;
+	$fdate_sql = $date_format->reverse($fdate);
+
+	if ($fdate_sql === false)
+	{
+		$alert->warning('De begindatum is fout geformateerd.');
+	}
+	else
+	{
+		$where_sql[] = 't.date >= ?';
+		$params_sql[] = $fdate_sql;
+		$params['fdate'] = $fdate;
+	}
 }
 
 if ($tdate)
 {
-	$where_sql[] = 't.date <= ?';
-	$params_sql[] = $tdate;
-	$params['tdate'] = $tdate;
+	$tdate_sql = $date_format->reverse($tdate);
+
+	if ($tdate_sql === false)
+	{
+		$alert->warning('De einddatum is fout geformateerd.');
+	}
+	else
+	{
+		$where_sql[] = 't.date <= ?';
+		$params_sql[] = $tdate_sql;
+		$params['tdate'] = $tdate;
+	}
 }
 
 if (count($where_sql))

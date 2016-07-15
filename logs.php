@@ -73,7 +73,7 @@ else
 	$where_sql = '';
 }
 
-$query = 'select *, to_char(ts, \'YYYY-MM-DD HH24:MI:SS\') as tss
+$query = 'select *
 	from eland_extra.logs
 		where schema = ?' . $where_sql . '
 	order by ' . $orderby . ' ';
@@ -300,7 +300,7 @@ echo '<tbody>';
 foreach($rows as $value)
 {
 	echo '<tr>';
-	echo '<td>' . $value['tss'] .'</td>';
+	echo '<td>' . $date_format->get($value['ts'], 'sec') .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';
