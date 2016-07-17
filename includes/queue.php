@@ -43,9 +43,17 @@ class queue
 			return $error;
 		}
 
+		if (!ctype_digit((string) $priority))
+		{
+			$error = 'Queue topic: ' . $topic . ' -> error Priority is no number: ' . $priority;
+			log_event('queue', $error);
+			return $error;
+		}
+
 		$insert = [
 			'topic'			=> $topic,
 			'data'			=> json_encode($data),
+			'priority'		=> $priority,
 		];
 
 		try
