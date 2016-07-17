@@ -174,7 +174,7 @@ class date_format
 	 *
 	 */
 
-	function get_format_options()
+	function get_options()
 	{
 		$options = [];
 

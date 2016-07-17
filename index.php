@@ -325,8 +325,10 @@ if ($s_admin)
 		where name = \'\'');
 //
 	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
+
 	$db_update = ($version == $schemaversion) ? false : true;
-	$default_config = $db->fetchColumn('select setting from config where "default" = True');
+
+//	$default_config = $db->fetchColumn('select setting from config where "default" = True');
 
 	if ($unvalid_mail || $empty_letscode || $empty_name || $db_update || $default_config)
 	{
@@ -569,6 +571,7 @@ if($s_admin)
 			echo '</li>';
 		}
 
+/*
 		if ($default_config)
 		{
 			echo '<li class="list-group-item">';
@@ -577,6 +580,7 @@ if($s_admin)
 			echo 'om ze te wijzigen of bevestigen';
 			echo '</li>';
 		}
+*/
 
 		echo '</ul>';
 		echo '</div>';

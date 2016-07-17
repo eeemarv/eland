@@ -117,15 +117,15 @@ if(!empty($redis_url))
  * vars
  **/
 
-$eland_config = [
-	'users_can_edit_username'	=> ['0', 'Gebruikers kunnen zelf hun gebruikersnaam aanpassen [0, 1]'],
-	'users_can_edit_fullname'	=> ['0', 'Gebruikers kunnen zelf hun volledige naam (voornaam + achternaam) aanpassen [0, 1]'],
-	'registration_en'			=> ['0', 'Inschrijvingsformulier ingeschakeld [0, 1]'],
-	'forum_en'					=> ['0', 'Forum ingeschakeld [0, 1]'],
-	'css'						=> ['0', 'Extra stijl: url van .css bestand (Vul 0 in wanneer niet gebruikt)'],
-	'msgs_days_default'			=> ['365', 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.'],
-	'balance_equilibrium'		=> ['0', 'Het uitstapsaldo voor actieve leden. Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'],
-	'date_format'				=> ['%e %b %Y, %H:%M:%S', 'Datumformaat'],
+$eland_config_default = [
+	'users_can_edit_username'	=> '0',
+	'users_can_edit_fullname'	=> '0',
+	'registration_en'			=> '0',
+	'forum_en'					=> '0',
+	'css'						=> '0',
+	'msgs_days_default'			=> '365',
+	'balance_equilibrium'		=> '0',
+	'date_format'				=> '%e %b %Y, %H:%M:%S',
 ];
 
 $top_right = '';
@@ -1003,7 +1003,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 function readconfigfromdb($key, $sch = null)
 {
     global $db, $schema, $redis, $exdb;
-    global $eland_config;
+    global $eland_config_default;
     static $cache;
 
     if (!isset($sch))
@@ -1023,7 +1023,7 @@ function readconfigfromdb($key, $sch = null)
 		return $cache[$sch][$key] = $redis->get($redis_key);
 	}
 
-	if (isset($eland_config[$key]))
+	if (isset($eland_config_default[$key]))
 	{
 		$row = $exdb->get('setting', $key, $sch);
 
@@ -1033,7 +1033,7 @@ function readconfigfromdb($key, $sch = null)
 		}
 		else
 		{
-			$value = $eland_config[$key][0];
+			$value = $eland_config_default[$key];
 		}
 	}
 	else

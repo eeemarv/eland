@@ -738,3 +738,9 @@ div.jqplot-noData-container {
   z-index: 9999;
   display: none;
 }
+
+/** input sm **/
+
+.sm-size {
+  width: 5em;
+}
