@@ -7,6 +7,10 @@ require_once $rootpath . 'includes/inc_default.php';
 $setting = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
+$active_tab = 'systemname';
+$active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : $active_tab;
+$active_tab = isset($_POST['active_tab']) ? $_POST['active_tab'] : $active_tab;
+
 $tab_panes = [
 
 	'systemname'	=> [
@@ -136,7 +140,7 @@ $tab_panes = [
 						'attr'	=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
 					],
 				],
-				'explain' => 'Noot: Gebruikers kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
+				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
 			],
 		],
 	],
@@ -196,7 +200,7 @@ $tab_panes = [
 		'lbl'	=> 'Leden rechten',
 		'inputs'	=> [
 			'li_1' => [
-				'inline' => '%1$s Gebruikers kunnen zelf hun gebruikersnaam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf hun gebruikersnaam aanpassen.',
 				'inputs' => [
 					'users_can_edit_username' => [
 						'type'	=> 'checkbox',
@@ -204,7 +208,7 @@ $tab_panes = [
 				],
 			],
 			'li_2' => [
-				'inline' => '%1$s Gebruikers kunnen zelf hun volledige naam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf hun volledige naam aanpassen.',
 				'inputs' => [
 					'users_can_edit_fullname' => [
 						'type'	=> 'checkbox',
@@ -271,6 +275,169 @@ foreach ($tab_panes as $pane)
 	}
 }
 
+if ($post)
+{
+	if (!isset($_POST[$active_tab . '_submit']))
+	{
+		$errors[] = 'Form submit error';
+	}
+
+	if ($error_token = get_error_form_token())
+	{
+		$errors[] = $error_token;
+	}
+
+	$posted_configs = $validators = [];
+
+	foreach ($tab_panes[$active_tab]['inputs'] as $name => $input)
+	{
+		if (isset($input['inputs']))
+		{
+			foreach ($input['inputs'] as $sub_name => $sub_input)
+			{
+				$posted_configs[$sub_name] = trim($_POST[$sub_name]);
+
+				$validators[$sub_name]['type'] = isset($sub_input['type']) ? $sub_input['type'] : 'text';
+				$validators[$sub_name]['attr'] = isset($sub_input['attr']) ? $sub_input['attr'] : [];
+				$validators[$sub_name]['required'] = isset($sub_input['required']) ? true : false;
+			}
+
+			continue;
+		}
+
+		$posted_configs[$name] = trim($_POST[$name]);
+
+		$validators[$name]['type'] = isset($input['type']) ? $input['type'] : 'text';
+		$validators[$name]['attr'] = isset($input['attr']) ? $input['attr'] : [];
+		$validators[$name]['required'] = isset($input['required']) ? true : false;
+	}
+
+	foreach ($posted_configs as $name => $value)
+	{
+		if ($value === $config[$name])
+		{
+			unset($posted_configs[$name]);
+			continue;
+		}
+
+		if ($name == 'date_format')
+		{
+			$error = $date_format->get_error_format($value);
+
+			if ($error)
+			{
+				$errors[] = $error;
+			}
+
+			continue;
+		}
+
+		$validator = $validators[$name];
+
+		if ($validator['type'] == 'text')
+		{
+			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
+			{
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['maxlength'] . ' tekens lang zijn.';
+			}
+
+			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
+			{
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['minlength'] . ' tekens lang zijn.';
+			}
+		}
+
+		if ($validator['type'] == 'number')
+		{
+			if (!ctype_digit($value))
+			{
+				$errors[] = 'Fout: de waarde moet een getal zijn.';
+			}
+
+			if (isset($validator['attr']['max']) && $value > $validator['attr']['max'])
+			{
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['max'] . ' bedragen.';
+			}
+
+			if (isset($validator['attr']['min']) && $value < $validator['attr']['min'])
+			{
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['min'] . ' bedragen.';
+			}
+
+			continue;
+		}
+
+		if ($validator['type'] == 'checkbox')
+		{
+			if ($value != '1')
+			{
+				$errors[] = 'Foute waarde voor checkbox.';
+			}
+
+			continue;
+		}
+
+		if ($validator['type'] == 'email')
+		{
+			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+			{
+				$errors[] =  $value . ' is geen geldig email adres.';
+			}
+
+			continue;
+		}
+
+		if ($validator['type'] == 'url')
+		{
+			if (!filter_var($value, FILTER_VALIDATE_URL))
+			{
+				$errors[] =  $value . ' is geen geldig email adres.';
+			}
+
+			continue;
+		}
+
+		if ($validator['type'] == 'textarea')
+		{
+
+		}
+	}
+
+	if (!count($posted_configs))
+	{
+		$alert->warning('Geen gewijzigde waarden.');
+		cancel();
+	}
+
+	if (count($errors))
+	{
+		$alert->error($errors);
+		cancel();
+	}
+
+	foreach ($posted_configs as $name => $value)
+	{
+		$exdb->set('setting', $name, ['value' => $value]);
+
+		$redis->del($schema . '_config_' . $name);
+
+		$db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);		
+	}
+
+	if (count($posted_configs) > 1)
+	{
+		$alert->success('De instellingen zijn aangepast.');
+	}
+	else
+	{
+		$alert->success('De instelling is aangepast.');
+	}
+
+	cancel();
+}
+
+
+/*
 
 if ($setting)
 {
@@ -386,7 +553,7 @@ foreach ($configi as $c)
 	$configi[$c['setting']] = $c['value'];
 }
 
-/*
+
 
 foreach ($eland_config as $setting => $default)
 {
@@ -417,15 +584,13 @@ $fa = 'gears';
 
 include $rootpath . 'includes/inc_header.php';
 
-$tab_active = 'systemname';
-
 echo '<div>';
 echo '<ul class="nav nav-pills" role="tablist">';
 
 foreach ($tab_panes as $id => $pane)
 {	
 	echo '<li role="presentation"';
-	echo ($id == $tab_active) ? ' class="active"' : '';
+	echo ($id == $active_tab) ? ' class="active"' : '';
 	echo '>';
 	echo '<a href="#' . $id . '" aria-controls="' . $id . '" role="tab" data-toggle="tab">';
 	echo $pane['lbl'];
@@ -443,11 +608,11 @@ echo '<div class="tab-content">';
 
 foreach ($tab_panes as $id => $pane)
 {
-	$active = ($id == $tab_active) ? ' active' : '';
+	$active = ($id == $active_tab) ? ' active' : '';
 
 	echo '<div role="tabpanel" class="tab-pane' . $active . '" id="' . $id . '">';
 
-	echo '<form mathod="post" class="form form-horizontal">';
+	echo '<form method="post" class="form form-horizontal">';
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading"><h4>';
@@ -515,7 +680,7 @@ foreach ($tab_panes as $id => $pane)
 				echo '<div class="col-sm-12">';
 			}
 
-			if ($input['type'] == 'select')
+			if (isset($input['type']) && $input['type'] == 'select')
 			{
 				echo '<select class="form-control" name="' . $name . '">';
 
@@ -559,7 +724,11 @@ foreach ($tab_panes as $id => $pane)
 	echo '</ul>';
 
 	echo '<div class="panel-footer">';
+
+	echo '<input type="hidden" name="active_tab" value="' . $id . '">';
 	echo '<input type="submit" class="btn btn-primary" value="Aanpassen" name="' . $id . '_submit">';
+	generate_form_token();
+
 	echo '</div>';
 
 	echo '</div>';
@@ -572,49 +741,12 @@ foreach ($tab_panes as $id => $pane)
 echo '</div>';
 echo '</div>';
 
-
-/*
-echo '<div class="panel panel-default printview">';
-
-echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-hover table-striped footable">';
-echo '<thead>';
-echo '<tr>';
-echo '<th>Categorie</th>';
-echo '<th>Instelling</th>';
-echo '<th>Waarde</th>';
-echo '<th data-hide="phone">Omschrijving</th>';
-echo '</tr>';
-echo '</thead>';
-
-echo '<tbody>';
-
-foreach($configi as $c)
-{
-	echo '<tr';
-	echo ($c['default']) ? ' class="danger"' : '';
-	echo '>';
-	echo '<td>' . $c['category'] . '</td>';
-	echo '<td>';
-	echo aphp('config', ['edit' => $c['setting']], $c['setting']);
-	echo '</td>';
-	echo '<td>' . $c['value'] . '</td>';
-	echo '<td>' . $c['description'] . '</td>';
-	echo '</tr>';
-}
-
-echo '</tbody>';
-echo '</table>';
-echo '</div></div>';
-
-echo '<p>Waardes in het rood moeten nog gewijzigd (of bevestigd) worden</p>';
-
-*/
-
 include $rootpath . 'includes/inc_footer.php';
 
 function cancel()
 {
-	header('Location: ' . generate_url('config'));
+	global $active_tab;
+
+	header('Location: ' . generate_url('config', ['active_tab' => $active_tab]));
 	exit;
 }

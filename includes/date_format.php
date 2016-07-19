@@ -190,6 +190,20 @@ class date_format
 	 *
 	 */
 
+	function get_error_format($format)
+	{
+		if (!isset($this->formats[$format]))
+		{
+			return 'Fout: dit datum- en tijdsformaat wordt niet ondersteund.';
+		}
+
+		return false;
+	}
+
+	/**
+	 *
+	 */
+
 	function get($ts = false, $precision = 'min')
 	{
 		$time = strtotime($ts . ' UTC');

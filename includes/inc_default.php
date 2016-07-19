@@ -117,17 +117,6 @@ if(!empty($redis_url))
  * vars
  **/
 
-$eland_config_default = [
-	'users_can_edit_username'	=> '0',
-	'users_can_edit_fullname'	=> '0',
-	'registration_en'			=> '0',
-	'forum_en'					=> '0',
-	'css'						=> '0',
-	'msgs_days_default'			=> '365',
-	'balance_equilibrium'		=> '0',
-	'date_format'				=> '%e %b %Y, %H:%M:%S',
-];
-
 $top_right = '';
 $top_buttons = '';
 
@@ -1003,8 +992,23 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 function readconfigfromdb($key, $sch = null)
 {
     global $db, $schema, $redis, $exdb;
-    global $eland_config_default;
     static $cache;
+
+	$eland_config_default = [
+		'users_can_edit_username'	=> '0',
+		'users_can_edit_fullname'	=> '0',
+		'registration_en'			=> '0',
+		'registration_top_text'		=> '',
+		'registration_bottom_text'	=> '',
+		'registration_error_text'	=> '',
+		'registration_success_text'	=> '',
+		'registration_success_url'	=> '',
+		'forum_en'					=> '0',
+		'css'						=> '0',
+		'msgs_days_default'			=> '365',
+		'balance_equilibrium'		=> '0',
+		'date_format'				=> '%e %b %Y, %H:%M:%S',
+	];
 
     if (!isset($sch))
     {
