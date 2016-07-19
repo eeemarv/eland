@@ -345,6 +345,8 @@ if ($post)
 			{
 				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['minlength'] . ' tekens lang zijn.';
 			}
+
+			continue;
 		}
 
 		if ($validator['type'] == 'number')
@@ -369,10 +371,7 @@ if ($post)
 
 		if ($validator['type'] == 'checkbox')
 		{
-			if ($value != '1')
-			{
-				$errors[] = 'Foute waarde voor checkbox.';
-			}
+			$posted_configs[$name] = ($value) ? '1' : '0';
 
 			continue;
 		}
