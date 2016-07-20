@@ -322,7 +322,7 @@ if ($post)
 
 		if ($name == 'date_format')
 		{
-			$error = $date_format->get_error_format($value);
+			$error = $date_format->get_error($value);
 
 			if ($error)
 			{

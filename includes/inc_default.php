@@ -247,15 +247,6 @@ require_once $rootpath . 'includes/alert.php';
 $alert = new alert();
 
 /**
- * format dates
- */
-
-require_once $rootpath . 'includes/date_format.php';
-
-$date_format = new date_format();
-
-
-/**
  * start session
  */
 
@@ -266,6 +257,12 @@ session_set_save_handler($redis_session);
 session_name('eland');
 session_set_cookie_params(0, '/', '.' . $overall_domain);
 session_start();
+
+/*
+ * set search path
+ */
+
+$db->exec('set search_path to ' . ($schema) ?: 'public');
 
 /** user **/
 
@@ -560,17 +557,21 @@ date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
 
-// set search path
-
-$db->exec('set search_path to ' . ($schema) ?: 'public');
-
-/**
- *
- */
+ /**
+  *
+  */
 
 require_once $rootpath . 'includes/eland_extra_db.php';
 
 $exdb = new eland_extra_db();
+
+/**
+ * format dates
+ */
+
+require_once $rootpath . 'includes/date_format.php';
+
+$date_format = new date_format();
 
 /**
  *
@@ -1022,13 +1023,18 @@ function readconfigfromdb($key, $sch = null)
 
 	$redis_key = $sch . '_config_' . $key;
 
-	if ($redis->exists($redis_key))
+	if ($redis->exists($redis_key) && $key != 'date_format')
 	{
+		//error_log('redis config key: ' . $key . ' schema : ' . $sch);
+
 		return $cache[$sch][$key] = $redis->get($redis_key);
 	}
 
 	if (isset($eland_config_default[$key]))
 	{
+		//error_log('exdb config key: ' . $key . ' schema : ' . $sch);
+		//debug_print_backtrace();
+
 		$row = $exdb->get('setting', $key, $sch);
 
 		if ($row)
@@ -1085,7 +1091,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		}
 	}
 
-	$user = $db->fetchAssoc('SELECT * FROM ' . $s . '.users WHERE id = ?', [$id]);
+	$user = $db->fetchAssoc('select * from ' . $s . '.users where id = ?', [$id]);
 
 	if (!is_array($user))
 	{

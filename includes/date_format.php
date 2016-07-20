@@ -190,7 +190,7 @@ class date_format
 	 *
 	 */
 
-	function get_error_format($format)
+	function get_error($format)
 	{
 		if (!isset($this->formats[$format]))
 		{
