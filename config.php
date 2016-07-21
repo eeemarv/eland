@@ -716,11 +716,11 @@ foreach ($tab_panes as $id => $pane)
 			}
 			else if (isset($input['type']) && $input['type'] == 'textarea')
 			{
-				echo '<div name="' . $name . '" id="' . $name . '" class="form-control';
+				echo '<textarea name="' . $name . '" id="' . $name . '" class="form-control';
 				echo isset($input['rich_edit']) ? ' rich-edit' : '';
 				echo '" rows="4">';
 				echo $config[$name];
-				echo '</div>';
+				echo '</textarea>';
 			}
 			else
 			{
