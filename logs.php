@@ -122,12 +122,10 @@ $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
-$includejs = '
-	<script src="' . $cdn_datepicker . '"></script>
-	<script src="' . $cdn_datepicker_nl . '"></script>
-	<script src="' . $rootpath . 'js/csv.js"></script>
-	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/typeahead.js"></script>';
+$include_ary[] = 'datepicker';
+$include_ary[] = 'typeahead';
+$include_ary[] = 'typeahead.js';
+$include_ary[] = 'csv.js';
 
 $filtered = $q || $type || $letscode || $fdate || $tdate;
 

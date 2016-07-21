@@ -1,25 +1,72 @@
 <?php
 
+$include_js = $include_css = [];
+
+foreach ($include_ary as $include)
+{
+	if (isset($asset_ary[$include]))
+	{
+		if (isset($asset_ary[$include]['js']))
+		{
+			if (is_array($asset_ary[$include]['js']))
+			{
+				foreach ($asset_ary[$include]['js'] as $js)
+				{
+					$include_js[] = $js;
+				}
+			}
+			else
+			{
+				$include_js[] = $asset_ary[$include]['js'];
+			}
+		}
+
+		if (isset($asset_ary[$include]['css']))
+		{
+			if (is_array($asset_ary[$include]['css']))
+			{
+				foreach ($asset_ary[$include]['css'] as $css)
+				{
+					$include_css[] = $css;
+				}
+			}
+			else
+			{
+				$include_css[] = $asset_ary[$include]['css'];
+			}
+		}
+
+		continue;
+	}
+
+	$ext = strtolower(pathinfo($include, PATHINFO_EXTENSION));
+
+	if ($ext == 'js')
+	{
+		$include_js[] = $rootpath . 'js/' . $include;
+	}
+	else if ($ext == 'css')
+	{
+		$include_css[] = $rootpath . 'gfx/' . $include;
+	}
+}
+
+if ($css = readconfigfromdb('css'))
+{
+	$include_css[] = $css;
+} 
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
 echo '<title>' . $systemname .'</title>';
 
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '" media="screen">';
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_fontawesome . '" media="screen">';
-echo '<link type="text/css" rel="stylesheet" href="' . $cdn_footable_css . '" media="screen">';
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css" media="screen">';
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">';
-
-if (isset ($includecss))
-{
-	echo $includecss;
-}
-
-if ($css = readconfigfromdb('css'))
+foreach ($include_css as $css)
 {
 	echo '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
-} 
+}
+
+echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">';
 
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';

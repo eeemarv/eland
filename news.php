@@ -164,12 +164,7 @@ if ($add)
 
 if ($add || $edit)
 {
-	$includejs = '
-		<script src="' . $cdn_jquery . '"></script>
-		<script src="' . $cdn_datepicker . '"></script>
-		<script src="' . $cdn_datepicker_nl . '"></script>';
-
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
+	$include_ary[] = 'datepicker';
 
 	$h1 = 'Nieuwsbericht ';
 	$h1 .= ($add) ? 'toevoegen' : 'aanpassen';

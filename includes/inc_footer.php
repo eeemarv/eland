@@ -13,17 +13,9 @@ echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>
 
 echo '</footer>';
 
-echo '<script src="' . $cdn_jquery . '"></script>';
-echo '<script src="' . $cdn_bootstrap_js . '"></script>';
-echo '<script src="' . $cdn_footable_js . '"></script>';
-echo '<script src="' . $cdn_footable_sort_js . '"></script>';
-echo '<script src="' . $cdn_footable_filter_js . '"></script>';
-
-echo '<script src="' . $rootpath . 'js/base.js"></script>';
-
-if (isset($includejs))
+foreach ($include_js as $js)
 {
-	echo $includejs;
+	echo '<script src="' . $js . '"></script>';
 }
 
 echo '</body>';

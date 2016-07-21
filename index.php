@@ -339,7 +339,7 @@ if ($s_admin)
 $h1 = 'Overzicht';
 $fa = 'home';
 
-$includejs = '<script src="' . $rootpath . 'js/index.js"></script>';
+$include_ary[] = 'index.js';
 
 include $rootpath . 'includes/inc_header.php';
 

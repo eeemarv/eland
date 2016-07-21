@@ -604,11 +604,7 @@ foreach ($eland_config as $setting => $default)
 */
 
 
-$includejs = '<script src="' . $cdn_summernote_js . '"></script>';
-$includejs .= '<script src="' . $cdn_summernote_nl . '"></script>';
-$includejs .= '<script src="' . $rootpath . 'js/config.js"></script>';
-
-$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_summernote_css . '" />';
+$include_ary[] = 'summernote';
 
 $h1 = 'Instellingen';
 $fa = 'gears';

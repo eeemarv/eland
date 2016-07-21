@@ -92,8 +92,8 @@ if ($map_edit)
 		$alert->error($errors);
 	}
 
-	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
 
 	$h1 = 'Map aanpassen: ' . aphp('docs', ['map' => $map_edit], $map_name);
 
@@ -223,8 +223,8 @@ if ($edit)
 		$map = $exdb->get('doc', $map_id)['data'];
 	}
 
-	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
 
 	$h1 = 'Document aanpassen';
 
@@ -532,9 +532,9 @@ if ($add)
 		}
 	}
 
-	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>
-		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
+	$include_ary[] = 'access_input_cache.js';
 
 	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 

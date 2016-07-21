@@ -701,8 +701,8 @@ if ($add)
 		}
 	}
 
-	$includejs = '<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
 
 	$balance = $session_user['saldo'];
 
@@ -1340,15 +1340,10 @@ if (!$inline)
 	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
 
-	$includejs = '
-		<script src="' . $cdn_datepicker . '"></script>
-		<script src="' . $cdn_datepicker_nl . '"></script>
-		<script src="' . $rootpath . 'js/csv.js"></script>
-		<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>
-	';
-
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
+	$include_ary[] = 'datepicker';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
+	$include_ary[] = 'csv.js';
 
 	include $rootpath . 'includes/inc_header.php';
 

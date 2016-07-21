@@ -346,8 +346,8 @@ if ($edit || $add)
 
 	if ($s_admin && $add && !$uid)
 	{
-		$includejs = '<script src="' . $cdn_typeahead . '"></script>
-			<script src="' . $rootpath . 'js/typeahead.js"></script>';
+		$include_ary[] = 'typeahead';
+		$include_ary[] = 'typeahead.js';
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
@@ -813,9 +813,9 @@ $top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', '
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
 
-$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
-	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/typeahead.js"></script>';
+$include_ary[] = 'csv.js';
+$include_ary[] = 'typeahead';
+$include_ary[] = 'typeahead.js';
 
 $h1 = 'Contacten';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';

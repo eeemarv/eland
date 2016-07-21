@@ -371,11 +371,10 @@ if ($from_letscode)
 	}
 }
 
-$includejs = '
-	<script src="' . $cdn_typeahead . '"></script>
-	<script src="' . $rootpath . 'js/typeahead.js"></script>
-	<script src="' . $rootpath . 'js/mass_transaction.js"></script>
-	<script src="' . $rootpath . 'js/combined_filter.js"></script>';
+$include_ary[] = 'typeahead';
+$include_ary[] = 'typeahead.js';
+$include_ary[] = 'mass_transaction.js';
+$include_ary[] = 'combined_filter.js';
 
 $h1 = 'Massa transactie';
 $fa = 'exchange';

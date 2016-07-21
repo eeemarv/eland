@@ -776,7 +776,7 @@ if ($pw)
 
 	$user = readuser($pw);
 
-	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
+	$include_ary[] = 'generate_password.js';
 
 	$h1 = 'Paswoord aanpassen';
 	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
@@ -1716,15 +1716,11 @@ if ($add || $edit)
 
 	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
-	$includejs = '
-		<script src="' . $cdn_datepicker . '"></script>
-		<script src="' . $cdn_datepicker_nl . '"></script>
-		<script src="' . $rootpath . 'js/generate_password.js"></script>
-		<script src="' . $rootpath . 'js/generate_password_onload.js"></script>
-		<script src="' . $rootpath . 'js/user_edit.js"></script>
-		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
-
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '" />';
+	$include_ary[] = 'datepicker';
+	$include_ary[] = 'generate_password.js';
+	$include_ary[] = 'generate_password_onload.js';
+	$include_ary[] = 'user_edit.js';
+	$include_ary[] = 'access_input_cache.js';
 
 	$h1 = 'Gebruiker ' . (($edit) ? 'aanpassen: ' . link_user($user) : 'toevoegen');
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
@@ -2016,32 +2012,16 @@ if ($id)
 		order by letscode desc
 		limit 1', [$user['letscode']]);
 
-	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
-		<script src="' . $rootpath . 'js/user.js"></script>
-		<script src="' . $cdn_jqplot . 'jquery.jqplot.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.donutRenderer.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.cursor.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.dateAxisRenderer.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasTextRenderer.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-		<script src="' . $cdn_jqplot . 'plugins/jqplot.highlighter.min.js"></script>
-		<script src="' . $rootpath . 'js/plot_user_transactions.js"></script>';
+	$include_ary[] = 'leaflet';
+	$include_ary[] = 'jqplot';
+	$include_ary[] = 'user.js';
+	$include_ary[] = 'plot_user_transactions.js';
 
 	if ($s_admin || $s_owner)
 	{
-		$includejs .= '<script src="' . $cdn_jquery_ui_widget . '"></script>
-			<script src="' . $cdn_load_image . '"></script>
-			<script src="' . $cdn_canvas_to_blob . '"></script>
-			<script src="' . $cdn_jquery_iframe_transport . '"></script>
-			<script src="' . $cdn_jquery_fileupload . '"></script>
-			<script src="' . $cdn_jquery_fileupload_process . '"></script>
-			<script src="' . $cdn_jquery_fileupload_image . '"></script>
-			<script src="' . $cdn_jquery_fileupload_validate . '"></script>
-			<script src="' . $rootpath . 'js/user_img.js"></script>';
+		$include_ary[] = 'fileupload';
+		$include_ary[] = 'user_img.js';
 	}
-
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
-	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
 
 	if ($s_admin)
 	{
@@ -2815,33 +2795,26 @@ $fa = 'users';
 
 if ($v_list)
 {
-	$includejs = '<script src="' . $rootpath . 'js/calc_sum.js"></script>';
-	$includejs .= '<script src="' . $rootpath . 'js/users_distance.js"></script>';
+	$include_ary[] = 'calc_sum.js';
+	$include_ary[] = 'users_distance.js';
 
 	if ($s_admin)
 	{
-		$includejs .= '	<script src="' . $cdn_datepicker . '"></script>
-			<script src="' . $cdn_datepicker_nl . '"></script>
-			<script src="' . $rootpath . 'js/csv.js"></script>
-			<script src="' . $rootpath . 'js/table_sel.js"></script>';
-
-		$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_datepicker_css . '">';
+		$include_ary[] = 'datepicker';
+		$include_ary[] = 'csv.js';
+		$include_ary[] = 'table_sel.js';
 	}
 }
 else if ($v_tiles)
 {
-	$includejs = '<script src="' . $cdn_isotope . '"></script>
-		<script src="' . $cdn_images_loaded . '"></script>
-		<script src="' . $rootpath . 'js/users_tiles.js"></script>';
+	$include_ary[] = 'isotope';
+	$include_ary[] = 'users_tiles.js';
 }
 else if ($v_map)
 {
-	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
-		<script src="' . $cdn_leaflet_label_js . '"></script>
-		<script src="' . $rootpath . 'js/users_map.js"></script>';
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />
-		<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_label_css . '" />';
-
+	$include_ary[] = 'leaflet';
+	$include_ary[] = 'leaflet_label';
+	$include_ary[] = 'users_map.js';
 }
 
 include $rootpath . 'includes/inc_header.php';

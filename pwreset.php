@@ -49,7 +49,7 @@ if ($token)
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 
-	$includejs = '<script src="' . $rootpath . 'js/generate_password.js"></script>';
+	$include_ary[] = 'generate_password.js';
 
 	require_once $rootpath . 'includes/inc_header.php';
 

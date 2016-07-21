@@ -227,9 +227,9 @@ if ($del)
 
 if ($add || $edit)
 {
-	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
-		<script src="' . $rootpath . 'js/forum.js"></script>
-		<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
+	$include_ary[] = 'ckeditor';
+	$include_ary[] = 'forum.js';
+	$include_ary[] = 'access_input_cache.js';
 
 	if ($topic)
 	{
@@ -405,8 +405,8 @@ if ($topic)
 
 	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
-	$includejs = '<script src="' . $cdn_ckeditor . '"></script>
-		<script src="' . $rootpath . 'js/forum.js"></script>';
+	$include_ary[] = 'ckeditor';
+	$include_ary[] = 'forum.js';
 
 	$h1 = $topic_post['subject'];
 

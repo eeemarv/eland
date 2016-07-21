@@ -458,7 +458,7 @@ if ($img_del == 'all' && $id)
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
-	$includejs = '<script src="' . $rootpath . 'js/msg_img_del.js"></script>';
+	$include_ary[] = 'msg_img_del.js';
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -968,10 +968,9 @@ if (($edit || $add))
 
 	if ($s_admin)
 	{
-		$includejs = '
-			<script src="' . $cdn_typeahead . '"></script>
-			<script src="' . $rootpath . 'js/typeahead.js"></script>
-			<script src="' . $rootpath . 'js/access_input_cache.js"></script>';
+		$include_ary[] = 'typeahead';
+		$include_ary[] = 'typeahead.js';
+		$include_ary[] = 'access_input_cache.js';
 	}
 
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
@@ -1130,24 +1129,14 @@ if ($id)
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
 
-	$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_fileupload_css . '" />';
-	$includecss .= '<link rel="stylesheet" type="text/css" href="' . $cdn_leaflet_css . '" />';
-
-	$includejs = '<script src="' . $cdn_leaflet_js . '"></script>
-		<script src="' . $cdn_jssor_slider_mini_js . '"></script>
-		<script src="' . $rootpath . 'js/msg.js"></script>';
+	$include_ary[] = 'leaflet';
+	$include_ary[] = 'jssor';
+	$include_ary[] = 'msg.js';
 
 	if ($s_admin || $s_owner)
 	{
-		$includejs .= '<script src="' . $cdn_jquery_ui_widget . '"></script>
-			<script src="' . $cdn_load_image . '"></script>
-			<script src="' . $cdn_canvas_to_blob . '"></script>
-			<script src="' . $cdn_jquery_iframe_transport . '"></script>
-			<script src="' . $cdn_jquery_fileupload . '"></script>
-			<script src="' . $cdn_jquery_fileupload_process . '"></script>
-			<script src="' . $cdn_jquery_fileupload_image . '"></script>
-			<script src="' . $cdn_jquery_fileupload_validate . '"></script>
-			<script src="' . $rootpath . 'js/msg_img.js"></script>';
+		$include_ary[] = 'fileupload';
+		$include_ary[] = 'msg_img.js';
 	}
 
 	if ($s_user || $s_admin)
@@ -1745,11 +1734,11 @@ if (!$inline)
 
 	$h1 .= '</span></span>';
 
-	$includejs = '<script src="' . $rootpath . 'js/csv.js"></script>
-		<script src="' . $rootpath . 'js/msgs.js"></script>
-		<script src="' . $rootpath . 'js/table_sel.js"></script>
-		<script src="' . $cdn_typeahead . '"></script>
-		<script src="' . $rootpath . 'js/typeahead.js"></script>';
+	$include_ary[] = 'csv.js';
+	$include_ary[] = 'msgs.js';
+	$include_ary[] = 'table_sel.js';
+	$include_ary[] = 'typeahead';
+	$include_ary[] = 'typeahead.js';
 
 	include $rootpath . 'includes/inc_header.php';
 

@@ -35,55 +35,89 @@ $overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
-$cdn_bootstrap_css = '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css';
-$cdn_bootstrap_js = '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js';
-$cdn_fontawesome = '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css';
+$asset_ary = [
+	'bootstrap' => [
+		'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css',
+		'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js',
+	],
+	'fontawesome'	=> [
+		'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css',
+	],
+	'footable'	=> [
+		'js'	=> [
+			$s3_res_url . 'footable-2.0.3/js/footable.js',
+			$s3_res_url . 'footable-2.0.3/js/footable.sort.js',
+			$s3_res_url . 'footable-2.0.3/js/footable.filter.js',
+		],
+		'css'	=> $s3_res_url . 'footable-2.0.3/css/footable.core.css',
+	],
+	'jssor'		=> [
+		'js' => $s3_res_url . 'jssor/js/jssor.slider.mini.js',
+	],
+	'jqplot'	=> [
+		'js'	=> [
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.donutRenderer.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.cursor.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasTextRenderer.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasAxisTickRenderer.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js',
+		],
+	],
+	'jquery'	=> [
+		'js'	=> '//code.jquery.com/jquery-2.1.4.min.js',
+	],
+	'fileupload'	=> [
+		'js'	=>	[
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js',
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js',
+			$s3_res_url . 'JavaScript-Load-Image-1.14.0/js/load-image.all.min.js',
+			$s3_res_url . 'JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js',
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload.js',
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js',
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js',
+			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js',
+		],
+		'css'	=> $s3_res_url . 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css',
+	],
+	'typeahead'		=> [
+		'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
+	],
+	'datepicker'	=> [
+		'js'	=>	[
+			'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.nl.min.js',
+		],
+		'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.standalone.min.css',
+	],
+	'ckeditor'	=> [
+		'js'	=> '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js',
+	],
+	'isotope'	=> [
+		'js' => [
+			'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js',
+		],
+	],
+	'leaflet'	=> [
+		'js'	=> 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js',
+		'css'	=> 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css',
+	],
+	'leaflet_label' => [
+		'js'	=> 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js',
+		'css'	=> 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css',
+	],
+	'summernote' => [
+		'js'	=> [
+			'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js',
+			'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js',
+		],
+		'css'	=> 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css',
+	],
+];
 
-$cdn_footable_js = $s3_res_url . 'footable-2.0.3/js/footable.js';
-$cdn_footable_sort_js = $s3_res_url . 'footable-2.0.3/js/footable.sort.js';
-$cdn_footable_filter_js = $s3_res_url . 'footable-2.0.3/js/footable.filter.js';
-$cdn_footable_css = $s3_res_url . 'footable-2.0.3/css/footable.core.css';
-
-/*
-$cdn_footable_js = $s3_res_url . 'footable-bootstrap-3.0.3/js/footable.js';
-$cdn_footable_css = $s3_res_url . 'footable-bootstrap-3.0.3/css/footable.bootstrap.css';
-*/
-
-$cdn_jssor_slider_mini_js = $s3_res_url . 'jssor/js/jssor.slider.mini.js';
-
-$cdn_jqplot = '//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/';
-$cdn_jquery = '//code.jquery.com/jquery-2.1.3.min.js';
-
-$cdn_jquery_ui_widget = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js';
-$cdn_jquery_iframe_transport = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js';
-$cdn_load_image = $s3_res_url . 'JavaScript-Load-Image-1.14.0/js/load-image.all.min.js';
-$cdn_canvas_to_blob = $s3_res_url . 'JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js';
-$cdn_jquery_fileupload = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload.js';
-$cdn_jquery_fileupload_process = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js';
-$cdn_jquery_fileupload_image = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js';
-$cdn_jquery_fileupload_validate = $s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js';
-$cdn_fileupload_css = $s3_res_url . 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css';
-
-$cdn_typeahead = '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js';
-$cdn_datepicker_css = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.standalone.min.css';
-$cdn_datepicker = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js';
-$cdn_datepicker_nl = '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.nl.min.js';
-
-$cdn_ckeditor = '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js';
-
-$cdn_isotope = '//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js';
-$cdn_images_loaded = '//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js';
-
-$cdn_leaflet_css = 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css';
-$cdn_leaflet_js = 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js';
-
-$cdn_leaflet_label_css = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css';
-$cdn_leaflet_label_js = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js';
-
-$cdn_summernote_nl = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js';
-$cdn_summernote_css = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css';
-$cdn_summernote_js = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js';
-
+$include_ary = ['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js'];
 
 $mapbox_token = getenv('MAPBOX_TOKEN');
 
