@@ -37,11 +37,11 @@ $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
 $asset_ary = [
 	'bootstrap' => [
-		'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css',
-		'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js',
+		'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css',
+		'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
 	],
 	'fontawesome'	=> [
-		'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css',
+		'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css',
 	],
 	'footable'	=> [
 		'js'	=> [
