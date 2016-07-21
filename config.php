@@ -11,6 +11,10 @@ $active_tab = 'systemname';
 $active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : $active_tab;
 $active_tab = isset($_POST['active_tab']) ? $_POST['active_tab'] : $active_tab;
 
+$register_link = $base_url . '/register.php';
+$register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
+$register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
+
 $tab_panes = [
 
 	'systemname'	=> [
@@ -40,6 +44,24 @@ $tab_panes = [
 		],
 	],
 
+	'mailaddresses'	=> [
+		'lbl'		=> 'Mailadressen',
+		'inputs'	=> [
+			'admin'	=> [
+				'lbl'	=> 'Algemeen admin/beheerder',
+				'attr' => ['minlength' => 7],
+			],
+			'newsadmin'	=> [
+				'lbl'	=> 'Nieuwsbeheerder',
+				'attr'	=> ['minlength' => 7],
+			],
+			'support'	=> [
+				'lbl'	=> 'Support / Helpdesk',
+				'attr'	=> ['minlength' => 7],
+			],
+		]
+	],
+
 	'balance'		=> [
 		'lbl'		=> 'Saldo',
 		'inputs'	=> [
@@ -62,27 +84,17 @@ $tab_panes = [
 		],
 	],
 
-	'mailaddresses'	=> [
-		'lbl'		=> 'Mailadressen',
+	'messages'		=> [
+		'lbl'		=> 'Vraag en aanbod',
 		'inputs'	=> [
-			'admin'	=> [
-				'lbl'	=> 'Algemeen admin/beheerder',
-				'attr' => ['minlength' => 7],
-			],
-			'newsadmin'	=> [
-				'lbl'	=> 'Nieuwsbeheerder',
-				'attr'	=> ['minlength' => 7],
-			],
-			'support'	=> [
-				'lbl'	=> 'Support / Helpdesk',
-				'attr'	=> ['minlength' => 7],
-			],
-		]
-	],
 
-	'msgexp'		=> [
-		'lbl'		=> 'Vervallen vraag en aanbod',
-		'inputs'	=> [
+			'msgs_days_default'	=> [
+				'lbl'	=> 'Standaard geldigheidsduur in aantal dagen', 
+				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
+				'type'	=> 'number',
+				'attr'	=> ['min' => 1, 'max' => 365],
+			],
+
 			'li_1'	=> [
 				'inline' => '%1$s Ruim vervallen vraag en aanbod op na %2$s dagen.',
 				'inputs' => [
@@ -146,16 +158,40 @@ $tab_panes = [
 	],
 
 	'registration'	=> [
-		'lbl'	=> 'Registratie',
-		'lbl_pane'	=> 'Registratieformulier',
+		'lbl'	=> 'Inschrijven',
+		'lbl_pane'	=> 'Inschrijvingsformulier',
 		'inputs'	=> [
 			'li_1'	=> [
-				'inline' => '%1$s registratieformulier aan.',
+				'inline' => '%1$s inschrijvingsformulier aan.',
 				'inputs' => [
 					'registration_en' => [
 						'type' => 'checkbox',
 					],
 				],
+				'explain' => $register_link_explain,
+			],
+			'registration_top_text' => [
+				'lbl'	=> 'Tekst boven het inschrijvingsformulier',
+				'type'	=> 'textarea',
+				'rich_edit'	=> true,
+				'explain' => 'Geschikt bijvoorbeeld om nadere uitleg bij de inschrijving te geven.',
+			],
+			'registration_bottom_text' => [
+				'lbl'	=> 'Tekst onder het inschrijvingsformulier',
+				'type'	=> 'textarea',
+				'rich_edit'	=> true,
+				'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
+			],
+			'registration_success_text'	=> [
+				'lbl'	=> 'Tekst na succesvol indienen formulier.',
+				'type'	=> 'textarea',
+				'rich_edit'	=> true,
+				'explain'	=> 'Deze tekst wordt enkel getoond wanneer hieronder geen url ingevuld is.',
+			],
+			'registration_success_url'	=> [
+				'lbl'	=> 'Url naar pagina na succesvol indienen formulier.',
+				'type'	=> 'url',
+				'explain'	=> 'Voer de gebruiker meteen terug naar je website na succesvol indienen van het formulier.',
 			],
 		],
 	],
@@ -181,17 +217,6 @@ $tab_panes = [
 				'lbl'	=> 'Aantal dagen dat een nieuw lid als instapper getoond wordt.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 0, 'max' => 365],
-			],
-		],
-	],
-
-	'msgs_days_default'	=> [
-		'lbl'	=> 'Vraag en aanbod',
-		'inputs'	=> [
-			'msgs_days_default'	=> [
-				'lbl'	=> 'Standaard geldigheidsduur in aantal dagen van vraag en aanbod.',
-				'type'	=> 'number',
-				'attr'	=> ['min' => 1, 'max' => 365],
 			],
 		],
 	],
@@ -578,6 +603,13 @@ foreach ($eland_config as $setting => $default)
 
 */
 
+
+$includejs = '<script src="' . $cdn_summernote_js . '"></script>';
+$includejs .= '<script src="' . $cdn_summernote_nl . '"></script>';
+$includejs .= '<script src="' . $rootpath . 'js/config.js"></script>';
+
+$includecss = '<link rel="stylesheet" type="text/css" href="' . $cdn_summernote_css . '" />';
+
 $h1 = 'Instellingen';
 $fa = 'gears';
 
@@ -600,8 +632,6 @@ foreach ($tab_panes as $id => $pane)
 echo '</ul>';
 
 echo '<div class="tab-content">';
-
-
 
 ///
 
@@ -687,6 +717,14 @@ foreach ($tab_panes as $id => $pane)
 
 				echo '</select>';
 			}
+			else if (isset($input['type']) && $input['type'] == 'textarea')
+			{
+				echo '<div name="' . $name . '" id="' . $name . '" class="form-control';
+				echo isset($input['rich_edit']) ? ' rich-edit' : '';
+				echo '" rows="4">';
+				echo $config[$name];
+				echo '</div>';
+			}
 			else
 			{
 				echo '<input type="';
@@ -739,6 +777,7 @@ foreach ($tab_panes as $id => $pane)
 
 echo '</div>';
 echo '</div>';
+
 
 include $rootpath . 'includes/inc_footer.php';
 

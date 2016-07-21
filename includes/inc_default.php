@@ -80,6 +80,11 @@ $cdn_leaflet_js = 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js';
 $cdn_leaflet_label_css = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css';
 $cdn_leaflet_label_js = 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js';
 
+$cdn_summernote_nl = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js';
+$cdn_summernote_css = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css';
+$cdn_summernote_js = 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js';
+
+
 $mapbox_token = getenv('MAPBOX_TOKEN');
 
 require_once $rootpath . 'vendor/autoload.php';
@@ -1001,7 +1006,6 @@ function readconfigfromdb($key, $sch = null)
 		'registration_en'			=> '0',
 		'registration_top_text'		=> '',
 		'registration_bottom_text'	=> '',
-		'registration_error_text'	=> '',
 		'registration_success_text'	=> '',
 		'registration_success_url'	=> '',
 		'forum_en'					=> '0',
