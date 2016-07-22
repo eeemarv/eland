@@ -339,6 +339,15 @@ if ($post)
 
 	foreach ($posted_configs as $name => $value)
 	{
+		$validator = $validators[$name];
+
+		$value = (strip_tags($value) !== '') ? $value : '';
+
+		if ($validator['type'] == 'checkbox')
+		{
+			$value = ($value) ? '1' : '0';
+		}
+
 		if ($value === $config[$name])
 		{
 			unset($posted_configs[$name]);
@@ -356,8 +365,6 @@ if ($post)
 
 			continue;
 		}
-
-		$validator = $validators[$name];
 
 		if ($validator['type'] == 'text')
 		{
@@ -396,7 +403,7 @@ if ($post)
 
 		if ($validator['type'] == 'checkbox')
 		{
-			$posted_configs[$name] = ($value) ? '1' : '0';
+			$posted_configs[$name] = $value;
 
 			continue;
 		}
@@ -423,8 +430,6 @@ if ($post)
 
 		if ($validator['type'] == 'textarea')
 		{
-			$value = (strip_tags($value)) ? $value : '';
-
 			$posted_configs[$name] = $value;
 
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
@@ -476,150 +481,6 @@ if ($post)
 
 	cancel();
 }
-
-
-/*
-
-if ($setting)
-{
-	$eh_config = isset($eland_config_default[$setting]) ? $eland_config_default[$setting] : false;
-
-	if ($submit)
-	{
-		$value = $_POST['value'];
-
-		if (strlen($value) > 60)
-		{
-			$errors[] = 'De waarde mag maximaal 60 tekens lang zijn.';
-		}
-
-		if ($value == '')
-		{
-			$errors[] = 'De waarde mag niet leeg zijn.';
-		}
-
-		if ($error_token = get_error_form_token())
-		{
-			$errors[] = $error_token;
-		}
-
-		if (!count($errors))
-		{
-			$exdb->set('setting', $setting, ['value' => $value]);
-
-			if (!$eland_config[$setting])			
-			{
-				if (!$db->update('config', array('value' => $value, '"default"' => 'f'), array('setting' => $setting)))
-				{
-					return false;
-				}
-			}
-
-			$redis_key = $schema . '_config_' . $setting;
-			$redis->set($redis_key, $value);
-			$redis->expire($redis_key, 2592000);
-
-			$alert->success('Instelling aangepast.');
-			cancel();
-		}
-
-		$alert->error($errors);
-	}
-	else
-	{
-		$value = readconfigfromdb($setting);
-	}
-
-	$description = ($eland_config_explain[$setting]) ? $eland_config_explain[$setting] : $db->fetchColumn('select description from config where setting = ?', array($setting));
-
-	$h1 = 'Instelling ' . $setting . ' aanpassen';
-	$fa = 'gears';
-
-	include $rootpath . 'includes/inc_header.php';
-
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-
-	echo '<form method="post" class="form-horizontal">';
-
-	echo '<p>' . $description . '</p>';
-
-	echo '<div class="form-group">';
-	echo '<label for="setting" class="col-sm-2 control-label">Instelling</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="setting" name="setting" ';
-	echo 'value="' . $setting . '" required readonly>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="value" name="value" ';
-	echo 'value="' . $value . '" required maxlength="60">';
-	echo '</div>';
-	echo '</div>';
-
-	echo aphp('config', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
-	generate_form_token();
-
-	echo '</form>';
-
-	echo '</div>';
-	echo '</div>';
-
-	include $rootpath . 'includes/inc_footer.php';
-	exit;
-}
-
-// exclude plaza stuff, emptypasswordlogin, share_enabled, pwscore
-
-$configi = $db->fetchAll('select *
-	from config
-	where category not like \'plaza%\'
-		and setting <> \'emptypasswordlogin\'
-		and setting <> \'share_enabled\'
-		and setting <> \'pwscore\'
-		and setting <> \'msgexpwarningdays\'
-		and setting <> \'news_announce\'
-		and setting <> \'mailinglists_enabled\'
-		and setting <> \'from_address\'
-		and setting <> \'from_address_transactions\'
-		and setting <> \'ets_enabled\'
-	order by category, setting');
-
-foreach ($configi as $c)
-{
-	$configi[$c['setting']] = $c['value'];
-}
-
-
-
-foreach ($eland_config as $setting => $default)
-{
-	unset($value);
-
-	$row = $exdb->get('setting', $setting);
-
-	if ($row)
-	{
-		$value = $row['data']['value'];
-	}
-
-	$config[] = array(
-		'category'		=> 'eLAND',
-		'setting'		=> $setting,
-		'value'			=> isset($value) ? $value : $default[0],
-		'description'	=> $default[1],
-		'default'		=> isset($value) ? false : true,
-	);
-
-	$config[$setting] = $value;
-}
-
-*/
-
 
 $include_ary[] = 'summernote';
 $include_ary[] = 'rich_edit.js';
