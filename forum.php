@@ -115,7 +115,7 @@ if ($submit)
 
 	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
 
-	$content = str_replace(["\n", "\r", '<p>&nbsp;</p>'], '', $content);
+	$content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
 
 	$content = trim($content);
 
@@ -227,8 +227,8 @@ if ($del)
 
 if ($add || $edit)
 {
-	$include_ary[] = 'ckeditor';
-	$include_ary[] = 'forum.js';
+	$include_ary[] = 'summernote';
+	$include_ary[] = 'rich_edit.js';
 	$include_ary[] = 'access_input_cache.js';
 
 	if ($topic)
@@ -276,7 +276,7 @@ if ($add || $edit)
 
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
-	echo '<textarea name="content" class="form-control" id="content" rows="4" required>';
+	echo '<textarea name="content" class="form-control rich-edit" id="content" rows="4" required>';
 	echo $forum_post['content'];
 	echo '</textarea>';
 	echo '</div>';
@@ -405,8 +405,8 @@ if ($topic)
 
 	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
-	$include_ary[] = 'ckeditor';
-	$include_ary[] = 'forum.js';
+	$include_ary[] = 'summernote';
+	$include_ary[] = 'rich_edit.js';
 
 	$h1 = $topic_post['subject'];
 
@@ -460,7 +460,7 @@ if ($topic)
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<textarea name="content" class="form-control" id="content" rows="4" required>';
+		echo '<textarea name="content" class="form-control rich-edit" id="content" rows="4" required>';
 		echo isset($forum_post['content']) ? $forum_post['content'] : '';
 		echo '</textarea>';
 		echo '</div>';
