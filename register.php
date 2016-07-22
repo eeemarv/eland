@@ -245,6 +245,16 @@ $fa = 'check-square-o';
 
 require_once $rootpath . 'includes/inc_header.php';
 
+$top_text = readconfigfromdb('register_top_text');
+
+if ($top_text)
+{
+	echo '<div class="panel-default">';
+	echo '<div class="panel-body">';
+	echo $top_text;
+	echo '</div></div>';
+}
+
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
