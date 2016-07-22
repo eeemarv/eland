@@ -622,7 +622,7 @@ foreach ($eland_config as $setting => $default)
 
 
 $include_ary[] = 'summernote';
-$include_ary[] = 'config.js';
+$include_ary[] = 'rich_edit.js';
 
 $h1 = 'Instellingen';
 $fa = 'gears';

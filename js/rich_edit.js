@@ -5,7 +5,6 @@ $(document).ready(function(){
 		lang: 'nl-NL',
 
 		 toolbar: [
-			// [groupName, [list of button]]
 			['style', ['bold', 'italic', 'underline', 'clear']],
 			['fontsize', ['fontsize']],
 			['para', ['ul', 'ol', 'paragraph']],
