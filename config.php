@@ -7,7 +7,7 @@ require_once $rootpath . 'includes/inc_default.php';
 $setting = (isset($_GET['edit'])) ? $_GET['edit'] : false;
 $submit = (isset($_POST['zend'])) ? true : false;
 
-$active_tab = 'systemname';
+$active_tab = 'balance';
 $active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : $active_tab;
 $active_tab = isset($_POST['active_tab']) ? $_POST['active_tab'] : $active_tab;
 
@@ -16,51 +16,6 @@ $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
 
 $tab_panes = [
-
-	'systemname'	=> [
-		'lbl'	=> 'Groepsnaam',
-		'inputs' => [
-			'systemname' => [
-				'lbl'	=> 'Groepsnaam',
-			],
-			'systemtag' => [
-				'lbl'	=> 'Tag (hoofding voor emails)',
-				'attr'	=> ['maxlength' => 30],
-			],
-		],
-	],
-
-	'currency'		=> [
-		'lbl'	=> 'LETS-Eenheid',
-		'inputs'	=> [
-			'currency'	=> [
-				'lbl'	=> 'Naam van LETS-Eenheid (meervoud)',
-			],
-			'currencyratio'	=> [
-				'lbl'	=> 'Aantal per uur',
-				'attr'	=> ['max' => 240, 'min' => 1],
-				'type'	=> 'number',
-			],
-		],
-	],
-
-	'mailaddresses'	=> [
-		'lbl'		=> 'Mailadressen',
-		'inputs'	=> [
-			'admin'	=> [
-				'lbl'	=> 'Algemeen admin/beheerder',
-				'attr' => ['minlength' => 7],
-			],
-			'newsadmin'	=> [
-				'lbl'	=> 'Nieuwsbeheerder',
-				'attr'	=> ['minlength' => 7],
-			],
-			'support'	=> [
-				'lbl'	=> 'Support / Helpdesk',
-				'attr'	=> ['minlength' => 7],
-			],
-		]
-	],
 
 	'balance'		=> [
 		'lbl'		=> 'Saldo',
@@ -126,6 +81,51 @@ $tab_panes = [
 						'attr'	=> ['min' => 1, 'max' => 365],
 					],
 				],
+			],
+		]
+	],
+
+	'systemname'	=> [
+		'lbl'	=> 'Groepsnaam',
+		'inputs' => [
+			'systemname' => [
+				'lbl'	=> 'Groepsnaam',
+			],
+			'systemtag' => [
+				'lbl'	=> 'Tag (hoofding voor emails)',
+				'attr'	=> ['maxlength' => 30],
+			],
+		],
+	],
+
+	'currency'		=> [
+		'lbl'	=> 'LETS-Eenheid',
+		'inputs'	=> [
+			'currency'	=> [
+				'lbl'	=> 'Naam van LETS-Eenheid (meervoud)',
+			],
+			'currencyratio'	=> [
+				'lbl'	=> 'Aantal per uur',
+				'attr'	=> ['max' => 240, 'min' => 1],
+				'type'	=> 'number',
+			],
+		],
+	],
+
+	'mailaddresses'	=> [
+		'lbl'		=> 'Mailadressen',
+		'inputs'	=> [
+			'admin'	=> [
+				'lbl'	=> 'Algemeen admin/beheerder',
+				'attr' => ['minlength' => 7],
+			],
+			'newsadmin'	=> [
+				'lbl'	=> 'Nieuwsbeheerder',
+				'attr'	=> ['minlength' => 7],
+			],
+			'support'	=> [
+				'lbl'	=> 'Support / Helpdesk',
+				'attr'	=> ['minlength' => 7],
 			],
 		]
 	],
@@ -718,7 +718,20 @@ foreach ($tab_panes as $id => $pane)
 			{
 				echo '<textarea name="' . $name . '" id="' . $name . '" class="form-control';
 				echo isset($input['rich_edit']) ? ' rich-edit' : '';
-				echo '" rows="4">';
+				echo '" rows="4"';
+
+				echo (isset($input['attr']['maxlength'])) ? '' : ' maxlength="2000"';
+				echo (isset($input['attr']['minlength'])) ? '' : ' minlength="1"';
+
+				if (isset($input['attr']))
+				{
+					foreach ($input['attr'] as $attr_name => $attr_value)
+					{
+						echo ' ' . $attr_name . '="' . $attr_value . '"';
+					}
+				}
+
+				echo '>';
 				echo $config[$name];
 				echo '</textarea>';
 			}
