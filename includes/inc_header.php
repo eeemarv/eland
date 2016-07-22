@@ -294,6 +294,7 @@ if ($s_anonymous)
 		'help'		=> ['ambulance', 'Help', []],
 	];
 
+
 	if (readconfigfromdb('registration_en'))
 	{
 		$menu['register'] = ['check-square-o', 'Inschrijven', []];

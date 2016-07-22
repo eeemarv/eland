@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'anonymous';
-$allow_anonymous_post = true;
+
 require_once $rootpath . 'includes/inc_default.php';
 
 $submit = isset($_POST['zend']) ? true : false;
@@ -11,6 +11,11 @@ if ($s_id)
 {
 	header('Location: ' . $rootpath . 'index.php');
 	exit;
+}
+
+if (!readconfigfromdb('registration_en'))
+{
+	redirect_login();
 }
 
 if ($token = $_GET['token'])
@@ -245,11 +250,11 @@ $fa = 'check-square-o';
 
 require_once $rootpath . 'includes/inc_header.php';
 
-$top_text = readconfigfromdb('register_top_text');
+$top_text = readconfigfromdb('registration_top_text');
 
 if ($top_text)
 {
-	echo '<div class="panel-default">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 	echo $top_text;
 	echo '</div></div>';
@@ -315,6 +320,16 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
+
+$bottom_text = readconfigfromdb('registration_bottom_text');
+
+if ($bottom_text)
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-body">';
+	echo $bottom_text;
+	echo '</div></div>';
+}
 
 require_once $rootpath . 'includes/inc_footer.php';
 exit;

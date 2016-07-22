@@ -2,7 +2,6 @@
 
 $rootpath = './';
 $page_access = 'anonymous';
-$allow_anonymous_post = true;
 
 require_once $rootpath . 'includes/inc_default.php';
 

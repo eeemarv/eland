@@ -21,7 +21,7 @@ $tab_panes = [
 		'lbl'		=> 'Saldo',
 		'inputs'	=> [
 			'minlimit'	=> [
-				'lbl'	=> 'Standaard minimum limiet',
+				'lbl'	=> 'Minimum limiet',
 				'type'	=> 'number',
 				'explain'	=> 'Standaardwaarde minimum limiet voor nieuwe gebruikers.',
 			],
@@ -423,7 +423,19 @@ if ($post)
 
 		if ($validator['type'] == 'textarea')
 		{
+			$value = (strip_tags($value)) ? $value : '';
 
+			$posted_configs[$name] = $value;
+
+			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
+			{
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['maxlength'] . ' tekens lang zijn.';
+			}
+
+			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
+			{
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['minlength'] . ' tekens lang zijn.';
+			}
 		}
 	}
 
@@ -445,7 +457,12 @@ if ($post)
 
 		$redis->del($schema . '_config_' . $name);
 
-		$db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);		
+		// check existance of config in eLAS first to prevent string too long error
+
+		if ($db->fetchColumn('select setting from config where setting = ?', [$name]))
+		{
+			$db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
+		}
 	}
 
 	if (count($posted_configs) > 1)

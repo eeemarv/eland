@@ -2,7 +2,16 @@ $(document).ready(function(){
 
 	$('textarea.rich-edit').summernote({
 
-		lang: 'nl-NL'
+		lang: 'nl-NL',
+
+		 toolbar: [
+			// [groupName, [list of button]]
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['fontsize', ['fontsize']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['insert', ['hr', 'link']],
+			['misc', ['fullscreen', 'codeview']]
+		  ]
 
 	});
 
