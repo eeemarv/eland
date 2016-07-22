@@ -91,9 +91,6 @@ $asset_ary = [
 		],
 		'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.standalone.min.css',
 	],
-	'ckeditor'	=> [
-		'js'	=> '//cdn.ckeditor.com/4.5.3/standard/ckeditor.js',
-	],
 	'isotope'	=> [
 		'js' => [
 			'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js',
