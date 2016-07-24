@@ -15,6 +15,7 @@ if ($s_id)
 
 if (!readconfigfromdb('registration_en'))
 {
+	$alert->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
 }
 
