@@ -28,7 +28,7 @@ if ($token = $_GET['token'])
 		$data = json_decode($data, true);
 		$redis->del($key);
 
-		$letscode = '--' . substr($token, 0, 5);
+//		$letscode = '--' . substr($token, 0, 5);
 
 		for ($i = 0; $i < 60; $i++)
 		{
@@ -58,8 +58,8 @@ if ($token = $_GET['token'])
 			'name'			=> $name,
 			'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
 			'postcode'		=> $data['postcode'],
-			'letscode'		=> $letscode,
-			'login'			=> $letscode,
+//			'letscode'		=> '',
+			'login'			=> sha1(microtime()),
 			'minlimit'		=> readconfigfromdb('minlimit'),
 			'maxlimit'		=> readconfigfromdb('maxlimit'),
 			'status'		=> 5,
@@ -140,18 +140,28 @@ if ($token = $_GET['token'])
 
 		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
+		$registration_success_url = readconfigfromdb('registration_success_url');
+
+		if ($registration_success_url)
+		{
+			header('Location: ' . $registration_success_url);
+			exit;
+		}
+
 		$alert->success('Inschrijving voltooid.');
 
 		require_once $rootpath . 'includes/inc_header.php';
-/*
-		echo '<div class="panel panel-success">';
-		echo '<div class="panel-body">';
 
-//		echo '<h2>Inschrijving gelukt</h2>';
+		$registration_success_text = readconfigfromdb('registration_success_text');
 
-		echo '</div>';
-		echo '</div>';
-*/
+		if ($registration_success_text)
+		{
+			echo '<div class="panel panel-default">';
+			echo '<div class="panel-body">';
+			echo $registration_success_text;
+			echo '</div></div>';
+		}
+
 		require_once $rootpath . 'includes/inc_footer.php';
 
 		exit;

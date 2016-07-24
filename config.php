@@ -353,6 +353,7 @@ if ($post)
 		if ($validator['type'] == 'text' || $validator['type'] == 'textarea')
 		{
 			$config_htmlpurifier = HTMLPurifier_Config::createDefault();
+			$config_htmlpurifier->set('Cache.DefinitionImpl', null);
 			$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
 			$value = $htmlpurifier->purify($value);
 		}
@@ -568,7 +569,7 @@ foreach ($tab_panes as $id => $pane)
 	{
 		echo '<li class="list-group-item">';
 
-		if ($input['max_inputs'] > 1)
+		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
 			echo '<input type="hidden" value="' . $config[$name] . '" ';
 			echo 'data-max-inputs="' . $input['max_inputs'] . '" ';
@@ -692,7 +693,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '</div>';
 		}
 
-		if ($input['max_inputs'] > 1)
+		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
 			echo '<div class="form-group hidden">';
 			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';

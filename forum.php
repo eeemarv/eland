@@ -120,6 +120,7 @@ if ($submit)
 	$content = trim($content);
 
 	$config_htmlpurifier = HTMLPurifier_Config::createDefault();
+	$config_htmlpurifier->set('Cache.DefinitionImpl', null);
 	$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
 	$content = $htmlpurifier->purify($content);
 
