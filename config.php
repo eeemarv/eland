@@ -47,7 +47,7 @@ $tab_panes = [
 				'lbl'	=> 'Standaard geldigheidsduur in aantal dagen', 
 				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
 				'type'	=> 'number',
-				'attr'	=> ['min' => 1, 'max' => 365],
+				'attr'	=> ['min' => 1, 'max' => 1460],
 			],
 
 			'li_1'	=> [
@@ -118,14 +118,20 @@ $tab_panes = [
 			'admin'	=> [
 				'lbl'	=> 'Algemeen admin/beheerder',
 				'attr' => ['minlength' => 7],
+				'type'	=> 'email',
+				'max_inputs'	=> 5,
 			],
 			'newsadmin'	=> [
 				'lbl'	=> 'Nieuwsbeheerder',
 				'attr'	=> ['minlength' => 7],
+				'type'	=> 'email',
+				'max_inputs'	=> 5,
 			],
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
 				'attr'	=> ['minlength' => 7],
+				'type'	=> 'email',
+				'max_inputs'	=> 5,
 			],
 		]
 	],
@@ -325,6 +331,7 @@ if ($post)
 				$validators[$sub_name]['type'] = isset($sub_input['type']) ? $sub_input['type'] : 'text';
 				$validators[$sub_name]['attr'] = isset($sub_input['attr']) ? $sub_input['attr'] : [];
 				$validators[$sub_name]['required'] = isset($sub_input['required']) ? true : false;
+				$validators[$sub_name]['max_inputs'] = isset($sub_input['max_inputs']) ? $sub_input['max_inputs'] : 1;
 			}
 
 			continue;
@@ -335,11 +342,20 @@ if ($post)
 		$validators[$name]['type'] = isset($input['type']) ? $input['type'] : 'text';
 		$validators[$name]['attr'] = isset($input['attr']) ? $input['attr'] : [];
 		$validators[$name]['required'] = isset($input['required']) ? true : false;
+		$validators[$name]['max_inputs'] = isset($input['max_inputs']) ? $input['max_inputs'] : 1;
+
 	}
 
 	foreach ($posted_configs as $name => $value)
 	{
 		$validator = $validators[$name];
+
+		if ($validator['type'] == 'text' || $validator['type'] == 'textarea')
+		{
+			$config_htmlpurifier = HTMLPurifier_Config::createDefault();
+			$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
+			$value = $htmlpurifier->purify($value);
+		}
 
 		$value = (strip_tags($value) !== '') ? $value : '';
 
@@ -368,6 +384,8 @@ if ($post)
 
 		if ($validator['type'] == 'text')
 		{
+			$posted_configs[$name] = $value;
+
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
 			{
 				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['maxlength'] . ' tekens lang zijn.';
@@ -410,9 +428,21 @@ if ($post)
 
 		if ($validator['type'] == 'email')
 		{
-			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+			$mail_ary = explode(',', $value);
+
+			if (count($mail_ary) > $validator['max_inputs'])
 			{
-				$errors[] =  $value . ' is geen geldig email adres.';
+				$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.';
+			}
+
+			foreach ($mail_ary as $m)
+			{
+				$m = trim($m);
+
+				if (!filter_var($m, FILTER_VALIDATE_EMAIL))
+				{
+					$errors[] =  $m . ' is geen geldig email adres.';
+				}
 			}
 
 			continue;
@@ -462,7 +492,15 @@ if ($post)
 
 		$redis->del($schema . '_config_' . $name);
 
-		// check existance of config in eLAS first to prevent string too long error
+		// prevent string too long error for eLAS database
+
+		if ($validators[$name][$max_inputs] > 1)
+		{
+			list($value) = explode(',', $value);
+			$value = trim($value);
+		}
+
+		$value = substr($value, 0, 60);
 
 		if ($db->fetchColumn('select setting from config where setting = ?', [$name]))
 		{
@@ -484,6 +522,7 @@ if ($post)
 
 $include_ary[] = 'summernote';
 $include_ary[] = 'rich_edit.js';
+$include_ary[] = 'config.js';
 
 $h1 = 'Instellingen';
 $fa = 'gears';
@@ -528,6 +567,19 @@ foreach ($tab_panes as $id => $pane)
 	foreach ($pane['inputs'] as $name => $input)
 	{
 		echo '<li class="list-group-item">';
+
+		if ($input['max_inputs'] > 1)
+		{
+			echo '<input type="hidden" value="' . $config[$name] . '" ';
+			echo 'data-max-inputs="' . $input['max_inputs'] . '" ';
+			echo 'name="' . $name . '">';
+
+			$name_suffix = '_0';
+		}
+		else
+		{
+			$name_suffix = '';
+		}
 
 		if (isset($input['inline']))
 		{
@@ -618,7 +670,9 @@ foreach ($tab_panes as $id => $pane)
 				echo '<input type="';
 				echo (isset($input['type'])) ? $input['type'] : 'text';
 				echo '" class="form-control" ';
-				echo 'name="' . $name . '" value="' . $config[$name] . '"';
+				echo 'name="' . $name . $name_suffix . '" ';
+				echo 'id="' . $name . $name_suffix . '" ';
+				echo 'value="' . $config[$name] . '"';
 
 				echo (isset($input['attr']['maxlength'])) ? '' : ' maxlength="60"';
 				echo (isset($input['attr']['minlength'])) ? '' : ' minlength="1"';
@@ -634,6 +688,16 @@ foreach ($tab_panes as $id => $pane)
 				echo '>';
 			}
 
+			echo '</div>';
+			echo '</div>';
+		}
+
+		if ($input['max_inputs'] > 1)
+		{
+			echo '<div class="form-group hidden">';
+			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';
+			echo '<br>';
+			echo '<span class="btn btn-default btn-extra-field"><i class="fa fa-plus" ></i> Extra</span>';
 			echo '</div>';
 			echo '</div>';
 		}

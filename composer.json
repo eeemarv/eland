@@ -13,6 +13,7 @@
         "doctrine/dbal": "~2.5",
         "willdurand/geocoder": "^3",
         "predis/predis": "~1.1",
-        "twig/twig": "^1"
+        "twig/twig": "^1",
+        "ezyang/htmlpurifier": "^4.8"
 	}
 }
