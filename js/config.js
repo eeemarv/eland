@@ -10,44 +10,41 @@ $(document).ready(function(){
 
 		var $li = $(this).parent();
 
-		var $form_group = $(this).siblings('div.form-group');
+		var $form_group = $(this).next('div.form-group');
 
-		var $extra_btn_form_group = $(this).find('div.extra-field');
+		var $add_input = $(this).siblings('div.add-input');
+
+		$add_input.removeClass('hidden');
 
 		var $input = $form_group.find('input');
 
-		console.log($input);
+		if (value_ary[0] && value_ary.length > 1){
 
-		if (value_ary[0]){
-
+			$input.attr('value', '');
 			$input.val(value_ary[0].trim());
 
 		}
 
-		var $cloned_form_group = $form_group.clone();
+		var $cloned_group = $form_group.clone();
 
-		$cloned_form_group.find('label').remove();
-
-		console.log($cloned_form_group);
-		console.log(name);
-		console.log(value_ary);
+		$cloned_group.find('label').remove();
 
 		for (var i = 1; i < value_ary.length; i++){
 
-			
+			$group_clone = $cloned_group.clone();
 
-			$group_clone = $cloned_form_group.clone();
-			$group_clone.find('input').prop('name', name + '_' + (i + 1));
-			$group_clone.find('input').prop('id', name + '_' + (i + 1));
-			$group_clone.find('div').addClass('col-sm-offset-3');
+			$cloned_group.find('input').prop('name', name + '_' + (i + 1));
+			$cloned_group.find('input').prop('id', name + '_' + (i + 1));
+			$cloned_group.find('input').attr('value','');
+			$cloned_group.find('div').addClass('col-sm-offset-3');
 
 			if (value_ary[i]){
 			
-				$group_clone.find('input').val(value_ary[i].trim());
+				$cloned_group.find('input').val(value_ary[i].trim());
 
 			}
 
-			$group_clone.insertAfter($form_group);
+			$cloned_group.insertAfter($form_group);
 
 			console.log(name + '_' + (i + 1));
 

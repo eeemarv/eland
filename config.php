@@ -695,10 +695,10 @@ foreach ($tab_panes as $id => $pane)
 
 		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
-			echo '<div class="form-group hidden">';
+			echo '<div class="form-group hidden add-input">';
 			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';
 			echo '<br>';
-			echo '<span class="btn btn-default btn-extra-field"><i class="fa fa-plus" ></i> Extra</span>';
+			echo '<span class="btn btn-default"><i class="fa fa-plus" ></i> Extra</span>';
 			echo '</div>';
 			echo '</div>';
 		}
