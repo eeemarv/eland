@@ -37,7 +37,8 @@ $images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
 
 $mail = (isset($_POST['mail'])) ? true : false;
 
-$selected_msgs = (isset($_POST['sel'])) ? $_POST['sel'] : [];
+$selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
+
 $extend_submit = (isset($_POST['extend_submit'])) ? true : false;
 $extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
 $access_submit = (isset($_POST['access_submit'])) ? true : false;
@@ -67,7 +68,15 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 		cancel();
 	}
 
-	$selected_msgs = array_keys($selected_msgs);
+	if (!count($selected_msgs))
+	{
+		$errors[] = 'Selecteer ten minste één vraag of aanbod voor deze actie.';
+	}
+
+	if ($error_token = get_error_form_token())
+	{
+		$errors[] = $error_token;
+	}
 
 	$validity_ary = [];
 
@@ -76,16 +85,16 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 	foreach ($rows as $row)
 	{
-		if (!$s_master && $s_user && ($row['id_user'] != $s_id))
+		if (!$s_admin && $s_user && ($row['id_user'] != $s_id))
 		{
-			$alert->error('Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')');
+			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')';
 			cancel();
 		}
 
 		$validity_ary[$row['id']] = $row['validity'];
 	}
 
-	if ($extend_submit)
+	if ($extend_submit && !count($errors))
 	{
 		foreach ($validity_ary as $id => $validity)
 		{
@@ -115,7 +124,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 		cancel();
 	}
 
-	if ($access_submit)
+	if ($access_submit && !count($errors))
 	{
 		$access_error = $access_control->get_post_error();
 
@@ -1987,7 +1996,7 @@ if ($v_list)
 
 		if (!$inline && ($s_admin || $s_owner))
 		{
-			echo '<input type="checkbox" name="sel[' . $msg['id'] . ']" value="1"';
+			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
 			echo '>&nbsp;';
 		}
@@ -2128,8 +2137,6 @@ else if ($v_list)
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
 
-		echo '<form method="post" class="form-horizontal" id="bulk">';
-
 		echo '<ul class="nav nav-tabs" role="tablist">';
 		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
 		echo '<li><a href="#access_tab" data-toggle="tab">Zichtbaarheid</a><li>';
@@ -2139,6 +2146,8 @@ else if ($v_list)
 
 		echo '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
 		echo '<h3>Vraag en aanbod verlengen</h3>';
+
+		echo '<form method="post" class="form-horizontal">';
 
 		echo '<div class="form-group">';
 		echo '<label for="extend" class="col-sm-2 control-label">Verlengen met</label>';
@@ -2151,22 +2160,30 @@ else if ($v_list)
 
 		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
 
+		generate_form_token();
+
+		echo '</form>';
+
 		echo '</div>';
 
 		echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 		echo '<h3>Zichtbaarheid instellen</h3>';
 
+		echo '<form method="post" class="form-horizontal">';
+
 		echo $access_control->get_radio_buttons(false, false, 'admin');
 
 		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
+
+		generate_form_token();
+
+		echo '</form>';
 
 		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
-
-		echo '</form>';
 
 		echo '</div></div>';
 	}

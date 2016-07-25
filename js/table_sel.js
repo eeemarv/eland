@@ -17,12 +17,12 @@ $(document).ready(function() {
 
 	$('form[method="post"]').submit(function(event) {
 
-		var sel_users = [];
+		var sel_ary = [];
 
 		$('table input[type="checkbox"]:visible:checked').each(function(){
-			sel_users.push($(this).attr('name').split('sel_')[1]);
+			sel_ary.push($(this).attr('name').split('sel_')[1]);
 		});
 
-		$('<input type="hidden">').attr({"name": "sel", "value": sel_users.join()}).appendTo(this);
+		$('<input type="hidden">').attr({"name": "sel", "value": sel_ary.join()}).appendTo(this);
 	});	
 });
