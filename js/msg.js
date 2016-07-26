@@ -6,7 +6,7 @@ var jssor_slider1;
 
 function jssor_init(imgs)
 {
-	var bucket_url = $images_con.attr('data-bucket-url');
+	var bucket_url = $images_con.data('bucket-url');
 
 	var html_sl = '<div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 800px; height: 600px;">';
 	html_sl = html_sl + '<div u="slides" id="slides_cont" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;" id="slides">';
@@ -66,7 +66,6 @@ function ScaleSlider() {
 		window.setTimeout(ScaleSlider, 30);
 	}
 }
-
 
 $(document).ready(function(){
 

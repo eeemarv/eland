@@ -251,13 +251,35 @@ if ($post)
 /**
  * post images
  */
-if ($post && $images && $id && $img
-	&& ($s_admin || $s_owner))
+if ($post && $img && $images && !$s_guest)
 {
 	$ret_ary = [];
 
-	$name = $images['name'];
-	$size = $images['size'];
+	if ($id)
+	{
+		if (!$s_owner && !$s_admin)
+		{
+			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
+		}
+	}
+	else
+	{
+		$form_token = isset($_GET['form_token']) ? $_GET['form_token'] : false;
+
+		if (!$form_token)
+		{
+			$ret_ary[] = ['error' => 'Geen vraag of aanbod id of form token gedefinieerd.'];
+		}
+		else if (!$redis->get('form_token_' . $form_token))
+		{
+			$ret_ary[] = ['error' => 'Formulier verlopen of ongeldig.'];
+		}
+	}
+
+	if (count($ret_ary))
+	{
+		$images = [];
+	}
 
 	foreach($images['tmp_name'] as $index => $tmpfile)
 	{
@@ -326,10 +348,18 @@ if ($post && $images && $id && $img
 
 		$image->save($tmpfile2);
 
-		//
+		// if no msg id available then we get the probable next id. If it doesn't match
+		// when the msg is posted then the file will get renamed.
+
+		if (!$id)
+		{
+			$id = $db->getColumn('select max(id) from messages');
+			$id++;
+		}
 
 		try {
-			$filename = $schema . '_m_' . $id . '_' . sha1(time()) . '.jpg';
+			$filename = $schema . '_m_' . $id . '_';
+			$filename .= sha1($filename . microtime()) . '.jpg';
 
 			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', [
 				'params'	=> [
@@ -338,26 +368,32 @@ if ($post && $images && $id && $img
 				],
 			]);
 
-			$db->insert('msgpictures', [
-				'msgid'			=> $id,
-				'"PictureFile"'	=> $filename]);
+			$ret = ['filename' => $filename];
 
-			$img_id = $db->lastInsertId('msgpictures_id_seq');
+			// only insert into msgpictures table when the msg is already created.
+
+			if ($form_token)
+			{
+				log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message not yet created.');
+
+				$ret['msgid'] = $id;
+			}
+			else
+			{
+				$db->insert('msgpictures', [
+					'msgid'			=> $id,
+					'"PictureFile"'	=> $filename]);
+
+				log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
+			}
+
+			//$img_id = $db->lastInsertId('msgpictures_id_seq');
 
 			// $size = $s3->get_object_filesize($s3_img, $filename);
 
-			log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
-
 			unlink($tmpfile);
 
-			$ret_ary[] = [
-				'url'			=> $s3_img_url . $filename,
-				'filename'		=> $filename,
-				'name'			=> $name,
-				'size'			=> $size,
-				'delete_url'	=> 'messages.php?id=' . $id . '&img_del=' . $img_id,
-				'delete_type'	=> 'POST',
-			];
+			$ret_ary[] = $ret;
 		}
 		catch(Exception $e)
 		{
