@@ -76,6 +76,7 @@ if(isset($_POST['zend']))
 			$text .= '. Contacteer de gebruiker op andere wijze.';
 		}
 
+		$text .= "\r\n\r\n";
 		$text .= 'Contactgegevens van ' . link_user($s_id, false, false) . ":\r\n\r\n";
 
 		foreach($my_contacts as $value)
