@@ -402,7 +402,7 @@ if ($post)
 
 		if ($validator['type'] == 'number')
 		{
-			if (!ctype_digit($value))
+			if (!filter_var($value, FILTER_VALIDATE_INT))
 			{
 				$errors[] = 'Fout: de waarde moet een getal zijn.';
 			}
