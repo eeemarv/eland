@@ -1065,25 +1065,21 @@ function readconfigfromdb($key, $sch = null)
 		return $cache[$sch][$key] = $redis->get($redis_key);
 	}
 
-	if (isset($eland_config_default[$key]))
+	$row = $exdb->get('setting', $key, $sch);
+
+	if ($row)
 	{
-		//error_log('exdb config key: ' . $key . ' schema : ' . $sch);
-		//debug_print_backtrace();
-
-		$row = $exdb->get('setting', $key, $sch);
-
-		if ($row)
-		{
-			$value = $row['data']['value'];
-		}
-		else
-		{
-			$value = $eland_config_default[$key];
-		}
+		$value = $row['data']['value'];
+	}
+	else if (isset($eland_config_default[$key]))
+	{
+		$value = $eland_config_default[$key];
 	}
 	else
 	{
 		$value = $db->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
+
+		$exdb->set('setting', $key, ['value' => $value], $sch);
 	}
 
 	if (isset($value))

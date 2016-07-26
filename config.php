@@ -508,7 +508,7 @@ if ($post)
 
 		// prevent string too long error for eLAS database
 
-		if ($validators[$name][$max_inputs] > 1)
+		if ($validators[$name]['max_inputs'] > 1)
 		{
 			list($value) = explode(',', $value);
 			$value = trim($value);
