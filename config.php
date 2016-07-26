@@ -120,18 +120,21 @@ $tab_panes = [
 				'attr' => ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
+				'add_btn_text' => 'Extra mailadres',
 			],
 			'newsadmin'	=> [
 				'lbl'	=> 'Nieuwsbeheerder',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
+				'add_btn_text'	=> 'Extra mailadres',
 			],
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
+				'add_btn_text'	=> 'Extra mailadres',
 			],
 		]
 	],
@@ -429,21 +432,31 @@ if ($post)
 
 		if ($validator['type'] == 'email')
 		{
-			$mail_ary = explode(',', $value);
-
-			if (count($mail_ary) > $validator['max_inputs'])
+			if (isset($validator['max_inputs']))
 			{
-				$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.';
+				$mail_ary = explode(',', $value);
+
+				if (count($mail_ary) > $validator['max_inputs'])
+				{
+					$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.';
+				}
+
+				foreach ($mail_ary as $m)
+				{
+					$m = trim($m);
+
+					if (!filter_var($m, FILTER_VALIDATE_EMAIL))
+					{
+						$errors[] =  $m . ' is geen geldig email adres.';
+					}
+				}
+
+				continue;
 			}
 
-			foreach ($mail_ary as $m)
+			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 			{
-				$m = trim($m);
-
-				if (!filter_var($m, FILTER_VALIDATE_EMAIL))
-				{
-					$errors[] =  $m . ' is geen geldig email adres.';
-				}
+				$errors[] =  $value . ' is geen geldig email adres.';
 			}
 
 			continue;
@@ -698,7 +711,9 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="form-group hidden add-input">';
 			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';
 			echo '<br>';
-			echo '<span class="btn btn-default"><i class="fa fa-plus" ></i> Extra</span>';
+			echo '<span class="btn btn-default"><i class="fa fa-plus" ></i> ';
+			echo isset($input['add_btn_text']) ? $input['add_btn_text'] : 'Extra';
+			echo '</span>';
 			echo '</div>';
 			echo '</div>';
 		}
