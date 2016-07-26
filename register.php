@@ -136,7 +136,7 @@ if ($token = $_GET['token'])
 		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
 		$text .= 'Postcode: ' . $user['postcode'] . "\n";
 		$text .= 'Email: ' . $data['email'] . "\n\n";
-		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id . '&admin=1';
+		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id;
 
 		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
@@ -242,7 +242,7 @@ if ($submit)
 		$key = $schema . '_register_email_' . $email;
 		$redis->set($key, '1');
 		$redis->expire($key, 86400);
-		$subject = '[' . $systemtag . '] Bevestig je inschrijving';
+		$subject = 'Bevestig je inschrijving voor ' . $systemname;
 		$url = $base_url . '/register.php?token=' . $token;
 		$text = 'Inschrijven voor ' . $systemname . "\n\n";
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
