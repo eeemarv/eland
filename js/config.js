@@ -10,6 +10,25 @@ $(document).ready(function(){
 
 		var $li = $(this).parent();
 
+		var data_input = $(this);
+
+		$(this).closest('form').submit(function(){
+
+			var out = [];
+
+			$li.find('div input').each(function(){
+
+				var val = $(this).val();
+
+				if (val){
+					out.push(val);
+				}
+			});
+
+			data_input.val(out.join(','));
+
+		});
+
 		var $form_group = $(this).next('div.form-group');
 
 		var $add_input = $(this).siblings('div.add-input');
