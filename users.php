@@ -2173,7 +2173,14 @@ if ($id)
 		echo '<dt>';
 		echo 'Geboortedatum';
 		echo '</dt>';
-		dd_render($date_format->get($user['birthday'], 'day'));
+		if (isset($user['birthday']))
+		{
+			dd_render($date_format->get($user['birthday'], 'day'));
+		}
+		else
+		{
+			echo '<dd><i class="fa fa-times"></i></dd>';
+		}
 	}
 
 	echo '<dt>';
@@ -2191,17 +2198,41 @@ if ($id)
 		echo '<dt>';
 		echo 'Tijdstip aanmaak';
 		echo '</dt>';
-		dd_render($date_format->get($user['cdate']));
+
+		if (isset($user['cdate']))
+		{
+			dd_render($date_format->get($user['cdate']));
+		}
+		else
+		{
+			echo '<dd><i class="fa fa-times"></i></dd>';
+		}
 
 		echo '<dt>';
 		echo 'Tijdstip activering';
 		echo '</dt>';
-		dd_render($date_format->get($user['adate']));
+
+		if (isset($user['adate']))
+		{
+			dd_render($date_format->get($user['adate']));
+		}
+		else
+		{
+			echo '<dd><i class="fa fa-times"></i></dd>';
+		}
 
 		echo '<dt>';
 		echo 'Laatste login';
 		echo '</dt>';
-		dd_render($date_format->get($user['lastlogin']));
+
+		if (isset($user['lastlogin']))
+		{
+			dd_render($date_format->get($user['lastlogin']));
+		}
+		else
+		{
+			echo '<dd><i class="fa fa-times"></i></dd>';
+		}
 
 		echo '<dt>';
 		echo 'Rechten';
