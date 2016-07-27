@@ -1015,8 +1015,11 @@ if (($edit || $add))
 	{
 		$include_ary[] = 'typeahead';
 		$include_ary[] = 'typeahead.js';
-		$include_ary[] = 'access_input_cache.js';
 	}
+
+	$include_ary[] = 'fileupload';
+	$include_ary[] = 'msg_edit.js';
+	$include_ary[] = 'access_input_cache.js';	
 
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
@@ -1100,9 +1103,28 @@ if (($edit || $add))
 	echo '</div>';
 	echo '</div>';
 
+	echo '<div class="form-group">';
+	echo '<label for="fileupload" class="col-sm-2 control-label">Afbeeldingen</label>';
+	echo '<div class="col-sm-10">';
+
+	echo '<span class="btn btn-default fileinput-button">';
+	echo '<i class="fa fa-plus" id="img_plus"></i> Opladen';
+	echo '<input id="fileupload" type="file" name="images[]" ';
+	echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id]) . '" ';
+	echo 'data-data-type="json" data-auto-upload="true" ';
+	echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+	echo 'data-max-file-size="999000" ';
+	echo 'multiple></span>&nbsp;';
+
+	echo '<p><small>Afbeeldingen moeten in het jpg/jpeg formaat zijn. Je kan ook afbeeldingen hierheen ';
+	echo 'verslepen.</small></p>';	
+	echo '</div>';
+	echo '</div>';
+
 	$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
 	echo $access_control->get_radio_buttons('messages', $access_value, 'admin');
+
 
 	$btn = ($edit) ? 'primary' : 'success';
 
