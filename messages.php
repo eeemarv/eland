@@ -379,7 +379,7 @@ if ($post && $img && $images && !$s_guest)
 
 			// only insert into msgpictures table when the msg is already created.
 
-			if ($img_insert)
+			if ($insert_img)
 			{
 				$db->insert('msgpictures', [
 					'msgid'			=> $id,

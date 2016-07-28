@@ -1,6 +1,15 @@
 $(document).ready(function () {
 
-    $('#fileupload').fileupload({
+    $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
+
+		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
+
+		alert(error);
+
+		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
+
+	}).fileupload({
+
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
