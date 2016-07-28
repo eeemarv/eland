@@ -1,5 +1,14 @@
 $(document).ready(function () {
 
+	$('span.img-delete').click(function() {
+
+		var $thumbnail = $(this).closest('div.thumbnail');
+
+		var src = $thumbnail.find('img').attr('src');
+
+		alert(src);
+	});
+
     $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
 
 		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
@@ -28,12 +37,34 @@ $(document).ready(function () {
 
             if (file.filename) {
 
-				var filename_input_html = '<input type="hidden" name="uploaded_images[]" value="';
+				var input_str = '<input type="hidden" name="uploaded_images[]" value="';
+				input_str += file.filename + '">'; 
 
-				filename_input_html += file.filename + '">';
+				var $input = $(input_str);
 
-				$('form').append(filename_input_html);
+				$('form').append($input);
 
+				var $model = $('#thumbnail_model');
+
+				var $thumbnail = $model.clone();
+
+				$thumbnail.prop('id', file.filename);
+
+				var $img = $thumbnail.find('img');
+
+				var s3_url = $img.data('s3-url');
+
+				$img.attr('src', s3_url + file.filename);
+
+				$thumbnail.find('span.img-delete').click(function(){
+
+					$input.remove();
+					$thumbnail.remove();
+				});
+
+				$thumbnail.removeClass('hidden');
+
+				$model.parent().append($thumbnail);
 
             } else {
 

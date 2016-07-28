@@ -1114,18 +1114,37 @@ if (($edit || $add))
 
 	echo '<div class="row">';
 
+	echo '<div class="col-sm-3 col-md-2 hidden" id="thumbnail_model">';
+	echo '<div class="thumbnail">';
+	echo '<img data-s3-url="' . $s3_img_url . '" src="" alt="afbeelding">';
+	echo '<div class="caption">';
+/*
+	echo '<p><span class="btn btn-default" role="button">';
+	echo '<i class="fa fa-caret-left"></i></span>';
+	echo '<span class="btn btn-default" role="button">';
+	echo '<i class="fa fa-caret-right"></i></span>';
+	echo '</p>';
+*/
+	echo '<p><span class="btn btn-danger img-delete" role="button">';
+	echo '<i class="fa fa-times"></i></span></p>';
+	echo '</div>';
+	echo '</div>';
+	echo '</div>';
+
 	foreach ($images as $img)
 	{
 		echo '<div class="col-sm-3 col-md-2">';
 		echo '<div class="thumbnail">';
 		echo '<img src="' . $s3_img_url . $img['PictureFile'] . '" alt="afbeelding">';
 		echo '<div class="caption">';
+/*
 		echo '<p><span class="btn btn-default" role="button">';
 		echo '<i class="fa fa-caret-left"></i></span>';
 		echo '<span class="btn btn-default" role="button">';
 		echo '<i class="fa fa-caret-right"></i></span>';
 		echo '</p>';
-		echo '<p><span class="btn btn-danger" role="button">';
+*/
+		echo '<p><span class="btn btn-danger img-delete" role="button">';
 		echo '<i class="fa fa-times"></i></span></p>';
 		echo '</div>';
 		echo '</div>';
