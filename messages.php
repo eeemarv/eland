@@ -961,6 +961,8 @@ if (($edit || $add))
 		$user = readuser($msg['id_user']);
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
+
+		$images = $db->fetchAll('select * from msgpictures where msgid = ?', [$edit]);
 	}
 	else if ($add)
 	{
@@ -988,6 +990,8 @@ if (($edit || $add))
 
 			$user_letscode = $user['letscode'] . ' ' . $user['name'];
 		}
+
+		$images = [];
 	}
 
 	$cat_list = ['' => ''];
@@ -1105,6 +1109,32 @@ if (($edit || $add))
 	echo '<div class="form-group">';
 	echo '<label for="fileupload" class="col-sm-2 control-label">Afbeeldingen</label>';
 	echo '<div class="col-sm-10">';
+
+//
+
+	echo '<div class="row">';
+
+	foreach ($images as $img)
+	{
+		echo '<div class="col-sm-3 col-md-2">';
+		echo '<div class="thumbnail">';
+		echo '<img src="' . $s3_img_url . $img['PictureFile'] . '" alt="afbeelding">';
+		echo '<div class="caption">';
+		echo '<p><span class="btn btn-default" role="button">';
+		echo '<i class="fa fa-caret-left"></i></span>';
+		echo '<span class="btn btn-default" role="button">';
+		echo '<i class="fa fa-caret-right"></i></span>';
+		echo '</p>';
+		echo '<p><span class="btn btn-danger" role="button">';
+		echo '<i class="fa fa-times"></i></span></p>';
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+	}
+
+	echo '</div>';
+
+//
 
 	$upload_img_param = ['img'	=> 1];
 
