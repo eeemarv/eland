@@ -31,6 +31,7 @@ $ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'active';
 $fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
 
 $img = (isset($_GET['img'])) ? true : false;
+$insert_img = (isset($_GET['insert_img'])) ? true : false;
 $img_del = (isset($_GET['img_del'])) ? $_GET['img_del'] : false;
 
 $images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
@@ -262,7 +263,8 @@ if ($post && $img && $images && !$s_guest)
 			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
 		}
 	}
-	else
+
+	if (!$insert_img)
 	{
 		$form_token = isset($_GET['form_token']) ? $_GET['form_token'] : false;
 
@@ -294,6 +296,7 @@ if ($post && $img && $images && !$s_guest)
 				'size'	=> $size,
 				'error' => 'ongeldig bestandstype',
 			];
+
 			continue;
 		}
 
@@ -304,6 +307,7 @@ if ($post && $img && $images && !$s_guest)
 				'size'	=> $size,
 				'error' => 'te groot bestand',
 			];
+
 			continue;
 		}
 
@@ -311,30 +315,33 @@ if ($post && $img && $images && !$s_guest)
 
 		$exif = exif_read_data($tmpfile);
 
-		$orientation = $exif['COMPUTED']['Orientation'];
-
 		$tmpfile2 = tempnam(sys_get_temp_dir(), 'img');
 
 		$imagine = new Imagine\Imagick\Imagine();
 
 		$image = $imagine->open($tmpfile);
 
-		switch ($orientation)
+		if (isset($exif['COMPUTED']['Orientation']))
 		{
-			case 3:
-			case 4:
-				$image->rotate(180);
-				break;
-			case 5:
-			case 6:
-				$image->rotate(-90);
-				break;
-			case 7:
-			case 8:
-				$image->rotate(90);
-				break;
-			default:
-				break;
+			$orientation = $exif['COMPUTED']['Orientation'];
+
+			switch ($orientation)
+			{
+				case 3:
+				case 4:
+					$image->rotate(180);
+					break;
+				case 5:
+				case 6:
+					$image->rotate(-90);
+					break;
+				case 7:
+				case 8:
+					$image->rotate(90);
+					break;
+				default:
+					break;
+			}
 		}
 
 		$orgsize = $image->getSize();
@@ -353,7 +360,7 @@ if ($post && $img && $images && !$s_guest)
 
 		if (!$id)
 		{
-			$id = $db->getColumn('select max(id) from messages');
+			$id = $db->fetchColumn('select max(id) from messages');
 			$id++;
 		}
 
@@ -372,24 +379,18 @@ if ($post && $img && $images && !$s_guest)
 
 			// only insert into msgpictures table when the msg is already created.
 
-			if ($form_token)
-			{
-				log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message not yet created.');
-
-				$ret['msgid'] = $id;
-			}
-			else
+			if ($img_insert)
 			{
 				$db->insert('msgpictures', [
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
-				log_event('pict', 'Message-Picture ' . $filename . ' uploaded. Message: ' . $id);
+				log_event('pict', 'Message-Picture ' . $filename . ' uploaded and inserted in db.');
 			}
-
-			//$img_id = $db->lastInsertId('msgpictures_id_seq');
-
-			// $size = $s3->get_object_filesize($s3_img, $filename);
+			else
+			{
+				log_event('pict', 'Message-Picture ' . $filename . ' uploaded, not (yet) inserted in db.');
+			}
 
 			unlink($tmpfile);
 
@@ -399,6 +400,8 @@ if ($post && $img && $images && !$s_guest)
 		{
 			echo $e->getMessage();
 			log_event('pict', 'Upload fail : ' . $e->getMessage());
+
+			$ret_ary = [['error' => 'Opladen mislukt.']];
 		}
 	}
 
@@ -894,9 +897,7 @@ if (($edit || $add))
 				$msg['validity'] = $msg['vtime'];
 			}
 			$msg['mdate'] = gmdate('Y-m-d H:i:s');
-/*
-			$description = $msg['description'];
-*/
+
 			unset($msg['vtime']);
 
 			if (empty($msg['amount']))
@@ -909,8 +910,6 @@ if (($edit || $add))
 			try
 			{
 				$db->update('messages', $msg, ['id' => $edit]);
-
-	//			$db->update('messages', ['"Description"' => $description, ['id' => $id]]);
 
 				if ($msg['msg_type'] != $msg['msg_type'] || $msg['id_category'] != $msg['id_category'])
 				{
@@ -1107,10 +1106,21 @@ if (($edit || $add))
 	echo '<label for="fileupload" class="col-sm-2 control-label">Afbeeldingen</label>';
 	echo '<div class="col-sm-10">';
 
+	$upload_img_param = ['img'	=> 1];
+
+	if ($edit)
+	{
+		$upload_img_param['id'] = $id;
+	}
+	else
+	{
+		$upload_img_param['form_token'] = generate_form_token(false);
+	}
+
 	echo '<span class="btn btn-default fileinput-button">';
 	echo '<i class="fa fa-plus" id="img_plus"></i> Opladen';
 	echo '<input id="fileupload" type="file" name="images[]" ';
-	echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id]) . '" ';
+	echo 'data-url="' . generate_url('messages', $upload_img_param) . '" ';
 	echo 'data-data-type="json" data-auto-upload="true" ';
 	echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 	echo 'data-max-file-size="999000" ';
@@ -1124,7 +1134,6 @@ if (($edit || $add))
 	$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
 	echo $access_control->get_radio_buttons('messages', $access_value, 'admin');
-
 
 	$btn = ($edit) ? 'primary' : 'success';
 
@@ -1282,7 +1291,7 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
-		echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id]) . '" ';
+		echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id, 'insert_img' => 1]) . '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
