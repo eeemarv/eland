@@ -824,6 +824,11 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
+	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
+
+	$db->execute('delete from eland_extra.logs
+		where schema = ? and ts < ?', [$schema, $treshold]);
+
 	return true;
 }
 
