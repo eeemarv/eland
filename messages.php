@@ -897,6 +897,11 @@ if (($edit || $add))
 							$img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
 						}
 
+						if ($msgid != $edit)
+						{
+							$img_errors[] = 'Id stemt niet overeen voor afbeelding ' . $img;
+						}
+
 						if (count($img_errors))
 						{
 							foreach ($img_errors as $error)
@@ -905,6 +910,8 @@ if (($edit || $add))
 							}
 
 							$alert->error($img_errors);
+
+							continue;
 						}
 
 						if ($msgid == $id)
@@ -1008,6 +1015,70 @@ if (($edit || $add))
 						set ' . $column . ' = ' . $column . ' + 1
 						where id = ?', [$msg['id_category']]);
 				}
+
+				if (count($deleted_images))
+				{
+					foreach ($deleted_images as $img)
+					{
+						if ($db->delete('msgpictures', [
+							'msgid'		=> $edit,
+							'"PictureFile"'	=> $img,
+						]))
+						{
+							log_event('pict', 'message-picture ' . $img . ' deleted from db.');
+						}
+					}
+				}
+
+				if (count($uploaded_images))
+				{
+					foreach ($uploaded_images as $img)
+					{
+						$img_errors = [];
+
+						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
+
+						if ($sch != $schema)
+						{
+							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
+						}
+
+						if ($img_type != 'm')
+						{
+							$img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
+						}
+
+						if ($msgid != $edit)
+						{
+							$img_errors[] = 'Id stemt niet overeen voor afbeelding ' . $img;
+						}
+
+						if (count($img_errors))
+						{
+							foreach ($img_errors as $error)
+							{
+								log_event('pict', $error);
+							}
+
+							$alert->error($img_errors);
+
+							continue;
+						}
+
+						if ($db->insert('msgpictures', [
+							'"PictureFile"' => $img,
+							'msgid'			=> $edit,
+						]))
+						{
+							log_event('pict', 'message-picture ' . $img . ' inserted in db.');
+						}
+						else
+						{
+							log_event('pict', 'error message-picture ' . $img . ' not inserted in db.');
+						}
+					}
+				}
+
 				$db->commit();
 				$alert->success('Vraag/aanbod aangepast');
 				cancel($edit);
