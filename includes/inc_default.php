@@ -1058,7 +1058,7 @@ function readconfigfromdb($key, $sch = null)
 
 	$redis_key = $sch . '_config_' . $key;
 
-	if ($redis->exists($redis_key) && $key != 'date_format')
+	if ($redis->exists($redis_key))// && $key != 'date_format')
 	{
 		//error_log('redis config key: ' . $key . ' schema : ' . $sch);
 
