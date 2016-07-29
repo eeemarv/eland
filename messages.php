@@ -270,7 +270,7 @@ if ($post && $img && $images && !$s_guest)
 
 		if (!$form_token)
 		{
-			$ret_ary[] = ['error' => 'Geen vraag of aanbod id of form token gedefinieerd.'];
+			$ret_ary[] = ['error' => 'Geen form token gedefiniëerd.'];
 		}
 		else if (!$redis->get('form_token_' . $form_token))
 		{
@@ -376,8 +376,6 @@ if ($post && $img && $images && !$s_guest)
 			]);
 
 			$ret = ['filename' => $filename];
-
-			// only insert into msgpictures table when the msg is already created.
 
 			if ($insert_img)
 			{
@@ -802,6 +800,9 @@ if (($edit || $add))
 			'local'			=> ($access_control->get_post_value() == 2) ? 0 : 1,
 		];
 
+		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
+		$uploaded_images = isset($_POST['uploaded_images']) ? $_POST['uploaded_images'] : [];
+
 		$access_error = $access_control->get_post_error();
 
 		if ($access_error)
@@ -877,6 +878,86 @@ if (($edit || $add))
 				$stat_column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
 				$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', [$msg['id_category']]);
+
+				if (count($uploaded_images))
+				{
+					foreach ($uploaded_images as $img)
+					{
+						$img_errors = [];
+
+						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
+
+						if ($sch != $schema)
+						{
+							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
+						}
+
+						if ($img_type != 'm')
+						{
+							$img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
+						}
+
+						if (count($img_errors))
+						{
+							foreach ($img_errors as $error)
+							{
+								log_event('pict', $error);
+							}
+
+							$alert->error($img_errors);
+						}
+
+						if ($msgid == $id)
+						{
+							if ($db->insert('msgpictures', [
+								'"PictureFile"' => $img,
+								'msgid'			=> $id,
+							]))
+							{
+								log_event('pict', 'message-picture ' . $img . ' inserted in db.');
+							}
+							else
+							{
+								log_event('pict', 'error message-picture ' . $img . ' not inserted in db.');
+							}
+
+							continue;
+						}
+
+						$new_filename = $schema . '_m_' . $id . '_';
+						$new_filename .= sha1($filename . microtime()) . '.jpg';
+
+						$result = $s3->copyObject([
+							'Bucket'		=> $s3_img,
+							'CopySource'	=> $s3_img . '/' . $img,
+							'Key'			=> $new_filename,
+							'ACL'			=> 'public-read',
+							'CacheControl'	=> 'public, max-age=31536000',
+							'ContentType'	=> 'image/jpeg',
+						]);
+
+						if ($result)
+						{
+							log_event('pict', 'renamed ' . $img . ' to ' . $new_filename);
+
+							if ($db->insert('msgpictures', [
+								'"PictureFile"'		=> $new_filename,
+								'msgid'				=> $id,
+							]))
+							{
+								log_event('pict', 'message-picture ' . $new_filename . ' inserted in db.');
+							}
+							else
+							{
+								log_event('pict', 'error: message-picture ' . $new_filename . ' not inserted in db.');
+							}
+						}
+						else
+						{
+							log_event('pict', 'message-picture renaming and storing in db ' . $img . ' not succeeded.');
+						}
+					}
+				}
 
 				$alert->success('Nieuw vraag of aanbod toegevoegd.');
 				cancel($id);
@@ -1114,9 +1195,10 @@ if (($edit || $add))
 
 	echo '<div class="row">';
 
-	echo '<div class="col-sm-3 col-md-2 hidden" id="thumbnail_model">';
+	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
+	echo 'data-s3-url="' . $s3_img_url . '">';
 	echo '<div class="thumbnail">';
-	echo '<img data-s3-url="' . $s3_img_url . '" src="" alt="afbeelding">';
+	echo '<img src="" alt="afbeelding">';
 	echo '<div class="caption">';
 /*
 	echo '<p><span class="btn btn-default" role="button">';
@@ -1133,7 +1215,7 @@ if (($edit || $add))
 
 	foreach ($images as $img)
 	{
-		echo '<div class="col-sm-3 col-md-2">';
+		echo '<div class="col-sm-3 col-md-2 thumbnail-col">';
 		echo '<div class="thumbnail">';
 		echo '<img src="' . $s3_img_url . $img['PictureFile'] . '" alt="afbeelding">';
 		echo '<div class="caption">';
@@ -1155,15 +1237,14 @@ if (($edit || $add))
 
 //
 
-	$upload_img_param = ['img'	=> 1];
+	$upload_img_param = [
+		'img'	=> 1,
+		'form_token' => $upload_img_param['form_token'] = generate_form_token(false),
+	];
 
 	if ($edit)
 	{
 		$upload_img_param['id'] = $id;
-	}
-	else
-	{
-		$upload_img_param['form_token'] = generate_form_token(false);
 	}
 
 	echo '<span class="btn btn-default fileinput-button">';

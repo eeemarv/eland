@@ -1,12 +1,28 @@
 $(document).ready(function () {
 
+	var $img_add_btn = $('#img_plus');
+
+	var $model = $('#thumbnail_model');
+
+	var s3_url = $model.data('s3-url');
+
 	$('span.img-delete').click(function() {
 
-		var $thumbnail = $(this).closest('div.thumbnail');
+		var $thumbnail_col = $(this).closest('div.thumbnail-col');
 
-		var src = $thumbnail.find('img').attr('src');
+		var src = $thumbnail_col.find('img').attr('src');
 
-		alert(src);
+		var filename = src.replace(s3_url, '').trim();
+
+		var input_str = '<input type="hidden" name="deleted_images[]" value="';
+
+		input_str += filename + '">';
+
+		var $input = $(input_str);
+
+		$('form').append($input);
+
+		$thumbnail_col.remove();
 	});
 
     $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
@@ -27,11 +43,11 @@ $(document).ready(function () {
 
 	}).on('fileuploadadd', function (e, data) {
 
-		$('#img_plus').removeClass('fa-plus').addClass('fa-spinner fa-spin');
+		$img_add_btn.removeClass('fa-plus').addClass('fa-spinner fa-spin');
 
 	}).on('fileuploaddone', function (e, data) {
 
-		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
+		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
 
         $.each(data.result, function (index, file) {
 
@@ -44,15 +60,11 @@ $(document).ready(function () {
 
 				$('form').append($input);
 
-				var $model = $('#thumbnail_model');
-
 				var $thumbnail = $model.clone();
 
 				$thumbnail.prop('id', file.filename);
 
 				var $img = $thumbnail.find('img');
-
-				var s3_url = $img.data('s3-url');
 
 				$img.attr('src', s3_url + file.filename);
 
