@@ -897,11 +897,6 @@ if (($edit || $add))
 							$img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
 						}
 
-						if ($msgid != $edit)
-						{
-							$img_errors[] = 'Id stemt niet overeen voor afbeelding ' . $img;
-						}
-
 						if (count($img_errors))
 						{
 							foreach ($img_errors as $error)
@@ -1097,6 +1092,30 @@ if (($edit || $add))
 		}
 
 		$msg['description'] = $msg['"Description"'];
+
+		$images = $edit ? $db->fetchAll('select * from msgpictures where msgid = ?', [$edit]) : [];
+
+		if (count($deleted_images))
+		{
+			foreach ($deleted_images as $del_img)
+			{
+				foreach ($images as $key => $img)
+				{
+					if ($img['PictureFile'] == $del_img)
+					{
+						unset($images[$key]);
+					}
+				}
+			}
+		}
+
+		if (count($uploaded_images))
+		{
+			foreach ($uploaded_images as $upl_img)
+			{
+				$images[] = ['PictureFile' => $upl_img];
+			}
+		}
 	}
 	else if ($edit)
 	{
@@ -1212,7 +1231,7 @@ if (($edit || $add))
 	echo '<label for="content" class="col-sm-2 control-label">Titel</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="content" name="content" ';
-	echo 'value="' . $msg['content'] . '" maxlength="200" required>';
+	echo 'value="' . $msg['content'] . '" maxlength="200"> required>';
 	echo '</div>';
 	echo '</div>';
 
@@ -1341,6 +1360,22 @@ if (($edit || $add))
 	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	generate_form_token();
+
+	if (count($uploaded_images))
+	{
+		foreach ($uploaded_images as $img)
+		{
+			echo '<input type="hidden" name="uploaded_images[]" value="' . $img . '">';
+		}
+	}
+
+	if (count($deleted_images))
+	{
+		foreach ($deleted_images as $img)
+		{
+			echo '<input type="hidden" name="deleted_images[]" value="' . $img . '">';
+		}
+	}
 
 	echo '</form>';
 

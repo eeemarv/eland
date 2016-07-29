@@ -1,12 +1,14 @@
 $(document).ready(function () {
 
-	var $img_add_btn = $('#img_plus');
+	var $form = $('form');
 
-	var $model = $('#thumbnail_model');
+	var $img_add_btn = $form.find('#img_plus');
+
+	var $model = $form.find('#thumbnail_model');
 
 	var s3_url = $model.data('s3-url');
 
-	$('span.img-delete').click(function() {
+	$form.find('span.img-delete').click(function() {
 
 		var $thumbnail_col = $(this).closest('div.thumbnail-col');
 
@@ -20,7 +22,9 @@ $(document).ready(function () {
 
 		var $input = $(input_str);
 
-		$('form').append($input);
+		$form.append($input);
+
+		$form.find('input[type="hidden"][name="uploaded_images[]"][value="' + filename + '"]').remove();
 
 		$thumbnail_col.remove();
 	});
@@ -31,7 +35,7 @@ $(document).ready(function () {
 
 		alert(error);
 
-		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
+		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
 
 	}).fileupload({
 
@@ -58,7 +62,7 @@ $(document).ready(function () {
 
 				var $input = $(input_str);
 
-				$('form').append($input);
+				$form.append($input);
 
 				var $thumbnail = $model.clone();
 
