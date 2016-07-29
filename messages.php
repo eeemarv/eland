@@ -1241,7 +1241,7 @@ if (($edit || $add))
 	echo '<label for="content" class="col-sm-2 control-label">Titel</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="content" name="content" ';
-	echo 'value="' . $msg['content'] . '" maxlength="200"> required>';
+	echo 'value="' . $msg['content'] . '" maxlength="200" required>';
 	echo '</div>';
 	echo '</div>';
 
