@@ -287,6 +287,8 @@ if ($post && $img && $id )
 
 	try {
 
+/** to be handled in background process
+
 		if ($user['PictureFile'])
 		{
 			$s3->deleteObject([
@@ -294,6 +296,7 @@ if ($post && $img && $id )
 				'Key'		=> $user['PictureFile'],
 			]);
 		}
+**/
 
 		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
 
@@ -365,10 +368,15 @@ if ($img_del && $id)
 
 	if ($post)
 	{
+
+/** to be handled in background process
+
 		$s3->deleteObject([
 			'Bucket'	=> $s3_img,
 			'Key'		=> $file,
 		]);
+
+**/
 
 		$db->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
@@ -915,6 +923,9 @@ if ($del)
 
 				while ($row = $rs->fetch())
 				{
+
+/** to be handled in background process
+
 					if ($row['PictureFile'])
 					{
 						$result = $s3->deleteObject([
@@ -922,6 +933,8 @@ if ($del)
 							'Key'    => $row['PictureFile'],
 						]);
 					}
+**/
+
 
 					$db->delete('msgpictures', ['id' => $row['id']]);
 				}
@@ -988,6 +1001,8 @@ if ($del)
 				$db->delete('contact', ['id_user' => $del]);
 
 				//delete userimage from bucket;
+/** to be handled in background process
+
 				if ($user['PictureFile'])
 				{
 					$result = $s3->deleteObject([
@@ -995,6 +1010,8 @@ if ($del)
 						'Key'    => $user['PictureFile'],
 					]);
 				}
+				*
+*/
 
 				//delete fullname access record.
 				$exdb->del('user_fullname_access', $del);

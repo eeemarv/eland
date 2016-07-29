@@ -123,7 +123,7 @@ else if ($step == 2)
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 
-/* Remove old images manually from s3 for now
+/* Remove old images manually from s3 for now // to be done in background process
 				$s3->deleteObject([
 					'Bucket'	=> $s3_img,
 					'Key'		=> $filename_bucket,
@@ -188,7 +188,7 @@ else if ($step == 3)
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
-/* Remove old images manually from s3 for now
+/* Remove old images manually from s3 for now // to be done in background process
 				$s3->deleteObject([
 					'Bucket'	=> $s3_img,
 					'Key'		=> $filename_bucket,

@@ -643,10 +643,14 @@ function cleanup_messages()
 
 	while ($row = $rs->fetch())
 	{
+
+/** to be handled in seperate background process
+
 		$result = $s3->deleteObject([
 			'Bucket' => $s3_img,
 			'Key'    => $row['PictureFile'],
 		]);
+**/
 
 		$db->delete('msgpictures', ['id' => $row['id']]);
 	}

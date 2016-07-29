@@ -422,6 +422,8 @@ if ($img_del == 'all' && $id && $post)
 		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
+/** to be done in background process
+
 	$imgs = $db->fetchAll('select * from msgpictures where msgid = ?', [$id]);
 
 	foreach($imgs as $img)
@@ -431,6 +433,8 @@ if ($img_del == 'all' && $id && $post)
 			'Key'		=> $img['PictureFile'],
 		]);
 	}
+
+**/
 
 	$db->delete('msgpictures', ['msgid' => $id]);
 
@@ -463,10 +467,13 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 
 	$db->delete('msgpictures', ['id' => $img_del]);
 
+/** to be done in background process
 	$s3->deleteObject([
 		'Bucket'	=> $s3_img,
 		'Key'		=> $msg['PictureFile'],
 	]);
+	*
+**/
 
 	echo json_encode(['success' => true]);
 	exit;
@@ -653,6 +660,8 @@ if ($del)
 			$alert->error($error_token);
 		}
 
+/** handle deleting files in background process.
+
 		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', [$del]);
 
 		foreach($pictures as $value)
@@ -662,6 +671,7 @@ if ($del)
 				'Key'    => $value['PictureFile'],
 			]);
 		}
+**/
 
 		$db->delete('msgpictures', ['msgid' => $del]);
 
