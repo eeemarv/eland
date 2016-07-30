@@ -942,7 +942,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 
 	$redis->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
 	$redis->set('cron_cleanup_image_files', '1');
-	$redis->expire('cron_cleanup_image_files', 7200);
+	$redis->expire('cron_cleanup_image_files', 900);
 
 	echo  $del_count . ' images deleted.' . $r;
 
