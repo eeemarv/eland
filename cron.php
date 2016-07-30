@@ -817,6 +817,144 @@ function cleanup_tokens()
 }
 
 /**
+ * cleanup image files // schema-independant cronjob.
+ */
+
+if (!$redis->get('cron_cleanup_image_files'))
+{
+	echo '+++ cleanup image files +++' . $r;
+
+	$marker = $redis->get('cleanup_image_files_marker');
+
+	$marker = ($marker) ? $marker : '0';
+
+	$time_treshold = time() - (84600 * 30);
+
+	$del_count = 0;
+
+	try {
+		$objects = $s3->getIterator('ListObjects', array(
+			'Bucket'	=> $s3_img,
+			'Marker'	=> $marker,
+		));
+
+		//echo $r . 'Keys retrieved' . $r;
+
+		$reset = true;
+
+		foreach ($objects as $k => $object)
+		{
+			if ($k > 4)
+			{
+				$reset = false;
+				break;
+			}
+
+			$delete = $del_str = false;
+
+			$object_time = strtotime($object['LastModified']);
+
+			$old = ($object_time < $time_treshold) ? true : false;
+
+			$str_log = $k . ' ' .  $object['Key'] . ' ' . $object['LastModified'] . ' ';
+
+			$str_log .= ($old) ? 'OLD' : 'NEW';
+
+			error_log($str_log);
+
+			if (!$old)
+			{
+				continue;
+			}
+
+			list($sch, $type, $id, $hash) = explode('_', $object['Key']);
+
+			if (ctype_digit((string) $sch))
+			{
+				error_log('-> elas import image. DELETE');
+				$delete = true;
+			} 
+
+
+			if (!$delete && !isset($hosts[$sch]))
+			{
+				error_log('-> unknown schema');
+				continue;
+			}
+
+			if (!$delete && !in_array($type, ['u', 'm']))
+			{
+				error_log('-> unknown type');
+				continue;
+			}
+
+			if (!$delete && $type == 'u')
+			{
+				$user = $db->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
+
+				if (!$user)
+				{
+					$del_str = '->User does not exist.';
+					$delete = true;
+				}
+				else if ($user['PictureFile'] != $object['Key'])
+				{
+					$del_str = '->does not match db key ' . $user['PictureFile'];
+					$delete = true;
+				}
+			}
+
+			if (!$delete && $type == 'm')
+			{
+				$msgpict = $db->fetchAssoc('select * from ' . $sch . '.msgpictures
+					where msgid = ?
+						and "PictureFile" = ?', [$id, $object['Key']]);
+
+				if (!$msgpict)
+				{
+					$del_str = '->is not present in db.';
+					$delete = true;
+				}
+			}
+
+			if (!$delete)
+			{
+				continue;
+			}
+
+			$s3->deleteObject([
+				'Bucket'	=> $s3_img,
+				'Key'		=> $object['Key'],
+			]);
+
+			if ($del_str)
+			{
+				log_event('cron', 'image file ' . $object['Key'] . ' deleted ' . $del_str, $sch);
+			}
+
+			$del_count++;
+		}
+	}
+	catch (S3Exception $e)
+	{
+		echo $e->getMessage() . $r . $r;
+	}
+
+	$redis->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
+	$redis->set('cron_cleanup_image_files', '1');
+	$redis->expire('cron_cleanup_image_files', 7200);
+
+	echo  $del_count . ' images deleted.' . $r;
+
+	echo '+++ end image files cleanup +++' . $r . $r;
+}
+else
+{
+	echo '+++ cleanup image files not running +++' . $r;
+}
+
+
+/**
  * Cleanup old logs
  */
 
@@ -824,10 +962,14 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
+	global $db, $schema;
+
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 
-	$db->execute('delete from eland_extra.logs
+	$db->executeQuery('delete from eland_extra.logs
 		where schema = ? and ts < ?', [$schema, $treshold]);
+
+	log_event('cron', 'Cleaned up logs older than 30 days.');
 
 	return true;
 }
