@@ -612,7 +612,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		foreach ($map as $key => $val)
 		{
-			$search[] = '{{' . $key . '}}';
+			$search[] = '{{ ' . $key . ' }}';
 			$replace[] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
 		}
 
@@ -2803,6 +2803,7 @@ if ($v_list)
 		$include_ary[] = 'datepicker';
 		$include_ary[] = 'csv.js';
 		$include_ary[] = 'table_sel.js';
+		$include_ary[] = 'users_bulk.js';
 	}
 }
 else if ($v_tiles)
@@ -3247,6 +3248,17 @@ if ($v_list)
 		$acc_sel .= '</div>';
 		$acc_sel .= '</div>';
 
+		$insert_vars = [
+			'letscode'	=> 'letscode',
+			'name' 		=> 'naam',
+			'fullname'	=> 'volledige_naam',
+			'postcode'	=> 'postcode',
+			'status'	=> 'status',
+			'minlimit'	=> 'min_limiet',
+			'maxlimit'	=> 'max_limiet',
+			'saldo'		=> 'saldo',
+		];
+
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
@@ -3294,10 +3306,21 @@ if ($v_list)
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="16" ';
+		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="8" ';
 		echo 'required>';
 		echo isset($bulk_mail_content) ? $bulk_mail_content : '';
 		echo '</textarea>';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="form-group">';
+		echo '<label class="col-sm-2">Variabele invoegen</label>';
+		echo '<div class="col-sm-10" id="insert_vars">';
+
+		foreach ($insert_vars as $iv)
+		{
+			echo '<span class="btn btn-default">{{ ' . $iv . ' }}</span>';
+		}
 		echo '</div>';
 		echo '</div>';
 
@@ -3306,7 +3329,7 @@ if ($v_list)
 
 		echo '<input type="submit" value="Zend test mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
-		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
+/*		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
 		echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
 		echo '<div class="table-responsive collapse" id="mail_variables">';
 		echo '<table class="table table-bordered table-hover" data-sort="false">';
@@ -3324,7 +3347,7 @@ if ($v_list)
 		echo '</body>';
 		echo '</table>';
 
-		echo '</div>';
+		echo '</div>';*/
 		echo '</div>';
 		generate_form_token();
 		echo '</form>';
