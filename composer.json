@@ -14,6 +14,7 @@
         "willdurand/geocoder": "^3",
         "predis/predis": "~1.1",
         "twig/twig": "^1",
-        "ezyang/htmlpurifier": "^4.8"
+        "ezyang/htmlpurifier": "^4.8",
+        "pixel418/markdownify": "^2.1"
 	}
 }

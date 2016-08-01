@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "874d10fae75a16c976127e036568cd2f",
-    "content-hash": "c9361e9ffb56d605699d0eaf1a05606f",
+    "hash": "08238c1d1d543f510b85d7ed5dab8924",
+    "content-hash": "b0051da00f85f114dbac4ab92b3e2434",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1252,6 +1252,59 @@
                 "jsonpath"
             ],
             "time": "2016-01-05 18:25:05"
+        },
+        {
+            "name": "pixel418/markdownify",
+            "version": "v2.1.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Elephant418/Markdownify.git",
+                "reference": "17143885c32d195b885d36e4b556f16377afa096"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Elephant418/Markdownify/zipball/17143885c32d195b885d36e4b556f16377afa096",
+                "reference": "17143885c32d195b885d36e4b556f16377afa096",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "lib",
+            "autoload": {
+                "psr-0": {
+                    "Markdownify": "src",
+                    "Test\\Markdownify": "test"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Kruithof",
+                    "email": "pkruithof@gmail.com",
+                    "homepage": "http://pkruithof.tumblr.com/"
+                },
+                {
+                    "name": "Milian Wolff",
+                    "email": "mail@milianw.de",
+                    "homepage": "http://milianw.de"
+                },
+                {
+                    "name": "Thomas Zilliox",
+                    "email": "hello@tzi.fr",
+                    "homepage": "http://tzi.fr"
+                }
+            ],
+            "description": "The HTML to Markdown converter for PHP ",
+            "homepage": "https://github.com/elephant418/Markdownify",
+            "keywords": [
+                "markdown",
+                "markdownify"
+            ],
+            "time": "2016-02-19 09:56:23"
         },
         {
             "name": "predis/predis",

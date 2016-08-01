@@ -140,6 +140,20 @@ if ($token = $_GET['token'])
 
 		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
+/*
+		$subject = 'Bedankt voor je inschrijving';
+
+		$text = 'Beste {{naam}}';
+		$text .= "\n\r\n\r";
+		$text .= 'We hebben je inschrijving goed onvangen en nemen zo spoedig mogelijk contact met je op.';
+		$text .= "\n\r\n\r";
+		$text .= 'Vriendelijke groeten,';
+		$text .= "\n\r\n\r";
+		$text .= '{{}}';
+
+
+		mail_q(['to' => $user_id, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
+*/
 		$registration_success_url = readconfigfromdb('registration_success_url');
 
 		if ($registration_success_url)

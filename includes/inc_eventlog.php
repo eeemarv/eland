@@ -1,5 +1,4 @@
 <?php
-require_once $rootpath . 'vendor/autoload.php';
 
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
