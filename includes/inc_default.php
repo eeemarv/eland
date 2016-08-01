@@ -602,10 +602,17 @@ $exdb = new eland\eland_extra_db();
 $date_format = new eland\date_format();
 
 /**
- *
+ * queue
  */
 
 $queue = new eland\queue();
+
+/**
+ * Twig
+ */
+
+$twig = new Twig_Environment();
+
 
 /* some more vars */
 
