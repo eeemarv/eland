@@ -807,7 +807,8 @@ function cleanup_tokens()
 }
 
 /**
- * cleanup image files // schema-independant cronjob.
+ * cleanup image files // schema-independent cronjob.
+ * images are delete from s3 170 days after been deleted from db.
  */
 
 if (!$redis->get('cron_cleanup_image_files'))
@@ -818,7 +819,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 
 	$marker = ($marker) ? $marker : '0';
 
-	$time_treshold = time() - (84600 * 30);
+	$time_treshold = time() - (84600 * 170);
 
 	$del_count = 0;
 
