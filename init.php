@@ -122,14 +122,6 @@ else if ($step == 2)
 				$db->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
-
-/* Remove old images manually from s3 for now // to be done in background process
-				$s3->deleteObject([
-					'Bucket'	=> $s3_img,
-					'Key'		=> $filename_bucket,
-				]);
-				*/
-
 			}
 		}
 	}
@@ -187,12 +179,6 @@ else if ($step == 3)
 				$db->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
-
-/* Remove old images manually from s3 for now // to be done in background process
-				$s3->deleteObject([
-					'Bucket'	=> $s3_img,
-					'Key'		=> $filename_bucket,
-				]); */
 			}
 		}
 	}
@@ -202,45 +188,6 @@ else if ($step == 3)
 	header('Location: ' . $rootpath . 'init.php?step=4');
 	exit;
 }
-
-/*
-$schemas = $db->fetchAll('select schema_name from information_schema.schemata');
-
-$schemas = array_map(function($row){ return $row['schema_name']; }, $schemas);
-
-$schemas = array_fill_keys($schemas, true);
-
-echo '* Cleanup files in bucket without valid schema prefix *' . $r;
-
-$results = $s3->getPaginator('ListObjects', [
-	'Bucket' => $s3_img
-]);
-
-foreach ($results as $result)
-{
-	foreach ($result['Contents'] as $object)
-	{
-		$key = $object['Key'];
-
-		list($sch, $type, $type_id, $hash) = explode('_', $key);
-
-		if ($schemas[$sch])
-		{
-			continue;
-		}
-
-		$s3->deleteObject([
-			'Key'		=> $key,
-			'Bucket'	=> $s3_img,
-		]);
-
-		echo 'Image deleted from bucket: ' . $key . $r;
-		log_event('init', 'Image deleted from bucket: ' . $key);
-	}
-}
-*/
-
-
 
 /*
 echo 'Cleanup orphaned contacts. ' . $r;
