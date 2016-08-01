@@ -44,7 +44,9 @@ if ($step == 2 || $step == 3)
 
 if ($step == 1)
 {
-	$currentversion = $dbversion = readparameter('schemaversion');
+	$currentversion = $dbversion = $db->fetchColumn('select value
+		from parameters
+		where parameter = \'schemaversion\'');
 
 	if ($currentversion >= $schemaversion)
 	{
@@ -53,15 +55,17 @@ if ($step == 1)
 	else
 	{
 		echo "eLAS/eLAND database needs to upgrade from $currentversion to $schemaversion\n";
+
 		while($currentversion < $schemaversion)
 		{
 			$currentversion++;
+
 			if(doupgrade($currentversion))
 			{
 				$doneversion = $currentversion;
 			}
 		}
-		$currentversion = readparameter('schemaversion', true);
+
 		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
 		echo $m . "\n";
 		log_event('DB', $m);	
@@ -244,39 +248,4 @@ else if ($step == 4)
 	echo "\n";
 
 	echo '** end **';
-}
-
-/**
- *
- */
-function readparameter($key, $refresh = false)
-{
-    global $db, $schema, $redis;
-    static $cache;
-
-	if (!$refresh)
-	{
-		if (isset($cache[$key]))
-		{
-			return $cache[$key];
-		}
-
-		$redis_key = $schema . '_parameters_' . $key;
-
-		if ($redis->exists($redis_key))
-		{
-			return $cache[$key] = $redis->get($redis_key);
-		}
-	}
-
-	$value = $db->fetchColumn('SELECT value FROM parameters WHERE parameter = ?', [$key]);
-
-	if (isset($value))
-	{
-		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 2592000);
-		$cache[$key] = $value;
-	}
-
-	return $value;
 }
