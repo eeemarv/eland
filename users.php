@@ -656,7 +656,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
 
-		$alert->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mail adres: <br>' . $missing_users);
+		$alert->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users);
 	}
 
 	if ($bulk_mail_submit && $count)
