@@ -611,7 +611,9 @@ $queue = new eland\queue();
  * Twig
  */
 
-$twig = new Twig_Environment();
+$twig_loader = new Twig_Loader_Array([]);
+
+$twig = new Twig_Environment($twig_loader);
 
 
 /* some more vars */

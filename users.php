@@ -565,7 +565,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 {
 	$to_log = '';
 
-	$map = [
+	$map_insert_vars = [
 		'naam' 				=> 'name',
 		'volledige_naam'	=> 'fullname',
 		'saldo'				=> 'saldo',
@@ -604,19 +604,20 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		{
 			// avoid duplicate send when multiple mail addresses for one user.
 			continue;
-		}	
+		}
 
 		unset($sel_ary[$sel_user['id']]);
 
-		$search = $replace = [];
+		$template_vars = [];
 
-		foreach ($map as $key => $val)
+		foreach ($map_insert_vars as $key => $val)
 		{
-			$search[] = '{{ ' . $key . ' }}';
-			$replace[] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
+			$template_vars[$key] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
 		}
 
-		$text = str_replace($search, $replace, $bulk_mail_content);
+		$template = $twig->createTemplate($bulk_mail_content);
+
+		$text = $template->render($template_vars);
 
 		mail_q([
 			'to' => $sel_user['id'],
@@ -3248,17 +3249,6 @@ if ($v_list)
 		$acc_sel .= '</div>';
 		$acc_sel .= '</div>';
 
-		$insert_vars = [
-			'letscode'	=> 'letscode',
-			'name' 		=> 'naam',
-			'fullname'	=> 'volledige_naam',
-			'postcode'	=> 'postcode',
-			'status'	=> 'status',
-			'minlimit'	=> 'min_limiet',
-			'maxlimit'	=> 'max_limiet',
-			'saldo'		=> 'saldo',
-		];
-
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
@@ -3317,7 +3307,7 @@ if ($v_list)
 		echo '<label class="col-sm-2">Variabele invoegen</label>';
 		echo '<div class="col-sm-10" id="insert_vars">';
 
-		foreach ($insert_vars as $iv)
+		foreach ($map_insert_vars as $iv => $v)
 		{
 			echo '<span class="btn btn-default">{{ ' . $iv . ' }}</span>';
 		}
