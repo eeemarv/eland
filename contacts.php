@@ -603,8 +603,6 @@ if ($uid)
  *
  */
 
-require_once $rootpath . 'includes/inc_pagination.php';
-
 if (!$s_admin)
 {
 	$alert->error('Je hebt geen toegang tot deze pagina.');
@@ -764,7 +762,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $db->fetchAll($query, $params_sql);
 
-$pagination = new pagination('contacts', $row_count, $params, $inline);
+$pagination = new eland\pagination('contacts', $row_count, $params, $inline);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,

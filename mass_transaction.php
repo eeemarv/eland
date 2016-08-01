@@ -4,7 +4,6 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
-require_once $rootpath . 'includes/multi_mail.php';
 
 $q = isset($_POST['q']) ? $_POST['q'] : (isset($_GET['q']) ? $_GET['q'] : '');
 $hsh = isset($_POST['hsh']) ? $_POST['hsh'] : (isset($_GET['hsh']) ? $_GET['hsh'] : '096024');
@@ -662,7 +661,7 @@ function mail_mass_transaction($mail_ary)
 
 // mail to active users
 
-	$mm = new multi_mail();
+	$mm = new eland\multi_mail();
 
 	$mm->add_text('*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r)
 		->add_text('Notificatie nieuwe transactie' . $r . $r)

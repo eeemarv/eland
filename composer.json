@@ -1,4 +1,9 @@
 {
+	"name": "eeemarv/eland",
+	"license": "AGPL-3.0",	
+	"type": "project",
+	"description": "web app for lets groups.",
+
     "require": {
 		"php": "^5.5|^5.6|^7",
 		"aws/aws-sdk-php": "^3",
@@ -16,5 +21,13 @@
         "twig/twig": "^1",
         "ezyang/htmlpurifier": "^4.8",
         "pixel418/markdownify": "^2.1"
-	}
+	},
+
+    "minimum-stability": "stable",
+
+    "autoload": {
+        "psr-4": {
+            "eland\\": "includes/"
+        }
+    }
 }

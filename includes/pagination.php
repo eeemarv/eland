@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 class pagination
 {
 	private $start;

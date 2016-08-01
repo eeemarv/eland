@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 class alert
 {
 	private $send_once;

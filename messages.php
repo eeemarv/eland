@@ -4,7 +4,6 @@ $rootpath = './';
 $page_access = 'guest';
 $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_pagination.php';
 
 $id = (isset($_GET['id'])) ? $_GET['id'] : false;
 $del = (isset($_GET['del'])) ? $_GET['del'] : false;
@@ -422,20 +421,6 @@ if ($img_del == 'all' && $id && $post)
 		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
-/** to be done in background process
-
-	$imgs = $db->fetchAll('select * from msgpictures where msgid = ?', [$id]);
-
-	foreach($imgs as $img)
-	{
-		$s3->deleteObject([
-			'Bucket'	=> $s3_img,
-			'Key'		=> $img['PictureFile'],
-		]);
-	}
-
-**/
-
 	$db->delete('msgpictures', ['msgid' => $id]);
 
 	$alert->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
@@ -467,14 +452,6 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 
 	$db->delete('msgpictures', ['id' => $img_del]);
 
-/** to be done in background process
-	$s3->deleteObject([
-		'Bucket'	=> $s3_img,
-		'Key'		=> $msg['PictureFile'],
-	]);
-	*
-**/
-
 	echo json_encode(['success' => true]);
 	exit;
 }
@@ -482,6 +459,7 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 /**
  * delete images form
  */
+
 if ($img_del == 'all' && $id)
 {
 	if (!($s_admin || $s_owner))
@@ -1883,7 +1861,7 @@ if ($v_extended)
 	}
 }
 
-$pagination = new pagination('messages', $row_count, $params, $inline);
+$pagination = new eland\pagination('messages', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,

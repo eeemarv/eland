@@ -2,7 +2,6 @@
 $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_pagination.php';
 
 $q = isset($_GET['q']) ? $_GET['q'] : '';
 $letscode = isset($_GET['letscode']) ? $_GET['letscode'] : '';
@@ -87,7 +86,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $db->fetchAll($query, $params_sql);
 
-$pagination = new pagination('logs', $row_count, $params, $inline);
+$pagination = new eland\pagination('logs', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,

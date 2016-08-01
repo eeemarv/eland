@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 class multi_mail
 {
 	private $text = '';

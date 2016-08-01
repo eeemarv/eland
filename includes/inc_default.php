@@ -278,17 +278,15 @@ if (!$schema)
  * alerts
 **/
 
-require_once $rootpath . 'includes/alert.php';
+//require_once $rootpath . 'includes/alert.php';
 
-$alert = new alert();
+$alert = new eland\alert();
 
 /**
  * start session
  */
 
-require_once $rootpath . 'includes/redis_session.php';
-
-$redis_session = new redis_session($redis);
+$redis_session = new eland\redis_session($redis);
 session_set_save_handler($redis_session);
 session_name('eland');
 session_set_cookie_params(0, '/', '.' . $overall_domain);
@@ -538,9 +536,7 @@ switch ($s_accountrole)
  * access control rendering labels and selectors
  */
 
-require_once $rootpath . 'includes/access_control.php';
-
-$access_control = new access_control();
+$access_control = new eland\access_control();
 
 /**
  * some vars
@@ -597,25 +593,19 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
   *
   */
 
-require_once $rootpath . 'includes/eland_extra_db.php';
-
-$exdb = new eland_extra_db();
+$exdb = new eland\eland_extra_db();
 
 /**
  * format dates
  */
 
-require_once $rootpath . 'includes/date_format.php';
-
-$date_format = new date_format();
+$date_format = new eland\date_format();
 
 /**
  *
  */
 
-require_once $rootpath . 'includes/queue.php';
-
-$queue = new queue();
+$queue = new eland\queue();
 
 /* some more vars */
 

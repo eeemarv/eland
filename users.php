@@ -1,6 +1,5 @@
 <?php
 $rootpath = './';
-require_once $rootpath . 'includes/inc_pagination.php';
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';
 $status = (isset($_GET['status'])) ? $_GET['status'] : false;
@@ -287,17 +286,6 @@ if ($post && $img && $id )
 
 	try {
 
-/** to be handled in background process
-
-		if ($user['PictureFile'])
-		{
-			$s3->deleteObject([
-				'Bucket'	=> $s3_img,
-				'Key'		=> $user['PictureFile'],
-			]);
-		}
-**/
-
 		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
 
 		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', [
@@ -368,16 +356,6 @@ if ($img_del && $id)
 
 	if ($post)
 	{
-
-/** to be handled in background process
-
-		$s3->deleteObject([
-			'Bucket'	=> $s3_img,
-			'Key'		=> $file,
-		]);
-
-**/
-
 		$db->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
 		$alert->success('Profielfoto verwijderd.');
@@ -923,19 +901,6 @@ if ($del)
 
 				while ($row = $rs->fetch())
 				{
-
-/** to be handled in background process
-
-					if ($row['PictureFile'])
-					{
-						$result = $s3->deleteObject([
-							'Bucket' => $s3_img,
-							'Key'    => $row['PictureFile'],
-						]);
-					}
-**/
-
-
 					$db->delete('msgpictures', ['id' => $row['id']]);
 				}
 
@@ -999,19 +964,6 @@ if ($del)
 
 				//delete contacts
 				$db->delete('contact', ['id_user' => $del]);
-
-				//delete userimage from bucket;
-/** to be handled in background process
-
-				if ($user['PictureFile'])
-				{
-					$result = $s3->deleteObject([
-						'Bucket' => $s3_img,
-						'Key'    => $user['PictureFile'],
-					]);
-				}
-				*
-*/
 
 				//delete fullname access record.
 				$exdb->del('user_fullname_access', $del);

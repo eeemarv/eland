@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 /*
                             Table "eland_extra.events"
    Column    |            Type             |              Modifiers               

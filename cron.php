@@ -21,7 +21,6 @@ require_once $rootpath . 'includes/inc_default.php';
 
 require_once $rootpath . 'includes/inc_saldo_mail.php';
 require_once $rootpath . 'includes/inc_mail.php';
-require_once $rootpath . 'includes/multi_mail.php';
 
 $s3 = Aws\S3\S3Client::factory([
 	'signature'	=> 'v4',
@@ -643,15 +642,6 @@ function cleanup_messages()
 
 	while ($row = $rs->fetch())
 	{
-
-/** to be handled in seperate background process
-
-		$result = $s3->deleteObject([
-			'Bucket' => $s3_img,
-			'Key'    => $row['PictureFile'],
-		]);
-**/
-
 		$db->delete('msgpictures', ['id' => $row['id']]);
 	}
 

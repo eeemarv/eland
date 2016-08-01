@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 class date_format
 {
 	private $formats = [

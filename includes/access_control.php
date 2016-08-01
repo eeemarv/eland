@@ -1,5 +1,7 @@
 <?php
 
+namespace eland;
+
 class access_control
 {
 	private $acc_ary = [

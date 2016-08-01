@@ -65,7 +65,7 @@ function saldo()
 
 // start template
 
-	$mm = new multi_mail();
+	$mm = new eland\multi_mail();
 
 	$t = '** Dit is een automatische mail. Niet beantwoorden a.u.b. **';
 	$mm->add_text($t . $r . $r)

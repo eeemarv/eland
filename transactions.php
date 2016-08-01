@@ -3,7 +3,6 @@
 $rootpath = './';
 $page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_pagination.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
 $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'cdate';
@@ -1220,7 +1219,7 @@ foreach ($transactions as $key => $t)
 $row_count = $db->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
-$pagination = new pagination('transactions', $row_count, $params, $inline);
+$pagination = new eland\pagination('transactions', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
