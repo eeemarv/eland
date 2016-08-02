@@ -5,7 +5,7 @@
  */
 function fetch_interlets_msgs($client, $group)
 {
-	global $redis, $r;
+	global $schema, $redis, $r;
 
 	$msgs = [];
 
@@ -50,7 +50,7 @@ function fetch_interlets_msgs($client, $group)
  */
 function fetch_interlets_typeahead_data($client, $group)
 {
-	global $redis, $r;
+	global $schema, $redis, $r;
 
 	$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
@@ -66,7 +66,12 @@ function fetch_interlets_typeahead_data($client, $group)
 
 		if ($status_code != 200)
 		{
-			echo '-- letsgroup url not responsive --' . $r;
+			echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
+
+			$redis_key = $schema . '_connection_failed_' . $group['domain'];
+			$redis->set($redis_key, '1');
+			$redis->expire($redis_key, 21600);  // 6 hours
+
 			return;
 		}
 

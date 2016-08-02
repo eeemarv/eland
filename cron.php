@@ -137,17 +137,22 @@ if (isset($group))
 	$apikey = $group['remoteapikey'];
 	$client = new nusoap_client($soapurl, true);
 	$err = $client->getError();
+
 	if ($err)
 	{
+
 		echo $err_group . 'Can not get connection.' . $r;
 		$redis_key = $schema . '_connection_failed_' . $group['domain'];
 		$redis->set($redis_key, '1');
 		$redis->expire($redis_key, 21600);  // 6 hours
+
 	}
 	else
 	{
+
 		$token = $client->call('gettoken', ['apikey' => $apikey]);
 		$err = $client->getError();
+
 		if ($err)
 		{
 			echo $err_group . 'Can not get token.' . $r;
@@ -808,7 +813,7 @@ function cleanup_tokens()
 
 /**
  * cleanup image files // schema-independent cronjob.
- * images are delete from s3 170 days after been deleted from db.
+ * images are deleted from s3 170 days after been deleted from db.
  */
 
 if (!$redis->get('cron_cleanup_image_files'))
