@@ -550,7 +550,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
+		$access_role = $access_control->get_role($access_value);
+
+		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
