@@ -1973,7 +1973,7 @@ if ($id)
 	}
 
 	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema && !$s_master) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 

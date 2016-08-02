@@ -1390,7 +1390,7 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema && !$s_master) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? getmailadr($s_schema . '.' . $s_id) : [];
 
 	$balance = $user['saldo'];
 
