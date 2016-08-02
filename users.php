@@ -561,10 +561,8 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
  * bulk action: mail
  */
 
-if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
+if ($s_admin)
 {
-	$to_log = '';
-
 	$map_template_vars = [
 		'naam' 				=> 'name',
 		'volledige_naam'	=> 'fullname',
@@ -576,6 +574,11 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		'min_limiet'		=> 'minlimit',
 		'max_limiet'		=> 'maxlimit',
 	];
+}
+
+if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
+{
+	$to_log = '';
 
 	if ($bulk_mail_test)
 	{
@@ -2802,9 +2805,11 @@ if ($v_list)
 	if ($s_admin)
 	{
 		$include_ary[] = 'datepicker';
+		$include_ary[] = 'summernote';
 		$include_ary[] = 'csv.js';
 		$include_ary[] = 'table_sel.js';
-		$include_ary[] = 'users_bulk.js';
+		$include_ary[] = 'rich_edit.js';
+//		$include_ary[] = 'users_bulk.js';
 	}
 }
 else if ($v_tiles)
@@ -3296,13 +3301,16 @@ if ($v_list)
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
-		echo '<textarea name="bulk_mail_content" class="form-control" id="bulk_mail_content" rows="8" ';
+		echo '<textarea name="bulk_mail_content" ';
+		echo 'class="form-control rich-edit" id="bulk_mail_content" rows="8" ';
+		echo 'data-template-vars="' . implode(',', array_keys($map_template_vars)) . '" ';
 		echo 'required>';
 		echo isset($bulk_mail_content) ? $bulk_mail_content : '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
 
+/*
 		echo '<div class="form-group">';
 		echo '<label class="col-sm-2">Variabele invoegen</label>';
 		echo '<div class="col-sm-10" id="insert_vars">';
@@ -3313,6 +3321,7 @@ if ($v_list)
 		}
 		echo '</div>';
 		echo '</div>';
+*/
 
 		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
 			'Je paswoord (extra veiligheid)', 'password', 'class="form-control" required', 'mail_password');
