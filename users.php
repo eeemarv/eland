@@ -19,6 +19,9 @@ $user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
 
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
+
+$bulk_field = isset($_POST['bulk_field']) ? $_POST['bulk_field'] : false;
+
 $selected_users = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
 
 /*
@@ -93,19 +96,11 @@ if ($s_admin)
 		],
 	];
 
-	if ($post && !($bulk_mail_test
-		|| $bulk_mail_submit
-		|| $edit || $add || $id
-		|| $img || $img_del || $password
-		|| $submit))
+	if ($post && $bulk_field)
 	{
-		foreach ($edit_fields_tabs as $field => $t)
+		if (isset($_POST[$bulk_field . '_bulk_submit']))
 		{
-			if (isset($_POST[$field . '_bulk_submit']))
-			{
-				$bulk_field_submit = true;
-				break;
-			}
+			$bulk_field_submit = true;
 		}
 	}
 
@@ -402,10 +397,8 @@ if ($bulk_submit && $post && $s_admin)
 	if ($bulk_field_submit || $bulk_mail_submit)
 	{
 		$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-		$password = ($bulk_mail_submit) ? 'mail_password_' : $field . '_password_';
+		$password = ($bulk_mail_submit) ? 'mail_password_' : $bulk_field . '_password_';
 		$password = $_POST[$password . $pw_name_suffix];
-
-		$value = $_POST[$field];
 
 		if (!$password)
 		{
@@ -420,6 +413,11 @@ if ($bulk_submit && $post && $s_admin)
 		{
 			$errors[] = 'Het paswoord is niet juist.';
 		}
+	}
+
+	if ($bulk_field_submit)
+	{
+		$value = isset($_POST[$bulk_field]) ? $_POST[$bulk_field] : '';
 	}
 
 	if ($bulk_mail_test || $bulk_mail_submit)
@@ -459,7 +457,7 @@ if ($bulk_submit && $post && $s_admin)
 	}
 
 	if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1,
-		'gsm_access' => 1, 'fullname_access' => 1][$field])
+		'gsm_access' => 1, 'fullname_access' => 1][$bulk_field])
 	{
 		$access_value = $access_control->get_post_value();
 
@@ -499,7 +497,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 	$users_log = ltrim($users_log, ', ');
 
-	if ($field == 'fullname_access')
+	if ($bulk_field == 'fullname_access')
 	{
 		$fullname_access_role = $access_control->get_role($access_value);
 
@@ -516,11 +514,11 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		cancel();
 	}
 	else if (['cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
-		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$field])
+		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$bulk_field])
 	{
-		$type = ($edit_fields_tabs[$field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+		$type = ($edit_fields_tabs[$bulk_field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-		$db->executeUpdate('update users set ' . $field . ' = ? where id in (?)',
+		$db->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
 			[$value, $user_ids],
 			[$type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
@@ -529,22 +527,22 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$redis->del($schema . '_user_' . $user_id);
 		}
 
-		if ($field == 'status')
+		if ($bulk_field == 'status')
 		{
 			invalidate_typeahead_thumbprint('users_active');
 			invalidate_typeahead_thumbprint('users_extern');
 		}
 
-		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 
 		clear_interlets_groups_cache();
 		
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
-	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$field])
+	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$bulk_field])
 	{
-		list($abbrev) = explode('_', $field);
+		list($abbrev) = explode('_', $bulk_field);
 
 		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
 
@@ -552,7 +550,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-		log_event('bulk', 'Set ' . $field . ' to ' . $value . ' for users ' . $users_log);
+		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 		$alert->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -3369,6 +3367,7 @@ if ($v_list)
 			echo sprintf($inp, $k . '_password_' . $pw_name_suffix,
 				'Paswoord', 'password', 'class="form-control" required', $k . '_password');
 
+			echo '<input type="hidden" value="' . $k . '" name="bulk_field">';
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
 			generate_form_token();
 			echo '</form>';
