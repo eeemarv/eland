@@ -15,6 +15,18 @@ $register_link = $base_url . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
 
+$map_template_vars = [
+	'naam' 				=> 'name',
+	'volledige_naam'	=> 'fullname',
+	'saldo'				=> 'saldo',
+	'letscode'			=> 'letscode',
+	'postcode'			=> 'postcode',
+	'id'				=> 'id',
+	'status'			=> 'status',
+	'min_limiet'		=> 'minlimit',
+	'max_limiet'		=> 'maxlimit',
+];
+
 $tab_panes = [
 
 	'balance'		=> [
@@ -186,8 +198,8 @@ $tab_panes = [
 				'explain' => 'Geschikt bijvoorbeeld om nadere uitleg bij de inschrijving te geven.',
 			],
 			'registration_bottom_text' => [
-				'lbl'	=> 'Tekst onder het inschrijvingsformulier',
-				'type'	=> 'textarea',
+				'lbl'		=> 'Tekst onder het inschrijvingsformulier',
+				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
 			],
@@ -202,6 +214,12 @@ $tab_panes = [
 				'type'	=> 'url',
 				'explain'	=> 'Voer de gebruiker meteen terug naar je website na succesvol indienen van het formulier.',
 			],
+			'registration_success_mail'	=> [
+				'lbl'		=> 'Mail naar gebruiker bij succesvol indienen formulier',
+				'type'		=> 'textarea',
+				'rich_edit'	=> true,
+				'attr'		=> ['data-template-vars' => implode(',', array_keys($map_template_vars))],
+			]
 		],
 	],
 

@@ -565,7 +565,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 {
 	$to_log = '';
 
-	$map_insert_vars = [
+	$map_template_vars = [
 		'naam' 				=> 'name',
 		'volledige_naam'	=> 'fullname',
 		'saldo'				=> 'saldo',
@@ -610,7 +610,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$template_vars = [];
 
-		foreach ($map_insert_vars as $key => $val)
+		foreach ($map_template_vars as $key => $val)
 		{
 			$template_vars[$key] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
 		}
@@ -3307,7 +3307,7 @@ if ($v_list)
 		echo '<label class="col-sm-2">Variabele invoegen</label>';
 		echo '<div class="col-sm-10" id="insert_vars">';
 
-		foreach ($map_insert_vars as $iv => $v)
+		foreach ($map_template_vars as $iv => $v)
 		{
 			echo '<span class="btn btn-default">{{ ' . $iv . ' }}</span>';
 		}
@@ -3319,25 +3319,7 @@ if ($v_list)
 
 		echo '<input type="submit" value="Zend test mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
-/*		echo '<p data-toggle="collapse" data-target="#mail_variables" style="cursor: pointer">';
-		echo 'Klik hier om variabelen te zien die in een mail gebruikt kunnen worden.</p>';
-		echo '<div class="table-responsive collapse" id="mail_variables">';
-		echo '<table class="table table-bordered table-hover" data-sort="false">';
 
-		echo '<tbody>';
-		echo '<tr><td>{{letscode}}</td><td>Letscode</td></tr>';
-		echo '<tr><td>{{naam}}</td><td>Gebruikersnaam</td></tr>';
-		echo '<tr><td>{{volledige_naam}}</td><td>Volledige naam (Voornaam + Achternaam)</td></tr>';
-		echo '<tr><td>{{postcode}}</td><td>Postcode</td></tr>';
-		echo '<tr><td>{{status}}</td><td>Status</td></tr>';
-		echo '<tr><td>{{min_limiet}}</td><td>Minimum limiet</td></tr>';
-		echo '<tr><td>{{max_limiet}}</td><td>Maximum limiet</td></tr>';
-		echo '<tr><td>{{saldo}}</td><td>Huidig saldo in ' . $currency . '</td></tr>';
-		echo '<tr><td>{{id}}</td><td>Gebruikers id (kan gebruikt worden om urls te vormen).</td></tr>';
-		echo '</body>';
-		echo '</table>';
-
-		echo '</div>';*/
 		echo '</div>';
 		generate_form_token();
 		echo '</form>';

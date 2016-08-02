@@ -107,10 +107,10 @@ $asset_ary = [
 	],
 	'summernote' => [
 		'js'	=> [
-			'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js',
+			'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js',
 		],
-		'css'	=> 'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css',
+		'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css',
 	],
 ];
 
