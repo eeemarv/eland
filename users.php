@@ -3123,6 +3123,7 @@ if ($v_list)
 				foreach ($show_columns['c'] as $key => $one)
 				{
 					echo '<td>';
+
 					if ($key == 'adr' && $adr_split != '')
 					{
 						list($adr_1, $adr_2) = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
@@ -3130,10 +3131,15 @@ if ($v_list)
 						echo '</td><td>';
 						echo $adr_2;
 					}
-					else
+					else if (isset($contacts[$id][$key]))
 					{
 						echo render_contacts($contacts[$id][$key], $key);
 					}
+					else
+					{
+						echo '&nbsp;';
+					}
+
 					echo '</td>';
 				}
 			}
@@ -3537,9 +3543,9 @@ function cancel($id = null)
 	}
 	else
 	{
-		$params['view'] = $view_users;
 		$params['status'] = 'active';
-	}	
+		$params['view'] = $view_users;
+	}
 
 	header('Location: ' . generate_url('users', $params));
 	exit;
