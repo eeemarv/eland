@@ -4,6 +4,8 @@ function sendmail()
 {
 	global $r, $queue;
 
+	$text_converter = new Markdownify\Converter;
+
 	$mail_ary = $queue->get('mail', 20);
 
 	foreach ($mail_ary as $mail)
@@ -47,7 +49,7 @@ function sendmail()
 		{
 			if (isset($mail['html']))
 			{
-				$mail['text'] = strip_tags($mail['html']);
+				$mail['text'] = $text_converter->parseString($mail['html']);
 			}
 			else
 			{

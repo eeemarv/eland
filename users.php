@@ -484,6 +484,7 @@ if ($bulk_submit && $post && $s_admin)
 /**
  * bulk action: change a field for multiple users
  */
+
 if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
@@ -593,6 +594,11 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	$count = 0;
 	$users_log = $alert_msg_users = [];
 
+	$config_htmlpurifier = HTMLPurifier_Config::createDefault();
+	$config_htmlpurifier->set('Cache.DefinitionImpl', null);
+	$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
+	$bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
+
 	$sel_users = $db->executeQuery('select u.*, c.value as mail
 		from users u, contact c, type_contact tc
 		where u.id in (?)
@@ -620,13 +626,13 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$template = $twig->createTemplate($bulk_mail_content);
 
-		$text = $template->render($template_vars);
+		$html = $template->render($template_vars);
 
 		mail_q([
-			'to' => $sel_user['id'],
-			'subject' => $bulk_mail_subject,
-			'text' => $text,
-			'reply_to' => $s_id,
+			'to' 		=> $sel_user['id'],
+			'subject' 	=> $bulk_mail_subject,
+			'html' 		=> $html,
+			'reply_to' 	=> $s_id,
 		]);
 
 		$to_log[] = link_user($sel_user, false, false);
