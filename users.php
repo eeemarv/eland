@@ -1,4 +1,5 @@
 <?php
+
 $rootpath = './';
 
 $q = (isset($_GET['q'])) ? $_GET['q'] : '';

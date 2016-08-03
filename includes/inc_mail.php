@@ -1,10 +1,13 @@
 <?php
 
+use League\HTMLToMarkdown\HtmlConverter;
+
 function sendmail()
 {
 	global $r, $queue;
 
-	$text_converter = new Markdownify\Converter;
+	$text_converter = new HtmlConverter();
+	$text_converter->getConfig()->setOption('strip_tags', true);
 
 	$mail_ary = $queue->get('mail', 20);
 
@@ -49,7 +52,7 @@ function sendmail()
 		{
 			if (isset($mail['html']))
 			{
-				$mail['text'] = $text_converter->parseString($mail['html']);
+				$mail['text'] = strip_tags($text_converter->convert($mail['html']));
 			}
 			else
 			{
