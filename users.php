@@ -457,8 +457,7 @@ if ($bulk_submit && $post && $s_admin)
 		$errors[] = $error_token;
 	}
 
-	if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1,
-		'gsm_access' => 1, 'fullname_access' => 1][$bulk_field])
+	if ($bulk_field && strpos($bulk_field, '_access') !== false)
 	{
 		$access_value = $access_control->get_post_value();
 
@@ -658,6 +657,8 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		$alert_msg .= '<br>';
 		$alert_msg .= implode('<br>', $alert_msg_users);
 
+		error_log($alert_msg);
+
 		$alert->success($alert_msg);
 	}
 	else
@@ -679,6 +680,8 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 	if ($bulk_mail_submit && $count)
 	{
+		error_log('cancel #245');
+
 		cancel();
 	}
 }
