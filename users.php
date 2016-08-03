@@ -395,25 +395,22 @@ if ($img_del && $id)
 
 if ($bulk_submit && $post && $s_admin)
 {
-	if ($bulk_field_submit || $bulk_mail_submit)
+	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
+	$password = ($bulk_mail_submit) ? 'mail_password_' : $bulk_field . '_password_';
+	$password = $_POST[$password . $pw_name_suffix];
+
+	if (!$password)
 	{
-		$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-		$password = ($bulk_mail_submit) ? 'mail_password_' : $bulk_field . '_password_';
-		$password = $_POST[$password . $pw_name_suffix];
+		$errors[] = 'Vul je paswoord in.';
+	}
 
-		if (!$password)
-		{
-			$errors[] = 'Vul je paswoord in.';
-		}
+	$password = hash('sha512', $password);
 
-		$password = hash('sha512', $password);
+	$fetched_password = ($s_master) ? getenv('MASTER_PASSWORD') : $session_user['password'];
 
-		$fetched_password = ($s_master) ? getenv('MASTER_PASSWORD') : $session_user['password'];
-
-		if ($password != $fetched_password)
-		{
-			$errors[] = 'Het paswoord is niet juist.';
-		}
+	if ($password != $fetched_password)
+	{
+		$errors[] = 'Het paswoord is niet juist.';
 	}
 
 	if ($bulk_field_submit)
