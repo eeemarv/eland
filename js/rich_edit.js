@@ -27,7 +27,7 @@ $(document).ready(function(){
 			ui.button({
 				className: 'dropdown-toggle',
 				contents: 'Variabelen <i class="fa fa-caret-down" aria-hidden="true"></i>',
-				tooltip: 'Event Data',
+				tooltip: 'Personaliseren met variabelen ({{)',
 				data: {
 					toggle: 'dropdown'
 				}
@@ -116,19 +116,6 @@ $(document).ready(function(){
 		});
 
 	});
-
-/*
-	$('form').submit(function(){
-
-		$('textarea.rich-edit').each(function(){
-
-			$(this).html($(this).summernote('code'));
-
-		});
-
-	});
-*/
-
 });
 
 
