@@ -27,7 +27,7 @@ $(document).ready(function(){
 			ui.button({
 				className: 'dropdown-toggle',
 				contents: 'Variabelen <i class="fa fa-caret-down" aria-hidden="true"></i>',
-				tooltip: 'Personaliseren met variabelen ({{)',
+				tooltip: 'Personaliseren met variabelen',
 				data: {
 					toggle: 'dropdown'
 				}
@@ -86,8 +86,9 @@ $(document).ready(function(){
 
 			buttons: {
 				tpl_vars: template_vars_button,
-			},
+			}
 
+/*
 			hint: {
 
 				match: hint_match,
@@ -106,6 +107,7 @@ $(document).ready(function(){
 				}
 
 			}
+*/
 
 		});
 

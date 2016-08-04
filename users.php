@@ -629,6 +629,8 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		catch (Exception $e)
 		{
 			$alert->error('Fout in mail template: ' . $e->getMessage());
+			$sel_ary = [];
+
 			break;
 		}
 
