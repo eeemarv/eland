@@ -6,6 +6,7 @@ $page_access = 'anonymous';
 require_once $rootpath . 'includes/inc_default.php';
 
 $submit = isset($_POST['zend']) ? true : false;
+$token = isset($_GET['token']) ? $_GET['token'] : false;
 
 if ($s_id)
 {
@@ -19,7 +20,7 @@ if (!readconfigfromdb('registration_en'))
 	redirect_login();
 }
 
-if ($token = $_GET['token'])
+if ($token)
 {
 	$key = $schema . '_register_' . $token;
 
@@ -75,6 +76,7 @@ if ($token = $_GET['token'])
 		try
 		{
 			$db->insert('users', $user);
+
 			$user_id = $db->lastInsertId('users_id_seq');
 
 			$tc = [];
@@ -131,6 +133,7 @@ if ($token = $_GET['token'])
 		}
 
 		$subject = 'nieuwe inschrijving: ' . $user['fullname'];
+
 		$text = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
 		$text .= "De volgende persoon schreef zich in via de website: \n\n";
 		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
@@ -140,26 +143,34 @@ if ($token = $_GET['token'])
 
 		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
-/*
-		$subject = 'Bedankt voor je inschrijving';
+		$registration_success_mail = readconfigfromdb('registration_success_mail');
 
-		$text = 'Beste {{naam}}';
-		$text .= "\n\r\n\r";
-		$text .= 'We hebben je inschrijving goed onvangen en nemen zo spoedig mogelijk contact met je op.';
-		$text .= "\n\r\n\r";
-		$text .= 'Vriendelijke groeten,';
-		$text .= "\n\r\n\r";
-		$text .= '{{}}';
-
-
-		mail_q(['to' => $user_id, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
-*/
-		$registration_success_url = readconfigfromdb('registration_success_url');
-
-		if ($registration_success_url)
+		if ($registration_success_mail)
 		{
-			header('Location: ' . $registration_success_url);
-			exit;
+			$subject = 'Inschrijving';
+
+			$map_template_vars = [
+				'voornaam' 			=> 'first_name',
+				'achternaam'		=> 'last_name',
+				'postcode'			=> 'postcode',
+			];
+
+			foreach ($map_template_vars as $k => $v)
+			{
+				$map_template_vars[$k] = $data[$v];
+			}
+
+			try
+			{
+				$template = $twig->createTemplate($registration_success_mail);
+				$html = $template->render($map_template_vars);
+			}
+			catch (Exception $e)
+			{
+				$alert->error('Fout in mail template: ' . $e->getMessage());
+			}
+
+			mail_q(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin']);
 		}
 
 		$alert->success('Inschrijving voltooid.');
@@ -264,7 +275,7 @@ if ($submit)
 
 		mail_q(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
 
-		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je verstuurd hebben om je inschrijving te voltooien.');
+		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}
@@ -294,7 +305,9 @@ echo '<div class="form-group">';
 echo '<label for="first_name" class="col-sm-2 control-label">Voornaam*</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="first_name" name="first_name" ';
-echo 'value="' . $reg['first_name'] . '" required>';
+echo 'value="';
+echo isset($reg['first_name']) ? $reg['first_name'] : '';
+echo '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -302,7 +315,9 @@ echo '<div class="form-group">';
 echo '<label for="last_name" class="col-sm-2 control-label">Achternaam*</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="last_name" name="last_name" ';
-echo 'value="' . $reg['last_name'] . '" required>';
+echo 'value="';
+echo isset($reg['last_name']) ? $reg['last_name'] : '';
+echo '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -310,7 +325,9 @@ echo '<div class="form-group">';
 echo '<label for="email" class="col-sm-2 control-label">Email*</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $reg['email'] . '" required>';
+echo 'value="';
+echo isset($reg['email']) ? $reg['email'] : '';
+echo '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -318,7 +335,9 @@ echo '<div class="form-group">';
 echo '<label for="postcode" class="col-sm-2 control-label">Postcode*</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
-echo 'value="' . $reg['postcode'] . '" required>';
+echo 'value="';
+echo isset($reg['postcode']) ? $reg['postcode'] : '';
+echo '" required>';
 echo '</div>';
 echo '</div>';
 
@@ -326,7 +345,9 @@ echo '<div class="form-group">';
 echo '<label for="gsm" class="col-sm-2 control-label">Gsm</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="gsm" name="gsm" ';
-echo 'value="' . $reg['gsm'] . '">';
+echo 'value="';
+echo  isset($reg['gsm']) ? $reg['gsm'] : '';
+echo  '">';
 echo '</div>';
 echo '</div>';
 
@@ -334,7 +355,9 @@ echo '<div class="form-group">';
 echo '<label for="tel" class="col-sm-2 control-label">Telefoon</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="tel" name="tel" ';
-echo 'value="' . $reg['tel'] . '">';
+echo 'value="';
+echo isset($reg['tel']) ? $reg['tel'] : '';
+echo '">';
 echo '</div>';
 echo '</div>';
 

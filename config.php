@@ -14,17 +14,17 @@ $active_tab = isset($_POST['active_tab']) ? $_POST['active_tab'] : $active_tab;
 $register_link = $base_url . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
+$register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonder letscode aangemaakt met status info-pakket.';
+$register_link_explain .= '<br>De admin krijgt een notificatie-email bij elke inschrijving.';
+
+$register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verder gaat gebeuren. <br>';
+$register_success_explain .= 'Als je groep een website heeft, is het nuttig om een link op te nemen ';
+$register_success_explain .= 'om de gebruiker terug te voeren.';
 
 $map_template_vars = [
-	'naam' 				=> 'name',
-	'volledige_naam'	=> 'fullname',
-	'saldo'				=> 'saldo',
-	'letscode'			=> 'letscode',
+	'voornaam' 			=> 'first_name',
+	'achternaam'		=> 'last_name',
 	'postcode'			=> 'postcode',
-	'id'				=> 'id',
-	'status'			=> 'status',
-	'min_limiet'		=> 'minlimit',
-	'max_limiet'		=> 'maxlimit',
 ];
 
 $tab_panes = [
@@ -207,19 +207,14 @@ $tab_panes = [
 				'lbl'	=> 'Tekst na succesvol indienen formulier.',
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
-				'explain'	=> 'Deze tekst wordt enkel getoond wanneer hieronder geen url ingevuld is.',
-			],
-			'registration_success_url'	=> [
-				'lbl'	=> 'Url naar pagina na succesvol indienen formulier.',
-				'type'	=> 'url',
-				'explain'	=> 'Voer de gebruiker meteen terug naar je website na succesvol indienen van het formulier.',
+				'explain'	=> $register_success_explain,
 			],
 			'registration_success_mail'	=> [
 				'lbl'		=> 'Mail naar gebruiker bij succesvol indienen formulier',
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'attr'		=> ['data-template-vars' => implode(',', array_keys($map_template_vars))],
-			]
+			],
 		],
 	],
 
