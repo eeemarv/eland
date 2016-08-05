@@ -7,19 +7,11 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$help = [
-		'subject' 			=> $_POST['subject'],
-		'description' 		=> $_POST['description'],
-	];
+	$description = isset($_POST['description']) ? $_POST['description'] : false;
 
-	if(empty($help['subject']))
+	if(empty($description) || strip_tags($description) == '' || $description === false)
 	{
-        $errors[] = 'Geef een onderwerp op.';
-	}
-
-	if(empty($help['description']))
-	{
-		$errors[] = 'Geef een omschrijving van je probleem.';
+		$errors[] = 'Het bericht is leeg.';
 	}
 
 	if (!trim(readconfigfromdb('support')))
@@ -44,7 +36,10 @@ if(isset($_POST['zend']))
 
 	$mailaddr = getmailadr($s_id);
 
-	$mail_ary = ['to' => 'support', 'subject' => $help['subject']];
+	$mail_ary = [
+		'to'		=> 'support',
+		'subject' 	=> 'Support voor ' . link_user($s_id, false, false)
+	];
 
 	foreach ($my_contacts as $my_contact)
 	{
@@ -56,35 +51,42 @@ if(isset($_POST['zend']))
 
 	if(!count($errors))
 	{
-		$text  = "-- via de website werd het volgende probleem gemeld --\r\n";
-		$text .= 'E-mail: ' . $help['mail'] . "\r\n";
+		$html = '<p>Gebruiker ' . link_user($s_id, false, false) . ' deed melding via het ';
+		$html .= 'supportformulier op de website.';
+		$html .= '</p>';
 
-		$text .= 'Gebruiker: ' . link_user($s_id, false, false) . "\r\n";
-
-		$text .= "\r\n\r\n";
-		$text .= "------------------------------ Bericht -----------------------------\r\n\r\n";
-		$text .= $help['description'] . "\r\n\r\n";
-		$text .= "--------------------------------------------------------------------\r\n\r\n";
+		$html .= '<hr>';
+		$html .= $description;
+		$html .= '<hr>';
+		$html .= '<p>';
 
 		if ($mail_ary['reply_to'])
 		{
-			$text .= 'Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken';
+			$html .= 'Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken';
 		}
 		else
 		{
-			$text .= 'Er is geen mailadres gekend van ' . link_user($s_id, false, false);
-			$text .= '. Contacteer de gebruiker op andere wijze.';
+			$html .= 'Er is geen mailadres gekend van ' . link_user($s_id, false, false);
+			$html .= '. Contacteer de gebruiker op andere wijze.';
 		}
 
-		$text .= "\r\n\r\n";
-		$text .= 'Contactgegevens van ' . link_user($s_id, false, false) . ":\r\n\r\n";
+		$html .= '</p>';
+
+		$html .= '<h4>Contactgegevens van ' . link_user($s_id, false, false) . '</h4><ul>';
 
 		foreach($my_contacts as $value)
 		{
-			$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+			$html .= '<li>' . $value['abbrev'] . "\t" . $value['value'] . '</li>';
 		}
+		
+		$html .= '</ul>';
 
-		$mail_ary['text'] = $text;
+		$config_htmlpurifier = HTMLPurifier_Config::createDefault();
+		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
+		$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
+		$html = $htmlpurifier->purify($html);
+
+		$mail_ary['html'] = $html;
 
 		$return_message =  mail_q($mail_ary);
 
@@ -104,10 +106,7 @@ if(isset($_POST['zend']))
 }
 else
 {
-	$help = [
-		'subject' 			=> '',
-		'description' 		=> '',
-	];
+	$description = '';
 
 	if ($s_master)
 	{
@@ -136,6 +135,9 @@ else if (!readconfigfromdb('support'))
 $h1 = 'Help / Probleem melden';
 $fa = 'ambulance';
 
+$include_ary[] = 'summernote';
+$include_ary[] = 'rich_edit.js';
+
 require_once $rootpath . 'includes/inc_header.php';
 
 echo '<div class="panel panel-info">';
@@ -143,6 +145,7 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
+/*
 echo '<div class="form-group">';
 echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
 echo '<div class="col-sm-10">';
@@ -150,12 +153,13 @@ echo '<input type="text" class="form-control" id="subject" name="subject" ';
 echo 'value="' . $help['subject'] . '" required>';
 echo '</div>';
 echo '</div>';
+*/
 
 echo '<div class="form-group">';
-echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
-echo '<div class="col-sm-10">';
-echo '<textarea name="description" class="form-control" id="description" rows="4" required>';
-echo $help['description'];
+//echo '<label for="description" class="col-sm-2 control-label">Je bericht</label>';
+echo '<div class="col-sm-12">';
+echo '<textarea name="description" class="form-control rich-edit" id="description" rows="4">';
+echo $description;
 echo '</textarea>';
 echo '</div>';
 echo '</div>';

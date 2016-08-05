@@ -124,6 +124,10 @@ $fa = 'ambulance';
 
 require_once $rootpath . 'includes/inc_header.php';
 
+echo '<small><i>Enkel voor leden</i><br>';
+echo '<i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord ';
+echo 'aanvragen met je e-mail adres!</i></small>';
+
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
@@ -169,7 +173,5 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
-
-echo '<small><i>Opgelet: je kan vanuit het loginscherm zelf een nieuw paswoord aanvragen met je e-mail adres!</i></small>';
 
 include $rootpath . 'includes/inc_footer.php';
