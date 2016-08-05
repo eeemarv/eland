@@ -290,8 +290,8 @@ echo '<div id="sidebar" class="sidebar-offcanvas">';
 if ($s_anonymous)
 {
 	$menu = [
-		'login'		=> ['sign-in', 'Login', []],
-		'help'		=> ['ambulance', 'Help', []],
+		'login'			=> ['sign-in', 'Login', []],
+		'contact'		=> ['comment-o', 'Contact', []],
 	];
 
 

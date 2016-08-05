@@ -7,7 +7,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if(isset($_POST['zend']))
 {
-	$description = isset($_POST['description']) ? $_POST['description'] : false;
+	$description = isset($_POST['description']) ? trim($_POST['description']) : false;
 
 	if(empty($description) || strip_tags($description) == '' || $description === false)
 	{
