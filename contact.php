@@ -7,9 +7,15 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $token = isset($_GET['token']) ? $_GET['token'] : false;
 
+if (!readconfigfromdb('contact_form_en'))
+{
+	$alert->warning('De contactpagina is niet ingeschakeld.');
+	redirect_login();
+}
+
 if ($token)
 {
-	$key = $schema . '_contact_' . $token
+	$key = $schema . '_contact_' . $token;
 	$data = $redis->get($key);
 
 	if ($data)
@@ -42,8 +48,20 @@ if ($token)
 			'reply_to'	=> $data['mail'],
 		]);
 
-		$alert->success('Uw bericht werd succesvol verzonden.');
+		$alert->success('Je bericht werd succesvol verzonden.');
 
+		$success_text = readconfigfromdb('contact_form_success_text');
+
+/*
+		require_once $rootpath . 'includes/inc_header.php';
+
+		if ($success_text)
+		{
+			echo $success_text;
+		}
+
+		require_once $rootpath . 'includes/inc_footer.php';
+*/
 		header('Location: ' . generate_url('contact'));
 		exit;
 	}
@@ -167,6 +185,13 @@ $fa = 'comment-o';
 
 require_once $rootpath . 'includes/inc_header.php';
 
+$top_text = readconfigfromdb('contact_form_top_text');
+
+if ($top_text)
+{
+	echo $top_text;
+}
+
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
@@ -217,6 +242,13 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
+
+$bottom_text = readconfigfromdb('contact_form_bottom_text');
+
+if ($bottom_text)
+{
+	echo $bottom_text;
+}
 
 echo '<p><small>Leden: indien mogelijk, login en gebruik het supportformulier. ';
 echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';

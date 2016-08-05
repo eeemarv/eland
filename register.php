@@ -181,10 +181,7 @@ if ($token)
 
 		if ($registration_success_text)
 		{
-			echo '<div class="panel panel-default">';
-			echo '<div class="panel-body">';
 			echo $registration_success_text;
-			echo '</div></div>';
 		}
 
 		require_once $rootpath . 'includes/inc_footer.php';
@@ -260,7 +257,7 @@ if ($submit)
 	}
 	else
 	{
-		$token = substr(hash('sha512', $schema . time() . $reg['email'] . $reg['first_name']), 0, 10);
+		$token = substr(hash('sha512', $schema . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
 		$key = $schema . '_register_' . $token;
 		$redis->set($key, json_encode($reg));
 		$redis->expire($key, 86400);
@@ -290,10 +287,7 @@ $top_text = readconfigfromdb('registration_top_text');
 
 if ($top_text)
 {
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-body">';
 	echo $top_text;
-	echo '</div></div>';
 }
 
 echo '<div class="panel panel-info">';
@@ -373,10 +367,7 @@ $bottom_text = readconfigfromdb('registration_bottom_text');
 
 if ($bottom_text)
 {
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-body">';
 	echo $bottom_text;
-	echo '</div></div>';
 }
 
 require_once $rootpath . 'includes/inc_footer.php';

@@ -21,6 +21,10 @@ $register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verde
 $register_success_explain .= 'Als je groep een website heeft, is het nuttig om een link op te nemen ';
 $register_success_explain .= 'om de gebruiker terug te voeren.';
 
+$contact_link = $base_url . '/contact.php';
+$contact_link_explain = 'Het contactformulier kan je terugvinden op <a href="' . $contact_link;
+$contact_link_explain .= '">' . $contact_link . '</a>.';
+
 $map_template_vars = [
 	'voornaam' 			=> 'first_name',
 	'achternaam'		=> 'last_name',
@@ -175,6 +179,39 @@ $tab_panes = [
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
 			],
+		],
+	],
+
+	'contact'	=> [
+		'lbl'	=> 'Contact',
+		'lbl_pane'	=> 'Contactformulier',
+		'inputs'	=> [
+			'li_1'	=> [
+				'inline' => '%1$s contactformulier aan.',
+				'inputs' => [
+					'contact_form_en' => [
+						'type' => 'checkbox',
+					],
+				],
+				'explain' => $contact_link_explain,
+			],
+			'contact_form_top_text' => [
+				'lbl'	=> 'Tekst boven het contactformulier',
+				'type'	=> 'textarea',
+				'rich_edit'	=> true,
+			],
+			'contact_form_bottom_text' => [
+				'lbl'		=> 'Tekst onder het contactformulier',
+				'type'		=> 'textarea',
+				'rich_edit'	=> true,
+			],
+/*
+			'contact_form_success_text'	=> [
+				'lbl'	=> 'Tekst na succesvol indienen formulier.',
+				'type'	=> 'textarea',
+				'rich_edit'	=> true,
+			],
+*/
 		],
 	],
 
