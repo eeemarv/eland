@@ -291,9 +291,12 @@ if ($s_anonymous)
 {
 	$menu = [
 		'login'			=> ['sign-in', 'Login', []],
-		'contact'		=> ['comment-o', 'Contact', []],
 	];
 
+	if (readconfigfromdb('contact_form_en'))
+	{
+		$menu['contact'] = ['comment-o', 'Contact', []];
+	}
 
 	if (readconfigfromdb('registration_en'))
 	{
