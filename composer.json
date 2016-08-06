@@ -5,7 +5,7 @@
 	"description": "web app for lets groups.",
 
     "require": {
-		"php": "^5.5|^5.6|^7",
+		"php": "^7",
 		"aws/aws-sdk-php": "^3",
 		"swiftmailer/swiftmailer": "~5.4",
 		"monolog/monolog": "^1",
