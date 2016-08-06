@@ -884,7 +884,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 				continue;
 			}
 
-			if (!$delete && $type == 'u')
+			if (!$delete && $type == 'u' && ctype_digit((string) $id))
 			{
 				$user = $db->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
 
@@ -900,7 +900,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 				}
 			}
 
-			if (!$delete && $type == 'm')
+			if (!$delete && $type == 'm' && ctype_digit((string) $id))
 			{
 				$msgpict = $db->fetchAssoc('select * from ' . $sch . '.msgpictures
 					where msgid = ?

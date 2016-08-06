@@ -125,7 +125,7 @@ class queue
 
 				$data[] = $d;
 
-				error_log('fetch queue id : ' . $row['id'] . ' priority: ' . $row['priority'] . ' data: ' . $row['data']);
+//				error_log('fetch queue id : ' . $row['id'] . ' priority: ' . $row['priority'] . ' data: ' . $row['data']);
 			}
 
 			$db->executeQuery('delete from eland_extra.queue where id in (?)',
