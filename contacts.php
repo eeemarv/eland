@@ -2,23 +2,23 @@
 
 $rootpath = './';
 
-$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
-$abbrev = (isset($_GET['abbrev'])) ? $_GET['abbrev'] : '';
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$letscode = (isset($_GET['letscode'])) ? $_GET['letscode'] : '';
-$access = (isset($_GET['access'])) ? $_GET['access'] : 'all';
-$ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'all';
+$uid = $_GET['uid'] ?? false;
+$abbrev = $_GET['abbrev'] ?? '';
+$q = $_GET['q'] ?? '';
+$letscode = $_GET['letscode'] ?? '';
+$access = $_GET['access'] ?? 'all';
+$ustatus = $_GET['ustatus'] ?? 'all';
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'c.id';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
-$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
-$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+$orderby = $_GET['orderby'] ?? 'c.id';
+$asc = $_GET['asc'] ?? 0;
+$limit = $_GET['limit'] ?? 25;
+$start = $_GET['start'] ?? 0;
 
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
-$inline = (isset($_GET['inline'])) ? true : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = $_GET['add'] ?? false;
+$inline = isset($_GET['inline']) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
 
 $page_access = ($del || $add || $edit) ? 'user' : 'guest';
 $page_access = ($abbrev || !$uid) ? 'admin' : $page_access;

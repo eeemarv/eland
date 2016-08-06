@@ -13,10 +13,10 @@ if ($s_id)
 }
 */
 
-$token = isset($_GET['token']) ? $_GET['token'] : false;
-$login = isset($_GET['login']) ? $_GET['login'] : '';
+$token = $_GET['token'] ?? false;
+$login = $_GET['login'] ?? '';
 
-$location = isset($_GET['location']) ? $_GET['location'] : false;
+$location = $_GET['location'] ?? false;
 $location = ($location) ? urldecode($location) : '/index.php';
 $location = (strpos($location, 'login.php') === false) ? $location : 'index.php';
 $location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
@@ -31,7 +31,7 @@ if($token)
 
 		$param = 'welcome=1&r=guest&u=elas';
 
-		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'unknown';
+		$referer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
 		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded. referer: ' . $referer);
 

@@ -5,43 +5,43 @@ $page_access = 'guest';
 $allow_guest_post = true;
 require_once $rootpath . 'includes/inc_default.php';
 
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? true : false;
+$id = $_GET['id'] ?? false;
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = isset($_GET['add']) ? true : false;
 
-$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$uid = $_GET['uid'] ?? false;
+$submit = isset($_POST['zend']) ? true : false;
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'm.cdate';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+$orderby = $_GET['orderby'] ?? 'm.cdate';
+$asc = $_GET['asc'] ?? 0;
 
-$recent = (isset($_GET['recent'])) ? true : false;
+$recent = isset($_GET['recent']) ? true : false;
 
-$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
-$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+$limit = $_GET['limit'] ?? 25;
+$start = $_GET['start'] ?? 0;
 
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$cid = (isset($_GET['cid'])) ? $_GET['cid'] : '';
+$q = $_GET['q'] ?? '';
+$cid = $_GET['cid'] ?? '';
 
-$ow = (isset($_GET['ow'])) ? $_GET['ow'] : 'all';
-$valid = (isset($_GET['valid'])) ? $_GET['valid'] : 'all';
-$ustatus = (isset($_GET['ustatus'])) ? $_GET['ustatus'] : 'active';
-$fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
+$ow = $_GET['ow'] ?? 'all';
+$valid = $_GET['valid'] ?? 'all';
+$ustatus = $_GET['ustatus'] ?? 'active';
+$fcode = $_GET['fcode'] ?? '';
 
-$img = (isset($_GET['img'])) ? true : false;
-$insert_img = (isset($_GET['insert_img'])) ? true : false;
-$img_del = (isset($_GET['img_del'])) ? $_GET['img_del'] : false;
+$img = isset($_GET['img']) ? true : false;
+$insert_img = isset($_GET['insert_img']) ? true : false;
+$img_del = $_GET['img_del'] ?? false;
 
-$images = (isset($_FILES['images'])) ? $_FILES['images'] : null;
+$images = $_FILES['images'] ?? false;
 
-$mail = (isset($_POST['mail'])) ? true : false;
+$mail = isset($_POST['mail']) ? true : false;
 
 $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
 
-$extend_submit = (isset($_POST['extend_submit'])) ? true : false;
-$extend = (isset($_POST['extend'])) ? $_POST['extend'] : false;
-$access_submit = (isset($_POST['access_submit'])) ? true : false;
+$extend_submit = isset($_POST['extend_submit']) ? true : false;
+$extend = $_POST['extend'] ?? false;
+$access_submit = isset($_POST['access_submit']) ? true : false;
 
 $access = $access_control->get_post_value();
 
@@ -54,7 +54,7 @@ if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
 
 if (!$post)
 {
-	$extend = (isset($_GET['extend'])) ? $_GET['extend'] : false;
+	$extend = $_GET['extend'] ?? false;
 }
 
 /*
@@ -265,7 +265,7 @@ if ($post && $img && $images && !$s_guest)
 
 	if (!$insert_img)
 	{
-		$form_token = isset($_GET['form_token']) ? $_GET['form_token'] : false;
+		$form_token = $_GET['form_token'] ?? false;
 
 		if (!$form_token)
 		{
@@ -789,7 +789,7 @@ if (($edit || $add))
 		];
 
 		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
-		$uploaded_images = isset($_POST['uploaded_images']) ? $_POST['uploaded_images'] : [];
+		$uploaded_images = $_POST['uploaded_images'] ?? [];
 
 		$access_error = $access_control->get_post_error();
 
@@ -1641,7 +1641,7 @@ if ($id)
 	echo 'class="form-control" required';
 	echo ($disabled) ? ' disabled' : '';
 	echo '>';
-	echo (isset($content)) ? $content : '';
+	echo $content ?? '';
 	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';

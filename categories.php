@@ -3,9 +3,9 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$edit = $_GET['edit'] ?? false;
+$del = $_GET['del'] ?? false;
+$add = $_GET['add'] ?? false;
 
 if ($add)
 {

@@ -2,26 +2,26 @@
 
 $rootpath = './';
 
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$status = (isset($_GET['status'])) ? $_GET['status'] : false;
+$q = $_GET['q'] ?? '';
+$status = $_GET['status'] ?? false;
 
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
-$pw = (isset($_GET['pw'])) ? $_GET['pw'] : false;
-$img = (isset($_GET['img'])) ? true : false;
-$img_del = (isset($_GET['img_del'])) ? true : false;
-$interlets = (isset($_GET['interlets'])) ? $_GET['interlets'] : false;
-$password = (isset($_POST['password'])) ? $_POST['password'] : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$id = $_GET['id'] ?? false;
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = $_GET['add'] ?? false;
+$pw = $_GET['pw'] ?? false;
+$img = isset($_GET['img']) ? true : false;
+$img_del = isset($_GET['img_del']) ? true : false;
+$interlets = $_GET['interlets'] ?? false;
+$password = $_POST['password'] ?? false;
+$submit = isset($_POST['zend']) ? true : false;
 
-$user_mail_submit = (isset($_POST['user_mail_submit'])) ? true : false;
+$user_mail_submit = isset($_POST['user_mail_submit']) ? true : false;
 
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
 
-$bulk_field = isset($_POST['bulk_field']) ? $_POST['bulk_field'] : false;
+$bulk_field = $_POST['bulk_field'] ?? false;
 
 $selected_users = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
 
@@ -415,7 +415,7 @@ if ($bulk_submit && $post && $s_admin)
 
 	if ($bulk_field_submit)
 	{
-		$value = isset($_POST[$bulk_field]) ? $_POST[$bulk_field] : '';
+		$value = $_POST[$bulk_field] ?? '';
 	}
 
 	if ($bulk_mail_test || $bulk_mail_submit)
@@ -703,7 +703,7 @@ if ($pw)
 	{
 		$password = trim($_POST['password']);
 
-		if (empty($password) || (trim($password) == ''))
+		if (empty($password) || ($password == ''))
 		{
 			$errors[] = 'Vul paswoord in!';
 		}
@@ -967,8 +967,8 @@ if ($del)
 					$wants = $val['stat_msgs_wanted'];
 					$cat_id = $val['id'];
 
-					$want_count[$cat_id] = (isset($want_count[$cat_id])) ? $want_count[$cat_id] : 0;
-					$offer_count[$cat_id] = (isset($offer_count[$cat_id])) ? $offer_count[$cat_id] : 0;
+					$want_count[$cat_id] = $want_count[$cat_id] ?? 0;
+					$offer_count[$cat_id] = $offer_count[$cat_id] ?? 0;
 
 					if ($want_count[$cat_id] == $wants && $offer_count[$cat_id] == $offers)
 					{
@@ -976,8 +976,8 @@ if ($del)
 					}
 
 					$stats = [
-						'stat_msgs_offers'	=> ($offer_count[$cat_id]) ?: 0,
-						'stat_msgs_wanted'	=> ($want_count[$cat_id]) ?: 0,
+						'stat_msgs_offers'	=> $offer_count[$cat_id] ?? 0,
+						'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
 					];
 
 					$db->update('categories', $stats, ['id' => $cat_id]);
@@ -2310,7 +2310,9 @@ if ($id)
 	echo '<textarea name="user_mail_content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
 	echo ($disabled) ? ' disabled' : '';
-	echo '>' . ((isset($user_mail_content)) ? $user_mail_content : '') . '</textarea>';
+	echo '>';
+	echo $user_mail_content ?? '';
+	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';
 
@@ -2483,11 +2485,12 @@ if ($v_list && $s_admin)
 		];
 	}
 
-	$adr_split = isset($_GET['adr_split']) ? $_GET['adr_split'] : '';
-	$activity_days = isset($_GET['activity_days']) ? $_GET['activity_days'] : 365;
+	$adr_split = $_GET['adr_split'] ?? '';
+	$activity_days = $_GET['activity_days'] ?? 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
-	$activity_filter_letscode = isset($_GET['activity_filter_letscode']) ? $_GET['activity_filter_letscode'] : '';
-	$saldo_date = isset($_GET['saldo_date']) ? trim($_GET['saldo_date']) : '';
+	$activity_filter_letscode = $_GET['activity_filter_letscode'] ?? '';
+	$saldo_date = $_GET['saldo_date'] ?? '';
+	$saldo_date = trim($saldo_date);
 
 	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
 
@@ -3317,7 +3320,7 @@ if ($v_list)
 		echo '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
 		echo 'placeholder="Onderwerp" ';
 		echo 'value="';
-		echo isset($bulk_mail_subject) ? $bulk_mail_subject : '';
+		echo $bulk_mail_subject ?? '';
 		echo '" required>';
 		echo '</div>';
 		echo '</div>';
@@ -3328,23 +3331,10 @@ if ($v_list)
 		echo 'class="form-control rich-edit" id="bulk_mail_content" rows="8" ';
 		echo 'data-template-vars="' . implode(',', array_keys($map_template_vars)) . '" ';
 		echo 'required>';
-		echo isset($bulk_mail_content) ? $bulk_mail_content : '';
+		echo $bulk_mail_content ?? '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
-
-/*
-		echo '<div class="form-group">';
-		echo '<label class="col-sm-2">Variabele invoegen</label>';
-		echo '<div class="col-sm-10" id="insert_vars">';
-
-		foreach ($map_template_vars as $iv => $v)
-		{
-			echo '<span class="btn btn-default">{{ ' . $iv . ' }}</span>';
-		}
-		echo '</div>';
-		echo '</div>';
-*/
 
 		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
 			'Je paswoord (extra veiligheid)', 'password', 'class="form-control" required', 'mail_password');

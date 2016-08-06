@@ -6,15 +6,15 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'files-o';
 
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$map = (isset($_GET['map'])) ? $_GET['map'] : false;
-$map_edit = (isset($_GET['map_edit'])) ? $_GET['map_edit'] : false;
-$add = (isset($_GET['add'])) ? true : false;
+$q = $_GET['q'] ?? '';
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$map = $_GET['map'] ?? false;
+$map_edit = $_GET['map_edit'] ?? false;
+$add = isset($_GET['add']) ? true : false;
 
-$submit = (isset($_POST['zend'])) ? true : false;
-$confirm_del = (isset($_POST['confirm_del'])) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
+$confirm_del = isset($_POST['confirm_del']) ? true : false;
 
 if ($post)
 {
@@ -260,7 +260,7 @@ if ($edit)
 
 	echo $access_control->get_radio_buttons('docs', $doc['access']);
 
-	$map_name = isset($map['map_name']) ? $map['map_name'] : '';
+	$map_name = $map['map_name'] ?? '';
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
@@ -423,7 +423,7 @@ if ($submit)
 		'md'		=> 'text/markdown',
 	];
 
-	$media_type = (isset($extension_types[$ext])) ? $extension_types[$ext] : $file_type;
+	$media_type = $extension_types[$ext] ?? $file_type;
 
 	if ($file_size > 1024 * 1024 * 10)
 	{
@@ -568,7 +568,7 @@ if ($add)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
-	echo (isset($map_name)) ? $map_name : '';
+	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
 	echo '</div>';

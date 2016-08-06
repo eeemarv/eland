@@ -4,12 +4,12 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$setting = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$setting = $_GET['edit'] ?? false;
+$submit = isset($_POST['zend']) ? true : false;
 
 $active_tab = 'balance';
-$active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : $active_tab;
-$active_tab = isset($_POST['active_tab']) ? $_POST['active_tab'] : $active_tab;
+$active_tab = $_GET['active_tab'] ?? $active_tab;
+$active_tab = $_POST['active_tab'] ?? $active_tab;
 
 $register_link = $base_url . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
@@ -381,10 +381,10 @@ if ($post)
 			{
 				$posted_configs[$sub_name] = trim($_POST[$sub_name]);
 
-				$validators[$sub_name]['type'] = isset($sub_input['type']) ? $sub_input['type'] : 'text';
-				$validators[$sub_name]['attr'] = isset($sub_input['attr']) ? $sub_input['attr'] : [];
+				$validators[$sub_name]['type'] = $sub_input['type'] ?? 'text';
+				$validators[$sub_name]['attr'] = $sub_input['attr'] ?? [];
 				$validators[$sub_name]['required'] = isset($sub_input['required']) ? true : false;
-				$validators[$sub_name]['max_inputs'] = isset($sub_input['max_inputs']) ? $sub_input['max_inputs'] : 1;
+				$validators[$sub_name]['max_inputs'] = $sub_input['max_inputs'] ?? 1;
 			}
 
 			continue;
@@ -392,10 +392,10 @@ if ($post)
 
 		$posted_configs[$name] = trim($_POST[$name]);
 
-		$validators[$name]['type'] = isset($input['type']) ? $input['type'] : 'text';
-		$validators[$name]['attr'] = isset($input['attr']) ? $input['attr'] : [];
+		$validators[$name]['type'] = $input['type'] ?? 'text';
+		$validators[$name]['attr'] = $input['attr'] ?? [];
 		$validators[$name]['required'] = isset($input['required']) ? true : false;
-		$validators[$name]['max_inputs'] = isset($input['max_inputs']) ? $input['max_inputs'] : 1;
+		$validators[$name]['max_inputs'] = $input['max_inputs'] ?? 1;
 
 	}
 
@@ -623,7 +623,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading"><h4>';
-	echo (isset($pane['lbl_pane'])) ? $pane['lbl_pane'] : $pane['lbl'];
+	echo $pane['lbl_pane'] ?? $pane['lbl'];
 	echo '</h4></div>';
 
 	echo '<ul class="list-group">';
@@ -654,7 +654,7 @@ foreach ($tab_panes as $id => $pane)
 				foreach ($input['inputs'] as $inline_name => $inline_input)
 				{
 					$str = '<input type="';
-					$str .= isset($inline_input['type']) ? $inline_input['type'] : 'text';
+					$str .= $inline_input['type'] ?? 'text';
 					$str .= '" name="' . $inline_name . '"';
 
 					if ($inline_input['type'] == 'checkbox')
@@ -732,7 +732,7 @@ foreach ($tab_panes as $id => $pane)
 			else
 			{
 				echo '<input type="';
-				echo (isset($input['type'])) ? $input['type'] : 'text';
+				echo $input['type'] ?? 'text';
 				echo '" class="form-control" ';
 				echo 'name="' . $name . $name_suffix . '" ';
 				echo 'id="' . $name . $name_suffix . '" ';
@@ -762,7 +762,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';
 			echo '<br>';
 			echo '<span class="btn btn-default"><i class="fa fa-plus" ></i> ';
-			echo isset($input['add_btn_text']) ? $input['add_btn_text'] : 'Extra';
+			echo $input['add_btn_text'] ?? 'Extra';
 			echo '</span>';
 			echo '</div>';
 			echo '</div>';

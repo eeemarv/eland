@@ -692,8 +692,8 @@ function cleanup_messages()
 		$wants = $val['stat_msgs_wanted'];
 		$id = $val['id'];
 
-		$want_count[$id] = (isset($want_count[$id])) ? $want_count[$id] : 0;
-		$offer_count[$id] = (isset($offer_count[$id])) ? $offer_count[$id] : 0;
+		$want_count[$id] = $want_count[$id] ?? 0;
+		$offer_count[$id] = $offer_count[$id] ?? 0;
 
 		if ($want_count[$id] == $wants && $offer_count[$id] == $offers)
 		{
@@ -701,8 +701,8 @@ function cleanup_messages()
 		}
 
 		$stats = [
-			'stat_msgs_offers'	=> ($offer_count[$id]) ?: 0,
-			'stat_msgs_wanted'	=> ($want_count[$id]) ?: 0,
+			'stat_msgs_offers'	=> $offer_count[$id] ?? 0,
+			'stat_msgs_wanted'	=> $want_count[$id] ?? 0,
 		];
 		
 		$db->update('categories', $stats, ['id' => $id]);
@@ -756,8 +756,8 @@ function saldo_update()
 
 	foreach ($user_balances as $id => $balance)
 	{
-		$plus[$id] = (isset($plus[$id])) ? $plus[$id] : 0;
-		$min[$id] = (isset($min[$id])) ? $min[$id] : 0;
+		$plus[$id] = $plus[$id] ?? 0;
+		$min[$id] = $min[$id] ?? 0;
 
 		$calculated = $plus[$id] - $min[$id];
 

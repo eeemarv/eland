@@ -3,13 +3,13 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? true : false;
-$add_schema = (isset($_GET['add_schema'])) ? $_GET['add_schema'] : false;
+$id = $_GET['id'] ?? false;
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = isset($_GET['add']) ? true : false;
+$add_schema = $_GET['add_schema'] ?? false;
 
-$submit = (isset($_POST['zend'])) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
 
 if ($id || $edit || $del)
 {

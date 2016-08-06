@@ -355,7 +355,7 @@ echo '<div class="visible-xs pull-left button-offcanvas">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"';
 echo ' title="Menu"><i class="fa fa-chevron-left"></i></button>';
 echo '</div>';
-echo (isset($top_buttons)) ? $top_buttons : '';
+echo $top_buttons ?? '';
 echo '</div>';
 echo '</div>';
 

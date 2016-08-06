@@ -300,9 +300,9 @@ $db->exec('set search_path to ' . ($schema) ?: 'public');
 
 /** user **/
 
-$p_role = (isset($_GET['r'])) ? $_GET['r'] : 'anonymous';
-$p_user = (isset($_GET['u'])) ? $_GET['u'] : false;
-$p_schema = (isset($_GET['s'])) ? $_GET['s'] : false;
+$p_role = $_GET['r'] ?? 'anonymous';
+$p_user = $_GET['u'] ?? false;
+$p_schema = $_GET['s'] ?? false;
 
 $s_schema = ($p_schema) ?: $schema;
 $s_id = $p_user;
@@ -312,7 +312,7 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 
 /** access user **/
 
-$logins = isset($_SESSION['logins']) ? $_SESSION['logins'] : [];
+$logins = $_SESSION['logins'] ?? [];
 
 $s_master = $s_elas_guest = false;
 
@@ -630,11 +630,11 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 $inline = (isset($_GET['inline'])) ? true : false;
 
-$view = (isset($_GET['view'])) ? $_GET['view'] : false;
+$view = $_GET['view'] ?? false;
 
-$view_users = (isset($_SESSION['view']['users'])) ? $_SESSION['view']['users'] : 'list';
-$view_messages = (isset($_SESSION['view']['messages'])) ? $_SESSION['view']['messages'] : 'extended';
-$view_news = (isset($_SESSION['view']['news'])) ? $_SESSION['view']['news'] : 'extended';
+$view_users = $_SESSION['view']['users'] ?? 'list';
+$view_messages = $_SESSION['view']['messages'] ?? 'extended';
+$view_news = $_SESSION['view']['news'] ?? 'extended';
 
 if ($view || $inline)
 {
@@ -1164,7 +1164,7 @@ function mail_q($mail = [], $priority = false)
 
 	// only the interlets transactions receiving side has a different schema
 
-	$mail['schema'] = isset($mail['schema']) ? $mail['schema'] : $schema;
+	$mail['schema'] = $mail['schema'] ?? $schema;
 
 	if (!readconfigfromdb('mailenabled'))
 	{

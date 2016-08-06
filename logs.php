@@ -3,17 +3,17 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$q = isset($_GET['q']) ? $_GET['q'] : '';
-$letscode = isset($_GET['letscode']) ? $_GET['letscode'] : '';
-$type = isset($_GET['type']) ? $_GET['type'] : '';
-$fdate = (isset($_GET['fdate'])) ? $_GET['fdate'] : '';
-$tdate = (isset($_GET['tdate'])) ? $_GET['tdate'] : '';
+$q = $_GET['q'] ?? '';
+$letscode = $_GET['letscode'] ?? '';
+$type = $_GET['type'] ?? '';
+$fdate = $_GET['fdate'] ?? '';
+$tdate = $_GET['tdate'] ?? '';
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'ts';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
+$orderby = $_GET['orderby'] ?? 'ts';
+$asc = $_GET['asc'] ?? 0;
 
-$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
-$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
+$limit = $_GET['limit'] ?? 25;
+$start = $_GET['start'] ?? 0;
 
 $params = [
 	'orderby'	=> $orderby,

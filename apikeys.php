@@ -4,10 +4,10 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$del = $_GET['del'] ?? false;
+$add = $_GET['add'] ?? false;
 
-$submit = (isset($_POST['zend'])) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
 
 if ($del)
 {

@@ -5,7 +5,7 @@ $page_access = 'anonymous';
 
 require_once $rootpath . 'includes/inc_default.php';
 
-$token = isset($_GET['token']) ? $_GET['token'] : false;
+$token = $_GET['token'] ?? false;
 
 if (!readconfigfromdb('contact_form_en'))
 {

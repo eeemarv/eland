@@ -103,7 +103,7 @@ foreach ($export_ary as $ex_key => $export)
 	{
 		$columns = $fields = [];
 
-		$sql_bind = isset($export['sql_bind']) ? $export['sql_bind'] : [];
+		$sql_bind = $export['sql_bind'] ?? [];
 
 		$data = $db->fetchAll($export['sql'], $sql_bind);
 
@@ -122,7 +122,7 @@ foreach ($export_ary as $ex_key => $export)
 
 			foreach($columns as $c)
 			{
-				$fields[] = isset($row[$c]) ? $row[$c] : '';
+				$fields[] = $row[$c] ?? '';
 			}
 
 			$out .= '"' . implode('","', $fields) . '"' . $r;

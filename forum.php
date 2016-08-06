@@ -6,11 +6,11 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $fa = 'comments-o';
 
-$topic = (isset($_GET['t'])) ? $_GET['t'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? true : false;
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
+$topic = $_GET['t'] ?? false;
+$del = $_GET['del'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = isset($_GET['add']) ? true : false;
+$q = $_GET['q'] ?? '';
 
 if (!($s_user || $s_admin))
 {
@@ -31,7 +31,7 @@ if (!($s_user || $s_admin))
 	}
 }
 
-$submit = (isset($_POST['zend'])) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
 
 if (!readconfigfromdb('forum_en'))
 {
@@ -76,7 +76,7 @@ if ($del || $edit)
 		cancel(($forum_post['parent_id']) ?: $t);
 	}
 
-	$topic = (isset($forum_post['parent_id'])) ? $forum_post['parent_id'] : false;
+	$topic = $forum_post['parent_id'] ?? false;
 }
 
 if ($submit)
@@ -466,7 +466,7 @@ if ($topic)
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<textarea name="content" class="form-control rich-edit" id="content" rows="4" required>';
-		echo isset($forum_post['content']) ? $forum_post['content'] : '';
+		echo $forum_post['content'] ?? '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
