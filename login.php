@@ -170,7 +170,7 @@ if ($submit)
 		$errors[] = 'Het account is niet actief.';
 	}
 
-	if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin']))
+	if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin', 'interlets']))
 	{
 		$errors[] = 'Het account beschikt niet over de juiste rechten.';
 	}
@@ -198,7 +198,10 @@ if ($submit)
 		$alert->success('Je bent ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
-		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
+
+		$accountrole = ($user['accountrole'] == 'interlets') ? 'guest' : $user['accountrole'];
+
+		header('Location: ' . $location . $glue . 'a=1&r=' . $accountrole . '&' . 'u=' .  $user['id']);
 		exit;
 	}
 

@@ -809,11 +809,12 @@ if ($pw)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail (enkel mogelijk wanneer status actief is)</label>';
+	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="notify" id="notify"';
 	echo ($user['status'] == 1 || $user['status'] == 2) ? ' checked="checked"' : ' readonly';
 	echo '>';
+	echo '<p><small>Notificatie is enkel mogelijk wanneer status actief is en mailadres ingesteld.</small></p>';
 	echo '</div>';
 	echo '</div>';
 

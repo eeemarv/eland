@@ -73,6 +73,7 @@ if($post && isset($_POST['zend']))
 {
 	$mail = isset($_POST['mail']) ? trim($_POST['mail']) : false;
 	$description = isset($_POST['description']) ? trim($_POST['description']) : false;
+
 	$browser = $_SERVER['HTTP_USER_AGENT'];
 
 	if (isset($_SERVER['HTTP_CLIENT_IP']))

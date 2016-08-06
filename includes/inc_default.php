@@ -434,6 +434,9 @@ else if (ctype_digit((string) $s_id))
 	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
 		error_log('redirect 2');
+
+		$s_accountrole = $session_user['accountrole'];
+
 		redirect_index();
 	}
 
