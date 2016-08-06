@@ -5,27 +5,27 @@ $page_access = 'guest';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
-$orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'cdate';
-$asc = (isset($_GET['asc'])) ? $_GET['asc'] : 0;
-$limit = (isset($_GET['limit'])) ? $_GET['limit'] : 25;
-$start = (isset($_GET['start'])) ? $_GET['start'] : 0;
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$add = (isset($_GET['add'])) ? true : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$orderby = $_GET['orderby'] ?? 'cdate';
+$asc = $_GET['asc'] ?? 0;
+$limit = $_GET['limit'] ?? 25;
+$start = $_GET['start'] ?? 0;
+$id = $_GET['id'] ?? false;
+$add = isset($_GET['add']) ? true : false;
+$submit = isset($_POST['zend']) ? true : false;
 
-$mid = (isset($_GET['mid'])) ? $_GET['mid'] : false;
-$tuid = (isset($_GET['tuid'])) ? $_GET['tuid'] : false;
-$tus = (isset($_GET['tus'])) ? $_GET['tus'] : false;
-$fuid = (isset($_GET['fuid'])) ? $_GET['fuid'] : false;
-$uid = (isset($_GET['uid'])) ? $_GET['uid'] : false;
-$inline = (isset($_GET['inline'])) ? true : false;
+$mid = $_GET['mid'] ?? false;
+$tuid = $_GET['tuid'] ?? false;
+$tus = $_GET['tus'] ?? false;
+$fuid = $_GET['fuid'] ?? false;
+$uid = $_GET['uid'] ?? false;
+$inline = isset($_GET['inline']) ? true : false;
 
-$q = (isset($_GET['q'])) ? $_GET['q'] : '';
-$fcode = (isset($_GET['fcode'])) ? $_GET['fcode'] : '';
-$tcode = (isset($_GET['tcode'])) ? $_GET['tcode'] : '';
-$andor = (isset($_GET['andor'])) ? $_GET['andor'] : 'and';
-$fdate = (isset($_GET['fdate'])) ? $_GET['fdate'] : '';
-$tdate = (isset($_GET['tdate'])) ? $_GET['tdate'] : '';
+$q = $_GET['q'] ?? '';
+$fcode = $_GET['fcode'] ?? '';
+$tcode = $_GET['tcode'] ?? '';
+$andor = $_GET['andor'] ?? 'and';
+$fdate = $_GET['fdate'] ?? '';
+$tdate = $_GET['tdate'] ?? '';
 
 /**
  * add

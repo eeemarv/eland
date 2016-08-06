@@ -1,11 +1,11 @@
 <?php
 $rootpath = './';
 $page_access = 'anonymous';
-$allow_anonymous_post = true;
+
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_passwords.php';
 
-$token = $_GET['token'];
+$token = $_GET['token'] ?? false;
 
 if ($token)
 {
@@ -81,7 +81,7 @@ if ($token)
 	exit;
 }
 
-if ($_POST['zend'])
+if (isset($_POST['zend']))
 {
 	$email = $_POST['email'];
 

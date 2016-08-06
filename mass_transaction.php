@@ -5,9 +5,9 @@ $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_transactions.php';
 
-$q = isset($_POST['q']) ? $_POST['q'] : (isset($_GET['q']) ? $_GET['q'] : '');
-$hsh = isset($_POST['hsh']) ? $_POST['hsh'] : (isset($_GET['hsh']) ? $_GET['hsh'] : '096024');
-$selected_users = isset($_POST['selected_users']) ? $_POST['selected_users'] : '';
+$q = $_POST['q'] ?? ($_GET['q'] ?? '');
+$hsh = $_POST['hsh'] ?? ($_GET['hsh'] ?? '096024');
+$selected_users = $_POST['selected_users'] ?? '';
 $selected_users = ltrim($selected_users, '.');
 $selected_users = explode('.', $selected_users);
 $selected_users = array_combine($selected_users, $selected_users);
@@ -91,11 +91,18 @@ while ($row = $rs->fetch())
 
 list($to_letscode) = isset($_POST['to_letscode']) ? explode(' ', $_POST['to_letscode']) : [''];
 list($from_letscode) = isset($_POST['from_letscode']) ? explode(' ', $_POST['from_letscode']) : [''];
-$amount = isset($_POST['amount']) ? $_POST['amount'] : [];
-$description = isset($_POST['description']) ? trim($_POST['description']) : '';
-$pw_name_suffix = substr(isset($_POST['form_token']) ? $_POST['form_token'] : '', 0, 5);
-$password = isset($_POST['password_' . $pw_name_suffix]) ? trim($_POST['password_' . $pw_name_suffix]) : '';
-$transid = isset($_POST['transid']) ? $_POST['transid'] : '';
+
+$amount = $_POST['amount'] ?? [];
+$description = $_POST['description'] ?? '';
+$description = trim($description);
+
+$pw_name_suffix = substr($_POST['form_token'] ?? '', 0, 5);
+
+$password = $_POST['password_' . $pw_name_suffix] ?? '';
+$password = trim($password);
+
+$transid = $_POST['transid'] ?? '';
+
 $mail_en = isset($_POST['mail_en']) ? true : false;
 
 if ($submit)
@@ -459,9 +466,10 @@ echo '<ul class="nav nav-tabs" id="nav-tabs">';
 
 foreach ($st as $k => $s)
 {
-	$shsh = isset($s['hsh']) ? $s['hsh'] : '';
+	$shsh = $s['hsh'] ?? '';
 	$class_li = ($shsh == $hsh) ? ' class="active"' : '';
-	$class_a  = isset($s['cl']) ? $s['cl'] : 'white';
+	$class_a  = $s['cl'] ?? 'white';
+
 	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
 	echo 'data-filter="' . $shsh . '">' . $s['lbl'] . '</a></li>';
 }
@@ -533,7 +541,7 @@ foreach($users as $user_id => $user)
 	echo '<td data-value="' . $hsh . '">';
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="';
-	echo  isset($amount[$user_id]) ? $amount[$user_id] : '';
+	echo $amount[$user_id] ?? '';
 	echo  '" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
 	echo 'data-user-id="' . $user_id . '" ';

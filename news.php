@@ -1,12 +1,12 @@
 <?php
 $rootpath = './';
 
-$approve = (isset($_GET['approve'])) ? $_GET['approve'] : false;
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$id = (isset($_GET['id'])) ? $_GET['id'] : false;
-$submit = (isset($_POST['zend'])) ? true : false;
+$approve = $_GET['approve'] ?? false;
+$edit = $_GET['edit'] ?? false;
+$add = $_GET['add'] ?? false;
+$del = $_GET['del'] ?? false;
+$id = $_GET['id'] ?? false;
+$submit = isset($_POST['zend']) ? true : false;
 
 /**
  * approve a newsitem
@@ -15,6 +15,7 @@ $submit = (isset($_POST['zend'])) ? true : false;
 if ($approve)
 {
 	$page_access = 'admin';
+
 	require_once $rootpath . 'includes/inc_default.php';
 
 	if ($db->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))

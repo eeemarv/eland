@@ -5,9 +5,10 @@ $page_access = 'user';
 
 require_once $rootpath . 'includes/inc_default.php';
 
-if(isset($_POST['zend']))
+if (isset($_POST['zend']))
 {
-	$description = isset($_POST['description']) ? trim($_POST['description']) : false;
+	$description = $_POST['description'] ?? '';
+	$desctiption = trim($description);
 
 	if(empty($description) || strip_tags($description) == '' || $description === false)
 	{

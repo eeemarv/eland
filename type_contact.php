@@ -4,9 +4,9 @@ $rootpath = './';
 $page_access = 'admin';
 require_once $rootpath . 'includes/inc_default.php';
 
-$edit = (isset($_GET['edit'])) ? $_GET['edit'] : false;
-$del = (isset($_GET['del'])) ? $_GET['del'] : false;
-$add = (isset($_GET['add'])) ? $_GET['add'] : false;
+$edit = $_GET['edit'] ?? false;
+$del = $_GET['del'] ?? false;
+$add = isset($_GET['add']) ? true : false;
 
 if ($add)
 {
@@ -262,7 +262,7 @@ echo '<tbody>';
 
 foreach($types as $t)
 {
-	$count = isset($contact_count[$t['id']]) ? $contact_count[$t['id']] : 0;
+	$count = $contact_count[$t['id']] ?? 0;
 
 	$protected = (in_array($t['abbrev'], ['mail', 'gsm', 'tel', 'adr', 'web'])) ? true : false;
 
