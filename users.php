@@ -282,7 +282,8 @@ if ($post && $img && $id )
 
 	try {
 
-		$filename = $schema . '_u_' . $id . '_' . sha1(time()) . '.jpg';
+		$filename = $schema . '_u_' . $id . '_';
+		$filename .= sha1($filename . microtime()) . '.jpg';
 
 		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 			'params'	=> [

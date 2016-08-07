@@ -638,19 +638,6 @@ if ($del)
 			$alert->error($error_token);
 		}
 
-/** handle deleting files in background process.
-
-		$pictures = $db->fetchAll('SELECT * FROM msgpictures WHERE msgid = ?', [$del]);
-
-		foreach($pictures as $value)
-		{
-			$s3->deleteObject([
-				'Bucket' => $s3_img,
-				'Key'    => $value['PictureFile'],
-			]);
-		}
-**/
-
 		$db->delete('msgpictures', ['msgid' => $del]);
 
 		if ($db->delete('messages', ['id' => $del]))
