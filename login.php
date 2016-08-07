@@ -201,7 +201,7 @@ if ($submit)
 
 		//$accountrole = ($user['accountrole'] == 'interlets') ? 'guest' : $user['accountrole'];
 
-		header('Location: ' . $location . $glue . 'a=1&r=' . $accountrole . '&' . 'u=' .  $user['id']);
+		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
 		exit;
 	}
 
