@@ -170,7 +170,7 @@ if ($submit)
 		$errors[] = 'Het account is niet actief.';
 	}
 
-	if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin', 'interlets']))
+	if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin']))
 	{
 		$errors[] = 'Het account beschikt niet over de juiste rechten.';
 	}
@@ -199,7 +199,7 @@ if ($submit)
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 
-		$accountrole = ($user['accountrole'] == 'interlets') ? 'guest' : $user['accountrole'];
+		//$accountrole = ($user['accountrole'] == 'interlets') ? 'guest' : $user['accountrole'];
 
 		header('Location: ' . $location . $glue . 'a=1&r=' . $accountrole . '&' . 'u=' .  $user['id']);
 		exit;
