@@ -20,7 +20,8 @@
         "predis/predis": "~1.1",
         "twig/twig": "^1",
         "ezyang/htmlpurifier": "^4.8",
-		"league/html-to-markdown": "^4.2"
+		"league/html-to-markdown": "^4.2",
+		"silex/silex": "~2.0"
 	},
 
     "minimum-stability": "stable",
