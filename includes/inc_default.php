@@ -127,6 +127,18 @@ require_once $rootpath . 'vendor/autoload.php';
 setlocale(LC_TIME, 'nl_NL.UTF-8');
 
 /*
+ *
+ */
+
+$app = new Silex\Application();
+
+// set up Monolog to log to stderr
+$app->register(new Silex\Provider\MonologServiceProvider(), [
+    'monolog.logfile' => 'php://stderr',
+    'monolog.level' => constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
+]); 
+
+/*
  * Connect to Redis
  */
 
