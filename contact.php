@@ -33,7 +33,7 @@ if ($token)
 		]);
 
 		$html .= '<hr><p>Dit bericht werd ingegeven in het contactformulier van ';
-		$html .= readconfigfromdb('systemname') . '. Het email adres werd gevalideerd. ';
+		$html .= readconfigfromdb('systemname') . '. Het mailadres werd gevalideerd. ';
 		$html .= 'Je kan reply kiezen om te reageren.</p>';
 		$html .= '<ul>';
 		$html .= '<li>mailadres: ' . $data['mail'] . '</li>';
