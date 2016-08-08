@@ -18,29 +18,22 @@ if(!isset($rootpath))
 
 ob_start('etag_buffer');
 
-$s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
-$s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
-$s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
+$app['eland.s3_res'] = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
+$app['eland.s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
+$app['eland.s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
-$s3_res_url = '//' . $s3_res;
-$s3_img_url = '//' . $s3_img;
-$s3_doc_url = '//' . $s3_doc;
-
-header('Access-Control-Allow-Origin: ' . $s3_res_url . ', ' . $s3_img_url . ', ' . $s3_doc_url);
-
-$s3_res_url .= '/';
-$s3_img_url .= '/';
-$s3_doc_url .= '/';
+header('Access-Control-Allow-Origin: //' . $app['eland.s3_res'] . ', //' . $app['eland.s3_img'] . ', //' . $app['eland.s3_doc']);
 
 $app['eland.rootpath'] = $rootpath;
-$app['eland.s3_res_url'] = $s3_res_url;
+$app['eland.s3_res_url'] = '//' . $app['eland.s3_res'] . '/';
+$app['eland.s3_img_url'] = '//' . $app['eland.s3_img'] . '/';
+$app['eland.s3_doc_url'] = '//' . $app['eland.s3_doc'] . '/';
 
 $app['eland.assets'] = function($app){
 	return new eland\assets($app['eland.s3_res_url'], $app['eland.rootpath']);
 };
 
 $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js']);
-
 
 $typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
 
@@ -55,89 +48,6 @@ $host_id = substr($host, 0, strpos($host, '.'));
 $overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
-
-/*
-$asset_ary = [
-	'bootstrap' => [
-		'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css',
-		'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
-	],
-	'fontawesome'	=> [
-		'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css',
-	],
-	'footable'	=> [
-		'js'	=> [
-			$s3_res_url . 'footable-2.0.3/js/footable.js',
-			$s3_res_url . 'footable-2.0.3/js/footable.sort.js',
-			$s3_res_url . 'footable-2.0.3/js/footable.filter.js',
-		],
-		'css'	=> $s3_res_url . 'footable-2.0.3/css/footable.core.css',
-	],
-	'jssor'		=> [
-		'js' => $s3_res_url . 'jssor/js/jssor.slider.mini.js',
-	],
-	'jqplot'	=> [
-		'js'	=> [
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.donutRenderer.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.cursor.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasTextRenderer.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasAxisTickRenderer.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js',
-		],
-	],
-	'jquery'	=> [
-		'js'	=> '//code.jquery.com/jquery-2.1.4.min.js',
-	],
-	'fileupload'	=> [
-		'js'	=>	[
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js',
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js',
-			$s3_res_url . 'JavaScript-Load-Image-1.14.0/js/load-image.all.min.js',
-			$s3_res_url . 'JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js',
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload.js',
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js',
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js',
-			$s3_res_url . 'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js',
-		],
-		'css'	=> $s3_res_url . 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css',
-	],
-	'typeahead'		=> [
-		'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
-	],
-	'datepicker'	=> [
-		'js'	=>	[
-			'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/locales/bootstrap-datepicker.nl.min.js',
-		],
-		'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.standalone.min.css',
-	],
-	'isotope'	=> [
-		'js' => [
-			'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js',
-		],
-	],
-	'leaflet'	=> [
-		'js'	=> 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js',
-		'css'	=> 'http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css',
-	],
-	'leaflet_label' => [
-		'js'	=> 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js',
-		'css'	=> 'https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css',
-	],
-	'summernote' => [
-		'js'	=> [
-			'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js',
-			'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js',
-		],
-		'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css',
-	],
-];
-
-$include_ary = ['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js'];
-*/
 
 $app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
 

@@ -95,7 +95,7 @@ else if ($step == 2)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if($s3->doesObjectExist($s3_img, $filename_bucket))
+			if($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
 			{
 				$found = true;
 				break;
@@ -113,8 +113,8 @@ else if ($step == 2)
 			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 
 			$result = $s3->copyObject([
-				'Bucket'		=> $s3_img,
-				'CopySource'	=> $s3_img . '/' . $filename_bucket,
+				'Bucket'		=> $app['eland.s3_img'],
+				'CopySource'	=> $app['eland.s3_img'] . '/' . $filename_bucket,
 				'Key'			=> $new_filename,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',
@@ -153,7 +153,7 @@ else if ($step == 3)
 		foreach ($possible_extensions as $extension)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
-			if($s3->doesObjectExist($s3_img, $filename_bucket))
+			if($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
 			{
 				$found = true;
 				break;
@@ -170,8 +170,8 @@ else if ($step == 3)
 		{
 			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
 			$result = $s3->copyObject([
-				'Bucket'		=> $s3_img,
-				'CopySource'	=> $s3_img . '/' . $filename_bucket,
+				'Bucket'		=> $app['eland.s3_img'],
+				'CopySource'	=> $app['eland.s3_img'] . '/' . $filename_bucket,
 				'Key'			=> $new_filename,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',

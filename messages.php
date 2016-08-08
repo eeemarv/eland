@@ -367,7 +367,7 @@ if ($post && $img && $images && !$s_guest)
 			$filename = $schema . '_m_' . $id . '_';
 			$filename .= sha1($filename . microtime()) . '.jpg';
 
-			$upload = $s3->upload($s3_img, $filename, fopen($tmpfile2, 'rb'), 'public-read', [
+			$upload = $s3->upload($app['eland.s3_img'], $filename, fopen($tmpfile2, 'rb'), 'public-read', [
 				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> 'image/jpeg',
@@ -504,7 +504,7 @@ if ($img_del == 'all' && $id)
 
 	foreach ($images as $img_id => $file)
 	{
-		$a_img = $s3_img_url . $file;
+		$a_img = $app['eland.s3_img_url'] . $file;
 
 		echo '<div class="col-xs-6 col-md-3">';
 		echo '<div class="thumbnail">';
@@ -907,8 +907,8 @@ if (($edit || $add))
 						$new_filename .= sha1($filename . microtime()) . '.jpg';
 
 						$result = $s3->copyObject([
-							'Bucket'		=> $s3_img,
-							'CopySource'	=> $s3_img . '/' . $img,
+							'Bucket'		=> $app['eland.s3_img'],
+							'CopySource'	=> $app['eland.s3_img'] . '/' . $img,
 							'Key'			=> $new_filename,
 							'ACL'			=> 'public-read',
 							'CacheControl'	=> 'public, max-age=31536000',
@@ -1268,7 +1268,7 @@ if (($edit || $add))
 	echo '<div class="row">';
 
 	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
-	echo 'data-s3-url="' . $s3_img_url . '">';
+	echo 'data-s3-url="' . $app['eland.s3_img_url'] . '">';
 	echo '<div class="thumbnail">';
 	echo '<img src="" alt="afbeelding">';
 	echo '<div class="caption">';
@@ -1289,7 +1289,7 @@ if (($edit || $add))
 	{
 		echo '<div class="col-sm-3 col-md-2 thumbnail-col">';
 		echo '<div class="thumbnail">';
-		echo '<img src="' . $s3_img_url . $img['PictureFile'] . '" alt="afbeelding">';
+		echo '<img src="' . $app['eland.s3_img_url'] . $img['PictureFile'] . '" alt="afbeelding">';
 		echo '<div class="caption">';
 /*
 		echo '<p><span class="btn btn-default" role="button">';
@@ -1505,7 +1505,7 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="images_con" ';
-	echo 'data-bucket-url="' . $s3_img_url . '" ';
+	echo 'data-bucket-url="' . $app['eland.s3_img_url'] . '" ';
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 
@@ -2350,7 +2350,7 @@ else if ($v_extended)
 		{
 			echo '<div class="media-left">';
 			echo '<a href="' . generate_url('messages', ['id' => $msg['id']]) . '">';
-			echo '<img class="media-object" src="' . $s3_img_url . $imgs[$msg['id']] . '" width="150">';
+			echo '<img class="media-object" src="' . $app['eland.s3_img_url'] . $imgs[$msg['id']] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}

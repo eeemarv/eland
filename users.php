@@ -285,7 +285,7 @@ if ($post && $img && $id )
 		$filename = $schema . '_u_' . $id . '_';
 		$filename .= sha1($filename . microtime()) . '.jpg';
 
-		$upload = $s3->upload($s3_img, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+		$upload = $s3->upload($app['eland.s3_img'], $filename, fopen($tmpfile, 'rb'), 'public-read', [
 			'params'	=> [
 				'CacheControl'	=> 'public, max-age=31536000',
 				'ContentType'	=> 'image/jpeg',
@@ -366,7 +366,7 @@ if ($img_del && $id)
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
-	echo '<img src="' . $s3_img_url . $file . '" class="img-rounded">';
+	echo '<img src="' . $app['eland.s3_img_url'] . $file . '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
 
@@ -2109,10 +2109,10 @@ if ($id)
 	$user_img = ($show_img) ? '' : ' style="display:none;"';
 	$no_user_img = ($show_img) ? ' style="display:none;"' : '';
 
-	$img_src = ($user['PictureFile']) ? $s3_img_url . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
+	$img_src = ($user['PictureFile']) ? $app['eland.s3_img_url'] . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
 	echo '<img id="user_img"' . $user_img . ' class="img-rounded img-responsive center-block" ';
 	echo 'src="' . $img_src . '" ';
-	echo 'data-bucket-url="' . $s3_img_url . '"></img>';
+	echo 'data-bucket-url="' . $app['eland.s3_img_url'] . '"></img>';
 
 	echo '<div id="no_user_img"' . $no_user_img . '>';
 	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto</div>';
@@ -3435,7 +3435,7 @@ else if ($v_extended)
 		{
 			echo '<div class="media-left">';
 			echo '<a href="' . generate_url('users', ['id' => $u['id']]) . '">';
-			echo '<img class="media-object" src="' . $s3_img_url . $u['PictureFile'] . '" width="150">';
+			echo '<img class="media-object" src="' . $app['eland.s3_img_url'] . $u['PictureFile'] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}
@@ -3499,7 +3499,7 @@ else if ($v_tiles)
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
-			echo '<img src="' . $s3_img_url . $u['PictureFile'] . '" class="img-rounded">';
+			echo '<img src="' . $app['eland.s3_img_url'] . $u['PictureFile'] . '" class="img-rounded">';
 		}
 		else
 		{

@@ -247,7 +247,7 @@ if ($edit)
 	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="location" ';
-	echo 'name="location" value="' . $s3_doc_url . $doc['filename'] . '" readonly>';
+	echo 'name="location" value="' . $app['eland.s3_doc_url'] . $doc['filename'] . '" readonly>';
 	echo '</div>';
 	echo '</div>';
 
@@ -311,7 +311,7 @@ if ($confirm_del && $del)
 	if ($doc)
 	{
 		$s3->deleteObject([
-			'Bucket'	=> $s3_doc,
+			'Bucket'	=> $app['eland.s3_doc'],
 			'Key'		=> $doc['filename'],
 		]);
 
@@ -357,7 +357,7 @@ if ($del)
 		echo '<form method="post">';
 
 		echo '<p>';
-		echo '<a href="' . $s3_doc_url . $doc['filename'] . '" target="_self">';
+		echo '<a href="' . $app['eland.s3_doc_url'] . $doc['filename'] . '" target="_self">';
 		echo ($doc['name']) ?: $doc['org_filename'];
 		echo '</a>';
 		echo '</p>';
@@ -514,7 +514,7 @@ if ($submit)
 			'ContentType'			=> $media_type,
 		];
 
-		$upload = $s3->upload($s3_doc, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+		$upload = $s3->upload($app['eland.s3_doc'], $filename, fopen($tmpfile, 'rb'), 'public-read', [
 			'params'	=> $params
 		]);
 
@@ -830,7 +830,7 @@ if (count($docs))
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="' . $s3_doc_url . $d['filename'] . '" target="_self">';
+		echo '<a href="' . $app['eland.s3_doc_url'] . $d['filename'] . '" target="_self">';
 		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';

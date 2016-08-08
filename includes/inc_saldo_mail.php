@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $db, $base_url, $systemtag, $currency, $s3_img, $s3_img_url, $exdb;
+	global $db, $base_url, $systemtag, $currency, $exdb, $app;
 
 // vars
 
@@ -148,7 +148,7 @@ function saldo()
 		if (isset($image_ary[$msg['id']]))
 		{
 			$image_count =  (count($image_ary[$msg['id']]) > 1) ? count($image_ary[$msg['id']]) . ' afbeeldingen' : '1 afbeelding';
-			$html_img = '<a href="' . $msg_url . $msg['id'] . '"><img src="' . $s3_img_url . $image_ary[$msg['id']][0];
+			$html_img = '<a href="' . $msg_url . $msg['id'] . '"><img src="' . $app['eland.s3_img_url'] . $image_ary[$msg['id']][0];
 			$html_img .= '" height="200" alt="afbeelding"></a><br>';
 		}
 		else

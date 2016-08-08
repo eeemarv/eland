@@ -154,8 +154,8 @@ class assets
 	}
 
 	/*
-	 *
-	 */
+	*
+	*/
 
 	public function render_js()
 	{
@@ -170,8 +170,9 @@ class assets
 	}
 
 	/*
-	 *
-	 */
+	*
+	*/
+
 	public function render_css()
 	{
 		$out = '';
