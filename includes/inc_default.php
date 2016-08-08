@@ -1,5 +1,16 @@
 <?php
 
+require_once $rootpath . 'vendor/autoload.php';
+
+$app = new Silex\Application();
+
+$app['debug'] = getenv('DEBUG');
+
+$app->register(new Silex\Provider\MonologServiceProvider(), [
+    'monolog.logfile'	=> 'php://stderr',
+    'monolog.level' 	=> constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
+]);
+
 if(!isset($rootpath))
 {
 	$rootpath = '';
@@ -11,15 +22,25 @@ $s3_res = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for res
 $s3_img = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $s3_doc = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
-$s3_res_url = 'http://' . $s3_res;
-$s3_img_url = 'http://' . $s3_img;
-$s3_doc_url = 'http://' . $s3_doc;
+$s3_res_url = '//' . $s3_res;
+$s3_img_url = '//' . $s3_img;
+$s3_doc_url = '//' . $s3_doc;
 
 header('Access-Control-Allow-Origin: ' . $s3_res_url . ', ' . $s3_img_url . ', ' . $s3_doc_url);
 
 $s3_res_url .= '/';
 $s3_img_url .= '/';
 $s3_doc_url .= '/';
+
+$app['eland.rootpath'] = $rootpath;
+$app['eland.s3_res_url'] = $s3_res_url;
+
+$app['eland.assets'] = function($app){
+	return new eland\assets($app['eland.s3_res_url'], $app['eland.rootpath']);
+};
+
+$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js']);
+
 
 $typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
 
@@ -35,6 +56,7 @@ $overall_domain = getenv('OVERALL_DOMAIN');
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
+/*
 $asset_ary = [
 	'bootstrap' => [
 		'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css',
@@ -115,28 +137,15 @@ $asset_ary = [
 ];
 
 $include_ary = ['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js'];
+*/
 
-$mapbox_token = getenv('MAPBOX_TOKEN');
-
-require_once $rootpath . 'vendor/autoload.php';
+$app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
  * The locale must be installed in the OS for formatting dates.
  */
 
 setlocale(LC_TIME, 'nl_NL.UTF-8');
-
-/*
- *
- */
-
-$app = new Silex\Application();
-
-// set up Monolog to log to stderr
-$app->register(new Silex\Provider\MonologServiceProvider(), [
-    'monolog.logfile' => 'php://stderr',
-    'monolog.level' => constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
-]); 
 
 /*
  * Connect to Redis
@@ -1653,4 +1662,6 @@ function etag_buffer($content)
 
 	return $content;
 }
+
+return $app;
 

@@ -121,10 +121,14 @@ $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
+/*
 $include_ary[] = 'datepicker';
 $include_ary[] = 'typeahead';
 $include_ary[] = 'typeahead.js';
 $include_ary[] = 'csv.js';
+*/
+
+$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
 $filtered = $q || $type || $letscode || $fdate || $tdate;
 

@@ -136,8 +136,12 @@ else if (!readconfigfromdb('support'))
 $h1 = 'Help / Probleem melden';
 $fa = 'ambulance';
 
+/*
 $include_ary[] = 'summernote';
 $include_ary[] = 'rich_edit.js';
+*/
+
+$app['eland.assets']->add(['summernote', 'rich_edit.js']);
 
 require_once $rootpath . 'includes/inc_header.php';
 

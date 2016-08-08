@@ -178,8 +178,12 @@ else if (!readconfigfromdb('support'))
 	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
+/*
 $include_ary[] = 'summernote';
 $include_ary[] = 'rich_edit.js';
+*/
+
+$app['eland.assets']->add(['summernote', 'rich_edit.js']);
 
 $h1 = 'Contact';
 $fa = 'comment-o';

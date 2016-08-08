@@ -92,8 +92,12 @@ if ($map_edit)
 		$alert->error($errors);
 	}
 
+/*
 	$include_ary[] = 'typeahead';
 	$include_ary[] = 'typeahead.js';
+*/
+
+	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
 
 	$h1 = 'Map aanpassen: ' . aphp('docs', ['map' => $map_edit], $map_name);
 
@@ -223,8 +227,12 @@ if ($edit)
 		$map = $exdb->get('doc', $map_id)['data'];
 	}
 
+/*
 	$include_ary[] = 'typeahead';
 	$include_ary[] = 'typeahead.js';
+*/
+
+	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
 
 	$h1 = 'Document aanpassen';
 
@@ -532,9 +540,13 @@ if ($add)
 		}
 	}
 
+/*
 	$include_ary[] = 'typeahead';
 	$include_ary[] = 'typeahead.js';
 	$include_ary[] = 'access_input_cache.js';
+*/
+
+	$app['eland.assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
 
 	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 

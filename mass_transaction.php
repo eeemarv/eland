@@ -377,10 +377,14 @@ if ($from_letscode)
 	}
 }
 
+/*
 $include_ary[] = 'typeahead';
 $include_ary[] = 'typeahead.js';
 $include_ary[] = 'mass_transaction.js';
 $include_ary[] = 'combined_filter.js';
+*/
+
+$app['eland.assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
 $h1 = 'Massa transactie';
 $fa = 'exchange';

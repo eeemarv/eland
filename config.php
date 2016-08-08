@@ -584,9 +584,13 @@ if ($post)
 	cancel();
 }
 
+/*
 $include_ary[] = 'summernote';
 $include_ary[] = 'rich_edit.js';
 $include_ary[] = 'config.js';
+*/
+
+$app['eland.assets']->add(['summernote', 'rich_edit.js', 'config.js']);
 
 $h1 = 'Instellingen';
 $fa = 'gears';

@@ -783,7 +783,9 @@ if ($pw)
 
 	$user = readuser($pw);
 
-	$include_ary[] = 'generate_password.js';
+//	$include_ary[] = 'generate_password.js';
+
+	$app['eland.assets']->add('generate_password.js');
 
 	$h1 = 'Paswoord aanpassen';
 	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
@@ -1707,11 +1709,16 @@ if ($add || $edit)
 
 	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
+/*
 	$include_ary[] = 'datepicker';
 	$include_ary[] = 'generate_password.js';
 	$include_ary[] = 'generate_password_onload.js';
 	$include_ary[] = 'user_edit.js';
-	$include_ary[] = 'access_input_cache.js';
+	$include_ary[] =  'access_input_cache.js';
+*/
+
+	$app['eland.assets']->add(['datepicker', 'generate_password.js',
+		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
 
 	$h1 = 'Gebruiker ' . (($edit) ? 'aanpassen: ' . link_user($user) : 'toevoegen');
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
@@ -2003,15 +2010,21 @@ if ($id)
 		order by letscode desc
 		limit 1', [$user['letscode']]);
 
+/*
 	$include_ary[] = 'leaflet';
 	$include_ary[] = 'jqplot';
 	$include_ary[] = 'user.js';
 	$include_ary[] = 'plot_user_transactions.js';
+*/
+
+	$app['eland.assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
 	if ($s_admin || $s_owner)
 	{
-		$include_ary[] = 'fileupload';
+/*		$include_ary[] = 'fileupload';
 		$include_ary[] = 'user_img.js';
+*/
+		$app['eland.assets']->add(['fileupload', 'user_img.js']);
 	}
 
 	if ($s_admin)
@@ -2820,29 +2833,41 @@ $fa = 'users';
 
 if ($v_list)
 {
+/*
 	$include_ary[] = 'calc_sum.js';
 	$include_ary[] = 'users_distance.js';
+*/
+	$app['eland.assets']->add(['calc_sum.js', 'users_distance.js']);
 
 	if ($s_admin)
 	{
+/*
 		$include_ary[] = 'datepicker';
 		$include_ary[] = 'summernote';
 		$include_ary[] = 'csv.js';
 		$include_ary[] = 'table_sel.js';
 		$include_ary[] = 'rich_edit.js';
-//		$include_ary[] = 'users_bulk.js';
+*/
+		$app['eland.assets']->add(['datepicker', 'summernote', 'csv.js', 'table_sel.js', 'rich_edit.js']);
 	}
 }
 else if ($v_tiles)
 {
+/*
 	$include_ary[] = 'isotope';
 	$include_ary[] = 'users_tiles.js';
+*/
+
+	$app['eland.assets']->add(['isotope', 'user_tiles.js']);
 }
 else if ($v_map)
 {
+/*
 	$include_ary[] = 'leaflet';
 	$include_ary[] = 'leaflet_label';
 	$include_ary[] = 'users_map.js';
+*/
+	$app['eland.assets']->add(['leaflet', 'leaflet_label', 'users_map.js']);
 }
 
 include $rootpath . 'includes/inc_header.php';
@@ -2906,7 +2931,7 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
-	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $mapbox_token . '" ';
+	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $app['eland.mapbox_token'] . '" ';
 	echo 'data-session-param="' . get_session_query_param() . '"></div>';
 	echo '</div>';
 	echo '</div>';

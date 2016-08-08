@@ -489,7 +489,9 @@ if ($img_del == 'all' && $id)
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
-	$include_ary[] = 'msg_img_del.js';
+//	$include_ary[] = 'msg_img_del.js';
+
+	$app['eland.assets']->add('msg_img_del.js');
 
 	include $rootpath . 'includes/inc_header.php';
 
@@ -1162,13 +1164,18 @@ if (($edit || $add))
 
 	if ($s_admin)
 	{
-		$include_ary[] = 'typeahead';
+/*		$include_ary[] = 'typeahead';
 		$include_ary[] = 'typeahead.js';
-	}
+*/
 
+		$app['eland.assets']->add(['typeahead', 'typeahead.js']);
+	}
+/*
 	$include_ary[] = 'fileupload';
 	$include_ary[] = 'msg_edit.js';
 	$include_ary[] = 'access_input_cache.js';	
+*/
+	$app['eland.assets']->add(['fileupload', 'msg_edit.js', 'access_input_cache.js']);
 
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
@@ -1416,14 +1423,21 @@ if ($id)
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
 
+/*
 	$include_ary[] = 'leaflet';
 	$include_ary[] = 'jssor';
 	$include_ary[] = 'msg.js';
+*/
+
+	$app['eland.assets']->add(['leaflet', 'jssor', 'msg.js']);
 
 	if ($s_admin || $s_owner)
 	{
+/*
 		$include_ary[] = 'fileupload';
 		$include_ary[] = 'msg_img.js';
+*/
+		$app['eland.assets']->add(['fileupload', 'msg_img.js']);
 	}
 
 	if ($s_user || $s_admin)
@@ -2021,11 +2035,15 @@ if (!$inline)
 
 	$h1 .= '</span></span>';
 
+/*
 	$include_ary[] = 'csv.js';
 	$include_ary[] = 'msgs.js';
 	$include_ary[] = 'table_sel.js';
 	$include_ary[] = 'typeahead';
 	$include_ary[] = 'typeahead.js';
+*/
+
+	$app['eland.assets']->add(['csv.js', 'msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
 
 	include $rootpath . 'includes/inc_header.php';
 

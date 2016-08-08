@@ -350,7 +350,9 @@ if ($id)
 	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
 	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
-	$include_ary[] = 'elas_soap_status.js';
+//	$include_ary[] = 'elas_soap_status.js';
+
+	$app['eland.assets']->add('elas_soap_status.js');
 
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';

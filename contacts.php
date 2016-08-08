@@ -346,8 +346,12 @@ if ($edit || $add)
 
 	if ($s_admin && $add && !$uid)
 	{
+/*
 		$include_ary[] = 'typeahead';
 		$include_ary[] = 'typeahead.js';
+*/
+
+		$app['eland.assets']->add(['typeahead', 'typeahead.js']);
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
@@ -582,7 +586,7 @@ if ($uid)
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-lng="' . $geo['lng'] . '" data-lat="' . $geo['lat'] . '" ';
-		echo 'data-token="' . $mapbox_token . '"></div>';
+		echo 'data-token="' . $app['eland.mapbox_token'] . '"></div>';
 		echo '</div>';
 	}
 
@@ -811,9 +815,13 @@ $top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', '
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
 
+/*
 $include_ary[] = 'csv.js';
 $include_ary[] = 'typeahead';
 $include_ary[] = 'typeahead.js';
+*/
+
+$app['eland.assets']->add(['csv.js', 'typeahead', 'typeahead.js']);
 
 $h1 = 'Contacten';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
