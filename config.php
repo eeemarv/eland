@@ -514,9 +514,12 @@ if ($post)
 
 		if ($validator['type'] == 'url')
 		{
-			if (!filter_var($value, FILTER_VALIDATE_URL))
+			if ($value != '')
 			{
-				$errors[] =  $value . ' is geen geldig email adres.';
+				if (!filter_var($value, FILTER_VALIDATE_URL))
+				{
+					$errors[] =  $value . ' is geen geldig url adres.';
+				}
 			}
 
 			continue;
