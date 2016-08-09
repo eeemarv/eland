@@ -205,13 +205,6 @@ $tab_panes = [
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 			],
-/*
-			'contact_form_success_text'	=> [
-				'lbl'	=> 'Tekst na succesvol indienen formulier.',
-				'type'	=> 'textarea',
-				'rich_edit'	=> true,
-			],
-*/
 		],
 	],
 

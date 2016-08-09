@@ -16,6 +16,8 @@ if(!isset($rootpath))
 	$rootpath = '';
 }
 
+$app['eland.rootpath'] = $rootpath;
+
 ob_start('etag_buffer');
 
 $app['eland.s3_res'] = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
@@ -24,7 +26,6 @@ $app['eland.s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 b
 
 header('Access-Control-Allow-Origin: //' . $app['eland.s3_res'] . ', //' . $app['eland.s3_img'] . ', //' . $app['eland.s3_doc']);
 
-$app['eland.rootpath'] = $rootpath;
 $app['eland.s3_res_url'] = '//' . $app['eland.s3_res'] . '/';
 $app['eland.s3_img_url'] = '//' . $app['eland.s3_img'] . '/';
 $app['eland.s3_doc_url'] = '//' . $app['eland.s3_doc'] . '/';
@@ -991,8 +992,6 @@ function readconfigfromdb($key, $sch = null)
 
 	if ($redis->exists($redis_key))// && $key != 'date_format')
 	{
-		//error_log('redis config key: ' . $key . ' schema : ' . $sch);
-
 		return $cache[$sch][$key] = $redis->get($redis_key);
 	}
 

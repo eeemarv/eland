@@ -92,7 +92,7 @@ class assets
 	 *
 	 */
 
-	public function __construct(string $res_url, $rootpath)
+	public function __construct(string $res_url, string $rootpath)
 	{
 		$this->res_url = $res_url;
 		$this->rootpath = $rootpath;
