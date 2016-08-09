@@ -550,7 +550,7 @@ if ($post)
 	{
 		$exdb->set('setting', $name, ['value' => $value]);
 
-		$redis->del($schema . '_config_' . $name);
+		$app['redis']->del($schema . '_config_' . $name);
 
 		// prevent string too long error for eLAS database
 

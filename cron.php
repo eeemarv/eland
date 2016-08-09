@@ -107,19 +107,19 @@ foreach ($groups as $group)
 		continue;
 	}
 
-	if ($redis->get($schema . '_token_failed_' . $group['remoteapikey'])
-		|| $redis->get($schema . '_connection_failed_' . $group['domain']))
+	if ($app['redis']->get($schema . '_token_failed_' . $group['remoteapikey'])
+		|| $app['redis']->get($schema . '_connection_failed_' . $group['domain']))
 	{
 		unset($group);
 		continue;
 	}
 
-	if (!$redis->get($group['domain'] . '_typeahead_updated'))
+	if (!$app['redis']->get($group['domain'] . '_typeahead_updated'))
 	{
 		break;
 	}
 /*
-	if (!$redis->get($group['domain'] . '_msgs_updated'))
+	if (!$app['redis']->get($group['domain'] . '_msgs_updated'))
 	{
 		$update_msgs = true;
 		break;
@@ -143,8 +143,8 @@ if (isset($group))
 
 		echo $err_group . 'Can not get connection.' . $r;
 		$redis_key = $schema . '_connection_failed_' . $group['domain'];
-		$redis->set($redis_key, '1');
-		$redis->expire($redis_key, 21600);  // 6 hours
+		$app['redis']->set($redis_key, '1');
+		$app['redis']->expire($redis_key, 21600);  // 6 hours
 
 	}
 	else
@@ -166,8 +166,8 @@ if (isset($group))
 		if ($err)
 		{
 			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
-			$redis->set($redis_key, '1');
-			$redis->expire($redis_key, 21600);  // 6 hours
+			$app['redis']->set($redis_key, '1');
+			$app['redis']->expire($redis_key, 21600);  // 6 hours
 		}
 	}
 
@@ -201,8 +201,8 @@ if (isset($group))
 			$err = $e->getMessage();
 			echo $err . $r;
 			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
-			$redis->set($redis_key, '1');
-			$redis->expire($redis_key, 21600);  // 6 hours
+			$app['redis']->set($redis_key, '1');
+			$app['redis']->expire($redis_key, 21600);  // 6 hours
 
 		}
 	}
@@ -342,7 +342,7 @@ while ($row = $st->fetch())
 
 	$key = 'geo_' . $adr;
 
-	if ($redis->exists($key))
+	if ($app['redis']->exists($key))
 	{
 		continue;
 	}
@@ -353,12 +353,12 @@ while ($row = $st->fetch())
 		'sch'	=> $schema,
 	];
 
-	$redis->set($key, 'q');
-	$redis->expire($key, 2592000);
+	$app['redis']->set($key, 'q');
+	$app['redis']->expire($key, 2592000);
 
 	$queue->set('geo', $data);
 
-	//$redis->lpush('geo_q', json_encode($data));
+	//$app['redis']->lpush('geo_q', json_encode($data));
 
 	$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $adr;
 }
@@ -374,9 +374,9 @@ run_cronjob('geo_q_process', 600);
 
 function geo_q_process()
 {
-	global $redis, $queue, $r;
+	global $app, $queue, $r;
 
-	if ($redis->exists('geo_sleep'))
+	if ($app['redis']->exists('geo_sleep'))
 	{
 		echo 'geocoding sleep';
 		return true;
@@ -408,7 +408,7 @@ function geo_q_process()
 
 		$key = 'geo_' . $adr;
 
-		$status = $redis->get($key);
+		$status = $app['redis']->get($key);
 
 		if ($status != 'q' && $status != 'f')
 		{
@@ -428,8 +428,8 @@ function geo_q_process()
 					'lng'	=> $address->getLongitude(),
 				];
 
-				$redis->set($key, json_encode($ary));
-				$redis->expire($key, 31536000); // 1 year
+				$app['redis']->set($key, json_encode($ary));
+				$app['redis']->expire($key, 31536000); // 1 year
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
 				log_event('cron geocode', $log . $log_user, $sch);
@@ -447,11 +447,11 @@ function geo_q_process()
 
 		echo  $log . $r;
 		log_event('cron geocode', $log . $log_user, $sch);
-		$redis->set($key, 'f');
-		$redis->expire($key, 31536000); // 1 year
+		$app['redis']->set($key, 'f');
+		$app['redis']->expire($key, 31536000); // 1 year
 
-		$redis->set('geo_sleep', '1');
-		$redis->expire('geo_sleep', 3600);
+		$app['redis']->set('geo_sleep', '1');
+		$app['redis']->expire('geo_sleep', 3600);
 		break;
 	}
 
@@ -817,11 +817,11 @@ function cleanup_tokens()
  * images are deleted from s3 170 days after been deleted from db.
  */
 
-if (!$redis->get('cron_cleanup_image_files'))
+if (!$app['redis']->get('cron_cleanup_image_files'))
 {
 	echo '+++ cleanup image files +++' . $r;
 
-	$marker = $redis->get('cleanup_image_files_marker');
+	$marker = $app['redis']->get('cleanup_image_files_marker');
 
 	$marker = ($marker) ? $marker : '0';
 
@@ -937,9 +937,9 @@ if (!$redis->get('cron_cleanup_image_files'))
 		echo $e->getMessage() . $r . $r;
 	}
 
-	$redis->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
-	$redis->set('cron_cleanup_image_files', '1');
-	$redis->expire('cron_cleanup_image_files', 900);
+	$app['redis']->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
+	$app['redis']->set('cron_cleanup_image_files', '1');
+	$app['redis']->expire('cron_cleanup_image_files', 900);
 
 	echo  $del_count . ' images deleted.' . $r;
 

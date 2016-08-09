@@ -83,18 +83,21 @@ $server->service($post_data);
 
 function gettoken($apikey)
 {
-	global $schema, $redis;
+	global $schema, $app;
 
 	log_event('debug', 'Token request');
 
 	if(check_apikey($apikey, 'interlets'))
 	{
 		$token = 'elasv2' . substr(md5(microtime() . $schema), 0, 12);
+
 		$key = $schema . '_token_' . $token;
-		$redis->set($key, '1');
-		$redis->expire($key, 600);
+
+		$app['redis']->set($key, '1');
+		$app['redis']->expire($key, 600);
 
 		log_event('soap' ,'Token ' . $token . ' generated');
+
 		return $token;
 	}
 

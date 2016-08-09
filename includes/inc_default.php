@@ -66,24 +66,22 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
  * Connect to Redis
  */
 
-$redis_url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
-
-if(!empty($redis_url))
-{
-	Predis\Autoloader::register();
+$app['redis'] = function () {
 	try
 	{
-		$redis_con = parse_url($redis_url);
-		$redis_con['password'] = $redis_con['pass'];
-		$redis_con['scheme'] = 'tcp';
-		$redis = new Predis\Client($redis_con);
+		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
+		$con = parse_url($url);
+		$con['password'] = $con['pass'];
+		$con['scheme'] = 'tcp';
+		return new Predis\Client($con);
 	}
 	catch (Exception $e)
 	{
-	    echo 'Couldn\'t connected to Redis: ';
-	    echo $e->getMessage();
+		echo 'Couldn\'t connected to Redis: ';
+		echo $e->getMessage();
+		exit;
 	}
-}
+};
 
 /**
  * vars
@@ -213,7 +211,7 @@ $alert = new eland\alert();
  * start session
  */
 
-$redis_session = new eland\redis_session($redis);
+$redis_session = new eland\redis_session($app['redis']);
 session_set_save_handler($redis_session);
 session_name('eland');
 session_set_cookie_params(0, '/', '.' . $overall_domain);
@@ -635,13 +633,13 @@ if (isset($_GET['welcome']) && $s_guest)
  */
 function clear_interlets_groups_cache()
 {
-	global $redis, $s_schema, $schemas;
+	global $app, $s_schema, $schemas;
 
-	$redis->del($s_schema . '_elas_interlets_groups');
+	$app['redis']->del($s_schema . '_elas_interlets_groups');
 
 	foreach ($schemas as $s)
 	{
-		$redis->del($s . '_eland_interlets_groups');
+		$app['redis']->del($s . '_eland_interlets_groups');
 	}
 }
 
@@ -650,7 +648,7 @@ function clear_interlets_groups_cache()
  */
 function get_eland_interlets_groups($refresh = false, $sch = false)
 {
-	global $redis, $app, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+	global $app, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
@@ -661,10 +659,10 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 
 	$redis_key = $sch . '_eland_interlets_groups';
 
-	if (!$refresh && $redis->exists($redis_key))
+	if (!$refresh && $app['redis']->exists($redis_key))
 	{
-		$redis->expire($redis_key, 3600);
-		return json_decode($redis->get($redis_key), true);
+		$app['redis']->expire($redis_key, 3600);
+		return json_decode($app['redis']->get($redis_key), true);
 	}
 
 	$interlets_hosts = $interlets_accounts_schemas = [];
@@ -693,8 +691,8 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 
 	// cache interlets account ids for user interlets linking. (in transactions)
 	$redis_key_interlets_accounts = $sch . '_interlets_accounts_schemas';
-	$redis->set($redis_key_interlets_accounts, json_encode($interlets_accounts_schemas));
-	$redis->expire($redis_key_interlets_accounts, 86400);
+	$app['redis']->set($redis_key_interlets_accounts, json_encode($interlets_accounts_schemas));
+	$app['redis']->expire($redis_key_interlets_accounts, 86400);
 
 	$s_url = $app_protocol . $hosts[$sch];
 
@@ -721,8 +719,8 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 		$eland_interlets_groups[$s] = $h;
 	}
 
-	$redis->set($redis_key, json_encode($eland_interlets_groups));
-	$redis->expire($redis_key, 3600);
+	$app['redis']->set($redis_key, json_encode($eland_interlets_groups));
+	$app['redis']->expire($redis_key, 3600);
 
 	return $eland_interlets_groups;
 }
@@ -732,7 +730,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
  */
 function get_elas_interlets_groups($refresh = false)
 {
-	global $redis, $app, $schemas, $base_url, $app_protocol, $s_schema;
+	global $app, $schemas, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
@@ -741,10 +739,10 @@ function get_elas_interlets_groups($refresh = false)
 
 	$redis_key = $s_schema . '_elas_interlets_groups';
 
-	if (!$refresh && $redis->exists($redis_key))
+	if (!$refresh && $app['redis']->exists($redis_key))
 	{
-		$redis->expire($redis_key, 3600);
-		return json_decode($redis->get($redis_key), true);
+		$app['redis']->expire($redis_key, 3600);
+		return json_decode($app['redis']->get($redis_key), true);
 	}
 
 	$elas_interlets_groups = [];
@@ -775,8 +773,8 @@ function get_elas_interlets_groups($refresh = false)
 		}
 	}
 
-	$redis->set($redis_key, json_encode($elas_interlets_groups));
-	$redis->expire($redis_key, 3600);
+	$app['redis']->set($redis_key, json_encode($elas_interlets_groups));
+	$app['redis']->expire($redis_key, 3600);
 
 	return $elas_interlets_groups;
 }
@@ -957,7 +955,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $app, $schema, $redis, $exdb;
+    global $app, $schema, $exdb;
     static $cache;
 
 	$eland_config_default = [
@@ -987,9 +985,9 @@ function readconfigfromdb($key, $sch = null)
 
 	$redis_key = $sch . '_config_' . $key;
 
-	if ($redis->exists($redis_key))// && $key != 'date_format')
+	if ($app['redis']->exists($redis_key))// && $key != 'date_format')
 	{
-		return $cache[$sch][$key] = $redis->get($redis_key);
+		return $cache[$sch][$key] = $app['redis']->get($redis_key);
 	}
 
 	$row = $exdb->get('setting', $key, $sch);
@@ -1011,8 +1009,8 @@ function readconfigfromdb($key, $sch = null)
 
 	if (isset($value))
 	{
-		$redis->set($redis_key, $value);
-		$redis->expire($redis_key, 2592000);
+		$app['redis']->set($redis_key, $value);
+		$app['redis']->expire($redis_key, 2592000);
 		$cache[$sch][$key] = $value;
 	}
 
@@ -1024,7 +1022,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $app, $schema, $redis, $exdb;
+    global $app, $schema, $exdb;
     static $cache;
 
 	if (!$id)
@@ -1043,9 +1041,9 @@ function readuser($id, $refresh = false, $remote_schema = false)
 			return $cache[$s][$id];
 		}
 
-		if ($redis->exists($redis_key))
+		if ($app['redis']->exists($redis_key))
 		{
-			return $cache[$s][$id] = unserialize($redis->get($redis_key));
+			return $cache[$s][$id] = unserialize($app['redis']->get($redis_key));
 		}
 	}
 
@@ -1071,8 +1069,8 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 	if (isset($user))
 	{
-		$redis->set($redis_key, serialize($user));
-		$redis->expire($redis_key, 2592000);
+		$app['redis']->set($redis_key, serialize($user));
+		$app['redis']->expire($redis_key, 2592000);
 		$cache[$s][$id] = $user;
 	}
 
@@ -1085,7 +1083,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 function mail_q($mail = [], $priority = false)
 {
-	global $schema, $redis, $queue;
+	global $schema, $queue;
 
 	// only the interlets transactions receiving side has a different schema
 
@@ -1349,15 +1347,15 @@ function render_select_options($option_ary, $selected, $print = true)
 
 function generate_form_token($print = true)
 {
-	global $redis;
+	global $app;
 	static $token;
 
 	if (!isset($token))
 	{
 		$token = sha1(microtime() . mt_rand(0, 1000000));
 		$key = 'form_token_' . $token;
-		$redis->set($key, '1');
-		$redis->expire($key, 14400); // 4 hours
+		$app['redis']->set($key, '1');
+		$app['redis']->expire($key, 14400); // 4 hours
 	}
 
 	if ($print)
@@ -1374,7 +1372,7 @@ function generate_form_token($print = true)
 
 function get_error_form_token()
 {
-	global $redis, $script_name;
+	global $app, $script_name;
 
 	if (!isset($_POST['form_token']))
 	{
@@ -1384,7 +1382,7 @@ function get_error_form_token()
 	$token = $_POST['form_token'];
 	$key = 'form_token_' . $token;
 
-	$value = $redis->get($key);
+	$value = $app['redis']->get($key);
 
 	if (!$value)
 	{
@@ -1395,13 +1393,13 @@ function get_error_form_token()
 
 	if ($value > 1)
 	{
-		$redis->incr($key);
+		$app['redis']->incr($key);
 		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
 		log_event('form_token', $m . '(count: ' . $value . ') : ' . $script_name);
 		return $m;
 	}
 
-	$redis->incr($key);
+	$app['redis']->incr($key);
 
 	return false;
 }
@@ -1445,13 +1443,13 @@ function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 
 function get_typeahead_thumbprint($name = 'users_active', $group_url = false)
 {
-	global $redis, $base_url;
+	global $app, $base_url;
 
 	$group_url = ($group_url) ?: $base_url;
 
 	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
-	$thumbprint = $redis->get($redis_key);
+	$thumbprint = $app['redis']->get($redis_key);
 
 	if (!$thumbprint)
 	{
@@ -1473,7 +1471,7 @@ function invalidate_typeahead_thumbprint(
 	$new_thumbprint = false,
 	$ttl = 5184000)	// 60 days;
 {
-	global $redis, $base_url;
+	global $app, $base_url;
 
 	$group_url = ($group_url) ?: $base_url;
 
@@ -1481,17 +1479,17 @@ function invalidate_typeahead_thumbprint(
 
 	if ($new_thumbprint)
 	{
-		if ($new_thumbprint != $redis->get($redis_key))
+		if ($new_thumbprint != $app['redis']->get($redis_key))
 		{
-			$redis->set($redis_key, $new_thumbprint);
+			$app['redis']->set($redis_key, $new_thumbprint);
 			log_event('typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 		}
 
-		$redis->expire($redis_key, $ttl);
+		$app['redis']->expire($redis_key, $ttl);
 	}
 	else
 	{
-		$redis->del($redis_key);
+		$app['redis']->del($redis_key);
 
 		log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 	}

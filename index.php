@@ -14,7 +14,7 @@ if (isset($hosting_form))
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		$token = $_POST['token'];
 
-		if (!$redis->get('hosting_form_' . $token))
+		if (!$app['redis']->get('hosting_form_' . $token))
 		{
 			$errors[] = 'Het formulier is verlopen.';
 		}
@@ -124,8 +124,8 @@ if (isset($hosting_form))
 
 		$token = sha1(microtime());
 		$key = 'hosting_form_' . $token;
-		$redis->set($key, '1');
-		$redis->expire($key, 7200);
+		$app['redis']->set($key, '1');
+		$app['redis']->expire($key, 7200);
 
 		echo '<h1>Aanvraag hosting eLAND</h1>';
 

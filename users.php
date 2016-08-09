@@ -502,7 +502,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		foreach ($user_ids as $user_id)
 		{
 			$exdb->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
-			$redis->del($schema . '_user_' . $user_id);
+			$app['redis']->del($schema . '_user_' . $user_id);
 		}
 
 		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
@@ -522,7 +522,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$redis->del($schema . '_user_' . $user_id);
+			$app['redis']->del($schema . '_user_' . $user_id);
 		}
 
 		if ($bulk_field == 'status')
@@ -994,7 +994,7 @@ if ($del)
 
 				//finally, the user
 				$app['db']->delete('users', ['id' => $del]);
-				$redis->expire($schema . '_user_' . $del, 0);
+				$app['redis']->expire($schema . '_user_' . $del, 0);
 
 				$alert->success('De gebruiker is verwijderd.');
 
@@ -2750,7 +2750,7 @@ else
 
 			if (isset($my_adr))
 			{
-				$geo = $redis->get('geo_' . $my_adr);
+				$geo = $app['redis']->get('geo_' . $my_adr);
 
 				if ($geo && $geo != 'q' && $geo != 'f')
 				{
@@ -2884,7 +2884,7 @@ if ($v_map)
 		if ($adr)
 		{
 
-			$geo = json_decode($redis->get('geo_' . $adr[0]), true);
+			$geo = json_decode($app['redis']->get('geo_' . $adr[0]), true);
 
 			if ($adr[1] >= $access_level)
 			{
@@ -3249,7 +3249,7 @@ if ($v_list)
 				echo '<td data-value="5000"';
 				if ($adr_ary && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
-					$geo = json_decode($redis->get('geo_' . $adr_ary[0]), true);
+					$geo = json_decode($app['redis']->get('geo_' . $adr_ary[0]), true);
 
 					if ($geo && $geo != 'q' && $geo != 'f')
 					{

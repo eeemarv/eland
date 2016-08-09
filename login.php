@@ -25,7 +25,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if($token)
 {
-	if($interlets = $redis->get($schema . '_token_' . $token))
+	if($interlets = $app['redis']->get($schema . '_token_' . $token))
 	{
 		$_SESSION['logins'][$schema] = 'elas';
 

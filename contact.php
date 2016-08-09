@@ -16,11 +16,11 @@ if (!readconfigfromdb('contact_form_en'))
 if ($token)
 {
 	$key = $schema . '_contact_' . $token;
-	$data = $redis->get($key);
+	$data = $app['redis']->get($key);
 
 	if ($data)
 	{
-		$redis->del($key);
+		$app['redis']->del($key);
 
 		$data = json_decode($data, true);
 
@@ -130,8 +130,8 @@ if($post && isset($_POST['zend']))
 
 		$token = substr(hash('sha512', $schema . microtime()), 0, 10);
 		$key = $schema . '_contact_' . $token;
-		$redis->set($key, json_encode($contact));
-		$redis->expire($key, 86400);
+		$app['redis']->set($key, json_encode($contact));
+		$app['redis']->expire($key, 86400);
 
 		log_event('contact', 'Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
 

@@ -242,7 +242,7 @@ else if ($step == 4)
 
 	foreach ($users as $u)
 	{
-		$redis->del($schema . '_user_' . $u['id']);
+		$app['redis']->del($schema . '_user_' . $u['id']);
 	}
 
 	echo "\n";

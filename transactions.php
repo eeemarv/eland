@@ -44,7 +44,7 @@ if ($add)
 
 	if ($submit)
 	{
-		$stored_transid = $redis->get($redis_transid_key);
+		$stored_transid = $app['redis']->get($redis_transid_key);
 
 		if (!$stored_transid)
 		{
@@ -300,7 +300,7 @@ if ($add)
 
 			if (strlen($letscode_to))
 			{
-				$active_users = json_decode($redis->get($group['url'] . '_typeahead_data'), true);
+				$active_users = json_decode($app['redis']->get($group['url'] . '_typeahead_data'), true);
 
 				$user_letscode_found = false;
 
@@ -629,8 +629,8 @@ if ($add)
 
 		$transid = generate_transid();
 
-		$redis->set($redis_transid_key, $transid);
-		$redis->expire($redis_transid_key, 3600);
+		$app['redis']->set($redis_transid_key, $transid);
+		$app['redis']->expire($redis_transid_key, 3600);
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
@@ -853,12 +853,12 @@ if ($add)
  * interlets accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+$interlets_accounts_schemas = json_decode($app['redis']->get($schema . '_interlets_accounts_schemas'), true);
 
 if (!is_array($interlets_accounts_schemas))
 {
 	get_eland_interlets_groups(false, $schema);
-	$interlets_accounts_schemas = json_decode($redis->get($schema . '_interlets_accounts_schemas'), true);
+	$interlets_accounts_schemas = json_decode($app['redis']->get($schema . '_interlets_accounts_schemas'), true);
 }
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);

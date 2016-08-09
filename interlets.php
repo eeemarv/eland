@@ -439,7 +439,7 @@ foreach ($groups as $key => $g)
 	}
 	else
 	{
-		$groups[$key]['user_count'] = $redis->get($g['url'] . '_active_user_count');
+		$groups[$key]['user_count'] = $app['redis']->get($g['url'] . '_active_user_count');
 	}
 }
 

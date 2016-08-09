@@ -313,19 +313,19 @@ if ($submit)
 		{
 			foreach ($transactions as $t)
 			{
-				$redis->del($schema . '_user_' . $t['id_from']);
+				$app['redis']->del($schema . '_user_' . $t['id_from']);
 			}
 
-			$redis->del($schema . '_user_' . $t['id_to']);
+			$app['redis']->del($schema . '_user_' . $t['id_to']);
 		}
 		else
 		{
 			foreach ($transactions as $t)
 			{
-				$redis->del($schema . '_user_' . $t['id_to']);
+				$app['redis']->del($schema . '_user_' . $t['id_to']);
 			}
 
-			$redis->del($schema . '_user_' . $t['id_from']);
+			$app['redis']->del($schema . '_user_' . $t['id_from']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;

@@ -5,7 +5,7 @@
  */
 function fetch_interlets_msgs($client, $group)
 {
-	global $schema, $redis, $r;
+	global $schema, $app, $r;
 
 	$msgs = [];
 
@@ -50,7 +50,7 @@ function fetch_interlets_msgs($client, $group)
  */
 function fetch_interlets_typeahead_data($client, $group)
 {
-	global $schema, $redis, $r;
+	global $schema, $app, $r;
 
 	$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
@@ -69,8 +69,8 @@ function fetch_interlets_typeahead_data($client, $group)
 			echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
 
 			$redis_key = $schema . '_connection_failed_' . $group['domain'];
-			$redis->set($redis_key, '1');
-			$redis->expire($redis_key, 21600);  // 6 hours
+			$app['redis']->set($redis_key, '1');
+			$app['redis']->expire($redis_key, 21600);  // 6 hours
 
 			return;
 		}
@@ -129,24 +129,24 @@ function fetch_interlets_typeahead_data($client, $group)
 	$redis_data_key = $group['url'] . '_typeahead_data';
 	$data_string = json_encode($users);
 
-	if ($data_string != $redis->get($redis_data_key))
+	if ($data_string != $app['redis']->get($redis_data_key))
 	{
 		invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($data_string));
 
-		$redis->set($redis_data_key, $data_string);
+		$app['redis']->set($redis_data_key, $data_string);
 	}
 
-	$redis->expire($redis_data_key, 86400);		// 1 day
+	$app['redis']->expire($redis_data_key, 86400);		// 1 day
 
 	$redis_refresh_key = $group['domain'] . '_typeahead_updated';
-	$redis->set($redis_refresh_key, '1');
-	$redis->expire($redis_refresh_key, 43200);		// 12 hours
+	$app['redis']->set($redis_refresh_key, '1');
+	$app['redis']->expire($redis_refresh_key, 43200);		// 12 hours
 
 	$user_count = count($users);
 
 	$redis_user_count_key = $group['url'] . '_active_user_count';
-	$redis->set($redis_user_count_key, $user_count);
-	$redis->expire($redis_user_count_key, 86400); // 1 day
+	$app['redis']->set($redis_user_count_key, $user_count);
+	$app['redis']->expire($redis_user_count_key, 86400); // 1 day
 
 	log_event('cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain']);
 

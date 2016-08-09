@@ -24,10 +24,10 @@ if ($token)
 {
 	$key = $schema . '_register_' . $token;
 
-	if ($data = $redis->get($key))
+	if ($data = $app['redis']->get($key))
 	{
 		$data = json_decode($data, true);
-		$redis->del($key);
+		$app['redis']->del($key);
 
 //		$letscode = '--' . substr($token, 0, 5);
 
@@ -259,11 +259,11 @@ if ($submit)
 	{
 		$token = substr(hash('sha512', $schema . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
 		$key = $schema . '_register_' . $token;
-		$redis->set($key, json_encode($reg));
-		$redis->expire($key, 86400);
+		$app['redis']->set($key, json_encode($reg));
+		$app['redis']->expire($key, 86400);
 		$key = $schema . '_register_email_' . $email;
-		$redis->set($key, '1');
-		$redis->expire($key, 86400);
+		$app['redis']->set($key, '1');
+		$app['redis']->expire($key, 86400);
 		$subject = 'Bevestig je inschrijving voor ' . $systemname;
 		$url = $base_url . '/register.php?token=' . $token;
 		$text = 'Inschrijven voor ' . $systemname . "\n\n";

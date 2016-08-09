@@ -87,7 +87,7 @@ if (isset($schemas[$group['domain']]))
 	exit;
 }
 
-$active_users = $redis->get($group['url'] . '_typeahead_data');
+$active_users = $app['redis']->get($group['url'] . '_typeahead_data');
 
 if ($active_users)
 {

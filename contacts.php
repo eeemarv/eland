@@ -470,7 +470,7 @@ if ($uid)
 
 	if ($adr)
 	{
-		$geo = $redis->get('geo_' . $adr);
+		$geo = $app['redis']->get('geo_' . $adr);
 
 		if ($geo)
 		{

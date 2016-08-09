@@ -272,7 +272,7 @@ if ($post && $img && $images && !$s_guest)
 		{
 			$ret_ary[] = ['error' => 'Geen form token gedefiniëerd.'];
 		}
-		else if (!$redis->get('form_token_' . $form_token))
+		else if (!$app['redis']->get('form_token_' . $form_token))
 		{
 			$ret_ary[] = ['error' => 'Formulier verlopen of ongeldig.'];
 		}
