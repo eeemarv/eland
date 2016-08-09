@@ -19,14 +19,14 @@ if ($del)
 			cancel();
 		}
 
-		if ($db->delete('apikeys', ['id' => $del]))
+		if ($app['db']->delete('apikeys', ['id' => $del]))
 		{
 			$alert->success('Apikey verwijderd.');
 			cancel();
 		}
 		$alert->error('Apikey niet verwijderd.');
 	}
-	$apikey = $db->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', [$del]);
+	$apikey = $app['db']->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', [$del]);
 
 	$h1 = 'Apikey verwijderen?';
 	$fa = 'key';
@@ -75,7 +75,7 @@ if ($add)
 			'type'		=> 'interlets',
 		];
 
-		if($db->insert('apikeys', $apikey))
+		if($app['db']->insert('apikeys', $apikey))
 		{
 			$alert->success('Apikey opgeslagen.');
 			cancel();
@@ -130,7 +130,7 @@ if ($add)
 	exit;
 }
 
-$apikeys = $db->fetchAll('select * from apikeys');
+$apikeys = $app['db']->fetchAll('select * from apikeys');
 
 $top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
 

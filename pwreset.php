@@ -17,7 +17,7 @@ if ($token)
 		{
 			if ($user_id = $redis->get($schema . '_token_' . $token))
 			{
-				$db->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
+				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
 				$alert->success('Paswoord opgeslagen.');
 				log_event('system', 'password reset success user ' . link_user($user, false, false, true));
@@ -90,7 +90,7 @@ if (isset($_POST['zend']))
 	if($email)
 	{
 		log_event('system', 'Activation request for ' . $email);
-		$mail_ary = $db->fetchAll('SELECT c.id_user, u.letscode
+		$mail_ary = $app['db']->fetchAll('SELECT c.id_user, u.letscode
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
 				AND tc.id = c.id_type_contact

@@ -141,7 +141,7 @@ if ($user_mail_submit && $id && $post)
 	$user_me .= link_user($session_user, $s_schema, false);
 	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
-	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
+	$my_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
@@ -292,7 +292,7 @@ if ($post && $img && $id )
 			],
 		]);
 
-		$db->update('users', [
+		$app['db']->update('users', [
 			'"PictureFile"'	=> $filename
 		],['id' => $id]);
 
@@ -353,7 +353,7 @@ if ($img_del && $id)
 
 	if ($post)
 	{
-		$db->update('users', ['"PictureFile"' => ''], ['id' => $id]);
+		$app['db']->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
 		$alert->success('Profielfoto verwijderd.');
 		cancel($id);
@@ -485,7 +485,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 
-	$rows = $db->executeQuery('select letscode, name, id from users where id in (?)',
+	$rows = $app['db']->executeQuery('select letscode, name, id from users where id in (?)',
 			[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
@@ -516,7 +516,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		$type = ($edit_fields_tabs[$bulk_field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-		$db->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
+		$app['db']->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
 			[$value, $user_ids],
 			[$type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
@@ -542,9 +542,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		list($abbrev) = explode('_', $bulk_field);
 
-		$id_type_contact = $db->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
+		$id_type_contact = $app['db']->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
 
-		$db->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
+		$app['db']->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
@@ -597,7 +597,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
 	$bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
 
-	$sel_users = $db->executeQuery('select u.*, c.value as mail
+	$sel_users = $app['db']->executeQuery('select u.*, c.value as mail
 		from users u, contact c, type_contact tc
 		where u.id in (?)
 			and u.id = c.id_user
@@ -726,14 +726,14 @@ if ($pw)
 				'mdate'		=> gmdate('Y-m-d H:i:s'),
 			];
 
-			if ($db->update('users', $update, ['id' => $pw]))
+			if ($app['db']->update('users', $update, ['id' => $pw]))
 			{
 				$user = readuser($pw, true);
 				$alert->success('Paswoord opgeslagen.');
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
-					$to = $db->fetchColumn('select c.value
+					$to = $app['db']->fetchColumn('select c.value
 						from contact c, type_contact tc
 						where tc.id = c.id_type_contact
 							and tc.abbrev = \'mail\'
@@ -852,7 +852,7 @@ if ($del)
 		cancel($del);
 	}
 
-	if ($db->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
+	if ($app['db']->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
 	{
 		$alert->error('Een gebruiker met transacties kan niet worden verwijderd.');
 		cancel($del);
@@ -887,14 +887,14 @@ if ($del)
 			}
 			else
 			{
-				$enc_password = $db->fetchColumn('select password from users where id = ?', [$s_id]);
+				$enc_password = $app['db']->fetchColumn('select password from users where id = ?', [$s_id]);
 			}
 
 			if ($sha512 == $enc_password)
 			{
 				$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 				$msgs = '';
-				$st = $db->prepare('SELECT id, content, id_category, msg_type
+				$st = $app['db']->prepare('SELECT id, content, id_category, msg_type
 					FROM messages
 					WHERE id_user = ?');
 
@@ -911,12 +911,12 @@ if ($del)
 				{
 					log_event('user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
-					$db->delete('messages', ['id_user' => $del]);
+					$app['db']->delete('messages', ['id_user' => $del]);
 				}
 
 				// remove orphaned images.
 
-				$rs = $db->prepare('SELECT mp.id, mp."PictureFile"
+				$rs = $app['db']->prepare('SELECT mp.id, mp."PictureFile"
 					FROM msgpictures mp
 					LEFT JOIN messages m ON mp.msgid = m.id
 					WHERE m.id IS NULL');
@@ -925,14 +925,14 @@ if ($del)
 
 				while ($row = $rs->fetch())
 				{
-					$db->delete('msgpictures', ['id' => $row['id']]);
+					$app['db']->delete('msgpictures', ['id' => $row['id']]);
 				}
 
 				// update counts for each category
 
 				$offer_count = $want_count = [];
 
-				$rs = $db->prepare('SELECT m.id_category, count(m.*)
+				$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
 					FROM messages m, users u
 					WHERE  m.id_user = u.id
 						AND u.status IN (1, 2, 3)
@@ -946,7 +946,7 @@ if ($del)
 					$offer_count[$row['id_category']] = $row['count'];
 				}
 
-				$rs = $db->prepare('SELECT m.id_category, count(m.*)
+				$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
 					FROM messages m, users u
 					WHERE  m.id_user = u.id
 						AND u.status IN (1, 2, 3)
@@ -960,7 +960,7 @@ if ($del)
 					$want_count[$row['id_category']] = $row['count'];
 				}
 
-				$all_cat = $db->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
+				$all_cat = $app['db']->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
 					FROM categories
 					WHERE id_parent IS NOT NULL');
 
@@ -983,17 +983,17 @@ if ($del)
 						'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
 					];
 
-					$db->update('categories', $stats, ['id' => $cat_id]);
+					$app['db']->update('categories', $stats, ['id' => $cat_id]);
 				}
 
 				//delete contacts
-				$db->delete('contact', ['id_user' => $del]);
+				$app['db']->delete('contact', ['id_user' => $del]);
 
 				//delete fullname access record.
 				$exdb->del('user_fullname_access', $del);
 
 				//finally, the user
-				$db->delete('users', ['id' => $del]);
+				$app['db']->delete('users', ['id' => $del]);
 				$redis->expire($schema . '_user_' . $del, 0);
 
 				$alert->success('De gebruiker is verwijderd.');
@@ -1135,7 +1135,7 @@ if ($add || $edit)
 
 			$mailadr = false;
 
-			$st = $db->prepare($mail_unique_check_sql);
+			$st = $app['db']->prepare($mail_unique_check_sql);
 
 			foreach ($contact as $key => $c)
 			{
@@ -1249,7 +1249,7 @@ if ($add || $edit)
 			{
 				$errors[] = 'Vul gebruikersnaam in!';
 			}
-			else if ($db->fetchColumn($name_sql, $name_sql_params))
+			else if ($app['db']->fetchColumn($name_sql, $name_sql_params))
 			{
 				$errors[] = 'Deze gebruikersnaam is al in gebruik!';
 			}
@@ -1266,7 +1266,7 @@ if ($add || $edit)
 				$errors[] = 'Vul de volledige naam in!';
 			}
 
-			if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+			if ($app['db']->fetchColumn($fullname_sql, $fullname_sql_params))
 			{
 				$errors[] = 'De volledige naam is al in gebruik!';
 			}
@@ -1283,7 +1283,7 @@ if ($add || $edit)
 			{
 				$errors[] = 'Vul een letscode in!';
 			}
-			else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
+			else if ($app['db']->fetchColumn($letscode_sql, $letscode_sql_params))
 			{
 				$errors[] = 'De letscode bestaat al!';
 			}
@@ -1364,7 +1364,7 @@ if ($add || $edit)
 		{
 			$contact_types = [];
 
-			$rs = $db->prepare('SELECT abbrev, id FROM type_contact');
+			$rs = $app['db']->prepare('SELECT abbrev, id FROM type_contact');
 
 			$rs->execute();
 
@@ -1389,9 +1389,9 @@ if ($add || $edit)
 					$user['password'] = hash('sha512', sha1(microtime()));
 				}
 
-				if ($db->insert('users', $user))
+				if ($app['db']->insert('users', $user))
 				{
-					$id = $db->lastInsertId('users_id_seq');
+					$id = $app['db']->lastInsertId('users_id_seq');
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
@@ -1415,7 +1415,7 @@ if ($add || $edit)
 							'id_user'			=> $id,
 						];
 
-						$db->insert('contact', $insert);
+						$app['db']->insert('contact', $insert);
 					}
 
 					if ($user['status'] == 1)
@@ -1476,7 +1476,7 @@ if ($add || $edit)
 					}
 				}
 
-				if($db->update('users', $user, ['id' => $edit]))
+				if($app['db']->update('users', $user, ['id' => $edit]))
 				{
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
@@ -1491,7 +1491,7 @@ if ($add || $edit)
 					{
 						$stored_contacts = [];
 
-						$rs = $db->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
+						$rs = $app['db']->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
 							FROM type_contact tc, contact c
 							WHERE tc.id = c.id_type_contact
 								AND c.id_user = ?');
@@ -1512,7 +1512,7 @@ if ($add || $edit)
 							{
 								if ($stored_contact)
 								{
-									$db->delete('contact', ['id_user' => $edit, 'id' => $value['id']]);
+									$app['db']->delete('contact', ['id_user' => $edit, 'id' => $value['id']]);
 								}
 								continue;
 							}
@@ -1532,7 +1532,7 @@ if ($add || $edit)
 									'flag_public'		=> $value['flag_public'],
 									'id_user'			=> $edit,
 								];
-								$db->insert('contact', $insert);
+								$app['db']->insert('contact', $insert);
 								continue;
 							}
 
@@ -1541,7 +1541,7 @@ if ($add || $edit)
 							unset($contact_update['id'], $contact_update['abbrev'],
 								$contact_update['name'], $contact_update['main_mail']);
 
-							$db->update('contact', $contact_update,
+							$app['db']->update('contact', $contact_update,
 								['id' => $value['id'], 'id_user' => $edit]);
 						}
 
@@ -1612,7 +1612,7 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
-			$contact = $db->fetchAll('select name, abbrev, \'\' as value, 0 as id
+			$contact = $app['db']->fetchAll('select name, abbrev, \'\' as value, 0 as id
 				from type_contact
 				where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 		}
@@ -1626,7 +1626,7 @@ if ($add || $edit)
 				$contact_keys[$c['abbrev']] = $key;
 			}
 
-			$st = $db->prepare('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
+			$st = $app['db']->prepare('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
 				FROM type_contact tc, contact c
 				WHERE tc.id = c.id_type_contact
 					AND c.id_user = ?');
@@ -1658,7 +1658,7 @@ if ($add || $edit)
 
 			if ($interlets)
 			{
-				if ($group = $db->fetchAssoc('select *
+				if ($group = $app['db']->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
 						and apimethod <> \'internal\'', [$interlets]))
@@ -1985,7 +1985,7 @@ if ($id)
 
 	if ($s_admin)
 	{
-		$count_transactions = $db->fetchColumn('select count(*)
+		$count_transactions = $app['db']->fetchColumn('select count(*)
 			from transactions
 			where id_from = ?
 				or id_to = ?', [$id, $id]);
@@ -1996,14 +1996,14 @@ if ($id)
 
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 
-	$next = $db->fetchColumn('select id
+	$next = $app['db']->fetchColumn('select id
 		from users
 		where letscode > ?
 		' . $and_status . '
 		order by letscode asc
 		limit 1', [$user['letscode']]);
 
-	$prev = $db->fetchColumn('select id
+	$prev = $app['db']->fetchColumn('select id
 		from users
 		where letscode < ?
 		' . $and_status . '
@@ -2506,7 +2506,7 @@ if ($v_list && $s_admin)
 	$saldo_date = $_GET['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
 
-	$type_contact = $db->fetchAll('select id, abbrev, name from type_contact');
+	$type_contact = $app['db']->fetchAll('select id, abbrev, name from type_contact');
 
 	$columns = [
 		'u'		=> [
@@ -2550,7 +2550,7 @@ if ($v_list && $s_admin)
 		'amount_total'	=> $currency . ' totaal',
 	];
 
-	$users = $db->fetchAll('select u.*
+	$users = $app['db']->fetchAll('select u.*
 		from users u
 		where ' . $st[$status]['sql'], $sql_bind);
 
@@ -2574,7 +2574,7 @@ if ($v_list && $s_admin)
 			$in = $out = [];
 			$datetime = new \DateTime($saldo_date_rev);
 
-			$rs = $db->prepare('select id_to, sum(amount)
+			$rs = $app['db']->prepare('select id_to, sum(amount)
 				from transactions
 				where date <= ?
 				group by id_to');
@@ -2588,7 +2588,7 @@ if ($v_list && $s_admin)
 				$in[$row['id_to']] = $row['sum'];
 			}
 
-			$rs = $db->prepare('select id_from, sum(amount)
+			$rs = $app['db']->prepare('select id_from, sum(amount)
 				from transactions
 				where date <= ?
 				group by id_from');
@@ -2610,7 +2610,7 @@ if ($v_list && $s_admin)
 
 	if (isset($show_columns['c']))
 	{
-		$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
+		$c_ary = $app['db']->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 			FROM contact c, type_contact tc, users u
 			WHERE tc.id = c.id_type_contact
 				and c.id_user = u.id
@@ -2630,7 +2630,7 @@ if ($v_list && $s_admin)
 
 		if (isset($show_columns['m']['offers']))
 		{
-			$ary = $db->fetchAll('select count(m.id), m.id_user
+			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
 				from messages m, users u
 				where msg_type = 1
 					and m.id_user = u.id
@@ -2645,7 +2645,7 @@ if ($v_list && $s_admin)
 
 		if (isset($show_columns['m']['demands']))
 		{
-			$ary = $db->fetchAll('select count(m.id), m.id_user
+			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
 				from messages m, users u
 				where msg_type = 0
 					and m.id_user = u.id
@@ -2660,7 +2660,7 @@ if ($v_list && $s_admin)
 
 		if (isset($show_columns['m']['total']))
 		{
-			$ary = $db->fetchAll('select count(m.id), m.id_user
+			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
 				from messages m, users u
 				where m.id_user = u.id
 					and ' . $st[$status]['sql'] . '
@@ -2682,13 +2682,13 @@ if ($v_list && $s_admin)
 		$and = ' and u.letscode <> ? ';
 		$sql_bind[] = trim($activity_filter_letscode);
 
-		$in_ary = $db->fetchAll('select sum(t.amount), count(t.id), t.id_to
+		$in_ary = $app['db']->fetchAll('select sum(t.amount), count(t.id), t.id_to
 			from transactions t, users u
 			where t.id_from = u.id
 				and t.cdate > ?' . $and . '
 			group by t.id_to', $sql_bind);
 
-		$out_ary = $db->fetchAll('select sum(t.amount), count(t.id), t.id_from
+		$out_ary = $app['db']->fetchAll('select sum(t.amount), count(t.id), t.id_from
 			from transactions t, users u
 			where t.id_to = u.id
 				and t.cdate > ?' . $and . '
@@ -2713,13 +2713,13 @@ if ($v_list && $s_admin)
 }
 else
 {
-	$users = $db->fetchAll('select u.*
+	$users = $app['db']->fetchAll('select u.*
 		from users u
 		where ' . $st[$status]['sql'], $sql_bind);
 
 	if ($v_list || $v_map)
 	{
-		$c_ary = $db->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
+		$c_ary = $app['db']->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
 			FROM contact c, type_contact tc
 			WHERE tc.id = c.id_type_contact
 				AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
@@ -2735,7 +2735,7 @@ else
 		{
 			if ($s_guest && $s_schema && !$s_elas_guest)
 			{
-				$my_adr = $db->fetchColumn('select c.value
+				$my_adr = $app['db']->fetchColumn('select c.value
 					from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 					where c.id_user = ?
 						and c.id_type_contact = tc.id

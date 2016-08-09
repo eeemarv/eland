@@ -83,7 +83,7 @@ $server->service($post_data);
 
 function gettoken($apikey)
 {
-	global $db, $schema, $redis;
+	global $schema, $redis;
 
 	log_event('debug', 'Token request');
 
@@ -109,13 +109,13 @@ function gettoken($apikey)
 
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
-	global $db;
+	global $app;
 
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 
 	log_event('debug', 'Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
-	if ($db->fetchColumn('SELECT * FROM transactions WHERE transid = ?', [$transid]))
+	if ($app['db']->fetchColumn('SELECT * FROM transactions WHERE transid = ?', [$transid]))
 	{
 		log_event('soap', 'Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
@@ -132,7 +132,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		{
 			log_event('debug', 'Looking up Interlets user ' . $from);
 
-			if ($fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$from]))
+			if ($fromuser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$from]))
 			{
 				log_event('debug', 'Found Interlets fromuser ' . json_encode($fromuser));
 			}
@@ -141,7 +141,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				log_event('debug', 'NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
 			}
 
-			if ($touser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$to]))
+			if ($touser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$to]))
 			{
 				log_event('debug', 'Found Interlets touser ' . json_encode($touser));
 			}
@@ -236,12 +236,14 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 function userbyletscode($apikey, $letscode)
 {
-	global $db;
+	global $app;
 
 	log_event('debug', 'Lookup request for ' . $letscode);
+
 	if(check_apikey($apikey,'interlets'))
 	{
-		$user = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode]);
+		$user = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode]);
+
 		if($user['name'] == '')
 		{
 			return 'Onbekend';
@@ -264,13 +266,14 @@ function userbyletscode($apikey, $letscode)
 
 function userbyname($apikey, $name)
 {
-	global $db;
+	global $app;
 
 	log_event('debug', 'Lookup request for user ' . $name);
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$user = $db->fetchAssoc('select * from users where name ilike ?', ['%' . $name . '%']);
+		$user = $app['db']->fetchAssoc('select * from users where name ilike ?', ['%' . $name . '%']);
+
 		return ($user['name']) ? $user['letscode'] : 'Onbekend';
 	}
 	else
@@ -319,9 +322,9 @@ function apiversion($apikey)
 
 function check_apikey($apikey, $type)
 {
-	global $db;
+	global $app;
 
-	return ($db->fetchColumn('select apikey
+	return ($app['db']->fetchColumn('select apikey
 		from apikeys
 		where apikey = ?
 		and type = ?', [$apikey, $type])) ? true : false;

@@ -49,7 +49,7 @@ if ($token)
 				}
 			}
 
-			if (!$db->fetchColumn('select name from users where name = ?', [$name]))
+			if (!$app['db']->fetchColumn('select name from users where name = ?', [$name]))
 			{
 				break;
 			}
@@ -71,17 +71,17 @@ if ($token)
 			'cdate'			=> gmdate('Y-m-d H:i:s'),
 		];
 
-		$db->beginTransaction();
+		$app['db']->beginTransaction();
 
 		try
 		{
-			$db->insert('users', $user);
+			$app['db']->insert('users', $user);
 
-			$user_id = $db->lastInsertId('users_id_seq');
+			$user_id = $app['db']->lastInsertId('users_id_seq');
 
 			$tc = [];
 
-			$rs = $db->prepare('select abbrev, id from type_contact');
+			$rs = $app['db']->prepare('select abbrev, id from type_contact');
 
 			$rs->execute();
 
@@ -97,7 +97,7 @@ if ($token)
 				'id_type_contact'	=> $tc['mail'],
 			];
 
-			$db->insert('contact', $mail);
+			$app['db']->insert('contact', $mail);
 
 			if ($data['gsm'] || $data['tel'])
 			{
@@ -110,7 +110,7 @@ if ($token)
 						'id_type_contact'	=> $tc['gsm'],
 					];
 
-					$db->insert('contact', $gsm);
+					$app['db']->insert('contact', $gsm);
 				}
 
 				if ($data['tel'])
@@ -121,14 +121,14 @@ if ($token)
 						'value'				=> $data['tel'],
 						'id_type_contact'	=> $tc['tel'],
 					];
-					$db->insert('contact', $tel);
+					$app['db']->insert('contact', $tel);
 				}
 			}
-			$db->commit();
+			$app['db']->commit();
 		}
 		catch (Exception $e)
 		{
-			$db->rollback();
+			$app['db']->rollback();
 			throw $e;
 		}
 
@@ -231,7 +231,7 @@ if ($submit)
 	{
 		$alert->error('Geen geldig email adres.');
 	}
-	else if ($db->fetchColumn('select c.id_user
+	else if ($app['db']->fetchColumn('select c.id_user
 		from contact c, type_contact tc
 		where c. value = ?
 			AND tc.id = c.id_type_contact

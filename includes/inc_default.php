@@ -11,6 +11,12 @@ $app->register(new Silex\Provider\MonologServiceProvider(), [
     'monolog.level' 	=> constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
 ]);
 
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'url'   => getenv('DATABASE_URL'),
+    ),
+));
+
 if(!isset($rootpath))
 {
 	$rootpath = '';
@@ -144,21 +150,12 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
 }
 
 /**
- * database connection
- * (search path not set yet)
- */
-
-$db = \Doctrine\DBAL\DriverManager::getConnection([
-	'url' => getenv('DATABASE_URL'),
-], new \Doctrine\DBAL\Configuration());
-
-/**
  * Get all eland schemas and domains
  */
 
 $schemas = $hosts = [];
 
-$schemas_db = ($db->fetchAll('select schema_name from information_schema.schemata')) ?: [];
+$schemas_db = ($app['db']->fetchAll('select schema_name from information_schema.schemata')) ?: [];
 $schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
 $schemas_db = array_fill_keys($schemas_db, true);
 
@@ -226,7 +223,7 @@ session_start();
  * set search path
  */
 
-$db->exec('set search_path to ' . ($schema) ?: 'public');
+$app['db']->exec('set search_path to ' . ($schema) ?: 'public');
 
 /** user **/
 
@@ -653,7 +650,7 @@ function clear_interlets_groups_cache()
  */
 function get_eland_interlets_groups($refresh = false, $sch = false)
 {
-	global $redis, $db, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
+	global $redis, $app, $schemas, $hosts, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
@@ -672,7 +669,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 
 	$interlets_hosts = $interlets_accounts_schemas = [];
 
-	$st = $db->prepare('select g.url, u.id
+	$st = $app['db']->prepare('select g.url, u.id
 		from ' . $sch . '.letsgroups g, ' . $sch . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
@@ -707,7 +704,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
 	{
 		$s = $schemas[$h];
 
-		$url = $db->fetchColumn('select g.url
+		$url = $app['db']->fetchColumn('select g.url
 			from ' . $s . '.letsgroups g, ' . $s . '.users u
 			where g.apimethod = \'elassoap\'
 				and u.letscode = g.localletscode
@@ -735,7 +732,7 @@ function get_eland_interlets_groups($refresh = false, $sch = false)
  */
 function get_elas_interlets_groups($refresh = false)
 {
-	global $redis, $db, $schemas, $base_url, $app_protocol, $s_schema;
+	global $redis, $app, $schemas, $base_url, $app_protocol, $s_schema;
 
 	if (!$s_schema)
 	{
@@ -752,7 +749,7 @@ function get_elas_interlets_groups($refresh = false)
 
 	$elas_interlets_groups = [];
 
-	$st = $db->prepare('select g.id, g.groupname, g.url
+	$st = $app['db']->prepare('select g.id, g.groupname, g.url
 		from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
 		where g.apimethod = \'elassoap\'
 			and u.letscode = g.localletscode
@@ -960,7 +957,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $db, $schema, $redis, $exdb;
+    global $app, $schema, $redis, $exdb;
     static $cache;
 
 	$eland_config_default = [
@@ -1007,7 +1004,7 @@ function readconfigfromdb($key, $sch = null)
 	}
 	else
 	{
-		$value = $db->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
+		$value = $app['db']->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
 
 		$exdb->set('setting', $key, ['value' => $value], $sch);
 	}
@@ -1027,7 +1024,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $db, $schema, $redis, $exdb;
+    global $app, $schema, $redis, $exdb;
     static $cache;
 
 	if (!$id)
@@ -1052,7 +1049,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		}
 	}
 
-	$user = $db->fetchAssoc('select * from ' . $s . '.users where id = ?', [$id]);
+	$user = $app['db']->fetchAssoc('select * from ' . $s . '.users where id = ?', [$id]);
 
 	if (!is_array($user))
 	{
@@ -1192,7 +1189,7 @@ function mail_q($mail = [], $priority = false)
 
 function getmailadr($m, $sending_schema = false)
 {
-	global $schema, $db, $s_admin;
+	global $schema, $app, $s_admin;
 
 	$sch = ($sending_schema) ?: $schema;
 
@@ -1247,7 +1244,7 @@ function getmailadr($m, $sending_schema = false)
 		{
 			$status_sql = ($s_admin) ? '' : ' and u.status in (1,2)';
 
-			$st = $db->prepare('select c.value, u.name, u.letscode
+			$st = $app['db']->prepare('select c.value, u.name, u.letscode
 				from contact c,
 					type_contact tc,
 					users u
@@ -1275,7 +1272,7 @@ function getmailadr($m, $sending_schema = false)
 		}
 		else if (ctype_digit((string) $remote_id) && $remote_schema)
 		{
-			$st = $db->prepare('select c.value, u.name, u.letscode
+			$st = $app['db']->prepare('select c.value, u.name, u.letscode
 				from ' . $remote_schema . '.contact c,
 					' . $remote_schema . '.type_contact tc,
 					' . $remote_schema . '.users u

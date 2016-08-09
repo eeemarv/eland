@@ -29,7 +29,7 @@ class queue
 
 	public function set($topic, $data, $priority = 0)
 	{
-		global $db;
+		global $app;
 
 		if (!strlen($topic))
 		{
@@ -60,11 +60,11 @@ class queue
 
 		try
 		{
-			$db->insert('eland_extra.queue', $insert);
+			$app['db']->insert('eland_extra.queue', $insert);
 		}
 		catch(Exception $e)
 		{
-			$db->rollback();
+			$app['db']->rollback();
 			error_log('error transaction eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
 			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
@@ -79,7 +79,7 @@ class queue
 
 	public function get($topic, $count = 1, $call_func = false)
 	{
-		global $db;
+		global $app;
 
 		if (!strlen($topic))
 		{
@@ -93,11 +93,11 @@ class queue
 
 		try
 		{
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
 
 			$del_ids = $data = [];
 
-			$st = $db->prepare('select data, id, priority
+			$st = $app['db']->prepare('select data, id, priority
 				from eland_extra.queue
 				where topic = ?
 				order by priority desc, id asc
@@ -128,14 +128,14 @@ class queue
 //				error_log('fetch queue id : ' . $row['id'] . ' priority: ' . $row['priority'] . ' data: ' . $row['data']);
 			}
 
-			$db->executeQuery('delete from eland_extra.queue where id in (?)',
+			$app['db']->executeQuery('delete from eland_extra.queue where id in (?)',
 				[$del_ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
-			$db->commit();
+			$app['db']->commit();
 		}
 		catch(Exception $e)
 		{
-			$db->rollback();
+			$app['db']->rollback();
 			error_log('error eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
 			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
@@ -152,18 +152,18 @@ class queue
 
 	public function count($topic = false)
 	{
-		global $db;
+		global $app;
 
 		$topic = trim($topic);
 
 		if ($topic)
 		{
-			return $db->fetchColumn('select count(*)
+			return $app['db']->fetchColumn('select count(*)
 				from eland_extra.queue
 				where topic = ?', [$topic]);
 		}
 
-		return $db->fetchColumn('select count(*) from eland_extra.queue');
+		return $app['db']->fetchColumn('select count(*) from eland_extra.queue');
 	}
 }
 

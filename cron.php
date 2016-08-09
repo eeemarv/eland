@@ -42,7 +42,7 @@ $schema_lastrun_ary = [];
 
 foreach ($schemas as $ho => $sch)
 {
-	$lastrun = $db->fetchColumn('select max(lastrun) from ' . $sch . '.cron');
+	$lastrun = $app['db']->fetchColumn('select max(lastrun) from ' . $sch . '.cron');
 	$schema_lastrun_ary[$sch] = ($lastrun) ?: 0;
 }
 
@@ -63,7 +63,7 @@ if (count($schemas))
 		{
 			$schema = $sch;
 			echo ' (selected)';
-			$db->exec('SET search_path TO ' . $schema);
+			$app['db']->exec('SET search_path TO ' . $schema);
 			$selected = true;
 		}
 
@@ -91,7 +91,7 @@ $base_url = $app_protocol . $hosts[$schema];
 
 $update_msgs = false;
 
-$groups = $db->fetchAll('select *
+$groups = $app['db']->fetchAll('select *
 	from letsgroups
 	where apimethod = \'elassoap\'
 		and remoteapikey IS NOT NULL
@@ -306,7 +306,7 @@ if (count($autominlimit_queue))
 
 		$exdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
 
-		$db->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
+		$app['db']->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
 		readuser($to_id, true, $sch);
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) .  $r;
@@ -327,7 +327,7 @@ else
 
 $log_ary = [];
 
-$st = $db->prepare('select c.value, c.id_user
+$st = $app['db']->prepare('select c.value, c.id_user
 	from contact c, type_contact tc, users u
 	where c.id_type_contact = tc.id
 		and tc.abbrev = \'adr\'
@@ -478,14 +478,14 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), re
 
 function admin_exp_msg()
 {
-	global $db, $now, $r, $base_url, $systemtag;
+	global $app, $now, $r, $base_url, $systemtag;
 
 	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
 		WHERE u.status <> 0
 			AND m.id_user = u.id
 			AND validity <= ?';
-	$messages = $db->fetchAll($query, [$now]);
+	$messages = $app['db']->fetchAll($query, [$now]);
 
 	if (empty($to))
 	{
@@ -517,11 +517,11 @@ run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {
-	global $db, $now, $base_url, $systemtag;
+	global $app, $now, $base_url, $systemtag;
 
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
-	$warn_messages  = $db->fetchAll('SELECT m.*
+	$warn_messages  = $app['db']->fetchAll('SELECT m.*
 		FROM messages m
 			WHERE m.exp_user_warn = \'f\'
 				AND m.validity < ?', [$now]);
@@ -563,7 +563,7 @@ function user_exp_msgs()
 		log_event('mail', 'Message expiration mail sent to ' . $to);
 	}
 
-	$db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+	$app['db']->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
 
 	//no double warn in eLAND.
 
@@ -578,12 +578,12 @@ run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
-	global $db, $now, $s3, $app;
+	global $app, $now, $s3, $app;
 
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
 
-	$st = $db->prepare('SELECT id, content, id_category, msg_type
+	$st = $app['db']->prepare('SELECT id, content, id_category, msg_type
 		FROM messages
 		WHERE validity < ?');
 
@@ -600,13 +600,13 @@ function cleanup_messages()
 	{
 		log_event('cron','Expired and deleted Messages ' . $msgs);
 
-		$db->executeQuery('delete from messages WHERE validity < ?', [$testdate]);
+		$app['db']->executeQuery('delete from messages WHERE validity < ?', [$testdate]);
 	}
 
 	$users = '';
 	$ids = [];
 
-	$st = $db->prepare('SELECT u.id, u.letscode, u.name
+	$st = $app['db']->prepare('SELECT u.id, u.letscode, u.name
 		FROM users u, messages m
 		WHERE u.status = 0
 			AND m.id_user = u.id');
@@ -627,18 +627,18 @@ function cleanup_messages()
 
 		if (count($ids) == 1)
 		{
-			$db->delete('messages', ['id_user' => $ids[0]]);
+			$app['db']->delete('messages', ['id_user' => $ids[0]]);
 		}
 		else if (count($ids) > 1)
 		{
-			$db->executeQuery('delete from messages where id_user in (?)',
+			$app['db']->executeQuery('delete from messages where id_user in (?)',
 				[$ids],
 				[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 		}
 	}
 
 	// remove orphaned images.
-	$rs = $db->prepare('SELECT mp.id, mp."PictureFile"
+	$rs = $app['db']->prepare('SELECT mp.id, mp."PictureFile"
 		FROM msgpictures mp
 		LEFT JOIN messages m ON mp.msgid = m.id
 		WHERE m.id IS NULL');
@@ -647,14 +647,14 @@ function cleanup_messages()
 
 	while ($row = $rs->fetch())
 	{
-		$db->delete('msgpictures', ['id' => $row['id']]);
+		$app['db']->delete('msgpictures', ['id' => $row['id']]);
 	}
 
 	// update counts for each category
 
 	$offer_count = $want_count = [];
 
-	$rs = $db->prepare('select m.id_category, count(m.*)
+	$rs = $app['db']->prepare('select m.id_category, count(m.*)
 		from messages m, users u
 		where  m.id_user = u.id
 			and u.status IN (1, 2, 3)
@@ -668,7 +668,7 @@ function cleanup_messages()
 		$offer_count[$row['id_category']] = $row['count'];
 	}
 
-	$rs = $db->prepare('select m.id_category, count(m.*)
+	$rs = $app['db']->prepare('select m.id_category, count(m.*)
 		from messages m, users u
 		where  m.id_user = u.id
 			and u.status IN (1, 2, 3)
@@ -682,7 +682,7 @@ function cleanup_messages()
 		$want_count[$row['id_category']] = $row['count'];
 	}
 
-	$all_cat = $db->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
+	$all_cat = $app['db']->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
 		from categories
 		where id_parent is not null');
 
@@ -705,7 +705,7 @@ function cleanup_messages()
 			'stat_msgs_wanted'	=> $want_count[$id] ?? 0,
 		];
 		
-		$db->update('categories', $stats, ['id' => $id]);
+		$app['db']->update('categories', $stats, ['id' => $id]);
 	}
 
 	return true;
@@ -719,11 +719,11 @@ run_cronjob('saldo_update', 86400);
 
 function saldo_update()
 {
-	global $db, $r;
+	global $app, $r;
 
 	$user_balances = $min = $plus = [];
 
-	$rs = $db->prepare('select id, saldo from users');
+	$rs = $app['db']->prepare('select id, saldo from users');
 
 	$rs->execute();
 
@@ -732,7 +732,7 @@ function saldo_update()
 		$user_balances[$row['id']] = $row['saldo'];
 	}
 
-	$rs = $db->prepare('select id_from, sum(amount)
+	$rs = $app['db']->prepare('select id_from, sum(amount)
 		from transactions
 		group by id_from');
 
@@ -743,7 +743,7 @@ function saldo_update()
 		$min[$row['id_from']] = $row['sum'];
 	}
 
-	$rs = $db->prepare('select id_to, sum(amount)
+	$rs = $app['db']->prepare('select id_to, sum(amount)
 		from transactions
 		group by id_to');
 
@@ -766,7 +766,7 @@ function saldo_update()
 			continue;
 		}
 
-		$db->update('users', ['saldo' => $calculated], ['id' => $id]);
+		$app['db']->update('users', ['saldo' => $calculated], ['id' => $id]);
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
 		log_event('cron' , $m);
@@ -783,14 +783,14 @@ run_cronjob('cleanup_news', 86400);
 
 function cleanup_news()
 {
-    global $db, $now, $exdb;
+    global $app, $now, $exdb;
 
-	$news = $db->fetchAll('select id from news where itemdate < ? and sticky = \'f\'', [$now]);
+	$news = $app['db']->fetchAll('select id from news where itemdate < ? and sticky = \'f\'', [$now]);
 
 	foreach ($news as $n)
 	{
 		$exdb->del('news_access', $n['id']);
-		$db->delete('news', ['id' => $n['id']]);
+		$app['db']->delete('news', ['id' => $n['id']]);
 	}
 
 	return true;
@@ -806,8 +806,9 @@ run_cronjob('cleanup_tokens', 604800);
 
 function cleanup_tokens()
 {
-	global $db, $now;
-	$db->executeQuery('delete from tokens where validity < ?', [$now]) ? true : false;
+	global $app, $now;
+
+	$app['db']->executeQuery('delete from tokens where validity < ?', [$now]) ? true : false;
 	return true;
 }
 
@@ -886,7 +887,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 
 			if (!$delete && $type == 'u' && ctype_digit((string) $id))
 			{
-				$user = $db->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
+				$user = $app['db']->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
 
 				if (!$user)
 				{
@@ -902,7 +903,7 @@ if (!$redis->get('cron_cleanup_image_files'))
 
 			if (!$delete && $type == 'm' && ctype_digit((string) $id))
 			{
-				$msgpict = $db->fetchAssoc('select * from ' . $sch . '.msgpictures
+				$msgpict = $app['db']->fetchAssoc('select * from ' . $sch . '.msgpictures
 					where msgid = ?
 						and "PictureFile" = ?', [$id, $object['Key']]);
 
@@ -958,11 +959,11 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
-	global $db, $schema;
+	global $app, $schema;
 
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 
-	$db->executeQuery('delete from eland_extra.logs
+	$app['db']->executeQuery('delete from eland_extra.logs
 		where schema = ? and ts < ?', [$schema, $treshold]);
 
 	log_event('cron', 'Cleaned up logs older than 30 days.');
@@ -988,14 +989,14 @@ exit;
 
 function run_cronjob($name, $interval = 300, $enabled = null)
 {
-	global $db, $r, $now;
+	global $app, $r, $now;
 	static $lastrun_ary;
 
 	if (!(isset($lastrun_ary) && is_array($lastrun_ary)))
 	{
 		$lastrun_ary = [];
 
-		$rs = $db->prepare('select cronjob, lastrun from cron');
+		$rs = $app['db']->prepare('select cronjob, lastrun from cron');
 
 		$rs->execute();
 
@@ -1022,11 +1023,11 @@ function run_cronjob($name, $interval = 300, $enabled = null)
 
 	if (isset($lastrun_ary[$name]))
 	{
-		$db->update('cron', ['lastrun' => gmdate('Y-m-d H:i:s', $lastrun)], ['cronjob' => $name]);
+		$app['db']->update('cron', ['lastrun' => gmdate('Y-m-d H:i:s', $lastrun)], ['cronjob' => $name]);
 	}
 	else
 	{
-		$db->insert('cron', ['cronjob' => $name, 'lastrun'	=> $now]);
+		$app['db']->insert('cron', ['cronjob' => $name, 'lastrun'	=> $now]);
 	}
 
 	echo '+++ Cronjob ' . $name . ' finished. +++' . $r;

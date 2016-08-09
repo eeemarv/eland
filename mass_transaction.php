@@ -73,7 +73,7 @@ $status_ary = [
 
 $users = [];
 
-$rs = $db->prepare(
+$rs = $app['db']->prepare(
 	'SELECT id, name, letscode,
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
@@ -121,7 +121,7 @@ if ($submit)
 		}
 		else
 		{
-			$enc_password = $db->fetchColumn('select password from users where id = ?', [$s_id]);
+			$enc_password = $app['db']->fetchColumn('select password from users where id = ?', [$s_id]);
 		}
 
 		if ($password != $enc_password)
@@ -148,7 +148,7 @@ if ($submit)
 		$to_one = ($to_letscode) ? true : false;
 		$letscode = ($to_one) ? $to_letscode : $from_letscode;
 
-		$one_uid = $db->fetchColumn('select id from users where letscode = ?', [$letscode]);
+		$one_uid = $app['db']->fetchColumn('select id from users where letscode = ?', [$letscode]);
 
 		if (!$one_uid)
 		{
@@ -200,7 +200,7 @@ if ($submit)
 		$errors[] = 'Geen geldig transactie id';
 	}
 
-	if ($db->fetchColumn('select id from transactions where transid = ?', [$transid]))
+	if ($app['db']->fetchColumn('select id from transactions where transid = ?', [$transid]))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
@@ -218,7 +218,7 @@ if ($submit)
 	{
 		$transactions = [];
 
-		$db->beginTransaction();
+		$app['db']->beginTransaction();
 
 		$date = date('Y-m-d H:i:s');
 		$cdate = gmdate('Y-m-d H:i:s');
@@ -278,9 +278,9 @@ if ($submit)
 					'creator'		=> ($s_master) ? 0 : $s_id,
 				];
 
-				$db->insert('transactions', $trans);
+				$app['db']->insert('transactions', $trans);
 
-				$db->executeUpdate('update users
+				$app['db']->executeUpdate('update users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
 					where id = ?', [$amo, $many_uid]);
 
@@ -291,16 +291,16 @@ if ($submit)
 				$transactions[] = $trans;
 			}
 
-			$db->executeUpdate('update users
+			$app['db']->executeUpdate('update users
 				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
 				where id = ?', [$total, $one_uid]);
 
-			$db->commit();
+			$app['db']->commit();
 		}
 		catch (Exception $e)
 		{
 			$alert->error('Fout bij het opslaan.');
-			$db->rollback();
+			$app['db']->rollback();
 			throw $e;
 		}
 
@@ -364,14 +364,14 @@ $transid = generate_transid();
 
 if ($to_letscode)
 {
-	if ($to_name = $db->fetchColumn('select name from users where letscode = ?', [$to_letscode]))
+	if ($to_name = $app['db']->fetchColumn('select name from users where letscode = ?', [$to_letscode]))
 	{
 		$to_letscode .= ' ' . $to_name;
 	}
 }
 if ($from_letscode)
 {
-	if ($from_name = $db->fetchColumn('select name from users where letscode = ?', [$from_letscode]))
+	if ($from_name = $app['db']->fetchColumn('select name from users where letscode = ?', [$from_letscode]))
 	{
 		$from_letscode .= ' ' . $from_name;
 	}
@@ -647,7 +647,7 @@ include $rootpath . 'includes/inc_footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $db, $alert, $s_id, $base_url, $systemtag, $currency;
+	global $app, $alert, $s_id, $base_url, $systemtag, $currency;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
@@ -705,7 +705,7 @@ function mail_mass_transaction($mail_ary)
 
 	$from_user_id = $to_user_id = $one_user_id;
 
-	$users = $db->executeQuery('SELECT u.id,
+	$users = $app['db']->executeQuery('SELECT u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.name, u.letscode
 		FROM users u
@@ -763,7 +763,7 @@ function mail_mass_transaction($mail_ary)
 		$text .= 'Van' . $r;
 	}	
 
-	$users = $db->executeQuery('SELECT u.id
+	$users = $app['db']->executeQuery('SELECT u.id
 		FROM users u
 		WHERE u.id IN (?)',
 		[$many_user_ids],

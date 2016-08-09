@@ -3,10 +3,10 @@
 
 function doupgrade($version)
 {
-	global $db;
+	global $app;
 	global $configuration;
 
-	$db->beginTransaction();
+	$app['db']->beginTransaction();
 
 	try{
 
@@ -21,12 +21,12 @@ function doupgrade($version)
 				break;
 
 			case 31000:
-				$db->delete('letsgroups', ['id' => 0]);
+				$app['db']->delete('letsgroups', ['id' => 0]);
 				break;
 
 			case 31002:
 				$query = "INSERT INTO config (category,setting,value,description,default) VALUES('system','ets_enabled','0', '', 0)";
-				$db->insert('config', [
+				$app['db']->insert('config', [
 					'category' 		=> 'system',
 					'setting'		=> 'ets_enabled',
 					'value'			=> '0',
@@ -42,13 +42,13 @@ function doupgrade($version)
 				break;
 					
 		}
-		$db->update('parameters', ['value' => $version], ['parameter' => 'schemaversion']);
-		$db->commit();
+		$app['db']->update('parameters', ['value' => $version], ['parameter' => 'schemaversion']);
+		$app['db']->commit();
 		return true;
 	}
 	catch(Exception $e)
 	{
-		$db->rollback();
+		$app['db']->rollback();
 		throw $e;
 		return false;
 

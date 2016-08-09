@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $db, $base_url, $systemtag, $currency, $exdb, $app;
+	global $app, $base_url, $systemtag, $currency, $exdb, $app;
 
 // vars
 
@@ -22,7 +22,7 @@ function saldo()
 
 	$users = [];
 
-	$rs = $db->prepare('SELECT u.id,
+	$rs = $app['db']->prepare('SELECT u.id,
 			u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.letscode, u.postcode, u.cron_saldo
 		FROM users u
@@ -39,7 +39,7 @@ function saldo()
 
 	$mailaddr = $mailaddr_public = $saldo_mail = [];
 
-	$st = $db->prepare('select u.id, c.value, c.flag_public
+	$st = $app['db']->prepare('select u.id, c.value, c.flag_public
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
@@ -96,7 +96,7 @@ function saldo()
 	
 	$image_ary = [];
 
-	$rs = $db->prepare('select m.id, p."PictureFile"
+	$rs = $app['db']->prepare('select m.id, p."PictureFile"
 		from msgpictures p, messages m
 		where p.msgid = m.id
 			and m.cdate >= ?', [$treshold_time]);
@@ -113,7 +113,7 @@ function saldo()
 
 	$addr = $addr_public = [];
 
-	$rs = $db->prepare('select u.id, c.value, flag_public
+	$rs = $app['db']->prepare('select u.id, c.value, flag_public
 		from users u, contact c, type_contact tc
 		where u.status in (1, 2)
 			and u.id = c.id_user
@@ -130,7 +130,7 @@ function saldo()
 
 	// fetch messages
 
-	$rs = $db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
+	$rs = $app['db']->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
 		u.name, u.letscode
 		FROM messages m, users u
 		WHERE m.id_user = u.id
@@ -222,7 +222,7 @@ function saldo()
 		$news_access_ary[$row['eland_id']] = $access;
 	}
 
-	$rs = $db->prepare('select n.*, u.name, u.letscode
+	$rs = $app['db']->prepare('select n.*, u.name, u.letscode
 		from news n, users u
 		where n.approved = \'t\'
 			and n.published = \'t\'
@@ -275,7 +275,7 @@ function saldo()
 		->add_html('<ul>', 'new_users:any')
 		->add_html('<p>Momenteel zijn er geen nieuwe leden.</p>', 'new_users:none');
 
-	$rs = $db->prepare('select u.id, u.name, u.letscode, u.postcode
+	$rs = $app['db']->prepare('select u.id, u.name, u.letscode, u.postcode
 		from users u
 		where u.status = 1
 			and u.adate > ?');
@@ -305,7 +305,7 @@ function saldo()
 		->add_html('<ul>', 'leaving_users:any')
 		->add_html('<p>Momenteel zijn er geen uitstappende leden.</p>', 'leaving_users:none');
 
-	$rs = $db->prepare('select u.id, u.name, u.letscode, u.postcode
+	$rs = $app['db']->prepare('select u.id, u.name, u.letscode, u.postcode
 		from users u
 		where u.status = 2');
 
@@ -337,7 +337,7 @@ function saldo()
 		->add_html('</p><p>Klik <a href="' . $new_transaction_url . '">hier</a> ')
 		->add_html(' om een nieuwe transactie in te geven.</p><ul>');
 
-	$rs = $db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
+	$rs = $app['db']->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
 			t.amount, t.cdate, t.description,
 			uf.name as name_from, uf.letscode as letscode_from,
 			ut.name as name_to, ut.letscode as letscode_to

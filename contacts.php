@@ -27,7 +27,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if ($del)
 {
-	if (!($user_id = $db->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
+	if (!($user_id = $app['db']->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
 	{
 		$alert->error('Het contact bestaat niet.');
 		cancel();
@@ -49,7 +49,7 @@ if ($del)
 		cancel($uid);
 	}
 
-	$contact = $db->fetchAssoc('select c.*, tc.abbrev
+	$contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
 		from contact c, type_contact tc
 		where c.id = ?
 			and tc.id = c.id_type_contact', array($del));
@@ -58,7 +58,7 @@ if ($del)
 
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
-		if ($db->fetchColumn('select count(c.*)
+		if ($app['db']->fetchColumn('select count(c.*)
 			from contact c, type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
@@ -78,7 +78,7 @@ if ($del)
 			cancel($uid);
 		}
 
-		if ($db->delete('contact', array('id' => $del)))
+		if ($app['db']->delete('contact', array('id' => $del)))
 		{
 			$alert->success('Contact verwijderd.');
 		}
@@ -89,7 +89,7 @@ if ($del)
 		cancel($uid);
 	}
 
-	$contact = $db->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
+	$contact = $app['db']->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
 		from type_contact tc, contact c
 		where c.id_type_contact = tc.id
 			and c.id = ?', array($del));
@@ -150,7 +150,7 @@ if ($edit || $add)
 {
 	if ($edit)
 	{
-		if (!($user_id = $db->fetchColumn('select id_user from contact where id = ?', array($edit))))
+		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', array($edit))))
 		{
 			$alert->error('Dit contact heeft geen eigenaar.');
 			cancel();
@@ -190,7 +190,7 @@ if ($edit || $add)
 			$letscode = $_POST['letscode'];
 			list($letscode) = explode(' ', trim($letscode));
 
-			$user_id = $db->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+			$user_id = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
 
 			if ($user_id)
 			{
@@ -210,7 +210,7 @@ if ($edit || $add)
 			'id_user'				=> $user_id,
 		);
 
-		$mail_type_id = $db->fetchColumn('select id from type_contact where abbrev = \'mail\'');
+		$mail_type_id = $app['db']->fetchColumn('select id from type_contact where abbrev = \'mail\'');
 
 		if ($contact['id_type_contact'] == $mail_type_id && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
 		{
@@ -232,7 +232,7 @@ if ($edit || $add)
 			$errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
 		}
 
-		if(!$db->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
+		if(!$app['db']->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
 		}
@@ -246,13 +246,13 @@ if ($edit || $add)
 
 		if ($edit)
 		{
-			$count_mail = $db->fetchColumn('select count(*)
+			$count_mail = $app['db']->fetchColumn('select count(*)
 				from contact
 				where id_user = ?
 					and id_type_contact = ?',
 				array($user_id, $mail_type_id));
 
-			$mail_id = $db->fetchColumn('select id
+			$mail_id = $app['db']->fetchColumn('select id
 				from contact
 				where id_user = ?
 					and id_type_contact = ?',
@@ -266,7 +266,7 @@ if ($edit || $add)
 
 		if ($contact['id_type_contact'] == $mail_type_id)
 		{
-			$mail_count = $db->fetchColumn('select count(c.*)
+			$mail_count = $app['db']->fetchColumn('select count(c.*)
 				from contact c, type_contact tc, users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
@@ -285,7 +285,7 @@ if ($edit || $add)
 		{
 			if ($edit)
 			{
-				if ($db->update('contact', $contact, array('id' => $edit)))
+				if ($app['db']->update('contact', $contact, array('id' => $edit)))
 				{
 					$alert->success('Contact aangepast.');
 					cancel($uid);
@@ -297,7 +297,7 @@ if ($edit || $add)
 			}
 			else
 			{
-				if ($db->insert('contact', $contact))
+				if ($app['db']->insert('contact', $contact))
 				{
 					$alert->success('Contact opgeslagen.');
 					cancel($uid);
@@ -315,7 +315,7 @@ if ($edit || $add)
 	}
 	else if ($edit)
 	{
-		$contact = $db->fetchAssoc('select * from contact where id = ?', array($edit));
+		$contact = $app['db']->fetchAssoc('select * from contact where id = ?', array($edit));
 	}
 	else if ($add)
 	{
@@ -328,7 +328,7 @@ if ($edit || $add)
 
 	$tc = array();
 
-	$rs = $db->prepare('SELECT id, name FROM type_contact');
+	$rs = $app['db']->prepare('SELECT id, name FROM type_contact');
 
 	$rs->execute();
 
@@ -445,14 +445,14 @@ if ($uid)
 {
 	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id && $uid) ? true : false;
 
-	$contacts = $db->fetchAll('select c.*, tc.abbrev
+	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
 	if ($s_owner)
 	{
-		$adr = $db->fetchColumn('select c.value
+		$adr = $app['db']->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_user = ?
 				and c.id_type_contact = tc.id
@@ -460,7 +460,7 @@ if ($uid)
 	}
 	else
 	{
-		$adr = $db->fetchColumn('select c.value
+		$adr = $app['db']->fetchColumn('select c.value
 			from contact c, type_contact tc
 			where c.id_user = ?
 				and c.id_type_contact = tc.id
@@ -641,7 +641,7 @@ if (!$uid)
 	{
 		list($letscode) = explode(' ', trim($letscode));
 
-		$fuid = $db->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
 
 		if ($fuid)
 		{
@@ -756,7 +756,7 @@ $query = 'select c.*, tc.abbrev
 	from contact c, type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql;
 
-$row_count = $db->fetchColumn('select count(c.*)
+$row_count = $app['db']->fetchColumn('select count(c.*)
 	from contact c, type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
@@ -764,7 +764,7 @@ $query .= ' order by ' . $orderby . ' ';
 $query .= ($asc) ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
-$contacts = $db->fetchAll($query, $params_sql);
+$contacts = $app['db']->fetchAll($query, $params_sql);
 
 $pagination = new eland\pagination('contacts', $row_count, $params, $inline);
 
@@ -799,7 +799,7 @@ unset($tableheader_ary['c.id']);
 
 $abbrev_ary = array();
 
-$rs = $db->prepare('select abbrev from type_contact');
+$rs = $app['db']->prepare('select abbrev from type_contact');
 $rs->execute();
 while($row = $rs->fetch())
 {

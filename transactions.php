@@ -67,7 +67,7 @@ if ($add)
 			$errors[] = 'Fout transactie id.';
 		}
 
-		if ($db->fetchColumn('select transid from transactions where transid = ?', [$stored_transid]))
+		if ($app['db']->fetchColumn('select transid from transactions where transid = ?', [$stored_transid]))
 		{
 			$errors[] = 'Een herinvoer van de transactie werd voorkomen.';
 		}
@@ -79,7 +79,7 @@ if ($add)
 
 		if ($group_id != 'self')
 		{
-			$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
+			$group = $app['db']->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
 
 			if (!isset($group))
 			{
@@ -89,16 +89,16 @@ if ($add)
 
 		if ($s_user && !$s_master)
 		{
-			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE id = ?', [$s_id]);
+			$fromuser = $app['db']->fetchAssoc('SELECT * FROM users WHERE id = ?', [$s_id]);
 		}
 		else
 		{
-			$fromuser = $db->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode_from]);
+			$fromuser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode_from]);
 		}
 
 		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
 
-		$touser = $db->fetchAssoc('select * from users where letscode = ?', [$letscode_touser]);
+		$touser = $app['db']->fetchAssoc('select * from users where letscode = ?', [$letscode_touser]);
 
 		if ($group_id == 'self')
 		{
@@ -449,7 +449,7 @@ if ($add)
 
 			$remote_schema = $schemas[$group_domain];
 
-			$to_remote_user = $db->fetchAssoc('select *
+			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
 				where letscode = ?', [$letscode_to]);
 
@@ -463,7 +463,7 @@ if ($add)
 				$errors[] = 'De interlets gebruiker is niet actief.';
 			}
 
-			$remote_group = $db->fetchAssoc('select *
+			$remote_group = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
 				where url = ?', [$base_url]);
 
@@ -477,7 +477,7 @@ if ($add)
 				$errors[] = 'Er is geen interlets account gedefiniëerd in de remote interlets groep.';
 			}
 
-			$remote_interlets_account = $db->fetchAssoc('select *
+			$remote_interlets_account = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
 				where letscode = ?', [$remote_group['localletscode']]);
 
@@ -552,15 +552,16 @@ if ($add)
 			$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 			$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
+
 			try
 			{
-				$db->insert('transactions', $transaction);
-				$id = $db->lastInsertId('transactions_id_seq');
-				$db->executeUpdate('update users
+				$app['db']->insert('transactions', $transaction);
+				$id = $app['db']->lastInsertId('transactions_id_seq');
+				$app['db']->executeUpdate('update users
 					set saldo = saldo + ? where id = ?',
 					[$transaction['amount'], $transaction['id_to']]);
-				$db->executeUpdate('update users
+				$app['db']->executeUpdate('update users
 					set saldo = saldo - ? where id = ?',
 					[$transaction['amount'], $transaction['id_from']]);
 
@@ -574,22 +575,22 @@ if ($add)
 				$transaction['real_from'] = link_user($fromuser['id'], false, false);
 				unset($transaction['real_to']);
 
-				$db->insert($remote_schema . '.transactions', $transaction);
-				$id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
-				$db->executeUpdate('update ' . $remote_schema . '.users
+				$app['db']->insert($remote_schema . '.transactions', $transaction);
+				$id = $app['db']->lastInsertId($remote_schema . '.transactions_id_seq');
+				$app['db']->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo + ? where id = ?',
 					[$remote_amount, $transaction['id_to']]);
-				$db->executeUpdate('update ' . $remote_schema . '.users
+				$app['db']->executeUpdate('update ' . $remote_schema . '.users
 					set saldo = saldo - ? where id = ?',
 					[$transaction['amount'], $transaction['id_from']]);
 				$transaction['id'] = $id;
 
-				$db->commit();
+				$app['db']->commit();
 
 			}
 			catch(Exception $e)
 			{
-				$db->rollback();
+				$app['db']->rollback();
 				$alert->error('Transactie niet gelukt.');
 				throw $e;
 				exit;
@@ -649,7 +650,7 @@ if ($add)
 			{
 				$host_from_tus = $hosts[$tus];
 
-				$group_id = $db->fetchColumn('select id
+				$group_id = $app['db']->fetchColumn('select id
 					from letsgroups
 					where url = ?', [$app_protocol . $host_from_tus]);
 				$to_schema_table = $tus . '.';
@@ -658,7 +659,7 @@ if ($add)
 
 		if ($mid && !($tus xor $host_from_tus))
 		{
-			$row = $db->fetchAssoc('SELECT
+			$row = $app['db']->fetchAssoc('SELECT
 					m.content, m.amount, m.id_user, u.letscode, u.name, u.status
 				from ' . $to_schema_table . 'messages m,
 					'. $to_schema_table . 'users u
@@ -709,7 +710,7 @@ if ($add)
 
 	$balance = $session_user['saldo'];
 
-	$groups = $db->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+	$groups = $app['db']->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
 
 	$groups = array_merge([[
 		'groupname' => $systemname,
@@ -868,7 +869,7 @@ $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]
 
 if ($id)
 {
-	$transaction = $db->fetchAssoc('select t.*
+	$transaction = $app['db']->fetchAssoc('select t.*
 		from transactions t
 		where t.id = ?', [$id]);
 
@@ -885,7 +886,7 @@ if ($id)
 
 	if ($inter_schema)
 	{
-		$inter_transaction = $db->fetchAssoc('select t.*
+		$inter_transaction = $app['db']->fetchAssoc('select t.*
 			from ' . $inter_schema . '.transactions t
 			where t.transid = ?', [$transaction['transid']]);
 	}
@@ -894,13 +895,13 @@ if ($id)
 		$inter_transaction = false;
 	}
 
-	$next = $db->fetchColumn('select id
+	$next = $app['db']->fetchColumn('select id
 		from transactions
 		where id > ?
 		order by id asc
 		limit 1', [$id]);
 
-	$prev = $db->fetchColumn('select id
+	$prev = $app['db']->fetchColumn('select id
 		from transactions
 		where id < ?
 		order by id desc
@@ -1086,7 +1087,7 @@ if (!$uid)
 	{
 		list($fcode) = explode(' ', trim($fcode));
 
-		$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
+		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
 
 		if ($fuid)
 		{
@@ -1107,7 +1108,7 @@ if (!$uid)
 	{
 		list($tcode) = explode(' ', trim($tcode));
 
-		$tuid = $db->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
+		$tuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
 
 		if ($tuid)
 		{
@@ -1185,7 +1186,7 @@ $query = 'select t.*
 $query .= ($asc) ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
-$transactions = $db->fetchAll($query, $params_sql);
+$transactions = $app['db']->fetchAll($query, $params_sql);
 
 foreach ($transactions as $key => $t)
 {
@@ -1207,7 +1208,7 @@ foreach ($transactions as $key => $t)
 
 	if ($inter_schema)
 	{
-		$inter_transaction = $db->fetchAssoc('select t.*
+		$inter_transaction = $app['db']->fetchAssoc('select t.*
 			from ' . $inter_schema . '.transactions t
 			where t.transid = ?', [$t['transid']]);
 
@@ -1220,7 +1221,7 @@ foreach ($transactions as $key => $t)
 }
 
 
-$row_count = $db->fetchColumn('select count(t.*)
+$row_count = $app['db']->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
 $pagination = new eland\pagination('transactions', $row_count, $params, $inline);

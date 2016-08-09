@@ -192,7 +192,7 @@ if (isset($hosting_form))
  *
  **/
 
-$newusers = $db->fetchAll('select id, letscode, name
+$newusers = $app['db']->fetchAll('select id, letscode, name
 	from users
 	where status = 1
 		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
@@ -201,7 +201,7 @@ $status_msgs = false;
 
 if ($s_admin)
 {
-	$non_unique_mail = $db->fetchAll('select c.value, count(c.*)
+	$non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
 		from contact c, type_contact tc, users u
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
@@ -212,7 +212,7 @@ if ($s_admin)
 
 	if (count($non_unique_mail))
 	{
-		$st = $db->prepare('select id_user
+		$st = $app['db']->prepare('select id_user
 			from contact c
 			where c.value = ?');
 
@@ -232,7 +232,7 @@ if ($s_admin)
 
 //
 
-	$non_unique_letscode = $db->fetchAll('select letscode, count(*)
+	$non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
 		from users
 		where letscode <> \'\'
 		group by letscode
@@ -240,7 +240,7 @@ if ($s_admin)
 
 	if (count($non_unique_letscode))
 	{
-		$st = $db->prepare('select id
+		$st = $app['db']->prepare('select id
 			from users
 			where letscode = ?');
 
@@ -260,7 +260,7 @@ if ($s_admin)
 
 //
 
-	$non_unique_name = $db->fetchAll('select name, count(*)
+	$non_unique_name = $app['db']->fetchAll('select name, count(*)
 		from users
 		where name <> \'\'
 		group by name
@@ -268,7 +268,7 @@ if ($s_admin)
 
 	if (count($non_unique_name))
 	{
-		$st = $db->prepare('select id
+		$st = $app['db']->prepare('select id
 			from users
 			where name = ?');
 
@@ -288,7 +288,7 @@ if ($s_admin)
 
 //
 
-	$unvalid_mail = $db->fetchAll('select c.id, c.value, c.id_user
+	$unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'mail\'
@@ -297,7 +297,7 @@ if ($s_admin)
 //
 	$no_mail = array();
 
-	$st = $db->prepare(' select u.id
+	$st = $app['db']->prepare(' select u.id
 		from users u
 		where u.status in (1, 2)
 			and not exists (select c.id
@@ -315,20 +315,20 @@ if ($s_admin)
 	}
 //
 
-	$empty_letscode = $db->fetchAll('select id
+	$empty_letscode = $app['db']->fetchAll('select id
 		from users
 		where letscode = \'\'');
 
 //
-	$empty_name = $db->fetchAll('select id
+	$empty_name = $app['db']->fetchAll('select id
 		from users
 		where name = \'\'');
 //
-	$version = $db->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
+	$version = $app['db']->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 
 	$db_update = ($version == $schemaversion) ? false : true;
 
-//	$default_config = $db->fetchColumn('select setting from config where "default" = True');
+//	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
 
 	if ($unvalid_mail || $empty_letscode || $empty_name || $db_update || $default_config)
 	{

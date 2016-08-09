@@ -19,7 +19,7 @@ if (!$group_id)
 	exit;
 }
 
-$group = $db->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', [$group_id]);
+$group = $app['db']->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', [$group_id]);
 
 if (!$group)
 {

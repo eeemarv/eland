@@ -105,7 +105,7 @@ foreach ($export_ary as $ex_key => $export)
 
 		$sql_bind = $export['sql_bind'] ?? [];
 
-		$data = $db->fetchAll($export['sql'], $sql_bind);
+		$data = $app['db']->fetchAll($export['sql'], $sql_bind);
 
 		foreach($export['columns'] as $key => $name)
 		{

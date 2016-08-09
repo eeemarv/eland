@@ -73,7 +73,7 @@ if ($submit)
 
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
-		$count_email = $db->fetchColumn('select count(c.*)
+		$count_email = $app['db']->fetchColumn('select count(c.*)
 			from contact c, type_contact tc, users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
@@ -83,7 +83,7 @@ if ($submit)
 
 		if ($count_email == 1)
 		{
-			$user_id = $db->fetchColumn('select u.id
+			$user_id = $app['db']->fetchColumn('select u.id
 				from contact c, type_contact tc, users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
@@ -101,7 +101,7 @@ if ($submit)
 
 	if (!$user_id && !count($errors))
 	{
-		$count_letscode = $db->fetchColumn('select count(u.*)
+		$count_letscode = $app['db']->fetchColumn('select count(u.*)
 			from users u
 			where letscode = ?', [$login]);
 
@@ -113,13 +113,13 @@ if ($submit)
 		}
 		else if ($count_letscode == 1)
 		{
-			$user_id = $db->fetchColumn('select id from users where letscode = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id from users where letscode = ?', [$login]);
 		}
 	}
 
 	if (!$user_id && !count($errors))
 	{
-		$count_name = $db->fetchColumn('select count(u.*)
+		$count_name = $app['db']->fetchColumn('select count(u.*)
 			from users u
 			where name = ?', [$login]);
 
@@ -131,7 +131,7 @@ if ($submit)
 		}
 		else if ($count_name == 1)
 		{
-			$user_id = $db->fetchColumn('select id from users where name = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id from users where name = ?', [$login]);
 		}
 	}
 
@@ -159,7 +159,7 @@ if ($submit)
 			}
 			else if ($user['password'] != $sha512)
 			{
-				$db->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
+				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
 				log_event('password', 'Password encryption updated to sha512');
 			}
 		}
@@ -192,7 +192,7 @@ if ($submit)
 		log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
 		log_event('agent', $browser);
 
-		$db->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
+		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);
 
 		$alert->success('Je bent ingelogd.');

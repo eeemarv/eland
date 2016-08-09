@@ -562,9 +562,9 @@ if ($post)
 
 		$value = substr($value, 0, 60);
 
-		if ($db->fetchColumn('select setting from config where setting = ?', [$name]))
+		if ($app['db']->fetchColumn('select setting from config where setting = ?', [$name]))
 		{
-			$db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
+			$app['db']->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 		}
 	}
 

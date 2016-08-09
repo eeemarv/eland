@@ -69,7 +69,7 @@ class eland_extra_db
 
 	public function set($agg_type = '', $eland_id = '', $data = [], $sch = false, $event_time = false)
 	{
-		global $schema, $s_schema, $s_id, $db;
+		global $schema, $s_schema, $s_id, $app;
 
 		$sch = ($sch) ?: $schema;
 
@@ -94,7 +94,7 @@ class eland_extra_db
 
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $db->fetchAssoc('select data, agg_version
+		$row = $app['db']->fetchAssoc('select data, agg_version
 			from eland_extra.aggs
 			where agg_id = ?', [$agg_id]);
 
@@ -139,13 +139,13 @@ class eland_extra_db
 
 		try
 		{
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
 
-			$db->insert('eland_extra.events', $insert);
+			$app['db']->insert('eland_extra.events', $insert);
 
 			if ($agg_version == 1)
 			{
-				$db->insert('eland_extra.aggs', $insert);
+				$app['db']->insert('eland_extra.aggs', $insert);
 			}
 			else
 			{
@@ -153,14 +153,14 @@ class eland_extra_db
 				$update = $insert;
 				$update['data'] = json_encode(array_merge($prev_data, $data));
 
-				$db->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
+				$app['db']->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
 			}
 
-			$db->commit();
+			$app['db']->commit();
 		}
 		catch(Exception $e)
 		{
-			$db->rollback();
+			$app['db']->rollback();
 			error_log('error transaction eland extra db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt.';
 			log_event('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
@@ -175,7 +175,7 @@ class eland_extra_db
 
 	public function del($agg_type = '', $eland_id = '', $sch = false)
 	{
-		global $schema, $s_schema, $s_id, $db;
+		global $schema, $s_schema, $s_id, $app;
 
 		$sch = ($sch) ?: $schema;
 
@@ -200,7 +200,7 @@ class eland_extra_db
 
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$agg_version = $db->fetchColumn('select agg_version
+		$agg_version = $app['db']->fetchColumn('select agg_version
 			from eland_extra.aggs
 			where agg_id = ?', [$agg_id]);
 
@@ -224,17 +224,17 @@ class eland_extra_db
 
 		try
 		{
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
 
-			$db->insert('eland_extra.events', $insert);
+			$app['db']->insert('eland_extra.events', $insert);
 
-			$db->delete('eland_extra.aggs', ['agg_id' => $agg_id]);
+			$app['db']->delete('eland_extra.aggs', ['agg_id' => $agg_id]);
 
-			$db->commit();
+			$app['db']->commit();
 		}
 		catch(Exception $e)
 		{
-			$db->rollback();
+			$app['db']->rollback();
 			$alert->error('Database transactie niet gelukt.');
 			echo 'Database transactie niet gelukt.';
 			event_log('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
@@ -249,7 +249,7 @@ class eland_extra_db
 
 	public function get($agg_type = '', $eland_id = '', $sch = false)
 	{
-		global $schema, $s_schema, $s_id, $db;
+		global $schema, $s_schema, $s_id, $app;
 
 		$sch = ($sch) ?: $schema;
 
@@ -270,7 +270,7 @@ class eland_extra_db
 
 		$agg_id = $sch . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $db->fetchAssoc('select * from eland_extra.aggs where agg_id = ?', [$agg_id]);
+		$row = $app['db']->fetchAssoc('select * from eland_extra.aggs where agg_id = ?', [$agg_id]);
 
 		if (!$row)
 		{
@@ -290,7 +290,7 @@ class eland_extra_db
 
 	public function get_many($filters = [], $query_extra = false)
 	{
-		global $db, $access_control;
+		global $app, $access_control;
 
 		$sql_where = [];
 		$sql_params = [];
@@ -349,7 +349,7 @@ class eland_extra_db
 
 		$query .= ($query_extra) ? ' ' . $query_extra : '';
 
-		$rows = $db->executeQuery($query, $sql_params, $sql_types);
+		$rows = $app['db']->executeQuery($query, $sql_params, $sql_types);
 
 		$ary = [];
 

@@ -31,24 +31,25 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $db, $s_id, $currency, $s_master;
+    global $app, $s_id, $currency, $s_master;
 
 	$transaction['creator'] = ($s_master) ? 0 : (($s_id) ? $s_id : 0);
     $transaction['cdate'] = date('Y-m-d H:i:s');
 
-	$db->beginTransaction();
+	$app['db']->beginTransaction();
+
 	try
 	{
-		$db->insert('transactions', $transaction);
-		$id = $db->lastInsertId('transactions_id_seq');
-		$db->executeUpdate('update users set saldo = saldo + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
-		$db->executeUpdate('update users set saldo = saldo - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
-		$db->commit();
+		$app['db']->insert('transactions', $transaction);
+		$id = $app['db']->lastInsertId('transactions_id_seq');
+		$app['db']->executeUpdate('update users set saldo = saldo + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
+		$app['db']->executeUpdate('update users set saldo = saldo - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
+		$app['db']->commit();
 
 	}
 	catch(Exception $e)
 	{
-		$db->rollback();
+		$app['db']->rollback();
 		throw $e;
 		return false;
 	}

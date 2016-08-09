@@ -5,7 +5,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 $log_types = [];
 
-$st = $db->prepare('select distinct type
+$st = $app['db']->prepare('select distinct type
 	from eland_extra.logs
 	where schema = ?
 	order by type asc');

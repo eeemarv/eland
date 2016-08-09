@@ -18,7 +18,7 @@ if ($approve)
 
 	require_once $rootpath . 'includes/inc_default.php';
 
-	if ($db->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
+	if ($app['db']->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
 		$alert->success('Nieuwsbericht goedgekeurd');
 	}
@@ -103,9 +103,9 @@ if ($add && $submit && !count($errors))
 	$news['id_user'] = ($s_master) ? 0 : $s_id;
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 	
-	if ($db->insert('news', $news))
+	if ($app['db']->insert('news', $news))
 	{
-		$id = $db->lastInsertId('news_id_seq');
+		$id = $app['db']->lastInsertId('news_id_seq');
 
 		$exdb->set('news_access', $id, ['access' => $_POST['access']]);
 
@@ -137,7 +137,7 @@ if ($add && $submit && !count($errors))
 
 if ($edit && $submit && !count($errors))
 {
-	if($db->update('news', $news, ['id' => $edit]))
+	if($app['db']->update('news', $news, ['id' => $edit]))
 	{
 		$exdb->set('news_access', $edit, ['access' => $_POST['access']]);
 
@@ -152,7 +152,7 @@ if ($edit && $submit && !count($errors))
 
 if ($edit)
 {
-	$news = $db->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
+	$news = $app['db']->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	list($news['itemdate']) = explode(' ', $news['itemdate']);
 
 	$news_access = $exdb->get('news_access', $edit)['data']['access'];
@@ -272,7 +272,7 @@ if ($del)
 			cancel();
 		}
 
-		if($db->delete('news', ['id' => $del]))
+		if($app['db']->delete('news', ['id' => $del]))
 		{
 			$exdb->del('news_access', $del);
 
@@ -282,7 +282,7 @@ if ($del)
 		$alert->error('Nieuwsbericht niet verwijderd.');
 	}
 
-	$news = $db->fetchAssoc('SELECT n.*
+	$news = $app['db']->fetchAssoc('SELECT n.*
 		FROM news n  
 		WHERE n.id = ?', [$del]);
 
@@ -370,7 +370,7 @@ if ($id)
 
 	require_once $rootpath . 'includes/inc_default.php';
 
-	$news = $db->fetchAssoc('SELECT n.*
+	$news = $app['db']->fetchAssoc('SELECT n.*
 		FROM news n  
 		WHERE n.id = ?', [$id]);
 
@@ -527,7 +527,7 @@ if(!$s_admin)
 
 $query .= ' order by itemdate desc';
 
-$news = $db->fetchAll($query);
+$news = $app['db']->fetchAll($query);
 
 $news_access_ary = [];
 

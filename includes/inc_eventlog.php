@@ -7,7 +7,7 @@ use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
 function log_event($type, $event, $remote_schema = false)
 {
-	global $db, $schema, $hosts, $s_schema, $s_id, $s_master, $s_elas_guest;
+	global $app, $schema, $hosts, $s_schema, $s_id, $s_master, $s_elas_guest;
 
 	$type = strtolower($type);
 
@@ -71,5 +71,5 @@ function log_event($type, $event, $remote_schema = false)
 		'event'			=> $event,
 	];
 
-	$db->insert('eland_extra.logs', $log_item);
+	$app['db']->insert('eland_extra.logs', $log_item);
 }

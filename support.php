@@ -30,7 +30,7 @@ if (isset($_POST['zend']))
 		$errors[] = $token_error;
 	}
 
-	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
+	$my_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from contact c, type_contact tc
 		where c.id_user = ?
 			and c.id_type_contact = tc.id', [$s_id]);

@@ -80,7 +80,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 	$validity_ary = [];
 
-	$rows = $db->executeQuery('select id_user, id, content, validity from messages where id in (?)',
+	$rows = $app['db']->executeQuery('select id_user, id, content, validity from messages where id in (?)',
 			[$selected_msgs], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
@@ -106,7 +106,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 				'exp_user_warn'	=> 'f',
 			];
 
-			if (!$db->update('messages', $m, ['id' => $id]))
+			if (!$app['db']->update('messages', $m, ['id' => $id]))
 			{
 				$alert->error('Fout: ' . $row['content'] . ' is niet verlengd.');
 				cancel();
@@ -140,15 +140,16 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 				'mdate' => gmdate('Y-m-d H:i:s')
 			];
 
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
+
 			try
 			{
 				foreach ($validity_ary as $id => $validity)
 				{
-					$db->update('messages', $m, ['id' => $id]);
+					$app['db']->update('messages', $m, ['id' => $id]);
 				}
 
-				$db->commit();
+				$app['db']->commit();
 
 				if (count($selected_msgs) > 1)
 				{
@@ -163,7 +164,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 			}
 			catch(Exception $e)
 			{
-				$db->rollback();
+				$app['db']->rollback();
 				throw $e;
 				$alert->error('Fout bij het opslaan.');
 				cancel();
@@ -181,7 +182,7 @@ if ($id || $edit || $del)
 {
 	$id = ($id) ?: (($edit) ?: $del);
 
-	$message = $db->fetchAssoc('SELECT m.*,
+	$message = $app['db']->fetchAssoc('SELECT m.*,
 			c.id as cid,
 			c.fullname as catname
 		FROM messages m, categories c
@@ -229,7 +230,7 @@ if ($id && $extend)
 		'exp_user_warn'	=> 'f',
 	];
 
-	if (!$db->update('messages', $m, ['id' => $id]))
+	if (!$app['db']->update('messages', $m, ['id' => $id]))
 	{
 		$alert->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
 		cancel($id);
@@ -359,7 +360,7 @@ if ($post && $img && $images && !$s_guest)
 
 		if (!$id)
 		{
-			$id = $db->fetchColumn('select max(id) from messages');
+			$id = $app['db']->fetchColumn('select max(id) from messages');
 			$id++;
 		}
 
@@ -378,7 +379,7 @@ if ($post && $img && $images && !$s_guest)
 
 			if ($insert_img)
 			{
-				$db->insert('msgpictures', [
+				$app['db']->insert('msgpictures', [
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
@@ -421,7 +422,7 @@ if ($img_del == 'all' && $id && $post)
 		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
-	$db->delete('msgpictures', ['msgid' => $id]);
+	$app['db']->delete('msgpictures', ['msgid' => $id]);
 
 	$alert->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
 
@@ -433,7 +434,7 @@ if ($img_del == 'all' && $id && $post)
  */
 if ($img_del && $post && ctype_digit((string) $img_del))
 {
-	if (!($msg = $db->fetchAssoc('select m.id_user, p."PictureFile"
+	if (!($msg = $app['db']->fetchAssoc('select m.id_user, p."PictureFile"
 		from msgpictures p, messages m
 		where p.msgid = m.id
 			and p.id = ?', [$img_del])))
@@ -450,7 +451,7 @@ if ($img_del && $post && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$db->delete('msgpictures', ['id' => $img_del]);
+	$app['db']->delete('msgpictures', ['id' => $img_del]);
 
 	echo json_encode(['success' => true]);
 	exit;
@@ -470,7 +471,7 @@ if ($img_del == 'all' && $id)
 
 	$images = [];
 
-	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
+	$st = $app['db']->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
 
@@ -575,7 +576,7 @@ if ($mail && $post && $id)
 	$user_me .= link_user($session_user, $s_schema, false);
 	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
 
-	$my_contacts = $db->fetchAll('select c.value, tc.abbrev
+	$my_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
@@ -640,14 +641,14 @@ if ($del)
 			$alert->error($error_token);
 		}
 
-		$db->delete('msgpictures', ['msgid' => $del]);
+		$app['db']->delete('msgpictures', ['msgid' => $del]);
 
-		if ($db->delete('messages', ['id' => $del]))
+		if ($app['db']->delete('messages', ['id' => $del]))
 		{
 			$column = 'stat_msgs_';
 			$column .= ($message['msg_type']) ? 'offers' : 'wanted';
 
-			$db->executeUpdate('update categories
+			$app['db']->executeUpdate('update categories
 				set ' . $column . ' = ' . $column . ' - 1
 				where id = ?', [$message['id_category']]);
 
@@ -754,7 +755,7 @@ if (($edit || $add))
 		{
 			list($user_letscode) = explode(' ', $_POST['user_letscode']);
 			$user_letscode = trim($user_letscode);
-			$user = $db->fetchAssoc('select *
+			$user = $app['db']->fetchAssoc('select *
 				from users
 				where letscode = ?
 					and status in (1, 2)', [$user_letscode]);
@@ -796,7 +797,7 @@ if (($edit || $add))
 		{
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
-		else if(!$db->fetchColumn('select id from categories where id = ?', [$msg['id_category']]))
+		else if(!$app['db']->fetchColumn('select id from categories where id = ?', [$msg['id_category']]))
 		{
 			$errors[] = 'Categorie bestaat niet!';
 		}
@@ -821,7 +822,7 @@ if (($edit || $add))
 			$errors[] = '"Per (uur, stuk, ...)" mag maximaal 15 tekens lang zijn.';
 		}
 
-		if(!($db->fetchColumn('select id from users where id = ? and status <> 0', [$msg['id_user']])))
+		if(!($app['db']->fetchColumn('select id from users where id = ? and status <> 0', [$msg['id_user']])))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
 		}
@@ -847,14 +848,14 @@ if (($edit || $add))
 				unset($msg['amount']);
 			}
 
-			if ($db->insert('messages', $msg))
+			if ($app['db']->insert('messages', $msg))
 			{
-				$id = $db->lastInsertId('messages_id_seq');
+				$id = $app['db']->lastInsertId('messages_id_seq');
 
 				$stat_column = 'stat_msgs_';
 				$stat_column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-				$db->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', [$msg['id_category']]);
+				$app['db']->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', [$msg['id_category']]);
 
 				if (count($uploaded_images))
 				{
@@ -888,7 +889,7 @@ if (($edit || $add))
 
 						if ($msgid == $id)
 						{
-							if ($db->insert('msgpictures', [
+							if ($app['db']->insert('msgpictures', [
 								'"PictureFile"' => $img,
 								'msgid'			=> $id,
 							]))
@@ -919,7 +920,7 @@ if (($edit || $add))
 						{
 							log_event('pict', 'renamed ' . $img . ' to ' . $new_filename);
 
-							if ($db->insert('msgpictures', [
+							if ($app['db']->insert('msgpictures', [
 								'"PictureFile"'		=> $new_filename,
 								'msgid'				=> $id,
 							]))
@@ -965,25 +966,25 @@ if (($edit || $add))
 				unset($msg['amount']);
 			}
 
-			$db->beginTransaction();
+			$app['db']->beginTransaction();
 
 			try
 			{
-				$db->update('messages', $msg, ['id' => $edit]);
+				$app['db']->update('messages', $msg, ['id' => $edit]);
 
 				if ($msg['msg_type'] != $msg['msg_type'] || $msg['id_category'] != $msg['id_category'])
 				{
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-					$db->executeUpdate('update categories
+					$app['db']->executeUpdate('update categories
 						set ' . $column . ' = ' . $column . ' - 1
 						where id = ?', [$msg['id_category']]);
 
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-					$db->executeUpdate('update categories
+					$app['db']->executeUpdate('update categories
 						set ' . $column . ' = ' . $column . ' + 1
 						where id = ?', [$msg['id_category']]);
 				}
@@ -992,7 +993,7 @@ if (($edit || $add))
 				{
 					foreach ($deleted_images as $img)
 					{
-						if ($db->delete('msgpictures', [
+						if ($app['db']->delete('msgpictures', [
 							'msgid'		=> $edit,
 							'"PictureFile"'	=> $img,
 						]))
@@ -1037,7 +1038,7 @@ if (($edit || $add))
 							continue;
 						}
 
-						if ($db->insert('msgpictures', [
+						if ($app['db']->insert('msgpictures', [
 							'"PictureFile"' => $img,
 							'msgid'			=> $edit,
 						]))
@@ -1051,13 +1052,13 @@ if (($edit || $add))
 					}
 				}
 
-				$db->commit();
+				$app['db']->commit();
 				$alert->success('Vraag/aanbod aangepast');
 				cancel($edit);
 			}
 			catch(Exception $e)
 			{
-				$db->rollback();
+				$app['db']->rollback();
 				throw $e;
 				exit;
 			}
@@ -1070,7 +1071,7 @@ if (($edit || $add))
 
 		$msg['description'] = $msg['"Description"'];
 
-		$images = $edit ? $db->fetchAll('select * from msgpictures where msgid = ?', [$edit]) : [];
+		$images = $edit ? $app['db']->fetchAll('select * from msgpictures where msgid = ?', [$edit]) : [];
 
 		if (count($deleted_images))
 		{
@@ -1096,7 +1097,7 @@ if (($edit || $add))
 	}
 	else if ($edit)
 	{
-		$msg =  $db->fetchAssoc('select m.*,
+		$msg =  $app['db']->fetchAssoc('select m.*,
 			m."Description" as description
 			from messages m
 			where m.id = ?', [$edit]);
@@ -1110,7 +1111,7 @@ if (($edit || $add))
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 
-		$images = $db->fetchAll('select * from msgpictures where msgid = ?', [$edit]);
+		$images = $app['db']->fetchAll('select * from msgpictures where msgid = ?', [$edit]);
 	}
 	else if ($add)
 	{
@@ -1144,7 +1145,7 @@ if (($edit || $add))
 
 	$cat_list = ['' => ''];
 
-	$rs = $db->prepare('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
+	$rs = $app['db']->prepare('SELECT id, fullname  FROM categories WHERE leafnote=1 order by fullname');
 
 	$rs->execute();
 
@@ -1377,7 +1378,7 @@ if ($id)
 
 	$user = readuser($message['id_user']);
 
-	$to = $db->fetchColumn('select c.value
+	$to = $app['db']->fetchColumn('select c.value
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
@@ -1390,7 +1391,7 @@ if ($id)
 
 	$images = [];
 
-	$st = $db->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
+	$st = $app['db']->prepare('select id, "PictureFile" from msgpictures where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
 
@@ -1401,14 +1402,14 @@ if ($id)
 
 	$and_local = ($s_guest) ? ' and local = \'f\' ' : '';
 
-	$prev = $db->fetchColumn('select id
+	$prev = $app['db']->fetchColumn('select id
 		from messages
 		where id > ?
 		' . $and_local . '
 		order by id asc
 		limit 1', [$id]);
 
-	$next = $db->fetchColumn('select id
+	$next = $app['db']->fetchColumn('select id
 		from messages
 		where id < ?
 		' . $and_local . '
@@ -1417,7 +1418,7 @@ if ($id)
 
 	$title = $message['content'];
 
-	$contacts = $db->fetchAll('select c.*, tc.abbrev
+	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
 		from contact c, type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
@@ -1710,7 +1711,7 @@ if (!$uid)
 	{
 		list($fcode) = explode(' ', trim($fcode));
 
-		$fuid = $db->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
+		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
 
 		if ($fuid)
 		{
@@ -1739,7 +1740,7 @@ if ($cid)
 {
 	$cat_ary = [];
 
-	$st = $db->prepare('select id from categories where id_parent = ?');
+	$st = $app['db']->prepare('select id from categories where id_parent = ?');
 	$st->bindValue(1, $cid);
 	$st->execute();
 
@@ -1827,14 +1828,14 @@ $query = 'select m.*, u.postcode
 		where m.id_user = u.id' . $where_sql . '
 	order by ' . $orderby . ' ';
 
-$row_count = $db->fetchColumn('select count(m.*)
+$row_count = $app['db']->fetchColumn('select count(m.*)
 	from messages m, users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
 $query .= ($asc) ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
-$messages = $db->fetchAll($query, $params_sql);
+$messages = $app['db']->fetchAll($query, $params_sql);
 
 if ($v_extended)
 {
@@ -1845,7 +1846,7 @@ if ($v_extended)
 		$ids[] = $msg['id'];
 	}
 
-	$_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
+	$_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
 		from msgpictures mp
 		where msgid in (?)',
 		[$ids],
@@ -1928,7 +1929,7 @@ $categories = $cat_params  = [];
 
 if ($uid)
 {
-	$st = $db->executeQuery('select c.*
+	$st = $app['db']->executeQuery('select c.*
 		from categories c, messages m
 		where m.id_category = c.id
 			and m.id_user = ?
@@ -1936,7 +1937,7 @@ if ($uid)
 }
 else
 {
-	$st = $db->executeQuery('select * from categories order by fullname');
+	$st = $app['db']->executeQuery('select * from categories order by fullname');
 }
 
 while ($row = $st->fetch())

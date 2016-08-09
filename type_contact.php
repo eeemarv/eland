@@ -27,7 +27,7 @@ if ($add)
 
 		if (!$error)
 		{
-			if ($db->insert('type_contact', $tc))
+			if ($app['db']->insert('type_contact', $tc))
 			{
 				$alert->success('Contact type toegevoegd.');
 			}
@@ -81,7 +81,7 @@ if ($add)
 
 if ($edit)
 {
-	$tc_prefetch = $db->fetchAssoc('select * from type_contact where id = ?', [$edit]);
+	$tc_prefetch = $app['db']->fetchAssoc('select * from type_contact where id = ?', [$edit]);
 
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
@@ -109,7 +109,7 @@ if ($edit)
 
 		if (!$error)
 		{
-			if ($db->update('type_contact', $tc, ['id' => $edit]))
+			if ($app['db']->update('type_contact', $tc, ['id' => $edit]))
 			{
 				$alert->success('Contact type aangepast.');
 
@@ -169,7 +169,7 @@ if ($edit)
 
 if ($del)
 {
-	$ct = $db->fetchAssoc('select * from type_contact where id = ?', [$del]);
+	$ct = $app['db']->fetchAssoc('select * from type_contact where id = ?', [$del]);
 
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
@@ -177,7 +177,7 @@ if ($del)
 		cancel();
 	}
 
-	if ($db->fetchColumn('select id from contact where id_type_contact = ?', [$del]))
+	if ($app['db']->fetchColumn('select id from contact where id_type_contact = ?', [$del]))
 	{
 		$alert->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
 		cancel();
@@ -191,13 +191,13 @@ if ($del)
 			cancel();
 		}
 
-		if ($db->delete('type_contact', ['id' => $del]))
+		if ($app['db']->delete('type_contact', ['id' => $del]))
 		{
 			$alert->success('Contact type verwijderd.');
 		}
 		else
 		{
-			$db->error('Fout bij het verwijderen.');
+			$app['db']->error('Fout bij het verwijderen.');
 		}
 
 		cancel();
@@ -224,11 +224,11 @@ if ($del)
 	exit;
 }
 
-$types = $db->fetchAll('select * from type_contact tc');
+$types = $app['db']->fetchAll('select * from type_contact tc');
 
 $contact_count = [];
 
-$rs = $db->prepare('select id_type_contact, count(id)
+$rs = $app['db']->prepare('select id_type_contact, count(id)
 	from contact
 	group by id_type_contact');
 $rs->execute();

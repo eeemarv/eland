@@ -44,7 +44,7 @@ if ($step == 2 || $step == 3)
 
 if ($step == 1)
 {
-	$currentversion = $dbversion = $db->fetchColumn('select value
+	$currentversion = $dbversion = $app['db']->fetchColumn('select value
 		from parameters
 		where parameter = \'schemaversion\'');
 
@@ -76,7 +76,7 @@ if ($step == 1)
 }
 else if ($step == 2)
 {
-	$rs = $db->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+	$rs = $app['db']->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
 
 	$rs->execute();
 
@@ -104,7 +104,7 @@ else if ($step == 2)
 
 		if (!$found)
 		{
-			$db->update('users', ['"PictureFile"' => null], ['id' => $user_id]);
+			$app['db']->update('users', ['"PictureFile"' => null], ['id' => $user_id]);
 			echo 'Profile image not present, deleted in database: ' . $filename . $r;
 			log_event ('cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
@@ -123,7 +123,7 @@ else if ($step == 2)
 
 			if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
 			{
-				$db->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
+				$app['db']->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 			}
@@ -136,7 +136,7 @@ else if ($step == 2)
 else if ($step == 3)
 {
 
-	$message_images = $db->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
+	$message_images = $app['db']->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
 
 	foreach($message_images as $image)
 	{
@@ -162,7 +162,7 @@ else if ($step == 3)
 
 		if (!$found)
 		{
-			$db->delete('msgpictures', ['id' => $id]);
+			$app['db']->delete('msgpictures', ['id' => $id]);
 			echo 'Message image not present, deleted in database: ' . $filename . $r;
 			log_event ('init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
@@ -180,7 +180,7 @@ else if ($step == 3)
 
 			if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
 			{
-				$db->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
+				$app['db']->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
 				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
 				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 			}
@@ -198,7 +198,7 @@ echo 'Cleanup orphaned contacts. ' . $r;
 
 $orphaned_contacts = [];
 
-$rs = $db->prepare('select c.id, c.value
+$rs = $app['db']->prepare('select c.id, c.value
 	from contact c
 	left join users u
 		on c.id_user = u.id
@@ -215,7 +215,7 @@ $count = count($orphaned_contacts);
 
 if ($count)
 {
-	$db->executeQuery('delete * from contact where id IN (?)',
+	$app['db']->executeQuery('delete * from contact where id IN (?)',
 		[implode(', ', array_keys($orphaned_contacts))],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
 	);
@@ -238,7 +238,7 @@ else if ($step == 4)
 
 	echo '*** clear users cache ***';
 
-	$users = $db->fetchAll('select id from users');
+	$users = $app['db']->fetchAll('select id from users');
 
 	foreach ($users as $u)
 	{

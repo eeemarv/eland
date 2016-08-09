@@ -77,14 +77,14 @@ $query = 'select *
 		where schema = ?' . $where_sql . '
 	order by ' . $orderby . ' ';
 
-$row_count = $db->fetchColumn('select count(*)
+$row_count = $app['db']->fetchColumn('select count(*)
 	from eland_extra.logs
 	where schema = ?' . $where_sql, $params_sql);
 
 $query .= ($asc) ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
-$rows = $db->fetchAll($query, $params_sql);
+$rows = $app['db']->fetchAll($query, $params_sql);
 
 $pagination = new eland\pagination('logs', $row_count, $params, $inline);
 

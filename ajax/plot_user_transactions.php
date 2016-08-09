@@ -21,7 +21,7 @@ if (!$user)
 
 $groups = $_groups = $transactions = $users = $_users  = [];
 
-$groups = $db->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
+$groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
 
 foreach ($groups as $g)
 {
@@ -44,7 +44,7 @@ $query = 'SELECT t.id, t.amount, t.id_from, t.id_to,
 		AND t.date >= ? 
 		AND t.date <= ? 
 	ORDER BY t.date DESC';
-$trans = $db->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
+$trans = $app['db']->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);

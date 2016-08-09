@@ -17,7 +17,7 @@ $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 
 $balance = [];
 
-$rs = $db->prepare('select id, saldo from users');
+$rs = $app['db']->prepare('select id, saldo from users');
 
 $rs->execute();
 
@@ -29,7 +29,7 @@ while ($row = $rs->fetch())
 $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
 $acc = array_map(function (){ return 0; }, $balance);
 
-$trans = $db->fetchAll('select id_to, id_from, amount, date
+$trans = $app['db']->fetchAll('select id_to, id_from, amount, date
 	from transactions
 	where date >= ?
 	order by date desc', [$begin]);

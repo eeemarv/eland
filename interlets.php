@@ -15,7 +15,7 @@ if ($id || $edit || $del)
 {
 	$id = ($id) ?: (($edit) ?: $del);
 
-	$group = $db->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$id]);
+	$group = $app['db']->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$id]);
 
 	if (!$group)
 	{
@@ -93,7 +93,7 @@ if ($add || $edit)
 
 		if ($edit)
 		{
-			if ($db->fetchColumn('select id
+			if ($app['db']->fetchColumn('select id
 				from letsgroups
 				where url = ?
 					and id <> ?', [$group['url'], $edit]))
@@ -101,7 +101,7 @@ if ($add || $edit)
 				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
 
-			if ($db->fetchColumn('select id
+			if ($app['db']->fetchColumn('select id
 				from letsgroups
 				where localletscode = ?
 					and id <> ?', [$group['localletscode'], $edit]))
@@ -111,7 +111,7 @@ if ($add || $edit)
 
 			if (!count($errors))
 			{
-				if ($db->update('letsgroups', $group, ['id' => $id]))
+				if ($app['db']->update('letsgroups', $group, ['id' => $id]))
 				{
 					$alert->success('Letsgroep aangepast.');
 
@@ -125,23 +125,23 @@ if ($add || $edit)
 		}
 		else
 		{
-			if ($db->fetchColumn('select id from letsgroups where url = ?', [$group['url']]))
+			if ($app['db']->fetchColumn('select id from letsgroups where url = ?', [$group['url']]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze url.';
 			}
 
-			if ($db->fetchColumn('select id from letsgroups where localletscode = ?', [$group['localletscode']]))
+			if ($app['db']->fetchColumn('select id from letsgroups where localletscode = ?', [$group['localletscode']]))
 			{
 				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
 			}
 
 			if (!count($errors))
 			{
-				if ($db->insert('letsgroups', $group))
+				if ($app['db']->insert('letsgroups', $group))
 				{
 					$alert->success('Letsgroep opgeslagen.');
 
-					$id = $db->lastInsertId('letsgroups_id_seq');
+					$id = $app['db']->lastInsertId('letsgroups_id_seq');
 
 					clear_interlets_groups_cache();
 					
@@ -296,7 +296,7 @@ if ($del)
 			cancel();
 		}
 
-		if($db->delete('letsgroups', ['id' => $del]))
+		if($app['db']->delete('letsgroups', ['id' => $del]))
 		{
 			$alert->success('Letsgroep verwijderd.');
 
@@ -411,7 +411,7 @@ if ($id)
  * list
  */
 
-$groups = $db->fetchAll('SELECT * FROM letsgroups');
+$groups = $app['db']->fetchAll('SELECT * FROM letsgroups');
 
 $letscodes = [];
 
@@ -427,13 +427,13 @@ foreach ($groups as $key => $g)
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
-		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
 			from ' . $s . '.users
 			where status in (1, 2)');
 	}
 	else if ($g['apimethod'] == 'internal')
 	{
-		$groups[$key]['user_count'] = $db->fetchColumn('select count(*)
+		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
 			from users
 			where status in (1, 2)');
 	}
@@ -445,7 +445,7 @@ foreach ($groups as $key => $g)
 
 $users_letscode = [];
 
-$interlets_users = $db->executeQuery('select id, status, letscode, accountrole
+$interlets_users = $app['db']->executeQuery('select id, status, letscode, accountrole
 	from users
 	where letscode in (?)',
 	[$letscodes],
@@ -563,7 +563,7 @@ exit;
 
 function render_schemas_groups()
 {
-	global $schema, $db, $base_url, $schemas, $hosts, $app_protocol;
+	global $schema, $app, $base_url, $schemas, $hosts, $app_protocol;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -610,7 +610,7 @@ function render_schemas_groups()
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = [];
 	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = [];
 
-	$groups = $db->executeQuery('select localletscode, url, id
+	$groups = $app['db']->executeQuery('select localletscode, url, id
 		from letsgroups
 		where url in (?)',
 		[$url_ary],
@@ -623,7 +623,7 @@ function render_schemas_groups()
 		$loc_group_ary[$h] = $group;
 	}
 
-	$interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
+	$interlets_accounts = $app['db']->executeQuery('select id, letscode, status, accountrole
 		from users
 		where letscode in (?)',
 		[$loc_letscode_ary],
@@ -636,11 +636,11 @@ function render_schemas_groups()
 
 	foreach ($schemas as $h => $s)
 	{
-		$rem_group = $db->fetchAssoc('select localletscode, url, id
+		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
 			where url = ?', [$base_url]);
 
-		$group_user_count_ary[$s] = $db->fetchColumn('select count(*)
+		$group_user_count_ary[$s] = $app['db']->fetchColumn('select count(*)
 			from ' . $s . '.users
 			where status in (1, 2)');
 
@@ -650,7 +650,7 @@ function render_schemas_groups()
 
 			if ($rem_group['localletscode'])
 			{
-				$rem_account = $db->fetchAssoc('select id, letscode, status, accountrole
+				$rem_account = $app['db']->fetchAssoc('select id, letscode, status, accountrole
 					from ' . $s . '.users where letscode = ?', [$rem_group['localletscode']]);
 
 				if ($rem_account)
