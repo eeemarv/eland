@@ -222,7 +222,7 @@ else
  * Process autominlimits
  */
 
-$autominlimit_queue = $queue->get('autominlimit', 6);
+$autominlimit_queue = $app['eland.queue']->get('autominlimit', 6);
 
 if (count($autominlimit_queue))
 {
@@ -356,7 +356,7 @@ while ($row = $st->fetch())
 	$app['redis']->set($key, 'q');
 	$app['redis']->expire($key, 2592000);
 
-	$queue->set('geo', $data);
+	$app['eland.queue']->set('geo', $data);
 
 	//$app['redis']->lpush('geo_q', json_encode($data));
 
@@ -374,7 +374,7 @@ run_cronjob('geo_q_process', 600);
 
 function geo_q_process()
 {
-	global $app, $queue, $r;
+	global $app, $r;
 
 	if ($app['redis']->exists('geo_sleep'))
 	{
@@ -394,7 +394,7 @@ function geo_q_process()
 	$geocoder->using('google_maps')
 		->limit(1);
 
-	$rows = $queue->get('geo', 4);
+	$rows = $app['eland.queue']->get('geo', 4);
 
 	foreach ($rows as $data)
 	{
@@ -578,7 +578,7 @@ run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
-	global $app, $now, $s3, $app;
+	global $app, $now, $s3;
 
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);

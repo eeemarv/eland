@@ -539,11 +539,9 @@ $exdb = new eland\eland_extra_db();
 
 $date_format = new eland\date_format();
 
-/**
- * queue
- */
-
-$queue = new eland\queue();
+$app['eland.queue'] = function($app){
+	return new eland\queue($app['db']);
+};
 
 /**
  * Twig
@@ -1093,7 +1091,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 function mail_q($mail = [], $priority = false)
 {
-	global $schema, $queue;
+	global $schema, $app;
 
 	// only the interlets transactions receiving side has a different schema
 
@@ -1177,7 +1175,7 @@ function mail_q($mail = [], $priority = false)
 
 	$mail['subject'] = '[' . $systemtag . '] ' . $mail['subject'];
 
-	$error = $queue->set('mail', $mail, ($priority) ? 10 : 0);
+	$error = $app['eland.queue']->set('mail', $mail, ($priority) ? 10 : 0);
 
 	if (!$error)
 	{
@@ -1433,7 +1431,7 @@ function get_host($url)
  */
 function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 {
-	global $schema, $queue;
+	global $schema, $app;
 
 	$sch = ($sch) ?: $schema;
 
@@ -1444,7 +1442,7 @@ function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 		'schema'	=> $sch,
 	];
 
-	$queue->set('autominlimit', $data);
+	$app['eland.queue']->set('autominlimit', $data);
 }
 
 /**
@@ -1481,6 +1479,3 @@ function etag_buffer($content)
 
 	return $content;
 }
-
-return $app;
-

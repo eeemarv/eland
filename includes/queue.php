@@ -2,6 +2,8 @@
 
 namespace eland;
 
+use Doctrine\DBAL\Connection as db;
+
 /*
                                         Table "eland_extra.queue"
   Column  |            Type             |                           Modifiers                            
@@ -19,8 +21,11 @@ Indexes:
 
 class queue
 {
-	public function __construct()
+	private $db;
+
+	public function __construct(db $db)
 	{
+		$this->db = $db;
 	}
 
 	/*
@@ -29,8 +34,6 @@ class queue
 
 	public function set($topic, $data, $priority = 0)
 	{
-		global $app;
-
 		if (!strlen($topic))
 		{
 			$error = 'No queue topic set for data ' . json_encode($data);
@@ -60,11 +63,11 @@ class queue
 
 		try
 		{
-			$app['db']->insert('eland_extra.queue', $insert);
+			$this->db->insert('eland_extra.queue', $insert);
 		}
 		catch(Exception $e)
 		{
-			$app['db']->rollback();
+			$this->db->rollback();
 			error_log('error transaction eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
 			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
@@ -79,8 +82,6 @@ class queue
 
 	public function get($topic, $count = 1, $call_func = false)
 	{
-		global $app;
-
 		if (!strlen($topic))
 		{
 			return [];
@@ -93,11 +94,11 @@ class queue
 
 		try
 		{
-			$app['db']->beginTransaction();
+			$this->db->beginTransaction();
 
 			$del_ids = $data = [];
 
-			$st = $app['db']->prepare('select data, id, priority
+			$st = $this->db->prepare('select data, id, priority
 				from eland_extra.queue
 				where topic = ?
 				order by priority desc, id asc
@@ -124,18 +125,16 @@ class queue
 				}
 
 				$data[] = $d;
-
-//				error_log('fetch queue id : ' . $row['id'] . ' priority: ' . $row['priority'] . ' data: ' . $row['data']);
 			}
 
-			$app['db']->executeQuery('delete from eland_extra.queue where id in (?)',
+			$this->db->executeQuery('delete from eland_extra.queue where id in (?)',
 				[$del_ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
-			$app['db']->commit();
+			$this->db->commit();
 		}
 		catch(Exception $e)
 		{
-			$app['db']->rollback();
+			$this->db->rollback();
 			error_log('error eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
 			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
@@ -152,18 +151,16 @@ class queue
 
 	public function count($topic = false)
 	{
-		global $app;
-
 		$topic = trim($topic);
 
 		if ($topic)
 		{
-			return $app['db']->fetchColumn('select count(*)
+			return $this->db->fetchColumn('select count(*)
 				from eland_extra.queue
 				where topic = ?', [$topic]);
 		}
 
-		return $app['db']->fetchColumn('select count(*) from eland_extra.queue');
+		return $this->db->fetchColumn('select count(*) from eland_extra.queue');
 	}
 }
 

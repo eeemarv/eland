@@ -4,12 +4,12 @@ use League\HTMLToMarkdown\HtmlConverter;
 
 function sendmail()
 {
-	global $r, $queue;
+	global $r, $app;
 
 	$text_converter = new HtmlConverter();
 	$text_converter->getConfig()->setOption('strip_tags', true);
 
-	$mail_ary = $queue->get('mail', 20);
+	$mail_ary = $app['eland.queue']->get('mail', 20);
 
 	foreach ($mail_ary as $mail)
 	{
