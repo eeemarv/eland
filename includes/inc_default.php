@@ -35,8 +35,6 @@ $app['eland.assets'] = function($app){
 
 $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js']);
 
-$typeahead_thumbprint_version = getenv('TYPEAHEAD_THUMBPRINT_VERSION') ?: ''; 
-
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
@@ -1451,20 +1449,22 @@ function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 
 function get_typeahead_thumbprint($name = 'users_active', $group_url = false)
 {
-	global $redis, $base_url, $typeahead_thumbprint_version;
+	global $redis, $base_url;
 
 	$group_url = ($group_url) ?: $base_url;
 
 	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
 
-	$thumbprint = $typeahead_thumbprint_version . $redis->get($redis_key);
+	$thumbprint = $redis->get($redis_key);
 
 	if (!$thumbprint)
 	{
 		return 'renew-' . crc32(microtime());
 	}
 
-	return $thumbprint;
+	$version = getenv('TYPEAHEAD_VERSION') ?: '';	
+
+	return $version . $thumbprint;
 }
 
 /**
