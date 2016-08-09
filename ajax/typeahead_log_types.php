@@ -21,7 +21,7 @@ while ($row = $st->fetch())
 
 $log_types = json_encode($log_types);
 
-invalidate_typeahead_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
+$app['eland.typeahead']->invalidate_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
 
 header('Content-type: application/json');
 

@@ -84,7 +84,7 @@ if ($map_edit)
 
 			$alert->success('Map naam aangepast.');
 
-			invalidate_typeahead_thumbprint('doc_map_names');
+			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
 			cancel($map_edit);
 		}
@@ -112,7 +112,7 @@ if ($map_edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" ';
-	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '" ';
+	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '" ';
 	echo 'value="' . $map_name . '">';
 	echo '</div>';
 	echo '</div>';
@@ -210,7 +210,7 @@ if ($edit)
 
 			$exdb->set('doc', $edit, $update);
 
-			invalidate_typeahead_thumbprint('doc_map_names');
+			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
 			$alert->success('Document aangepast');
 
@@ -274,7 +274,7 @@ if ($edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
+	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -322,7 +322,7 @@ if ($confirm_del && $del)
 		if (count($rows) < 2)
 		{
 			$exdb->del('doc', $doc['map_id']);
-			invalidate_typeahead_thumbprint('doc_map_names');
+			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
 			unset($doc['map_id']);
 		}
@@ -494,7 +494,7 @@ if ($submit)
 
 				$exdb->set('doc', $map_id, $map);
 
-				invalidate_typeahead_thumbprint('doc_map_names');
+				$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 			}
 
 			$doc['map_id'] = $map_id;
@@ -582,7 +582,7 @@ if ($add)
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
 	echo $map_name ?? '';
 	echo '" ';
-	echo 'data-typeahead="' . get_typeahead('doc_map_names') . '">';
+	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '">';
 	echo '</div>';
 	echo '</div>';
 

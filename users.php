@@ -527,8 +527,8 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		if ($bulk_field == 'status')
 		{
-			invalidate_typeahead_thumbprint('users_active');
-			invalidate_typeahead_thumbprint('users_extern');
+			$app['eland.typeahead']->invalidate_thumbprint('users_active');
+			$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 		}
 
 		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
@@ -1000,11 +1000,11 @@ if ($del)
 
 				if ($user['status'] == 1 || $user['status'] == 2)
 				{
-					invalidate_typeahead_thumbprint('users_active');
+					$app['eland.typeahead']->invalidate_thumbprint('users_active');
 				}
 				else if ($user['status'] == 7)
 				{
-					invalidate_typeahead_thumbprint('users_extern');
+					$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 				}
 
 				clear_interlets_groups_cache();
@@ -1443,12 +1443,12 @@ if ($add || $edit)
 
 					if ($user['status'] == 2 | $user['status'] == 1)
 					{
-						invalidate_typeahead_thumbprint('users_active');
+						$app['eland.typeahead']->invalidate_thumbprint('users_active');
 					}
 
 					if ($user['status'] == 7)
 					{
-						invalidate_typeahead_thumbprint('users_extern');
+						$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 					}
 
 					clear_interlets_groups_cache();
@@ -1573,13 +1573,13 @@ if ($add || $edit)
 							|| $user_stored['status'] == 1
 							|| $user_stored['status'] == 2)
 						{
-							invalidate_typeahead_thumbprint('users_active');
+							$app['eland.typeahead']->invalidate_thumbprint('users_active');
 						}
 
 						if ($user['status'] == 7
 							|| $user_stored['status'] == 7)
 						{
-							invalidate_typeahead_thumbprint('users_extern');
+							$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 						}
 
 						clear_interlets_groups_cache();

@@ -131,7 +131,7 @@ function fetch_interlets_typeahead_data($client, $group)
 
 	if ($data_string != $app['redis']->get($redis_data_key))
 	{
-		invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($data_string));
+		$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['url'], crc32($data_string));
 
 		$app['redis']->set($redis_data_key, $data_string);
 	}

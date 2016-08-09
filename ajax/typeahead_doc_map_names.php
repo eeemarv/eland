@@ -23,7 +23,7 @@ while ($row = $st->fetch())
 
 $map_names = json_encode($map_names);
 
-invalidate_typeahead_thumbprint('doc_map_names', false, crc32($map_names));
+$app['eland.typeahead']->invalidate_thumbprint('doc_map_names', false, crc32($map_names));
 
 header('Content-type: application/json');
 

@@ -44,7 +44,7 @@ if ($group_id == 'self')
 
 	$users = users_to_json($schema, $status_sql);
 
-	invalidate_typeahead_thumbprint('users_' . $status, false, crc32($users));
+	$app['eland.typeahead']->invalidate_thumbprint('users_' . $status, false, crc32($users));
 
 	header('Content-type: application/json');
 	echo $users;
@@ -76,7 +76,7 @@ if (isset($schemas[$group['domain']]))
 	{
 		$active_users = users_to_json($remote_schema);
 
-		invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
+		$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['url'], crc32($active_users));
 
 		header('Content-type: application/json');
 		echo $active_users;
@@ -91,7 +91,7 @@ $active_users = $app['redis']->get($group['url'] . '_typeahead_data');
 
 if ($active_users)
 {
-	invalidate_typeahead_thumbprint('users_active', $group['url'], crc32($active_users));
+	$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['url'], crc32($active_users));
 
 	header('Content-type: application/json');
 	echo $active_users;

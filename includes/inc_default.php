@@ -48,6 +48,9 @@ $script_name = str_replace('.php', '', $script_name);
 $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 $host = $_SERVER['SERVER_NAME'];
 $base_url = $app_protocol . $host;
+
+$app['eland.base_url'] = $base_url;
+
 $host_id = substr($host, 0, strpos($host, '.'));
 
 $overall_domain = getenv('OVERALL_DOMAIN');
@@ -81,6 +84,15 @@ $app['redis'] = function () {
 		echo $e->getMessage();
 		exit;
 	}
+};
+
+/**
+ * typeahead
+ */
+
+$app['eland.typeahead'] = function($app){
+
+	return new eland\typeahead($app['redis'], $app['eland.base_url'], $app['eland.rootpath']);
 };
 
 /**
@@ -202,8 +214,6 @@ if (!$schema)
 /**
  * alerts
 **/
-
-//require_once $rootpath . 'includes/alert.php';
 
 $alert = new eland\alert();
 
@@ -1435,101 +1445,6 @@ function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
 	];
 
 	$queue->set('autominlimit', $data);
-}
-
-/**
- *
- */
-
-function get_typeahead_thumbprint($name = 'users_active', $group_url = false)
-{
-	global $app, $base_url;
-
-	$group_url = ($group_url) ?: $base_url;
-
-	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
-
-	$thumbprint = $app['redis']->get($redis_key);
-
-	if (!$thumbprint)
-	{
-		return 'renew-' . crc32(microtime());
-	}
-
-	$version = getenv('TYPEAHEAD_VERSION') ?: '';	
-
-	return $version . $thumbprint;
-}
-
-/**
- *
- */
-
-function invalidate_typeahead_thumbprint(
-	$name = 'users_active',
-	$group_url = false,
-	$new_thumbprint = false,
-	$ttl = 5184000)	// 60 days;
-{
-	global $app, $base_url;
-
-	$group_url = ($group_url) ?: $base_url;
-
-	$redis_key = $group_url . '_typeahead_thumbprint_' . $name;
-
-	if ($new_thumbprint)
-	{
-		if ($new_thumbprint != $app['redis']->get($redis_key))
-		{
-			$app['redis']->set($redis_key, $new_thumbprint);
-			log_event('typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
-		}
-
-		$app['redis']->expire($redis_key, $ttl);
-	}
-	else
-	{
-		$app['redis']->del($redis_key);
-
-		log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
-	}
-}
-
-/**
- * 
- */
-function get_typeahead($name_ary, $group_url = false, $group_id = false)
-{
-	global $rootpath;
-
-	$out = '';
-
-	if (!is_array($name_ary))
-	{
-		$name_ary = [$name_ary];
-	}
-
-	foreach($name_ary as $name)
-	{
-		$out .= get_typeahead_thumbprint($name, $group_url) . '|';
-
-		if (strpos($name, 'users_') !== false)
-		{
-			$status = str_replace('users_', '', $name);
-			$out .= $rootpath . 'ajax/typeahead_users.php?status=' . $status;
-			$out .= ($group_id) ? '&group_id=' . $group_id : '';
-			$out .= '&' . http_build_query(get_session_query_param());
-		}
-		else
-		{
-			$out .= $rootpath . 'ajax/typeahead_' . $name . '.php?';
-			$out .= http_build_query(get_session_query_param());
-		}
-
-		$out .= '|';
-	}
-
-	return rtrim($out, '|');
 }
 
 /**

@@ -784,11 +784,11 @@ if ($add)
 				$typeahead = 'users_active';
 			}
 
-			$typeahead = get_typeahead($typeahead);
+			$typeahead = $app['eland.typeahead']->get($typeahead);
 		}
 		else
 		{
-			$typeahead = get_typeahead('users_active', $l['url'], $l['id']);
+			$typeahead = $app['eland.typeahead']->get('users_active', $l['url'], $l['id']);
 		}
 
 		echo 'data-typeahead="' . $typeahead . '"';
@@ -1398,7 +1398,7 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . get_typeahead($typeahead_name_ary) . '" '; 
+	echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" '; 
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 

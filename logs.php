@@ -165,7 +165,7 @@ echo 'Type</span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
-echo 'data-typeahead="' . get_typeahead('log_types') . '" '; 
+echo 'data-typeahead="' . $app['eland.typeahead']->get('log_types') . '" '; 
 echo 'name="type" id="type" placeholder="Type" ';
 echo 'value="' . $type . '">';
 echo '</div>';
@@ -180,7 +180,7 @@ echo '<span class="fa fa-user"></span></span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . get_typeahead($typeahead_users_ary) . '" '; 
+echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_users_ary) . '" '; 
 echo 'name="letscode" id="letscode" placeholder="Letscode" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
