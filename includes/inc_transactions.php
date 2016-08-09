@@ -34,7 +34,7 @@ function insert_transaction($transaction)
     global $app, $s_id, $currency, $s_master;
 
 	$transaction['creator'] = ($s_master) ? 0 : (($s_id) ? $s_id : 0);
-    $transaction['cdate'] = date('Y-m-d H:i:s');
+    $transaction['cdate'] = gmdate('Y-m-d H:i:s');
 
 	$app['db']->beginTransaction();
 
