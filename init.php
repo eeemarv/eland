@@ -169,6 +169,7 @@ else if ($step == 3)
 		else if ($f_schema != $schema)
 		{
 			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
+
 			$result = $s3->copyObject([
 				'Bucket'		=> $app['eland.s3_img'],
 				'CopySource'	=> $app['eland.s3_img'] . '/' . $filename_bucket,

@@ -438,6 +438,8 @@ if ($add)
 				cancel();
 			}
 
+			$transaction['id'] = $id;
+
 			mail_transaction($transaction);
 
 			$alert->success('De interlets transactie werd verwerkt.');
