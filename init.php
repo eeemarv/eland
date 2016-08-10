@@ -37,6 +37,8 @@ if ($step == 2 || $step == 3)
 
 if ($step == 1)
 {
+	$schemaversion = 31000;
+
 	$currentversion = $dbversion = $app['db']->fetchColumn('select value
 		from parameters
 		where parameter = \'schemaversion\'');

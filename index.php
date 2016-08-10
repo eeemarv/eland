@@ -324,13 +324,16 @@ if ($s_admin)
 		from users
 		where name = \'\'');
 //
+
+/*
 	$version = $app['db']->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 
-	$db_update = ($version == $schemaversion) ? false : true;
+	$db_update = ($version == '31000') ? false : true;
+*/
 
 //	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
 
-	if ($unvalid_mail || $empty_letscode || $empty_name || $db_update || $default_config)
+	if ($unvalid_mail || $empty_letscode || $empty_name)
 	{
 		$status_msgs = true;
 	}
@@ -566,13 +569,14 @@ if($s_admin)
 			echo '</li>';
 		}
 
+/*
 		if ($db_update)
 		{
 			echo '<li class="list-group-item">';
 			echo 'Een database update is nodig.';
 			echo '</li>';
 		}
-
+*/
 /*
 		if ($default_config)
 		{

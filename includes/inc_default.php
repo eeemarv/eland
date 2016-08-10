@@ -73,6 +73,10 @@ $app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 setlocale(LC_TIME, 'nl_NL.UTF-8');
 
+// default timezone to Europe/Brussels
+
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+
 /*
  * Connect to Redis
  */
@@ -529,12 +533,6 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 
 require_once $rootpath . 'includes/inc_eventlog.php';
 
-// default timezone to Europe/Brussels
-
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
-
-$schemaversion = 31000;  // no new versions anymore, release file is not read anymore.
-
  /**
   *
   */
@@ -542,6 +540,8 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
 $app['eland.xdb'] = function ($app){
 	return new eland\xdb($app['db']);
 };
+
+// todo: remove $access_control dep.
 
 $app['eland.xdb']->init($schema, $s_schema, $s_id, $access_control);
 
