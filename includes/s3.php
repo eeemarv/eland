@@ -2,6 +2,8 @@
 
 namespace eland;
 
+use Aws\S3\S3Client;
+
 class s3
 {
 	private $res_bucket;
@@ -65,7 +67,7 @@ class s3
 		$this->img_bucket = $img_bucket;
 		$this->doc_bucket = $doc_bucket;
 
-		$this->client = Aws\S3\S3Client::factory([
+		$this->client = S3Client::factory([
 			'signature'	=> 'v4',
 			'region'	=> 'eu-central-1',
 			'version'	=> '2006-03-01',
@@ -256,7 +258,7 @@ class s3
 
 			return $objects;
 		}
-		catch (S3Exception $e)
+		catch (Exception $e)
 		{
 			echo $e->getMessage() . "\n\r\n\r";
 		}

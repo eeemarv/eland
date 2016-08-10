@@ -22,12 +22,6 @@ require_once $rootpath . 'includes/inc_default.php';
 require_once $rootpath . 'includes/inc_saldo_mail.php';
 require_once $rootpath . 'includes/inc_mail.php';
 
-$s3 = Aws\S3\S3Client::factory([
-	'signature'	=> 'v4',
-	'region'	=> 'eu-central-1',
-	'version'	=> '2006-03-01',
-]);
-
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;
 
@@ -829,112 +823,98 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 
 	$del_count = 0;
 
-	try {
-		$objects = $s3->getIterator('ListObjects', [
-			'Bucket'	=> $app['eland.s3_img'],
-			'Marker'	=> $marker,
-		]);
+	$objects = $app['eland.s3']->img_list($marker);
 
-		//echo $r . 'Keys retrieved' . $r;
+	$reset = true;
 
-		$reset = true;
-
-		foreach ($objects as $k => $object)
-		{
-			if ($k > 4)
-			{
-				$reset = false;
-				break;
-			}
-
-			$delete = $del_str = false;
-
-			$object_time = strtotime($object['LastModified']);
-
-			$old = ($object_time < $time_treshold) ? true : false;
-
-			$str_log = $k . ' ' .  $object['Key'] . ' ' . $object['LastModified'] . ' ';
-
-			$str_log .= ($old) ? 'OLD' : 'NEW';
-
-			error_log($str_log);
-
-			if (!$old)
-			{
-				continue;
-			}
-
-			list($sch, $type, $id, $hash) = explode('_', $object['Key']);
-
-			if (ctype_digit((string) $sch))
-			{
-				error_log('-> elas import image. DELETE');
-				$delete = true;
-			} 
-
-
-			if (!$delete && !isset($hosts[$sch]))
-			{
-				error_log('-> unknown schema');
-				continue;
-			}
-
-			if (!$delete && !in_array($type, ['u', 'm']))
-			{
-				error_log('-> unknown type');
-				continue;
-			}
-
-			if (!$delete && $type == 'u' && ctype_digit((string) $id))
-			{
-				$user = $app['db']->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
-
-				if (!$user)
-				{
-					$del_str = '->User does not exist.';
-					$delete = true;
-				}
-				else if ($user['PictureFile'] != $object['Key'])
-				{
-					$del_str = '->does not match db key ' . $user['PictureFile'];
-					$delete = true;
-				}
-			}
-
-			if (!$delete && $type == 'm' && ctype_digit((string) $id))
-			{
-				$msgpict = $app['db']->fetchAssoc('select * from ' . $sch . '.msgpictures
-					where msgid = ?
-						and "PictureFile" = ?', [$id, $object['Key']]);
-
-				if (!$msgpict)
-				{
-					$del_str = '->is not present in db.';
-					$delete = true;
-				}
-			}
-
-			if (!$delete)
-			{
-				continue;
-			}
-
-			$s3->deleteObject([
-				'Bucket'	=> $app['eland.s3_img'],
-				'Key'		=> $object['Key'],
-			]);
-
-			if ($del_str)
-			{
-				log_event('cron', 'image file ' . $object['Key'] . ' deleted ' . $del_str, $sch);
-			}
-
-			$del_count++;
-		}
-	}
-	catch (S3Exception $e)
+	foreach ($objects as $k => $object)
 	{
-		echo $e->getMessage() . $r . $r;
+		if ($k > 4)
+		{
+			$reset = false;
+			break;
+		}
+
+		$delete = $del_str = false;
+
+		$object_time = strtotime($object['LastModified']);
+
+		$old = ($object_time < $time_treshold) ? true : false;
+
+		$str_log = $k . ' ' .  $object['Key'] . ' ' . $object['LastModified'] . ' ';
+
+		$str_log .= ($old) ? 'OLD' : 'NEW';
+
+		error_log($str_log);
+
+		if (!$old)
+		{
+			continue;
+		}
+
+		list($sch, $type, $id, $hash) = explode('_', $object['Key']);
+
+		if (ctype_digit((string) $sch))
+		{
+			error_log('-> elas import image. DELETE');
+			$delete = true;
+		} 
+
+
+		if (!$delete && !isset($hosts[$sch]))
+		{
+			error_log('-> unknown schema');
+			continue;
+		}
+
+		if (!$delete && !in_array($type, ['u', 'm']))
+		{
+			error_log('-> unknown type');
+			continue;
+		}
+
+		if (!$delete && $type == 'u' && ctype_digit((string) $id))
+		{
+			$user = $app['db']->fetchAssoc('select id, "PictureFile" from ' . $sch . '.users where id = ?', [$id]);
+
+			if (!$user)
+			{
+				$del_str = '->User does not exist.';
+				$delete = true;
+			}
+			else if ($user['PictureFile'] != $object['Key'])
+			{
+				$del_str = '->does not match db key ' . $user['PictureFile'];
+				$delete = true;
+			}
+		}
+
+		if (!$delete && $type == 'm' && ctype_digit((string) $id))
+		{
+			$msgpict = $app['db']->fetchAssoc('select * from ' . $sch . '.msgpictures
+				where msgid = ?
+					and "PictureFile" = ?', [$id, $object['Key']]);
+
+			if (!$msgpict)
+			{
+				$del_str = '->is not present in db.';
+				$delete = true;
+			}
+		}
+
+		if (!$delete)
+		{
+			continue;
+		}
+
+		$app['eland.s3']->img_delete($object['Key']);
+
+		if ($del_str)
+		{
+			log_event('cron', 'image file ' . $object['Key'] . ' deleted ' . $del_str, $sch);
+		}
+
+		$del_count++;
 	}
 
 	$app['redis']->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);

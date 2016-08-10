@@ -16,15 +16,6 @@ $add = isset($_GET['add']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
-if ($post)
-{
-	$s3 = Aws\S3\S3Client::factory([
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	]);
-}
-
 if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
 {
 	$alert->error('Je hebt onvoldoende rechten voor deze actie.');
@@ -310,10 +301,12 @@ if ($confirm_del && $del)
 
 	if ($doc)
 	{
-		$s3->deleteObject([
-			'Bucket'	=> $app['eland.s3_doc'],
-			'Key'		=> $doc['filename'],
-		]);
+		$err = $app['eland.s3']->doc_del($doc['filename']);
+
+		if ($err)
+		{
+			event_log('doc', 'doc delete file fail: ' . $err);
+		}
 
 		$rows = $exdb->get_many(['agg_schema' => $schema,
 			'agg_type'	=> 'doc',
@@ -322,6 +315,7 @@ if ($confirm_del && $del)
 		if (count($rows) < 2)
 		{
 			$exdb->del('doc', $doc['map_id']);
+
 			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
 			unset($doc['map_id']);
@@ -386,52 +380,6 @@ if ($submit)
 	$file = $_FILES['file']['name'];
 	$file_size = $_FILES['file']['size'];
 	$type = $_FILES['file']['type'];
-	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-
-	$finfo = finfo_open(FILEINFO_MIME_TYPE);
-	$file_type = finfo_file($finfo, $tmpfile);
-	finfo_close($finfo);
-
-	$extension_types = [
-		'docx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-		'docm'		=> 'application/vnd.ms-word.document.macroEnabled.12',
-		'dotx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-		'dotm'		=> 'application/vnd.ms-word.template.macroEnabled.12',
-		'xlsx'		=> 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-		'xlsm'		=> 'application/vnd.ms-excel.sheet.macroEnabled.12',
-		'xltx'		=> 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
-		'xltm'		=> 'application/vnd.ms-excel.template.macroEnabled.12',
-		'xlsb'		=> 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-		'xlam'		=> 'application/vnd.ms-excel.addin.macroEnabled.12',
-		'pptx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-		'pptm'		=> 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-		'ppsx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-		'ppsm'		=> 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
-		'potx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.template',
-		'potm'		=> 'application/vnd.ms-powerpoint.template.macroEnabled.12',
-		'ppam'		=> 'application/vnd.ms-powerpoint.addin.macroEnabled.12',
-		'sldx'		=> 'application/vnd.openxmlformats-officedocument.presentationml.slide',
-		'sldm'		=> 'application/vnd.ms-powerpoint.slide.macroEnabled.12',
-		'one'		=> 'application/msonenote',
-		'onetoc2'	=> 'application/msonenote',
-		'onetmp'	=> 'application/msonenote',
-		'onepkg'	=> 'application/msonenote',
-		'thmx'		=> 'application/vnd.ms-officetheme',
-		'doc'		=> 'application/msword',
-		'dot'		=> 'application/msword',
-		'xls'		=> 'application/vnd.ms-excel',
-		'xlt'		=> 'application/vnd.ms-excel',
-		'xla'		=> 'application/vnd.ms-excel',
-		'ppt' 		=> 'application/vnd.ms-powerpoint',
-		'pot'		=> 'application/vnd.ms-powerpoint',
-		'pps'		=> 'application/vnd.ms-powerpoint',
-		'ppa'		=> 'application/vnd.ms-powerpoint',
-		'css'		=> 'text/css',
-		'html'		=> 'text/html',
-		'md'		=> 'text/markdown',
-	];
-
-	$media_type = $extension_types[$ext] ?? $file_type;
 
 	if ($file_size > 1024 * 1024 * 10)
 	{
@@ -465,62 +413,64 @@ if ($submit)
 
 		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
 
-		$doc = [
-			'filename'		=> $filename,
-			'org_filename'	=> $file,
-			'access'		=> $_POST['access'],
-			'user_id'		=> ($s_master) ? 0 : $s_id,
-		];
+		$error = $app['eland.s3']->doc_upload($filename, $tmpfile);
 
-		$map_name = trim($_POST['map_name']);
-
-		if (strlen($map_name))
+		if ($error)
 		{
-			$rows = $exdb->get_many(['agg_schema' => $schema,
-				'agg_type' => 'doc',
-				'data->>\'map_name\'' => $map_name], 'limit 1');
+			event_log('doc', 'upload fail: ' . $error);
+			$alert->error('Bestand opladen mislukt.');
+		}
+		else
+		{
+			$doc = [
+				'filename'		=> $filename,
+				'org_filename'	=> $file,
+				'access'		=> $_POST['access'],
+				'user_id'		=> ($s_master) ? 0 : $s_id,
+			];
 
-			if (count($rows))
+			$map_name = trim($_POST['map_name']);
+
+			if (strlen($map_name))
 			{
-				$map = reset($rows)['data'];
-				$map_id = reset($rows)['eland_id'];
+				$rows = $exdb->get_many(['agg_schema' => $schema,
+					'agg_type' => 'doc',
+					'data->>\'map_name\'' => $map_name], 'limit 1');
+
+				if (count($rows))
+				{
+					$map = reset($rows)['data'];
+					$map_id = reset($rows)['eland_id'];
+				}
+
+				if (!$map)
+				{
+					$map_id = substr(sha1(time() . mt_rand(0, 220000)), 0, 24);
+
+					$map = ['map_name' => $map_name];
+
+					$exdb->set('doc', $map_id, $map);
+
+					$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+				}
+
+				$doc['map_id'] = $map_id;
 			}
 
-			if (!$map)
+			$name = trim($_POST['name']);
+
+			if ($name)
 			{
-				$map_id = substr(sha1(time() . mt_rand(0, 220000)), 0, 24);
-
-				$map = ['map_name' => $map_name];
-
-				$exdb->set('doc', $map_id, $map);
-
-				$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+				$doc['name'] = $name;
 			}
 
-			$doc['map_id'] = $map_id;
+			$exdb->set('doc', $doc_id, $doc);
+
+
+			$alert->success('Het bestand is opgeladen.');
+
+			cancel($doc['map_id']);
 		}
-
-		$name = trim($_POST['name']);
-
-		if ($name)
-		{
-			$doc['name'] = $name;
-		}
-
-		$exdb->set('doc', $doc_id, $doc);
-
-		$params = [
-			'CacheControl'			=> 'public, max-age=31536000',
-			'ContentType'			=> $media_type,
-		];
-
-		$upload = $s3->upload($app['eland.s3_doc'], $filename, fopen($tmpfile, 'rb'), 'public-read', [
-			'params'	=> $params
-		]);
-
-		$alert->success('Het bestand is opgeladen.');
-
-		cancel($doc['map_id']);
 	}
 }
 

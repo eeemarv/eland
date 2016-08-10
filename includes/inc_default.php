@@ -36,6 +36,10 @@ $app['eland.s3_res_url'] = '//' . $app['eland.s3_res'] . '/';
 $app['eland.s3_img_url'] = '//' . $app['eland.s3_img'] . '/';
 $app['eland.s3_doc_url'] = '//' . $app['eland.s3_doc'] . '/';
 
+$app['eland.s3'] = function($app){
+	return new eland\s3($app['eland.s3_res'], $app['eland.s3_img'], $app['eland.s3_doc']);
+};
+
 $app['eland.assets'] = function($app){
 	return new eland\assets($app['eland.s3_res_url'], $app['eland.rootpath']);
 };

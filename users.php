@@ -193,19 +193,6 @@ if ($user_mail_submit && $id && $post)
 }
 
 /*
- *
- */
-
-if ($post)
-{
-	$s3 = Aws\S3\S3Client::factory([
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	]);
-}
-
-/*
  * upload image
  */
 
@@ -280,18 +267,19 @@ if ($post && $img && $id )
 
 	//
 
-	try {
+	$filename = $schema . '_u_' . $id . '_';
+	$filename .= sha1($filename . microtime()) . '.jpg';
 
-		$filename = $schema . '_u_' . $id . '_';
-		$filename .= sha1($filename . microtime()) . '.jpg';
+	$err = $app['eland.s3']->img_upload($filename, $tmpfile);
 
-		$upload = $s3->upload($app['eland.s3_img'], $filename, fopen($tmpfile, 'rb'), 'public-read', [
-			'params'	=> [
-				'CacheControl'	=> 'public, max-age=31536000',
-				'ContentType'	=> 'image/jpeg',
-			],
-		]);
+	if ($err)
+	{
+		log_event('pict', $err . ' -- ' . $filename);
 
+		$response = ['error' => 'Afbeelding opladen mislukt.'];
+	}
+	else
+	{
 		$app['db']->update('users', [
 			'"PictureFile"'	=> $filename
 		],['id' => $id]);
@@ -300,14 +288,10 @@ if ($post && $img && $id )
 
 		readuser($id, true);
 
-		unlink($tmp_name);
+		$response = ['success' => 1, 'filename' => $filename];
 	}
-	catch(Exception $e)
-	{
-		echo json_encode(['error' => $e->getMessage()]);
-		log_event('pict', 'Upload fail : ' . $e->getMessage());
-		exit;
-	}
+
+	unlink($tmp_name);
 
 	header('Pragma: no-cache');
 	header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -317,7 +301,7 @@ if ($post && $img && $id )
 
 	header('Vary: Accept');
 
-	echo json_encode(['success' => 1, 'filename' => $filename]);
+	echo json_encode($response);
 	exit;
 }
 

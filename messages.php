@@ -240,15 +240,6 @@ if ($id && $extend)
 	cancel($id);
 }
 
-if ($post)
-{
-	$s3 = Aws\S3\S3Client::factory([
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	]);
-}
-
 /**
  * post images
  */
@@ -364,19 +355,20 @@ if ($post && $img && $images && !$s_guest)
 			$id++;
 		}
 
-		try {
-			$filename = $schema . '_m_' . $id . '_';
-			$filename .= sha1($filename . microtime()) . '.jpg';
+		$filename = $schema . '_m_' . $id . '_';
+		$filename .= sha1($filename . microtime()) . '.jpg';
 
-			$upload = $s3->upload($app['eland.s3_img'], $filename, fopen($tmpfile2, 'rb'), 'public-read', [
-				'params'	=> [
-					'CacheControl'	=> 'public, max-age=31536000',
-					'ContentType'	=> 'image/jpeg',
-				],
-			]);
+		$err = $app['eland.s3']->img_upload($filename, $tmpfile2);
 
-			$ret = ['filename' => $filename];
+		if ($err)
+		{
+			log_event('pict', 'Upload fail : ' . $err);
 
+			$ret_ary = [['error' => 'Opladen mislukt.']];
+			break;
+		}
+		else
+		{
 			if ($insert_img)
 			{
 				$app['db']->insert('msgpictures', [
@@ -392,14 +384,7 @@ if ($post && $img && $images && !$s_guest)
 
 			unlink($tmpfile);
 
-			$ret_ary[] = $ret;
-		}
-		catch(Exception $e)
-		{
-			echo $e->getMessage();
-			log_event('pict', 'Upload fail : ' . $e->getMessage());
-
-			$ret_ary = [['error' => 'Opladen mislukt.']];
+			$ret_ary[] = ['filename' => $filename];
 		}
 	}
 
@@ -907,16 +892,13 @@ if (($edit || $add))
 						$new_filename = $schema . '_m_' . $id . '_';
 						$new_filename .= sha1($filename . microtime()) . '.jpg';
 
-						$result = $s3->copyObject([
-							'Bucket'		=> $app['eland.s3_img'],
-							'CopySource'	=> $app['eland.s3_img'] . '/' . $img,
-							'Key'			=> $new_filename,
-							'ACL'			=> 'public-read',
-							'CacheControl'	=> 'public, max-age=31536000',
-							'ContentType'	=> 'image/jpeg',
-						]);
+						$err = $app['eland.s3']->img_copy($filename, $new_filename);
 
-						if ($result)
+						if (isset($err))
+						{
+							log_event('pict', 'message-picture renaming and storing in db ' . $img . ' not succeeded.');
+						}
+						else
 						{
 							log_event('pict', 'renamed ' . $img . ' to ' . $new_filename);
 
@@ -932,14 +914,11 @@ if (($edit || $add))
 								log_event('pict', 'error: message-picture ' . $new_filename . ' not inserted in db.');
 							}
 						}
-						else
-						{
-							log_event('pict', 'message-picture renaming and storing in db ' . $img . ' not succeeded.');
-						}
 					}
 				}
 
 				$alert->success('Nieuw vraag of aanbod toegevoegd.');
+
 				cancel($id);
 			}
 			else

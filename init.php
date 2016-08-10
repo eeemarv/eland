@@ -28,13 +28,6 @@ echo "schema: " . $schema . ' systemtag: ' . $systemtag . $r;
 
 if ($step == 2 || $step == 3)
 {
-	// sync the image files  
-	$s3 = Aws\S3\S3Client::factory([
-		'signature'	=> 'v4',
-		'region'	=> 'eu-central-1',
-		'version'	=> '2006-03-01',
-	]);
-
 	echo 'Sync the image files.' . $r;
 
 	$possible_extensions = ['jpg', 'jpeg', 'JPG', 'JPEG'];
@@ -95,7 +88,7 @@ else if ($step == 2)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
+			if($app['eland.s3']->img_exists($filename_bucket))
 			{
 				$found = true;
 				break;
@@ -112,21 +105,18 @@ else if ($step == 2)
 		{
 			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 
-			$result = $s3->copyObject([
-				'Bucket'		=> $app['eland.s3_img'],
-				'CopySource'	=> $app['eland.s3_img'] . '/' . $filename_bucket,
-				'Key'			=> $new_filename,
-				'ACL'			=> 'public-read',
-				'CacheControl'	=> 'public, max-age=31536000',
-				'ContentType'	=> 'image/jpeg',
-			]);
+			$err = $app['eland.s3']->img_copy($filename_bucket, $new_filename);
 
-			if ($result) // && $result instanceof \Guzzle\Service\Resource\Model)
+			if ($err)
 			{
-				$app['db']->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
-				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-				log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+				echo 'error: ' . $err . $r . $r;
+				log_event('init', 'copy img error: ' . $err);
+				continue;
 			}
+
+			$app['db']->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
+			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+			log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 		}
 	}
 
@@ -154,7 +144,7 @@ else if ($step == 3)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if ($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
+			if ($app['eland.s3']->img_exists($filename_bucket))
 			{
 				$found = true;
 				break;
@@ -171,21 +161,19 @@ else if ($step == 3)
 		{
 			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
 
-			$result = $s3->copyObject([
-				'Bucket'		=> $app['eland.s3_img'],
-				'CopySource'	=> $app['eland.s3_img'] . '/' . $filename_bucket,
-				'Key'			=> $new_filename,
-				'ACL'			=> 'public-read',
-				'CacheControl'	=> 'public, max-age=31536000',
-				'ContentType'	=> 'image/jpeg',
-			]);
+			$err = $app['eland.s3']->img_copy($filename_bucket, $new_filename);
 
-			if ($result) //&& $result instanceof \Guzzle\Service\Resource\Model)
+			if ($err)
 			{
-				$app['db']->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
-				echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-				log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+				echo 'error: ' . $err . $r . $r;
+				log_event('init', 'copy img error: ' . $err);
+				continue;
 			}
+
+			$app['db']->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
+			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+			log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+
 		}
 	}
 
