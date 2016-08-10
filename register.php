@@ -162,7 +162,7 @@ if ($token)
 
 			try
 			{
-				$template = $twig->createTemplate($registration_success_mail);
+				$template = $app['twig']->createTemplate($registration_success_mail);
 				$html = $template->render($map_template_vars);
 			}
 			catch (Exception $e)

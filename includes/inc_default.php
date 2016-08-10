@@ -11,11 +11,15 @@ $app->register(new Silex\Provider\MonologServiceProvider(), [
     'monolog.level' 	=> constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
 ]);
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options' => array(
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    'db.options' => [
         'url'   => getenv('DATABASE_URL'),
-    ),
-));
+    ],
+]);
+
+$app->register(new Silex\Provider\TwigServiceProvider(), [
+	'twig.path' => __DIR__.'/../views',
+]);
 
 if(!isset($rootpath))
 {
@@ -211,7 +215,7 @@ $schema = $schemas[$host];
 if (!$schema)
 {
 	http_response_code(404);
-	include $rootpath. 'tpl/404.html';
+	include $rootpath. 'views/404.html';
 	exit;
 }
 
@@ -420,7 +424,7 @@ else
 if (!isset($page_access))
 {
 	http_response_code(500);
-	include $rootpath . 'tpl/500.html';
+	include $rootpath . 'views/500.html';
 	exit;
 }
 
@@ -515,7 +519,7 @@ if ($page_access != 'anonymous'
 
 if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 {
-	include $rootpath . 'tpl/maintenance.html';
+	include $rootpath . 'views/maintenance.html';
 	exit;
 }
 
@@ -550,15 +554,6 @@ $date_format = new eland\date_format();
 $app['eland.queue'] = function($app){
 	return new eland\queue($app['db']);
 };
-
-/**
- * Twig
- */
-
-$twig_loader = new Twig_Loader_Array([]);
-
-$twig = new Twig_Environment($twig_loader);
-
 
 /* some more vars */
 

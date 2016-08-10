@@ -608,7 +608,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		try
 		{
-			$template = $twig->createTemplate($bulk_mail_content);
+			$template = $app['twig']->createTemplate($bulk_mail_content);
 			$html = $template->render($template_vars);
 		}
 		catch (Exception $e)
