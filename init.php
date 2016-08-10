@@ -2,7 +2,7 @@
 
 $r = "\r\n";
 
-$step = ($_GET['step']) ?: 1;
+$step = $_GET['step']) ?? 1;
 
 $php_sapi_name = php_sapi_name();
 
@@ -88,7 +88,7 @@ else if ($step == 2)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if($app['eland.s3']->img_exists($filename_bucket))
+			if ($app['eland.s3']->img_exists($filename_bucket))
 			{
 				$found = true;
 				break;
@@ -128,7 +128,7 @@ else if ($step == 3)
 
 	$message_images = $app['db']->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
 
-	foreach($message_images as $image)
+	foreach ($message_images as $image)
 	{
 		$filename = $image['PictureFile'];
 		$msg_id = $image['msgid'];
