@@ -1320,7 +1320,7 @@ if (($edit || $add))
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	generate_form_token();
 
-	if (count($uploaded_images))
+	if (isset($uploaded_images) && count($uploaded_images))
 	{
 		foreach ($uploaded_images as $img)
 		{
@@ -1328,7 +1328,7 @@ if (($edit || $add))
 		}
 	}
 
-	if (count($deleted_images))
+	if (isset($deleted_images) && count($deleted_images))
 	{
 		foreach ($deleted_images as $img)
 		{
