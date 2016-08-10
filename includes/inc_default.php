@@ -562,8 +562,6 @@ $twig = new Twig_Environment($twig_loader);
 
 /* some more vars */
 
-$systemtag = readconfigfromdb('systemtag');
-$currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view (global for all groups) */
@@ -623,8 +621,8 @@ if (!$s_anonymous)
 if (isset($_GET['welcome']) && $s_guest)
 {
 	$msg = '<strong>Welkom bij ' . readconfigfromdb('systemname') . '</strong><br>';
-	$msg .= 'Waardering bij ' . readconfigfromdb('systemname') . ' gebeurt met \'' . $currency . '\'. ';
-	$msg .= readconfigfromdb('currencyratio') . ' ' . $currency;
+	$msg .= 'Waardering bij ' . readconfigfromdb('systemname') . ' gebeurt met \'' . readconfigfromdb('currency') . '\'. ';
+	$msg .= readconfigfromdb('currencyratio') . ' ' . readconfigfromdb('currency');
 	$msg .= ' stemt overeen met 1 LETS uur.<br>';
 
 	if ($s_elas_guest)
@@ -1178,9 +1176,7 @@ function mail_q($mail = [], $priority = false)
 		}
 	}
 
-	$systemtag = readconfigfromdb('systemtag', $mail['schema']);
-
-	$mail['subject'] = '[' . $systemtag . '] ' . $mail['subject'];
+	$mail['subject'] = '[' . readconfigfromdb('systemtag', $mail['schema']) . '] ' . $mail['subject'];
 
 	$error = $app['eland.queue']->set('mail', $mail, ($priority) ? 10 : 0);
 

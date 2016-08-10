@@ -134,7 +134,7 @@ if ($token)
 
 		$subject = 'nieuwe inschrijving: ' . $user['fullname'];
 
-		$text = '*** Dit is een automatische mail van ' . $systemtag . " *** \n\n";
+		$text = '*** Dit is een automatische mail van ' . readconfigfromdb('systemname') . " *** \n\n";
 		$text .= "De volgende persoon schreef zich in via de website: \n\n";
 		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
 		$text .= 'Postcode: ' . $user['postcode'] . "\n";

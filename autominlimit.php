@@ -137,7 +137,7 @@ echo '</div>';
 echo '<hr>';
 
 echo '<h3>Begrenzing</h3>';
-echo '<p>Grens van de automatische minimum limiet (in ' . $currency . ').</p>';
+echo '<p>Grens van de automatische minimum limiet (in ' . readconfigfromdb('currency') . ').</p>';
 
 echo '<div class="form-group">';
 echo '<label for="max" class="col-sm-3 control-label">';
@@ -166,7 +166,7 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="account_base" class="col-sm-3 control-label">';
-echo 'Enkel wanneer account is boven bedrag (' . $currency . ')</label>';
+echo 'Enkel wanneer account is boven bedrag (' . readconfigfromdb('currency') . ')</label>';
 echo '<div class="col-sm-9">';
 echo '<input type="number" id="account_base" name="account_base" ';
 echo 'value="' . $a['account_base'] . '" ';

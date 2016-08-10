@@ -2,11 +2,12 @@
 
 function saldo()
 {
-	global $app, $base_url, $systemtag, $currency;
+	global $app, $base_url;
 
 // vars
 
 	$r = "\r\n";
+	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 	
 	$msg_url = $base_url . '/messages.php?id=';

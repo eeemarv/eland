@@ -70,11 +70,9 @@ else
 	exit;
 }
 
-$systemtag = readconfigfromdb('systemtag');
-$currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . $systemtag ."] ***" . $r;
+echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
 $base_url = $app_protocol . $hosts[$schema];
 
@@ -473,7 +471,7 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), re
 
 function admin_exp_msg()
 {
-	global $app, $now, $r, $base_url, $systemtag;
+	global $app, $now, $r, $base_url;
 
 	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
@@ -512,7 +510,7 @@ run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {
-	global $app, $now, $base_url, $systemtag;
+	global $app, $now, $base_url;
 
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');

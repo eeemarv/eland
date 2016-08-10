@@ -585,7 +585,7 @@ if ($mail && $post && $id)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . readconfigfromdb('systemname');
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
@@ -772,7 +772,7 @@ if (($edit || $add))
 
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
-			$errors[] = 'De (richt)prijs in ' . $currency . ' moet nul of een positief getal zijn.';
+			$errors[] = 'De (richt)prijs in ' . readconfigfromdb('currency') . ' moet nul of een positief getal zijn.';
 		}
 
 		if (!$msg['id_category'])
@@ -1221,7 +1221,7 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $currency . '</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . readconfigfromdb('currency') . '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
 	echo 'value="' . $msg['amount'] . '">';
@@ -1539,14 +1539,14 @@ if ($id)
 	echo '</dt>';
 	echo '<dd>';
 	$units = ($message['units']) ? ' per ' . $message['units'] : '';
-	echo (empty($message['amount'])) ? 'niet opgegeven.' : $message['amount'] . ' ' . $currency . $units;
+	echo (empty($message['amount'])) ? 'niet opgegeven.' : $message['amount'] . ' ' . readconfigfromdb('currency') . $units;
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
 	echo '</dt>';
 	echo '<dd>';
 	echo link_user($user);
-	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .$currency . ')';
+	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .readconfigfromdb('currency') . ')';
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';

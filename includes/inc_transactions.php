@@ -31,7 +31,7 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $app, $s_id, $currency, $s_master;
+    global $app, $s_id, $s_master;
 
 	$transaction['creator'] = ($s_master) ? 0 : (($s_id) ? $s_id : 0);
     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
@@ -60,7 +60,7 @@ function insert_transaction($transaction)
 	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	log_event('trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
-		$transaction['amount'] . ' ' . $currency . ' from user ' .
+		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .
 		link_user($transaction['id_to'], false, false, true));
 
@@ -72,14 +72,12 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
-	global $systemtag, $currency;
-
 	$r = "\r\n";
 	$t = "\t";
 
 	$to = getmailadr($transaction['id_to']);
 
-	$subject .= '[' . $systemtag . '] Interlets transactie';
+	$subject .= 'Interlets transactie';
 
 	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
 
@@ -97,8 +95,8 @@ function mail_mail_interlets_transaction($transaction)
 	$currencyratio = readconfigfromdb('currencyratio');
 	$meta = round($transaction['amount'] / $currencyratio, 4);
 
-	$text .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . $currency . ', ofwel ';
-	$text .= $meta . ' LETS uren* (' . $currencyratio . ' ' . $currency . ' = 1 uur)' . $r . $r;
+	$text .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . readconfigfromdb('currency') . ', ofwel ';
+	$text .= $meta . ' LETS uren* (' . $currencyratio . ' ' . readconfigfromdb('currency') . ' = 1 uur)' . $r . $r;
 	$text .= 'Transactie id: ' . $t . $transaction['transid'] . $r . $r;
 
 	$text .= 'Je moet deze in je eigen systeem verder verwerken.' . $r;
@@ -187,8 +185,6 @@ function mail_transaction($transaction, $remote_schema = null)
 
 function mail_failed_interlets($transid, $id_from, $amount, $description, $letscode_to, $result)
 {
-	global $systemtag, $currency;
-
 	$r = "\r\n";
 	$t = "\t";
 
@@ -230,7 +226,7 @@ function mail_failed_interlets($transid, $id_from, $amount, $description, $letsc
 
 	$text .= 'Letscode: ' . $t . $letscode_to . $r;
 	$text .= 'Voor: ' . $t . $description . $r;
-	$text .= 'Aantal: ' . $t . $amount . $currency . $r . $r;
+	$text .= 'Aantal: ' . $t . $amount . readconfigfromdb('currency') . $r . $r;
 	$text .= 'Transactie id:' . $t . $transid . $r . $r . '--';;
 
 	mail_q(['to' => $to, 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);

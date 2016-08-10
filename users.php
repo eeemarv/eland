@@ -2241,19 +2241,19 @@ if ($id)
 	echo '<dt>Saldo</dt>';
 	echo '<dd>';
 	echo '<span class="label label-info">' . $user['saldo'] . '</span>&nbsp;';
-	echo $currency;
+	echo readconfigfromdb('currency');
 	echo '</dd>';
 
 	echo '<dt>Minimum limiet</dt>';
 	echo '<dd>';
 	echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
-	echo $currency;
+	echo readconfigfromdb('currency');
 	echo '</dd>';
 
 	echo '<dt>Maximum limiet</dt>';
 	echo '<dd>';
 	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
-	echo $currency;
+	echo readconfigfromdb('currency');
 	echo '</dd>';
 
 	if ($s_admin || $s_owner)
@@ -2335,7 +2335,7 @@ if ($id)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
-	echo $currency . '</h3>';
+	echo readconfigfromdb('currency') . '</h3>';
 	echo '</div></div>';
 
 	echo '<div class="row print-hide">';
@@ -2529,9 +2529,9 @@ if ($v_list && $s_admin)
 		'trans_in'		=> 'Transacties in',
 		'trans_out'		=> 'Transacties uit',
 		'trans_total'	=> 'Transacties totaal',
-		'amount_in'		=> $currency . ' in',
-		'amount_out'	=> $currency . ' uit',
-		'amount_total'	=> $currency . ' totaal',
+		'amount_in'		=> readconfigfromdb('currency') . ' in',
+		'amount_out'	=> readconfigfromdb('currency') . ' uit',
+		'amount_total'	=> readconfigfromdb('currency') . ' totaal',
 	];
 
 	$users = $app['db']->fetchAll('select u.*
@@ -3253,7 +3253,7 @@ if ($v_list)
 	echo '</div></div>';
 
 	echo '<div class="row"><div class="col-md-12">';
-	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $currency . '</span></p>';
+	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . readconfigfromdb('currency') . '</span></p>';
 	echo '</div></div>';
 
 /*
@@ -3573,12 +3573,10 @@ function dd_render($str)
 
 function sendadminmail($user)
 {
-	global $systemtag;
-
 	$subject .= 'Account activatie';
 
 	$text  = "*** Dit is een automatische mail van ";
-	$text .= $systemtag;
+	$text .= readconfigfromdb('systemtag');
 	$text .= " ***\r\n\n";
 	$text .= "De account " . link_user($user, false, false) ;
 	$text .= " werd geactiveerd met een nieuw paswoord.\n";
@@ -3600,7 +3598,7 @@ function sendadminmail($user)
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $alert, $systemtag;
+	global $base_url, $alert;
 
 	if (empty($user['mail']))
 	{

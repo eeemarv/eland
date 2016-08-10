@@ -258,7 +258,7 @@ if ($submit)
 
 				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
 				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
-				$alert_success .= '  met bedrag ' . $amo .' ' . $currency . ' uitgevoerd.<br>';
+				$alert_success .= '  met bedrag ' . $amo .' ' . readconfigfromdb('currency') . ' uitgevoerd.<br>';
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
@@ -328,10 +328,10 @@ if ($submit)
 			$app['redis']->del($schema . '_user_' . $t['id_from']);
 		}
 
-		$alert_success .= 'Totaal: ' . $total . ' ' . $currency;
+		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');
 		$alert->success($alert_success);
 
-		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . $currency . ')'; 
+		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')'; 
 		$log_many = rtrim($log_many, ', ');
 		$log_str = 'Mass transaction from ';
 		$log_str .= ($to_one) ? $log_many : $log_one;
@@ -579,7 +579,7 @@ echo '</table>';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $currency . '</label>';
+echo '<label for="total" class="col-sm-2 control-label">Totaal ' . readconfigfromdb('currency') . '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
@@ -647,7 +647,7 @@ include $rootpath . 'includes/inc_footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $alert, $s_id, $base_url, $systemtag, $currency;
+	global $app, $alert, $s_id, $base_url;
 
 	if (!readconfigfromdb('mailenabled'))
 	{

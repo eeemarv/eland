@@ -182,13 +182,13 @@ if ($add)
 
 			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
-				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $currency . ' uitgeven.';
+				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . readconfigfromdb('currency') . ' uitgeven.';
 			}
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
 				$dest = ($group_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
-				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $currency . ' ontvangen.';
+				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . readconfigfromdb('currency') . ' ontvangen.';
 			}
 		}
 
@@ -534,12 +534,12 @@ if ($add)
 
 			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
 			{
-				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $currency . ').';
+				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . readconfigfromdb('currency') . ').';
 			}
 
 			if (($to_remote_user['status'] == 2) && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq))
 			{
-				$errors[] = 'De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $currency . ').';
+				$errors[] = 'De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . readconfigfromdb('currency') . ').';
 			}
 
 			if (count($errors))
@@ -736,7 +736,7 @@ if ($add)
 	if (!$s_master)
 	{
 		echo '<div>';
-		echo '<p><strong>' . link_user($session_user) . ' huidige ' . $currency . ' stand: ';
+		echo '<p><strong>' . link_user($session_user) . ' huidige ' . readconfigfromdb('currency') . ' stand: ';
 		echo '<span class="label label-info">' . $balance . '</span></strong> ';
 		echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
 		echo '</div>';
@@ -812,7 +812,7 @@ if ($add)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $currency . '</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . readconfigfromdb('currency') . '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
 	echo 'value="' . $transaction['amount'] . '" required>';
@@ -843,7 +843,7 @@ if ($add)
 
 	echo '<li>';
 	echo readconfigfromdb('currencyratio');
-	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 
 	echo '</i></small></ul>';
 
@@ -1025,7 +1025,7 @@ if ($id)
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
-	echo $transaction['amount'] . ' ' . $currency;
+	echo $transaction['amount'] . ' ' . readconfigfromdb('currency');
 	echo '</dd>';
 
 	echo '<br>';
@@ -1042,7 +1042,7 @@ if ($id)
 	echo '<ul><small><i>';
 
 	echo '<li>' . readconfigfromdb('currencyratio');
-	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 	echo '</i></small></ul>';
 
 	include $rootpath . 'includes/inc_footer.php';
@@ -1237,7 +1237,7 @@ $tableheader_ary = [
 	'description' => array_merge($asc_preset_ary, [
 		'lbl' => 'Omschrijving']),
 	'amount' => array_merge($asc_preset_ary, [
-		'lbl' => $currency]),
+		'lbl' => readconfigfromdb('currency')]),
 	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'])
@@ -1734,7 +1734,7 @@ else
 	echo '<ul><small><i>';
 
 	echo '<li>' . readconfigfromdb('currencyratio');
-	echo ' ' . $currency . ' staat gelijk aan 1 LETS-uur.</li>';
+	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 
 	echo '</i></small></ul>';
 
