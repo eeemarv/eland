@@ -308,24 +308,27 @@ if ($confirm_del && $del)
 			event_log('doc', 'doc delete file fail: ' . $err);
 		}
 
-		$rows = $exdb->get_many(['agg_schema' => $schema,
-			'agg_type'	=> 'doc',
-			'data->>\'map_id\'' => $doc['map_id']]);
-
-		if (count($rows) < 2)
+		if (isset($doc['map_id']))
 		{
-			$exdb->del('doc', $doc['map_id']);
+			$rows = $exdb->get_many(['agg_schema' => $schema,
+				'agg_type'	=> 'doc',
+				'data->>\'map_id\'' => $doc['map_id']]);
 
-			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+			if (count($rows) < 2)
+			{
+				$exdb->del('doc', $doc['map_id']);
 
-			unset($doc['map_id']);
+				$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+
+				unset($doc['map_id']);
+			}
 		}
 
 		$exdb->del('doc', $del);
 
 		$alert->success('Het document werd verwijderd.');
 
-		cancel($doc['map_id']);
+		cancel($doc['map_id'] ?? false);
 	}
 
 	$alert->error('Document niet gevonden.');
@@ -352,7 +355,7 @@ if ($del)
 
 		echo '<p>';
 		echo '<a href="' . $app['eland.s3_doc_url'] . $doc['filename'] . '" target="_self">';
-		echo ($doc['name']) ?: $doc['org_filename'];
+		echo $doc['name'] ?? $doc['org_filename'];
 		echo '</a>';
 		echo '</p>';
 
@@ -381,7 +384,7 @@ if ($submit)
 	$file_size = $_FILES['file']['size'];
 	$type = $_FILES['file']['type'];
 
-	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
 	if ($file_size > 1024 * 1024 * 10)
 	{
