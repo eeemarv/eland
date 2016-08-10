@@ -312,27 +312,24 @@ if ($post && $img && $images && !$s_guest)
 
 		$image = $imagine->open($tmpfile);
 
-		if (isset($exif['COMPUTED']['Orientation']))
-		{
-			$orientation = $exif['COMPUTED']['Orientation'];
+		$orientation = $exif['COMPUTED']['Orientation'] ?? false;
 
-			switch ($orientation)
-			{
-				case 3:
-				case 4:
-					$image->rotate(180);
-					break;
-				case 5:
-				case 6:
-					$image->rotate(-90);
-					break;
-				case 7:
-				case 8:
-					$image->rotate(90);
-					break;
-				default:
-					break;
-			}
+		switch ($orientation)
+		{
+			case 3:
+			case 4:
+				$image->rotate(180);
+				break;
+			case 5:
+			case 6:
+				$image->rotate(-90);
+				break;
+			case 7:
+			case 8:
+				$image->rotate(90);
+				break;
+			default:
+				break;
 		}
 
 		$orgsize = $image->getSize();
