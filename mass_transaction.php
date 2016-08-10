@@ -205,7 +205,7 @@ if ($submit)
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
 
-	if ($error_token = get_error_form_token())
+	if ($error_token = $app['eland.form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
@@ -220,7 +220,6 @@ if ($submit)
 
 		$app['db']->beginTransaction();
 
-		$date = date('Y-m-d H:i:s');
 		$cdate = gmdate('Y-m-d H:i:s');
 
 		$one_field = ($to_one) ? 'to' : 'from';
@@ -229,7 +228,7 @@ if ($submit)
 		$mail_ary = [
 			$one_field 		=> $one_uid,
 			'description'	=> $description,
-			'date'			=> $date,
+			'date'			=> $cdate,
 		];
 
 		$alert_success = $log = '';
@@ -272,7 +271,7 @@ if ($submit)
 					'id_from' 		=> $from_id,
 					'amount' 		=> $amo,
 					'description' 	=> $description,
-					'date' 			=> $date,
+					'date' 			=> $cdate,
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
 					'creator'		=> ($s_master) ? 0 : $s_id,
@@ -615,7 +614,7 @@ echo '>';
 echo '</div>';
 echo '</div>';
 
-$form_token = generate_form_token(false);
+$form_token = $app['eland.form_token']->generate(false);
 $pw_name_suffix = substr($form_token, 0, 5);
 
 echo '<div class="form-group">';
@@ -629,7 +628,7 @@ echo '</div>';
 
 echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
-generate_form_token();
+$app['eland.form_token']->generate();
 
 echo '</div>';
 echo '</div>';

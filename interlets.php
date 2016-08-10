@@ -82,7 +82,7 @@ if ($add || $edit)
 			$errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
 		}
 
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -269,7 +269,7 @@ if ($add || $edit)
 	$canc = ($edit) ? ['id' => $edit] : [];
 	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 
@@ -290,7 +290,7 @@ if ($del)
 	if ($submit)
 	{
 
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -323,7 +323,7 @@ if ($del)
 
 	echo aphp('interlets', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo "</form></p>";
 	echo "</div>";

@@ -83,7 +83,7 @@ if ($submit)
 {
 	if ($del)
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -161,7 +161,7 @@ if ($submit)
 		}
 	}
 
-	if ($token_error = get_error_form_token())
+	if ($token_error = $app['eland.form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
@@ -216,7 +216,7 @@ if ($del)
 
 	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 
@@ -318,7 +318,7 @@ if ($add || $edit)
 
 	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 
@@ -484,7 +484,7 @@ if ($topic)
 		$action = ($edit) ? 'aanpassen' : 'toevoegen';
 
 		echo '<input type="submit" name="zend" value="Reactie toevoegen" class="btn btn-success">';
-		generate_form_token();
+		$app['eland.form_token']->generate();
 
 		echo '</form>';
 

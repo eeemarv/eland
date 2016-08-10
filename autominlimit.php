@@ -6,7 +6,7 @@ require_once $rootpath . 'includes/inc_default.php';
 
 if (isset($_POST['zend']))
 {
-	if ($error_token = get_error_form_token())
+	if ($error_token = $app['eland.form_token']->get_error())
 	{
 		$alert->error($error_token);
 		cancel();
@@ -185,7 +185,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
-generate_form_token();
+$app['eland.form_token']->generate();
 
 echo '</form>';
 

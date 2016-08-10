@@ -72,7 +72,7 @@ if ($del)
 
 	if ($submit)
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel($uid);
@@ -135,7 +135,7 @@ if ($del)
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 
@@ -180,7 +180,7 @@ if ($edit || $add)
 
 	if($submit)
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -426,7 +426,7 @@ if ($edit || $add)
 	{
 		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
 	}
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 

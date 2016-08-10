@@ -553,6 +553,10 @@ $app['eland.date_format'] = function(){
 	return new eland\date_format();
 };
 
+$app['eland.form_token'] = function($app){
+	return new eland\form_token($app['redis']);
+};
+
 /* some more vars */
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
@@ -1341,69 +1345,6 @@ function render_select_options($option_ary, $selected, $print = true)
 	}
 
 	return $str;
-}
-
-/**
- *
- */
-
-function generate_form_token($print = true)
-{
-	global $app;
-	static $token;
-
-	if (!isset($token))
-	{
-		$token = sha1(microtime() . mt_rand(0, 1000000));
-		$key = 'form_token_' . $token;
-		$app['redis']->set($key, '1');
-		$app['redis']->expire($key, 14400); // 4 hours
-	}
-
-	if ($print)
-	{
-		echo '<input type="hidden" name="form_token" value="' . $token . '">';
-	}
-
-	return $token;
-}
-
-/**
- * return false|string (error message)
- */
-
-function get_error_form_token()
-{
-	global $app, $script_name;
-
-	if (!isset($_POST['form_token']))
-	{
-		return 'Het formulier bevat geen token';
-	}
-
-	$token = $_POST['form_token'];
-	$key = 'form_token_' . $token;
-
-	$value = $app['redis']->get($key);
-
-	if (!$value)
-	{
-		$m = 'Het formulier is verlopen';
-		log_event('form_token', $m . ': ' . $script_name);
-		return $m;
-	}
-
-	if ($value > 1)
-	{
-		$app['redis']->incr($key);
-		$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-		log_event('form_token', $m . '(count: ' . $value . ') : ' . $script_name);
-		return $m;
-	}
-
-	$app['redis']->incr($key);
-
-	return false;
 }
 
 /**
