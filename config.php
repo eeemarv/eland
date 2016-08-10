@@ -359,7 +359,7 @@ if ($post)
 		$errors[] = 'Form submit error';
 	}
 
-	if ($error_token = get_error_form_token())
+	if ($error_token = $app['eland.form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
@@ -782,7 +782,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '<input type="hidden" name="active_tab" value="' . $id . '">';
 	echo '<input type="submit" class="btn btn-primary" value="Aanpassen" name="' . $id . '_submit">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</div>';
 

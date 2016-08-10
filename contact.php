@@ -109,7 +109,7 @@ if($post && isset($_POST['zend']))
 		$errors[] = 'Het support mailadres is niet ingesteld op deze installatie';
 	}
 
-	if ($token_error = get_error_form_token())
+	if ($token_error = $app['eland.form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
@@ -241,7 +241,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-generate_form_token();
+$app['eland.form_token']->generate();
 
 echo '</form>';
 

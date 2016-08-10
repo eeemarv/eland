@@ -12,7 +12,7 @@ if ($add)
 {
 	if (isset($_POST['zend']))
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -69,7 +69,7 @@ if ($add)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';
@@ -92,7 +92,7 @@ if ($edit)
 
 	if(isset($_POST['zend']))
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -157,7 +157,7 @@ if ($edit)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';
@@ -185,7 +185,7 @@ if ($del)
 
 	if(isset($_POST['zend']))
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -214,7 +214,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';

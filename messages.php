@@ -73,7 +73,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 		$errors[] = 'Selecteer ten minste één vraag of aanbod voor deze actie.';
 	}
 
-	if ($error_token = get_error_form_token())
+	if ($error_token = $app['eland.form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
@@ -618,7 +618,7 @@ if ($del)
 
 	if($submit)
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 		}
@@ -694,7 +694,7 @@ if ($del)
 
 	echo aphp('messages', ['id' => $del], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 	echo '</form></p>';
 
 	echo '</div>';
@@ -809,7 +809,7 @@ if (($edit || $add))
 			$errors[] = 'Gebruiker bestaat niet!';
 		}
 
-		if ($error_form = get_error_form_token())
+		if ($error_form = $app['eland.form_token']->get_error())
 		{
 			$errors[] = $error_form;
 		}
@@ -1288,7 +1288,7 @@ if (($edit || $add))
 
 	$upload_img_param = [
 		'img'	=> 1,
-		'form_token' => $upload_img_param['form_token'] = generate_form_token(false),
+		'form_token' => $upload_img_param['form_token'] = $app['eland.form_token']->generate(false),
 	];
 
 	if ($edit)
@@ -1318,7 +1318,7 @@ if (($edit || $add))
 
 	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	if (isset($uploaded_images) && count($uploaded_images))
 	{
@@ -2420,7 +2420,7 @@ else if ($v_list)
 
 		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
 
-		generate_form_token();
+		$app['eland.form_token']->generate();
 
 		echo '</form>';
 
@@ -2435,7 +2435,7 @@ else if ($v_list)
 
 		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
 
-		generate_form_token();
+		$app['eland.form_token']->generate();
 
 		echo '</form>';
 

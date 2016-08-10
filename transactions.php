@@ -201,7 +201,7 @@ if ($add)
 			$errors[] = 'Fout in datumformaat (jjjj-mm-dd)';
 		}
 
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -829,7 +829,7 @@ if ($add)
 
 	echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';

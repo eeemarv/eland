@@ -251,7 +251,7 @@ if ($submit)
 	{
 		$alert->error('Vul een postcode in.');
 	}
-	else if ($error_token = get_error_form_token())
+	else if ($error_token = $app['eland.form_token']->get_error())
 	{
 		$alert->error($error_token);
 	}
@@ -356,7 +356,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
-generate_form_token();
+$app['eland.form_token']->generate();
 
 echo '</form>';
 

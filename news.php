@@ -84,7 +84,7 @@ if ($add || $edit)
 			$errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
 		}
 
-		if ($token_error = get_error_form_token())
+		if ($token_error = $app['eland.form_token']->get_error())
 		{
 			$errors[] = $token_error;
 		}
@@ -244,7 +244,7 @@ if ($add || $edit)
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 
 	echo '</form>';
 
@@ -266,7 +266,7 @@ if ($del)
 
 	if ($submit)
 	{
-		if ($error_token = get_error_form_token())
+		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$alert->error($error_token);
 			cancel();
@@ -350,7 +350,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	generate_form_token();
+	$app['eland.form_token']->generate();
 	echo '</form>';
 
 	echo '</div>';
