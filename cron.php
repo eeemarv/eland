@@ -578,7 +578,7 @@ run_cronjob('cleanup_messages', 86400);
 
 function cleanup_messages()
 {
-	global $app, $now, $s3;
+	global $app, $now;
 
 	$msgs = '';
 	$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
@@ -830,10 +830,10 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 	$del_count = 0;
 
 	try {
-		$objects = $s3->getIterator('ListObjects', array(
+		$objects = $s3->getIterator('ListObjects', [
 			'Bucket'	=> $app['eland.s3_img'],
 			'Marker'	=> $marker,
-		));
+		]);
 
 		//echo $r . 'Keys retrieved' . $r;
 

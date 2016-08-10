@@ -461,7 +461,7 @@ if ($submit)
 	}
 	else
 	{
-		$doc_id = substr(sha1(time() . mt_rand(0, 1000000)), 0, 24);
+		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
 		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
 

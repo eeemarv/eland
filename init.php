@@ -68,7 +68,7 @@ if ($step == 1)
 
 		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
 		echo $m . "\n";
-		log_event('DB', $m);	
+		log_event('DB', $m);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=2');
@@ -153,7 +153,8 @@ else if ($step == 3)
 		foreach ($possible_extensions as $extension)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
-			if($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
+
+			if ($s3->doesObjectExist($app['eland.s3_img'], $filename_bucket))
 			{
 				$found = true;
 				break;
