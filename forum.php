@@ -445,7 +445,7 @@ if ($topic)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p>' . link_user((int) $p['uid']) . ' @' . $date_format->get($p['ts']);
+		echo '<p>' . link_user((int) $p['uid']) . ' @' . $app['eland.date_format']->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
@@ -602,7 +602,7 @@ foreach($forum_posts as $p)
 	echo '</td>';
 	echo '<td>' . link_user($p['uid']) . '</td>';
 
-	echo $date_format->get_td($p['ts']);
+	echo $app['eland.date_format']->get_td($p['ts']);
 	
 	if (!$s_guest)
 	{

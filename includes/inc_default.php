@@ -545,14 +545,12 @@ $app['eland.xdb'] = function ($app){
 
 $app['eland.xdb']->init($schema, $s_schema, $s_id, $access_control);
 
-/**
- * format dates
- */
-
-$date_format = new eland\date_format();
-
 $app['eland.queue'] = function($app){
 	return new eland\queue($app['db']);
+};
+
+$app['eland.date_format'] = function(){
+	return new eland\date_format();
 };
 
 /* some more vars */

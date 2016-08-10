@@ -1303,7 +1303,7 @@ if ($add || $edit)
 
 		if ($user['birthday'])
 		{
-			$user['birthday'] = $date_format->reverse($user['birthday']);
+			$user['birthday'] = $app['eland.date_format']->reverse($user['birthday']);
 
 			if ($user['birthday'] === false)
 			{
@@ -1768,19 +1768,19 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
 	echo 'value="';
-	echo $user['birthday'] ? $date_format->get($user['birthday'], 'day') : '';
+	echo $user['birthday'] ? $app['eland.date_format']->get($user['birthday'], 'day') : '';
 	echo '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 	echo 'data-date-default-view="2" ';
-	echo 'data-date-end-date="' . $date_format->get(false, 'day') . '" ';
+	echo 'data-date-end-date="' . $app['eland.date_format']->get(false, 'day') . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-start-view="2" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -2163,7 +2163,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			dd_render($date_format->get($user['birthday'], 'day'));
+			dd_render($app['eland.date_format']->get($user['birthday'], 'day'));
 		}
 		else
 		{
@@ -2189,7 +2189,7 @@ if ($id)
 
 		if (isset($user['cdate']))
 		{
-			dd_render($date_format->get($user['cdate']));
+			dd_render($app['eland.date_format']->get($user['cdate']));
 		}
 		else
 		{
@@ -2202,7 +2202,7 @@ if ($id)
 
 		if (isset($user['adate']))
 		{
-			dd_render($date_format->get($user['adate']));
+			dd_render($app['eland.date_format']->get($user['adate']));
 		}
 		else
 		{
@@ -2215,7 +2215,7 @@ if ($id)
 
 		if (isset($user['lastlogin']))
 		{
-			dd_render($date_format->get($user['lastlogin']));
+			dd_render($app['eland.date_format']->get($user['lastlogin']));
 		}
 		else
 		{
@@ -2542,12 +2542,12 @@ if ($v_list && $s_admin)
 	{
 		if ($saldo_date)
 		{
-			$saldo_date_rev = $date_format->reverse($saldo_date);
+			$saldo_date_rev = $app['eland.date_format']->reverse($saldo_date);
 		}
 
 		if ($saldo_date_rev === false || $saldo_date == '')
 		{
-			$saldo_date = $date_format->get(false, 'day');
+			$saldo_date = $app['eland.date_format']->get(false, 'day');
 
 			array_walk($users, function(&$user, $user_id){
 				$user['saldo_date'] = $user['saldo'];
@@ -2996,14 +2996,14 @@ if ($s_admin && $v_list)
 			{
 				echo '<input type="text" name="saldo_date" ';
 				echo 'data-provide="datepicker" ';
-				echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+				echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 				echo 'data-date-language="nl" ';
 				echo 'data-date-today-highlight="true" ';
 				echo 'data-date-autoclose="true" ';
 				echo 'data-date-enable-on-readonly="false" ';
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
-				echo 'placeholder="' . $date_format->datepicker_placeholder() . '" ';
+				echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '" ';
 				echo 'value="' . $saldo_date . '">';
 
 				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;

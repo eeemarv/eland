@@ -301,7 +301,7 @@ echo '<tbody>';
 foreach($rows as $value)
 {
 	echo '<tr>';
-	echo '<td>' . $date_format->get($value['ts'], 'sec') .'</td>';
+	echo '<td>' . $app['eland.date_format']->get($value['ts'], 'sec') .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';

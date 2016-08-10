@@ -160,7 +160,7 @@ $tab_panes = [
 		'inputs'	=> [
 			'date_format' => [
 				'type'		=> 'select',
-				'options'	=> $date_format->get_options(),
+				'options'	=> $app['eland.date_format']->get_options(),
 			],
 		],
 	],
@@ -419,7 +419,7 @@ if ($post)
 
 		if ($name == 'date_format')
 		{
-			$error = $date_format->get_error($value);
+			$error = $app['eland.date_format']->get_error($value);
 
 			if ($error)
 			{

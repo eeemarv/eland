@@ -943,7 +943,7 @@ if ($id)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $date_format->get($transaction['cdate']);
+	echo $app['eland.date_format']->get($transaction['cdate']);
 	echo '</dd>';
 
 	echo '<br>';
@@ -1142,7 +1142,7 @@ $where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
-	$fdate_sql = $date_format->reverse($fdate);
+	$fdate_sql = $app['eland.date_format']->reverse($fdate);
 
 	if ($fdate_sql === false)
 	{
@@ -1158,7 +1158,7 @@ if ($fdate)
 
 if ($tdate)
 {
-	$tdate_sql = $date_format->reverse($tdate);
+	$tdate_sql = $app['eland.date_format']->reverse($tdate);
 
 	if ($tdate_sql === false)
 	{
@@ -1444,7 +1444,7 @@ if (!$inline)
 	echo 'id="fdate" name="fdate" ';
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
@@ -1452,7 +1452,7 @@ if (!$inline)
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -1468,14 +1468,14 @@ if (!$inline)
 	echo 'id="tdate" name="tdate" ';
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $date_format->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -1591,7 +1591,7 @@ if ($uid)
 		echo '</span></td>';
 
 		echo '<td>';
-		echo $date_format->get($t['cdate']);
+		echo $app['eland.date_format']->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';
@@ -1663,7 +1663,7 @@ else
 		echo '</td>';
 
 		echo '<td>';
-		echo $date_format->get($t['cdate']);
+		echo $app['eland.date_format']->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';

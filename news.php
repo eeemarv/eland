@@ -59,7 +59,7 @@ if ($add || $edit)
 
 		if ($news['itemdate'])
 		{
-			$news['itemdate'] = $date_format->reverse($news['itemdate']);
+			$news['itemdate'] = $app['eland.date_format']->reverse($news['itemdate']);
 
 			if ($news['itemdate'] === false)
 			{
@@ -185,13 +185,13 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $date_format->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'value="' . $date_format->get($news['itemdate'], 'day') . '" ';
-	echo 'placeholder="' . $date_format->datepicker_placeholder() . '">';
+	echo 'value="' . $app['eland.date_format']->get($news['itemdate'], 'day') . '" ';
+	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -309,7 +309,7 @@ if ($del)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo ($itemdate) ? $date_format->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
+	echo ($itemdate) ? $app['eland.date_format']->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -465,7 +465,7 @@ if ($id)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo ($news['itemdate']) ? $date_format->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
+	echo ($news['itemdate']) ? $app['eland.date_format']->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -636,7 +636,7 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
-		echo $date_format->get_td($n['itemdate'], 'day');
+		echo $app['eland.date_format']->get_td($n['itemdate'], 'day');
 
 		if ($s_admin && !$inline)
 		{
@@ -691,7 +691,7 @@ else if ($v_extended)
 			echo 'Agendadatum';
 			echo '</dt>';
 			echo '<dd>';
-			echo $date_format->get($n['itemdate'], 'day');
+			echo $app['eland.date_format']->get($n['itemdate'], 'day');
 
 			if ($n['sticky'])
 			{

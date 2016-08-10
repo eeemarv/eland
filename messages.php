@@ -1553,10 +1553,10 @@ if ($id)
 	echo '<dd>' . $user['postcode'] . '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
-	echo '<dd>' . $date_format->get($message['cdate'], 'day') . '</dd>';
+	echo '<dd>' . $app['eland.date_format']->get($message['cdate'], 'day') . '</dd>';
 
 	echo '<dt>Geldig tot</dt>';
-	echo '<dd>' . $date_format->get($message['validity'], 'day') . '</dd>';
+	echo '<dd>' . $app['eland.date_format']->get($message['validity'], 'day') . '</dd>';
 
 	if ($s_admin || $s_owner)
 	{
@@ -2287,7 +2287,7 @@ if ($v_list)
 		}
 
 		echo '<td>';
-		echo $date_format->get($msg['validity'], 'day');
+		echo $app['eland.date_format']->get($msg['validity'], 'day');
 		echo '</td>';
 
 		if (!$s_guest)
