@@ -28,7 +28,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$row = $exdb->get('doc', $map_edit);
+	$row = $app['eland.xdb']->get('doc', $map_edit);
 
 	if ($row)
 	{
@@ -59,7 +59,7 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
-			$rows = $exdb->get_many(['agg_schema' => $schema,
+			$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]); 		
@@ -71,7 +71,7 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
-			$exdb->set('doc', $map_edit, ['map_name' => $posted_map_name]);
+			$app['eland.xdb']->set('doc', $map_edit, ['map_name' => $posted_map_name]);
 
 			$alert->success('Map naam aangepast.');
 
@@ -127,7 +127,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $exdb->get('doc', $edit);
+	$row = $app['eland.xdb']->get('doc', $edit);
 
 	if ($row)
 	{
@@ -158,7 +158,7 @@ if ($edit)
 
 			if (strlen($map_name))
 			{
-				$rows = $exdb->get_many(['agg_type' => 'doc',
+				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
 					'agg_schema' => $schema,
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -173,7 +173,7 @@ if ($edit)
 
 					$mid = substr(sha1(microtime() . $schema . $map_name), 0, 24);
 
-					$exdb->set('doc', $mid, $map);
+					$app['eland.xdb']->set('doc', $mid, $map);
 
 					$map['id'] = $mid;
 				}
@@ -189,17 +189,17 @@ if ($edit)
 				&& ((isset($update['map_id']) && $update['map_id'] != $doc['map_id'])
 					|| !strlen($map_name)))
 			{
-				$rows = $exdb->get_many(['agg_type' => 'doc',
+				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
 					'agg_schema' => $schema,
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
 				{
-					$exdb->del('doc', $doc['map_id']);
+					$app['eland.xdb']->del('doc', $doc['map_id']);
 				}
 			}
 
-			$exdb->set('doc', $edit, $update);
+			$app['eland.xdb']->set('doc', $edit, $update);
 
 			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -215,7 +215,7 @@ if ($edit)
 	{
 		$map_id = $doc['map_id'];
 
-		$map = $exdb->get('doc', $map_id)['data'];
+		$map = $app['eland.xdb']->get('doc', $map_id)['data'];
 	}
 
 /*
@@ -292,7 +292,7 @@ if ($confirm_del && $del)
 		cancel();
 	}
 
-	$row = $exdb->get('doc', $del);
+	$row = $app['eland.xdb']->get('doc', $del);
 
 	if ($row)
 	{
@@ -310,13 +310,13 @@ if ($confirm_del && $del)
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $exdb->get_many(['agg_schema' => $schema,
+			$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
 			if (count($rows) < 2)
 			{
-				$exdb->del('doc', $doc['map_id']);
+				$app['eland.xdb']->del('doc', $doc['map_id']);
 
 				$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -324,7 +324,7 @@ if ($confirm_del && $del)
 			}
 		}
 
-		$exdb->del('doc', $del);
+		$app['eland.xdb']->del('doc', $del);
 
 		$alert->success('Het document werd verwijderd.');
 
@@ -336,7 +336,7 @@ if ($confirm_del && $del)
 
 if ($del)
 {
-	$row = $exdb->get('doc', $del);
+	$row = $app['eland.xdb']->get('doc', $del);
 
 	if ($row)
 	{
@@ -438,7 +438,7 @@ if ($submit)
 
 			if (strlen($map_name))
 			{
-				$rows = $exdb->get_many(['agg_schema' => $schema,
+				$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -454,7 +454,7 @@ if ($submit)
 
 					$map = ['map_name' => $map_name];
 
-					$exdb->set('doc', $map_id, $map);
+					$app['eland.xdb']->set('doc', $map_id, $map);
 
 					$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 				}
@@ -469,7 +469,7 @@ if ($submit)
 				$doc['name'] = $name;
 			}
 
-			$exdb->set('doc', $doc_id, $doc);
+			$app['eland.xdb']->set('doc', $doc_id, $doc);
 
 
 			$alert->success('Het bestand is opgeladen.');
@@ -487,7 +487,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $exdb->get('doc', $map);
+		$row = $app['eland.xdb']->get('doc', $map);
 
 		if ($row)
 		{
@@ -562,7 +562,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $exdb->get('doc', $map);
+	$row = $app['eland.xdb']->get('doc', $map);
 
 	if ($row)
 	{
@@ -576,7 +576,7 @@ if ($map)
 	}
 //
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
 		'access' => true], 'order by event_time asc');
@@ -602,7 +602,7 @@ if ($map)
 }
 else
 {
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -623,7 +623,7 @@ else
 		}
 	}
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
 		'access' => true], 'order by event_time asc');

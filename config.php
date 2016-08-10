@@ -548,7 +548,7 @@ if ($post)
 
 	foreach ($posted_configs as $name => $value)
 	{
-		$exdb->set('setting', $name, ['value' => $value]);
+		$app['eland.xdb']->set('setting', $name, ['value' => $value]);
 
 		$app['redis']->del($schema . '_config_' . $name);
 

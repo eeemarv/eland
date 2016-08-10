@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $app, $base_url, $systemtag, $currency, $exdb, $app;
+	global $app, $base_url, $systemtag, $currency;
 
 // vars
 
@@ -214,7 +214,7 @@ function saldo()
 
 	$news_access_ary = [];
 
-	$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
 
 	foreach ($rows as $row)
 	{
@@ -239,7 +239,7 @@ function saldo()
 		}
 		else
 		{
-			$exdb->set('news_access', $news_id, ['access' => 'interlets']);
+			$app['eland.xdb']->set('news_access', $news_id, ['access' => 'interlets']);
 			$news_access = 'interlets';
 		}
 

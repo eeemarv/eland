@@ -25,14 +25,14 @@ if (isset($_POST['zend']))
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
-	$exdb->set('setting', 'autominlimit', $a);
+	$app['eland.xdb']->set('setting', 'autominlimit', $a);
 
 	$alert->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
 else 
 {
-	$row = $exdb->get('setting', 'autominlimit');
+	$row = $app['eland.xdb']->get('setting', 'autominlimit');
 
 	if ($row)
 	{

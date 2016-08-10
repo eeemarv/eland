@@ -535,7 +535,11 @@ $schemaversion = 31000;  // no new versions anymore, release file is not read an
   *
   */
 
-$exdb = new eland\eland_extra_db();
+$app['eland.xdb'] = function ($app){
+	return new eland\xdb($app['db']);
+};
+
+$app['eland.xdb']->init($schema, $s_schema, $s_id, $access_control);
 
 /**
  * format dates
@@ -967,7 +971,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $app, $schema, $exdb;
+    global $app, $schema;
     static $cache;
 
 	$eland_config_default = [
@@ -1002,7 +1006,7 @@ function readconfigfromdb($key, $sch = null)
 		return $cache[$sch][$key] = $app['redis']->get($redis_key);
 	}
 
-	$row = $exdb->get('setting', $key, $sch);
+	$row = $app['eland.xdb']->get('setting', $key, $sch);
 
 	if ($row)
 	{
@@ -1016,7 +1020,7 @@ function readconfigfromdb($key, $sch = null)
 	{
 		$value = $app['db']->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
 
-		$exdb->set('setting', $key, ['value' => $value], $sch);
+		$app['eland.xdb']->set('setting', $key, ['value' => $value], $sch);
 	}
 
 	if (isset($value))
@@ -1034,7 +1038,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $app, $schema, $exdb;
+    global $app, $schema;
     static $cache;
 
 	if (!$id)
@@ -1066,7 +1070,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$row = $exdb->get('user_fullname_access', $id, $s);
+	$row = $app['eland.xdb']->get('user_fullname_access', $id, $s);
 
 	if ($row)
 	{
@@ -1076,7 +1080,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	{
 		$user += ['fullname_access' => 'admin'];
 
-		$exdb->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
+		$app['eland.xdb']->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
 	}
 
 	if (isset($user))

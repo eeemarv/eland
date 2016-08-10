@@ -485,7 +485,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$exdb->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
+			$app['eland.xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
 			$app['redis']->del($schema . '_user_' . $user_id);
 		}
 
@@ -974,7 +974,7 @@ if ($del)
 				$app['db']->delete('contact', ['id_user' => $del]);
 
 				//delete fullname access record.
-				$exdb->del('user_fullname_access', $del);
+				$app['eland.xdb']->del('user_fullname_access', $del);
 
 				//finally, the user
 				$app['db']->delete('users', ['id' => $del]);
@@ -1379,7 +1379,7 @@ if ($add || $edit)
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
-					$exdb->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
+					$app['eland.xdb']->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
 					$alert->success('Gebruiker opgeslagen.');
 
@@ -1465,7 +1465,7 @@ if ($add || $edit)
 
 					$fullname_access_role = $access_control->get_role($fullname_access);
 
-					$exdb->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
+					$app['eland.xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
 
 					$user = readuser($edit, true);
 

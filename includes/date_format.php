@@ -145,7 +145,7 @@ class date_format
 					$key_part = '%' . $f;
 				}
 
-				$parts[$key_part] .= $s;
+				$parts[$key_part] = isset($parts[$key_part]) ? $parts[$key_part] . $s : $s;
 
 				$len = strlen($parts[$key_part]);
 

@@ -77,7 +77,9 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . $systemtag ."] ***" . $r;
 
-$base_url = $app_protocol . $hosts[$schema]; 
+$base_url = $app_protocol . $hosts[$schema];
+
+$app['eland.xdb']->init($schema, '', 0, $access_control);
 
 /**
  * typeahead && msgs from eLAS interlets update
@@ -251,7 +253,7 @@ if (count($autominlimit_queue))
 			continue;
 		}
 
-		$row = $exdb->get('setting', 'autominlimit', $sch);
+		$row = $app['eland.xdb']->get('setting', 'autominlimit', $sch);
 
 		$a = $row['data'];
 
@@ -298,7 +300,7 @@ if (count($autominlimit_queue))
 		$new_minlimit = $user['minlimit'] - $extract;
 		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
 
-		$exdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
+		$app['eland.xdb']->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
 
 		$app['db']->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
 		readuser($to_id, true, $sch);
@@ -777,13 +779,13 @@ run_cronjob('cleanup_news', 86400);
 
 function cleanup_news()
 {
-    global $app, $now, $exdb;
+    global $app, $now;
 
 	$news = $app['db']->fetchAll('select id from news where itemdate < ? and sticky = \'f\'', [$now]);
 
 	foreach ($news as $n)
 	{
-		$exdb->del('news_access', $n['id']);
+		$app['eland.xdb']->del('news_access', $n['id']);
 		$app['db']->delete('news', ['id' => $n['id']]);
 	}
 

@@ -43,11 +43,11 @@ if ($add || $edit)
 	if ($submit)
 	{
 		$news = [
-			'itemdate'		=> trim($_POST['itemdate']),
-			'location'		=> trim($_POST['location']),
-			'sticky'		=> ($_POST['sticky']) ? 't' : 'f',
-			'newsitem'		=> trim($_POST['newsitem']),
-			'headline'		=> trim($_POST['headline']),
+			'itemdate'		=> trim($_POST['itemdate'] ?? ''),
+			'location'		=> trim($_POST['location'] ?? ''),
+			'sticky'		=> isset($_POST['sticky']) ? 't' : 'f',
+			'newsitem'		=> trim($_POST['newsitem'] ?? ''),
+			'headline'		=> trim($_POST['headline'] ?? ''),
 		];
 
 		$access_error = $access_control->get_post_error();
@@ -107,7 +107,7 @@ if ($add && $submit && !count($errors))
 	{
 		$id = $app['db']->lastInsertId('news_id_seq');
 
-		$exdb->set('news_access', $id, ['access' => $_POST['access']]);
+		$app['eland.xdb']->set('news_access', $id, ['access' => $_POST['access']]);
 
 		$alert->success('Nieuwsbericht opgeslagen.');
 
@@ -139,7 +139,7 @@ if ($edit && $submit && !count($errors))
 {
 	if($app['db']->update('news', $news, ['id' => $edit]))
 	{
-		$exdb->set('news_access', $edit, ['access' => $_POST['access']]);
+		$app['eland.xdb']->set('news_access', $edit, ['access' => $_POST['access']]);
 
 		$alert->success('Nieuwsbericht aangepast.');
 		cancel($edit);
@@ -155,7 +155,7 @@ if ($edit)
 	$news = $app['db']->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	list($news['itemdate']) = explode(' ', $news['itemdate']);
 
-	$news_access = $exdb->get('news_access', $edit)['data']['access'];
+	$news_access = $app['eland.xdb']->get('news_access', $edit)['data']['access'];
 }
 
 if ($add)
@@ -274,7 +274,7 @@ if ($del)
 
 		if($app['db']->delete('news', ['id' => $del]))
 		{
-			$exdb->del('news_access', $del);
+			$app['eland.xdb']->del('news_access', $del);
 
 			$alert->success('Nieuwsbericht verwijderd.');
 			cancel();
@@ -286,7 +286,7 @@ if ($del)
 		FROM news n  
 		WHERE n.id = ?', [$del]);
 
-	$news_access = $exdb->get('news_access', $del)['data']['access'];
+	$news_access = $app['eland.xdb']->get('news_access', $del)['data']['access'];
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
@@ -380,7 +380,7 @@ if ($id)
 		cancel();
 	}
 
-	$news_access = $exdb->get('news_access', $id)['data']['access'];
+	$news_access = $app['eland.xdb']->get('news_access', $id)['data']['access'];
 
 	if (!$access_control->is_visible($news_access))
 	{
@@ -390,14 +390,14 @@ if ($id)
 
 	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
 		'access' => true], 'order by eland_id desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
 		'access' => true], 'order by eland_id asc limit 1');
@@ -531,7 +531,7 @@ $news = $app['db']->fetchAll($query);
 
 $news_access_ary = [];
 
-$rows = $exdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
 
 foreach ($rows as $row)
 {
@@ -545,7 +545,7 @@ foreach ($news as $k => $n)
 
 	if (!isset($news_access_ary[$news_id]))
 	{
-		$exdb->set('news_access', $news_id, ['access' => 'interlets']);
+		$app['eland.xdb']->set('news_access', $news_id, ['access' => 'interlets']);
 		$news[$k]['access'] = 'interlets';
 		continue;
 	}

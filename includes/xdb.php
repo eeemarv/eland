@@ -2,6 +2,9 @@
 
 namespace eland;
 
+use Doctrine\DBAL\Connection as db;
+use eland\access_control;
+
 /*
                             Table "eland_extra.events"
    Column    |            Type             |              Modifiers               
@@ -43,12 +46,19 @@ Indexes:
     "aggs_agg_type_idx" btree (agg_type)
 */
 
-class eland_extra_db
+class xdb
 {
 	private $ip;
+	private $schema = false;
+	private $user_schema = '';
+	private $user_id = '';
+	private $db;
+	private $access_control;
 
-	public function __construct()
+	public function __construct(db $db)
 	{
+		$this->db = $db;
+
 		if (isset($_SERVER['HTTP_CLIENT_IP']))
 		{
 			$this->ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -64,14 +74,23 @@ class eland_extra_db
 	}
 
 	/*
+	 */
+
+	public function init(string $schema, string $user_schema = '', $user_id = 0, access_control $access_control)
+	{
+		$this->schema = $schema;
+		$this->user_schema = ($user_schema) ? $user_schema : $schema;
+		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
+		$this->access_control = $access_control;
+	}
+
+	/*
 	 *
 	 */
 
-	public function set($agg_type = '', $eland_id = '', $data = [], $sch = false, $event_time = false)
+	public function set($agg_type = '', $eland_id = '', $data = [], $agg_schema = false, $event_time = false)
 	{
-		global $schema, $s_schema, $s_id, $app;
-
-		$sch = ($sch) ?: $schema;
+		$agg_schema = ($agg_schema) ?: $this->schema;
 
 		if (!strlen($agg_type))
 		{
@@ -83,18 +102,14 @@ class eland_extra_db
 			return 'No eland id set';
 		}
 
-		if (!isset($sch) || !$sch)
+		if (!isset($agg_schema) || !$agg_schema)
 		{
 			return 'No schema set';
 		}
 
-		$user_id = ctype_digit((string) $s_id) ? $s_id : 0;
-		$user_schema = $s_schema;
-		$agg_schema = $sch;
-
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $app['db']->fetchAssoc('select data, agg_version
+		$row = $this->db->fetchAssoc('select data, agg_version
 			from eland_extra.aggs
 			where agg_id = ?', [$agg_id]);
 
@@ -120,8 +135,8 @@ class eland_extra_db
 		$event = $agg_type . '_' . $ev;
 
 		$insert = [
-			'user_id'		=> $user_id,
-			'user_schema'	=> $user_schema,
+			'user_id'		=> $this->user_id,
+			'user_schema'	=> $this->user_schema,
 			'agg_id'		=> $agg_id,
 			'agg_type'		=> $agg_type,
 			'agg_schema'	=> $agg_schema,
@@ -139,13 +154,13 @@ class eland_extra_db
 
 		try
 		{
-			$app['db']->beginTransaction();
+			$this->db->beginTransaction();
 
-			$app['db']->insert('eland_extra.events', $insert);
+			$this->db->insert('eland_extra.events', $insert);
 
 			if ($agg_version == 1)
 			{
-				$app['db']->insert('eland_extra.aggs', $insert);
+				$this->db->insert('eland_extra.aggs', $insert);
 			}
 			else
 			{
@@ -153,14 +168,14 @@ class eland_extra_db
 				$update = $insert;
 				$update['data'] = json_encode(array_merge($prev_data, $data));
 
-				$app['db']->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
+				$this->db->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
 			}
 
-			$app['db']->commit();
+			$this->db->commit();
 		}
 		catch(Exception $e)
 		{
-			$app['db']->rollback();
+			$this->db->rollback();
 			error_log('error transaction eland extra db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt.';
 			log_event('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
@@ -173,11 +188,9 @@ class eland_extra_db
 	 *
 	 */
 
-	public function del($agg_type = '', $eland_id = '', $sch = false)
+	public function del($agg_type = '', $eland_id = '', $agg_schema = false)
 	{
-		global $schema, $s_schema, $s_id, $app;
-
-		$sch = ($sch) ?: $schema;
+		$agg_schema = ($agg_schema) ?: $this->schema;
 
 		if (!strlen($agg_type))
 		{
@@ -189,18 +202,14 @@ class eland_extra_db
 			return 'No eland id set';
 		}
 
-		if (!isset($sch) || !$sch)
+		if (!isset($agg_schema) || !$agg_schema)
 		{
 			return 'No schema set';
 		}
 
-		$user_id = ctype_digit((string) $s_id) ? $s_id : 0;
-		$user_schema = $s_schema;
-		$agg_schema = $sch;
-
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$agg_version = $app['db']->fetchColumn('select agg_version
+		$agg_version = $this->db->fetchColumn('select agg_version
 			from eland_extra.aggs
 			where agg_id = ?', [$agg_id]);
 
@@ -210,8 +219,8 @@ class eland_extra_db
 		}
 
 		$insert = [
-			'user_id'		=> $user_id,
-			'user_schema'	=> $user_schema,
+			'user_id'		=> $this->user_id,
+			'user_schema'	=> $this->user_schema,
 			'agg_id'		=> $agg_id,
 			'agg_type'		=> $agg_type,
 			'agg_schema'	=> $agg_schema,
@@ -224,17 +233,17 @@ class eland_extra_db
 
 		try
 		{
-			$app['db']->beginTransaction();
+			$this->db->beginTransaction();
 
-			$app['db']->insert('eland_extra.events', $insert);
+			$this->db->insert('eland_extra.events', $insert);
 
-			$app['db']->delete('eland_extra.aggs', ['agg_id' => $agg_id]);
+			$this->db->delete('eland_extra.aggs', ['agg_id' => $agg_id]);
 
-			$app['db']->commit();
+			$this->db->commit();
 		}
 		catch(Exception $e)
 		{
-			$app['db']->rollback();
+			$this->db->rollback();
 			$alert->error('Database transactie niet gelukt.');
 			echo 'Database transactie niet gelukt.';
 			event_log('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
@@ -247,11 +256,9 @@ class eland_extra_db
 	 *
 	 */
 
-	public function get($agg_type = '', $eland_id = '', $sch = false)
+	public function get($agg_type = '', $eland_id = '', $agg_schema = false)
 	{
-		global $schema, $s_schema, $s_id, $app;
-
-		$sch = ($sch) ?: $schema;
+		$agg_schema = ($agg_schema) ?: $this->schema;
 
 		if (!strlen($agg_type))
 		{
@@ -263,14 +270,14 @@ class eland_extra_db
 			return [];
 		}
 
-		if (!isset($sch) || !$sch)
+		if (!isset($agg_schema) || !$agg_schema)
 		{
 			return [];
 		}
 
-		$agg_id = $sch . '_' . $agg_type . '_' . $eland_id;
+		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $app['db']->fetchAssoc('select * from eland_extra.aggs where agg_id = ?', [$agg_id]);
+		$row = $this->db->fetchAssoc('select * from eland_extra.aggs where agg_id = ?', [$agg_id]);
 
 		if (!$row)
 		{
@@ -279,7 +286,7 @@ class eland_extra_db
 
 		$row['data'] = json_decode($row['data'], true);
 
-		error_log(' - eland_extra get ' . $agg_id . ' - ');
+		error_log(' - xdb get ' . $agg_id . ' - ');
 
 		return $row;
 	}
@@ -290,7 +297,7 @@ class eland_extra_db
 
 	public function get_many($filters = [], $query_extra = false)
 	{
-		global $app, $access_control;
+		global $access_control;
 
 		$sql_where = [];
 		$sql_params = [];
@@ -308,7 +315,7 @@ class eland_extra_db
 		if (isset($filters['access']))
 		{
 			$sql_where[] = 'data->>\'access\' in (?)';
-			$sql_params[] = $access_control->get_visible_ary();
+			$sql_params[] = $this->access_control->get_visible_ary();
 			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
 		}
 
@@ -349,7 +356,7 @@ class eland_extra_db
 
 		$query .= ($query_extra) ? ' ' . $query_extra : '';
 
-		$rows = $app['db']->executeQuery($query, $sql_params, $sql_types);
+		$rows = $this->db->executeQuery($query, $sql_params, $sql_types);
 
 		$ary = [];
 
@@ -360,7 +367,7 @@ class eland_extra_db
 			$ary[$row['agg_id']] = $row;
 		}
 
-		error_log(' - eland_extra get_many - ');
+		error_log(' - xdb get_many - ');
 
 		return $ary;
 	}

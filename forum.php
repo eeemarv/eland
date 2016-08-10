@@ -43,7 +43,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$row = $exdb->get('forum', $t);
+	$row = $app['eland.xdb']->get('forum', $t);
 
 	if ($row)
 	{
@@ -89,17 +89,17 @@ if ($submit)
 			cancel();
 		}
 
-		$exdb->del('forum', $del);
+		$app['eland.xdb']->del('forum', $del);
 
 		if (!isset($forum_post['parent_id']))
 		{
-			$rows = $exdb->get_many(['agg_type' => 'forum',
+			$rows = $app['eland.xdb']->get_many(['agg_type' => 'forum',
 				'agg_schema' => $schema,
 				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$exdb->del('forum', $row['eland_id']); 
+				$app['eland.xdb']->del('forum', $row['eland_id']); 
 			}
 
 			$alert->success('Het forum onderwerp is verwijderd.');
@@ -141,7 +141,7 @@ if ($submit)
 		$forum_post['uid'] = ($s_master) ? 0 : $s_id;
 	}
 
- 	if (!($forum_post['subject'] || $topic))
+ 	if (!($topic || $forum_post['subject']))
 	{
 		 $errors[] = 'Vul een onderwerp in.';
 	}
@@ -172,7 +172,7 @@ if ($submit)
 	}
 	else if ($edit)
 	{
-		$exdb->set('forum', $edit, $forum_post);
+		$app['eland.xdb']->set('forum', $edit, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
@@ -180,9 +180,9 @@ if ($submit)
 	}
 	else
 	{
-		$new_id = substr(sha1(microtime() . $schema . $map_name), 0, 24);
+		$new_id = substr(sha1(microtime() . $schema), 0, 24);
 
-		$exdb->set('forum', $new_id, $forum_post);
+		$app['eland.xdb']->set('forum', $new_id, $forum_post);
 
 		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
@@ -242,7 +242,7 @@ if ($add || $edit)
 
 	if ($topic)
 	{
-		$row = $exdb->get('forum', $topic);
+		$row = $app['eland.xdb']->get('forum', $topic);
 
 		if ($row)
 		{
@@ -337,7 +337,7 @@ if ($topic)
 {
 	$forum_posts = [];
 
-	$row = $exdb->get('forum', $topic);
+	$row = $app['eland.xdb']->get('forum', $topic);
 
 	if ($row)
 	{
@@ -362,7 +362,7 @@ if ($topic)
 
 	$forum_posts[] = $topic_post;
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
@@ -381,14 +381,14 @@ if ($topic)
 		}
 	}
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
 		'access' => true], 'order by event_time desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $exdb->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
 		'access' => true], 'order by event_time asc limit 1');
@@ -500,7 +500,7 @@ if ($topic)
  * show topic list
  */
 
-$rows = $exdb->get_many(['agg_schema' => $schema,
+$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 	'agg_type' => 'forum',
 	'access' => true], 'order by event_time desc');
 
