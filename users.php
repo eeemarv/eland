@@ -147,7 +147,7 @@ if ($user_mail_submit && $id && $post)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
-	$subject = 'Bericht van ' . $systemname;
+	$subject = 'Bericht van ' . readconfigfromdb('systemname');
 
 	$text = 'Beste ' . $user['name'] . "\r\n\r\n";
 	$text .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
@@ -168,7 +168,7 @@ if ($user_mail_submit && $id && $post)
 		{
 			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
 			$msg .= $user['name'];
-			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . $systemname;
+			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . readconfigfromdb('systemname');
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
@@ -730,7 +730,7 @@ if ($pw)
 						$subj = 'nieuw paswoord voor je account';
 
 						$con = '*** Dit is een automatische mail van ';
-						$con .= $systemname;
+						$con .= readconfigfromdb('systemname');
 						$con .= '. Niet beantwoorden a.u.b. ';
 						$con .= "***\n\n";
 						$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
@@ -3600,7 +3600,7 @@ function sendadminmail($user)
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $alert, $systemname, $systemtag;
+	global $base_url, $alert, $systemtag;
 
 	if (empty($user['mail']))
 	{
@@ -3608,16 +3608,16 @@ function sendactivationmail($password, $user)
 		return 0;
 	}
 
-	$subject = 'account activatie voor ' . $systemname;
+	$subject = 'account activatie voor ' . readconfigfromdb('systemname');
 
 	$text  = "*** Dit is een automatische mail van ";
-	$text .= $systemname;
+	$text .= readconfigfromdb('systemname');
 	$text .= " ***\r\n\n";
 	$text .= 'Beste ';
 	$text .= $user['name'];
 	$text .= "\n\n";
 
-	$text .= "Welkom bij Letsgroep $systemname";
+	$text .= "Welkom bij Letsgroep readconfigfromdb('systemname')";
 	$text .= '. Surf naar ' . $base_url;
 	$text .= " en meld je aan met onderstaande gegevens.\n";
 	$text .= "\n-- Account gegevens --\n";

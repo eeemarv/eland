@@ -8,7 +8,7 @@ if ($css = readconfigfromdb('css'))
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '<head>';
-echo '<title>' . $systemname .'</title>';
+echo '<title>' . readconfigfromdb('systemname') .'</title>';
 
 echo $app['eland.assets']->render_css();
 
@@ -47,7 +47,7 @@ echo '<a href="' . generate_url('index') . '" class="pull-left hidden-xs">';
 echo '<div class="logo"></div>';
 echo '</a>';
 
-echo aphp('index', [], $systemname, 'navbar-brand');
+echo aphp('index', [], readconfigfromdb('systemname'), 'navbar-brand');
 
 echo '</div>';
 

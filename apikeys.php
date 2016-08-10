@@ -83,7 +83,7 @@ if ($add)
 		$alert->error('Apikey niet opgeslagen.');
 	}
 
-	$key = sha1($systemname . microtime());
+	$key = sha1(readconfigfromdb('systemname') . microtime());
 
 	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true); 
 

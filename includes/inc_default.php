@@ -562,7 +562,6 @@ $twig = new Twig_Environment($twig_loader);
 
 /* some more vars */
 
-$systemname = readconfigfromdb('systemname');
 $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
@@ -623,8 +622,8 @@ if (!$s_anonymous)
 
 if (isset($_GET['welcome']) && $s_guest)
 {
-	$msg = '<strong>Welkom bij ' . $systemname . '</strong><br>';
-	$msg .= 'Waardering bij ' . $systemname . ' gebeurt met \'' . $currency . '\'. ';
+	$msg = '<strong>Welkom bij ' . readconfigfromdb('systemname') . '</strong><br>';
+	$msg .= 'Waardering bij ' . readconfigfromdb('systemname') . ' gebeurt met \'' . $currency . '\'. ';
 	$msg .= readconfigfromdb('currencyratio') . ' ' . $currency;
 	$msg .= ' stemt overeen met 1 LETS uur.<br>';
 
@@ -1225,7 +1224,6 @@ function getmailadr($m, $sending_schema = false)
 		if (in_array($in, ['admin', 'newsadmin', 'support']))
 		{
 			$ary = explode(',', readconfigfromdb($in));
-			$systemname = readconfigfromdb('systemname');
 
 			foreach ($ary as $mail)
 			{
@@ -1237,14 +1235,13 @@ function getmailadr($m, $sending_schema = false)
 					continue;
 				}
 
-				$out[$mail] = $systemname;
+				$out[$mail] = readconfigfromdb('systemname');
 			}
 		}
 		else if (in_array($in, ['from', 'noreply']))
 		{
 			$mail = getenv('MAIL_' . strtoupper($in) . '_ADDRESS');
 			$mail = trim($mail);
-			$systemname = readconfigfromdb('systemname', $sch);
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
@@ -1252,7 +1249,7 @@ function getmailadr($m, $sending_schema = false)
 				continue;
 			}
 
-			$out[$mail] = $systemname;
+			$out[$mail] = readconfigfromdb('systemname', $sch);
 		}
 		else if (ctype_digit((string) $in))
 		{

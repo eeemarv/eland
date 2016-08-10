@@ -471,7 +471,7 @@ if ($add)
 
 			if (!$remote_group)
 			{
-				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. $systemname . ') niet geconfigureerd.';
+				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. readconfigfromdb('systemname') . ') niet geconfigureerd.';
 			}
 
 			if (!$remote_group['localletscode'])
@@ -715,7 +715,7 @@ if ($add)
 	$groups = $app['db']->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
 
 	$groups = array_merge([[
-		'groupname' => $systemname,
+		'groupname' => readconfigfromdb('systemname'),
 		'id'		=> 'self',
 	]], $groups);
 

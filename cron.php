@@ -70,7 +70,6 @@ else
 	exit;
 }
 
-$systemname = readconfigfromdb('systemname');
 $systemtag = readconfigfromdb('systemtag');
 $currency = readconfigfromdb('currency');
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;

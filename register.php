@@ -264,9 +264,9 @@ if ($submit)
 		$key = $schema . '_register_email_' . $email;
 		$app['redis']->set($key, '1');
 		$app['redis']->expire($key, 86400);
-		$subject = 'Bevestig je inschrijving voor ' . $systemname;
+		$subject = 'Bevestig je inschrijving voor ' . readconfigfromdb('systemname');
 		$url = $base_url . '/register.php?token=' . $token;
-		$text = 'Inschrijven voor ' . $systemname . "\n\n";
+		$text = 'Inschrijven voor ' . readconfigfromdb('systemname') . "\n\n";
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$text .= "Deze link blijft 1 dag geldig.\n\n";
 

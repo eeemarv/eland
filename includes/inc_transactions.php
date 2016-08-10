@@ -72,7 +72,7 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
-	global $systemname, $systemtag, $currency;
+	global $systemtag, $currency;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -83,7 +83,7 @@ function mail_mail_interlets_transaction($transaction)
 
 	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
 
-	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . $systemname;
+	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . readconfigfromdb('systemname');
 	$text  .= ' met de volgende gegevens:' . $r . $r;
 
 	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], false, false);
