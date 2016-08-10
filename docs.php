@@ -381,6 +381,8 @@ if ($submit)
 	$file_size = $_FILES['file']['size'];
 	$type = $_FILES['file']['type'];
 
+	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
 	if ($file_size > 1024 * 1024 * 10)
 	{
 		$errors[] = 'Het bestand is te groot. De maximum grootte is 10MB.';
@@ -469,7 +471,7 @@ if ($submit)
 
 			$alert->success('Het bestand is opgeladen.');
 
-			cancel($doc['map_id']);
+			cancel($doc['map_id'] ?? false);
 		}
 	}
 }
@@ -818,11 +820,11 @@ else if (!count($maps))
 
 include $rootpath . 'includes/inc_footer.php';
 
-function cancel($map = null)
+function cancel($map = false)
 {
 	$params = [];
 
-	if ($map)
+	if ($map ?? false)
 	{
 		$params['map'] = $map;
 	}
