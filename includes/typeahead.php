@@ -99,7 +99,7 @@ class typeahead
 		}
 		else
 		{
-			$this->redis->del($redis_key);
+			$this->redis->del($redis);
 
 			log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 		}
