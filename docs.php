@@ -262,10 +262,11 @@ if ($edit)
 	$map_name = $map['map_name'] ?? '';
 
 	echo '<div class="form-group">';
-	echo '<label for="map_name" class="col-sm-2 control-label">Map (optioneel, creëer een nieuwe map of selecteer een bestaande)</label>';
+	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
 	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '">';
+	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
 
