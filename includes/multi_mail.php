@@ -28,7 +28,7 @@ class multi_mail
 				{
 					$this->cond[$key] = true;
 				}
-				else if ($this->cond[$key] && $when == 'none')
+				else if (isset($this->cond[$key]) && $when == 'none')
 				{
 					return $this;
 				}
@@ -100,11 +100,11 @@ class multi_mail
 				{
 					$cond = true;
 				}
-				else if ($out['cond_when'] == 'none' && !$this->cond[$out['cond_key']])
+				else if ($out['cond_when'] == 'none' && !isset($this->cond[$out['cond_key']]))
 				{
 					$cond = true;
 				}
-				else if ($out['cond_when'] == 'any' && $this->cond[$out['cond_key']])
+				else if ($out['cond_when'] == 'any' && isset($this->cond[$out['cond_key']]))
 				{
 					$cond = true;
 				}
@@ -132,6 +132,7 @@ class multi_mail
 		}
 
 		mail_q(array_merge($mail_ary, $out));
+
 		$this->vars = [];
 
 		return $this;
