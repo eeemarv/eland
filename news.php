@@ -181,7 +181,7 @@ if ($add || $edit)
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-	echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum (wanneer gaat dit door?)</label>';
+	echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
@@ -192,6 +192,7 @@ if ($add || $edit)
 	echo 'data-date-orientation="bottom" ';
 	echo 'value="' . $app['eland.date_format']->get($news['itemdate'], 'day') . '" ';
 	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '">';
+	echo '<p><small>Wanneer gaat dit door?</small></p>';
 	echo '</div>';
 	echo '</div>';
 
