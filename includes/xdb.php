@@ -241,7 +241,6 @@ class xdb
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			$alert->error('Database transactie niet gelukt.');
 			echo 'Database transactie niet gelukt.';
 			event_log('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
 			throw $e;

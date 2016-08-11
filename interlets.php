@@ -19,7 +19,7 @@ if ($id || $edit || $del)
 
 	if (!$group)
 	{
-		$alert->error('Groep niet gevonden.');
+		$app['eland.alert']->error('Groep niet gevonden.');
 		cancel();
 	}
 }
@@ -113,14 +113,14 @@ if ($add || $edit)
 			{
 				if ($app['db']->update('letsgroups', $group, ['id' => $id]))
 				{
-					$alert->success('Letsgroep aangepast.');
+					$app['eland.alert']->success('Letsgroep aangepast.');
 
 					clear_interlets_groups_cache();
 					
 					cancel($edit);
 				}
 
-				$alert->error('Letsgroep niet aangepast.');
+				$app['eland.alert']->error('Letsgroep niet aangepast.');
 			}
 		}
 		else
@@ -139,7 +139,7 @@ if ($add || $edit)
 			{
 				if ($app['db']->insert('letsgroups', $group))
 				{
-					$alert->success('Letsgroep opgeslagen.');
+					$app['eland.alert']->success('Letsgroep opgeslagen.');
 
 					$id = $app['db']->lastInsertId('letsgroups_id_seq');
 
@@ -148,13 +148,13 @@ if ($add || $edit)
 					cancel($id);
 				}
 
-				$alert->error('Letsgroep niet opgeslagen.');
+				$app['eland.alert']->error('Letsgroep niet opgeslagen.');
 			}
 		}
 
 		if (count($errors))
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 	}
 
@@ -292,20 +292,20 @@ if ($del)
 
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
 		if($app['db']->delete('letsgroups', ['id' => $del]))
 		{
-			$alert->success('Letsgroep verwijderd.');
+			$app['eland.alert']->success('Letsgroep verwijderd.');
 
 			clear_interlets_groups_cache();
 			
 			cancel();
 		}
 
-		$alert->error('Letsgroep niet verwijderd.');
+		$app['eland.alert']->error('Letsgroep niet verwijderd.');
 	}
 
 	$h1 = 'Letsgroep verwijderen: ' . $group['groupname'];

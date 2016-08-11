@@ -19,7 +19,7 @@ if ($token)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
-				$alert->success('Paswoord opgeslagen.');
+				$app['eland.alert']->success('Paswoord opgeslagen.');
 				log_event('system', 'password reset success user ' . link_user($user, false, false, true));
 
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
@@ -36,13 +36,14 @@ if ($token)
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
 			}
-			$alert->error('Het reset-token is niet meer geldig.');
+
+			$app['eland.alert']->error('Het reset-token is niet meer geldig.');
 			header('Location: pwreset.php');
 			exit;
 		}
 		else
 		{
-			$alert->error('Te zwak paswoord.');
+			$app['eland.alert']->error('Te zwak paswoord.');
 		}
 	}
 
@@ -121,24 +122,24 @@ if (isset($_POST['zend']))
 
 				mail_q(['to' => $email, 'text' => $text, 'subject' => $subject], true);
 
-				$alert->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
+				$app['eland.alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 				log_event('system', 'Paswoord reset link verstuurd naar ' . $email);
 				header('Location: login.php');
 				exit;
 			}
 			else
 			{
-				$alert->error('Mailadres niet bekend');
+				$app['eland.alert']->error('Mailadres niet bekend');
 			}
 		}
 		else
 		{
-			$alert->error('Mailadres niet uniek.');
+			$app['eland.alert']->error('Mailadres niet uniek.');
 		}
 	}
 	else
 	{
-		$alert->error('Geef een mailadres op');
+		$app['eland.alert']->error('Geef een mailadres op');
 		log_event('system', 'Empty activation request');
 	}
 }

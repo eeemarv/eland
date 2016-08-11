@@ -16,7 +16,7 @@ if ($s_id)
 
 if (!readconfigfromdb('registration_en'))
 {
-	$alert->warning('De inschrijvingspagina is niet ingeschakeld.');
+	$app['eland.alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
 }
 
@@ -167,13 +167,13 @@ if ($token)
 			}
 			catch (Exception $e)
 			{
-				$alert->error('Fout in mail template: ' . $e->getMessage());
+				$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
 			}
 
 			mail_q(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin']);
 		}
 
-		$alert->success('Inschrijving voltooid.');
+		$app['eland.alert']->success('Inschrijving voltooid.');
 
 		require_once $rootpath . 'includes/inc_header.php';
 
@@ -189,7 +189,7 @@ if ($token)
 		exit;
 	}
 
-	$alert->error('Geen geldig token.');
+	$app['eland.alert']->error('Geen geldig token.');
 
 	require_once $rootpath . 'includes/inc_header.php';
 
@@ -225,11 +225,11 @@ if ($submit)
 
 	if(!$reg['email'])
 	{
-		$alert->error('Vul een email adres in.');
+		$app['eland.alert']->error('Vul een email adres in.');
 	}
 	else if (!filter_var($reg['email'], FILTER_VALIDATE_EMAIL))
 	{
-		$alert->error('Geen geldig email adres.');
+		$app['eland.alert']->error('Geen geldig email adres.');
 	}
 	else if ($app['db']->fetchColumn('select c.id_user
 		from contact c, type_contact tc
@@ -237,23 +237,23 @@ if ($submit)
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))
 	{
-		$alert->error('Er bestaat reeds een inschrijving met dit mailadres.');
+		$app['eland.alert']->error('Er bestaat reeds een inschrijving met dit mailadres.');
 	}
 	else if (!$reg['first_name'])
 	{
-		$alert->error('Vul een voornaam in.');
+		$app['eland.alert']->error('Vul een voornaam in.');
 	}
 	else if (!$reg['last_name'])
 	{
-		$alert->error('Vul een achternaam in.');
+		$app['eland.alert']->error('Vul een achternaam in.');
 	}
 	else if (!$reg['postcode'])
 	{
-		$alert->error('Vul een postcode in.');
+		$app['eland.alert']->error('Vul een postcode in.');
 	}
 	else if ($error_token = $app['eland.form_token']->get_error())
 	{
-		$alert->error($error_token);
+		$app['eland.alert']->error($error_token);
 	}
 	else
 	{
@@ -272,7 +272,7 @@ if ($submit)
 
 		mail_q(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
 
-		$alert->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
+		$app['eland.alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}

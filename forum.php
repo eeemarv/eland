@@ -16,17 +16,17 @@ if (!($s_user || $s_admin))
 {
 	if ($del)
 	{
-		$alert->error('Je hebt geen rechten om te verwijderen.');
+		$app['eland.alert']->error('Je hebt geen rechten om te verwijderen.');
 		cancel();
 	}
 	if ($add)
 	{
-		$alert->error('Je hebt geen rechten om te toe te voegen.');
+		$app['eland.alert']->error('Je hebt geen rechten om te toe te voegen.');
 		cancel();
 	}
 	if ($edit)
 	{
-		$alert->error('Je hebt geen rechten om aan te passen.');
+		$app['eland.alert']->error('Je hebt geen rechten om aan te passen.');
 		cancel();
 	}
 }
@@ -35,7 +35,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if (!readconfigfromdb('forum_en'))
 {
-	$alert->warning('De forum pagina is niet ingeschakeld.');
+	$app['eland.alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_index();
 }
 
@@ -54,7 +54,7 @@ if ($del || $edit)
 
 	if (!isset($forum_post))
 	{
-		$alert->error('Post niet gevonden.');
+		$app['eland.alert']->error('Post niet gevonden.');
 		cancel();
 	}
 
@@ -66,11 +66,11 @@ if ($del || $edit)
 
 		if ($del)
 		{
-			$alert->error('Je hebt onvoldoende rechten om ' . $str . ' te verwijderen.');
+			$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $str . ' te verwijderen.');
 		}
 		else
 		{
-			$alert->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
+			$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
 		}
 
 		cancel(($forum_post['parent_id']) ?: $t);
@@ -85,7 +85,7 @@ if ($submit)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -102,11 +102,11 @@ if ($submit)
 				$app['eland.xdb']->del('forum', $row['eland_id']); 
 			}
 
-			$alert->success('Het forum onderwerp is verwijderd.');
+			$app['eland.alert']->success('Het forum onderwerp is verwijderd.');
 			cancel();
 		}
 
-		$alert->success('De reactie is verwijderd.');
+		$app['eland.alert']->success('De reactie is verwijderd.');
 
 		cancel($forum_post['parent_id']);
 	}
@@ -153,7 +153,7 @@ if ($submit)
 
 	if (!$topic)
 	{
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -168,13 +168,13 @@ if ($submit)
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 	else if ($edit)
 	{
 		$app['eland.xdb']->set('forum', $edit, $forum_post);
 
-		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
+		$app['eland.alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
 		cancel($topic);
 	}
@@ -184,7 +184,7 @@ if ($submit)
 
 		$app['eland.xdb']->set('forum', $new_id, $forum_post);
 
-		$alert->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
+		$app['eland.alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
 		cancel($topic);
 	}
@@ -249,9 +249,9 @@ if ($add || $edit)
 			$topic_post = $row['data'];
 		}
 
-		if (!$access_control->is_visible($topic_post['access']))
+		if (!$app['eland.access_control']->is_visible($topic_post['access']))
 		{
-			$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
+			$app['eland.alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 			cancel();
 		}
 	}
@@ -308,7 +308,7 @@ if ($add || $edit)
 			$omit_access = false;
 		}
 
-		echo $access_control->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
+		echo $app['eland.access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
 	}
 
 	$str = ($topic) ? 'Reactie' : 'Onderwerp';
@@ -354,9 +354,9 @@ if ($topic)
 
 	$s_owner = ($topic_post['uid'] && $topic_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
 
-	if (!$access_control->is_visible($topic_post['access']) && !$s_owner)
+	if (!$app['eland.access_control']->is_visible($topic_post['access']) && !$s_owner)
 	{
-		$alert->error('Je hebt geen toegang tot dit forum onderwerp.');
+		$app['eland.alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 		cancel();
 	}
 
@@ -384,14 +384,14 @@ if ($topic)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
-		'access' => $access_control->get_visible_ary()], 'order by event_time desc limit 1');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
-		'access' => $access_control->get_visible_ary()], 'order by event_time asc limit 1');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
@@ -428,7 +428,7 @@ if ($topic)
 	if (!$s_guest)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $access_control->get_label($topic_post['access']);
+		echo $app['eland.access_control']->get_label($topic_post['access']);
 		echo '</p>';
 	}
 
@@ -502,7 +502,7 @@ if ($topic)
 
 $rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 	'agg_type' => 'forum',
-	'access' => $access_control->get_visible_ary()], 'order by event_time desc');
+	'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc');
 
 if (count($rows))
 {
@@ -547,7 +547,7 @@ $forum_empty = true;
 
 foreach($forum_posts as $p)
 {
-	if ($access_control->is_visible($p['access']))
+	if ($app['eland.access_control']->is_visible($p['access']))
 	{
 		$forum_empty = false;
 		break;
@@ -586,7 +586,7 @@ echo '<tbody>';
 
 foreach($forum_posts as $p)
 {
-	if (!$access_control->is_visible($p['access']))
+	if (!$app['eland.access_control']->is_visible($p['access']))
 	{
 		continue;
 	}
@@ -606,7 +606,7 @@ foreach($forum_posts as $p)
 	
 	if (!$s_guest)
 	{
-		echo '<td>' . $access_control->get_label($p['access']) . '</td>';
+		echo '<td>' . $app['eland.access_control']->get_label($p['access']) . '</td>';
 	}
 
 	if ($s_admin)

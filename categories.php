@@ -46,15 +46,15 @@ if ($add)
 
 			if ($app['db']->insert('categories', $cat))
 			{
-				$alert->success('Categorie toegevoegd.');
+				$app['eland.alert']->success('Categorie toegevoegd.');
 				cancel();
 			}
 
-			$alert->error('Categorie niet toegevoegd.');
+			$app['eland.alert']->error('Categorie niet toegevoegd.');
 		}
 		else
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 	}
 
@@ -141,19 +141,19 @@ if ($edit)
 
 		if (!$cat['name'])
 		{
-			$alert->error('Vul naam in!');	
+			$app['eland.alert']->error('Vul naam in!');	
 		}
 		else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 		{
-			$alert->error('Hoofdcategoriën kunnen geen berichten bevatten.');
+			$app['eland.alert']->error('Hoofdcategoriën kunnen geen berichten bevatten.');
 		}
 		else if ($cat['leafnote'] && $child_count_ary[$edit])
 		{
-			$alert->error('Subcategoriën kunnen geen categoriën bevatten.');
+			$app['eland.alert']->error('Subcategoriën kunnen geen categoriën bevatten.');
 		}
 		else if ($token_error = $app['eland.form_token']->get_error())
 		{
-			$alert->error($token_error);
+			$app['eland.alert']->error($token_error);
 		}
 		else
 		{
@@ -163,12 +163,12 @@ if ($edit)
 
 			if ($app['db']->update('categories', $cat, ['id' => $edit]))
 			{
-				$alert->success('Categorie aangepast.');
+				$app['eland.alert']->success('Categorie aangepast.');
 				$app['db']->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', [$cat['name'], $edit]);
 				cancel();
 			}
 
-			$alert->error('Categorie niet aangepast.');
+			$app['eland.alert']->error('Categorie niet aangepast.');
 		}
 	}
 
@@ -232,17 +232,17 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('categories', ['id' => $del]))
 		{
-			$alert->success('Categorie verwijderd.');
+			$app['eland.alert']->success('Categorie verwijderd.');
 			cancel();
 		}
 
-		$alert->error('Categorie niet verwijderd.');
+		$app['eland.alert']->error('Categorie niet verwijderd.');
 	}
 
 	$fullname = $app['db']->fetchColumn('SELECT fullname FROM categories WHERE id = ?', [$del]);

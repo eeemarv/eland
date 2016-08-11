@@ -121,19 +121,19 @@ if ($user_mail_submit && $id && $post)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$alert->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['eland.alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
 	}
 
 	if ($s_master)
 	{
-		$alert->error('Het master account kan geen berichten versturen.');
+		$app['eland.alert']->error('Het master account kan geen berichten versturen.');
 		cancel();
 	}
 
 	if (!$s_schema)
 	{
-		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
 		cancel();
 	}
 
@@ -182,11 +182,11 @@ if ($user_mail_submit && $id && $post)
 
 		mail_q(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
 
-		$alert->success('Mail verzonden.');
+		$app['eland.alert']->success('Mail verzonden.');
 	}
 	else
 	{
-		$alert->error('Fout: leeg bericht. Mail niet verzonden.');
+		$app['eland.alert']->error('Fout: leeg bericht. Mail niet verzonden.');
 	}
 
 	cancel($id);
@@ -315,7 +315,7 @@ if ($img_del && $id)
 
 	if (!($s_owner || $s_admin))
 	{
-		$alert->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
 		cancel($id);
 	}
 
@@ -323,7 +323,7 @@ if ($img_del && $id)
 
 	if (!$user)
 	{
-		$alert->error('De gebruiker bestaat niet.');
+		$app['eland.alert']->error('De gebruiker bestaat niet.');
 		cancel();
 	}
 
@@ -331,7 +331,7 @@ if ($img_del && $id)
 
 	if ($file == '' || !$file)
 	{
-		$alert->error('De gebruiker heeft geen foto.');
+		$app['eland.alert']->error('De gebruiker heeft geen foto.');
 		cancel($id);
 	}
 
@@ -339,7 +339,7 @@ if ($img_del && $id)
 	{
 		$app['db']->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
-		$alert->success('Profielfoto verwijderd.');
+		$app['eland.alert']->success('Profielfoto verwijderd.');
 		cancel($id);
 	}
 
@@ -441,9 +441,9 @@ if ($bulk_submit && $post && $s_admin)
 
 	if ($bulk_field && strpos($bulk_field, '_access') !== false)
 	{
-		$access_value = $access_control->get_post_value();
+		$access_value = $app['eland.access_control']->get_post_value();
 
-		if ($access_error = $access_control->get_post_error())
+		if ($access_error = $app['eland.access_control']->get_post_error())
 		{
 			$errors[] = $access_error;
 		}
@@ -451,7 +451,7 @@ if ($bulk_submit && $post && $s_admin)
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 	else
 	{
@@ -481,7 +481,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 	if ($bulk_field == 'fullname_access')
 	{
-		$fullname_access_role = $access_control->get_role($access_value);
+		$fullname_access_role = $app['eland.access_control']->get_role($access_value);
 
 		foreach ($user_ids as $user_id)
 		{
@@ -491,7 +491,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
 
-		$alert->success('De zichtbaarheid van de volledige naam werd aangepast.');
+		$app['eland.alert']->success('De zichtbaarheid van de volledige naam werd aangepast.');
 
 		cancel();
 	}
@@ -519,7 +519,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		clear_interlets_groups_cache();
 		
-		$alert->success('Het veld werd aangepast.');
+		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
 	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$bulk_field])
@@ -532,10 +532,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-		$access_role = $access_control->get_role($access_value);
+		$access_role = $app['eland.access_control']->get_role($access_value);
 
 		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
-		$alert->success('Het veld werd aangepast.');
+		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
 }
@@ -613,7 +613,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		}
 		catch (Exception $e)
 		{
-			$alert->error('Fout in mail template: ' . $e->getMessage());
+			$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
 			$sel_ary = [];
 
 			break;
@@ -643,11 +643,11 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		error_log($alert_msg);
 
-		$alert->success($alert_msg);
+		$app['eland.alert']->success($alert_msg);
 	}
 	else
 	{
-		$alert->warning('Geen mails verzonden.');
+		$app['eland.alert']->warning('Geen mails verzonden.');
 	}
 
 	if (count($sel_ary))
@@ -659,7 +659,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
 
-		$alert->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users);
+		$app['eland.alert']->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users);
 	}
 
 	if ($bulk_mail_submit && $count)
@@ -680,7 +680,7 @@ if ($pw)
 
 	if (!$s_admin && !$s_owner)
 	{
-		$alert->error('Je hebt onvoldoende rechten om het paswoord aan te passen voor deze gebruiker.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om het paswoord aan te passen voor deze gebruiker.');
 		cancel($pw);
 	}
 
@@ -713,7 +713,7 @@ if ($pw)
 			if ($app['db']->update('users', $update, ['id' => $pw]))
 			{
 				$user = readuser($pw, true);
-				$alert->success('Paswoord opgeslagen.');
+				$app['eland.alert']->success('Paswoord opgeslagen.');
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
@@ -744,23 +744,23 @@ if ($pw)
 						$con .= 'Veel letsgenot!';
 						mail_q(['to' => $pw, 'subject' => $subj, 'text' => $con]);
 
-						$alert->success('Notificatie mail verzonden');
+						$app['eland.alert']->success('Notificatie mail verzonden');
 					}
 					else
 					{
-						$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+						$app['eland.alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
 					}
 				}
 				cancel($pw);
 			}
 			else
 			{
-				$alert->error('Paswoord niet opgeslagen.');
+				$app['eland.alert']->error('Paswoord niet opgeslagen.');
 			}
 		}
 		else
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 
 	}
@@ -826,19 +826,19 @@ if ($del)
 {
 	if (!$s_admin)
 	{
-		$alert->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
 		cancel($del);
 	}
 
 	if ($s_id == $del)
 	{
-		$alert->error('Je kan jezelf niet verwijderen.');
+		$app['eland.alert']->error('Je kan jezelf niet verwijderen.');
 		cancel($del);
 	}
 
 	if ($app['db']->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
 	{
-		$alert->error('Een gebruiker met transacties kan niet worden verwijderd.');
+		$app['eland.alert']->error('Een gebruiker met transacties kan niet worden verwijderd.');
 		cancel($del);
 	}
 
@@ -846,7 +846,7 @@ if ($del)
 
 	if (!$user)
 	{
-		$alert->error('Gebruiker bestaat niet.');
+		$app['eland.alert']->error('Gebruiker bestaat niet.');
 		cancel();
 	}
 
@@ -854,7 +854,7 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -980,7 +980,7 @@ if ($del)
 				$app['db']->delete('users', ['id' => $del]);
 				$app['redis']->expire($schema . '_user_' . $del, 0);
 
-				$alert->success('De gebruiker is verwijderd.');
+				$app['eland.alert']->success('De gebruiker is verwijderd.');
 
 				if ($user['status'] == 1 || $user['status'] == 2)
 				{
@@ -997,12 +997,12 @@ if ($del)
 			}
 			else
 			{
-				$alert->error('Het paswoord is niet correct.');
+				$app['eland.alert']->error('Het paswoord is niet correct.');
 			}
 		}
 		else
 		{
-			$alert->error('Het paswoord is niet ingevuld.');
+			$app['eland.alert']->error('Het paswoord is niet ingevuld.');
 		}
 	}
 
@@ -1051,7 +1051,7 @@ if ($add || $edit)
 {
 	if ($add && !$s_admin)
 	{
-		$alert->error('Je hebt geen rechten om een gebruiker toe te voegen.');
+		$app['eland.alert']->error('Je hebt geen rechten om een gebruiker toe te voegen.');
 		cancel();
 	}
 
@@ -1059,7 +1059,7 @@ if ($add || $edit)
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
-		$alert->error('Je hebt geen rechten om deze gebruiker aan te passen.');
+		$app['eland.alert']->error('Je hebt geen rechten om deze gebruiker aan te passen.');
 		cancel($edit);
 	}
 
@@ -1123,11 +1123,11 @@ if ($add || $edit)
 
 			foreach ($contact as $key => $c)
 			{
-				$contact[$key]['flag_public'] = $access_control->get_post_value('contact_access_' . $key);
+				$contact[$key]['flag_public'] = $app['eland.access_control']->get_post_value('contact_access_' . $key);
 
 				if ($c['value'])
 				{
-					$contact_post_error = $access_control->get_post_error('contact_access_' . $key);
+					$contact_post_error = $app['eland.access_control']->get_post_error('contact_access_' . $key);
 
 					if ($contact_post_error)
 					{
@@ -1176,7 +1176,7 @@ if ($add || $edit)
 			{
 				if (!$mailadr)
 				{
-					$alert->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
+					$app['eland.alert']->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
 				}
 			}
 
@@ -1196,7 +1196,7 @@ if ($add || $edit)
 			$user['fullname'] = trim($_POST['fullname']);
 		}
 
-		$fullname_access = $access_control->get_post_value('fullname_access');
+		$fullname_access = $app['eland.access_control']->get_post_value('fullname_access');
 
 		$name_sql = 'select name
 			from users
@@ -1220,7 +1220,7 @@ if ($add || $edit)
 			$user_prefetch = readuser($edit);
 		}
 
-		$fullname_access_error = $access_control->get_post_error('fullname_access');
+		$fullname_access_error = $app['eland.access_control']->get_post_error('fullname_access');
 
 		if ($fullname_access_error)
 		{
@@ -1377,11 +1377,11 @@ if ($add || $edit)
 				{
 					$id = $app['db']->lastInsertId('users_id_seq');
 
-					$fullname_access_role = $access_control->get_role($fullname_access);
+					$fullname_access_role = $app['eland.access_control']->get_role($fullname_access);
 
 					$app['eland.xdb']->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
-					$alert->success('Gebruiker opgeslagen.');
+					$app['eland.alert']->success('Gebruiker opgeslagen.');
 
 					$user = readuser($id, true);
 
@@ -1412,16 +1412,16 @@ if ($add || $edit)
 							{
 								sendactivationmail($password, $user);
 								sendadminmail($user);
-								$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+								$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 							}
 							else
 							{
-								$alert->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['eland.alert']->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 						else
 						{
-							$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+							$app['eland.alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 						}
 					}
 
@@ -1441,7 +1441,7 @@ if ($add || $edit)
 				}
 				else
 				{
-					$alert->error('Gebruiker niet opgeslagen.');
+					$app['eland.alert']->error('Gebruiker niet opgeslagen.');
 				}
 			}
 			else if ($edit)
@@ -1463,13 +1463,13 @@ if ($add || $edit)
 				if($app['db']->update('users', $user, ['id' => $edit]))
 				{
 
-					$fullname_access_role = $access_control->get_role($fullname_access);
+					$fullname_access_role = $app['eland.access_control']->get_role($fullname_access);
 
 					$app['eland.xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
 
 					$user = readuser($edit, true);
 
-					$alert->success('Gebruiker aangepast.');
+					$app['eland.alert']->success('Gebruiker aangepast.');
 
 					if ($s_admin)
 					{
@@ -1539,16 +1539,16 @@ if ($add || $edit)
 									$user['mail'] = $mail;
 									sendactivationmail($password, $user);
 									sendadminmail($user);
-									$alert->success('Mail met paswoord naar de gebruiker verstuurd.');
+									$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 								}
 								else
 								{
-									$alert->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+									$app['eland.alert']->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
 								}
 							}
 							else
 							{
-								$alert->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['eland.alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 
@@ -1572,13 +1572,13 @@ if ($add || $edit)
 				}
 				else
 				{
-					$alert->error('Gebruiker niet aangepast.');
+					$app['eland.alert']->error('Gebruiker niet aangepast.');
 				}
 			}
 		}
 		else
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 
 			if ($edit)
 			{
@@ -1753,7 +1753,7 @@ if ($add || $edit)
 		$fullname_access = ($add && !$interlets) ? false : 'admin';
 	}
 
-	echo $access_control->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
+	echo $app['eland.access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
 
 	echo '<div class="form-group">';
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
@@ -1890,7 +1890,7 @@ if ($add || $edit)
 				$c['flag_public'] = false;
 			}
 
-			echo $access_control->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
+			echo $app['eland.access_control']->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
 
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
@@ -1963,7 +1963,7 @@ if ($id)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$alert->error('Je hebt geen toegang tot deze gebruiker.');
+		$app['eland.alert']->error('Je hebt geen toegang tot deze gebruiker.');
 		cancel();
 	}
 
@@ -2138,7 +2138,7 @@ if ($id)
 
 	$fullname_access = ($user['fullname_access']) ?: 'admin';
 
-	if ($s_admin || $s_owner || $access_control->is_visible($fullname_access))
+	if ($s_admin || $s_owner || $app['eland.access_control']->is_visible($fullname_access))
 	{
 		echo '<dt>';
 		echo 'Volledige naam';
@@ -2147,7 +2147,7 @@ if ($id)
 
 		echo '<dt>Zichtbaarheid volledige naam</dt>';
 		echo '<dd>';
-		echo $access_control->get_label($fullname_access);
+		echo $app['eland.access_control']->get_label($fullname_access);
 		echo '</dd>';
 	}
 
@@ -3376,7 +3376,7 @@ if ($v_list)
 			}
 			else if (isset($t['access_control']))
 			{
-				echo $access_control->get_radio_buttons();
+				echo $app['eland.access_control']->get_radio_buttons();
 			}
 			else
 			{
@@ -3598,11 +3598,11 @@ function sendadminmail($user)
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $alert;
+	global $base_url, $app;
 
 	if (empty($user['mail']))
 	{
-		$alert->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
+		$app['eland.alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
 		return 0;
 	}
 

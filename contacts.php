@@ -29,13 +29,13 @@ if ($del)
 {
 	if (!($user_id = $app['db']->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
 	{
-		$alert->error('Het contact bestaat niet.');
+		$app['eland.alert']->error('Het contact bestaat niet.');
 		cancel();
 	}
 
 	if ($uid && $uid != $user_id)
 	{
-		$alert->error('uid in url is niet de eigenaar van contact.');
+		$app['eland.alert']->error('uid in url is niet de eigenaar van contact.');
 		cancel();
 	}
 
@@ -45,7 +45,7 @@ if ($del)
 
 	if (!($s_admin || $s_owner))
 	{
-		$alert->error('Je hebt geen rechten om het contact te verwijderen.');
+		$app['eland.alert']->error('Je hebt geen rechten om het contact te verwijderen.');
 		cancel($uid);
 	}
 
@@ -65,7 +65,7 @@ if ($del)
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
 		{
 			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een actieve gebruiker';
-			$alert->warning('Waarschuwing: dit is ' . $err);
+			$app['eland.alert']->warning('Waarschuwing: dit is ' . $err);
 			//cancel($uid);
 		}
 	}
@@ -74,17 +74,17 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel($uid);
 		}
 
 		if ($app['db']->delete('contact', array('id' => $del)))
 		{
-			$alert->success('Contact verwijderd.');
+			$app['eland.alert']->success('Contact verwijderd.');
 		}
 		else
 		{
-			$alert->error('Fout bij verwijderen van het contact.');
+			$app['eland.alert']->error('Fout bij verwijderen van het contact.');
 		}
 		cancel($uid);
 	}
@@ -118,7 +118,7 @@ if ($del)
 	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>' . $access_control->get_label($contact['flag_public']) . '</dd>';
+	echo '<dd>' . $app['eland.access_control']->get_label($contact['flag_public']) . '</dd>';
 	echo '</dl>';
 
 	echo '<form method="post" class="form-horizontal">';
@@ -152,13 +152,13 @@ if ($edit || $add)
 	{
 		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', array($edit))))
 		{
-			$alert->error('Dit contact heeft geen eigenaar.');
+			$app['eland.alert']->error('Dit contact heeft geen eigenaar.');
 			cancel();
 		}
 
 		if ($uid && $uid != $user_id)
 		{
-			$alert->error('uid in url is niet de eigenaar van contact.');
+			$app['eland.alert']->error('uid in url is niet de eigenaar van contact.');
 			cancel();
 		}
 	}
@@ -174,7 +174,7 @@ if ($edit || $add)
 	if (!($s_admin || $s_owner))
 	{
 		$err = ($edit) ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
-		$alert->error('Je hebt geen rechten om ' . $err);
+		$app['eland.alert']->error('Je hebt geen rechten om ' . $err);
 		cancel($uid);
 	}
 
@@ -206,7 +206,7 @@ if ($edit || $add)
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> trim($_POST['value']),
 			'comments' 				=> trim($_POST['comments']),
-			'flag_public'			=> $access_control->get_post_value(), //$_POST['flag_public'],
+			'flag_public'			=> $app['eland.access_control']->get_post_value(), //$_POST['flag_public'],
 			'id_user'				=> $user_id,
 		);
 
@@ -237,7 +237,7 @@ if ($edit || $add)
 			$errors[] = 'Contacttype bestaat niet!';
 		}
 
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -260,7 +260,7 @@ if ($edit || $add)
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
-				$alert->warning('Waarschuwing: de gebruiker heeft geen mailadres.');
+				$app['eland.alert']->warning('Waarschuwing: de gebruiker heeft geen mailadres.');
 			} 
 		}
 
@@ -287,30 +287,30 @@ if ($edit || $add)
 			{
 				if ($app['db']->update('contact', $contact, array('id' => $edit)))
 				{
-					$alert->success('Contact aangepast.');
+					$app['eland.alert']->success('Contact aangepast.');
 					cancel($uid);
 				}
 				else
 				{
-					$alert->error('Fout bij het opslaan');
+					$app['eland.alert']->error('Fout bij het opslaan');
 				}
 			}
 			else
 			{
 				if ($app['db']->insert('contact', $contact))
 				{
-					$alert->success('Contact opgeslagen.');
+					$app['eland.alert']->success('Contact opgeslagen.');
 					cancel($uid);
 				}
 				else
 				{
-					$alert->error('Fout bij het opslaan');
+					$app['eland.alert']->error('Fout bij het opslaan');
 				}
 			}
 		}
 		else
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 	}
 	else if ($edit)
@@ -404,7 +404,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $access_control->get_radio_buttons(false, $contact['flag_public']);
+	echo $app['eland.access_control']->get_radio_buttons(false, $contact['flag_public']);
 
 	if ($uid)
 	{
@@ -569,7 +569,7 @@ if ($uid)
 
 		if ($s_admin || $s_owner)
 		{
-			echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
+			echo '<td>' . $app['eland.access_control']->get_label($c['flag_public']) . '</td>';
 
 			echo '<td>';
 			echo aphp('contacts', ['del' => $c['id'], 'uid' => $uid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
@@ -609,7 +609,7 @@ if ($uid)
 
 if (!$s_admin)
 {
-	$alert->error('Je hebt geen toegang tot deze pagina.');
+	$app['eland.alert']->error('Je hebt geen toegang tot deze pagina.');
 	redirect_index();
 }
 
@@ -1012,7 +1012,7 @@ foreach ($contacts as $c)
 	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['value']) . '</td>';
 	echo '<td>' . link_user($c['id_user']) . '</td>';
 	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['comments']) . '</td>';
-	echo '<td>' . $access_control->get_label($c['flag_public']) . '</td>';
+	echo '<td>' . $app['eland.access_control']->get_label($c['flag_public']) . '</td>';
 
 	echo '<td>';
 	echo aphp('contacts', ['del' => $c['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');

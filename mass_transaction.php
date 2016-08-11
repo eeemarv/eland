@@ -212,7 +212,7 @@ if ($submit)
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 	else
 	{
@@ -298,7 +298,7 @@ if ($submit)
 		}
 		catch (Exception $e)
 		{
-			$alert->error('Fout bij het opslaan.');
+			$app['eland.alert']->error('Fout bij het opslaan.');
 			$app['db']->rollback();
 			throw $e;
 		}
@@ -328,7 +328,7 @@ if ($submit)
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');
-		$alert->success($alert_success);
+		$app['eland.alert']->success($alert_success);
 
 		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')'; 
 		$log_many = rtrim($log_many, ', ');
@@ -341,17 +341,17 @@ if ($submit)
 
 		if ($s_master)
 		{
-			$alert->warning('Master account: geen mails verzonden.');
+			$app['eland.alert']->warning('Master account: geen mails verzonden.');
 		} 
 		else if ($mail_en)
 		{
 			if (mail_mass_transaction($mail_ary))
 			{
-				$alert->success('Notificatie mails verzonden.');
+				$app['eland.alert']->success('Notificatie mails verzonden.');
 			}
 			else
 			{
-				$alert->error('Fout bij het verzenden van notificatie mails.');
+				$app['eland.alert']->error('Fout bij het verzenden van notificatie mails.');
 			}
 		} 
 
@@ -646,11 +646,11 @@ include $rootpath . 'includes/inc_footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $alert, $s_id, $base_url;
+	global $app, $s_id, $base_url;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
-		$alert->warning('Mail functions are not enabled. ');
+		$app['eland.alert']->warning('Mail functions are not enabled. ');
 		return;
 	}
 

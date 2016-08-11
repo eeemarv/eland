@@ -15,16 +15,16 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('apikeys', ['id' => $del]))
 		{
-			$alert->success('Apikey verwijderd.');
+			$app['eland.alert']->success('Apikey verwijderd.');
 			cancel();
 		}
-		$alert->error('Apikey niet verwijderd.');
+		$app['eland.alert']->error('Apikey niet verwijderd.');
 	}
 	$apikey = $app['db']->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', [$del]);
 
@@ -65,7 +65,7 @@ if ($add)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -77,10 +77,10 @@ if ($add)
 
 		if($app['db']->insert('apikeys', $apikey))
 		{
-			$alert->success('Apikey opgeslagen.');
+			$app['eland.alert']->success('Apikey opgeslagen.');
 			cancel();
 		}
-		$alert->error('Apikey niet opgeslagen.');
+		$app['eland.alert']->error('Apikey niet opgeslagen.');
 	}
 
 	$key = sha1(readconfigfromdb('systemname') . microtime());
