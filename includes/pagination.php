@@ -26,7 +26,11 @@ class pagination
 		1000 	=> 1000,
 	];
 
-	public function __construct($entity = '', $row_count = 0, $params = [], $inline = false)
+	public function __construct()
+	{
+	}
+
+	public function init($entity = '', $row_count = 0, $params = [], $inline = false)
 	{
 		$this->limit = $params['limit'] ?: 25;
 		$this->start = $params['start'] ?: 0;
