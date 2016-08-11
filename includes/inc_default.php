@@ -541,9 +541,7 @@ $app['eland.xdb'] = function ($app){
 	return new eland\xdb($app['db']);
 };
 
-// todo: remove $access_control dep.
-
-$app['eland.xdb']->init($schema, $s_schema, $s_id, $access_control);
+$app['eland.xdb']->init($schema, $s_schema, $s_id);
 
 $app['eland.queue'] = function($app){
 	return new eland\queue($app['db']);

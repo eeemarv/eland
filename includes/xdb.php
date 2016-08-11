@@ -3,7 +3,6 @@
 namespace eland;
 
 use Doctrine\DBAL\Connection as db;
-use eland\access_control;
 
 /*
                             Table "eland_extra.events"
@@ -53,7 +52,6 @@ class xdb
 	private $user_schema = '';
 	private $user_id = '';
 	private $db;
-	private $access_control;
 
 	public function __construct(db $db)
 	{
@@ -76,12 +74,11 @@ class xdb
 	/*
 	 */
 
-	public function init(string $schema, string $user_schema = '', $user_id = 0, access_control $access_control)
+	public function init(string $schema, string $user_schema = '', $user_id = 0)
 	{
 		$this->schema = $schema;
 		$this->user_schema = ($user_schema) ? $user_schema : $schema;
 		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
-		$this->access_control = $access_control;
 	}
 
 	/*
@@ -297,8 +294,6 @@ class xdb
 
 	public function get_many($filters = [], $query_extra = false)
 	{
-		global $access_control;
-
 		$sql_where = [];
 		$sql_params = [];
 		$sql_types = [];
@@ -315,7 +310,7 @@ class xdb
 		if (isset($filters['access']))
 		{
 			$sql_where[] = 'data->>\'access\' in (?)';
-			$sql_params[] = $this->access_control->get_visible_ary();
+			$sql_params[] = $filters['access'];
 			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
 		}
 

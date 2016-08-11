@@ -393,14 +393,14 @@ if ($id)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
-		'access' => true], 'order by eland_id desc limit 1');
+		'access' => $access_control->get_visible_ary()], 'order by eland_id desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
-		'access' => true], 'order by eland_id asc limit 1');
+		'access' => $access_control->get_visible_ary()], 'order by eland_id asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 

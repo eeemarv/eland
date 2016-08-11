@@ -59,10 +59,12 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
+
 			$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
-				'data->>\'map_name\'' => $posted_map_name]); 		
+				'data->>\'map_name\'' => $posted_map_name]);
+
 			if (count($rows))
 			{
 				$errors[] = 'Er bestaat al een map met deze naam!';
@@ -580,7 +582,7 @@ if ($map)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
-		'access' => true], 'order by event_time asc');
+		'access' => $access_control->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 
@@ -627,7 +629,7 @@ else
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
-		'access' => true], 'order by event_time asc');
+		'access' => $access_control->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 

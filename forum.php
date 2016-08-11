@@ -384,14 +384,14 @@ if ($topic)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
-		'access' => true], 'order by event_time desc limit 1');
+		'access' => $access_control->get_visible_ary()], 'order by event_time desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
-		'access' => true], 'order by event_time asc limit 1');
+		'access' => $access_control->get_visible_ary()], 'order by event_time asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
@@ -502,7 +502,7 @@ if ($topic)
 
 $rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 	'agg_type' => 'forum',
-	'access' => true], 'order by event_time desc');
+	'access' => $access_control->get_visible_ary()], 'order by event_time desc');
 
 if (count($rows))
 {
