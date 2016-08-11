@@ -233,8 +233,7 @@ $alert = new eland\alert();
  * start session
  */
 
-$redis_session = new eland\redis_session($app['redis']);
-session_set_save_handler($redis_session);
+session_set_save_handler(new eland\redis_session($app['redis']));
 session_name('eland');
 session_set_cookie_params(0, '/', '.' . $overall_domain);
 session_start();
