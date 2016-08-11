@@ -235,12 +235,12 @@ class s3
 
 	public function img_list($marker = false)
 	{
-		return $this->bucket_list($this->img_bucket);
+		return $this->bucket_list($this->img_bucket, $marker);
 	}
 
 	public function doc_list($marker = false)
 	{
-		return $this->bucket_list($this->doc_bucket);
+		return $this->bucket_list($this->doc_bucket, $marker);
 	}
 
 	public function bucket_list(string $bucket, $marker = false)
