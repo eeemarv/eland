@@ -41,7 +41,7 @@ if($token)
 	}
 	else
 	{
-		$alert->error('De interlets login is mislukt.');
+		$app['eland.alert']->error('De interlets login is mislukt.');
 		log_event('', 'login-fail', 'Token login failed (' . $token . ')');
 	}
 }
@@ -63,7 +63,7 @@ if ($submit)
 		$_SESSION['logins'][$schema] = 'master';
 
 		log_event('login','Master user logged in');
-		$alert->success('OK - Gebruiker ingelogd als master.');
+		$app['eland.alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
 		exit;
@@ -195,7 +195,7 @@ if ($submit)
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);
 
-		$alert->success('Je bent ingelogd.');
+		$app['eland.alert']->success('Je bent ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 
@@ -205,12 +205,12 @@ if ($submit)
 		exit;
 	}
 
-	$alert->error($errors);
+	$app['eland.alert']->error($errors);
 }
 
 if(readconfigfromdb('maintenance'))
 {
-	$alert->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
+	$app['eland.alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }
 
 $h1 = 'Login';

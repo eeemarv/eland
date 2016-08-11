@@ -536,13 +536,13 @@ if ($post)
 
 	if (!count($posted_configs))
 	{
-		$alert->warning('Geen gewijzigde waarden.');
+		$app['eland.alert']->warning('Geen gewijzigde waarden.');
 		cancel();
 	}
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 		cancel();
 	}
 
@@ -570,11 +570,11 @@ if ($post)
 
 	if (count($posted_configs) > 1)
 	{
-		$alert->success('De instellingen zijn aangepast.');
+		$app['eland.alert']->success('De instellingen zijn aangepast.');
 	}
 	else
 	{
-		$alert->success('De instelling is aangepast.');
+		$app['eland.alert']->success('De instelling is aangepast.');
 	}
 
 	cancel();

@@ -34,7 +34,7 @@ if ($add)
 {
 	if ($s_guest)
 	{
-		$alert->error('Je hebt geen rechten om een transactie toe te voegen.');
+		$app['eland.alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
 		cancel();
 	}
 
@@ -221,7 +221,7 @@ if ($add)
 		{
 			log_event('transaction', 'form error(s): ' . implode(' | ', $errors));
 
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 		else if ($group_id == 'self')
 		{
@@ -229,11 +229,11 @@ if ($add)
 			{
 				$transaction['id'] = $id;
 				mail_transaction($transaction);
-				$alert->success('Transactie opgeslagen');
+				$app['eland.alert']->success('Transactie opgeslagen');
 			}
 			else
 			{
-				$alert->error('Gefaalde transactie');
+				$app['eland.alert']->error('Gefaalde transactie');
 			}
 
 			cancel();
@@ -247,11 +247,11 @@ if ($add)
 
 				mail_mail_interlets_transaction($transaction);
 
-				$alert->success('Interlets transactie opgeslagen (verwerking per mail).');
+				$app['eland.alert']->success('Interlets transactie opgeslagen (verwerking per mail).');
 			}
 			else
 			{
-				$alert->error('Gefaalde interlets transactie');
+				$app['eland.alert']->error('Gefaalde interlets transactie');
 			}
 
 			cancel();
@@ -260,7 +260,7 @@ if ($add)
 		{
 			log_event('transaction', 'Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.');
 
-			$alert->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
+			$app['eland.alert']->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
 
 			cancel();
 		}
@@ -268,7 +268,7 @@ if ($add)
 		{
 			log_event('transaction', 'Geen url ingesteld voor ' . $group['groupname']);
 
-			$alert->error('Geen url voor deze interlets groep.' . $contact_admin);
+			$app['eland.alert']->error('Geen url voor deze interlets groep.' . $contact_admin);
 
 			cancel();
 		}
@@ -330,7 +330,7 @@ if ($add)
 			if (count($errors))
 			{
 				log_event('interlets', 'form errors eLAS transaction, ' . $group['groupname'] . ': ' . implode('<br>', $errors));
-				$alert->error($errors);
+				$app['eland.alert']->error($errors);
 				cancel();
 			}
 
@@ -352,7 +352,7 @@ if ($add)
 			if ($error)
 			{
 				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
-				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();				
 			}
 
@@ -372,7 +372,7 @@ if ($add)
 			if ($error)
 			{
 				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
-				$alert->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();
 			}
 
@@ -414,7 +414,7 @@ if ($add)
 			if (count($errors))
 			{
 				log_event('interlets', 'soap errors eLAS transaction ' . $trans['transid'] . ', ' . $group['groupname'] . ': ' . implode('<br>', $errors));
-				$alert->error($errors);
+				$app['eland.alert']->error($errors);
 				cancel();
 			}
 
@@ -434,7 +434,7 @@ if ($add)
 
 				mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
-				$alert->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
+				$app['eland.alert']->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
 				cancel();
 			}
 
@@ -442,7 +442,7 @@ if ($add)
 
 			mail_transaction($transaction);
 
-			$alert->success('De interlets transactie werd verwerkt.');
+			$app['eland.alert']->success('De interlets transactie werd verwerkt.');
 			cancel();
 		}
 		else
@@ -545,7 +545,7 @@ if ($add)
 			if (count($errors))
 			{
 				log_event('interlets', 'form errors eLAND transaction: ' . implode('<br>', $errors));
-				$alert->error($errors);
+				$app['eland.alert']->error($errors);
 				cancel();
 			}
 
@@ -593,7 +593,7 @@ if ($add)
 			catch(Exception $e)
 			{
 				$app['db']->rollback();
-				$alert->error('Transactie niet gelukt.');
+				$app['eland.alert']->error('Transactie niet gelukt.');
 				throw $e;
 				exit;
 			}
@@ -618,7 +618,7 @@ if ($add)
 
 			autominlimit_queue($transaction['id_from'], $transaction['id_to'], $remote_amount, $remote_schema);
 
-			$alert->success('Interlets transactie uitgevoerd.');
+			$app['eland.alert']->success('Interlets transactie uitgevoerd.');
 			cancel();
 		}
 
@@ -1146,7 +1146,7 @@ if ($fdate)
 
 	if ($fdate_sql === false)
 	{
-		$alert->warning('De begindatum is fout geformateerd.');
+		$app['eland.alert']->warning('De begindatum is fout geformateerd.');
 	}
 	else
 	{
@@ -1162,7 +1162,7 @@ if ($tdate)
 
 	if ($tdate_sql === false)
 	{
-		$alert->warning('De einddatum is fout geformateerd.');
+		$app['eland.alert']->warning('De einddatum is fout geformateerd.');
 	}
 	else
 	{

@@ -1,5 +1,8 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 require_once $rootpath . 'vendor/autoload.php';
 
 $app = new Silex\Application();
@@ -10,6 +13,23 @@ $app->register(new Silex\Provider\MonologServiceProvider(), [
     'monolog.logfile'	=> 'php://stderr',
     'monolog.level' 	=> constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
 ]);
+
+$app['redis'] = function () {
+	try
+	{
+		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
+		$con = parse_url($url);
+		$con['password'] = $con['pass'];
+		$con['scheme'] = 'tcp';
+		return new Predis\Client($con);
+	}
+	catch (Exception $e)
+	{
+		echo 'Couldn\'t connected to Redis: ';
+		echo $e->getMessage();
+		exit;
+	}
+};
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
@@ -73,34 +93,7 @@ $app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 setlocale(LC_TIME, 'nl_NL.UTF-8');
 
-// default timezone to Europe/Brussels
-
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
-
-/*
- * Connect to Redis
- */
-
-$app['redis'] = function () {
-	try
-	{
-		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
-		$con = parse_url($url);
-		$con['password'] = $con['pass'];
-		$con['scheme'] = 'tcp';
-		return new Predis\Client($con);
-	}
-	catch (Exception $e)
-	{
-		echo 'Couldn\'t connected to Redis: ';
-		echo $e->getMessage();
-		exit;
-	}
-};
-
-/**
- * typeahead
- */
 
 $app['eland.typeahead'] = function($app){
 
@@ -227,7 +220,9 @@ if (!$schema)
  * alerts
 **/
 
-$alert = new eland\alert();
+$app['eland.alert'] = function (){
+	return new eland\alert();
+};
 
 /**
  * start session
@@ -481,11 +476,9 @@ switch ($s_accountrole)
 		break;
 }
 
-/**
- * access control rendering labels and selectors
- */
-
-$access_control = new eland\access_control();
+$app['eland.access_control'] = function($app){
+	return new eland\access_control();
+};
 
 /**
  * some vars
@@ -631,7 +624,7 @@ if (isset($_GET['welcome']) && $s_guest)
 		$msg .= 'boven in de navigatiebalk.';
 	}
 
-	$alert->info($msg);
+	$app['eland.alert']->info($msg);
 }
 
 /**************** FUNCTIONS ***************/
@@ -825,9 +818,9 @@ function aphp(
  */
 function generate_url($entity = 'index', $params = [], $sch = false)
 {
-	global $rootpath, $alert, $hosts, $app_protocol;
+	global $rootpath, $app, $hosts, $app_protocol;
 
-	if ($alert->is_set())
+	if ($app['eland.alert']->is_set())
 	{
 		$params['a'] = '1';
 	}

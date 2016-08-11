@@ -9,7 +9,7 @@ $token = $_GET['token'] ?? false;
 
 if (!readconfigfromdb('contact_form_en'))
 {
-	$alert->warning('De contactpagina is niet ingeschakeld.');
+	$app['eland.alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
 }
 
@@ -48,7 +48,7 @@ if ($token)
 			'reply_to'	=> $data['mail'],
 		]);
 
-		$alert->success('Je bericht werd succesvol verzonden.');
+		$app['eland.alert']->success('Je bericht werd succesvol verzonden.');
 
 		$success_text = readconfigfromdb('contact_form_success_text');
 
@@ -66,7 +66,7 @@ if ($token)
 		exit;
 	}
 
-	$alert->error('Ongeldig of verlopen token.');
+	$app['eland.alert']->error('Ongeldig of verlopen token.');
 }
 
 if($post && isset($_POST['zend']))
@@ -151,16 +151,16 @@ if($post && isset($_POST['zend']))
 
 		if (!$return_message)
 		{
-			$alert->success('Open je mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
+			$app['eland.alert']->success('Open je mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
 			header('Location: ' . generate_url('contact'));
 			exit;
 		}
 
-		$alert->error('Mail niet verstuurd. ' . $return_message);
+		$app['eland.alert']->error('Mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 }
 else
@@ -171,11 +171,11 @@ else
 
 if (!readconfigfromdb('mailenabled'))
 {
-	$alert->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['eland.alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!readconfigfromdb('support'))
 {
-	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['eland.alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 /*

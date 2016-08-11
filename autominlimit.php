@@ -8,7 +8,7 @@ if (isset($_POST['zend']))
 {
 	if ($error_token = $app['eland.form_token']->get_error())
 	{
-		$alert->error($error_token);
+		$app['eland.alert']->error($error_token);
 		cancel();
 	}
 
@@ -27,7 +27,7 @@ if (isset($_POST['zend']))
 
 	$app['eland.xdb']->set('setting', 'autominlimit', $a);
 
-	$alert->success('De automatische minimum limiet instellingen zijn aangepast.');
+	$app['eland.alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
 else 

@@ -18,7 +18,7 @@ $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
 if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
 {
-	$alert->error('Je hebt onvoldoende rechten voor deze actie.');
+	$app['eland.alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
 }
 
@@ -37,7 +37,7 @@ if ($map_edit)
 
 	if (!$map_name)
 	{
-		$alert->error('Map niet gevonden.');
+		$app['eland.alert']->error('Map niet gevonden.');
 		cancel();
 	}
 
@@ -45,7 +45,7 @@ if ($map_edit)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 
 			cancel($map_edit);
 		}
@@ -75,14 +75,14 @@ if ($map_edit)
 		{
 			$app['eland.xdb']->set('doc', $map_edit, ['map_name' => $posted_map_name]);
 
-			$alert->success('Map naam aangepast.');
+			$app['eland.alert']->success('Map naam aangepast.');
 
 			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
 			cancel($map_edit);
 		}
 
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 
 /*
@@ -147,7 +147,7 @@ if ($edit)
 			'access'		=> $_POST['access'],
 		];
 
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -205,12 +205,12 @@ if ($edit)
 
 			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
 
-			$alert->success('Document aangepast');
+			$app['eland.alert']->success('Document aangepast');
 
 			cancel($update['map_id']);
 		}
 
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 
 	if (isset($doc['map_id']) && $doc['map_id'] != '')
@@ -259,7 +259,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo $access_control->get_radio_buttons('docs', $doc['access']);
+	echo $app['eland.access_control']->get_radio_buttons('docs', $doc['access']);
 
 	$map_name = $map['map_name'] ?? '';
 
@@ -291,7 +291,7 @@ if ($confirm_del && $del)
 {
 	if ($error_token = $app['eland.form_token']->get_error())
 	{
-		$alert->error($error_token);
+		$app['eland.alert']->error($error_token);
 		cancel();
 	}
 
@@ -329,12 +329,12 @@ if ($confirm_del && $del)
 
 		$app['eland.xdb']->del('doc', $del);
 
-		$alert->success('Het document werd verwijderd.');
+		$app['eland.alert']->success('Het document werd verwijderd.');
 
 		cancel($doc['map_id'] ?? false);
 	}
 
-	$alert->error('Document niet gevonden.');
+	$app['eland.alert']->error('Document niet gevonden.');
 }
 
 if ($del)
@@ -374,7 +374,7 @@ if ($del)
 		exit;
 	}
 
-	$alert->error('Document niet gevonden.');
+	$app['eland.alert']->error('Document niet gevonden.');
 }
 
 /**
@@ -399,7 +399,7 @@ if ($submit)
 		$errors[] = 'Geen bestand geselecteerd.';
 	}
 
-	$access_error = $access_control->get_post_error();
+	$access_error = $app['eland.access_control']->get_post_error();
 
 	if ($access_error)
 	{
@@ -413,7 +413,7 @@ if ($submit)
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 	else
 	{
@@ -426,7 +426,7 @@ if ($submit)
 		if ($error)
 		{
 			event_log('doc', 'upload fail: ' . $error);
-			$alert->error('Bestand opladen mislukt.');
+			$app['eland.alert']->error('Bestand opladen mislukt.');
 		}
 		else
 		{
@@ -475,7 +475,7 @@ if ($submit)
 			$app['eland.xdb']->set('doc', $doc_id, $doc);
 
 
-			$alert->success('Het bestand is opgeladen.');
+			$app['eland.alert']->success('Het bestand is opgeladen.');
 
 			cancel($doc['map_id'] ?? false);
 		}
@@ -532,7 +532,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $access_control->get_radio_buttons('docs');
+	echo $app['eland.access_control']->get_radio_buttons('docs');
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
@@ -574,7 +574,7 @@ if ($map)
 
 	if (!$map_name)
 	{
-		$alert->error('Onbestaande map id.');
+		$app['eland.alert']->error('Onbestaande map id.');
 		cancel();
 	}
 //
@@ -582,7 +582,7 @@ if ($map)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
-		'access' => $access_control->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 
@@ -629,7 +629,7 @@ else
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
-		'access' => $access_control->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 
@@ -797,7 +797,7 @@ if (count($docs))
 
 		if (!$s_guest)
 		{
-			echo '<td>' . $access_control->get_label($d['access']) . '</td>';
+			echo '<td>' . $app['eland.access_control']->get_label($d['access']) . '</td>';
 		}
 
 		if ($s_admin)

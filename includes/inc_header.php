@@ -292,7 +292,7 @@ $class_admin = ($page_access == 'admin') ? ' admin' : '';
 echo '<div id="wrap">';
 echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
 
-$alert->render();
+$app['eland.alert']->render();
 
 echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';

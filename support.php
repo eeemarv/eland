@@ -93,16 +93,16 @@ if (isset($_POST['zend']))
 
 		if (!$return_message)
 		{
-			$alert->success('De support mail is verzonden.');
+			$app['eland.alert']->success('De support mail is verzonden.');
 			header('Location: ' . generate_url('index'));
 			exit;
 		}
 
-		$alert->error('Mail niet verstuurd. ' . $return_message);
+		$app['eland.alert']->error('Mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 }
 else
@@ -111,7 +111,7 @@ else
 
 	if ($s_master)
 	{
-		$alert->warning('Het master account kan geen berichten versturen.');
+		$app['eland.alert']->warning('Het master account kan geen berichten versturen.');
 	}
 	else
 	{
@@ -119,18 +119,18 @@ else
 
 		if (!count($mail))
 		{
-			$alert->warning('Je hebt geen email adres ingesteld voor je account. ');
+			$app['eland.alert']->warning('Je hebt geen email adres ingesteld voor je account. ');
 		}
 	}
 }
 
 if (!readconfigfromdb('mailenabled'))
 {
-	$alert->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['eland.alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!readconfigfromdb('support'))
 {
-	$alert->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['eland.alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Help / Probleem melden';

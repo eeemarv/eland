@@ -20,11 +20,11 @@ if ($approve)
 
 	if ($app['db']->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
-		$alert->success('Nieuwsbericht goedgekeurd');
+		$app['eland.alert']->success('Nieuwsbericht goedgekeurd');
 	}
 	else
 	{
-		$alert->error('Goedkeuren nieuwsbericht mislukt.');
+		$app['eland.alert']->error('Goedkeuren nieuwsbericht mislukt.');
 	}
 	cancel($approve);
 }
@@ -50,7 +50,7 @@ if ($add || $edit)
 			'headline'		=> trim($_POST['headline'] ?? ''),
 		];
 
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -92,7 +92,7 @@ if ($add || $edit)
 
 	if (count($errors))
 	{
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 }
 
@@ -109,7 +109,7 @@ if ($add && $submit && !count($errors))
 
 		$app['eland.xdb']->set('news_access', $id, ['access' => $_POST['access']]);
 
-		$alert->success('Nieuwsbericht opgeslagen.');
+		$app['eland.alert']->success('Nieuwsbericht opgeslagen.');
 
 		if(!$s_admin)
 		{
@@ -124,14 +124,15 @@ if ($add && $submit && !count($errors))
 			$text .= 'link: ' .  $url . "\n";
 			mail_q(['to' => 'newsadmin', 'subject' => $subject, 'text' => $text]);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
-			$alert->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
+
+			$app['eland.alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
 		}
 		cancel($id);
 	}
 	else
 	{
-		$alert->error('Nieuwsbericht niet opgeslagen.');
+		$app['eland.alert']->error('Nieuwsbericht niet opgeslagen.');
 	}
 }
 
@@ -141,12 +142,12 @@ if ($edit && $submit && !count($errors))
 	{
 		$app['eland.xdb']->set('news_access', $edit, ['access' => $_POST['access']]);
 
-		$alert->success('Nieuwsbericht aangepast.');
+		$app['eland.alert']->success('Nieuwsbericht aangepast.');
 		cancel($edit);
 	}
 	else
 	{
-		$alert->error('Nieuwsbericht niet aangepast.');
+		$app['eland.alert']->error('Nieuwsbericht niet aangepast.');
 	}
 }
 
@@ -240,7 +241,7 @@ if ($add || $edit)
 		$omit_access = false;
 	}
 
-	echo $access_control->get_radio_buttons('news', $news_access, $omit_access);
+	echo $app['eland.access_control']->get_radio_buttons('news', $news_access, $omit_access);
 
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
@@ -269,7 +270,7 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -277,10 +278,11 @@ if ($del)
 		{
 			$app['eland.xdb']->del('news_access', $del);
 
-			$alert->success('Nieuwsbericht verwijderd.');
+			$app['eland.alert']->success('Nieuwsbericht verwijderd.');
 			cancel();
 		}
-		$alert->error('Nieuwsbericht niet verwijderd.');
+
+		$app['eland.alert']->error('Nieuwsbericht niet verwijderd.');
 	}
 
 	$news = $app['db']->fetchAssoc('SELECT n.*
@@ -335,7 +337,7 @@ if ($del)
 
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
-	echo $access_control->get_label($news_access);
+	echo $app['eland.access_control']->get_label($news_access);
 	echo '</dd>';
 
 	echo '</dl>';
@@ -377,15 +379,15 @@ if ($id)
 
 	if (!$s_admin && !$news['approved'])
 	{
-		$alert->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		$app['eland.alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
 	$news_access = $app['eland.xdb']->get('news_access', $id)['data']['access'];
 
-	if (!$access_control->is_visible($news_access))
+	if (!$app['eland.access_control']->is_visible($news_access))
 	{
-		$alert->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		$app['eland.alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
@@ -394,14 +396,14 @@ if ($id)
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
-		'access' => $access_control->get_visible_ary()], 'order by eland_id desc limit 1');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
-		'access' => $access_control->get_visible_ary()], 'order by eland_id asc limit 1');
+		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
@@ -443,7 +445,7 @@ if ($id)
 	if (!$s_guest)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $access_control->get_label($news_access);
+		echo $app['eland.access_control']->get_label($news_access);
 		echo '</p>';
 	}
 
@@ -553,7 +555,7 @@ foreach ($news as $k => $n)
 
 	$news[$k]['access'] = $news_access_ary[$news_id];
 
-	if (!$access_control->is_visible($news[$k]['access']))
+	if (!$app['eland.access_control']->is_visible($news[$k]['access']))
 	{
 		unset($news[$k]);
 	}
@@ -649,7 +651,7 @@ if ($v_list)
 		if (!$s_guest)
 		{
 			echo '<td>';
-			echo $access_control->get_label($n['access']);
+			echo $app['eland.access_control']->get_label($n['access']);
 			echo '</td>';
 		}
 
@@ -707,7 +709,7 @@ else if ($v_extended)
 			echo 'Zichtbaarheid';
 			echo '</dt>';
 			echo '<dd>';
-			echo $access_control->get_label($n['access']);
+			echo $app['eland.access_control']->get_label($n['access']);
 			echo '</dd>';
 		}
 

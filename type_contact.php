@@ -14,7 +14,7 @@ if ($add)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -29,17 +29,17 @@ if ($add)
 		{
 			if ($app['db']->insert('type_contact', $tc))
 			{
-				$alert->success('Contact type toegevoegd.');
+				$app['eland.alert']->success('Contact type toegevoegd.');
 			}
 			else
 			{
-				$alert->error('Fout bij het opslaan');
+				$app['eland.alert']->error('Fout bij het opslaan');
 			}
 
 			cancel();
 		}
 
-		$alert->error('Corrigeer één of meerdere velden.');
+		$app['eland.alert']->error('Corrigeer één of meerdere velden.');
 	}
 
 	$h1 = 'Contact type toevoegen';
@@ -85,7 +85,7 @@ if ($edit)
 
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
-		$alert->warning('Beschermd contact type.');
+		$app['eland.alert']->warning('Beschermd contact type.');
 
 		cancel();
 	}
@@ -94,7 +94,7 @@ if ($edit)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
@@ -111,18 +111,18 @@ if ($edit)
 		{
 			if ($app['db']->update('type_contact', $tc, ['id' => $edit]))
 			{
-				$alert->success('Contact type aangepast.');
+				$app['eland.alert']->success('Contact type aangepast.');
 
 				cancel();
 			}
 			else
 			{
-				$alert->error('Fout bij het opslaan.');
+				$app['eland.alert']->error('Fout bij het opslaan.');
 			}
 		}
 		else
 		{
-			$alert->error('Fout in één of meer velden. ' . $error);
+			$app['eland.alert']->error('Fout in één of meer velden. ' . $error);
 		}
 	}
 	else
@@ -173,13 +173,13 @@ if ($del)
 
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
-		$alert->warning('Beschermd contact type.');
+		$app['eland.alert']->warning('Beschermd contact type.');
 		cancel();
 	}
 
 	if ($app['db']->fetchColumn('select id from contact where id_type_contact = ?', [$del]))
 	{
-		$alert->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
+		$app['eland.alert']->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
 		cancel();
 	}
 
@@ -187,13 +187,13 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('type_contact', ['id' => $del]))
 		{
-			$alert->success('Contact type verwijderd.');
+			$app['eland.alert']->success('Contact type verwijderd.');
 		}
 		else
 		{

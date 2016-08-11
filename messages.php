@@ -43,12 +43,12 @@ $extend_submit = isset($_POST['extend_submit']) ? true : false;
 $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']) ? true : false;
 
-$access = $access_control->get_post_value();
+$access = $app['eland.access_control']->get_post_value();
 
 if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
 	|| $extend_submit || $access_submit || $extend || $access))
 {
-	$alert->error('Geen toegang als gast tot deze actie');
+	$app['eland.alert']->error('Geen toegang als gast tot deze actie');
 	cancel($id);
 }
 
@@ -64,7 +64,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
-		$alert->error('Selecteer ten minste één vraag of aanbod voor deze actie.');
+		$app['eland.alert']->error('Selecteer ten minste één vraag of aanbod voor deze actie.');
 		cancel();
 	}
 
@@ -108,17 +108,17 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 			if (!$app['db']->update('messages', $m, ['id' => $id]))
 			{
-				$alert->error('Fout: ' . $row['content'] . ' is niet verlengd.');
+				$app['eland.alert']->error('Fout: ' . $row['content'] . ' is niet verlengd.');
 				cancel();
 			}
 		}
 		if (count($validity_ary) > 1)
 		{
-			$alert->success('De berichten zijn verlengd.');
+			$app['eland.alert']->success('De berichten zijn verlengd.');
 		}
 		else
 		{
-			$alert->success('Het bericht is verlengd.');
+			$app['eland.alert']->success('Het bericht is verlengd.');
 		}
 
 		cancel();
@@ -126,7 +126,7 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 	if ($access_submit && !count($errors))
 	{
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -153,11 +153,11 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 
 				if (count($selected_msgs) > 1)
 				{
-					$alert->success('De berichten zijn aangepast.');
+					$app['eland.alert']->success('De berichten zijn aangepast.');
 				}
 				else
 				{
-					$alert->success('Het bericht is aangepast.');
+					$app['eland.alert']->success('Het bericht is aangepast.');
 				}
 
 				cancel();
@@ -166,12 +166,12 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
 			{
 				$app['db']->rollback();
 				throw $e;
-				$alert->error('Fout bij het opslaan.');
+				$app['eland.alert']->error('Fout bij het opslaan.');
 				cancel();
 			}
 		}
 
-		$alert->error($errors);
+		$app['eland.alert']->error($errors);
 	}
 }
 
@@ -191,7 +191,7 @@ if ($id || $edit || $del)
 
 	if (!$message)
 	{
-		$alert->error('Bericht niet gevonden.');
+		$app['eland.alert']->error('Bericht niet gevonden.');
 		cancel();
 	}
 
@@ -199,7 +199,7 @@ if ($id || $edit || $del)
 
 	if ($message['local'] && $s_guest)
 	{
-		$alert->error('Je hebt geen toegang tot dit bericht.');
+		$app['eland.alert']->error('Je hebt geen toegang tot dit bericht.');
 		cancel();
 	}
 
@@ -218,7 +218,7 @@ if ($id && $extend)
 {
 	if (!($s_owner || $s_admin))
 	{
-		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
 		cancel($id);
 	}
 
@@ -232,11 +232,11 @@ if ($id && $extend)
 
 	if (!$app['db']->update('messages', $m, ['id' => $id]))
 	{
-		$alert->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
+		$app['eland.alert']->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
 		cancel($id);
 	}
 
-	$alert->success($ow_type_uc_the . ' is verlengd.');
+	$app['eland.alert']->success($ow_type_uc_the . ' is verlengd.');
 	cancel($id);
 }
 
@@ -401,12 +401,12 @@ if ($img_del == 'all' && $id && $post)
 {
 	if (!($s_owner || $s_admin))
 	{
-		$alert->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
 	$app['db']->delete('msgpictures', ['msgid' => $id]);
 
-	$alert->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
+	$app['eland.alert']->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
 
 	cancel($id);
 }
@@ -447,7 +447,7 @@ if ($img_del == 'all' && $id)
 {
 	if (!($s_admin || $s_owner))
 	{
-		$alert->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
+		$app['eland.alert']->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
 		cancel($id);
 	}
 
@@ -464,7 +464,7 @@ if ($img_del == 'all' && $id)
 
 	if (!count($images))
 	{
-		$alert->error($ow_type_uc_the . ' heeft geen afbeeldingen.');
+		$app['eland.alert']->error($ow_type_uc_the . ' heeft geen afbeeldingen.');
 		cancel($id);
 	}
 
@@ -538,19 +538,19 @@ if ($mail && $post && $id)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$alert->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['eland.alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
 	}
 
 	if ($s_master)
 	{
-		$alert->error('Het master account kan geen berichten versturen.');
+		$app['eland.alert']->error('Het master account kan geen berichten versturen.');
 		cancel();
 	}
 
 	if (!$s_schema)
 	{
-		$alert->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
 		cancel();
 	}
 
@@ -596,11 +596,11 @@ if ($mail && $post && $id)
 
 		mail_q(['to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text]);
 
-		$alert->success('Mail verzonden.');
+		$app['eland.alert']->success('Mail verzonden.');
 	}
 	else
 	{
-		$alert->error('Fout: leeg bericht. Mail niet verzonden.');
+		$app['eland.alert']->error('Fout: leeg bericht. Mail niet verzonden.');
 	}
 	cancel($id);
 }
@@ -612,7 +612,7 @@ if ($del)
 {
 	if (!($s_owner || $s_admin))
 	{
-		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
 		cancel($del);
 	}
 
@@ -620,7 +620,7 @@ if ($del)
 	{
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
-			$alert->error($error_token);
+			$app['eland.alert']->error($error_token);
 		}
 
 		$app['db']->delete('msgpictures', ['msgid' => $del]);
@@ -634,11 +634,11 @@ if ($del)
 				set ' . $column . ' = ' . $column . ' - 1
 				where id = ?', [$message['id_category']]);
 
-			$alert->success(ucfirst($ow_type_this) . ' is verwijderd.');
+			$app['eland.alert']->success(ucfirst($ow_type_this) . ' is verwijderd.');
 			cancel();
 		}
 
-		$alert->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
+		$app['eland.alert']->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
 	}
 
 	$h1 = ucfirst($ow_type_this) . ' ';
@@ -671,7 +671,7 @@ if ($del)
 
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
-	echo $access_control->get_label($message['local'] ? 'users' : 'interlets');
+	echo $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets');
 	echo '</dd>';
 
 	echo '</dl>';
@@ -711,13 +711,13 @@ if (($edit || $add))
 {
 	if (!($s_admin || $s_user) && $add)
 	{
-		$alert->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
 		cancel();
 	}
 
 	if (!($s_admin || $s_owner) && $edit)
 	{
-		$alert->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
 		cancel($edit);
 	}
 
@@ -757,13 +757,13 @@ if (($edit || $add))
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
-			'local'			=> ($access_control->get_post_value() == 2) ? 0 : 1,
+			'local'			=> ($app['eland.access_control']->get_post_value() == 2) ? 0 : 1,
 		];
 
 		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
 		$uploaded_images = $_POST['uploaded_images'] ?? [];
 
-		$access_error = $access_control->get_post_error();
+		$access_error = $app['eland.access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -816,7 +816,7 @@ if (($edit || $add))
 
 		if (count($errors))
 		{
-			$alert->error($errors);
+			$app['eland.alert']->error($errors);
 		}
 		else if ($add)
 		{
@@ -864,7 +864,7 @@ if (($edit || $add))
 								log_event('pict', $error);
 							}
 
-							$alert->error($img_errors);
+							$app['eland.alert']->error($img_errors);
 
 							continue;
 						}
@@ -914,13 +914,13 @@ if (($edit || $add))
 					}
 				}
 
-				$alert->success('Nieuw vraag of aanbod toegevoegd.');
+				$app['eland.alert']->success('Nieuw vraag of aanbod toegevoegd.');
 
 				cancel($id);
 			}
 			else
 			{
-				$alert->error('Fout bij het opslaan van vraag of aanbod.');
+				$app['eland.alert']->error('Fout bij het opslaan van vraag of aanbod.');
 			}
 		}
 		else if ($edit)
@@ -1009,7 +1009,7 @@ if (($edit || $add))
 								log_event('pict', $error);
 							}
 
-							$alert->error($img_errors);
+							$app['eland.alert']->error($img_errors);
 
 							continue;
 						}
@@ -1029,7 +1029,7 @@ if (($edit || $add))
 				}
 
 				$app['db']->commit();
-				$alert->success('Vraag/aanbod aangepast');
+				$app['eland.alert']->success('Vraag/aanbod aangepast');
 				cancel($edit);
 			}
 			catch(Exception $e)
@@ -1041,7 +1041,7 @@ if (($edit || $add))
 		}
 		else
 		{
-			$alert->error('Fout: onbepaalde actie.');
+			$app['eland.alert']->error('Fout: onbepaalde actie.');
 			cancel();
 		}
 
@@ -1312,7 +1312,7 @@ if (($edit || $add))
 
 	$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
-	echo $access_control->get_radio_buttons('messages', $access_value, 'admin');
+	echo $app['eland.access_control']->get_radio_buttons('messages', $access_value, 'admin');
 
 	$btn = ($edit) ? 'primary' : 'success';
 
@@ -1567,7 +1567,7 @@ if ($id)
 	}
 
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>' . $access_control->get_label($message['local'] ? 'users' : 'interlets') . '</dd>';
+	echo '<dd>' . $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets') . '</dd>';
 
 	echo '</dl>';
 
@@ -2292,7 +2292,7 @@ if ($v_list)
 
 		if (!$s_guest)
 		{
-			echo '<td>' . $access_control->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
+			echo '<td>' . $app['eland.access_control']->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
 		}
 
 		echo '</tr>';
@@ -2431,7 +2431,7 @@ else if ($v_list)
 
 		echo '<form method="post" class="form-horizontal">';
 
-		echo $access_control->get_radio_buttons(false, false, 'admin');
+		echo $app['eland.access_control']->get_radio_buttons(false, false, 'admin');
 
 		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
 
