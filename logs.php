@@ -86,7 +86,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
-$pagination = new eland\pagination('logs', $row_count, $params, $inline);
+$app['eland.pagination']->init('logs', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -258,7 +258,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 echo '<div class="panel panel-default printview">';
 
@@ -315,6 +315,6 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 include $rootpath . 'includes/inc_footer.php';

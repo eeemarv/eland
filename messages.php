@@ -1839,7 +1839,7 @@ if ($v_extended)
 	}
 }
 
-$pagination = new eland\pagination('messages', $row_count, $params, $inline);
+$app['eland.pagination']->init('messages', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2182,7 +2182,7 @@ if ($inline)
 
 if (!$recent)
 {
-	$pagination->render();
+	$app['eland.pagination']->render();
 }
 
 if (!count($messages))
@@ -2195,7 +2195,7 @@ if (!count($messages))
 
 	if (!$recent)
 	{
-		$pagination->render();
+		$app['eland.pagination']->render();
 	}
 
 	if (!$inline)
@@ -2364,7 +2364,7 @@ else if ($v_extended)
 
 if (!$recent)
 {
-	$pagination->render();
+	$app['eland.pagination']->render();
 }
 
 if ($inline)

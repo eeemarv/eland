@@ -1226,7 +1226,7 @@ foreach ($transactions as $key => $t)
 $row_count = $app['db']->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
-$pagination = new eland\pagination('transactions', $row_count, $params, $inline);
+$app['eland.pagination']->init('transactions', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -1523,7 +1523,7 @@ else
 	echo '</h3>';
 }
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 if (!count($transactions))
 {
@@ -1532,7 +1532,7 @@ if (!count($transactions))
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
-	$pagination->render();
+	$app['eland.pagination']->render();
 
 	if (!$inline)
 	{
@@ -1723,7 +1723,7 @@ else
 }
 echo '</table></div></div>';
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 if ($inline)
 {

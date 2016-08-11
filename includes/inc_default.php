@@ -216,12 +216,12 @@ if (!$schema)
 	exit;
 }
 
-/**
- * alerts
-**/
-
 $app['eland.alert'] = function (){
 	return new eland\alert();
+};
+
+$app['eland.pagination'] = function (){
+	return new eland\pagination();
 };
 
 /**

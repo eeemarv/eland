@@ -766,7 +766,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$pagination = new eland\pagination('contacts', $row_count, $params, $inline);
+$app['eland.pagination']->init('contacts', $row_count, $params, $inline);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -952,7 +952,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 if (!count($contacts))
 {
@@ -962,7 +962,7 @@ if (!count($contacts))
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 
-	$pagination->render();
+	$app['eland.pagination']->render();
 
 	include $rootpath . 'includes/inc_footer.php';
 	exit;
@@ -1027,7 +1027,7 @@ echo '</table>';
 
 echo '</div></div>';
 
-$pagination->render();
+$app['eland.pagination']->render();
 
 include $rootpath . 'includes/inc_footer.php';
 
