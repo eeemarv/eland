@@ -517,7 +517,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 
-		clear_interlets_groups_cache();
+		$app['eland.interlets_groups']->clear_cache($s_schema);
 		
 		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
@@ -989,7 +989,7 @@ if ($del)
 					$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 				}
 
-				clear_interlets_groups_cache();
+				$app['eland.interlets_groups']->clear_cache($s_schema);
 
 				cancel();
 			}
@@ -1433,7 +1433,7 @@ if ($add || $edit)
 						$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 					}
 
-					clear_interlets_groups_cache();
+					$app['eland.interlets_groups']->clear_cache($s_schema);
 
 					cancel($id);
 				}
@@ -1564,7 +1564,7 @@ if ($add || $edit)
 							$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 						}
 
-						clear_interlets_groups_cache();
+						$app['eland.interlets_groups']->clear_cache($s_schema);
 					}
 					cancel($edit);
 				}

@@ -224,6 +224,10 @@ $app['eland.pagination'] = function (){
 	return new eland\pagination();
 };
 
+$app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts, $app_protocol) {
+	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app_protocol);
+};
+
 /**
  * start session
  */
@@ -497,8 +501,8 @@ $errors = [];
  * check access to groups
  **/
 
-$elas_interlets_groups = get_elas_interlets_groups();
-$eland_interlets_groups = get_eland_interlets_groups();
+$elas_interlets_groups = $app['eland.interlets_groups']->get_elas($s_schema); //get_elas_interlets_groups();
+$eland_interlets_groups = $app['eland.interlets_groups']->get_eland($s_schema); //get_eland_interlets_groups();
 
 if ($s_group_self && $s_guest)
 {

@@ -115,8 +115,8 @@ if ($add || $edit)
 				{
 					$app['eland.alert']->success('Letsgroep aangepast.');
 
-					clear_interlets_groups_cache();
-					
+					$app['eland.interlets_groups']->clear_cache($s_schema);
+
 					cancel($edit);
 				}
 
@@ -143,8 +143,8 @@ if ($add || $edit)
 
 					$id = $app['db']->lastInsertId('letsgroups_id_seq');
 
-					clear_interlets_groups_cache();
-					
+					$app['eland.interlets_groups']->clear_cache($s_schema);
+
 					cancel($id);
 				}
 
@@ -300,8 +300,8 @@ if ($del)
 		{
 			$app['eland.alert']->success('Letsgroep verwijderd.');
 
-			clear_interlets_groups_cache();
-			
+			$app['eland.interlets_groups']->clear_cache($s_schema);
+
 			cancel();
 		}
 

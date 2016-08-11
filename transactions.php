@@ -850,6 +850,7 @@ if ($add)
  * interlets accounts schemas needed for interlinking users.
  */
 
+/*
 $interlets_accounts_schemas = json_decode($app['redis']->get($schema . '_interlets_accounts_schemas'), true);
 
 if (!is_array($interlets_accounts_schemas))
@@ -857,6 +858,9 @@ if (!is_array($interlets_accounts_schemas))
 	get_eland_interlets_groups(false, $schema);
 	$interlets_accounts_schemas = json_decode($app['redis']->get($schema . '_interlets_accounts_schemas'), true);
 }
+*/
+
+$interlets_accounts_schemas = $app['eland.interlets_groups']->get_eland_accounts_schemas($schema);
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 
