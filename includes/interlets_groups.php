@@ -42,7 +42,7 @@ class interlets_groups
 			return $ret;
 		}
 
-		$this->get_eland($schema);
+		$this->get_eland($schema, true);
 
 		return json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);
 	}
@@ -65,7 +65,7 @@ class interlets_groups
 	 *
 	 */
 
-	function get_eland(string $s_schema)
+	function get_eland(string $s_schema, boolean $refresh = false)
 	{
 		if (!$s_schema)
 		{
@@ -74,9 +74,9 @@ class interlets_groups
 
 		$redis_key = $s_schema . '_eland_interlets_groups';
 
-		if ($this->redis->exists($redis_key))
+		if (!$refresh && $this->redis->exists($redis_key))
 		{
-			$this->redis->expire($redis_key, 3600);
+			$this->redis->expire($redis_key, $this->ttl);
 
 			return json_decode($this->redis->get($redis_key), true);
 		}
