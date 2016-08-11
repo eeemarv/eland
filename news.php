@@ -166,8 +166,6 @@ if ($add)
 
 if ($add || $edit)
 {
-//	$include_ary[] = 'datepicker';
-
 	$app['eland.assets']->add('datepicker');
 
 	$h1 = 'Nieuwsbericht ';

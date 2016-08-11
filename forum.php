@@ -232,12 +232,6 @@ if ($del)
 
 if ($add || $edit)
 {
-	/*
-	$include_ary[] = 'summernote';
-	$include_ary[] = 'rich_edit.js';
-	$include_ary[] = 'access_input_cache.js';
-	*/
-
 	$app['eland.assets']->add(['summernote', 'rich_edit.js', 'access_input_cache.js']);
 
 	if ($topic)
@@ -413,11 +407,6 @@ if ($topic)
 	}
 
 	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
-
-/*
-	$include_ary[] = 'summernote';
-	$include_ary[] = 'rich_edit.js';
-*/
 
 	$app['eland.assets']->add(['summernote', 'rich_edit.js']);
 

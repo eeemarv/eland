@@ -342,8 +342,6 @@ if ($s_admin)
 $h1 = 'Overzicht';
 $fa = 'home';
 
-// $include_ary[] = 'index.js';
-
 $app['eland.assets']->add('index.js');
 
 include $rootpath . 'includes/inc_header.php';

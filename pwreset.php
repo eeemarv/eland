@@ -50,8 +50,6 @@ if ($token)
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 
-//	$include_ary[] = 'generate_password.js';
-
 	$app['eland.assets']->add('generate_password.js');
 
 	require_once $rootpath . 'includes/inc_header.php';

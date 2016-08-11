@@ -703,11 +703,6 @@ if ($add)
 		}
 	}
 
-/*
-	$include_ary[] = 'typeahead';
-	$include_ary[] = 'typeahead.js';
-*/
-
 	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
 
 	$balance = $session_user['saldo'];
@@ -1345,13 +1340,6 @@ if (!$inline)
 	$h1 .= 'data-toggle="collapse" data-target="#filter"';
 	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
-
-/*
-	$include_ary[] = 'datepicker';
-	$include_ary[] = 'typeahead';
-	$include_ary[] = 'typeahead.js';
-	$include_ary[] = 'csv.js';
-*/
 
 	$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 

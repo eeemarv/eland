@@ -767,8 +767,6 @@ if ($pw)
 
 	$user = readuser($pw);
 
-//	$include_ary[] = 'generate_password.js';
-
 	$app['eland.assets']->add('generate_password.js');
 
 	$h1 = 'Paswoord aanpassen';
@@ -1693,14 +1691,6 @@ if ($add || $edit)
 
 	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
-/*
-	$include_ary[] = 'datepicker';
-	$include_ary[] = 'generate_password.js';
-	$include_ary[] = 'generate_password_onload.js';
-	$include_ary[] = 'user_edit.js';
-	$include_ary[] =  'access_input_cache.js';
-*/
-
 	$app['eland.assets']->add(['datepicker', 'generate_password.js',
 		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
 
@@ -1994,20 +1984,10 @@ if ($id)
 		order by letscode desc
 		limit 1', [$user['letscode']]);
 
-/*
-	$include_ary[] = 'leaflet';
-	$include_ary[] = 'jqplot';
-	$include_ary[] = 'user.js';
-	$include_ary[] = 'plot_user_transactions.js';
-*/
-
 	$app['eland.assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
 	if ($s_admin || $s_owner)
 	{
-/*		$include_ary[] = 'fileupload';
-		$include_ary[] = 'user_img.js';
-*/
 		$app['eland.assets']->add(['fileupload', 'user_img.js']);
 	}
 
@@ -2817,40 +2797,19 @@ $fa = 'users';
 
 if ($v_list)
 {
-/*
-	$include_ary[] = 'calc_sum.js';
-	$include_ary[] = 'users_distance.js';
-*/
 	$app['eland.assets']->add(['calc_sum.js', 'users_distance.js']);
 
 	if ($s_admin)
 	{
-/*
-		$include_ary[] = 'datepicker';
-		$include_ary[] = 'summernote';
-		$include_ary[] = 'csv.js';
-		$include_ary[] = 'table_sel.js';
-		$include_ary[] = 'rich_edit.js';
-*/
 		$app['eland.assets']->add(['datepicker', 'summernote', 'csv.js', 'table_sel.js', 'rich_edit.js']);
 	}
 }
 else if ($v_tiles)
 {
-/*
-	$include_ary[] = 'isotope';
-	$include_ary[] = 'users_tiles.js';
-*/
-
 	$app['eland.assets']->add(['isotope', 'user_tiles.js']);
 }
 else if ($v_map)
 {
-/*
-	$include_ary[] = 'leaflet';
-	$include_ary[] = 'leaflet_label';
-	$include_ary[] = 'users_map.js';
-*/
 	$app['eland.assets']->add(['leaflet', 'leaflet_label', 'users_map.js']);
 }
 
