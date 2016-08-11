@@ -76,7 +76,7 @@ echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . readc
 
 $base_url = $app_protocol . $hosts[$schema];
 
-$app['eland.xdb']->init($schema, '', 0, $access_control);
+$app['eland.xdb']->init($schema);
 
 /**
  * typeahead && msgs from eLAS interlets update
