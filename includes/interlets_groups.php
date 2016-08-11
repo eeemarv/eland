@@ -65,7 +65,7 @@ class interlets_groups
 	 *
 	 */
 
-	function get_eland(string $s_schema, boolean $refresh = false)
+	function get_eland(string $s_schema, bool $refresh = false)
 	{
 		if (!$s_schema)
 		{
