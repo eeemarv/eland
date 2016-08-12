@@ -906,7 +906,7 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 			continue;
 		}
 
-		$app['eland.s3']->img_delete($object['Key']);
+		$app['eland.s3']->img_del($object['Key']);
 
 		if ($del_str)
 		{
