@@ -3,16 +3,26 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Bramus\Monolog\Formatter\ColoredLineFormatter;
+
 require_once $rootpath . 'vendor/autoload.php';
 
 $app = new Silex\Application();
 
 $app['debug'] = getenv('DEBUG');
 
-$app->register(new Silex\Provider\MonologServiceProvider(), [
-    'monolog.logfile'	=> 'php://stderr',
-    'monolog.level' 	=> constant('Monolog\\Logger::'.strtoupper(getenv('LOG_LEVEL')?:'NOTICE')),
-]);
+$app->register(new Silex\Provider\MonologServiceProvider(), []);
+
+$app->extend('monolog', function($monolog, $app) {
+
+	$handler = new StreamHandler('php://stdout', Logger::DEBUG);
+	$handler->setFormatter(new ColoredLineFormatter());
+	$monolog->pushHandler($handler);
+
+	return $monolog;
+});
 
 $app['redis'] = function () {
 	try
@@ -231,6 +241,15 @@ $app['eland.pagination'] = function (){
 $app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts, $app_protocol) {
 	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app_protocol);
 };
+
+/*
+$app['monolog']->addDebug('debug.');
+$app['monolog']->addNotice('notice.', ['user' => 'fwiep']);
+$app['monolog']->addInfo('info.');
+$app['monolog']->addError('error.');
+$app['monolog']->addWarning('warning.');
+$app['monolog']->addCritical('critical.');
+*/
 
 /**
  * start session

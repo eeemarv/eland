@@ -73,3 +73,4 @@ function log_event($type, $event, $remote_schema = false)
 
 	$app['db']->insert('eland_extra.logs', $log_item);
 }
+
