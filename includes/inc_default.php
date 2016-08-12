@@ -215,7 +215,8 @@ $schema = $schemas[$host];
 if (!$schema)
 {
 	http_response_code(404);
-	include $rootpath. 'views/404.html';
+
+	echo $app['twig']->render('404.twig');
 	exit;
 }
 
@@ -429,7 +430,8 @@ else
 if (!isset($page_access))
 {
 	http_response_code(500);
-	include $rootpath . 'views/500.html';
+
+	echo $app['twig']->render('500.twig');
 	exit;
 }
 
@@ -522,7 +524,7 @@ if ($page_access != 'anonymous'
 
 if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 {
-	include $rootpath . 'views/maintenance.html';
+	echo $app['twig']->render('maintenance.twig');
 	exit;
 }
 
