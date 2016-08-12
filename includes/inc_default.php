@@ -48,17 +48,24 @@ if(!isset($rootpath))
 
 $app['eland.rootpath'] = $rootpath;
 
+$app['eland.protocol'] = $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+
+
 ob_start('etag_buffer');
 
 $app['eland.s3_res'] = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
 $app['eland.s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $app['eland.s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
-header('Access-Control-Allow-Origin: //' . $app['eland.s3_res'] . ', //' . $app['eland.s3_img'] . ', //' . $app['eland.s3_doc']);
+$header_allow_origin = $app['eland.protocol'] . $app['eland.s3_res'] . ', ';
+$header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_img'] . ', ';
+$header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_doc'];
 
-$app['eland.s3_res_url'] = '//' . $app['eland.s3_res'] . '/';
-$app['eland.s3_img_url'] = '//' . $app['eland.s3_img'] . '/';
-$app['eland.s3_doc_url'] = '//' . $app['eland.s3_doc'] . '/';
+header('Access-Control-Allow-Origin: ' . $header_allow_origin);
+
+$app['eland.s3_res_url'] = $app['eland.protocol'] . $app['eland.s3_res'] . '/';
+$app['eland.s3_img_url'] = $app['eland.protocol'] . $app['eland.s3_img'] . '/';
+$app['eland.s3_doc_url'] = $app['eland.protocol'] . $app['eland.s3_doc'] . '/';
 
 $app['eland.s3'] = function($app){
 	return new eland\s3($app['eland.s3_res'], $app['eland.s3_img'], $app['eland.s3_doc']);
@@ -73,7 +80,7 @@ $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'ba
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
-$app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+
 $host = $_SERVER['SERVER_NAME'];
 $base_url = $app_protocol . $host;
 
