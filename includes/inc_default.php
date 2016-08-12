@@ -50,7 +50,6 @@ $app['eland.rootpath'] = $rootpath;
 
 $app['eland.protocol'] = $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 
-
 ob_start('etag_buffer');
 
 $app['eland.s3_res'] = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
@@ -80,11 +79,8 @@ $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'ba
 $script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
 $script_name = str_replace('.php', '', $script_name);
 
-
 $host = $_SERVER['SERVER_NAME'];
-$base_url = $app_protocol . $host;
-
-$app['eland.base_url'] = $base_url;
+$app['eland.base_url'] = $base_url = $app['eland.protocol'] . $host;
 
 $host_id = substr($host, 0, strpos($host, '.'));
 
