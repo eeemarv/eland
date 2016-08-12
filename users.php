@@ -2806,7 +2806,7 @@ if ($v_list)
 }
 else if ($v_tiles)
 {
-	$app['eland.assets']->add(['isotope', 'user_tiles.js']);
+	$app['eland.assets']->add(['isotope', 'users_tiles.js']);
 }
 else if ($v_map)
 {
