@@ -3431,8 +3431,8 @@ else if ($v_tiles)
 	foreach ($users as $u)
 	{
 		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-		$class = $st_class_ary[$row_stat];
-		$class = (isset($class)) ? ' class="bg-' . $class . '"' : '';
+		$class = $st_class_ary[$row_stat] ?? false;
+		$class = $class ? ' class="bg-' . $class . '"' : '';
 
 		$url = generate_url('users', ['id' => $u['id']]);
 		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
