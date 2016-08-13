@@ -48,7 +48,10 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
 ]);
 
 $app->register(new Silex\Provider\TwigServiceProvider(), [
-	'twig.path' => __DIR__.'/../views',
+	'twig.path' => __DIR__ . '/../views',
+	'twig.options'	=> [
+		'cache'		=> __DIR__ . '/../cache',
+	],
 ]);
 
 if(!isset($rootpath))
