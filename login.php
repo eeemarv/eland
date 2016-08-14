@@ -31,9 +31,7 @@ if($token)
 
 		$param = 'welcome=1&r=guest&u=elas';
 
-		$referer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
-
-		log_event('login', 'eLAS guest login using token ' . $token . ' succeeded. referer: ' . $referer);
+		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -42,7 +40,6 @@ if($token)
 	else
 	{
 		$app['eland.alert']->error('De interlets login is mislukt.');
-		log_event('', 'login-fail', 'Token login failed (' . $token . ')');
 	}
 }
 
@@ -62,7 +59,6 @@ if ($submit)
 	{
 		$_SESSION['logins'][$schema] = 'master';
 
-		log_event('login','Master user logged in');
 		$app['eland.alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
@@ -160,7 +156,7 @@ if ($submit)
 			else if ($user['password'] != $sha512)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
-				log_event('password', 'Password encryption updated to sha512');
+				$app['monolog']->info('Password encryption updated to sha512');
 			}
 		}
 	}
@@ -189,8 +185,7 @@ if ($submit)
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
-		log_event('login','User ' . link_user($user, false, false, true) . ' logged in');
-		log_event('agent', $browser);
+		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser);
 
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);

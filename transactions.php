@@ -219,8 +219,6 @@ if ($add)
 
 		if(count($errors))
 		{
-			log_event('transaction', 'form error(s): ' . implode(' | ', $errors));
-
 			$app['eland.alert']->error($errors);
 		}
 		else if ($group_id == 'self')
@@ -258,17 +256,13 @@ if ($add)
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
-			log_event('transaction', 'Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.');
-
-			$app['eland.alert']->error('Deze interlets groep heeft geen geldige api methode.' . $contact_admin);
+			$app['eland.alert']->error('Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$group_domain)
 		{
-			log_event('transaction', 'Geen url ingesteld voor ' . $group['groupname']);
-
-			$app['eland.alert']->error('Geen url voor deze interlets groep.' . $contact_admin);
+			$app['eland.alert']->error('Geen url voor interlets groep ' . $group['groupname'] . '. ' . $contact_admin);
 
 			cancel();
 		}
@@ -329,7 +323,6 @@ if ($add)
 
 			if (count($errors))
 			{
-				log_event('interlets', 'form errors eLAS transaction, ' . $group['groupname'] . ': ' . implode('<br>', $errors));
 				$app['eland.alert']->error($errors);
 				cancel();
 			}
@@ -351,7 +344,6 @@ if ($add)
 
 			if ($error)
 			{
-				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
 				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();				
 			}
@@ -371,7 +363,6 @@ if ($add)
 
 			if ($error)
 			{
-				log_event('interlets', $group['groupname'] . ', eLAS transaction soap error: ' . $error);
 				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();
 			}
@@ -413,21 +404,18 @@ if ($add)
 				
 			if (count($errors))
 			{
-				log_event('interlets', 'soap errors eLAS transaction ' . $trans['transid'] . ', ' . $group['groupname'] . ': ' . implode('<br>', $errors));
 				$app['eland.alert']->error($errors);
 				cancel();
 			}
 
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
-			error_log( '---   ' . http_build_query($transaction) . ' ----');
+			$app['monolog']->debug( 'insert transation: --  ' . http_build_query($transaction) . ' --');
 
 			$id = insert_transaction($transaction);
 
 			if (!$id)
-			{
-				log_event('transaction', $group['groupname'] . ', Local commit of ' . $transaction['transid'] . ' failed.');
-				
+			{				
 				$subject = 'Interlets FAILURE!';
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 				$text .= ' group:' . $group['groupname'];
@@ -544,7 +532,6 @@ if ($add)
 
 			if (count($errors))
 			{
-				log_event('interlets', 'form errors eLAND transaction: ' . implode('<br>', $errors));
 				$app['eland.alert']->error($errors);
 				cancel();
 			}
@@ -607,14 +594,14 @@ if ($add)
 			mail_transaction($trans_org);
 			mail_transaction($transaction, $remote_schema);
 
-			log_event('trans', 'direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+			$app['monolog']->info('direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
 				$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
 				' to user: ' . link_user($touser['id'], false, false));
 
-			log_event('trans', 'direct interlets transaction (receiving) ' . $transaction['transid'] .
+			$app['monolog']->info('direct interlets transaction (receiving) ' . $transaction['transid'] .
 				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
-				$to_remote_user['name'], $remote_schema);
+				$to_remote_user['name'], ['schema' => $remote_schema]);
 
 			autominlimit_queue($transaction['id_from'], $transaction['id_to'], $remote_amount, $remote_schema);
 

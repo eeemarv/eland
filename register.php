@@ -221,7 +221,7 @@ if ($submit)
 		'gsm'			=> $_POST['gsm'],
 	];
 
-	log_event('system', 'Registration request for ' . $reg['email']);
+	$app['monolog']->info('Registration request for ' . $reg['email']);
 
 	if(!$reg['email'])
 	{

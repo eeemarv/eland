@@ -16,12 +16,15 @@ function generate_transid()
 
 function sign_transaction($transaction, $sharedsecret)
 {
+	global $app;
+
 	$amount = (float) $transaction['amount'];
 	$amount = $amount * 100;
 	$amount = round($amount);
 	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $amount;
 	$signature = sha1($tosign);
-	log_event('debug','Signing ' . $tosign . ' : ' . $signature);
+	$app['monolog']->debug('Signing ' . $tosign . ' : ' . $signature);
+
 	return $signature;
 }
 
@@ -59,7 +62,7 @@ function insert_transaction($transaction)
 
 	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-	log_event('trans', 'Transaction ' . $transaction['transid'] . ' saved: ' .
+	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .
 		link_user($transaction['id_to'], false, false, true));
@@ -175,6 +178,4 @@ function mail_transaction($transaction, $remote_schema = null)
 			'schema'	=> $sch,
 		]);
 	}
-
-	log_event('mail', $subject, $sch);
 }

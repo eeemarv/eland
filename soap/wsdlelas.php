@@ -85,7 +85,7 @@ function gettoken($apikey)
 {
 	global $schema, $app;
 
-	log_event('debug', 'Token request');
+	$app['monolog']->debug('Token request');
 
 	if(check_apikey($apikey, 'interlets'))
 	{
@@ -96,12 +96,13 @@ function gettoken($apikey)
 		$app['redis']->set($key, '1');
 		$app['redis']->expire($key, 600);
 
-		log_event('soap' ,'Token ' . $token . ' generated');
+		$app['monolog']->debug('elas-soap: Token ' . $token . ' generated');
 
 		return $token;
 	}
 
-	log_event('soap','apikey fail, apikey: ' . $apikey . ' no token generated');
+	$app['monolog']->debug('elas-soap: apikey fail, apikey: ' . $apikey . ' no token generated');
+
 	return '---';
 
 }
@@ -116,11 +117,11 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	// Possible status values are SUCCESS, FAILED, DUPLICATE and OFFLINE
 
-	log_event('debug', 'Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
+	$app['monolog']->debug('Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
 	if ($app['db']->fetchColumn('SELECT * FROM transactions WHERE transid = ?', [$transid]))
 	{
-		log_event('soap', 'Transaction ' . $transid . ' is a duplicate');
+		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
 	}
 
@@ -128,29 +129,29 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	{
 		if(readconfigfromdb('maintenance'))
 		{
-			log_event('soap', 'Transaction ' . $transid . ' deferred (offline)');
+			$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' deferred (offline)');
 			return 'OFFLINE';
 		}
 		else
 		{
-			log_event('debug', 'Looking up Interlets user ' . $from);
+			$app['monolog']->debug('Looking up Interlets user ' . $from);
 
 			if ($fromuser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$from]))
 			{
-				log_event('debug', 'Found Interlets fromuser ' . json_encode($fromuser));
+				$app['monolog']->debug('Found Interlets fromuser ' . json_encode($fromuser));
 			}
 			else
 			{
-				log_event('debug', 'NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
+				$app['monolog']->debug('NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
 			}
 
 			if ($touser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$to]))
 			{
-				log_event('debug', 'Found Interlets touser ' . json_encode($touser));
+				$app['monolog']->debug('Found Interlets touser ' . json_encode($touser));
 			}
 			else
 			{
-				log_event('debug', 'Not found Interlets touser ' . $to . ' transid: ' . $transid);
+				$app['monolog']->debug('Not found Interlets touser ' . $to . ' transid: ' . $transid);
 			}
 
 			$transaction = [
@@ -166,25 +167,25 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 			{
-				log_event('soap','Transaction ' . $transid . ', unknown FROM user (to:' . $to . ')');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ', unknown FROM user (to:' . $to . ')');
 				return 'NOUSER';
 			}
 
 			if (empty($touser['letscode']) || ($touser['status'] != 1 && $touser['status'] != 2))
 			{
-				log_event('soap','Transaction ' . $transid . ', unknown or invalid TO user');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ', unknown or invalid TO user');
 				return 'NOUSER';
 			}
 
 			if (empty($transid))
 			{
-				log_event('soap', 'Transaction ' . $transid . ' missing trans id (failed).');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' missing trans id (failed).');
 				return 'FAILED';
 			}
 
 			if (empty($description))
 			{
-				log_event('soap', 'Transaction ' . $transid . ' missing description (failed).');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' missing description (failed).');
 				return 'FAILED';
 			}
 
@@ -192,7 +193,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if ($sigtest != $signature)
 			{
-				log_event('soap', 'Transaction ' . $transid . ', invalid signature');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ', invalid signature');
 				return 'SIGFAIL';
 			}
 
@@ -200,13 +201,13 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if ($transaction['amount'] < 1)
 			{
-				log_event('soap', 'Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' is lower than 1. (failed)');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' is lower than 1. (failed)');
 				return 'FAILED';
 			}
 
 			if (($transaction['amount'] + $touser['saldo']) > $touser['maxlimit'])
 			{
-				log_event('soap', 'Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' failed. ' . link_user($touser, false, false) . ' over maxlimit.');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' failed. ' . link_user($touser, false, false) . ' over maxlimit.');
 				return 'FAILED';
 			}
 
@@ -214,21 +215,21 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 			if($id = insert_transaction($transaction))
 			{
-				log_event('soap', 'Transaction ' . $transid . ' processed (success)');
+				$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' processed (success)');
 				$transaction['id'] = $id;
 				mail_transaction($transaction);
 
 				return 'SUCCESS';
 			}
 
-			log_event('soap', 'Transaction ' . $transid . ' failed');
+			$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' failed');
 
 			return 'FAILED';
 		}
 	}
 	else
 	{
-		log_event('soap','APIKEY failed for Transaction ' . $transid . ' apikey: ' . $apikey);
+		$app['monolog']->debug('elas-soap: APIKEY failed for Transaction ' . $transid . ' apikey: ' . $apikey);
 		return 'APIKEYFAIL';
 	}
 }
@@ -241,7 +242,7 @@ function userbyletscode($apikey, $letscode)
 {
 	global $app;
 
-	log_event('debug', 'Lookup request for ' . $letscode);
+	$app['monolog']->debug('Lookup request for ' . $letscode);
 
 	if(check_apikey($apikey,'interlets'))
 	{
@@ -258,7 +259,8 @@ function userbyletscode($apikey, $letscode)
 	}
 	else
 	{
-		log_event('debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for letscode ' . $letscode . ')');
+		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey . ' (lookup request for letscode ' . $letscode . ')');
+
 		return '---';
 	}
 }
@@ -271,7 +273,7 @@ function userbyname($apikey, $name)
 {
 	global $app;
 
-	log_event('debug', 'Lookup request for user ' . $name);
+	$app['monolog']->debug('Lookup request for user ' . $name);
 
 	if(check_apikey($apikey, 'interlets'))
 	{
@@ -281,7 +283,8 @@ function userbyname($apikey, $name)
 	}
 	else
 	{
-		log_event('debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for name ' . $name . ')');
+		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey . ' (lookup request for name ' . $name . ')');
+
 		return '---';
 	}
 }
@@ -292,13 +295,15 @@ function userbyname($apikey, $name)
 
 function getstatus($apikey)
 {
+	global $app;
+
 	if (check_apikey($apikey, 'interlets'))
 	{
 		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND';
 	}
 	else
 	{
-		log_event('debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for status)');
+		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey . ' (lookup request for status)');
 		return 'APIKEYFAIL';
 	}
 }
@@ -309,13 +314,15 @@ function getstatus($apikey)
 
 function apiversion($apikey)
 {
+	global $app;
+
 	if(check_apikey($apikey, 'interlets'))
 	{
 		return 1200; //soapversion;
 	}
 	else
 	{
-		log_event('debug', 'Apikey fail, apikey: ' . $apikey . ' (lookup request for apiversion)');
+		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey . ' (lookup request for apiversion)');
 	}
 }
 

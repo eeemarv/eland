@@ -20,7 +20,6 @@ if ($token)
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
 				$app['eland.alert']->success('Paswoord opgeslagen.');
-				log_event('system', 'password reset success user ' . link_user($user, false, false, true));
 
 				$url = $base_url . '/login.php?login=' . $user['letscode'];
 
@@ -88,7 +87,6 @@ if (isset($_POST['zend']))
 
 	if($email)
 	{
-		log_event('system', 'Activation request for ' . $email);
 		$mail_ary = $app['db']->fetchAll('SELECT c.id_user, u.letscode
 			FROM contact c, type_contact tc, users u
 			WHERE c. value = ?
@@ -121,7 +119,7 @@ if (isset($_POST['zend']))
 				mail_q(['to' => $email, 'text' => $text, 'subject' => $subject], true);
 
 				$app['eland.alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
-				log_event('system', 'Paswoord reset link verstuurd naar ' . $email);
+
 				header('Location: login.php');
 				exit;
 			}
@@ -138,7 +136,6 @@ if (isset($_POST['zend']))
 	else
 	{
 		$app['eland.alert']->error('Geef een mailadres op');
-		log_event('system', 'Empty activation request');
 	}
 }
 

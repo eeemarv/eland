@@ -18,7 +18,7 @@ function sendmail()
 
 		if (!isset($schema))
 		{
-			log_event('mail', 'error: mail in queue without schema');
+			$app['monolog']->error('mail error: mail in queue without schema');
 			continue;
 		}
 
@@ -26,7 +26,7 @@ function sendmail()
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
-			log_event('mail', $m);
+			$app['monolog']->error('mail: ' . $m);
 			return ;
 		}
 
@@ -44,7 +44,7 @@ function sendmail()
 
 		if (!isset($mail['subject']))
 		{
-			log_event('mail', 'error: mail without subject', $schema);
+			$app['monolog']->error('mail error: mail without subject', ['schema' => $schema]);
 			continue;
 		}
 
@@ -56,19 +56,19 @@ function sendmail()
 			}
 			else
 			{
-				log_event('mail', 'error: mail without body content', $schema);
+				$app['monolog']->error('mail error: mail without body content', ['schema' => $schema]);
 			}
 		}
 
 		if (!$mail['to'])
 		{
-			log_event('mail', 'error: mail without "to" | subject: ' . $mail['subject'], $schema);
+			$app['monolog']->error('mail error: mail without "to" | subject: ' . $mail['subject'], ['schema' => $schema]);
 			continue;
 		}
 
 		if (!$mail['from'])
 		{
-			log_event('mail', 'error: mail without "from" | subject: ' . $mail['subject'], $schema);
+			$app['monolog']->error('mail error: mail without "from" | subject: ' . $mail['subject'], ['schema' => $schema]);
 			continue;
 		} 
 
@@ -95,16 +95,16 @@ function sendmail()
 
 		if ($mailer->send($message, $failed_recipients))
 		{
-			log_event('mail', 'message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
+			$app['monolog']->info('mail: message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $schema]);
 		}
 		else
 		{
-			log_event('mail', 'failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], $schema);
+			$app['monolog']->error('mail error: failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $schema]);
 		}
 
 		if ($failed_recipients)
 		{
-			log_event('mail', 'failed recipients: ' . $failed_recipients, $schema);
+			$app['monolog']->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $schema]);
 		}
 	}
 }

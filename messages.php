@@ -359,7 +359,7 @@ if ($post && $img && $images && !$s_guest)
 
 		if ($err)
 		{
-			log_event('pict', 'Upload fail : ' . $err);
+			$app['monolog']->error('Upload fail : ' . $err);
 
 			$ret_ary = [['error' => 'Opladen mislukt.']];
 			break;
@@ -372,11 +372,11 @@ if ($post && $img && $images && !$s_guest)
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
-				log_event('pict', 'Message-Picture ' . $filename . ' uploaded and inserted in db.');
+				$app['monolog']->info('Message-Picture ' . $filename . ' uploaded and inserted in db.');
 			}
 			else
 			{
-				log_event('pict', 'Message-Picture ' . $filename . ' uploaded, not (yet) inserted in db.');
+				$app['monolog']->info('Message-Picture ' . $filename . ' uploaded, not (yet) inserted in db.');
 			}
 
 			unlink($tmpfile);
@@ -857,11 +857,6 @@ if (($edit || $add))
 
 						if (count($img_errors))
 						{
-							foreach ($img_errors as $error)
-							{
-								log_event('pict', $error);
-							}
-
 							$app['eland.alert']->error($img_errors);
 
 							continue;
@@ -874,11 +869,11 @@ if (($edit || $add))
 								'msgid'			=> $id,
 							]))
 							{
-								log_event('pict', 'message-picture ' . $img . ' inserted in db.');
+								$app['monolog']->info('message-picture ' . $img . ' inserted in db.');
 							}
 							else
 							{
-								log_event('pict', 'error message-picture ' . $img . ' not inserted in db.');
+								$app['monolog']->error('error message-picture ' . $img . ' not inserted in db.');
 							}
 
 							continue;
@@ -891,22 +886,22 @@ if (($edit || $add))
 
 						if (isset($err))
 						{
-							log_event('pict', 'message-picture renaming and storing in db ' . $img . ' not succeeded.');
+							$app['monolog']->info('message-picture renaming and storing in db ' . $img . ' not succeeded.');
 						}
 						else
 						{
-							log_event('pict', 'renamed ' . $img . ' to ' . $new_filename);
+							$app['monolog']->info('renamed ' . $img . ' to ' . $new_filename);
 
 							if ($app['db']->insert('msgpictures', [
 								'"PictureFile"'		=> $new_filename,
 								'msgid'				=> $id,
 							]))
 							{
-								log_event('pict', 'message-picture ' . $new_filename . ' inserted in db.');
+								$app['monolog']->info('message-picture ' . $new_filename . ' inserted in db.');
 							}
 							else
 							{
-								log_event('pict', 'error: message-picture ' . $new_filename . ' not inserted in db.');
+								$app['monolog']->error('error: message-picture ' . $new_filename . ' not inserted in db.');
 							}
 						}
 					}
@@ -972,7 +967,7 @@ if (($edit || $add))
 							'"PictureFile"'	=> $img,
 						]))
 						{
-							log_event('pict', 'message-picture ' . $img . ' deleted from db.');
+							$app['monolog']->info('message-picture ' . $img . ' deleted from db.');
 						}
 					}
 				}
@@ -1002,11 +997,6 @@ if (($edit || $add))
 
 						if (count($img_errors))
 						{
-							foreach ($img_errors as $error)
-							{
-								log_event('pict', $error);
-							}
-
 							$app['eland.alert']->error($img_errors);
 
 							continue;
@@ -1017,11 +1007,11 @@ if (($edit || $add))
 							'msgid'			=> $edit,
 						]))
 						{
-							log_event('pict', 'message-picture ' . $img . ' inserted in db.');
+							$app['monolog']->info('message-picture ' . $img . ' inserted in db.');
 						}
 						else
 						{
-							log_event('pict', 'error message-picture ' . $img . ' not inserted in db.');
+							$app['monolog']->error('error message-picture ' . $img . ' not inserted in db.');
 						}
 					}
 				}

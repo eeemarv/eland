@@ -274,7 +274,7 @@ if ($post && $img && $id )
 
 	if ($err)
 	{
-		log_event('pict', $err . ' -- ' . $filename);
+		$app['monolog']->error('pict: ' .  $err . ' -- ' . $filename);
 
 		$response = ['error' => 'Afbeelding opladen mislukt.'];
 	}
@@ -284,7 +284,7 @@ if ($post && $img && $id )
 			'"PictureFile"'	=> $filename
 		],['id' => $id]);
 
-		log_event('pict', 'User image ' . $filename . ' uploaded. User: ' . $id);
+		$app['monolog']->info('User image ' . $filename . ' uploaded. User: ' . $id);
 
 		readuser($id, true);
 
@@ -489,7 +489,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$app['redis']->del($schema . '_user_' . $user_id);
 		}
 
-		log_event('bulk', 'Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
 
 		$app['eland.alert']->success('De zichtbaarheid van de volledige naam werd aangepast.');
 
@@ -515,7 +515,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$app['eland.typeahead']->invalidate_thumbprint('users_extern');
 		}
 
-		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 
 		$app['eland.interlets_groups']->clear_cache($s_schema);
 		
@@ -534,7 +534,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		$access_role = $app['eland.access_control']->get_role($access_value);
 
-		log_event('bulk', 'Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
 		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -634,14 +634,10 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 	if ($count)
 	{
-		log_event('mail', 'Bulk mail queued, subject: ' . $bulk_mail_subject . ', to: ' . implode(', ', $to_log));
-
 		$alert_msg = 'Mail verzonden naar ' . $count . ' ';
 		$alert_msg .= ($count > 1) ? 'accounts' : 'account';
 		$alert_msg .= '<br>';
 		$alert_msg .= implode('<br>', $alert_msg_users);
-
-		error_log($alert_msg);
 
 		$app['eland.alert']->success($alert_msg);
 	}
@@ -664,7 +660,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 	if ($bulk_mail_submit && $count)
 	{
-		error_log('cancel #245');
+		$app['monolog']->debug('cancel #245');
 
 		cancel();
 	}
@@ -891,7 +887,7 @@ if ($del)
 
 				if ($msgs)
 				{
-					log_event('user','Delete user ' . $usr . ', deleted Messages ' . $msgs);
+					$app['monolog']->info('Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
 					$app['db']->delete('messages', ['id_user' => $del]);
 				}

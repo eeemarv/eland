@@ -298,7 +298,7 @@ if ($confirm_del && $del)
 
 		if ($err)
 		{
-			event_log('doc', 'doc delete file fail: ' . $err);
+			$app['monolog']->error('doc delete file fail: ' . $err);
 		}
 
 		if (isset($doc['map_id']))
@@ -415,7 +415,7 @@ if ($submit)
 
 		if ($error)
 		{
-			event_log('doc', 'upload fail: ' . $error);
+			$app['monolog']->error('doc upload fail: ' . $error);
 			$app['eland.alert']->error('Bestand opladen mislukt.');
 		}
 		else

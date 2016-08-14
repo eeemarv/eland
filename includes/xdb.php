@@ -3,6 +3,7 @@
 namespace eland;
 
 use Doctrine\DBAL\Connection as db;
+use Monolog\Logger;
 
 /*
                             Table "eland_extra.events"
@@ -52,10 +53,12 @@ class xdb
 	private $user_schema = '';
 	private $user_id = '';
 	private $db;
+	private $monolog;
 
-	public function __construct(db $db)
+	public function __construct(db $db, Logger $monolog)
 	{
 		$this->db = $db;
+		$this->monolog = $monolog;
 
 		if (isset($_SERVER['HTTP_CLIENT_IP']))
 		{
@@ -173,9 +176,8 @@ class xdb
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			error_log('error transaction eland extra db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt.';
-			log_event('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
 			throw $e;
 			exit;
 		}
@@ -242,7 +244,7 @@ class xdb
 		{
 			$this->db->rollback();
 			echo 'Database transactie niet gelukt.';
-			event_log('debug', 'Database transactie niet gelukt. ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
 			throw $e;
 			exit;
 		}

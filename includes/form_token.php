@@ -2,15 +2,20 @@
 
 namespace eland;
 
+use Predis\Client as Redis;
+use Monolog\Logger;
+
 class form_token
 {
 	public $ttl = 14400; // 4 hours
 	private $redis;
 	private $token;
+	private $monolog;
 
-	public function __construct(\Predis\Client $redis)
+	public function __construct(Redis $redis, Logger $monolog)
 	{
 		$this->redis = $redis;
+		$this->monolog = $monolog;
 	}
 
 	public function generate($print = true)
@@ -52,7 +57,7 @@ class form_token
 		if (!$value)
 		{
 			$m = 'Het formulier is verlopen';
-			log_event('form_token', $m . ': ' . $script_name);
+			$this->monolog->debug('form_token: ' . $m . ': ' . $script_name);
 			return $m;
 		}
 
@@ -60,7 +65,7 @@ class form_token
 		{
 			$this->redis->incr($key);
 			$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-			log_event('form_token', $m . '(count: ' . $value . ') : ' . $script_name);
+			$this->monolog->debug('form_token: ' . $m . '(count: ' . $value . ') : ' . $script_name);
 			return $m;
 		}
 

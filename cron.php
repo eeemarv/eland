@@ -304,7 +304,7 @@ if (count($autominlimit_queue))
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) .  $r;
 
-		log_event('cron', 'autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', $sch);
+		$app['monolog']->info('(cron) autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', ['schema' => $sch]);
 	}
 
 	echo '--- end queue autominlimit --- ' . $r;
@@ -358,7 +358,7 @@ while ($row = $st->fetch())
 
 if (count($log_ary))
 {
-	log_event('cron geocode', 'Adresses queued for geocoding: ' . implode(', ', $log_ary));
+	$app['monolog']->info('Adresses queued for geocoding: ' . implode(', ', $log_ary));
 }
 
 // end queue addresses to geocode queue
@@ -425,7 +425,7 @@ function geo_q_process()
 				$app['redis']->expire($key, 31536000); // 1 year
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 				echo  $log . $r;
-				log_event('cron geocode', $log . $log_user, $sch);
+				$app['monolog']->info('(cron) ' . $log . $log_user, ['schema' => $sch]);
 				continue;
 			}
 
@@ -439,7 +439,7 @@ function geo_q_process()
 		}
 
 		echo  $log . $r;
-		log_event('cron geocode', $log . $log_user, $sch);
+		$app['monolog']->info('cron geocode: ' . $log . $log_user, ['schema' => $sch]);
 		$app['redis']->set($key, 'f');
 		$app['redis']->expire($key, 31536000); // 1 year
 
@@ -552,8 +552,6 @@ function user_exp_msgs()
 		}
 
 		mail_q(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
-
-		log_event('mail', 'Message expiration mail sent to ' . $to);
 	}
 
 	$app['db']->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
@@ -591,7 +589,7 @@ function cleanup_messages()
 
 	if ($msgs)
 	{
-		log_event('cron','Expired and deleted Messages ' . $msgs);
+		$app['monolog']->info('(cron) Expired and deleted Messages ' . $msgs);
 
 		$app['db']->executeQuery('delete from messages WHERE validity < ?', [$testdate]);
 	}
@@ -615,7 +613,7 @@ function cleanup_messages()
 
 	if (count($ids))
 	{
-		log_event('cron','Cleanup messages from users: ' . $users);
+		$app['monolog']->info('(cron) Cleanup messages from users: ' . $users);
 		echo 'Cleanup messages from users: ' . $users;
 
 		if (count($ids) == 1)
@@ -762,7 +760,7 @@ function saldo_update()
 		$app['db']->update('users', ['saldo' => $calculated], ['id' => $id]);
 		$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 		echo $m . $r;
-		log_event('cron' , $m);
+		$app['monolog']->info('(cron) ' . $m);
 	}
 
 	return true;
@@ -910,7 +908,7 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 
 		if ($del_str)
 		{
-			log_event('cron', 'image file ' . $object['Key'] . ' deleted ' . $del_str, $sch);
+			$app['monolog']->info('(cron) image file ' . $object['Key'] . ' deleted ' . $del_str, ['schema' => $sch]);
 		}
 
 		$del_count++;
@@ -945,7 +943,7 @@ function cleanup_logs()
 	$app['db']->executeQuery('delete from eland_extra.logs
 		where schema = ? and ts < ?', [$schema, $treshold]);
 
-	log_event('cron', 'Cleaned up logs older than 30 days.');
+	$app['monolog']->info('(cron) Cleaned up logs older than 30 days.');
 
 	return true;
 }

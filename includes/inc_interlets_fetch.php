@@ -148,7 +148,7 @@ function fetch_interlets_typeahead_data($client, $group)
 	$app['redis']->set($redis_user_count_key, $user_count);
 	$app['redis']->expire($redis_user_count_key, 86400); // 1 day
 
-	log_event('cron', 'typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain']);
+	$app['monolog']->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain']);
 
 	echo '----------------------------------------------------' . $r;
 	echo $redis_data_key . $r;

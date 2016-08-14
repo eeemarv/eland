@@ -337,7 +337,7 @@ if ($submit)
 		$log_str .= ' to ';
 		$log_str .= ($to_one) ? $log_one : $log_many;
 
-		log_event('trans', $log_str);
+		$app['monolog']->info('trans: ' . $log_str);
 
 		if ($s_master)
 		{

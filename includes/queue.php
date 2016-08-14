@@ -3,6 +3,7 @@
 namespace eland;
 
 use Doctrine\DBAL\Connection as db;
+use Monolog\Logger;
 
 /*
                                         Table "eland_extra.queue"
@@ -22,10 +23,12 @@ Indexes:
 class queue
 {
 	private $db;
+	private $monolog;
 
-	public function __construct(db $db)
+	public function __construct(db $db, Logger $monolog)
 	{
 		$this->db = $db;
+		$this->monolog = $monolog;
 	}
 
 	/*
@@ -37,21 +40,21 @@ class queue
 		if (!strlen($topic))
 		{
 			$error = 'No queue topic set for data ' . json_encode($data);
-			log_event('queue', $error);
+			$this->monolog->error('queue: ' . $error);
 			return $error;
 		}
 
 		if (!$data)
 		{
 			$error = 'Queue topic: ' . $topic . ' -> No data set';
-			log_event('queue', $error);
+			$this->monolog->error('queue: ', $error);
 			return $error;
 		}
 
 		if (!ctype_digit((string) $priority))
 		{
 			$error = 'Queue topic: ' . $topic . ' -> error Priority is no number: ' . $priority;
-			log_event('queue', $error);
+			$this->monolog->error('queue error: ', $error);
 			return $error;
 		}
 
@@ -68,9 +71,8 @@ class queue
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			error_log('error transaction eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
-			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt (queue). ' . $e->getMessage());
 			throw $e;
 			exit;
 		}
@@ -135,9 +137,8 @@ class queue
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			error_log('error eland extra.queue db: ' . $e->getMessage());
 			echo 'Database transactie niet gelukt (queue).';
-			log_event('debug', 'Database transactie niet gelukt (queue). ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt (queue). ' . $e->getMessage());
 			throw $e;
 			exit;
 		}

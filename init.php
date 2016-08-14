@@ -63,7 +63,7 @@ if ($step == 1)
 
 		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
 		echo $m . "\n";
-		log_event('DB', $m);
+		$app['monolog']->info('DB: ' . $m);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=2');
@@ -101,7 +101,7 @@ else if ($step == 2)
 		{
 			$app['db']->update('users', ['"PictureFile"' => null], ['id' => $user_id]);
 			echo 'Profile image not present, deleted in database: ' . $filename . $r;
-			log_event ('cron', 'Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
+			$app['monolog']->info('cron: Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
 		else if ($f_schema != $schema)
 		{
@@ -112,13 +112,13 @@ else if ($step == 2)
 			if ($err)
 			{
 				echo 'error: ' . $err . $r . $r;
-				log_event('init', 'copy img error: ' . $err);
+				$app['monolog']->info('init: copy img error: ' . $err);
 				continue;
 			}
 
 			$app['db']->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-			log_event('init', 'Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+			$app['monolog']->info('init: Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 		}
 	}
 
@@ -157,7 +157,7 @@ else if ($step == 3)
 		{
 			$app['db']->delete('msgpictures', ['id' => $id]);
 			echo 'Message image not present, deleted in database: ' . $filename . $r;
-			log_event ('init', 'Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
+			$app['monolog']->info('init: Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
 		else if ($f_schema != $schema)
 		{
@@ -168,13 +168,13 @@ else if ($step == 3)
 			if ($err)
 			{
 				echo 'error: ' . $err . $r . $r;
-				log_event('init', 'copy img error: ' . $err);
+				$app['monolog']->info('init: copy img error: ' . $err);
 				continue;
 			}
 
 			$app['db']->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
 			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
-			log_event('init', 'Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+			$app['monolog']->info('init: Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
 		}
 	}

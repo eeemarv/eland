@@ -92,7 +92,7 @@ class typeahead
 			{
 				$this->redis->set($key, $new_thumbprint);
 
-				log_event('typeahead', 'new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
+				$app['monolog']->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 			}
 
 			$this->redis->expire($key, $this->ttl);
@@ -101,7 +101,7 @@ class typeahead
 		{
 			$this->redis->del($key);
 
-			log_event('typeahead', 'typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
+			$app['monolog']->debug('typeahead: typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 		}
 	}
 }

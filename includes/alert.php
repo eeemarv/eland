@@ -2,15 +2,28 @@
 
 namespace eland;
 
+use Monolog\Logger;
 class alert
 {
 	private $send_once;
+	private $monolog;
 
-	function add($type, $msg)
+	public function __construct(Logger $monolog)
+	{
+		$this->monolog = $monolog;
+	} 
+
+	private function add($type, $msg)
 	{
 		if (is_array($msg))
 		{
+			$log = implode(' -- & ', $msg);
 			$msg = implode('<br>', $msg);
+			$this->monolog->notice($log, ['alert_type' => $type]);
+		}
+		else
+		{
+			$this->monolog->notice($msg, ['alert_type' => $type]);
 		}
 
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
@@ -21,7 +34,7 @@ class alert
 		$_SESSION['alert'][] = [$type, $msg];
 	}
 
-	function error($msg)
+	public function error($msg)
 	{
 		$this->add('error', $msg);
 	}
@@ -31,17 +44,17 @@ class alert
 		$this->add('success', $msg);
 	}
 
-	function info($msg)
+	public function info($msg)
 	{
 		$this->add('info', $msg);
 	}
 
-	function warning($msg)
+	public function warning($msg)
 	{
 		$this->add('warning', $msg);
 	}
 
-	function render()
+	public function render()
 	{
 		if (!(isset($_SESSION['alert']) && is_array($_SESSION['alert']) && count($_SESSION['alert'])))
 		{
@@ -61,7 +74,7 @@ class alert
 		}
 	}
 
-	function is_set()
+	public function is_set()
 	{
 		$is_set = (!isset($this->send_once) && isset($_SESSION['alert'])
 			&& is_array($_SESSION['alert']) && count($_SESSION['alert'])) ? true : false;

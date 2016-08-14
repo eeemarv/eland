@@ -466,11 +466,11 @@ function saldo()
 
 	if (count($log_to))
 	{
-		log_event('mail', 'Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to));
+		$app['monolog']->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to));
 	}
 	else
 	{
-		log_event('mail', 'no saldomail queued');
+		$app['monolog']->info('mail: no saldomail queued');
 	}
 
 	return true;

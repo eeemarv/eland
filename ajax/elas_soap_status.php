@@ -52,7 +52,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen verbinding maken.';
 	echo $m . ' ' . $err;
-	log_event('token', $m . ' ' . $err);
+	$app['monolog']->error('elas-token: ', $m . ' ' . $err);
 	exit;
 }
 
@@ -64,7 +64,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen status verkrijgen. ' . $err;
 	echo $m;
-	log_event('token', $m . ' ' . $err);
+	$app['monolog']->error('elas-token: ', $m . ' ' . $err);
 	exit;
 }
 

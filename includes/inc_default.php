@@ -259,8 +259,8 @@ if (!$schema)
 	exit;
 }
 
-$app['eland.alert'] = function (){
-	return new eland\alert();
+$app['eland.alert'] = function ($app){
+	return new eland\alert($app['monolog']);
 };
 
 $app['eland.pagination'] = function (){
@@ -306,17 +306,18 @@ $logins = $_SESSION['logins'] ?? [];
 
 $s_master = $s_elas_guest = false;
 
+/*
 if (count($logins))
 {
-	error_log('logins: ' . http_build_query($logins));
+	$app['monolog']->debug('logins: ' . http_build_query($logins));
 }
 else
 {
-	error_log('no logins');
+	$app['monolog']->debug('no logins');
 }
 
-error_log('s_id: ' . $s_id);
-
+$app['monolog']->debug('s_id: ' . $s_id);
+*/
 /**
  *
  */
@@ -325,7 +326,7 @@ if (!count($logins))
 {
 	if ($s_accountrole != 'anonymous')
 	{
-		error_log('redirect a');
+		$app['monolog']->debug('redirect a');
 		redirect_login();
 	}
 }
@@ -353,7 +354,7 @@ if (!$s_id)
 				$get['s'] = $s_schema;
 			}
 
-			error_log('redirect p');
+			$app['monolog']->debug('redirect p');
 
 			$get = http_build_query($get);
 			header('Location: ' . $location . '?' . $get);
@@ -361,13 +362,13 @@ if (!$s_id)
 
 		}
 
-		error_log('redirect b');
+		$app['monolog']->debug('redirect b');
 		redirect_login();
 	}
 
 	if ($s_accountrole != 'anonymous')
 	{
-		error_log('redirect c');
+		$app['monolog']->debug('redirect c');
 		redirect_login();
 	}
 }
@@ -399,14 +400,14 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 			$get['s'] = $s_schema;
 		}
 
-		error_log('redirect d');
+		$app['monolog']->debug('redirect d');
 
 		$get = http_build_query($get);
 		header('Location: ' . $location . '?' . $get);
 		exit;
 	}
 
-	error_log('redirect 1');
+	$app['monolog']->debug('redirect 1');
 	redirect_login();
 }
 else if (ctype_digit((string) $s_id))
@@ -423,7 +424,7 @@ else if (ctype_digit((string) $s_id))
 
 	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
-		error_log('redirect 2');
+		$app['monolog']->debug('redirect 2');
 
 		$s_accountrole = $session_user['accountrole'];
 
@@ -432,7 +433,7 @@ else if (ctype_digit((string) $s_id))
 
 	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
 	{
-		error_log('redirect 2a');
+		$app['monolog']->debug('redirect 2a');
 		$_SESSION = [];
 		redirect_login();
 	}
@@ -441,7 +442,7 @@ else if ($s_id == 'elas')
 {
 	if ($s_accountrole != 'guest' || !$s_group_self)
 	{
-		error_log('redirect 3');
+		$app['monolog']->debug('redirect 3');
 		redirect_login();
 	}
 
@@ -451,7 +452,7 @@ else if ($s_id == 'master')
 {
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		error_log('redirect 3a');
+		$app['monolog']->debug('redirect 3a');
 
 		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=admin&u=master';
 		header('Location: ' . $location);
@@ -462,7 +463,7 @@ else if ($s_id == 'master')
 }
 else
 {
-	error_log('redirect 4');
+	$app['monolog']->debug('redirect 4');
 	redirect_login();
 }
 
@@ -482,7 +483,7 @@ switch ($s_accountrole)
 
 		if ($page_access != 'anonymous')
 		{
-			error_log('redirect 5');
+			$app['monolog']->debug('redirect 5');
 			redirect_login();
 		}
 
@@ -492,7 +493,7 @@ switch ($s_accountrole)
 
 		if ($page_access != 'guest')
 		{
-			error_log('redirect 6');
+			$app['monolog']->debug('redirect 6');
 			redirect_index();
 		}
 
@@ -502,7 +503,7 @@ switch ($s_accountrole)
 
 		if (!($page_access == 'user' || $page_access == 'guest'))
 		{
-			error_log('redirect 7');
+			$app['monolog']->debug('redirect 7');
 			redirect_index();
 		}
 
@@ -512,7 +513,7 @@ switch ($s_accountrole)
 
 		if ($page_access == 'anonymous')
 		{
-			error_log('redirect 8');
+			$app['monolog']->debug('redirect 8');
 			redirect_index();
 		}
 
@@ -520,7 +521,7 @@ switch ($s_accountrole)
 
 	default:
 
-		error_log('redirect 9');
+		$app['monolog']->debug('redirect 9');
 		redirect_login();
 
 		break;
@@ -580,13 +581,13 @@ require_once $rootpath . 'includes/inc_eventlog.php';
   */
 
 $app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db']);
+	return new eland\xdb($app['db'], $app['monolog']);
 };
 
 $app['eland.xdb']->init($schema, $s_schema, $s_id);
 
 $app['eland.queue'] = function($app){
-	return new eland\queue($app['db']);
+	return new eland\queue($app['db'], $app['monolog']);
 };
 
 $app['eland.date_format'] = function(){
@@ -594,7 +595,7 @@ $app['eland.date_format'] = function(){
 };
 
 $app['eland.form_token'] = function($app){
-	return new eland\form_token($app['redis']);
+	return new eland\form_token($app['redis'], $app['monolog']);
 };
 
 /* some more vars */
@@ -603,13 +604,14 @@ $app['eland.schema'] = $schema;
 $app['eland.session_user'] = $session_user ?? [];
 $app['eland.session_schema'] = $s_schema;
 
+/*
 $app['monolog']->debug('debug.');
 $app['monolog']->notice('notice.', ['user' => 'fwiep']);
 $app['monolog']->info('info.');
 $app['monolog']->error('error.');
 $app['monolog']->warning('warning.');
 $app['monolog']->critical('critical.');
-
+*/
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view (global for all groups) */
@@ -1004,14 +1006,14 @@ function mail_q($mail = [], $priority = false)
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
 		echo $m;
-		log_event('mail', $m);
+		$app['monolog']->info('mail: ' . $m);
 		return $m;
 	}
 
 	if (!isset($mail['subject']) || $mail['subject'] == '')
 	{
 		$m = 'Mail "subject" is missing.';
-		log_event('mail', $m);
+		$app['monolog']->error('mail: '. $m);
 		return $m;
 	}
 
@@ -1019,14 +1021,14 @@ function mail_q($mail = [], $priority = false)
 		&& (!isset($mail['html']) || $mail['html'] == ''))
 	{
 		$m = 'Mail "body" (text or html) is missing.';
-		log_event('mail', $m);
+		$app['monolog']->error('mail: ' . $m);
 		return $m;
 	}
 
 	if (!isset($mail['to']) || !$mail['to'])
 	{
 		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
-		log_event('mail', $m);
+		$app['monolog']->error('mail: ' . $m);
 		return $m;
 	}
 
@@ -1035,7 +1037,7 @@ function mail_q($mail = [], $priority = false)
 	if (!count($mail['to']))
 	{
 		$m = 'error: mail without "to" | subject: ' . $mail['subject'];
-		log_event('mail', $m);
+		$app['monolog']->error('mail: ' . $m);
 		return $m;
 	} 
 
@@ -1045,7 +1047,7 @@ function mail_q($mail = [], $priority = false)
 
 		if (!count($mail['reply_to']))
 		{
-			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			$app['monolog']->error('mail: error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['reply_to']);
 		}
 
@@ -1059,7 +1061,7 @@ function mail_q($mail = [], $priority = false)
 	if (!count($mail['from']))
 	{
 		$m = 'error: mail without "from" | subject: ' . $mail['subject'];
-		log_event('mail', $m);
+		$app['monolog']->error('mail: ' . $m);
 		return $m;
 	}
 
@@ -1069,7 +1071,7 @@ function mail_q($mail = [], $priority = false)
 
 		if (!count($mail['cc']))
 		{
-			log_event('mail', 'error: invalid "reply to" : ' . $mail['subject']);
+			$app['monolog']->error('mail error: invalid "reply to" : ' . $mail['subject']);
 			unset($mail['cc']);
 		}
 	}
@@ -1082,7 +1084,7 @@ function mail_q($mail = [], $priority = false)
 	{
 		$reply = (isset($mail['reply_to'])) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
 
-		log_event('mail', 'Mail in queue, subject: ' .
+		$app['monolog']->info('mail: Mail in queue, subject: ' .
 			$mail['subject'] . ', from : ' .
 			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, $mail['schema']);
 	}
@@ -1125,7 +1127,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+					$app['monolog']->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
 					continue;
 				}
 
@@ -1139,7 +1141,7 @@ function getmailadr($m, $sending_schema = false)
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
-				log_event('mail', 'error: invalid ' . $in . ' mail address : ' . $mail);
+				$app['monolog']->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
 				continue;
 			}
 
@@ -1168,7 +1170,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event('mail', 'error: invalid mail address : ' . $mail . ', user id: ' . $in);
+					$app['monolog']->error('mail error: invalid mail address : ' . $mail . ', user id: ' . $in);
 					continue;
 				}
 
@@ -1200,7 +1202,7 @@ function getmailadr($m, $sending_schema = false)
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					log_event('mail', 'error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
+					$app['monolog']->error('mail error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
 					continue;
 				}
 
@@ -1213,13 +1215,13 @@ function getmailadr($m, $sending_schema = false)
 		}
 		else
 		{
-			log_event('mail', 'error: no valid input for mail adr: ' . $in);
+			$app['monolog']->error('mail error: no valid input for mail adr: ' . $in);
 		}
 	}
 
 	if (!count($out))
 	{
-		log_event('mail', 'no valid mail adress found for: ' . implode('|', $m));
+		$app['monolog']->error('mail error: no valid mail adress found for: ' . implode('|', $m));
 		return $out;
 	} 
 

@@ -133,7 +133,7 @@ if($post && isset($_POST['zend']))
 		$app['redis']->set($key, json_encode($contact));
 		$app['redis']->expire($key, 86400);
 
-		log_event('contact', 'Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
+		$app['monolog']->info('Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
 
 		$link = $base_url . '/contact.php?token=' . $token;
 
