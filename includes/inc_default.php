@@ -4,10 +4,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once $rootpath . 'vendor/autoload.php';
-error_log(`git branch -v --no-abbrev`);
+
 $app = new Silex\Application();
 
 $app['debug'] = getenv('DEBUG');
+
+$app['redis'] = function () {
+	try
+	{
+		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
+		$con = parse_url($url);
+		$con['password'] = $con['pass'];
+		$con['scheme'] = 'tcp';
+		return new Predis\Client($con);
+	}
+	catch (Exception $e)
+	{
+		echo 'Couldn\'t connected to Redis: ';
+		echo $e->getMessage();
+		exit;
+	}
+};
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
@@ -30,15 +47,14 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Bramus\Monolog\Formatter\ColoredLineFormatter());
 	$monolog->pushHandler($handler);
 
-//	$monolog->pushHandler(new eland\log_handler($app['db'], \Monolog\Logger::DEBUG));
+	$monolog->pushHandler(new Monolog\Handler\RedisHandler($app['redis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20));
 
 	if ($app['debug'])
 	{
-		$monolog->pushHandler(new \Monolog\Handler\BrowserConsoleHandler());
+		$monolog->pushHandler(new Monolog\Handler\BrowserConsoleHandler());
 	}
 
-	$monolog->pushProcessor(new \Monolog\Processor\WebProcessor());
-
+	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
@@ -63,24 +79,6 @@ $app->extend('monolog', function($monolog, $app) {
 
 	return $monolog;
 });
-
-
-$app['redis'] = function () {
-	try
-	{
-		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
-		$con = parse_url($url);
-		$con['password'] = $con['pass'];
-		$con['scheme'] = 'tcp';
-		return new Predis\Client($con);
-	}
-	catch (Exception $e)
-	{
-		echo 'Couldn\'t connected to Redis: ';
-		echo $e->getMessage();
-		exit;
-	}
-};
 
 if(!isset($rootpath))
 {
@@ -605,11 +603,11 @@ $app['eland.schema'] = $schema;
 $app['eland.session_user'] = $session_user ?? [];
 $app['eland.session_schema'] = $s_schema;
 
-$app['monolog']->addDebug('debug.');
-$app['monolog']->addNotice('notice.', ['user' => 'fwiep']);
-$app['monolog']->addInfo('info.');
-$app['monolog']->addError('error.');
-$app['monolog']->addWarning('warning.');
+$app['monolog']->debug('debug.');
+$app['monolog']->notice('notice.', ['user' => 'fwiep']);
+$app['monolog']->info('info.');
+$app['monolog']->error('error.');
+$app['monolog']->warning('warning.');
 $app['monolog']->critical('critical.');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
