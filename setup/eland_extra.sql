@@ -1,7 +1,7 @@
 
 create schema eland_extra;
 
-create table eland_extra.logs (
+create table if not exists eland_extra.logs (
 schema varchar(60) not null,
 user_id int not null default 0,
 user_schema varchar(60),
@@ -17,7 +17,7 @@ create index on eland_extra.logs(schema, letscode);
 create index on eland_extra.logs(letscode);
 create index on eland_extra.logs(type);
 
-create table eland_extra.events (
+create table if not exists eland_extra.events (
 ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
@@ -34,7 +34,7 @@ eland_id varchar(40)
 
 alter table eland_extra.events add primary key (agg_id, agg_version);
 
-create table eland_extra.aggs (
+create table if not exists eland_extra.aggs (
 ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
@@ -53,7 +53,7 @@ create index on eland_extra.aggs(agg_type, agg_schema);
 create index on eland_extra.aggs(agg_schema);
 create index on eland_extra.logs(agg_type);
 
-create table eland_extra.queue (
+create table if not exists eland_extra.queue (
 ts timestamp without time zone default timezone('utc'::text, now()),
 id bigserial primary key,
 topic varchar(60) not null,

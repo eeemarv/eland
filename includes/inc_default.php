@@ -3,26 +3,67 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Bramus\Monolog\Formatter\ColoredLineFormatter;
-
 require_once $rootpath . 'vendor/autoload.php';
-
+error_log(`git branch -v --no-abbrev`);
 $app = new Silex\Application();
 
 $app['debug'] = getenv('DEBUG');
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    'db.options' => [
+        'url'   => getenv('DATABASE_URL'),
+    ],
+]);
+
+$app->register(new Silex\Provider\TwigServiceProvider(), [
+	'twig.path' => __DIR__ . '/../views',
+	'twig.options'	=> [
+		'cache'		=> __DIR__ . '/../cache',
+	],
+]);
 
 $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
 $app->extend('monolog', function($monolog, $app) {
 
-	$handler = new StreamHandler('php://stdout', Logger::DEBUG);
-	$handler->setFormatter(new ColoredLineFormatter());
+	$handler = new \Monolog\Handler\StreamHandler('php://stdout', \Monolog\Logger::DEBUG);
+	$handler->setFormatter(new \Bramus\Monolog\Formatter\ColoredLineFormatter());
 	$monolog->pushHandler($handler);
+
+//	$monolog->pushHandler(new eland\log_handler($app['db'], \Monolog\Logger::DEBUG));
+
+	if ($app['debug'])
+	{
+		$monolog->pushHandler(new \Monolog\Handler\BrowserConsoleHandler());
+	}
+
+	$monolog->pushProcessor(new \Monolog\Processor\WebProcessor());
+
+
+	$monolog->pushProcessor(function ($record) use ($app){
+
+		if (isset($app['eland.schema']))
+		{
+			$record['extra']['schema'] = $app['eland.schema'];
+		}
+
+		if (isset($app['eland.session_user']))
+		{
+			$record['extra']['letscode'] = $app['eland.session_user']['letscode'];
+			$record['extra']['user_id'] = $app['eland.session_user']['id'];
+		}
+
+		if (isset($app['eland.session_schema']))
+		{
+			$record['extra']['user_schema'] = $app['eland.session_schema'];
+		}
+
+		return $record;
+	});
 
 	return $monolog;
 });
+
 
 $app['redis'] = function () {
 	try
@@ -40,19 +81,6 @@ $app['redis'] = function () {
 		exit;
 	}
 };
-
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    'db.options' => [
-        'url'   => getenv('DATABASE_URL'),
-    ],
-]);
-
-$app->register(new Silex\Provider\TwigServiceProvider(), [
-	'twig.path' => __DIR__ . '/../views',
-	'twig.options'	=> [
-		'cache'		=> __DIR__ . '/../cache',
-	],
-]);
 
 if(!isset($rootpath))
 {
@@ -245,14 +273,7 @@ $app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts, $app_pro
 	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app_protocol);
 };
 
-/*
-$app['monolog']->addDebug('debug.');
-$app['monolog']->addNotice('notice.', ['user' => 'fwiep']);
-$app['monolog']->addInfo('info.');
-$app['monolog']->addError('error.');
-$app['monolog']->addWarning('warning.');
-$app['monolog']->addCritical('critical.');
-*/
+
 
 /**
  * start session
@@ -579,6 +600,17 @@ $app['eland.form_token'] = function($app){
 };
 
 /* some more vars */
+
+$app['eland.schema'] = $schema;
+$app['eland.session_user'] = $session_user ?? [];
+$app['eland.session_schema'] = $s_schema;
+
+$app['monolog']->addDebug('debug.');
+$app['monolog']->addNotice('notice.', ['user' => 'fwiep']);
+$app['monolog']->addInfo('info.');
+$app['monolog']->addError('error.');
+$app['monolog']->addWarning('warning.');
+$app['monolog']->critical('critical.');
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
