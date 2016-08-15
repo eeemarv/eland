@@ -3,18 +3,21 @@
 namespace eland;
 
 use Predis\Client as Redis;
+use Monolog\Logger;
 
 class typeahead
 {
 	protected $redis;
+	protected $monolog;
 	protected $base_url;
 	protected $rootpath;
 	protected $version;
 	protected $ttl = 5184000; // 60 days
 
-	public function __construct(Redis $redis, string $base_url, string $rootpath)
+	public function __construct(Redis $redis, Logger $monolog, string $base_url, string $rootpath)
 	{
 		$this->redis = $redis;
+		$this->monolog = $monolog;
 		$this->base_url = $base_url;
 		$this->rootpath = $rootpath;
 		$this->version = getenv('TYPEAHEAD_VERSION') ?: '';
@@ -92,7 +95,7 @@ class typeahead
 			{
 				$this->redis->set($key, $new_thumbprint);
 
-				$app['monolog']->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
+				$this->monolog->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
 			}
 
 			$this->redis->expire($key, $this->ttl);
@@ -101,7 +104,7 @@ class typeahead
 		{
 			$this->redis->del($key);
 
-			$app['monolog']->debug('typeahead: typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
+			$this->monolog->debug('typeahead: typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
 		}
 	}
 }

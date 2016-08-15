@@ -16,7 +16,7 @@ chdir(__DIR__);
 
 $rootpath = './';
 $page_access = 'anonymous';
-$allow_session = true;
+
 require_once $rootpath . 'includes/inc_default.php';
 
 require_once $rootpath . 'includes/inc_saldo_mail.php';
@@ -304,7 +304,8 @@ if (count($autominlimit_queue))
 
 		echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) .  $r;
 
-		$app['monolog']->info('(cron) autominlimit: new minlimit : ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', ['schema' => $sch]);
+		$app['monolog']->info('(cron) autominlimit: new minlimit : ' . $new_minlimit .
+			' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', ['schema' => $sch]);
 	}
 
 	echo '--- end queue autominlimit --- ' . $r;

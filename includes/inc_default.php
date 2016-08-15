@@ -139,7 +139,7 @@ date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['eland.typeahead'] = function($app){
 
-	return new eland\typeahead($app['redis'], $app['eland.base_url'], $app['eland.rootpath']);
+	return new eland\typeahead($app['redis'], $app['monolog'], $app['eland.base_url'], $app['eland.rootpath']);
 };
 
 /**
@@ -606,7 +606,7 @@ $app['eland.session_schema'] = $s_schema;
 
 /*
 $app['monolog']->debug('debug.');
-$app['monolog']->notice('notice.', ['user' => 'fwiep']);
+$app['monolog']->notice('notice.');
 $app['monolog']->info('info.');
 $app['monolog']->error('error.');
 $app['monolog']->warning('warning.');
@@ -1005,7 +1005,6 @@ function mail_q($mail = [], $priority = false)
 	if (!readconfigfromdb('mailenabled'))
 	{
 		$m = 'Mail functions are not enabled. ' . "\n";
-		echo $m;
 		$app['monolog']->info('mail: ' . $m);
 		return $m;
 	}

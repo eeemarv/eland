@@ -3,6 +3,7 @@
 namespace eland;
 
 use Monolog\Logger;
+
 class alert
 {
 	private $send_once;

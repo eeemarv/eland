@@ -410,7 +410,7 @@ if ($add)
 
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
-			$app['monolog']->debug( 'insert transation: --  ' . http_build_query($transaction) . ' --');
+			$app['monolog']->debug('insert transation: --  ' . http_build_query($transaction) . ' --');
 
 			$id = insert_transaction($transaction);
 
