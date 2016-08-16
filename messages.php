@@ -879,13 +879,13 @@ if (($edit || $add))
 						}
 
 						$new_filename = $schema . '_m_' . $id . '_';
-						$new_filename .= sha1($filename . microtime()) . '.jpg';
+						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
-						$err = $app['eland.s3']->img_copy($filename, $new_filename);
+						$err = $app['eland.s3']->img_copy($img, $new_filename);
 
 						if (isset($err))
 						{
-							$app['monolog']->info('message-picture renaming and storing in db ' . $img . ' not succeeded.');
+							$app['monolog']->error('message-picture renaming and storing in db ' . $img . ' not succeeded. ' . $err);
 						}
 						else
 						{

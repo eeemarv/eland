@@ -180,7 +180,7 @@ class s3
 	{
 		try
 		{
-			$result = $his->client->getObject([
+			$result = $this->client->getObject([
 				'Bucket' => $bucket,
 				'Key'    => $source,
 			]);
