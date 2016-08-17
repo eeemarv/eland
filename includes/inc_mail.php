@@ -52,7 +52,7 @@ function sendmail()
 		{
 			if (isset($mail['html']))
 			{
-				$mail['text'] = strip_tags($text_converter->convert($mail['html']));
+				$mail['text'] = $text_converter->convert($mail['html']);
 			}
 			else
 			{

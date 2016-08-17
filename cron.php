@@ -29,6 +29,48 @@ echo 'php version: ' . phpversion() . $r;
 
 $app['eland.log_db']->update();
 
+/** take cron task from the queue and run **/
+/*
+$queue = $app['eland.queue']->get_all(5);
+
+foreach ($queue as $q_msg)
+{
+	$topic = $q_msg['topic'];
+	$data = $q_msg['data'];
+
+	if (!isset($data['schema']))
+	{
+		$app['monolog']->error('no schema set for queue msg id : ' . $q_msg['id'] . ' data: ' .
+			json_encode($data) . ' topic: ' . $topic);
+
+		$app['eland.queue']->del($q_msg['id']);
+
+		continue;
+	}
+
+	switch ($q_msg['topic'])
+	{
+		case 'mail':
+			
+			break;
+		case 'autominlimit':
+
+			break;
+		default:
+			$app['monolog']->error('Task not recognised: ' . json_encode($q_msg));
+			break;
+	}
+}
+
+if (count($queue))
+{
+	echo '-- Cron end. --';
+	exit;
+}
+
+
+*/
+
 /*
  *  select in which schema to perform updates
  */
