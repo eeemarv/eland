@@ -577,7 +577,7 @@ $app['eland.xdb'] = function ($app){
 
 $app['eland.xdb']->init($schema, $s_schema, $s_id);
 
-$app['eland.queue'] = function($app){
+$app['eland.queue'] = function ($app){
 	return new eland\queue($app['db'], $app['monolog']);
 };
 
@@ -585,8 +585,18 @@ $app['eland.date_format'] = function(){
 	return new eland\date_format();
 };
 
-$app['eland.form_token'] = function($app){
+$app['eland.form_token'] = function ($app){
 	return new eland\form_token($app['redis'], $app['monolog']);
+};
+
+// tasks
+
+$app['eland.task.mail'] = function($app){
+	return new eland\task\mail($app['eland.queue'], $app['monolog']);
+};
+
+$app['eland.task.autominlimit'] = function ($app){
+	return new eland\task\autominlimit($app['eland.queue'], $app['monolog']);
 };
 
 /* some more vars */
