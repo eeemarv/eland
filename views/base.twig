@@ -80,7 +80,7 @@
 		<ul class="dropdown-menu" role="menu">
 		foreach ($menu as $link => $label)
 		{
-			$active = ($script_name == $link) ? ' class="active"' : '
+			$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
 			<li' . $active . '>
 			 aphp($link, '', $label[1], false, false, $label[0]);
 			</li>
@@ -162,7 +162,7 @@
 
 foreach ($menu as $link => $label)
 {
-	$active = ($script_name == $link) ? ' class="active"' : '
+	$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
 	<li' . $active . '>
 	 aphp($link, (isset($label[2])) ? $label[2] : '',
 		$label[1], false, false, $label[0]);

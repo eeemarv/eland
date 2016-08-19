@@ -121,8 +121,7 @@ $app['eland.assets'] = function($app){
 
 $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js']);
 
-$script_name = ltrim($_SERVER['SCRIPT_NAME'], '/');
-$script_name = str_replace('.php', '', $script_name);
+$app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
 $host = $_SERVER['SERVER_NAME'];
 $app['eland.base_url'] = $base_url = $app['eland.protocol'] . $host;
@@ -195,7 +194,7 @@ $allowed_interlets_landing_pages = [
  */
 $key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($host));
 
-if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
+if ($app['eland.script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
 	$page_access = 'anonymous';
 	$hosting_form = true;
@@ -580,7 +579,7 @@ $app['eland.date_format'] = function(){
 };
 
 $app['eland.form_token'] = function ($app){
-	return new eland\form_token($app['redis'], $app['monolog']);
+	return new eland\form_token($app['redis'], $app['monolog'], $app['eland.script_name']);
 };
 
 // tasks
@@ -621,17 +620,17 @@ $view_news = $_SESSION['view']['news'] ?? 'extended';
 
 if ($view || $inline)
 {
-	if ($script_name == 'users' && $view != $view_users)
+	if ($app['eland.script_name'] == 'users' && $view != $view_users)
 	{
 		$view_users = ($view) ?: $view_users;
 		$_SESSION['view']['users'] = $view = $view_users;
 	}
-	else if ($script_name == 'messages' && $view != $view_messages)
+	else if ($app['eland.script_name'] == 'messages' && $view != $view_messages)
 	{
 		$view_messages = ($view) ?: $view_messages;
 		$_SESSION['view']['messages'] = $view = $view_messages;
 	}
-	else if ($script_name == 'news' && $view != $view_news)
+	else if ($app['eland.script_name'] == 'news' && $view != $view_news)
 	{
 		$view_news = ($view) ?: $view_news;
 		$_SESSION['view']['news'] = $view = $view_news;

@@ -75,7 +75,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		echo '>';
 		
 		echo '<a href="';
-		echo $app['eland.protocol'] . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
+		echo $app['eland.protocol'] . $hosts[$login_schema] . '/' . $app['eland.script_name'] . '.php?r=';
 		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
 		echo '&u=' . $login_id;
 		echo '">';
@@ -99,7 +99,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 				echo ($schema == $sch) ? ' class="active"' : '';
 				echo '>';
 
-				$page = (isset($allowed_interlets_landing_pages[$script_name])) ? $script_name : 'index';
+				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'index';
 
 				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
 				echo readconfigfromdb('systemname', $sch) . '</a>';
@@ -192,7 +192,7 @@ if (!$s_anonymous)
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $item)
 		{
-			$active = ($script_name == $link) ? ' class="active"' : '';
+			$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '';
 			echo '<li' . $active . '>';
 			echo aphp($link, [], $item[1], false, false, $item[0]);
 			echo '</li>';
@@ -277,7 +277,7 @@ echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $link => $item)
 {
-	$active = ($script_name == $link) ? ' class="active"' : '';
+	$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '';
 	echo '<li' . $active . '>';
 	echo aphp($link, $item[2],
 		$item[1], false, false, $item[0]);

@@ -11,11 +11,13 @@ class form_token
 	private $redis;
 	private $token;
 	private $monolog;
+	private $script_name;
 
-	public function __construct(Redis $redis, Logger $monolog)
+	public function __construct(Redis $redis, Logger $monolog, string $script_name)
 	{
 		$this->redis = $redis;
 		$this->monolog = $monolog;
+		$this->script_name = $script_name;
 	}
 
 	public function generate($print = true)
@@ -42,8 +44,6 @@ class form_token
 
 	public function get_error()
 	{
-		global $script_name;
-
 		if (!isset($_POST['form_token']))
 		{
 			return 'Het formulier bevat geen token';
@@ -57,7 +57,7 @@ class form_token
 		if (!$value)
 		{
 			$m = 'Het formulier is verlopen';
-			$this->monolog->debug('form_token: ' . $m . ': ' . $script_name);
+			$this->monolog->debug('form_token: ' . $m . ': ' . $this->script_name);
 			return $m;
 		}
 
@@ -65,7 +65,7 @@ class form_token
 		{
 			$this->redis->incr($key);
 			$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-			$this->monolog->debug('form_token: ' . $m . '(count: ' . $value . ') : ' . $script_name);
+			$this->monolog->debug('form_token: ' . $m . '(count: ' . $value . ') : ' . $this->script_name);
 			return $m;
 		}
 
