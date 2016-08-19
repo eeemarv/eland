@@ -640,7 +640,7 @@ if ($add)
 
 				$group_id = $app['db']->fetchColumn('select id
 					from letsgroups
-					where url = ?', [$app_protocol . $host_from_tus]);
+					where url = ?', [$app['eland.protocol'] . $host_from_tus]);
 				$to_schema_table = $tus . '.';
 			}
 		}

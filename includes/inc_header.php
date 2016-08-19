@@ -75,7 +75,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		echo '>';
 		
 		echo '<a href="';
-		echo $app_protocol . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
+		echo $app['eland.protocol'] . $hosts[$login_schema] . '/' . $script_name . '.php?r=';
 		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
 		echo '&u=' . $login_id;
 		echo '">';

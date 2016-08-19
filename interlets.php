@@ -175,7 +175,7 @@ if ($add || $edit)
 	{
 		if (isset($hosts[$add_schema]))
 		{
-			$group['url'] = $app_protocol . $hosts[$add_schema];
+			$group['url'] = $app['eland.protocol'] . $hosts[$add_schema];
 			$group['groupname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
@@ -561,7 +561,7 @@ exit;
 
 function render_schemas_groups()
 {
-	global $schema, $app, $base_url, $schemas, $hosts, $app_protocol;
+	global $schema, $app, $base_url, $schemas, $hosts;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -602,7 +602,7 @@ function render_schemas_groups()
 
 	foreach ($hosts as $h)
 	{
-		$url_ary[] = $app_protocol . $h;
+		$url_ary[] = $app['eland.protocol'] . $h;
 	}
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = [];

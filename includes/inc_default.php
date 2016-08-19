@@ -93,7 +93,7 @@ if(!isset($rootpath))
 
 $app['eland.rootpath'] = $rootpath;
 
-$app['eland.protocol'] = $app_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$app['eland.protocol'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 
 ob_start('etag_buffer');
 
@@ -126,8 +126,6 @@ $script_name = str_replace('.php', '', $script_name);
 
 $host = $_SERVER['SERVER_NAME'];
 $app['eland.base_url'] = $base_url = $app['eland.protocol'] . $host;
-
-$host_id = substr($host, 0, strpos($host, '.'));
 
 $overall_domain = getenv('OVERALL_DOMAIN');
 
@@ -211,7 +209,7 @@ if ($script_name == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 if ($redirect = getenv('REDIRECT_' . $key_host_env))
 {
 	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app_protocol . $redirect . $_SERVER['REQUEST_URI']);
+	header('Location: ' . $app['eland.protocol'] . $redirect . $_SERVER['REQUEST_URI']);
 	exit;
 }
 
@@ -276,8 +274,8 @@ $app['eland.pagination'] = function (){
 	return new eland\pagination();
 };
 
-$app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts, $app_protocol) {
-	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app_protocol);
+$app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts) {
+	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app['eland.protocol']);
 };
 
 
@@ -314,10 +312,6 @@ $s_group_self = ($s_schema == $schema) ? true : false;
 $logins = $_SESSION['logins'] ?? [];
 
 $s_master = $s_elas_guest = false;
-
-/**
- *
- */
 
 if (!count($logins))
 {
@@ -413,7 +407,7 @@ else if (ctype_digit((string) $s_id))
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=';
+		$location = $app['eland.protocol'] . $hosts[$s_schema] . '/index.php?r=';
 		$location .= $session_user['accountrole'] . '&u=' . $s_id;
 		header('Location: ' . $location);
 		exit;
@@ -451,7 +445,7 @@ else if ($s_id == 'master')
 	{
 		$app['monolog']->debug('redirect 3a');
 
-		$location = $app_protocol . $hosts[$s_schema] . '/index.php?r=admin&u=master';
+		$location = $app['eland.protocol'] . $hosts[$s_schema] . '/index.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -617,7 +611,7 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view (global for all groups) */
 
-$inline = (isset($_GET['inline'])) ? true : false;
+$inline = isset($_GET['inline']) ? true : false;
 
 $view = $_GET['view'] ?? false;
 
@@ -732,7 +726,7 @@ function aphp(
  */
 function generate_url($entity = 'index', $params = [], $sch = false)
 {
-	global $rootpath, $app, $hosts, $app_protocol;
+	global $rootpath, $app, $hosts;
 
 	if ($app['eland.alert']->is_set())
 	{
@@ -745,7 +739,7 @@ function generate_url($entity = 'index', $params = [], $sch = false)
 
 	$params = ($params) ? '?' . $params : '';
 
-	$path = ($sch) ? $app_protocol . $hosts[$sch] . '/' : $rootpath;
+	$path = ($sch) ? $app['eland.protocol'] . $hosts[$sch] . '/' : $rootpath;
 
 	return $path . $entity . '.php' . $params;
 }

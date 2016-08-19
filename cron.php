@@ -117,7 +117,7 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
-$base_url = $app_protocol . $hosts[$schema];
+$base_url = $app['eland.protocol'] . $hosts[$schema];
 
 $app['eland.xdb']->init($schema);
 

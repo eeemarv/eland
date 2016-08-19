@@ -8,7 +8,6 @@ use Monolog\Logger;
 
 class mail
 {
-
 	protected $converter;
 	protected $mailer;
 	protected $queue;

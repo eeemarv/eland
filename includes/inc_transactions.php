@@ -119,7 +119,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $base_url, $schema, $hosts, $app_protocol;
+	global $base_url, $schema, $hosts, $app;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -153,7 +153,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if (isset($remote_schema))
 	{
-		$url = $app_protocol . $hosts[$sch];
+		$url = $app['eland.protocol'] . $hosts[$sch];
 	}
 	else
 	{
