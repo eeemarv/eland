@@ -711,6 +711,8 @@ function render_schemas_groups()
 
 			if (isset($loc_group_ary[$h]) && is_array($loc_group_ary[$h]))
 			{
+				$loc_group = $loc_group_ary[$h];
+
 				echo aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
 			else
