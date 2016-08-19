@@ -2,7 +2,7 @@
 
 function saldo()
 {
-	global $app, $base_url;
+	global $app;
 
 // vars
 
@@ -10,14 +10,14 @@ function saldo()
 	$currency = readconfigfromdb('currency');
 	$support = readconfigfromdb('support');
 	$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 	
-	$msg_url = $base_url . '/messages.php?id=';
-	$msgs_url = $base_url . '/messages.php';
-	$news_url = $base_url . '/news.php?id=';
-	$user_url = $base_url . '/users.php?id=';
-	$login_url = $base_url . '/login.php?login=';
-	$new_message_url = $base_url . '/messages.php?add=1';
-	$new_transaction_url = $base_url . '/transactions.php?add=1';
-	$account_edit_url = $base_url . '/users.php?edit=';
+	$msg_url = $app['eland.base_url'] . '/messages.php?id=';
+	$msgs_url = $app['eland.base_url'] . '/messages.php';
+	$news_url = $app['eland.base_url'] . '/news.php?id=';
+	$user_url = $app['eland.base_url'] . '/users.php?id=';
+	$login_url = $app['eland.base_url'] . '/login.php?login=';
+	$new_message_url = $app['eland.base_url'] . '/messages.php?add=1';
+	$new_transaction_url = $app['eland.base_url'] . '/transactions.php?add=1';
+	$account_edit_url = $app['eland.base_url'] . '/users.php?edit=';
 
 // fetch active users
 
@@ -207,7 +207,7 @@ function saldo()
 
 	$mm->add_text('Nieuws' . $r)
 		->add_text('------' . $r)
-		->add_text('Bekijk online: ' . $base_url . '/news.php' . $r . $r)
+		->add_text('Bekijk online: ' . $app['eland.base_url'] . '/news.php' . $r . $r)
 		->add_html('<h2>Nieuws</h2>')
 		->add_html('<ul>', 'news:any')
 		->add_text('Momenteel zijn er geen nieuwsberichten.' . $r . $r, 'news:none')

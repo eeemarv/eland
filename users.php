@@ -175,7 +175,7 @@ if ($user_mail_submit && $id && $post)
 
 		if ($user['status'] == 1 || $user['status'] == 2)
 		{
-			$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+			$text .= "\r\n\r\nInloggen op de website: " . $app['eland.base_url'] . "\r\n\r\n";
 		}
 
 		mail_q(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
@@ -719,7 +719,7 @@ if ($pw)
 
 					if ($to)
 					{
-						$url = $base_url . '/login.php?login=' . $user['letscode'];
+						$url = $app['eland.base_url'] . '/login.php?login=' . $user['letscode'];
 
 						$subj = 'nieuw paswoord voor je account';
 
@@ -3551,7 +3551,7 @@ function sendadminmail($user)
 
 function sendactivationmail($password, $user)
 {
-	global $base_url, $app;
+	global $app;
 
 	if (empty($user['mail']))
 	{
@@ -3569,7 +3569,7 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 
 	$text .= "Welkom bij Letsgroep readconfigfromdb('systemname')";
-	$text .= '. Surf naar ' . $base_url;
+	$text .= '. Surf naar ' . $app['eland.base_url'];
 	$text .= " en meld je aan met onderstaande gegevens.\n";
 	$text .= "\n-- Account gegevens --\n";
 	$text .= "Login: ";

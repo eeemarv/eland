@@ -138,7 +138,7 @@ if ($token)
 		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
 		$text .= 'Postcode: ' . $user['postcode'] . "\n";
 		$text .= 'Email: ' . $data['email'] . "\n\n";
-		$text .= 'Link: ' . $base_url . '/users.php?id=' . $user_id;
+		$text .= 'Link: ' . $app['eland.base_url'] . '/users.php?id=' . $user_id;
 
 		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
@@ -264,7 +264,7 @@ if ($submit)
 		$app['redis']->set($key, '1');
 		$app['redis']->expire($key, 86400);
 		$subject = 'Bevestig je inschrijving voor ' . readconfigfromdb('systemname');
-		$url = $base_url . '/register.php?token=' . $token;
+		$url = $app['eland.base_url'] . '/register.php?token=' . $token;
 		$text = 'Inschrijven voor ' . readconfigfromdb('systemname') . "\n\n";
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$text .= "Deze link blijft 1 dag geldig.\n\n";

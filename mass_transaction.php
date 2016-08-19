@@ -638,7 +638,7 @@ include __DIR__ . '/includes/inc_footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $s_id, $base_url;
+	global $app, $s_id;
 
 	if (!readconfigfromdb('mailenabled'))
 	{
@@ -658,8 +658,8 @@ function mail_mass_transaction($mail_ary)
 	$t = "\t";
 	$support = readconfigfromdb('support');
 	$currency = readconfigfromdb('currency');
-	$login_url = $base_url . '/login.php?login=';
-	$new_transaction_url = $base_url . '/transactions.php?add=1';
+	$login_url = $app['eland.base_url'] . '/login.php?login=';
+	$new_transaction_url = $app['eland.base_url'] . '/transactions.php?add=1';
 	$subject = 'Nieuwe transactie';
 
 // mail to active users

@@ -6,8 +6,8 @@
 
 function generate_transid()
 {
-	global $base_url, $s_id;
-	return substr(sha1($s_id .microtime()), 0, 12) . '_' . $s_id . '@' . $base_url;
+	global $app, $s_id;
+	return substr(sha1($s_id .microtime()), 0, 12) . '_' . $s_id . '@' . $app['eland.base_url'];
 }
 
 /*
@@ -119,7 +119,7 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $base_url, $schema, $hosts, $app;
+	global $schema, $hosts, $app;
 
 	$r = "\r\n";
 	$t = "\t";
@@ -157,7 +157,7 @@ function mail_transaction($transaction, $remote_schema = null)
 	}
 	else
 	{
-		$url = $base_url;
+		$url = $app['eland.base_url'];
 	}
 
 	$text .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;

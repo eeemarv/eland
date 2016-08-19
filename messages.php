@@ -589,7 +589,7 @@ if ($mail && $post && $id)
 			mail_q(['to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text]);
 		}
 
-		$text .= "\r\n\r\nInloggen op de website: " . $base_url . "\r\n\r\n";
+		$text .= "\r\n\r\nInloggen op de website: " . $app['eland.base_url'] . "\r\n\r\n";
 
 		mail_q(['to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text]);
 

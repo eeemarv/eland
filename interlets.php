@@ -561,7 +561,7 @@ exit;
 
 function render_schemas_groups()
 {
-	global $schema, $app, $base_url, $schemas, $hosts;
+	global $schema, $app, $schemas, $hosts;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -636,7 +636,7 @@ function render_schemas_groups()
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
-			where url = ?', [$base_url]);
+			where url = ?', [$app['eland.base_url']]);
 
 		$group_user_count_ary[$s] = $app['db']->fetchColumn('select count(*)
 			from ' . $s . '.users

@@ -113,7 +113,7 @@ if ($add && $submit && !count($errors))
 		if(!$s_admin)
 		{
 			// Send a notice to ask for approval
-			$url = $base_url . '/news.php?id=' . $id;
+			$url = $app['eland.base_url'] . '/news.php?id=' . $id;
 
 			$subject = 'Nieuwsbericht wacht op goedkeuring';
 			$text .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";

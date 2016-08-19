@@ -21,7 +21,7 @@ if ($token)
 				$user = readuser($user_id, true);
 				$app['eland.alert']->success('Paswoord opgeslagen.');
 
-				$url = $base_url . '/login.php?login=' . $user['letscode'];
+				$url = $app['eland.base_url'] . '/login.php?login=' . $user['letscode'];
 
 				$subj = 'nieuw paswoord.';
 				$text = 'Beste ' . $user['name'] . ",\n\n";
@@ -106,7 +106,7 @@ if (isset($_POST['zend']))
 				$app['redis']->set($key, $user_id);
 				$app['redis']->expire($key, 3600);
 
-				$url = $base_url . '/pwreset.php?token=' . $token;
+				$url = $app['eland.base_url'] . '/pwreset.php?token=' . $token;
 
 				$subject = 'Paswoord reset link.';
 

@@ -72,7 +72,7 @@ if (isset($schemas[$group['domain']]))
 {
 	$remote_schema = $schemas[$group['domain']];
 
-	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$base_url]))
+	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$app['eland.base_url']]))
 	{
 		$active_users = users_to_json($remote_schema);
 

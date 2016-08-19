@@ -454,7 +454,7 @@ if ($add)
 
 			$remote_group = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
-				where url = ?', [$base_url]);
+				where url = ?', [$app['eland.base_url']]);
 
 			if (!$remote_group)
 			{

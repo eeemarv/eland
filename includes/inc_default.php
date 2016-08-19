@@ -124,7 +124,7 @@ $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'ba
 $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
 $host = $_SERVER['SERVER_NAME'];
-$app['eland.base_url'] = $base_url = $app['eland.protocol'] . $host;
+$app['eland.base_url'] = $app['eland.protocol'] . $host;
 
 $overall_domain = getenv('OVERALL_DOMAIN');
 

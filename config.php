@@ -10,7 +10,7 @@ $active_tab = 'balance';
 $active_tab = $_GET['active_tab'] ?? $active_tab;
 $active_tab = $_POST['active_tab'] ?? $active_tab;
 
-$register_link = $base_url . '/register.php';
+$register_link = $app['eland.base_url'] . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
 $register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonder letscode aangemaakt met status info-pakket.';
@@ -20,7 +20,7 @@ $register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verde
 $register_success_explain .= 'Als je groep een website heeft, is het nuttig om een link op te nemen ';
 $register_success_explain .= 'om de gebruiker terug te voeren.';
 
-$contact_link = $base_url . '/contact.php';
+$contact_link = $app['eland.base_url'] . '/contact.php';
 $contact_link_explain = 'Het contactformulier kan je terugvinden op <a href="' . $contact_link;
 $contact_link_explain .= '">' . $contact_link . '</a>.';
 

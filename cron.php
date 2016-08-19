@@ -117,7 +117,7 @@ $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
-$base_url = $app['eland.protocol'] . $hosts[$schema];
+$app['eland.base_url'] = $app['eland.protocol'] . $hosts[$schema];
 
 $app['eland.xdb']->init($schema);
 
@@ -515,7 +515,7 @@ run_cronjob('admin_exp_msg', 86400 * readconfigfromdb('adminmsgexpfreqdays'), re
 
 function admin_exp_msg()
 {
-	global $app, $now, $r, $base_url;
+	global $app, $now, $r;
 
 	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
 		FROM messages m, users u
@@ -538,7 +538,7 @@ function admin_exp_msg()
 	foreach($messages as $key => $value)
 	{
 		$text .= link_user($value['id_user'], false, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
-		$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
+		$text .= $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
 	mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
@@ -554,7 +554,7 @@ run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {
-	global $app, $now, $base_url;
+	global $app, $now;
 
 	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
 	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
@@ -569,7 +569,7 @@ function user_exp_msgs()
 		echo 'Found new expired message ' . $value['id'];
 		$user = readuser($value['id_user']);
 
-		$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&extend=';
+		$extend_url = $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . '&extend=';
 		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
 		$text = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
 		$text .= "Beste " . $user['name'] . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
@@ -583,7 +583,7 @@ function user_exp_msgs()
 		$text .= "één jaar: " . $extend_url . "365 \n";
 		$text .= "twee jaar: " . $extend_url . "730 \n";
 		$text .= "vijf jaar: " . $extend_url . "1825 \n\n";
-		$text .= "Nieuw vraag of aanbod ingeven: " . $base_url . "/messages.php?add=1 \n\n";
+		$text .= "Nieuw vraag of aanbod ingeven: " . $app['eland.base_url'] . "/messages.php?add=1 \n\n";
 		$text .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
 		$text .= readconfigfromdb('support');
 

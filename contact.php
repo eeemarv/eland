@@ -134,10 +134,10 @@ if($post && isset($_POST['zend']))
 
 		$app['monolog']->info('Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
 
-		$link = $base_url . '/contact.php?token=' . $token;
+		$link = $app['eland.base_url'] . '/contact.php?token=' . $token;
 
 		$html = '<p>Gelieve deze mail te negeren indien je niet zelf het ';
-		$html .= '<a href="' . $base_url . '/contact.php">contactformulier van ';
+		$html .= '<a href="' . $app['eland.base_url'] . '/contact.php">contactformulier van ';
 		$html .= readconfigfromdb('systemname') . '</a> hebt ingevuld.</p>';
 
 		$html .= '<p><a href="' . $link . '">Klik hier om je bericht in het contactformulier te bevestigen.</a></p>';
