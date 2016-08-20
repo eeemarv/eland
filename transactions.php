@@ -852,11 +852,11 @@ if ($id)
 
 	$inter_schema = false;
 
-	if ($interlets_accounts_schemas[$transaction['id_from']])
+	if (isset($interlets_accounts_schemas[$transaction['id_from']]))
 	{
 		$inter_schema = $interlets_accounts_schemas[$transaction['id_from']];
 	}
-	else if ($interlets_accounts_schemas[$transaction['id_to']])
+	else if (isset($interlets_accounts_schemas[$transaction['id_to']]))
 	{
 		$inter_schema = $interlets_accounts_schemas[$transaction['id_to']];
 	}
