@@ -34,7 +34,7 @@ class mail
 	/**
 	 *
 	 */
-	public function run(array $data, bool $check_schema = false)
+	public function process(array $data, bool $check_schema = false)
 	{
 		if ($check_schema)
 		{
@@ -122,8 +122,98 @@ class mail
 		}
 	}
 
-	public function queue(array $data)
+	public function queue(array $data, $priority = 100)
 	{
+		global $schema;
 
+		// only the interlets transactions receiving side has a different schema
+
+		$data['schema'] = $data['schema'] ?? $schema;
+
+		if (!readconfigfromdb('mailenabled'))
+		{
+			$m = 'Mail functions are not enabled. ' . "\n";
+			$this->monolog->info('mail: ' . $m);
+			return $m;
+		}
+
+		if (!isset($data['subject']) || $data['subject'] == '')
+		{
+			$m = 'Mail "subject" is missing.';
+			$this->monolog->error('mail: '. $m);
+			return $m;
+		}
+
+		if ((!isset($data['text']) || $data['text'] == '')
+			&& (!isset($data['html']) || $data['html'] == ''))
+		{
+			$m = 'Mail "body" (text or html) is missing.';
+			$this->monolog->error('mail: ' . $m);
+			return $m;
+		}
+
+		if (!isset($data['to']) || !$data['to'])
+		{
+			$m = 'Mail "to" is missing for "' . $data['subject'] . '"';
+			$this->monolog->error('mail: ' . $m);
+			return $m;
+		}
+
+		$data['to'] = getmailadr($data['to']);
+
+		if (!count($data['to']))
+		{
+			$m = 'error: mail without "to" | subject: ' . $data['subject'];
+			$this->monolog->error('mail: ' . $m);
+			return $m;
+		} 
+
+		if (isset($data['reply_to']))
+		{
+			$data['reply_to'] = getmailadr($data['reply_to']);
+
+			if (!count($data['reply_to']))
+			{
+				$this->monolog->error('mail: error: invalid "reply to" : ' . $data['subject']);
+				unset($data['reply_to']);
+			}
+
+			$data['from'] = getmailadr('from', $data['schema']);
+		}
+		else
+		{
+			$data['from'] = getmailadr('noreply', $data['schema']);
+		}
+
+		if (!count($data['from']))
+		{
+			$m = 'error: mail without "from" | subject: ' . $data['subject'];
+			$this->monolog->error('mail: ' . $m);
+			return $m;
+		}
+
+		if (isset($data['cc']))
+		{
+			$data['cc'] = getmailadr($data['cc']);
+
+			if (!count($data['cc']))
+			{
+				$this->monolog->error('mail error: invalid "reply to" : ' . $data['subject']);
+				unset($data['cc']);
+			}
+		}
+
+		$data['subject'] = '[' . readconfigfromdb('systemtag', $data['schema']) . '] ' . $data['subject'];
+
+		$error = $this->queue->set('mail', $data, ($priority) ? 10 : 0);
+
+		if (!$error)
+		{
+			$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
+
+			$this->monolog->info('mail: Mail in queue, subject: ' .
+				$data['subject'] . ', from : ' .
+				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . $reply, ['schema' => $data['schema']]);
+		}
 	} 
 }

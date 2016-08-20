@@ -16,7 +16,7 @@ class autominlimit
 		$this->monolog = $monolog;
 	}
 
-	public function run(array $data)
+	public function process(array $data)
 	{
 		$to_id = $q['to_id'];
 		$from_id = $q['from_id'];
