@@ -1,0 +1,72 @@
+<?php
+
+namespace eland;
+
+use Doctrine\DBAL\Connection as db;
+// use Predis\Client as redis;
+
+class groups
+{
+	private $schemas = [];
+	private $hosts = [];
+
+	public function __construct(db $db)
+	{
+		$this->db = $db;
+
+		$overall_domain = getenv('OVERALL_DOMAIN');
+
+		$schemas_db = $this->db->fetchAll('select schema_name from information_schema.schemata') ?: [];
+		$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+		$schemas_db = array_fill_keys($schemas_db, true);
+
+		foreach ($_ENV as $key => $s)
+		{
+			if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+			{
+				continue;
+			}
+
+			$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
+			$h = strtolower($h);
+
+			if (!strpos($h, '.' . $overall_domain))
+			{
+				$h .= '.' . $overall_domain;
+			}
+
+			if (strpos($h, 'localhost') === 0)
+			{
+				continue;
+			}
+
+			$this->schemas[$h] = $s;
+			$this->hosts[$s] = $h;
+		}
+	}
+
+	public function get_schemas()
+	{
+		return $this->schemas;
+	}
+
+	public function get_hosts()
+	{
+		return $this->hosts;
+	}
+
+	public function get_schema($host)
+	{
+		return $this->schemas[$host] ?? false;
+	}
+
+	public function get_host($schema)
+	{
+		return $this->hosts[$schema] ?? false;
+	}
+
+	public function count()
+	{
+		return count($this->schemas);
+	}
+}
