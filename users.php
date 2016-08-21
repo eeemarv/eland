@@ -1,7 +1,5 @@
 <?php
 
-$rootpath = './';
-
 $q = $_GET['q'] ?? '';
 $status = $_GET['status'] ?? false;
 

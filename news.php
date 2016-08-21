@@ -1,5 +1,4 @@
 <?php
-$rootpath = './';
 
 $approve = $_GET['approve'] ?? false;
 $edit = $_GET['edit'] ?? false;

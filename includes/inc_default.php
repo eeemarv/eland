@@ -46,7 +46,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 if(!isset($rootpath))
 {
-	$rootpath = '';
+	$rootpath = './';
 }
 
 $app['eland.rootpath'] = $rootpath;

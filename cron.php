@@ -14,7 +14,6 @@ if ($php_sapi_name == 'cli')
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
-$rootpath = './';
 $page_access = 'anonymous';
 $allow_session = true;
 require_once __DIR__ . '/includes/inc_default.php';

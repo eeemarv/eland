@@ -1,7 +1,5 @@
 <?php
 
-$rootpath = './';
-
 $uid = $_GET['uid'] ?? false;
 $abbrev = $_GET['abbrev'] ?? '';
 $q = $_GET['q'] ?? '';
