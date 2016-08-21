@@ -2,8 +2,8 @@
 $rootpath = './';
 $page_access = 'anonymous';
 
-require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_passwords.php';
+require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_passwords.php';
 
 $token = $_GET['token'] ?? false;
 
@@ -52,7 +52,7 @@ if ($token)
 
 	$app['eland.assets']->add('generate_password.js');
 
-	require_once $rootpath . 'includes/inc_header.php';
+	require_once __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -78,7 +78,7 @@ if ($token)
 	echo '</div>';
 	echo '</div>';
 
-	require_once $rootpath . 'includes/inc_footer.php';
+	require_once __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -144,7 +144,7 @@ if (isset($_POST['zend']))
 
 $h1 = 'Paswoord vergeten';
 
-require_once $rootpath . 'includes/inc_header.php';
+require_once __DIR__ . '/includes/inc_header.php';
 
 echo '<p>Met onderstaand formulier stuur je een link om je paswoord te resetten naar je mailbox. </p>';
 
@@ -167,4 +167,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-require_once $rootpath . 'includes/inc_footer.php';
+require_once __DIR__ . '/includes/inc_footer.php';

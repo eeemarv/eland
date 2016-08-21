@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'admin';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 $edit = $_GET['edit'] ?? false;
 $del = $_GET['del'] ?? false;
@@ -45,7 +45,7 @@ if ($add)
 	$h1 = 'Contact type toevoegen';
 	$fa = 'circle-o-notch';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -75,7 +75,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -133,7 +133,7 @@ if ($edit)
 	$h1 = 'Contact type aanpassen';
 	$fa = 'circle-o-notch';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -163,7 +163,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -206,7 +206,7 @@ if ($del)
 	$h1 = 'Contact type verwijderen: ' . $ct['name'];
 	$fa = 'circle-o-notch';
 
-	include $rootpath . 'includes/inc_header.php';	
+	include __DIR__ . '/includes/inc_header.php';	
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -220,7 +220,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -243,7 +243,7 @@ $top_buttons .= aphp('type_contact', ['add' => 1], 'Toevoegen', 'btn btn-success
 $h1 = 'Contact types';
 $fa = 'circle-o-notch';
 
-include $rootpath . 'includes/inc_header.php';
+include __DIR__ . '/includes/inc_header.php';
 
 echo '<div class="panel panel-default printview">';
 
@@ -312,7 +312,7 @@ echo '</div></div>';
 echo '<p>Kunnen niet verwijderd worden: ';
 echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</p>';
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';
 
 function cancel($id = '')
 {

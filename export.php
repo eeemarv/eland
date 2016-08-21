@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'admin';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 $export_ary = [
 	'users'		=> [
@@ -148,7 +148,7 @@ foreach ($export_ary as $ex_key => $export)
 $h1 = 'Export';
 $fa = 'download';
 
-include $rootpath . 'includes/inc_header.php';
+include __DIR__ . '/includes/inc_header.php';
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
@@ -160,4 +160,4 @@ echo $buttons;
 
 echo '</div></div>';
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';

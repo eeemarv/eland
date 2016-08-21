@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once $rootpath . 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $app = new Silex\Application();
 
@@ -535,7 +535,7 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
  * 
  */
 
-require_once $rootpath . 'includes/inc_eventlog.php';
+require_once __DIR__ . '/../includes/inc_eventlog.php';
 
  /**
   *

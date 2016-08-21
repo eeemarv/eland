@@ -33,8 +33,8 @@ $page_access = ($edit || $pw || $img_del || $password || $submit || $img) ? 'use
 $page_access = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $page_access;
 $allow_guest_post = ($page_access == 'guest' && $user_mail_submit) ? true : false;
 
-require_once $rootpath . 'includes/inc_passwords.php';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_passwords.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 /**
  * selectors for bulk actions
@@ -345,7 +345,7 @@ if ($img_del && $id)
 
 	$h1 = 'Profielfoto ' . (($s_admin) ? 'van ' . link_user($id) . ' ' : '') . 'verwijderen?';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
@@ -369,7 +369,7 @@ if ($img_del && $id)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 
 	exit;
 }
@@ -773,7 +773,7 @@ if ($pw)
 	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
 	$fa = 'key';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -812,7 +812,7 @@ if ($pw)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1010,7 +1010,7 @@ if ($del)
 	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
 	$fa = 'user';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['name'];
 	echo ' worden verwijderd.</font></p>';
@@ -1037,7 +1037,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1698,7 +1698,7 @@ if ($add || $edit)
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
 	$fa = 'user';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1935,7 +1935,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -2060,7 +2060,7 @@ if ($id)
 
 	$fa = 'user';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="row">';
 	echo '<div class="col-md-6">';
@@ -2345,7 +2345,7 @@ if ($id)
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
 	echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -2813,7 +2813,7 @@ else if ($v_map)
 	$app['eland.assets']->add(['leaflet', 'leaflet_label', 'users_map.js']);
 }
 
-include $rootpath . 'includes/inc_header.php';
+include __DIR__ . '/includes/inc_header.php';
 
 if ($v_map)
 {
@@ -3466,7 +3466,7 @@ else if ($v_tiles)
 	echo '</div>';
 }
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';
 
 function render_contacts($contacts, $abbrev = null)
 {

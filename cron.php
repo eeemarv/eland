@@ -17,10 +17,10 @@ chdir(__DIR__);
 $rootpath = './';
 $page_access = 'anonymous';
 $allow_session = true;
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
-require_once $rootpath . 'includes/inc_saldo_mail.php';
-require_once $rootpath . 'includes/inc_mail.php';
+require_once __DIR__ . '/includes/inc_saldo_mail.php';
+require_once __DIR__ . '/includes/inc_mail.php';
 
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;
@@ -172,7 +172,7 @@ if (isset($group))
 
 			$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
 
-			require_once $rootpath . 'includes/inc_interlets_fetch.php';
+			require_once __DIR__ . '/includes/inc_interlets_fetch.php';
 
 			if ($update_msgs)
 			{

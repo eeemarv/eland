@@ -3,7 +3,7 @@
 $rootpath = './';
 $page_access = 'anonymous';
 
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 /*
 if ($s_id)
@@ -216,7 +216,7 @@ if(readconfigfromdb('maintenance'))
 $h1 = 'Login';
 $fa = 'sign-in';
 
-require_once $rootpath . 'includes/inc_header.php';
+require_once __DIR__ . '/includes/inc_header.php';
 
 if(empty($token))
 {
@@ -251,4 +251,4 @@ if(empty($token))
 	echo aphp('pwreset', [], 'Ik ben mijn paswoord vergeten');
 }
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';
