@@ -55,11 +55,6 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushHandler(new Monolog\Handler\RedisHandler($app['redis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20));
 
-	if ($app['debug'])
-	{
-		$monolog->pushHandler(new Monolog\Handler\BrowserConsoleHandler());
-	}
-
 	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
 
 	$monolog->pushProcessor(function ($record) use ($app){
