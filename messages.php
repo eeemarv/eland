@@ -1,6 +1,5 @@
 <?php
 
-$rootpath = './';
 $page_access = 'guest';
 $allow_guest_post = true;
 require_once __DIR__ . '/includes/inc_default.php';

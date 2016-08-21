@@ -1,6 +1,5 @@
 <?php
 
-$rootpath = './';
 $page_access = 'anonymous';
 
 require_once __DIR__ . '/includes/inc_default.php';

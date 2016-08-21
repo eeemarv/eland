@@ -83,7 +83,7 @@ $app->extend('monolog', function($monolog, $app) {
 
 if(!isset($rootpath))
 {
-	$rootpath = '';
+	$rootpath = './';
 }
 
 $app['eland.rootpath'] = $rootpath;

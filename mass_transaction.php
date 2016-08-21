@@ -1,6 +1,5 @@
 <?php
 
-$rootpath = './';
 $page_access = 'admin';
 require_once __DIR__ . '/includes/inc_default.php';
 require_once __DIR__ . '/includes/inc_transactions.php';
