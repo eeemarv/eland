@@ -33,6 +33,19 @@ $brr = $app['redis']->lpop('monolog_logs');
 var_dump($brr);
 
 /*
+for ($i = 0; $i < 100; $i++)
+{
+	$log = $app['redis']->lpop('monolog_logs');
+
+	if ($log === false)
+	{
+		break;
+	}
+
+}
+*/
+
+/*
  *  select in which schema to perform updates
  */
 

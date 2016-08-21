@@ -49,6 +49,8 @@ $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
 $app->extend('monolog', function($monolog, $app) {
 
+	$monolog->setTimezone(new DateTimeZone('UTC'));
+
 	$handler = new \Monolog\Handler\StreamHandler('php://stdout', \Monolog\Logger::DEBUG);
 	$handler->setFormatter(new \Bramus\Monolog\Formatter\ColoredLineFormatter());
 	$monolog->pushHandler($handler);
