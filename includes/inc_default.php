@@ -14,8 +14,14 @@ $app['redis'] = function () {
 	{
 		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
 		$con = parse_url($url);
-		$con['password'] = $con['pass'];
+
+		if (isset($con['pass']))
+		{
+			$con['password'] = $con['pass'];
+		}
+
 		$con['scheme'] = 'tcp';
+
 		return new Predis\Client($con);
 	}
 	catch (Exception $e)
