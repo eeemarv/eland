@@ -27,6 +27,11 @@ echo '*** Cron eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
+
+$brr = $app['redis']->lpop('monolog_logs');
+
+var_dump($brr);
+
 /*
  *  select in which schema to perform updates
  */

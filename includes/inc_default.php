@@ -53,7 +53,9 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Bramus\Monolog\Formatter\ColoredLineFormatter());
 	$monolog->pushHandler($handler);
 
-	$monolog->pushHandler(new Monolog\Handler\RedisHandler($app['redis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20));
+	$handler = new \Monolog\Handler\RedisHandler($app['redis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20);
+	$handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
+	$monolog->pushHandler($handler);
 
 	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
 
@@ -1086,7 +1088,7 @@ function mail_q($mail = [], $priority = false)
 
 		$app['monolog']->info('mail: Mail in queue, subject: ' .
 			$mail['subject'] . ', from : ' .
-			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, $mail['schema']);
+			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, ['schema' => $mail['schema']]);
 	}
 }
 
