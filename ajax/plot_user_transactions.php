@@ -2,7 +2,7 @@
 
 $rootpath = '../';
 $page_access = 'guest';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/../includes/inc_default.php';
 
 $days = (isset($_GET['days'])) ? $_GET['days'] : 365;
 $user_id = (isset($_GET['user_id'])) ? $_GET['user_id'] : false;

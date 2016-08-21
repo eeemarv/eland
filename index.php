@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'guest';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 if (isset($hosting_form))
 {
@@ -344,7 +344,7 @@ $fa = 'home';
 
 $app['eland.assets']->add('index.js');
 
-include $rootpath . 'includes/inc_header.php';
+include __DIR__ . '/includes/inc_header.php';
 
 if($s_admin)
 {
@@ -628,4 +628,4 @@ echo '<div id="messages" ';
 echo 'data-url="' . $rootpath . 'messages.php?inline=1&recent=1&limit=10';
 echo '&' . http_build_query(get_session_query_param()) . '" class="printview"></div>';
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';

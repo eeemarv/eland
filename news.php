@@ -16,7 +16,7 @@ if ($approve)
 {
 	$page_access = 'admin';
 
-	require_once $rootpath . 'includes/inc_default.php';
+	require_once __DIR__ . '/includes/inc_default.php';
 
 	if ($app['db']->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
@@ -36,7 +36,7 @@ if ($approve)
 if ($add || $edit)
 {
 	$page_access = 'user';
-	require_once $rootpath . 'includes/inc_default.php';
+	require_once __DIR__ . '/includes/inc_default.php';
 
 	$news = [];
 
@@ -172,7 +172,7 @@ if ($add || $edit)
 	$h1 .= ($add) ? 'toevoegen' : 'aanpassen';
 	$fa = 'calendar';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -251,7 +251,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -262,7 +262,7 @@ if ($add || $edit)
 if ($del)
 {
 	$page_access = 'admin';
-	require_once $rootpath . 'includes/inc_default.php';
+	require_once __DIR__ . '/includes/inc_default.php';
 
 	if ($submit)
 	{
@@ -292,7 +292,7 @@ if ($del)
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	$background = ($news['approved']) ? '' : ' bg-warning';
 
@@ -357,7 +357,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath. 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -369,7 +369,7 @@ if ($id)
 {
 	$page_access = 'guest';
 
-	require_once $rootpath . 'includes/inc_default.php';
+	require_once __DIR__ . '/includes/inc_default.php';
 
 	$news = $app['db']->fetchAssoc('SELECT n.*
 		FROM news n  
@@ -438,7 +438,7 @@ if ($id)
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
 	$fa = 'calendar';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	if (!$s_guest)
 	{
@@ -496,7 +496,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -505,7 +505,7 @@ if ($id)
  */
 
 $page_access = 'guest';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 if (!($view || $inline))
 {
@@ -590,7 +590,7 @@ else
 
 	$fa = 'calendar';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 }
 
 if (!count($news))
@@ -602,7 +602,7 @@ if (!count($news))
 
 	if (!$inline)
 	{
-		include $rootpath . 'includes/inc_footer.php';
+		include __DIR__ . '/includes/inc_footer.php';
 	}
 	exit;
 }
@@ -740,7 +740,7 @@ else if ($v_extended)
 
 if (!$inline)
 {
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 }
 
 function cancel($id = '')

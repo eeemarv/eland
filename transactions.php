@@ -2,8 +2,8 @@
 
 $rootpath = './';
 $page_access = 'guest';
-require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_transactions.php';
+require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_transactions.php';
 
 $orderby = $_GET['orderby'] ?? 'cdate';
 $asc = $_GET['asc'] ?? 0;
@@ -711,7 +711,7 @@ if ($add)
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	$minlimit = $session_user['minlimit'];
 
@@ -829,7 +829,7 @@ if ($add)
 
 	echo '</i></small></ul>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -910,7 +910,7 @@ if ($id)
 	$h1 = 'Transactie';
 	$fa = 'exchange';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
@@ -1021,7 +1021,7 @@ if ($id)
 	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 	echo '</i></small></ul>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1324,7 +1324,7 @@ if (!$inline)
 
 	$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	$panel_collapse = ($filtered && !$uid) ? '' : ' collapse';
 
@@ -1505,7 +1505,7 @@ if (!count($transactions))
 
 	if (!$inline)
 	{
-		include $rootpath . 'includes/inc_footer.php';
+		include __DIR__ . '/includes/inc_footer.php';
 	}
 	exit;
 }
@@ -1707,7 +1707,7 @@ else
 
 	echo '</i></small></ul>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 }
 
 function cancel($id = null)

@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'admin';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 $setting = $_GET['edit'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
@@ -585,7 +585,7 @@ $app['eland.assets']->add(['summernote', 'rich_edit.js', 'config.js']);
 $h1 = 'Instellingen';
 $fa = 'gears';
 
-include $rootpath . 'includes/inc_header.php';
+include __DIR__ . '/includes/inc_header.php';
 
 echo '<div>';
 echo '<ul class="nav nav-pills" role="tablist">';
@@ -791,7 +791,7 @@ echo '</div>';
 echo '</div>';
 
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';
 
 function cancel()
 {

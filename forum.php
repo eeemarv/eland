@@ -2,7 +2,7 @@
 
 $rootpath = './';
 $page_access = 'guest';
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 $fa = 'comments-o';
 
@@ -205,7 +205,7 @@ if ($del)
 
 	$h1 .= ' verwijderen?';
 
-	require_once $rootpath . 'includes/inc_header.php';
+	require_once __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -222,7 +222,7 @@ if ($del)
 
 	echo '</div>';
 	echo '</div>';
-	require_once $rootpath . 'includes/inc_footer.php';
+	require_once __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -259,7 +259,7 @@ if ($add || $edit)
 		$h1 = ($topic) ? 'Nieuwe reactie' : 'Nieuw forum onderwerp';
 	}
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -319,7 +319,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -412,7 +412,7 @@ if ($topic)
 
 	$h1 = $topic_post['subject'];
 
-	require_once $rootpath . 'includes/inc_header.php';
+	require_once __DIR__ . '/includes/inc_header.php';
 
 	if (!$s_guest)
 	{
@@ -481,7 +481,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -510,7 +510,7 @@ if ($s_admin || $s_user)
 
 $h1 = 'Forum';
 
-require_once $rootpath . 'includes/inc_header.php';
+require_once __DIR__ . '/includes/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -550,7 +550,7 @@ if ($forum_empty)
 	echo '<p>Er zijn nog geen forum onderwerpen.</p>';
 	echo '</div></div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;	
 }
 
@@ -615,7 +615,7 @@ echo '</table>';
 echo '</div>';
 echo '</div>';
 
-include $rootpath . 'includes/inc_footer.php';
+include __DIR__ . '/includes/inc_footer.php';
 
 function cancel($topic = null)
 {

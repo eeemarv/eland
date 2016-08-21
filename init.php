@@ -17,8 +17,8 @@ chdir(__DIR__);
 
 $rootpath = './';
 $page_access = 'anonymous';
-require_once $rootpath . 'includes/inc_default.php';
-require_once $rootpath . 'includes/inc_upgrade.php';
+require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_upgrade.php';
 
 header('Content-Type:text/plain');
 echo '*** Init eLAND ***' . $r;

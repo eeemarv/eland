@@ -3,7 +3,7 @@
 $rootpath = './';
 $page_access = 'guest';
 $allow_guest_post = true;
-require_once $rootpath . 'includes/inc_default.php';
+require_once __DIR__ . '/includes/inc_default.php';
 
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
@@ -474,7 +474,7 @@ if ($img_del == 'all' && $id)
 
 	$app['eland.assets']->add('msg_img_del.js');
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	if ($s_admin)
 	{
@@ -519,7 +519,7 @@ if ($img_del == 'all' && $id)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 
 	exit;
 }
@@ -644,7 +644,7 @@ if ($del)
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info printview">';
 
@@ -698,7 +698,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1137,7 +1137,7 @@ if (($edit || $add))
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1321,7 +1321,7 @@ if (($edit || $add))
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1437,7 +1437,7 @@ if ($id)
 	$h1 .= (strtotime($message['validity']) < time()) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 	$fa = 'newspaper-o';
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="row">';
 
@@ -1611,7 +1611,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 	exit;
 }
 
@@ -1984,7 +1984,7 @@ if (!$inline)
 
 	$app['eland.assets']->add(['csv.js', 'msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
 
-	include $rootpath . 'includes/inc_header.php';
+	include __DIR__ . '/includes/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -2162,7 +2162,7 @@ if (!count($messages))
 
 	if (!$inline)
 	{
-		include $rootpath . 'includes/inc_footer.php';
+		include __DIR__ . '/includes/inc_footer.php';
 	}
 	exit;
 }
@@ -2410,11 +2410,11 @@ else if ($v_list)
 		echo '</div></div>';
 	}
 
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 }
 else if ($v_extended)
 {
-	include $rootpath . 'includes/inc_footer.php';
+	include __DIR__ . '/includes/inc_footer.php';
 }
 
 function cancel($id = null)
