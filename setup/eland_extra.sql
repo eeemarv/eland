@@ -10,7 +10,8 @@ username varchar(255),
 ip varchar(60),
 ts timestamp without time zone default (now() at time zone 'utc'),
 type varchar(60),
-event varchar(255));
+event varchar(255),
+data jsonb);
 
 create index on eland_extra.logs(schema);
 create index on eland_extra.logs(schema, letscode);
