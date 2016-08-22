@@ -31,6 +31,7 @@ $app['eland.log_db']->update();
 
 /** take cron task from the queue and run **/
 
+/*
 if ($app['redis']->get('process_queue_sleep') && $app['eland.queue']->count())
 {
 	$queue = $app['eland.queue']->get('', 5);
