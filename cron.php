@@ -276,6 +276,26 @@ else
 	echo '-- autominlimit queue is empty --' . $r;
 }
 
+/** send mail **/
+
+$mail_queue = $app['eland.queue']->get('mail', 6);
+
+if (count($mail_queue))
+{
+	echo '-- processing mail queue -- ' . $r;
+
+	foreach ($mail_queue as $q)
+	{
+		$app['eland.task.mail']->process($q['data']);
+	}
+
+	echo '--- end mail queue --- ' . $r;
+}
+else
+{
+	echo '-- mail queue is empty --' . $r;
+}
+
 /**
  * Geocoding queue
  */ 
@@ -419,7 +439,9 @@ function geo_q_process()
  * Send emails
  */
 
-run_cronjob('sendmail', 50);
+//run_cronjob('sendmail', 50);
+
+
 
 /**
  * Periodic overview mail
