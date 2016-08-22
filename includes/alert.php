@@ -16,7 +16,7 @@ class alert
 
 	private function add($type, $msg)
 	{
-		$url = $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
+		$url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 		if (is_array($msg))
 		{
