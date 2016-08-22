@@ -495,6 +495,11 @@ function geo_q_process()
 	return true;
 }
 
+/**
+ * Send emails
+ */
+
+run_cronjob('sendmail', 50);
 
 /**
  * Periodic overview mail
