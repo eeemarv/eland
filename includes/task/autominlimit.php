@@ -107,21 +107,25 @@ class autominlimit
 	{
 		if (!isset($data['schema']))
 		{
+			$this->monolog->debug('no schema set for autominlimit');
 			return;
 		}
 
 		if (!isset($data['from_id']))
 		{
+			$this->monolog->debug('no from_id set for autominlimit');
 			return;
 		}
 
 		if (!isset($data['to_id']))
 		{
+			$this->monolog->debug('no to_id set for autominlimit');
 			return;
 		}
 
 		if (!isset($data['amount']))
 		{
+			$this->monolog->debug('no amount set for autominlimit');
 			return;
 		}
 

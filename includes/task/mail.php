@@ -34,26 +34,23 @@ class mail
 	/**
 	 *
 	 */
-	public function process(array $data, bool $check_schema = false)
+	public function process(array $data)
 	{
-		if ($check_schema)
+		if (!isset($data['schema']))
 		{
-			if (!isset($data['schema']))
-			{
-				$app->monolog->error('mail error: mail in queue without schema');
-				return;
-			}
+			$app->monolog->error('mail error: mail in queue without schema');
+			return;
+		}
 
-			$schema = $data['schema'];
-			unset($data['schema']);
+		$schema = $data['schema'];
+		unset($data['schema']);
 
-			if (!readconfigfromdb('mailenabled', $schema))
-			{
-				$m = 'Mail functions are not enabled. ' . "\n";
-				echo $m;
-				$this->monolog->error('mail: ' . $m);
-				return ;
-			}
+		if (!readconfigfromdb('mailenabled', $schema))
+		{
+			$m = 'Mail functions are not enabled. ' . "\n";
+			echo $m;
+			$this->monolog->error('mail: ' . $m);
+			return ;
 		}
 
 		if (!isset($data['subject']))
@@ -71,6 +68,7 @@ class mail
 			else
 			{
 				$this->monolog->error('mail error: mail without body content', ['schema' => $schema]);
+				return;
 			}
 		}
 
