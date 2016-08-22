@@ -72,8 +72,7 @@ if (isset($hosting_form))
 	echo '<html>';
 	echo '<head>';
 	echo '<title>eLAND hosting aanvraag</title>';
-	echo '<link type="text/css" rel="stylesheet" href="' . $cdn_bootstrap_css . '" media="screen">';
-	echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/base.css" media="screen">';
+	echo $app['eland.assets']->render_css();
 	echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 	echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 	echo '</head>';
