@@ -567,12 +567,6 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 	exit;
 }
 
-/**
- * 
- */
-
-require_once __DIR__ . '/../includes/inc_eventlog.php';
-
  /**
   *
   */
