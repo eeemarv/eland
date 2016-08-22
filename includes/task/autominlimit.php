@@ -78,7 +78,7 @@ class autominlimit
 			|| ($a['account_base'] >= $user['saldo']) 
 		)
 		{
-			$this->monolog->debug('autominlimit: no new minlimit for user ' . link_user($user, $sch, false), ['schema' => $schema]);
+			$this->monolog->debug('autominlimit: no new minlimit for user ' . link_user($user, $sch, false), ['schema' => $sch]);
 			return;
 		}
 

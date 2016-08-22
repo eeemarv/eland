@@ -265,7 +265,7 @@ if ($post && $img && $id )
 
 	//
 
-	$filename = $schema . '_u_' . $id . '_';
+	$filename = $app['eland.this_group']->get_schema() . '_u_' . $id . '_';
 	$filename .= sha1($filename . microtime()) . '.jpg';
 
 	$err = $app['eland.s3']->img_upload($filename, $tmpfile);
@@ -484,7 +484,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		foreach ($user_ids as $user_id)
 		{
 			$app['eland.xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
-			$app['redis']->del($schema . '_user_' . $user_id);
+			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
@@ -504,7 +504,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['redis']->del($schema . '_user_' . $user_id);
+			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		if ($bulk_field == 'status')
@@ -970,7 +970,7 @@ if ($del)
 
 				//finally, the user
 				$app['db']->delete('users', ['id' => $del]);
-				$app['redis']->expire($schema . '_user_' . $del, 0);
+				$app['redis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
 
 				$app['eland.alert']->success('De gebruiker is verwijderd.');
 
@@ -1641,13 +1641,13 @@ if ($add || $edit)
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($group['url'] && ($remote_schema = $schemas[$group['url']]))
+					if ($group['url'] && ($remote_schema = $app['eland.groups']->get_schema($group['url'])))
 					{
 						$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-						if (isset($schemas[$group['domain']]))
+						if ($app['eland.groups']->get_schema($group['domain']))
 						{
-							$remote_schema = $schemas[$group['domain']];
+							$remote_schema = $app['eland.groups']->get_schema($group['domain']);
 
 							$admin_mail = readconfigfromdb('admin', $remote_schema);
 
@@ -2009,7 +2009,7 @@ if ($id)
 
 			if (!$s_group_self)
 			{
-				$tus['tus'] = $schema;
+				$tus['tus'] = $app['eland.this_group']->get_schema();
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',

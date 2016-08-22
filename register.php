@@ -21,7 +21,7 @@ if (!readconfigfromdb('registration_en'))
 
 if ($token)
 {
-	$key = $schema . '_register_' . $token;
+	$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
 
 	if ($data = $app['redis']->get($key))
 	{
@@ -44,7 +44,7 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $schema . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $app['eland.this_group']->get_schema() . time() . mt_rand(0, 100000), 0, 4));
 				}
 			}
 
@@ -256,11 +256,11 @@ if ($submit)
 	}
 	else
 	{
-		$token = substr(hash('sha512', $schema . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
-		$key = $schema . '_register_' . $token;
+		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
+		$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
 		$app['redis']->set($key, json_encode($reg));
 		$app['redis']->expire($key, 86400);
-		$key = $schema . '_register_email_' . $email;
+		$key = $app['eland.this_group']->get_schema() . '_register_email_' . $email;
 		$app['redis']->set($key, '1');
 		$app['redis']->expire($key, 86400);
 		$subject = 'Bevestig je inschrijving voor ' . readconfigfromdb('systemname');

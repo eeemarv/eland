@@ -93,7 +93,7 @@ if ($submit)
 		if (!isset($forum_post['parent_id']))
 		{
 			$rows = $app['eland.xdb']->get_many(['agg_type' => 'forum',
-				'agg_schema' => $schema,
+				'agg_schema' => $app['eland.this_group']->get_schema(),
 				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
@@ -179,7 +179,7 @@ if ($submit)
 	}
 	else
 	{
-		$new_id = substr(sha1(microtime() . $schema), 0, 24);
+		$new_id = substr(sha1(microtime() . $app['eland.this_group']->get_schema()), 0, 24);
 
 		$app['eland.xdb']->set('forum', $new_id, $forum_post);
 
@@ -355,7 +355,7 @@ if ($topic)
 
 	$forum_posts[] = $topic_post;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
@@ -374,14 +374,14 @@ if ($topic)
 		}
 	}
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc limit 1');
@@ -488,7 +488,7 @@ if ($topic)
  * show topic list
  */
 
-$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 	'agg_type' => 'forum',
 	'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc');
 

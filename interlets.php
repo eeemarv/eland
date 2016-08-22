@@ -173,9 +173,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if (isset($hosts[$add_schema]))
+		if ($app['eland.groups']->get_host($add_schema))
 		{
-			$group['url'] = $app['eland.protocol'] . $hosts[$add_schema];
+			$group['url'] = $app['eland.protocol'] . $app['eland.groups']->get_host($add_schema);
 			$group['groupname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
@@ -363,7 +363,7 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if (isset($schemas[$group['host']]))
+	if ($app['eland.groups']->get_schema($group['host']))
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span></dd>';
 	}
@@ -419,9 +419,9 @@ foreach ($groups as $key => $g)
 
 	$letscodes[] = $g['localletscode'];
 
-	if (isset($schemas[$h]))
+	if ($app['eland.groups']->get_schema($h))
 	{
-		$s = $schemas[$h];
+		$s = $app['eland.groups']->get_schema($h);
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
@@ -561,7 +561,7 @@ exit;
 
 function render_schemas_groups()
 {
-	global $schema, $app, $schemas, $hosts;
+	global $app;
 
 	echo '<p><ul>';
 	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
@@ -600,7 +600,7 @@ function render_schemas_groups()
 
 	$url_ary = [];
 
-	foreach ($hosts as $h)
+	foreach ($app['eland.groups']->get_hosts() as $h)
 	{
 		$url_ary[] = $app['eland.protocol'] . $h;
 	}
@@ -632,7 +632,7 @@ function render_schemas_groups()
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($schemas as $h => $s)
+	foreach ($app['eland.groups']->get_schemas() as $h => $s)
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
@@ -679,7 +679,7 @@ function render_schemas_groups()
 
 	echo '<tbody>';
 
-	foreach($schemas as $h => $s)
+	foreach($app['eland.groups']->get_schemas() as $h => $s)
 	{
 		echo '<tr>';
 
@@ -699,7 +699,7 @@ function render_schemas_groups()
 		echo $group_user_count_ary[$s];
 		echo '</td>';
 
-		if ($schema == $s)
+		if ($app['eland.this_group']->get_schema() == $s)
 		{
 			echo '<td colspan="4">';
 			echo 'eigen groep';

@@ -10,7 +10,7 @@ $st = $app['db']->prepare('select distinct type
 	where schema = ?
 	order by type asc');
 
-$st->bindValue(1, $schema);
+$st->bindValue(1, $app['eland.this_group']->get_schema());
 
 $st->execute();
 

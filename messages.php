@@ -351,7 +351,7 @@ if ($post && $img && $images && !$s_guest)
 			$id++;
 		}
 
-		$filename = $schema . '_m_' . $id . '_';
+		$filename = $app['eland.this_group']->get_schema() . '_m_' . $id . '_';
 		$filename .= sha1($filename . microtime()) . '.jpg';
 
 		$err = $app['eland.s3']->img_upload($filename, $tmpfile2);
@@ -844,7 +844,7 @@ if (($edit || $add))
 
 						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
 
-						if ($sch != $schema)
+						if ($sch != $app['eland.this_group']->get_schema())
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -878,7 +878,7 @@ if (($edit || $add))
 							continue;
 						}
 
-						$new_filename = $schema . '_m_' . $id . '_';
+						$new_filename = $app['eland.this_group']->get_schema() . '_m_' . $id . '_';
 						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
 						$err = $app['eland.s3']->img_copy($img, $new_filename);
@@ -979,7 +979,7 @@ if (($edit || $add))
 
 						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
 
-						if ($sch != $schema)
+						if ($sch != $app['eland.this_group']->get_schema())
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -1406,7 +1406,7 @@ if ($id)
 
 			if (!$s_group_self)
 			{
-				$tus['tus'] = $schema;
+				$tus['tus'] = $app['eland.this_group']->get_schema();
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',

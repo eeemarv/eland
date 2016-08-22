@@ -79,7 +79,7 @@ if ($app['redis']->get('process_queue_sleep') && $app['eland.queue']->count())
 
 $schema_lastrun_ary = [];
 
-foreach ($schemas as $ho => $sch)
+foreach ($app['eland.groups']->get_schemas() as $ho => $sch)
 {
 	$lastrun = $app['db']->fetchColumn('select max(lastrun) from ' . $sch . '.cron');
 	$schema_lastrun_ary[$sch] = ($lastrun) ?: 0;
@@ -87,7 +87,7 @@ foreach ($schemas as $ho => $sch)
 
 unset($sch, $ho, $selected);
 
-if (count($schemas))
+if ($app['eland.groups']->get_count())
 {
 	asort($schema_lastrun_ary);
 
@@ -96,13 +96,12 @@ if (count($schemas))
 
 	foreach ($schema_lastrun_ary as $sch => $time)
 	{
-		echo $sch . ' (' . $hosts[$sch] . '): ' . $time;
+		echo $sch . ' (' . $app['eland.groups']->get_host($sch) . '): ' . $time;
 
 		if (!isset($selected))
 		{
-			$schema = $sch;
+			$app['eland.this_group']->force($sch);
 			echo ' (selected)';
-			$app['db']->exec('SET search_path TO ' . $schema);
 			$selected = true;
 		}
 
@@ -117,11 +116,10 @@ else
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo "*** Cron system running [" . $schema . ' ' . $hosts[$schema] . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
+echo "*** Cron system running [" . $app['eland.this_group']->get_schema() . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
 
-$app['eland.base_url'] = $app['eland.protocol'] . $hosts[$schema];
+$app['eland.base_url'] = $app['eland.protocol'] . $app['eland.this_group']->get_host();
 
-$app['eland.xdb']->init($schema);
 
 /**
  * typeahead && msgs from eLAS interlets update
@@ -139,14 +137,14 @@ foreach ($groups as $group)
 {
 	$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-	if (isset($schemas[$group['domain']]))
+	if ($app['eland.groups']->get_schema($group['domain']))
 	{
 		unset($group);
 		continue;
 	}
 
-	if ($app['redis']->get($schema . '_token_failed_' . $group['remoteapikey'])
-		|| $app['redis']->get($schema . '_connection_failed_' . $group['domain']))
+	if ($app['redis']->get($app['eland.this_group']->get_schema() . '_token_failed_' . $group['remoteapikey'])
+		|| $app['redis']->get($app['eland.this_group']->get_schema() . '_connection_failed_' . $group['domain']))
 	{
 		unset($group);
 		continue;
@@ -180,7 +178,7 @@ if (isset($group))
 	{
 
 		echo $err_group . 'Can not get connection.' . $r;
-		$redis_key = $schema . '_connection_failed_' . $group['domain'];
+		$redis_key = $app['eland.this_group']->get_schema() . '_connection_failed_' . $group['domain'];
 		$app['redis']->set($redis_key, '1');
 		$app['redis']->expire($redis_key, 21600);  // 6 hours
 
@@ -203,7 +201,7 @@ if (isset($group))
 
 		if ($err)
 		{
-			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+			$redis_key = $app['eland.this_group']->get_schema() . '_token_failed_' . $group['remoteapikey'];
 			$app['redis']->set($redis_key, '1');
 			$app['redis']->expire($redis_key, 21600);  // 6 hours
 		}
@@ -238,7 +236,7 @@ if (isset($group))
 		{
 			$err = $e->getMessage();
 			echo $err . $r;
-			$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+			$redis_key = $app['eland.this_group']->get_schema() . '_token_failed_' . $group['remoteapikey'];
 			$app['redis']->set($redis_key, '1');
 			$app['redis']->expire($redis_key, 21600);  // 6 hours
 
@@ -391,7 +389,7 @@ while ($row = $st->fetch())
 	$data = [
 		'adr'	=> $adr,
 		'uid'	=> $row['id_user'],
-		'sch'	=> $schema,
+		'sch'	=> $app['eland.this_group']->get_schema(),
 	];
 
 	$app['redis']->set($key, 'q');
@@ -908,7 +906,7 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 		} 
 
 
-		if (!$delete && !isset($hosts[$sch]))
+		if (!$delete && !isset($app['eland.groups']->get_host($sch)))
 		{
 			error_log('-> unknown schema');
 			continue;
@@ -986,12 +984,12 @@ run_cronjob('cleanup_logs', 86400);
 
 function cleanup_logs()
 {
-	global $app, $schema;
+	global $app;
 
 	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 
 	$app['db']->executeQuery('delete from eland_extra.logs
-		where schema = ? and ts < ?', [$schema, $treshold]);
+		where schema = ? and ts < ?', [$app['eland.this_group']->get_schema(), $treshold]);
 
 	$app['monolog']->info('(cron) Cleaned up logs older than 30 days.');
 

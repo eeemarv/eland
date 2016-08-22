@@ -15,16 +15,16 @@ function sendmail()
 	{
 		$mail = $queue_record['data'];
 
-		$schema = $mail['schema'];
+		$sch = $mail['schema'];
 		unset($mail['schema']);
 
-		if (!isset($schema))
+		if (!isset($sch))
 		{
 			$app['monolog']->error('mail error: mail in queue without schema');
 			continue;
 		}
 
-		if (!readconfigfromdb('mailenabled', $schema))
+		if (!readconfigfromdb('mailenabled', $sch))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
@@ -46,7 +46,7 @@ function sendmail()
 
 		if (!isset($mail['subject']))
 		{
-			$app['monolog']->error('mail error: mail without subject', ['schema' => $schema]);
+			$app['monolog']->error('mail error: mail without subject', ['schema' => $sch]);
 			continue;
 		}
 
@@ -58,19 +58,19 @@ function sendmail()
 			}
 			else
 			{
-				$app['monolog']->error('mail error: mail without body content', ['schema' => $schema]);
+				$app['monolog']->error('mail error: mail without body content', ['schema' => $sch]);
 			}
 		}
 
 		if (!$mail['to'])
 		{
-			$app['monolog']->error('mail error: mail without "to" | subject: ' . $mail['subject'], ['schema' => $schema]);
+			$app['monolog']->error('mail error: mail without "to" | subject: ' . $mail['subject'], ['schema' => $sch]);
 			continue;
 		}
 
 		if (!$mail['from'])
 		{
-			$app['monolog']->error('mail error: mail without "from" | subject: ' . $mail['subject'], ['schema' => $schema]);
+			$app['monolog']->error('mail error: mail without "from" | subject: ' . $mail['subject'], ['schema' => $sch]);
 			continue;
 		} 
 
@@ -97,16 +97,16 @@ function sendmail()
 
 		if ($mailer->send($message, $failed_recipients))
 		{
-			$app['monolog']->info('mail: message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $schema]);
+			$app['monolog']->info('mail: message send to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $sch]);
 		}
 		else
 		{
-			$app['monolog']->error('mail error: failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $schema]);
+			$app['monolog']->error('mail error: failed sending message to ' . implode(', ', $mail['to']) . ' subject: ' . $mail['subject'], ['schema' => $sch]);
 		}
 
 		if ($failed_recipients)
 		{
-			$app['monolog']->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $schema]);
+			$app['monolog']->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $sch]);
 		}
 	}
 }

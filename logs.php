@@ -26,7 +26,7 @@ $params = [
 
 $params_sql = $where_sql = [];
 
-$params_sql[] = $schema;
+$params_sql[] = $app['eland.this_group']->get_schema();
 
 if ($letscode)
 {

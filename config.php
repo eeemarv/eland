@@ -549,7 +549,7 @@ if ($post)
 	{
 		$app['eland.xdb']->set('setting', $name, ['value' => $value]);
 
-		$app['redis']->del($schema . '_config_' . $name);
+		$app['redis']->del($app['eland.this_group']->get_schema() . '_config_' . $name);
 
 		// prevent string too long error for eLAS database
 

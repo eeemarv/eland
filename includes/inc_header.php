@@ -68,14 +68,14 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	foreach ($logins as $login_schema => $login_id)
 	{
 		$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '';
-		$class = ($login_schema == $schema && $login_schema == $s_schema) ? ' class="active"' : $class;
+		$class = ($login_schema == $app['eland.this_group']->get_schema() && $login_schema == $s_schema) ? ' class="active"' : $class;
 
 		echo '<li';
 		echo $class;
 		echo '>';
 		
 		echo '<a href="';
-		echo $app['eland.protocol'] . $hosts[$login_schema] . '/' . $app['eland.script_name'] . '.php?r=';
+		echo $app['eland.protocol'] . $app['eland.groups']->get_host($login_schema) . '/' . $app['eland.script_name'] . '.php?r=';
 		echo ($login_id == 'elas') ? 'guest' : $_SESSION['roles'][$login_schema];
 		echo '&u=' . $login_id;
 		echo '">';
@@ -96,7 +96,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 			foreach ($eland_interlets_groups as $sch => $h)
 			{
 				echo '<li';
-				echo ($schema == $sch) ? ' class="active"' : '';
+				echo ($app['eland.this_group']->get_schema() == $sch) ? ' class="active"' : '';
 				echo '>';
 
 				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'index';

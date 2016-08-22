@@ -5,6 +5,7 @@ namespace eland\task;
 use League\HTMLToMarkdown\HtmlConverter;
 use eland\queue;
 use Monolog\Logger;
+use eland\this_group;
 
 class mail
 {
@@ -12,11 +13,13 @@ class mail
 	protected $mailer;
 	protected $queue;
 	protected $monolog;
+	protected $this_group;
 
-	public function __construct(queue $queue, Logger $monolog)
+	public function __construct(queue $queue, Logger $monolog, this_group $this_group)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
+		$this->this_group = $this_group;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
@@ -42,10 +45,10 @@ class mail
 			return;
 		}
 
-		$schema = $data['schema'];
+		$sch = $data['schema'];
 		unset($data['schema']);
 
-		if (!readconfigfromdb('mailenabled', $schema))
+		if (!readconfigfromdb('mailenabled', $sch))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
@@ -55,7 +58,7 @@ class mail
 
 		if (!isset($data['subject']))
 		{
-			$this->monolog->error('mail error: mail without subject', ['schema' => $schema]);
+			$this->monolog->error('mail error: mail without subject', ['schema' => $sch]);
 			return;
 		}
 
@@ -67,20 +70,20 @@ class mail
 			}
 			else
 			{
-				$this->monolog->error('mail error: mail without body content', ['schema' => $schema]);
+				$this->monolog->error('mail error: mail without body content', ['schema' => $sch]);
 				return;
 			}
 		}
 
 		if (!$data['to'])
 		{
-			$this->monolog->error('mail error: mail without "to" | subject: ' . $data['subject'], ['schema' => $schema]);
+			$this->monolog->error('mail error: mail without "to" | subject: ' . $data['subject'], ['schema' => $sch]);
 			return;
 		}
 
 		if (!$data['from'])
 		{
-			$this->monolog->error('mail error: mail without "from" | subject: ' . $data['subject'], ['schema' => $schema]);
+			$this->monolog->error('mail error: mail without "from" | subject: ' . $data['subject'], ['schema' => $sch]);
 			return;
 		} 
 
@@ -107,26 +110,24 @@ class mail
 
 		if ($this->mailer->send($message, $failed_recipients))
 		{
-			$this->monolog->info('mail: message send to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $schema]);
+			$this->monolog->info('mail: message send to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
 		}
 		else
 		{
-			$this->monolog->error('mail error: failed sending message to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $schema]);
+			$this->monolog->error('mail error: failed sending message to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
 		}
 
 		if ($failed_recipients)
 		{
-			$this->monolog->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $schema]);
+			$this->monolog->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $sch]);
 		}
 	}
 
 	public function queue(array $data, $priority = 100)
 	{
-		global $schema;
-
 		// only the interlets transactions receiving side has a different schema
 
-		$data['schema'] = $data['schema'] ?? $schema;
+		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
 		if (!readconfigfromdb('mailenabled'))
 		{

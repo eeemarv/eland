@@ -9,12 +9,13 @@ class groups
 {
 	private $schemas = [];
 	private $hosts = [];
+	private $overall_domain;
 
 	public function __construct(db $db)
 	{
 		$this->db = $db;
 
-		$overall_domain = getenv('OVERALL_DOMAIN');
+		$this->overall_domain = getenv('OVERALL_DOMAIN');
 
 		$schemas_db = $this->db->fetchAll('select schema_name from information_schema.schemata') ?: [];
 		$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
@@ -30,9 +31,9 @@ class groups
 			$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
 			$h = strtolower($h);
 
-			if (!strpos($h, '.' . $overall_domain))
+			if (!strpos($h, '.' . $this->overall_domain))
 			{
-				$h .= '.' . $overall_domain;
+				$h .= '.' . $this->overall_domain;
 			}
 
 			if (strpos($h, 'localhost') === 0)

@@ -15,7 +15,7 @@ if ($token)
 
 		if (!(password_strength($password) < 50)) // ignored readconfigfromdb('pwscore')
 		{
-			if ($user_id = $app['redis']->get($schema . '_token_' . $token))
+			if ($user_id = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
@@ -101,8 +101,8 @@ if (isset($_POST['zend']))
 
 			if ($user_id)
 			{
-				$token = substr(hash('sha512', $user_id . $schema . time() . $email), 0, 12);
-				$key = $schema . '_token_' . $token;
+				$token = substr(hash('sha512', $user_id . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
+				$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
 				$app['redis']->set($key, $user_id);
 				$app['redis']->expire($key, 3600);
 

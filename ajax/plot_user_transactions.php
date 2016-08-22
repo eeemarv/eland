@@ -64,7 +64,7 @@ foreach ($trans as $t)
 	{
 		$group = $_groups[$t['letscode']];
 
-		if ($sch = $schemas[$group['domain']])
+		if ($sch = $app['eland.groups']->get_schema($group['domain']))
 		{
 			list($code, $name) = explode(' ', $real);
 		}

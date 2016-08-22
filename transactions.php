@@ -39,7 +39,7 @@ if ($add)
 
 	$transaction = [];
 
-	$redis_transid_key = $schema . '_transid_u_' . $s_id;
+	$redis_transid_key = $app['eland.this_group']->get_schema() . '_transid_u_' . $s_id;
 
 	if ($submit)
 	{
@@ -265,7 +265,7 @@ if ($add)
 
 			cancel();
 		}
-		else if (!(isset($schemas[$group_domain])))
+		else if ($app['eland.groups']->get_schema($group_domain))
 		{
 			// The interlets group uses eLAS or is on another server
 
@@ -436,7 +436,7 @@ if ($add)
 		{
 			// the interlets group is on the same server (eLAND)
 
-			$remote_schema = $schemas[$group_domain];
+			$remote_schema = $app['eland.groups']->get_schema($group_domain);
 
 			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -639,9 +639,9 @@ if ($add)
 
 		if ($tus)
 		{
-			if (isset($hosts[$tus]))
+			if ($app['eland.groups']->get_host($tus))
 			{
-				$host_from_tus = $hosts[$tus];
+				$host_from_tus = $app['eland.groups']->get_host($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
 					from letsgroups
@@ -688,7 +688,7 @@ if ($add)
 			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
 		}
 
-		if ($tuid == $s_id && !$fuid && $tus != $schema)
+		if ($tuid == $s_id && !$fuid && $tus != $app['eland.this_group']->get_schema())
 		{
 			$transaction['letscode_from'] = '';
 		}
@@ -841,7 +841,7 @@ if ($add)
  * interlets accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['eland.interlets_groups']->get_eland_accounts_schemas($schema);
+$interlets_accounts_schemas = $app['eland.interlets_groups']->get_eland_accounts_schemas($app['eland.this_group']->get_schema());
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 

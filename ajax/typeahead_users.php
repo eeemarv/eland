@@ -42,7 +42,7 @@ if ($group_id == 'self')
 			exit;
 	}
 
-	$users = users_to_json($schema, $status_sql);
+	$users = users_to_json($app['eland.this_group']->get_schema(), $status_sql);
 
 	$app['eland.typeahead']->invalidate_thumbprint('users_' . $status, false, crc32($users));
 
@@ -68,9 +68,9 @@ if ($group['apimethod'] != 'elassoap')
 	exit;
 }
 
-if (isset($schemas[$group['domain']]))
+if ($app['eland.groups']->get_schema($group['domain']))
 {
-	$remote_schema = $schemas[$group['domain']];
+	$remote_schema = $app['eland.groups']->get_schema($group['domain']);
 
 	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$app['eland.base_url']]))
 	{
@@ -107,7 +107,7 @@ else
 /*
  *
  */
-function users_to_json($schema, $status_sql = 'in (1, 2)')
+function users_to_json($sch, $status_sql = 'in (1, 2)')
 {
 	global $app;
 
@@ -117,13 +117,13 @@ function users_to_json($schema, $status_sql = 'in (1, 2)')
 			extract(epoch from adate) as a,
 			status as s,
 			postcode as p
-		FROM ' . $schema . '.users
+		FROM ' . $sch . '.users
 		WHERE status ' . $status_sql
 	);
 
 	$users = [];
 
-	$new_user_days = readconfigfromdb('newuserdays', $schema);
+	$new_user_days = readconfigfromdb('newuserdays', $sch);
 
 	foreach ($fetched_users as $user)
 	{

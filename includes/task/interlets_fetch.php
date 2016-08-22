@@ -5,23 +5,26 @@ namespace eland\task;
 use Predis\Client as Redis;
 use eland\typeahead;
 use Monolog\Logger;
+use eland\this_group;
 
 class interlets_fetch
 {
 	protected $redis;
 	protected $typeahead;
 	protected $monolog;
+	protected $this_group;
 
-	public function __construct(Redis $redis, typeahead $typeahead, Logger $monolog)
+	public function __construct(Redis $redis, typeahead $typeahead, Logger $monolog, this_group $this_group)
 	{
 		$this->redis = $redis;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
+		$this->group = $this_group;
 	}
 
 	function fetch_interlets_msgs($client, $group)
 	{
-		global $schema, $r;
+		$r = "<br>\r\n";
 
 		$msgs = [];
 
@@ -66,8 +69,6 @@ class interlets_fetch
 	 */
 	function fetch_interlets_typeahead_data($client, $group)
 	{
-		global $schema, $r;
-
 		$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
 		$status_code = $client->getResponse()->getStatus();
@@ -84,7 +85,7 @@ class interlets_fetch
 			{
 				echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
 
-				$redis_key = $schema . '_connection_failed_' . $group['domain'];
+				$redis_key = $this->this_group->get_schema() . '_connection_failed_' . $group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -164,7 +165,7 @@ class interlets_fetch
 		$this->redis->set($redis_user_count_key, $user_count);
 		$this->redis->expire($redis_user_count_key, 86400); // 1 day
 
-		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $schema]);
+		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $app['eland.this_group']->get_schema()]);
 
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;

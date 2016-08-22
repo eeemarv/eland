@@ -14,7 +14,7 @@ if (!readconfigfromdb('contact_form_en'))
 
 if ($token)
 {
-	$key = $schema . '_contact_' . $token;
+	$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
 	$data = $app['redis']->get($key);
 
 	if ($data)
@@ -127,8 +127,8 @@ if($post && isset($_POST['zend']))
 			'ip'		=> $ip,
 		];
 
-		$token = substr(hash('sha512', $schema . microtime()), 0, 10);
-		$key = $schema . '_contact_' . $token;
+		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime()), 0, 10);
+		$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
 		$app['redis']->set($key, json_encode($contact));
 		$app['redis']->expire($key, 86400);
 

@@ -24,9 +24,9 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if($token)
 {
-	if($interlets = $app['redis']->get($schema . '_token_' . $token))
+	if($interlets = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 	{
-		$_SESSION['logins'][$schema] = 'elas';
+		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = 'elas';
 
 		$param = 'welcome=1&r=guest&u=elas';
 
@@ -56,7 +56,7 @@ if ($submit)
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
-		$_SESSION['logins'][$schema] = 'master';
+		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = 'master';
 
 		$app['eland.alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
@@ -183,10 +183,10 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$_SESSION['logins'][$schema] = $user['id'];
+		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = $user['id'];
 
 		$s_id = $user['id'];
-		$s_schema = $schema;
+		$s_schema = $app['eland.this_group']->get_schema();
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 

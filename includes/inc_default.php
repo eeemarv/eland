@@ -123,8 +123,7 @@ $app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'ba
 
 $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
-$host = $_SERVER['SERVER_NAME'];
-$app['eland.base_url'] = $app['eland.protocol'] . $host;
+$app['eland.base_url'] = $app['eland.protocol'] . $_SERVER['SERVER_NAME'];
 
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
@@ -190,7 +189,7 @@ $allowed_interlets_landing_pages = [
 /*
  * check if we are on the request hosting url.
  */
-$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($host));
+$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($_SERVER['SERVER_NAME']));
 
 if ($app['eland.script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
@@ -214,54 +213,13 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
  * Get all eland schemas and domains
  */
 
-$schemas = $hosts = [];
+$app['eland.groups'] = function ($app){
+	return new eland\groups($app['db']);
+};
 
-$schemas_db = ($app['db']->fetchAll('select schema_name from information_schema.schemata')) ?: [];
-$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
-$schemas_db = array_fill_keys($schemas_db, true);
-
-foreach ($_ENV as $key => $s)
-{
-	if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
-	{
-		continue;
-	}
-
-	$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
-	$h = strtolower($h);
-
-	if (!strpos($h, '.' . getenv('OVERALL_DOMAIN')))
-	{
-		$h .= '.' . getenv('OVERALL_DOMAIN');
-	}
-
-	if (strpos($h, 'localhost') === 0)
-	{
-		continue;
-	}
-
-	$schemas[$h] = $s;
-	$hosts[$s] = $h;
-}
-
-/*
- * Set schema
- *
- * + schema is the schema in the postgres database
- * + schema is prefix of the image files.
- * + schema name is prefix of keys in Redis.
- *
- */
-
-$schema = $schemas[$host];
-
-if (!$schema)
-{
-	http_response_code(404);
-
-	echo $app['twig']->render('404.twig');
-	exit;
-}
+$app['eland.this_group'] = function($app){
+	return new eland\this_group($app['eland.groups'], $app['db'], $app['redis'], $app['twig']);
+};
 
 $app['eland.alert'] = function ($app){
 	return new eland\alert($app['monolog']);
@@ -271,24 +229,10 @@ $app['eland.pagination'] = function (){
 	return new eland\pagination();
 };
 
-$app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts) {
-	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app['eland.protocol']);
+$app['eland.interlets_groups'] = function ($app){
+	return new eland\interlets_groups($app['db'], $app['redis'], $app['eland.groups'], $app['eland.protocol']);
 };
 
-/**
- * start session
- */
-
-session_set_save_handler(new eland\redis_session($app['redis']));
-session_name('eland');
-session_set_cookie_params(0, '/', '.' . getenv('OVERALL_DOMAIN'));
-session_start();
-
-/*
- * set search path
- */
-
-$app['db']->exec('set search_path to ' . ($schema) ?: 'public');
 
 /** user **/
 
@@ -296,11 +240,11 @@ $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = ($p_schema) ?: $schema;
+$s_schema = ($p_schema) ?: $app['eland.this_group']->get_schema();
 $s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = ($s_schema == $schema) ? true : false;
+$s_group_self = ($s_schema == $app['eland.this_group']->get_schema()) ? true : false;
 
 /** access user **/
 
@@ -402,7 +346,7 @@ else if (ctype_digit((string) $s_id))
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app['eland.protocol'] . $hosts[$s_schema] . '/index.php?r=';
+		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/index.php?r=';
 		$location .= $session_user['accountrole'] . '&u=' . $s_id;
 		header('Location: ' . $location);
 		exit;
@@ -440,7 +384,7 @@ else if ($s_id == 'master')
 	{
 		$app['monolog']->debug('redirect 3a');
 
-		$location = $app['eland.protocol'] . $hosts[$s_schema] . '/index.php?r=admin&u=master';
+		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/index.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -514,7 +458,7 @@ switch ($s_accountrole)
 }
 
 $app['eland.access_control'] = function($app){
-	return new eland\access_control();
+	return new eland\access_control($app['eland.this_group']);
 };
 
 /**
@@ -544,7 +488,7 @@ if ($s_group_self && $s_guest)
 
 if ($page_access != 'anonymous'
 	&& !$s_group_self
-	&& !$eland_interlets_groups[$schema])
+	&& !$eland_interlets_groups[$app['eland.this_group']->get_schema()])
 {
 	header('Location: ' . generate_url('index', [], $s_schema));
 	exit;
@@ -561,10 +505,10 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
   */
 
 $app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['monolog']);
+	return new eland\xdb($app['db'], $app['monolog'], $app['eland.this_group']);
 };
 
-$app['eland.xdb']->init($schema, $s_schema, $s_id);
+$app['eland.xdb']->init($s_schema, $s_id);
 
 $app['eland.queue'] = function ($app){
 	return new eland\queue($app['db'], $app['monolog']);
@@ -581,7 +525,7 @@ $app['eland.form_token'] = function ($app){
 // tasks
 
 $app['eland.task.mail'] = function ($app){
-	return new eland\task\mail($app['eland.queue'], $app['monolog']);
+	return new eland\task\mail($app['eland.queue'], $app['monolog'], $app['eland.this_group']);
 };
 
 $app['eland.task.autominlimit'] = function ($app){
@@ -591,12 +535,12 @@ $app['eland.task.autominlimit'] = function ($app){
 //
 
 $app['eland.interlets_fetch'] = function ($app){
-	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog']);
+	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog'], $app['this_group']);
 };
 
 /* some more vars */
 
-$app['eland.schema'] = $schema;
+$app['eland.schema'] = $app['eland.this_group']->get_schema();
 $app['eland.session_user'] = $session_user ?? [];
 $app['eland.session_schema'] = $s_schema;
 
@@ -646,9 +590,9 @@ if (!$s_anonymous)
 {
 	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		if (isset($logins[$schema]) && $s_group_self)
+		if (isset($logins[$app['eland.this_group']->get_schema()]) && $s_group_self)
 		{
-			$_SESSION['roles'][$schema] = $s_accountrole;
+			$_SESSION['roles'][$app['eland.this_group']->get_schema()] = $s_accountrole;
 		}
 
 		$s_user_params_own_group = [
@@ -727,7 +671,7 @@ function aphp(
  */
 function generate_url($entity = 'index', $params = [], $sch = false)
 {
-	global $rootpath, $app, $hosts;
+	global $rootpath, $app;
 
 	if ($app['eland.alert']->is_set())
 	{
@@ -740,7 +684,7 @@ function generate_url($entity = 'index', $params = [], $sch = false)
 
 	$params = ($params) ? '?' . $params : '';
 
-	$path = ($sch) ? $app['eland.protocol'] . $hosts[$sch] . '/' : $rootpath;
+	$path = ($sch) ? $app['eland.protocol'] . $app['eland.groups']->get_host($sch) . '/' : $rootpath;
 
 	return $path . $entity . '.php' . $params;
 }
@@ -864,7 +808,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $app, $schema;
+    global $app;
     static $cache;
 
 	$eland_config_default = [
@@ -884,7 +828,7 @@ function readconfigfromdb($key, $sch = null)
 
     if (!isset($sch))
     {
-		$sch = $schema;
+		$sch = $app['eland.this_group']->get_schema();
 	}
 
 	if (isset($cache[$sch][$key]))
@@ -931,7 +875,7 @@ function readconfigfromdb($key, $sch = null)
  */
 function readuser($id, $refresh = false, $remote_schema = false)
 {
-    global $app, $schema;
+    global $app;
     static $cache;
 
 	if (!$id)
@@ -939,7 +883,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$s = ($remote_schema) ?: $schema;
+	$s = ($remote_schema) ?: $app['eland.this_group']->get_schema();
 
 	$redis_key = $s . '_user_' . $id;
 
@@ -986,107 +930,6 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	return $user;
 }
 
-/**
- *
- */
-
-/*
-function mail_q($mail = [], $priority = false)
-{
-	global $schema, $app;
-
-	// only the interlets transactions receiving side has a different schema
-
-	$mail['schema'] = $mail['schema'] ?? $schema;
-
-	if (!readconfigfromdb('mailenabled'))
-	{
-		$m = 'Mail functions are not enabled. ' . "\n";
-		$app['monolog']->info('mail: ' . $m);
-		return $m;
-	}
-
-	if (!isset($mail['subject']) || $mail['subject'] == '')
-	{
-		$m = 'Mail "subject" is missing.';
-		$app['monolog']->error('mail: '. $m);
-		return $m;
-	}
-
-	if ((!isset($mail['text']) || $mail['text'] == '')
-		&& (!isset($mail['html']) || $mail['html'] == ''))
-	{
-		$m = 'Mail "body" (text or html) is missing.';
-		$app['monolog']->error('mail: ' . $m);
-		return $m;
-	}
-
-	if (!isset($mail['to']) || !$mail['to'])
-	{
-		$m = 'Mail "to" is missing for "' . $mail['subject'] . '"';
-		$app['monolog']->error('mail: ' . $m);
-		return $m;
-	}
-
-	$mail['to'] = getmailadr($mail['to']);
-
-	if (!count($mail['to']))
-	{
-		$m = 'error: mail without "to" | subject: ' . $mail['subject'];
-		$app['monolog']->error('mail: ' . $m);
-		return $m;
-	} 
-
-	if (isset($mail['reply_to']))
-	{
-		$mail['reply_to'] = getmailadr($mail['reply_to']);
-
-		if (!count($mail['reply_to']))
-		{
-			$app['monolog']->error('mail: error: invalid "reply to" : ' . $mail['subject']);
-			unset($mail['reply_to']);
-		}
-
-		$mail['from'] = getmailadr('from', $mail['schema']);
-	}
-	else
-	{
-		$mail['from'] = getmailadr('noreply', $mail['schema']);
-	}
-
-	if (!count($mail['from']))
-	{
-		$m = 'error: mail without "from" | subject: ' . $mail['subject'];
-		$app['monolog']->error('mail: ' . $m);
-		return $m;
-	}
-
-	if (isset($mail['cc']))
-	{
-		$mail['cc'] = getmailadr($mail['cc']);
-
-		if (!count($mail['cc']))
-		{
-			$app['monolog']->error('mail error: invalid "reply to" : ' . $mail['subject']);
-			unset($mail['cc']);
-		}
-	}
-
-	$mail['subject'] = '[' . readconfigfromdb('systemtag', $mail['schema']) . '] ' . $mail['subject'];
-
-	$error = $app['eland.queue']->set('mail', $mail, ($priority) ? 10 : 0);
-
-	if (!$error)
-	{
-		$reply = (isset($mail['reply_to'])) ? ' reply-to: ' . json_encode($mail['reply_to']) : '';
-
-		$app['monolog']->info('mail: Mail in queue, subject: ' .
-			$mail['subject'] . ', from : ' .
-			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, ['schema' => $mail['schema']]);
-	}
-}
-*/
-
 /*
  * param string mail addr | [string.]int [schema.]user id | array
  * param string sending_schema
@@ -1095,9 +938,9 @@ function mail_q($mail = [], $priority = false)
 
 function getmailadr($m, $sending_schema = false)
 {
-	global $schema, $app, $s_admin;
+	global $app, $s_admin;
 
-	$sch = ($sending_schema) ?: $schema;
+	$sch = ($sending_schema) ?: $app['eland.this_group']->get_schema();
 
 	if (!is_array($m))
 	{

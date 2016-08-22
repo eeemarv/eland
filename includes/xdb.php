@@ -4,6 +4,7 @@ namespace eland;
 
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
+use eland\this_group;
 
 /*
                             Table "eland_extra.events"
@@ -49,16 +50,16 @@ Indexes:
 class xdb
 {
 	private $ip;
-	private $schema = false;
 	private $user_schema = '';
 	private $user_id = '';
 	private $db;
 	private $monolog;
 
-	public function __construct(db $db, Logger $monolog)
+	public function __construct(db $db, Logger $monolog, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
+		$this->this_group = $this_group;
 
 		if (isset($_SERVER['HTTP_CLIENT_IP']))
 		{
@@ -77,10 +78,9 @@ class xdb
 	/*
 	 */
 
-	public function init(string $schema, string $user_schema = '', $user_id = 0)
+	public function init(string $user_schema = '', $user_id = 0)
 	{
-		$this->schema = $schema;
-		$this->user_schema = ($user_schema) ? $user_schema : $schema;
+		$this->user_schema = ($user_schema) ? $user_schema : $this->this_group->get_schema();
 		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 	}
 
@@ -90,7 +90,7 @@ class xdb
 
 	public function set($agg_type = '', $eland_id = '', $data = [], $agg_schema = false, $event_time = false)
 	{
-		$agg_schema = ($agg_schema) ?: $this->schema;
+		$agg_schema = ($agg_schema) ?: $app->this_group->get_schema();
 
 		if (!strlen($agg_type))
 		{
@@ -189,7 +189,7 @@ class xdb
 
 	public function del($agg_type = '', $eland_id = '', $agg_schema = false)
 	{
-		$agg_schema = ($agg_schema) ?: $this->schema;
+		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
 		if (!strlen($agg_type))
 		{
@@ -256,7 +256,7 @@ class xdb
 
 	public function get($agg_type = '', $eland_id = '', $agg_schema = false)
 	{
-		$agg_schema = ($agg_schema) ?: $this->schema;
+		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
 		if (!strlen($agg_type))
 		{

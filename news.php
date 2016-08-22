@@ -390,14 +390,14 @@ if ($id)
 
 	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id asc limit 1');
@@ -531,7 +531,7 @@ $news = $app['db']->fetchAll($query);
 
 $news_access_ary = [];
 
-$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(), 'agg_type' => 'news_access']);
 
 foreach ($rows as $row)
 {

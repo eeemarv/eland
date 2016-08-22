@@ -215,7 +215,7 @@ function saldo()
 
 	$news_access_ary = [];
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(), 'agg_type' => 'news_access']);
 
 	foreach ($rows as $row)
 	{

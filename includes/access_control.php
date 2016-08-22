@@ -2,8 +2,12 @@
 
 namespace eland;
 
+use eland\this_group;
+
 class access_control
 {
+	private $this_group;
+
 	private $acc_ary = [
 		'admin'	=> [
 			'level'	=> 0,
@@ -32,8 +36,9 @@ class access_control
 	 *
 	 */
 
-	public function __construct()
+	public function __construct(this_group $this_group)
 	{
+		$this->this_group = $this_group;
 	}
 
 	/*
@@ -152,8 +157,6 @@ class access_control
 
 	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access', $size = 'xs', $label = 'Zichtbaarheid')
 	{
-		global $schema;
-
 		$acc_ary = $this->acc_ary;
 
 		if ($value === false)
@@ -189,7 +192,7 @@ class access_control
 		$out = '<div class="form-group">';
 		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">' . $label . '</label>';
 		$out .= '<div class="col-sm-10"';
-		$out .= ($access_cache_id) ? ' data-access-cache-id="' . $schema . '_' . $access_cache_id . '"' : '';
+		$out .= ($access_cache_id) ? ' data-access-cache-id="' . $this->this_group->get_schema() . '_' . $access_cache_id . '"' : '';
 		$out .= ' id="' . $name . '">';
 
 		foreach ($acc_ary as $key => $ary)

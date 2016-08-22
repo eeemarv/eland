@@ -23,7 +23,7 @@ header('Content-Type:text/plain');
 echo '*** Init eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
-echo "schema: " . $schema . ' systemtag: ' . readconfigfromdb('systemtag') . $r;
+echo "schema: " . $app['eland.this_group']->get_schema() . ' systemtag: ' . readconfigfromdb('systemtag') . $r;
 
 if ($step == 2 || $step == 3)
 {
@@ -102,9 +102,9 @@ else if ($step == 2)
 			echo 'Profile image not present, deleted in database: ' . $filename . $r;
 			$app['monolog']->info('cron: Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
-		else if ($f_schema != $schema)
+		else if ($f_schema != $app['eland.this_group']->get_schema())
 		{
-			$new_filename = $schema . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
+			$new_filename = $app['eland.this_group']->get_schema() . '_u_' . $user_id . '_' . sha1(time() . $filename) . '.jpg';
 
 			$err = $app['eland.s3']->img_copy($filename_bucket, $new_filename);
 
@@ -158,9 +158,9 @@ else if ($step == 3)
 			echo 'Message image not present, deleted in database: ' . $filename . $r;
 			$app['monolog']->info('init: Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
-		else if ($f_schema != $schema)
+		else if ($f_schema != $app['eland.this_group']->get_schema())
 		{
-			$new_filename = $schema . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
+			$new_filename = $app['eland.this_group']->get_schema() . '_m_' . $msg_id . '_' . sha1(time() . $filename) . '.jpg';
 
 			$err = $app['eland.s3']->img_copy($filename_bucket, $new_filename);
 
@@ -233,7 +233,7 @@ else if ($step == 4)
 
 	foreach ($users as $u)
 	{
-		$app['redis']->del($schema . '_user_' . $u['id']);
+		$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $u['id']);
 	}
 
 	echo "\n";

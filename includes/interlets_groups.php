@@ -10,8 +10,7 @@ class interlets_groups
 	public $ttl = 14400; // 4 hours
 	private $redis;
 	private $db;
-	private $schemas;
-	private $hosts;
+	private $groups;
 	private $app_protocol;
 
 	private $eland_ary;
@@ -20,12 +19,11 @@ class interlets_groups
 	private $eland_accounts_schemas;
 	private $ttl_eland_accounts_schemas = 86400; // 1 day
 
-	public function __construct(db $db, redis $redis, array $schemas, array $hosts, string $app_protocol)
+	public function __construct(db $db, redis $redis, groups $groups, string $app_protocol)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
-		$this->schemas = $schemas;
-		$this->hosts = $hosts;
+		$this->groups = $groups;
 		$this->app_protocol = $app_protocol;
 	}
 
@@ -55,7 +53,7 @@ class interlets_groups
 	{
 		$this->redis->del($s_schema . '_elas_interlets_groups');
 
-		foreach ($this->schemas as $s)
+		foreach ($this->groups->get_schemas() as $s)
 		{
 			$this->redis->del($s . '_eland_interlets_groups');
 		}
@@ -97,11 +95,11 @@ class interlets_groups
 		{
 			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
-			if (isset($this->schemas[$h]))
+			if ($this->groups->get_schema($h))
 			{
 				$interlets_hosts[] = $h;
 
-				$this->eland_accounts_schemas[$row['id']] = $this->schemas[$h];
+				$this->eland_accounts_schemas[$row['id']] = $this->groups->get_schema($h);
 			}
 		}
 
@@ -112,13 +110,13 @@ class interlets_groups
 
 		$this->redis->expire($key_interlets_accounts, $this->ttl_eland_accounts_schemas);
 
-		$s_url = $this->app_protocol . $this->hosts[$s_schema];
+		$s_url = $this->app_protocol . $this->groups->get_host($s_schema);
 
 		$this->eland_ary = [];
 
 		foreach ($interlets_hosts as $h)
 		{
-			$s = $this->schemas[$h];
+			$s = $this->groups->get_schema($h);
 
 			$url = $this->db->fetchColumn('select g.url
 				from ' . $s . '.letsgroups g, ' . $s . '.users u
@@ -184,7 +182,7 @@ class interlets_groups
 		{
 			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
-			if (!(isset($this->schemas[$h])))
+			if (!$this->groups->get_schema($h))
 			{
 				$this->elas_ary[$row['id']] = $row;
 			}

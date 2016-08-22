@@ -7,8 +7,8 @@ namespace eland;
 
 class user
 {
-	private $schemas = [];
-	private $hosts = [];
+	private $schema;
+	private $host;
 
 	public function __construct()
 	{

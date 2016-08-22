@@ -60,7 +60,7 @@ if ($map_edit)
 		if (!count($errors))
 		{
 
-			$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+			$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]);
@@ -156,7 +156,7 @@ if ($edit)
 			if (strlen($map_name))
 			{
 				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $schema,
+					'agg_schema' => $app['eland.this_group']->get_schema(),
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
 				if (count($rows))
@@ -168,7 +168,7 @@ if ($edit)
 				{
 					$map = ['map_name' => $map_name];
 
-					$mid = substr(sha1(microtime() . $schema . $map_name), 0, 24);
+					$mid = substr(sha1(microtime() . $app['eland.this_group']->get_schema() . $map_name), 0, 24);
 
 					$app['eland.xdb']->set('doc', $mid, $map);
 
@@ -187,7 +187,7 @@ if ($edit)
 					|| !strlen($map_name)))
 			{
 				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $schema,
+					'agg_schema' => $app['eland.this_group']->get_schema(),
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
@@ -303,7 +303,7 @@ if ($confirm_del && $del)
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+			$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
@@ -409,7 +409,7 @@ if ($submit)
 	{
 		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
-		$filename = $schema . '_d_' . $doc_id . '.' . $ext;
+		$filename = $app['eland.this_group']->get_schema() . '_d_' . $doc_id . '.' . $ext;
 
 		$error = $app['eland.s3']->doc_upload($filename, $tmpfile);
 
@@ -431,7 +431,7 @@ if ($submit)
 
 			if (strlen($map_name))
 			{
-				$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+				$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -563,7 +563,7 @@ if ($map)
 	}
 //
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');
@@ -589,7 +589,7 @@ if ($map)
 }
 else
 {
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -610,7 +610,7 @@ else
 		}
 	}
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $schema,
+	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
 		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');

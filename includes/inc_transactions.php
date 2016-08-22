@@ -34,7 +34,7 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $app, $s_id, $s_master, $schema;
+    global $app, $s_id, $s_master;
 
 	$transaction['creator'] = ($s_master) ? 0 : (($s_id) ? $s_id : 0);
     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
@@ -66,7 +66,7 @@ function insert_transaction($transaction)
 		'from_id'	=> $transaction['id_from'],
 		'to_id'		=> $transaction['id_to'],
 		'amount'	=> $transaction['amount'],
-		'schema'	=> $schema,
+		'schema'	=> $app['eland.this_group']->get_schema(),
 	]);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
@@ -128,12 +128,12 @@ function mail_mail_interlets_transaction($transaction)
  */
 function mail_transaction($transaction, $remote_schema = null)
 {
-	global $schema, $hosts, $app;
+	global $app;
 
 	$r = "\r\n";
 	$t = "\t";
 
-	$sch = (isset($remote_schema)) ? $remote_schema : $schema;
+	$sch = (isset($remote_schema)) ? $remote_schema : $app['eland.this_group']->get_schema();
 
 	$currency = readconfigfromdb('currency', $sch);
 
@@ -162,7 +162,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if (isset($remote_schema))
 	{
-		$url = $app['eland.protocol'] . $hosts[$sch];
+		$url = $app['eland.protocol'] . $app['eland.groups']->get_host($sch);
 	}
 	else
 	{

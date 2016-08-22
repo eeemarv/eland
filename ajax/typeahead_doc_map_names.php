@@ -12,7 +12,7 @@ $st = $app['db']->prepare('select distinct data->>\'map_name\' as map_name
 		and data->>\'map_name\' <> \'\'
 	order by data->>\'map_name\' asc');
 
-$st->bindValue(1, $schema);
+$st->bindValue(1, $app['eland.this_group']->get_schema());
 
 $st->execute();
 
