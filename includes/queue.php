@@ -82,7 +82,7 @@ class queue
 	 *
 	 */
 
-	public function get($topic, $count = 1, $call_func = false)
+	public function get($topic, $count = 1)
 	{
 		if (!strlen($topic))
 		{
@@ -112,21 +112,7 @@ class queue
 
 			while ($row = $st->fetch())
 			{
-				$d = json_decode($row['data'], true);
-
-				if ($call_func)
-				{
-					if (!call_user_func($call_func, $d))
-					{
-						$del_ids[] = $row['id'];
-					}
-				}
-				else
-				{
-					$del_ids[] = $row['id'];
-				}
-
-				$data[] = $d;
+				$data[] = json_decode($row['data'], true);
 			}
 
 			$this->db->executeQuery('delete from eland_extra.queue where id in (?)',
