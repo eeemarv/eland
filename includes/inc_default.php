@@ -126,8 +126,6 @@ $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'
 $host = $_SERVER['SERVER_NAME'];
 $app['eland.base_url'] = $app['eland.protocol'] . $host;
 
-$overall_domain = getenv('OVERALL_DOMAIN');
-
 $post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
 
 $app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
@@ -232,9 +230,9 @@ foreach ($_ENV as $key => $s)
 	$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
 	$h = strtolower($h);
 
-	if (!strpos($h, '.' . $overall_domain))
+	if (!strpos($h, '.' . getenv('OVERALL_DOMAIN')))
 	{
-		$h .= '.' . $overall_domain;
+		$h .= '.' . getenv('OVERALL_DOMAIN');
 	}
 
 	if (strpos($h, 'localhost') === 0)
@@ -283,7 +281,7 @@ $app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts) {
 
 session_set_save_handler(new eland\redis_session($app['redis']));
 session_name('eland');
-session_set_cookie_params(0, '/', '.' . $overall_domain);
+session_set_cookie_params(0, '/', '.' . getenv('OVERALL_DOMAIN'));
 session_start();
 
 /*
