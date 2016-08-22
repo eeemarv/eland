@@ -144,6 +144,12 @@ if ($submit)
 		}
 		else
 		{
+			$log_ary = [
+				'user_id'	=> $user['id'],
+				'letscode'	=> $user['letscode'],
+				'username'	=> $user['name'],
+			];
+
 			$sha512 = hash('sha512', $password);
 			$sha1 = sha1($password);
 			$md5 = md5($password);
@@ -155,7 +161,7 @@ if ($submit)
 			else if ($user['password'] != $sha512)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
-				$app['monolog']->info('Password encryption updated to sha512');
+				$app['monolog']->info('Password encryption updated to sha512', $log_ary);
 			}
 		}
 	}
@@ -180,11 +186,11 @@ if ($submit)
 		$_SESSION['logins'][$schema] = $user['id'];
 
 		$s_id = $user['id'];
-		$s_schema = $schema;		
+		$s_schema = $schema;
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
-		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser);
+		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser, $log_ary);
 
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);

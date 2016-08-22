@@ -72,6 +72,7 @@ $app->extend('monolog', function($monolog, $app) {
 		{
 			$record['extra']['letscode'] = $app['eland.session_user']['letscode'];
 			$record['extra']['user_id'] = $app['eland.session_user']['id'];
+			$record['extra']['username'] = $app['eland.session_user']['username'];
 		}
 
 		if (isset($app['eland.session_schema']))
@@ -314,18 +315,6 @@ $logins = $_SESSION['logins'] ?? [];
 
 $s_master = $s_elas_guest = false;
 
-/*
-if (count($logins))
-{
-	$app['monolog']->debug('logins: ' . http_build_query($logins));
-}
-else
-{
-	$app['monolog']->debug('no logins');
-}
-
-$app['monolog']->debug('s_id: ' . $s_id);
-*/
 /**
  *
  */
