@@ -15,6 +15,8 @@ $asc = $_GET['asc'] ?? 0;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
 
+$app['eland.log_db']->update();
+
 $params = [
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
@@ -37,7 +39,7 @@ if ($letscode)
 
 if ($type)
 {
-	$where_sql[] = 'type = ?';
+	$where_sql[] = 'type ilike ?';
 	$params_sql[] = strtolower($type);
 	$params['type'] = $type;
 }

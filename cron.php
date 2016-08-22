@@ -27,57 +27,7 @@ echo '*** Cron eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 
-for ($i = 0; $i < 100; $i++)
-{
-	$log_json = $app['redis']->lpop('monolog_logs');
-
-	if (!isset($log_json))
-	{
-		echo $r . '-- end logs -- ' . $r;
-		break;
-	}
-
-	$log = json_decode($log_json, true);
-
-	var_dump($log_json);
-
-	$sch = $log['context']['schema'] ?? $log['extra']['schema'];
-
-	if (!isset($sch))
-	{
-		var_dump('-- log: schema not set, continue -- ' . $log);
-		continue;
-	}
-
-	$insert = [
-		'schema'		=> $log['context']['schema'] ?? $log['extra']['schema'],
-		'user_id'		=> $log['extra']['user_id'] ?? 0,
-		'user_schema'	=> $log['extra']['user_schema'],
-		'letscode'		=> $log['extra']['letscode'],
-		'username'		=> $log['extra']['username'] ,
-		'ip'			=> $log['extra']['ip'],
-		'ts'			=> $log['datetime']['date'],
-		'type'			=> $log['level_name'],
-		'event'			=> $log['message'],
-		'letscode'		=> $log['extra'],
-		'data'			=> $log_json,
-	];
-
-/*
-schema varchar(60) not null,
-user_id int not null default 0,
-user_schema varchar(60),
-letscode varchar(20),
-username varchar(255),
-ip varchar(60),
-ts timestamp without time zone default (now() at time zone 'utc'),
-type varchar(60),
-event varchar(255),
-data jsonb);
-*/
-
-	$app['db']->insert('eland_extra.logs', $insert);
-}
+$app['eland.log_db']->update();
 
 /*
  *  select in which schema to perform updates

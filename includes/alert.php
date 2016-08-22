@@ -20,11 +20,11 @@ class alert
 		{
 			$log = implode(' -- & ', $msg);
 			$msg = implode('<br>', $msg);
-			$this->monolog->notice($log, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . '] ' . $log, ['alert_type' => $type]);
 		}
 		else
 		{
-			$this->monolog->notice($msg, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . '] ' . $msg, ['alert_type' => $type]);
 		}
 
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
