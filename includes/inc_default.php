@@ -526,7 +526,7 @@ $app['eland.task.mail'] = function ($app){
 };
 
 $app['eland.task.autominlimit'] = function ($app){
-	return new eland\task\autominlimit($app['eland.queue'], $app['monolog']);
+	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'], $app['eland.xdb'], $app['db']);
 };
 
 //

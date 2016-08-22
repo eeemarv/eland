@@ -3,25 +3,30 @@
 namespace eland\task;
 
 use eland\queue;
+use eland\xdb;
 use Monolog\Logger;
+use Doctrine\DBAL\Connection as db;
 
 class autominlimit
 {
 	protected $queue;
 	protected $monolog;
+	protected $xdb;
 
-	public function __construct(queue $queue, Logger $monolog)
+	public function __construct(queue $queue, Logger $monolog, xdb $xdb, db $db)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
+		$this->xdb = $xdb;
+		$this->db = $db;
 	}
 
 	public function process(array $data)
 	{
-		$to_id = $q['to_id'];
-		$from_id = $q['from_id'];
-		$amount = $q['amount'];
-		$sch = $q['schema'];
+		$to_id = $data['to_id'];
+		$from_id = $data['from_id'];
+		$amount = $data['amount'];
+		$sch = $data['schema'];
 
 		if (!$to_id || !$from_id || !$amount || !$sch)
 		{
@@ -45,7 +50,7 @@ class autominlimit
 			return;
 		}
 
-		$row = $app['eland.xdb']->get('setting', 'autominlimit', $sch);
+		$row = $this->xdb->get('setting', 'autominlimit', $sch);
 
 		$a = $row['data'];
 
@@ -92,12 +97,11 @@ class autominlimit
 		$new_minlimit = $user['minlimit'] - $extract;
 		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
 
-		$app['eland.xdb']->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
+		$this->xdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
 
-		$app['db']->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
+		$this->db->update($sch . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
+
 		readuser($to_id, true, $sch);
-
-//				echo 'new minlimit ' . $new_minlimit . ' for user ' . link_user($user, $sch, false) .  $r;
 
 		$this->monolog->info('(cron) autominlimit: new minlimit : ' . $new_minlimit .
 			' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', ['schema' => $sch]);
