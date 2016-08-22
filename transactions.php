@@ -265,7 +265,7 @@ if ($add)
 
 			cancel();
 		}
-		else if ($app['eland.groups']->get_schema($group_domain))
+		else if (!$app['eland.groups']->get_schema($group_domain))
 		{
 			// The interlets group uses eLAS or is on another server
 
