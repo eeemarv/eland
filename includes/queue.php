@@ -116,7 +116,7 @@ class queue
 
 			$st->execute();
 
-			while ($row = $rs->fetch())
+			while ($row = $st->fetch())
 			{
 				$ret[] = [
 					'data'	=> json_decode($row['data'], true),
