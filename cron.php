@@ -30,43 +30,44 @@ echo 'php version: ' . phpversion() . $r;
 $app['eland.log_db']->update();
 
 /** take cron task from the queue and run **/
-/*
-$queue = $app['eland.queue']->get_all(5);
 
-foreach ($queue as $q_msg)
+if ($app['redis']->get('process_queue_sleep') && $app['eland.queue']->count())
 {
-	$topic = $q_msg['topic'];
-	$data = $q_msg['data'];
+	$queue = $app['eland.queue']->get('', 5);
 
-	if (!isset($data['schema']))
+	foreach ($queue as $q_msg)
 	{
-		$app['monolog']->error('no schema set for queue msg id : ' . $q_msg['id'] . ' data: ' .
-			json_encode($data) . ' topic: ' . $topic);
+		$topic = $q_msg['topic'];
+		$data = $q_msg['data'];
 
-		$app['eland.queue']->del($q_msg['id']);
+		if (!isset($data['schema']))
+		{
+			$app['monolog']->error('no schema set for queue msg id : ' . $q_msg['id'] . ' data: ' .
+				json_encode($data) . ' topic: ' . $topic);
 
-		continue;
+			continue;
+		}
+
+		switch ($q_msg['topic'])
+		{
+			case 'mail':
+				
+				break;
+			case 'autominlimit':
+
+				break;
+			default:
+				$app['monolog']->error('Task not recognised: ' . json_encode($q_msg));
+				break;
+		}
 	}
 
-	switch ($q_msg['topic'])
-	{
-		case 'mail':
-			
-			break;
-		case 'autominlimit':
-
-			break;
-		default:
-			$app['monolog']->error('Task not recognised: ' . json_encode($q_msg));
-			break;
-	}
-}
-
-if (count($queue))
-{
+	$app['redis']->set('process_queue_sleep', '1');
+	$app['redis']->expire('process_queue_sleep', 50);
 	echo '-- Cron end. --';
-	exit;
+	exit;	
 }
+
 
 
 */
@@ -266,10 +267,12 @@ if (count($autominlimit_queue))
 
 	foreach ($autominlimit_queue as $q)
 	{
-		$to_id = $q['to_id'];
-		$from_id = $q['from_id'];
-		$amount = $q['amount'];
-		$sch = $q['schema'];
+		$data = $q['data'];
+
+		$to_id = $data['to_id'];
+		$from_id = $data['from_id'];
+		$amount = $data['amount'];
+		$sch = $data['schema'];
 
 		if (!$to_id || !$from_id || !$amount || !$sch)
 		{
@@ -433,8 +436,10 @@ function geo_q_process()
 
 	$rows = $app['eland.queue']->get('geo', 4);
 
-	foreach ($rows as $data)
+	foreach ($rows as $g)
 	{
+		$data = $g['data'];
+
 		$adr = $data['adr'];
 		$uid = $data['uid'];
 		$sch = $data['sch'];

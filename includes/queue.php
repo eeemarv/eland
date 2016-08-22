@@ -89,7 +89,7 @@ class queue
 			return [];
 		}
 
-		$sql_where = $sql_params = $del_ids = $data = [];
+		$sql_where = $sql_params = $del_ids = $ret = [];
 
 		if ($topic)
 		{
@@ -118,7 +118,13 @@ class queue
 
 			while ($row = $rs->fetch())
 			{
-				$data[] = json_decode($row['data'], true);
+				$ret[] = [
+					'data'	=> json_decode($row['data'], true),
+					'id'	=> $row['id'],
+					'topic'	=> $row['topic'],
+					'prioritry'	=> $row['priority'],
+				];
+
 				$del_ids[] = $row['id'];
 			}
 
@@ -136,7 +142,7 @@ class queue
 			exit;
 		}
 
-		return $data;
+		return $ret;
 	}
 
 	/**

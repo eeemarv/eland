@@ -11,8 +11,10 @@ function sendmail()
 
 	$mail_ary = $app['eland.queue']->get('mail', 20);
 
-	foreach ($mail_ary as $mail)
+	foreach ($mail_ary as $queue_record)
 	{
+		$mail = $queue_record['data'];
+
 		$schema = $mail['schema'];
 		unset($mail['schema']);
 
