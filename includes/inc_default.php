@@ -67,9 +67,9 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if (isset($app['eland.session_user']))
 		{
-			$record['extra']['letscode'] = $app['eland.session_user']['letscode'];
-			$record['extra']['user_id'] = $app['eland.session_user']['id'];
-			$record['extra']['username'] = $app['eland.session_user']['username'];
+			$record['extra']['letscode'] = $app['eland.session_user']['letscode'] ?? '';
+			$record['extra']['user_id'] = $app['eland.session_user']['id'] ?? '';
+			$record['extra']['username'] = $app['eland.session_user']['username'] ?? '';
 		}
 
 		if (isset($app['eland.session_schema']))
