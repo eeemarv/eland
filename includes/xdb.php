@@ -54,6 +54,7 @@ class xdb
 	private $user_id = '';
 	private $db;
 	private $monolog;
+	private $this_group;
 
 	public function __construct(db $db, Logger $monolog, this_group $this_group)
 	{
@@ -90,7 +91,7 @@ class xdb
 
 	public function set($agg_type = '', $eland_id = '', $data = [], $agg_schema = false, $event_time = false)
 	{
-		$agg_schema = ($agg_schema) ?: $app->this_group->get_schema();
+		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
 		if (!strlen($agg_type))
 		{
