@@ -277,8 +277,6 @@ $app['eland.interlets_groups'] = function ($app) use ($schemas, $hosts) {
 	return new eland\interlets_groups($app['db'], $app['redis'], $schemas, $hosts, $app['eland.protocol']);
 };
 
-
-
 /**
  * start session
  */
@@ -584,12 +582,16 @@ $app['eland.form_token'] = function ($app){
 
 // tasks
 
-$app['eland.task.mail'] = function($app){
+$app['eland.task.mail'] = function ($app){
 	return new eland\task\mail($app['eland.queue'], $app['monolog']);
 };
 
 $app['eland.task.autominlimit'] = function ($app){
 	return new eland\task\autominlimit($app['eland.queue'], $app['monolog']);
+};
+
+$app['eland.interlets_fetch'] = function ($app){
+	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog']);
 };
 
 /* some more vars */

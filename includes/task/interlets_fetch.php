@@ -2,35 +2,26 @@
 
 namespace eland\task;
 
-use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
-use eland\queue;
+use Predis\Client as Redis;
 use eland\typeahead;
-
+use Monolog\Logger;
 
 class interlets_fetch
 {
-	protected $db;
 	protected $redis;
-	protected $queue;
 	protected $typeahead;
+	protected $monolog;
 
-	public function __construct(db $db, redis $redis, typeahead $typeahead)
+	public function __construct(Redis $redis, typeahead $typeahead, Logger $monolog)
 	{
-		$this->db = $db;
 		$this->redis = $redis;
 		$this->typeahead = $typeahead;
-
-
-
-
+		$this->monolog = $monolog;
 	}
-
-
 
 	function fetch_interlets_msgs($client, $group)
 	{
-		global $schema, $app, $r;
+		global $schema, $r;
 
 		$msgs = [];
 
@@ -75,7 +66,7 @@ class interlets_fetch
 	 */
 	function fetch_interlets_typeahead_data($client, $group)
 	{
-		global $schema, $app, $r;
+		global $schema, $r;
 
 		$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
@@ -94,8 +85,8 @@ class interlets_fetch
 				echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
 
 				$redis_key = $schema . '_connection_failed_' . $group['domain'];
-				$app['redis']->set($redis_key, '1');
-				$app['redis']->expire($redis_key, 21600);  // 6 hours
+				$this->redis->set($redis_key, '1');
+				$this->redis->expire($redis_key, 21600);  // 6 hours
 
 				return;
 			}
@@ -154,26 +145,26 @@ class interlets_fetch
 		$redis_data_key = $group['url'] . '_typeahead_data';
 		$data_string = json_encode($users);
 
-		if ($data_string != $app['redis']->get($redis_data_key))
+		if ($data_string != $this->redis->get($redis_data_key))
 		{
-			$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['url'], crc32($data_string));
+			$this->typeahead->invalidate_thumbprint('users_active', $group['url'], crc32($data_string));
 
-			$app['redis']->set($redis_data_key, $data_string);
+			$this->redis->set($redis_data_key, $data_string);
 		}
 
-		$app['redis']->expire($redis_data_key, 86400);		// 1 day
+		$this->redis->expire($redis_data_key, 86400);		// 1 day
 
 		$redis_refresh_key = $group['domain'] . '_typeahead_updated';
-		$app['redis']->set($redis_refresh_key, '1');
-		$app['redis']->expire($redis_refresh_key, 43200);		// 12 hours
+		$this->redis->set($redis_refresh_key, '1');
+		$this->redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 		$user_count = count($users);
 
 		$redis_user_count_key = $group['url'] . '_active_user_count';
-		$app['redis']->set($redis_user_count_key, $user_count);
-		$app['redis']->expire($redis_user_count_key, 86400); // 1 day
+		$this->redis->set($redis_user_count_key, $user_count);
+		$this->redis->expire($redis_user_count_key, 86400); // 1 day
 
-		$app['monolog']->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain']);
+		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $schema]);
 
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;
