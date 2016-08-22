@@ -19,13 +19,13 @@ class mail
 		$this->monolog = $monolog;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
-		$transport = Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
+		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
 			->setUsername(getenv('SMTP_USERNAME'))
 			->setPassword(getenv('SMTP_PASSWORD'));
 
-		$this->mailer = Swift_Mailer::newInstance($transport);
+		$this->mailer = \Swift_Mailer::newInstance($transport);
 
-		$this->mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, 30));
+		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 
 		$this->converter = new HtmlConverter();
 		$this->converter->getConfig()->setOption('strip_tags', true);
@@ -203,7 +203,7 @@ class mail
 
 		$data['subject'] = '[' . readconfigfromdb('systemtag', $data['schema']) . '] ' . $data['subject'];
 
-		$error = $this->queue->set('mail', $data, ($priority) ? 10 : 0);
+		$error = $this->queue->set('mail', $data, $priority);
 
 		if (!$error)
 		{

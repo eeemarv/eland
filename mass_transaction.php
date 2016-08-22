@@ -778,7 +778,7 @@ function mail_mass_transaction($mail_ary)
 	$text .= 'Totaal: ' . $total . ' ' . $currency . $r . $r;
 	$text .= 'Voor: ' . $mail_ary['description'] . $r . $r;
 
-	mail_q(['to' => ['admin', $s_id, $one_user_id], 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.mail']->queue(['to' => ['admin', $s_id, $one_user_id], 'subject' => $subject, 'text' => $text]);
 
 	return true;
 }

@@ -121,7 +121,7 @@ if ($add && $submit && !count($errors))
 			$text .= $news['headline'];
 			$text .= "' in. Dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
 			$text .= 'link: ' .  $url . "\n";
-			mail_q(['to' => 'newsadmin', 'subject' => $subject, 'text' => $text]);
+			$app['eland.task.mail']->queue(['to' => 'newsadmin', 'subject' => $subject, 'text' => $text]);
 			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
 
 			$app['eland.alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');

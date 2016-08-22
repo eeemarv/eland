@@ -30,7 +30,7 @@ if ($token)
 				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
 				$text .= 'Inloggen: ' . $url;
 
-				mail_q(['to' => $user_id, 'subject' => $subj, 'text' => $text], true);
+				$app['eland.task.mail']->queue(['to' => $user_id, 'subject' => $subj, 'text' => $text], true);
 
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
@@ -116,7 +116,7 @@ if (isset($_POST['zend']))
 				$text .= 'Gelieve deze mail te negeren indien je niet zelf deze paswoord ';
 				$text .= 'reset aangevraagd hebt op de website, ';
 
-				mail_q(['to' => $email, 'text' => $text, 'subject' => $subject], true);
+				$app['eland.task.mail']->queue(['to' => $email, 'text' => $text, 'subject' => $subject], true);
 
 				$app['eland.alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 

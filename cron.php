@@ -547,7 +547,7 @@ function admin_exp_msg()
 		$text .= $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . " \n\n";
 	}
 
-	mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 	return true;
 }
@@ -601,7 +601,7 @@ function user_exp_msgs()
 			return;
 		}
 
-		mail_q(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
 	}
 
 	$app['db']->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);

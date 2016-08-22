@@ -75,6 +75,8 @@ function insert_transaction($transaction)
  */
 function mail_mail_interlets_transaction($transaction)
 {
+	global $app;
+
 	$r = "\r\n";
 	$t = "\t";
 
@@ -106,12 +108,12 @@ function mail_mail_interlets_transaction($transaction)
 	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
 	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
 
-	mail_q(['to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
+	$app['eland.task.mail']->queue(['to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
 
 	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
 	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
 
-	mail_q(['to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);
+	$app['eland.task.mail']->queue(['to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);
 }
 
 /*
@@ -166,12 +168,12 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		mail_q(['to' => $userfrom['id'], 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => $userfrom['id'], 'subject' => $subject, 'text' => $text]);
 	}
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		mail_q([
+		$app['eland.task.mail']->queue([
 			'to' => $t_schema . $userto['id'],
 			'subject' => $subject,
 			'text' => $text,

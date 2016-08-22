@@ -90,6 +90,8 @@ class multi_mail
 
 	public function mail_q($mail_ary = [])
 	{
+		global $app;
+
 		$html = $text = '';
 
 		foreach ($this->out as $out)
@@ -131,7 +133,7 @@ class multi_mail
 			$out['html'] = $html;
 		}
 
-		mail_q(array_merge($mail_ary, $out));
+		$app['eland.task.mail']->queue(array_merge($mail_ary, $out));
 
 		$this->vars = [];
 

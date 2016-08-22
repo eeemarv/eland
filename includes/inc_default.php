@@ -590,6 +590,8 @@ $app['eland.task.autominlimit'] = function ($app){
 	return new eland\task\autominlimit($app['eland.queue'], $app['monolog']);
 };
 
+//
+
 $app['eland.interlets_fetch'] = function ($app){
 	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog']);
 };

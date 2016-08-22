@@ -419,7 +419,7 @@ if ($add)
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 				$text .= ' group:' . $group['groupname'];
 
-				mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+				$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 				$app['eland.alert']->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
 				cancel();

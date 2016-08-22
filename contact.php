@@ -25,7 +25,7 @@ if ($token)
 
 		$html = $data['html'];
 
-		mail_q([
+		$app['eland.task.mail']->queue([
 			'subject'	=> 'kopie van je bericht naar ' . readconfigfromdb('systemname'),
 			'html'		=> '<p>Dit bericht heb je verstuurd naar ' . readconfigfromdb('systemname') . '</p><hr>' . $html,
 			'to'		=> $data['mail'],
@@ -40,7 +40,7 @@ if ($token)
 		$html .= '<li>browser: ' . $data['browser'] . '</li>';
 		$html .= '</ul>';
 
-		mail_q([
+		$app['eland.task.mail']->queue([
 			'html'		=> $html,
 			'to'		=> 'support',
 			'subject'	=> 'Bericht van het contactformulier',
@@ -142,7 +142,7 @@ if($post && isset($_POST['zend']))
 
 		$html .= '<p><a href="' . $link . '">Klik hier om je bericht in het contactformulier te bevestigen.</a></p>';
 
-		$return_message =  mail_q([
+		$return_message =  $app['eland.task.mail']->queue([
 			'to' 		=> $mail,
 			'subject' 	=> 'Bevestig je bericht aan ' . readconfigfromdb('systemname'),
 			'html' 		=> $html,

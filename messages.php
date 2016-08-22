@@ -586,12 +586,12 @@ if ($mail && $post && $id)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(['to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text]);
+			$app['eland.task.mail']->queue(['to' => $s_schema . '.' . $s_id, 'subject' => $subject . ' (kopie)', 'text' => $msg . $text]);
 		}
 
 		$text .= "\r\n\r\nInloggen op de website: " . $app['eland.base_url'] . "\r\n\r\n";
 
-		mail_q(['to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => $user['id'], 'reply_to' => $s_schema . '.' . $s_id, 'subject' => $subject, 'text' => $text]);
 
 		$app['eland.alert']->success('Mail verzonden.');
 	}

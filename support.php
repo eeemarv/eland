@@ -88,7 +88,7 @@ if (isset($_POST['zend']))
 
 		$mail_ary['html'] = $html;
 
-		$return_message =  mail_q($mail_ary);
+		$return_message =  $app['eland.task.mail']->queue($mail_ary);
 
 		if (!$return_message)
 		{

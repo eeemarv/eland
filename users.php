@@ -170,7 +170,7 @@ if ($user_mail_submit && $id && $post)
 			$msg .= ' verzonden hebt. ';
 			$msg .= "\r\n\r\n\r\n";
 
-			mail_q(['to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)']);
+			$app['eland.task.mail']->queue(['to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)']);
 		}
 
 		if ($user['status'] == 1 || $user['status'] == 2)
@@ -178,7 +178,7 @@ if ($user_mail_submit && $id && $post)
 			$text .= "\r\n\r\nInloggen op de website: " . $app['eland.base_url'] . "\r\n\r\n";
 		}
 
-		mail_q(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
+		$app['eland.task.mail']->queue(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
 
 		$app['eland.alert']->success('Mail verzonden.');
 	}
@@ -617,7 +617,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			break;
 		}
 
-		mail_q([
+		$app['eland.task.mail']->queue([
 			'to' 		=> $sel_user['id'],
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
@@ -736,7 +736,7 @@ if ($pw)
 						$con .= 'link waar je kan inloggen: ' . $url;
 						$con .= "\n\n";
 						$con .= 'Veel letsgenot!';
-						mail_q(['to' => $pw, 'subject' => $subj, 'text' => $con]);
+						$app['eland.task.mail']->queue(['to' => $pw, 'subject' => $subj, 'text' => $con]);
 
 						$app['eland.alert']->success('Notificatie mail verzonden');
 					}
@@ -3546,7 +3546,7 @@ function sendadminmail($user)
 
 	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 
-	mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 }
 
 function sendactivationmail($password, $user)
@@ -3587,5 +3587,5 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 	$text .= "Veel plezier bij het letsen! \n";
 
-	mail_q(['to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support']);
+	$app['eland.task.mail']->queue(['to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support']);
 }

@@ -140,7 +140,7 @@ if ($token)
 		$text .= 'Email: ' . $data['email'] . "\n\n";
 		$text .= 'Link: ' . $app['eland.base_url'] . '/users.php?id=' . $user_id;
 
-		mail_q(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
 
 		$registration_success_mail = readconfigfromdb('registration_success_mail');
 
@@ -169,7 +169,7 @@ if ($token)
 				$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
 			}
 
-			mail_q(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin']);
+			$app['eland.task.mail']->queue(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin']);
 		}
 
 		$app['eland.alert']->success('Inschrijving voltooid.');
@@ -269,7 +269,7 @@ if ($submit)
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$text .= "Deze link blijft 1 dag geldig.\n\n";
 
-		mail_q(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
 
 		$app['eland.alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
