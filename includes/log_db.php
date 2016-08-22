@@ -45,7 +45,7 @@ class log_db
 				'user_id'		=> $log['context']['user_id'] ?? $log['extra']['user_id'] ?? 0,
 				'user_schema'	=> $log['extra']['user_schema'],
 				'letscode'		=> $log['context']['letscode'] ?? $log['extra']['letscode'],
-				'username'		=> $log['context']['username'] ?? $log['extra']['username'],
+				'username'		=> $log['context']['username'] ?? $log['extra']['username'] ?? '',
 				'ip'			=> $log['extra']['ip'],
 				'ts'			=> $log['datetime']['date'],
 				'type'			=> $log['level_name'],
