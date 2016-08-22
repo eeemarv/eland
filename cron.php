@@ -87,7 +87,7 @@ foreach ($app['eland.groups']->get_schemas() as $ho => $sch)
 
 unset($sch, $ho, $selected);
 
-if ($app['eland.groups']->get_count())
+if ($app['eland.groups']->count())
 {
 	asort($schema_lastrun_ary);
 
@@ -906,7 +906,7 @@ if (!$app['redis']->get('cron_cleanup_image_files'))
 		} 
 
 
-		if (!$delete && !isset($app['eland.groups']->get_host($sch)))
+		if (!$delete && $app['eland.groups']->get_host($sch))
 		{
 			error_log('-> unknown schema');
 			continue;

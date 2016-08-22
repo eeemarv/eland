@@ -63,10 +63,7 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
-		if (isset($app['eland.schema']))
-		{
-			$record['extra']['schema'] = $app['eland.schema'];
-		}
+		$record['extra']['schema'] = $app['eland.this_group']->get_schema();
 
 		if (isset($app['eland.session_user']))
 		{
@@ -540,18 +537,9 @@ $app['eland.interlets_fetch'] = function ($app){
 
 /* some more vars */
 
-$app['eland.schema'] = $app['eland.this_group']->get_schema();
 $app['eland.session_user'] = $session_user ?? [];
 $app['eland.session_schema'] = $s_schema;
 
-/*
-$app['monolog']->debug('debug.');
-$app['monolog']->notice('notice.');
-$app['monolog']->info('info.');
-$app['monolog']->error('error.');
-$app['monolog']->warning('warning.');
-$app['monolog']->critical('critical.');
-*/
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view (global for all groups) */
