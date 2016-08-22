@@ -602,7 +602,12 @@ if ($add)
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], ['schema' => $remote_schema]);
 
-			autominlimit_queue($transaction['id_from'], $transaction['id_to'], $remote_amount, $remote_schema);
+			$app['eland.task.autominlimit']->queue([
+				'from_id'	=> $transaction['id_from'],
+				'to_id'		=> $transaction['id_to'],
+				'amount'	=> $remote_amount,
+				'schema'	=> $remote_schema,
+			]);
 
 			$app['eland.alert']->success('Interlets transactie uitgevoerd.');
 			cancel();

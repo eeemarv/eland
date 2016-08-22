@@ -34,7 +34,7 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-    global $app, $s_id, $s_master;
+    global $app, $s_id, $s_master, $schema;
 
 	$transaction['creator'] = ($s_master) ? 0 : (($s_id) ? $s_id : 0);
     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
@@ -60,7 +60,14 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
-	autominlimit_queue($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
+	error_log('jmqsfjmqskdjmqsfqsmf -- '  . http_build_query($transaction));
+
+	$app['eland.task.autominlimit']->queue([
+		'from_id'	=> $transaction['id_from'],
+		'to_id'		=> $transaction['id_to'],
+		'amount'	=> $transaction['amount'],
+		'schema'	=> $schema,
+	]);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
@@ -135,8 +142,8 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$interlets = ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? 'interlets ' : '';
 
-	$real_from = $transaction['real_from'];
-	$real_to = $transaction['real_to'];
+	$real_from = $transaction['real_from'] ?? '';
+	$real_to = $transaction['real_to'] ?? '';
 
 	$u_from = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
 	$u_to = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];

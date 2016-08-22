@@ -304,7 +304,12 @@ if ($submit)
 
 		foreach($transactions as $t)
 		{
-			autominlimit_queue($t['id_from'], $t['id_to'], $t['amount']);
+			$app['eland.task.autominlimit']->queue([
+				'from_id'	=> $t['id_from'],
+				'to_id'		=> $t['id_to'],
+				'amount'	=> $t['amount'],
+				'schema'	=> $schema,
+			]);
 		}
 
 		if ($to_one)

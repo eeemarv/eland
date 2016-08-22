@@ -1263,24 +1263,6 @@ function get_host($url)
 	return strtolower(parse_url($url, PHP_URL_HOST));
 }
 
-/**
- *
- */
-function autominlimit_queue($from_id, $to_id, $amount, $sch = false)
-{
-	global $schema, $app;
-
-	$sch = ($sch) ?: $schema;
-
-	$data = [
-		'from_id'	=> $from_id,
-		'to_id'		=> $to_id,
-		'amount'	=> $amount,
-		'schema'	=> $sch,
-	];
-
-	$app['eland.queue']->set('autominlimit', $data);
-}
 
 /**
  *
