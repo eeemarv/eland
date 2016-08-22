@@ -992,6 +992,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
  *
  */
 
+/*
 function mail_q($mail = [], $priority = false)
 {
 	global $schema, $app;
@@ -1086,6 +1087,7 @@ function mail_q($mail = [], $priority = false)
 			json_encode($mail['from']) . ' to : ' . json_encode($mail['to']) . $reply, ['schema' => $mail['schema']]);
 	}
 }
+*/
 
 /*
  * param string mail addr | [string.]int [schema.]user id | array
