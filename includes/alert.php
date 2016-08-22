@@ -16,15 +16,17 @@ class alert
 
 	private function add($type, $msg)
 	{
+		$url = $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
+
 		if (is_array($msg))
 		{
 			$log = implode(' -- & ', $msg);
 			$msg = implode('<br>', $msg);
-			$this->monolog->debug('[alert ' . $type . '] ' . $log, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $log, ['alert_type' => $type]);
 		}
 		else
 		{
-			$this->monolog->debug('[alert ' . $type . '] ' . $msg, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $msg, ['alert_type' => $type]);
 		}
 
 		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
