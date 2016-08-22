@@ -35,7 +35,7 @@ class queue
 	 *
 	 */
 
-	public function set($topic, $data, $priority = 0)
+	public function set(string $topic, array $data, int $priority = 0)
 	{
 		if (!strlen($topic))
 		{
@@ -82,37 +82,44 @@ class queue
 	 *
 	 */
 
-	public function get($topic, $count = 1)
+	public function get(string $topic = '', $count = 1)
 	{
-		if (!strlen($topic))
-		{
-			return [];
-		}
-
 		if (!$count)
 		{
 			return [];
 		}
 
+		$sql_where = $sql_params = $del_ids = $data = [];
+
+		if ($topic)
+		{
+			$sql_where[] = 'topic = ?';
+			$sql_params[] = trim($topic);
+		}
+	
+		$sql_where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
+
 		try
 		{
 			$this->db->beginTransaction();
 
-			$del_ids = $data = [];
-
-			$st = $this->db->prepare('select data, id, priority
+			$st = $this->db->prepare('select topic, data, id, priority
 				from eland_extra.queue
-				where topic = ?
+				' . $sql_where . '
 				order by priority desc, id asc
 				limit ' . $count);
 
-			$st->bindValue(1, $topic);
+			foreach ($sql_params as $k => $p)
+			{
+				$st->bindValue($k + 1, $p);
+			}
 
 			$st->execute();
 
-			while ($row = $st->fetch())
+			while ($row = $rs->fetch())
 			{
 				$data[] = json_decode($row['data'], true);
+				$del_ids[] = $row['id'];
 			}
 
 			$this->db->executeQuery('delete from eland_extra.queue where id in (?)',
@@ -136,7 +143,7 @@ class queue
 	 *
 	 */
 
-	public function count($topic = false)
+	public function count(string $topic = '')
 	{
 		$topic = trim($topic);
 
