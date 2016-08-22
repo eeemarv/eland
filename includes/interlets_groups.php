@@ -95,7 +95,7 @@ class interlets_groups
 
 		while($row = $st->fetch())
 		{
-			$h = get_host($row['url']);
+			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
 			if (isset($this->schemas[$h]))
 			{
@@ -182,7 +182,7 @@ class interlets_groups
 
 		while($row = $st->fetch())
 		{
-			$h = get_host($row['url']);
+			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
 			if (!(isset($this->schemas[$h])))
 			{

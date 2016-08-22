@@ -1643,7 +1643,7 @@ if ($add || $edit)
 
 					if ($group['url'] && ($remote_schema = $schemas[$group['url']]))
 					{
-						$group['domain'] = get_host($group);
+						$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
 						if (isset($schemas[$group['domain']]))
 						{

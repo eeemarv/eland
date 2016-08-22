@@ -342,7 +342,7 @@ if ($id)
 {
 	if (isset($group['url']))
 	{
-		$group['host'] = get_host($group);
+		$group['host'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 	}
 
 	$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
@@ -415,7 +415,7 @@ $letscodes = [];
 
 foreach ($groups as $key => $g)
 {
-	$h = get_host($g);
+	$h = strtolower(parse_url($g['url'], PHP_URL_HOST));
 
 	$letscodes[] = $g['localletscode'];
 
@@ -617,7 +617,7 @@ function render_schemas_groups()
 	foreach ($groups as $group)
 	{
 		$loc_letscode_ary[] = $group['localletscode'];
-		$h = get_host($group);
+		$h = strtolower(parse_url($group['url'], PHP_URL_HOST));
 		$loc_group_ary[$h] = $group;
 	}
 

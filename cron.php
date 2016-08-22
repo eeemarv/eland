@@ -137,7 +137,7 @@ $groups = $app['db']->fetchAll('select *
 
 foreach ($groups as $group)
 {
-	$group['domain'] = get_host($group);
+	$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
 	if (isset($schemas[$group['domain']]))
 	{

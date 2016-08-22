@@ -1250,21 +1250,6 @@ function render_select_options($option_ary, $selected, $print = true)
 }
 
 /**
-*
- */
-
-function get_host($url)
-{
-	if (is_array($url))
-	{
-		$url = $url['url'];
-	}
-
-	return strtolower(parse_url($url, PHP_URL_HOST));
-}
-
-
-/**
  *
  */
 function etag_buffer($content)

@@ -25,7 +25,7 @@ $groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, u
 
 foreach ($groups as $g)
 {
-	$g['domain'] = get_host($g);
+	$g['domain'] = strtolower(parse_url($g['url'], PHP_URL_HOST));
 	$_groups[$g['c']] = $g;
 }
 

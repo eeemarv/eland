@@ -53,7 +53,7 @@ if ($group_id == 'self')
 
 $group = $app['db']->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
 
-$group['domain'] = get_host($group);
+$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
 if (!$group || $status != 'active')
 {

@@ -209,7 +209,7 @@ if ($add)
 
 		if (isset($group['url']))
 		{
-			$group_domain = get_host($group);
+			$group_domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 		}
 		else
 		{
