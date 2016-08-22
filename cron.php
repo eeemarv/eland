@@ -19,7 +19,6 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/includes/inc_default.php';
 
 require_once __DIR__ . '/includes/inc_saldo_mail.php';
-require_once __DIR__ . '/includes/inc_mail.php';
 
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;
@@ -434,14 +433,6 @@ function geo_q_process()
 
 	return true;
 }
-
-/**
- * Send emails
- */
-
-//run_cronjob('sendmail', 50);
-
-
 
 /**
  * Periodic overview mail
