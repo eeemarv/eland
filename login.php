@@ -30,7 +30,7 @@ if($token)
 
 		$param = 'welcome=1&r=guest&u=elas';
 
-		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded.');
+		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: {referrer}');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
