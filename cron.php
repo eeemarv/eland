@@ -28,7 +28,7 @@ echo 'php version: ' . phpversion() . $r;
 
 $app['eland.log_db']->update();
 
-/** take cron task from the queue and run **/
+/** take cron task from the queue and process **/
 
 /*
 if ($app['redis']->get('process_queue_sleep') && $app['eland.queue']->count())
@@ -115,7 +115,7 @@ else
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo "*** Cron system running [" . $app['eland.this_group']->get_schema() . ' ' . readconfigfromdb('systemtag') ."] ***" . $r;
+echo '*** Cron system running [' . $app['eland.this_group']->get_schema() '] ***' . $r;
 
 $app['eland.base_url'] = $app['eland.protocol'] . $app['eland.this_group']->get_host();
 

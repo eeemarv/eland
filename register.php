@@ -169,7 +169,7 @@ if ($token)
 				$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
 			}
 
-			$app['eland.task.mail']->queue(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin']);
+			$app['eland.task.mail']->queue(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin'], 1000);
 		}
 
 		$app['eland.alert']->success('Inschrijving voltooid.');
@@ -269,7 +269,7 @@ if ($submit)
 		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
 		$text .= "Deze link blijft 1 dag geldig.\n\n";
 
-		$app['eland.task.mail']->queue(['to' => $reg['email'], 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue(['to' => $reg['email'], 'subject' => $subject, 'text' => $text], 1000);
 
 		$app['eland.alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
