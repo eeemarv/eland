@@ -115,7 +115,7 @@ else
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
-echo '*** Cron system running [' . $app['eland.this_group']->get_schema() '] ***' . $r;
+echo '*** Cron system running [' . $app['eland.this_group']->get_schema() . '] ***' . $r;
 
 $app['eland.base_url'] = $app['eland.protocol'] . $app['eland.this_group']->get_host();
 
@@ -295,144 +295,63 @@ else
 	echo '-- mail queue is empty --' . $r;
 }
 
-/**
- * Geocoding queue
- */ 
 
-$log_ary = [];
+$geo_queue = $app['eland.queue']->get('geocode', 6);
 
-$st = $app['db']->prepare('select c.value, c.id_user
-	from contact c, type_contact tc, users u
-	where c.id_type_contact = tc.id
-		and tc.abbrev = \'adr\'
-		and c.id_user = u.id
-		and u.status in (1, 2)');
-
-$st->execute();
-
-while ($row = $st->fetch())
+if (count($geo_queue))
 {
-	$adr = $row['value'];
+	echo '-- processing geo queue -- ' . $r;
 
-	$key = 'geo_' . $adr;
-
-	if ($app['redis']->exists($key))
+	foreach ($geo_queue as $q)
 	{
-		continue;
+		$app['eland.task.geocode']->process($q['data']);
 	}
 
-	$data = [
-		'adr'	=> $adr,
-		'uid'	=> $row['id_user'],
-		'sch'	=> $app['eland.this_group']->get_schema(),
-	];
-
-	$app['redis']->set($key, 'q');
-	$app['redis']->expire($key, 2592000);
-
-	$app['eland.queue']->set('geo', $data);
-
-	//$app['redis']->lpush('geo_q', json_encode($data));
-
-	$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $adr;
+	echo '-- end geo queue -- ' . $r;
+}
+else
+{
+	echo '-- geo queue is empty -- ' . $r;
 }
 
-if (count($log_ary))
+
+run_cronjob('geo_queue', 7200);
+
+function geo_queue()
 {
-	$app['monolog']->info('Adresses queued for geocoding: ' . implode(', ', $log_ary));
-}
+	global $app;
 
-// end queue addresses to geocode queue
+	$log_ary = [];
 
-run_cronjob('geo_q_process', 600);
+	$st = $app['db']->prepare('select c.value, c.id_user
+		from contact c, type_contact tc, users u
+		where c.id_type_contact = tc.id
+			and tc.abbrev = \'adr\'
+			and c.id_user = u.id
+			and u.status in (1, 2)');
 
-function geo_q_process()
-{
-	global $app, $r;
+	$st->execute();
 
-	if ($app['redis']->exists('geo_sleep'))
+	while (($row = $st->fetch()) && count($log_ary) < 20)
 	{
-		echo 'geocoding sleep';
-		return true;
+		$data = [
+			'adr'		=> trim($row['value']),
+			'uid'		=> $row['id_user'],
+			'schema'	=> $app['eland.this_group']->get_schema(),
+		];
+
+		if ($app['eland.task.geocode']->queue($data) !== false)
+		{
+			$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $data['adr'];
+		}
 	}
 
-	$curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
-	$geocoder = new \Geocoder\ProviderAggregator();
-
-	$geocoder->registerProviders([
-		new \Geocoder\Provider\GoogleMaps(
-			$curl, 'nl', 'be', true
-		),
-	]);
-
-	$geocoder->using('google_maps')
-		->limit(1);
-
-	$rows = $app['eland.queue']->get('geo', 4);
-
-	foreach ($rows as $g)
+	if (count($log_ary))
 	{
-		$data = $g['data'];
-
-		$adr = $data['adr'];
-		$uid = $data['uid'];
-		$sch = $data['sch'];
-
-		$user = readuser($uid, false, $sch);
-
-		$log_user = ' user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
-
-		$key = 'geo_' . $adr;
-
-		$status = $app['redis']->get($key);
-
-		if ($status != 'q' && $status != 'f')
-		{
-			continue;
-		}
-
-		try
-		{
-			$address_collection = $geocoder->geocode($adr);
-
-			if (is_object($address_collection))
-			{
-				$address = $address_collection->first();
-
-				$ary = [
-					'lat'	=> $address->getLatitude(),
-					'lng'	=> $address->getLongitude(),
-				];
-
-				$app['redis']->set($key, json_encode($ary));
-				$app['redis']->expire($key, 31536000); // 1 year
-				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
-				echo  $log . $r;
-				$app['monolog']->info('(cron) ' . $log . $log_user, ['schema' => $sch]);
-				continue;
-			}
-
-			$log_1 = 'Geocode return NULL for: ' . $adr;
-
-		}
-
-		catch (Exception $e)
-		{
-			$log = 'Geocode adr: ' . $adr . ' exception: ' . $e->getMessage();
-		}
-
-		echo  $log . $r;
-		$app['monolog']->info('cron geocode: ' . $log . $log_user, ['schema' => $sch]);
-		$app['redis']->set($key, 'f');
-		$app['redis']->expire($key, 31536000); // 1 year
-
-		$app['redis']->set('geo_sleep', '1');
-		$app['redis']->expire('geo_sleep', 3600);
-		break;
+		$app['monolog']->info('Adresses queued for geocoding: ' . implode(', ', $log_ary));
 	}
-
-	return true;
 }
+
 
 /**
  * Periodic overview mail

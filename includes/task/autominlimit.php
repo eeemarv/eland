@@ -12,6 +12,7 @@ class autominlimit
 	protected $queue;
 	protected $monolog;
 	protected $xdb;
+	protected $db;
 
 	public function __construct(queue $queue, Logger $monolog, xdb $xdb, db $db)
 	{

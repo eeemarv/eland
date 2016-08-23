@@ -529,6 +529,10 @@ $app['eland.task.autominlimit'] = function ($app){
 	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'], $app['eland.xdb'], $app['db']);
 };
 
+$app['eland.task.geocode'] = function ($app){
+	return new eland\task\geocode($app['redis'], $app['db'], $app['eland.xdb'], $app['eland.queue'], $app['monolog']);
+};
+
 //
 
 $app['eland.interlets_fetch'] = function ($app){
