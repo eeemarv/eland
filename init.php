@@ -236,7 +236,27 @@ else if ($step == 4)
 		$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $u['id']);
 	}
 
-	echo "\n";
+	echo $r;
+
+	header('Location: ' . $rootpath . 'init.php?step=5');
+	exit;
+}
+else if ($step == 5)
+{
+	$app['db']->delete('tokens');
+
+	echo '*** empty tokens table (is not used anymore) *** ' . $r;
+
+	header('Location: ' . $rootpath . 'init.php?step=6');
+	exit;
+}
+else if ($step == 6)
+{
+	$app['db']->delete('city_distance');
+
+	echo '*** empty city_distance table (is not used anymore) *** ' . $r;
 
 	echo '** end **';
+
+	exit;
 }

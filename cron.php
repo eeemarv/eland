@@ -508,21 +508,6 @@ function cleanup_news()
 	return true;
 }
 
-/**
- *
- */
-
-run_cronjob('cleanup_tokens', 604800);
-
-// tokens are stored in redis now, not anymore in db (cleaning up for new groups)
-
-function cleanup_tokens()
-{
-	global $app, $now;
-
-	$app['db']->executeQuery('delete from tokens where validity < ?', [$now]) ? true : false;
-	return true;
-}
 
 /**
  * cleanup image files // schema-independent cronjob.
