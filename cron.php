@@ -480,7 +480,7 @@ run_cronjob('saldo_update', 86400);
 
 function saldo_update()
 {
-	global $app, $r;
+	global $app;
 
 	$app['eland.task.saldo_update']->run();
 
@@ -495,15 +495,9 @@ run_cronjob('cleanup_news', 86400);
 
 function cleanup_news()
 {
-    global $app, $now;
+	global $app;
 
-	$news = $app['db']->fetchAll('select id from news where itemdate < ? and sticky = \'f\'', [$now]);
-
-	foreach ($news as $n)
-	{
-		$app['eland.xdb']->del('news_access', $n['id']);
-		$app['db']->delete('news', ['id' => $n['id']]);
-	}
+	$app['eland.task.cleanup_news']->run();
 
 	return true;
 }
