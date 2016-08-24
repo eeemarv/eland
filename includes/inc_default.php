@@ -541,6 +541,10 @@ $app['eland.task.cleanup_messages'] = function ($app){
 	return new eland\task\cleanup_messages($app['db'], $app['monolog']);
 };
 
+$app['eland.task.saldo_update'] = function ($app){
+	return new eland\task\saldo_update($app['db'], $app['monolog']);
+};
+
 //
 
 $app['eland.interlets_fetch'] = function ($app){
