@@ -89,7 +89,7 @@ class xdb
 	 *
 	 */
 
-	public function set($agg_type = '', $eland_id = '', $data = [], $agg_schema = false, $event_time = false)
+	public function set(string $agg_type = '', string $eland_id = '', array $data = [], string $agg_schema = '', string $event_time = '')
 	{
 		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
@@ -188,7 +188,7 @@ class xdb
 	 *
 	 */
 
-	public function del($agg_type = '', $eland_id = '', $agg_schema = false)
+	public function del(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
 	{
 		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
@@ -255,7 +255,7 @@ class xdb
 	 *
 	 */
 
-	public function get($agg_type = '', $eland_id = '', $agg_schema = false)
+	public function get(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
 	{
 		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
 
@@ -294,7 +294,7 @@ class xdb
 	 *
 	 */
 
-	public function get_many($filters = [], $query_extra = false)
+	public function get_many(array $filters = [], string $query_extra = '')
 	{
 		$sql_where = [];
 		$sql_params = [];
