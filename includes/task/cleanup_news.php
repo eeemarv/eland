@@ -10,7 +10,7 @@ class cleanup_news
 	protected $db;
 	protected $xdb;
 
-	public function __construct(db $db, xdb $sdb)
+	public function __construct(db $db, xdb $xdb)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;

@@ -549,6 +549,10 @@ $app['eland.task.saldo_update'] = function ($app){
 	return new eland\task\saldo_update($app['db'], $app['monolog']);
 };
 
+$app['eland.task.user_exp_msgs'] = function ($app){
+	return new eland\task\user_exp_msgs($app['db'], $app['eland.task.mail']);
+};
+
 //
 
 $app['eland.interlets_fetch'] = function ($app){

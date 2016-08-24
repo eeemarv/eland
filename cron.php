@@ -406,53 +406,9 @@ run_cronjob('user_exp_msgs', 86400, readconfigfromdb('msgexpwarnenabled'));
 
 function user_exp_msgs()
 {
-	global $app, $now;
+	global $app;
 
-	//Fetch a list of all non-expired messages that havent sent a notification out yet and mail the user
-	$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
-	$warn_messages  = $app['db']->fetchAll('SELECT m.*
-		FROM messages m
-			WHERE m.exp_user_warn = \'f\'
-				AND m.validity < ?', [$now]);
-
-	foreach ($warn_messages AS $key => $value)
-	{
-		//For each of these, we need to fetch the user's mailaddress and send her/him a mail.
-		echo 'Found new expired message ' . $value['id'];
-		$user = readuser($value['id_user']);
-
-		$extend_url = $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . '&extend=';
-		$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
-		$text = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
-		$text .= "Beste " . $user['name'] . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
-		$text .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
-		$text .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
-		$text .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
-		$text .= "\n\n Verlengen met \n\n";
-		$text .= "één maand: " . $extend_url . "30 \n";
-		$text .= "twee maanden: " . $extend_url . "60 \n";
-		$text .= "zes maanden: " . $extend_url . "180 \n";
-		$text .= "één jaar: " . $extend_url . "365 \n";
-		$text .= "twee jaar: " . $extend_url . "730 \n";
-		$text .= "vijf jaar: " . $extend_url . "1825 \n\n";
-		$text .= "Nieuw vraag of aanbod ingeven: " . $app['eland.base_url'] . "/messages.php?add=1 \n\n";
-		$text .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
-		$text .= readconfigfromdb('support');
-
-		$subject = 'Je ' . $va . ' is vervallen.';
-
-		if (empty($from))
-		{
-			echo "Mail from address is not set in configuration\n";
-			return;
-		}
-
-		$app['eland.task.mail']->queue(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
-	}
-
-	$app['db']->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
-
-	//no double warn in eLAND.
+	$app['eland.task.user_exp_msgs']->run();
 
 	return true;
 }
