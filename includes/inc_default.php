@@ -550,7 +550,11 @@ $app['eland.task.saldo_update'] = function ($app){
 };
 
 $app['eland.task.user_exp_msgs'] = function ($app){
-	return new eland\task\user_exp_msgs($app['db'], $app['eland.task.mail']);
+	return new eland\task\user_exp_msgs($app['db'], $app['eland.task.mail'], $app['eland.base_url']);
+};
+
+$app['eland.task.admin_exp_msg'] = function ($app){
+	return new eland\task\admin_exp_msg($app['db'], $app['eland.task.mail'], $app['eland.base_url']);
 };
 
 //

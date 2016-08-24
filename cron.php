@@ -369,31 +369,7 @@ function admin_exp_msg()
 {
 	global $app, $now, $r;
 
-	$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
-		FROM messages m, users u
-		WHERE u.status <> 0
-			AND m.id_user = u.id
-			AND validity <= ?';
-	$messages = $app['db']->fetchAll($query, [$now]);
-
-	if (empty($to))
-	{
-		echo 'No admin E-mail address specified in config' . $r;
-		return false;
-	}
-
-	$subject = 'Rapport vervallen Vraag en aanbod';
-
-	$text = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
-	$text .= "Gebruiker\t\tVervallen vraag of aanbod\t\tVervallen\n\n";
-	
-	foreach($messages as $key => $value)
-	{
-		$text .= link_user($value['id_user'], false, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
-		$text .= $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . " \n\n";
-	}
-
-	$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.admin_exp_msg']->run();
 
 	return true;
 }

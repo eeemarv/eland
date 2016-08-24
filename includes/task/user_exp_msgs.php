@@ -10,10 +10,11 @@ class user_exp_msgs
 	protected $db;
 	protected $mail;
 
-	public function __construct(db $db, mail $mail)
+	public function __construct(db $db, mail $mail, string $base_url)
 	{
 		$this->db = $db;
 		$this->mail = $mail;
+		$this->base_url = $base_url;
 	}
 
 	function run()
@@ -34,7 +35,7 @@ class user_exp_msgs
 
 			$user = readuser($value['id_user']);
 
-			$extend_url = $app['eland.base_url'] . '/messages.php?id=' . $value['id'] . '&extend=';
+			$extend_url = $this->base_url . '/messages.php?id=' . $value['id'] . '&extend=';
 
 			$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
 
@@ -50,7 +51,7 @@ class user_exp_msgs
 			$text .= "één jaar: " . $extend_url . "365 \n";
 			$text .= "twee jaar: " . $extend_url . "730 \n";
 			$text .= "vijf jaar: " . $extend_url . "1825 \n\n";
-			$text .= "Nieuw vraag of aanbod ingeven: " . $app['eland.base_url'] . "/messages.php?add=1 \n\n";
+			$text .= "Nieuw vraag of aanbod ingeven: " . $this->base_url . "/messages.php?add=1 \n\n";
 			$text .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
 			$text .= readconfigfromdb('support');
 
