@@ -1339,8 +1339,8 @@ if ($id)
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
-	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_to = $app['eland.mailaddr']->get($user['id']);
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['eland.mailaddr']->get($s_schema . '.' . $s_id) : [];
 
 	$balance = $user['saldo'];
 

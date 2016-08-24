@@ -5,31 +5,34 @@ namespace eland;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-class mail_addr
+use eland\this_group;
+
+class mailaddr
 {
 	private $db;
 	private $monolog;
 	private $script_name;
 	private $schema;
 
-	public function __construct(db $db, Logger $monolog, string $schema, string $script_name)
+	public function __construct(db $db, Logger $monolog, this_group $this_group, string $script_name)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
+		$this->this_group = $this_group;
 		$this->script_name = $script_name;
 	}
 
-	/**
+	/*
 	 * param string mail addr | [string.]int [schema.]user id | array
-	 * param string sending_schema (cron)
+	 * param string sending_schema
 	 * return array
 	 */
 
-	public function get($m, $sending_schema)
+	function get($m, string $sending_schema = '')
 	{
-		global $schema, $app, $s_admin;
+		global $s_admin;
 
-		$sch = $sending_schema ?? $schema;
+		$sch = ($sending_schema) ?: $this->this_group->get_schema();
 
 		if (!is_array($m))
 		{
@@ -56,7 +59,7 @@ class mail_addr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$app['monolog']->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
+						$this->monolog->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
 						continue;
 					}
 
@@ -70,7 +73,8 @@ class mail_addr
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					$app['monolog']->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
+					$this->monolog->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
+
 					continue;
 				}
 
@@ -80,7 +84,7 @@ class mail_addr
 			{
 				$status_sql = ($s_admin) ? '' : ' and u.status in (1,2)';
 
-				$st = $app['db']->prepare('select c.value, u.name, u.letscode
+				$st = $this->db->prepare('select c.value, u.name, u.letscode
 					from contact c,
 						type_contact tc,
 						users u
@@ -99,7 +103,7 @@ class mail_addr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$app['monolog']->error('mail error: invalid mail address : ' . $mail . ', user id: ' . $in);
+						$this->monolog->error('mail error: invalid mail address : ' . $mail . ', user id: ' . $in);
 						continue;
 					}
 
@@ -108,7 +112,7 @@ class mail_addr
 			}
 			else if (ctype_digit((string) $remote_id) && $remote_schema)
 			{
-				$st = $app['db']->prepare('select c.value, u.name, u.letscode
+				$st = $this->db->prepare('select c.value, u.name, u.letscode
 					from ' . $remote_schema . '.contact c,
 						' . $remote_schema . '.type_contact tc,
 						' . $remote_schema . '.users u
@@ -131,7 +135,7 @@ class mail_addr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$app['monolog']->error('mail error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
+						$this->monolog->error('mail error: invalid mail address from interlets: ' . $mail . ', user: ' . $user);
 						continue;
 					}
 
@@ -144,13 +148,13 @@ class mail_addr
 			}
 			else
 			{
-				$app['monolog']->error('mail error: no valid input for mail adr: ' . $in);
+				$this->monolog->error('mail error: no valid input for mail adr: ' . $in);
 			}
 		}
 
 		if (!count($out))
 		{
-			$app['monolog']->error('mail error: no valid mail adress found for: ' . implode('|', $m));
+			$this->monolog->error('mail error: no valid mail adress found for: ' . implode('|', $m));
 			return $out;
 		} 
 

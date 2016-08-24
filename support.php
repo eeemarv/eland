@@ -34,7 +34,7 @@ if (isset($_POST['zend']))
 		where c.id_user = ?
 			and c.id_type_contact = tc.id', [$s_id]);
 
-	$mailaddr = getmailadr($s_id);
+	$mailaddr = $app['eland.mailaddr']->get($s_id);
 
 	$mail_ary = [
 		'to'		=> 'support',
@@ -114,7 +114,7 @@ else
 	}
 	else
 	{
-		$mail = getmailadr($s_id);
+		$mail = $app['eland.mailaddr']->get($s_id);
 
 		if (!count($mail))
 		{

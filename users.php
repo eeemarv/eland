@@ -1959,8 +1959,8 @@ if ($id)
 				or id_to = ?', [$id, $id]);
 	}
 
-	$mail_to = getmailadr($user['id']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? getmailadr($s_schema . '.' . $s_id) : [];
+	$mail_to = $app['eland.mailaddr']->get($user['id']);
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['eland.mailaddr']->get($s_schema . '.' . $s_id) : [];
 
 	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
 

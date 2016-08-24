@@ -87,8 +87,6 @@ function mail_mail_interlets_transaction($transaction)
 	$r = "\r\n";
 	$t = "\t";
 
-	$to = getmailadr($transaction['id_to']);
-
 	$subject .= 'Interlets transactie';
 
 	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
@@ -115,7 +113,7 @@ function mail_mail_interlets_transaction($transaction)
 	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
 	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
 
-	$app['eland.task.mail']->queue(['to' => $to, 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
+	$app['eland.task.mail']->queue(['to' => $transaction['id_to'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
 
 	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
 	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';

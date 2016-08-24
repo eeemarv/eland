@@ -6,6 +6,7 @@ use League\HTMLToMarkdown\HtmlConverter;
 use eland\queue;
 use Monolog\Logger;
 use eland\this_group;
+use eland\mailaddr;
 
 class mail
 {
@@ -14,12 +15,14 @@ class mail
 	protected $queue;
 	protected $monolog;
 	protected $this_group;
+	protected $mailaddr;
 
-	public function __construct(queue $queue, Logger $monolog, this_group $this_group)
+	public function __construct(queue $queue, Logger $monolog, this_group $this_group, mailaddr $mailaddr)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
+		$this->mailaddr = $mailaddr;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
@@ -158,7 +161,7 @@ class mail
 			return $m;
 		}
 
-		$data['to'] = getmailadr($data['to']);
+		$data['to'] = $this->mailaddr->get($data['to']);
 
 		if (!count($data['to']))
 		{
@@ -169,7 +172,7 @@ class mail
 
 		if (isset($data['reply_to']))
 		{
-			$data['reply_to'] = getmailadr($data['reply_to']);
+			$data['reply_to'] = $this->mailaddr->get($data['reply_to']);
 
 			if (!count($data['reply_to']))
 			{
@@ -177,11 +180,11 @@ class mail
 				unset($data['reply_to']);
 			}
 
-			$data['from'] = getmailadr('from', $data['schema']);
+			$data['from'] = $this->mailaddr->get('from', $data['schema']);
 		}
 		else
 		{
-			$data['from'] = getmailadr('noreply', $data['schema']);
+			$data['from'] = $this->mailaddr->get('noreply', $data['schema']);
 		}
 
 		if (!count($data['from']))
@@ -193,7 +196,7 @@ class mail
 
 		if (isset($data['cc']))
 		{
-			$data['cc'] = getmailadr($data['cc']);
+			$data['cc'] = $this->mailaddr->get($data['cc']);
 
 			if (!count($data['cc']))
 			{
