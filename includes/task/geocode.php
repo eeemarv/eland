@@ -147,5 +147,38 @@ class geocode
 		$this->redis->expire($key, 2592000);
 
 		$this->queue->set('geocode', $data);
-	} 
+	}
+
+	public function run()
+	{
+		$log_ary = [];
+
+		$st = $this->db->prepare('select c.value, c.id_user
+			from contact c, type_contact tc, users u
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'adr\'
+				and c.id_user = u.id
+				and u.status in (1, 2)');
+
+		$st->execute();
+
+		while (($row = $st->fetch()) && count($log_ary) < 20)
+		{
+			$data = [
+				'adr'		=> trim($row['value']),
+				'uid'		=> $row['id_user'],
+				'schema'	=> $app['eland.this_group']->get_schema(),
+			];
+
+			if ($this->queue($data) !== false)
+			{
+				$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $data['adr'];
+			}
+		}
+
+		if (count($log_ary))
+		{
+			$this->monolog->info('Adresses queued for geocoding: ' . implode(', ', $log_ary));
+		}
+	}
 }
