@@ -542,6 +542,11 @@ $app['eland.task.geocode'] = function ($app){
 		$app['eland.queue'], $app['monolog'], $app['eland.this_group']);
 };
 
+$app['eland.task.cleanup_image_files'] = function ($app){
+	return new eland\task\cleanup_image_files($app['redis'], $app['db'], $app['monolog'],
+		$app['eland.s3'], $app['eland.groups']);
+};
+
 $app['eland.task.cleanup_messages'] = function ($app){
 	return new eland\task\cleanup_messages($app['db'], $app['monolog']);
 };
