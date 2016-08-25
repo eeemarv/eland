@@ -545,6 +545,10 @@ $app['eland.task.cleanup_news'] = function ($app){
 	return new eland\task\cleanup_news($app['db'], $app['eland.xdb']);
 };
 
+$app['eland.task.cleanup_logs'] = function ($app){
+	return new eland\task\cleanup_logs($app['db'], $app['eland.xdb']);
+};
+
 $app['eland.task.saldo_update'] = function ($app){
 	return new eland\task\saldo_update($app['db'], $app['monolog']);
 };

@@ -570,12 +570,7 @@ function cleanup_logs()
 {
 	global $app;
 
-	$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
-
-	$app['db']->executeQuery('delete from eland_extra.logs
-		where schema = ? and ts < ?', [$app['eland.this_group']->get_schema(), $treshold]);
-
-	$app['monolog']->info('(cron) Cleaned up logs older than 30 days.');
+	$app['eland.task.cleanup_logs']->run();
 
 	return true;
 }
