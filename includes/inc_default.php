@@ -582,6 +582,10 @@ $app['eland.interlets_fetch'] = function ($app){
 	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog'], $app['this_group']);
 };
 
+$app['eland.elas_db_upgrade'] = function ($app){
+	return new eland\elas_db_upgrade($app['db']);
+};
+
 /* some more vars */
 
 $app['eland.session_user'] = $session_user ?? [];

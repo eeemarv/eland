@@ -2,7 +2,7 @@
 
 $r = "\r\n";
 
-$step = $_GET['step']) ?? 1;
+$step = $_GET['step'] ?? 1;
 
 $php_sapi_name = php_sapi_name();
 
@@ -17,7 +17,6 @@ chdir(__DIR__);
 
 $page_access = 'anonymous';
 require_once __DIR__ . '/includes/inc_default.php';
-require_once __DIR__ . '/includes/inc_upgrade.php';
 
 header('Content-Type:text/plain');
 echo '*** Init eLAND ***' . $r;
@@ -54,7 +53,7 @@ if ($step == 1)
 		{
 			$currentversion++;
 
-			if(doupgrade($currentversion))
+			if($app['eland.elas_db_upgrade']->run($currentversion))
 			{
 				$doneversion = $currentversion;
 			}
@@ -243,7 +242,7 @@ else if ($step == 4)
 }
 else if ($step == 5)
 {
-	$app['db']->delete('tokens');
+	$app['db']->executeQuery('delete from tokens');
 
 	echo '*** empty tokens table (is not used anymore) *** ' . $r;
 
@@ -252,11 +251,11 @@ else if ($step == 5)
 }
 else if ($step == 6)
 {
-	$app['db']->delete('city_distance');
+	$app['db']->executeQuery('delete from city_distance');
 
 	echo '*** empty city_distance table (is not used anymore) *** ' . $r;
 
-	echo '** end **';
+	echo '** init end **';
 
 	exit;
 }
