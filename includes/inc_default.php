@@ -538,7 +538,8 @@ $app['eland.task.autominlimit'] = function ($app){
 };
 
 $app['eland.task.geocode'] = function ($app){
-	return new eland\task\geocode($app['redis'], $app['db'], $app['eland.xdb'], $app['eland.queue'], $app['monolog']);
+	return new eland\task\geocode($app['redis'], $app['db'], $app['eland.xdb'],
+		$app['eland.queue'], $app['monolog'], $app['eland.this_group']);
 };
 
 $app['eland.task.cleanup_messages'] = function ($app){

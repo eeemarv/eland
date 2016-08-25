@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use eland\queue;
 use Monolog\Logger;
+use eland\this_group;
 
 class geocode
 {
@@ -19,13 +20,14 @@ class geocode
 	protected $curl;
 	protected $geocoder;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, queue $queue, Logger $monolog)
+	public function __construct(Redis $redis, db $db, xdb $xdb, queue $queue, Logger $monolog, this_group $this_group)
 	{
 		$this->redis = $redis;
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->db = $db;
+		$this->this_group = $this_group;
 
 		$this->curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 		$this->geocoder = new \Geocoder\ProviderAggregator();
@@ -167,7 +169,7 @@ class geocode
 			$data = [
 				'adr'		=> trim($row['value']),
 				'uid'		=> $row['id_user'],
-				'schema'	=> $app['eland.this_group']->get_schema(),
+				'schema'	=> $this->this_group->get_schema(),
 			];
 
 			if ($this->queue($data) !== false)
