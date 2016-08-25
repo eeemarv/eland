@@ -2,10 +2,11 @@
 
 namespace eland;
 
-//use Doctrine\DBAL\Connection as db;
-// use Predis\Client as redis;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\DBAL\Connection as db;
+use Predis\Client as redis;
 
-class user
+class user implements UserInterface;
 {
 	private $schema;
 	private $host;
@@ -15,28 +16,27 @@ class user
 
 	}
 
-	public function is_master()
+	public function getRoles()
 	{
-
+		return ['ROLE_USER'];
 	}
 
-	public function is_admin()
+	public function getPassword()
 	{
-
+		return '';
 	}
 
-	public function is_user()
+	public function getSalt()
 	{
-
+		return null;
 	}
 
-	public function is_interlets()
+	public function getUsername()
 	{
-
+		return '';
 	}
 
-	public function is_guest()
+	public function eraseCredentials()
 	{
-
 	}
 }
