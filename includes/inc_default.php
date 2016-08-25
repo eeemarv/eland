@@ -578,9 +578,12 @@ $app['eland.task.saldo'] = function ($app){
 
 //
 
-$app['eland.interlets_fetch'] = function ($app){
-	return new eland\interlets_fetch($app['redis'], $app['typeahead'], $app['monolog'], $app['this_group']);
+$app['eland.task.interlets_fetch'] = function ($app){
+	return new eland\task\interlets_fetch($app['redis'], $app['db'], $app['eland.typeahead'],
+		$app['monolog'], $app['eland.this_group'], $app['eland.groups']);
 };
+
+//
 
 $app['eland.elas_db_upgrade'] = function ($app){
 	return new eland\elas_db_upgrade($app['db']);
