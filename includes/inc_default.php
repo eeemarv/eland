@@ -218,6 +218,10 @@ $app['eland.this_group'] = function($app){
 	return new eland\this_group($app['eland.groups'], $app['db'], $app['redis'], $app['twig']);
 };
 
+$app['eland.xdb'] = function ($app){
+	return new eland\xdb($app['db'], $app['monolog'], $app['eland.this_group']);
+};
+
 $app['eland.alert'] = function ($app){
 	return new eland\alert($app['monolog']);
 };
@@ -504,10 +508,6 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
  /**
   *
   */
-
-$app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['monolog'], $app['eland.this_group']);
-};
 
 $app['eland.xdb']->init($s_schema, $s_id);
 
