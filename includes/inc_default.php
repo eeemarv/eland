@@ -230,6 +230,10 @@ $app['eland.interlets_groups'] = function ($app){
 	return new eland\interlets_groups($app['db'], $app['redis'], $app['eland.groups'], $app['eland.protocol']);
 };
 
+$app['eland.password_strength'] = function ($app){
+	return new eland\password_strength();
+};
+
 
 /** user **/
 

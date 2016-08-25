@@ -31,7 +31,6 @@ $page_access = ($edit || $pw || $img_del || $password || $submit || $img) ? 'use
 $page_access = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $page_access;
 $allow_guest_post = ($page_access == 'guest' && $user_mail_submit) ? true : false;
 
-require_once __DIR__ . '/includes/inc_passwords.php';
 require_once __DIR__ . '/includes/inc_default.php';
 
 /**
@@ -687,7 +686,7 @@ if ($pw)
 			$errors[] = 'Vul paswoord in!';
 		}
 
-		if (!$s_admin && password_strength($password) < 50) // ignored readconfigfromdb('pwscore')
+		if (!$s_admin && $app['eland.password_strength']->get($password) < 50)
 		{
 			$errors[] = 'Te zwak paswoord.';
 		}
@@ -1325,7 +1324,7 @@ if ($add || $edit)
 			{
 				$errors[] = 'Gelieve een paswoord in te vullen.';
 			}
-			else if (!password_strength($password))
+			else if (!$app['eland.password_strength']->get($password))
 			{
 				$errors[] = 'Het paswoord is niet sterk genoeg.';
 			}

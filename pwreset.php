@@ -3,7 +3,6 @@
 $page_access = 'anonymous';
 
 require_once __DIR__ . '/includes/inc_default.php';
-require_once __DIR__ . '/includes/inc_passwords.php';
 
 $token = $_GET['token'] ?? false;
 
@@ -13,7 +12,7 @@ if ($token)
 	{
 		$password = $_POST['password'];
 
-		if (!(password_strength($password) < 50)) // ignored readconfigfromdb('pwscore')
+		if (!($app['eland.password_strength']->get($password) < 50))
 		{
 			if ($user_id = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 			{
