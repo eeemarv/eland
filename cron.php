@@ -18,8 +18,6 @@ $page_access = 'anonymous';
 
 require_once __DIR__ . '/includes/inc_default.php';
 
-require_once __DIR__ . '/includes/inc_saldo_mail.php';
-
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;
 
@@ -332,6 +330,15 @@ function geocode()
  */
 
 run_cronjob('saldo', 86400 * readconfigfromdb('saldofreqdays'));
+
+function saldo()
+{
+	global $app;
+
+	$app['eland.task.saldo']->run();
+
+	return true;
+}
 
 /**
  * Report expired messages to the admin by mail

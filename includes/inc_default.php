@@ -561,6 +561,11 @@ $app['eland.task.admin_exp_msg'] = function ($app){
 	return new eland\task\admin_exp_msg($app['db'], $app['eland.task.mail'], $app['eland.base_url']);
 };
 
+$app['eland.task.saldo'] = function ($app){
+	return new eland\task\admin_exp_msg($app['db'], $app['eland.xdb'], $app['monolog'],
+		$app['eland.this_group'], $app['eland.base_url'], $app['eland.s3_img_url']);
+};
+
 //
 
 $app['eland.interlets_fetch'] = function ($app){
