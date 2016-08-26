@@ -572,7 +572,7 @@ $app['eland.task.admin_exp_msg'] = function ($app){
 };
 
 $app['eland.task.saldo'] = function ($app){
-	return new eland\task\admin_exp_msg($app['db'], $app['eland.xdb'], $app['monolog'],
+	return new eland\task\saldo($app['db'], $app['eland.xdb'], $app['monolog'],
 		$app['eland.this_group'], $app['eland.base_url'], $app['eland.s3_img_url']);
 };
 
