@@ -3,7 +3,7 @@ namespace eland;
 
 class password_strength
 {
-	public __contruct()
+	public function __contruct()
 	{
 	}
 
