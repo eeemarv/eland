@@ -1,7 +1,7 @@
 <?php
 namespace eland;
 
-class password_strength($password, $username = null)
+class password_strength
 {
 	public __contruct()
 	{
