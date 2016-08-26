@@ -39,14 +39,7 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
 		'cookie_lifetime'			=> 172800,
 	],
-
 ]);
-
-/*
-$app['session.storage.handler'] = function ($app) {
-    return new );
-};
-*/
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
