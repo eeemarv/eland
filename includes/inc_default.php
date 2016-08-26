@@ -90,6 +90,8 @@ if(!isset($rootpath))
 
 $app['eland.rootpath'] = $rootpath;
 
+$app['eland.page_access'] = $page_access;
+
 $app['eland.protocol'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 
 ob_start('etag_buffer');
@@ -239,7 +241,7 @@ $app['eland.password_strength'] = function ($app){
 };
 
 $app['eland.user'] = function ($app){
-	return new eland\user($app['eland.this_group']);
+	return new eland\user($app['eland.this_group'], $app['monolog'], $app['eland.page_access']);
 };
 
 /** user **/
