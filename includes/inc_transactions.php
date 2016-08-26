@@ -60,8 +60,6 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
-	error_log('jmqsfjmqskdjmqsfqsmf -- '  . http_build_query($transaction));
-
 	$app['eland.task.autominlimit']->queue([
 		'from_id'	=> $transaction['id_from'],
 		'to_id'		=> $transaction['id_to'],
