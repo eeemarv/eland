@@ -238,6 +238,9 @@ $app['eland.password_strength'] = function ($app){
 	return new eland\password_strength();
 };
 
+$app['eland.user'] = function ($app){
+	return new eland\user($app['eland.this_group']);
+};
 
 /** user **/
 
