@@ -32,11 +32,6 @@ class this_group
 			exit;
 		}
 
-		session_set_save_handler(new \eland\redis_session($this->redis));
-		session_name('eland');
-		session_set_cookie_params(0, '/', '.' . getenv('OVERALL_DOMAIN'));
-		session_start();
-
 		$this->db->exec('set search_path to ' . $this->schema);
 	}
 

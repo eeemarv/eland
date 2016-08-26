@@ -26,7 +26,9 @@ if($token)
 {
 	if($interlets = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 	{
-		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = 'elas';
+		$logins = $app['session']->get('logins');
+		$logins[$app['eland.this_group']->get_schema()] = 'elas';
+		$app['session']->set('logins', $logins);
 
 		$param = 'welcome=1&r=guest&u=elas';
 
@@ -58,7 +60,9 @@ if ($submit)
 
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
-		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = 'master';
+		$logins = $app['session']->get('logins');
+		$logins[$app['eland.this_group']->get_schema()] = 'master';
+		$app['session']->set('logins', $logins);
 
 		$app['eland.alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
@@ -185,7 +189,9 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$_SESSION['logins'][$app['eland.this_group']->get_schema()] = $user['id'];
+		$logins = $app['session']->get('logins');
+		$logins[$app['eland.this_group']->get_schema()] = $user['id'];
+		$app['session']->set('logins', $logins);
 
 		$s_id = $user['id'];
 		$s_schema = $app['eland.this_group']->get_schema();

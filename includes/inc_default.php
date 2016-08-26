@@ -32,6 +32,22 @@ $app['redis'] = function () {
 	}
 };
 
+$app->register(new Silex\Provider\SessionServiceProvider(), [
+	'session.storage.handler'	=> new eland\redis_session($app['redis']),
+	'session.storage.options'	=> [
+		'name'						=> 'eland',
+		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
+		'cookie_lifetime'			=> 172800,
+	],
+
+]);
+
+/*
+$app['session.storage.handler'] = function ($app) {
+    return new );
+};
+*/
+
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
         'url'   => getenv('DATABASE_URL'),
@@ -225,7 +241,7 @@ $app['eland.xdb'] = function ($app){
 };
 
 $app['eland.alert'] = function ($app){
-	return new eland\alert($app['monolog']);
+	return new eland\alert($app['monolog'], $app['session']);
 };
 
 $app['eland.pagination'] = function (){
@@ -241,7 +257,7 @@ $app['eland.password_strength'] = function ($app){
 };
 
 $app['eland.user'] = function ($app){
-	return new eland\user($app['eland.this_group'], $app['monolog'], $app['eland.page_access']);
+	return new eland\user($app['eland.this_group'], $app['monolog'], $app['session'], $app['eland.page_access']);
 };
 
 /** user **/
@@ -258,7 +274,7 @@ $s_group_self = ($s_schema == $app['eland.this_group']->get_schema()) ? true : f
 
 /** access user **/
 
-$logins = $_SESSION['logins'] ?? [];
+$logins = $app['session']->get('logins') ?? [];
 
 $s_master = $s_elas_guest = false;
 
@@ -374,7 +390,8 @@ else if (ctype_digit((string) $s_id))
 	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
 	{
 		$app['monolog']->debug('redirect 2a');
-		$_SESSION = [];
+
+		$app['session']->invalidate();
 		redirect_login();
 	}
 }
@@ -607,26 +624,26 @@ $inline = isset($_GET['inline']) ? true : false;
 
 $view = $_GET['view'] ?? false;
 
-$view_users = $_SESSION['view']['users'] ?? 'list';
-$view_messages = $_SESSION['view']['messages'] ?? 'extended';
-$view_news = $_SESSION['view']['news'] ?? 'extended';
+$view_users = $app['session']->get('view.users') ?? 'list';
+$view_messages = $app['session']->get('view.messages') ?? 'extended';
+$view_news = $app['session']->get('view.news') ?? 'extended';
 
 if ($view || $inline)
 {
 	if ($app['eland.script_name'] == 'users' && $view != $view_users)
 	{
-		$view_users = ($view) ?: $view_users;
-		$_SESSION['view']['users'] = $view = $view_users;
+		$view = $view_users = ($view) ?: $view_users;
+		$app['session']->set('view.users', $view_users);
 	}
 	else if ($app['eland.script_name'] == 'messages' && $view != $view_messages)
 	{
-		$view_messages = ($view) ?: $view_messages;
-		$_SESSION['view']['messages'] = $view = $view_messages;
+		$view = $view_messages = ($view) ?: $view_messages;
+		$app['session']->set('view.messages', $view);
 	}
 	else if ($app['eland.script_name'] == 'news' && $view != $view_news)
 	{
-		$view_news = ($view) ?: $view_news;
-		$_SESSION['view']['news'] = $view = $view_news;
+		$view = $view_news = ($view) ?: $view_news;
+		$app['session']->set('view.news', $view);
 	}
 }
 
@@ -639,11 +656,11 @@ if (!$s_anonymous)
 	{
 		if (isset($logins[$app['eland.this_group']->get_schema()]) && $s_group_self)
 		{
-			$_SESSION['roles'][$app['eland.this_group']->get_schema()] = $s_accountrole;
+			$app['session']->set('role.' . $app['eland.this_group']->get_schema(), $s_accountrole);
 		}
 
 		$s_user_params_own_group = [
-			'r' => $_SESSION['roles'][$s_schema],
+			'r' => $app['session']->get('role.' . $s_schema),
 			'u'	=> $s_id,
 		];
 	}

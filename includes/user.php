@@ -6,12 +6,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as redis;
 use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Session\Session;
 use eland\this_group;
 
 class user implements UserInterface;
 {
 	protected $this_group;
 	protected $monolog;
+	protected $session;
 
 	protected $schema;
 
@@ -30,10 +32,11 @@ class user implements UserInterface;
 		'ROLE_ADMIN'		=> 'admin',
 	];
 
-	public function __construct(this_group $this_group, Logger $monolog, string $page_access)
+	public function __construct(this_group $this_group, Logger $monolog, Session $session, string $page_access)
 	{
 		$this->this_group = $this_group;
 		$this->monolog = $monolog;
+		$this->session = $session;
 		$this->page_access = $page_access;
 
 		$this->schema = $_GET['s'] ?? $this->this_group->get_schema();
@@ -41,7 +44,7 @@ class user implements UserInterface;
 		$this->role = $_GET['r'] ?? 'anonymous';
 		$this->id = $_GET['u'] ?? false;
 
-		$this->logins = $_SESSION['logins'] ?? [];
+		$this->logins = $this->session->get('logins') ?? [];
 
 		if (!count($this->logins))
 		{

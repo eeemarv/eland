@@ -3,13 +3,15 @@
 $page_access = 'guest';
 require_once __DIR__ . '/includes/inc_default.php';
 
-$_SESSION = [];
+$app['session']->invalidate();
 
+/*
 $cookie_params = session_get_cookie_params();
 setcookie(session_name(), '', time() - 86400, $cookie_params['path'], $cookie_params['domain'],
 	$cookie_params['secure'], $cookie_params['httponly']);
 
 session_destroy();
+*/
 
 $app['monolog']->info('user ' . link_user($s_id, false, false, true) . ' logged out');
 

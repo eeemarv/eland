@@ -3,15 +3,20 @@
 namespace eland;
 
 use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class alert
 {
 	private $send_once;
 	private $monolog;
+	private $session;
+	private $flashbag;
 
-	public function __construct(Logger $monolog)
+	public function __construct(Logger $monolog, Session $session)
 	{
 		$this->monolog = $monolog;
+		$this->session = $session;
+		$this->flashbag = $this->session->getFlashBag();
 	} 
 
 	private function add($type, $msg)
@@ -29,12 +34,7 @@ class alert
 			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $msg, ['alert_type' => $type]);
 		}
 
-		if (!isset($_SESSION['alert']) || !is_array($_SESSION['alert']))
-		{
-			$_SESSION['alert'] = [];
-		}
-
-		$_SESSION['alert'][] = [$type, $msg];
+		$this->flashbag->add('alert', [$type, $msg]);
 	}
 
 	public function error($msg)
@@ -59,12 +59,12 @@ class alert
 
 	public function render()
 	{
-		if (!(isset($_SESSION['alert']) && is_array($_SESSION['alert']) && count($_SESSION['alert'])))
+		if (!$this->flashbag->has('alert'))
 		{
 			return;
 		}
 
-		while ($alert = array_pop($_SESSION['alert']))
+		foreach ($this->flashbag->get('alert') as $alert)
 		{
 			$alert[0] = ($alert[0] == 'error') ? 'danger' : $alert[0];
 
@@ -79,8 +79,7 @@ class alert
 
 	public function is_set()
 	{
-		$is_set = (!isset($this->send_once) && isset($_SESSION['alert'])
-			&& is_array($_SESSION['alert']) && count($_SESSION['alert'])) ? true : false;
+		$is_set = (!isset($this->send_once) && $this->flashbag->has('alert')) ? true : false;
 
 		$this->send_once = true;
 
