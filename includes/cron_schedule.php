@@ -39,10 +39,10 @@ class cron_schedule
 		$this->xdb = $xdb;
 		$this->groups = $groups;
 		$this->time = time();
-		$this->sha = sha1($this->time());
+		$this->sha = sha1($this->time);
 	}
 
-	public function search_next()
+	public function find_next()
 	{
 		$cronjob_ary = $this->xdb->get_many(['agg_type' => 'cronjob']);
 
@@ -75,7 +75,7 @@ class cron_schedule
 
 					$next = $last + $add;
 
-					if ($next < $this->time())
+					if ($next < $this->time)
 					{
 						$next = ((($this->time - $next) > 43200) || ($add < 43201)) ? $this->time : $next;
 						$this->event_time = gmdate('Y-m-d H:i:s', $next);
@@ -106,13 +106,13 @@ class cron_schedule
 				where cronjob = ?', [$insert_name]);
 		}
 
-		if ($event_time)
+		if (isset($event_time))
 		{
 			$this->monolog->debug('move cronjob ' . $insert_name . ' to xdb', ['schema' => $insert_schema]);
 		}
 		else
 		{
-			$event_time = gmdate('Y-m-d H:i:s', $this->time());			
+			$event_time = gmdate('Y-m-d H:i:s', $this->time);
 			$this->monolog->debug('new cronjob ' . $insert_name . ' in xdb.', ['schema' => $insert_schema]);
 		}
 
@@ -126,7 +126,7 @@ class cron_schedule
 		return $this->schema;
 	}
 
-	public function get_name();
+	public function get_name()
 	{
 		return $this->name;
 	}
