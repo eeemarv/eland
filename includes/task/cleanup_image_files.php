@@ -23,7 +23,7 @@ class cleanup_image_files
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->s3 = $s3;
-		$this->groups = $groups;	
+		$this->groups = $groups;
 	}
 
 	function run()

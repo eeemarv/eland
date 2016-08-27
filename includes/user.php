@@ -9,7 +9,7 @@ use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
 use eland\this_group;
 
-class user implements UserInterface;
+class user implements UserInterface
 {
 	protected $this_group;
 	protected $monolog;
