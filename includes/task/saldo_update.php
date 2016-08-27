@@ -16,11 +16,11 @@ class saldo_update
 		$this->monolog = $monolog;
 	}
 
-	function run()
+	function run($schema)
 	{
 		$user_balances = $min = $plus = [];
 
-		$rs = $this->db->prepare('select id, saldo from users');
+		$rs = $this->db->prepare('select id, saldo from ' . $schema . '.users');
 
 		$rs->execute();
 
@@ -30,7 +30,7 @@ class saldo_update
 		}
 
 		$rs = $this->db->prepare('select id_from, sum(amount)
-			from transactions
+			from ' . $schema . '.transactions
 			group by id_from');
 
 		$rs->execute();
@@ -41,7 +41,7 @@ class saldo_update
 		}
 
 		$rs = $this->db->prepare('select id_to, sum(amount)
-			from transactions
+			from ' . $schema . '.transactions
 			group by id_to');
 
 		$rs->execute();
@@ -63,10 +63,9 @@ class saldo_update
 				continue;
 			}
 
-			$this->db->update('users', ['saldo' => $calculated], ['id' => $id]);
+			$this->db->update($schema . '.users', ['saldo' => $calculated], ['id' => $id]);
 			$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
-			$this->monolog->info('(cron) ' . $m);
+			$this->monolog->info('(cron) ' . $m, ['schema' => $schema]);
 		}
-
 	}
 }

@@ -27,8 +27,9 @@ class cron_schedule
 		'saldo_update'			=> [86400],
 		'cleanup_news'			=> [86400],
 		'cleanup_logs'			=> [86400],
+		'cleanup_image_files'	=> [14400],
 		'geocode' 				=> [7200],
-		'cleanup_image_files'	=> [3600],
+		'interlets_fetch'		=> [3600],
 	];
 
 	public function __construct(db $db, Logger $monolog, xdb $xdb, groups $groups)

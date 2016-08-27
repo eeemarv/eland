@@ -16,13 +16,13 @@ class cleanup_messages
 		$this->monolog = $monolog;
 	}
 
-	function run()
+	function run($schema)
 	{
 		$msgs = '';
-		$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays') * 86400);
+		$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays', $schema) * 86400);
 
 		$st = $this->db->prepare('SELECT id, content, id_category, msg_type
-			FROM messages
+			FROM ' . $schema . '.messages
 			WHERE validity < ?');
 
 		$st->bindValue(1, $testdate);
@@ -32,20 +32,21 @@ class cleanup_messages
 		{
 			$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
 		}
+
 		$msgs = trim($msgs, '\n\r\t ,;:');
 
 		if ($msgs)
 		{
-			$this->monolog->info('(cron) Expired and deleted Messages ' . $msgs);
+			$this->monolog->info('(cron) Expired and deleted Messages ' . $msgs, ['schema' => $schema]);
 
-			$this->db->executeQuery('delete from messages WHERE validity < ?', [$testdate]);
+			$this->db->executeQuery('delete from ' . $schema . '.messages WHERE validity < ?', [$testdate]);
 		}
 
 		$users = '';
 		$ids = [];
 
 		$st = $this->db->prepare('SELECT u.id, u.letscode, u.name
-			FROM users u, messages m
+			FROM ' . $schema . '.users u, ' . $schema . '.messages m
 			WHERE u.status = 0
 				AND m.id_user = u.id');
 
@@ -60,17 +61,17 @@ class cleanup_messages
 
 		if (count($ids))
 		{
-			$this->monolog->info('(cron) Cleanup messages from users: ' . $users);
+			$this->monolog->info('(cron) Cleanup messages from users: ' . $users, ['schema' => $schema]);
 
 			echo 'Cleanup messages from users: ' . $users;
 
 			if (count($ids) == 1)
 			{
-				$this->db->delete('messages', ['id_user' => $ids[0]]);
+				$this->db->delete($schema . '.messages', ['id_user' => $ids[0]]);
 			}
 			else if (count($ids) > 1)
 			{
-				$this->db->executeQuery('delete from messages where id_user in (?)',
+				$this->db->executeQuery('delete from ' . $schema . '.messages where id_user in (?)',
 					[$ids],
 					[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 			}
@@ -79,15 +80,15 @@ class cleanup_messages
 		// remove orphaned images.
 
 		$rs = $this->db->prepare('select mp.id, mp."PictureFile"
-			from msgpictures mp
-			left join messages m ON mp.msgid = m.id
+			from ' . $schema . '.msgpictures mp
+			left join ' . $schema . '.messages m ON mp.msgid = m.id
 			where m.id is null');
 
 		$rs->execute();
 
 		while ($row = $rs->fetch())
 		{
-			$this->db->delete('msgpictures', ['id' => $row['id']]);
+			$this->db->delete($schema . '.msgpictures', ['id' => $row['id']]);
 		}
 
 		// update counts for each category
@@ -95,7 +96,7 @@ class cleanup_messages
 		$offer_count = $want_count = [];
 
 		$rs = $this->db->prepare('select m.id_category, count(m.*)
-			from messages m, users u
+			from ' . $schema . '.messages m, ' . $schema . '.users u
 			where  m.id_user = u.id
 				and u.status IN (1, 2, 3)
 				and msg_type = 1
@@ -109,7 +110,7 @@ class cleanup_messages
 		}
 
 		$rs = $this->db->prepare('select m.id_category, count(m.*)
-			from messages m, users u
+			from ' . $schema . '.messages m, ' . $schema . '.users u
 			where  m.id_user = u.id
 				and u.status IN (1, 2, 3)
 				and msg_type = 0
@@ -123,7 +124,7 @@ class cleanup_messages
 		}
 
 		$all_cat = $this->db->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
-			from categories
+			from ' . $schema . '.categories
 			where id_parent is not null');
 
 		foreach ($all_cat as $val)
@@ -145,7 +146,7 @@ class cleanup_messages
 				'stat_msgs_wanted'	=> $want_count[$id] ?? 0,
 			];
 			
-			$this->db->update('categories', $stats, ['id' => $id]);
+			$this->db->update($schema . '.categories', $stats, ['id' => $id]);
 		}
 	}
 }

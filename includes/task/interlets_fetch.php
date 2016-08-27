@@ -6,7 +6,6 @@ use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
 use eland\typeahead;
 use Monolog\Logger;
-use eland\this_group;
 use eland\groups;
 
 class interlets_fetch
@@ -15,27 +14,25 @@ class interlets_fetch
 	protected $db;
 	protected $typeahead;
 	protected $monolog;
-	protected $this_group;
 	protected $groups;
 
-	public function __construct(Redis $redis, db $db, typeahead $typeahead, Logger $monolog, this_group $this_group, groups $groups)
+	public function __construct(Redis $redis, db $db, typeahead $typeahead, Logger $monolog, groups $groups)
 	{
 		$this->redis = $redis;
 		$this->db = $db;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
-		$this->this_group = $this_group;
 		$this->groups = $groups;
 	}
 
-	public function run()
+	public function run($schema)
 	{
 		$r = "<br>\r\n";
 
 		$update_msgs = false;
 
 		$groups = $this->db->fetchAll('select *
-			from letsgroups
+			from ' . $schema . '.letsgroups
 			where apimethod = \'elassoap\'
 				and remoteapikey IS NOT NULL
 				and url <> \'\'');
@@ -50,8 +47,8 @@ class interlets_fetch
 				continue;
 			}
 
-			if ($this->redis->get($this->this_group->get_schema() . '_token_failed_' . $group['remoteapikey'])
-				|| $this->redis->get($this->this_group->get_schema() . '_connection_failed_' . $group['domain']))
+			if ($this->redis->get($schema . '_token_failed_' . $group['remoteapikey'])
+				|| $this->redis->get($schema . '_connection_failed_' . $group['domain']))
 			{
 				unset($group);
 				continue;
@@ -85,7 +82,7 @@ class interlets_fetch
 			{
 
 				echo $err_group . 'Can not get connection.' . $r;
-				$redis_key = $this->this_group->get_schema() . '_connection_failed_' . $group['domain'];
+				$redis_key = $schema . '_connection_failed_' . $group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -108,7 +105,7 @@ class interlets_fetch
 
 				if ($err)
 				{
-					$redis_key = $this->this_group->get_schema() . '_token_failed_' . $group['remoteapikey'];
+					$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 				}
@@ -130,7 +127,7 @@ class interlets_fetch
 					else
 					{
 						echo 'fetch interlets typeahead data' . $r;
-						$this->fetch_typeahead($client, $group);
+						$this->fetch_typeahead($client, $group, $schema);
 					}
 
 					echo '----------------------------------------------------' . $r;
@@ -141,7 +138,7 @@ class interlets_fetch
 				{
 					$err = $e->getMessage();
 					echo $err . $r;
-					$redis_key = $this->this_group->get_schema() . '_token_failed_' . $group['remoteapikey'];
+					$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -205,7 +202,7 @@ class interlets_fetch
 	/*
 	 *
 	 */
-	public function fetch_typeahead($client, $group)
+	public function fetch_typeahead($client, $group, $schema)
 	{
 		$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
@@ -223,7 +220,7 @@ class interlets_fetch
 			{
 				echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
 
-				$redis_key = $this->this_group->get_schema() . '_connection_failed_' . $group['domain'];
+				$redis_key = $schema . '_connection_failed_' . $group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -303,7 +300,7 @@ class interlets_fetch
 		$this->redis->set($redis_user_count_key, $user_count);
 		$this->redis->expire($redis_user_count_key, 86400); // 1 day
 
-		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $this->this_group->get_schema()]);
+		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $schema]);
 
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;

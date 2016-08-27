@@ -5,45 +5,54 @@ namespace eland\task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use Monolog\Logger;
-use eland\this_group;
+use eland\groups;
 use eland\multi_mail;
 
 class saldo
 {
 	protected $db;
 	protected $xdb;
-	protected $base_url;
 	protected $monolog;
-	protected $this_group;
+	protected $groups;
 	protected $s3_img_url;
+	protected $protocol;
 
 	public function __construct(db $db, xdb $xdb, Logger $monolog,
-		this_group $this_group, string $base_url, string $s3_img_url)
+		groups $groups, string $s3_img_url, string $protocol)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->monolog = $monolog;
-		$this->this_group = $this_group;
-		$this->base_url = $base_url;
+		$this->groups = $groups;
 		$this->s3_img_url = $s3_img_url;
+		$this->protocol = $protocol;
 	}
 
-	function run()
+	function run($schema)
 	{
 		// vars
 
+		$host = $this->groups->get_host($schema);
+
+		if (!$host)
+		{
+			return;
+		}
+
+		$base_url = $this->protocol . $host;
+
 		$r = "\r\n";
-		$currency = readconfigfromdb('currency');
-		$support = readconfigfromdb('support');
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays') * 86400); 	
-		$msg_url = $this->base_url . '/messages.php?id=';
-		$msgs_url = $this->base_url . '/messages.php';
-		$news_url = $this->base_url . '/news.php?id=';
-		$user_url = $this->base_url . '/users.php?id=';
-		$login_url = $this->base_url . '/login.php?login=';
-		$new_message_url = $this->base_url . '/messages.php?add=1';
-		$new_transaction_url = $this->base_url . '/transactions.php?add=1';
-		$account_edit_url = $this->base_url . '/users.php?edit=';
+		$currency = readconfigfromdb('currency', $schema);
+		$support = readconfigfromdb('support', $schema);
+		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays', $schema) * 86400); 	
+		$msg_url = $base_url . '/messages.php?id=';
+		$msgs_url = $base_url . '/messages.php';
+		$news_url = $base_url . '/news.php?id=';
+		$user_url = $base_url . '/users.php?id=';
+		$login_url = $base_url . '/login.php?login=';
+		$new_message_url = $base_url . '/messages.php?add=1';
+		$new_transaction_url = $base_url . '/transactions.php?add=1';
+		$account_edit_url = $base_url . '/users.php?edit=';
 
 	// fetch active users
 
@@ -52,7 +61,7 @@ class saldo
 		$rs = $this->db->prepare('SELECT u.id,
 				u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 				u.letscode, u.postcode, u.cron_saldo
-			FROM users u
+			FROM ' . $schema . '.users u
 			WHERE u.status in (1, 2)');
 
 		$rs->execute();
@@ -67,7 +76,7 @@ class saldo
 		$mailaddr = $mailaddr_public = $saldo_mail = [];
 
 		$st = $this->db->prepare('select u.id, c.value, c.flag_public
-			from users u, contact c, type_contact tc
+			from ' . $schema . '.users u, ' . $schema . '.contact c, ' . $schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
@@ -105,14 +114,14 @@ class saldo
 		$mm->add_text($t . $r . $u . $r)
 			->add_html('<h2>' . $t . '</h2>');
 
-		$t = 'Deze lijst bevat LETS vraag en aanbod dat de afgelopen ' . readconfigfromdb('saldofreqdays');
+		$t = 'Deze lijst bevat LETS vraag en aanbod dat de afgelopen ' . readconfigfromdb('saldofreqdays', $schema);
 		$t .= ' dagen online is geplaatst. ';
 
 		$mm->add_html('<p>')
 			->add_text_and_html($t, 'msgs:any');
 
 		$t = 'Er werd geen nieuw vraag of aanbod online geplaatst afgelopen ' .
-			readconfigfromdb('saldofreqdays') . ' dagen. ';
+			readconfigfromdb('saldofreqdays', $schema) . ' dagen. ';
 
 		$mm->add_text_and_html($t, 'msgs:none')
 			->add_text($r . $r . 'Geef zelf je eigen vraag of aanbod in: ' . $new_message_url . $r . $r)
@@ -124,7 +133,7 @@ class saldo
 		$image_ary = [];
 
 		$rs = $this->db->prepare('select m.id, p."PictureFile"
-			from msgpictures p, messages m
+			from ' . $schema . '.msgpictures p, ' . $schema . '.messages m
 			where p.msgid = m.id
 				and m.cdate >= ?', [$treshold_time]);
 
@@ -141,7 +150,7 @@ class saldo
 		$addr = $addr_public = [];
 
 		$rs = $this->db->prepare('select u.id, c.value, flag_public
-			from users u, contact c, type_contact tc
+			from ' . $schema . '.users u, ' . $schema . '.contact c, ' . $schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
@@ -159,7 +168,7 @@ class saldo
 
 		$rs = $this->db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
 			u.name, u.letscode
-			FROM messages m, users u
+			FROM ' . $schema . 'messages m, ' . $schema . '.users u
 			WHERE m.id_user = u.id
 				AND u.status IN (1, 2)
 				AND m.cdate >= ?
@@ -233,7 +242,7 @@ class saldo
 
 		$mm->add_text('Nieuws' . $r)
 			->add_text('------' . $r)
-			->add_text('Bekijk online: ' . $this->base_url . '/news.php' . $r . $r)
+			->add_text('Bekijk online: ' . $base_url . '/news.php' . $r . $r)
 			->add_html('<h2>Nieuws</h2>')
 			->add_html('<ul>', 'news:any')
 			->add_text('Momenteel zijn er geen nieuwsberichten.' . $r . $r, 'news:none')
@@ -241,7 +250,7 @@ class saldo
 
 		$news_access_ary = [];
 
-		$rows = $this->xdb->get_many(['agg_schema' => $this->this_group->get_schema(), 'agg_type' => 'news_access']);
+		$rows = $this->xdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
 
 		foreach ($rows as $row)
 		{
@@ -250,7 +259,7 @@ class saldo
 		}
 
 		$rs = $this->db->prepare('select n.*, u.name, u.letscode
-			from news n, users u
+			from ' . $schema . '.news n, ' . $schema . '.users u
 			where n.approved = \'t\'
 				and n.published = \'t\'
 				and n.id_user = u.id
@@ -266,7 +275,7 @@ class saldo
 			}
 			else
 			{
-				$this->xdb->set('news_access', $news_id, ['access' => 'interlets']);
+				$this->xdb->set('news_access', $news_id, ['access' => 'interlets'], $schema);
 				$news_access = 'interlets';
 			}
 
@@ -303,11 +312,11 @@ class saldo
 			->add_html('<p>Momenteel zijn er geen nieuwe leden.</p>', 'new_users:none');
 
 		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
-			from users u
+			from ' . $schema . '.users u
 			where u.status = 1
 				and u.adate > ?');
 
-		$rs->bindValue(1, gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays') * 86400));
+		$rs->bindValue(1, gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $schema) * 86400));
 		$rs->execute();
 
 		while ($row = $rs->fetch())
@@ -333,7 +342,7 @@ class saldo
 			->add_html('<p>Momenteel zijn er geen uitstappende leden.</p>', 'leaving_users:none');
 
 		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
-			from users u
+			from ' . $schema . '.users u
 			where u.status = 2');
 
 		$rs->execute();
@@ -356,9 +365,9 @@ class saldo
 		$mm->add_text('Recente transacties' . $r)
 			->add_text('-------------------' . $r . $r)
 			->add_html('<h2>Recente transacties</h2><p>');
-		$t = 'Deze lijst toont de transacties van de laatste ' . readconfigfromdb('saldofreqdays') . ' dagen.';
+		$t = 'Deze lijst toont de transacties van de laatste ' . readconfigfromdb('saldofreqdays', $schema) . ' dagen.';
 		$mm->add_text_and_html($t, 'trans:any');
-		$t = 'Er werden geen nieuwe transacties gedaan afgelopen ' . readconfigfromdb('saldofreqdays') . ' dagen. ';
+		$t = 'Er werden geen nieuwe transacties gedaan afgelopen ' . readconfigfromdb('saldofreqdays', $schema) . ' dagen. ';
 		$mm->add_text_and_html($t, 'trans:none')
 			->add_text($r . $r . 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r)
 			->add_html('</p><p>Klik <a href="' . $new_transaction_url . '">hier</a> ')
@@ -368,7 +377,7 @@ class saldo
 				t.amount, t.cdate, t.description,
 				uf.name as name_from, uf.letscode as letscode_from,
 				ut.name as name_to, ut.letscode as letscode_to
-			from transactions t, users uf, users ut
+			from ' . $schema . '.transactions t, ' . $schema . '.users uf, ' . $schema . '.users ut
 			where t.id_from = uf.id
 				and t.id_to = ut.id
 				and t.cdate > ?');
@@ -486,17 +495,17 @@ class saldo
 				$mm->set_var('googleaddr', str_replace(' ', '+', $addr[$user_id]));
 			}
 
-			$mm->mail_q(['to' => $user_id, 'subject' => $subject]);
+			$mm->mail_q(['to' => $user_id, 'subject' => $subject, 'schema' => $schema]);
 			$log_to[] = $users[$user_id]['letscode'] . ' ' . $users[$user_id]['name'] . ' (' . $user_id . ')';
 		}
 
 		if (count($log_to))
 		{
-			$this->monolog->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to));
+			$this->monolog->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to), ['schema' => $schema]);
 		}
 		else
 		{
-			$this->monolog->info('mail: no saldomail queued');
+			$this->monolog->info('mail: no saldomail queued', ['schema' => $schema]);
 		}
 
 		return true;

@@ -545,16 +545,18 @@ $app['eland.mailaddr'] = function ($app){
 // tasks
 
 $app['eland.task.mail'] = function ($app){
-	return new eland\task\mail($app['eland.queue'], $app['monolog'], $app['eland.this_group'], $app['eland.mailaddr']);
+	return new eland\task\mail($app['eland.queue'], $app['monolog'],
+		$app['eland.this_group'], $app['eland.mailaddr']);
 };
 
 $app['eland.task.autominlimit'] = function ($app){
-	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'], $app['eland.xdb'], $app['db']);
+	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'],
+		$app['eland.xdb'], $app['db']);
 };
 
 $app['eland.task.geocode'] = function ($app){
 	return new eland\task\geocode($app['redis'], $app['db'], $app['eland.xdb'],
-		$app['eland.queue'], $app['monolog'], $app['eland.this_group']);
+		$app['eland.queue'], $app['monolog']);
 };
 
 $app['eland.task.cleanup_image_files'] = function ($app){
@@ -567,7 +569,7 @@ $app['eland.task.cleanup_messages'] = function ($app){
 };
 
 $app['eland.task.cleanup_news'] = function ($app){
-	return new eland\task\cleanup_news($app['db'], $app['eland.xdb']);
+	return new eland\task\cleanup_news($app['db'], $app['eland.xdb'], $app['monolog']);
 };
 
 $app['eland.task.cleanup_logs'] = function ($app){
@@ -579,21 +581,23 @@ $app['eland.task.saldo_update'] = function ($app){
 };
 
 $app['eland.task.user_exp_msgs'] = function ($app){
-	return new eland\task\user_exp_msgs($app['db'], $app['eland.task.mail'], $app['eland.base_url']);
+	return new eland\task\user_exp_msgs($app['db'], $app['eland.task.mail'],
+		$app['eland.groups'], $app['eland.protocol']);
 };
 
 $app['eland.task.admin_exp_msg'] = function ($app){
-	return new eland\task\admin_exp_msg($app['db'], $app['eland.task.mail'], $app['eland.base_url']);
+	return new eland\task\admin_exp_msg($app['db'], $app['eland.task.mail'],
+		$app['eland.groups'], $app['eland.protocol']);
 };
 
 $app['eland.task.saldo'] = function ($app){
 	return new eland\task\saldo($app['db'], $app['eland.xdb'], $app['monolog'],
-		$app['eland.this_group'], $app['eland.base_url'], $app['eland.s3_img_url']);
+		$app['eland.groups'], $app['eland.s3_img_url'], $app['eland.protocol']);
 };
 
 $app['eland.task.interlets_fetch'] = function ($app){
 	return new eland\task\interlets_fetch($app['redis'], $app['db'], $app['eland.typeahead'],
-		$app['monolog'], $app['eland.this_group'], $app['eland.groups']);
+		$app['monolog'], $app['eland.groups']);
 };
 
 $app['eland.cron_schedule'] = function ($app){

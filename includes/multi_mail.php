@@ -133,7 +133,7 @@ class multi_mail
 			$out['html'] = $html;
 		}
 
-		$app['eland.task.mail']->queue(array_merge($mail_ary, $out));
+		$app['eland.task.mail']->queue(array_merge($mail_ary, $out), $mail_ary['schema'] ?? false);
 
 		$this->vars = [];
 

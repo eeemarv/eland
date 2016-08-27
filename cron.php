@@ -111,8 +111,6 @@ else
 	exit;
 }
 
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
 echo '*** Cron system running [' . $app['eland.this_group']->get_schema() . '] ***' . $r;
 
 $app['eland.base_url'] = $app['eland.protocol'] . $app['eland.this_group']->get_host();

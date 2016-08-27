@@ -16,8 +16,10 @@ class cleanup_logs
 		$this->xdb = $xdb;
 	}
 
-	function run()
+	function run($schema)
 	{
+		// $schema is not used, logs from all schemas are cleaned up.
+
 		$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 
 		$this->db->executeQuery('delete from eland_extra.logs

@@ -132,17 +132,17 @@ class mail
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
-		if (!readconfigfromdb('mailenabled'))
+		if (!readconfigfromdb('mailenabled', $data['schema']))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
-			$this->monolog->info('mail: ' . $m);
+			$this->monolog->info('mail: ' . $m, ['schema' => $data['schema']]);
 			return $m;
 		}
 
 		if (!isset($data['subject']) || $data['subject'] == '')
 		{
 			$m = 'Mail "subject" is missing.';
-			$this->monolog->error('mail: '. $m);
+			$this->monolog->error('mail: '. $m, ['schema' => $data['schema']]);
 			return $m;
 		}
 
@@ -150,14 +150,14 @@ class mail
 			&& (!isset($data['html']) || $data['html'] == ''))
 		{
 			$m = 'Mail "body" (text or html) is missing.';
-			$this->monolog->error('mail: ' . $m);
+			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
 			return $m;
 		}
 
 		if (!isset($data['to']) || !$data['to'])
 		{
 			$m = 'Mail "to" is missing for "' . $data['subject'] . '"';
-			$this->monolog->error('mail: ' . $m);
+			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
 			return $m;
 		}
 

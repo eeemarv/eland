@@ -9,22 +9,27 @@ class user_exp_msgs
 {
 	protected $db;
 	protected $mail;
+	protected $groups;
+	protected $protocol;
 
-	public function __construct(db $db, mail $mail, string $base_url)
+	public function __construct(db $db, mail $mail, groups $groups, string $protocol)
 	{
 		$this->db = $db;
 		$this->mail = $mail;
-		$this->base_url = $base_url;
+		$this->groups = $groups;
+		$this->protocol = $protocol;
 	}
 
-	function run()
+	function run($schema)
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
-		$msgcleanupdays = readconfigfromdb('msgexpcleanupdays');
+		$base_url = $this->protocol . $this->groups->get_host($schema);
+
+		$msgcleanupdays = readconfigfromdb('msgexpcleanupdays', $schema);
 
 		$warn_messages  = $this->db->fetchAll('SELECT m.*
-			FROM messages m
+			FROM ' . $schema . '.messages m
 				WHERE m.exp_user_warn = \'f\'
 					AND m.validity < ?', [$now]);
 
@@ -33,9 +38,9 @@ class user_exp_msgs
 
 			echo 'Found new expired message ' . $value['id'];
 
-			$user = readuser($value['id_user']);
+			$user = readuser($value['id_user'], $schema);
 
-			$extend_url = $this->base_url . '/messages.php?id=' . $value['id'] . '&extend=';
+			$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&extend=';
 
 			$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
 
@@ -51,9 +56,9 @@ class user_exp_msgs
 			$text .= "één jaar: " . $extend_url . "365 \n";
 			$text .= "twee jaar: " . $extend_url . "730 \n";
 			$text .= "vijf jaar: " . $extend_url . "1825 \n\n";
-			$text .= "Nieuw vraag of aanbod ingeven: " . $this->base_url . "/messages.php?add=1 \n\n";
+			$text .= "Nieuw vraag of aanbod ingeven: " . $base_url . "/messages.php?add=1 \n\n";
 			$text .= "Als je nog vragen of problemen hebt, kan je mailen naar ";
-			$text .= readconfigfromdb('support');
+			$text .= readconfigfromdb('support', $schema);
 
 			$subject = 'Je ' . $va . ' is vervallen.';
 
@@ -63,10 +68,10 @@ class user_exp_msgs
 				return;
 			}
 
-			$this->mail->queue(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text]);
+			$this->mail->queue(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text, 'schema' => $schema]);
 		}
 
-		$this->db->executeUpdate('update messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+		$this->db->executeUpdate('update ' . $schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
 
 	}
 }

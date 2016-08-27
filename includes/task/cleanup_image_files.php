@@ -26,9 +26,11 @@ class cleanup_image_files
 		$this->groups = $groups;
 	}
 
-	function run()
+	function run($schema)
 	{
-		if ($this->redis->get('cron_cleanup_image_files'))
+		// $schema is not used, files of all schemas are scanned
+
+		if (!$this->groups->get_host($schema))
 		{
 			return;
 		}
@@ -132,7 +134,5 @@ class cleanup_image_files
 		}
 
 		$this->redis->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
-		$this->redis->set('cron_cleanup_image_files', '1');
-		$this->redis->expire('cron_cleanup_image_files', 900);
 	}
 }

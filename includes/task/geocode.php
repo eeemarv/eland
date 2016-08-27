@@ -7,7 +7,6 @@ use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use eland\queue;
 use Monolog\Logger;
-use eland\this_group;
 
 class geocode
 {
@@ -20,14 +19,13 @@ class geocode
 	protected $curl;
 	protected $geocoder;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, queue $queue, Logger $monolog, this_group $this_group)
+	public function __construct(Redis $redis, db $db, xdb $xdb, queue $queue, Logger $monolog)
 	{
 		$this->redis = $redis;
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->db = $db;
-		$this->this_group = $this_group;
 
 		$this->curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 		$this->geocoder = new \Geocoder\ProviderAggregator();
@@ -151,12 +149,12 @@ class geocode
 		$this->queue->set('geocode', $data);
 	}
 
-	public function run()
+	public function run($schema)
 	{
 		$log_ary = [];
 
 		$st = $this->db->prepare('select c.value, c.id_user
-			from contact c, type_contact tc, users u
+			from ' . $schema . '.contact c, ' . $schema . '.type_contact tc, ' . $schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
 				and c.id_user = u.id
@@ -169,18 +167,18 @@ class geocode
 			$data = [
 				'adr'		=> trim($row['value']),
 				'uid'		=> $row['id_user'],
-				'schema'	=> $this->this_group->get_schema(),
+				'schema'	=> $schema,
 			];
 
 			if ($this->queue($data) !== false)
 			{
-				$log_ary[] = link_user($row['id_user'], false, false, true) . ': ' . $data['adr'];
+				$log_ary[] = link_user($row['id_user'], $schema, false, true) . ': ' . $data['adr'];
 			}
 		}
 
 		if (count($log_ary))
 		{
-			$this->monolog->info('Adresses queued for geocoding: ' . implode(', ', $log_ary));
+			$this->monolog->info('Adresses queued for geocoding: ' . implode(', ', $log_ary), ['schema' => $schema]);
 		}
 	}
 }
