@@ -23,13 +23,13 @@ class cleanup_news
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
-		$news = $this->db->fetchAll('select id, content from ' . $schema . '.news where itemdate < ? and sticky = \'f\'', [$now]);
+		$news = $this->db->fetchAll('select id, headline from ' . $schema . '.news where itemdate < ? and sticky = \'f\'', [$now]);
 
 		foreach ($news as $n)
 		{
 			$this->xdb->del('news_access', $n['id'], $schema);
 			$this->db->delete($schema . '.news', ['id' => $n['id']]);
-			$this->monolog->info('removed news item ' . $n['content'], ['schema' => $schema]);
+			$this->monolog->info('removed news item ' . $n['headline'], ['schema' => $schema]);
 		}
 	}
 }
