@@ -204,6 +204,8 @@ class interlets_fetch
 	 */
 	public function fetch_typeahead($client, $group, $schema)
 	{
+		$r = "<br>\r\n";
+
 		$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
 
 		$status_code = $client->getResponse()->getStatus();
