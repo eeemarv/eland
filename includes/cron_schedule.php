@@ -44,6 +44,8 @@ class cron_schedule
 
 	public function find_next()
 	{
+		$r = "<br>\n\r";
+
 		$cronjob_ary = $this->xdb->get_many(['agg_type' => 'cronjob']);
 
 		foreach ($this->tasks as $name => $t)
@@ -99,8 +101,13 @@ class cron_schedule
 
 		$schema_manager = $this->db->getSchemaManager();
 
-		if ($schema_manager->tablesExist([$insert_schema . '.cron']))
+		if ($this->db->executeQuery('select tablename
+			from pg_tables
+			where schemaname = ? and tablename = \'cron\'', [$insert_schema]))
 		{
+
+			echo $insert_schema . '.cron table exists.' . $r;
+
 			$event_time = $this->db->fetchColumn('select lastrun
 				from ' . $insert_schema . '.cron
 				where cronjob = ?', [$insert_name]);
@@ -108,10 +115,12 @@ class cron_schedule
 
 		if (isset($event_time))
 		{
+			echo 'move ' . $insert_schema . ' ' . $insert_name . ' to xdb' . $r;
 			$this->monolog->debug('move cronjob ' . $insert_name . ' to xdb', ['schema' => $insert_schema]);
 		}
 		else
 		{
+			echo 'new ' . $insert_schema . ' ' . $insert_name . ' in xdb' . $r;
 			$event_time = gmdate('Y-m-d H:i:s', $this->time);
 			$this->monolog->debug('new cronjob ' . $insert_name . ' in xdb.', ['schema' => $insert_schema]);
 		}

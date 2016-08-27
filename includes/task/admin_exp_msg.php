@@ -10,12 +10,14 @@ class admin_exp_msg
 {
 	protected $db;
 	protected $mail;
+	protected $groups;
 	protected $protocol;
 
 	public function __construct(db $db, mail $mail, groups $groups, string $protocol)
 	{
 		$this->db = $db;
 		$this->mail = $mail;
+		$this->groups = $groups;
 		$this->protocol = $protocol;
 	}
 
