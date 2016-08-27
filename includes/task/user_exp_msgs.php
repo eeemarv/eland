@@ -4,6 +4,7 @@ namespace eland\task;
 
 use Doctrine\DBAL\Connection as db;
 use eland\task\mail;
+use eland\groups;
 
 class user_exp_msgs
 {
