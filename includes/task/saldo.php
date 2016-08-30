@@ -168,7 +168,7 @@ class saldo
 
 		$rs = $this->db->prepare('SELECT m.id, m.content, m."Description", m.msg_type, m.id_user,
 			u.name, u.letscode
-			FROM ' . $schema . 'messages m, ' . $schema . '.users u
+			FROM ' . $schema . '.messages m, ' . $schema . '.users u
 			WHERE m.id_user = u.id
 				AND u.status IN (1, 2)
 				AND m.cdate >= ?
