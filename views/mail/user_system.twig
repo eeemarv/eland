@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body bgcolor="#FEFEFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+{% block pretext %}
+<p><i>Dit is een automatische mail. Niet beantwoorden a.u.b.</i></p>
+{% endblock pretext %}
+
+{% block body %}
+{% endblock body %}
+
+{% block accountinfo %}
+<hr>
+
+<h4>Je account</h4>
+
+<ul>
+<li>Je letscode: {{ user.letscode }}</li>
+<li>Je gebruikersnaam: {{ user.name }}</li>
+<li>Je saldo bedraagt momenteel {{ user.balance }} {{ group.currency }}</li>
+<li>Minimum limiet: {{ user.minlimit }} {{ group.currency }}, Maximum limiet: {{ user.maxlimit }} {{ group.currency }}</li>
+<li>Status: {{ user.status_text }}</li>
+<li>Login: {{ user.login_url }}</li>
+
+</ul>
+{% endblock accountinfo %}
+{% block support %}
+<hr>
+
+<p>Als je vragen of problemen hebt, kan je mailen naar {{ group.support }}</p>
+{% endblock support %}
+{% block footer %}
+{% endblock footer %}

@@ -33,7 +33,7 @@ if (!$app['redis']->get('process_queue_sleep') && ($count = $app['eland.queue']-
 	echo '-- process queue -- (count: ' . $count . ')' . $r;
 
 	$queue_tasks = [
-		'mail'	=> true,
+		'mail'			=> true,
 		'autominlimit'	=> true,
 		'geocode'		=> true,
 	];
@@ -66,7 +66,7 @@ if (!$app['redis']->get('process_queue_sleep') && ($count = $app['eland.queue']-
 	$app['redis']->set('process_queue_sleep', '1');
 	$app['redis']->expire('process_queue_sleep', 50);
 	echo '-- Cron end. --';
-	exit;	
+	exit;
 }
 
 if ($app['eland.cron_schedule']->find_next())

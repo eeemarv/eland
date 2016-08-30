@@ -5,11 +5,25 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/includes/inc_default.php';
 
 $token = $_GET['token'] ?? false;
+$test = $_GET['test'] ? true : false;
 
 if (!readconfigfromdb('contact_form_en'))
 {
 	$app['eland.alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
+}
+
+if($test && getenv('DEBUG'))
+{
+	$mail = [
+		'html' 		=> $app['twig']->render('mail/base_news.twig'),
+		'subject'	=> 'Test',
+		'to'		=> 'admin',
+	];
+
+	$app['eland.task.mail']->queue($mail);
+
+	$app['eland.alert']->info('Test mail queued');
 }
 
 if ($token)

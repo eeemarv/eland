@@ -34,7 +34,9 @@ class mail
 		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 
 		$this->converter = new HtmlConverter();
-		$this->converter->getConfig()->setOption('strip_tags', true);
+		$converter_config = $this->converter->getConfig();
+		$converter_config->setOption('strip_tags', true);
+		$converter_config->setOption('remove_nodes', 'img');
 	}
 
 	/**

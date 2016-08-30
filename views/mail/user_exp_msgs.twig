@@ -1,0 +1,22 @@
+{% extends user_system.twig %}
+
+{% block body %}
+<p>Beste {{ user.name }},</p>
+
+<p>Je {{ msg.type }} "{{ msg.content }}" is vervallen en zal over {{ msgcleanupdays }} dagen verwijderd worden.
+Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als 
+je niet ingelogd bent, zal je eerst gevraagd worden in te loggen).</p>
+
+<p>Verlengen met</p>
+
+<ul>
+<li><a href="{{ url_extend.7 }}">Een week</a></li>
+<li><a href="{{ url_extend.30 }}">Een maand</a></li>
+<li><a href="{{ url_extend.180 }}">Zes maanden</a></li>
+<li><a href="{{ url_extend.365 }}">Een jaar</a></li>
+<li><a href="{{ url_extend.1825 }}">Vijf jaren</a></li>
+</ul>
+
+<p><a href="{{ url_new_msg }}">Nieuw vraag of aanbod ingeven</a></p>
+
+{% endblock body %}

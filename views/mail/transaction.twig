@@ -1,0 +1,34 @@
+{% extends user_system.twig %}
+
+{% block body %}
+<h3>{% if interlets %}Nieuwe interlets transactie{% else %}Nieuwe transactie{% endif %}</h3>
+
+<p>Er werden {{ amount }} {{ group.currency }} naar je account overgeschreven door {{ from_user }}</p>
+
+<dl>
+<dt>Van</dt>
+<dd>{{ from_user }}</dd>
+
+<dt>Aan</dt>
+<dd>{{ to_user }}</dd>
+
+<dt>Omschrijving</dt>
+<dd>{{ description }}</dd>
+
+<dt>Aantal</dt>
+<dd>{{ amount }} {{ group.currency }}</dd>
+
+<dt></dt>
+<dd></dd>
+
+</dl>
+
+	$text .= 'Notificatie ' . $interlets . 'transactie' . $r . $r;
+	$text .= 'Van: ' . $t . $t . $u_from . $r;
+	$text .= 'Aan: ' . $t . $t . $u_to . $r;
+
+	$text .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
+	$text .= 'Aantal: ' . $t . $t . $transaction['amount'] . ' ' . $currency . $r . $r;
+	$text .= 'Transactie id:' . $t . $t .$transaction['transid'] . $r;
+
+{% endblock body %}
