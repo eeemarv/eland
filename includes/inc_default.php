@@ -601,7 +601,8 @@ $app['eland.task.interlets_fetch'] = function ($app){
 };
 
 $app['eland.cron_schedule'] = function ($app){
-	return new eland\cron_schedule($app['db'], $app['monolog'], $app['eland.xdb'], $app['eland.groups']);
+	return new eland\cron_schedule($app['db'], $app['monolog'], $app['eland.xdb'],
+		$app['eland.groups'], $app['eland.this_group']);
 };
 
 //
