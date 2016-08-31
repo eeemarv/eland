@@ -6,8 +6,8 @@
 
 function generate_transid()
 {
-	global $app, $s_id;
-	return substr(sha1($s_id .microtime()), 0, 12) . '_' . $s_id . '@' . $app['eland.base_url'];
+	global $s_id;
+	return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $_SERVER['SERVER_NAME'];
 }
 
 /*
