@@ -872,7 +872,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 function readconfigfromdb($key, $sch = null)
 {
-    global $app;
+    global $app, $s_guest, $s_master;
     static $cache;
 
 	$eland_config_default = [
@@ -921,7 +921,10 @@ function readconfigfromdb($key, $sch = null)
 	{
 		$value = $app['db']->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
 
-		$app['eland.xdb']->set('setting', $key, ['value' => $value], $sch);
+		if (!$s_guest && !$s_master)
+		{
+			$app['eland.xdb']->set('setting', $key, ['value' => $value], $sch);
+		}
 	}
 
 	if (isset($value))
