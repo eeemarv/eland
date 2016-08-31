@@ -1,0 +1,24 @@
+{% extends 'mail/base.twig' %}
+
+{% block subject %}{% endblock subject %}
+{% block html %}{% endblock html %}
+
+{% block text_body %}
+
+Beste {{ user.name }},
+
+Je {% if msg.type == 'offer' %}aanbod{% else %}vraag{% endif %} "{{ msg.content }}" is vervallen en zal over {{ group.msgexpcleanupdays }} dagen verwijderd worden.
+Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links. Als 
+je niet ingelogd bent, zal je eerst gevraagd worden in te loggen.
+
+Verlengen met
+
+- Een week: {{ url_extend.7|raw }}
+- Een maand: {{ url_extend.30|raw }}
+- Zes maanden: {{ url_extend.180|raw }}
+- Een jaar: {{ url_extend.365|raw }}
+- Vijf jaar: {{ url_extend.1825|raw }}
+
+Nieuw vraag of aanbod ingeven: {{ url_msg_add|raw }}
+
+{% endblock text_body %}

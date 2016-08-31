@@ -70,4 +70,18 @@ class groups
 	{
 		return count($this->schemas);
 	}
+
+	public function get_template_vars($schema)
+	{
+		$return = [
+			'tag'				=> readconfigfromdb('systemtag', $schema),
+			'name'				=> readconfigfromdb('systemname', $schema),
+			'currency'			=> readconfigfromdb('currency', $schema),
+			'support'			=> readconfigfromdb('support', $schema),
+			'admin'				=> readconfigfromdb('admin', $schema),
+			'msgexpcleanupdays'	=> readconfigfromdb('msgexpcleanupdays', $schema),
+		];
+
+		return $return;
+	}
 }

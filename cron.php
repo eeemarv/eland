@@ -69,6 +69,9 @@ if (!$app['redis']->get('process_queue_sleep') && ($count = $app['eland.queue']-
 	exit;
 }
 
+$app['eland.task.user_exp_msgs']->run('x');
+//exit;
+
 if ($app['eland.cron_schedule']->find_next())
 {
 	$name = $app['eland.cron_schedule']->get_name();

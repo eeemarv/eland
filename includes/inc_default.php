@@ -51,6 +51,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 	'twig.path' => __DIR__ . '/../views',
 	'twig.options'	=> [
 		'cache'		=> __DIR__ . '/../cache',
+		'debug'		=> getenv('DEBUG'),
 	],
 ]);
 
@@ -546,7 +547,7 @@ $app['eland.mailaddr'] = function ($app){
 
 $app['eland.task.mail'] = function ($app){
 	return new eland\task\mail($app['eland.queue'], $app['monolog'],
-		$app['eland.this_group'], $app['eland.mailaddr']);
+		$app['eland.this_group'], $app['eland.mailaddr'], $app['twig']);
 };
 
 $app['eland.task.autominlimit'] = function ($app){

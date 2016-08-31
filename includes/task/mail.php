@@ -7,6 +7,7 @@ use eland\queue;
 use Monolog\Logger;
 use eland\this_group;
 use eland\mailaddr;
+use Twig_Environment as Twig;
 
 class mail
 {
@@ -16,13 +17,15 @@ class mail
 	protected $monolog;
 	protected $this_group;
 	protected $mailaddr;
+	protected $twig;
 
-	public function __construct(queue $queue, Logger $monolog, this_group $this_group, mailaddr $mailaddr)
+	public function __construct(queue $queue, Logger $monolog, this_group $this_group, mailaddr $mailaddr, Twig $twig)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
 		$this->mailaddr = $mailaddr;
+		$this->twig = $twig;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
@@ -61,22 +64,39 @@ class mail
 			return ;
 		}
 
-		if (!isset($data['subject']))
+		if (isset($data['template']) && isset($data['vars']))
 		{
-			$this->monolog->error('mail error: mail without subject', ['schema' => $sch]);
-			return;
-		}
+			$template_subject = $this->twig->loadTemplate('mail/' . $data['template'] . '.subject.twig');
+			$template_html = $this->twig->loadTemplate('mail/' . $data['template'] . '.html.twig');
+			$template_text = $this->twig->loadTemplate('mail/' . $data['template'] . '.text.twig');
 
-		if (!isset($data['text']))
+			$data['subject']  = $template_subject->render($data['vars']);
+			$data['html'] = $template_html->render($data['vars']);
+			$data['text'] = $template_text->render($data['vars']);
+
+			error_log('subject: ' . $data['subject']);
+			error_log('html: ' . $data['html']);
+			error_log('text: ' . $data['text']);
+		}
+		else
 		{
-			if (isset($data['html']))
+			if (!isset($data['subject']))
 			{
-				$data['text'] = $this->converter->convert($data['html']);
-			}
-			else
-			{
-				$this->monolog->error('mail error: mail without body content', ['schema' => $sch]);
+				$this->monolog->error('mail error: mail without subject', ['schema' => $sch]);
 				return;
+			}
+
+			if (!isset($data['text']))
+			{
+				if (isset($data['html']))
+				{
+					$data['text'] = $this->converter->convert($data['html']);
+				}
+				else
+				{
+					$this->monolog->error('mail error: mail without body content', ['schema' => $sch]);
+					return;
+				}
 			}
 		}
 
@@ -131,6 +151,7 @@ class mail
 	public function queue(array $data, int $priority = 100)
 	{
 		// only the interlets transactions receiving side has a different schema
+		// always set schema in cron 
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
@@ -141,19 +162,24 @@ class mail
 			return $m;
 		}
 
-		if (!isset($data['subject']) || $data['subject'] == '')
+		if (!isset($data['template']))
 		{
-			$m = 'Mail "subject" is missing.';
-			$this->monolog->error('mail: '. $m, ['schema' => $data['schema']]);
-			return $m;
-		}
+			if (!isset($data['subject']) || $data['subject'] == '')
+			{
+				$m = 'Mail "subject" is missing.';
+				$this->monolog->error('mail: '. $m, ['schema' => $data['schema']]);
+				return $m;
+			}
 
-		if ((!isset($data['text']) || $data['text'] == '')
-			&& (!isset($data['html']) || $data['html'] == ''))
-		{
-			$m = 'Mail "body" (text or html) is missing.';
-			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
-			return $m;
+			if ((!isset($data['text']) || $data['text'] == '')
+				&& (!isset($data['html']) || $data['html'] == ''))
+			{
+				$m = 'Mail "body" (text or html) is missing.';
+				$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
+				return $m;
+			}
+
+			$data['subject'] = '[' . readconfigfromdb('systemtag', $data['schema']) . '] ' . $data['subject'];
 		}
 
 		if (!isset($data['to']) || !$data['to'])
@@ -206,8 +232,6 @@ class mail
 				unset($data['cc']);
 			}
 		}
-
-		$data['subject'] = '[' . readconfigfromdb('systemtag', $data['schema']) . '] ' . $data['subject'];
 
 		$error = $this->queue->set('mail', $data, $priority);
 

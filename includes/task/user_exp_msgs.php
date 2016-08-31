@@ -27,26 +27,46 @@ class user_exp_msgs
 
 		$base_url = $this->protocol . $this->groups->get_host($schema);
 
-		$msgcleanupdays = readconfigfromdb('msgexpcleanupdays', $schema);
+		if ($schema == 'x')
+		{
+			$warn_messages  = $this->db->fetchAll('SELECT m.*
+				FROM ' . $schema . '.messages m
+					WHERE m.exp_user_warn = \'f\' limit 1');
+		}
+		else
+		{
+			echo 'bye';
+			return;
+		}
 
+		$group_vars = $this->groups->get_template_vars($schema);
+
+//		$msgcleanupdays = readconfigfromdb('msgexpcleanupdays', $schema);
+/*
 		$warn_messages  = $this->db->fetchAll('SELECT m.*
 			FROM ' . $schema . '.messages m
 				WHERE m.exp_user_warn = \'f\'
 					AND m.validity < ?', [$now]);
+*/
 
-		foreach ($warn_messages AS $key => $value)
+		foreach ($warn_messages as $key => $msg)
 		{
+			$msg['type'] = ($msg['msg_type']) ? 'offer' : 'want';
 
-			echo 'Found new expired message ' . $value['id'];
+			$url_extend = [];
 
-			$user = readuser($value['id_user'], $schema);
+			foreach ([7, 30, 60, 180, 365, 730, 1825] as $ext_days)
+			{
+				$url_extend[$ext_days] = $base_url . '/messages.php?id=' . $msg['id'] . '&extend=' . $ext_days;
+			}
 
-			$extend_url = $base_url . '/messages.php?id=' . $value['id'] . '&extend=';
+/*
+			$va = ($msg['msg_type']) ? 'aanbod' : 'vraag';
 
-			$va = ($value['msg_type']) ? 'aanbod' : 'vraag';
+			$extend_url = $base_url . '/messages.php?id=' . $msg['id'] . '&extend=';
 
 			$text = "-- Dit is een automatische mail, niet beantwoorden aub --\r\n\r\n";
-			$text .= "Beste " . $user['name'] . "\n\nJe " . $va . ' ' . $value['content'] . ' ';
+			$text .= "Beste " . $user['name'] . "\n\nJe " . $va . ' ' . $msg['content'] . ' ';
 			$text .= 'is vervallen en zal over ' . $msgcleanupdays . ' dagen verwijderd worden. ';
 			$text .= 'Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als ';
 			$text .= 'je niet ingelogd bent, zal je eerst gevraagd worden in te loggen). ';
@@ -62,17 +82,24 @@ class user_exp_msgs
 			$text .= readconfigfromdb('support', $schema);
 
 			$subject = 'Je ' . $va . ' is vervallen.';
+*/
+			$vars = [
+				'msg' 			=> $msg,
+				'user'			=> readuser($msg['id_user'], $schema),
+				'url_extend' 	=> $url_extend,
+				'url_msg_add'	=> $base_url . '/messages.php?add=1',
+				'group'			=> $group_vars,
+			];
 
-			if (empty($from))
-			{
-				echo "Mail from address is not set in configuration\n";
-				return;
-			}
-
-			$this->mail->queue(['to' => $value['id_user'], 'subject' => $subject, 'text' => $text, 'schema' => $schema]);
+			$this->mail->queue(['to' => $msg['id_user'],
+//				'subject' => $subject,
+//				'text' => $text,
+				'schema' => $schema,
+				'template' => 'user_exp_msgs',
+				'vars' => $vars]);
 		}
 
-		$this->db->executeUpdate('update ' . $schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+//		$this->db->executeUpdate('update ' . $schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
 
 	}
 }

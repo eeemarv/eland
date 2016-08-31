@@ -1,5 +1,5 @@
 {% block subject %}
-Bericht van {{ group.name }}
+{% block subject_tag %}[{{ group.tag }}]{% endblock subject_tag %} {% block subject_line %}Bericht van {{ group.name }}{% endblock subject_line %}
 {% endblock subject %}
 
 {% block html %}
