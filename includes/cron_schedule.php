@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use eland\xdb;
 use eland\groups;
+use eland\this_group;
 
 class cron_schedule
 {
@@ -18,6 +19,7 @@ class cron_schedule
 	protected $schema;
 	protected $name;
 	protected $event_time;
+	protected $this_group;
 
 	protected $tasks = [
 		'saldo'					=> [86400, 'saldofreqdays'],
@@ -32,12 +34,13 @@ class cron_schedule
 		'interlets_fetch'		=> [3600],
 	];
 
-	public function __construct(db $db, Logger $monolog, xdb $xdb, groups $groups)
+	public function __construct(db $db, Logger $monolog, xdb $xdb, groups $groups, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->groups = $groups;
+		$this->this_group = $this_group;
 		$this->time = time();
 		$this->sha = sha1($this->time);
 	}
@@ -83,6 +86,7 @@ class cron_schedule
 						$this->event_time = gmdate('Y-m-d H:i:s', $next);
 						$this->schema = $sch;
 						$this->name = $name;
+						$this->this_group->force($sch);
 						return true;
 					}
 				}
