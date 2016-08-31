@@ -34,26 +34,34 @@ class admin_exp_msg
 
 		$now = gmdate('Y-m-d H:i:s');
 
-		$query = 'SELECT m.id_user, m.content, m.id, to_char(m.validity, \'YYYY-MM-DD\') as vali
-			FROM ' . $schema . '.messages m, ' . $schema . '.users u
-			WHERE u.status <> 0
-				AND m.id_user = u.id
-				AND validity <= ?';
+		$query = 'select m.id_user, m.content, m.id
+			from ' . $schema . '.messages m, ' . $schema . '.users u
+			where u.status in (1, 2)
+				and m.id_user = u.id
+				and validity <= ?';
 
-		$messages = $this->db->fetchAll($query, [$now]);
+		$msgs = $this->db->fetchAll($query, [$now]);
 
-		$subject = 'Rapport vervallen Vraag en aanbod';
+		$messages = [];
 
-		$text = "-- Dit is een automatische mail, niet beantwoorden aub --\n\n";
-		$text .= "Gebruiker\t\tVervallen vraag of aanbod\t\tVervallen\n\n";
-		
-		foreach($messages as $key => $value)
+		foreach($msgs as $msg)
 		{
-			$text .= link_user($value['id_user'], $schema, false) . "\t\t" . $value['content'] . "\t\t" . $value['vali'] ."\n";
-
-			$text .= $base_url . '/messages.php?id=' . $value['id'] . " \n\n";
+			$messages[] = [
+				'user_str'	=> link_user($msg['id_user'], $schema, false),
+				'user_url'	=> $base_url . '/users.php?id=' . $msg['id_user'],
+				'content'	=> $msg['content'],
+				'url'		=> $base_url . '/messages.php?id=' . $msg['id'],
+			];
 		}
 
-		$this->mail->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text, 'schema' => $schema]);
+		$vars = [
+			'messages'	=> $messages,
+			'group'		=> $this->groups->get_template_vars($schema),
+		];
+
+		$this->mail->queue(['to' => 'admin',
+			'template'	=> 'admin_exp_msg',
+			'vars'		=> $vars,
+			'schema' 	=> $schema]);
 	}
 }

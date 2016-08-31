@@ -1,0 +1,16 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block body %}
+
+Vervallen vraag en aanbod
+-------------------------
+
+{% for msg in messages %}
+* {{ msg.content }}
+	{{ msg.user_str }}
+{% endfor %}
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
