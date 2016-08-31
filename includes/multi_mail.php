@@ -92,6 +92,12 @@ class multi_mail
 	{
 		global $app;
 
+		if (!isset($mail_ary['schema']))
+		{
+			$app['monolog']->error('schema not set for multi-mail');
+			return;
+		}
+
 		$html = $text = '';
 
 		foreach ($this->out as $out)
@@ -133,7 +139,7 @@ class multi_mail
 			$out['html'] = $html;
 		}
 
-		$app['eland.task.mail']->queue(array_merge($mail_ary, $out), $mail_ary['schema'] ?? false);
+		$app['eland.task.mail']->queue(array_merge($mail_ary, $out));
 
 		$this->vars = [];
 

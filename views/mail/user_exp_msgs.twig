@@ -1,6 +1,7 @@
-{% extends user_system.twig %}
+{% extends base.twig %}
 
-{% block body %}
+{% block html_body %}
+
 <p>Beste {{ user.name }},</p>
 
 <p>Je {{ msg.type }} "{{ msg.content }}" is vervallen en zal over {{ msgcleanupdays }} dagen verwijderd worden.
@@ -14,9 +15,29 @@ je niet ingelogd bent, zal je eerst gevraagd worden in te loggen).</p>
 <li><a href="{{ url_extend.30 }}">Een maand</a></li>
 <li><a href="{{ url_extend.180 }}">Zes maanden</a></li>
 <li><a href="{{ url_extend.365 }}">Een jaar</a></li>
-<li><a href="{{ url_extend.1825 }}">Vijf jaren</a></li>
+<li><a href="{{ url_extend.1825 }}">Vijf jaar</a></li>
 </ul>
 
 <p><a href="{{ url_new_msg }}">Nieuw vraag of aanbod ingeven</a></p>
 
-{% endblock body %}
+{% endblock html_body %}
+
+{% block text_body %}
+
+Beste {{ user.name }},
+
+Je {{ msg.type }} "{{ msg.content }}" is vervallen en zal over {{ msgcleanupdays }} dagen verwijderd worden.
+Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links (Als 
+je niet ingelogd bent, zal je eerst gevraagd worden in te loggen).
+
+Verlengen met
+
+- Een week: {{ url_extend.7 }}
+- Een maand: {{ url_extend.30 }}
+- Zes maanden: {{ url_extend.180 }}
+- Een jaar: {{ url_extend.365 }}
+- Vijf jaar: {{ url_extend.1825 }}
+
+Nieuw vraag of aanbod ingeven: {{ url_new_msg }}
+
+{% endblock text_body %}

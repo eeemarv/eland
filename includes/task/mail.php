@@ -128,7 +128,7 @@ class mail
 		}
 	}
 
-	public function queue(array $data, $priority = 100)
+	public function queue(array $data, int $priority = 100)
 	{
 		// only the interlets transactions receiving side has a different schema
 
