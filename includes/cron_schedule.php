@@ -30,8 +30,8 @@ class cron_schedule
 		'cleanup_news'			=> [86400],
 		'cleanup_logs'			=> [86400],
 		'cleanup_image_files'	=> [14400],
+		'interlets_fetch'		=> [7200],
 		'geocode' 				=> [7200],
-		'interlets_fetch'		=> [3600],
 	];
 
 	public function __construct(db $db, Logger $monolog, xdb $xdb, groups $groups, this_group $this_group)
