@@ -1,12 +1,10 @@
-{% extends 'base.twig' %}
+{% extends 'mail/base.html.twig' %}
 
-{% block subject %}{% endblock subject %}
-{% block text %}{% endblock text %}
-
-{% block html_body %}
+{% block body %}
 <p>Beste {{ user.name }},</p>
 
-<p>Je {% if msg.type == 'offer' %}aanbod{% else %}vraag{% endif %} "{{ msg.content }}" is vervallen en zal over {{ group.msgexpcleanupdays }} dagen verwijderd worden.
+<p>Je {% if msg.type == 'offer' %}aanbod{% else %}vraag{% endif %}  "<a href="{{ url_msg }}">{{ msg.content }}</a>"
+is vervallen en zal over {{ group.msgexpcleanupdays }} dagen verwijderd worden.
 Om dit te voorkomen kan je verlengen met behulp van één van de onderstaande links. Als 
 je niet ingelogd bent, zal je eerst gevraagd worden in te loggen.</p>
 
@@ -22,5 +20,4 @@ je niet ingelogd bent, zal je eerst gevraagd worden in te loggen.</p>
 
 <p><a href="{{ url_msg_add }}">Nieuw vraag of aanbod ingeven</a></p>
 
-{% endblock html_body %}
-
+{% endblock body %}

@@ -1,9 +1,6 @@
-{% extends 'mail/base.twig' %}
+{% extends 'mail/base.text.twig' %}
 
-{% block subject %}{% endblock subject %}
-{% block html %}{% endblock html %}
-
-{% block text_body %}
+{% block body %}
 
 Beste {{ user.name }},
 
@@ -21,4 +18,4 @@ Verlengen met
 
 Nieuw vraag of aanbod ingeven: {{ url_msg_add|raw }}
 
-{% endblock text_body %}
+{% endblock body %}

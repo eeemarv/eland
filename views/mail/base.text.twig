@@ -1,0 +1,31 @@
+{% block pretext %}
+** Dit is een automatische mail. Niet beantwoorden a.u.b. **
+{% endblock pretext %}
+
+{% block body %}
+{% endblock body %}
+
+{% block accountinfo %}
+
+Je account
+----------
+
+Je letscode: {{ user.letscode }}
+Je gebruikersnaam: {{ user.name }}
+Je saldo bedraagt momenteel {{ user.saldo }} {{ group.currency }}
+Minimum limiet: {{ user.minlimit }} {{ group.currency }}
+Maximum limiet: {{ user.maxlimit }} {{ group.currency }}
+Status: {% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}
+
+Login: {{ url_login }}
+
+{% endblock accountinfo %}
+{% block support %}
+Support
+-------
+
+Als je vragen of problemen hebt, kan je mailen naar {{ group.support }}
+{% endblock support %}
+{% block footer %}
+{% endblock footer %}
+

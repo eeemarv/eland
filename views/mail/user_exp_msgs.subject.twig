@@ -1,6 +1,3 @@
-{% extends 'base.twig' %}
+{% extends 'mail/base.subject.twig' %}
 
-{% block subject_line %}Je {% if msg.type == 'offer' %}aanbod{% else %}vraag{% endif %} is vervallen{% endblock subject_line %}
-
-{% block html %}{% endblock html %}
-{% block text %}{% endblock text %}
+{% block line %}Je {% if msg.type == 'offer' %}aanbod{% else %}vraag{% endif %} is vervallen{% endblock line %}
