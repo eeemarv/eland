@@ -55,6 +55,16 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 	],
 ]);
 
+/*
+$app->extend('twig', function($twig, $app) {
+//$twig->addGlobal('pi', 3.14);
+	$twig->addFilter(new Twig_SimpleFilter('distance', array('eland\twig_extension', 'distance')));
+	$twig->addFilter(new Twig_SimpleFilter('geocode', array('eland\twig_extension', 'geocode')));
+
+	return $twig;
+});
+*/
+
 $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
 $app->extend('monolog', function($monolog, $app) {
