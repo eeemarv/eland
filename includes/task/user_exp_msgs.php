@@ -29,10 +29,12 @@ class user_exp_msgs
 
 		$group_vars = $this->groups->get_template_vars($schema);
 
-		$warn_messages  = $this->db->fetchAll('SELECT m.*
-			FROM ' . $schema . '.messages m
-				WHERE m.exp_user_warn = \'f\'
-					AND m.validity < ?', [$now]);
+		$warn_messages  = $this->db->fetchAll('select m.*
+			from ' . $schema . '.messages m, ' . $schema . '.users u
+				where m.exp_user_warn = \'f\'
+					and u.id = m.id_user
+					and u.status in (1, 2)
+					and m.validity < ?', [$now]);
 
 		foreach ($warn_messages as $msg)
 		{
