@@ -73,10 +73,11 @@ class mail
 			$data['subject']  = $template_subject->render($data['vars']);
 			$data['html'] = $template_html->render($data['vars']);
 			$data['text'] = $template_text->render($data['vars']);
-
+/*
 			error_log('subject: ' . $data['subject']);
 			error_log('html: ' . $data['html']);
 			error_log('text: ' . $data['text']);
+*/
 		}
 		else
 		{
