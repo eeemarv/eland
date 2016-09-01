@@ -55,8 +55,9 @@ class admin_exp_msg
 		}
 
 		$vars = [
-			'messages'	=> $messages,
-			'group'		=> $this->groups->get_template_vars($schema),
+			'messages'		=> $messages,
+			'group'			=> $this->groups->get_template_vars($schema),
+			'config_url'	=> $base_url . '/config.php?active_tab=messages',
 		];
 
 		$this->mail->queue(['to' => 'admin',
