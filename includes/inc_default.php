@@ -55,15 +55,14 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 	],
 ]);
 
-/*
 $app->extend('twig', function($twig, $app) {
 //$twig->addGlobal('pi', 3.14);
-	$twig->addFilter(new Twig_SimpleFilter('distance', array('eland\twig_extension', 'distance')));
-	$twig->addFilter(new Twig_SimpleFilter('geocode', array('eland\twig_extension', 'geocode')));
+//	$twig->addFilter(new Twig_SimpleFilter('distance', array('eland\twig_extension', 'distance')));
+//	$twig->addFilter(new Twig_SimpleFilter('geocode', array('eland\twig_extension', 'geocode')));
+	$twig->addFilter(new Twig_SimpleFilter('date_format', array('eland\date_format', 'get')));
 
 	return $twig;
 });
-*/
 
 $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
