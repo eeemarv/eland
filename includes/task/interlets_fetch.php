@@ -7,11 +7,13 @@ use Doctrine\DBAL\Connection as db;
 use eland\typeahead;
 use Monolog\Logger;
 use eland\groups;
+use eland\xdb;
 
 class interlets_fetch
 {
 	protected $redis;
 	protected $db;
+	protected $xdb;
 	protected $typeahead;
 	protected $monolog;
 	protected $groups;
@@ -19,10 +21,11 @@ class interlets_fetch
 	protected $group;
 	protected $client;
 
-	public function __construct(Redis $redis, db $db, typeahead $typeahead, Logger $monolog, groups $groups)
+	public function __construct(Redis $redis, db $db, xdb $xdb, typeahead $typeahead, Logger $monolog, groups $groups)
 	{
 		$this->redis = $redis;
 		$this->db = $db;
+		$this->xdb = $xdb;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
 		$this->groups = $groups;
@@ -296,6 +299,7 @@ class interlets_fetch
 		}
 
 		$redis_data_key = $this->group['url'] . '_typeahead_data';
+		$redis_data_key_2 = $this->group['domain'] . '_typeahead_data';
 		$data_string = json_encode($users);
 
 		if ($data_string != $this->redis->get($redis_data_key))
@@ -303,11 +307,13 @@ class interlets_fetch
 			$this->typeahead->invalidate_thumbprint('users_active', $this->group['url'], crc32($data_string));
 
 			$this->redis->set($redis_data_key, $data_string);
+			$this->redis->set($redis_data_key_2, $data_string);
 		}
 
 		$this->redis->expire($redis_data_key, 86400);		// 1 day
+		$this->redis->expire($redis_data_key_2, 86400);		// 1 day
 
-		$this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external');
+		echo $this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external');
 
 /*
 		$redis_data_key = $this->group['domain'] . '_typeahead_data';
@@ -345,7 +351,12 @@ class interlets_fetch
 
 		$user_count = count($users);
 
+		// to be removed
 		$redis_user_count_key = $this->group['url'] . '_active_user_count';
+		$this->redis->set($redis_user_count_key, $user_count);
+		$this->redis->expire($redis_user_count_key, 86400); // 1 day
+
+		$redis_user_count_key = $this->group['domain'] . '_active_user_count';
 		$this->redis->set($redis_user_count_key, $user_count);
 		$this->redis->expire($redis_user_count_key, 86400); // 1 day
 
