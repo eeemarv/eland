@@ -27,7 +27,7 @@ class typeahead
 	*
 	*/
 
-	public function get($name_ary, $group_url = false, $group_id = false)
+	public function get($name_ary, $group_domain = false, $group_id = false)
 	{
 		$out = '';
 
@@ -38,7 +38,7 @@ class typeahead
 
 		foreach($name_ary as $name)
 		{
-			$out .= $this->get_thumbprint($name, $group_url) . '|';
+			$out .= $this->get_thumbprint($name, $group_domain) . '|';
 
 			if (strpos($name, 'users_') !== false)
 			{
@@ -63,11 +63,11 @@ class typeahead
 	*
 	*/
 
-	private function get_thumbprint(string $name = 'users_active', $group_url = false)
+	private function get_thumbprint(string $name = 'users_active', $group_domain = false)
 	{
-		$group_url = ($group_url) ?: $this->base_url;
+		$group_domain = ($group_domain) ?: $_SERVER['SERVER_NAME'];
 
-		$key = $group_url . '_typeahead_thumbprint_' . $name;
+		$key = $group_domain . '_typeahead_thumbprint_' . $name;
 
 		$thumbprint = $this->redis->get($key);
 
@@ -83,11 +83,11 @@ class typeahead
 	*
 	*/
 
-	public function invalidate_thumbprint(string $name = 'users_active', $group_url = false, $new_thumbprint = false)
+	public function invalidate_thumbprint(string $name = 'users_active', $group_domain = false, $new_thumbprint = false)
 	{
-		$group_url = ($group_url) ?: $this->base_url;
+		$group_domain = ($group_domain) ?: $_SERVER['SERVER_NAME'];
 
-		$key = $group_url . '_typeahead_thumbprint_' . $name;
+		$key = $group_domain . '_typeahead_thumbprint_' . $name;
 
 		if ($new_thumbprint)
 		{
@@ -95,7 +95,7 @@ class typeahead
 			{
 				$this->redis->set($key, $new_thumbprint);
 
-				$this->monolog->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_url . ' : ' . $name);
+				$this->monolog->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint . ' for ' . $group_domain . ' : ' . $name);
 			}
 
 			$this->redis->expire($key, $this->ttl);
@@ -104,7 +104,7 @@ class typeahead
 		{
 			$this->redis->del($key);
 
-			$this->monolog->debug('typeahead: typeahead thumbprint deleted for ' . $group_url . ' : ' . $name);
+			$this->monolog->debug('typeahead: typeahead thumbprint deleted for ' . $group_domain . ' : ' . $name);
 		}
 	}
 }

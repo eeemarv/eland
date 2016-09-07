@@ -776,7 +776,8 @@ if ($add)
 		}
 		else
 		{
-			$typeahead = $app['eland.typeahead']->get('users_active', $l['url'], $l['id']);
+			$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
+			$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
 		}
 
 		echo 'data-typeahead="' . $typeahead . '"';

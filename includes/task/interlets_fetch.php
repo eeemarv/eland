@@ -304,7 +304,7 @@ class interlets_fetch
 
 		if ($data_string != $this->redis->get($redis_data_key))
 		{
-			$this->typeahead->invalidate_thumbprint('users_active', $this->group['url'], crc32($data_string));
+			$this->typeahead->invalidate_thumbprint('users_active', $this->group['domain'], crc32($data_string));
 
 			$this->redis->set($redis_data_key, $data_string);
 			$this->redis->set($redis_data_key_2, $data_string);
