@@ -16,6 +16,9 @@ class interlets_fetch
 	protected $monolog;
 	protected $groups;
 
+	protected $group;
+	protected $client;
+
 	public function __construct(Redis $redis, db $db, typeahead $typeahead, Logger $monolog, groups $groups)
 	{
 		$this->redis = $redis;
@@ -70,19 +73,24 @@ class interlets_fetch
 
 		if (isset($group))
 		{
-			$err_group = $group['groupname'] . ': ';
+			$this->group = $group;
 
-			$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
+			$err_group = $this->group['groupname'] . ': ';
+
+//			$soapurl = $this->group['url'] . '/soap';
+
+			$soapurl = 'http://' . $this->group['domain'] . '/soap';
 			$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-			$apikey = $group['remoteapikey'];
-			$client = new \nusoap_client($soapurl, true);
-			$err = $client->getError();
+			$apikey = $this->group['remoteapikey'];
+
+			$soap_client = new \nusoap_client($soapurl, true);
+			$err = $soap_client->getError();
 
 			if ($err)
 			{
 
 				echo $err_group . 'Can not get connection.' . $r;
-				$redis_key = $schema . '_connection_failed_' . $group['domain'];
+				$redis_key = $schema . '_connection_failed_' . $this->group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -90,8 +98,8 @@ class interlets_fetch
 			else
 			{
 
-				$token = $client->call('gettoken', ['apikey' => $apikey]);
-				$err = $client->getError();
+				$token = $soap_client->call('gettoken', ['apikey' => $apikey]);
+				$err = $soap_client->getError();
 
 				if ($err)
 				{
@@ -105,7 +113,7 @@ class interlets_fetch
 
 				if ($err)
 				{
-					$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+					$redis_key = $schema . '_token_failed_' . $this->group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 				}
@@ -115,19 +123,19 @@ class interlets_fetch
 			{
 				try
 				{
-					$client = new \Goutte\Client();
+					$this->client = new \Goutte\Client();
 
-					$crawler = $client->request('GET', $group['url'] . '/login.php?token=' . $token);
+					$crawler = $this->client->request('GET', $this->group['url'] . '/login.php?token=' . $token);
 
 					if ($update_msgs)
 					{
 						echo 'fetch interlets messages' . $r;
-						$this->fetch_msgs($client, $group);
+						$this->fetch_msgs();
 					}
 					else
 					{
 						echo 'fetch interlets typeahead data' . $r;
-						$this->fetch_typeahead($client, $group, $schema);
+						$this->fetch_typeahead($schema);
 					}
 
 					echo '----------------------------------------------------' . $r;
@@ -138,7 +146,7 @@ class interlets_fetch
 				{
 					$err = $e->getMessage();
 					echo $err . $r;
-					$redis_key = $schema . '_token_failed_' . $group['remoteapikey'];
+					$redis_key = $schema . '_token_failed_' . $this->group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -157,15 +165,15 @@ class interlets_fetch
 		}
 	}
 
-	public function fetch_msgs($client, $group)
+	public function fetch_msgs()
 	{
 		$r = "<br>\r\n";
 
 		$msgs = [];
 
-		$crawler = $client->request('GET', $group['url'] . '/renderindex.php');
+		$crawler = $this->client->request('GET', $this->group['url'] . '/renderindex.php');
 
-		echo $group['url'] . $r;
+		echo $this->group['url'] . $r;
 
 		$msgs_table = $crawler->filter('table')
 			->last()
@@ -202,39 +210,41 @@ class interlets_fetch
 	/*
 	 *
 	 */
-	public function fetch_typeahead($client, $group, $schema)
+	public function fetch_typeahead($schema)
 	{
 		$r = "<br>\r\n";
 
-		$crawler = $client->request('GET', $group['url'] . '/rendermembers.php');
+		$url = 'http://' . $this->group['domain'] . '/';
 
-		$status_code = $client->getResponse()->getStatus();
+		$crawler = $this->client->request('GET', $url . 'rendermembers.php');
+
+		$status_code = $this->client->getResponse()->getStatus();
+
+		$users = $h_users = [];
 
 		if ($status_code != 200)
 		{
-			// for an eLAND group which is on another server (this is meant mainly for testing.)
+			// for an eLAND group which is on another server (mainly for testing.)
 
-			$crawler = $client->request('GET', $group['url'] . '/users.php?view=list&r=guest&u=elas');
+			$crawler = $this->client->request('GET', $url . 'users.php?view=list&r=guest&u=elas');
 
-			$status_code = $client->getResponse()->getStatus();
+			$status_code = $this->client->getResponse()->getStatus();
 
 			if ($status_code != 200)
 			{
-				echo '-- letsgroup url not responsive: ' . $group['url'] . ' status : ' . $status_code . ' --' . $r;
+				echo '-- letsgroup url not responsive: ' . $this->group['domain'] . ' status : ' . $status_code . ' --' . $r;
 
-				$redis_key = $schema . '_connection_failed_' . $group['domain'];
+				$redis_key = $schema . '_connection_failed_' . $this->group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
 				return;
 			}
 
-			$users = [];
-
 			$crawler->filter('table tbody tr')
 				->each(function ($node) use (&$users)
 			{
-				$user = [];
+				$user = $h_user = [];
 
 				$td = $node->filter('td')->first();
 
@@ -242,32 +252,36 @@ class interlets_fetch
 				$user['n'] = $td->nextAll()->text();
 
 				$users[] = $user;
+
+				$h_users[$user['c']] = ['name' => $user['n']];
 			});
 		}
 		else
 		{
-
-			echo $group['url'];
-
-			$users = [];
-
 			$crawler->filter('table tr')
 				->first()
 				->nextAll()
 				->each(function ($node) use (&$users)
 			{
-				$user = [];
+				$user = $h_user = [];
 
 				$td = $node->filter('td')->first();
-				$bgcolor = $td->attr('bgcolor');
-				$postcode = $td->siblings()->eq(3)->text();
+	
+				$bgcolor = trim($td->attr('bgcolor'));
+				$postcode = trim($td->siblings()->eq(3)->text());
 
-				$user['c'] = $td->text();
-				$user['n'] = $td->nextAll()->text();
+				$code = trim($td->text());
+				$name = trim($td->nextAll()->text());
+
+				$user['c'] = $code;
+				$user['n'] = $name;
+
+				$h_user = ['name'	=> $name];
 
 				if ($bgcolor)
 				{
 					$user['s'] = (strtolower(substr($bgcolor, 1, 1)) > 'c') ? 2 : 3;
+					$h_user['status'] = (strtolower(substr($bgcolor, 1, 1)) > 'c') ? 'leaving' : 'new';
 				}
 
 				if ($postcode)
@@ -276,33 +290,66 @@ class interlets_fetch
 				} 
 
 				$users[] = $user;
-			}); 
 
+				$h_users[$code] = $h_user;
+			}); 
 		}
 
-		$redis_data_key = $group['url'] . '_typeahead_data';
+		$redis_data_key = $this->group['url'] . '_typeahead_data';
 		$data_string = json_encode($users);
 
 		if ($data_string != $this->redis->get($redis_data_key))
 		{
-			$this->typeahead->invalidate_thumbprint('users_active', $group['url'], crc32($data_string));
+			$this->typeahead->invalidate_thumbprint('users_active', $this->group['url'], crc32($data_string));
 
 			$this->redis->set($redis_data_key, $data_string);
 		}
 
 		$this->redis->expire($redis_data_key, 86400);		// 1 day
 
-		$redis_refresh_key = $group['domain'] . '_typeahead_updated';
+		$this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external');
+
+/*
+		$redis_data_key = $this->group['domain'] . '_typeahead_data';
+
+		$stored_users = $this->redis->hgetall($redis_data_key);
+
+		$diff_ary_1 = array_diff_assoc($h_users, $stored_users);
+
+		foreach ($diff_ary_1 as $k => $v)
+		{
+			$this->redis->hset($redis_data_key, $k, $v);
+			$stored_users[$k] = $v;
+		}
+
+		$diff_ary_2 = array_diff_assoc($stored_users, $h_users);
+
+		foreach ($diff_ary_2 as $k => $v)
+		{
+			$this->redis->hdel($redis_data_key, $k);
+		}
+
+		if (count($diff_ary_1) || count($diff_ary_2))
+		{
+			// invalidate_thumbprint
+		}
+
+		$this->redis->expire($redis_data_key, 86400);
+*/
+	//
+
+
+		$redis_refresh_key = $this->group['domain'] . '_typeahead_updated';
 		$this->redis->set($redis_refresh_key, '1');
 		$this->redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 		$user_count = count($users);
 
-		$redis_user_count_key = $group['url'] . '_active_user_count';
+		$redis_user_count_key = $this->group['url'] . '_active_user_count';
 		$this->redis->set($redis_user_count_key, $user_count);
 		$this->redis->expire($redis_user_count_key, 86400); // 1 day
 
-		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $group['domain'], ['schema' => $schema]);
+		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $this->group['domain'], ['schema' => $schema]);
 
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;
