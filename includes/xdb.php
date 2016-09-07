@@ -368,5 +368,36 @@ class xdb
 
 		return $ary;
 	}
+
+	/**
+	 *
+	 */
+
+	public function count(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
+	{
+		$sql_where = $sql_params = [];
+
+		if ($agg_type)
+		{
+			$sql_where[] = 'agg_type = ?';
+			$sql_params[] = $agg_type;
+		}
+
+		if ($eland_id)
+		{
+			$sql_where[] = 'eland_id = ?';
+			$sql_params[] = $eland_id;
+		}
+
+		if ($agg_schema)
+		{
+			$sql_where[] = 'agg_schema = ?';
+			$sql_params[] = $agg_schema;
+		}
+
+		$where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
+
+		return $this->db->fetchColumn('select count(*) from eland_extra.aggs' . $where, $sq_params);
+	}
 }
 
