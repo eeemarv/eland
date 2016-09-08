@@ -171,6 +171,7 @@ if (!$s_anonymous)
 	if ($s_admin)
 	{
 		$menu = [
+			'status'						=> ['exclamation-triangle', 'Status'],
 			'categories'	 				=> ['clone', 'Categorieën'],
 			'type_contact'					=> ['circle-o-notch', 'Contact types'],
 			'contacts'						=> ['map-marker', 'Contacten'],
