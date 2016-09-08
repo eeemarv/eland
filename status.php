@@ -395,7 +395,9 @@ if ($status_msgs)
 else
 {
 	echo '<div class="panel panel-info">';
+	echo '<div class="panel-body">';
 	echo '<p>Geen bijzonderheden</p>';
+	echo '</div>';
 	echo '</div>';
 }
 
