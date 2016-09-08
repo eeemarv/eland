@@ -8,9 +8,9 @@ $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 
 $location = $_GET['location'] ?? false;
-$location = ($location) ? urldecode($location) : '/index.php';
-$location = (strpos($location, 'login.php') === false) ? $location : 'index.php';
-$location = (strpos($location, 'logout.php') === false) ? $location : 'index.php';
+$location = ($location) ? urldecode($location) : '/messages.php?view=' . $view_messages;
+$location = (strpos($location, 'login.php') === false) ? $location : 'messages.php?view=' . $view_messages;
+$location = (strpos($location, 'logout.php') === false) ? $location : 'messages.php?view=' . $view_messages;
 
 $submit = isset($_POST['zend']) ? true : false;
 

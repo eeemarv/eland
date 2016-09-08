@@ -86,7 +86,7 @@
 			</li>
 		}
 		<li class="divider"></li>
-		$user_url = ($access_page == 0) ? 'index.php' : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$user_url = ($access_page == 0) ? 'messages.php' : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		$get_params = $_GET;
 		$get_params['r'] = 'user
 		<li>
@@ -132,7 +132,6 @@
 	}
 {% else %}
 	$menu = array(
-		'index'					=> array('home', 'Overzicht'),
 		'messages'				=> array('newspaper-o', 'Vraag & Aanbod', 'view=' . $view_messages),
 		'users'					=> array('users', (($s_admin) ? 'Gebruikers' : 'Leden'), 'status=active&view=' . $view_users),
 		'transactions'			=> array('exchange', 'Transacties'),

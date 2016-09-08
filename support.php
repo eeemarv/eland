@@ -93,7 +93,7 @@ if (isset($_POST['zend']))
 		if (!$return_message)
 		{
 			$app['eland.alert']->success('De support mail is verzonden.');
-			header('Location: ' . generate_url('index'));
+			header('Location: ' . generate_url('messages'));
 			exit;
 		}
 

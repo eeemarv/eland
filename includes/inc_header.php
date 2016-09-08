@@ -43,11 +43,11 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-echo '<a href="' . generate_url('index') . '" class="pull-left hidden-xs">';
+echo '<a href="' . generate_url('messages', ['view' => $view_messages]) . '" class="pull-left hidden-xs">';
 echo '<div class="logo"></div>';
 echo '</a>';
 
-echo aphp('index', [], readconfigfromdb('systemname'), 'navbar-brand');
+echo aphp('messages', ['view' => $view_messages], readconfigfromdb('systemname'), 'navbar-brand');
 
 echo '</div>';
 
@@ -99,7 +99,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 				echo ($app['eland.this_group']->get_schema() == $sch) ? ' class="active"' : '';
 				echo '>';
 
-				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'index';
+				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'messages';
 
 				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
 				echo readconfigfromdb('systemname', $sch) . '</a>';
@@ -198,7 +198,7 @@ if (!$s_anonymous)
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
-		$user_url = ($page_access == 'admin') ? 'index.php' : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$user_url = ($page_access == 'admin') ? 'messages.php' : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		$get_params = $_GET;
 		$get_params['r'] = 'user';
 		echo '<li>';
@@ -252,7 +252,7 @@ if ($s_anonymous)
 else
 {
 	$menu = [
-		'index'					=> ['home', 'Overzicht', []],
+//		'index'					=> ['home', 'Overzicht', []],
 		'messages'				=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
 		'users'					=> ['users', (($s_admin) ? 'Gebruikers' : 'Leden'), ['status' => 'active', 'view' => $view_users]],
 		'transactions'			=> ['exchange', 'Transacties', []],

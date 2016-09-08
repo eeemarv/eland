@@ -196,7 +196,7 @@ $access_ary = [
 ];
 
 $allowed_interlets_landing_pages = [
-	'index'			=> true,
+//	'index'			=> true,
 	'messages'		=> true,
 	'users'			=> true,
 	'transactions'	=> true,
@@ -375,7 +375,7 @@ else if (ctype_digit((string) $s_id))
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/index.php?r=';
+		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/messages.php?r=';
 		$location .= $session_user['accountrole'] . '&u=' . $s_id;
 		header('Location: ' . $location);
 		exit;
@@ -387,7 +387,7 @@ else if (ctype_digit((string) $s_id))
 
 		$s_accountrole = $session_user['accountrole'];
 
-		redirect_index();
+		redirect_messages();
 	}
 
 	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
@@ -414,7 +414,7 @@ else if ($s_id == 'master')
 	{
 		$app['monolog']->debug('redirect 3a');
 
-		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/index.php?r=admin&u=master';
+		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -454,7 +454,7 @@ switch ($s_accountrole)
 		if ($page_access != 'guest')
 		{
 			$app['monolog']->debug('redirect 6');
-			redirect_index();
+			redirect_messages();
 		}
 
 		break;
@@ -464,7 +464,7 @@ switch ($s_accountrole)
 		if (!($page_access == 'user' || $page_access == 'guest'))
 		{
 			$app['monolog']->debug('redirect 7');
-			redirect_index();
+			redirect_messages();
 		}
 
 		break;
@@ -474,7 +474,7 @@ switch ($s_accountrole)
 		if ($page_access == 'anonymous')
 		{
 			$app['monolog']->debug('redirect 8');
-			redirect_index();
+			redirect_messages();
 		}
 
 		break;
@@ -520,7 +520,7 @@ if ($page_access != 'anonymous'
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$app['eland.this_group']->get_schema()])
 {
-	header('Location: ' . generate_url('index', [], $s_schema));
+	header('Location: ' . generate_url('messages', ['view' => $view_messages], $s_schema));
 	exit;
 }
 
@@ -743,7 +743,7 @@ function aphp(
 /**
  * generate url
  */
-function generate_url($entity = 'index', $params = [], $sch = false)
+function generate_url($entity = 'messages', $params = [], $sch = false)
 {
 	global $rootpath, $app;
 
@@ -813,10 +813,10 @@ function get_session_query_param($sch = false)
 /**
  *
  */
-function redirect_index()
+function redirect_messages()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $s_id, $s_accountrole, $s_schema;
+	global $s_id, $s_accountrole, $s_schema, $view_messages;
 
 	$access_level = $access_session;
 
@@ -824,7 +824,7 @@ function redirect_index()
 	$p_user = $s_id;
 	$p_role = $s_accountrole;
 
-	header('Location: ' . generate_url('index'));
+	header('Location: ' . generate_url('messages', ['view' => $view_messages]));
 	exit;
 }
 

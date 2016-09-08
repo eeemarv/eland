@@ -35,7 +35,7 @@ $submit = isset($_POST['zend']) ? true : false;
 if (!readconfigfromdb('forum_en'))
 {
 	$app['eland.alert']->warning('De forum pagina is niet ingeschakeld.');
-	redirect_index();
+	redirect_messages();
 }
 
 if ($del || $edit)

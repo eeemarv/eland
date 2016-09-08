@@ -603,7 +603,7 @@ if ($uid)
 if (!$s_admin)
 {
 	$app['eland.alert']->error('Je hebt geen toegang tot deze pagina.');
-	redirect_index();
+	redirect_messages();
 }
 
 $s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;

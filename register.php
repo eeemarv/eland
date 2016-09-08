@@ -9,8 +9,7 @@ $token = $_GET['token'] ?? false;
 
 if ($s_id)
 {
-	header('Location: ' . $rootpath . 'index.php');
-	exit;
+	redirect_messages();
 }
 
 if (!readconfigfromdb('registration_en'))
