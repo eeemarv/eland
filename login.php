@@ -4,14 +4,6 @@ $page_access = 'anonymous';
 
 require_once __DIR__ . '/includes/inc_default.php';
 
-/*
-if ($s_id)
-{
-	header('Location: ' . generate_url('index'));
-	exit;
-}
-*/
-
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 
@@ -24,7 +16,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if($token)
 {
-	if($interlets = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
+	if($apikey = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 	{
 		$logins = $app['session']->get('logins');
 		$logins[$app['eland.this_group']->get_schema()] = 'elas';
@@ -33,6 +25,13 @@ if($token)
 		$param = 'welcome=1&r=guest&u=elas';
 
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
+
+		if ($referrer != 'unknown')
+		{
+			// record logins to link the apikeys to domains and groups
+			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
+			$app['eland.xdb']->set('apikey_login', $apikey, ['domain' => $domain_referrer]);
+		}
 
 		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: ' . $referrer);
 

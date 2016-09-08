@@ -93,7 +93,7 @@ function gettoken($apikey)
 
 		$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
 
-		$app['redis']->set($key, '1');
+		$app['redis']->set($key, $apikey);
 		$app['redis']->expire($key, 600);
 
 		$app['monolog']->debug('elas-soap: Token ' . $token . ' generated');
