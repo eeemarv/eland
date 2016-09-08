@@ -293,7 +293,7 @@ if ($add)
 
 			if (strlen($letscode_to))
 			{
-				$active_users = json_decode($app['redis']->get($group['url'] . '_typeahead_data'), true);
+				$active_users = json_decode($app['redis']->get($group['domain'] . '_typeahead_data'), true);
 
 				$user_letscode_found = false;
 

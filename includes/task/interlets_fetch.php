@@ -298,8 +298,8 @@ class interlets_fetch
 			}); 
 		}
 
-		$redis_data_key = $this->group['url'] . '_typeahead_data';
-		$redis_data_key_2 = $this->group['domain'] . '_typeahead_data';
+		$redis_data_key = $this->group['domain'] . '_typeahead_data';
+
 		$data_string = json_encode($users);
 
 		if ($data_string != $this->redis->get($redis_data_key))
@@ -307,11 +307,9 @@ class interlets_fetch
 			$this->typeahead->invalidate_thumbprint('users_active', $this->group['domain'], crc32($data_string));
 
 			$this->redis->set($redis_data_key, $data_string);
-			$this->redis->set($redis_data_key_2, $data_string);
 		}
 
-		$this->redis->expire($redis_data_key, 86400);		// 1 day
-		$this->redis->expire($redis_data_key_2, 86400);		// 1 day
+		$this->redis->expire($redis_data_key, 172800); // 2 days
 
 		echo $this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external');
 
@@ -344,21 +342,15 @@ class interlets_fetch
 */
 	//
 
-
 		$redis_refresh_key = $this->group['domain'] . '_typeahead_updated';
 		$this->redis->set($redis_refresh_key, '1');
 		$this->redis->expire($redis_refresh_key, 43200);		// 12 hours
 
 		$user_count = count($users);
 
-		// to be removed
-		$redis_user_count_key = $this->group['url'] . '_active_user_count';
-		$this->redis->set($redis_user_count_key, $user_count);
-		$this->redis->expire($redis_user_count_key, 86400); // 1 day
-
 		$redis_user_count_key = $this->group['domain'] . '_active_user_count';
 		$this->redis->set($redis_user_count_key, $user_count);
-		$this->redis->expire($redis_user_count_key, 86400); // 1 day
+		$this->redis->expire($redis_user_count_key, 172800); // 1 day
 
 		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $this->group['domain'], ['schema' => $schema]);
 
