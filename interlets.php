@@ -668,7 +668,7 @@ function render_schemas_groups()
 	echo '<tr>';
 	echo '<th data-sort-initial="true" data-hide="phone, tablet">tag</th>';
 	echo '<th>groepsnaam</th>';
-	echo '<th data-hide="phone, tablet">url</th>';
+	echo '<th data-hide="phone, tablet">domein</th>';
 	echo '<th data-hide="phone, tablet">leden</th>';
 	echo '<th>lok.groep</th>';
 	echo '<th>lok.account</th>';
