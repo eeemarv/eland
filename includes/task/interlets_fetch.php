@@ -311,7 +311,7 @@ class interlets_fetch
 
 		$this->redis->expire($redis_data_key, 172800); // 2 days
 
-		echo $this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external');
+		error_log($this->xdb->set('typeahead_data', $this->group['domain'], $h_users, 'external'));
 
 /*
 		$redis_data_key = $this->group['domain'] . '_typeahead_data';
