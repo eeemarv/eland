@@ -84,6 +84,10 @@ if ($add)
 			{
 				$errors[] = 'Letsgroep niet gevonden.';
 			}
+			else
+			{
+				$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
+			}
 		}
 
 		if ($s_user && !$s_master)
