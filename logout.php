@@ -13,7 +13,7 @@ setcookie(session_name(), '', time() - 86400, $cookie_params['path'], $cookie_pa
 session_destroy();
 */
 
-$app['monolog']->info('user ' . link_user($s_id, false, false, true) . ' logged out');
+$app['monolog']->info('user logged out');
 
 header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 header('Location: ' . $rootpath . 'login.php');
