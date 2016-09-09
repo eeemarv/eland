@@ -95,17 +95,17 @@ class xdb
 
 		if (!strlen($agg_type))
 		{
-			return 'No agg type set';
+			return 'xdb: No agg type set';
 		}
 
 		if (!strlen($eland_id))
 		{
-			return 'No eland id set';
+			return 'xdb: No eland id set';
 		}
 
 		if (!isset($agg_schema) || !$agg_schema)
 		{
-			return 'No schema set';
+			return 'xdb: No schema set';
 		}
 
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
@@ -130,7 +130,7 @@ class xdb
 
 		if (!count($data))
 		{
-			return;
+			return 'xdb: no (new) data';
 		}
 
 		$event = $agg_type . '_' . $ev;
