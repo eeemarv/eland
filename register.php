@@ -27,8 +27,6 @@ if ($token)
 		$data = json_decode($data, true);
 		$app['redis']->del($key);
 
-//		$letscode = '--' . substr($token, 0, 5);
-
 		for ($i = 0; $i < 60; $i++)
 		{
 			$name = $data['first_name'];
@@ -96,6 +94,15 @@ if ($token)
 			];
 
 			$app['db']->insert('contact', $mail);
+
+			$ev_data = [
+				'token'			=> $token,
+				'user_id'		=> $user_id,
+				'script_name'	=> 'register',
+				'email'			=> $data['email'],
+			];
+
+			$app['eland.xdb']->set('email_validated', $data['email'], $ev_data);
 
 			if ($data['gsm'] || $data['tel'])
 			{

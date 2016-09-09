@@ -8,13 +8,19 @@ $token = $_GET['token'] ?? false;
 
 if ($token)
 {
+	$data = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token);
+	$data = json_decode($data, true);
+
+	$user_id = $data['user_id'];
+	$email = $data['email'];
+
 	if ($_POST['zend'])
 	{
 		$password = $_POST['password'];
 
 		if (!($app['eland.password_strength']->get($password) < 50))
 		{
-			if ($user_id = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
+			if ($user_id)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
@@ -43,6 +49,18 @@ if ($token)
 		{
 			$app['eland.alert']->error('Te zwak paswoord.');
 		}
+	}
+
+	if ($email)
+	{
+		$ev_data = [
+			'token'			=> $token,
+			'user_id'		=> $user_id,
+			'script_name'	=> 'pwreset',
+			'email'			=> $email,
+		];
+
+		$app['eland.xdb']->set('email_validated', $email, $ev_data);
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';
@@ -82,16 +100,17 @@ if ($token)
 
 if (isset($_POST['zend']))
 {
-	$email = $_POST['email'];
+	$email = trim($_POST['email']);
 
 	if($email)
 	{
-		$mail_ary = $app['db']->fetchAll('SELECT c.id_user, u.letscode
-			FROM contact c, type_contact tc, users u
-			WHERE c. value = ?
-				AND tc.id = c.id_type_contact
-				AND tc.abbrev = \'mail\'
-				AND c.id_user = u.id', [$email]);
+		$mail_ary = $app['db']->fetchAll('select c.id_user, u.letscode
+			from contact c, type_contact tc, users u
+			where c. value = ?
+				and tc.id = c.id_type_contact
+				and tc.abbrev = \'mail\'
+				and c.id_user = u.id
+				and u.status in (1, 2)', [$email]);
 
 		if (count($mail_ary) < 2)
 		{
@@ -102,7 +121,8 @@ if (isset($_POST['zend']))
 			{
 				$token = substr(hash('sha512', $user_id . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
 				$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
-				$app['redis']->set($key, $user_id);
+
+				$app['redis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
 				$app['redis']->expire($key, 3600);
 
 				$url = $app['eland.base_url'] . '/pwreset.php?token=' . $token;

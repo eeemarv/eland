@@ -13,19 +13,6 @@ if (!readconfigfromdb('contact_form_en'))
 	redirect_login();
 }
 
-if($test && getenv('DEBUG'))
-{
-	$mail = [
-		'html' 		=> $app['twig']->render('mail/base_news.twig'),
-		'subject'	=> 'Test',
-		'to'		=> 'admin',
-	];
-
-	$app['eland.task.mail']->queue($mail);
-
-	$app['eland.alert']->info('Test mail queued');
-}
-
 if ($token)
 {
 	$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
@@ -36,6 +23,14 @@ if ($token)
 		$app['redis']->del($key);
 
 		$data = json_decode($data, true);
+
+		$ev_data = [
+			'token'			=> $token,
+			'script_name'	=> 'contact',
+			'email'			=> $data['mail'],
+		];
+
+		$app['eland.xdb']->set('email_validated', $data['mail'], $ev_data);
 
 		$html = $data['html'];
 
