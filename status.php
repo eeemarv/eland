@@ -3,151 +3,153 @@
 $page_access = 'admin';
 require_once __DIR__ . '/includes/inc_default.php';
 
-$newusers = $app['db']->fetchAll('select id, letscode, name
-	from users
-	where status = 1
-		and adate > ?', array(date('Y-m-d H:i:s', $newusertreshold)));
-
 $status_msgs = false;
 
-if ($s_admin)
+$non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
+	from contact c, type_contact tc, users u
+	where c.id_type_contact = tc.id
+		and tc.abbrev = \'mail\'
+		and c.id_user = u.id
+		and u.status in (1, 2)
+	group by value
+	having count(*) > 1');
+
+if (count($non_unique_mail))
 {
-	$non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
-		from contact c, type_contact tc, users u
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'
-			and c.id_user = u.id
-			and u.status in (1, 2)
-		group by value
-		having count(*) > 1');
+	$st = $app['db']->prepare('select id_user
+		from contact c
+		where c.value = ?');
 
-	if (count($non_unique_mail))
+	foreach ($non_unique_mail as $key => $ary)
 	{
-		$st = $app['db']->prepare('select id_user
-			from contact c
-			where c.value = ?');
+		$st->bindValue(1, $ary['value']);
+		$st->execute();
 
-		foreach ($non_unique_mail as $key => $ary)
+		while ($row = $st->fetch())
 		{
-			$st->bindValue(1, $ary['value']);
-			$st->execute();
-
-			while ($row = $st->fetch())
-			{
-				$non_unique_mail[$key]['users'][$row['id_user']] = true;
-			}
+			$non_unique_mail[$key]['users'][$row['id_user']] = true;
 		}
-
-		$status_msgs = true;
 	}
+
+	$status_msgs = true;
+}
 
 //
 
-	$non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
+$non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
+	from users
+	where letscode <> \'\'
+	group by letscode
+	having count(*) > 1');
+
+if (count($non_unique_letscode))
+{
+	$st = $app['db']->prepare('select id
 		from users
-		where letscode <> \'\'
-		group by letscode
-		having count(*) > 1');
+		where letscode = ?');
 
-	if (count($non_unique_letscode))
+	foreach ($non_unique_letscode as $key => $ary)
 	{
-		$st = $app['db']->prepare('select id
-			from users
-			where letscode = ?');
+		$st->bindValue(1, $ary['letscode']);
+		$st->execute();
 
-		foreach ($non_unique_letscode as $key => $ary)
+		while ($row = $st->fetch())
 		{
-			$st->bindValue(1, $ary['letscode']);
-			$st->execute();
-
-			while ($row = $st->fetch())
-			{
-				$non_unique_letscode[$key]['users'][$row['id']] = true;
-			}
+			$non_unique_letscode[$key]['users'][$row['id']] = true;
 		}
-
-		$status_msgs = true;
 	}
+
+	$status_msgs = true;
+}
 
 //
 
-	$non_unique_name = $app['db']->fetchAll('select name, count(*)
+$non_unique_name = $app['db']->fetchAll('select name, count(*)
+	from users
+	where name <> \'\'
+	group by name
+	having count(*) > 1');
+
+if (count($non_unique_name))
+{
+	$st = $app['db']->prepare('select id
 		from users
-		where name <> \'\'
-		group by name
-		having count(*) > 1');
+		where name = ?');
 
-	if (count($non_unique_name))
+	foreach ($non_unique_name as $key => $ary)
 	{
-		$st = $app['db']->prepare('select id
-			from users
-			where name = ?');
+		$st->bindValue(1, $ary['name']);
+		$st->execute();
 
-		foreach ($non_unique_name as $key => $ary)
+		while ($row = $st->fetch())
 		{
-			$st->bindValue(1, $ary['name']);
-			$st->execute();
-
-			while ($row = $st->fetch())
-			{
-				$non_unique_name[$key]['users'][$row['id']] = true;
-			}
+			$non_unique_name[$key]['users'][$row['id']] = true;
 		}
-
-		$status_msgs = true;
 	}
 
-//
-
-	$unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
-		from contact c, type_contact tc
-		where c.id_type_contact = tc.id
-			and tc.abbrev = \'mail\'
-			and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
+	$status_msgs = true;
+}
 
 //
-	$no_mail = array();
 
-	$st = $app['db']->prepare(' select u.id
-		from users u
-		where u.status in (1, 2)
-			and not exists (select c.id
-				from contact c, type_contact tc
-				where c.id_user = u.id
-					and c.id_type_contact = tc.id
-					and tc.abbrev = \'mail\')');
-
-	$st->execute();
-
-	while ($row = $st->fetch())
-	{
-		$no_mail[] = $row['id'];
-		$status_msgs = true;
-	}
-//
-
-	$empty_letscode = $app['db']->fetchAll('select id
-		from users
-		where letscode = \'\'');
+$unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
+	from contact c, type_contact tc
+	where c.id_type_contact = tc.id
+		and tc.abbrev = \'mail\'
+		and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
 
 //
-	$empty_name = $app['db']->fetchAll('select id
-		from users
-		where name = \'\'');
+$no_mail = array();
+
+$st = $app['db']->prepare(' select u.id
+	from users u
+	where u.status in (1, 2)
+		and not exists (select c.id
+			from contact c, type_contact tc
+			where c.id_user = u.id
+				and c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\')');
+
+$st->execute();
+
+while ($row = $st->fetch())
+{
+	$no_mail[] = $row['id'];
+	$status_msgs = true;
+}
+//
+
+$empty_letscode = $app['db']->fetchAll('select id
+	from users
+	where status in (1, 2) and letscode = \'\'');
+
+//
+$empty_name = $app['db']->fetchAll('select id
+	from users
+	where name = \'\'');
 //
 
 /*
-	$version = $app['db']->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
+$version = $app['db']->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
 
-	$db_update = ($version == '31000') ? false : true;
+$db_update = ($version == '31000') ? false : true;
 */
 
 //	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
 
-	if ($unvalid_mail || $empty_letscode || $empty_name)
-	{
-		$status_msgs = true;
-	}
+if ($unvalid_mail || $empty_letscode || $empty_name)
+{
+	$status_msgs = true;
+}
+
+$no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
+	from users u
+	where status in (1, 2)
+		and not exists (select 1 from messages m where m.id_user = u.id)');
+
+if (count($no_msgs_users))
+{
+	$status_msgs = true;
 }
 
 $h1 = 'Status';
@@ -351,11 +353,11 @@ if ($status_msgs)
 		echo '<li class="list-group-item">';
 		if (count($empty_letscode) == 1)
 		{
-			echo 'Eén gebruiker heeft geen letscode.';
+			echo 'Eén actieve gebruiker heeft geen letscode.';
 		}
 		else
 		{
-			echo count($empty_letscode) . ' gebruikers hebben geen letscode.';
+			echo count($empty_letscode) . ' actieve gebruikers hebben geen letscode.';
 		}
 
 		echo '<ul>';
@@ -388,6 +390,35 @@ if ($status_msgs)
 		echo '</li>';
 	}
 */
+
+	if (count($no_msgs_users))
+	{
+		echo '<li class="list-group-item">';
+		if (count($no_msgs_users) == 1)
+		{
+			echo 'Eén actieve gebruiker heeft geen vraag of aanbod.';
+		}
+		else
+		{
+			echo count($no_msgs_users) . ' actieve gebruikers hebben geen vraag of aanbod.';
+		}
+
+		echo '<ul>';
+
+		$currency = readconfigfromdb('currency');
+
+		foreach ($no_msgs_users as $u)
+		{
+			echo '<li>';
+			echo link_user($u['id']);
+			echo ($u['status'] == 2) ? ' <span class="text-danger">Uitstapper</span>' : '';
+			echo ', saldo: ' . $u['saldo'] . ' ' . $currency;
+			echo '</li>';
+		}
+
+		echo '</ul>';
+		echo '</li>';
+	}
 
 	echo '</ul>';
 	echo '</div>';
