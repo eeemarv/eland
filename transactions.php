@@ -10,6 +10,7 @@ $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
 $id = $_GET['id'] ?? false;
 $add = isset($_GET['add']) ? true : false;
+$edit = $_GET['edit'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 
 $mid = $_GET['mid'] ?? false;
@@ -50,8 +51,8 @@ if ($add)
 			$errors[] = 'Formulier verlopen.';
 		}
 
-		$transaction['transid'] = $_POST['transid'];
-		$transaction['description'] = $_POST['description'];
+		$transaction['transid'] = trim($_POST['transid']);
+		$transaction['description'] = trim($_POST['description']);
 
 		list($letscode_from) = explode(' ', $_POST['letscode_from']);
 		list($letscode_to) = explode(' ', $_POST['letscode_to']);
@@ -59,7 +60,7 @@ if ($add)
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = gmdate('Y-m-d H:i:s');
 
-		$group_id = $_POST['group_id'];
+		$group_id = trim($_POST['group_id']);
 
 		if ($stored_transid != $transaction['transid'])
 		{
@@ -854,8 +855,10 @@ $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]
  * show a transaction
  */
 
-if ($id)
+if ($id || $edit)
 {
+	$id = ($edit) ? $edit : $id;
+
 	$transaction = $app['db']->fetchAssoc('select t.*
 		from transactions t
 		where t.id = ?', [$id]);
@@ -881,7 +884,216 @@ if ($id)
 	{
 		$inter_transaction = false;
 	}
+}
 
+/**
+ * edit description
+ */
+
+if ($edit)
+{
+	if (!$s_admin)
+	{
+		$app['eland.alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
+		cancel($edit);
+	}
+
+	if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
+	{
+		$app['eland.alert']->error('De omschrijving van een transactie naar een eLAS installatie kan niet aangepast worden.');
+		cancel($edit);
+	}
+
+	if ($submit)
+	{
+		$description = trim($_POST['description'] ?? '');
+
+		if ($error_token = $app['eland.form_token']->get_error())
+		{
+			$errors[] = $error_token;
+		}
+
+		if (strlen($description) > 60)
+		{
+			$errors[] = 'De omschrijving mag maximaal 60 tekens lang zijn.';
+		}
+
+		if (!$description)
+		{
+			$errors[]= 'De omschrijving is niet ingevuld';
+		}
+
+		if (!count($errors))
+		{
+			$app['db']->update('transactions', ['description' => $description], ['id' => $edit]);
+
+			if ($inter_transaction)
+			{
+				$app['db']->update($inter_schema . '.transactions', ['description' => $description], ['id' => $inter_transaction['id']]);
+			}
+
+			$app['monolog']->info('Transaction description edited from "' . $transaction['description'] .
+				'" to "' . $description . '", transid: ' . $transaction['transid']);
+
+			$app['eland.alert']->success('Omschrijving transactie aangepast.');
+
+			cancel($id);
+		}
+
+		$app['eland.alert']->error($errors);		
+	}
+
+	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
+
+	$h1 = 'Omschrijving transactie aanpassen';
+	$fa = 'exchange';
+
+	include __DIR__ . '/includes/inc_header.php';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+
+	echo '<form  method="post" class="form-horizontal" autocomplete="off">';
+
+// copied from "show a transaction"
+
+	echo '<dl class="dl-horizontal">';
+
+	echo '<dt>Tijdstip</dt>';
+	echo '<dd>';
+	echo $app['eland.date_format']->get($transaction['cdate']);
+	echo '</dd>';
+
+	echo '<br>';
+
+	echo '<dt>Transactie ID</dt>';
+	echo '<dd>';
+	echo $transaction['transid'];
+	echo '</dd>';
+
+	echo '<br>';
+
+	if ($transaction['real_from'])
+	{
+		echo '<dt>Van interlets account</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_from'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Van interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_from'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
+		}
+		else
+		{
+			echo $transaction['real_from'];
+		}
+
+		echo '</dd>';
+	}
+	else
+	{
+		echo '<dt>Van gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_from']);
+		echo '</dd>';
+	}
+
+	echo '<br>';
+
+	if ($transaction['real_to'])
+	{
+		echo '<dt>Naar interlets account</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_to'], false, $s_admin);
+		echo '</dd>';
+
+		echo '<dt>Naar interlets gebruiker</dt>';
+		echo '<dd>';
+		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+
+		if ($inter_transaction)
+		{
+			echo link_user($inter_transaction['id_to'],
+				$inter_schema,
+				$s_inter_schema_check[$inter_schema]);
+		}
+		else
+		{
+			echo $transaction['real_to'];
+		}
+
+		echo '</dd>';
+	}
+	else
+	{
+		echo '<dt>Naar gebruiker</dt>';
+		echo '<dd>';
+		echo link_user($transaction['id_to']);
+		echo '</dd>';
+	}
+
+	echo '<br>';
+
+	echo '<dt>Waarde</dt>';
+	echo '<dd>';
+	echo $transaction['amount'] . ' ' . readconfigfromdb('currency');
+	echo '</dd>';
+
+	echo '<br>';
+
+	echo '<dt>Omschrijving</dt>';
+	echo '<dd>';
+	echo $transaction['description'];
+	echo '</dd>';
+
+	echo '</dl>';
+
+//
+	echo '<div class="form-group">';
+	echo '<label for="description" class="col-sm-2 control-label">Nieuwe omschrijving</label>';
+	echo '<div class="col-sm-10">';
+	echo '<input type="text" class="form-control" id="description" name="description" ';
+	echo 'value="' . $transaction['description'] . '" required maxlength="60">';
+	echo '</div>';
+	echo '</div>';
+
+	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+	$app['eland.form_token']->generate();
+	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
+
+	echo '</form>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<ul><small><i>';
+	echo '<li>Omdat dat transacties binnen het netwerk zichtbaar zijn voor iedereen kan ';
+	echo 'de omschrijving aangepast worden door admins in het geval deze ongewenste informatie bevat (bvb. een opmerking die beledigend is).</li>';
+	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
+	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
+	echo '<li>';
+	echo readconfigfromdb('currencyratio');
+	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+
+	echo '</i></small></ul>';
+
+	include __DIR__ . '/includes/inc_footer.php';
+	exit;	
+}
+
+/**
+ * show a transaction
+ */
+ 
+if ($id)
+{
 	$next = $app['db']->fetchColumn('select id
 		from transactions
 		where id > ?
@@ -897,6 +1109,11 @@ if ($id)
 	if ($s_user || $s_admin)
 	{
 		$top_buttons .= aphp('transactions', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
+	}
+
+	if ($s_admin && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
+	{
+		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);
 	}
 
 	if ($prev)
