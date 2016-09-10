@@ -86,6 +86,8 @@ if ($token)
 				$tc[$row['abbrev']] = $row['id'];
 			}
 
+			$data['email'] = strtolower($data['email']);
+
 			$mail = [
 				'id_user'			=> $user_id,
 				'flag_public'		=> 0,

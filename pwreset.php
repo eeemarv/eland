@@ -57,7 +57,7 @@ if ($token)
 			'token'			=> $token,
 			'user_id'		=> $user_id,
 			'script_name'	=> 'pwreset',
-			'email'			=> $email,
+			'email'			=> strtolower($email),
 		];
 
 		$app['eland.xdb']->set('email_validated', $email, $ev_data);

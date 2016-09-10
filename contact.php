@@ -27,7 +27,7 @@ if ($token)
 		$ev_data = [
 			'token'			=> $token,
 			'script_name'	=> 'contact',
-			'email'			=> $data['mail'],
+			'email'			=> strtolower($data['mail']),
 		];
 
 		$app['eland.xdb']->set('email_validated', $data['mail'], $ev_data);
