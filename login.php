@@ -11,6 +11,7 @@ $location = $_GET['location'] ?? false;
 $location = ($location) ? urldecode($location) : '/messages.php?view=' . $view_messages;
 $location = (strpos($location, 'login.php') === false) ? $location : 'messages.php?view=' . $view_messages;
 $location = (strpos($location, 'logout.php') === false) ? $location : 'messages.php?view=' . $view_messages;
+$location = ($location != '' && $location != '/') ? $location : 'messages.php?view=' . $view_messages;
 
 $submit = isset($_POST['zend']) ? true : false;
 
