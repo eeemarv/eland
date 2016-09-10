@@ -5,7 +5,6 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/includes/inc_default.php';
 
 $token = $_GET['token'] ?? false;
-$test = $_GET['test'] ? true : false;
 
 if (!readconfigfromdb('contact_form_en'))
 {
@@ -32,14 +31,37 @@ if ($token)
 
 		$app['eland.xdb']->set('email_validated', $data['mail'], $ev_data);
 
-		$html = $data['html'];
+		$msg_html = $data['html'];
+
+		$converter = new \League\HTMLToMarkdown\HtmlConverter();
+		$converter_config = $converter->getConfig();
+		$converter_config->setOption('strip_tags', true);
+		$converter_config->setOption('remove_nodes', 'img');
+
+		$msg_text = $converter->convert($msg_html);
+
+		$vars = [
+			'msg_html'		=> $msg_html,
+			'msg_text'		=> $msg_text,
+			'config_url'	=> $app['eland.base_url'] . '/config.php?active_tab=mailaddresses',
+			'ip'			=> $data['ip'],
+			'browser'		=> $data['browser'],
+			'mail'			=> $data['mail'],
+			'group'			=> [
+				'name' =>	readconfigfromdb('systemname'),
+				'tag' => 	readconfigfromdb('systemtag'),
+			],
+		];
+		
 
 		$app['eland.task.mail']->queue([
-			'subject'	=> 'kopie van je bericht naar ' . readconfigfromdb('systemname'),
-			'html'		=> '<p>Dit bericht heb je verstuurd naar ' . readconfigfromdb('systemname') . '</p><hr>' . $html,
+			'template'	=> 'contact_copy',
+			'vars'		=> $vars,
+//			'subject'	=> 'kopie van je bericht naar ' . readconfigfromdb('systemname'),
+//			'html'		=> '<p>Dit bericht heb je verstuurd naar ' . readconfigfromdb('systemname') . '</p><hr>' . $html,
 			'to'		=> $data['mail'],
 		]);
-
+/*
 		$html .= '<hr><p>Dit bericht werd ingegeven in het contactformulier van ';
 		$html .= readconfigfromdb('systemname') . '. Het mailadres werd gevalideerd. ';
 		$html .= 'Je kan reply kiezen om te reageren.</p>';
@@ -48,11 +70,12 @@ if ($token)
 		$html .= '<li>ip: ' . $data['ip'] . '</li>';
 		$html .= '<li>browser: ' . $data['browser'] . '</li>';
 		$html .= '</ul>';
-
+*/
 		$app['eland.task.mail']->queue([
-			'html'		=> $html,
+			'template'	=> 'contact',
+			'vars'		=> $vars,
+//			'html'		=> $html,
 			'to'		=> 'support',
-			'subject'	=> 'Bericht van het contactformulier',
 			'reply_to'	=> $data['mail'],
 		]);
 
@@ -60,16 +83,6 @@ if ($token)
 
 		$success_text = readconfigfromdb('contact_form_success_text');
 
-/*
-		require_once __DIR__ . '/includes/inc_header.php';
-
-		if ($success_text)
-		{
-			echo $success_text;
-		}
-
-		require_once __DIR__ . '/includes/inc_footer.php';
-*/
 		header('Location: ' . generate_url('contact'));
 		exit;
 	}
@@ -205,16 +218,6 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
-/*
-echo '<div class="form-group">';
-echo '<label for="letscode" class="col-sm-2 control-label">Letscode</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-echo 'value="' . $help['letscode'] . '" required>';
-echo '</div>';
-echo '</div>';
-*/
-
 echo '<div class="form-group">';
 echo '<label for="mail" class="col-sm-2 control-label">Je mailadres</label>';
 echo '<div class="col-sm-10">';
@@ -224,18 +227,7 @@ echo '<p><small>Er wordt een validatielink naar je gestuurd die je moet aanklikk
 echo '</div>';
 echo '</div>';
 
-/*
 echo '<div class="form-group">';
-echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="subject" name="subject" ';
-echo 'value="' . $help['subject'] . '" required>';
-echo '</div>';
-echo '</div>';
-*/
-
-echo '<div class="form-group">';
-//echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 echo '<div class="col-sm-12">';
 echo '<textarea name="description" class="form-control rich-edit" rows="4">';
 echo $description;
