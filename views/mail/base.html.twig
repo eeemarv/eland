@@ -17,12 +17,12 @@
 <h4>Je account</h4>
 
 <ul>
-<li>Je letscode: {{ user.letscode }}</li>
-<li>Je gebruikersnaam: {{ user.name }}</li>
-<li>Je saldo bedraagt momenteel {{ user.saldo }} {{ group.currency }}</li>
-<li>Minimum limiet: {{ user.minlimit }} {{ group.currency }}</li>
-<li>Maximum limiet: {{ user.maxlimit }} {{ group.currency }}</li>
-<li>Status: {% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}</li>
+<li>Je letscode: <strong>{{ user.letscode }}</strong></li>
+<li>Je gebruikersnaam: <strong>{{ user.name }}</strong></li>
+<li>Je saldo bedraagt momenteel <strong>{{ user.saldo }}</strong> {{ group.currency }}</li>
+<li>Minimum limiet: <strong>{{ user.minlimit }}</strong> {{ group.currency }}</li>
+<li>Maximum limiet: <strong>{{ user.maxlimit }}</strong> {{ group.currency }}</li>
+<li>Status: <strong>{% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}</strong></li>
 <li>Login: {{ url_login }}</li>
 
 </ul>

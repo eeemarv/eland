@@ -126,12 +126,7 @@ function mail_transaction($transaction, $remote_schema = null)
 {
 	global $app;
 
-	$r = "\r\n";
-	$t = "\t";
-
-	$sch = (isset($remote_schema)) ? $remote_schema : $app['eland.this_group']->get_schema();
-
-	$currency = readconfigfromdb('currency', $sch);
+	$sch = isset($remote_schema) ? $remote_schema : $app['eland.this_group']->get_schema();
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
 	$userto = readuser($transaction['id_to'], false, $sch);
@@ -141,46 +136,53 @@ function mail_transaction($transaction, $remote_schema = null)
 	$real_from = $transaction['real_from'] ?? '';
 	$real_to = $transaction['real_to'] ?? '';
 
-	$u_from = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
-	$u_to = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];
+	$from_user = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
+	$to_user = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];
 
-	$subject = $interlets . 'transactie, ' . $transaction['amount'] . ' ' . $currency . ' van ';
-	$subject .= $u_from . ' aan ' . $u_to;
+	$url = isset($remote_schema) ? $app['eland.protocol'] . $app['eland.groups']->get_host($sch) : $app['eland.base_url'];
 
-	$text = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
-	$text .= 'Notificatie ' . $interlets . 'transactie' . $r . $r;
-	$text .= 'Van: ' . $t . $t . $u_from . $r;
-	$text .= 'Aan: ' . $t . $t . $u_to . $r;
-
-	$text .= 'Omschrijving: ' . $t . $t . $transaction['description'] . $r;
-	$text .= 'Aantal: ' . $t . $t . $transaction['amount'] . ' ' . $currency . $r . $r;
-	$text .= 'Transactie id:' . $t . $t .$transaction['transid'] . $r;
-
-	if (isset($remote_schema))
-	{
-		$url = $app['eland.protocol'] . $app['eland.groups']->get_host($sch);
-	}
-	else
-	{
-		$url = $app['eland.base_url'];
-	}
-
-	$text .= 'link: ' . $url . '/transactions.php?id=' . $transaction['id'] . $r;
+	$vars = [
+		'from_user' => $from_user,
+		'to_user'	=> $to_user,
+		'interlets'	=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
+		'amount'			=> $transaction['amount'],
+		'transid'			=> $transaction['transid'],
+		'description'		=> $transaction['description'],
+		'transaction_url'	=> $url . '/transactions.php?id=' . $transaction['id'],
+		'group'				=> [
+			'name'			=> readconfigfromdb('systemname', $sch),
+			'tag'			=> readconfigfromdb('systemtag', $sch),
+			'currency'		=> readconfigfromdb('currency', $sch),
+			'support'		=> readconfigfromdb('support', $sch),
+		],
+	];
 
 	$t_schema = ($remote_schema) ? $remote_schema . '.' : '';
 
+	$base_url = $app['eland.protocol'] . $app['eland.groups']->get_host($sch);
+
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		$app['eland.task.mail']->queue(['to' => $userfrom['id'], 'subject' => $subject, 'text' => $text]);
+		$app['eland.task.mail']->queue([
+			'to' 		=> $userfrom['id'],
+			'template'	=> 'transaction',
+			'vars'		=> array_merge($vars, [
+				'user' 			=> $userfrom,
+				'url_login'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
+			]),
+		]);
 	}
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
 		$app['eland.task.mail']->queue([
-			'to' => $t_schema . $userto['id'],
-			'subject' => $subject,
-			'text' => $text,
+			'to' 		=> $t_schema . $userto['id'],
 			'schema'	=> $sch,
+			'template'	=> 'transaction',
+			'vars'		=> array_merge($vars, [
+				'user'		=> $userto,
+				'url_login'	=> $base_url . '/login.php?login=' . $userto['letscode'],
+			]),
 		]);
 	}
 }
