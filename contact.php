@@ -57,24 +57,12 @@ if ($token)
 		$app['eland.task.mail']->queue([
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
-//			'subject'	=> 'kopie van je bericht naar ' . readconfigfromdb('systemname'),
-//			'html'		=> '<p>Dit bericht heb je verstuurd naar ' . readconfigfromdb('systemname') . '</p><hr>' . $html,
 			'to'		=> $data['mail'],
 		]);
-/*
-		$html .= '<hr><p>Dit bericht werd ingegeven in het contactformulier van ';
-		$html .= readconfigfromdb('systemname') . '. Het mailadres werd gevalideerd. ';
-		$html .= 'Je kan reply kiezen om te reageren.</p>';
-		$html .= '<ul>';
-		$html .= '<li>mailadres: ' . $data['mail'] . '</li>';
-		$html .= '<li>ip: ' . $data['ip'] . '</li>';
-		$html .= '<li>browser: ' . $data['browser'] . '</li>';
-		$html .= '</ul>';
-*/
+
 		$app['eland.task.mail']->queue([
 			'template'	=> 'contact',
 			'vars'		=> $vars,
-//			'html'		=> $html,
 			'to'		=> 'support',
 			'reply_to'	=> $data['mail'],
 		]);
@@ -156,18 +144,19 @@ if($post && isset($_POST['zend']))
 
 		$app['monolog']->info('Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
 
-		$link = $app['eland.base_url'] . '/contact.php?token=' . $token;
-
-		$html = '<p>Gelieve deze mail te negeren indien je niet zelf het ';
-		$html .= '<a href="' . $app['eland.base_url'] . '/contact.php">contactformulier van ';
-		$html .= readconfigfromdb('systemname') . '</a> hebt ingevuld.</p>';
-
-		$html .= '<p><a href="' . $link . '">Klik hier om je bericht in het contactformulier te bevestigen.</a></p>';
+		$vars = [
+			'group' => [
+				'tag'	=> readconfigfromdb('systemtag'),
+				'name'	=> readconfigfromdb('systemname'),
+			],
+			'contact_url'	=> $app['eland.base_url'] . '/contact.php',
+			'confirm_url'	=> $app['eland.base_url'] . '/contact.php?token=' . $token,
+		];
 
 		$return_message =  $app['eland.task.mail']->queue([
 			'to' 		=> $mail,
-			'subject' 	=> 'Bevestig je bericht aan ' . readconfigfromdb('systemname'),
-			'html' 		=> $html,
+			'template'	=> 'contact_confirm',
+			'vars'		=> $vars,
 		]);
 
 		if (!$return_message)

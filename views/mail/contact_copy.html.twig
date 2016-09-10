@@ -1,0 +1,15 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block pretext %}<p><i>Niet beantwoorden a.u.b.</i></p>{% endblock pretext %}
+
+{% block body %}
+
+<p>Dit bericht heb je verstuurd naar {{ group.name }}</p><hr>
+
+{{ msg_html|raw }}
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}

@@ -1,0 +1,17 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block pretext %}Niet beantwoorden a.u.b.{% endblock pretext %}
+
+{% block body %}
+
+Dit bericht heb je verstuurd naar {{ group.name }}
+
+- - - - -
+
+{{ msg_text }}
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
