@@ -1239,6 +1239,13 @@ if ($id)
 
 	echo '</dl>';
 
+	if ($inter_transaction)
+	{
+		echo '<p><a href="';
+		echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+		echo '">Zie de complementaire transactie in de andere groep.</a></p>';
+	}
+
 	echo '</div></div>';
 
 	echo '<ul><small><i>';
