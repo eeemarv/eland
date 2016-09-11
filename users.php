@@ -119,72 +119,66 @@ if ($user_mail_submit && $id && $post)
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
 		$app['eland.alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
-		cancel();
+		cancel($id);
 	}
 
 	if ($s_master)
 	{
 		$app['eland.alert']->error('Het master account kan geen berichten versturen.');
-		cancel();
+		cancel($id);
 	}
 
 	if (!$s_schema)
 	{
 		$app['eland.alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
-		cancel();
+		cancel($id);
 	}
 
-	$user_me = ($s_group_self) ? '' : readconfigfromdb('systemtag', $s_schema) . '.';
-	$user_me .= link_user($session_user, $s_schema, false);
-	$user_me .= ($s_group_self) ? '' : ' van interlets groep ' . readconfigfromdb('systemname', $s_schema);
+	if (!$user_mail_content)
+	{
+		$app['eland.alert']->error('Fout: leeg bericht. Mail niet verzonden.');
+		cancel($id);
+	}
 
-	$my_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
-	$subject = 'Bericht van ' . readconfigfromdb('systemname');
+	$vars = [
+		'group'		=> [
+			'tag'	=> readconfigfromdb('systemtag'),
+			'name'	=> readconfigfromdb('systemname'),
+		],
+		'to_user'		=> link_user($user, false, false),
+		'to_username'	=> $user['name'],
+		'from_user'		=> link_user($session_user, $s_schema, false),
+		'from_username'	=> $session_user['name'],
+		'to_group'		=> $s_group_self ? '' : readconfigfromdb('systemname'),
+		'from_group'	=> $s_group_self ? '' : readconfigfromdb('systemname', $s_schema),
+		'contacts'		=> $contacts,
+		'msg_text'		=> $user_mail_content,
+		'login_url'		=> $app['eland.base_url'].'/login.php',
+	];
 
-	$text = 'Beste ' . $user['name'] . "\r\n\r\n";
-	$text .= 'Gebruiker ' . $user_me . " heeft een bericht naar je verstuurd via de webtoepassing\r\n\r\n";
-	$text .= '--------------------bericht--------------------' . "\r\n\r\n";
-	$text .= $user_mail_content . "\r\n\r\n";
-	$text .= '-----------------------------------------------' . "\r\n\r\n";
-	$text .= "Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken\r\n\r\n";
-	$text .= 'Contactgegevens van ' . $user_me . ":\r\n\r\n";
+	$app['eland.task.mail']->queue([
+		'to'		=> $id,
+		'reply_to'	=> $s_schema . '.' . $s_id,
+		'template'	=> 'user',
+		'vars'		=> $vars,
+	]);
 
-	foreach($my_contacts as $value)
+	if ($user_mail_cc)
 	{
-		$text .= '* ' . $value['abbrev'] . "\t" . $value['value'] ."\n";
+		$app['eland.task.mail']->queue([
+			'to' 		=> $s_schema . '.' . $s_id,
+			'template' 	=> 'user_copy',
+			'vars'		=> $vars,
+		]);
 	}
 
-	if ($user_mail_content)
-	{
-		if ($user_mail_cc)
-		{
-			$msg = 'Dit is een kopie van het bericht dat je naar ' . $user['letscode'] . ' ';
-			$msg .= $user['name'];
-			$msg .= ($s_group_self) ? '' : ' van letsgroep ' . readconfigfromdb('systemname');
-			$msg .= ' verzonden hebt. ';
-			$msg .= "\r\n\r\n\r\n";
-
-			$app['eland.task.mail']->queue(['to' => $s_schema . '.' . $s_id, 'text' => $msg . $text, 'subject' => $subject . ' (kopie)']);
-		}
-
-		if ($user['status'] == 1 || $user['status'] == 2)
-		{
-			$text .= "\r\n\r\nInloggen op de website: " . $app['eland.base_url'] . "\r\n\r\n";
-		}
-
-		$app['eland.task.mail']->queue(['to' => $id, 'subject' => $subject, 'text' => $text, 'reply_to' => $s_schema . '.' . $s_id]);
-
-		$app['eland.alert']->success('Mail verzonden.');
-	}
-	else
-	{
-		$app['eland.alert']->error('Fout: leeg bericht. Mail niet verzonden.');
-	}
+	$app['eland.alert']->success('Mail verzonden.');
 
 	cancel($id);
 }
