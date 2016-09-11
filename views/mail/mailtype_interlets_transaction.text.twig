@@ -1,0 +1,39 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup }} verstuurd werd. mailadres: {{ to_mail }}{% endif %}{% endblock pretext %}
+
+{% block body %}
+
+Notificatie interlets transactie
+--------------------------------
+
+Er werd een interlets transactie ingegeven op de installatie van {{ group.name }}
+met de volgende gegevens:
+
+Van
+{{ from_user }}
+
+Aan
+{{ to_user }}
+
+Aantal
+{{ amount }} {{ group.currency }}
+ofwel
+{{ amount_hours }} LETS uren ({{ group.currencyratio }} {{ group.currency }} = 1 uur)
+
+Omschrijving
+{{ description }}
+
+Transactie id
+{{ transid }}
+
+Je moet deze transactie in je eigen systeem verder verwerken.
+Als dit niet mogelijk is, moet je de kern van de andere groep 
+verwittigen zodat ze de transactie aan hun kant annuleren.
+Je kan dit doen door een reply te sturen op dit bericht.
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}

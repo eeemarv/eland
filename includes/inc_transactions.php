@@ -78,45 +78,47 @@ function insert_transaction($transaction)
 /*
  *
  */
-function mail_mail_interlets_transaction($transaction)
+function mail_mailtype_interlets_transaction($transaction)
 {
 	global $app;
 
-	$r = "\r\n";
-	$t = "\t";
+	$from_user = link_user($transaction['id_from'], false, false);
+	$to_group = link_user($transaction['id_to'], false, false);
 
-	$subject .= 'Interlets transactie';
+	$to_user = $transaction['real_to'];
 
-	$text  = '-- Dit is een automatische mail, niet beantwoorden a.u.b. --' . $r . $r;
+	$vars = [
+		'copy'		=> false,
+		'from_user' => $from_user,
+		'to_user'	=> $to_user,
+		'to_group'	=> $to_group,
+		'amount'			=> $transaction['amount'],
+		'amount_hours'		=> round($transaction['amount'] / readconfigfromdb('currencyratio'), 4),
+		'transid'			=> $transaction['transid'],
+		'description'		=> $transaction['description'],
+		'group'				=> [
+			'name'			=> readconfigfromdb('systemname'),
+			'tag'			=> readconfigfromdb('systemtag'),
+			'currency'		=> readconfigfromdb('currency'),
+			'currencyratio'	=> readconfigfromdb('currencyratio'),
+		],
+	];
 
-	$text  .= 'Er werd een interlets transactie ingegeven op de installatie van ' . readconfigfromdb('systemname');
-	$text  .= ' met de volgende gegevens:' . $r . $r;
+	$app['eland.task.mail']->queue([
+		'to' 		=> $transaction['id_to'],
+		'reply_to' 	=> 'admin',
+		'template'	=> 'mailtype_interlets_transaction',
+		'vars'		=> $vars,
+	]);
 
-	$u_from = ($transaction['real_from']) ?: link_user($transaction['id_from'], false, false);
-	$u_to = ($transaction['real_to']) ?: link_user($transaction['id_to'], false, false);
+	$vars['copy'] = true;
 
-	$text .= 'Van: ' . $t . $t . $u_from . $r;
-	$text .= 'Aan: ' . $t . $t . $u_to . ', letscode: ' . $transaction['letscode_to'] . $r;
-
-	$text .= 'Omschrijving: ' . $t . $transaction['description'] . $r;
-
-	$currencyratio = readconfigfromdb('currencyratio');
-	$meta = round($transaction['amount'] / $currencyratio, 4);
-
-	$text .= 'Aantal: ' . $t . $transaction['amount'] . ' ' . readconfigfromdb('currency') . ', ofwel ';
-	$text .= $meta . ' LETS uren* (' . $currencyratio . ' ' . readconfigfromdb('currency') . ' = 1 uur)' . $r . $r;
-	$text .= 'Transactie id: ' . $t . $transaction['transid'] . $r . $r;
-
-	$text .= 'Je moet deze in je eigen systeem verder verwerken.' . $r;
-	$text .= 'Als dit niet mogelijk is, moet je de kern van de andere groep ';
-	$text .= 'verwittigen zodat ze de transactie aan hun kant annuleren.';
-
-	$app['eland.task.mail']->queue(['to' => $transaction['id_to'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'admin']);
-
-	$subject .= ' [Kopie van bericht verzonden naar ' . $u_to . ']';
-	$text .= $r . $r . '-- Dit bericht werd verzonden naar adres: ' . $to . ' -- ';
-
-	$app['eland.task.mail']->queue(['to' => $transaction['id_from'], 'subject' => $subject, 'text' => $text, 'cc' => 'admin']);
+	$app['eland.task.mail']->queue([
+		'to' 		=> $transaction['id_from'],
+		'cc' 		=> 'admin',
+		'template'	=> 'mailtype_interlets_transaction',
+		'vars'		=> $vars,
+	]);
 }
 
 /*

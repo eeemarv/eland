@@ -247,7 +247,7 @@ if ($add)
 				$transaction['id'] = $id;
 				$transaction['letscode_to'] = $letscode_to;
 
-				mail_mail_interlets_transaction($transaction);
+				mail_mailtype_interlets_transaction($transaction);
 
 				$app['eland.alert']->success('Interlets transactie opgeslagen (verwerking per mail).');
 			}
