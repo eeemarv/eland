@@ -1,0 +1,36 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block pretext %}{% endblock pretext %}
+
+{% block body %}
+
+<p>Beste {{ to_username }},</p>
+
+<p>gebruiker {{ from_user }}{% if from_group %} van {{ from_group }}{% endif %} stuurt je via de webtoepassing een reactie op je {% if message.type == 'offer' %}aanbod{% else %}vraag{% endif %} '{{ message.content }}'.</p>
+
+<hr>
+
+<p>{{ msg_text }}</p>
+
+<hr>
+
+<p>Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken.</p>
+
+<h4>Contactgegevens van {{ from_user }}{% if from_group %} van {{ from_group }}{% endif %}:</h4>
+
+{% for contact in contacts %}
+
+<p>{{ contact.abbrev }}:<br>
+<strong>{{ contact.value }}</strong></p>
+
+{% endfor %}
+
+<hr>
+
+<p><a href="{{ login_url }}">Inloggen op de website</a></p>
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
