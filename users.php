@@ -3519,6 +3519,8 @@ function dd_render($str)
 
 function sendadminmail($user)
 {
+	global $app;
+
 	$subject .= 'Account activatie';
 
 	$text  = "*** Dit is een automatische mail van ";
@@ -3539,7 +3541,11 @@ function sendadminmail($user)
 
 	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
 
-	$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.mail']->queue([
+		'to' 		=> 'admin',
+		'subject' 	=> $subject,
+		'text' 		=> $text,
+	]);
 }
 
 function sendactivationmail($password, $user)
@@ -3580,5 +3586,10 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 	$text .= "Veel plezier bij het letsen! \n";
 
-	$app['eland.task.mail']->queue(['to' => $user['id'], 'subject' => $subject, 'text' => $text, 'reply_to' => 'support']);
+	$app['eland.task.mail']->queue([
+		'to' 		=> $user['id'],
+		'subject' 	=> $subject,
+		'text' 		=> $text,
+		'reply_to' 	=> 'support'
+	]);
 }
