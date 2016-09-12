@@ -60,7 +60,7 @@ class mail
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
-			$this->monolog->error('mail: ' . $m);
+			$this->monolog->error('mail: ' . $m, ['schema' => $sch]);
 			return ;
 		}
 
@@ -73,6 +73,32 @@ class mail
 			$data['subject']  = $template_subject->render($data['vars']);
 			$data['html'] = $template_html->render($data['vars']);
 			$data['text'] = $template_text->render($data['vars']);
+		}
+		else if (isset($data['template_from_config']) && isset($data['vars']))
+		{
+			$template = readconfigfromdb($data['template_from_config']);
+
+			if (!$template)
+			{
+				$this->monolog->error('mail error: no template set in config for ' . $data['template_from_config'],
+					['schema' => $sch]);
+				return;
+			}
+
+			try
+			{
+				$template_subject = $this->twig->loadTemplate('mail/' . $data['template_from_config'] . '.subject.twig');
+				$template_html = $this->twig->createTemplate($template);
+
+				$data['subject']  = $template_subject->render($data['vars']);
+				$data['html'] = $template_html->render($data['vars']);
+				$data['text'] = $this->converter->convert($data['html']);
+			}
+			catch (Exception $e)
+			{
+				$this->monolog->error('Fout in mail template: ' . $e->getMessage(), ['schema' => $schema]);
+				return;
+			}
 		}
 		else
 		{
@@ -158,7 +184,7 @@ class mail
 			return $m;
 		}
 
-		if (!isset($data['template']))
+		if (!isset($data['template']) && !isset($data['template_from_config']))
 		{
 			if (!isset($data['subject']) || $data['subject'] == '')
 			{

@@ -1,0 +1,24 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block body %}
+
+<h3>Notificatie nieuwe inschrijving</h3>
+
+<p>De volgende persoon schreef zich in via de website:</p>
+
+<p>Volledige naam: <strong>{{ user.fullname }}</strong></p>
+
+<p>Postcode: <strong>{{ user.postcode }}</strong></p>
+
+<p>Email: <strong>{{ email }}</strong></p>
+
+<p><strong><a href="{{ user_url }}">Link naar de nieuwe gebruiker</a></strong></p>
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
+
+
+

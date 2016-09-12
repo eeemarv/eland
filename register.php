@@ -139,46 +139,39 @@ if ($token)
 			throw $e;
 		}
 
-		$subject = 'nieuwe inschrijving: ' . $user['fullname'];
+		$vars = [
+			'group'	=> [
+				'name'	=> readconfigfromdb('systemname'),
+				'tag'	=> readconfigfromdb('systemtag'),
+			],
+			'user'	=> $user,
+			'email'	=> $data['email'],
+			'user_url'	=> $app['eland.base_url'] . '/users.php?id=' . $user_id,
+		];
 
-		$text = '*** Dit is een automatische mail van ' . readconfigfromdb('systemname') . " *** \n\n";
-		$text .= "De volgende persoon schreef zich in via de website: \n\n";
-		$text .= 'Volledige naam: ' . $user['fullname'] . "\n";
-		$text .= 'Postcode: ' . $user['postcode'] . "\n";
-		$text .= 'Email: ' . $data['email'] . "\n\n";
-		$text .= 'Link: ' . $app['eland.base_url'] . '/users.php?id=' . $user_id;
+		$app['eland.task.mail']->queue([
+			'to' 			=> 'admin',
+			'vars'			=> $vars,
+			'template'		=> 'admin_registration',
+		]);
 
-		$app['eland.task.mail']->queue(['to' => 'admin', 'subject' => $subject, 'text' => $text]);
+		$map_template_vars = [
+			'voornaam' 			=> 'first_name',
+			'achternaam'		=> 'last_name',
+			'postcode'			=> 'postcode',
+		];
 
-		$registration_success_mail = readconfigfromdb('registration_success_mail');
-
-		if ($registration_success_mail)
+		foreach ($map_template_vars as $k => $v)
 		{
-			$subject = 'Inschrijving';
-
-			$map_template_vars = [
-				'voornaam' 			=> 'first_name',
-				'achternaam'		=> 'last_name',
-				'postcode'			=> 'postcode',
-			];
-
-			foreach ($map_template_vars as $k => $v)
-			{
-				$map_template_vars[$k] = $data[$v];
-			}
-
-			try
-			{
-				$template = $app['twig']->createTemplate($registration_success_mail);
-				$html = $template->render($map_template_vars);
-			}
-			catch (Exception $e)
-			{
-				$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
-			}
-
-			$app['eland.task.mail']->queue(['to' => $data['email'], 'subject' => $subject, 'html' => $html, 'reply_to' => 'admin'], 1000);
+			$vars[$k] = $data[$v];
 		}
+
+		$app['eland.task.mail']->queue([
+			'to' 					=> $data['email'],
+			'reply_to'				=> 'admin',
+			'template_from_config'	=> 'registration_success_mail',
+			'vars'		=> $vars,
+		], 1000);
 
 		$app['eland.alert']->success('Inschrijving voltooid.');
 
@@ -271,13 +264,20 @@ if ($submit)
 		$key = $app['eland.this_group']->get_schema() . '_register_email_' . $email;
 		$app['redis']->set($key, '1');
 		$app['redis']->expire($key, 86400);
-		$subject = 'Bevestig je inschrijving voor ' . readconfigfromdb('systemname');
-		$url = $app['eland.base_url'] . '/register.php?token=' . $token;
-		$text = 'Inschrijven voor ' . readconfigfromdb('systemname') . "\n\n";
-		$text .= "Klik op deze link om je inschrijving  te bevestigen :\n\n" . $url . "\n\n";
-		$text .= "Deze link blijft 1 dag geldig.\n\n";
 
-		$app['eland.task.mail']->queue(['to' => $reg['email'], 'subject' => $subject, 'text' => $text], 1000);
+		$vars = [
+			'group'		=> [
+				'name'	=> readconfigfromdb('systemname'),
+				'tag'	=> readconfigfromdb('systemtag'),
+			],
+			'confirm_url'	=> $app['eland.base_url'] . '/register.php?token=' . $token,
+		];
+
+		$app['eland.task.mail']->queue([
+			'to' 		=> $reg['email'],
+			'vars'		=> $vars,
+			'template'	=> 'registration_confirm',
+		], 1000);
 
 		$app['eland.alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
