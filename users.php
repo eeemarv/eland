@@ -3521,30 +3521,19 @@ function sendadminmail($user)
 {
 	global $app;
 
-	$subject .= 'Account activatie';
-
-	$text  = "*** Dit is een automatische mail van ";
-	$text .= readconfigfromdb('systemtag');
-	$text .= " ***\r\n\n";
-	$text .= "De account " . link_user($user, false, false) ;
-	$text .= " werd geactiveerd met een nieuw paswoord.\n";
-
-	if ($user['mail'])
-	{
-		$text .= 'Er werd een mail verstuurd naar de gebruiker.';
-		$text .= ".\n\n";
-	}
-	else
-	{
-		$text .= "Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.\n\n";
-	}
-
-	$text .= "OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals mailing lists.\n\n";
+	$vars = [
+		'group'		=> [
+			'name'	=> readconfigfromdb('systemname'),
+			'tag'	=> readconfigfromdb('systemtag'),
+		],
+		'user'			=> link_user($user, false, false),
+		'user_mail'		=> $user['mail'],
+	];
 
 	$app['eland.task.mail']->queue([
 		'to' 		=> 'admin',
-		'subject' 	=> $subject,
-		'text' 		=> $text,
+		'vars'		=> $vars,
+		'template'	=> 'admin_user_activation',
 	]);
 }
 
@@ -3555,7 +3544,7 @@ function sendactivationmail($password, $user)
 	if (empty($user['mail']))
 	{
 		$app['eland.alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
-		return 0;
+		return;
 	}
 
 	$subject = 'account activatie voor ' . readconfigfromdb('systemname');

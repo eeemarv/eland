@@ -1,0 +1,19 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block body %}
+
+<p>Account {{ user }} werd geactiveerd met een nieuw paswoord.</p>
+
+{% if user_mail %}
+<p>Er werd een mail verstuurd naar de gebruiker.</p>
+{% else %}
+<p>Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.</p>
+{% endif %}
+
+<p>OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals email-lijsten.</p>
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
