@@ -372,7 +372,7 @@ if ($img_del && $id)
 if ($bulk_submit && $post && $s_admin)
 {
 	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-	$password = ($bulk_mail_submit) ? 'mail_password_' : $bulk_field . '_password_';
+	$password = ($bulk_mail_submit || $bulk_mail_test) ? 'mail_password_' : $bulk_field . '_password_';
 	$password = $_POST[$password . $pw_name_suffix];
 
 	if (!$password)
