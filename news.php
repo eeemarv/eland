@@ -112,17 +112,22 @@ if ($add && $submit && !count($errors))
 
 		if(!$s_admin)
 		{
-			// Send a notice to ask for approval
-			$url = $app['eland.base_url'] . '/news.php?id=' . $id;
+			$vars = [
+				'group'		=> [
+					'name'	=> readconfigfromdb('systemname'),
+					'tag'	=> readconfigfromdb('systemtag'),
+				],
+				'news'	=> $news,
+				'news_url'	=> $app['eland.base_url'] . '/news.php?id=' . $id,
+			];
 
-			$subject = 'Nieuwsbericht wacht op goedkeuring';
-			$text .= "-- Dit is een automatische mail, niet beantwoorden aub --\r\n";
-			$text .= "\nEen lid gaf een nieuwsbericht met titel '";
-			$text .= $news['headline'];
-			$text .= "' in. Dat bericht wacht op goedkeuring.  Log in als beheerder en ga naar nieuws om het bericht goed te keuren.\n";
-			$text .= 'link: ' .  $url . "\n";
-			$app['eland.task.mail']->queue(['to' => 'newsadmin', 'subject' => $subject, 'text' => $text]);
-			echo '<br><strong>Bericht wacht op goedkeuring van een beheerder</strong>';
+			$app['eland.task.mail']->queue([
+				'to' 		=> 'newsadmin',
+				'subject' 	=> $subject,
+				'text' 		=> $text,
+				'template'	=> 'admin_news_approve',
+				'vars'		=> $vars,
+			]);
 
 			$app['eland.alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
