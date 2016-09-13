@@ -1395,8 +1395,8 @@ if ($add || $edit)
 
 							if (readconfigfromdb('mailenabled'))
 							{
-								sendactivationmail($password, $user);
-								sendadminmail($user);
+								send_activation_mail($password, $user);
+
 								$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 							}
 							else
@@ -1523,8 +1523,8 @@ if ($add || $edit)
 								{
 									$user['mail'] = $mailadr;
 
-									sendactivationmail($password, $user);
-									sendadminmail($user);
+									send_activation_mail($password, $user);
+
 									$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 								}
 								else
@@ -3518,7 +3518,7 @@ function dd_render($str)
 	echo '</dd>';
 }
 
-function sendadminmail($user)
+function send_activation_mail($password, $user)
 {
 	global $app;
 
@@ -3536,11 +3536,6 @@ function sendadminmail($user)
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
 	]);
-}
-
-function sendactivationmail($password, $user)
-{
-	global $app;
 
 	$vars = [
 		'group'		=> [
