@@ -1069,7 +1069,7 @@ if ($add || $edit)
 			'birthday'		=> trim($_POST['birthday']) ?: null,
 			'hobbies'		=> trim($_POST['hobbies']),
 			'comments'		=> trim($_POST['comments']),
-			'cron_saldo'	=> $_POST['cron_saldo'] ? 1 : 0,
+			'cron_saldo'	=> isset($_POST['cron_saldo']) ? 1 : 0,
 			'lang'			=> 'nl'
 		];
 
@@ -1517,11 +1517,12 @@ if ($add || $edit)
 
 						if ($user['status'] == 1 && !$user_prefetch['adate'])
 						{
-							if ($notify && !empty($mail) && $password)
+							if ($notify && !empty($mailadr) && $password)
 							{
 								if (readconfigfromdb('mailenabled'))
 								{
-									$user['mail'] = $mail;
+									$user['mail'] = $mailadr;
+
 									sendactivationmail($password, $user);
 									sendadminmail($user);
 									$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
@@ -3541,12 +3542,6 @@ function sendactivationmail($password, $user)
 {
 	global $app;
 
-	if (empty($user['mail']))
-	{
-		$app['eland.alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het wachtwoord op een andere manier door!');
-		return;
-	}
-
 	$subject = 'account activatie voor ' . readconfigfromdb('systemname');
 
 	$text  = "*** Dit is een automatische mail van ";
@@ -3575,10 +3570,24 @@ function sendactivationmail($password, $user)
 	$text .= "\n\n";
 	$text .= "Veel plezier bij het letsen! \n";
 
+	$vars = [
+		'group'		=> [
+			'name'		=> readconfigfromdb('systemname'),
+			'tag'		=> readconfigfromdb('systemtag'),
+			'support'	=> readconfigfromdb('support'),
+			'currency'	=> readconfigfromdb('currency'),
+		],
+		'user'		=> $user,
+		'password'	=> $password,
+		'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],	
+	];
+
 	$app['eland.task.mail']->queue([
 		'to' 		=> $user['id'],
-		'subject' 	=> $subject,
-		'text' 		=> $text,
-		'reply_to' 	=> 'support'
+//		'subject' 	=> $subject,
+//		'text' 		=> $text,
+		'reply_to' 	=> 'support',
+		'template'	=> 'user_activation',
+		'vars'		=> $vars,
 	]);
 }
