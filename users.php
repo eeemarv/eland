@@ -3542,34 +3542,6 @@ function sendactivationmail($password, $user)
 {
 	global $app;
 
-	$subject = 'account activatie voor ' . readconfigfromdb('systemname');
-
-	$text  = "*** Dit is een automatische mail van ";
-	$text .= readconfigfromdb('systemname');
-	$text .= " ***\r\n\n";
-	$text .= 'Beste ';
-	$text .= $user['name'];
-	$text .= "\n\n";
-
-	$text .= "Welkom bij Letsgroep readconfigfromdb('systemname')";
-	$text .= '. Surf naar ' . $app['eland.base_url'];
-	$text .= " en meld je aan met onderstaande gegevens.\n";
-	$text .= "\n-- Account gegevens --\n";
-	$text .= "Login: ";
-	$text .= $user['letscode']; 
-	$text .= "\nPasswoord: ";
-	$text .= $password;
-	$text .= "\n-- --\n\n";
-
-	$text .= "Je kan je gebruikersgevens, vraag&aanbod en lets-transacties";
-	$text .= " zelf bijwerken op het Internet.";
-	$text .= "\n\n";
-
-	$text .= "Als je nog vragen of problemen hebt, kan je terecht bij ";
-	$text .= readconfigfromdb('support');
-	$text .= "\n\n";
-	$text .= "Veel plezier bij het letsen! \n";
-
 	$vars = [
 		'group'		=> [
 			'name'		=> readconfigfromdb('systemname'),
