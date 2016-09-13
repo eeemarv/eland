@@ -712,24 +712,24 @@ if ($pw)
 
 					if ($to)
 					{
-						$url = $app['eland.base_url'] . '/login.php?login=' . $user['letscode'];
+						$vars = [
+							'group'		=> [
+								'name'		=> readconfigfromdb('systemname'),
+								'tag'		=> readconfigfromdb('systemtag'),
+								'support'	=> readconfigfromdb('support'),
+								'currency'	=> readconfigfromdb('currency'),
+							],
+							'user'			=> $user,
+							'password'		=> $password,
+							'url_login'		=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+						];
 
-						$subj = 'nieuw paswoord voor je account';
-
-						$con = '*** Dit is een automatische mail van ';
-						$con .= readconfigfromdb('systemname');
-						$con .= '. Niet beantwoorden a.u.b. ';
-						$con .= "***\n\n";
-						$con .= 'Beste ' . $user['name'] . ',' . "\n\n";
-						$con .= 'Er werd een nieuw paswoord voor je ingesteld.';
-						$con .= "\n\n";
-						$con .= 'Je kan inloggen met de volgende gegevens:';
-						$con .= "\n\nLogin (letscode): " . $user['letscode'];
-						$con .= "\nPaswoord: " .$password . "\n\n";
-						$con .= 'link waar je kan inloggen: ' . $url;
-						$con .= "\n\n";
-						$con .= 'Veel letsgenot!';
-						$app['eland.task.mail']->queue(['to' => $pw, 'subject' => $subj, 'text' => $con]);
+						$app['eland.task.mail']->queue([
+							'to' 		=> $pw,
+							'reply_to'	=> 'support',
+							'template'	=> 'password_reset',
+							'vars'		=> $vars,
+						]);
 
 						$app['eland.alert']->success('Notificatie mail verzonden');
 					}
@@ -3584,8 +3584,6 @@ function sendactivationmail($password, $user)
 
 	$app['eland.task.mail']->queue([
 		'to' 		=> $user['id'],
-//		'subject' 	=> $subject,
-//		'text' 		=> $text,
 		'reply_to' 	=> 'support',
 		'template'	=> 'user_activation',
 		'vars'		=> $vars,
