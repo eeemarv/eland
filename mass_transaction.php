@@ -215,7 +215,7 @@ if ($submit)
 	}
 	else
 	{
-		$transactions = [];
+		$transactions = $transid_ary = [];
 
 		$app['db']->beginTransaction();
 
@@ -230,7 +230,7 @@ if ($submit)
 			'date'			=> $cdate,
 		];
 
-		$alert_success = $log = '';
+		$alert_success = $log_many = '';
 		$total = 0;
 
 		try
@@ -260,11 +260,6 @@ if ($submit)
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
-				$mail_ary[$many_field][$many_uid] = [
-					'amount'	=> $amo,
-					'transid' 	=> $transid,
-				];
-
 				$trans = [
 					'id_to' 		=> $to_id,
 					'id_from' 		=> $from_id,
@@ -277,6 +272,13 @@ if ($submit)
 				];
 
 				$app['db']->insert('transactions', $trans);
+
+				$mail_ary[$many_field][$many_uid] = [
+					'amount'	=> $amo,
+					'transid' 	=> $transid,
+				];
+
+				$transid_ary[] = $transid;
 
 				$app['db']->executeUpdate('update users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
@@ -349,6 +351,8 @@ if ($submit)
 		} 
 		else if ($mail_en)
 		{
+			$mail_ary['transid_ary'] = $transid_ary;
+
 			if (mail_mass_transaction($mail_ary))
 			{
 				$app['eland.alert']->success('Notificatie mails verzonden.');
@@ -651,6 +655,19 @@ function mail_mass_transaction($mail_ary)
 		return;
 	}
 
+	$trans_map = [];
+
+	$trans = $app['db']->executeQuery('select id, transid
+		from transactions
+		where transid IN (?)',
+		[$mail_ary['transid_ary']],
+		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+
+	foreach ($trans as $t)
+	{
+		$trans_map[$t['transid']] = $t['id'];
+	}
+
 	$from_many_bool = (is_array($mail_ary['from'])) ? true : false;
 
 	$many_ary = ($from_many_bool) ? $mail_ary['from'] : $mail_ary['to'];
@@ -659,45 +676,17 @@ function mail_mass_transaction($mail_ary)
 
 	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
 
-	$r = "\r\n";
-	$t = "\t";
-	$support = readconfigfromdb('support');
-	$currency = readconfigfromdb('currency');
-	$login_url = $app['eland.base_url'] . '/login.php?login=';
-	$new_transaction_url = $app['eland.base_url'] . '/transactions.php?add=1';
-	$subject = 'Nieuwe transactie';
-
-// mail to active users
-
-	$mm = new eland\multi_mail();
-
-	$mm->add_text('*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r)
-		->add_text('Notificatie nieuwe transactie' . $r . $r)
-		->add_text('Bedrag: ')
-		->add_text_var('amount')
-		->add_text(' ' . $currency . $r)
-		->add_text('Omschrijving: ')
-		->add_text_var('description')
-		->add_text($r . 'Van: ')
-		->add_text_var('from_user')
-		->add_text($r . 'Naar: ')
-		->add_text_var('to_user')
-		->add_text($r . $r . 'Transactie id: ')
-		->add_text_var('transid')
-		->add_text($r . $r . 'Je huidige saldo bedraagt nu ')
-		->add_text_var('saldo')
-		->add_text(' ' . $currency . $r)
-		->add_text('Minimum limiet: ')
-		->add_text_var('minlimit')
-		->add_text(' ' . $currency)
-		->add_text(', Maximum limiet: ')
-		->add_text_var('maxlimit')
-		->add_text(' ' . $currency . $r)
-		->add_text('Status: ')
-		->add_text_var('status')
-		->add_text($r . 'Login: ' . $login_url)
-		->add_text_var('letscode')
-		->add_text($r . $r . 'Nieuwe transactie ingeven: ' . $new_transaction_url . $r . $r);
+	$common_vars = [
+		'group'		=> [
+			'name'			=> readconfigfromdb('systemname'),
+			'tag'			=> readconfigfromdb('systemtag'),
+			'support'		=> readconfigfromdb('support'),
+			'currency'		=> readconfigfromdb('currency'),
+		],
+		'description'			=> $mail_ary['description'],
+		'new_transaction_url'	=> $app['eland.base_url'] . '/transactions.php?add=1',
+		'from_many'				=> $from_many_bool,
+	];
 
 	$from_user_id = $to_user_id = $one_user_id;
 
@@ -722,68 +711,68 @@ function mail_mass_transaction($mail_ary)
 		{
 			$to_user_id = $user_id;
 		}
-		
-		$data = [
-			'amount' 		=> $many_ary[$user_id]['amount'],
-			'transid' 		=> $many_ary[$user_id]['transid'],
-			'description'	=> $mail_ary['description'],
-			'from_user' 	=> link_user($from_user_id, false, false),
-			'to_user'		=> link_user($to_user_id, false, false),
-		];
 
-		$data = array_merge($user, $data);
+		$vars = array_merge($common_vars, [
+			'amount' 			=> $many_ary[$user_id]['amount'],
+			'transid' 			=> $many_ary[$user_id]['transid'],
+			'from_user' 		=> link_user($from_user_id, false, false),
+			'to_user'			=> link_user($to_user_id, false, false),
+			'transaction_url'	=> $app['eland.base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
+			'user'				=> $user,
+			'interlets'			=> false,
+			'url_login'			=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+		]);
 
-		$mm->set_vars($data)
-			->set_var('status', ($user['status'] == 2) ? 'uitstapper' : 'actief')
-			->mail_q(['to' => $user_id, 'subject' => $subject]);
+		$app['eland.task.mail']->queue([
+			'to'		=> $user_id,
+			'template'	=> 'transaction',
+			'vars'		=> $vars,
+		]);
 	}
 
-// compilation mail
-
-	$subject = 'Nieuwe massa transactie';
 	$total = 0;
 
-	$text = '*** Dit is een automatische mail. Niet beantwoorden a.u.b. ***' . $r . $r;
+	$users = [];
 
-	$text .= 'Notificatie nieuwe massa transactie' . $r . $r;
-
-	$t_one = link_user($one_user_id, false, false);
-
-	if (!$from_many_bool)
-	{
-		$text .= 'Van ' . $t_one . $r . $r;
-		$text .= 'Aan' . $r; 
-	}
-	else
-	{
-		$text .= 'Van' . $r;
-	}	
-
-	$users = $app['db']->executeQuery('SELECT u.id
+	$user_ids = $app['db']->executeQuery('SELECT u.id
 		FROM users u
 		WHERE u.id IN (?)',
 		[$many_user_ids],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
-	foreach ($users as $user)
+	foreach ($user_ids as $u)
 	{
-		$user_id = $user['id'];
+		$user_id = $u['id'];
 
+		$users[] = [
+			'url'		=> $app['eland.base_url'] . '/users.php?id=' . $user_id,
+			'text'		=> link_user($user_id, false, false),
+			'amount'	=> $many_ary[$user_id]['amount'],
+			'id'		=> $user_id,
+		];
+		
 		$total += $many_ary[$user_id]['amount'];
 
 		$text .= link_user($user_id, false, false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
 	}
 
-	if ($from_many_bool)
-	{
-		$text .= $r . 'Aan ' . $t_one . $r . $r;
-	}
+	$vars = array_merge($common_vars, [
+		'users'		=> $users,
+		'user'		=> [
+			'url'	=> $app['eland.base_url'] . '/users.php?id=' . $one_user_id,
+			'text'	=> link_user($one_user_id, false, false),
+		],
+		'total'		=> $total,
+	]);
 
-	$text .= 'Totaal: ' . $total . ' ' . $currency . $r . $r;
-	$text .= 'Voor: ' . $mail_ary['description'] . $r . $r;
-
-	$app['eland.task.mail']->queue(['to' => ['admin', $s_id, $one_user_id], 'subject' => $subject, 'text' => $text]);
+	$app['eland.task.mail']->queue([
+		'to' 		=> ['admin', $s_id, $one_user_id],
+		'subject' 	=> $subject,
+		'text' 		=> $text,
+		'template'	=> 'admin_mass_transaction',
+		'vars'		=> $vars,
+	]);
 
 	return true;
 }

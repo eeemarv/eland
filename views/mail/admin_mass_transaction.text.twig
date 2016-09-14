@@ -1,0 +1,33 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block body %}
+
+Notificatie nieuwe massa transactie
+-----------------------------------
+
+Van:
+
+{% if not from_many %}
+{{ user.text }}
+
+Aan:
+
+{% endif %}
+{% for u in users %}
+{{ u.text }}: {{ u.amount }} {{ group.currency }}
+{% endfor %}
+
+{% if from_many %}
+Aan:
+{{ user.text }}
+{% endif %}
+
+Totaal: {{ total }} {{ group.currency }}
+
+Omschrijving: {{ description }}
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}

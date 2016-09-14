@@ -1,0 +1,33 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block body %}
+
+<h3>Notificatie nieuwe massa transactie</h3>
+
+<p>Van:</p>
+
+{% if not from_many %}
+<p><a href="{{ user.url }}">{{ user.text }}</a></p>
+<p>Aan:</p>
+{% endif %}
+ 
+<ul>
+{% for u in users %}
+<li><a href="{{ u.url }}">{{ u.text }}</a>: <strong>{{ u.amount }}</strong> {{ group.currency }}</li>
+{% endfor %}
+</ul>
+
+{% if from_many %}
+<p>Aan:</p>
+<p><a href="{{ user.url }}">{{ user.text }}</a></p>
+{% endif %}
+
+<p>Totaal<br><strong>{{ total }}</strong> {{ group.currency }}</p>
+
+<p>Omschrijving<br><strong>{{ description }}</strong></p>
+
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
