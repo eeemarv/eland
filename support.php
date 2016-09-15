@@ -29,64 +29,53 @@ if (isset($_POST['zend']))
 		$errors[] = $token_error;
 	}
 
-	$my_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-		from contact c, type_contact tc
-		where c.id_user = ?
-			and c.id_type_contact = tc.id', [$s_id]);
-
-	$mailaddr = $app['eland.mailaddr']->get($s_id);
-
-	$mail_ary = [
-		'to'		=> 'support',
-		'subject' 	=> 'Support voor ' . link_user($s_id, false, false)
-	];
-
-	foreach ($my_contacts as $my_contact)
+	if(!count($errors))
 	{
-		if ($my_contact['abbrev'] == 'mail')
+		$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+			from contact c, type_contact tc
+			where c.id_user = ?
+				and c.id_type_contact = tc.id', [$s_id]);
+
+		$mailaddr = $app['eland.mailaddr']->get($s_id);
+
+		$config_htmlpurifier = \HTMLPurifier_Config::createDefault();
+		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
+		$htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
+		$msg_html = $htmlpurifier->purify($description);
+
+		$converter = new \League\HTMLToMarkdown\HtmlConverter();
+		$converter_config = $converter->getConfig();
+		$converter_config->setOption('strip_tags', true);
+		$converter_config->setOption('remove_nodes', 'img');
+
+		$msg_text = $converter->convert($msg_html);
+
+		$vars = [
+			'group'	=> [
+				'name'		=> readconfigfromdb('systemname'),
+				'tag'		=> readconfigfromdb('systemtag'),
+			],
+			'user'	=> [
+				'text'			=> link_user($s_id, false, false),
+				'url'			=> $app['eland.base_url'] . '/users.php?id=' . $s_id,
+				'mail'			=> $mailaddr,
+			],
+			'contacts'		=> $contacts,
+			'msg_html'		=> $msg_html,
+			'msg_text'		=> $msg_text,
+			'config_url'	=> $app['eland.base_url'] . '/config.php?active_tab=mailaddresses',
+		];
+
+		$mail_ary = [
+			'to'		=> 'support',
+			'template'	=> 'support',
+			'vars'		=> $vars,
+		];
+
+		if ($mailaddr)
 		{
 			$mail_ary['reply_to'] = $s_id;
 		}
-	}
-
-	if(!count($errors))
-	{
-		$html = '<p>Gebruiker ' . link_user($s_id, false, false) . ' deed melding via het ';
-		$html .= 'supportformulier op de website.';
-		$html .= '</p>';
-
-		$html .= '<hr>';
-		$html .= $description;
-		$html .= '<hr>';
-		$html .= '<p>';
-
-		if ($mail_ary['reply_to'])
-		{
-			$html .= 'Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken';
-		}
-		else
-		{
-			$html .= 'Er is geen mailadres gekend van ' . link_user($s_id, false, false);
-			$html .= '. Contacteer de gebruiker op andere wijze.';
-		}
-
-		$html .= '</p>';
-
-		$html .= '<h4>Contactgegevens van ' . link_user($s_id, false, false) . '</h4><ul>';
-
-		foreach($my_contacts as $value)
-		{
-			$html .= '<li>' . $value['abbrev'] . "\t" . $value['value'] . '</li>';
-		}
-		
-		$html .= '</ul>';
-
-		$config_htmlpurifier = HTMLPurifier_Config::createDefault();
-		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
-		$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
-		$html = $htmlpurifier->purify($html);
-
-		$mail_ary['html'] = $html;
 
 		$return_message =  $app['eland.task.mail']->queue($mail_ary);
 
@@ -144,18 +133,7 @@ echo '<div class="panel-heading">';
 
 echo '<form method="post" class="form-horizontal">';
 
-/*
 echo '<div class="form-group">';
-echo '<label for="subject" class="col-sm-2 control-label">Onderwerp</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="text" class="form-control" id="subject" name="subject" ';
-echo 'value="' . $help['subject'] . '" required>';
-echo '</div>';
-echo '</div>';
-*/
-
-echo '<div class="form-group">';
-//echo '<label for="description" class="col-sm-2 control-label">Je bericht</label>';
 echo '<div class="col-sm-12">';
 echo '<textarea name="description" class="form-control rich-edit" id="description" rows="4">';
 echo $description;
