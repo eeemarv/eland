@@ -52,7 +52,6 @@ if ($token)
 				'tag' => 	readconfigfromdb('systemtag'),
 			],
 		];
-		
 
 		$app['eland.task.mail']->queue([
 			'template'	=> 'contact_copy',
