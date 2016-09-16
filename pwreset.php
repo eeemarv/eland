@@ -26,19 +26,22 @@ if ($token)
 				$user = readuser($user_id, true);
 				$app['eland.alert']->success('Paswoord opgeslagen.');
 
-				$url = $app['eland.base_url'] . '/login.php?login=' . $user['letscode'];
-
-				$subj = 'nieuw paswoord.';
-				$text = 'Beste ' . $user['name'] . ",\n\n";
-				$text .= 'Er werd een nieuw paswoord voor je account ingesteld.';
-				$text .= "\n\npaswoord: " . $password . "\n";
-				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
-				$text .= 'Inloggen: ' . $url;
+				$vars = [
+					'group'		=> [
+						'name'		=> readconfigfromdb('systemname'),
+						'tag'		=> readconfigfromdb('systemtag'),
+						'currency'	=> readconfigfromdb('currency'),
+						'support'	=> readconfigfromdb('support'),
+					],
+					'password'	=> $password,
+					'user'		=> $user,
+					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+				];
 
 				$app['eland.task.mail']->queue([
-					'to' => $user_id,
-					'subject' => $subj,
-					'text' => $text,
+					'to' 		=> $user_id,
+					'template'	=> 'password_reset',
+					'vars'		=> $vars,
 				]);
 
 				header('Location: ' . $rootpath . 'login.php');
@@ -137,7 +140,7 @@ if (isset($_POST['zend']))
 					],
 					'token_url'	=> $app['eland.base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,
-					'url_login'	=> $app['eland.base_url'] . '/users.php?id=' . $user['id'],
+					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
 				$app['eland.task.mail']->queue([
