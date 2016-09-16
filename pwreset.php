@@ -35,7 +35,11 @@ if ($token)
 				$text .= 'login (letscode): ' . $user['letscode'] . "\n\n";
 				$text .= 'Inloggen: ' . $url;
 
-				$app['eland.task.mail']->queue(['to' => $user_id, 'subject' => $subj, 'text' => $text]);
+				$app['eland.task.mail']->queue([
+					'to' => $user_id,
+					'subject' => $subj,
+					'text' => $text,
+				]);
 
 				header('Location: ' . $rootpath . 'login.php');
 				exit;
@@ -104,7 +108,7 @@ if (isset($_POST['zend']))
 
 	if($email)
 	{
-		$mail_ary = $app['db']->fetchAll('select c.id_user, u.letscode
+		$user = $app['db']->fetchAll('select u.*
 			from contact c, type_contact tc, users u
 			where c. value = ?
 				and tc.id = c.id_type_contact
@@ -112,30 +116,35 @@ if (isset($_POST['zend']))
 				and c.id_user = u.id
 				and u.status in (1, 2)', [$email]);
 
-		if (count($mail_ary) < 2)
+		if (count($user) < 2)
 		{
-			$user_id = $mail_ary[0]['id_user'];
-			$letscode = $mail_ary[0]['letscode'];
+			$user = $user[0];
 
-			if ($user_id)
+			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user_id . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
+				$token = substr(hash('sha512', $user['id'] . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
 				$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
 
-				$app['redis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
+				$app['redis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
 				$app['redis']->expire($key, 3600);
 
-				$url = $app['eland.base_url'] . '/pwreset.php?token=' . $token;
+				$vars = [
+					'group'		=> [
+						'name'		=> readconfigfromdb('systemname'),
+						'tag'		=> readconfigfromdb('systemtag'),
+						'currency'	=> readconfigfromdb('currency'),
+						'support'	=> readconfigfromdb('support'),
+					],
+					'token_url'	=> $app['eland.base_url'] . '/pwreset.php?token=' . $token,
+					'user'		=> $user,
+					'url_login'	=> $app['eland.base_url'] . '/users.php?id=' . $user['id'],
+				];
 
-				$subject = 'Paswoord reset link.';
-
-				$text = "Link om je paswoord te resetten :\n\n" . $url . "\n\n";
-				$text .= "Let op: deze link blijft slechts 1 uur geldig.\n\n";
-				$text .= 'Je letscode is: ' . $letscode . "\n\n";
-				$text .= 'Gelieve deze mail te negeren indien je niet zelf deze paswoord ';
-				$text .= 'reset aangevraagd hebt op de website, ';
-
-				$app['eland.task.mail']->queue(['to' => $email, 'text' => $text, 'subject' => $subject], 1000);
+				$app['eland.task.mail']->queue([
+					'to' 		=> $email,
+					'template'	=> 'password_reset_confirm',
+					'vars'		=> $vars,
+				], 1000);
 
 				$app['eland.alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 

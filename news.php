@@ -123,8 +123,6 @@ if ($add && $submit && !count($errors))
 
 			$app['eland.task.mail']->queue([
 				'to' 		=> 'newsadmin',
-				'subject' 	=> $subject,
-				'text' 		=> $text,
 				'template'	=> 'admin_news_approve',
 				'vars'		=> $vars,
 			]);
