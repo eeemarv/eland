@@ -1,0 +1,130 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block body %}
+
+<h4>Vraag en aanbod</h4>
+{% if messages %}
+<p>Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.</p>
+<ul>
+{% for msg in messages %}
+<li><strong><a href="{{ msg.url }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
+({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
+<br>
+{% if msg.imgs|length %}<img src="{{ msg.imgs.0 }}" height="200" alt="afbeelding"><br>{% endif %}
+{{ msg.description }}<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
+{% if msg.addr_url %}<a href="{{ msg.addr_url }}">{{ msg.user.addr|geocode|distance</a> | {% endif %}
+{% if msg.user.postcode %}{{ msg.user.postcode }} | {% endif %}
+{% for mail in msg.user.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
+{% if not loop.last %}|{% endif %} {% endfor %}
+</li>
+
+{% endfor %}
+</ul>
+
+{% else %}
+<p>Er werd geen nieuw vraag of aanbod online geplaatst.</p>
+{% endif %}
+
+<p><a href="{{ new_message_url }}">Geef zelf je eigen vraag of aanbod in.</a></p>
+
+{#
+{% if inter_messages %}
+
+<h4>Interlets vraag en aanbod</h4>
+
+{% for group in inter_messages %}
+<h5>Groep: {{ group.name }}</h5>
+<ul>
+	{% for msg in group.msgs %}
+		<li>{{ msg.content }} <br>Ingegeven door: {{ msg.user }}</li>
+	{% endfor %}
+</ul>
+{% endfor %}
+
+{% endif %}
+#}
+
+<p><a href="{{ messages_url }}">Bekijk alle vraag en aanbod online.</a></p>
+
+{#
+
+{% if forum_en %}
+<h4><a href="{{ forum_url }}">Forum</a></h4>
+
+	{% if forum %}
+	<ul>
+	{% for msg in forum %}
+	<li><a href="{{ msg.url }}">{{ msg.subject }}</a>
+	{% if msg.new %}- nieuw onderwerp{% endif %}
+	[{{ msg.new_reply_count }}]
+	</li>
+	{% endfor %}
+	</ul>
+	{% else %}
+	<p>Er zijn geen nieuwe forumberichten.</p>
+	{% endif %}
+{% endif %}
+
+#}
+
+<h4><a href="{{ news_url }}">Nieuws</a></h4>
+
+{% if news %}
+<ul>
+{% for n in news %}
+<li><h5><a href="{{ n.url }}">{{ n.headline }}</a></h5><br>
+Datum: <b>{{ n.itemdate|date_format('day') }}</b><br>
+Bericht: {{ n.newsitem }}<br>
+Ingegeven door: {{ n.user|link_user }}
+</li><br>
+{% endfor %}
+</ul>
+{% else %}
+<p>Er zijn geen nieuwe nieuwsberichten.</p>
+{% endif %}
+
+<h4>Nieuwe leden</h4>
+
+{% if new_users %}
+<ul>
+	{% for user in new_users %}
+<li>{{ user|link_user }}{% if user.postcode %} | user.postcode {% endif %}</li>
+	{% endfor %}
+</ul>
+{% else %}
+<p>Momenteel zijn er geen nieuwe leden.</p>
+{% endif %}
+
+<h4>Uitstappende leden</h4>
+
+{% if leaving_users %}
+<ul>
+	{% for user in leaving_users %}
+<li>{{ user|link_user }}{% if user.postcode %} | user.postcode {% endif %}</li>
+	{% endfor %}
+</ul>
+{% else %}
+<p>Momenteel zijn er geen uitstappende leden.</p>
+{% endif %}
+
+<h4>Recente transacties</h4>
+
+{% if transactions %}
+<ul>
+{% for tr in transactions %}
+<li>
+{{ tr.description }}<br>
+{{ tr.amount }} {{ group.currency }} van {{ tr.from_user }} naar {{ tr.to_user }}
+</li>
+</ul>
+{% else %}
+<p>Deze week vonden geen transacties plaats.</p>
+{% endif %}
+
+{% endblock body %}
+
+{% block unsubscribe %}
+<p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen. ')
+Klik <a href="{{ }}">hier</a> om aan te passen</p>
+{% endblock unsubscribe %}
+

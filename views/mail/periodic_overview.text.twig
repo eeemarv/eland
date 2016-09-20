@@ -1,0 +1,82 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block body %}
+
+Recent LETS vraag en aanbod
+---------------------------
+
+{% if messages %}
+Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.
+{% for msg in messages %}
+{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
+
+{{ msg.description }}
+	Ingegeven door: msg.user {{ msg.user_url }}
+{% endfor %}
+{% else %}
+Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.
+{% endif %}
+
+Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
+
+
+Nieuws
+------
+
+Bekijk online: {{ news_url }}
+
+{% for n in news %}
+*** {{ n.headline }} ***
+{% if n.location %}{{ n.location }}{% endif %}
+{% if n.itemdate %}{{ n.itemdate }}{% endif %}
+Bericht: {{ n.newsitem }}
+Ingegeven door: {{ n.user }}
+
+
+{% else %}
+Momenteel zijn er geen nieuwsberichten.
+{% endfor %}
+
+Nieuwe leden
+------------
+
+{% for u in new_users %}
+u.user u.user_url {% if u.postcode %} | u.postcode {% endif %}
+{% else %}
+Momenteel zijn er geen nieuwe leden.
+{% endfor %}
+
+
+Uitstappende leden
+------------------
+
+{% for u in leaving_users %}
+u.user u.user_url {% if u.postcode %} | u.postcode {% endif %}
+{% else %}
+Momenteel zijn er geen uitstappende leden.
+{% endfor %}
+
+Recente transacties
+-------------------
+
+{% if transactions %}
+Deze lijst toont de transacties van de laatste {{ group.saldofreqdays }} dagen.
+{% endif %}
+
+{% for t in transactions %}
+* {{ t.amount }} {{ group.currency }} van {{ t.from_user }} naar {{ t.to_user }}
+	{{ t.description }}
+
+{% else %}
+Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dagen.
+{% endfor %}
+
+Nieuwe transactie ingeven: {{ new_transaction_url }}
+
+{% endblock body %}
+
+{% block unsubscribe %}
+Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen:
+{{ account_edit_url }}
+{% endblock unsubscribe %}
+
