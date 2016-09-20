@@ -54,6 +54,20 @@ class saldo
 		$new_transaction_url = $base_url . '/transactions.php?add=1';
 		$account_edit_url = $base_url . '/users.php?edit=';
 
+		$vars = [
+			'group'		=> [
+				'name'				=> readconfigfromdb('systemname'),
+				'tag'				=> readconfigfromdb('systemtag'),
+				'support'			=> readconfigfromdb('support'),
+				'saldofreqdays'		=> readconfigfromdb('saldofreqdays'),
+			],
+			'messages_url'			=> $base_url . '/messages.php',
+			'new_message_url'		=> $base_url . '/messages.php?add=1',
+			'news_url'				=> $base_url . '/news.php',
+			'transactions_url'		=> $base_url . '/transactions.php',
+			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
+		];
+
 	// fetch active users
 
 		$users = [];
@@ -69,6 +83,17 @@ class saldo
 		while ($row = $rs->fetch())
 		{
 			$users[$row['id']] = $row;
+
+/*
+			$this->mail->queue([
+				'schema'	=> $schema,
+				'to'		=> $user_id,
+				'template'	=> 'periodic_overview',
+				'vars'		=> array_merge($vars, [
+					'user'	=> $row,
+				],
+			]);
+*/
 		}
 
 	// fetch mail addresses & cron_saldo
@@ -97,6 +122,8 @@ class saldo
 			}
 
 			$saldo_mail[$user_id] = true;
+
+
 		}
 
 	// start template
