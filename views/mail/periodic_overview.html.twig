@@ -73,9 +73,10 @@
 <ul>
 {% for n in news %}
 <li><h5><a href="{{ n.url }}">{{ n.headline }}</a></h5><br>
-Datum: <b>{{ n.itemdate|date_format('day') }}</b><br>
+{% if n.location %}{{ n.location }}{% endif %}
+{% if n.itemdate %}Datum: <b>{{ n.itemdate }}</b><br>{% endif %}
 Bericht: {{ n.newsitem }}<br>
-Ingegeven door: {{ n.user|link_user }}
+Ingegeven door: {{ n.user }}
 </li><br>
 {% endfor %}
 </ul>

@@ -11,7 +11,7 @@ Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dage
 {% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 
 {{ msg.description }}
-	Ingegeven door: msg.user {{ msg.user_url }}
+	Ingegeven door: {{ msg.user.letscode }} {{ msg.user.name }} {{ msg.user_url }}
 {% endfor %}
 {% else %}
 Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.

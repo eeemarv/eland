@@ -61,14 +61,24 @@ class saldo
 				'support'			=> readconfigfromdb('support'),
 				'saldofreqdays'		=> readconfigfromdb('saldofreqdays'),
 			],
-			'messages_url'			=> $base_url . '/messages.php',
-			'new_message_url'		=> $base_url . '/messages.php?add=1',
+			'new_users'				=> $new_users,
+			'leaving_users'			=> $leaving_users,
+			'news'					=> $news,
 			'news_url'				=> $base_url . '/news.php',
+			'transactions'			=> $transactions,
 			'transactions_url'		=> $base_url . '/transactions.php',
 			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
+			'forum'					=> $forum,
+			'forum_url'				=> $base_url . '/forum.php',
+			'docs'					=> $docs,
+			'docs_url'				=> $base_url . '/docs.php',
+			'messages'				=> $messages,
+			'messages_url'			=> $base_url . '/messages.php',
+			'new_message_url'		=> $base_url . '/messages.php?add=1',
+			'inter_messages'		=> $inter_messages,
 		];
 
-	// fetch active users
+	// fetch all active users
 
 		$users = [];
 
@@ -122,8 +132,6 @@ class saldo
 			}
 
 			$saldo_mail[$user_id] = true;
-
-
 		}
 
 	// start template
@@ -281,8 +289,7 @@ class saldo
 
 		foreach ($rows as $row)
 		{
-			$access = $row['data']['access'];
-			$news_access_ary[$row['eland_id']] = $access;
+			$news_access_ary[$row['eland_id']] = $row['data']['access'];
 		}
 
 		$rs = $this->db->prepare('select n.*, u.name, u.letscode
