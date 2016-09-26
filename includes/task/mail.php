@@ -96,7 +96,7 @@ class mail
 			}
 			catch (Exception $e)
 			{
-				$this->monolog->error('Fout in mail template: ' . $e->getMessage(), ['schema' => $schema]);
+				$this->monolog->error('Fout in mail template: ' . $e->getMessage(), ['schema' => $sch]);
 				return;
 			}
 		}
