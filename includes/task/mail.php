@@ -76,7 +76,7 @@ class mail
 		}
 		else if (isset($data['template_from_config']) && isset($data['vars']))
 		{
-			$template = readconfigfromdb($data['template_from_config']);
+			$template = readconfigfromdb($data['template_from_config'], $sch);
 
 			if (!$template)
 			{
