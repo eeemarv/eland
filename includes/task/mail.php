@@ -76,7 +76,7 @@ class mail
 		}
 		else if (isset($data['template_from_config']) && isset($data['vars']))
 		{
-			$template = readconfigfromdb($data['template_from_config']);
+			$template = readconfigfromdb($data['template_from_config'], $sch);
 
 			if (!$template)
 			{
@@ -96,7 +96,7 @@ class mail
 			}
 			catch (Exception $e)
 			{
-				$this->monolog->error('Fout in mail template: ' . $e->getMessage(), ['schema' => $schema]);
+				$this->monolog->error('Fout in mail template: ' . $e->getMessage(), ['schema' => $sch]);
 				return;
 			}
 		}
