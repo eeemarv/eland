@@ -8,13 +8,13 @@
 <ul>
 {% for msg in messages %}
 <li><strong><a href="{{ msg.url }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
-({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
+({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 <br>
-{% if msg.imgs|length %}<img src="{{ msg.imgs.0 }}" height="200" alt="afbeelding"><br>{% endif %}
+{% if msg.images|length %}<img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
 {{ msg.description }}<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
-{% if msg.addr_url %}<a href="{{ msg.addr_url }}">{{ msg.user.addr|geocode|distance</a> | {% endif %}
-{% if msg.user.postcode %}{{ msg.user.postcode }} | {% endif %}
-{% for mail in msg.user.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
+{% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a> | {% endif %}
+{% if msg.postcode %}{{ msg.postcode }} | {% endif %}
+{% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
 {% if not loop.last %}|{% endif %} {% endfor %}
 </li>
 
@@ -76,7 +76,7 @@
 {% if n.location %}{{ n.location }}{% endif %}
 {% if n.itemdate %}Datum: <b>{{ n.itemdate }}</b><br>{% endif %}
 Bericht: {{ n.newsitem }}<br>
-Ingegeven door: {{ n.user }}
+Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 </li><br>
 {% endfor %}
 </ul>
@@ -88,8 +88,8 @@ Ingegeven door: {{ n.user }}
 
 {% if new_users %}
 <ul>
-	{% for user in new_users %}
-<li>{{ user|link_user }}{% if user.postcode %} | user.postcode {% endif %}</li>
+	{% for u in new_users %}
+<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | u.postcode {% endif %}</li>
 	{% endfor %}
 </ul>
 {% else %}
@@ -100,8 +100,8 @@ Ingegeven door: {{ n.user }}
 
 {% if leaving_users %}
 <ul>
-	{% for user in leaving_users %}
-<li>{{ user|link_user }}{% if user.postcode %} | user.postcode {% endif %}</li>
+	{% for u in leaving_users %}
+<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | u.postcode {% endif %}</li>
 	{% endfor %}
 </ul>
 {% else %}
@@ -115,17 +115,29 @@ Ingegeven door: {{ n.user }}
 {% for tr in transactions %}
 <li>
 {{ tr.description }}<br>
-{{ tr.amount }} {{ group.currency }} van {{ tr.from_user }} naar {{ tr.to_user }}
+{{ tr.amount }} {{ group.currency }}van
+{% if tr.real_from %}
+{{ tr.real_from }} [ {{ tr.from_name }} ]
+{% else %}
+<a href="{{ tr.from_user_url }}">{{ tr.from_user }}</a>
+{% endif %}
+naar
+{% if tr.real_to %}
+{{ tr.real_to }} [ {{ tr.to_name }} ]
+{% else %} 
+<a href="{{ tr.to_user_url }}">{{ tr.to_user }}</a>
+{% endif %}
 </li>
+{% endfor %}
 </ul>
 {% else %}
-<p>Deze week vonden geen transacties plaats.</p>
+<p>Er zijn geen recente transacties.</p>
 {% endif %}
 
 {% endblock body %}
 
 {% block unsubscribe %}
 <p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen. ')
-Klik <a href="{{ }}">hier</a> om aan te passen</p>
+Klik <a href="{{ account_edit_url }}">hier</a> om aan te passen</p>
 {% endblock unsubscribe %}
 

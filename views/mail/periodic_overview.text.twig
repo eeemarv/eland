@@ -8,7 +8,7 @@ Recent LETS vraag en aanbod
 {% if messages %}
 Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.
 {% for msg in messages %}
-{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
+{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% if msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 
 {{ msg.description }}
 	Ingegeven door: {{ msg.user.letscode }} {{ msg.user.name }} {{ msg.user_url }}
@@ -41,7 +41,8 @@ Nieuwe leden
 ------------
 
 {% for u in new_users %}
-u.user u.user_url {% if u.postcode %} | u.postcode {% endif %}
+* {{ u.text }}{% if u.postcode %} | {{ u.postcode }}{% endif %}
+
 {% else %}
 Momenteel zijn er geen nieuwe leden.
 {% endfor %}
@@ -51,7 +52,8 @@ Uitstappende leden
 ------------------
 
 {% for u in leaving_users %}
-u.user u.user_url {% if u.postcode %} | u.postcode {% endif %}
+* {{ u.text }}{% if u.postcode %} | {{ u.postcode }}{% endif %}
+
 {% else %}
 Momenteel zijn er geen uitstappende leden.
 {% endfor %}
@@ -76,6 +78,7 @@ Nieuwe transactie ingeven: {{ new_transaction_url }}
 {% endblock body %}
 
 {% block unsubscribe %}
+
 Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen:
 {{ account_edit_url }}
 {% endblock unsubscribe %}
