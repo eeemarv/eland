@@ -2,7 +2,7 @@
 
 {% block body %}
 
-<h4>Vraag en aanbod</h4>
+<h3><a href="{{ messages_url }}">Vraag en aanbod</a></h3>
 {% if messages %}
 <p>Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.</p>
 <ul>
@@ -10,13 +10,13 @@
 <li><strong><a href="{{ msg.url }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
 ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 <br>
-{% if msg.images|length %}<img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
+{% if msg.images|length %}<br><img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
 {{ msg.description }}<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
 {% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a> | {% endif %}
 {% if msg.postcode %}{{ msg.postcode }} | {% endif %}
 {% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
 {% if not loop.last %}|{% endif %} {% endfor %}
-</li>
+</li><br>
 
 {% endfor %}
 </ul>
@@ -44,12 +44,12 @@
 {% endif %}
 #}
 
-<p><a href="{{ messages_url }}">Bekijk alle vraag en aanbod online.</a></p>
+{# <p><a href="{{ messages_url }}">Bekijk alle vraag en aanbod online.</a></p> #}
 
 {#
 
 {% if forum_en %}
-<h4><a href="{{ forum_url }}">Forum</a></h4>
+<h3><a href="{{ forum_url }}">Forum</a></h3>
 
 	{% if forum %}
 	<ul>
@@ -67,24 +67,25 @@
 
 #}
 
-<h4><a href="{{ news_url }}">Nieuws</a></h4>
+<h3><a href="{{ news_url }}">Nieuws</a></h3>
 
 {% if news %}
 <ul>
 {% for n in news %}
-<li><h5><a href="{{ n.url }}">{{ n.headline }}</a></h5><br>
-{% if n.location %}{{ n.location }}{% endif %}
-{% if n.itemdate %}Datum: <b>{{ n.itemdate }}</b><br>{% endif %}
-Bericht: {{ n.newsitem }}<br>
+<li><h4><a href="{{ n.url }}">{{ n.headline }}</a></h4>
+{{ n.newsitem }}<br><br>
+{% if n.location %}Plaats: <strong>{{ n.location }}</strong><br>{% endif %}
+{% if n.itemdate %}Datum: <strong>{{ n.itemdate|date_format('day') }}</strong><br>{% endif %}
+
 Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
-</li><br>
+</li><br><br>
 {% endfor %}
 </ul>
 {% else %}
 <p>Er zijn geen nieuwe nieuwsberichten.</p>
 {% endif %}
 
-<h4>Nieuwe leden</h4>
+<h3>Nieuwe leden</h3>
 
 {% if new_users %}
 <ul>
@@ -96,7 +97,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 <p>Momenteel zijn er geen nieuwe leden.</p>
 {% endif %}
 
-<h4>Uitstappende leden</h4>
+<h3>Uitstappende leden</h3>
 
 {% if leaving_users %}
 <ul>
@@ -108,14 +109,12 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 <p>Momenteel zijn er geen uitstappende leden.</p>
 {% endif %}
 
-<h4>Recente transacties</h4>
+<h3><a href="{{ transactions_url }}">Recente transacties</a></h3>
 
 {% if transactions %}
 <ul>
 {% for tr in transactions %}
-<li>
-{{ tr.description }}<br>
-{{ tr.amount }} {{ group.currency }}van
+<li>{{ tr.amount }} {{ group.currency }} van
 {% if tr.real_from %}
 {{ tr.real_from }} [ {{ tr.from_name }} ]
 {% else %}
@@ -127,7 +126,9 @@ naar
 {% else %} 
 <a href="{{ tr.to_user_url }}">{{ tr.to_user }}</a>
 {% endif %}
-</li>
+<br>
+{{ tr.description }}
+</li><br>
 {% endfor %}
 </ul>
 {% else %}

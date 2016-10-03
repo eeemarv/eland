@@ -750,7 +750,7 @@ function mail_mass_transaction($mail_ary)
 			'amount'	=> $many_ary[$user_id]['amount'],
 			'id'		=> $user_id,
 		];
-		
+
 		$total += $many_ary[$user_id]['amount'];
 
 		$text .= link_user($user_id, false, false) . $t . $t . $many_ary[$user_id]['amount'];

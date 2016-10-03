@@ -4,7 +4,7 @@ namespace eland;
 
 class date_format
 {
-	private $formats = [
+	private static $formats = [
 		'%Y-%m-%d %H:%M:%S' => [
 			'day'	=> '%Y-%m-%d',
 			'min'	=> '%Y-%m-%d %H:%M',
@@ -53,12 +53,12 @@ class date_format
 
 		$sec = $this->format;
 
-		if (!isset($this->formats[$sec]))
+		if (!isset(self::formats[$sec]))
 		{
 			$sec = '%e %b %Y, %H:%M:%S';
 		}
 
-		$this->format_ary = $this->formats[$sec];
+		$this->format_ary = self::formats[$sec];
 		$this->format_ary['sec'] = $sec;
 	}
 
@@ -66,7 +66,7 @@ class date_format
 	 *
 	 */
 
-	function datepicker_format()
+	public function datepicker_format()
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'yyyy', 'M', 'MM', 'D', 'DD'];
@@ -78,7 +78,7 @@ class date_format
 	 *
 	 */
 
-	function datepicker_placeholder()
+	public function datepicker_placeholder()
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', '(wd)', '(weekdag)'];
@@ -90,7 +90,7 @@ class date_format
 	 *
 	 */
 
-	function reverse($from_datepicker)
+	public function reverse($from_datepicker)
 	{
 		$from_datepicker = trim($from_datepicker);
 
@@ -176,7 +176,7 @@ class date_format
 	 *
 	 */
 
-	function get_options()
+	public function get_options()
 	{
 		$options = [];
 
@@ -192,7 +192,7 @@ class date_format
 	 *
 	 */
 
-	function get_error($format)
+	public function get_error($format)
 	{
 		if (!isset($this->formats[$format]))
 		{
@@ -203,21 +203,48 @@ class date_format
 	}
 
 	/**
-	 *
+	 * to do: get schema for static method version
 	 */
 
-	function get($ts = false, $precision = 'min')
+	public function get($ts = false, $precision = 'min')
 	{
+		static $format_ary, $format;
+
 		$time = strtotime($ts . ' UTC');
 
-		return strftime($this->format_ary[$precision], $time);
+		if (isset($this))
+		{
+			return strftime($this->format_ary[$precision], $time);
+		}
+
+		if (!isset($format_ary))
+		{
+			$format = readconfigfromdb('date_format');
+
+			if (!$format)
+			{
+				$format = '%e %b %Y, %H:%M:%S';
+			}
+
+			$sec = $format;
+
+			if (!isset(self::$formats[$sec]))
+			{
+				$sec = '%e %b %Y, %H:%M:%S';
+			}
+
+			$format_ary = self::$formats[$sec];
+			$format_ary['sec'] = $sec;
+		}
+
+		return strftime($format_ary[$precision], $time);
 	}
 
 	/**
 	 *
 	 */
 
-	function get_td($ts = false, $precision = 'min')
+	public function get_td($ts = false, $precision = 'min')
 	{
 		$time = strtotime($ts . ' UTC');
 

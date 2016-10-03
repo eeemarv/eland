@@ -22,8 +22,7 @@ class cron_schedule
 	protected $this_group;
 
 	protected $tasks = [
-		'saldo'					=> [20],
-//		'saldo'					=> [86400, 'saldofreqdays'],
+		'saldo'					=> [86400, 'saldofreqdays'],
 		'admin_exp_msg'			=> [86400, 'adminmsgexpfreqdays', 'adminmsgexp'],
 		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],
 		'cleanup_messages'		=> [86400],

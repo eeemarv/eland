@@ -6,6 +6,7 @@
 {% endblock body %}
 
 {% block accountinfo %}
+{% autoescape false %}
 
 Je account
 ----------
@@ -19,14 +20,17 @@ Status: {% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{%
 
 Login: {{ url_login }}
 
+{% endautoescape %}
 {% endblock accountinfo %}
 {% block support %}
+{% autoescape false %}
 
 Support
 -------
 
 Als je een vraag of probleem hebt, kan je mailen naar {{ group.support }}
 
+{% endautoescape %}
 {% endblock support %}
 {% block unsubscribe %}
 {% endblock unsubscribe %}

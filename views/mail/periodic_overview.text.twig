@@ -1,6 +1,7 @@
 {% extends 'mail/base.text.twig' %}
 
 {% block body %}
+{% autoescape false %}
 
 Recent LETS vraag en aanbod
 ---------------------------
@@ -27,15 +28,19 @@ Bekijk online: {{ news_url }}
 
 {% for n in news %}
 *** {{ n.headline }} ***
-{% if n.location %}{{ n.location }}{% endif %}
-{% if n.itemdate %}{{ n.itemdate }}{% endif %}
-Bericht: {{ n.newsitem }}
-Ingegeven door: {{ n.user }}
 
+{{ n.newsitem }}
+
+{% if n.location %}Plaats: {{ n.location }}{% endif %}
+
+{% if n.itemdate %}Datum: {{ n.itemdate|date_format('day') }}{% endif %}
+
+Ingegeven door: {{ n.user }}
 
 {% else %}
 Momenteel zijn er geen nieuwsberichten.
 {% endfor %}
+
 
 Nieuwe leden
 ------------
@@ -65,9 +70,11 @@ Recente transacties
 Deze lijst toont de transacties van de laatste {{ group.saldofreqdays }} dagen.
 {% endif %}
 
-{% for t in transactions %}
-* {{ t.amount }} {{ group.currency }} van {{ t.from_user }} naar {{ t.to_user }}
-	{{ t.description }}
+{% for tr in transactions %}
+* {{ tr.amount }} {{ group.currency }} van {% if tr.real_from %}{{ tr.real_from }} [ {{ tr.from_name }} ]{% else %}{{ tr.from_user }}{% endif %}
+ naar {% if tr.real_to %}{{ tr.real_to }} [ {{ tr.to_name }} ]{% else %} {{ tr.to_user }}{% endif %}
+
+	{{ tr.description }}
 
 {% else %}
 Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dagen.
@@ -75,11 +82,15 @@ Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dag
 
 Nieuwe transactie ingeven: {{ new_transaction_url }}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block unsubscribe %}
+{% autoescape false %}
 
 Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen:
+
 {{ account_edit_url }}
+{% endautoescape %}
 {% endblock unsubscribe %}
 
