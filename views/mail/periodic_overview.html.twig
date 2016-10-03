@@ -89,7 +89,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 {% if new_users %}
 <ul>
 	{% for u in new_users %}
-<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | u.postcode {% endif %}</li>
+<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
 	{% endfor %}
 </ul>
 {% else %}
@@ -101,7 +101,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 {% if leaving_users %}
 <ul>
 	{% for u in leaving_users %}
-<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | u.postcode {% endif %}</li>
+<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
 	{% endfor %}
 </ul>
 {% else %}

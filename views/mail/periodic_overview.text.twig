@@ -8,10 +8,10 @@ Recent LETS vraag en aanbod
 {% if messages %}
 Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.
 {% for msg in messages %}
-{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.imgs|length %}{{ msg.imgs|length }}{% else %}geen{% endif %} {% if msg.imgs|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 
-{{ msg.description }}
-	Ingegeven door: {{ msg.user.letscode }} {{ msg.user.name }} {{ msg.user_url }}
+{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
+{{ msg.url }}
+	Ingegeven door: {{ msg.user}}
 {% endfor %}
 {% else %}
 Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.
@@ -41,7 +41,7 @@ Nieuwe leden
 ------------
 
 {% for u in new_users %}
-* {{ u.text }}{% if u.postcode %} | {{ u.postcode }}{% endif %}
+* {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
 
 {% else %}
 Momenteel zijn er geen nieuwe leden.
@@ -52,7 +52,7 @@ Uitstappende leden
 ------------------
 
 {% for u in leaving_users %}
-* {{ u.text }}{% if u.postcode %} | {{ u.postcode }}{% endif %}
+* {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
 
 {% else %}
 Momenteel zijn er geen uitstappende leden.

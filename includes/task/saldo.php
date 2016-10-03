@@ -140,7 +140,7 @@ class saldo
 
 		$rs = $this->db->prepare('SELECT m.id, m.content,
 			m."Description" as description, m.msg_type, m.id_user,
-			u.name, u.letscode
+			u.name, u.letscode, u.postcode
 			FROM ' . $schema . '.messages m, ' . $schema . '.users u
 			WHERE m.id_user = u.id
 				AND u.status IN (1, 2)
@@ -150,9 +150,11 @@ class saldo
 		$rs->bindValue(1, $treshold_time);
 		$rs->execute();
 
-		while ($msg = $rs->fetch())
+		while ($row = $rs->fetch())
 		{
 			$row['type'] = $row['msg_type'] ? 'offer' : 'want';
+			$row['offer'] = $row['type'] == 'offer' ? true : false;
+			$row['want'] = $row['type'] == 'want' ? true : false;
 			$row['images'] = $image_ary[$row['id']];
 			$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
 			$row['mail'] = $mailaddr[$msg['id_user']];
@@ -279,6 +281,7 @@ class saldo
 				'support'			=> readconfigfromdb('support'),
 				'saldofreqdays'		=> readconfigfromdb('saldofreqdays'),
 			],
+			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
 			'leaving_users'			=> $leaving_users,
 			'news'					=> $news,
