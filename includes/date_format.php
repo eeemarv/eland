@@ -53,12 +53,12 @@ class date_format
 
 		$sec = $this->format;
 
-		if (!isset(self::formats[$sec]))
+		if (!isset(self::$formats[$sec]))
 		{
 			$sec = '%e %b %Y, %H:%M:%S';
 		}
 
-		$this->format_ary = self::formats[$sec];
+		$this->format_ary = self::$formats[$sec];
 		$this->format_ary['sec'] = $sec;
 	}
 
