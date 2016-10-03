@@ -70,8 +70,8 @@ class mail
 			$template_html = $this->twig->loadTemplate('mail/' . $data['template'] . '.html.twig');
 			$template_text = $this->twig->loadTemplate('mail/' . $data['template'] . '.text.twig');
 
-			$data['subject']  = $template_subject->render($data['vars'], ['autoescape' => false]);
-			$data['text'] = $template_text->render($data['vars'], ['autoescape' => false]);
+			$data['subject']  = $template_subject->render($data['vars']);
+			$data['text'] = $template_text->render($data['vars']);
 			$data['html'] = $template_html->render($data['vars']);
 		}
 		else if (isset($data['template_from_config']) && isset($data['vars']))
@@ -90,8 +90,8 @@ class mail
 				$template_subject = $this->twig->loadTemplate('mail/' . $data['template_from_config'] . '.subject.twig');
 				$template_html = $this->twig->createTemplate($template);
 
-				$data['subject']  = $template_subject->render($data['vars'], ['autoescape' => false]);
-				$data['text'] = $this->converter->convert($data['html'], ['autoescape'	=> false]);
+				$data['subject']  = $template_subject->render($data['vars']);
+				$data['text'] = $this->converter->convert($data['html']);
 				$data['html'] = $template_html->render($data['vars']);
 			}
 			catch (Exception $e)
