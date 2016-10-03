@@ -1,8 +1,9 @@
 {% extends 'mail/base.text.twig' %}
 
-{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup }} verstuurd werd. mailadres: {{ to_mail }}{% endif %}{% endblock pretext %}
+{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup|raw }} verstuurd werd. mailadres: {{ to_mail }}{% endif %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 
 Notificatie interlets transactie
 --------------------------------
@@ -32,6 +33,7 @@ Als dit niet mogelijk is, moet je de kern van de andere groep
 verwittigen zodat ze de transactie aan hun kant annuleren.
 Je kan dit doen door een reply te sturen op dit bericht.
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

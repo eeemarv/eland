@@ -1,6 +1,7 @@
 {% extends 'mail/base.text.twig' %}
 
 {% block body %}
+{% autoescape false %}
 
 Admin overzicht van vervallen vraag en aanbod
 ---------------------------------------------
@@ -12,6 +13,7 @@ Admin overzicht van vervallen vraag en aanbod
 Er is momenteel geen vervallen vraag of aanbod.
 {% endfor %}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

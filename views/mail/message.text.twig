@@ -3,6 +3,7 @@
 {% block pretext %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 Beste {{ to_username }},
 
 gebruiker {{ from_user }}{% if from_group %} van {{ from_group }}{% endif %} stuurt je via de webtoepassing een reactie op je {% if message.type == 'offer' %}aanbod{% else %}vraag{% endif %} '{{ message.content }}'.
@@ -27,6 +28,7 @@ Contactgegevens van {{ from_user }}{% if from_group %} van {{ from_group }}{% en
 
 Inloggen op de website: {{ login_url }}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

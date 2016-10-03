@@ -1,6 +1,7 @@
 {% extends 'mail/base.text.twig' %}
 
 {% block body %}
+{% autoescape false %}
 
 {% if interlets %}
 Notificatie interlets transactie
@@ -28,5 +29,6 @@ Transactie id
 Link
 {{ transaction_url }}
 
+{% endautoescape %}
 {% endblock body %}
 

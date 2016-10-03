@@ -6,7 +6,6 @@ use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use Monolog\Logger;
 use eland\groups;
-use eland\multi_mail;
 use eland\task\mail;
 
 class saldo

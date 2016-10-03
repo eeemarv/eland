@@ -3,6 +3,7 @@
 {% block pretext %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 Gebruiker {{ user.text }} deed melding via het supportformulier op de website.
 		
 - - - - - -
@@ -27,6 +28,7 @@ Contactgegevens van {{ user.text }}:
 Er zijn geen contactgegevens bekend van {{ user.text }}.
 {% endif %}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

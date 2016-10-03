@@ -1,3 +1,3 @@
 {% extends 'mail/base.subject.twig' %}
 
-{% block line %}Nieuwe inschrijving: {{ user.fullname }}{% endblock line %}
+{% block line %}Nieuwe inschrijving: {{ user.fullname|raw }}{% endblock line %}

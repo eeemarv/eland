@@ -3,6 +3,7 @@
 {% block pretext %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 
 Account {{ user }} werd geactiveerd met een nieuw paswoord.
 
@@ -14,6 +15,7 @@ Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruik
 
 OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals email-lijsten.
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

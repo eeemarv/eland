@@ -3,6 +3,7 @@
 {% block pretext %}Niet beantwoorden a.u.b.{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 
 Beste {{ from_username }},
 
@@ -12,6 +13,7 @@ dit is een kopie van het bericht dat je naar {{ to_user }}{% if to_group %} van 
 
 {{ msg_text }}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

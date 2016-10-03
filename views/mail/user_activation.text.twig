@@ -3,6 +3,7 @@
 {% block pretext %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 Welkom bij {{ group.name }}.
 
 Er werd een letsrekening voor je aangemaakt.
@@ -17,6 +18,7 @@ Paswoord: {{ password }}
 Gebruikersgevens, vraag en aanbod kan je zelf online bewerken.
 
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block unsubscribe %}{% endblock unsubscribe %}

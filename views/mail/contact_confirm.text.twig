@@ -3,6 +3,7 @@
 {% block pretext %}{% endblock pretext %}
 
 {% block body %}
+{% autoescape false %}
 
 Klik hieronder op de link om je bericht in het contactformulier te bevestigen.
 
@@ -12,6 +13,7 @@ Klik hieronder op de link om je bericht in het contactformulier te bevestigen.
 Gelieve dit bericht te negeren indien je niet zelf het contactformulier van {{ group.name }} hebt ingevuld.
 ({{ contact_url }})
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}

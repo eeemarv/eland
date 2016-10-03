@@ -1,6 +1,7 @@
 {% extends 'mail/base.text.twig' %}
 
 {% block body %}
+{% autoescape false %}
 
 Notificatie nieuwe inschrijving
 -------------------------------
@@ -15,6 +16,7 @@ Email: {{ email }}
 
 Link: {{ user_url }}
 
+{% endautoescape %}
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}
