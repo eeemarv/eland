@@ -32,6 +32,12 @@ $app['redis'] = function () {
 	}
 };
 
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    'db.options' => [
+        'url'   => getenv('DATABASE_URL'),
+    ],
+]);
+
 $app->register(new Silex\Provider\SessionServiceProvider(), [
 	'session.storage.handler'	=> new eland\redis_session($app['redis']),
 	'session.storage.options'	=> [
@@ -39,12 +45,6 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
 		'cookie_lifetime'			=> 172800,
 	],
-]);
-
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    'db.options' => [
-        'url'   => getenv('DATABASE_URL'),
-    ],
 ]);
 
 $app->register(new Silex\Provider\TwigServiceProvider(), [
@@ -56,10 +56,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 ]);
 
 $app->extend('twig', function($twig, $app) {
-//$twig->addGlobal('pi', 3.14);
+
 //	$twig->addFilter(new Twig_SimpleFilter('distance', array('eland\twig_extension', 'distance')));
 //	$twig->addFilter(new Twig_SimpleFilter('geocode', array('eland\twig_extension', 'geocode')));
-	$twig->addFilter(new Twig_SimpleFilter('date_format', array('eland\date_format', 'get')));
+	$twig->addFilter(new Twig_SimpleFilter('date_format', array('eland\date_format', 'twig_get'), [
+		'needs_environment'	=> true,
+		'needs_context'		=> true,
+	]));
 
 	return $twig;
 });
@@ -84,16 +87,16 @@ $app->extend('monolog', function($monolog, $app) {
 
 		$record['extra']['schema'] = $app['eland.this_group']->get_schema();
 
-		if (isset($app['eland.session_user']))
+		if (isset($app['s_ary_user']))
 		{
-			$record['extra']['letscode'] = $app['eland.session_user']['letscode'] ?? '';
-			$record['extra']['user_id'] = $app['eland.session_user']['id'] ?? '';
-			$record['extra']['username'] = $app['eland.session_user']['username'] ?? '';
+			$record['extra']['letscode'] = $app['s_ary_user']['letscode'] ?? '';
+			$record['extra']['user_id'] = $app['s_ary_user']['id'] ?? '';
+			$record['extra']['username'] = $app['s_ary_user']['name'] ?? '';
 		}
 
-		if (isset($app['eland.session_schema']))
+		if (isset($app['s_schema']))
 		{
-			$record['extra']['user_schema'] = $app['eland.session_schema'];
+			$record['extra']['user_schema'] = $app['s_schema'];
 		}
 
 		return $record;
@@ -137,7 +140,7 @@ $app['eland.assets'] = function($app){
 	return new eland\assets($app['eland.s3_res_url'], $app['eland.rootpath']);
 };
 
-$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'base.js']);
+$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'print.css', 'base.js']);
 
 $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
@@ -621,12 +624,6 @@ $app['eland.elas_db_upgrade'] = function ($app){
 	return new eland\elas_db_upgrade($app['db']);
 };
 
-/* some more vars */
-
-$app['eland.session_user'] = $session_user ?? [];
-$app['eland.session_schema'] = $s_schema;
-
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
 
 /* view (global for all groups) */
 
@@ -679,6 +676,37 @@ if (!$s_anonymous)
 		$s_user_params_own_group = [];
 	}
 }
+
+/* some more vars */
+
+$app['eland.view_messages'] = $view_messages;
+$app['eland.view_users'] = $view_users;
+$app['eland.view_news'] = $view_news;
+
+$app['s_ary_user'] = $session_user ?? [];
+$app['s_schema'] = $s_schema;
+
+$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+
+$app['s_user_params_own_group'] = $s_user_params_own_group ?? [];
+
+$app['s_master'] = $s_master;
+$app['s_admin'] = $s_admin;
+$app['s_user'] = $s_user;
+$app['s_guest'] = $s_guest;
+$app['s_anonymous'] = $s_anonymous;
+$app['s_accountrole'] = $s_accountrole;
+$app['s_group_self'] = $s_group_self;
+$app['s_elas_guest'] = $s_elas_guest;
+$app['s_id'] = $s_id;
+
+$app['url.messages'] = generate_url('messages', ['view' => $app['eland.view_messages']]);
+$app['url.users'] = generate_url('users', ['view' => $app['eland.view_users']]);
+$app['url.news'] = generate_url('news', ['view' => $app['eland.view_news']]);
+$app['url.transactions'] = generate_url('transactions');
+$app['url.docs'] = generate_url('docs');
+$app['url.forum'] = generate_url('forum');
+$app['url.logout'] = generate_url('logout');
 
 /** welcome message **/
 

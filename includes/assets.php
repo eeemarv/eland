@@ -84,6 +84,7 @@ class assets
 	];
 
 	private $include_css = [];
+	private $include_css_print = [];
 	private $include_js = [];
 
 	private $res_url = '';
@@ -136,8 +137,6 @@ class assets
 
 			$ext = strtolower(pathinfo($asset_name, PATHINFO_EXTENSION));
 
-
-
 			if ($ext == 'js')
 			{
 				$pre = (in_array(substr($asset_name, 0, 2), ['ht', '//'])) ? '' : $this->rootpath . 'js/';
@@ -146,9 +145,16 @@ class assets
 			else if ($ext == 'css')
 			{
 				$pre = (in_array(substr($asset_name, 0, 2), ['ht', '//'])) ? '' : $this->rootpath . 'gfx/';
+
+				if (strpos($asset_name, 'print') !== false)
+				{
+					$this->include_css_print[] = $pre . $asset_name;
+					continue;
+				}
+
 				$this->include_css[] = $pre . $asset_name;
 			}
-		}		
+		}
 
 		return $this;
 	}
@@ -170,6 +176,15 @@ class assets
 	}
 
 	/*
+	 *
+	 */
+
+	public function get_js()
+	{
+		return $this->include_js;
+	}
+
+	/*
 	*
 	*/
 
@@ -183,5 +198,23 @@ class assets
 		}
 
 		return $out;
+	}
+
+	/*
+	 *
+	 */
+
+	public function get_css()
+	{
+		return $this->include_css;
+	}
+
+	/*
+	 *
+	 */
+
+	public function get_css_print()
+	{
+		return $this->include_css_print;
 	}
 }

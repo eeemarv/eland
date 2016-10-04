@@ -244,6 +244,49 @@ class date_format
 	 *
 	 */
 
+	public function twig_get($environment, $context, $ts = false, $precision = 'min')
+	{
+		static $format_ary, $format;
+
+/*
+		var_dump($environment);
+
+		echo ' -- ';
+
+		var_dump($context);
+
+*/
+
+		$time = strtotime($ts . ' UTC');
+
+		if (!isset($format_ary))
+		{
+			$format = readconfigfromdb('date_format');
+
+			if (!$format)
+			{
+				$format = '%e %b %Y, %H:%M:%S';
+			}
+
+			$sec = $format;
+
+			if (!isset(self::$formats[$sec]))
+			{
+				$sec = '%e %b %Y, %H:%M:%S';
+			}
+
+			$format_ary = self::$formats[$sec];
+			$format_ary['sec'] = $sec;
+		}
+
+		return strftime($format_ary[$precision], $time);
+	}
+
+
+	/**
+	 *
+	 */
+
 	public function get_td($ts = false, $precision = 'min')
 	{
 		$time = strtotime($ts . ' UTC');
