@@ -1,9 +1,10 @@
 <?php
 
-$r = "\r\n";
+$no_headers = true;
 
 $step = $_GET['step'] ?? 1;
 $start = $_GET['start'] ?? 0;
+
 
 if (!ctype_digit((string) $start))
 {
@@ -15,11 +16,12 @@ if (!ctype_digit((string) $step))
 	exit;
 }
 
+
 $php_sapi_name = php_sapi_name();
 
 if ($php_sapi_name == 'cli')
 {
-	echo 'The init should not run from the cli but from the http web server.' . $r;
+	error_log('The init should not run from the cli but from the http web server.');
 	exit;
 }
 
@@ -29,15 +31,17 @@ chdir(__DIR__);
 $page_access = 'anonymous';
 require_once __DIR__ . '/includes/inc_default.php';
 
+/*
 header('Content-Type:text/plain');
 echo '*** Init eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
 echo "schema: " . $app['eland.this_group']->get_schema() . ' systemtag: ' . readconfigfromdb('systemtag') . $r;
+*/
 
 if ($step == 2 || $step == 3)
 {
-	echo 'Sync the image files.' . $r;
+	error_log(' -- Sync the image files. --');
 
 	$possible_extensions = ['jpg', 'jpeg', 'JPG', 'JPEG'];
 }
@@ -54,11 +58,11 @@ if ($step == 1)
 
 	if ($currentversion >= $schemaversion)
 	{
-		echo '-- Database already up to date -- ' . $r;
+		error_log('-- Database already up to date -- ');
 	}
 	else
 	{
-		echo "eLAS/eLAND database needs to upgrade from $currentversion to $schemaversion\n";
+		error_log(' -- eLAS/eLAND database needs to upgrade from ' . $currentversion . ' to ' . $schemaversion . ' -- ');
 
 		while($currentversion < $schemaversion)
 		{
@@ -71,7 +75,7 @@ if ($step == 1)
 		}
 
 		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
-		echo $m . "\n";
+		error_log(' -- ' . $m . ' -- ');
 		$app['monolog']->info('DB: ' . $m);
 	}
 
@@ -86,7 +90,7 @@ else if ($step == 2)
 		from users
 		where "PictureFile" is not null
 		order by id asc
-		limit 10 offset ' . $start);
+		limit 50 offset ' . $start);
 
 	$rs->execute();
 
@@ -117,7 +121,7 @@ else if ($step == 2)
 		if (!$found)
 		{
 			$app['db']->update('users', ['"PictureFile"' => null], ['id' => $user_id]);
-			echo 'Profile image not present, deleted in database: ' . $filename . $r;
+			error_log(' -- Profile image not present, deleted in database: ' . $filename . ' -- ');
 			$app['monolog']->info('cron: Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
 		}
 		else if ($f_schema != $app['eland.this_group']->get_schema())
@@ -128,20 +132,22 @@ else if ($step == 2)
 
 			if ($err)
 			{
-				echo 'error: ' . $err . $r . $r;
+				error_log(' -- error: ' . $err . ' -- ');
 				$app['monolog']->info('init: copy img error: ' . $err);
 				continue;
 			}
 
 			$app['db']->update('users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
-			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+			error_log(' -- Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . ' -- ');
 			$app['monolog']->info('init: Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
 		}
 	}
 
 	if ($found)
 	{
-		header('Location: ' . $rootpath . 'init.php?step=2&start=' . $start + 10);
+		error_log(' found img ');
+		$start += 50;
+		header('Location: ' . $rootpath . 'init.php?step=2&start=' . $start);
 		exit;
 	}
 
@@ -154,10 +160,11 @@ else if ($step == 3)
 	$message_images = $app['db']->fetchAll('select id, msgid, "PictureFile"
 		from msgpictures
 		order by id asc
-		limit 10 offset ' . $start);
+		limit 50 offset ' . $start);
 
 	if (!count($message_images))
 	{
+		error_log(' to step 4 ');
 		header('Location: ' . $rootpath . 'init.php?step=4');
 		exit;
 	}
@@ -188,7 +195,7 @@ else if ($step == 3)
 		if (!$found)
 		{
 			$app['db']->delete('msgpictures', ['id' => $id]);
-			echo 'Message image not present, deleted in database: ' . $filename . $r;
+			error_log(' -- Message image not present, deleted in database: ' . $filename . ' -- ');
 			$app['monolog']->info('init: Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
 		}
 		else if ($f_schema != $app['eland.this_group']->get_schema())
@@ -199,26 +206,28 @@ else if ($step == 3)
 
 			if ($err)
 			{
-				echo 'error: ' . $err . $r . $r;
+				error_log(' -- error: ' . $err . ' -- ');
 				$app['monolog']->info('init: copy img error: ' . $err);
 				continue;
 			}
 
 			$app['db']->update('msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
-			echo 'Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . $r;
+			error_log('Profile image renamed, old: ' . $filename . ' new: ' . $new_filename);
 			$app['monolog']->info('init: Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
 
 		}
 	}
 
-	echo 'Sync image files ready.' . $r;
+	error_log('Sync image files next.');
 
-	header('Location: ' . $rootpath . 'init.php?step=3&start=' . $start + 10);
+	$start += 50;
+
+	header('Location: ' . $rootpath . 'init.php?step=3&start=' . $start);
 	exit;
 }
 
 /*
-echo 'Cleanup orphaned contacts. ' . $r;
+error_log('Cleanup orphaned contacts. ');
 
 $orphaned_contacts = [];
 
@@ -244,23 +253,23 @@ if ($count)
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
 	);
 
-	echo 'Found & deleted ' . $count . ' orphaned contacts.' . $r;
-	echo '---------------------------------------------' . $r;
+	error_log('Found & deleted ' . $count . ' orphaned contacts.');
+
 	foreach ($orphaned_contacts as $id => $val)
 	{
-		echo $id . ' => ' . $val . $r;
+		error_log('  ' . $id . ' => ' . $val . '  -- ');
 	}
 }
 else
 {
-	echo 'none found.' . $r;
+	error_log('none found.');
 }
 */
 
 else if ($step == 4)
 {
 
-	echo '*** clear users cache ***';
+	error_log('*** clear users cache ***');
 
 	$users = $app['db']->fetchAll('select id from users');
 
@@ -269,8 +278,6 @@ else if ($step == 4)
 		$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $u['id']);
 	}
 
-	echo $r;
-
 	header('Location: ' . $rootpath . 'init.php?step=5');
 	exit;
 }
@@ -278,7 +285,7 @@ else if ($step == 5)
 {
 	$app['db']->executeQuery('delete from tokens');
 
-	echo '*** empty tokens table (is not used anymore) *** ' . $r;
+	error_log('*** empty tokens table (is not used anymore) *** ');
 
 	header('Location: ' . $rootpath . 'init.php?step=6');
 	exit;
@@ -287,9 +294,9 @@ else if ($step == 6)
 {
 	$app['db']->executeQuery('delete from city_distance');
 
-	echo '*** empty city_distance table (is not used anymore) *** ' . $r;
+	error_log('*** empty city_distance table (is not used anymore) *** ');
 
-	echo '** init end **';
+	error_log('** init end **');
 
 	exit;
 }

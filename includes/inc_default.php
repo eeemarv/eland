@@ -116,7 +116,7 @@ $app['eland.page_access'] = $page_access;
 
 $app['eland.protocol'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
 
-ob_start('etag_buffer');
+
 
 $app['eland.s3_res'] = getenv('S3_RES') ?: die('Environment variable S3_RES S3 bucket for resources not defined.');
 $app['eland.s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
@@ -126,7 +126,11 @@ $header_allow_origin = $app['eland.protocol'] . $app['eland.s3_res'] . ', ';
 $header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_img'] . ', ';
 $header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_doc'];
 
-header('Access-Control-Allow-Origin: ' . $header_allow_origin);
+if (isset($no_headers))
+{
+	ob_start('etag_buffer');
+	header('Access-Control-Allow-Origin: ' . $header_allow_origin);
+}
 
 $app['eland.s3_res_url'] = $app['eland.protocol'] . $app['eland.s3_res'] . '/';
 $app['eland.s3_img_url'] = $app['eland.protocol'] . $app['eland.s3_img'] . '/';
