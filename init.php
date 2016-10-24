@@ -5,12 +5,12 @@ $r = "\r\n";
 $step = $_GET['step'] ?? 1;
 $start = $_GET['start'] ?? 0;
 
-if (!ctype_digit($start))
+if (!ctype_digit((string) $start))
 {
 	exit;
 }
 
-if (!ctype_digit($step))
+if (!ctype_digit((string) $step))
 {
 	exit;
 }
