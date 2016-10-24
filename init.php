@@ -3,6 +3,17 @@
 $r = "\r\n";
 
 $step = $_GET['step'] ?? 1;
+$start = $_GET['start'] ?? 0;
+
+if (!ctype_digit($start))
+{
+	exit;
+}
+
+if (!ctype_digit($step))
+{
+	exit;
+}
 
 $php_sapi_name = php_sapi_name();
 
@@ -69,12 +80,20 @@ if ($step == 1)
 }
 else if ($step == 2)
 {
-	$rs = $app['db']->prepare('SELECT id, "PictureFile" FROM users WHERE "PictureFile" IS NOT NULL');
+	$found = false;
+
+	$rs = $app['db']->prepare('select id, "PictureFile"
+		from users
+		where "PictureFile" is not null
+		order by id asc
+		limit 10 offset ' . $start);
 
 	$rs->execute();
 
 	while($row = $rs->fetch())
 	{
+		$found = true;
+
 		$filename = $row['PictureFile'];
 		$user_id = $row['id'];
 
@@ -120,13 +139,28 @@ else if ($step == 2)
 		}
 	}
 
+	if ($found)
+	{
+		header('Location: ' . $rootpath . 'init.php?step=2&start=' . $start + 10);
+		exit;
+	}
+
 	header('Location: ' . $rootpath . 'init.php?step=3');
 	exit;
 }
 else if ($step == 3)
 {
 
-	$message_images = $app['db']->fetchAll('SELECT id, msgid, "PictureFile" FROM msgpictures');
+	$message_images = $app['db']->fetchAll('select id, msgid, "PictureFile"
+		from msgpictures
+		order by id asc
+		limit 10 offset ' . $start);
+
+	if (!count($message_images))
+	{
+		header('Location: ' . $rootpath . 'init.php?step=4');
+		exit;
+	}
 
 	foreach ($message_images as $image)
 	{
@@ -179,7 +213,7 @@ else if ($step == 3)
 
 	echo 'Sync image files ready.' . $r;
 
-	header('Location: ' . $rootpath . 'init.php?step=4');
+	header('Location: ' . $rootpath . 'init.php?step=3&start=' . $start + 10);
 	exit;
 }
 
