@@ -1270,12 +1270,12 @@ if ($add || $edit)
 				$errors[] = 'De letscode kan enkel uit letters, cijfers en koppeltekens bestaan.';
 			}
 
-			if (!($user['minlimit'] == 0 || filter_var($user['minlimit'], FILTER_VALIDATE_INT)))
+			if (!filter_var($user['minlimit'], FILTER_VALIDATE_INT))
 			{
 				$errors[] = 'Geef getal op voor de minimum limiet.';
 			}
 
-			if (!($user['maxlimit'] == 0 || filter_var($user['maxlimit'], FILTER_VALIDATE_INT)))
+			if (!filter_var($user['maxlimit'], FILTER_VALIDATE_INT))
 			{
 				$errors[] = 'Geef getal op voor de maximum limiet.';
 			}
