@@ -1243,7 +1243,7 @@ if ($id)
 
 	echo '</dl>';
 
-	if ($inter_transaction)
+	if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
 	{
 		echo '<p><a href="';
 		echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
