@@ -85,19 +85,7 @@ $tab_panes = [
 					],
 				],
 			],
-			'li_3'	=> [
-				'inline' => '%1$s Mail de admin een overzicht van vervallen vraag en aanbod elke %2$s dagen.',
-				'inputs' => [
-					'adminmsgexp'	=> [
-						'type'	=> 'checkbox',
-					],
-					'adminmsgexpfreqdays' => [
-						'type'	=> 'number',
-						'attr'	=> ['min' => 1, 'max' => 365],
-					],
-				],
-			],
-		]
+		],
 	],
 
 	'systemname'	=> [

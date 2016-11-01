@@ -23,7 +23,6 @@ class cron_schedule
 
 	protected $tasks = [
 		'saldo'					=> [86400, 'saldofreqdays'],
-		'admin_exp_msg'			=> [86400, 'adminmsgexpfreqdays', 'adminmsgexp'],
 		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],
 		'cleanup_messages'		=> [86400],
 		'saldo_update'			=> [86400],
