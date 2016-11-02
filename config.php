@@ -30,6 +30,15 @@ $map_template_vars = [
 	'postcode'			=> 'postcode',
 ];
 
+
+$periodic_mail_item_show_options = $periodic_mail_item_show_options_not_all = [
+	'all'		=> 'Alle',
+	'recent'	=> 'Recente',
+	'none'		=> 'Geen',
+];
+
+unset($periodic_mail_item_show_options_not_all['all']);
+
 $tab_panes = [
 
 	'balance'		=> [
@@ -165,6 +174,36 @@ $tab_panes = [
 					],
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
+			],
+			'periodic_mail_show_interlets'	=> [
+				'lbl'		=> 'Toon interlets vraag en aanbod',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options_not_all,
+			],
+			'periodic_mail_show_news'	=> [
+				'lbl'		=> 'Toon nieuwsberichten',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options,
+			],
+			'periodic_mail_show_forum'	=> [
+				'lbl'		=> 'Toon forumberichten',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options_not_all,
+			],
+			'periodic_mail_show_transactions'	=> [
+				'lbl'		=> 'Toon forumberichten',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options_not_all,
+			],
+			'periodic_mail_show_new_users'	=> [
+				'lbl'		=> 'Toon Instappers',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options,
+			],
+			'periodic_mail_show_leaving_users'	=> [
+				'lbl'		=> 'Toon Uitstappers',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options,
 			],
 		],
 	],

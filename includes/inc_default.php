@@ -925,6 +925,12 @@ function readconfigfromdb($key, $sch = null)
 		'msgs_days_default'			=> '365',
 		'balance_equilibrium'		=> '0',
 		'date_format'				=> '%e %b %Y, %H:%M:%S',
+		'periodic_mail_show_interlets'		=> 'recent',
+		'periodic_mail_show_news'			=> 'recent',
+		'periodic_mail_show_forum'			=> 'recent',
+		'periodic_mail_show_transactions'	=> 'recent',
+		'periodic_mail_show_leaving_users'	=> 'all',
+		'periodic_mail_show_new_users'		=> 'all',
 	];
 
     if (!isset($sch))
