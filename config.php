@@ -175,7 +175,7 @@ $tab_panes = [
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
 			],
-			'periodic_mail_show_interlets'	=> [
+/*			'periodic_mail_show_interlets'	=> [
 				'lbl'		=> 'Toon interlets vraag en aanbod',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
@@ -205,6 +205,7 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
 			],
+*/
 		],
 	],
 
