@@ -70,15 +70,27 @@ mogrify -resize 400x400 -quality 100 -path ../imgs *.jpg
 ```
 
 Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
-Make the image files public.
+Make the image files public. Use the [awscli](https://aws.amazon.com/cli/)
 
 ```
 cd ../imgs
 aws s3 sync . s3://img.letsa.net
 ```
 
+The aws s3 sync command can also be used to take a backup on your local machine:
+
+```
+cd destination-directory
+aws s3 sync s3://img.letsa.net .
+``` 
+
 * Log in with admin rights to your website (you can use the master login and password) go to path `/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
 The files get prefixed with the schema name and the user or message id. All extensions become jpg.
 ie.
     abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
     abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg
+
+
+* In case the init procedure times out, it needs to be resumed with the same location where it stopped (Just put your cursor in the address bar of your browser and hit enter.)
+* The init procudure copies the images and gives them a new name. The original images, the filename not starting with a schema name but with a number, can be removed manually from the S3 bucket, with the AWS webinterface.
+
