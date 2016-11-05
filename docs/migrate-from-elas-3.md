@@ -61,6 +61,7 @@ yphen must be converted to a triple underscore and a colon (for defining port nu
 ####Images
 
 * Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG).
+You can use imagemagick for this:
 
 ```
 cd userpictures
