@@ -102,10 +102,10 @@ foreach ($export_ary as $ex_key => $export)
 {
 	if (isset($_GET['db']) && function_exists('exec'))
 	{
-		$filename = 'elas-db-' . date('Y-m-d-H-i-s') . '-' . sha1(microtime()) . '.sql';
-		$location = 'cache/' . $filename;
+		$schema = $app['eland.this_group']->get_schema();
+		$filename = $schema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
 
-		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $app['eland.this_group']->get_schema() . ' --no-owner > ' . $location);
+		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $schema . ' --no-owner > ' . $filename);
 
 		header('Content-disposition: attachment; filename=' . $filename);
 		header('Content-Type: application/force-download');
@@ -113,13 +113,21 @@ foreach ($export_ary as $ex_key => $export)
 		header('Pragma: no-cache');
 		header('Expires: 0');
 
-		$handle = fopen($location, 'rb');
+		$handle = fopen($filename, 'rb');
+
+		if (!$handle)
+		{
+			exit;
+		}
 
 		while (!feof($handle))
 		{
 		  echo fread($handle, 8192);
 		}
+
 		fclose($handle);
+
+		unlink($filename);
 
 		exit;
 	}
