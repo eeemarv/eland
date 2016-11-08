@@ -4,6 +4,8 @@ namespace eland;
 
 class assets
 {
+	private $version = 'jdi024sle-0';
+
 	private $asset_ary = [
 		'bootstrap' => [
 			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css',
@@ -140,7 +142,7 @@ class assets
 			if ($ext == 'js')
 			{
 				$pre = (in_array(substr($asset_name, 0, 2), ['ht', '//'])) ? '' : $this->rootpath . 'js/';
-				$this->include_js[] = $pre . $asset_name;
+				$this->include_js[] = $pre . $asset_name . '?v=' . $this->version;
 			}
 			else if ($ext == 'css')
 			{
@@ -148,11 +150,11 @@ class assets
 
 				if (strpos($asset_name, 'print') !== false)
 				{
-					$this->include_css_print[] = $pre . $asset_name;
+					$this->include_css_print[] = $pre . $asset_name . '?v=' . $this->version;
 					continue;
 				}
 
-				$this->include_css[] = $pre . $asset_name;
+				$this->include_css[] = $pre . $asset_name . '?v=' . $this->version;
 			}
 		}
 
@@ -197,7 +199,21 @@ class assets
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
 		}
 
+		foreach ($this->include_css_print as $css)
+		{
+			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="print">';
+		}
+
 		return $out;
+	}
+
+	/**
+	 *
+	 */
+
+	public function get_version_param()
+	{
+		return '?v=' . $this->version;
 	}
 
 	/*

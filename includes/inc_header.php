@@ -12,8 +12,6 @@ echo '<title>' . readconfigfromdb('systemname') .'</title>';
 
 echo $app['eland.assets']->render_css();
 
-echo '<link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">';
-
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 echo '</head>';
@@ -26,7 +24,7 @@ if ($s_schema)
 
 echo '>';
 
-echo '<img src="/gfx/loading.gif" class="ajax-loader">';
+echo '<img src="/gfx/loading.gif' . $app['eland.assets']->get_version_param() . '" class="ajax-loader">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
