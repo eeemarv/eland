@@ -5,6 +5,7 @@ $no_headers = true;
 $step = $_GET['step'] ?? 1;
 $start = $_GET['start'] ?? 0;
 
+set_time_limit(300);
 
 if (!ctype_digit((string) $start))
 {
