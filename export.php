@@ -1,5 +1,7 @@
 <?php
 
+set_time_limit(60);
+
 $page_access = 'admin';
 require_once __DIR__ . '/includes/inc_default.php';
 
@@ -98,6 +100,30 @@ $r = "\r\n";
 
 foreach ($export_ary as $ex_key => $export)
 {
+	if (isset($_GET['db']) && function_exists('exec'))
+	{
+		$filename = 'elas-db-' . date('Y-m-d-H-i-s') . '-' . sha1(microtime()) . '.sql';
+		$location = 'cache/' . $filename;
+
+		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $app['eland.this_group']->get_schema() . ' --no-owner > ' . $location);
+
+		header('Content-disposition: attachment; filename=' . $filename);
+		header('Content-Type: application/force-download');
+		header('Content-Transfer-Encoding: binary');
+		header('Pragma: no-cache');
+		header('Expires: 0');
+
+		$handle = fopen($location, 'rb');
+
+		while (!feof($handle))
+		{
+		  echo fread($handle, 8192);
+		}
+		fclose($handle);
+
+		exit;
+	}
+
 	if (isset($_GET[$ex_key]))
 	{
 		$columns = $fields = [];
@@ -148,6 +174,24 @@ $h1 = 'Export';
 $fa = 'download';
 
 include __DIR__ . '/includes/inc_header.php';
+
+
+if (function_exists('exec'))
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<h3>eLAS database download (SQL)';
+	echo '</h3>';
+	echo '</div>';
+	echo '<div class="panel-heading">';
+
+	echo '<form>';
+	echo '<input type="submit" value="Download" name="db" class="btn btn-default margin-bottom">';
+	echo '</form>';
+
+	echo '</div></div>';
+}
+
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
