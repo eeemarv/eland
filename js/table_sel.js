@@ -1,19 +1,22 @@
 $(document).ready(function() {
 	
 	$('#select_all').click(function(){
-		change_select(true);
+		$('table input[type="checkbox"]:visible').each(function() {
+			this.checked = true;
+		});
 	});
 
 	$('#deselect_all').click(function(){
-		change_select(false);
+		$('table input[type="checkbox"]:visible').each(function() {
+			this.checked = false;
+		});
 	});
 
-	function change_select(checked)
-	{
+	$('#invert_selection').click(function(){
 		$('table input[type="checkbox"]:visible').each(function() {
-			this.checked = checked;
+			this.checked = !this.checked;
 		});
-	}
+	});
 
 	$('form[method="post"]').submit(function(event) {
 

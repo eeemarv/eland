@@ -2352,6 +2352,7 @@ else if ($v_list)
 
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
+		echo '<span class="btn btn-default" id="invert_selection">Selectie omkeren</span>&nbsp;';
 		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
 		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
 		echo '</div></div>';
