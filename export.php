@@ -105,7 +105,7 @@ foreach ($export_ary as $ex_key => $export)
 		$schema = $app['eland.this_group']->get_schema();
 		$filename = $schema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
 
-		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $schema . ' --no-owner > ' . $filename);
+		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $schema . ' --no-owner --no-acl > ' . $filename);
 
 		header('Content-disposition: attachment; filename=' . $filename);
 		header('Content-Type: application/force-download');
@@ -161,7 +161,7 @@ foreach ($export_ary as $ex_key => $export)
 			$out .= '"' . implode('","', $fields) . '"' . $r;
 		}
 
-		header('Content-disposition: attachment; filename=elas-' . $ex_key . '-'.date('Y-m-d').'.csv');
+		header('Content-disposition: attachment; filename=elas-' . $ex_key . '-'.date('Y-m-d-H-i-S').'.csv');
 		header('Content-Type: application/force-download');
 		header('Content-Transfer-Encoding: binary');
 		header('Pragma: no-cache');
@@ -203,7 +203,7 @@ if (function_exists('exec'))
 
 echo '<div class="panel panel-default">';
 echo '<div class="panel-heading">';
-echo '<h3>Csv export zoals eLAS</h3>';
+echo '<h3>eLAS Csv export</h3>';
 echo '</div>';
 echo '<div class="panel-heading">';
 
