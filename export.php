@@ -129,6 +129,8 @@ foreach ($export_ary as $ex_key => $export)
 
 		unlink($filename);
 
+		$app['monolog']->info('db downloaded');
+
 		exit;
 	}
 
@@ -168,6 +170,9 @@ foreach ($export_ary as $ex_key => $export)
 		header('Expires: 0');
 
 		echo $out;
+
+		$app['monolog']->info('csv ' . $ex_key . ' exported.');
+
 		exit;
 	}
 
