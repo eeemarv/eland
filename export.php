@@ -195,6 +195,8 @@ if (function_exists('exec'))
 
 	echo '<form>';
 	echo '<input type="submit" value="Download" name="db" class="btn btn-default margin-bottom">';
+	echo '<input type="hidden" value="admin" name="r">';
+	echo '<input type="hidden" value="' . $s_id . '" name="u">';
 	echo '</form>';
 
 	echo '</div></div>';
