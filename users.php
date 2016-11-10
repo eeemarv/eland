@@ -4,6 +4,8 @@ $q = $_GET['q'] ?? '';
 $status = $_GET['status'] ?? false;
 
 $id = $_GET['id'] ?? false;
+$tdays = $_GET['tdays'] ?? 365;
+
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
@@ -2309,7 +2311,7 @@ if ($id)
 	echo '<div class="row print-hide">';
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
-	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id;
+	echo 'data-url="' . $rootpath . 'ajax/plot_user_transactions.php?id=' . $id . '&days=' . $tdays;
 	echo '&' . http_build_query(get_session_query_param()) . '" ';
 	echo 'data-users-url="' . $rootpath . 'users.php?id=" ';
 	echo 'data-transactions-url="' . $rootpath . 'transactions.php?id=" ';
