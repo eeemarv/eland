@@ -212,7 +212,7 @@ if (!$s_anonymous)
 			$u_param = [];
 		}
 
-		$get_params['r'] = 'user';
+		$u_param['r'] = 'user';
 		$u_param['u'] = $_GET['u'];
 
 		echo '<li>';
@@ -266,7 +266,6 @@ if ($s_anonymous)
 else
 {
 	$menu = [
-//		'index'					=> ['home', 'Overzicht', []],
 		'messages'				=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
 		'users'					=> ['users', (($s_admin) ? 'Gebruikers' : 'Leden'), ['status' => 'active', 'view' => $view_users]],
 		'transactions'			=> ['exchange', 'Transacties', []],
