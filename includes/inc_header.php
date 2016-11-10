@@ -200,19 +200,22 @@ if (!$s_anonymous)
 
 		if ($page_access == 'admin')
 		{
-			$user_url = readconfigfromdb('default_landing_page');
+			$user_url = readconfigfromdb('default_landing_page') . '.php';
 
 			$u_param = 'view_' . $user_url;
 			$u_param = in_array($user_url, ['messages', 'users', 'news']) ? ['view' => $$u_param] : [];
-			$user_url .= '.php?' . http_build_query($u_param);
 		}
 		else
 		{
 			$user_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+			$u_param = [];
 		}
 
 		$get_params = $_GET;
 		$get_params['r'] = 'user';
+		$get_param = array_merge($get_param, $u_param);
+
 		echo '<li>';
 		echo '<a href="' . $user_url . '?' . http_build_query($get_params) . '"><i class="fa fa-times"></i>';
 		echo ' Admin modus uit</a>';
