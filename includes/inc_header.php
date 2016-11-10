@@ -200,7 +200,7 @@ if (!$s_anonymous)
 
 		if ($page_access == 'admin')
 		{
-			$user_url = readconfigfromdb('default_landing_page') . '.php';
+			$user_url = readconfigfromdb('default_landing_page');
 
 			$u_param = 'view_' . $user_url;
 			$u_param = in_array($user_url, ['messages', 'users', 'news']) ? ['view' => $$u_param] : [];
