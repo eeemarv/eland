@@ -212,12 +212,11 @@ if (!$s_anonymous)
 			$u_param = [];
 		}
 
-		$get_params = $_GET;
 		$get_params['r'] = 'user';
-		$get_param = array_merge($get_param, $u_param);
+		$u_param['u'] = $_GET['u'];
 
 		echo '<li>';
-		echo '<a href="' . $user_url . '?' . http_build_query($get_params) . '"><i class="fa fa-times"></i>';
+		echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '"><i class="fa fa-times"></i>';
 		echo ' Admin modus uit</a>';
 		echo '</li>';
 		echo '</ul>';
