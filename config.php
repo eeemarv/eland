@@ -37,6 +37,13 @@ $periodic_mail_item_show_options = $periodic_mail_item_show_options_not_all = [
 	'none'		=> 'Geen',
 ];
 
+$landing_page_options = [
+	'messages'		=> 'Vraag en aanbod',
+	'users'			=> 'Leden',
+	'transactions'	=> 'Transacties',
+	'news'			=> 'Nieuws',
+];
+
 unset($periodic_mail_item_show_options_not_all['all']);
 
 $tab_panes = [
@@ -351,9 +358,13 @@ $tab_panes = [
 					],
 				],
 			],
+			'default_landing_page'	=> [
+				'lbl'		=> 'Standaard landingspagina',
+				'type'		=> 'select',
+				'options'	=> $landing_page_options,
+			],
 		],
 	],
-
 ];
 
 $config = [];

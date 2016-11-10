@@ -35,7 +35,7 @@ $submit = isset($_POST['zend']) ? true : false;
 if (!readconfigfromdb('forum_en'))
 {
 	$app['eland.alert']->warning('De forum pagina is niet ingeschakeld.');
-	redirect_messages();
+	redirect_default_page();
 }
 
 if ($del || $edit)
@@ -550,7 +550,7 @@ if ($forum_empty)
 	echo '</div></div>';
 
 	include __DIR__ . '/includes/inc_footer.php';
-	exit;	
+	exit;
 }
 
 echo '<div class="panel panel-default printview">';

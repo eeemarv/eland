@@ -8,10 +8,18 @@ $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 
 $location = $_GET['location'] ?? false;
-$location = ($location) ? urldecode($location) : '/messages.php?view=' . $view_messages;
-$location = (strpos($location, 'login.php') === false) ? $location : 'messages.php?view=' . $view_messages;
-$location = (strpos($location, 'logout.php') === false) ? $location : 'messages.php?view=' . $view_messages;
-$location = ($location != '' && $location != '/') ? $location : 'messages.php?view=' . $view_messages;
+
+if (!$location
+	|| strpos($location, 'login.php') !== false
+	|| strpos($location, 'logout.php') !== false
+	|| $location == ''
+	|| $location == '/')
+{
+	$location = readconfigfromdb('default_landing_page');
+	$param = 'view_' . $location;
+	$param = in_array($location, ['messages', 'users', 'news']) ? ['view' => $$param] : [];
+	$location .= '.php?' . http_build_query($param);
+}
 
 $submit = isset($_POST['zend']) ? true : false;
 

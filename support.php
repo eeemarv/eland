@@ -88,8 +88,10 @@ if (isset($_POST['zend']))
 		if (!$return_message)
 		{
 			$app['eland.alert']->success('De support mail is verzonden.');
-			header('Location: ' . generate_url('messages'));
-			exit;
+			redirect_default_page();
+
+//			header('Location: ' . generate_url('messages'));
+//			exit;
 		}
 
 		$app['eland.alert']->error('Mail niet verstuurd. ' . $return_message);

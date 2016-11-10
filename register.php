@@ -9,7 +9,7 @@ $token = $_GET['token'] ?? false;
 
 if ($s_id)
 {
-	redirect_messages();
+	redirect_default_page();
 }
 
 if (!readconfigfromdb('registration_en'))

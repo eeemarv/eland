@@ -394,7 +394,7 @@ else if (ctype_digit((string) $s_id))
 
 		$s_accountrole = $session_user['accountrole'];
 
-		redirect_messages();
+		redirect_default_page();
 	}
 
 	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
@@ -461,7 +461,7 @@ switch ($s_accountrole)
 		if ($page_access != 'guest')
 		{
 			$app['monolog']->debug('redirect 6');
-			redirect_messages();
+			redirect_default_page();
 		}
 
 		break;
@@ -471,7 +471,7 @@ switch ($s_accountrole)
 		if (!($page_access == 'user' || $page_access == 'guest'))
 		{
 			$app['monolog']->debug('redirect 7');
-			redirect_messages();
+			redirect_default_page();
 		}
 
 		break;
@@ -481,7 +481,7 @@ switch ($s_accountrole)
 		if ($page_access == 'anonymous')
 		{
 			$app['monolog']->debug('redirect 8');
-			redirect_messages();
+			redirect_default_page();
 		}
 
 		break;
@@ -678,34 +678,10 @@ if (!$s_anonymous)
 
 /* some more vars */
 
-$app['eland.view_messages'] = $view_messages;
-$app['eland.view_users'] = $view_users;
-$app['eland.view_news'] = $view_news;
-
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
 $newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
-
-$app['s_user_params_own_group'] = $s_user_params_own_group ?? [];
-
-$app['s_master'] = $s_master;
-$app['s_admin'] = $s_admin;
-$app['s_user'] = $s_user;
-$app['s_guest'] = $s_guest;
-$app['s_anonymous'] = $s_anonymous;
-$app['s_accountrole'] = $s_accountrole;
-$app['s_group_self'] = $s_group_self;
-$app['s_elas_guest'] = $s_elas_guest;
-$app['s_id'] = $s_id;
-
-$app['url.messages'] = generate_url('messages', ['view' => $app['eland.view_messages']]);
-$app['url.users'] = generate_url('users', ['view' => $app['eland.view_users']]);
-$app['url.news'] = generate_url('news', ['view' => $app['eland.view_news']]);
-$app['url.transactions'] = generate_url('transactions');
-$app['url.docs'] = generate_url('docs');
-$app['url.forum'] = generate_url('forum');
-$app['url.logout'] = generate_url('logout');
 
 /** welcome message **/
 
@@ -837,13 +813,10 @@ function get_session_query_param($sch = false)
 	return $ary;
 }
 
-/**
- *
- */
-function redirect_messages()
+function redirect_default_page()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $s_id, $s_accountrole, $s_schema, $view_messages;
+	global $s_id, $s_accountrole, $s_schema, $view_messages, $view_users, $view_news;
 
 	$access_level = $access_session;
 
@@ -851,7 +824,30 @@ function redirect_messages()
 	$p_user = $s_id;
 	$p_role = $s_accountrole;
 
-	header('Location: ' . generate_url('messages', ['view' => $view_messages]));
+	$page = readconfigfromdb('default_landing_page');
+
+	$param = [];
+
+	switch ($page)
+	{
+		case 'messages':
+		case 'users':
+		case 'news':
+
+			$view_param = 'view_' . $page;
+			$param[] = [
+				$view_param = $$view_param,
+			];
+
+			break;
+
+		default:
+
+			$view_param = false;
+			break;
+	}
+
+	header('Location: ' . generate_url($page, $param));
 	exit;
 }
 
@@ -931,6 +927,7 @@ function readconfigfromdb($key, $sch = null)
 		'periodic_mail_show_transactions'	=> 'recent',
 		'periodic_mail_show_leaving_users'	=> 'all',
 		'periodic_mail_show_new_users'		=> 'all',
+		'default_landing_page'				=> 'messages',
 	];
 
     if (!isset($sch))
