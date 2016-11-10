@@ -707,12 +707,56 @@ if ($add)
 
 	$balance = $session_user['saldo'];
 
-	$groups = $app['db']->fetchAll('SELECT id, groupname, url FROM letsgroups where apimethod <> \'internal\'');
+	$groups = [];
 
-	$groups = array_merge([[
-		'groupname' => readconfigfromdb('systemname'),
+	$groups[] = [
+		'groupname' => readconfigfromdb('systemname') . ' (eigen groep)',
 		'id'		=> 'self',
-	]], $groups);
+	];
+
+	if (count($eland_interlets_groups))
+	{
+		$urls = [];
+
+		foreach ($eland_interlets_groups as $h)
+		{
+			$urls[] = $app['eland.protocol'] . $h;
+		}
+
+		$eland_groups = $app['db']->executeQuery('select id, groupname, url
+			from letsgroups
+			where apimethod <> \'internal\'
+				and url in (?)',
+				[$urls],
+				[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+
+		foreach ($eland_groups as $g)
+		{
+			$groups[] = $g;
+		}
+	}
+
+	if (count($elas_interlets_groups))
+	{
+		$ids = [];
+
+		foreach ($elas_interlets_groups as $key => $name)
+		{
+			$ids[] = $key;
+		}
+
+		$elas_groups = $app['db']->executeQuery('select id, groupname, url
+			from letsgroups
+			where apimethod <> \'internal\'
+				and id in (?)',
+				[$ids],
+				[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+		foreach ($elas_groups as $g)
+		{
+			$groups[] = $g;
+		}
+	}
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -759,50 +803,77 @@ if ($add)
 
 	echo ($s_admin) ? '' : '</div>';
 
-	echo '<div class="form-group">';
-	echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
-	echo '<div class="col-sm-10">';
-	echo '<select type="text" class="form-control" id="group_id" name="group_id">';
-
-	foreach ($groups as $l)
+	if (count($groups) > 1)
 	{
-		echo '<option value="' . $l['id'] . '" ';
+		echo '<div class="form-group">';
+		echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
+		echo '<div class="col-sm-10">';
+		echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
-		if ($l['id'] == 'self')
+		foreach ($groups as $l)
 		{
-			echo 'id="group_self" ';
+			echo '<option value="' . $l['id'] . '" ';
 
-			if ($s_admin)
+			if ($l['id'] == 'self')
 			{
-				$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
+				echo 'id="group_self" ';
+
+				if ($s_admin)
+				{
+					$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
+				}
+				else
+				{
+					$typeahead = 'users_active';
+				}
+
+				$typeahead = $app['eland.typeahead']->get($typeahead);
 			}
 			else
 			{
-				$typeahead = 'users_active';
+				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
+				$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
 			}
 
-			$typeahead = $app['eland.typeahead']->get($typeahead);
+			echo 'data-typeahead="' . $typeahead . '"';
+			echo ($l['id'] == $group_id) ? ' selected="selected" ' : '';
+			echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
+		}
+
+		echo '</select>';
+		echo '</div>';
+		echo '</div>';
+	}
+	else
+	{
+		if ($s_admin)
+		{
+			$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
 		}
 		else
 		{
-			$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
-			$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
+			$typeahead = 'users_active';
 		}
 
-		echo 'data-typeahead="' . $typeahead . '"';
-		echo ($l['id'] == $group_id) ? ' selected="selected" ' : '';
-		echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
-	}
+		$typeahead = $app['eland.typeahead']->get($typeahead);
 
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
+		echo '<input type="hidden" id="group_id" name="group_id" value="self">';
+	}
 
 	echo '<div class="form-group">';
 	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
-	echo 'data-typeahead-source="group_id" ';
+
+	if (count($groups) > 1)
+	{
+		echo 'data-typeahead-source="group_id" ';
+	}
+	else
+	{
+		echo 'data-typeahead="' . $typeahead . '" ';
+	}
+
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 	echo '</div>';
 	echo '</div>';
@@ -835,7 +906,8 @@ if ($add)
 	echo '<ul><small><i>';
 
 	echo '<li>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of letscode in te typen. ';
-	echo 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.</li>';
+	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
+	echo '</li>';
 
 	echo '<li>';
 	echo readconfigfromdb('currencyratio');
