@@ -33,7 +33,7 @@ Bekijk online: {{ news_url }}
 
 {% if n.location %}Plaats: {{ n.location }}{% endif %}
 
-{% if n.itemdate %}Datum: {{ n.itemdate|date_format('day') }}{% endif %}
+{% if n.itemdate %}Datum: {{ n.itemdate }}{% endif %}
 
 Ingegeven door: {{ n.user }}
 
