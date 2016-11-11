@@ -549,7 +549,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$app['monolog']->info('bulk: Set periodic mail to ' . $value . ' for users ' . $users_log);
 
 		$app['eland.interlets_groups']->clear_cache($s_schema);
-		
+
 		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}

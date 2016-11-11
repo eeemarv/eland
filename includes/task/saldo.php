@@ -225,70 +225,94 @@ class saldo
 
 		$show_new_users = readconfigfromdb('weekly_mail_show_new_users', $schema);
 
-		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
-			from ' . $schema . '.users u
-			where u.status = 1
-				and u.adate > ?');
-
-		$rs->bindValue(1, gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $schema) * 86400));
-		$rs->execute();
-
-		while ($row = $rs->fetch())
+		if ($show_new_users != 'none')
 		{
-			$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-			$row['text'] = $row['letscode'] . ' ' . $row['name'];
 
-			$new_users[] = $row;
+			$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
+				from ' . $schema . '.users u
+				where u.status = 1
+					and u.adate > ?');
+
+			$time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $schema) * 86400);
+			$time = ($show_new_users == 'recent') ? $treshold_time: $time;
+
+			$rs->bindValue(1, $time);
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
+				$row['text'] = $row['letscode'] . ' ' . $row['name'];
+
+				$new_users[] = $row;
+			}
 		}
 
 	// leaving users
 
 		$show_leaving_users = readconfigfromdb('weekly_mail_show_leaving_users', $schema);
 
-		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
-			from ' . $schema . '.users u
-			where u.status = 2');
-
-		$rs->execute();
-
-		while ($row = $rs->fetch())
+		if ($show_leaving_users != 'none')
 		{
-			$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-			$row['text'] = $row['letscode'] . ' ' . $row['name'];
 
-			$leaving_users[] = $row;
+			$query = 'select u.id, u.name, u.letscode, u.postcode
+				from ' . $schema . '.users u
+				where u.status = 2';
+
+			$query .= ($show_leaving_users == 'recent') ? ' and mdate > ?';
+
+			$rs = $this->db->prepare($query);
+
+			if ($show_leaving_users == 'recent')
+			{
+				$rs->bindValue(1, $treshold_time);
+			}
+
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
+				$row['text'] = $row['letscode'] . ' ' . $row['name'];
+
+				$leaving_users[] = $row;
+			}
 		}
 
 	// transactions
 
 		$show_transactions = readconfigfromdb('weekly_mail_show_transactions', $schema);
 
-		$rs = $this->db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
-				t.amount, t.cdate, t.description,
-				uf.name as from_name, uf.letscode as from_letscode,
-				ut.name as to_name, ut.letscode as to_letscode
-			from ' . $schema . '.transactions t, ' . $schema . '.users uf, ' . $schema . '.users ut
-			where t.id_from = uf.id
-				and t.id_to = ut.id
-				and t.cdate > ?');
-
-		$rs->bindValue(1, $treshold_time);
-		$rs->execute();
-
-		while ($row = $rs->fetch())
+		if ($show_transactions != 'none')
 		{
-			$transactions[] = [
-				'amount'	=> $row['amount'],
-				'description'	=> $row['description'],
-				'to_user'		=> $row['to_letscode'] . ' ' . $row['to_name'],
-				'to_user_url'	=> $base_url . '/users.php?id=' . $row['id_to'],
-				'from_user'		=> $row['from_letscode'] . ' ' . $row['from_name'],
-				'from_user_url'	=> $base_url . '/users.php?id=' . $row['id_from'],
-				'real_to'		=> $row['real_to'],
-				'real_from'		=> $row['real_form'],
-				'to_name'		=> $row['to_name'],
-				'from_name'		=> $row['from_name'],
-			];
+
+			$rs = $this->db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
+					t.amount, t.cdate, t.description,
+					uf.name as from_name, uf.letscode as from_letscode,
+					ut.name as to_name, ut.letscode as to_letscode
+				from ' . $schema . '.transactions t, ' . $schema . '.users uf, ' . $schema . '.users ut
+				where t.id_from = uf.id
+					and t.id_to = ut.id
+					and t.cdate > ?');
+
+			$rs->bindValue(1, $treshold_time);
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$transactions[] = [
+					'amount'	=> $row['amount'],
+					'description'	=> $row['description'],
+					'to_user'		=> $row['to_letscode'] . ' ' . $row['to_name'],
+					'to_user_url'	=> $base_url . '/users.php?id=' . $row['id_to'],
+					'from_user'		=> $row['from_letscode'] . ' ' . $row['from_name'],
+					'from_user_url'	=> $base_url . '/users.php?id=' . $row['id_from'],
+					'real_to'		=> $row['real_to'],
+					'real_from'		=> $row['real_form'],
+					'to_name'		=> $row['to_name'],
+					'from_name'		=> $row['from_name'],
+				];
+			}
 		}
 
 	// forum
