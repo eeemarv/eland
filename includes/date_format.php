@@ -194,7 +194,7 @@ class date_format
 
 	public function get_error($format)
 	{
-		if (!isset($this->formats[$format]))
+		if (!isset(self::$formats[$format]))
 		{
 			return 'Fout: dit datum- en tijdsformaat wordt niet ondersteund.';
 		}
@@ -247,15 +247,6 @@ class date_format
 	public function twig_get($environment, $context, $ts = false, $precision = 'min')
 	{
 		static $format_ary, $format;
-
-/*
-		var_dump($environment);
-
-		echo ' -- ';
-
-		var_dump($context);
-
-*/
 
 		$time = strtotime($ts . ' UTC');
 
