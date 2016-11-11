@@ -13,13 +13,6 @@ echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>
 
 echo '</footer>';
 
-/*
-foreach ($include_js as $js)
-{
-	echo '<script src="' . $js . '"></script>';
-}
-*/
-
 echo $app['eland.assets']->render_js();
 
 echo '</body>';

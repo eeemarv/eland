@@ -166,47 +166,64 @@ class saldo
 
 	// news
 
-		$rows = $this->xdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+		$show_news = readconfigfromdb('weekly_mail_show_news', $schema);
 
-		foreach ($rows as $row)
+		if ($show_news != 'none')
 		{
-			$news_access_ary[$row['eland_id']] = $row['data']['access'];
-		}
+			$rows = $this->xdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
 
-		$rs = $this->db->prepare('select n.*, u.name, u.letscode
-			from ' . $schema . '.news n, ' . $schema . '.users u
-			where n.approved = \'t\'
-				and n.published = \'t\'
-				and n.id_user = u.id
-			order by n.cdate desc');
-
-		$rs->execute();
-
-		while ($row = $rs->fetch())
-		{
-			if (isset($news_access_ary[$row['id']]))
+			foreach ($rows as $row)
 			{
-				$row['access'] = $news_access_ary[$row['id']];
-			}
-			else
-			{
-				$this->xdb->set('news_access', $news_id, ['access' => 'interlets'], $schema);
-				$row['access'] = 'interlets';
+				$news_access_ary[$row['eland_id']] = $row['data']['access'];
 			}
 
-			if (!in_array($row['access'], ['users', 'interlets']))
+			$query = 'select n.*, u.name, u.letscode
+				from ' . $schema . '.news n, ' . $schema . '.users u
+				where n.approved = \'t\'
+					and n.published = \'t\'
+					and n.id_user = u.id ';
+
+			$query .= ($show_news == 'recent') ? 'and n.cdate > ? ' : '';
+
+			$query .= 'order by n.cdate desc';
+
+			$rs = $this->db->prepare($query);
+
+			if ($show_news == 'recent')
 			{
-				continue;
+				$rs->bindValue(1, $treshold_time);
 			}
 
-			$row['url'] = $base_url . '/news.php?id=' . $row['id'];
-			$row['user'] = $row['letscode'] . ' ' . $row['name'];
-			$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
+			$rs->execute();
 
-			$news[] = $row;
+			while ($row = $rs->fetch())
+			{
+				if (isset($news_access_ary[$row['id']]))
+				{
+					$row['access'] = $news_access_ary[$row['id']];
+				}
+				else
+				{
+					$this->xdb->set('news_access', $news_id, ['access' => 'interlets'], $schema);
+					$row['access'] = 'interlets';
+				}
+
+				if (!in_array($row['access'], ['users', 'interlets']))
+				{
+					continue;
+				}
+
+				$row['url'] = $base_url . '/news.php?id=' . $row['id'];
+				$row['user'] = $row['letscode'] . ' ' . $row['name'];
+				$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
+
+				$news[] = $row;
+			}
 		}
 
 	// new users
+
+		$show_new_users = readconfigfromdb('weekly_mail_show_new_users', $schema);
 
 		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
 			from ' . $schema . '.users u
@@ -226,6 +243,8 @@ class saldo
 
 	// leaving users
 
+		$show_leaving_users = readconfigfromdb('weekly_mail_show_leaving_users', $schema);
+
 		$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
 			from ' . $schema . '.users u
 			where u.status = 2');
@@ -241,6 +260,8 @@ class saldo
 		}
 
 	// transactions
+
+		$show_transactions = readconfigfromdb('weekly_mail_show_transactions', $schema);
 
 		$rs = $this->db->prepare('select t.id_from, t.id_to, t.real_from, t.real_to,
 				t.amount, t.cdate, t.description,
@@ -270,28 +291,42 @@ class saldo
 			];
 		}
 
+	// forum
+
+		$show_forum = readconfigfromdb('weekly_mail_show_forum', $schema);
+
+	// docs
+
+		$show_docs = readconfigfromdb('weekly_mail_show_docs', $schema);
+
 	//
 
 		$vars = [
 			'group'		=> [
-				'name'				=> readconfigfromdb('systemname'),
-				'tag'				=> readconfigfromdb('systemtag'),
-				'currency'			=> readconfigfromdb('currency'),
-				'support'			=> readconfigfromdb('support'),
-				'saldofreqdays'		=> readconfigfromdb('saldofreqdays'),
+				'name'				=> readconfigfromdb('systemname', $schema),
+				'tag'				=> readconfigfromdb('systemtag', $schema),
+				'currency'			=> readconfigfromdb('currency', $schema),
+				'support'			=> readconfigfromdb('support', $schema),
+				'saldofreqdays'		=> readconfigfromdb('saldofreqdays', $schema),
 			],
 			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
+			'show_new_users'		=> $show_new_users,
 			'leaving_users'			=> $leaving_users,
+			'show_leaving_users'	=> $show_leaving_users,
 			'news'					=> $news,
 			'news_url'				=> $base_url . '/news.php',
+			'show_news'				=> $show_news,
 			'transactions'			=> $transactions,
 			'transactions_url'		=> $base_url . '/transactions.php',
+			'show_transactions'		=> $show_transactions,
 			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
 			'forum'					=> $forum,
 			'forum_url'				=> $base_url . '/forum.php',
+			'show_forum'			=> $show_forum,
 			'docs'					=> $docs,
 			'docs_url'				=> $base_url . '/docs.php',
+			'show_docs'				=> $show_docs,
 			'messages'				=> $messages,
 			'messages_url'			=> $base_url . '/messages.php',
 			'new_message_url'		=> $base_url . '/messages.php?add=1',
