@@ -816,13 +816,27 @@ function get_session_query_param($sch = false)
 function redirect_default_page()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $s_id, $s_accountrole, $s_schema, $view_messages, $view_users, $view_news;
+	global $s_id, $s_accountrole, $s_schema;
 
 	$access_level = $access_session;
 
 	$p_schema = $s_schema;
 	$p_user = $s_id;
 	$p_role = $s_accountrole;
+
+	header('Location: ' . get_default_page());
+	exit;
+}
+
+function get_default_page()
+{
+	global $view_messages, $view_users, $view_news;
+	static $default_page;
+
+	if (isset($default_page))
+	{
+		return $default_page;
+	}
 
 	$page = readconfigfromdb('default_landing_page');
 
@@ -835,20 +849,18 @@ function redirect_default_page()
 		case 'news':
 
 			$view_param = 'view_' . $page;
-			$param[] = [
-				$view_param = $$view_param,
-			];
+			$param['view'] = $$view_param;
 
 			break;
 
 		default:
 
-			$view_param = false;
 			break;
 	}
 
-	header('Location: ' . generate_url($page, $param));
-	exit;
+	$default_page = generate_url($page, $param);
+
+	return $default_page;
 }
 
 /**
@@ -921,13 +933,14 @@ function readconfigfromdb($key, $sch = null)
 		'msgs_days_default'			=> '365',
 		'balance_equilibrium'		=> '0',
 		'date_format'				=> '%e %b %Y, %H:%M:%S',
-		'periodic_mail_show_interlets'		=> 'recent',
-		'periodic_mail_show_news'			=> 'recent',
-		'periodic_mail_show_forum'			=> 'recent',
-		'periodic_mail_show_transactions'	=> 'recent',
-		'periodic_mail_show_leaving_users'	=> 'all',
-		'periodic_mail_show_new_users'		=> 'all',
+		'weekly_mail_show_interlets'		=> 'recent',
+		'weekly_mail_show_news'			=> 'recent',
+		'weekly_mail_show_forum'			=> 'recent',
+		'weekly_mail_show_transactions'	=> 'recent',
+		'weekly_mail_show_leaving_users'	=> 'all',
+		'weekly_mail_show_new_users'		=> 'all',
 		'default_landing_page'				=> 'messages',
+		'homepage_url'						=> '',
 	];
 
     if (!isset($sch))

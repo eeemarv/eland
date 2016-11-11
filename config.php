@@ -182,32 +182,34 @@ $tab_panes = [
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
 			],
-/*			'periodic_mail_show_interlets'	=> [
+
+/*
+			'weekly_mail_show_interlets'	=> [
 				'lbl'		=> 'Toon interlets vraag en aanbod',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
-			'periodic_mail_show_news'	=> [
+			'weekly_mail_show_news'	=> [
 				'lbl'		=> 'Toon nieuwsberichten',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
 			],
-			'periodic_mail_show_forum'	=> [
+			'weekly_mail_show_forum'	=> [
 				'lbl'		=> 'Toon forumberichten',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
-			'periodic_mail_show_transactions'	=> [
+			'weekly_mail_show_transactions'	=> [
 				'lbl'		=> 'Toon forumberichten',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
-			'periodic_mail_show_new_users'	=> [
+			'weekly_mail_show_new_users'	=> [
 				'lbl'		=> 'Toon Instappers',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
 			],
-			'periodic_mail_show_leaving_users'	=> [
+			'weekly_mail_show_leaving_users'	=> [
 				'lbl'		=> 'Toon Uitstappers',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
@@ -362,6 +364,11 @@ $tab_panes = [
 				'lbl'		=> 'Standaard landingspagina',
 				'type'		=> 'select',
 				'options'	=> $landing_page_options,
+			],
+			'homepage_url'	=> [
+				'lbl'		=> 'Website url',
+				'type'		=> 'url',
+				'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
 			],
 		],
 	],

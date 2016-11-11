@@ -41,12 +41,20 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-echo '<a href="' . generate_url('messages', ['view' => $view_messages]) . '" class="pull-left hidden-xs">';
+$homepage_url = readconfigfromdb('homepage_url');
+
+if (!$homepage_url)
+{
+	$homepage_url = get_default_page();
+}
+
+echo '<a href="' . $homepage_url . '" class="pull-left hidden-xs">';
 echo '<div class="logo"></div>';
 echo '</a>';
 
-echo aphp('messages', ['view' => $view_messages], readconfigfromdb('systemname'), 'navbar-brand');
-
+echo '<a href="' . $homepage_url . '" class="navbar-brand">';
+echo readconfigfromdb('systemname');
+echo '</a>';
 echo '</div>';
 
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
