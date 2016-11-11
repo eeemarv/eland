@@ -404,7 +404,7 @@ class saldo
 					'url_login'	=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
 					'account_edit_url'	=> $base_url . '/users.php?edit=' . $id,
 				]),
-			]);
+			], random_int(50, 500));
 
 			$log_to[] = $users[$id]['letscode'] . ' ' . $users[$id]['name'] . ' (' . $id . ')';
 		}
