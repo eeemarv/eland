@@ -126,7 +126,7 @@ $header_allow_origin = $app['eland.protocol'] . $app['eland.s3_res'] . ', ';
 $header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_img'] . ', ';
 $header_allow_origin .= $app['eland.protocol'] . $app['eland.s3_doc'];
 
-if (isset($no_headers))
+if (!isset($no_headers))
 {
 	ob_start('etag_buffer');
 	header('Access-Control-Allow-Origin: ' . $header_allow_origin);

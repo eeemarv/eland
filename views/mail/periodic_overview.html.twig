@@ -67,6 +67,8 @@
 
 #}
 
+{% if show_news != 'none' %}
+
 <h3><a href="{{ news_url }}">Nieuws</a></h3>
 
 {% if news %}
@@ -82,8 +84,16 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 {% endfor %}
 </ul>
 {% else %}
-<p>Er zijn geen nieuwe nieuwsberichten.</p>
+	{% if show_news == 'recent' %}
+	<p>Er zijn geen recente nieuwsberichten.</p>
+	{% else %}
+	<p>Er zijn geen nieuwe nieuwsberichten.</p>
+	{% endif %}
 {% endif %}
+
+{% endif %}
+
+{% if show_new_users != 'none' %}
 
 <h3>Nieuwe leden</h3>
 
@@ -94,20 +104,37 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 	{% endfor %}
 </ul>
 {% else %}
-<p>Momenteel zijn er geen nieuwe leden.</p>
+	{% if show_new_users == 'recent' %}
+		<p>Er zijn geen nieuwe leden bijgekomen.</p>
+	{% else %}
+		<p>Momenteel zijn er geen nieuwe leden.</p>
+	{% endif %}
 {% endif %}
 
-<h3>Uitstappende leden</h3>
-
-{% if leaving_users %}
-<ul>
-	{% for u in leaving_users %}
-<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
-	{% endfor %}
-</ul>
-{% else %}
-<p>Momenteel zijn er geen uitstappende leden.</p>
 {% endif %}
+
+
+{% if show_leaving_users != 'none' %}
+
+	<h3>Uitstappende leden</h3>
+
+	{% if leaving_users %}
+	<ul>
+		{% for u in leaving_users %}
+	<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+		{% if show_leaving_users == 'recent' %}
+			<p>Er zijn geen extra uitstappende leden.</p>
+		{% else %}
+			<p>Momenteel zijn er geen uitstappende leden.</p>
+		{% endif %}
+	{% endif %}
+
+{% endif %}
+
+{% if show_transactions != 'none' %}
 
 <h3><a href="{{ transactions_url }}">Recente transacties</a></h3>
 
@@ -133,6 +160,8 @@ naar
 </ul>
 {% else %}
 <p>Er zijn geen recente transacties.</p>
+{% endif %}
+
 {% endif %}
 
 {% endblock body %}

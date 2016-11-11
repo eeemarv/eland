@@ -20,6 +20,7 @@ Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreq
 
 Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
 
+{% if show_news != 'none' %}
 
 Nieuws
 ------
@@ -38,9 +39,18 @@ Bekijk online: {{ news_url }}
 Ingegeven door: {{ n.user }}
 
 {% else %}
+
+{% if show_news == 'recent' %}
+Momenteel zijn er geen nieuwe nieuwsberichten.
+{% else %}
 Momenteel zijn er geen nieuwsberichten.
+{% endif %}
+
 {% endfor %}
 
+{% endif %}
+
+{% if show_new_users != 'none' %}
 
 Nieuwe leden
 ------------
@@ -49,9 +59,18 @@ Nieuwe leden
 * {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
 
 {% else %}
+
+{% if show_new_users == 'recent' %}
+Er zijn geen nieuwe leden bijgekomen.
+{% else %}
 Momenteel zijn er geen nieuwe leden.
+{% endif %}
+
 {% endfor %}
 
+{% endif %}
+
+{% if show_leaving_users != 'none' %}
 
 Uitstappende leden
 ------------------
@@ -60,8 +79,18 @@ Uitstappende leden
 * {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
 
 {% else %}
+
+{% if show_leaving_users == 'recent' %}
+Er zijn geen extra uitstappende leden.
+{% else %}
 Momenteel zijn er geen uitstappende leden.
+{% endif %}
+
 {% endfor %}
+
+{% endif %}
+
+{% if show_transactions != 'none' %}
 
 Recente transacties
 -------------------
@@ -81,6 +110,8 @@ Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dag
 {% endfor %}
 
 Nieuwe transactie ingeven: {{ new_transaction_url }}
+
+{% endif %}
 
 {% endautoescape %}
 {% endblock body %}
