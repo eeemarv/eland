@@ -488,7 +488,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		cancel();
 	}
-	else if (['cron_saldo' => 1, 'accountrole' => 1, 'status' => 1, 'comments' => 1,
+	else if (['accountrole' => 1, 'status' => 1, 'comments' => 1,
 		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$bulk_field])
 	{
 		$type = ($edit_fields_tabs[$bulk_field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
@@ -528,6 +528,28 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$access_role = $app['eland.access_control']->get_role($access_value);
 
 		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
+		$app['eland.alert']->success('Het veld werd aangepast.');
+		cancel();
+	}
+	else if ($bulk_field == 'cron_saldo')
+	{
+		$value = $value ? true : false;
+
+		$app['db']->executeUpdate('update users set cron_saldo = ? where id in (?)',
+			[$value, $user_ids],
+			[\PDO::PARAM_BOOL, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+		foreach ($user_ids as $user_id)
+		{
+			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+		}
+
+		$value = $value ? 'on' : 'off';
+
+		$app['monolog']->info('bulk: Set periodic mail to ' . $value . ' for users ' . $users_log);
+
+		$app['eland.interlets_groups']->clear_cache($s_schema);
+		
 		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
