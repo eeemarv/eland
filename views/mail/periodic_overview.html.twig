@@ -27,7 +27,6 @@
 
 <p><a href="{{ new_message_url }}">Geef zelf je eigen vraag of aanbod in.</a></p>
 
-{#
 {% if inter_messages %}
 
 <h4>Interlets vraag en aanbod</h4>
@@ -42,21 +41,15 @@
 {% endfor %}
 
 {% endif %}
-#}
 
-{# <p><a href="{{ messages_url }}">Bekijk alle vraag en aanbod online.</a></p> #}
-
-{#
-
-{% if forum_en %}
+{% if forum_en and show_forum != 'none' %}
 <h3><a href="{{ forum_url }}">Forum</a></h3>
 
 	{% if forum %}
 	<ul>
-	{% for msg in forum %}
-	<li><a href="{{ msg.url }}">{{ msg.subject }}</a>
-	{% if msg.new %}- nieuw onderwerp{% endif %}
-	[{{ msg.new_reply_count }}]
+	{% for f in forum %}
+	<li><a href="{{ f.url }}">{{ f.subject }}</a>
+{#	&nbsp;[{{ msg.new_reply_count }}]  #}
 	</li>
 	{% endfor %}
 	</ul>
@@ -64,8 +57,6 @@
 	<p>Er zijn geen nieuwe forumberichten.</p>
 	{% endif %}
 {% endif %}
-
-#}
 
 {% if show_news != 'none' %}
 

@@ -20,6 +20,19 @@ Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreq
 
 Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
 
+{% if forum_en and show_forum != 'none' %}
+
+Forum
+-----
+
+{% for f in forum %}
+* {{ f.subject }} {{ f.url }}
+{% else %}
+Er zijn geen nieuwe forumberichten.
+{% endfor %}
+
+{% endif %}
+
 {% if show_news != 'none' %}
 
 Nieuws

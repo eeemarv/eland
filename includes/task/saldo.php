@@ -56,6 +56,8 @@ class saldo
 
 		$users = $news = $new_users = $leaving_users = $transactions = $messages = [];
 
+		$forum = $inter_messages = $docs = [];
+
 		$mailaddr = $mailaddr_public = $saldo_mail = [];
 
 	// fetch active users
@@ -259,7 +261,7 @@ class saldo
 				from ' . $schema . '.users u
 				where u.status = 2';
 
-			$query .= ($show_leaving_users == 'recent') ? ' and mdate > ?';
+			$query .= ($show_leaving_users == 'recent') ? ' and mdate > ?' : '';
 
 			$rs = $this->db->prepare($query);
 
@@ -317,7 +319,36 @@ class saldo
 
 	// forum
 
-		$show_forum = readconfigfromdb('weekly_mail_show_forum', $schema);
+		$forum_en = readconfigfromdb('forum_en', $schema);
+
+		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $schema) : 'none';
+
+		if ($show_form != 'none')
+		{
+
+			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+				'agg_type' => 'forum',
+				'data->>\'subject\'' => ['is not null'],
+				'ts' => ['>' => $treshold_time],
+				'access' => ['users', 'interlets']], 'order by event_time desc');
+
+			if (count($rows))
+			{
+				$forum_posts = [];
+
+				foreach ($rows as $row)
+				{
+					$data = $row['data'];
+
+					$forum[] = [
+						'subject'	=> $data['subject'],
+						'content'	=> $data['content'],
+						'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+						'ts'		=> $row['ts'],
+					];
+				}
+			}
+		}
 
 	// docs
 
@@ -348,6 +379,7 @@ class saldo
 			'forum'					=> $forum,
 			'forum_url'				=> $base_url . '/forum.php',
 			'show_forum'			=> $show_forum,
+			'forum_en'				=> $forum_en,
 			'docs'					=> $docs,
 			'docs_url'				=> $base_url . '/docs.php',
 			'show_docs'				=> $show_docs,

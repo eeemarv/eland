@@ -195,13 +195,11 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
 			],
-/*
 			'weekly_mail_show_forum'	=> [
 				'lbl'		=> 'Toon forumberichten',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
-*/
 			'weekly_mail_show_transactions'	=> [
 				'lbl'		=> 'Toon transacties',
 				'type'		=> 'select',
