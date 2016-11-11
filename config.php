@@ -203,7 +203,7 @@ $tab_panes = [
 			],
 */
 			'weekly_mail_show_transactions'	=> [
-				'lbl'		=> 'Toon forumberichten',
+				'lbl'		=> 'Toon transacties',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
