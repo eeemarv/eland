@@ -62,3 +62,10 @@ data jsonb,
 priority int default 0);
 
 create index on eland_extra.queue(id, priority);
+
+create table if not exists eland_extra.cache (
+id varchar(255) primary key not null,
+data jsonb,
+ts timestamp without time zone default timezone('utc'::text, now()),
+expires timestamp without time zone);
+
