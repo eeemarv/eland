@@ -310,7 +310,7 @@ class saldo
 					'from_user'		=> $row['from_letscode'] . ' ' . $row['from_name'],
 					'from_user_url'	=> $base_url . '/users.php?id=' . $row['id_from'],
 					'real_to'		=> $row['real_to'],
-					'real_from'		=> $row['real_form'],
+					'real_from'		=> $row['real_from'],
 					'to_name'		=> $row['to_name'],
 					'from_name'		=> $row['from_name'],
 				];
@@ -325,7 +325,7 @@ class saldo
 
 		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $schema) : 'none';
 
-		if ($show_form != 'none')
+		if ($show_forum != 'none')
 		{
 
 			// new topics
