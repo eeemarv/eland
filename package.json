@@ -4,10 +4,6 @@
     "node": "5.7.x",
     "npm": "3.8.x"
   },
-  "dependencies": {
-    "uglifycss": "*",
-    "uglify-js": "*"
-  },
   "devDependencies": {
     "gitbook-cli": "^1.0.1"
   },
