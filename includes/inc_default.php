@@ -935,6 +935,7 @@ function readconfigfromdb($key, $sch = null)
 		'date_format'				=> '%e %b %Y, %H:%M:%S',
 		'weekly_mail_show_interlets'		=> 'recent',
 		'weekly_mail_show_news'				=> 'recent',
+		'weekly_mail_show_docs'				=> 'recent',
 		'weekly_mail_show_forum'			=> 'recent',
 		'weekly_mail_show_transactions'		=> 'recent',
 		'weekly_mail_show_leaving_users'	=> 'all',

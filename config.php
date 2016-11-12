@@ -195,9 +195,15 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
 			],
+			'weekly_mail_show_docs'	=> [
+				'lbl'		=> 'Toon nieuwe documenten',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_item_show_options_not_all,
+			],
 			'weekly_mail_show_forum'	=> [
 				'lbl'		=> 'Toon forumberichten',
 				'type'		=> 'select',
+				'explain'	=> 'Deze instelling heeft enkel invloed wanneer de forumpagina geactiveerd is.',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
 			'weekly_mail_show_transactions'	=> [
