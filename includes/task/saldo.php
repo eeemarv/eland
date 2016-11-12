@@ -357,10 +357,8 @@ class saldo
 
 			$rows = $this->xdb->get_many(['agg_schema' => $schema,
 				'agg_type' => 'forum',
-				'data->>\'subject\'' => ['is null'],
 				'data->>\'parent_id\'' => ['is not null'],
-				'ts' => ['>' => $treshold_time],
-				'access' => ['users', 'interlets']], 'order by event_time desc');
+				'ts' => ['>' => $treshold_time]], 'order by event_time desc');
 
 			foreach ($rows as $row)
 			{
@@ -374,7 +372,8 @@ class saldo
 
 			if (count($forum_topics_replied))
 			{
-				$rows = $this->xdb->get_many(['agg_id_ary' => $forum_topics_replied]);
+				$rows = $this->xdb->get_many(['agg_id_ary' => $forum_topics_replied,
+					'access' => ['users', 'interlets']]);
 
 				if (count($rows))
 				{
