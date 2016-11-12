@@ -319,12 +319,16 @@ class saldo
 
 	// forum
 
+		$forum_topics = $forum_topics_replied = [];
+
 		$forum_en = readconfigfromdb('forum_en', $schema);
 
 		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $schema) : 'none';
 
 		if ($show_form != 'none')
 		{
+
+			// new topics
 
 			$rows = $this->xdb->get_many(['agg_schema' => $schema,
 				'agg_type' => 'forum',
@@ -334,8 +338,6 @@ class saldo
 
 			if (count($rows))
 			{
-				$forum_posts = [];
-
 				foreach ($rows as $row)
 				{
 					$data = $row['data'];
@@ -346,6 +348,47 @@ class saldo
 						'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
 						'ts'		=> $row['ts'],
 					];
+
+					$forum_topics[$row['eland_id']] = true;
+				}
+			}
+
+			// new replies
+
+			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+				'agg_type' => 'forum',
+				'data->>\'subject\'' => ['is null'],
+				'data->>\'parent_id\'' => ['is not null'],
+				'ts' => ['>' => $treshold_time],
+				'access' => ['users', 'interlets']], 'order by event_time desc');
+
+			foreach ($rows as $row)
+			{
+				$data = $row['data'];
+
+				if (!isset($forum_topics[$data['parent_id']]))
+				{
+					$forum_topics_replied[] = $schema . '_forum_' . $data['parent_id'];
+				}
+			}
+
+			if (count($forum_topics_replied))
+			{
+				$rows = $this->xdb->get_many(['agg_id_ary' => $forum_topics_replied]);
+
+				if (count($rows))
+				{
+					foreach ($rows as $row)
+					{
+						$data = $row['data'];
+
+						$forum[] = [
+							'subject'	=> $data['subject'],
+							'content'	=> $data['content'],
+							'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+							'ts'		=> $row['ts'],
+						];
+					}
 				}
 			}
 		}
