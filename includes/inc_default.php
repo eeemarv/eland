@@ -604,7 +604,7 @@ $app['eland.task.user_exp_msgs'] = function ($app){
 
 $app['eland.task.saldo'] = function ($app){
 	return new eland\task\saldo($app['db'], $app['eland.xdb'], $app['monolog'], $app['eland.task.mail'],
-		$app['eland.groups'], $app['eland.s3_img_url'], $app['eland.protocol']);
+		$app['eland.groups'], $app['eland.s3_img_url'], $app['eland.s3_doc_url'], $app['eland.protocol']);
 };
 
 $app['eland.task.interlets_fetch'] = function ($app){

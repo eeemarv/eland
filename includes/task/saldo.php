@@ -16,10 +16,11 @@ class saldo
 	protected $mail;
 	protected $groups;
 	protected $s3_img_url;
+	protected $s3_doc_url;
 	protected $protocol;
 
 	public function __construct(db $db, xdb $xdb, Logger $monolog, mail $mail,
-		groups $groups, string $s3_img_url, string $protocol)
+		groups $groups, string $s3_img_url, string $s3_doc_url, string $protocol)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;
@@ -27,6 +28,7 @@ class saldo
 		$this->mail = $mail;
 		$this->groups = $groups;
 		$this->s3_img_url = $s3_img_url;
+		$this->s3_doc_url = $s3_doc_url;
 		$this->protocol = $protocol;
 	}
 
@@ -395,6 +397,30 @@ class saldo
 	// docs
 
 		$show_docs = readconfigfromdb('weekly_mail_show_docs', $schema);
+
+		if ($show_docs != 'none')
+		{
+			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+				'agg_type' => 'doc',
+				'ts' => ['>' => $treshold_time],
+				'access' => ['users', 'interlets']], 'order by event_time desc');
+
+			if (count($rows))
+			{
+				foreach ($rows as $row)
+				{
+					$data = $row['data'];
+
+					$docs[] = [
+						'name'			=> $data['name'] ?? $data['org_filename'],
+						'url'			=> $this->s3_doc_url . $data['filename'],
+						'ts'			=> $row['ts'],
+					];
+
+					$forum_topics[$row['eland_id']] = true;
+				}
+			}
+		}
 
 	//
 

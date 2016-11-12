@@ -63,6 +63,19 @@ Momenteel zijn er geen nieuwsberichten.
 
 {% endif %}
 
+{% if show_docs != 'none' %}
+
+Nieuwe Documenten
+-----------------
+
+{% for d in docs %}
+* {{ d.name }} {{ d.url }}
+{% else %}
+Er zijn geen nieuwe documenten.
+{% endfor %}
+
+{% endif %}
+
 {% if show_new_users != 'none' %}
 
 Nieuwe leden
