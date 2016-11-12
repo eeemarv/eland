@@ -158,6 +158,7 @@ $tab_panes = [
 		]
 	],
 
+/*
 	'date_format'	=> [
 		'lbl'	=> 'Datum- en tijdsweergave',
 		'inputs'	=> [
@@ -167,6 +168,7 @@ $tab_panes = [
 			],
 		],
 	],
+*/
 
 	'saldomail'		=> [
 		'lbl'	=> 'Overzichtsmail',
@@ -196,7 +198,7 @@ $tab_panes = [
 				'options'	=> $periodic_mail_item_show_options,
 			],
 			'weekly_mail_show_docs'	=> [
-				'lbl'		=> 'Toon nieuwe documenten',
+				'lbl'		=> 'Toon documenten',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
 			],
@@ -304,21 +306,15 @@ $tab_panes = [
 		],
 	],
 
-	'newuserdays'	=> [
-		'lbl'	=> 'Instappers',
+	'users'	=> [
+		'lbl'	=> 'Leden',
 		'inputs'	=> [
-			'newuserdays'	=> [
+			'newuserdays' => [
 				'lbl'	=> 'Aantal dagen dat een nieuw lid als instapper getoond wordt.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 0, 'max' => 365],
 			],
-		],
-	],
-
-	'users_self_edit'	=> [
-		'lbl'	=> 'Leden rechten',
-		'inputs'	=> [
-			'li_1' => [
+			'li_2' => [
 				'inline' => '%1$s Leden kunnen zelf hun gebruikersnaam aanpassen.',
 				'inputs' => [
 					'users_can_edit_username' => [
@@ -326,23 +322,13 @@ $tab_panes = [
 					],
 				],
 			],
-			'li_2' => [
+			'li_3' => [
 				'inline' => '%1$s Leden kunnen zelf hun volledige naam aanpassen.',
 				'inputs' => [
 					'users_can_edit_fullname' => [
 						'type'	=> 'checkbox',
 					],
 				],
-			],
-		],
-	],
-
-	'css'	=> [
-		'lbl'	=> 'Stijl',
-		'inputs' => [
-			'css' => [
-				'type' 	=> 'url',
-				'lbl'	=> 'Url van extra stijlblad (css-bestand)',
 			],
 		],
 	],
@@ -376,6 +362,18 @@ $tab_panes = [
 				'type'		=> 'url',
 				'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
 			],
+			'date_format'	=> [
+				'lbl'		=> 'Datum- en tijdsweergave',
+				'type'		=> 'select',
+				'options'	=> $app['eland.date_format']->get_options(),
+			],
+
+			'css'	=> [
+				'lbl'		=> 'Stijl (css)',
+				'type' 		=> 'url',
+				'explain'	=> 'Url van extra stijlblad (css-bestand)',
+			],
+
 		],
 	],
 ];
