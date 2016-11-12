@@ -250,6 +250,10 @@ $app['eland.xdb'] = function ($app){
 	return new eland\xdb($app['db'], $app['monolog'], $app['eland.this_group']);
 };
 
+$app['eland.cache'] = function ($app){
+	return new eland\cache($app['db'], $app['redis'], $app['monolog']);
+};
+
 $app['eland.alert'] = function ($app){
 	return new eland\alert($app['monolog'], $app['session']);
 };
