@@ -1294,12 +1294,12 @@ if ($add || $edit)
 				$errors[] = 'De letscode kan enkel uit letters, cijfers en koppeltekens bestaan.';
 			}
 
-			if (!filter_var($user['minlimit'], FILTER_VALIDATE_INT))
+			if (filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
 			{
 				$errors[] = 'Geef getal op voor de minimum limiet.';
 			}
 
-			if (!filter_var($user['maxlimit'], FILTER_VALIDATE_INT))
+			if (filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
 			{
 				$errors[] = 'Geef getal op voor de maximum limiet.';
 			}
