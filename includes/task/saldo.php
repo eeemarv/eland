@@ -7,6 +7,7 @@ use eland\xdb;
 use Monolog\Logger;
 use eland\groups;
 use eland\task\mail;
+use eland\date_format;
 
 class saldo
 {
@@ -18,9 +19,11 @@ class saldo
 	protected $s3_img_url;
 	protected $s3_doc_url;
 	protected $protocol;
+	protected $date_format;
 
 	public function __construct(db $db, xdb $xdb, Logger $monolog, mail $mail,
-		groups $groups, string $s3_img_url, string $s3_doc_url, string $protocol)
+		groups $groups, string $s3_img_url, string $s3_doc_url, string $protocol,
+		date_format $date_format)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;
@@ -30,6 +33,7 @@ class saldo
 		$this->s3_img_url = $s3_img_url;
 		$this->s3_doc_url = $s3_doc_url;
 		$this->protocol = $protocol;
+		$this->date_format = $date_format;
 	}
 
 	function run($schema)
@@ -220,6 +224,7 @@ class saldo
 				$row['url'] = $base_url . '/news.php?id=' . $row['id'];
 				$row['user'] = $row['letscode'] . ' ' . $row['name'];
 				$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
+				$row['itemdate_formatted'] = $this->date_format->get($row['itemdate'], 'day');
 
 				$news[] = $row;
 			}

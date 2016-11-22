@@ -68,7 +68,7 @@
 <li><h4><a href="{{ n.url }}">{{ n.headline }}</a></h4>
 {{ n.newsitem }}<br><br>
 {% if n.location %}Plaats: <strong>{{ n.location }}</strong><br>{% endif %}
-{% if n.itemdate %}Datum: <strong>{{ n.itemdate }}</strong><br>{% endif %}
+{% if n.itemdate %}Datum: <strong>{{ n.itemdate_formatted }}</strong><br>{% endif %}
 
 Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 </li><br><br>
