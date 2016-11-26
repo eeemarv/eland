@@ -28,7 +28,11 @@ class this_group
 		{
 			http_response_code(404);
 
-			echo $this->twig->render('404.twig');
+			$vars = [
+				'temp_test'		=> getenv('TEMP_TEST'),
+			];
+
+			echo $this->twig->render('404.twig.html', $vars);
 			exit;
 		}
 
