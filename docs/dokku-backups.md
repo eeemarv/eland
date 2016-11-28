@@ -1,6 +1,14 @@
 #Dokku
 
-###Backups
+###Backups to S3
+
+
+See the [Postgres addon](https://github.com/dokku/dokku-postgres)
+
+
+###Backups to S3 (previous method)
+
+This method was used before the existance of the postgres:backup-schedule command.
 
 * Install Aws-cli
 * Create a bucket on AWS S3 with versioning and rules.
