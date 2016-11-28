@@ -1,12 +1,10 @@
 #Setup on Heroku
 
 ###Heroku buildpack
-Set multiple buildpacks.
-
-(note: this is probably now outdated.)
+Set php buildpack.
 
 ```shell
-heroku buildpacks:set https://github.com/ddollar/heroku-buildpack-multi.git
+heroku buildpacks:set heroku/php
 ```
 
 ###Cron
@@ -30,6 +28,7 @@ The overall domain is set by environment variable OVERALL_DOMAIN
 heroku config:set OVERALL_DOMAIN=letsa.net
 
 Also add the overall domain with wildcard to Heroku:
+
 ```shell
 heroku domains:add *.letsa.net
 ```
