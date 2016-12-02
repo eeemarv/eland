@@ -28,7 +28,7 @@ class this_group
 		{
 			http_response_code(404);
 
-			echo $this->twig->render('404.twig.html');
+			echo $this->twig->render('404.html.twig');
 			exit;
 		}
 

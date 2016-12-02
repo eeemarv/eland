@@ -444,7 +444,13 @@ if (!isset($page_access))
 {
 	http_response_code(500);
 
-	echo $app['twig']->render('500.twig');
+	echo $app['twig']->render('500.html.twig');
+	exit;
+}
+
+if (getenv('WEBSITE_MAINTENANCE'))
+{
+	echo $app['twig']->render('website_maintenance.html.twig', ['message' =>  getenv('WEBSITE_MAINTENANCE')]);
 	exit;
 }
 
@@ -537,7 +543,7 @@ if ($page_access != 'anonymous'
 
 if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 {
-	echo $app['twig']->render('maintenance.twig');
+	echo $app['twig']->render('maintenance.html.twig');
 	exit;
 }
 
