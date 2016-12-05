@@ -2528,7 +2528,8 @@ if ($v_list && $s_admin)
 
 	$users = $app['db']->fetchAll('select u.*
 		from users u
-		where ' . $st[$status]['sql'], $sql_bind);
+		where ' . $st[$status]['sql'] . '
+		order by u.letscode asc', $sql_bind);
 
 	if (isset($show_columns['u']['saldo_date']))
 	{
@@ -2691,7 +2692,8 @@ else
 {
 	$users = $app['db']->fetchAll('select u.*
 		from users u
-		where ' . $st[$status]['sql'], $sql_bind);
+		where ' . $st[$status]['sql'] . '
+		order by u.letscode asc', $sql_bind);
 
 	if ($v_list || $v_map)
 	{
