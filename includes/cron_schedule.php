@@ -22,6 +22,7 @@ class cron_schedule
 	protected $this_group;
 
 	protected $tasks = [
+		'cleanup_cache'			=> [864000],
 		'saldo'					=> [86400, 'saldofreqdays'],
 		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],
 		'cleanup_messages'		=> [86400],
@@ -101,8 +102,6 @@ class cron_schedule
 		{
 			return false;
 		}
-
-		$schema_manager = $this->db->getSchemaManager();
 
 		if ($this->db->executeQuery('select tablename
 			from pg_tables

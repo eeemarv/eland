@@ -58,7 +58,7 @@ class cache
 
 		$this->redis->set($id, $data);
 
-		if ($expire)
+		if ($expires)
 		{
 			$this->redis->expire($expires);
 		}
@@ -151,7 +151,7 @@ class cache
 	public function cleanup()
 	{
 		$this->db->executeQuery('delete from eland_extra.cache
-			where expires < timezone(\'utc\'::text, now()); and expires is not null');
+			where expires < timezone(\'utc\'::text, now()) and expires is not null');
 		return; 
 	}
 }
