@@ -56,11 +56,11 @@ class cache
 
 		$id = sha1($id);
 
-		$this->redis->set($id, $data);
+		$this->redis->set('cache_' . $id, $data);
 
 		if ($expires)
 		{
-			$this->redis->expire($expires);
+			$this->redis->expire('cache_' . $id, $expires);
 		}
 
 		$insert = [
@@ -101,7 +101,7 @@ class cache
 			return [];
 		}
 
-		$data = $this->redis->get($id);
+		$data = $this->redis->get('cache_' . $id);
 
 		if ($data)
 		{
@@ -116,11 +116,11 @@ class cache
 
 		if ($row)
 		{
-			$this->redis->set($id, $row['data']);
+			$this->redis->set('cache_' . $id, $row['data']);
 
 			if (isset($data['expires']))
 			{
-				$this->redis->expireat($data['expires']);
+				$this->redis->expireat('cache_' . $id, $data['expires']);
 			}
 		}
 
@@ -135,7 +135,7 @@ class cache
 	{
 		$id = sha1(trim($id));
 
-		$this->redis->expire($id, $time);
+		$this->redis->expire('cache_' . $id, $time);
 
 		$time = gmdate('Y-m-d H:i:s', $time);
 
