@@ -1714,11 +1714,11 @@ switch ($valid)
 {
 	case 'n':
 		$where_sql[] = 'm.validity < now()';
-		$params['valid'] = '0';
+		$params['valid'] = 'n';
 		break;
 	case 'y':
 		$where_sql[] = 'm.validity >= now()';
-		$params['valid'] = '1';
+		$params['valid'] = 'y';
 		break;
 	default:
 		$params['valid'] = 'all';
