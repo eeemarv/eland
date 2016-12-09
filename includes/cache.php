@@ -68,14 +68,25 @@ class cache
 			'data'			=> $data,
 		];
 
-		if ($expires)
+		if ($expires && $experis !== 0)
 		{
 			$insert['expires'] = gmdate('Y-m-d H:i:s', time() + $expires);
 		}
 
 		try
 		{
-			$this->db->insert('eland_extra.cache', $insert);
+			$this->db->beginTransaction();
+
+			if ($this->db->fetchColumn('select id from eland_extra.cache where id = ?', [$id]))
+			{
+				$this->db->update('eland_extra.cache', ['data' => $data], ['id' => $id]);
+			}
+			else
+			{
+				$this->db->insert('eland_extra.cache', $insert);
+			}
+
+			$this->db->commit();
 		}
 		catch(Exception $e)
 		{

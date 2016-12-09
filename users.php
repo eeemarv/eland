@@ -2728,24 +2728,16 @@ else
 
 			if (isset($my_adr))
 			{
-				$geo = $app['eland.cache']->get('geo_' . $my_adr);
+				$geo = $app['redis']->get('geo_' . $my_adr);
 
-				if (!count($geo))
+				if ($geo && $geo != 'q' && $geo != 'f')
 				{
-					$geo = $app['redis']->get('geo_' . $my_adr);
+					$geo = json_decode($geo, true);
 
-					if ($geo && $geo != 'q' && $geo != 'f')
-					{
-						$geo = json_decode($geo, true);
+					$lat = $geo['lat'];
+					$lng = $geo['lng'];
 
-						$app['eland.cache']->set('geo_' . $my_adr);
-						$app['redis']->del('geo_' . $my_adr);
-
-						$lat = $geo['lat'];
-						$lng = $geo['lng'];
-
-						$my_geo = true;
-					}
+					$my_geo = true;
 				}
 			}
 		}
@@ -2846,24 +2838,15 @@ if ($v_map)
 
 	foreach ($users as $user)
 	{
-		$adr = trim($contacts[$user['id']]['adr'][0]);
+		$adr = $contacts[$user['id']]['adr'][0];
 
 		if ($adr)
 		{
+			$geo = $app['redis']->get('geo_' . $adr[0]);
 
-			$geo = $app['eland.cache']->get('geo_' . $adr);
-
-			if (!count($geo))
+			if ($geo && $geo != 'q' && $geo != 'f')
 			{
-				$geo = $app['redis']->get('geo_' . $adr);
-
-				if ($geo && $geo != 'q' && $geo != 'f')
-				{
-					$geo = json_decode($geo, true);
-
-					$app['eland.cache']->set('geo_' . $adr);
-					$app['redis']->del('geo_' . $adr);
-				}
+				$geo = json_decode($geo, true);
 			}
 
 			if ($adr[1] >= $access_level)
@@ -3234,25 +3217,32 @@ if ($v_list)
 			}
 			echo '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
+
 			if ($my_geo)
 			{
 				echo '<td data-value="5000"';
+
 				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
-					$geo = json_decode($app['redis']->get('geo_' . $adr_ary[0]), true);
+					$geo = $app['redis']->get('geo_' . $adr_ary[0]);
 
 					if ($geo && $geo != 'q' && $geo != 'f')
 					{
+						$geo = json_decode($geo, true);
+
 						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
 					}
 				}
+
 				echo '><i class="fa fa-times"></i></td>';
 			}
 			echo '<td>';
+
 			if (isset($contacts[$id]['mail']))
 			{
 				echo render_contacts($contacts[$id]['mail'], 'mail');
 			}
+
 			echo '</td>';
 			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
 			echo '</tr>';

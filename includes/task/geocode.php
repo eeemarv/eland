@@ -4,7 +4,7 @@ namespace eland\task;
 
 use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
-use eland\xdb;
+use eland\cache;
 use eland\queue;
 use Monolog\Logger;
 
@@ -12,19 +12,19 @@ class geocode
 {
 	protected $queue;
 	protected $monolog;
-	protected $xdb;
+	protected $cache;
 	protected $db;
 	protected $redis;
 
 	protected $curl;
 	protected $geocoder;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, queue $queue, Logger $monolog)
+	public function __construct(Redis $redis, db $db, cache $cache, queue $queue, Logger $monolog)
 	{
 		$this->redis = $redis;
 		$this->queue = $queue;
 		$this->monolog = $monolog;
-		$this->xdb = $xdb;
+		$this->cache = $cache;
 		$this->db = $db;
 
 		$this->curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
@@ -83,6 +83,7 @@ class geocode
 					'lng'	=> $address->getLongitude(),
 				];
 
+				$this->cache->set($key, $ary);
 				$this->redis->set($key, json_encode($ary));
 				$this->redis->expire($key, 31536000); // 1 year
 
@@ -140,6 +141,14 @@ class geocode
 
 		if ($this->redis->exists($key))
 		{
+			$geo = $this->redis->get($key);
+			$geo = json_decode($geo, true);
+
+			if (is_array($geo))
+			{
+				$this->cache->set($key, $geo);
+			}
+
 			return false;
 		}
 
@@ -178,7 +187,7 @@ class geocode
 
 		if (count($log_ary))
 		{
-			$this->monolog->info('Adresses queued for geocoding: ' . implode(', ', $log_ary), ['schema' => $schema]);
+			$this->monolog->info('Addresses queued for geocoding: ' . implode(', ', $log_ary), ['schema' => $schema]);
 		}
 	}
 }
