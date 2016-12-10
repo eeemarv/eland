@@ -2728,12 +2728,10 @@ else
 
 			if (isset($my_adr))
 			{
-				$geo = $app['redis']->get('geo_' . $my_adr);
+				$geo = $app['eland.cache']->get('geo_' . $my_adr);
 
-				if ($geo && $geo != 'q' && $geo != 'f')
+				if ($geo)
 				{
-					$geo = json_decode($geo, true);
-
 					$lat = $geo['lat'];
 					$lng = $geo['lng'];
 
@@ -2842,16 +2840,11 @@ if ($v_map)
 
 		if ($adr)
 		{
-			$geo = $app['redis']->get('geo_' . $adr[0]);
-
-			if ($geo && $geo != 'q' && $geo != 'f')
-			{
-				$geo = json_decode($geo, true);
-			}
-
 			if ($adr[1] >= $access_level)
 			{
-				if ($geo && is_array($geo) && count($geo))
+				$geo = $app['eland.cache']->get('geo_' . $adr[0]);
+
+				if ($geo)
 				{
 					$data_users[$user['id']] = [
 						'name'		=> $user['name'],
@@ -3224,12 +3217,10 @@ if ($v_list)
 
 				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
-					$geo = $app['redis']->get('geo_' . $adr_ary[0]);
+					$geo = $app['eland.cache']->get('geo_' . $adr_ary[0]);
 
-					if ($geo && $geo != 'q' && $geo != 'f')
+					if ($geo)
 					{
-						$geo = json_decode($geo, true);
-
 						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
 					}
 				}
