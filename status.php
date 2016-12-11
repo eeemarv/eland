@@ -127,13 +127,6 @@ $empty_letscode = $app['db']->fetchAll('select id
 $empty_name = $app['db']->fetchAll('select id
 	from users
 	where name = \'\'');
-//
-
-/*
-$version = $app['db']->fetchColumn('select value from parameters where parameter = \'schemaversion\'');
-
-$db_update = ($version == '31000') ? false : true;
-*/
 
 //	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
 
@@ -148,6 +141,14 @@ $no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
 		and not exists (select 1 from messages m where m.id_user = u.id)');
 
 if (count($no_msgs_users))
+{
+	$status_msgs = true;
+}
+
+$env_x = getenv('SCHEMA_X');
+$env_y = getenv('SCHEMA_Y');
+
+if ($env_x || $env_y)
 {
 	$status_msgs = true;
 }
@@ -372,25 +373,6 @@ if ($status_msgs)
 		echo '</li>';
 	}
 
-/*
-	if ($db_update)
-	{
-		echo '<li class="list-group-item">';
-		echo 'Een database update is nodig.';
-		echo '</li>';
-	}
-*/
-/*
-	if ($default_config)
-	{
-		echo '<li class="list-group-item">';
-		echo 'Er zijn nog settings met standaardwaarden, ';
-		echo 'Kijk in de ' . aphp('config', [], 'instellingen') . ' ';
-		echo 'om ze te wijzigen of bevestigen';
-		echo '</li>';
-	}
-*/
-
 	if (count($no_msgs_users))
 	{
 		echo '<li class="list-group-item">';
@@ -419,6 +401,23 @@ if ($status_msgs)
 		echo '</ul>';
 		echo '</li>';
 	}
+
+// test for unset config bug.
+	if ($env_x)
+	{
+		echo '<li class="list-group-item">';
+		echo 'env x: ' . $env_x;
+		echo '</li>';
+	}
+
+	if ($env_y)
+	{
+		echo '<li class="list-group-item">';
+		echo 'env y: ' . $env_y;
+		echo '</li>';
+	}
+
+//
 
 	echo '</ul>';
 	echo '</div>';
