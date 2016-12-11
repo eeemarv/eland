@@ -23,7 +23,7 @@ class assets
 			'css'	=> 'footable-2.0.3/css/footable.core.css',
 		],
 		'jssor'		=> [
-			'js' => 'jssor/js/jssor.slider.mini.js',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/21.1.5/jssor.slider.min.js',
 		],
 		'jqplot'	=> [
 			'js'	=> [
