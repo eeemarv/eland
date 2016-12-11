@@ -148,7 +148,7 @@ if (count($no_msgs_users))
 $env_x = getenv('SCHEMA_X');
 $env_y = getenv('SCHEMA_Y');
 
-if ($env_x || $env_y)
+if ($env_x !== false || $env_y !== false)
 {
 	$status_msgs = true;
 }
@@ -403,17 +403,19 @@ if ($status_msgs)
 	}
 
 // test for unset config bug.
-	if ($env_x)
+	if ($env_x !== false)
 	{
 		echo '<li class="list-group-item">';
-		echo 'env x: ' . $env_x;
+		echo 'env x: ';
+		var_dump($env_x);
 		echo '</li>';
 	}
 
-	if ($env_y)
+	if ($env_y !== false)
 	{
 		echo '<li class="list-group-item">';
-		echo 'env y: ' . $env_y;
+		echo 'env y: ';
+		var_dump($env_y);
 		echo '</li>';
 	}
 
