@@ -54,8 +54,6 @@ class cache
 			return $error;
 		}
 
-		$id = sha1($id);
-
 		$this->redis->set('cache_' . $id, $data);
 
 		if ($expires)
@@ -68,7 +66,7 @@ class cache
 			'data'			=> $data,
 		];
 
-		if ($expires && $experis !== 0)
+		if ($expires && $expires !== 0)
 		{
 			$insert['expires'] = gmdate('Y-m-d H:i:s', time() + $expires);
 		}
@@ -105,12 +103,12 @@ class cache
 
 	public function get(string $id)
 	{
-		$id = sha1(trim($id));
-
 		if (!$id)
 		{
 			return [];
 		}
+
+		$id = trim($id);
 
 		$data = $this->redis->get('cache_' . $id);
 
@@ -133,9 +131,43 @@ class cache
 			{
 				$this->redis->expireat('cache_' . $id, $data['expires']);
 			}
+
+			return json_decode($row['data'], true);
 		}
 
-		return json_decode($row['data'], true);
+		return [];
+	}
+
+	/**
+	 *
+	 */
+
+	public function exists(string $id)
+	{
+		$id = trim($id);
+
+		if (!$id)
+		{
+			return false;
+		}
+
+		if ($this->redis->exists('cache_' . $id))
+		{
+			return true;
+		}
+
+		$exists = $this->db->fetchColumn('select id
+			from eland_extra.cache
+			where id = ?
+				and (expires < timezone(\'utc\'::text, now())
+					or expires is null)', [$id]);
+
+		if ($exists)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -144,7 +176,12 @@ class cache
 
 	public function expire(string $id, int $time)
 	{
-		$id = sha1(trim($id));
+		$id = trim($id);
+
+		if (!$id)
+		{
+			return;
+		}
 
 		$this->redis->expire('cache_' . $id, $time);
 
@@ -159,10 +196,31 @@ class cache
 	 *
 	 */
 
+	public function del(string $id)
+	{
+		$id = trim($id);
+
+		if (!$id)
+		{
+			return;
+		}
+
+		$this->redis->del('cache_' . $id);
+
+		$this->db->delete('eland_extra.cache', ['id' => $id]);
+
+		return;
+	}
+
+	/**
+	 *
+	 */
+
 	public function cleanup()
 	{
 		$this->db->executeQuery('delete from eland_extra.cache
 			where expires < timezone(\'utc\'::text, now()) and expires is not null');
+
 		return; 
 	}
 }

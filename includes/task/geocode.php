@@ -51,7 +51,7 @@ class geocode
 			return;
 		}
 
-		if ($this->redis->exists('geo_sleep'))
+		if ($this->cache->exists('geo_sleep'))
 		{
 			$this->monolog->debug('geocoding task is at sleep.', ['schema' => $sch]);
 			return;
@@ -61,14 +61,17 @@ class geocode
 
 		$log_user = 'user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
 
+		$geo_status_key = 'geo_status_' . $adr;
+
 		$key = 'geo_' . $adr;
 
-		$status = $this->redis->get($key);
-
-		if ($status != 'q' && $status != 'f')
+		if (!$this->cache->exists($geo_status_key))
 		{
 			return;
 		}
+
+//		$this->cache->set('geo_sleep', ['value' => '1'], 3600);
+		$this->cache->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
 
 		try
 		{
@@ -84,8 +87,8 @@ class geocode
 				];
 
 				$this->cache->set($key, $ary);
-				$this->redis->set($key, json_encode($ary));
-				$this->redis->expire($key, 31536000); // 1 year
+				$this->cache->del($geo_status_key);
+				$this->cache->del('geo_sleep');
 
 				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $ary);
 
@@ -101,16 +104,11 @@ class geocode
 		catch (Exception $e)
 		{
 			$log = 'Geocode adr: ' . $adr . ' exception: ' . $e->getMessage();
+
+			return;
 		}
 
 		$this->monolog->info('cron geocode: ' . $log . ' ' . $log_user, ['schema' => $sch]);
-
-		$this->redis->set($key, 'f');
-
-		$this->redis->expire($key, 31536000); // 1 year
-
-		$this->redis->set('geo_sleep', '1');
-		$this->redis->expire('geo_sleep', 3600);
 
 		return;
 	}
@@ -138,22 +136,40 @@ class geocode
 		$data['adr'] = trim($data['adr']);
 
 		$key = 'geo_' . $data['adr'];
+		$status_key = 'geo_status_' . $data['adr'];
 
-		if ($this->redis->exists($key))
+// delete hashed status
+
+		$this->cache->del(sha1('geo_status_' . $data['adr']));
+
+//
+
+		if ($this->cache->exists($key))
 		{
-			$geo = $this->redis->get($key);
-			$geo = json_decode($geo, true);
+			return false;
+		}
 
-			if (is_array($geo))
-			{
-				$this->cache->set($key, $geo);
-			}
+		if ($this->cache->get($status_key) == ['value' => 'error'])
+		{
+			return false;
+		}
+
+// move to unhashed keys
+
+		$sha = sha1($key);
+
+		if ($this->cache->exists($sha))
+		{
+			$prdata = $this->cache->get($sha);
+			$this->cache->set($key, $prdata);
+			$this->cache->del($sha);
 
 			return false;
 		}
 
-		$this->redis->set($key, 'q');
-		$this->redis->expire($key, 2592000);
+//
+
+		$this->cache->set($status_key, ['value' => 'queue'], 2592000);  // 30 days
 
 		$this->queue->set('geocode', $data);
 	}
