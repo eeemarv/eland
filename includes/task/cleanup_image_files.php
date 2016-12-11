@@ -17,6 +17,8 @@ class cleanup_image_files
 	protected $s3;
 	protected $groups;
 
+	protected $schema_manager;
+
 	public function __construct(Redis $redis, db $db, Logger $monolog, s3 $s3, groups $groups)
 	{
 		$this->redis = $redis;
@@ -24,6 +26,8 @@ class cleanup_image_files
 		$this->monolog = $monolog;
 		$this->s3 = $s3;
 		$this->groups = $groups;
+
+		$this->schema_manager = $this->db->getSchemaManager();
 	}
 
 	function run($schema)
@@ -84,6 +88,18 @@ class cleanup_image_files
 				error_log('-> unknown schema');
 				continue;
 			}
+
+			// dokku 7.2 bug: unset config var still exists
+
+			// begin
+
+			if ($this->schema_manager->tablesExist([$sch . '.users', $sch . '.msgpictures']) !== true)
+			{
+				error_log('-> table not present for schema ' . $sch);
+				continue;
+			}
+
+			// end
 
 			if (!$delete && !in_array($type, ['u', 'm']))
 			{
