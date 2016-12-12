@@ -45,16 +45,17 @@ class assets
 		],
 		'fileupload'	=> [
 			'js'	=>	[
-				'jQuery-File-Upload-9.10.4/js/vendor/jquery.ui.widget.js',
-				'jQuery-File-Upload-9.10.4/js/jquery.iframe-transport.js',
-				'JavaScript-Load-Image-1.14.0/js/load-image.all.min.js',
-				'JavaScript-Canvas-to-Blob-2.2.0/js/canvas-to-blob.min.js',
-				'jQuery-File-Upload-9.10.4/js/jquery.fileupload.js',
-				'jQuery-File-Upload-9.10.4/js/jquery.fileupload-process.js',
-				'jQuery-File-Upload-9.10.4/js/jquery.fileupload-image.js',
-				'jQuery-File-Upload-9.10.4/js/jquery.fileupload-validate.js',
+
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/vendor/jquery.ui.widget.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.iframe-transport.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.all.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-process.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-image.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-validate.min.js',
 			],
-			'css'	=> 'jQuery-File-Upload-9.10.4/css/jquery.fileupload.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/css/jquery.fileupload.min.css',
 		],
 		'typeahead'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
