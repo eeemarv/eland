@@ -90,15 +90,12 @@ class assets
 	private $include_css_print = [];
 	private $include_js = [];
 
-	private $res_url = '';
-
 	/**
 	 *
 	 */
 
-	public function __construct(string $res_url, string $rootpath)
+	public function __construct(string $rootpath)
 	{
-		$this->res_url = $res_url;
 		$this->rootpath = $rootpath;
 	}
 
@@ -122,15 +119,13 @@ class assets
 					{
 						foreach($a as $loc)
 						{
-							$pre = (substr($loc, 0, 2) == '//') ? '' : $this->res_url;
 							$var = 'include_' . $k;
-							$this->$var[] = $pre . $loc;
+							$this->$var[] = $loc;
 						}
 
 						continue;
 					}
 
-					$pre = (substr($a, 0, 2) == '//') ? '' : $this->res_url;
 					$var = 'include_' . $k;
 					$this->$var[] = $pre . $a;
 				}

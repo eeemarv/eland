@@ -6,7 +6,6 @@ use Aws\S3\S3Client;
 
 class s3
 {
-	private $res_bucket;
 	private $img_bucket;
 	private $doc_bucket;
 	private $client;
@@ -61,9 +60,8 @@ class s3
 	 *
 	 */
 
-	public function __construct(string $res_bucket, string $img_bucket, string $doc_bucket)
+	public function __construct(string $img_bucket, string $doc_bucket)
 	{
-		$this->res_bucket = $res_bucket;
 		$this->img_bucket = $img_bucket;
 		$this->doc_bucket = $doc_bucket;
 
@@ -77,11 +75,6 @@ class s3
 	/*
 	 *
 	 */
-
-	public function res_exists(string $filename)
-	{
-		return $this->client->doesObjectExist($this->res_bucket, $filename);
-	}
 
 	public function img_exists(string $filename)
 	{
