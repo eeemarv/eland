@@ -127,7 +127,7 @@ class assets
 					}
 
 					$var = 'include_' . $k;
-					$this->$var[] = $pre . $a;
+					$this->$var[] = $a;
 				}
 
 				continue;
