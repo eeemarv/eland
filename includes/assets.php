@@ -16,11 +16,15 @@ class assets
 		],
 		'footable'	=> [
 			'js'	=> [
-				'footable-2.0.3/js/footable.js',
-				'footable-2.0.3/js/footable.sort.js',
-				'footable-2.0.3/js/footable.filter.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.core.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.sorting.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.filtering.min.js',
 			],
-			'css'	=> 'footable-2.0.3/css/footable.core.css',
+			'css'	=> [
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.core.bootstrap.min.css',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.sorting.min.css',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.filtering.min.css',
+			],
 		],
 		'jssor'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/21.1.5/jssor.slider.min.js',
