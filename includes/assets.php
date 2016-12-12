@@ -8,11 +8,11 @@ class assets
 
 	private $asset_ary = [
 		'bootstrap' => [
-			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css',
-			'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
+			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+			'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
 		],
 		'fontawesome'	=> [
-			'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css',
+			'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
 		],
 		'footable'	=> [
 			'js'	=> [
