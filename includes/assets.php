@@ -16,15 +16,11 @@ class assets
 		],
 		'footable'	=> [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.core.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.sorting.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.filtering.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.sort.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.filter.min.js',
 			],
-			'css'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.core.bootstrap.min.css',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.sorting.min.css',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/3.1.3/footable.filtering.min.css',
-			],
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/css/footable.core.min.css',
 		],
 		'jssor'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/21.1.5/jssor.slider.min.js',
@@ -41,7 +37,8 @@ class assets
 			],
 		],
 		'jquery'	=> [
-			'js'	=> '//code.jquery.com/jquery-2.1.4.min.js',
+//			'js'	=> '//code.jquery.com/jquery-2.1.4.min.js',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js',
 		],
 		'fileupload'	=> [
 			'js'	=>	[
