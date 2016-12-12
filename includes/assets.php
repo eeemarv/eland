@@ -37,8 +37,7 @@ class assets
 			],
 		],
 		'jquery'	=> [
-//			'js'	=> '//code.jquery.com/jquery-2.1.4.min.js',
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js',
+			'js'	=> '//code.jquery.com/jquery-3.1.1.min.js',
 		],
 		'fileupload'	=> [
 			'js'	=>	[
