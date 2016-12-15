@@ -30,7 +30,7 @@ class cron_schedule
 		'cleanup_news'			=> [86400],
 		'cleanup_logs'			=> [86400],
 		'cleanup_image_files'	=> [14400],
-		'geocode' 				=> [72],
+		'geocode' 				=> [7200],
 		'interlets_fetch'		=> [7200],
 	];
 
