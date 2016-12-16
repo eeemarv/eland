@@ -3062,10 +3062,32 @@ if ($v_list)
 
 	if ($s_admin)
 	{
+
+		$numeric_groups = [
+			'a'				=> true,
+			'm'				=> true,
+		];
+
+		$numeric_keys = [
+			'saldo'			=> true,
+		];
+
+		$date_keys = [
+			'cdate'			=> true,
+			'mdate'			=> true,
+			'adate'			=> true,
+			'lastlogin'		=> true,
+		];
+
+		$link_user_keys = [
+			'letscode'		=> true,
+			'name'			=> true,
+			'fullname'		=> true,
+		];
+
 		foreach ($show_columns as $group => $ary)
 		{
 			$data_sort_ignore = ($group == 'c') ? ' data-sort-ignore="true"' : '';
-			$data_type = ($group == 'a' || $group == 'm') ? ' data-type="numeric"' : '';
 
 			foreach ($ary as $key => $one)
 			{
@@ -3076,8 +3098,9 @@ if ($v_list)
 					continue;
 				}
 
-				$data_type = ($key == 'saldo') ? ' data-type="numeric"' : $data_type;
-				$sort_initial = (isset($sort_initial)) ? '' : ' data-sort-initial="true"';
+				$data_type =  isset($numeric_groups[$group]) || isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
+
+				$sort_initial = isset($sort_initial) ? '' : ' data-sort-initial="true"';
 
 				echo '<th' . $sort_initial . $data_sort_ignore . $data_type . '>' . $columns[$group][$key] . '</th>';
 			}
@@ -3108,10 +3131,26 @@ if ($v_list)
 			{
 				foreach ($show_columns['u'] as $key => $one)
 				{
-					echo '<td>';
+					echo '<td';
+					echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
+					echo '>';
+
 					echo ($first) ? $checkbox : '';
 					$first = false;
-					echo ($key == 'letscode' || $key == 'name' || $key == 'fullname') ? link_user($u, false, true, false, $key) : $u[$key];
+
+					if (isset($link_user_keys[$key]))
+					{
+						echo link_user($u, false, true, false, $key);
+					}
+					else if (isset($date_keys[$key]))
+					{
+						echo $u[$key] ? $app['eland.date_format']->get($u[$key], 'day') : '&nbsp;';
+					}
+					else
+					{
+						echo $u[$key];
+					}
+
 					echo '</td>';
 				}
 			}
