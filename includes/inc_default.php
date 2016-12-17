@@ -528,6 +528,8 @@ if ($s_group_self && $s_guest)
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
 
+$count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
+
 if ($page_access != 'anonymous'
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$app['eland.this_group']->get_schema()])

@@ -61,8 +61,6 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-$count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
-
 if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 {
 	echo '<li class="dropdown">';
