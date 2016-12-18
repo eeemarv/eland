@@ -176,6 +176,8 @@ class xdb
 			}
 
 			$this->db->commit();
+
+//			$this->redis->hmset('xdb_' . $agg_id, $data);
 		}
 		catch(Exception $e)
 		{
@@ -233,6 +235,8 @@ class xdb
 			'data'			=> '{}',
 			'ip'			=> $this->ip,
 		];
+
+//		$this->redis->del('xdb_' . $agg_id);
 
 		try
 		{
@@ -292,6 +296,89 @@ class xdb
 
 		return $row;
 	}
+
+/*
+
+	public function dget(string $agg_type, string $eland_id, string $agg_schema = '')
+	{
+		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
+
+		if (!strlen($agg_type))
+		{
+			return [];
+		}
+
+		if (!strlen($eland_id))
+		{
+			return [];
+		}
+
+		if (!isset($agg_schema) || !$agg_schema)
+		{
+			return [];
+		}
+
+		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
+
+		$data = $this->redis->hgetall('xdb_' . $agg_id);
+
+		if (isset($data))
+		{
+			return $data;
+		}
+
+		$row = $this->get($agg_id);
+
+		if ($row)
+		{
+			$this->redis->hmset('xdb_' . $agg_id, $row['data']);
+			return $row['data'];
+		}
+
+		return [];
+	}
+
+	public function hget(string $agg_type, string $eland_id, string $agg_schema = '', string $field)
+	{
+		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
+
+		if (!strlen($agg_type))
+		{
+			return '';
+		}
+
+		if (!strlen($eland_id))
+		{
+			return '';
+		}
+
+		if (!isset($agg_schema) || !$agg_schema)
+		{
+			return '';
+		}
+
+		if (!isset($agg_field) || !$agg_field)
+		{
+			return '';
+		}
+
+		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
+
+		$value = $this->redis->hget('xdb_' . $agg_id, $field);
+
+		if ($value)
+		{
+			return $value;
+		}
+
+		$value = $this->db->fetchColumn('select data->>\'' . $field . '\'
+			from xdb.aggs
+			where agg_id = ?', [$agg_id]);
+
+		return $value;
+	}
+
+*/
 
 	/**
 	 *
