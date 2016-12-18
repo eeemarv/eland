@@ -242,7 +242,7 @@ $app['eland.this_group'] = function($app){
 };
 
 $app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['monolog'], $app['eland.this_group']);
+	return new eland\xdb($app['db'], $app['redis'], $app['monolog'], $app['eland.this_group']);
 };
 
 $app['eland.cache'] = function ($app){

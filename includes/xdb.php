@@ -3,6 +3,7 @@
 namespace eland;
 
 use Doctrine\DBAL\Connection as db;
+use Predis\Client as Redis;
 use Monolog\Logger;
 use eland\this_group;
 
@@ -53,12 +54,14 @@ class xdb
 	private $user_schema = '';
 	private $user_id = '';
 	private $db;
+	private $redis;
 	private $monolog;
 	private $this_group;
 
-	public function __construct(db $db, Logger $monolog, this_group $this_group)
+	public function __construct(db $db, Redis $redis, Logger $monolog, this_group $this_group)
 	{
 		$this->db = $db;
+		$this->redis = $redis;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
 
