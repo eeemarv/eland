@@ -75,12 +75,12 @@ else
 }
 
 $query = 'select *
-	from eland_extra.logs
+	from xdb.logs
 		where schema = ?' . $where_sql . '
 	order by ' . $orderby . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(*)
-	from eland_extra.logs
+	from xdb.logs
 	where schema = ?' . $where_sql, $params_sql);
 
 $query .= ($asc) ? 'asc ' : 'desc ';

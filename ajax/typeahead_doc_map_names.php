@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/inc_default.php';
 $map_names = [];
 
 $st = $app['db']->prepare('select distinct data->>\'map_name\' as map_name
-	from eland_extra.aggs
+	from xdb.aggs
 	where agg_type = \'doc\'
 		and agg_schema = ?
 		and data->>\'map_name\' <> \'\'

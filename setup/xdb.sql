@@ -1,7 +1,7 @@
 
-create schema eland_extra;
+create schema xdb;
 
-create table if not exists eland_extra.logs (
+create table if not exists xdb.logs (
 schema varchar(60) not null,
 user_id int not null default 0,
 user_schema varchar(60),
@@ -13,12 +13,12 @@ type varchar(60),
 event varchar(255),
 data jsonb);
 
-create index on eland_extra.logs(schema);
-create index on eland_extra.logs(schema, letscode);
-create index on eland_extra.logs(letscode);
-create index on eland_extra.logs(type);
+create index on xdb.logs(schema);
+create index on xdb.logs(schema, letscode);
+create index on xdb.logs(letscode);
+create index on xdb.logs(type);
 
-create table if not exists eland_extra.events (
+create table if not exists xdb.events (
 ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
@@ -33,9 +33,9 @@ agg_schema varchar(60),
 eland_id varchar(40)
 );
 
-alter table eland_extra.events add primary key (agg_id, agg_version);
+alter table xdb.events add primary key (agg_id, agg_version);
 
-create table if not exists eland_extra.aggs (
+create table if not exists xdb.aggs (
 ts timestamp without time zone default timezone('utc'::text, now()),
 user_id int default 0,
 user_schema varchar(60),
@@ -50,20 +50,20 @@ eland_id varchar(40),
 event_time timestamp without time zone default timezone('utc'::text, now())
 );
 
-create index on eland_extra.aggs(agg_type, agg_schema);
-create index on eland_extra.aggs(agg_schema);
-create index on eland_extra.logs(agg_type);
+create index on xdb.aggs(agg_type, agg_schema);
+create index on xdb.aggs(agg_schema);
+create index on xdb.logs(agg_type);
 
-create table if not exists eland_extra.queue (
+create table if not exists xdb.queue (
 ts timestamp without time zone default timezone('utc'::text, now()),
 id bigserial primary key,
 topic varchar(60) not null,
 data jsonb,
 priority int default 0);
 
-create index on eland_extra.queue(id, priority);
+create index on xdb.queue(id, priority);
 
-create table if not exists eland_extra.cache (
+create table if not exists xdb.cache (
 id varchar(255) primary key not null,
 data jsonb,
 ts timestamp without time zone default timezone('utc'::text, now()),

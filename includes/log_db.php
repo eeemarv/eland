@@ -57,7 +57,7 @@ class log_db
 				'data'			=> $log_json,
 			];
 
-			$this->db->insert('eland_extra.logs', $insert);
+			$this->db->insert('xdb.logs', $insert);
 		}
 	}
 }

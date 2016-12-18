@@ -6,14 +6,14 @@ use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
 /*
-                                        Table "eland_extra.queue"
+                                        Table "xdb.queue"
   Column  |            Type             |                           Modifiers                            
 ----------+-----------------------------+----------------------------------------------------------------
  ts       | timestamp without time zone | default timezone('utc'::text, now())
  data     | jsonb                       | 
  topic    | character varying(60)       | not null
  priority | integer                     | default 0
- id       | bigint                      | not null default nextval('eland_extra.queue_id_seq'::regclass)
+ id       | bigint                      | not null default nextval('xdb.queue_id_seq'::regclass)
 Indexes:
     "queue_pkey" PRIMARY KEY, btree (id)
     "queue_id_priority_idx" btree (id, priority)
@@ -66,7 +66,7 @@ class queue
 
 		try
 		{
-			$this->db->insert('eland_extra.queue', $insert);
+			$this->db->insert('xdb.queue', $insert);
 		}
 		catch(Exception $e)
 		{
@@ -104,7 +104,7 @@ class queue
 			$this->db->beginTransaction();
 
 			$st = $this->db->prepare('select topic, data, id, priority
-				from eland_extra.queue
+				from xdb.queue
 				' . $sql_where . '
 				order by priority desc, id asc
 				limit ' . $count);
@@ -128,7 +128,7 @@ class queue
 				$del_ids[] = $row['id'];
 			}
 
-			$this->db->executeQuery('delete from eland_extra.queue where id in (?)',
+			$this->db->executeQuery('delete from xdb.queue where id in (?)',
 				[$del_ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
 			$this->db->commit();
@@ -156,11 +156,11 @@ class queue
 		if ($topic)
 		{
 			return $this->db->fetchColumn('select count(*)
-				from eland_extra.queue
+				from xdb.queue
 				where topic = ?', [$topic]);
 		}
 
-		return $this->db->fetchColumn('select count(*) from eland_extra.queue');
+		return $this->db->fetchColumn('select count(*) from xdb.queue');
 	}
 }
 

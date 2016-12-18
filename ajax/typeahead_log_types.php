@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/inc_default.php';
 $log_types = [];
 
 $st = $app['db']->prepare('select distinct type
-	from eland_extra.logs
+	from xdb.logs
 	where schema = ?
 	order by type asc');
 

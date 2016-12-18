@@ -22,7 +22,7 @@ class cleanup_logs
 
 		$treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
 
-		$this->db->executeQuery('delete from eland_extra.logs
+		$this->db->executeQuery('delete from xdb.logs
 			where ts < ?', [$treshold]);
 	}
 }

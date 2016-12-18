@@ -7,7 +7,7 @@ use Predis\Client as Redis;
 use Monolog\Logger;
 
 /*
-                          Table "eland_extra.cache"
+                          Table "xdb.cache"
  Column  |            Type             |              Modifiers               
 ---------+-----------------------------+--------------------------------------
  id      | character varying(255)      | not null
@@ -75,13 +75,13 @@ class cache
 		{
 			$this->db->beginTransaction();
 
-			if ($this->db->fetchColumn('select id from eland_extra.cache where id = ?', [$id]))
+			if ($this->db->fetchColumn('select id from xdb.cache where id = ?', [$id]))
 			{
-				$this->db->update('eland_extra.cache', ['data' => $data], ['id' => $id]);
+				$this->db->update('xdb.cache', ['data' => $data], ['id' => $id]);
 			}
 			else
 			{
-				$this->db->insert('eland_extra.cache', $insert);
+				$this->db->insert('xdb.cache', $insert);
 			}
 
 			$this->db->commit();
@@ -118,7 +118,7 @@ class cache
 		}
 
 		$row = $this->db->fetchAssoc('select data, expires
-			from eland_extra.cache
+			from xdb.cache
 			where id = ?
 				and (expires < timezone(\'utc\'::text, now())
 					or expires is null)', [$id]);
@@ -157,7 +157,7 @@ class cache
 		}
 
 		$exists = $this->db->fetchColumn('select id
-			from eland_extra.cache
+			from xdb.cache
 			where id = ?
 				and (expires < timezone(\'utc\'::text, now())
 					or expires is null)', [$id]);
@@ -187,7 +187,7 @@ class cache
 
 		$time = gmdate('Y-m-d H:i:s', $time);
 
-		$this->db->update('eland_extra.cache', ['expires' => $time], ['id' => $id]);
+		$this->db->update('xdb.cache', ['expires' => $time], ['id' => $id]);
 
 		return;
 	}
@@ -207,7 +207,7 @@ class cache
 
 		$this->redis->del('cache_' . $id);
 
-		$this->db->delete('eland_extra.cache', ['id' => $id]);
+		$this->db->delete('xdb.cache', ['id' => $id]);
 
 		return;
 	}
@@ -218,7 +218,7 @@ class cache
 
 	public function cleanup()
 	{
-		$this->db->executeQuery('delete from eland_extra.cache
+		$this->db->executeQuery('delete from xdb.cache
 			where expires < timezone(\'utc\'::text, now()) and expires is not null');
 
 		return; 

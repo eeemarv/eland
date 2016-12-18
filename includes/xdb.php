@@ -7,7 +7,7 @@ use Monolog\Logger;
 use eland\this_group;
 
 /*
-                            Table "eland_extra.events"
+                            Table "xdb.events"
    Column    |            Type             |              Modifiers               
 -------------+-----------------------------+--------------------------------------
  ts          | timestamp without time zone | default timezone('utc'::text, now())
@@ -25,7 +25,7 @@ use eland\this_group;
 Indexes:
     "events_pkey" PRIMARY KEY, btree (agg_id, agg_version)
 
-                             Table "eland_extra.aggs"
+                             Table "xdb.aggs"
    Column    |            Type             |              Modifiers               
 -------------+-----------------------------+--------------------------------------
  agg_id      | character varying(255)      | not null
@@ -111,7 +111,7 @@ class xdb
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
 		$row = $this->db->fetchAssoc('select data, agg_version
-			from eland_extra.aggs
+			from xdb.aggs
 			where agg_id = ?', [$agg_id]);
 
 		if ($row)
@@ -157,11 +157,11 @@ class xdb
 		{
 			$this->db->beginTransaction();
 
-			$this->db->insert('eland_extra.events', $insert);
+			$this->db->insert('xdb.events', $insert);
 
 			if ($agg_version == 1)
 			{
-				$this->db->insert('eland_extra.aggs', $insert);
+				$this->db->insert('xdb.aggs', $insert);
 			}
 			else
 			{
@@ -169,7 +169,7 @@ class xdb
 				$update = $insert;
 				$update['data'] = json_encode(array_merge($prev_data, $data));
 
-				$this->db->update('eland_extra.aggs', $update, ['agg_id' => $agg_id]);
+				$this->db->update('xdb.aggs', $update, ['agg_id' => $agg_id]);
 			}
 
 			$this->db->commit();
@@ -210,7 +210,7 @@ class xdb
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
 		$agg_version = $this->db->fetchColumn('select agg_version
-			from eland_extra.aggs
+			from xdb.aggs
 			where agg_id = ?', [$agg_id]);
 
 		if (!$agg_version)
@@ -235,9 +235,9 @@ class xdb
 		{
 			$this->db->beginTransaction();
 
-			$this->db->insert('eland_extra.events', $insert);
+			$this->db->insert('xdb.events', $insert);
 
-			$this->db->delete('eland_extra.aggs', ['agg_id' => $agg_id]);
+			$this->db->delete('xdb.aggs', ['agg_id' => $agg_id]);
 
 			$this->db->commit();
 		}
@@ -276,7 +276,7 @@ class xdb
 
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $this->db->fetchAssoc('select * from eland_extra.aggs where agg_id = ?', [$agg_id]);
+		$row = $this->db->fetchAssoc('select * from xdb.aggs where agg_id = ?', [$agg_id]);
 
 		if (!$row)
 		{
@@ -344,7 +344,7 @@ class xdb
 			}
 		}
 
-		$query = 'select * from eland_extra.aggs';
+		$query = 'select * from xdb.aggs';
 
 		if (count($sql_where))
 		{
@@ -397,7 +397,7 @@ class xdb
 
 		$where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
 
-		return $this->db->fetchColumn('select count(*) from eland_extra.aggs' . $where, $sq_params);
+		return $this->db->fetchColumn('select count(*) from xdb.aggs' . $where, $sq_params);
 	}
 }
 
