@@ -19,3 +19,12 @@ dokku domains:set app-name *.letsa.net
 ```shell
 sudo apt-get install language-pack-nl
 ```
+
+* Configure nginx to allow bigger uploads (for documents)
+```shell
+sudo su - dokku
+mkdir /home/dokku/appname/nginx.conf.d/
+echo 'client_max_body_size 10M;' > /home/dokku/appname/nginx.conf.d/upload.conf
+exit
+sudo service nginx reload
+```
