@@ -5,6 +5,7 @@ namespace eland;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use eland\xdb;
+use eland\cache;
 use eland\groups;
 use eland\this_group;
 
@@ -13,13 +14,15 @@ class cron_schedule
 	protected $db;
 	protected $monolog;
 	protected $xdb;
+	protected $cache;
 	protected $groups;
 	protected $time;
-	protected $sha;
+//	protected $sha;
 	protected $schema;
 	protected $name;
 	protected $event_time;
 	protected $this_group;
+	protected $cronjob_ary;
 
 	protected $tasks = [
 		'cleanup_cache'			=> [864000],
@@ -34,28 +37,39 @@ class cron_schedule
 		'interlets_fetch'		=> [7200],
 	];
 
-	public function __construct(db $db, Logger $monolog, xdb $xdb, groups $groups, this_group $this_group)
+	public function __construct(db $db, Logger $monolog, xdb $xdb, cache $cache, groups $groups, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
+		$this->cache = $cache;
 		$this->groups = $groups;
 		$this->this_group = $this_group;
 		$this->time = time();
-		$this->sha = sha1($this->time);
+//		$this->sha = sha1($this->time);
 	}
 
 	public function find_next()
 	{
 		$r = "<br>\n\r";
 
-		$cronjob_ary = $this->xdb->get_many(['agg_type' => 'cronjob']);
+		$this->cronjob_ary = $this->cache->get('cronjob_ary');
+
+		if (!count($this->cronjob_ary))
+		{
+			$ary = $this->xdb->get_many(['agg_type' => 'cronjob']);
+
+			foreach ($ary as $key => $row)
+			{
+				$this->cronjob_ary[$key] = ['event_time' => $row['event_time']];
+			}
+		}
 
 		foreach ($this->tasks as $name => $t)
 		{
 			foreach ($this->groups->get_schemas() as $sch)
 			{
-				if (isset($cronjob_ary[$sch . '_cronjob_' . $name]))
+				if (isset($this->cronjob_ary[$sch . '_cronjob_' . $name]))
 				{
 					if (isset($t[2]))
 					{
@@ -74,9 +88,9 @@ class cron_schedule
 
 					$add = $t[0] * $multiply;
 
-					$cronjob = $cronjob_ary[$sch . '_cronjob_' . $name];
+					$last_time = $this->cronjob_ary[$sch . '_cronjob_' . $name]['event_time'];
 
-					$last = strtotime($cronjob['event_time'] . ' UTC');
+					$last = strtotime($last_time . ' UTC');
 
 					$next = $last + $add;
 
@@ -117,17 +131,21 @@ class cron_schedule
 
 		if (isset($event_time))
 		{
-			echo 'move ' . $insert_schema . ' ' . $insert_name . ' to xdb' . $r;
-			$this->monolog->debug('move cronjob ' . $insert_name . ' to xdb', ['schema' => $insert_schema]);
+			echo 'move ' . $insert_schema . ' ' . $insert_name . ' to cache' . $r;
+			$this->monolog->debug('move cronjob ' . $insert_name . ' to cache', ['schema' => $insert_schema]);
 		}
 		else
 		{
-			echo 'new ' . $insert_schema . ' ' . $insert_name . ' in xdb' . $r;
+			echo 'new ' . $insert_schema . ' ' . $insert_name . ' in cache' . $r;
 			$event_time = gmdate('Y-m-d H:i:s', $this->time);
-			$this->monolog->debug('new cronjob ' . $insert_name . ' in xdb.', ['schema' => $insert_schema]);
+			$this->monolog->debug('new cronjob ' . $insert_name . ' in cache.', ['schema' => $insert_schema]);
 		}
 
-		$this->xdb->set('cronjob', $insert_name, ['sha' => $this->sha], $insert_schema, $event_time);
+		$this->cronjob_ary[$insert_schema . '_cronjob_' . $insert_name]['event_time'] = $event_time;
+
+		$this->cache->set('cronjob_ary', $this->cronjob_ary);
+
+//		$this->xdb->set('cronjob', $insert_name, ['sha' => $this->sha], $insert_schema, $event_time);
 
 		return false;
 	}
@@ -144,6 +162,12 @@ class cron_schedule
 
 	public function update()
 	{
-		$this->xdb->set('cronjob', $this->name, ['sha' => $this->sha], $this->schema, $this->event_time);
+		unset($this->cronjob_ary[$this->schema . '_cronjob_' . $this->name]);
+
+		$this->cronjob_ary[$this->schema . '_cronjob_' . $this->name]['event_time'] = $this->event_time;
+
+		$this->cache->set('cronjob_ary', $this->cronjob_ary);
+
+//		$this->xdb->set('cronjob', $this->name, ['sha' => $this->sha], $this->schema, $this->event_time);
 	}
 }

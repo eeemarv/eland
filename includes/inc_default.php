@@ -620,12 +620,12 @@ $app['eland.task.saldo'] = function ($app){
 };
 
 $app['eland.task.interlets_fetch'] = function ($app){
-	return new eland\task\interlets_fetch($app['redis'], $app['db'], $app['eland.xdb'],
+	return new eland\task\interlets_fetch($app['redis'], $app['db'], $app['eland.xdb'], $app['eland.cache'],
 		$app['eland.typeahead'], $app['monolog'], $app['eland.groups']);
 };
 
 $app['eland.cron_schedule'] = function ($app){
-	return new eland\cron_schedule($app['db'], $app['monolog'], $app['eland.xdb'],
+	return new eland\cron_schedule($app['db'], $app['monolog'], $app['eland.xdb'], $app['eland.cache'],
 		$app['eland.groups'], $app['eland.this_group']);
 };
 

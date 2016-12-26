@@ -8,12 +8,14 @@ use eland\typeahead;
 use Monolog\Logger;
 use eland\groups;
 use eland\xdb;
+use eland\cache;
 
 class interlets_fetch
 {
 	protected $redis;
 	protected $db;
 	protected $xdb;
+	protected $cache;
 	protected $typeahead;
 	protected $monolog;
 	protected $groups;
@@ -21,11 +23,12 @@ class interlets_fetch
 	protected $group;
 	protected $client;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, typeahead $typeahead, Logger $monolog, groups $groups)
+	public function __construct(Redis $redis, db $db, xdb $xdb, cache $cache, typeahead $typeahead, Logger $monolog, groups $groups)
 	{
 		$this->redis = $redis;
 		$this->db = $db;
 		$this->xdb = $xdb;
+		$this->cache = $cache;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
 		$this->groups = $groups;
