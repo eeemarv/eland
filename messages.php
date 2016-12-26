@@ -1441,6 +1441,14 @@ if ($id)
 
 	include __DIR__ . '/includes/inc_header.php';
 
+	if ($message['cid'])
+	{
+		echo '<p>Categorie: ';
+		echo '<a href="' . generate_url('messages', ['cid' => $message['cid'], 'view' => $view_messages]) . '">';
+		echo $message['catname'];
+		echo '</a></p>';
+	}
+
 	echo '<div class="row">';
 
 	echo '<div class="col-md-6">';
