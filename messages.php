@@ -743,7 +743,7 @@ if (($edit || $add))
 					and status in (1, 2)', [$user_letscode]);
 			if (!$user)
 			{
-				$errors[] = 'Ongeldige letscode.' . $user_letscode;
+				$errors[] = 'Ongeldige letscode. ' . $user_letscode;
 			}
 		}
 
@@ -2438,7 +2438,7 @@ function cancel($id = null)
 	}
 	else
 	{
-		$params = ['view' => $view_messages];		
+		$params = ['view' => $view_messages];
 
 		if ($uid)
 		{

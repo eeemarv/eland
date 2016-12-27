@@ -4,7 +4,6 @@ namespace eland;
 
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
-use eland\xdb;
 use eland\cache;
 use eland\groups;
 use eland\this_group;
@@ -13,7 +12,6 @@ class cron_schedule
 {
 	protected $db;
 	protected $monolog;
-	protected $xdb;
 	protected $cache;
 	protected $groups;
 	protected $time;
@@ -37,16 +35,14 @@ class cron_schedule
 		'interlets_fetch'		=> [7200],
 	];
 
-	public function __construct(db $db, Logger $monolog, xdb $xdb, cache $cache, groups $groups, this_group $this_group)
+	public function __construct(db $db, Logger $monolog, cache $cache, groups $groups, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
-		$this->xdb = $xdb;
 		$this->cache = $cache;
 		$this->groups = $groups;
 		$this->this_group = $this_group;
 		$this->time = time();
-//		$this->sha = sha1($this->time);
 	}
 
 	public function find_next()
@@ -54,16 +50,6 @@ class cron_schedule
 		$r = "<br>\n\r";
 
 		$this->cronjob_ary = $this->cache->get('cronjob_ary');
-
-		if (!count($this->cronjob_ary))
-		{
-			$ary = $this->xdb->get_many(['agg_type' => 'cronjob']);
-
-			foreach ($ary as $key => $row)
-			{
-				$this->cronjob_ary[$key] = ['event_time' => $row['event_time']];
-			}
-		}
 
 		foreach ($this->tasks as $name => $t)
 		{
@@ -145,8 +131,6 @@ class cron_schedule
 
 		$this->cache->set('cronjob_ary', $this->cronjob_ary);
 
-//		$this->xdb->set('cronjob', $insert_name, ['sha' => $this->sha], $insert_schema, $event_time);
-
 		return false;
 	}
 
@@ -167,7 +151,5 @@ class cron_schedule
 		$this->cronjob_ary[$this->schema . '_cronjob_' . $this->name]['event_time'] = $this->event_time;
 
 		$this->cache->set('cronjob_ary', $this->cronjob_ary);
-
-//		$this->xdb->set('cronjob', $this->name, ['sha' => $this->sha], $this->schema, $this->event_time);
 	}
 }
