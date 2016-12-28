@@ -7,3 +7,11 @@ if (php_sapi_name() !== 'cli')
 }
 
 echo 'worker start';
+
+while (true)
+{
+	error_log('... worker ...');
+
+
+	sleep(5);
+}
