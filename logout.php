@@ -3,6 +3,13 @@
 $page_access = 'guest';
 require_once __DIR__ . '/includes/inc_default.php';
 
+$logins = $app['session']->get('logins') ?? [];
+
+foreach($logins as $sch => $uid)
+{
+	$app['eland.xdb']->set('logout', $uid, ['time' => time()], $sch);
+}
+
 $app['session']->invalidate();
 
 /*

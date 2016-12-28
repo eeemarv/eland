@@ -211,6 +211,8 @@ if ($submit)
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);
 
+		$app['eland.xdb']->set('login', $user['id'], ['browser' => $browser, 'time' => time()], $s_schema);
+
 		$app['eland.alert']->success('Je bent ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
