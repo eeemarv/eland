@@ -443,11 +443,11 @@ class xdb
 
 		$query .= ($query_extra) ? ' ' . $query_extra : '';
 
-		$rows = $this->db->executeQuery($query, $sql_params, $sql_types);
+		$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
 
 		$ary = [];
 
-		foreach ($rows as $row)
+		while ($row = $stmt->fetch())
 		{
 			$row['data'] = json_decode($row['data'], true);
 

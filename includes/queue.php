@@ -84,7 +84,7 @@ class queue
 
 	public function get(array $omit_topics = [])
 	{
-		$sql_where = $sql_params = $sql_types = $del_ids = $ret = [];
+		$sql_where = $sql_params = $sql_types = [];
 
 		if (count($omit_topics))
 		{
@@ -101,10 +101,12 @@ class queue
 				order by priority desc, id asc
 				limit 1';
 
-		$row = $this->db->executeQuery($query, $sql_params, $sql_types)[0];
+		$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
 
-		if ($row)
+		if ($row = $stmt->fetch())
 		{
+			$row = $rows[0];
+
 			$this->db->delete('xdb.queue', ['id' => $row['id']]);
 
 			return [
