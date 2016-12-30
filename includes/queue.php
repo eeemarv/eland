@@ -35,7 +35,7 @@ class queue
 	 *
 	 */
 
-	public function set(string $topic, array $data, int $priority = 0)
+	public function set(string $topic, array $data, int $priority = 0, int $interval = 0)
 	{
 		if (!strlen($topic))
 		{
@@ -82,67 +82,40 @@ class queue
 	 *
 	 */
 
-	public function get(string $topic = '', $count = 1)
+	public function get(array $omit_topics = [])
 	{
-		if (!$count)
+		$sql_where = $sql_params = $sql_types = $del_ids = $ret = [];
+
+		if (count($omit_topics))
 		{
-			return [];
+			$sql_where[] = 'topic not in (?)';
+			$sql_params[] = $omit_topics;
+			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
 		}
 
-		$sql_where = $sql_params = $del_ids = $ret = [];
-
-		if ($topic)
-		{
-			$sql_where[] = 'topic = ?';
-			$sql_params[] = trim($topic);
-		}
-	
 		$sql_where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
 
-		try
-		{
-			$this->db->beginTransaction();
-
-			$st = $this->db->prepare('select topic, data, id, priority
+		$query = 'select topic, data, id, priority
 				from xdb.queue
 				' . $sql_where . '
 				order by priority desc, id asc
-				limit ' . $count);
+				limit 1';
 
-			foreach ($sql_params as $k => $p)
-			{
-				$st->bindValue($k + 1, $p);
-			}
+		$row = $this->db->executeQuery($query, $sql_params, $sql_types)[0];
 
-			$st->execute();
-
-			while ($row = $st->fetch())
-			{
-				$ret[] = [
-					'data'	=> json_decode($row['data'], true),
-					'id'	=> $row['id'],
-					'topic'	=> $row['topic'],
-					'prioritry'	=> $row['priority'],
-				];
-
-				$del_ids[] = $row['id'];
-			}
-
-			$this->db->executeQuery('delete from xdb.queue where id in (?)',
-				[$del_ids], [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
-
-			$this->db->commit();
-		}
-		catch(Exception $e)
+		if ($row)
 		{
-			$this->db->rollback();
-			echo 'Database transactie niet gelukt (queue).';
-			$this->monolog->debug('Database transactie niet gelukt (queue). ' . $e->getMessage());
-			throw $e;
-			exit;
+			$this->db->delete('xdb.queue', ['id' => $row['id']]);
+
+			return [
+				'data'	=> json_decode($row['data'], true),
+				'id'	=> $row['id'],
+				'topic'	=> $row['topic'],
+				'prioritry'	=> $row['priority'],
+			];
 		}
 
-		return $ret;
+		return [];
 	}
 
 	/**
