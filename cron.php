@@ -16,7 +16,7 @@ chdir(__DIR__);
 
 $page_access = 'anonymous';
 
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/worker.php';
 
 header('Content-Type:text/html');
 echo '*** Cron eLAND ***' . $r;

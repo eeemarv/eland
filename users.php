@@ -33,7 +33,7 @@ $page_access = ($edit || $pw || $img_del || $password || $submit || $img) ? 'use
 $page_access = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $page_access;
 $allow_guest_post = ($page_access == 'guest' && $user_mail_submit) ? true : false;
 
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 /**
  * selectors for bulk actions

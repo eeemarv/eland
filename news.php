@@ -15,7 +15,7 @@ if ($approve)
 {
 	$page_access = 'admin';
 
-	require_once __DIR__ . '/includes/inc_default.php';
+	require_once __DIR__ . '/includes/web.php';
 
 	if ($app['db']->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
@@ -35,7 +35,7 @@ if ($approve)
 if ($add || $edit)
 {
 	$page_access = 'user';
-	require_once __DIR__ . '/includes/inc_default.php';
+	require_once __DIR__ . '/includes/web.php';
 
 	$news = [];
 
@@ -264,7 +264,7 @@ if ($add || $edit)
 if ($del)
 {
 	$page_access = 'admin';
-	require_once __DIR__ . '/includes/inc_default.php';
+	require_once __DIR__ . '/includes/web.php';
 
 	if ($submit)
 	{
@@ -371,7 +371,7 @@ if ($id)
 {
 	$page_access = 'guest';
 
-	require_once __DIR__ . '/includes/inc_default.php';
+	require_once __DIR__ . '/includes/web.php';
 
 	$news = $app['db']->fetchAssoc('SELECT n.*
 		FROM news n  
@@ -507,7 +507,7 @@ if ($id)
  */
 
 $page_access = 'guest';
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 if (!($view || $inline))
 {

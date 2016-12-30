@@ -2,7 +2,7 @@
 
 $page_access = 'anonymous';
 
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 $submit = isset($_POST['zend']) ? true : false;
 $token = $_GET['token'] ?? false;

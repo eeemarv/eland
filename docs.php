@@ -2,7 +2,7 @@
 
 $rootpath = '';
 $page_access = 'guest';
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 $fa = 'files-o';
 

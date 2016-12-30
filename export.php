@@ -3,7 +3,7 @@
 set_time_limit(60);
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 $export_ary = [
 	'users'		=> [

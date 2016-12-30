@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'guest';
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 require_once __DIR__ . '/includes/inc_transactions.php';
 
 $orderby = $_GET['orderby'] ?? 'cdate';

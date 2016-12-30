@@ -107,19 +107,12 @@ class user implements UserInterface
 
 			//
 		}
-		
-
-
 	}
 
 	public function is_own_group()
 	{
 		return $this->schema === $this->this_group->get_schema();
 	}
-
-
-
-
 
 	public function getRoles()
 	{

@@ -50,7 +50,7 @@ The environment variable SCHEMA_domain: couples a subdomain to a schema
 
 ###AWS S3
 Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
-See (file inludes/defaults)[includes/inc_default.php] for which libraries are to be uploaded. 
+See (file inludes/default.php)[includes/default.php] for which libraries are to be uploaded. 
 The buckets should have the same name as the url.
 
 ```shell
@@ -121,8 +121,6 @@ domain of the hosting form and redirects is formatted the same way as the schema
 
 * TIMEZONE: defaults to 'Europe/Brussels'
 * MASTER_PASSWORD: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
-
-CDN urls of cdns see [includes/inc_default.php] for defaults
 
 ###Daily backups
 

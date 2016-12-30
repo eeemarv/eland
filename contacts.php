@@ -21,7 +21,7 @@ $submit = isset($_POST['zend']) ? true : false;
 $page_access = ($del || $add || $edit) ? 'user' : 'guest';
 $page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
 
-require_once __DIR__ . '/includes/inc_default.php';
+require_once __DIR__ . '/includes/web.php';
 
 if ($del)
 {
