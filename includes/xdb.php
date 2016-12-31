@@ -52,7 +52,7 @@ class xdb
 {
 	private $ip;
 	private $user_schema = '';
-	private $user_id = '';
+	private $user_id = 0;
 	private $db;
 	private $redis;
 	private $monolog;
@@ -65,7 +65,11 @@ class xdb
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
 
-		if (isset($_SERVER['HTTP_CLIENT_IP']))
+		if (php_sapi_name() == 'cli')
+		{
+			$this->ip = '';
+		}
+		else if (isset($_SERVER['HTTP_CLIENT_IP']))
 		{
 			$this->ip = $_SERVER['HTTP_CLIENT_IP'];
 		}
@@ -82,7 +86,7 @@ class xdb
 	/*
 	 */
 
-	public function init(string $user_schema = '', $user_id = 0)
+	public function set_user(string $user_schema = '', $user_id = 0)
 	{
 		$this->user_schema = ($user_schema) ? $user_schema : $this->this_group->get_schema();
 		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
@@ -296,89 +300,6 @@ class xdb
 
 		return $row;
 	}
-
-/*
-
-	public function dget(string $agg_type, string $eland_id, string $agg_schema = '')
-	{
-		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
-
-		if (!strlen($agg_type))
-		{
-			return [];
-		}
-
-		if (!strlen($eland_id))
-		{
-			return [];
-		}
-
-		if (!isset($agg_schema) || !$agg_schema)
-		{
-			return [];
-		}
-
-		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
-
-		$data = $this->redis->hgetall('xdb_' . $agg_id);
-
-		if (isset($data))
-		{
-			return $data;
-		}
-
-		$row = $this->get($agg_id);
-
-		if ($row)
-		{
-			$this->redis->hmset('xdb_' . $agg_id, $row['data']);
-			return $row['data'];
-		}
-
-		return [];
-	}
-
-	public function hget(string $agg_type, string $eland_id, string $agg_schema = '', string $field)
-	{
-		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
-
-		if (!strlen($agg_type))
-		{
-			return '';
-		}
-
-		if (!strlen($eland_id))
-		{
-			return '';
-		}
-
-		if (!isset($agg_schema) || !$agg_schema)
-		{
-			return '';
-		}
-
-		if (!isset($agg_field) || !$agg_field)
-		{
-			return '';
-		}
-
-		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
-
-		$value = $this->redis->hget('xdb_' . $agg_id, $field);
-
-		if ($value)
-		{
-			return $value;
-		}
-
-		$value = $this->db->fetchColumn('select data->>\'' . $field . '\'
-			from xdb.aggs
-			where agg_id = ?', [$agg_id]);
-
-		return $value;
-	}
-
-*/
 
 	/**
 	 *

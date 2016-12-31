@@ -11,28 +11,21 @@ class this_group
 	private $db;
 	private $redis;
 	private $groups;
-	private $twig;
 	private $schema;
 	private $host;
 
-	public function __construct(groups $groups, db $db, Redis $redis, \Twig_Environment $twig)
+	public function __construct(groups $groups, db $db, Redis $redis)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
 		$this->groups = $groups;
-		$this->twig = $twig;
-		$this->host = $_SERVER['SERVER_NAME'];
-		$this->schema = $this->groups->get_schema($this->host);
+		$this->host = $_SERVER['SERVER_NAME'] ?? '';
+		$this->schema = $this->host ? $this->groups->get_schema($this->host) : '';
 
-		if (!$this->schema)
+		if ($this->schema)
 		{
-			http_response_code(404);
-
-			echo $this->twig->render('404.html.twig');
-			exit;
+			$this->db->exec('set search_path to ' . $this->schema);
 		}
-
-		$this->db->exec('set search_path to ' . $this->schema);
 	}
 
 	public function force($schema)

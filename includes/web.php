@@ -127,6 +127,16 @@ $app['eland.user'] = function ($app){
 	return new eland\user($app['eland.this_group'], $app['monolog'], $app['session'], $app['eland.page_access']);
 };
 
+/** **/
+
+if (!$app['eland.this_group']->get_schema())
+{
+	http_response_code(404);
+
+	echo $this->twig->render('404.html.twig');
+	exit;
+}
+
 /** user **/
 
 $p_role = $_GET['r'] ?? 'anonymous';
@@ -406,7 +416,7 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
   *
   */
 
-$app['eland.xdb']->init($s_schema, $s_id);
+$app['eland.xdb']->set_user($s_schema, $s_id);
 
 $app['eland.form_token'] = function ($app){
 	return new eland\form_token($app['redis'], $app['monolog'], $app['eland.script_name']);

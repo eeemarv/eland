@@ -36,6 +36,8 @@ class mail
 
 		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 
+		$this->mailer->getTransport()->stop();
+
 		$this->converter = new HtmlConverter();
 		$converter_config = $this->converter->getConfig();
 		$converter_config->setOption('strip_tags', true);
@@ -168,6 +170,8 @@ class mail
 		{
 			$this->monolog->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $sch]);
 		}
+
+		$this->mailer->getTransport()->stop();
 	}
 
 	public function queue(array $data, int $priority = 100)

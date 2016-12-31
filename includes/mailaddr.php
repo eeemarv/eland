@@ -11,15 +11,13 @@ class mailaddr
 {
 	private $db;
 	private $monolog;
-	private $script_name;
 	private $schema;
 
-	public function __construct(db $db, Logger $monolog, this_group $this_group, string $script_name)
+	public function __construct(db $db, Logger $monolog, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
-		$this->script_name = $script_name;
 	}
 
 	/*

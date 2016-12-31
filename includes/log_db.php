@@ -47,10 +47,10 @@ class log_db
 			$insert = [
 				'schema'		=> $log['context']['schema'] ?? $log['extra']['schema'],
 				'user_id'		=> $user_id,
-				'user_schema'	=> $log['extra']['user_schema'],
-				'letscode'		=> $log['context']['letscode'] ?? $log['extra']['letscode'],
+				'user_schema'	=> $log['extra']['user_schema'] ?? '',
+				'letscode'		=> $log['context']['letscode'] ?? $log['extra']['letscode'] ?? '',
 				'username'		=> $log['context']['username'] ?? $log['extra']['username'] ?? '',
-				'ip'			=> $log['extra']['ip'],
+				'ip'			=> $log['extra']['ip'] ?? '',
 				'ts'			=> $log['datetime']['date'],
 				'type'			=> $log['level_name'],
 				'event'			=> $log['message'],

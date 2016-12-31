@@ -157,7 +157,7 @@ $app['eland.date_format'] = function(){
 };
 
 $app['eland.mailaddr'] = function ($app){
-	return new eland\mailaddr($app['db'], $app['monolog'], $app['eland.this_group'], $app['eland.script_name']);
+	return new eland\mailaddr($app['db'], $app['monolog'], $app['eland.this_group']);
 };
 
 //
@@ -241,6 +241,11 @@ function readconfigfromdb($key, $sch = null)
     if (!isset($sch))
     {
 		$sch = $app['eland.this_group']->get_schema();
+	}
+
+	if (!$sch)
+	{
+		$app['monolog']->error('no schema set in readconfigfromdb');
 	}
 
 	if (isset($cache[$sch][$key]))
