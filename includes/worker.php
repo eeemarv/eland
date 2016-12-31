@@ -8,11 +8,6 @@ $app['eland.task.cleanup_cache'] = function ($app){
 	return new eland\task\cleanup_cache($app['eland.cache']);
 };
 
-$app['eland.task.autominlimit'] = function ($app){
-	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'],
-		$app['eland.xdb'], $app['db']);
-};
-
 $app['eland.task.geocode'] = function ($app){
 	return new eland\task\geocode($app['redis'], $app['db'], $app['eland.cache'],
 		$app['eland.queue'], $app['monolog']);

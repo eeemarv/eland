@@ -105,8 +105,6 @@ class queue
 
 		if ($row = $stmt->fetch())
 		{
-			$row = $rows[0];
-
 			$this->db->delete('xdb.queue', ['id' => $row['id']]);
 
 			return [

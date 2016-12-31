@@ -8,15 +8,21 @@ if (php_sapi_name() !== 'cli')
 
 require_once __DIR__ . '/includes/worker.php';
 
-echo 'worker start';
+echo "worker start\n";
 
+$task_interval_ary = [
+	'mail'				=> 5,
+	'autominlimit'		=> 1,
+	'geocode'			=> 120,
+];
+
+$task_next_ary = [];
 $now = time();
 
-$queue_tasks = [
-	'mail'			=> ['next' => $now, 'interval' => 5],
-	'autominlimit'	=> ['next' => $now, 'interval' => 1],
-	'geocode'		=> ['next' => $now, 'interval' => 120],
-];
+foreach ($task_interval_ary as $task => $interval)
+{
+	$task_next_ary[$task] = $now + $task_interval_ary[$task];
+}
 
 $loop_count = 1;
 
@@ -26,21 +32,23 @@ while (true)
 
 	sleep(1);
 
-	$omit_topics = [];
+	$omit_task_ary = [];
 
 	$now = time();
 
-	foreach ($queue_tasks as $task => $timing)
+	foreach ($task_next_ary as $task => $time)
 	{
-		if ($timing['next'] < $now)
+		if ($time > $now)
 		{
-			$omit_topics[] = $task;
+			$omit_task_ary[] = $task;
 		}
 	}
 
 	unset($task);
 
-	$task = $app['eland.queue']->get($omit_topics);
+	error_log(implode(' ! ', $omit_task_ary));
+
+	$task = $app['eland.queue']->get($omit_task_ary);
 
 	if ($task)
 	{
@@ -52,15 +60,15 @@ while (true)
 			error_log('no schema set for queue msg id : ' . $task['id'] . ' data: ' .
 				json_encode($data) . ' topic: ' . $topic);
 		}
-		else if (!isset($queue_tasks[$topic]))
+		else if (!isset($task_interval_ary[$topic]))
 		{
-			error_log('Task not recognised: ' . json_encode($q_msg));
+			error_log('Task not recognised: ' . json_encode($task));
 		}
 		else
 		{
 			$app['eland.task.' . $topic]->process($data);
 
-			$queue_tasks[$topic]['next'] = $now + $queue_tasks[$topic]['interval'];
+			$task_next_ary[$topic] = $now + $task_interval_ary[$topic];
 		}
 	}
 
@@ -70,9 +78,9 @@ while (true)
 
 
 
-	error_log('... worker ... ' . $loop_count);
 
 	sleep(1);
 
+	error_log('... worker ... ' . $loop_count);
 	$loop_count++;
 }
