@@ -17,4 +17,16 @@ class cleanup_cache
 	{
 		$this->cache->cleanup();
 	}
+
+	function has_schema()
+	{
+		return false;
+	}
+
+	function can_run()
+	{
+		return true;
+	}
+
+
 }
