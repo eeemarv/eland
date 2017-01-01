@@ -582,7 +582,7 @@ if ($mail && $post && $id)
 		'login_url'		=> $app['eland.base_url'].'/login.php',
 	];
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to'		=> $user['id'],
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'message',
@@ -592,7 +592,7 @@ if ($mail && $post && $id)
 
 	if ($cc)
 	{
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to'		=> $s_schema . '.' . $s_id,
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,

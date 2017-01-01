@@ -8,7 +8,7 @@ use eland\cache;
 use eland\groups;
 use eland\this_group;
 
-class cron_schedule
+class task_schedule
 {
 	protected $db;
 	protected $monolog;

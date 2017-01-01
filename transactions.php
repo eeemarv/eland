@@ -424,7 +424,7 @@ if ($add)
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 				$text .= ' group:' . $group['groupname'];
 
-				$app['eland.task.mail']->queue([
+				$app['eland.queue.mail']->queue([
 					'to' => 'admin',
 					'subject' => $subject,
 					'text' => $text,
@@ -611,7 +611,7 @@ if ($add)
 				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 				$to_remote_user['name'], ['schema' => $remote_schema]);
 
-			$app['eland.task.autominlimit']->queue([
+			$app['eland.queue.autominlimit']->queue([
 				'from_id'	=> $transaction['id_from'],
 				'to_id'		=> $transaction['id_to'],
 				'amount'	=> $remote_amount,

@@ -121,7 +121,7 @@ if ($add && $submit && !count($errors))
 				'news_url'	=> $app['eland.base_url'] . '/news.php?id=' . $id,
 			];
 
-			$app['eland.task.mail']->queue([
+			$app['eland.queue.mail']->queue([
 				'to' 		=> 'newsadmin',
 				'template'	=> 'admin_news_approve',
 				'vars'		=> $vars,

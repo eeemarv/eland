@@ -1,13 +1,14 @@
 <?php
 
-namespace eland\task;
+namespace eland\queue;
 
 use eland\queue;
+use eland\queue_interface;
 use eland\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
 
-class autominlimit
+class autominlimit implements queue_interface
 {
 	protected $queue;
 	protected $monolog;
@@ -135,5 +136,10 @@ class autominlimit
 		}
 
 		$this->queue->set('autominlimit', $data);
-	} 
+	}
+
+	public function get_interval()
+	{
+		return 1;
+	}
 }

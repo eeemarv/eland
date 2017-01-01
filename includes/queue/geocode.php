@@ -1,27 +1,25 @@
 <?php
 
-namespace eland\task;
+namespace eland\queue;
 
-use Predis\Client as Redis;
+use eland\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use eland\cache;
 use eland\queue;
 use Monolog\Logger;
 
-class geocode
+class geocode implements queue_interface
 {
 	protected $queue;
 	protected $monolog;
 	protected $cache;
 	protected $db;
-	protected $redis;
 
 	protected $curl;
 	protected $geocoder;
 
-	public function __construct(Redis $redis, db $db, cache $cache, queue $queue, Logger $monolog)
+	public function __construct(db $db, cache $cache, queue $queue, Logger $monolog)
 	{
-		$this->redis = $redis;
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->cache = $cache;
@@ -122,53 +120,17 @@ class geocode
 
 		if (!isset($data['uid']))
 		{
-			$this->monolog->debug('no uid set for geocode task');
+			$this->monolog->debug('no uid set for geocode task', ['schema' => $data['schema']]);
 			return;
 		}
 
 		if (!isset($data['adr']))
 		{
-			$this->monolog->debug('no adr set for geocode task');
+			$this->monolog->debug('no adr set for geocode task', ['schema' => $data['schema']]);
 			return;
 		}
 
 		$data['adr'] = trim($data['adr']);
-
-		$key = 'geo_' . $data['adr'];
-		$status_key = 'geo_status_' . $data['adr'];
-
-// delete hashed status
-
-		$this->cache->del(sha1('geo_status_' . $data['adr']));
-
-//
-
-		if ($this->cache->exists($key))
-		{
-			return false;
-		}
-
-		if ($this->cache->get($status_key) == ['value' => 'error'])
-		{
-			return false;
-		}
-
-// move to unhashed keys
-
-		$sha = sha1($key);
-
-		if ($this->cache->exists($sha))
-		{
-			$prdata = $this->cache->get($sha);
-			$this->cache->set($key, $prdata);
-			$this->cache->del($sha);
-
-			return false;
-		}
-
-//
-
-		$this->cache->set($status_key, ['value' => 'queue'], 2592000);  // 30 days
 
 		$this->queue->set('geocode', $data);
 	}
@@ -204,5 +166,10 @@ class geocode
 		{
 			$this->monolog->info('Addresses queued for geocoding: ' . implode(', ', $log_ary), ['schema' => $schema]);
 		}
+	}
+
+	public function get_interval()
+	{
+		return 120;
 	}
 }

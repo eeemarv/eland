@@ -3,8 +3,9 @@
 namespace eland\task;
 
 use eland\cache;
+use eland\base_task;
 
-class cleanup_cache
+class cleanup_cache extends base_task
 {
 	protected $cache;
 
@@ -13,7 +14,7 @@ class cleanup_cache
 		$this->cache = $cache;
 	}
 
-	function run($schema)
+	function run()
 	{
 		$this->cache->cleanup();
 	}
@@ -28,5 +29,13 @@ class cleanup_cache
 		return true;
 	}
 
+	function should_run()
+	{
 
+	}
+
+	function get_interval()
+	{
+		return 7200;
+	}
 }

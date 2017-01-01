@@ -74,7 +74,7 @@ if (isset($_POST['zend']))
 
 		if ($mailaddr)
 		{
-			$app['eland.task.mail']->queue([
+			$app['eland.queue.mail']->queue([
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
 				'to'		=> $s_id,
@@ -83,7 +83,7 @@ if (isset($_POST['zend']))
 			$mail_ary['reply_to'] = $s_id;
 		}
 
-		$return_message =  $app['eland.task.mail']->queue($mail_ary);
+		$return_message =  $app['eland.queue.mail']->queue($mail_ary);
 
 		if (!$return_message)
 		{

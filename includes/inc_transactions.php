@@ -60,7 +60,7 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
-	$app['eland.task.autominlimit']->queue([
+	$app['eland.queue.autominlimit']->queue([
 		'from_id'	=> $transaction['id_from'],
 		'to_id'		=> $transaction['id_to'],
 		'amount'	=> $transaction['amount'],
@@ -104,7 +104,7 @@ function mail_mailtype_interlets_transaction($transaction)
 		],
 	];
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to' 		=> $transaction['id_to'],
 		'reply_to' 	=> 'admin',
 		'template'	=> 'mailtype_interlets_transaction',
@@ -113,7 +113,7 @@ function mail_mailtype_interlets_transaction($transaction)
 
 	$vars['copy'] = true;
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to' 		=> $transaction['id_from'],
 		'cc' 		=> 'admin',
 		'template'	=> 'mailtype_interlets_transaction',
@@ -165,7 +165,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 		=> $userfrom['id'],
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
@@ -177,7 +177,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 		=> $t_schema . $userto['id'],
 			'schema'	=> $sch,
 			'template'	=> 'transaction',

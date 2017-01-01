@@ -2,10 +2,11 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-class saldo_update
+class saldo_update extends base_task
 {
 	protected $db;
 	protected $monolog;
@@ -16,11 +17,11 @@ class saldo_update
 		$this->monolog = $monolog;
 	}
 
-	function run($schema)
+	function run()
 	{
 		$user_balances = $min = $plus = [];
 
-		$rs = $this->db->prepare('select id, saldo from ' . $schema . '.users');
+		$rs = $this->db->prepare('select id, saldo from ' . $this->schema . '.users');
 
 		$rs->execute();
 
@@ -30,7 +31,7 @@ class saldo_update
 		}
 
 		$rs = $this->db->prepare('select id_from, sum(amount)
-			from ' . $schema . '.transactions
+			from ' . $this->schema . '.transactions
 			group by id_from');
 
 		$rs->execute();
@@ -41,7 +42,7 @@ class saldo_update
 		}
 
 		$rs = $this->db->prepare('select id_to, sum(amount)
-			from ' . $schema . '.transactions
+			from ' . $this->schema . '.transactions
 			group by id_to');
 
 		$rs->execute();
@@ -63,9 +64,9 @@ class saldo_update
 				continue;
 			}
 
-			$this->db->update($schema . '.users', ['saldo' => $calculated], ['id' => $id]);
+			$this->db->update($this->schema . '.users', ['saldo' => $calculated], ['id' => $id]);
 			$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
-			$this->monolog->info('(cron) ' . $m, ['schema' => $schema]);
+			$this->monolog->info('(cron) ' . $m, ['schema' => $this->schema]);
 		}
 	}
 }

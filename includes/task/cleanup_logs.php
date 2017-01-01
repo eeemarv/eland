@@ -2,10 +2,11 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 
-class cleanup_logs
+class cleanup_logs extends base_task
 {
 	protected $db;
 	protected $xdb;
@@ -16,7 +17,7 @@ class cleanup_logs
 		$this->xdb = $xdb;
 	}
 
-	function run($schema)
+	public function run()
 	{
 		// $schema is not used, logs from all schemas are cleaned up.
 
@@ -24,5 +25,10 @@ class cleanup_logs
 
 		$this->db->executeQuery('delete from xdb.logs
 			where ts < ?', [$treshold]);
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

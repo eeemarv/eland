@@ -53,13 +53,13 @@ if ($token)
 			],
 		];
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
 			'to'		=> $data['mail'],
 		]);
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'template'	=> 'contact',
 			'vars'		=> $vars,
 			'to'		=> 'support',
@@ -152,7 +152,7 @@ if($post && isset($_POST['zend']))
 			'confirm_url'	=> $app['eland.base_url'] . '/contact.php?token=' . $token,
 		];
 
-		$return_message =  $app['eland.task.mail']->queue([
+		$return_message =  $app['eland.queue.mail']->queue([
 			'to' 		=> $mail,
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,

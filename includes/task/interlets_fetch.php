@@ -2,6 +2,7 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
 use eland\typeahead;
@@ -10,7 +11,7 @@ use eland\groups;
 use eland\xdb;
 use eland\cache;
 
-class interlets_fetch
+class interlets_fetch extends base_task
 {
 	protected $redis;
 	protected $db;
@@ -34,14 +35,14 @@ class interlets_fetch
 		$this->groups = $groups;
 	}
 
-	public function run($schema)
+	public function run()
 	{
 		$r = "<br>\r\n";
 
 		$update_msgs = false;
 
 		$groups = $this->db->fetchAll('select *
-			from ' . $schema . '.letsgroups
+			from ' . $this->schema . '.letsgroups
 			where apimethod = \'elassoap\'
 				and remoteapikey IS NOT NULL
 				and url <> \'\'');
@@ -56,8 +57,8 @@ class interlets_fetch
 				continue;
 			}
 
-			if ($this->redis->get($schema . '_token_failed_' . $group['remoteapikey'])
-				|| $this->redis->get($schema . '_connection_failed_' . $group['domain']))
+			if ($this->redis->get($this->schema . '_token_failed_' . $group['remoteapikey'])
+				|| $this->redis->get($this->schema . '_connection_failed_' . $group['domain']))
 			{
 				unset($group);
 				continue;
@@ -96,7 +97,7 @@ class interlets_fetch
 			{
 
 				echo $err_group . 'Can not get connection.' . $r;
-				$redis_key = $schema . '_connection_failed_' . $this->group['domain'];
+				$redis_key = $this->schema . '_connection_failed_' . $this->group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -119,7 +120,7 @@ class interlets_fetch
 
 				if ($err)
 				{
-					$redis_key = $schema . '_token_failed_' . $this->group['remoteapikey'];
+					$redis_key = $this->schema . '_token_failed_' . $this->group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 				}
@@ -141,7 +142,7 @@ class interlets_fetch
 					else
 					{
 						echo 'fetch interlets typeahead data' . $r;
-						$this->fetch_typeahead($schema);
+						$this->fetch_typeahead();
 					}
 
 					echo '----------------------------------------------------' . $r;
@@ -151,7 +152,7 @@ class interlets_fetch
 				{
 					$err = $e->getMessage();
 					echo $err . $r;
-					$redis_key = $schema . '_token_failed_' . $this->group['remoteapikey'];
+					$redis_key = $this->schema . '_token_failed_' . $this->group['remoteapikey'];
 					$this->redis->set($redis_key, '1');
 					$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -215,7 +216,7 @@ class interlets_fetch
 	/*
 	 *
 	 */
-	public function fetch_typeahead($schema)
+	public function fetch_typeahead()
 	{
 		$r = "<br>\r\n";
 
@@ -239,7 +240,7 @@ class interlets_fetch
 			{
 				echo '-- letsgroup url not responsive: ' . $this->group['domain'] . ' status : ' . $status_code . ' --' . $r;
 
-				$redis_key = $schema . '_connection_failed_' . $this->group['domain'];
+				$redis_key = $this->schema . '_connection_failed_' . $this->group['domain'];
 				$this->redis->set($redis_key, '1');
 				$this->redis->expire($redis_key, 21600);  // 6 hours
 
@@ -354,7 +355,7 @@ class interlets_fetch
 		$this->redis->set($redis_user_count_key, $user_count);
 		$this->redis->expire($redis_user_count_key, 172800); // 1 day
 
-		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $this->group['domain'], ['schema' => $schema]);
+		$this->monolog->debug('cron: typeahead data fetched of ' . $user_count . ' users from group ' . $this->group['domain'], ['schema' => $this->schema]);
 
 		echo '----------------------------------------------------' . $r;
 		echo $redis_data_key . $r;

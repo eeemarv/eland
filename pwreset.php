@@ -38,7 +38,7 @@ if ($token)
 					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
-				$app['eland.task.mail']->queue([
+				$app['eland.queue.mail']->queue([
 					'to' 		=> $user_id,
 					'template'	=> 'password_reset',
 					'vars'		=> $vars,
@@ -143,7 +143,7 @@ if (isset($_POST['zend']))
 					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
-				$app['eland.task.mail']->queue([
+				$app['eland.queue.mail']->queue([
 					'to' 		=> $email,
 					'template'	=> 'password_reset_confirm',
 					'vars'		=> $vars,

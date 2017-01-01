@@ -2,13 +2,14 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use eland\s3;
 use eland\groups;
 
-class cleanup_image_files
+class cleanup_image_files extends base_task
 {
 	protected $days = 365;
 	protected $redis;
@@ -30,14 +31,9 @@ class cleanup_image_files
 		$this->schema_manager = $this->db->getSchemaManager();
 	}
 
-	function run($schema)
+	function run()
 	{
 		// $schema is not used, files of all schemas are scanned
-
-		if (!$this->groups->get_host($schema))
-		{
-			return;
-		}
 
 		$marker = $this->redis->get('cleanup_image_files_marker');
 
@@ -150,5 +146,10 @@ class cleanup_image_files
 		}
 
 		$this->redis->set('cleanup_image_files_marker', $reset ? '0' : $object['Key']);
+	}
+
+	public function get_interval()
+	{
+		return 100;
 	}
 }

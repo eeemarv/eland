@@ -2,14 +2,15 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use Monolog\Logger;
 use eland\groups;
-use eland\task\mail;
+use eland\queue\mail;
 use eland\date_format;
 
-class saldo
+class saldo extends base_task
 {
 	protected $db;
 	protected $xdb;
@@ -36,11 +37,11 @@ class saldo
 		$this->date_format = $date_format;
 	}
 
-	function run($schema)
+	function run()
 	{
 		// vars
 
-		$host = $this->groups->get_host($schema);
+		$host = $this->groups->get_host($this->schema);
 
 		if (!$host)
 		{
@@ -49,7 +50,7 @@ class saldo
 
 		$base_url = $this->protocol . $host;
 
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays', $schema) * 86400);
+		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays', $this->schema) * 86400);
  	
 		$msg_url = $base_url . '/messages.php?id=';
 		$msgs_url = $base_url . '/messages.php';
@@ -71,7 +72,7 @@ class saldo
 		$rs = $this->db->prepare('SELECT u.id,
 				u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 				u.letscode, u.postcode, u.cron_saldo
-			FROM ' . $schema . '.users u
+			FROM ' . $this->schema . '.users u
 			WHERE u.status in (1, 2)');
 
 		$rs->execute();
@@ -84,7 +85,7 @@ class saldo
 	// fetch mail addresses & cron_saldo
 
 		$st = $this->db->prepare('select u.id, c.value, c.flag_public
-			from ' . $schema . '.users u, ' . $schema . '.contact c, ' . $schema . '.type_contact tc
+			from ' . $this->schema . '.users u, ' . $this->schema . '.contact c, ' . $this->schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
@@ -112,7 +113,7 @@ class saldo
 		$image_ary = [];
 
 		$rs = $this->db->prepare('select m.id, p."PictureFile"
-			from ' . $schema . '.msgpictures p, ' . $schema . '.messages m
+			from ' . $this->schema . '.msgpictures p, ' . $this->schema . '.messages m
 			where p.msgid = m.id
 				and m.cdate >= ?', [$treshold_time]);
 
@@ -129,7 +130,7 @@ class saldo
 		$addr = $addr_public = [];
 
 		$rs = $this->db->prepare('select u.id, c.value, flag_public
-			from ' . $schema . '.users u, ' . $schema . '.contact c, ' . $schema . '.type_contact tc
+			from ' . $this->schema . '.users u, ' . $this->schema . '.contact c, ' . $this->schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
@@ -148,7 +149,7 @@ class saldo
 		$rs = $this->db->prepare('SELECT m.id, m.content,
 			m."Description" as description, m.msg_type, m.id_user,
 			u.name, u.letscode, u.postcode
-			FROM ' . $schema . '.messages m, ' . $schema . '.users u
+			FROM ' . $this->schema . '.messages m, ' . $this->schema . '.users u
 			WHERE m.id_user = u.id
 				AND u.status IN (1, 2)
 				AND m.cdate >= ?
@@ -174,11 +175,11 @@ class saldo
 
 	// news
 
-		$show_news = readconfigfromdb('weekly_mail_show_news', $schema);
+		$show_news = readconfigfromdb('weekly_mail_show_news', $this->schema);
 
 		if ($show_news != 'none')
 		{
-			$rows = $this->xdb->get_many(['agg_schema' => $schema, 'agg_type' => 'news_access']);
+			$rows = $this->xdb->get_many(['agg_schema' => $this->schema, 'agg_type' => 'news_access']);
 
 			foreach ($rows as $row)
 			{
@@ -186,7 +187,7 @@ class saldo
 			}
 
 			$query = 'select n.*, u.name, u.letscode
-				from ' . $schema . '.news n, ' . $schema . '.users u
+				from ' . $this->schema . '.news n, ' . $this->schema . '.users u
 				where n.approved = \'t\'
 					and n.published = \'t\'
 					and n.id_user = u.id ';
@@ -212,7 +213,7 @@ class saldo
 				}
 				else
 				{
-					$this->xdb->set('news_access', $news_id, ['access' => 'interlets'], $schema);
+					$this->xdb->set('news_access', $news_id, ['access' => 'interlets'], $this->schema);
 					$row['access'] = 'interlets';
 				}
 
@@ -232,17 +233,17 @@ class saldo
 
 	// new users
 
-		$show_new_users = readconfigfromdb('weekly_mail_show_new_users', $schema);
+		$show_new_users = readconfigfromdb('weekly_mail_show_new_users', $this->schema);
 
 		if ($show_new_users != 'none')
 		{
 
 			$rs = $this->db->prepare('select u.id, u.name, u.letscode, u.postcode
-				from ' . $schema . '.users u
+				from ' . $this->schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
 
-			$time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $schema) * 86400);
+			$time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $this->schema) * 86400);
 			$time = ($show_new_users == 'recent') ? $treshold_time: $time;
 
 			$rs->bindValue(1, $time);
@@ -259,13 +260,13 @@ class saldo
 
 	// leaving users
 
-		$show_leaving_users = readconfigfromdb('weekly_mail_show_leaving_users', $schema);
+		$show_leaving_users = readconfigfromdb('weekly_mail_show_leaving_users', $this->schema);
 
 		if ($show_leaving_users != 'none')
 		{
 
 			$query = 'select u.id, u.name, u.letscode, u.postcode
-				from ' . $schema . '.users u
+				from ' . $this->schema . '.users u
 				where u.status = 2';
 
 			$query .= ($show_leaving_users == 'recent') ? ' and mdate > ?' : '';
@@ -290,7 +291,7 @@ class saldo
 
 	// transactions
 
-		$show_transactions = readconfigfromdb('weekly_mail_show_transactions', $schema);
+		$show_transactions = readconfigfromdb('weekly_mail_show_transactions', $this->schema);
 
 		if ($show_transactions != 'none')
 		{
@@ -299,7 +300,7 @@ class saldo
 					t.amount, t.cdate, t.description,
 					uf.name as from_name, uf.letscode as from_letscode,
 					ut.name as to_name, ut.letscode as to_letscode
-				from ' . $schema . '.transactions t, ' . $schema . '.users uf, ' . $schema . '.users ut
+				from ' . $this->schema . '.transactions t, ' . $this->schema . '.users uf, ' . $this->schema . '.users ut
 				where t.id_from = uf.id
 					and t.id_to = ut.id
 					and t.cdate > ?');
@@ -328,16 +329,16 @@ class saldo
 
 		$forum_topics = $forum_topics_replied = [];
 
-		$forum_en = readconfigfromdb('forum_en', $schema);
+		$forum_en = readconfigfromdb('forum_en', $this->schema);
 
-		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $schema) : 'none';
+		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $this->schema) : 'none';
 
 		if ($show_forum != 'none')
 		{
 
 			// new topics
 
-			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+			$rows = $this->xdb->get_many(['agg_schema' => $this->schema,
 				'agg_type' => 'forum',
 				'data->>\'subject\'' => ['is not null'],
 				'ts' => ['>' => $treshold_time],
@@ -362,7 +363,7 @@ class saldo
 
 			// new replies
 
-			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+			$rows = $this->xdb->get_many(['agg_schema' => $this->schema,
 				'agg_type' => 'forum',
 				'data->>\'parent_id\'' => ['is not null'],
 				'ts' => ['>' => $treshold_time]], 'order by event_time desc');
@@ -373,7 +374,7 @@ class saldo
 
 				if (!isset($forum_topics[$data['parent_id']]))
 				{
-					$forum_topics_replied[] = $schema . '_forum_' . $data['parent_id'];
+					$forum_topics_replied[] = $this->schema . '_forum_' . $data['parent_id'];
 				}
 			}
 
@@ -401,11 +402,11 @@ class saldo
 
 	// docs
 
-		$show_docs = readconfigfromdb('weekly_mail_show_docs', $schema);
+		$show_docs = readconfigfromdb('weekly_mail_show_docs', $this->schema);
 
 		if ($show_docs != 'none')
 		{
-			$rows = $this->xdb->get_many(['agg_schema' => $schema,
+			$rows = $this->xdb->get_many(['agg_schema' => $this->schema,
 				'agg_type' => 'doc',
 				'ts' => ['>' => $treshold_time],
 				'access' => ['users', 'interlets']], 'order by event_time desc');
@@ -431,11 +432,11 @@ class saldo
 
 		$vars = [
 			'group'		=> [
-				'name'				=> readconfigfromdb('systemname', $schema),
-				'tag'				=> readconfigfromdb('systemtag', $schema),
-				'currency'			=> readconfigfromdb('currency', $schema),
-				'support'			=> readconfigfromdb('support', $schema),
-				'saldofreqdays'		=> readconfigfromdb('saldofreqdays', $schema),
+				'name'				=> readconfigfromdb('systemname', $this->schema),
+				'tag'				=> readconfigfromdb('systemtag', $this->schema),
+				'currency'			=> readconfigfromdb('currency', $this->schema),
+				'support'			=> readconfigfromdb('support', $this->schema),
+				'saldofreqdays'		=> readconfigfromdb('saldofreqdays', $this->schema),
 			],
 			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
@@ -469,7 +470,7 @@ class saldo
 		foreach ($saldo_mail as $id => $b)
 		{
 			$this->mail->queue([
-				'schema'	=> $schema,
+				'schema'	=> $this->schema,
 				'to'		=> $id,
 				'template'	=> 'periodic_overview',
 				'vars'		=> array_merge($vars, [
@@ -484,11 +485,11 @@ class saldo
 
 		if (count($log_to))
 		{
-			$this->monolog->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to), ['schema' => $schema]);
+			$this->monolog->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to), ['schema' => $this->schema]);
 		}
 		else
 		{
-			$this->monolog->info('mail: no saldomail queued', ['schema' => $schema]);
+			$this->monolog->info('mail: no saldomail queued', ['schema' => $this->schema]);
 		}
 
 		return true;

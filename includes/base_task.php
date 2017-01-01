@@ -2,38 +2,27 @@
 
 namespace eland;
 
-abstract class base_task //implements \eland\task
+abstract class base_task
 {
-	private $name = '';
-	private $schema = '';
+	protected $schema = '';
 
-	public function run()
+	function needs_schema()
 	{
+		return true;
 	}
 
-	public function get_name()
-	{
-		return $name;
-	}
-
-	public function set_name(string $name)
-	{
-		$this->name = $name;
-	}
-
-	public function get_schema()
-	{
-		return $this->schema;
-	}
-
-	public function set_schema($schema)
+	function set_schema($schema)
 	{
 		$this->schema = $schema;
 	}
 
-	public function has_schema()
+	function get_schema()
 	{
-		return true;
+		return $this->schema;
+	}
+
+	public function run()
+	{
 	}
 
 	public function can_run()
@@ -44,5 +33,10 @@ abstract class base_task //implements \eland\task
 	public function should_run()
 	{
 		return true;
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

@@ -149,7 +149,7 @@ if ($token)
 			'user_url'	=> $app['eland.base_url'] . '/users.php?id=' . $user_id,
 		];
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 			=> 'admin',
 			'vars'			=> $vars,
 			'template'		=> 'admin_registration',
@@ -166,7 +166,7 @@ if ($token)
 			$vars[$k] = $data[$v];
 		}
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 					=> $data['email'],
 			'reply_to'				=> 'admin',
 			'template_from_config'	=> 'registration_success_mail',
@@ -273,7 +273,7 @@ if ($submit)
 			'confirm_url'	=> $app['eland.base_url'] . '/register.php?token=' . $token,
 		];
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 		=> $reg['email'],
 			'vars'		=> $vars,
 			'template'	=> 'registration_confirm',

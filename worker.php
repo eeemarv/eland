@@ -66,18 +66,19 @@ while (true)
 		}
 		else
 		{
-			$app['eland.task.' . $topic]->process($data);
+			$app['eland.queue.' . $topic]->process($data);
 
 			$queue_task_next_ary[$topic] = $now + $queue_task_interval_ary[$topic];
 		}
 	}
-	else if ($app['eland.cron_schedule']->find_next())
+	else if ($app['eland.task_schedule']->find_next())
 	{
-		$name = $app['eland.cron_schedule']->get_name();
-		$schema = $app['eland.cron_schedule']->get_schema();
+		$name = $app['eland.task_schedule']->get_name();
+		$schema = $app['eland.task_schedule']->get_schema();
 		echo 'cron task: ' . $schema . ' . ' . $name . "\n";
-		$app['eland.task.' . $name]->run($schema);
-		$app['eland.cron_schedule']->update();
+		$app['eland.task.' . $name]->set_schema($schema);
+		$app['eland.task.' . $name]->run();
+		$app['eland.task_schedule']->update();
 	}
 
 	if ($loop_count % 60 == 0)

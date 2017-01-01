@@ -306,7 +306,7 @@ if ($submit)
 
 		foreach($transactions as $t)
 		{
-			$app['eland.task.autominlimit']->queue([
+			$app['eland.queue.autominlimit']->queue([
 				'from_id'	=> $t['id_from'],
 				'to_id'		=> $t['id_to'],
 				'amount'	=> $t['amount'],
@@ -723,7 +723,7 @@ function mail_mass_transaction($mail_ary)
 			'url_login'			=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 		]);
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to'		=> $user_id,
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
@@ -766,7 +766,7 @@ function mail_mass_transaction($mail_ary)
 		'total'		=> $total,
 	]);
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to' 		=> ['admin', $s_id, $one_user_id],
 		'subject' 	=> $subject,
 		'text' 		=> $text,

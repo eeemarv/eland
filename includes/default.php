@@ -160,15 +160,15 @@ $app['eland.mailaddr'] = function ($app){
 	return new eland\mailaddr($app['db'], $app['monolog'], $app['eland.this_group']);
 };
 
-//
+// queue
 
-$app['eland.task.mail'] = function ($app){
-	return new eland\task\mail($app['eland.queue'], $app['monolog'],
+$app['eland.queue.mail'] = function ($app){
+	return new eland\queue\mail($app['eland.queue'], $app['monolog'],
 		$app['eland.this_group'], $app['eland.mailaddr'], $app['twig']);
 };
 
-$app['eland.task.autominlimit'] = function ($app){
-	return new eland\task\autominlimit($app['eland.queue'], $app['monolog'],
+$app['eland.queue.autominlimit'] = function ($app){
+	return new eland\queue\autominlimit($app['eland.queue'], $app['monolog'],
 		$app['eland.xdb'], $app['db']);
 };
 

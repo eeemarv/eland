@@ -1,7 +1,8 @@
 <?php
 
-namespace eland\task;
+namespace eland\queue;
 
+use eland\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use eland\queue;
 use Monolog\Logger;
@@ -9,7 +10,7 @@ use eland\this_group;
 use eland\mailaddr;
 use Twig_Environment as Twig;
 
-class mail
+class mail implements queue_interface
 {
 	protected $converter;
 	protected $mailer;
@@ -269,5 +270,10 @@ class mail
 				$data['subject'] . ', from : ' .
 				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . $reply, ['schema' => $data['schema']]);
 		}
-	} 
+	}
+
+	public function get_interval()
+	{
+		return 5;
+	}
 }

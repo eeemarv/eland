@@ -164,7 +164,7 @@ if ($user_mail_submit && $id && $post)
 		'login_url'		=> $app['eland.base_url'].'/login.php',
 	];
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to'		=> $id,
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'user',
@@ -173,7 +173,7 @@ if ($user_mail_submit && $id && $post)
 
 	if ($user_mail_cc)
 	{
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 		=> $s_schema . '.' . $s_id,
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
@@ -634,7 +634,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			break;
 		}
 
-		$app['eland.task.mail']->queue([
+		$app['eland.queue.mail']->queue([
 			'to' 		=> $sel_user['id'],
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
@@ -748,7 +748,7 @@ if ($pw)
 							'url_login'		=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 						];
 
-						$app['eland.task.mail']->queue([
+						$app['eland.queue.mail']->queue([
 							'to' 		=> $pw,
 							'reply_to'	=> 'support',
 							'template'	=> 'password_reset',
@@ -3616,7 +3616,7 @@ function send_activation_mail($password, $user)
 		'user_mail'		=> $user['mail'],
 	];
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to' 		=> 'admin',
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
@@ -3634,7 +3634,7 @@ function send_activation_mail($password, $user)
 		'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],	
 	];
 
-	$app['eland.task.mail']->queue([
+	$app['eland.queue.mail']->queue([
 		'to' 		=> $user['id'],
 		'reply_to' 	=> 'support',
 		'template'	=> 'user_activation',

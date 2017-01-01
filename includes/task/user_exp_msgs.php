@@ -2,11 +2,12 @@
 
 namespace eland\task;
 
+use eland\base_task;
 use Doctrine\DBAL\Connection as db;
-use eland\task\mail;
+use eland\queue\mail;
 use eland\groups;
 
-class user_exp_msgs
+class user_exp_msgs extends base_task
 {
 	protected $db;
 	protected $mail;
@@ -21,16 +22,16 @@ class user_exp_msgs
 		$this->protocol = $protocol;
 	}
 
-	function run($schema)
+	function run()
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
-		$base_url = $this->protocol . $this->groups->get_host($schema);
+		$base_url = $this->protocol . $this->groups->get_host($this->schema);
 
-		$group_vars = $this->groups->get_template_vars($schema);
+		$group_vars = $this->groups->get_template_vars($this->schema);
 
 		$warn_messages  = $this->db->fetchAll('select m.*
-			from ' . $schema . '.messages m, ' . $schema . '.users u
+			from ' . $this->schema . '.messages m, ' . $this->schema . '.users u
 				where m.exp_user_warn = \'f\'
 					and u.id = m.id_user
 					and u.status in (1, 2)
@@ -38,7 +39,7 @@ class user_exp_msgs
 
 		foreach ($warn_messages as $msg)
 		{
-			$user = readuser($msg['id_user'], $schema);
+			$user = readuser($msg['id_user'], $this->schema);
 
 			if (!($user['status'] == 1 || $user['status'] == 2))
 			{
@@ -65,11 +66,11 @@ class user_exp_msgs
 			];
 
 			$this->mail->queue(['to' => $msg['id_user'],
-				'schema' 	=> $schema,
+				'schema' 	=> $this->schema,
 				'template' 	=> 'user_exp_msgs',
 				'vars' 		=> $vars]);
 		}
 
-		$this->db->executeUpdate('update ' . $schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+		$this->db->executeUpdate('update ' . $this->schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
 	}
 }
