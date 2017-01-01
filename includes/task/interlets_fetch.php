@@ -145,8 +145,7 @@ class interlets_fetch
 					}
 
 					echo '----------------------------------------------------' . $r;
-					echo 'end Cron ' . "\n";
-					exit;
+					return;
 				}
 				catch (Exception $e)
 				{

@@ -121,7 +121,7 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['eland.typeahead'] = function($app){
-	return new eland\typeahead($app['redis'], $app['monolog'], $app['eland.base_url'], $app['eland.rootpath']);
+	return new eland\typeahead($app['redis'], $app['monolog']);
 };
 
 $app['eland.log_db'] = function($app){

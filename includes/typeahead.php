@@ -9,17 +9,13 @@ class typeahead
 {
 	protected $redis;
 	protected $monolog;
-	protected $base_url;
-	protected $rootpath;
 	protected $version;
 	protected $ttl = 5184000; // 60 days
 
-	public function __construct(Redis $redis, Logger $monolog, string $base_url, string $rootpath)
+	public function __construct(Redis $redis, Logger $monolog)
 	{
 		$this->redis = $redis;
 		$this->monolog = $monolog;
-		$this->base_url = $base_url;
-		$this->rootpath = $rootpath;
 		$this->version = getenv('TYPEAHEAD_VERSION') ?: '';
 	}
 

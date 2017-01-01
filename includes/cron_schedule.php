@@ -23,7 +23,7 @@ class cron_schedule
 	protected $cronjob_ary;
 
 	protected $tasks = [
-		'cleanup_cache'			=> [864000],
+		'cleanup_cache'			=> [86400],
 		'saldo'					=> [86400, 'saldofreqdays'],
 		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],
 		'cleanup_messages'		=> [86400],
