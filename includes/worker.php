@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/default.php';
 
+$app['eland.protocol'] = 'http://';
+
 // tasks
 
 $app['eland.task.cleanup_cache'] = function ($app){
