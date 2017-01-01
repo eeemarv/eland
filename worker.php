@@ -60,7 +60,7 @@ while (true)
 			error_log('no schema set for queue msg id : ' . $queue_task['id'] . ' data: ' .
 				json_encode($data) . ' topic: ' . $topic);
 		}
-		else if (!isset($task_interval_ary[$topic]))
+		else if (!isset($queue_task_interval_ary[$topic]))
 		{
 			error_log('Queue task not recognised: ' . json_encode($queue_task));
 		}
