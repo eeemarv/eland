@@ -15,7 +15,6 @@ class cron_schedule
 	protected $cache;
 	protected $groups;
 	protected $time;
-//	protected $sha;
 	protected $schema;
 	protected $name;
 	protected $event_time;
@@ -42,14 +41,15 @@ class cron_schedule
 		$this->cache = $cache;
 		$this->groups = $groups;
 		$this->this_group = $this_group;
-		$this->time = time();
+
+		$this->cronjob_ary = $this->cache->get('cronjob_ary');
 	}
 
 	public function find_next()
 	{
-		$r = "<br>\n\r";
+		$r = "\n\r";
 
-		$this->cronjob_ary = $this->cache->get('cronjob_ary');
+		$this->time = time();
 
 		foreach ($this->tasks as $name => $t)
 		{
