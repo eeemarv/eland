@@ -133,7 +133,7 @@ if (!$app['eland.this_group']->get_schema())
 {
 	http_response_code(404);
 
-	echo $this->twig->render('404.html.twig');
+	echo $app['twig']->render('404.html.twig');
 	exit;
 }
 
