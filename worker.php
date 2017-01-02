@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Finder\Finder;
+
 if (php_sapi_name() !== 'cli')
 {
 	echo '-- cli only --';
@@ -10,13 +12,39 @@ require_once __DIR__ . '/includes/worker.php';
 
 echo "worker started\n";
 
+$queue_task_next_ary = $queue_task_interval_ary = [];
+
+$finder = new Finder();
+$finder->files()
+	->in(__DIR__ . '/includes/queue')
+	->name('*.php');
+
+foreach ($finder as $file)
+{
+    $path = $file->getRelativePathname();
+
+    $queue_task = basename($path, '.php');
+
+    $queue_task_interval_ary[$queue_task] = $app['eland.queue.' . $queue_task]->get_interval();
+}
+
+/*
 $queue_task_interval_ary = [
 	'mail'				=> 5,
 	'autominlimit'		=> 1,
 	'geocode'			=> 120,
 ];
+* 
+
+
+
 
 $queue_task_next_ary = [];
+*/
+
+var_dump($queue_task_interval_ary);
+
+
 $now = time();
 
 foreach ($queue_task_interval_ary as $task => $interval)
