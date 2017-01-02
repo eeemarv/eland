@@ -226,17 +226,17 @@ class s3
 	 *
 	 */
 
-	public function img_list($marker = false)
+	public function img_list(string $marker = '0')
 	{
 		return $this->bucket_list($this->img_bucket, $marker);
 	}
 
-	public function doc_list($marker = false)
+	public function doc_list(string $marker = '0')
 	{
 		return $this->bucket_list($this->doc_bucket, $marker);
 	}
 
-	public function bucket_list(string $bucket, $marker = false)
+	public function bucket_list(string $bucket, $marker = '0')
 	{
 		$params = ['Bucket'	=> $bucket];
 
@@ -254,6 +254,29 @@ class s3
 		catch (Exception $e)
 		{
 			echo $e->getMessage() . "\n\r\n\r";
+		}
+	}
+
+	/**
+	 *
+	 */
+
+	public function find_img(string $marker = '0')
+	{
+		$params = [
+			'Bucket'	=> $this->img_bucket,
+			'Marker'	=> $marker,
+			'MaxKeys'	=> 1,
+		];
+
+		try
+		{
+			return $this->client->getIterator('ListObjects', $params)->current();
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage() . "\n\r\n\r";
+			return [];
 		}
 	}
 }

@@ -29,22 +29,9 @@ class task_schedule
 		'saldo_update'			=> [86400],
 		'cleanup_news'			=> [86400],
 		'cleanup_logs'			=> [86400],
-		'cleanup_image_files'	=> [14400],
-		'geocode' 				=> [7200],
-		'interlets_fetch'		=> [7200],
-	];
-
-	protected $task_interval_ary = [
-		'cleanup_cache'			=> [86400],
-		'saldo'					=> [86400, 'saldofreqdays'],
-		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],
-		'cleanup_messages'		=> [86400],
-		'saldo_update'			=> [86400],
-		'cleanup_news'			=> [86400],
-		'cleanup_logs'			=> [86400],
-		'cleanup_image_files'	=> [14400],
-		'geocode' 				=> [7200],
-		'interlets_fetch'		=> [7200],
+		'cleanup_image_files'	=> [900],
+		'geocode' 				=> [900],
+		'interlets_fetch'		=> [900],
 	];
 
 	public function __construct(db $db, Logger $monolog, cache $cache, groups $groups, this_group $this_group)

@@ -16,7 +16,7 @@ $app['eland.task.geocode'] = function ($app){
 };
 
 $app['eland.task.cleanup_image_files'] = function ($app){
-	return new eland\task\cleanup_image_files($app['redis'], $app['db'], $app['monolog'],
+	return new eland\task\cleanup_image_files($app['eland.cache'], $app['db'], $app['monolog'],
 		$app['eland.s3'], $app['eland.groups']);
 };
 
