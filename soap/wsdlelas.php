@@ -1,8 +1,8 @@
 <?php
 $rootpath='../';
 $page_access = 'anonymous';
-require_once __DIR__ . '/../includes/web.php';
-require_once __DIR__ . '/../includes/inc_transactions.php';
+require_once __DIR__ . '/../include/web.php';
+require_once __DIR__ . '/../include/inc_transactions.php';
 
 $server = new soap_server();
 $server->configureWSDL('interletswsdl', 'urn:interletswsdl');

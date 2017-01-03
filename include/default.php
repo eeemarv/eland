@@ -36,7 +36,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
 ]);
 
 $app->register(new Silex\Provider\TwigServiceProvider(), [
-	'twig.path' => __DIR__ . '/../views',
+	'twig.path' => __DIR__ . '/../view',
 	'twig.options'	=> [
 		'cache'		=> __DIR__ . '/../cache',
 		'debug'		=> getenv('DEBUG'),

@@ -30,7 +30,7 @@ defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
 $page_access = 'anonymous';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 /*
 header('Content-Type:text/plain');

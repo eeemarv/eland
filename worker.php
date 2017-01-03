@@ -8,7 +8,7 @@ if (php_sapi_name() !== 'cli')
 	exit;
 }
 
-require_once __DIR__ . '/includes/worker.php';
+require_once __DIR__ . '/include/worker.php';
 
 echo "worker started\n";
 

@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'guest';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 if (isset($hosting_form))
 {
@@ -190,5 +190,5 @@ if (isset($hosting_form))
  *
  **/
 
-include __DIR__ . '/includes/inc_header.php';
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/inc_footer.php';

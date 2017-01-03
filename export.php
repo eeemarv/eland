@@ -3,7 +3,7 @@
 set_time_limit(60);
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $export_ary = [
 	'users'		=> [
@@ -186,7 +186,7 @@ foreach ($export_ary as $ex_key => $export)
 $h1 = 'Export';
 $fa = 'download';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 
 if (function_exists('exec'))
@@ -218,4 +218,4 @@ echo $buttons;
 
 echo '</div></div>';
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';

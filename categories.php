@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $edit = $_GET['edit'] ?? false;
 $del = $_GET['del'] ?? false;
@@ -74,7 +74,7 @@ if ($add)
 	$h1 = 'Categorie toevoegen';
 	$fa = 'clone';
 
-	include __DIR__ . '/includes/inc_header.php';
+	include __DIR__ . '/include/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -107,7 +107,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -189,7 +189,7 @@ if ($edit)
 	$h1 = 'Categorie aanpassen : ' . $cat['name'];
 	$fa = 'clone';
 
-	include __DIR__ . '/includes/inc_header.php';
+	include __DIR__ . '/include/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -222,7 +222,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -250,7 +250,7 @@ if ($del)
 	$h1 = 'Categorie verwijderen : ' . $fullname;
 	$fa = 'clone';
 
-	include __DIR__ . '/includes/inc_header.php';
+	include __DIR__ . '/include/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -267,7 +267,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -290,7 +290,7 @@ $top_buttons .= aphp('categories', ['add' => 1], 'Toevoegen', 'btn btn-success',
 $h1 = 'Categorieën';
 $fa = 'clone';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 echo '<div class="panel panel-default printview">';
 
@@ -353,7 +353,7 @@ echo '</div></div>';
 echo '<p><ul><li>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.';
 echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></li></ul></p>';
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';
 
 function cancel($id = '')
 {

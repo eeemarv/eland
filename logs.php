@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $q = $_GET['q'] ?? '';
 $letscode = $_GET['letscode'] ?? '';
@@ -131,7 +131,7 @@ $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
 
 $fa = 'history';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -311,4 +311,4 @@ echo '</div></div>';
 
 $app['eland.pagination']->render();
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';

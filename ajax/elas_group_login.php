@@ -1,7 +1,7 @@
 <?php
 $rootpath = '../';
 $page_access = 'guest';
-require_once __DIR__ . '/../includes/web.php';
+require_once __DIR__ . '/../include/web.php';
 
 $group_id = isset($_GET['group_id']) ? $_GET['group_id'] : false;
 

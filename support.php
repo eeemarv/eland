@@ -2,7 +2,7 @@
 
 $page_access = 'user';
 
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 if (isset($_POST['zend']))
 {
@@ -134,7 +134,7 @@ $fa = 'ambulance';
 
 $app['eland.assets']->add(['summernote', 'rich_edit.js']);
 
-require_once __DIR__ . '/includes/inc_header.php';
+require_once __DIR__ . '/include/inc_header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -157,4 +157,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';

@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'guest';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $logins = $app['session']->get('logins') ?? [];
 

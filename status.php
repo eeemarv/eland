@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $status_msgs = false;
 
@@ -156,7 +156,7 @@ if ($env_x !== false || $env_y !== false)
 $h1 = 'Status';
 $fa = 'exclamation-triangle';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 if ($status_msgs)
 {
@@ -433,4 +433,4 @@ else
 	echo '</div>';
 }
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';

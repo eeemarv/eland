@@ -2,7 +2,7 @@
 
 $page_access = 'anonymous';
 
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $submit = isset($_POST['zend']) ? true : false;
 $token = $_GET['token'] ?? false;
@@ -175,7 +175,7 @@ if ($token)
 
 		$app['eland.alert']->success('Inschrijving voltooid.');
 
-		require_once __DIR__ . '/includes/inc_header.php';
+		require_once __DIR__ . '/include/inc_header.php';
 
 		$registration_success_text = readconfigfromdb('registration_success_text');
 
@@ -184,14 +184,14 @@ if ($token)
 			echo $registration_success_text;
 		}
 
-		require_once __DIR__ . '/includes/inc_footer.php';
+		require_once __DIR__ . '/include/inc_footer.php';
 
 		exit;
 	}
 
 	$app['eland.alert']->error('Geen geldig token.');
 
-	require_once __DIR__ . '/includes/inc_header.php';
+	require_once __DIR__ . '/include/inc_header.php';
 
 	echo '<div class="panel panel-danger">';
 	echo '<div class="panel-heading">';
@@ -206,7 +206,7 @@ if ($token)
 	echo '</div>';
 	echo '</div>';
 
-	require_once __DIR__ . '/includes/inc_footer.php';
+	require_once __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -288,7 +288,7 @@ if ($submit)
 $h1 = 'Inschrijven';
 $fa = 'check-square-o';
 
-require_once __DIR__ . '/includes/inc_header.php';
+require_once __DIR__ . '/include/inc_header.php';
 
 $top_text = readconfigfromdb('registration_top_text');
 
@@ -377,5 +377,5 @@ if ($bottom_text)
 	echo $bottom_text;
 }
 
-require_once __DIR__ . '/includes/inc_footer.php';
+require_once __DIR__ . '/include/inc_footer.php';
 exit;

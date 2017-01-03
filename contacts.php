@@ -21,7 +21,7 @@ $submit = isset($_POST['zend']) ? true : false;
 $page_access = ($del || $add || $edit) ? 'user' : 'guest';
 $page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
 
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 if ($del)
 {
@@ -94,7 +94,7 @@ if ($del)
 
 	$h1 = 'Contact verwijderen?';
 
-	include __DIR__ . '/includes/inc_header.php';
+	include __DIR__ . '/include/inc_header.php';
 
 	echo '<br>';
 
@@ -140,7 +140,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -350,7 +350,7 @@ if ($edit || $add)
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
 	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id);
 
-	include __DIR__ . '/includes/inc_header.php';
+	include __DIR__ . '/include/inc_header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -426,7 +426,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -483,7 +483,7 @@ if ($uid)
 		$h1 = ($s_owner) ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user);
 		$fa = 'map-marker';
 
-		include __DIR__ . '/includes/inc_header.php';
+		include __DIR__ . '/include/inc_header.php';
 		echo '<br>';
 	}
 	else
@@ -506,7 +506,7 @@ if ($uid)
 
 		if (!$inline)
 		{
-			include __DIR__ . '/includes/inc_footer.php';
+			include __DIR__ . '/include/inc_footer.php';
 		}
 		exit;
 	}
@@ -592,7 +592,7 @@ if ($uid)
 		exit;
 	}
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -820,7 +820,7 @@ $h1 .= '</div>';
 
 $fa = 'map-marker';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 echo '<div id="filters" class="panel panel-info';
 echo ($panel_collapse) ? ' collapse' : '';
@@ -951,7 +951,7 @@ if (!count($contacts))
 
 	$app['eland.pagination']->render();
 
-	include __DIR__ . '/includes/inc_footer.php';
+	include __DIR__ . '/include/inc_footer.php';
 	exit;
 }
 
@@ -1016,7 +1016,7 @@ echo '</div></div>';
 
 $app['eland.pagination']->render();
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';
 
 function cancel($uid = false)
 {

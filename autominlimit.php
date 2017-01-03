@@ -1,7 +1,7 @@
 <?php
 
 $page_access = 'admin';
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 if (isset($_POST['zend']))
 {
@@ -57,7 +57,7 @@ else
 $h1 = 'Automatische minimum limiet';
 $fa = 'arrows-v';
 
-include __DIR__ . '/includes/inc_header.php';
+include __DIR__ . '/include/inc_header.php';
 
 echo '<div class="panel panel-info">';
 
@@ -191,7 +191,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';
 
 function cancel()
 {

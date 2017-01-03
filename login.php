@@ -2,7 +2,7 @@
 
 $page_access = 'anonymous';
 
-require_once __DIR__ . '/includes/web.php';
+require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
@@ -234,7 +234,7 @@ if(readconfigfromdb('maintenance'))
 $h1 = 'Login';
 $fa = 'sign-in';
 
-require_once __DIR__ . '/includes/inc_header.php';
+require_once __DIR__ . '/include/inc_header.php';
 
 if(empty($token))
 {
@@ -269,4 +269,4 @@ if(empty($token))
 	echo aphp('pwreset', [], 'Ik ben mijn paswoord vergeten');
 }
 
-include __DIR__ . '/includes/inc_footer.php';
+include __DIR__ . '/include/inc_footer.php';
