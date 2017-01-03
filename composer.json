@@ -20,10 +20,10 @@
         "predis/predis": "~1.1",
         "twig/twig": "^1",
         "ezyang/htmlpurifier": "^4.8",
-		"league/html-to-markdown": "^4.2",
+		"league/html-to-markdown": "^4.4",
 		"silex/silex": "~2.0",
-		"symfony/twig-bridge": "^3.1",
-		"symfony/security": "^3.1",
+		"symfony/twig-bridge": "^3.2",
+		"symfony/security": "^3.2",
 		"symfony/finder": "^3.2"
 	},
 
