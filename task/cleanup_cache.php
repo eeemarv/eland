@@ -3,9 +3,9 @@
 namespace eland\task;
 
 use eland\cache;
-use eland\base_task;
+use eland\model\task;
 
-class cleanup_cache extends base_task
+class cleanup_cache extends task
 {
 	protected $cache;
 

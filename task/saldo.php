@@ -2,7 +2,7 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use Monolog\Logger;
@@ -10,7 +10,7 @@ use eland\groups;
 use eland\queue\mail;
 use eland\date_format;
 
-class saldo extends base_task
+class saldo extends task
 {
 	protected $db;
 	protected $xdb;
@@ -493,5 +493,10 @@ class saldo extends base_task
 		}
 
 		return true;
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

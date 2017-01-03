@@ -1,8 +1,8 @@
 <?php
 
-namespace eland;
+namespace eland\model;
 
-abstract class base_task
+abstract class task
 {
 	protected $schema = '';
 

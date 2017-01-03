@@ -2,11 +2,11 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-class saldo_update extends base_task
+class saldo_update extends task
 {
 	protected $db;
 	protected $monolog;
@@ -68,5 +68,10 @@ class saldo_update extends base_task
 			$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
 			$this->monolog->info('(cron) ' . $m, ['schema' => $this->schema]);
 		}
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

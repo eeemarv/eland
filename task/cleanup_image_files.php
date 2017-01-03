@@ -2,7 +2,7 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Predis\Client as Redis;
 use eland\cache;
 use Doctrine\DBAL\Connection as db;
@@ -10,7 +10,7 @@ use Monolog\Logger;
 use eland\s3;
 use eland\groups;
 
-class cleanup_image_files extends base_task
+class cleanup_image_files extends task
 {
 	protected $days = 365;
 	protected $cache;

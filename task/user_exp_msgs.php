@@ -2,12 +2,12 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use eland\queue\mail;
 use eland\groups;
 
-class user_exp_msgs extends base_task
+class user_exp_msgs extends task
 {
 	protected $db;
 	protected $mail;
@@ -72,5 +72,10 @@ class user_exp_msgs extends base_task
 		}
 
 		$this->db->executeUpdate('update ' . $this->schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

@@ -12,11 +12,15 @@ require_once __DIR__ . '/includes/worker.php';
 
 echo "worker started\n";
 
+$now = time();
+
+// get queue tasks 
+
 $queue_task_next_ary = $queue_task_interval_ary = [];
 
 $finder = new Finder();
 $finder->files()
-	->in(__DIR__ . '/includes/queue')
+	->in(__DIR__ . '/queue')
 	->name('*.php');
 
 foreach ($finder as $file)
@@ -28,29 +32,46 @@ foreach ($finder as $file)
     $queue_task_interval_ary[$queue_task] = $app['eland.queue.' . $queue_task]->get_interval();
 }
 
-/*
-$queue_task_interval_ary = [
-	'mail'				=> 5,
-	'autominlimit'		=> 1,
-	'geocode'			=> 120,
-];
-* 
-
-
-
-
-$queue_task_next_ary = [];
-*/
-
+error_log('-- queue tasks: ');
 var_dump($queue_task_interval_ary);
-
-
-$now = time();
 
 foreach ($queue_task_interval_ary as $task => $interval)
 {
 	$queue_task_next_ary[$task] = $now + $interval;
 }
+
+// get tasks
+
+$task_next_ary = $task_interval_ary = [];
+
+$finder = new Finder();
+$finder->files()
+	->in(__DIR__ . '/task')
+	->name('*.php');
+
+foreach ($finder as $file)
+{
+    $path = $file->getRelativePathname();
+
+    $queue_task = basename($path, '.php');
+
+    $task_interval_ary[$queue_task] = $app['eland.task.' . $queue_task]->get_interval();
+}
+
+error_log('-- tasks: ');
+var_dump($task_interval_ary);
+
+foreach ($task_interval_ary as $task => $interval)
+{
+	$task_next_ary[$task] = $now + $interval;
+}
+
+
+
+
+
+
+
 
 $loop_count = 1;
 
@@ -72,9 +93,7 @@ while (true)
 		}
 	}
 
-	unset($task);
-
-//	error_log(implode(' ! ', $omit_queue_task_ary));
+	unset($queue_task);
 
 	$queue_task = $app['eland.queue']->get($omit_queue_task_ary);
 
@@ -108,6 +127,7 @@ while (true)
 		$app['eland.task.' . $name]->run();
 		$app['eland.task_schedule']->update();
 	}
+
 
 	if ($loop_count % 60 == 0)
 	{

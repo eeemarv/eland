@@ -2,8 +2,8 @@
 
 namespace eland\queue;
 
+use eland\model\queue as queue_interface;
 use eland\queue;
-use eland\queue_interface;
 use eland\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;

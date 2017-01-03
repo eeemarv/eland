@@ -1,8 +1,8 @@
 {
 	"name": "eeemarv/eland",
-	"license": "AGPL-3.0",	
+	"license": "AGPL-3.0",
 	"type": "project",
-	"description": "web app for lets groups.",
+	"description": "web app for community currency.",
 
     "require": {
 		"php": "^7",
@@ -29,9 +29,12 @@
 
     "minimum-stability": "stable",
 
-    "autoload": {
-        "psr-4": {
-            "eland\\": "includes/"
+	"autoload": {
+		"psr-4": {
+			"eland\\": "service/",
+			"eland\\model\\": "model/",
+			"eland\\queue\\": "queue/",
+			"eland\\task\\": "task/"
         }
     }
 }

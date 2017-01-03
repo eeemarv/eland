@@ -29,7 +29,7 @@ $app['eland.task.cleanup_news'] = function ($app){
 };
 
 $app['eland.task.cleanup_logs'] = function ($app){
-	return new eland\task\cleanup_logs($app['db'], $app['eland.xdb']);
+	return new eland\task\cleanup_logs($app['db']);
 };
 
 $app['eland.task.saldo_update'] = function ($app){
@@ -60,7 +60,7 @@ $app['eland.task_schedule'] = function ($app){
 // queue
 
 $app['eland.queue.geocode'] = function ($app){
-	return new eland\queue\geocode($app['db'], $app['eland.cache'], $app['eland.queue'], $app['monolog']);
+	return new \eland\queue\geocode($app['db'], $app['eland.cache'], $app['eland.queue'], $app['monolog']);
 };
 
 // init

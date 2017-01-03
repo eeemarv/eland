@@ -2,19 +2,16 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
-use eland\xdb;
 
-class cleanup_logs extends base_task
+class cleanup_logs extends task
 {
 	protected $db;
-	protected $xdb;
 
-	public function __construct(db $db, xdb $xdb)
+	public function __construct(db $db)
 	{
 		$this->db = $db;
-		$this->xdb = $xdb;
 	}
 
 	public function run()

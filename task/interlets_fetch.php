@@ -2,7 +2,7 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
 use eland\typeahead;
@@ -11,7 +11,7 @@ use eland\groups;
 use eland\xdb;
 use eland\cache;
 
-class interlets_fetch extends base_task
+class interlets_fetch extends task
 {
 	protected $redis;
 	protected $db;
@@ -361,5 +361,10 @@ class interlets_fetch extends base_task
 		echo $redis_data_key . $r;
 		echo $redis_refresh_key . $r;
 		echo 'user count: ' . $user_count . $r;	
+	}
+
+	public function get_interval()
+	{
+		return 1800;
 	}
 }

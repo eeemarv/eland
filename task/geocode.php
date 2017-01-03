@@ -2,13 +2,13 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use eland\cache;
 use Monolog\Logger;
 use eland\queue\geocode as geocode_queue;
 
-class geocode extends base_task
+class geocode extends task
 {
 	protected $queue;
 	protected $monolog;
@@ -78,6 +78,6 @@ class geocode extends base_task
 
 	public function get_interval()
 	{
-		return 1800;
+		return 900;
 	}
 }

@@ -2,12 +2,12 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use eland\xdb;
 
-class cleanup_news extends base_task
+class cleanup_news extends task
 {
 	protected $db;
 	protected $xdb;
@@ -20,7 +20,7 @@ class cleanup_news extends base_task
 		$this->monolog = $monolog;
 	}
 
-	function run()
+	public function run()
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
@@ -32,5 +32,10 @@ class cleanup_news extends base_task
 			$this->db->delete($this->schema . '.news', ['id' => $n['id']]);
 			$this->monolog->info('removed news item ' . $n['headline'], ['schema' => $this->schema]);
 		}
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }

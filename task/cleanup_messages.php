@@ -2,11 +2,11 @@
 
 namespace eland\task;
 
-use eland\base_task;
+use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-class cleanup_messages extends base_task
+class cleanup_messages extends task
 {
 	protected $db;
 	protected $monolog;
@@ -149,5 +149,10 @@ class cleanup_messages extends base_task
 			
 			$this->db->update($this->schema . '.categories', $stats, ['id' => $id]);
 		}
+	}
+
+	public function get_interval()
+	{
+		return 86400;
 	}
 }
