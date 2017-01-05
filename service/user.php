@@ -11,20 +11,20 @@ use eland\this_group;
 
 class user implements UserInterface
 {
-	protected $this_group;
-	protected $monolog;
-	protected $session;
+	private $this_group;
+	private $monolog;
+	private $session;
 
-	protected $schema;
+	private $schema;
 
-	protected $id;
-	protected $role;
+	private $id;
+	private $role;
 
-	protected $data;
+	private $data;
 
-	protected $logins;
+	private $logins;
 
-	protected $possible_roles = [
+	private $possible_roles = [
 		'ROLE_ANONUMOUS' 	=> 'anonymous',
 		'ROLE_GUEST'		=> 'guest',
 		'ROLE_INTERLETS'	=> 'interlets',

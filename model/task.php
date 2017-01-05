@@ -2,21 +2,23 @@
 
 namespace eland\model;
 
-abstract class task
-{
-	protected $schema = '';
+use eland\model\task_interface;
 
-	function needs_schema()
+abstract class task implements task_interface
+{
+	private $schema = '';
+
+	public function needs_schema()
 	{
 		return true;
 	}
 
-	function set_schema($schema)
+	public function set_schema($schema)
 	{
 		$this->schema = $schema;
 	}
 
-	function get_schema()
+	public function get_schema()
 	{
 		return $this->schema;
 	}

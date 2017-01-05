@@ -7,10 +7,10 @@ use Monolog\Logger;
 
 class typeahead
 {
-	protected $redis;
-	protected $monolog;
-	protected $version;
-	protected $ttl = 5184000; // 60 days
+	private $redis;
+	private $monolog;
+	private $version;
+	private $ttl = 5184000; // 60 days
 
 	public function __construct(Redis $redis, Logger $monolog)
 	{

@@ -10,18 +10,18 @@ use eland\this_group;
 
 class task_schedule
 {
-	protected $db;
-	protected $monolog;
-	protected $cache;
-	protected $groups;
-	protected $time;
-	protected $schema;
-	protected $name;
-	protected $event_time;
-	protected $this_group;
-	protected $cronjob_ary;
+	private $db;
+	private $monolog;
+	private $cache;
+	private $groups;
+	private $time;
+	private $schema;
+	private $name;
+	private $event_time;
+	private $this_group;
+	private $cronjob_ary;
 
-	protected $tasks = [
+	private $tasks = [
 		'cleanup_cache'			=> [86400],
 		'saldo'					=> [86400, 'saldofreqdays'],
 		'user_exp_msgs'			=> [86400, '', 'msgexpwarnenabled'],

@@ -8,8 +8,8 @@ use eland\user;
 
 class base_twig_extension extends Twig_Extension
 {
-	protected $this_group;
-	protected $user;
+	private $this_group;
+	private $user;
 
 	public function __construct(this_group $this_group, user $user)
 	{
