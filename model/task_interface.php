@@ -4,12 +4,9 @@ namespace eland\model;
 
 interface task_interface
 {
-	public function needs_schema()
-
-	public function set_schema(string $schema)
-
-	public function get_schema()
-
+	/*
+	 * run the task
+	 */
 	public function run()
 
 	/*
@@ -22,5 +19,8 @@ interface task_interface
 	 */
 	public function should_run()
 
+	/*
+	 * get the interval to the next task in seconds
+	 */
 	public function get_interval()
 }

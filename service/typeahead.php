@@ -39,13 +39,13 @@ class typeahead
 			if (strpos($name, 'users_') !== false)
 			{
 				$status = str_replace('users_', '', $name);
-				$out .= $this->rootpath . 'ajax/typeahead_users.php?status=' . $status;
+				$out .= './ajax/typeahead_users.php?status=' . $status;
 				$out .= ($group_id) ? '&group_id=' . $group_id : '';
 				$out .= '&' . http_build_query(get_session_query_param());
 			}
 			else
 			{
-				$out .= $this->rootpath . 'ajax/typeahead_' . $name . '.php?';
+				$out .= './ajax/typeahead_' . $name . '.php?';
 				$out .= http_build_query(get_session_query_param());
 			}
 
