@@ -35,7 +35,8 @@
 			"eland\\model\\": "model/",
 			"eland\\queue\\": "queue/",
 			"eland\\task\\": "task/",
-			"eland\\schema_task\\": "schema_task/"
+			"eland\\schema_task\\": "schema_task/",
+			"eland\\util\\": "util/"
         }
     }
 }

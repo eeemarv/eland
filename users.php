@@ -2656,8 +2656,19 @@ if ($v_list && $s_admin)
 
 		$ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
 		$sql_bind = [$ts];
-		$and = ' and u.letscode <> ? ';
-		$sql_bind[] = trim($activity_filter_letscode);
+
+		$activity_filter_letscode = trim($activity_filter_letscode);
+
+		if ($activity_filter_letscode)
+		{
+			list($code_only_activity_filter_letscode) = explode(' ', $activity_filter_letscode);
+			$and = ' and u.letscode <> ? ';
+			$sql_bind[] = trim($code_only_activity_filter_letscode);
+		}
+		else
+		{
+			$and = ' and 1 = 1 ';
+		}
 
 		$in_ary = $app['db']->fetchAll('select sum(t.amount), count(t.id), t.id_to
 			from transactions t, users u
@@ -2673,14 +2684,26 @@ if ($v_list && $s_admin)
 
 		foreach ($in_ary as $in)
 		{
+			if (!isset($activity[$in['id_to']]))
+			{
+				$activity[$in['id_to']]['trans_total'] = 0;
+				$activity[$in['id_to']]['amount_total'] = 0;
+			}
+
 			$activity[$in['id_to']]['trans_in'] = $in['count'];
 			$activity[$in['id_to']]['amount_in'] = $in['sum'];
-			$activity[$in['id_to']]['trans_total'] = $in['count'];
-			$activity[$in['id_to']]['amount_total'] = $in['sum'];
+			$activity[$in['id_to']]['trans_total'] += $in['count'];
+			$activity[$in['id_to']]['amount_total'] += $in['sum'];
 		}
 
 		foreach ($out_ary as $out)
 		{
+			if (!isset($activity[$out['id_from']]))
+			{
+				$activity[$out['id_from']]['trans_total'] = 0;
+				$activity[$out['id_from']]['amount_total'] = 0;
+			}
+
 			$activity[$out['id_from']]['trans_out'] = $out['count'];
 			$activity[$out['id_from']]['amount_out'] = $out['sum'];
 			$activity[$out['id_from']]['trans_total'] += $out['count'];
@@ -2815,7 +2838,8 @@ if ($v_list)
 
 	if ($s_admin)
 	{
-		$app['eland.assets']->add(['datepicker', 'summernote', 'csv.js', 'table_sel.js', 'rich_edit.js']);
+		$app['eland.assets']->add(['datepicker', 'summernote', 'typeahead',
+			'csv.js', 'table_sel.js', 'rich_edit.js', 'typeahead.js']);
 	}
 }
 else if ($v_tiles)
@@ -2946,9 +2970,34 @@ if ($s_admin && $v_list)
 		else if ($group == 'a')
 		{
 			echo '<h3>Transacties/activiteit</h3>';
-			echo '<p>In de laatste <input type="number" name="activity_days" value="' . $activity_days . '" ';
-			echo 'size="4" min="1"> dagen. Exclusief tegenpartij (letscode): <input type="text" name="activity_filter_letscode" ';
-			echo 'value="' . $activity_filter_letscode . '"></p>';
+			echo '<div class="form-horizontal">';
+
+			echo '<div class="form-group">';
+			echo '<label for="activity_days" class="col-sm-3 control-label">';
+			echo 'In periode (dagen)';
+			echo '</label>';
+			echo '<div class="col-sm-9">';
+			echo '<input type="number" name="activity_days" value="' . $activity_days . '" ';
+			echo 'size="4" min="1" class="form-control">';
+			echo '</div></div>';
+
+			echo '<div class="form-group">';
+			echo '<label for="activity_filter_letscode" class="col-sm-3 control-label">';
+			echo 'Exclusief tegenpartij (letscode)';
+			echo '</label>';
+			echo '<div class="col-sm-9">';
+			echo '<input type="text" name="activity_filter_letscode" ';
+			echo 'value="' . $activity_filter_letscode . '" ';
+			echo 'class="form-control" data-typeahead="';
+			echo $app['eland.typeahead']->get(['users_active', 'users_extern',
+				'users_inactive', 'users_im', 'users_ip']);
+			echo '">';
+			echo '</div></div>';
+/*			echo '<p></p>Exclusief tegenpartij (letscode): <input type="text" name="activity_filter_letscode" ';
+			echo 'value="' . $activity_filter_letscode . '" ';
+			echo 'data-typeahead="' . . '">'; *
+			*/
+			echo '</div>';
 		}
 		else if ($group == 'm')
 		{
@@ -3196,7 +3245,7 @@ if ($v_list)
 				foreach($show_columns['a'] as $key => $one)
 				{
 					echo '<td>';
-					echo $activity[$id][$key];
+					echo $activity[$id][$key] ?? '';
 					echo '</td>';
 				}
 			}

@@ -11,16 +11,19 @@ interface task_interface
 
 	/*
 	 * if this task can run according to configuration
+	 * should be called each cycle
 	 */
 	public function can_run()
 
 	/*
-	 * if this task should run now (time)
-	 */
-	public function should_run()
-
-	/*
 	 * get the interval to the next task in seconds
+	 * should be called at init
 	 */
 	public function get_interval()
+
+	/*
+	 * get the interval multiplicator according to the configuration
+	 * should be called each cycle
+	 */
+	public function get_interval_multiplicator()
 }
