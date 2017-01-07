@@ -4,22 +4,20 @@ namespace eland;
 
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
-use eland\cache;
+use eland\schedule;
 use eland\groups;
 use eland\this_group;
 
-class task_schedule
+class task
 {
 	private $db;
 	private $monolog;
-	private $cache;
+	private $schedule;
 	private $groups;
 	private $time;
 	private $schema;
 	private $name;
-	private $event_time;
 	private $this_group;
-	private $cronjob_ary;
 
 	private $tasks = [
 		'cleanup_cache'			=> [86400],
@@ -34,28 +32,28 @@ class task_schedule
 		'interlets_fetch'		=> [900],
 	];
 
-	public function __construct(db $db, Logger $monolog, cache $cache, groups $groups, this_group $this_group)
+	public function __construct(db $db, Logger $monolog, schedule $schedule, groups $groups, this_group $this_group)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
-		$this->cache = $cache;
+		$this->schedule = $schedule;
 		$this->groups = $groups;
 		$this->this_group = $this_group;
-
-		$this->cronjob_ary = $this->cache->get('cronjob_ary');
 	}
 
 	public function find_next()
 	{
 		$r = "\n\r";
 
-		$this->time = time();
+		$this->schedule->set_time();
 
 		foreach ($this->tasks as $name => $t)
 		{
 			foreach ($this->groups->get_schemas() as $sch)
 			{
-				if (isset($this->cronjob_ary[$sch . '_cronjob_' . $name]))
+				$this->schedule->set_id($sch . '_' . $name);
+
+				if ($this->schedule->exists())
 				{
 					if (isset($t[2]))
 					{
@@ -74,16 +72,8 @@ class task_schedule
 
 					$add = $t[0] * $multiply;
 
-					$last_time = $this->cronjob_ary[$sch . '_cronjob_' . $name]['event_time'];
-
-					$last = strtotime($last_time . ' UTC');
-
-					$next = $last + $add;
-
-					if ($next < $this->time)
+					if ($this->schedule->should_run($add))
 					{
-						$next = ((($this->time - $next) > 43200) || ($add < 43201)) ? $this->time : $next;
-						$this->event_time = gmdate('Y-m-d H:i:s', $next);
 						$this->schema = $sch;
 						$this->name = $name;
 						$this->this_group->force($sch);
@@ -127,9 +117,10 @@ class task_schedule
 			$this->monolog->debug('new cronjob ' . $insert_name . ' in cache.', ['schema' => $insert_schema]);
 		}
 
-		$this->cronjob_ary[$insert_schema . '_cronjob_' . $insert_name]['event_time'] = $event_time;
-
-		$this->cache->set('cronjob_ary', $this->cronjob_ary);
+		$this->schedule->set_id($insert_schema . '_' . $insert_name)
+			->set_time(strtotime($event_time . ' UTC'));
+			->set_interval(0)
+			->update();
 
 		return false;
 	}
@@ -146,10 +137,6 @@ class task_schedule
 
 	public function update()
 	{
-		unset($this->cronjob_ary[$this->schema . '_cronjob_' . $this->name]);
-
-		$this->cronjob_ary[$this->schema . '_cronjob_' . $this->name]['event_time'] = $this->event_time;
-
-		$this->cache->set('cronjob_ary', $this->cronjob_ary);
+		$this->schedule->update();
 	}
 }

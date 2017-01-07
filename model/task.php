@@ -3,19 +3,42 @@
 namespace eland\model;
 
 use eland\model\task_interface;
+use eland\schedule;
 
 abstract class task implements task_interface
 {
-	public function run()
-	{
-	}
+	private $schedule;
 
-	public function can_run()
+	public function __construct(schedule $schedule)
 	{
-		return true;
+		$this->schedule = $schedule;
 	}
 
 	public function should_run()
+	{
+		if (!$this->is_enabled())
+		{
+			return false;
+		}
+
+		return $this->schedule->set_time()
+			->set_id(static::class)
+			->set_interval($this->get_interval())
+			->should_run();
+	}
+
+	public function run()
+	{
+		$this->process();
+		$this->schedule->update();
+		return $this;
+	}
+
+	public function process()
+	{
+	}
+
+	public function is_enabled()
 	{
 		return true;
 	}

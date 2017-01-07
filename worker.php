@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\Finder\Finder;
+use eland\util\task_container;
 
 if (php_sapi_name() !== 'cli')
 {
@@ -12,6 +13,39 @@ require_once __DIR__ . '/include/worker.php';
 
 echo "worker started\n";
 
+$queue = new task_container($app, 'queue');
+$task = new task_container($app, 'task');
+$schema_task = new task_container($app, 'schema_task');
+
+
+$loop_count = 1;
+
+while (true)
+{
+	$app['eland.log_db']->update();
+
+	sleep(1);
+
+	if ($task->should_run())
+	{
+		$task->run();
+	}
+	else if ($schema_task->should_run())
+	{
+		$schema_task->run();
+	}
+
+	if ($loop_count % 60 == 0)
+	{
+		error_log('...worker... ' . $loop_count);
+	}
+
+	$loop_count++;
+}
+
+
+
+/*
 $now = time();
 
 // get queue tasks 
@@ -65,12 +99,6 @@ foreach ($task_interval_ary as $task => $interval)
 {
 	$task_next_ary[$task] = $now + $interval;
 }
-
-
-
-
-
-
 
 
 $loop_count = 1;
@@ -136,3 +164,4 @@ while (true)
 
 	$loop_count++;
 }
+*/

@@ -10,17 +10,20 @@ use Monolog\Logger;
 use eland\s3;
 use eland\groups;
 
+use eland\schedule;
+
 class cleanup_image_files extends task
 {
-	protected $days = 365;
-	protected $cache;
-	protected $db;
-	protected $monolog;
-	protected $s3;
-	protected $groups;
+	private $days = 365;
+	private $cache;
+	private $db;
+	private $monolog;
+	private $s3;
+	private $groups;
 
-	public function __construct(cache $cache, db $db, Logger $monolog, s3 $s3, groups $groups)
+	public function __construct(cache $cache, db $db, Logger $monolog, s3 $s3, groups $groups, schedule $schedule)
 	{
+		parent::__construct($schedule);
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->monolog = $monolog;
@@ -28,7 +31,7 @@ class cleanup_image_files extends task
 		$this->groups = $groups;
 	}
 
-	public function run()
+	public function process()
 	{
 		// $schema is not used, files of all schemas are scanned
 

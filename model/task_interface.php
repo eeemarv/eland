@@ -5,25 +5,28 @@ namespace eland\model;
 interface task_interface
 {
 	/*
-	 * run the task
+	 * if this task should run 
 	 */
-	public function run()
+	public function should_run();
 
 	/*
-	 * if this task can run according to configuration
-	 * should be called each cycle
+	 * run the task and updates schedule
 	 */
-	public function can_run()
+	public function run();
+
+	/*
+	 *	called by ::run()
+	 */
+	public function process();
+
+	/*
+	 *
+	 */
+	public function is_enabled();
 
 	/*
 	 * get the interval to the next task in seconds
-	 * should be called at init
-	 */
-	public function get_interval()
-
-	/*
-	 * get the interval multiplicator according to the configuration
 	 * should be called each cycle
 	 */
-	public function get_interval_multiplicator()
+	public function get_interval();
 }

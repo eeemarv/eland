@@ -1,28 +1,31 @@
 <?php
 
-namespace eland\task;
+namespace eland\schema_task;
 
-use eland\model\task;
+use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use eland\queue\mail;
+
+use eland\schedule;
 use eland\groups;
+use eland\this_group;
 
-class user_exp_msgs extends task
+class user_exp_msgs extends schema_task
 {
-	protected $db;
-	protected $mail;
-	protected $groups;
-	protected $protocol;
+	private $db;
+	private $mail;
+	private $protocol;
 
-	public function __construct(db $db, mail $mail, groups $groups, string $protocol)
+	public function __construct(db $db, mail $mail, string $protocol,
+		schedule $schedule, groups $groups, this_group $this_group)
 	{
+		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->mail = $mail;
-		$this->groups = $groups;
 		$this->protocol = $protocol;
 	}
 
-	function run()
+	function process()
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
@@ -72,6 +75,11 @@ class user_exp_msgs extends task
 		}
 
 		$this->db->executeUpdate('update ' . $this->schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+	}
+
+	public function is_enabled()
+	{
+		return readconfigfromdb('msgexpwarnenabled', $this->schema) ? true : false;
 	}
 
 	public function get_interval()

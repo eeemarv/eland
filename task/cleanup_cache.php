@@ -5,33 +5,21 @@ namespace eland\task;
 use eland\cache;
 use eland\model\task;
 
+use eland\schedule;
+
 class cleanup_cache extends task
 {
-	protected $cache;
+	private $cache;
 
-	public function __construct(cache $cache)
+	public function __construct(cache $cache, schedule $schedule)
 	{
+		parent::__construct($schedule);
 		$this->cache = $cache;
 	}
 
-	function run()
+	function process()
 	{
 		$this->cache->cleanup();
-	}
-
-	function has_schema()
-	{
-		return false;
-	}
-
-	function can_run()
-	{
-		return true;
-	}
-
-	function should_run()
-	{
-
 	}
 
 	function get_interval()

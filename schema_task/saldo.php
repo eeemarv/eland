@@ -1,43 +1,45 @@
 <?php
 
-namespace eland\task;
+namespace eland\schema_task;
 
-use eland\model\task;
+use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
 use Monolog\Logger;
-use eland\groups;
 use eland\queue\mail;
 use eland\date_format;
 
-class saldo extends task
+use eland\schedule;
+use eland\groups;
+use eland\this_group;
+
+class saldo extends schema_task
 {
-	protected $db;
-	protected $xdb;
-	protected $monolog;
-	protected $mail;
-	protected $groups;
-	protected $s3_img_url;
-	protected $s3_doc_url;
-	protected $protocol;
-	protected $date_format;
+	private $db;
+	private $xdb;
+	private $monolog;
+	private $mail;
+	private $s3_img_url;
+	private $s3_doc_url;
+	private $protocol;
+	private $date_format;
 
 	public function __construct(db $db, xdb $xdb, Logger $monolog, mail $mail,
-		groups $groups, string $s3_img_url, string $s3_doc_url, string $protocol,
-		date_format $date_format)
+		string $s3_img_url, string $s3_doc_url, string $protocol,
+		date_format $date_format, schedule $schedule, groups $groups, this_group $this_group)
 	{
+		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
-		$this->groups = $groups;
 		$this->s3_img_url = $s3_img_url;
 		$this->s3_doc_url = $s3_doc_url;
 		$this->protocol = $protocol;
 		$this->date_format = $date_format;
 	}
 
-	function run()
+	function process()
 	{
 		// vars
 
@@ -497,6 +499,11 @@ class saldo extends task
 
 	public function get_interval()
 	{
+		if (isset($this->schema))
+		{
+			return 86400 * readconfigfromdb('saldofreqdays', $this->schema);
+		}
+
 		return 86400;
 	}
 }

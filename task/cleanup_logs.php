@@ -5,16 +5,19 @@ namespace eland\task;
 use eland\model\task;
 use Doctrine\DBAL\Connection as db;
 
+use eland\schedule;
+
 class cleanup_logs extends task
 {
-	protected $db;
+	private $db;
 
-	public function __construct(db $db)
+	public function __construct(db $db, schedule $schedule)
 	{
+		parent::__construct($schedule);
 		$this->db = $db;
 	}
 
-	public function run()
+	public function process()
 	{
 		// $schema is not used, logs from all schemas are cleaned up.
 

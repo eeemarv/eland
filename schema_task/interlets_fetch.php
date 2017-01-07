@@ -1,41 +1,44 @@
 <?php
 
-namespace eland\task;
+namespace eland\schema_task;
 
-use eland\model\task;
+use eland\model\schema_task;
 use Predis\Client as Redis;
 use Doctrine\DBAL\Connection as db;
 use eland\typeahead;
 use Monolog\Logger;
-use eland\groups;
 use eland\xdb;
 use eland\cache;
 
-class interlets_fetch extends task
+use eland\schedule;
+use eland\groups;
+use eland\this_group;
+
+class interlets_fetch extends schema_task
 {
-	protected $redis;
-	protected $db;
-	protected $xdb;
-	protected $cache;
-	protected $typeahead;
-	protected $monolog;
-	protected $groups;
+	private $redis;
+	private $db;
+	private $xdb;
+	private $cache;
+	private $typeahead;
+	private $monolog;
 
-	protected $group;
-	protected $client;
+	private $group;
+	private $client;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, cache $cache, typeahead $typeahead, Logger $monolog, groups $groups)
+	public function __construct(Redis $redis, db $db, xdb $xdb, cache $cache, typeahead $typeahead, Logger $monolog,
+		schedule $schedule, groups $groups, this_group $this_group)
 	{
+		parent::__construct($schedule, $groups, $this_group);
 		$this->redis = $redis;
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->cache = $cache;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
-		$this->groups = $groups;
 	}
 
-	public function run()
+	public function process()
 	{
 		$r = "<br>\r\n";
 

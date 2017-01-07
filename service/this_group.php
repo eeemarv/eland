@@ -32,7 +32,7 @@ class this_group
 	{
 		$this->schema = $schema;
 		$this->host = $this->groups->get_host($schema);
-		$this->db->exec('SET search_path TO ' . $schema);
+		$this->db->exec('set search_path to ' . $schema);
 	}
 
 	public function get_schema()

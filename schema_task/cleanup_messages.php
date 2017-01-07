@@ -1,23 +1,28 @@
 <?php
 
-namespace eland\task;
+namespace eland\schema_task;
 
-use eland\model\task;
+use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-class cleanup_messages extends task
-{
-	protected $db;
-	protected $monolog;
+use eland\schedule;
+use eland\groups;
+use eland\this_group;
 
-	public function __construct(db $db, Logger $monolog)
+class cleanup_messages extends schema_task
+{
+	private $db;
+	private $monolog;
+
+	public function __construct(db $db, Logger $monolog, schedule $schedule, groups $groups, this_group $this_group)
 	{
+		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->monolog = $monolog;
 	}
 
-	function run()
+	function process()
 	{
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays', $this->schema) * 86400);

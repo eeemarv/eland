@@ -2,7 +2,7 @@
 
 namespace eland\queue;
 
-use eland\model\queue as queue_interface;
+use eland\model\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use eland\cache;
 use eland\queue;

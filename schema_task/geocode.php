@@ -1,34 +1,40 @@
 <?php
 
-namespace eland\task;
+namespace eland\schema_task;
 
-use eland\model\task;
+use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use eland\cache;
 use Monolog\Logger;
 use eland\queue\geocode as geocode_queue;
 
-class geocode extends task
+use eland\schedule;
+use eland\groups;
+use eland\this_group;
+
+class geocode extends schema_task
 {
-	protected $queue;
-	protected $monolog;
-	protected $cache;
-	protected $db;
+	private $queue;
+	private $monolog;
+	private $cache;
+	private $db;
 
-	protected $curl;
-	protected $geocoder;
+	private $curl;
+	private $geocoder;
 
-	protected $geocode_queue;
+	private $geocode_queue;
 
-	public function __construct(db $db, cache $cache, Logger $monolog, geocode_queue $geocode_queue)
+	public function __construct(db $db, cache $cache, Logger $monolog, geocode_queue $geocode_queue,
+		schedule $schedule, groups $groups, this_group $this_group)
 	{
+		parent::__construct($schedule, $groups, $this_group);
 		$this->monolog = $monolog;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
 	}
 
-	public function run()
+	public function process()
 	{
 		$log_ary = [];
 
