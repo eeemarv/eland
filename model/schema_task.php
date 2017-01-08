@@ -11,9 +11,9 @@ use eland\this_group;
 
 abstract class schema_task extends task implements task_interface
 {
-	private $groups;
-	private $this_group;
-	private $schema;
+	protected $groups;
+	protected $this_group;
+	protected $schema;
 
 	public function __construct(schedule $schedule, groups $groups, this_group $this_group)
 	{
@@ -36,7 +36,7 @@ abstract class schema_task extends task implements task_interface
 				continue;
 			}
 
-			$should_run = $this->schedule->set_id($schema . '_' . static::class)
+			$should_run = $this->schedule->set_id($this->schema . '_' . $this->get_class_name())
 				->set_interval($this->get_interval())
 				->should_run();
 

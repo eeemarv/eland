@@ -13,6 +13,16 @@ require_once __DIR__ . '/include/worker.php';
 
 echo "worker started\n";
 
+$boot = $app['eland.cache']->get('boot');
+
+if (!count($boot))
+{
+	$boot = ['count' => 0];
+}
+
+$boot['count']++;
+$app['eland.cache']->set('boot', $boot);
+
 $queue = new task_container($app, 'queue');
 $task = new task_container($app, 'task');
 $schema_task = new task_container($app, 'schema_task');
@@ -37,7 +47,7 @@ while (true)
 
 	if ($loop_count % 60 == 0)
 	{
-		error_log('...worker... ' . $loop_count);
+		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
 	}
 
 	$loop_count++;

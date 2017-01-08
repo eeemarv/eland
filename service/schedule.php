@@ -79,6 +79,11 @@ class schedule
 
 	public function should_run()
 	{
+		if (!$this->exists())
+		{
+			return true;
+		}
+
 		$last = strtotime($this->tasks[$this->id] . ' UTC');
 
 		$this->next = $last + $this->interval;

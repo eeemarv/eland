@@ -7,7 +7,7 @@ use eland\schedule;
 
 abstract class task implements task_interface
 {
-	private $schedule;
+	protected $schedule;
 
 	public function __construct(schedule $schedule)
 	{
@@ -22,13 +22,15 @@ abstract class task implements task_interface
 		}
 
 		return $this->schedule->set_time()
-			->set_id(static::class)
+			->set_id($this->get_class_name())
 			->set_interval($this->get_interval())
 			->should_run();
 	}
 
 	public function run()
 	{
+		error_log('>> ' . $this->id);
+
 		$this->process();
 		$this->schedule->update();
 		return $this;
@@ -46,5 +48,18 @@ abstract class task implements task_interface
 	public function get_interval()
 	{
 		return 86400;
+	}
+
+	public function get_class_name()
+	{
+		$full = static::class;
+		$pos = strrpos($full, '\\');
+
+		if ($pos)
+		{
+			return substr($full, $pos + 1);
+		}
+
+		return $full;
 	}
 }
