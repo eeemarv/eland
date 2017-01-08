@@ -29,7 +29,7 @@ abstract class task implements task_interface
 
 	public function run()
 	{
-		error_log('>> ' . $this->id);
+		error_log('>> ' . $this->schedule->get_id());
 
 		$this->process();
 		$this->schedule->update();
