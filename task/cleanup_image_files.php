@@ -52,7 +52,7 @@ class cleanup_image_files extends task
 
 		$this->cache->set('cleanup_image_files_marker', ['marker' => $object['Key']]);
 
-		$object_time = strtotime($object['LastModified']);
+		$object_time = strtotime($object['LastModified'] . ' UTC');
 
 		$old = ($object_time < $time_treshold) ? true : false;
 
