@@ -487,7 +487,7 @@ class saldo extends schema_task
 
 		if (count($log_to))
 		{
-			$this->monolog->info('Saldomail queued, subject: ' . $subject . ', to: ' . implode(', ', $log_to), ['schema' => $this->schema]);
+			$this->monolog->info('Saldomail queued, to: ' . implode(', ', $log_to), ['schema' => $this->schema]);
 		}
 		else
 		{

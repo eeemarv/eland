@@ -19,6 +19,11 @@ $app['eland.task.cleanup_logs'] = function ($app){
 	return new eland\task\cleanup_logs($app['db'], $app['eland.schedule']);
 };
 
+$app['eland.task.get_elas_interlets_domains'] = function ($app){
+	return new eland\task\get_elas_interlets_domains($app['db'], $app['eland.cache'],
+		$app['eland.schedule'], $app['eland.groups']);
+};
+
 // schema tasks (tasks applied to every group seperate)
 
 $app['eland.schema_task.cleanup_messages'] = function ($app){
