@@ -2,10 +2,11 @@
 
 namespace eland\model;
 
+use eland\model\job;
 use eland\model\task_interface;
 use eland\schedule;
 
-abstract class task implements task_interface
+abstract class task extends job implements task_interface
 {
 	protected $schedule;
 
@@ -48,18 +49,5 @@ abstract class task implements task_interface
 	public function get_interval()
 	{
 		return 86400;
-	}
-
-	public function get_class_name()
-	{
-		$full = static::class;
-		$pos = strrpos($full, '\\');
-
-		if ($pos)
-		{
-			return substr($full, $pos + 1);
-		}
-
-		return $full;
 	}
 }

@@ -2,13 +2,14 @@
 
 namespace eland\queue;
 
+use eland\model\queue as queue_model;
 use eland\model\queue_interface;
 use eland\queue;
 use eland\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
 
-class autominlimit implements queue_interface
+class autominlimit extends queue_model implements queue_interface
 {
 	protected $queue;
 	protected $monolog;
@@ -21,6 +22,8 @@ class autominlimit implements queue_interface
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->db = $db;
+
+		parent::__construct();
 	}
 
 	public function process(array $data)

@@ -69,7 +69,7 @@ class geocode extends schema_task
 				continue;
 			}
 
-			$this->queue_geocode->queue($data);
+			$this->geocode_queue->queue($data);
 
 			$log_ary[] = link_user($row['id_user'], $this->schema, false, true) . ': ' . $data['adr'];
 

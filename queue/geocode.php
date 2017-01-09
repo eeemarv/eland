@@ -2,13 +2,14 @@
 
 namespace eland\queue;
 
+use eland\model\queue as queue_model;
 use eland\model\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use eland\cache;
 use eland\queue;
 use Monolog\Logger;
 
-class geocode implements queue_interface
+class geocode extends queue_model implements queue_interface
 {
 	protected $queue;
 	protected $monolog;
@@ -35,6 +36,8 @@ class geocode implements queue_interface
 		]);
 
 		$this->geocoder->using('google_maps')->limit(1);
+
+		parent::__construct();
 	}
 
 	public function process(array $data)

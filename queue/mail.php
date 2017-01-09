@@ -2,6 +2,7 @@
 
 namespace eland\queue;
 
+use eland\model\queue as queue_model;
 use eland\model\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use eland\queue;
@@ -10,7 +11,7 @@ use eland\this_group;
 use eland\mailaddr;
 use Twig_Environment as Twig;
 
-class mail implements queue_interface
+class mail extends queue_model implements queue_interface
 {
 	protected $converter;
 	protected $mailer;
@@ -43,6 +44,8 @@ class mail implements queue_interface
 		$converter_config = $this->converter->getConfig();
 		$converter_config->setOption('strip_tags', true);
 		$converter_config->setOption('remove_nodes', 'img');
+
+		parent::__construct();
 	}
 
 	/**

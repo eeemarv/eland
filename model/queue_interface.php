@@ -9,4 +9,8 @@ interface queue_interface
 	public function queue(array $data);
 
 	public function get_interval();
+
+	public function get_next();
+
+	public function set_next(int $next);
 }

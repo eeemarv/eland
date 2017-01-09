@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\Finder\Finder;
+use eland\util\queue_container;
 use eland\util\task_container;
 
 if (php_sapi_name() !== 'cli')
@@ -23,10 +24,9 @@ if (!count($boot))
 $boot['count']++;
 $app['eland.cache']->set('boot', $boot);
 
-$queue = new task_container($app, 'queue');
+$queue = new queue_container($app, 'queue');
 $task = new task_container($app, 'task');
 $schema_task = new task_container($app, 'schema_task');
-
 
 $loop_count = 1;
 
@@ -36,7 +36,11 @@ while (true)
 
 	sleep(1);
 
-	if ($task->should_run())
+	if ($queue->should_run())
+	{
+		$queue->run();
+	}
+	else if ($task->should_run())
 	{
 		$task->run();
 	}
