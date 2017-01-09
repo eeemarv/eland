@@ -127,6 +127,12 @@ $app['eland.user'] = function ($app){
 	return new eland\user($app['eland.this_group'], $app['monolog'], $app['session'], $app['eland.page_access']);
 };
 
+// init
+
+$app['eland.elas_db_upgrade'] = function ($app){
+	return new eland\elas_db_upgrade($app['db']);
+};
+
 /** **/
 
 if (!$app['eland.this_group']->get_schema())

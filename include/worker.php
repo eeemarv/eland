@@ -87,10 +87,3 @@ $app['eland.queue.geocode'] = function ($app){
 	return new \eland\queue\geocode($app['db'], $app['eland.cache'], $app['eland.queue'], $app['monolog']);
 };
 
-// init
-
-$app['eland.elas_db_upgrade'] = function ($app){
-	return new eland\elas_db_upgrade($app['db']);
-};
-
-
