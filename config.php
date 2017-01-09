@@ -634,7 +634,7 @@ $app['eland.assets']->add(['summernote', 'rich_edit.js', 'config.js']);
 $h1 = 'Instellingen';
 $fa = 'gears';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 echo '<div>';
 echo '<ul class="nav nav-pills" role="tablist">';
@@ -840,7 +840,7 @@ echo '</div>';
 echo '</div>';
 
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';
 
 function cancel()
 {

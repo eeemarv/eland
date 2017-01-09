@@ -174,7 +174,7 @@ if ($add || $edit)
 	$h1 .= ($add) ? 'toevoegen' : 'aanpassen';
 	$fa = 'calendar';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -253,7 +253,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -294,7 +294,7 @@ if ($del)
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	$background = ($news['approved']) ? '' : ' bg-warning';
 
@@ -359,7 +359,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -440,7 +440,7 @@ if ($id)
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
 	$fa = 'calendar';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	if (!$s_guest)
 	{
@@ -498,7 +498,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -592,7 +592,7 @@ else
 
 	$fa = 'calendar';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 }
 
 if (!count($news))
@@ -604,7 +604,7 @@ if (!count($news))
 
 	if (!$inline)
 	{
-		include __DIR__ . '/include/inc_footer.php';
+		include __DIR__ . '/include/footer.php';
 	}
 	exit;
 }
@@ -742,7 +742,7 @@ else if ($v_extended)
 
 if (!$inline)
 {
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 }
 
 function cancel($id = '')

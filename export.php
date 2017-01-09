@@ -186,7 +186,7 @@ foreach ($export_ary as $ex_key => $export)
 $h1 = 'Export';
 $fa = 'download';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 
 if (function_exists('exec'))
@@ -218,4 +218,4 @@ echo $buttons;
 
 echo '</div></div>';
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';

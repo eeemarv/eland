@@ -131,7 +131,7 @@ $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
 
 $fa = 'history';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -311,4 +311,4 @@ echo '</div></div>';
 
 $app['eland.pagination']->render();
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';

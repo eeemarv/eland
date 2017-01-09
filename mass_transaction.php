@@ -2,7 +2,7 @@
 
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
-require_once __DIR__ . '/include/inc_transactions.php';
+require_once __DIR__ . '/include/transactions.php';
 
 $q = $_POST['q'] ?? ($_GET['q'] ?? '');
 $hsh = $_POST['hsh'] ?? ($_GET['hsh'] ?? '096024');
@@ -389,7 +389,7 @@ $app['eland.assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', '
 $h1 = 'Massa transactie';
 $fa = 'exchange';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
@@ -640,7 +640,7 @@ echo '<input type="hidden" value="' . $transid . '" name="transid">';
 
 echo '</form>';
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';
 
 /**
  *

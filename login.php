@@ -234,7 +234,7 @@ if(readconfigfromdb('maintenance'))
 $h1 = 'Login';
 $fa = 'sign-in';
 
-require_once __DIR__ . '/include/inc_header.php';
+require_once __DIR__ . '/include/header.php';
 
 if(empty($token))
 {
@@ -269,4 +269,4 @@ if(empty($token))
 	echo aphp('pwreset', [], 'Ik ben mijn paswoord vergeten');
 }
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';

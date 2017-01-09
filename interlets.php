@@ -185,7 +185,7 @@ if ($add || $edit)
 	$h1 .= ($edit) ? 'aanpassen' : 'toevoegen';
 	$fa = 'share-alt';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -278,7 +278,7 @@ if ($add || $edit)
 
 	render_schemas_groups();
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -311,7 +311,7 @@ if ($del)
 	$h1 = 'Letsgroep verwijderen: ' . $group['groupname'];
 	$fa = 'share-alt';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -331,7 +331,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -355,7 +355,7 @@ if ($id)
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
@@ -401,7 +401,7 @@ if ($id)
 
 	render_schemas_groups();
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -463,7 +463,7 @@ $top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 
 $h1 = 'InterLETS groepen';
 $fa = 'share-alt';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 if (count($groups))
 {
@@ -552,7 +552,7 @@ else
 
 render_schemas_groups();
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';
 exit;
 
 /**

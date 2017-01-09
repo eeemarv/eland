@@ -2,7 +2,7 @@
 
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
-require_once __DIR__ . '/include/inc_transactions.php';
+require_once __DIR__ . '/include/transactions.php';
 
 $orderby = $_GET['orderby'] ?? 'cdate';
 $asc = $_GET['asc'] ?? 0;
@@ -768,7 +768,7 @@ if ($add)
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	$minlimit = $session_user['minlimit'];
 
@@ -915,7 +915,7 @@ if ($add)
 
 	echo '</i></small></ul>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1024,7 +1024,7 @@ if ($edit)
 	$h1 = 'Omschrijving transactie aanpassen';
 	$fa = 'exchange';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1160,7 +1160,7 @@ if ($edit)
 
 	echo '</i></small></ul>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;	
 }
 
@@ -1212,7 +1212,7 @@ if ($id)
 	$h1 = 'Transactie';
 	$fa = 'exchange';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
@@ -1330,7 +1330,7 @@ if ($id)
 	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 	echo '</i></small></ul>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1633,7 +1633,7 @@ if (!$inline)
 
 	$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	$panel_collapse = ($filtered && !$uid) ? '' : ' collapse';
 
@@ -1814,7 +1814,7 @@ if (!count($transactions))
 
 	if (!$inline)
 	{
-		include __DIR__ . '/include/inc_footer.php';
+		include __DIR__ . '/include/footer.php';
 	}
 	exit;
 }
@@ -2016,7 +2016,7 @@ else
 
 	echo '</i></small></ul>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 }
 
 function cancel($id = null)

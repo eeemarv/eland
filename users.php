@@ -338,7 +338,7 @@ if ($img_del && $id)
 
 	$h1 = 'Profielfoto ' . (($s_admin) ? 'van ' . link_user($id) . ' ' : '') . 'verwijderen?';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
@@ -362,7 +362,7 @@ if ($img_del && $id)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 
 	exit;
 }
@@ -784,7 +784,7 @@ if ($pw)
 	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
 	$fa = 'key';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -823,7 +823,7 @@ if ($pw)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1021,7 +1021,7 @@ if ($del)
 	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
 	$fa = 'user';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['name'];
 	echo ' worden verwijderd.</font></p>';
@@ -1048,7 +1048,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1710,7 +1710,7 @@ if ($add || $edit)
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
 	$fa = 'user';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1947,7 +1947,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -2072,7 +2072,7 @@ if ($id)
 
 	$fa = 'user';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="row">';
 	echo '<div class="col-md-6">';
@@ -2357,7 +2357,7 @@ if ($id)
 	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
 	echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -2851,7 +2851,7 @@ else if ($v_map)
 	$app['eland.assets']->add(['leaflet', 'leaflet_label', 'users_map.js']);
 }
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 if ($v_map)
 {
@@ -3588,7 +3588,7 @@ else if ($v_tiles)
 	echo '</div>';
 }
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';
 
 function render_contacts($contacts, $abbrev = null)
 {

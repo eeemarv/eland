@@ -192,7 +192,7 @@ $app['eland.assets']->add(['summernote', 'rich_edit.js']);
 $h1 = 'Contact';
 $fa = 'comment-o';
 
-require_once __DIR__ . '/include/inc_header.php';
+require_once __DIR__ . '/include/header.php';
 
 $top_text = readconfigfromdb('contact_form_top_text');
 
@@ -242,4 +242,4 @@ echo '<p><small>Leden: indien mogelijk, login en gebruik het supportformulier. '
 echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';
 echo 'aanvragen met je mailadres vanuit de login-pagina!</i></small></p>';
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';

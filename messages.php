@@ -473,7 +473,7 @@ if ($img_del == 'all' && $id)
 
 	$app['eland.assets']->add('msg_img_del.js');
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	if ($s_admin)
 	{
@@ -518,7 +518,7 @@ if ($img_del == 'all' && $id)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 
 	exit;
 }
@@ -646,7 +646,7 @@ if ($del)
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info printview">';
 
@@ -700,7 +700,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1139,7 +1139,7 @@ if (($edit || $add))
 	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1323,7 +1323,7 @@ if (($edit || $add))
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1439,7 +1439,7 @@ if ($id)
 	$h1 .= (strtotime($message['validity']) < time()) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 	$fa = 'newspaper-o';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	if ($message['cid'])
 	{
@@ -1621,7 +1621,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -1994,7 +1994,7 @@ if (!$inline)
 
 	$app['eland.assets']->add(['csv.js', 'msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -2172,7 +2172,7 @@ if (!count($messages))
 
 	if (!$inline)
 	{
-		include __DIR__ . '/include/inc_footer.php';
+		include __DIR__ . '/include/footer.php';
 	}
 	exit;
 }
@@ -2421,11 +2421,11 @@ else if ($v_list)
 		echo '</div></div>';
 	}
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 }
 else if ($v_extended)
 {
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 }
 
 function cancel($id = null)

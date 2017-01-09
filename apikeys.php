@@ -30,7 +30,7 @@ if ($del)
 	$h1 = 'Apikey verwijderen?';
 	$fa = 'key';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -50,7 +50,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -89,7 +89,7 @@ if ($add)
 	$h1 = 'Apikey toevoegen';
 	$fa = 'key';
 
-	include __DIR__ . '/include/inc_header.php';
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -125,7 +125,7 @@ if ($add)
 	echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
 	echo 'moet je geen apikey aanmaken.</li></ul>';
 
-	include __DIR__ . '/include/inc_footer.php';
+	include __DIR__ . '/include/footer.php';
 	exit;
 }
 
@@ -136,7 +136,7 @@ $top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'A
 $h1 = 'Apikeys';
 $fa = 'key';
 
-include __DIR__ . '/include/inc_header.php';
+include __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-default printview">';
 
@@ -176,7 +176,7 @@ echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interlets verbindinge
 echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
 echo 'moet je geen apikey aanmaken.</li></ul>';
 
-include __DIR__ . '/include/inc_footer.php';
+include __DIR__ . '/include/footer.php';
 
 function cancel($id = '')
 {
