@@ -31,7 +31,7 @@ class get_elas_interlets_domains extends task
 
 		foreach ($this->groups->get_schemas() as $sch)
 		{
-			$groups = $this->db->fetchAll('select url
+			$groups = $this->db->fetchAll('select url, remoteapikey
 				from ' . $sch . '.letsgroups
 				where apimethod = \'elassoap\'
 					and remoteapikey is not null
@@ -46,7 +46,7 @@ class get_elas_interlets_domains extends task
 					continue;
 				}
 
-				$domains[$domain][$sch] = true;
+				$domains[$domain][$sch] = $group['remoteapikey'];
 			}
 		}
 

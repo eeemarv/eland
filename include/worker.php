@@ -24,6 +24,10 @@ $app['eland.task.get_elas_interlets_domains'] = function ($app){
 		$app['eland.schedule'], $app['eland.groups']);
 };
 
+$app['eland.task.fetch_interlets_users'] = function ($app){
+	return new eland\task\fetch_interlets_users($app['eland.cache'], $app['eland.schedule']);
+};
+
 // schema tasks (tasks applied to every group seperate)
 
 $app['eland.schema_task.cleanup_messages'] = function ($app){

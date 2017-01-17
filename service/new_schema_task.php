@@ -6,6 +6,8 @@ use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use eland\schedule;
 
+// not used
+
 class new_schema_task
 {
 	private $db;
