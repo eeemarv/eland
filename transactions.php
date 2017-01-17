@@ -525,7 +525,7 @@ if ($add)
 
 			if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
 			{
-				$errors[] = 'De interlets gebruiker heeft zijn maximum limiet bereikt.';
+				$errors[] = 'De interlets gebruiker in de remote interlets groep heeft zijn maximum limiet bereikt.';
 			}
 
 			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
