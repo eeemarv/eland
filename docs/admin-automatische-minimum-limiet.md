@@ -8,7 +8,7 @@ Wanneer men de automatisch dalende minimum limiet inschakelt, zal de mimimum lim
 
 Een voorbeeld:
 
-_Een nieuw lid begint met een saldo nul en een minimum limiet nul. Dus het lid kan nog niets uitgeven. Wanneer het lid 20 letseenheden verdient, daalt automatisch de minimum limiet naar -20. Het lid kan nu maximaal 40 eenheden uitgeven (saldo: +20, minimum limiet: -20). Wanneer het lid nog eens 30 eenheden uitgeeft, zal de minimum limiet -50 bedragen. De minimum limiet zal blijven dalen tot de absolute en algemeen geldende minimum limiet bereikt is._
+_Een nieuw lid begint met een saldo nul en een minimum limiet nul. Dus het lid kan nog niets uitgeven. Wanneer het lid 20 letseenheden ontvangt, daalt automatisch de minimum limiet naar -20. Het lid kan nu maximaal 40 eenheden uitgeven (saldo: +20, minimum limiet: -20). Wanneer het lid nog eens 30 eenheden uitgeeft, zal de minimum limiet -50 bedragen. De minimum limiet zal blijven dalen tot de absolute en algemeen geldende minimum limiet bereikt is._
 
 
 Het formulier 'Automatische minimum limiet' bevat nogal wat opties, een standaard instelling volstaat gewoonlijk:
