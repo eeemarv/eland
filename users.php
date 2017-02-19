@@ -2855,12 +2855,13 @@ include __DIR__ . '/include/header.php';
 
 if ($v_map)
 {
+	$lat_add = $lng_add = 0;
 	$data_users = [];
-	$hidden_count = $not_geocoded_count = $not_preset_count = 0;
+	$hidden_count = $not_geocoded_count = $not_present_count = 0;
 
 	foreach ($users as $user)
 	{
-		$adr = $contacts[$user['id']]['adr'][0];
+		$adr = $contacts[$user['id']]['adr'][0] ?? false;
 
 		if ($adr)
 		{
@@ -2912,7 +2913,9 @@ if ($v_map)
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
 	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $app['eland.mapbox_token'] . '" ';
-	echo 'data-session-param="' . get_session_query_param() . '"></div>';
+	echo 'data-session-param="';
+	echo http_build_query(get_session_query_param());
+	echo '"></div>';
 	echo '</div>';
 	echo '</div>';
 
