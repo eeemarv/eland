@@ -76,7 +76,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen token krijgen.';
 	echo json_encode(['error' => $m]);
-	$app['monolog']->error('elas-token: ', $m . ' ' . $err);
+	$app['monolog']->error('elas-token: ' . $m . ' ' . $err);
 	exit;
 }
 

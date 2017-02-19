@@ -943,14 +943,14 @@ if (($edit || $add))
 			{
 				$app['db']->update('messages', $msg, ['id' => $edit]);
 
-				if ($msg['msg_type'] != $msg['msg_type'] || $msg['id_category'] != $msg['id_category'])
+				if ($msg['msg_type'] != $message['msg_type'] || $msg['id_category'] != $message['id_category'])
 				{
 					$column = 'stat_msgs_';
-					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
+					$column .= ($message['msg_type']) ? 'offers' : 'wanted';
 
 					$app['db']->executeUpdate('update categories
 						set ' . $column . ' = ' . $column . ' - 1
-						where id = ?', [$msg['id_category']]);
+						where id = ?', [$message['id_category']]);
 
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
