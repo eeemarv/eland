@@ -1,183 +1,187 @@
 <?php
 
-namespace eland\schema_task;
+namespace eland\task;
 
-use eland\model\schema_task;
-use Predis\Client as Redis;
-use Doctrine\DBAL\Connection as db;
-use eland\typeahead;
-use Monolog\Logger;
-use eland\xdb;
 use eland\cache;
+use eland\model\task;
 
 use eland\schedule;
-use eland\groups;
-use eland\this_group;
 
-class interlets_fetch extends schema_task
+class fetch_elas_interlets extends task
 {
-	private $redis;
-	private $db;
-	private $xdb;
 	private $cache;
-	private $typeahead;
-	private $monolog;
 
-	private $group;
-	private $client;
 
-	public function __construct(Redis $redis, db $db, xdb $xdb, cache $cache, typeahead $typeahead, Logger $monolog,
-		schedule $schedule, groups $groups, this_group $this_group)
+
+	public function __construct(cache $cache, schedule $schedule)
 	{
-		parent::__construct($schedule, $groups, $this_group);
-		$this->redis = $redis;
-		$this->db = $db;
-		$this->xdb = $xdb;
+		parent::__construct($schedule);
 		$this->cache = $cache;
-		$this->typeahead = $typeahead;
-		$this->monolog = $monolog;
 	}
 
-	public function process()
+	function process()
 	{
-		$r = "<br>\r\n";
+		$now = time();
+		$now_gmdate = gmdate('Y-m-d H:i:s', $now);
 
-		$update_msgs = false;
+		$elas_interlets_domains = $this->cache->get('elas_interlets_domains');
 
-		$groups = $this->db->fetchAll('select *
-			from ' . $this->schema . '.letsgroups
-			where apimethod = \'elassoap\'
-				and remoteapikey IS NOT NULL
-				and url <> \'\'');
+		$last_fetch = $this->cache->get('elas_interlets_last_fetch');
 
-		foreach ($groups as $group)
+		$apikey_fails = $this->cache->get('elas_interlets_apikey_fails');
+
+		$apikeys_ignore = [];
+
+		$yesterday = $now - 86400;
+
+		foreach ($apikey_fails as $apikey => $time_failed)
 		{
-			$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
+			$failed = strtotime($time_failed . ' UTC');
 
-			if ($this->groups->get_schema($group['domain']))
+			if ($failed > $yesterday)
 			{
-				unset($group);
-				continue;
+				$apikeys_ignore[$apikey] = $time_failed;
 			}
-
-			if ($this->redis->get($this->schema . '_token_failed_' . $group['remoteapikey'])
-				|| $this->redis->get($this->schema . '_connection_failed_' . $group['domain']))
-			{
-				unset($group);
-				continue;
-			}
-
-			if (!$this->redis->get($group['domain'] . '_typeahead_updated'))
-			{
-				break;
-			}
-		/*
-			if (!$this->redis->get($group['domain'] . '_msgs_updated'))
-			{
-				$update_msgs = true;
-				break;
-			}
-		*/
-			unset($group);
 		}
 
-		if (isset($group))
+		$diff = array_diff_key($elas_interlets_domains, $last_fetch['users'] ?? []);
+
+		if (count($diff))
 		{
-			$this->group = $group;
+			$one_week_ago = $now - 604800;
+ 
+			$one_week_ago = gmdate('Y-m-d H:i:s', $one_week_ago);
 
-			$err_group = $this->group['groupname'] . ': ';
-
-//			$soapurl = $this->group['url'] . '/soap';
-
-			$soapurl = 'http://' . $this->group['domain'] . '/soap';
-			$soapurl = $soapurl . '/wsdlelas.php?wsdl';
-			$apikey = $this->group['remoteapikey'];
-
-			$soap_client = new \nusoap_client($soapurl, true);
-			$err = $soap_client->getError();
-
-			if ($err)
+			foreach ($diff as $domain => $ary)
 			{
+				$last_fetch['users'][$domain] = $one_week_ago;
+				$last_fetch['msgs'][$domain] = $one_week_ago;
 
-				echo $err_group . 'Can not get connection.' . $r;
-				$redis_key = $this->schema . '_connection_failed_' . $this->group['domain'];
-				$this->redis->set($redis_key, '1');
-				$this->redis->expire($redis_key, 21600);  // 6 hours
+				error_log('-- add to fetch schedule: ' . $domain);
+			}
+		}
 
+		$last_fetch['users'] = array_intersect_key($last_fetch['users'], $elas_interlets_domains);
+		$last_fetch['msgs'] = array_intersect_key($last_fetch['msgs'], $elas_interlets_domains);
+
+		$apikeys = [];
+
+		foreach ($elas_interlets_domains as $domain => $ary)
+		{
+			foreach ($ary as $sch => $apikey)
+			{
+				if (!isset($apikeys_ignore[$apikey]))
+				{
+					$apikeys[$domain] = $apikey;
+					continue;
+				}
+			}
+		}
+
+		$v_users = array_intersect_key($last_fetch['users'], $apikeys);
+		$v_msgs = array_intersect_key($last_fetch['msgs'], $apikeys);
+
+		$next_domain_users = current(array_keys($v_users, min($v_users)));
+		$next_domain_msgs = current(array_keys($v_msgs, min($v_msgs)));
+
+		if (!$next_domain_users && !$next_domain_msgs)
+		{
+			return;
+		}
+
+		$last_fetch_users = $last_fetch[$next_domain_users];
+		$last_fetch_msgs = $last_fetch[$next_domain_msgs];
+
+		$subject = $last_fetch_msgs < $last_fetch_users ? 'msgs' : 'users';
+
+		$domain_var = $subject == 'users' ? 'next_domain_users' : 'next_domain_msgs';
+		$domain = $$domain_var;
+		$next = $last_fetch[$subject][$domain];
+
+		$next = $last_fetch[$next_domain];
+
+		$next = strtotime($next . ' UTC');
+
+		if ($next > $now - 3600)
+		{
+			return;
+		}
+
+		$group_url = 'http://' . $domain;
+		$soap_url = $group_url . '/soap/wsdlelas.php?wsdl';
+		$apikey = $apikeys[$domain];
+
+		$soap_client = new \nusoap_client($soap_url, true);
+		$err = $soap_client->getError();
+
+		if ($err)
+		{
+			error_log($domain . ' : Can not get connection. Wait 6 hours.');
+
+			$last_fetch[$subject][$domain] = gmdate('Y-m-d H:i:s', $now + 21600);
+			$this->cache->set('elas_interlets_last_fetch', $last_fetch);
+			return;
+		}
+
+		$token = $soap_client->call('gettoken', ['apikey' => $apikey]);
+		$err = $soap_client->getError();
+
+		if ($err)
+		{
+			error_log($domain . ' : Can not get token.');
+
+			$apikey_fails[$apikey] = $now_gmdate;
+			$this->cache->set('elas_interlets_apikey_fails', $apikey_fails);
+			return;
+		}
+
+		if (!$token || $token == '---')
+		{
+			error_log ($domain . ' : Invalid token.');
+
+			$apikey_fails[$apikey] = $now_gmdate;
+			$this->cache->set('elas_interlets_apikey_fails', $apikey_fails);
+			return;
+		}
+
+		try
+		{
+			$this->client = new \Goutte\Client();
+
+			$crawler = $this->client->request('GET', $group_url . '/login.php?token=' . $token);
+
+			if ($subject == 'msgs')
+			{
+				error_log($domain . ': fetch interlets messages');
+				$this->fetch_msgs();
+
+				$last_fetch['msgs'][$domain] = $now_gmdate;
 			}
 			else
 			{
-
-				$token = $soap_client->call('gettoken', ['apikey' => $apikey]);
-				$err = $soap_client->getError();
-
-				if ($err)
-				{
-					echo $err_group . 'Can not get token.' . $r;
-				}
-				else if (!$token || $token == '---')
-				{
-					$err = 'invalid token';
-					echo $err_group . 'Invalid token.' . $r;
-				}
-
-				if ($err)
-				{
-					$redis_key = $this->schema . '_token_failed_' . $this->group['remoteapikey'];
-					$this->redis->set($redis_key, '1');
-					$this->redis->expire($redis_key, 21600);  // 6 hours
-				}
+				error_log($domain . ' : fetch interlets typeahead data');
+				$this->fetch_typeahead();
+				$last_fetch['users'][$domain] = $now_gmdate;
 			}
 
-			if (!$err)
-			{
-				try
-				{
-					$this->client = new \Goutte\Client();
-
-					$crawler = $this->client->request('GET', $this->group['url'] . '/login.php?token=' . $token);
-
-					if ($update_msgs)
-					{
-						echo 'fetch interlets messages' . $r;
-						$this->fetch_msgs();
-					}
-					else
-					{
-						echo 'fetch interlets typeahead data' . $r;
-						$this->fetch_typeahead();
-					}
-
-					echo '----------------------------------------------------' . $r;
-					return;
-				}
-				catch (Exception $e)
-				{
-					$err = $e->getMessage();
-					echo $err . $r;
-					$redis_key = $this->schema . '_token_failed_' . $this->group['remoteapikey'];
-					$this->redis->set($redis_key, '1');
-					$this->redis->expire($redis_key, 21600);  // 6 hours
-
-				}
-			}
-
-			if ($err)
-			{
-				echo '-- retry after 6 hours --' . $r;
-				echo '-- continue --' . $r;
-			}
+			$last_fetch = $this->cache->set('elas_interlets_last_fetch', $last_fetch);
+			return;
 		}
-		else
+		catch (Exception $e)
 		{
-			echo '-- no interlets data fetch needed -- ' . $r;
+			error_log($e->getMessage());
+
+			$apikey_fails[$apikey] = $now_gmdate;
+			$this->cache->set('elas_interlets_apikey_fails', $apikey_fails);
 		}
+
+		return;
 	}
+
+////
 
 	public function fetch_msgs()
 	{
-		$r = "<br>\r\n";
-
 		$msgs = [];
 
 		$crawler = $this->client->request('GET', $this->group['url'] . '/renderindex.php');
@@ -221,8 +225,6 @@ class interlets_fetch extends schema_task
 	 */
 	public function fetch_typeahead()
 	{
-		$r = "<br>\r\n";
-
 		$url = 'http://' . $this->group['domain'] . '/';
 
 		$crawler = $this->client->request('GET', $url . 'rendermembers.php');
@@ -366,8 +368,13 @@ class interlets_fetch extends schema_task
 		echo 'user count: ' . $user_count . $r;	
 	}
 
-	public function get_interval()
+
+////
+
+
+
+	function get_interval()
 	{
-		return 1800;
+		return 900;
 	}
 }

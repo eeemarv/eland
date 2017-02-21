@@ -46,7 +46,12 @@ class get_elas_interlets_domains extends task
 					continue;
 				}
 
-				$domains[$domain][$sch] = $group['remoteapikey'];
+				if (!$group['remoteapikey'])
+				{
+					continue;
+				}
+
+				$domains[$domain][$sch] = trim($group['remoteapikey']);
 			}
 		}
 
@@ -57,9 +62,7 @@ class get_elas_interlets_domains extends task
 
 		$this->cache->set('elas_interlets_domains', $domains);
 
-		error_log('update domains');
-
-		var_dump($domains);
+		error_log('update domains: ' . json_encode($domains));
 
 		return;
 	}
