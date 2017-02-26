@@ -69,6 +69,6 @@ class get_elas_interlets_domains extends task
 
 	function get_interval()
 	{
-		return 900;
+		return 60;
 	}
 }

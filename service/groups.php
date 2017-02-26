@@ -36,11 +36,6 @@ class groups
 				$h .= '.' . $this->overall_domain;
 			}
 
-			if (strpos($h, 'localhost') === 0)
-			{
-				continue;
-			}
-
 			$this->schemas[$h] = $s;
 			$this->hosts[$s] = $h;
 		}
