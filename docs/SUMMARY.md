@@ -28,9 +28,8 @@
   * [eLAS interlets koppeling maken](admin-elas-interlets-koppeling-maken.md)
 
 * [Server & Hosting](hosting.md)
-  * [Option 1: Heroku](heroku.md)
-  * [Option 2: Dokku](dokku.md)
-    * [backups](dokku-backups.md)
+  * [Dokku](dokku.md)
+  * [Backups](dokku-backups.md)
   * [Migrate from eLAS 2.x](migrate-from-elas-2.md)
   * [Migrate from eLAS 3.x](migrate-from-elas-3.md)
   * [Import CSV](import-csv.md)

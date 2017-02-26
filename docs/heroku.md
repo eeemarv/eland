@@ -7,18 +7,6 @@ Set php buildpack.
 heroku buildpacks:set heroku/php
 ```
 
-###Cron
-
-Trigger the cronscript every minute from a remote server.
-
-crontab:
-```
-* * * * * wget -O /dev/null http://a.letsa.net/cron.php
-
-```
-
-Only one cronjob is needed for all installed domains (unlike eLAS). Just choose one domain.
-
 ###Domain
 
 Every letsgroup is in its own subdomain of one overall domain.
