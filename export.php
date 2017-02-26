@@ -195,6 +195,7 @@ if (function_exists('exec'))
 	echo '<div class="panel-heading">';
 	echo '<h3>eLAS database download (SQL)';
 	echo '</h3>';
+	echo '<p>Schema gerelateerde regels ~16 - 24 (CREATE SCHEMA & SET search_path) moeten verwijderd worden voor gebruik in eLAS.</p>';
 	echo '</div>';
 	echo '<div class="panel-heading">';
 
