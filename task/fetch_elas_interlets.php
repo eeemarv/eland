@@ -132,14 +132,12 @@ class fetch_elas_interlets extends task
 
 		$next = strtotime($next . ' UTC');
 
-/*
-		if ($next > $this->now - 3600)
+		if ($next > $this->now - 7200)
 		{
 			$this->update_cache();
-			error_log('e 3600');
+			error_log('e 7200');
 			return;
 		}
-*/
 
 		$this->url = 'http://' . $this->domain;
 		$soap_url = $this->url . '/soap/wsdlelas.php?wsdl';
@@ -188,8 +186,6 @@ class fetch_elas_interlets extends task
 			{
 				error_log($this->domain . ': fetch interlets messages');
 				$this->fetch_msgs();
-
-				$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
 			}
 			else
 			{
@@ -231,6 +227,8 @@ class fetch_elas_interlets extends task
 	{
 		$msgs = [];
 
+		$cached = $this->cache->get($this->domain . '_elas_interlets_msgs');
+
 		$crawler = $this->client->request('GET', $this->url . '/renderindex.php');
 
 		$status_code = $this->client->getResponse()->getStatus();
@@ -248,13 +246,12 @@ class fetch_elas_interlets extends task
 				error_log($this->domain . ' not responsive: status : ' . $status_code . ' --');
 
 				$this->last_fetch[$subject][$this->domain] = gmdate('Y-m-d H:i:s', $this->now + 21600);
-				$this->update_cache();
 
 				return;
 			}
 
 			$crawler->filter('table tbody tr')
-				->each(function ($node) use (&$msgs)
+				->each(function ($node) use (&$msgs, $cached)
 			{
 				$msg = [];
 
@@ -270,16 +267,32 @@ class fetch_elas_interlets extends task
 				$content = $a->text();
 				$user = $next_tds->eq(1)->text();
 
-				list($dummy, $msgid) = explode('=', $href);
+				list($dummy, $id) = explode('=', $href);
 
-				$msgid = rtrim($msgid, '&r ');
+				$id = rtrim($id, '&r ');
 
-				$redis_msg_key = $this->url . '_interlets_msg_' . $msgid;
+				$c = $cached[$id] ?? false;
 
-				error_log($this->domain . ' _' . $va . '_  id:' . $msgid . ' c: ' . $content . ' -- ' . $user);
+				$count = is_array($c) ? $c['fetch_count'] + 1 : 0;
 
+				$msg = [
+					'id'			=> $id,
+					'ow'			=> $va == 'v' ? 'w' : 'o',
+					'content'		=> trim($content),
+					'user'			=> $user,
+					'fetch_count'	=> $count, 
+					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
+				];
+
+				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
+
+				$msgs[$id] = $msg;
 			});
 
+			$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
+			$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
+
+			return;
 		}
 
 		$msgs_table = $crawler->filter('table')
@@ -287,7 +300,7 @@ class fetch_elas_interlets extends task
 			->filter('tr')
 			->first()
 			->nextAll()
-			->each(function ($node) use (&$msgs)
+			->each(function ($node) use (&$msgs, $cached)
 		{
 			$first_td = $node->filter('td')->first();
 			$va = $first_td->text();
@@ -301,15 +314,40 @@ class fetch_elas_interlets extends task
 				$content = $a->text();
 				$user = $next_tds->eq(1)->text();
 
-				list($dummy, $msgid) = explode('=', $href);
+				$user = rtrim($user, ') ');
+				$pos = strrpos($user, '(');
 
-				$redis_msg_key = $this->url . '_interlets_msg_' . $msgid;
+				$username = substr($user, 0, $pos - 1);
+				$letscode = substr($user, $pos + 1);
 
-				error_log($this->domain . ' _' . $va . '_  id:' . $msgid . ' c: ' . $content . ' -- ' . $user);
+				$user = $letscode . ' ' . $username;
 
+				list($dummy, $id) = explode('=', $href);
+
+				$c = $cached[$id] ?? false;
+
+				$count = is_array($c) ? $c['fetch_count'] + 1 : 0;
+
+				$msg = [
+					'id'			=> $id,
+					'ow'			=> $va == 'v' ? 'w' : 'o',
+					'content'		=> trim($content),
+					'user'			=> $user,
+					'fetch_count'	=> $count, 
+					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
+				];
+
+				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
+
+				$msgs[$id] = $msg;
 			}
 
 		});
+
+		$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
+		$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
+
+		return;
 	}
 
 	/*
@@ -415,6 +453,6 @@ class fetch_elas_interlets extends task
 
 	function get_interval()
 	{
-		return 60;
+		return 900;
 	}
 }
