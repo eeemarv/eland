@@ -49,7 +49,7 @@ while (true)
 		$schema_task->run();
 	}
 
-	if ($loop_count % 60 == 0)
+	if ($loop_count % 1000 == 0)
 	{
 		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
 	}
