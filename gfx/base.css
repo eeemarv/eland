@@ -455,11 +455,11 @@ li.active-group a:visited, li.active-group a:hover
 /**/
 
 div.users_map {
-	height: 300px;
+	height: 400px;
 }
 
 div.user_map {
-	height: 150px;
+	height: 300px;
 }
 
 /** jqplot **/
