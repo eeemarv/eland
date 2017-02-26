@@ -3,6 +3,7 @@
 namespace eland\task;
 
 use eland\cache;
+use Predis\Client as redis;
 use eland\model\task;
 use eland\typeahead;
 use Monolog\Logger;
@@ -12,6 +13,7 @@ use eland\schedule;
 class fetch_elas_interlets extends task
 {
 	private $cache;
+	private $redis;
 	private $typeahead;
 	private $monolog;
 	private $client;
@@ -23,10 +25,11 @@ class fetch_elas_interlets extends task
 	private $apikeys_fails;
 
 
-	public function __construct(cache $cache, typeahead $typeahead, Logger $monolog, schedule $schedule)
+	public function __construct(cache $cache, redis $redis, typeahead $typeahead, Logger $monolog, schedule $schedule)
 	{
 		parent::__construct($schedule);
 		$this->cache = $cache;
+		$this->redis = $redis;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
 	}
@@ -443,6 +446,10 @@ class fetch_elas_interlets extends task
 		$this->cache->set($this->domain . '_typeahead_data', $users);
 
 		$this->last_fetch['users'][$this->domain] = $this->now_gmdate;
+
+		$redis_key = $this->domain . '_active_user_count';
+		$this->redis->set($redis_key, count($users));
+		$this->redis->expire($redis_key, 86400); // 1 day
 
 		error_log($this->domain . ' typeahead data fetched of ' . count($users) . ' users');
 	}

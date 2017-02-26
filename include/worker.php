@@ -25,7 +25,7 @@ $app['eland.task.get_elas_interlets_domains'] = function ($app){
 };
 
 $app['eland.task.fetch_elas_interlets'] = function ($app){
-	return new eland\task\fetch_elas_interlets($app['eland.cache'], $app['eland.typeahead'],
+	return new eland\task\fetch_elas_interlets($app['eland.cache'], $app['redis'], $app['eland.typeahead'],
 		$app['monolog'], $app['eland.schedule']);
 };
 
