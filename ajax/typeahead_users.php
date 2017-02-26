@@ -87,7 +87,7 @@ if ($app['eland.groups']->get_schema($group['domain']))
 	exit;
 }
 
-$active_users = $app['redis']->get($group['domain'] . '_typeahead_data');
+$active_users = $app['eland.cache']->get($group['domain'] . '_typeahead_data', false);
 
 if ($active_users)
 {
@@ -102,7 +102,6 @@ else
 	http_response_code(404);
 	exit;
 }
-
 
 /*
  *

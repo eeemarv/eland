@@ -101,11 +101,11 @@ class cache
 	 *
 	 */
 
-	public function get(string $id)
+	public function get(string $id, bool $decoded = true)
 	{
 		if (!$id)
 		{
-			return [];
+			return $decoded ? [] : '';
 		}
 
 		$id = trim($id);
@@ -114,6 +114,11 @@ class cache
 
 		if ($data)
 		{
+			if (!$decoded)
+			{
+				return $data;
+			}
+
 			return json_decode($data, true);
 		}
 
@@ -132,10 +137,15 @@ class cache
 				$this->redis->expireat('cache_' . $id, $data['expires']);
 			}
 
+			if (!$decoded)
+			{
+				return $row['data'];
+			}
+
 			return json_decode($row['data'], true);
 		}
 
-		return [];
+		return $decoded ? [] : '';
 	}
 
 	/**

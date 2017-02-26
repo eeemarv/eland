@@ -298,7 +298,7 @@ if ($add)
 
 			if (strlen($letscode_to))
 			{
-				$active_users = json_decode($app['redis']->get($group['domain'] . '_typeahead_data'), true);
+				$active_users = $app['eland.cache']->get($group['domain'] . '_typeahead_data');
 
 				$user_letscode_found = false;
 
