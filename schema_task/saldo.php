@@ -150,6 +150,7 @@ class saldo extends schema_task
 
 		$rs = $this->db->prepare('SELECT m.id, m.content,
 			m."Description" as description, m.msg_type, m.id_user,
+			m.amount, m.units,
 			u.name, u.letscode, u.postcode
 			FROM ' . $this->schema . '.messages m, ' . $this->schema . '.users u
 			WHERE m.id_user = u.id
@@ -499,6 +500,8 @@ class saldo extends schema_task
 
 	public function get_interval()
 	{
+		return 900;
+
 		if (isset($this->schema))
 		{
 			return 86400 * readconfigfromdb('saldofreqdays', $this->schema);
