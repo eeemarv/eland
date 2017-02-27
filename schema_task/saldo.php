@@ -500,11 +500,12 @@ class saldo extends schema_task
 
 	public function get_interval()
 	{
-		return 900;
-
 		if (isset($this->schema))
 		{
-			return 86400 * readconfigfromdb('saldofreqdays', $this->schema);
+			$days = readconfigfromdb('saldofreqdays', $this->schema);
+			$days = $days < 1 ? 7 : $days;
+
+			return 86400 * $days;
 		}
 
 		return 86400;
