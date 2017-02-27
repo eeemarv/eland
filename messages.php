@@ -669,10 +669,13 @@ if ($del)
 	echo $message['validity'];
 	echo '</dd>';
 
-	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>';
-	echo $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets');
-	echo '</dd>';
+	if ($count_interlets_groups)
+	{
+		echo '<dt>Zichtbaarheid</dt>';
+		echo '<dd>';
+		echo $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets');
+		echo '</dd>';
+	}
 
 	echo '</dl>';
 
@@ -757,17 +760,25 @@ if (($edit || $add))
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
-			'local'			=> ($app['eland.access_control']->get_post_value() == 2) ? 0 : 1,
 		];
 
 		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
 		$uploaded_images = $_POST['uploaded_images'] ?? [];
 
-		$access_error = $app['eland.access_control']->get_post_error();
-
-		if ($access_error)
+		if ($count_interlets_groups)
 		{
-			$errors[] = $access_error;
+			$access_error = $app['eland.access_control']->get_post_error();
+
+			if ($access_error)
+			{
+				$errors[] = $access_error;
+			}
+
+			$msg['local'] = $app['eland.access_control']->get_post_value() == 2 ? 0 : 1;
+		}
+		else if ($add)
+		{
+			$msg['local'] = 1;
 		}
 
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
@@ -835,7 +846,7 @@ if (($edit || $add))
 				$id = $app['db']->lastInsertId('messages_id_seq');
 
 				$stat_column = 'stat_msgs_';
-				$stat_column .= ($msg['msg_type']) ? 'offers' : 'wanted';
+				$stat_column .= $msg['msg_type'] ? 'offers' : 'wanted';
 
 				$app['db']->executeUpdate('update categories set ' . $stat_column . ' = ' . $stat_column . ' + 1 where id = ?', [$msg['id_category']]);
 
@@ -1231,13 +1242,7 @@ if (($edit || $add))
 	echo '<div class="thumbnail">';
 	echo '<img src="" alt="afbeelding">';
 	echo '<div class="caption">';
-/*
-	echo '<p><span class="btn btn-default" role="button">';
-	echo '<i class="fa fa-caret-left"></i></span>';
-	echo '<span class="btn btn-default" role="button">';
-	echo '<i class="fa fa-caret-right"></i></span>';
-	echo '</p>';
-*/
+
 	echo '<p><span class="btn btn-danger img-delete" role="button">';
 	echo '<i class="fa fa-times"></i></span></p>';
 	echo '</div>';
@@ -1250,13 +1255,7 @@ if (($edit || $add))
 		echo '<div class="thumbnail">';
 		echo '<img src="' . $app['eland.s3_img_url'] . $img['PictureFile'] . '" alt="afbeelding">';
 		echo '<div class="caption">';
-/*
-		echo '<p><span class="btn btn-default" role="button">';
-		echo '<i class="fa fa-caret-left"></i></span>';
-		echo '<span class="btn btn-default" role="button">';
-		echo '<i class="fa fa-caret-right"></i></span>';
-		echo '</p>';
-*/
+
 		echo '<p><span class="btn btn-danger img-delete" role="button">';
 		echo '<i class="fa fa-times"></i></span></p>';
 		echo '</div>';
@@ -1292,9 +1291,12 @@ if (($edit || $add))
 	echo '</div>';
 	echo '</div>';
 
-	$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
+	if ($count_interlets_groups)
+	{
+		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
-	echo $app['eland.access_control']->get_radio_buttons('messages', $access_value, 'admin');
+		echo $app['eland.access_control']->get_radio_buttons('messages', $access_value, 'admin');
+	}
 
 	$btn = ($edit) ? 'primary' : 'success';
 
@@ -1546,8 +1548,13 @@ if ($id)
 		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs') . '</dd>';
 	}
 
-	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>' . $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets') . '</dd>';
+	if ($count_interlets_groups)
+	{
+		echo '<dt>Zichtbaarheid</dt>';
+		echo '<dd>';
+		echo  $app['eland.access_control']->get_label($message['local'] ? 'users' : 'interlets');
+		echo '</dd>';
+	}
 
 	echo '</dl>';
 
@@ -1864,7 +1871,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$s_guest)
+if (!$s_guest && $count_interlets_groups)
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2262,7 +2269,7 @@ if ($v_list)
 		echo $app['eland.date_format']->get($msg['validity'], 'day');
 		echo '</td>';
 
-		if (!$s_guest)
+		if (!$s_guest && $count_interlets_groups)
 		{
 			echo '<td>' . $app['eland.access_control']->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
 		}
