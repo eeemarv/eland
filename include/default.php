@@ -87,7 +87,7 @@ $app->extend('monolog', function($monolog, $app) {
 			$record['extra']['user_schema'] = $app['s_schema'];
 		}
 
-		$record['extra']['request_ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
+		$record['extra']['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
 		return $record;
 	});
