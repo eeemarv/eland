@@ -498,7 +498,15 @@ if (count($rows))
 
 	foreach ($rows as $row)
 	{
-		$forum_posts[] = $row['data'] + ['id' => $row['eland_id'], 'ts' => $row['event_time']];
+		$replies = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+			'agg_type' => 'forum',
+			'data->>\'parent_id\'' => $row['eland_id']]);
+
+		$forum_posts[] = $row['data'] + [
+			'id' 		=> $row['eland_id'],
+			'ts' 		=> $row['event_time'],
+			'replies'	=> count($replies),
+		];
 	}
 }
 
@@ -562,10 +570,11 @@ echo '<thead>';
 
 echo '<tr>';
 echo '<th>Onderwerp</th>';
+echo '<th>Reacties</th>';
 echo '<th data-hide="phone, tablet">Gebruiker</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="descending" ';
 echo 'data-type="numeric">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone">Zichtbaarheid</th>';
+echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 echo ($s_admin) ? '<th data-hide="phone,tablet">Acties</th>' : '';
 echo '</tr>';
 
@@ -588,6 +597,11 @@ foreach($forum_posts as $p)
 	echo '<td>';
 	echo aphp('forum', ['t' => $pid], $p['subject']);
 	echo '</td>';
+
+	echo '<td>';
+	echo $p['replies'];
+	echo '</td>';
+
 	echo '<td>' . link_user($p['uid']) . '</td>';
 
 	echo $app['eland.date_format']->get_td($p['ts']);
