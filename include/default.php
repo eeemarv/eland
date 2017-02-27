@@ -87,6 +87,8 @@ $app->extend('monolog', function($monolog, $app) {
 			$record['extra']['user_schema'] = $app['s_schema'];
 		}
 
+		$record['extra']['client_ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
+
 		return $record;
 	});
 
