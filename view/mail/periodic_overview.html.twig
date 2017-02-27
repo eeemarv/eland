@@ -11,8 +11,9 @@
 ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 <br>
 {% if msg.images|length %}<br><img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
+{{ msg.description }}
 {% if msg.amount %}<br>(Richt-)prijs: {{ msg.amount }} {{ group.currency }}{% if msg.units %} per {{ msg.units }}{% endif %}{% endif %}
-{{ msg.description }}<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
+<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
 {% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a> | {% endif %}
 {% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
 {% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
