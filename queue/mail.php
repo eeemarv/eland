@@ -270,7 +270,7 @@ class mail extends queue_model implements queue_interface
 			$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
 
 			$this->monolog->info('mail: Mail in queue, subject: ' .
-				$data['subject'] . ', from : ' .
+				($data['subject'] ?? '(template)') . ', from : ' .
 				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . $reply, ['schema' => $data['schema']]);
 		}
 	}
