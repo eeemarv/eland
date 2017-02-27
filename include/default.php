@@ -69,7 +69,7 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
 	$monolog->pushHandler($handler);
 
-	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
+//	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
