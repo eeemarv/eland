@@ -6,6 +6,8 @@ $app = new Silex\Application();
 
 $app['debug'] = getenv('DEBUG');
 
+$app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+
 $app['redis'] = function () {
 	try
 	{

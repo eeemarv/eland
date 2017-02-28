@@ -16,8 +16,6 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 
 $app['eland.page_access'] = $page_access;
 
-$app['eland.protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https://" : "http://";
-
 $header_allow_origin = $app['eland.s3_protocol'] . $app['eland.s3_img'] . ', ';
 $header_allow_origin .= $app['eland.s3_protocol'] . $app['eland.s3_doc'];
 
