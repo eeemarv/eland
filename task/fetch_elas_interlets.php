@@ -280,7 +280,7 @@ class fetch_elas_interlets extends task
 
 				$msg = [
 					'id'			=> $id,
-					'ow'			=> $va == 'v' ? 'w' : 'o',
+					'ow'			=> $va == 'v' || $va == 'V' ? 'w' : 'o',
 					'content'		=> trim($content),
 					'user'			=> $user,
 					'fetch_count'	=> $count, 
