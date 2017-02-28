@@ -135,10 +135,10 @@ class fetch_elas_interlets extends task
 
 		$next = strtotime($next . ' UTC');
 
-		if ($next > $this->now - 7200)
+		if ($next > $this->now - 14400)
 		{
 			$this->update_cache();
-			error_log('e 7200');
+			error_log('e 14400');
 			return;
 		}
 
