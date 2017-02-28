@@ -16,7 +16,7 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 
 $app['eland.page_access'] = $page_access;
 
-$app['eland.protocol'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https://" : "http://";
+$app['eland.protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https://" : "http://";
 
 $header_allow_origin = $app['eland.s3_protocol'] . $app['eland.s3_img'] . ', ';
 $header_allow_origin .= $app['eland.s3_protocol'] . $app['eland.s3_doc'];
@@ -37,7 +37,7 @@ $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'
 
 $app['eland.base_url'] = $app['eland.protocol'] . $_SERVER['SERVER_NAME'];
 
-$post = ($_SERVER['REQUEST_METHOD'] == 'GET') ? false : true;
+$post = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
 $app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
 

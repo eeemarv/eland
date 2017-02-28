@@ -5,6 +5,7 @@ namespace eland\schema_task;
 use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use eland\xdb;
+use eland\cache;
 use Monolog\Logger;
 use eland\queue\mail;
 use eland\date_format;
@@ -17,6 +18,7 @@ class saldo extends schema_task
 {
 	private $db;
 	private $xdb;
+	private $cache;
 	private $monolog;
 	private $mail;
 	private $s3_img_url;
@@ -24,13 +26,14 @@ class saldo extends schema_task
 	private $protocol;
 	private $date_format;
 
-	public function __construct(db $db, xdb $xdb, Logger $monolog, mail $mail,
+	public function __construct(db $db, xdb $xdb, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
 		date_format $date_format, schedule $schedule, groups $groups, this_group $this_group)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->xdb = $xdb;
+		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
 		$this->s3_img_url = $s3_img_url;
@@ -65,7 +68,7 @@ class saldo extends schema_task
 
 		$users = $news = $new_users = $leaving_users = $transactions = $messages = [];
 
-		$forum = $inter_messages = $docs = [];
+		$forum = $interlets = $docs = [];
 
 		$mailaddr = $mailaddr_public = $saldo_mail = [];
 
@@ -175,6 +178,10 @@ class saldo extends schema_task
 
 			$messages[] = $row;
 		}
+
+	// interlets messages
+
+
 
 	// news
 
@@ -463,7 +470,7 @@ class saldo extends schema_task
 			'messages'				=> $messages,
 			'messages_url'			=> $base_url . '/messages.php',
 			'new_message_url'		=> $base_url . '/messages.php?add=1',
-			'inter_messages'		=> $inter_messages,
+			'interlets'				=> $interlets,
 		];
 
 	// queue mail
