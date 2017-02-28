@@ -301,8 +301,6 @@ if ($post && $img && $images && !$s_guest)
 			continue;
 		}
 
-		//
-
 		$exif = exif_read_data($tmpfile);
 
 		$tmpfile2 = tempnam(sys_get_temp_dir(), 'img');
@@ -1233,8 +1231,6 @@ if (($edit || $add))
 	echo '<label for="fileupload" class="col-sm-2 control-label">Afbeeldingen</label>';
 	echo '<div class="col-sm-10">';
 
-//
-
 	echo '<div class="row">';
 
 	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
@@ -1264,8 +1260,6 @@ if (($edit || $add))
 	}
 
 	echo '</div>';
-
-//
 
 	$upload_img_param = [
 		'img'	=> 1,
@@ -1468,7 +1462,7 @@ if ($id)
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 
-	echo '</div>'; // panel-body
+	echo '</div>';
 
 	if ($s_admin || $s_owner)
 	{
@@ -1559,12 +1553,12 @@ if ($id)
 	echo '</dl>';
 
 	echo '</div>';
-	echo '</div>'; // panel
+	echo '</div>'; 
 
-	echo '</div>'; //col-md-6
-	echo '</div>'; //row
+	echo '</div>';
+	echo '</div>'; 
 
-	echo '<div id="contacts" '; // data-uid="' . $message['id_user'] . '" ';
+	echo '<div id="contacts" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
 	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
 
