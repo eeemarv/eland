@@ -160,8 +160,8 @@ class saldo extends schema_task
 			u.name, u.letscode, u.postcode
 			from ' . $this->schema . '.messages m, ' . $this->schema . '.users u
 			where m.id_user = u.id
-				AND u.status IN (1, 2)
-				AND m.cdate >= ?
+				and u.status IN (1, 2)
+				and m.cdate >= ?
 			order BY m.cdate DESC');
 
 		$rs->bindValue(1, $treshold_time);
@@ -198,8 +198,9 @@ class saldo extends schema_task
 					u.name, u.letscode, u.postcode
 					from ' . $sch . '.messages m, ' . $sch . '.users u
 					where m.id_user = u.id
-						AND u.status IN (1, 2)
-						AND m.cdate >= ?
+						and m.local = 0
+						and u.status IN (1, 2)
+						and m.cdate >= ?
 					order BY m.cdate DESC');
 
 				$rs->bindValue(1, $treshold_time);
