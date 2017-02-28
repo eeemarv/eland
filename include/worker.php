@@ -67,7 +67,8 @@ $app['eland.schema_task.saldo'] = function ($app){
 $app['eland.schema_task.interlets_fetch'] = function ($app){
 	return new eland\schema_task\interlets_fetch($app['redis'], $app['db'], $app['eland.xdb'], $app['eland.cache'],
 		$app['eland.typeahead'], $app['monolog'],
-		$app['eland.schedule'], $app['eland.groups'], $app['eland.this_group']);
+		$app['eland.schedule'], $app['eland.groups'], $app['eland.this_group'],
+		$app['eland.interlets_groups']);
 };
 
 //

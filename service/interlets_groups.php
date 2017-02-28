@@ -184,6 +184,7 @@ class interlets_groups
 
 			if (!$this->groups->get_schema($h))
 			{
+				$row['domain'] = $h;
 				$this->elas_ary[$row['id']] = $row;
 			}
 		}

@@ -13,6 +13,7 @@ use eland\date_format;
 use eland\schedule;
 use eland\groups;
 use eland\this_group;
+use eland\interlets_groups;
 
 class saldo extends schema_task
 {
@@ -28,7 +29,8 @@ class saldo extends schema_task
 
 	public function __construct(db $db, xdb $xdb, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
-		date_format $date_format, schedule $schedule, groups $groups, this_group $this_group)
+		date_format $date_format, schedule $schedule, groups $groups, this_group $this_group,
+		interlets_groups $interlets_groups)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -40,6 +42,7 @@ class saldo extends schema_task
 		$this->s3_doc_url = $s3_doc_url;
 		$this->protocol = $protocol;
 		$this->date_format = $date_format;
+		$this->interlets_groups = $interlets_groups;
 	}
 
 	function process()
@@ -151,15 +154,15 @@ class saldo extends schema_task
 
 	// fetch messages
 
-		$rs = $this->db->prepare('SELECT m.id, m.content,
+		$rs = $this->db->prepare('select m.id, m.content,
 			m."Description" as description, m.msg_type, m.id_user,
 			m.amount, m.units,
 			u.name, u.letscode, u.postcode
-			FROM ' . $this->schema . '.messages m, ' . $this->schema . '.users u
-			WHERE m.id_user = u.id
+			from ' . $this->schema . '.messages m, ' . $this->schema . '.users u
+			where m.id_user = u.id
 				AND u.status IN (1, 2)
 				AND m.cdate >= ?
-			ORDER BY m.cdate DESC');
+			order BY m.cdate DESC');
 
 		$rs->bindValue(1, $treshold_time);
 		$rs->execute();
@@ -181,7 +184,76 @@ class saldo extends schema_task
 
 	// interlets messages
 
+		$eland_ary = $this->interlets_groups->get_eland($this->schema);
 
+		foreach ($eland_ary as $sch => $d)
+		{
+			$interlets_msgs = [];
+
+			$rs = $this->db->prepare('select m.id, m.content,
+				m."Description" as description, m.msg_type, m.id_user,
+				m.amount, m.units,
+				u.name, u.letscode, u.postcode
+				from ' . $sch . '.messages m, ' . $sch . '.users u
+				where m.id_user = u.id
+					AND u.status IN (1, 2)
+					AND m.cdate >= ?
+				order BY m.cdate DESC');
+
+			$rs->bindValue(1, $treshold_time);
+			$rs->execute();
+
+			while ($row = $rs->fetch())
+			{
+				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
+				$row['offer'] = $row['type'] == 'offer' ? true : false;
+				$row['want'] = $row['type'] == 'want' ? true : false;
+				$row['user'] = $row['letscode'] . ' ' . $row['name'];
+
+				$interlets_msgs[] = $row;
+			}
+
+			if (count($interlets_msgs))
+			{
+				$interlets[] = [
+					'group'		=> readconfigfromdb('systemname', $sch),
+					'messages'	=> $interlets_msgs,
+				];
+			}
+		}
+
+		$elas_ary = $this->interlets_groups->get_elas($this->schema);
+
+		foreach ($elas_ary as $group_id => $ary)
+		{
+			$interlets_msgs = [];
+
+			$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
+
+			$elas_msgs = $this->cache->get($domain . '_elas_interlets_msgs');
+
+			foreach ($elas_msgs as $m)
+			{
+				if ($m['fetched_at'] < $treshold_time)
+				{
+					continue;
+				}
+
+				$m['type'] = $m['ow'] == 'o' ? 'offer' : 'want';
+				$m['offer'] = $m['type'] == 'offer' ? true : false;
+				$m['want'] = $m['type'] == 'want' ? true : false;
+
+				$interlets_msgs[] = $m;
+			}
+
+			if (count($interlets_msgs))
+			{
+				$interlets[] = [
+					'group'		=> $ary['groupname'],
+					'messages'	=> $interlets_msgs,
+				];
+			}
+		}
 
 	// news
 
