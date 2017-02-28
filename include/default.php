@@ -164,6 +164,10 @@ $app['eland.mailaddr'] = function ($app){
 	return new eland\mailaddr($app['db'], $app['monolog'], $app['eland.this_group']);
 };
 
+$app['eland.interlets_groups'] = function ($app){
+	return new eland\interlets_groups($app['db'], $app['redis'], $app['eland.groups'], $app['eland.protocol']);
+};
+
 // queue
 
 $app['eland.queue.mail'] = function ($app){
