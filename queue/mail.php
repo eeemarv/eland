@@ -271,7 +271,8 @@ class mail extends queue_model implements queue_interface
 
 			$this->monolog->info('mail: Mail in queue, subject: ' .
 				($data['subject'] ?? '(template)') . ', from : ' .
-				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . $reply, ['schema' => $data['schema']]);
+				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+				$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
 		}
 	}
 

@@ -108,10 +108,10 @@ class queue
 			$this->db->delete('xdb.queue', ['id' => $row['id']]);
 
 			return [
-				'data'	=> json_decode($row['data'], true),
-				'id'	=> $row['id'],
-				'topic'	=> $row['topic'],
-				'prioritry'	=> $row['priority'],
+				'data'		=> json_decode($row['data'], true),
+				'id'		=> $row['id'],
+				'topic'		=> $row['topic'],
+				'priority'	=> $row['priority'],
 			];
 		}
 

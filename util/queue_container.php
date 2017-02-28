@@ -48,6 +48,8 @@ class queue_container extends job_container
 			return false;
 		}
 
+		error_log('queue should run: ' . $topic . ' priority: ' . $record['priority'] . ' id: ' . $record['id']);
+
 		$this->queue_task = $this->app['eland.queue.' . $topic];
 
 		return true;
