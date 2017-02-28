@@ -28,23 +28,20 @@
 {% endif %}
 
 <p><a href="{{ new_message_url }}">Geef zelf je eigen vraag of aanbod in.</a></p>
+	
+{% if interlets %}
+<h4>Recent interLETS vraag en aanbod</h4>
 
-{#
-{% if inter_messages %}
-
-<h4>Interlets vraag en aanbod</h4>
-
-{% for group in inter_messages %}
-<h5>Groep: {{ group.name }}</h5>
+{% for grp in interlets %}
+<h5>Groep: {{ grp.group }}</h5>
 <ul>
-	{% for msg in group.msgs %}
-		<li>{{ msg.content }} <br>Ingegeven door: {{ msg.user }}</li>
+	{% for msg in grp.messages %}
+		<li>{{ msg.content }} <br>Ingegeven door: {{ msg.user }} [{{ grp.group }}]</li><br>
 	{% endfor %}
 </ul>
 {% endfor %}
 
 {% endif %}
-#}
 
 {% if forum_en and show_forum != 'none' %}
 <h3><a href="{{ forum_url }}">Forum</a></h3>

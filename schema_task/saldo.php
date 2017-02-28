@@ -198,7 +198,7 @@ class saldo extends schema_task
 					u.name, u.letscode, u.postcode
 					from ' . $sch . '.messages m, ' . $sch . '.users u
 					where m.id_user = u.id
-						and m.local = 0
+						and m.local = \'f\'
 						and u.status IN (1, 2)
 						and m.cdate >= ?
 					order BY m.cdate DESC');
@@ -583,9 +583,6 @@ class saldo extends schema_task
 
 	public function get_interval()
 	{
-
-//		return 90;  // testing
-
 		if (isset($this->schema))
 		{
 			$days = readconfigfromdb('saldofreqdays', $this->schema);
