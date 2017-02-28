@@ -299,7 +299,7 @@ foreach($rows as $value)
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';
-	echo (isset($value['user_id']) && ctype_digit((string) $value['user_id'])) ? link_user($value['user_id']) : 'geen';
+	echo (isset($value['user_id']) && ctype_digit((string) $value['user_id'])) ? link_user($value['user_id'], $value['user_schema']) : 'geen';
 	echo '</td>';
 	echo '<td>' . $value['event'] . '</td>';
 	echo '</tr>';
