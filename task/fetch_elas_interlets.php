@@ -287,10 +287,12 @@ class fetch_elas_interlets extends task
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
 
-				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
+//				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
 
 				$msgs[$id] = $msg;
 			});
+
+			error_log($this->domain . ' : fetched ' . count($msgs) . ' messages');
 
 			$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
 			$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
@@ -307,6 +309,8 @@ class fetch_elas_interlets extends task
 		{
 			$first_td = $node->filter('td')->first();
 			$va = $first_td->text();
+			$va = substr($va, 0, 1);
+
 			$next_tds = $first_td->siblings();
 			$a = $next_tds->eq(0)->filter('a');
 			$del = $a->filter('del')->count();
@@ -333,19 +337,21 @@ class fetch_elas_interlets extends task
 
 				$msg = [
 					'id'			=> $id,
-					'ow'			=> $va == 'v' ? 'w' : 'o',
+					'ow'			=> $va == 'v' || $va == 'V' ? 'w' : 'o',
 					'content'		=> trim($content),
 					'user'			=> $user,
 					'fetch_count'	=> $count, 
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
 
-				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
+//				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
 
 				$msgs[$id] = $msg;
 			}
 
 		});
+
+		error_log($this->domain . ' : fetched ' . count($msgs) . ' messages');
 
 		$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
 		$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;

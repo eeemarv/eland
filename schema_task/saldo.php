@@ -174,84 +174,87 @@ class saldo extends schema_task
 			$row['want'] = $row['type'] == 'want' ? true : false;
 			$row['images'] = $image_ary[$row['id']];
 			$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
-			$row['mail'] = $mailaddr[$msg['id_user']];
+			$row['mail'] = $mailaddr[$row['id_user']];
 			$row['user'] = $row['letscode'] . ' ' . $row['name'];
 			$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
-			$row['addr'] = str_replace(' ', '+', $addr[$msg['id_user']]);
+			$row['addr'] = str_replace(' ', '+', $addr[$row['id_user']]);
 
 			$messages[] = $row;
 		}
 
 	// interlets messages
 
-		$eland_ary = $this->interlets_groups->get_eland($this->schema);
-
-		foreach ($eland_ary as $sch => $d)
+		if (readconfigfromdb('weekly_mail_show_interlets', $this->schema) == 'recent')
 		{
-			$interlets_msgs = [];
+			$eland_ary = $this->interlets_groups->get_eland($this->schema);
 
-			$rs = $this->db->prepare('select m.id, m.content,
-				m."Description" as description, m.msg_type, m.id_user,
-				m.amount, m.units,
-				u.name, u.letscode, u.postcode
-				from ' . $sch . '.messages m, ' . $sch . '.users u
-				where m.id_user = u.id
-					AND u.status IN (1, 2)
-					AND m.cdate >= ?
-				order BY m.cdate DESC');
-
-			$rs->bindValue(1, $treshold_time);
-			$rs->execute();
-
-			while ($row = $rs->fetch())
+			foreach ($eland_ary as $sch => $d)
 			{
-				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
-				$row['offer'] = $row['type'] == 'offer' ? true : false;
-				$row['want'] = $row['type'] == 'want' ? true : false;
-				$row['user'] = $row['letscode'] . ' ' . $row['name'];
+				$interlets_msgs = [];
 
-				$interlets_msgs[] = $row;
-			}
+				$rs = $this->db->prepare('select m.id, m.content,
+					m."Description" as description, m.msg_type, m.id_user,
+					m.amount, m.units,
+					u.name, u.letscode, u.postcode
+					from ' . $sch . '.messages m, ' . $sch . '.users u
+					where m.id_user = u.id
+						AND u.status IN (1, 2)
+						AND m.cdate >= ?
+					order BY m.cdate DESC');
 
-			if (count($interlets_msgs))
-			{
-				$interlets[] = [
-					'group'		=> readconfigfromdb('systemname', $sch),
-					'messages'	=> $interlets_msgs,
-				];
-			}
-		}
+				$rs->bindValue(1, $treshold_time);
+				$rs->execute();
 
-		$elas_ary = $this->interlets_groups->get_elas($this->schema);
-
-		foreach ($elas_ary as $group_id => $ary)
-		{
-			$interlets_msgs = [];
-
-			$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
-
-			$elas_msgs = $this->cache->get($domain . '_elas_interlets_msgs');
-
-			foreach ($elas_msgs as $m)
-			{
-				if ($m['fetched_at'] < $treshold_time)
+				while ($row = $rs->fetch())
 				{
-					continue;
+					$row['type'] = $row['msg_type'] ? 'offer' : 'want';
+					$row['offer'] = $row['type'] == 'offer' ? true : false;
+					$row['want'] = $row['type'] == 'want' ? true : false;
+					$row['user'] = $row['letscode'] . ' ' . $row['name'];
+
+					$interlets_msgs[] = $row;
 				}
 
-				$m['type'] = $m['ow'] == 'o' ? 'offer' : 'want';
-				$m['offer'] = $m['type'] == 'offer' ? true : false;
-				$m['want'] = $m['type'] == 'want' ? true : false;
-
-				$interlets_msgs[] = $m;
+				if (count($interlets_msgs))
+				{
+					$interlets[] = [
+						'group'		=> readconfigfromdb('systemname', $sch),
+						'messages'	=> $interlets_msgs,
+					];
+				}
 			}
 
-			if (count($interlets_msgs))
+			$elas_ary = $this->interlets_groups->get_elas($this->schema);
+
+			foreach ($elas_ary as $group_id => $ary)
 			{
-				$interlets[] = [
-					'group'		=> $ary['groupname'],
-					'messages'	=> $interlets_msgs,
-				];
+				$interlets_msgs = [];
+
+				$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
+
+				$elas_msgs = $this->cache->get($domain . '_elas_interlets_msgs');
+
+				foreach ($elas_msgs as $m)
+				{
+					if ($m['fetched_at'] < $treshold_time)
+					{
+						continue;
+					}
+
+					$m['type'] = $m['ow'] == 'o' ? 'offer' : 'want';
+					$m['offer'] = $m['type'] == 'offer' ? true : false;
+					$m['want'] = $m['type'] == 'want' ? true : false;
+
+					$interlets_msgs[] = $m;
+				}
+
+				if (count($interlets_msgs))
+				{
+					$interlets[] = [
+						'group'		=> $ary['groupname'],
+						'messages'	=> $interlets_msgs,
+					];
+				}
 			}
 		}
 
@@ -579,6 +582,9 @@ class saldo extends schema_task
 
 	public function get_interval()
 	{
+
+//		return 90;  // testing
+
 		if (isset($this->schema))
 		{
 			$days = readconfigfromdb('saldofreqdays', $this->schema);

@@ -20,6 +20,23 @@ Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreq
 
 Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
 
+{% if interlets %}
+
+Recent vraag en aanbod in interLETS groepen
+-------------------------------------------
+
+{% for grp in interlets %}
+
+** GROEP: {{ grp.group }} **
+
+{% for msg in grp.messages %}
+
+    {% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}
+	    Ingegeven door: {{ msg.user}} [{{ grp.group }}]
+{% endfor %}
+{% endfor %}
+{% endif %}
+
 {% if forum_en and show_forum != 'none' %}
 
 Forum
