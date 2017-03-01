@@ -443,36 +443,6 @@ if ($uid)
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
-/*
-	if ($s_owner)
-	{
-		$adr = $app['db']->fetchColumn('select c.value
-			from contact c, type_contact tc
-			where c.id_user = ?
-				and c.id_type_contact = tc.id
-				and tc.abbrev = \'adr\'', array($uid));
-	}
-	else
-	{
-		$adr = $app['db']->fetchColumn('select c.value
-			from contact c, type_contact tc
-			where c.id_user = ?
-				and c.id_type_contact = tc.id
-				and tc.abbrev = \'adr\'
-				and flag_public >= ?', array($uid, $access_level));
-	}
-
-	if ($adr)
-	{
-		$geo = $app['redis']->get('geo_' . $adr);
-
-		if ($geo)
-		{
-			$geo = json_decode($geo, true);
-		}
-	}
-*/
-
 	$user = readuser($uid);
 
 	if ($s_admin || $s_owner)
