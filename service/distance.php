@@ -76,8 +76,10 @@ class distance
 
 		if (count($geo))
 		{
-			$this->to[] = $geo['lat'];
-			$this->to[] = $geo['lng'];
+			$this->to[] = [
+				'lat'	=> $geo['lat'],
+				'lng'	=> $geo['lng'],
+			];
 
 			$this->to_lat = deg2rad($geo['lat']);
 			$this->to_lng = deg2rad($geo['lng']);
@@ -92,16 +94,9 @@ class distance
 		return $this;
 	}
 
-	public function get_to_lat()
+	public function get_to_data()
 	{
-		return $this->to[0];
-		return $this->to_lat;
-	}
-
-	public function get_to_lng()
-	{
-		return $this->to[1];
-		return $this->to_lng;
+		return htmlspecialchars(json_encode($this->to));
 	}
 
 	public function get_to_geo()
@@ -121,8 +116,6 @@ class distance
 
 		$angle = 2 * asin(sqrt(pow(sin($lat_d / 2), 2) + cos($this->lat) * cos($this->to_lat) * pow(sin($lng_d / 2), 2)));
 
-//		$angle = sin($lat_d / 2) * sin($lat_d / 2) + cos($this->lat) * cos($this->to_lat) * sin($lng_d / 2) * sin($this->lng / 2);
-//		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 		$this->dist = 6371 * $angle;
 
 		return $this;

@@ -568,10 +568,8 @@ if ($uid)
 	if ($app['eland.distance']->get_to_geo() && $inline)
 	{
 		echo '<div class="panel-footer">';
-		echo '<div class="user_map" id="map" data-lng="';
-		echo $app['eland.distance']->get_to_lng();
-		echo '" data-lat="';
-		echo $app['eland.distance']->get_to_lat();
+		echo '<div class="user_map" id="map" data-markers="';
+		echo $app['eland.distance']->get_to_data();
 		echo '" ';
 		echo 'data-token="' . $app['eland.mapbox_token'] . '"></div>';
 		echo '</div>';

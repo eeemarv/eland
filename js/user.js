@@ -7,8 +7,22 @@ $(document).ready(function(){
 		contacts_div.html(data);
 	}).done(function(){
 		var $map = $('#map');
-		var lat = $map.data('lat');
-		var lng = $map.data('lng');
+
+		var markers = $map.data('markers');
+
+		var lat = 0;
+		var lng = 0;
+
+		$.each(markers, function(index, marker){
+			lat = lat + marker.lat;
+			lng = lng + marker.lng;
+		});
+
+//		var lat = markers.reduce(function(a, b){ return a + b.lat });
+//		var lng = markers.reduce(function(a, b){ return a + b.lng });
+
+		lat = lat / markers.length;
+		lng = lng / markers.length;
 
 		var map = L.map('map').setView([lat, lng], 15);
 
@@ -19,7 +33,11 @@ $(document).ready(function(){
 			accessToken: $map.data('token')
 		}).addTo(map);
 
-		L.marker([lat, lng]).addTo(map);
+		$.each(markers, function(id, m){
+			L.marker([m.lat, m.lng], {
+				riseOnHover: true
+			}).addTo(map);
+		});
 	});
 
 	$.get(transactions_div.data('url'), function(data){
