@@ -145,7 +145,6 @@ class saldo extends schema_task
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
-				and c.flag_public <> 0
 				and tc.abbrev = \'adr\'');
 
 		$rs->execute();
@@ -154,6 +153,7 @@ class saldo extends schema_task
 		{
 			$addr[$row['id']] = $row['value']; 
 			$addr_public[$row['id']] = $row['flag_public'];
+			$users[$row['id']]['adr'] = $row['value'];
 		}
 
 	// fetch messages
@@ -174,6 +174,7 @@ class saldo extends schema_task
 		while ($row = $rs->fetch())
 		{
 			$uid = $row['id_user'];
+			$adr = isset($addr_public[$uid]) && $addr_public[$uid] ? $addr[$uid] : '';
 
 			$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 			$row['offer'] = $row['type'] == 'offer' ? true : false;
@@ -183,7 +184,8 @@ class saldo extends schema_task
 			$row['mail'] = $mailaddr[$uid];
 			$row['user'] = $row['letscode'] . ' ' . $row['name'];
 			$row['user_url'] = $base_url . '/users.php?id=' . $uid;
-			$row['addr'] = isset($addr_public[$uid]) && $addr_public[$uid] ? str_replace(' ', '+', $addr[$uid]) : '';
+			$row['addr'] = str_replace(' ', '+', $adr) : '';
+			$row['adr'] = $adr;
 
 			$messages[] = $row;
 		}
