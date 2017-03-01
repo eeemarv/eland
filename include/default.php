@@ -168,6 +168,10 @@ $app['eland.interlets_groups'] = function ($app){
 	return new eland\interlets_groups($app['db'], $app['redis'], $app['eland.groups'], $app['eland.protocol']);
 };
 
+$app['eland.distance'] = function ($app){
+	return new eland\distance($app['db'], $app['eland.cache']);
+};
+
 // queue
 
 $app['eland.queue.mail'] = function ($app){

@@ -1,24 +1,27 @@
 $(document).ready(function() {
-	var lat = $('table').data('lat');
-	var lng = $('table').data('lng');
+	var lat_1 = $('table').data('lat');
+	var lng_1 = $('table').data('lng');
 
-	if (lat && lng){
+	if (lat_1 && lng_1){
 
-		lat = Math.PI * lat / 180;
-		lng = Math.PI * lng / 180;
+		lat_1 = Math.PI * lat_1 / 180;
+		lng_1 = Math.PI * lng_1 / 180;
 
 		$('table tr td[data-lng]').each(function() {
-			var llat = $(this).data('lat');
-			var llng = $(this).data('lng');
 
-			llat = Math.PI * llat / 180;
-			llng = Math.PI * llng / 180;
+			var lat_2 = $(this).data('lat');
+			var lng_2 = $(this).data('lng');
 
-			var th = lng - llng;
-			var distance = (Math.sin(lat) * Math.sin(llat)) + (Math.cos(lat) * Math.cos(llat) * Math.cos(th));
-			distance = Math.acos(distance);
+			lat_2 = Math.PI * lat_2 / 180;
+			lng_2 = Math.PI * lng_2 / 180;
 
-			distance = distance * 8381.763465709408;
+			var lat_d = lat_2 - lat_1;
+			var lng_d = lng_2 - lng_1;
+
+			var angle = Math.sin(lat_d / 2) * Math.sin(lat_d / 2) +
+				Math.cos(lat_1) * Math.cos(lat_2) *
+				Math.sin(lng_d / 2) * Math.sin(lng_d / 2);
+			var distance = 2 * Math.atan2(Math.sqrt(angle), Math.sqrt(1 - angle)) * 6371;
 
 			$(this).attr('data-value', (Math.round(distance * 100) / 100));
 

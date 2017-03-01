@@ -4,7 +4,7 @@ namespace eland;
 
 class assets
 {
-	private $version = '3';
+	private $version = '4';
 
 	private $asset_ary = [
 		'bootstrap' => [

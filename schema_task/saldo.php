@@ -581,6 +581,9 @@ class saldo extends schema_task
 		return true;
 	}
 
+	/**
+	 *
+	 */
 	public function get_interval()
 	{
 		if (isset($this->schema))

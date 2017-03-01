@@ -443,6 +443,7 @@ if ($uid)
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
+/*
 	if ($s_owner)
 	{
 		$adr = $app['db']->fetchColumn('select c.value
@@ -470,6 +471,7 @@ if ($uid)
 			$geo = json_decode($geo, true);
 		}
 	}
+*/
 
 	$user = readuser($uid);
 
@@ -556,7 +558,16 @@ if ($uid)
 		}
 		else
 		{
-			echo '<td>' . htmlspecialchars($c['value'], ENT_QUOTES) . '</td>';
+			echo '<td>';
+			echo htmlspecialchars($c['value'], ENT_QUOTES);
+			if ($c['abbrev'] == 'adr')
+			{
+				echo $app['eland.distance']->set_from_geo('', $s_id, $s_schema)
+					->set_to_geo(trim($c['value']))
+					->calc()
+					->format_parenthesis();
+			}
+			echo '</td>';
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 
@@ -575,10 +586,14 @@ if ($uid)
 
 	echo '</table>';
 
-	if (isset($geo) && $inline)
+	if ($app['eland.distance']->get_to_geo() && $inline)
 	{
 		echo '<div class="panel-footer">';
-		echo '<div class="user_map" id="map" data-lng="' . $geo['lng'] . '" data-lat="' . $geo['lat'] . '" ';
+		echo '<div class="user_map" id="map" data-lng="';
+		echo $app['eland.distance']->get_to_lng();
+		echo '" data-lat="';
+		echo $app['eland.distance']->get_to_lat();
+		echo '" ';
 		echo 'data-token="' . $app['eland.mapbox_token'] . '"></div>';
 		echo '</div>';
 	}
