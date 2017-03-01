@@ -30,7 +30,12 @@
 {% block support %}
 
 <h4>Support</h4>
-<p>Als je een vraag of probleem hebt, kan je mailen naar {{ group.support }}</p>
+<p>Als je een vraag of probleem hebt, kan je mailen naar
+<ul></ul>
+{% for mail in group.support %}
+<li><a href="mailto:{{ mail }}?subject=Support">{{ mail }}</a></li>
+{% endfor %}
+</p>
 {% endblock support %}
 {% block unsubscribe %}{% endblock unsubscribe %}
 {% block footer %}{% endblock footer %}

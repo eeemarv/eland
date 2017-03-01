@@ -155,7 +155,7 @@ function mail_transaction($transaction, $remote_schema = null)
 			'name'			=> readconfigfromdb('systemname', $sch),
 			'tag'			=> readconfigfromdb('systemtag', $sch),
 			'currency'		=> readconfigfromdb('currency', $sch),
-			'support'		=> readconfigfromdb('support', $sch),
+			'support'		=> explode(',', readconfigfromdb('support', $sch)),
 		],
 	];
 

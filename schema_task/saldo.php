@@ -529,7 +529,7 @@ class saldo extends schema_task
 				'name'				=> readconfigfromdb('systemname', $this->schema),
 				'tag'				=> readconfigfromdb('systemtag', $this->schema),
 				'currency'			=> readconfigfromdb('currency', $this->schema),
-				'support'			=> readconfigfromdb('support', $this->schema),
+				'support'			=> explode(',', readconfigfromdb('support', $this->schema)),
 				'saldofreqdays'		=> readconfigfromdb('saldofreqdays', $this->schema),
 			],
 			's3_img'				=> $this->s3_img_url,

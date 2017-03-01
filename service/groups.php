@@ -72,7 +72,7 @@ class groups
 			'tag'				=> readconfigfromdb('systemtag', $schema),
 			'name'				=> readconfigfromdb('systemname', $schema),
 			'currency'			=> readconfigfromdb('currency', $schema),
-			'support'			=> readconfigfromdb('support', $schema),
+			'support'			=> explode(',', readconfigfromdb('support', $schema)),
 			'admin'				=> readconfigfromdb('admin', $schema),
 			'msgexpcleanupdays'	=> readconfigfromdb('msgexpcleanupdays', $schema),
 		];
