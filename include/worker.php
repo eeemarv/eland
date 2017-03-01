@@ -60,7 +60,7 @@ $app['eland.schema_task.saldo'] = function ($app){
 	return new eland\schema_task\saldo($app['db'], $app['eland.xdb'], $app['eland.cache'],
 		$app['monolog'], $app['eland.queue.mail'],
 		$app['eland.s3_img_url'], $app['eland.s3_doc_url'], $app['eland.protocol'],
-		$app['eland.date_format'],
+		$app['eland.date_format'], $app['eland.distance'],
 		$app['eland.schedule'], $app['eland.groups'], $app['eland.this_group'],
 		$app['eland.interlets_groups']);
 };

@@ -9,6 +9,7 @@ use eland\cache;
 use Monolog\Logger;
 use eland\queue\mail;
 use eland\date_format;
+use eland\distance;
 
 use eland\schedule;
 use eland\groups;
@@ -26,10 +27,12 @@ class saldo extends schema_task
 	private $s3_doc_url;
 	private $protocol;
 	private $date_format;
+	private $distance;
 
 	public function __construct(db $db, xdb $xdb, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
-		date_format $date_format, schedule $schedule, groups $groups, this_group $this_group,
+		date_format $date_format, distance $distance, schedule $schedule,
+		groups $groups, this_group $this_group,
 		interlets_groups $interlets_groups)
 	{
 		parent::__construct($schedule, $groups, $this_group);
@@ -135,20 +138,21 @@ class saldo extends schema_task
 
 	// fetch addresses
 
-		$addr = $addr_public = [];
+		$addr = $addr_public = $addr_p = [];
 
-		$rs = $this->db->prepare('select u.id, c.value, flag_public
+		$rs = $this->db->prepare('select u.id, c.value
 			from ' . $this->schema . '.users u, ' . $this->schema . '.contact c, ' . $this->schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
+				and c.flag_public <> 0
 				and tc.abbrev = \'adr\'');
 
 		$rs->execute();
 
 		while ($row = $rs->fetch())
 		{
-			$addr[$row['id']] = $row['value'];
+			$addr[$row['id']] = $row['value']; 
 			$addr_public[$row['id']] = $row['flag_public'];
 		}
 
@@ -169,15 +173,17 @@ class saldo extends schema_task
 
 		while ($row = $rs->fetch())
 		{
+			$uid = $row['id_user'];
+
 			$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 			$row['offer'] = $row['type'] == 'offer' ? true : false;
 			$row['want'] = $row['type'] == 'want' ? true : false;
 			$row['images'] = $image_ary[$row['id']];
 			$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
-			$row['mail'] = $mailaddr[$row['id_user']];
+			$row['mail'] = $mailaddr[$uid];
 			$row['user'] = $row['letscode'] . ' ' . $row['name'];
-			$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
-			$row['addr'] = str_replace(' ', '+', $addr[$row['id_user']]);
+			$row['user_url'] = $base_url . '/users.php?id=' . $uid;
+			$row['addr'] = isset($addr_public[$uid]) && $addr_public[$uid] ? str_replace(' ', '+', $addr[$uid]) : '';
 
 			$messages[] = $row;
 		}
