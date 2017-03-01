@@ -70,14 +70,8 @@ class assets
 			],
 		],
 		'leaflet'	=> [
-//			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js',
-//			'css'	=> 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css',
-			'js'	=> '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js',
-			'css'	=> '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css',
-		],
-		'leaflet_label' => [
-			'js'	=> '//api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js',
-			'css'	=> '//api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css',
 		],
 		'summernote' => [
 			'js'	=> [

@@ -2848,7 +2848,7 @@ else if ($v_tiles)
 }
 else if ($v_map)
 {
-	$app['eland.assets']->add(['leaflet', 'leaflet_label', 'users_map.js']);
+	$app['eland.assets']->add(['leaflet', 'users_map.js']);
 }
 
 include __DIR__ . '/include/header.php';

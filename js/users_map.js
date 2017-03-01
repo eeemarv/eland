@@ -16,14 +16,10 @@ $(document).ready(function() {
 
 	$.each(users, function(id, user){
 		var m = L.marker([user.lat, user.lng], {
-			url: './users.php?id=' + id + '&' + sessionParam,
 			riseOnHover: true
-		}).addTo(map);
-
-		m.on('click', function(){ window.location.replace( this.options.url );})
-			.bindLabel(user.letscode + ' ' + user.name, {
-				direction: 'auto',
-			});
+		}).addTo(map).on('click', function(e){
+			window.location.href = './users.php?id=' + id + '&' + sessionParam;
+		}).bindTooltip(user.letscode + ' ' + user.name);
 	});
 
 });
