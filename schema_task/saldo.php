@@ -140,7 +140,7 @@ class saldo extends schema_task
 
 		$addr = $addr_public = $addr_p = [];
 
-		$rs = $this->db->prepare('select u.id, c.value
+		$rs = $this->db->prepare('select u.id, c.value, c.flag_public
 			from ' . $this->schema . '.users u, ' . $this->schema . '.contact c, ' . $this->schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
@@ -184,7 +184,7 @@ class saldo extends schema_task
 			$row['mail'] = $mailaddr[$uid];
 			$row['user'] = $row['letscode'] . ' ' . $row['name'];
 			$row['user_url'] = $base_url . '/users.php?id=' . $uid;
-			$row['addr'] = str_replace(' ', '+', $adr) : '';
+			$row['addr'] = str_replace(' ', '+', $adr);
 			$row['adr'] = $adr;
 
 			$messages[] = $row;
