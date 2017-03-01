@@ -23,7 +23,7 @@
 <li>Minimum limiet: <strong>{{ user.minlimit }}</strong> {{ group.currency }}</li>
 <li>Maximum limiet: <strong>{{ user.maxlimit }}</strong> {{ group.currency }}</li>
 <li>Status: <strong>{% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}</strong></li>
-<li>Login: {{ url_login }}</li>
+<li><a href="{{ url_login }}">Login</a></li>
 
 </ul>
 {% endblock accountinfo %}
