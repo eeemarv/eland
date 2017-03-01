@@ -23,17 +23,17 @@ class assets
 			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/css/footable.core.min.css',
 		],
 		'jssor'		=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/21.1.5/jssor.slider.min.js',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/22.1.8/jssor.slider.min.js',
 		],
 		'jqplot'	=> [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.donutRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.cursor.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasTextRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasAxisTickRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/jquery.jqplot.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.donutRenderer.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.cursor.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.dateAxisRenderer.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasTextRenderer.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasAxisTickRenderer.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.highlighter.min.js',
 			],
 		],
 		'jquery'	=> [
@@ -42,16 +42,16 @@ class assets
 		'fileupload'	=> [
 			'js'	=>	[
 
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/vendor/jquery.ui.widget.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.iframe-transport.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.all.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-process.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-image.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-validate.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/vendor/jquery.ui.widget.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.iframe-transport.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.7.0/js/canvas-to-blob.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-process.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-image.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-validate.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/css/jquery.fileupload.min.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/css/jquery.fileupload.min.css',
 		],
 		'typeahead'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
@@ -65,11 +65,13 @@ class assets
 		],
 		'isotope'	=> [
 			'js' => [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.2.0/imagesloaded.pkgd.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.2/isotope.pkgd.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js',
 			],
 		],
 		'leaflet'	=> [
+//			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js',
+//			'css'	=> 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css',
 			'js'	=> '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js',
 			'css'	=> '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css',
 		],
@@ -79,10 +81,10 @@ class assets
 		],
 		'summernote' => [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/lang/summernote-nl-NL.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/lang/summernote-nl-NL.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css',
 		],
 	];
 
