@@ -548,7 +548,16 @@ if ($uid)
 		}
 		else if ($s_owner || $s_admin)
 		{
-			echo '<td>' . aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']) . '</td>';
+			echo '<td>';
+			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
+			if ($c['abbrev'] == 'adr')
+			{
+				echo $app['eland.distance']->set_from_geo('', $s_id, $s_schema)
+					->set_to_geo(trim($c['value']))
+					->calc()
+					->format_parenthesis();
+			}
+			echo '</td>';
 			echo '<td>' . aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) . '</td>';
 		}
 		else if ($c['abbrev'] == 'mail')
