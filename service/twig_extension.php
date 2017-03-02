@@ -2,26 +2,25 @@
 
 namespace eland;
 
-use eland\this_group;
-use eland\user;
-
-
-class base_twig_extension extends Twig_Extension
+class twig_extension extends \Twig_Extension
 {
-	private $this_group;
-	private $user;
-
-	public function __construct(this_group $this_group, user $user)
+/*
+	public function __construct()
 	{
-		$this->this_group = $this_group;
-		$this->user = $user;
+	}
+*/
+	public function getFilters()
+	{
+		return [
+		];
 	}
 
-    public function getGlobals()
-    {
-        return [
-            'someStuff' => $this->myVar,
-            // ...
-        ];
-    }
+	public function getFunctions()
+	{
+		return [
+			new \Twig_Function('distance_p', ['eland\util\distance', 'format_p']),
+		];
+	}
+
+
 }

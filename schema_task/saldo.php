@@ -16,6 +16,8 @@ use eland\groups;
 use eland\this_group;
 use eland\interlets_groups;
 
+use eland\util\geo;
+
 class saldo extends schema_task
 {
 	private $db;
@@ -154,6 +156,16 @@ class saldo extends schema_task
 			$addr[$row['id']] = $row['value']; 
 			$addr_public[$row['id']] = $row['flag_public'];
 			$users[$row['id']]['adr'] = $row['value'];
+
+			$geo = $this->cache->get('geo_' . $row['value']);
+
+			if (count($geo))
+			{
+				if (isset($geo['lat']) && isset($geo['lng']))
+				{
+					$users_geo[$row['id']] = new geo($geo['lat'], $geo['lng']);
+				}
+			}
 		}
 
 	// fetch messages
@@ -181,11 +193,16 @@ class saldo extends schema_task
 			$row['want'] = $row['type'] == 'want' ? true : false;
 			$row['images'] = $image_ary[$row['id']];
 			$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
-			$row['mail'] = $mailaddr[$uid];
+			$row['mail'] = $mailaddr[$uid] ?? '';
 			$row['user'] = $row['letscode'] . ' ' . $row['name'];
 			$row['user_url'] = $base_url . '/users.php?id=' . $uid;
 			$row['addr'] = str_replace(' ', '+', $adr);
 			$row['adr'] = $adr;
+
+			if (isset($users_geo[$uid]))
+			{
+				$row['geo'] = $users_geo[$uid];
+			}
 
 			$messages[] = $row;
 		}
@@ -563,6 +580,11 @@ class saldo extends schema_task
 
 		foreach ($saldo_mail as $id => $b)
 		{
+			if (isset($users_geo[$id]))
+			{
+				$users[$id]['geo'] = $users_geo[$id];
+			}
+
 			$this->mail->queue([
 				'schema'	=> $this->schema,
 				'to'		=> $id,
@@ -594,6 +616,14 @@ class saldo extends schema_task
 	 */
 	public function get_interval()
 	{
+/** testing 
+		if ($this->schema == 'y')
+		{
+			return 86400;
+		}
+
+		return 90;
+**/
 		if (isset($this->schema))
 		{
 			$days = readconfigfromdb('saldofreqdays', $this->schema);

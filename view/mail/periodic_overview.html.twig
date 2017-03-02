@@ -14,7 +14,8 @@
 {{ msg.description }}
 {% if msg.amount %}<br>(Richt-)prijs: {{ msg.amount }} {{ group.currency }}{% if msg.units %} per {{ msg.units }}{% endif %}{% endif %}
 <br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
-{% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a> | {% endif %}
+{% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a>
+{% if msg.geo is defined and user.geo is defined %}{{ distance_p(user.geo, msg.geo) }}{% endif %} | {% endif %}
 {% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
 {% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
 {% if not loop.last %}|{% endif %} {% endfor %}
@@ -36,7 +37,8 @@
 <h5>Groep: {{ grp.group }}</h5>
 <ul>
 	{% for msg in grp.messages %}
-		<li>{{ msg.content }} <br>Ingegeven door: {{ msg.user }} [{{ grp.group }}]</li><br>
+		<li>{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} <br>
+		Ingegeven door: {{ msg.user }} [{{ grp.group }}]</li><br>
 	{% endfor %}
 </ul>
 {% endfor %}

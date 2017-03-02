@@ -12,8 +12,6 @@ if (php_sapi_name() !== 'cli')
 
 require_once __DIR__ . '/include/worker.php';
 
-echo "worker started\n";
-
 $boot = $app['eland.cache']->get('boot');
 
 if (!count($boot))
@@ -23,6 +21,8 @@ if (!count($boot))
 
 $boot['count']++;
 $app['eland.cache']->set('boot', $boot);
+
+echo 'worker started .. ' . $boot['count'] . "\n";
 
 $queue = new queue_container($app, 'queue');
 $task = new task_container($app, 'task');
