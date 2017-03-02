@@ -8,7 +8,7 @@ class distance
 	{
 	}
 
-	public static function get($from, $to)
+	public static function get(array $from, array $to)
 	{
 		$to_lat = deg2rad($to['lat']);
 		$to_lng = deg2rad($to['lng']);
@@ -23,7 +23,7 @@ class distance
 		return 6371 * $angle;
 	}
 
-	public static function format($from, $to)
+	public static function format(array $from, array $to)
 	{
 		$d = self::get($from, $to);
 
@@ -40,7 +40,7 @@ class distance
 		return round($d) . ' km';
 	}
 
-	public static function format_p($from, $to)
+	public static function format_p(array $from, array $to)
 	{
 		$p = self::format($from, $to);
 

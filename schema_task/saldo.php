@@ -16,8 +16,6 @@ use eland\groups;
 use eland\this_group;
 use eland\interlets_groups;
 
-use eland\util\geo;
-
 class saldo extends schema_task
 {
 	private $db;
@@ -163,7 +161,7 @@ class saldo extends schema_task
 			{
 				if (isset($geo['lat']) && isset($geo['lng']))
 				{
-					$users_geo[$row['id']] = new geo($geo['lat'], $geo['lng']);
+					$users_geo[$row['id']] = $geo;
 				}
 			}
 		}
@@ -616,14 +614,7 @@ class saldo extends schema_task
 	 */
 	public function get_interval()
 	{
-/** testing 
-		if ($this->schema == 'y')
-		{
-			return 86400;
-		}
 
-		return 90;
-**/
 		if (isset($this->schema))
 		{
 			$days = readconfigfromdb('saldofreqdays', $this->schema);
