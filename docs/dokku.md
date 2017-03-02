@@ -37,7 +37,7 @@ A CNAME record with wildcard should point to the Dokku app url.
 
 set a config var for each subdomain to the name of the schema in the database
 ```shell
-heroku config:set appname SCHEMA_MYGROUP=mygroup
+dokku config:set appname SCHEMA_MYGROUP=mygroup
 ```
 
 Above example couples domain mygroup.letsa.net to database schema mygroup.
@@ -54,8 +54,8 @@ See (file inludes/default.php)[includes/default.php] for which libraries are to 
 The buckets should have the same name as the url.
 
 ```shell
-heroku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net S3_RES=res.letsa.net
-heroku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
+dokku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net S3_RES=res.letsa.net
+dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
 ```
 
 Create CNAME records to these buckets
