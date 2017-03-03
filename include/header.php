@@ -15,6 +15,13 @@ echo $app['eland.assets']->render_css();
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
 
+echo '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">';
+echo '<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">';
+echo '<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">';
+echo '<link rel="manifest" href="/manifest.json">';
+echo '<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">';
+echo '<meta name="theme-color" content="#ffffff">';
+
 echo '</head>';
 echo '<body';
 
