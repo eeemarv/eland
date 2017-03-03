@@ -47,14 +47,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
 
-//	$twig->addFilter(new Twig_SimpleFilter('distance', array('eland\twig_extension', 'distance')));
-//	$twig->addFilter(new Twig_SimpleFilter('geocode', array('eland\twig_extension', 'geocode')));
-/*	$twig->addFilter(new Twig_SimpleFilter('date_format', ['eland\date_format', 'twig_get'], [
-		'needs_environment'	=> true,
-		'needs_context'		=> true,
-	]));
-*/
-
 	$twig->addExtension(new eland\twig_extension($app));
 
 	return $twig;
