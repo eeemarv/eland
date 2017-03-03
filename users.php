@@ -2462,10 +2462,12 @@ if ($v_list && $s_admin)
 	if (isset($_GET['sh']))
 	{
 		$show_columns = $_GET['sh'];
+
+		$app['session']->set('users_columns', $show_columns);
 	}
 	else
 	{
-		$show_columns = [
+		$preset_columns = [
 			'u'	=> [
 				'letscode'	=> 1,
 				'name'		=> 1,
@@ -2473,13 +2475,24 @@ if ($v_list && $s_admin)
 				'saldo'		=> 1,
 			],
 		];
+
+		$show_columns = $app['session']->get('users_columns') ?? $preset_columns;
 	}
 
+/*
 	$adr_split = $_GET['adr_split'] ?? '';
 	$activity_days = $_GET['activity_days'] ?? 365;
 	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
 	$activity_filter_letscode = $_GET['activity_filter_letscode'] ?? '';
 	$saldo_date = $_GET['saldo_date'] ?? '';
+	$saldo_date = trim($saldo_date);
+*/
+
+	$adr_split = $show_columns['p']['adr_split'] ?? '';
+	$activity_days = $show_columns['p']['activity_days'] ?? 365;
+	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
+	$activity_filter_letscode = $show_columns['p']['activity_filter_letscode'] ?? '';
+	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
 
 	$type_contact = $app['db']->fetchAll('select id, abbrev, name from type_contact');
@@ -2980,7 +2993,7 @@ if ($s_admin && $v_list)
 			echo 'In periode (dagen)';
 			echo '</label>';
 			echo '<div class="col-sm-9">';
-			echo '<input type="number" name="activity_days" value="' . $activity_days . '" ';
+			echo '<input type="number" name="sh[p][activity_days]" value="' . $activity_days . '" ';
 			echo 'size="4" min="1" class="form-control">';
 			echo '</div></div>';
 
@@ -2989,17 +3002,13 @@ if ($s_admin && $v_list)
 			echo 'Exclusief tegenpartij (letscode)';
 			echo '</label>';
 			echo '<div class="col-sm-9">';
-			echo '<input type="text" name="activity_filter_letscode" ';
+			echo '<input type="text" name="sh[p][activity_filter_letscode]" ';
 			echo 'value="' . $activity_filter_letscode . '" ';
 			echo 'class="form-control" data-typeahead="';
 			echo $app['eland.typeahead']->get(['users_active', 'users_extern',
 				'users_inactive', 'users_im', 'users_ip']);
 			echo '">';
 			echo '</div></div>';
-/*			echo '<p></p>Exclusief tegenpartij (letscode): <input type="text" name="activity_filter_letscode" ';
-			echo 'value="' . $activity_filter_letscode . '" ';
-			echo 'data-typeahead="' . . '">'; *
-			*/
 			echo '</div>';
 		}
 		else if ($group == 'm')
@@ -3014,11 +3023,11 @@ if ($s_admin && $v_list)
 			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" value="1"';
 			echo (isset($show_columns[$group][$key])) ? ' checked="checked"' : '';
 			echo '> ' . $lbl;
-			echo ($key == 'adr') ? ', split door teken: <input type="text" name="adr_split" size="1" value="' . $adr_split . '">' : '';
+			echo ($key == 'adr') ? ', split door teken: <input type="text" name="sh[p][adr_split]" size="1" value="' . $adr_split . '">' : '';
 
 			if ($key == 'saldo_date')
 			{
-				echo '<input type="text" name="saldo_date" ';
+				echo '<input type="text" name="sh[p][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
 				echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
 				echo 'data-date-language="nl" ';
@@ -3139,6 +3148,11 @@ if ($v_list)
 
 		foreach ($show_columns as $group => $ary)
 		{
+			if ($group == 'p')
+			{
+				continue;
+			}
+
 			$data_sort_ignore = ($group == 'c') ? ' data-sort-ignore="true"' : '';
 
 			foreach ($ary as $key => $one)
