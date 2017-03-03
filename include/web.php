@@ -29,7 +29,7 @@ $app['eland.assets'] = function($app){
 	return new eland\assets($app['eland.rootpath']);
 };
 
-$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'base.css', 'print.css', 'base.js']);
+$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'swiper', 'base.css', 'print.css', 'base.js']);
 
 $app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 

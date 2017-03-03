@@ -4,7 +4,7 @@ namespace eland;
 
 class assets
 {
-	private $version = '6';
+	private $version = '7';
 
 	private $asset_ary = [
 		'bootstrap' => [
@@ -79,6 +79,10 @@ class assets
 				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/lang/summernote-nl-NL.min.js',
 			],
 			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css',
+		],
+		'swiper' => [
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.1/js/swiper.jquery.min.js',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.1/css/swiper.min.css',
 		],
 	];
 

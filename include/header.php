@@ -258,6 +258,7 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
+echo '<div class="swiper-container">';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
@@ -324,7 +325,7 @@ $app['eland.alert']->render();
 echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';
 
-echo '<div class="visible-xs pull-left button-offcanvas">';
+echo '<div class="visible-xs pull-left button-offcanvas menu-button">';
 echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"';
 echo ' title="Menu"><i class="fa fa-chevron-left"></i></button>';
 echo '</div>';

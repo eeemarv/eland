@@ -18,9 +18,6 @@ $(document).ready(function(){
 			lng = lng + marker.lng;
 		});
 
-//		var lat = markers.reduce(function(a, b){ return a + b.lat });
-//		var lng = markers.reduce(function(a, b){ return a + b.lng });
-
 		lat = lat / markers.length;
 		lng = lng / markers.length;
 

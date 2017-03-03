@@ -1,7 +1,37 @@
 $(document).ready(function() {
+
 	$('[data-toggle=offcanvas]').click(function() {
 		$('.row-offcanvas').toggleClass('active');
 	});
+/*
+	var toggleMenu = function(){
+		if (swiper.previousIndex == 0)
+			swiper.slidePrev();
+	},
+
+	menuButton = $('.menu-button').eq(0),
+
+	swiper = new Swiper('.swiper-container', {
+		slidesPerView: 'auto',
+		initialSlide: 1,
+		resistanceRatio: .00000000000001,
+		onSlideChangeStart: function(slider) {
+			if (slider.activeIndex == 0) {
+				menuButton.addClass('cross');
+				menuButton.unbind('click', toggleMenu);
+			} else {
+				menuButton.removeClass('cross');
+			}
+		},
+		onSlideChangeEnd: function(slider) {
+			if (slider.activeIndex == 0)
+				menuButton.unbind('click', toggleMenu);
+			else
+				menuButton.bind('click', toggleMenu);
+		},
+		slideToClickedSlide: true
+	});
+*/
 
 	$('.footable').footable();
 

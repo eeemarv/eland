@@ -1,6 +1,9 @@
 <?php
 
-echo '</div>';
+echo '</div>'; 
+echo '</div>'; 
+echo '</div>'; 
+echo '</div>'; 
 
 echo '<footer class="footer">';
 
