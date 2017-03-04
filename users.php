@@ -9,6 +9,7 @@ $tdays = $_GET['tdays'] ?? 365;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
+$link = $_GET['link'] ?? false;
 $pw = $_GET['pw'] ?? false;
 $img = isset($_GET['img']) ? true : false;
 $img_del = isset($_GET['img_del']) ? true : false;
@@ -1951,6 +1952,74 @@ if ($add || $edit)
 	exit;
 }
 
+/**
+ * status definitions
+ */
+
+$st = [
+	'active'	=> [
+		'lbl'	=> 'Actief',
+		'sql'	=> 'u.status in (1, 2)',
+		'st'	=> [1, 2],
+	],
+	'new'		=> [
+		'lbl'	=> 'Instappers',
+		'sql'	=> 'u.status = 1 and u.adate > ?',
+		'sql_bind'	=> gmdate('Y-m-d H:i:s', $newusertreshold),
+		'cl'	=> 'success',
+		'st'	=> 3,
+	],
+	'leaving'	=> [
+		'lbl'	=> 'Uitstappers',
+		'sql'	=> 'u.status = 2',
+		'cl'	=> 'danger',
+		'st'	=> 2,
+	],
+];
+
+if ($s_admin)
+{
+	$st = $st + [
+		'inactive'	=> [
+			'lbl'	=> 'Inactief',
+			'sql'	=> 'u.status = 0',
+			'cl'	=> 'inactive',
+			'st'	=> 0,
+		],
+		'ip'		=> [
+			'lbl'	=> 'Info-pakket',
+			'sql'	=> 'u.status = 5',
+			'cl'	=> 'warning',
+			'st'	=> 5,
+		],
+		'im'		=> [
+			'lbl'	=> 'Info-moment',
+			'sql'	=> 'u.status = 6',
+			'cl'	=> 'info',
+			'st'	=> 6
+		],
+		'extern'	=> [
+			'lbl'	=> 'Extern',
+			'sql'	=> 'u.status = 7',
+			'cl'	=> 'extern',
+			'st'	=> 7,
+		],
+		'all'		=> [
+			'lbl'	=> 'Alle',
+			'sql'	=> '1 = 1',
+		],
+	];
+}
+
+$st_class_ary = [
+	0 => 'inactive',
+	2 => 'danger',
+	3 => 'success',
+	5 => 'warning',
+	6 => 'info',
+	7 => 'extern',
+];
+
 /*
  * Show a user
  */
@@ -1980,21 +2049,35 @@ if ($id)
 	$mail_to = $app['eland.mailaddr']->get($user['id']);
 	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['eland.mailaddr']->get($s_schema . '.' . $s_id) : [];
 
-	$and_status = ($s_admin) ? '' : ' and status in (1, 2) ';
+	$sql_bind = [$user['letscode']];
+
+	if ($link && isset($st[$link]))
+	{
+		$and_status = isset($st[$link]['sql']) ? ' and ' . $st[$link]['sql'] : '';
+
+		if (isset($st[$link]['sql_bind']))
+		{
+			$sql_bind[] = $st[$link]['sql_bind'];
+		}
+	}
+	else
+	{
+		$and_status = ($s_admin) ? '' : ' and u.status in (1, 2) ';
+	}
 
 	$next = $app['db']->fetchColumn('select id
-		from users
-		where letscode > ?
+		from users u
+		where u.letscode > ?
 		' . $and_status . '
-		order by letscode asc
-		limit 1', [$user['letscode']]);
+		order by u.letscode asc
+		limit 1', $sql_bind);
 
 	$prev = $app['db']->fetchColumn('select id
-		from users
-		where letscode < ?
+		from users u
+		where u.letscode < ?
 		' . $and_status . '
-		order by letscode desc
-		limit 1', [$user['letscode']]);
+		order by u.letscode desc
+		limit 1', $sql_bind);
 
 	$app['eland.assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
@@ -2037,27 +2120,32 @@ if ($id)
 
 	if ($prev)
 	{
-		$top_buttons .= aphp('users', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
+		$param_prev = ['id' => $prev];
+
+		if ($link)
+		{
+			$param_prev['link'] = $link;
+		}
+
+		$top_buttons .= aphp('users', $param_prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
 	}
 
 	if ($next)
 	{
-		$top_buttons .= aphp('users', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
+		$param_next = ['id' => $next];
+
+		if ($link)
+		{
+			$param_next['link'] = $link;
+		}
+
+		$top_buttons .= aphp('users', $param_next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
 	}
 
-	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons .= aphp('users', ['status' => $link ? $link : 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
-
-	$status_style_ary = [
-		0	=> 'default',
-		2	=> 'danger',
-		3	=> 'success',
-		5	=> 'warning',
-		6	=> 'info',
-		7	=> 'extern',
-	];
 
 	$h_status_ary = $status_ary;
 	$h_status_ary[3] = 'Instapper';
@@ -2066,7 +2154,7 @@ if ($id)
 
 	if ($status != 1)
 	{
-		$h1 .= ' <small><span class="text-' . $status_style_ary[$status] . '">';
+		$h1 .= ' <small><span class="text-' . $st_class_ary[$status] . '">';
 		$h1 .= $h_status_ary[$status] . '</span></small>';
 	}
 
@@ -2375,70 +2463,6 @@ $v_extended = ($view == 'extended') ? true : false;
 $v_tiles = ($view == 'tiles') ? true : false;
 $v_map = ($view == 'map') ? true : false;
 
-$st = [
-	'active'	=> [
-		'lbl'	=> 'Actief',
-		'sql'	=> 'u.status in (1, 2)',
-		'st'	=> [1, 2],
-	],
-	'new'		=> [
-		'lbl'	=> 'Instappers',
-		'sql'	=> 'u.status = 1 and u.adate > ?',
-		'sql_bind'	=> gmdate('Y-m-d H:i:s', $newusertreshold),
-		'cl'	=> 'success',
-		'st'	=> 3,
-	],
-	'leaving'	=> [
-		'lbl'	=> 'Uitstappers',
-		'sql'	=> 'u.status = 2',
-		'cl'	=> 'danger',
-		'st'	=> 2,
-	],
-];
-
-if ($s_admin)
-{
-	$st = $st + [
-		'inactive'	=> [
-			'lbl'	=> 'Inactief',
-			'sql'	=> 'u.status = 0',
-			'cl'	=> 'inactive',
-			'st'	=> 0,
-		],
-		'ip'		=> [
-			'lbl'	=> 'Info-pakket',
-			'sql'	=> 'u.status = 5',
-			'cl'	=> 'warning',
-			'st'	=> 5,
-		],
-		'im'		=> [
-			'lbl'	=> 'Info-moment',
-			'sql'	=> 'u.status = 6',
-			'cl'	=> 'info',
-			'st'	=> 6
-		],
-		'extern'	=> [
-			'lbl'	=> 'Extern',
-			'sql'	=> 'u.status = 7',
-			'cl'	=> 'extern',
-			'st'	=> 7,
-		],
-		'all'		=> [
-			'lbl'	=> 'Alle',
-			'sql'	=> '1 = 1',
-		],
-	];
-}
-
-$st_class_ary = [
-	0 => 'inactive',
-	2 => 'danger',
-	3 => 'success',
-	5 => 'warning',
-	6 => 'info',
-	7 => 'extern',
-];
-
 $sql_bind = [];
 $params = [];
 
@@ -2478,15 +2502,6 @@ if ($v_list && $s_admin)
 
 		$show_columns = $app['session']->get('users_columns') ?? $preset_columns;
 	}
-
-/*
-	$adr_split = $_GET['adr_split'] ?? '';
-	$activity_days = $_GET['activity_days'] ?? 365;
-	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
-	$activity_filter_letscode = $_GET['activity_filter_letscode'] ?? '';
-	$saldo_date = $_GET['saldo_date'] ?? '';
-	$saldo_date = trim($saldo_date);
-*/
 
 	$adr_split = $show_columns['p']['adr_split'] ?? '';
 	$activity_days = $show_columns['p']['activity_days'] ?? 365;
@@ -3206,7 +3221,7 @@ if ($v_list)
 
 					if (isset($link_user_keys[$key]))
 					{
-						echo link_user($u, false, true, false, $key);
+						echo link_user($u, false, $status, false, $key);
 					}
 					else if (isset($date_keys[$key]))
 					{
@@ -3300,8 +3315,8 @@ if ($v_list)
 			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
 
 			echo '>';
-			echo '<td>' . link_user($u, false, true, false, 'letscode') . '</td>';
-			echo '<td>' . link_user($u, false, true, false, 'name') . '</td>';
+			echo '<td>' . link_user($u, false, $status, false, 'letscode') . '</td>';
+			echo '<td>' . link_user($u, false, $status, false, 'name') . '</td>';
 			echo '<td>';
 			if (isset($contacts[$id]['tel']))
 			{
@@ -3524,7 +3539,7 @@ else if ($v_extended)
 		echo '<div class="media-body">';
 
 		echo '<h3 class="media-heading">';
-		echo link_user($u);
+		echo link_user($u, false, $status);
 		echo '</h3>';
 
 		echo htmlspecialchars($u['hobbies'], ENT_QUOTES);
@@ -3536,7 +3551,7 @@ else if ($v_extended)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user']);
+		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user'], false, $status);
 		echo ($msg['postcode']) ? ', postcode: ' . $u['postcode'] : '';
 
 		if ($s_admin)
@@ -3573,7 +3588,8 @@ else if ($v_tiles)
 		$class = $st_class_ary[$row_stat] ?? false;
 		$class = $class ? ' class="bg-' . $class . '"' : '';
 
-		$url = generate_url('users', ['id' => $u['id']]);
+		$url = generate_url('users', ['id' => $u['id'], 'link' => $status]);
+
 		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
 		echo '<div' . $class . '>';
 		echo '<div class="thumbnail text-center">';

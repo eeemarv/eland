@@ -198,8 +198,13 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 
 	if ($link)
 	{
+		$param = ['id' => $user['id']];
+		if (is_string($link))
+		{
+			$param['link'] = $link;
+		}
 		$out = '<a href="';
-		$out .= generate_url('users', ['id' => $user['id']], $sch);
+		$out .= generate_url('users', $param, $sch);
 		$out .= '">' . $str . '</a>';
 	}
 	else
