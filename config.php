@@ -52,14 +52,14 @@ $tab_panes = [
 		'lbl'		=> 'Saldo',
 		'inputs'	=> [
 			'minlimit'	=> [
-				'lbl'	=> 'Minimum limiet',
+				'lbl'	=> 'Minimum groepslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Minimum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele minimum limiet ingesteld is.',
+				'explain'	=> 'Minimum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele minimum limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'maxlimit'	=> [
-				'lbl'	=> 'Maximum limiet',
+				'lbl'	=> 'Maximum groepslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is.',
+				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'balance_equilibrium'	=> [
 				'lbl'	=> 'Het uitstapsaldo voor actieve leden. ',

@@ -1651,8 +1651,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> '', //readconfigfromdb('minlimit'),
-				'maxlimit'		=> '', //readconfigfromdb('maxlimit'),
+				'minlimit'		=> '', 
+				'maxlimit'		=> '',
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -2626,6 +2626,17 @@ if ($v_list && $s_admin)
 		from users u
 		where ' . $st[$status]['sql'] . '
 		order by u.letscode asc', $sql_bind);
+
+// hack eLAS compatibility (in eLAND limits can be null)
+
+	if (isset($show_columns['u']['minlimit']) || isset($show_columns['u']['maxlimit']))
+	{
+		foreach ($users as &$user)
+		{
+			$user['minlimit'] = $user['minlimit'] === -999999999 ? '' : $user['minlimit'];
+			$user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : $user['maxlimit'];
+		}
+	}
 
 	if (isset($show_columns['u']['saldo_date']))
 	{

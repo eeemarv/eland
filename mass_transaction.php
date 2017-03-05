@@ -85,6 +85,12 @@ $rs->execute();
 
 while ($row = $rs->fetch())
 {
+
+// hack eLAS compatibility (in eLAND limits can be null)
+
+	$row['minlimit'] = $row['minlimit'] === -999999999 ? '' : $row['minlimit'];
+	$row['maxlimit'] = $row['maxlimit'] === 999999999 ? '' : $row['maxlimit'];
+
 	$users[$row['id']] = $row;
 }
 
@@ -390,6 +396,30 @@ $h1 = 'Massa transactie';
 $fa = 'exchange';
 
 include __DIR__ . '/include/header.php';
+
+if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
+{
+	echo '<div class="panel panel-default">';
+	echo '<div class="panel-heading">';
+	echo '<ul>';
+
+	if (readconfigfromdb('minlimit') !== '')
+	{
+		echo '<li>Algemene minimum limiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+	}
+
+	if (readconfigfromdb('maxlimit') !== '')
+	{
+		echo '<li>Algemene maximum limiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+	}
+
+	echo '<li>De algemeen limieten gelden voor alle accounts behalve de ';
+	echo 'accounts waarbij eigen limieten ingesteld zijn.</li>';
+
+	echo '</ul>';
+	echo '</div>';
+	echo '</div>';
+}
 
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';

@@ -798,6 +798,30 @@ if ($add)
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
 	echo 'data-typeahead-source="group_self" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
+
+	echo '<ul>';
+	echo '<li>Huidige saldo: <strong>';
+	echo $balance . '</strong> ';
+	echo readconfigfromdb('currency') . '</li>';
+
+	if ($minlimit !== '')
+	{
+		echo '<li>Minimum limiet: <strong>';
+		echo $minlimit;
+		echo '</strong> ';
+		echo readconfigfromdb('currency') . '</li>';
+	}
+
+	if (readconfigfromdb('minlimit') !== '')
+	{
+		echo '<li>Minimum groepslimiet: <strong>';
+		echo readconfigfromdb('minlimit');
+		echo '</strong> ';
+		echo readconfigfromdb('currency') . '</li>';
+	}
+
+	echo '</ul>';
+
 	echo '</div>';
 	echo '</div>';
 
@@ -841,6 +865,17 @@ if ($add)
 		}
 
 		echo '</select>';
+
+		echo '<ul>';
+		echo '<li>';
+		echo 'Maximum limiet: <strong>' . readconfigfromdb('maxlimit');
+		echo '</strong> ';
+		echo readconfigfromdb('currency');
+
+		echo '</li>';
+
+		echo '</ul>';
+
 		echo '</div>';
 		echo '</div>';
 	}
@@ -875,15 +910,64 @@ if ($add)
 	}
 
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
+
+	echo '<ul>';
+	echo '<li>';
+	echo 'Huidig saldo: <strong>';
+
+	echo '</strong> ' . readconfigfromdb('currency');
+	echo '</li>';
+	echo '<li>';
+	echo 'Maximum limiet <strong>46</strong> ';
+	echo readconfigfromdb('currency');
+	echo '</li>';
+
+	echo '<li>';
+	echo '</ul>';
+
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . readconfigfromdb('currency') . '</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">Aantal</label>';
+//	echo '<div class="col-sm-10">';
+
+/*
+	echo '<div class="col-sm-12">';
+	echo '<div class="input-group margin-bottom">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-search"></i>';
+	echo '</span>';
+	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoekterm">';
+	echo '</div>';
+	echo '</div>';
+*/
+
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+
+	echo '<span class="input-group-addon">';
+	echo readconfigfromdb('currency');
+	echo '</span>';
+
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
 	echo 'value="' . $transaction['amount'] . '" required>';
+
 	echo '</div>';
+	echo '<ul><li>Maximum <strong>15</strong> ' . readconfigfromdb('currency') . ' mogelijk.</li></ul>';
+
+	echo '</div>';
+
+	echo '<div class="col-sm-5 collapse">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '';
+	echo '</span>';
+	echo '<input type="number" class="form-control" id="amount" name="amount" ';
+	echo 'value="" required>';
+	echo '</div>';	
+	echo '</div>';
+
 	echo '</div>';
 
 	echo '<div class="form-group">';
