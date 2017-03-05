@@ -4,7 +4,7 @@ $(document).ready(function(){
 	var $mail = $('input[type="email"]');
 	var $activate = $('div#activate');
 	var $contact_input = $('input[data-access]');
-	var $presharedkey_formgroup = $('#presharedkey_formgroup');
+	var $presharedkey_panel = $('#presharedkey_panel');
 
 	status_change();
 
@@ -44,10 +44,10 @@ $(document).ready(function(){
 	function accountrole_change(){
 		if ($accountrole.val() == 'interlets'){
 
-			$presharedkey_formgroup.show();
+			$presharedkey_panel.show();
 		} else {
 
-			$presharedkey_formgroup.hide();
+			$presharedkey_panel.hide();
 		}
 	}
 });

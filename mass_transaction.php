@@ -394,7 +394,7 @@ include __DIR__ . '/include/header.php';
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
 echo '<button class="btn btn-default" title="Toon invul-hulp" data-toggle="collapse" ';
-echo 'data-target="#help">';
+echo 'data-target="#help" type="button">';
 echo '<i class="fa fa-question"></i>';
 echo ' Invul-hulp</button>';
 echo '</div>';

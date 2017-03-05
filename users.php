@@ -1100,13 +1100,20 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
+			// hack eLAS compatibility (in eLAND limits can be null)
+			$minlimit = trim($_POST['minlimit']);
+			$maxlimit = trim($_POST['maxlimit']);
+
+			$minlimit = $minlimit === '' ? -999999999 : $minlimit;
+			$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
+
 			$user += [
 				'letscode'		=> trim($_POST['letscode']),
 				'accountrole'	=> $_POST['accountrole'],
 				'status'		=> $_POST['status'],
 				'admincomment'	=> trim($_POST['admincomment']),
-				'minlimit'		=> trim($_POST['minlimit']),
-				'maxlimit'		=> trim($_POST['maxlimit']),
+				'minlimit'		=> $minlimit,
+				'maxlimit'		=> $maxlimit,
 				'presharedkey'	=> trim($_POST['presharedkey']),
 			];
 
@@ -1297,12 +1304,12 @@ if ($add || $edit)
 
 			if (filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
 			{
-				$errors[] = 'Geef getal op voor de minimum limiet.';
+				$errors[] = 'Geef getal of niets op voor de minimum limiet.';
 			}
 
 			if (filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
 			{
-				$errors[] = 'Geef getal op voor de maximum limiet.';
+				$errors[] = 'Geef getal of niets op voor de maximum limiet.';
 			}
 
 			if (strlen($user['presharedkey']) > 80)
@@ -1644,8 +1651,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> readconfigfromdb('minlimit'),
-				'maxlimit'		=> readconfigfromdb('maxlimit'),
+				'minlimit'		=> '', //readconfigfromdb('minlimit'),
+				'maxlimit'		=> '', //readconfigfromdb('maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -1816,21 +1823,24 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
+		echo '<div class="bg-danger pan-sub" id="presharedkey_panel">';
+		echo '<div class="form-group" id="presharedkey_formgroup">';
+		echo '<label for="presharedkey" class="col-sm-2 control-label">';
+		echo 'Preshared key</label>';
+		echo '<div class="col-sm-10">';
+		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
+		echo 'value="' . $user['presharedkey'] . '" maxlength="80">';
+		echo '<p>Vul dit enkel in voor een interletsaccount van een eLAS-installatie.</p>';
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
 		echo '<div class="form-group">';
 		echo '<label for="status" class="col-sm-2 control-label">Status</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select id="status" name="status" class="form-control">';
 		render_select_options($status_ary, $user['status']);
 		echo '</select>';
-		echo '</div>';
-		echo '</div>';
-
-		echo '<div class="form-group" id="presharedkey_formgroup">';
-		echo '<label for="presharedkey" class="col-sm-2 control-label">';
-		echo 'Preshared key (enkel voor interletsaccount met eLAS-installatie)</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-		echo 'value="' . $user['presharedkey'] . '" maxlength="80">';
 		echo '</div>';
 		echo '</div>';
 
@@ -1843,11 +1853,46 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
+		echo '<div class="bg-danger pan-sub">';
+
+		echo '<h2>Limieten&nbsp;';
+
+		if ($user['minlimit'] === '' && $user['maxlimit'] === '')
+		{
+			echo '<button class="btn btn-default" title="Limieten instellen" data-toggle="collapse" ';
+			echo 'data-target="#limits_pan" type="button">Instellen</button>';
+		}
+
+		echo '</h2>';
+
+		echo '<div id="limits_pan"';
+
+		if ($user['minlimit'] === '' && $user['maxlimit'] === '')
+		{
+			echo ' class="collapse"';
+		}
+
+		echo '>';
 		echo '<div class="form-group">';
 		echo '<label for="minlimit" class="col-sm-2 control-label">Minimum limiet saldo</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="minlimit" name="minlimit" ';
 		echo 'value="' . $user['minlimit'] . '">';
+
+		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
+		echo 'voor dit account. ';
+
+		if (readconfigfromdb('minlimit') === '')
+		{
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende minimum limiet ingesteld.';
+		}
+		else
+		{
+			echo 'De algemeen geldende minimum limiet bedraagt <strong>';
+			echo readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
+		}
+
+		echo '</p>';
 		echo '</div>';
 		echo '</div>';
 
@@ -1856,9 +1901,26 @@ if ($add || $edit)
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="maxlimit" name="maxlimit" ';
 		echo 'value="' . $user['maxlimit'] . '">';
+
+		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
+		echo 'voor dit account. ';
+
+		if (readconfigfromdb('maxlimit') === '')
+		{
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende maximum limiet ingesteld.';
+		}
+		else
+		{
+			echo 'De algemeen geldende maximum limiet bedraagt <strong>';
+			echo readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
+		}
+	
 		echo '</div>';
 		echo '</div>';
 	}
+
+	echo '</div>';
+	echo '</div>';
 
 	echo '<div class="form-group">';
 	echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke mail met recent vraag en aanbod</label>';
@@ -1871,7 +1933,7 @@ if ($add || $edit)
 
 	if ($s_admin)
 	{
-		echo '<div class="bg-warning">';
+		echo '<div class="bg-warning pan-sub">';
 		echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
 		foreach ($contact as $key => $c)
@@ -2324,17 +2386,23 @@ if ($id)
 	echo readconfigfromdb('currency');
 	echo '</dd>';
 
-	echo '<dt>Minimum limiet</dt>';
-	echo '<dd>';
-	echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
-	echo readconfigfromdb('currency');
-	echo '</dd>';
+	if ($user['minlimit'] !== '')
+	{
+		echo '<dt>Minimum limiet</dt>';
+		echo '<dd>';
+		echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
+		echo readconfigfromdb('currency');
+		echo '</dd>';
+	}
 
-	echo '<dt>Maximum limiet</dt>';
-	echo '<dd>';
-	echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
-	echo readconfigfromdb('currency');
-	echo '</dd>';
+	if ($user['maxlimit'] !== '')
+	{
+		echo '<dt>Maximum limiet</dt>';
+		echo '<dd>';
+		echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
+		echo readconfigfromdb('currency');
+		echo '</dd>';
+	}
 
 	if ($s_admin || $s_owner)
 	{

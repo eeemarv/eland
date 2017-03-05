@@ -339,6 +339,10 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
+	// hack eLAS compatibility (in eLAND limits can be null)
+	$user['minlimit'] = $user['minlimit'] == -999999999 ? '' : $user['minlimit'];
+	$user['maxlimit'] = $user['maxlimit'] == 999999999 ? '' : $user['maxlimit'];
+
 	$row = $app['eland.xdb']->get('user_fullname_access', $id, $s);
 
 	if ($row)

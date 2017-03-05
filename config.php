@@ -54,12 +54,12 @@ $tab_panes = [
 			'minlimit'	=> [
 				'lbl'	=> 'Minimum limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Standaardwaarde minimum limiet voor nieuwe gebruikers.',
+				'explain'	=> 'Minimum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele minimum limiet ingesteld is.',
 			],
 			'maxlimit'	=> [
 				'lbl'	=> 'Maximum limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Standaardwaarde maximum limiet voor nieuwe gebruikers.',
+				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is.',
 			],
 			'balance_equilibrium'	=> [
 				'lbl'	=> 'Het uitstapsaldo voor actieve leden. ',
