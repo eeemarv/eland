@@ -852,15 +852,32 @@ if ($add)
 				}
 
 				$typeahead = $app['eland.typeahead']->get($typeahead);
+
+				echo ' data-newuserdays="' . readconfigfromdb('newuserdays') . '"';
+				echo ' data-minlimit="' . readconfigfromdb('minlimit') . '"';
+				echo ' data-maxlimit="' . readconfigfromdb('maxlimit') . '"';
+				echo ' data-currency="' . readconfigfromdb('currency') . '"';
+				echo ' data-currencyratio="' . readconfigfromdb('currencyratio') . '"';
 			}
 			else
 			{
 				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
 				$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
+
+				$sch = $app['eland.groups']->get_schema($domain);
+
+				if ($sch)
+				{
+					echo ' data-newuserdays="' . readconfigfromdb('newuserdays', $sch) . '"';
+					echo ' data-minlimit="' . readconfigfromdb('minlimit', $sch) . '"';
+					echo ' data-maxlimit="' . readconfigfromdb('maxlimit', $sch) . '"';
+					echo ' data-currency="' . readconfigfromdb('currency', $sch) . '"';
+					echo ' data-currencyratio="' . readconfigfromdb('currencyratio', $sch) . '"';
+				}
 			}
 
 			echo 'data-typeahead="' . $typeahead . '"';
-			echo ($l['id'] == $group_id) ? ' selected="selected" ' : '';
+			echo ($l['id'] == $group_id) ? ' selected="selected"' : '';
 			echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
 		}
 
@@ -868,7 +885,7 @@ if ($add)
 
 		echo '<ul>';
 		echo '<li>';
-		echo 'Maximum limiet: <strong>' . readconfigfromdb('maxlimit');
+		echo 'Maximum groepslimiet: <strong>' . readconfigfromdb('maxlimit');
 		echo '</strong> ';
 		echo readconfigfromdb('currency');
 

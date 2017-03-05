@@ -115,22 +115,35 @@ function users_to_json($sch, $status_sql = 'in (1, 2)')
 			name as n,
 			extract(epoch from adate) as a,
 			status as s,
-			postcode as p
+			postcode as p,
+			saldo as b,
+			minlimit as min,
+			maxlimit as max
 		FROM ' . $sch . '.users
 		WHERE status ' . $status_sql
 	);
 
 	$users = [];
 
-	$new_user_days = readconfigfromdb('newuserdays', $sch);
+//	$new_user_days = readconfigfromdb('newuserdays', $sch);
 
 	foreach ($fetched_users as $user)
 	{
-		$user['nd'] = $new_user_days;
+//		$user['nd'] = $new_user_days;
 
 		if ($user['s'] == 1)
 		{
 			unset($user['s']);
+		}
+
+		if ($user['max'] == 999999999)
+		{
+			unset($user['max']);
+		}
+
+		if ($user['min'] == -999999999)
+		{
+			unset($user['min']);
 		}
 
 		$users[] = $user;

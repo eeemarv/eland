@@ -404,6 +404,8 @@ class fetch_elas_interlets extends task
 				$href = $a->attr('href');
 				list($dummy, $id) = explode('=', $href);
 
+				$user['b'] = trim($next_tds->eq(6)->text());
+
 				$users[$id] = $user;
 			});
 		}
@@ -419,18 +421,20 @@ class fetch_elas_interlets extends task
 				$td = $node->filter('td')->first();
 	
 				$bgcolor = trim($td->attr('bgcolor'));
-				$postcode = trim($td->siblings()->eq(3)->text());
+				$next_tds = $td->siblings();		
+				$postcode = trim($next_tds->eq(3)->text());
+				$balance = trim($next_tds->eq(5)->text());
 
 				$code = trim($td->text());
 				$name = trim($td->nextAll()->text());
 
-				$next_tds = $td->siblings();
 				$a = $next_tds->eq(0)->filter('a');
 				$href = $a->attr('href');
 				list($dummy, $id) = explode('=', $href);
 
 				$user['c'] = $code;
 				$user['n'] = $name;
+				$user['b'] = $balance;
 
 				if ($bgcolor)
 				{

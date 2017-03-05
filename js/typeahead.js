@@ -16,6 +16,10 @@ $(document).ready(function(){
 
 		data = data.split('|');
 
+		var newuserdays = $(this).data('newuserdays');
+
+		var treshold = now - (newuserdays * 86400);
+
 		for(var i = 0; i < data.length; i += 2){
 
 			var thumbprint = data[i];
@@ -26,7 +30,7 @@ $(document).ready(function(){
 				var filter = function(users){
 					return $.map(users, function(user){
 
-						var cl = (user.a && (user.a > (now - (user.nd * 86400)))) ? ' class="success"' : '';
+						var cl = (user.a && (user.a > treshold)) ? ' class="success"' : '';
 
 						switch (user.s){
 							case 0:
