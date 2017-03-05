@@ -1880,15 +1880,16 @@ if ($add || $edit)
 		echo 'value="' . $user['minlimit'] . '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
-		echo 'voor dit account. ';
+		echo 'voor dit account. ls dit veld leeg is, dan is de algemene geldende minimum groepslimiet ';
+		echo 'van toepassing. ';
 
 		if (readconfigfromdb('minlimit') === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende minimum limiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende minimum groepslimiet ingesteld.';
 		}
 		else
 		{
-			echo 'De algemeen geldende minimum limiet bedraagt <strong>';
+			echo 'De algemeen geldende minimum groepslimiet bedraagt <strong>';
 			echo readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
 		}
 
@@ -1903,15 +1904,16 @@ if ($add || $edit)
 		echo 'value="' . $user['maxlimit'] . '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
-		echo 'voor dit account. ';
+		echo 'voor dit account. Als dit veld leeg is, dan is de algemene geldende maximum groepslimiet ';
+		echo 'van toepassing. ';
 
 		if (readconfigfromdb('maxlimit') === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende maximum limiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende maximum groepslimiet ingesteld.';
 		}
 		else
 		{
-			echo 'De algemeen geldende maximum limiet bedraagt <strong>';
+			echo 'De algemeen geldende maximum groepslimiet bedraagt <strong>';
 			echo readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
 		}
 	

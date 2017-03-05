@@ -479,12 +479,12 @@ if ($post)
 
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['maxlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.';
 			}
 
 			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['minlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.';
 			}
 
 			continue;
@@ -499,12 +499,12 @@ if ($post)
 
 			if (isset($validator['attr']['max']) && $value > $validator['attr']['max'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['max'] . ' bedragen.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['max'] . ' bedragen.';
 			}
 
 			if (isset($validator['attr']['min']) && $value < $validator['attr']['min'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['min'] . ' bedragen.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['min'] . ' bedragen.';
 			}
 
 			continue;
@@ -568,12 +568,12 @@ if ($post)
 
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validators['attr']['maxlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.';
 			}
 
 			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validators['attr']['minlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.';
 			}
 		}
 	}
