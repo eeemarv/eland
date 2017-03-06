@@ -62,9 +62,10 @@ $tab_panes = [
 				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'balance_equilibrium'	=> [
-				'lbl'	=> 'Het uitstapsaldo voor actieve leden. ',
-				'type'	=> 'number',
-				'explain' => 'Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'
+				'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
+				'type'		=> 'number',
+				'required'	=> true,
+				'explain' 	=> 'Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'
 			],
 
 		],
@@ -109,11 +110,13 @@ $tab_panes = [
 		'lbl'	=> 'Groepsnaam',
 		'inputs' => [
 			'systemname' => [
-				'lbl'	=> 'Groepsnaam',
+				'lbl'		=> 'Groepsnaam',
+				'required'	=> true,
 			],
 			'systemtag' => [
-				'lbl'	=> 'Tag (hoofding voor emails)',
-				'attr'	=> ['maxlength' => 30],
+				'lbl'		=> 'Tag (hoofding voor emails)',
+				'required'	=> true,
+				'attr'		=> ['maxlength' => 30],
 			],
 		],
 	],
@@ -122,12 +125,14 @@ $tab_panes = [
 		'lbl'	=> 'LETS-Eenheid',
 		'inputs'	=> [
 			'currency'	=> [
-				'lbl'	=> 'Naam van LETS-Eenheid (meervoud)',
+				'lbl'		=> 'Naam van LETS-Eenheid (meervoud)',
+				'required'	=> true,
 			],
 			'currencyratio'	=> [
-				'lbl'	=> 'Aantal per uur',
-				'attr'	=> ['max' => 240, 'min' => 1],
-				'type'	=> 'number',
+				'lbl'		=> 'Aantal per uur',
+				'attr'		=> ['max' => 240, 'min' => 1],
+				'type'		=> 'number',
+				'explain'	=> 'Deze instelling is vereist voor eLAS/eLAND interLETS',
 			],
 		],
 	],
@@ -167,8 +172,9 @@ $tab_panes = [
 				'inline' => 'Verstuur de overzichtsmail met recent vraag en aanbod om de %1$s dagen',
 				'inputs' => [
 					'saldofreqdays'	=> [
-						'type'	=> 'number',
-						'attr'	=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
+						'type'		=> 'number',
+						'attr'		=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
+						'required'	=> true,
 					],
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
@@ -305,9 +311,10 @@ $tab_panes = [
 		'lbl'	=> 'Leden',
 		'inputs'	=> [
 			'newuserdays' => [
-				'lbl'	=> 'Aantal dagen dat een nieuw lid als instapper getoond wordt.',
-				'type'	=> 'number',
-				'attr'	=> ['min' => 0, 'max' => 365],
+				'lbl'		=> 'Aantal dagen dat een nieuw lid als instapper getoond wordt.',
+				'type'		=> 'number',
+				'attr'		=> ['min' => 0, 'max' => 365],
+				'required'	=> true,
 			],
 			'li_2' => [
 				'inline' => '%1$s Leden kunnen zelf hun gebruikersnaam aanpassen.',
@@ -351,6 +358,7 @@ $tab_panes = [
 				'lbl'		=> 'Standaard landingspagina',
 				'type'		=> 'select',
 				'options'	=> $landing_page_options,
+				'required'	=> true,
 			],
 			'homepage_url'	=> [
 				'lbl'		=> 'Website url',
@@ -368,7 +376,6 @@ $tab_panes = [
 				'type' 		=> 'url',
 				'explain'	=> 'Url van extra stijlblad (css-bestand)',
 			],
-
 		],
 	],
 ];
@@ -714,6 +721,8 @@ foreach ($tab_panes as $id => $pane)
 						}
 					}
 
+					$str .= isset($inline_input['required']) ? ' required' : '';
+
 					$str .= '>';
 
 					$input_ary[] = $str;
@@ -740,7 +749,9 @@ foreach ($tab_panes as $id => $pane)
 
 			if (isset($input['type']) && $input['type'] == 'select')
 			{
-				echo '<select class="form-control" name="' . $name . '">';
+				echo '<select class="form-control" name="' . $name . '"';
+				echo isset($input['required']) ? ' required' : '';
+				echo '>';
 
 				render_select_options($input['options'], $config[$name]);
 
@@ -752,8 +763,9 @@ foreach ($tab_panes as $id => $pane)
 				echo isset($input['rich_edit']) ? ' rich-edit' : '';
 				echo '" rows="4"';
 
-				echo (isset($input['attr']['maxlength'])) ? '' : ' maxlength="2000"';
-				echo (isset($input['attr']['minlength'])) ? '' : ' minlength="1"';
+				echo isset($input['attr']['maxlength']) ? '' : ' maxlength="2000"';
+				echo isset($input['attr']['minlength']) ? '' : ' minlength="1"';
+				echo isset($input['required']) ? ' required' : '';
 
 				if (isset($input['attr']))
 				{
@@ -776,8 +788,9 @@ foreach ($tab_panes as $id => $pane)
 				echo 'id="' . $name . $name_suffix . '" ';
 				echo 'value="' . $config[$name] . '"';
 
-				echo (isset($input['attr']['maxlength'])) ? '' : ' maxlength="60"';
-				echo (isset($input['attr']['minlength'])) ? '' : ' minlength="1"';
+				echo isset($input['attr']['maxlength']) ? '' : ' maxlength="60"';
+				echo isset($input['attr']['minlength']) ? '' : ' minlength="1"';
+				echo isset($input['required']) ? ' required' : '';
 
 				if (isset($input['attr']))
 				{
