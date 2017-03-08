@@ -683,18 +683,20 @@ if ($add)
 		}
 		else if ($tuid)
 		{
-			$row = readuser($tuid, false, ((isset($host_from_tus)) ? $tus : false));
+			$to_user = readuser($tuid, false, ((isset($host_from_tus)) ? $tus : false));
 
-			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			if (($s_admin && !$tus) || $to_user['status'] == 1 || $to_user['status'] == 2)
 			{
-				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+				$transaction['letscode_to'] = $to_user['letscode'] . ' ' . $to_user['name'];
 			}
 		}
 
 		if ($fuid && $s_admin && ($fuid != $tuid))
 		{
-			$row = readuser($fuid);
-			$transaction['letscode_from'] = $row['letscode'] . ' ' . $row['name'];
+			$from_user = readuser($fuid);
+			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
+
+			
 		}
 
 		if ($tuid == $s_id && !$fuid && $tus != $app['eland.this_group']->get_schema())
@@ -802,24 +804,22 @@ if ($add)
 	echo $groups_en ? 'group_self' : 'letscode_to';
 	echo '" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
+
 	echo '<ul>';
-	echo '<li>Huidige saldo: <strong>';
-	echo $balance . '</strong> ';
+
+	echo '<li class="" id="info_from_bal">Huidige saldo: <strong><span>';
+	echo '</span></span></strong> ';
 	echo readconfigfromdb('currency') . '</li>';
 
-	if ($minlimit !== '')
-	{
-		echo '<li>Minimum limiet: <strong>';
-		echo $minlimit;
-		echo '</strong> ';
-		echo readconfigfromdb('currency') . '</li>';
-	}
+	echo '<li class="" id="info_from_minlimit">Minimum limiet: <strong><span>';
+	echo '</span></strong> ';
+	echo readconfigfromdb('currency') . '</li>';	
 
 	if (readconfigfromdb('minlimit') !== '')
 	{
-		echo '<li>Minimum groepslimiet: <strong>';
+		echo '<li class="" id="info_from_groupminlimit">Minimum groepslimiet: <strong><span>';
 		echo readconfigfromdb('minlimit');
-		echo '</strong> ';
+		echo '</span></strong> ';
 		echo readconfigfromdb('currency') . '</li>';
 	}
 

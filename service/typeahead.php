@@ -25,7 +25,7 @@ class typeahead
 
 	public function get($name_ary, $group_domain = false, $group_id = false)
 	{
-		$out = '';
+		$out = [];
 
 		if (!is_array($name_ary))
 		{
@@ -34,7 +34,10 @@ class typeahead
 
 		foreach($name_ary as $name)
 		{
-			$out .= $this->get_thumbprint($name, $group_domain) . '|';
+			$rec = [];
+
+/*
+			$rec =  . '|';
 
 			if (strpos($name, 'users_') !== false)
 			{
@@ -48,11 +51,34 @@ class typeahead
 				$out .= './ajax/typeahead_' . $name . '.php?';
 				$out .= http_build_query(get_session_query_param());
 			}
+*/
+			$users_en = strpos($name, 'users_') === false ? false : true;
 
-			$out .= '|';
+			$rec = [
+				'thumbprint'	=> $this->get_thumbprint($name, $group_domain),
+				'name'			=> $users_en ? 'users' : $name,
+			];
+
+			if ($users_en)
+			{
+				$params = [
+					'status'	=> str_replace('users_', '', $name)
+				];
+
+				if ($group_id)
+				{
+					$params['group_id']	= $group_id;
+				}
+
+				$rec['params'] = $params;
+			}
+
+			$out[] = $rec;
 		}
 
-		return rtrim($out, '|');
+		return htmlspecialchars(json_encode($out));
+
+//		return rtrim($out, '|');
 	}
 
 	/**

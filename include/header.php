@@ -23,7 +23,9 @@ echo '<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">';
 echo '<meta name="theme-color" content="#ffffff">';
 
 echo '</head>';
-echo '<body';
+echo '<body data-session-params="';
+echo htmlspecialchars(json_encode(get_session_query_param()));
+echo '"';
 
 if ($s_schema)
 {

@@ -6,6 +6,8 @@ $(document).ready(function(){
 	var $data_options = $('form select option[data-typeahead]');
 	var $target_text_inputs = $('form input[type="text"][data-typeahead-source]');
 
+	var session_params = $('body').data('session-params');
+
 	var $data_sources = $data_text_inputs.add($data_options);
 
 	$data_sources.each(function(){
@@ -14,18 +16,28 @@ $(document).ready(function(){
 
 		var data = $(this).data('typeahead');
 
-		data = data.split('|');
+		//data = data.split('|');
 
 		var newuserdays = $(this).data('newuserdays');
 
 		var treshold = now - (newuserdays * 86400);
 
-		for(var i = 0; i < data.length; i += 2){
+		for(var i = 0; i < data.length; i++){
 
-			var thumbprint = data[i];
-			var url = data[i+1];
+			var rec = data[i];
 
-			if (url.indexOf('users') > -1){
+			if (rec.hasOwnProperty('params')){
+				var params = rec.params;
+			} else {
+				params = [];
+			}
+
+			$.extend(params, session_params);
+
+//			var thumbprint = data[i];
+//			var url = data[i+1];
+
+			if (rec['name'] == 'users'){
 
 				var filter = function(users){
 					return $.map(users, function(user){
@@ -90,10 +102,10 @@ $(document).ready(function(){
 
 			datasets.push({data: new Bloodhound({
 					prefetch: {
-						url: url,
+						url: './ajax/typeahead_' + rec.name + '.php?' + $.param(params),
 						cache: true,
 						ttl: 2592000000,	//30 days
-						thumbprint: thumbprint,
+						thumbprint: rec.thumbprint,
 						filter: filter
 					},
 					datumTokenizer: tokenizer,
@@ -102,8 +114,6 @@ $(document).ready(function(){
 				templates: templates,
 				displayKey: displayKey
 			});
-
-			
 		}
 
 		var args = [{
