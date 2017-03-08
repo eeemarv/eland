@@ -41,9 +41,14 @@ $(document).ready(function() {
 		ajax_loader.css('display', 'inherit');
 
 		var group_id = $(this).data('elas-group-id');
-		var elas_group_login = $('body').data('elas-group-login');
+//		var elas_group_login = $('body').data('elas-group-login');
+		var session_params = $('body').data('session-params');
 
-		$.get(elas_group_login + '&group_id=' + group_id, function(data){
+		var params = {"group_id": group_id};
+
+		$.extend(params, session_params);
+
+		$.get('./ajax/elas_group_login.php?' + $.param(params), function(data){
 
 			ajax_loader.css('display', 'none');
 

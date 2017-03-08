@@ -25,14 +25,7 @@ echo '<meta name="theme-color" content="#ffffff">';
 echo '</head>';
 echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
-echo '"';
-
-if ($s_schema)
-{
-	echo ' data-elas-group-login="' . generate_url('ajax/elas_group_login', []) . '"';
-}
-
-echo '>';
+echo '">';
 
 echo '<img src="/gfx/loading.gif' . $app['eland.assets']->get_version_param() . '" class="ajax-loader">';
 

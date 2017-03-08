@@ -369,7 +369,7 @@ if ($id)
 	}
 	else
 	{
-		echo '<dd><i><span data-elas-soap-status="' . generate_url('ajax/elas_soap_status', ['group_id' => $group['id']]) . '">';
+		echo '<dd><i><span data-elas-soap-status="' . $group['id']. '">';
 		echo 'bezig met eLAS soap status te bekomen...</span></i>';
 		echo '</dd>';
 
