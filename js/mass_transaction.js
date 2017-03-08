@@ -41,7 +41,14 @@ $(document).ready(function(){
 
 		var days = $('#percentage_balance_days').val();
 		if (days > 1){
-			var jqxhr = $.get('./ajax/weighted_balances.php', {'days' :days})
+
+			var session_params = $('body').data('session-params');
+			var params = {"days": days};
+
+			$.extend(params, session_params);
+
+			var jqxhr = $.get('./ajax/weighted_balances.php', params)
+
 			.done(function(data){
 				fill_in(data);
 			})
