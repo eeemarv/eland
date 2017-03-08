@@ -3100,7 +3100,9 @@ if ($s_admin && $v_list)
 			echo '<div class="col-sm-9">';
 			echo '<input type="text" name="sh[p][activity_filter_letscode]" ';
 			echo 'value="' . $activity_filter_letscode . '" ';
-			echo 'class="form-control" data-typeahead="';
+			echo 'class="form-control" ';
+			echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+			echo 'data-typeahead="';
 			echo $app['eland.typeahead']->get(['users_active', 'users_extern',
 				'users_inactive', 'users_im', 'users_ip']);
 			echo '">';

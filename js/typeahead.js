@@ -16,8 +16,6 @@ $(document).ready(function(){
 
 		var data = $(this).data('typeahead');
 
-		//data = data.split('|');
-
 		var newuserdays = $(this).data('newuserdays');
 
 		var treshold = now - (newuserdays * 86400);
@@ -33,9 +31,6 @@ $(document).ready(function(){
 			}
 
 			$.extend(params, session_params);
-
-//			var thumbprint = data[i];
-//			var url = data[i+1];
 
 			if (rec['name'] == 'users'){
 

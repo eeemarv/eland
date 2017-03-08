@@ -174,7 +174,8 @@ echo '<span class="fa fa-user"></span></span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_users_ary) . '" '; 
+echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_users_ary) . '" ';
+echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" '; 
 echo 'name="letscode" id="letscode" placeholder="Letscode" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';

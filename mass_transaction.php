@@ -526,6 +526,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
+echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'data-typeahead="';
 echo $app['eland.typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';

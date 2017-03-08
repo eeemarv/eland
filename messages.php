@@ -1163,6 +1163,7 @@ if (($edit || $add))
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="' . $app['eland.typeahead']->get('users_active') . '" ';
+		echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';
@@ -2103,7 +2104,8 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get('users_active') . '" '; 
+	echo 'data-typeahead="' . $app['eland.typeahead']->get('users_active') . '" ';
+	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 	echo '</div>';

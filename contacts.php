@@ -366,6 +366,7 @@ if ($edit || $add)
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
 		echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_ary) . '" ';
+		echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 		echo 'placeholder="letscode" ';
 		echo 'value="' . $letscode . '" required>';
 		echo '</div>';
@@ -898,7 +899,8 @@ $typeahead_name_ary = array('users_active', 'users_inactive', 'users_ip', 'users
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" '; 
+echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" ';
+echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'name="letscode" id="letscode" placeholder="letscode" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';

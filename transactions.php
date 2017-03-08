@@ -927,6 +927,8 @@ if ($add)
 		echo 'data-typeahead="' . $typeahead . '" ';
 	}
 
+	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 
 	echo '<ul>';
@@ -1792,7 +1794,8 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" '; 
+	echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" ';
+	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 
