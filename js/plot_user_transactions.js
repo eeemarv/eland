@@ -1,9 +1,18 @@
 $(document).ready(function(){
 
+	var session_params = $('body').data('session-params');
+
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
-	$.get($chart.data('url'), { user_id: $chart.data('user-id') }, 'json')
+	var params = {
+		"user_id": $chart.data('user-id'),
+		"days": $chart.data('days')
+	};
+
+	$.extend(params, session_params);
+
+	$.get('./ajax/plot_user_transactions.php', params, 'json')
 	.done( function(data){
 
 		var transactions = data.transactions;
@@ -187,9 +196,13 @@ $(document).ready(function(){
 			}
 
 			var tid = graphTrans[pointIndex];
-			
+
+			var params = {"id" : tid};
+
+			$.extend(params, session_params);
+
 			if (tid){
-				window.location.href = $chart.data('transactions-url') + tid + '&' + $chart.data('session-query-param');
+				window.location.href = './transactions.php?' + $.param(params);
 			}
 		});
 
@@ -259,7 +272,12 @@ $(document).ready(function(){
 		$donut.on('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 			var user = users[donutData[pointIndex].userIndex];
 			if (user.l){
-				window.location.href = $chart.data('users-url') + user.id + '&' + $chart.data('session-query-param');
+
+				var params = {"id": user.id};
+
+				$.extend(params, session_params);
+
+				window.location.href = './users.php?' + $.param(params);
 			}
 		});
 
