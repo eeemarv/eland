@@ -447,6 +447,14 @@ if ($post)
 	{
 		$validator = $validators[$name];
 
+		$err_n = ' (' . $name . ')';
+
+		if ($validator['required'] && $value === '')
+		{
+			$errors[] = 'Het veld is verplicht in te vullen.' . $err_n;
+			continue;
+		}
+
 		if ($validator['type'] == 'text' || $validator['type'] == 'textarea')
 		{
 			$config_htmlpurifier = HTMLPurifier_Config::createDefault();
@@ -474,7 +482,7 @@ if ($post)
 
 			if ($error)
 			{
-				$errors[] = $error;
+				$errors[] = $error . $err_n;
 			}
 
 			continue;
@@ -486,12 +494,12 @@ if ($post)
 
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.' . $err_n;
 			}
 
 			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.' . $err_n;
 			}
 
 			continue;
@@ -499,19 +507,24 @@ if ($post)
 
 		if ($validator['type'] == 'number')
 		{
+			if ($value === '' && !$validator['required'])
+			{
+				continue;
+			}
+
 			if (!filter_var($value, FILTER_VALIDATE_INT))
 			{
-				$errors[] = 'Fout: de waarde moet een getal zijn.';
+				$errors[] = 'Fout: de waarde moet een getal zijn.' . $err_n;
 			}
 
 			if (isset($validator['attr']['max']) && $value > $validator['attr']['max'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['max'] . ' bedragen.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['max'] . ' bedragen.' . $err_n;
 			}
 
 			if (isset($validator['attr']['min']) && $value < $validator['attr']['min'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['min'] . ' bedragen.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['min'] . ' bedragen.' . $err_n;
 			}
 
 			continue;
@@ -532,7 +545,7 @@ if ($post)
 
 				if (count($mail_ary) > $validator['max_inputs'])
 				{
-					$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.';
+					$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.' . $err_n;
 				}
 
 				foreach ($mail_ary as $m)
@@ -541,7 +554,7 @@ if ($post)
 
 					if (!filter_var($m, FILTER_VALIDATE_EMAIL))
 					{
-						$errors[] =  $m . ' is geen geldig email adres.';
+						$errors[] =  $m . ' is geen geldig email adres.' . $err_n;
 					}
 				}
 
@@ -550,7 +563,7 @@ if ($post)
 
 			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 			{
-				$errors[] =  $value . ' is geen geldig email adres.';
+				$errors[] =  $value . ' is geen geldig email adres.' . $err_n;
 			}
 
 			continue;
@@ -562,7 +575,7 @@ if ($post)
 			{
 				if (!filter_var($value, FILTER_VALIDATE_URL))
 				{
-					$errors[] =  $value . ' is geen geldig url adres.';
+					$errors[] =  $value . ' is geen geldig url adres.' . $err_n;
 				}
 			}
 
@@ -575,12 +588,12 @@ if ($post)
 
 			if (isset($validator['attr']['maxlength']) && strlen($value) > $validator['attr']['maxlength'])
 			{
-				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde mag maximaal ' . $validator['attr']['maxlength'] . ' tekens lang zijn.' . $err_n;
 			}
 
 			if (isset($validator['attr']['minlength']) && strlen($value) < $validator['attr']['minlength'])
 			{
-				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.';
+				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.' . $err_n;
 			}
 		}
 	}
@@ -846,7 +859,6 @@ foreach ($tab_panes as $id => $pane)
 
 echo '</div>';
 echo '</div>';
-
 
 include __DIR__ . '/include/footer.php';
 

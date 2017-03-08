@@ -758,6 +758,8 @@ if ($add)
 		}
 	}
 
+	$groups_en = count($groups) > 1 && readconfigfromdb('currencyratio') > 0 ? true : false;
+
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
 	if (!$s_master)
@@ -796,9 +798,10 @@ if ($add)
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
-	echo 'data-typeahead-source="group_self" ';
+	echo 'data-typeahead-source="';
+	echo $groups_en ? 'group_self' : 'letscode_to';
+	echo '" ';
 	echo 'value="' . $transaction['letscode_from'] . '" required>';
-
 	echo '<ul>';
 	echo '<li>Huidige saldo: <strong>';
 	echo $balance . '</strong> ';
@@ -827,7 +830,7 @@ if ($add)
 
 	echo ($s_admin) ? '' : '</div>';
 
-	if (count($groups) > 1)
+	if (count($groups) > 1 && readconfigfromdb('currencyratio') > 0)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
@@ -858,6 +861,7 @@ if ($add)
 			else
 			{
 				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
+
 				$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
 
 				$sch = $app['eland.groups']->get_schema($domain);
@@ -914,7 +918,7 @@ if ($add)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
 
-	if (count($groups) > 1)
+	if (count($groups) > 1 && readconfigfromdb('currencyratio') > 0)
 	{
 		echo 'data-typeahead-source="group_id" ';
 	}
@@ -1007,9 +1011,12 @@ if ($add)
 	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
 
-	echo '<li>';
-	echo readconfigfromdb('currencyratio');
-	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	if (readconfigfromdb('currencyratio') > 0)
+	{
+		echo '<li>';
+		echo readconfigfromdb('currencyratio');
+		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	}
 
 	echo '</i></small></ul>';
 
@@ -1252,9 +1259,13 @@ if ($edit)
 	echo 'de omschrijving aangepast worden door admins in het geval deze ongewenste informatie bevat (bvb. een opmerking die beledigend is).</li>';
 	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
 	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
-	echo '<li>';
-	echo readconfigfromdb('currencyratio');
-	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+
+	if (readconfigfromdb('currencyratio') > 0)
+	{
+		echo '<li>';
+		echo readconfigfromdb('currencyratio');
+		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	}
 
 	echo '</i></small></ul>';
 
@@ -1424,8 +1435,13 @@ if ($id)
 
 	echo '<ul><small><i>';
 
-	echo '<li>' . readconfigfromdb('currencyratio');
-	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	if (readconfigfromdb('currencyratio') > 0)
+	{
+		echo '<li>';
+		echo readconfigfromdb('currencyratio');
+		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	}
+
 	echo '</i></small></ul>';
 
 	include __DIR__ . '/include/footer.php';
@@ -2109,8 +2125,12 @@ else
 {
 	echo '<ul><small><i>';
 
-	echo '<li>' . readconfigfromdb('currencyratio');
-	echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	if (readconfigfromdb('currencyratio') > 0)
+	{
+		echo '<li>';
+		echo readconfigfromdb('currencyratio');
+		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	}
 
 	echo '</i></small></ul>';
 
