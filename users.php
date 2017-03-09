@@ -492,6 +492,16 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	else if (['accountrole' => 1, 'status' => 1, 'comments' => 1,
 		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$bulk_field])
 	{
+		if ($bulk_field == 'minlimit')
+		{
+			$value = $value == '' ? -999999999 : $value;
+		}
+
+		if ($bulk_field == 'maxlimit')
+		{
+			$value = $value == '' ? 999999999 : $value;
+		}
+
 		$type = ($edit_fields_tabs[$bulk_field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
 		$app['db']->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
