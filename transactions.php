@@ -27,6 +27,8 @@ $andor = $_GET['andor'] ?? 'and';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
 
+$currency = readconfigfromdb('currency');
+
 /**
  * add
  */
@@ -135,9 +137,32 @@ if ($add)
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}
 
-		if(($fromuser['saldo'] - $amount) < $fromuser['minlimit'] && !$s_admin)
+		if (!$s_admin)
 		{
-			$errors[] = 'Je beschikbaar saldo laat deze transactie niet toe';
+			if ($fromuser['minlimit'] === -999999999)
+			{
+				$minlimit = readconfigfromdb('minlimit');
+
+				if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
+				{
+					$err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
+					$err .= 'Je saldo bedraagt ' . $fromuser['saldo'] . ' ' . $currency . ' ';
+					$err .= 'en de minimum groepslimiet bedraagt ';
+					$err .= $minlimit . ' ' . $currency;
+					$errors[] = $err;
+				}
+			}
+			else
+			{
+				if(($fromuser['saldo'] - $amount) < $fromuser['minlimit'])
+				{
+					$err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
+					$err .= 'Je saldo bedraagt ' . $fromuser['saldo'] . ' ';
+					$err .= $currency . ' en je minimum limiet bedraagt ';
+					$err .= $fromuser['minlimit'] . ' ' . $currency . '.';
+					$errors[] = $err;
+				}
+			}
 		}
 
 		if(empty($fromuser))
@@ -167,10 +192,36 @@ if ($add)
 			$errors[] = 'Van en Aan letscode zijn hetzelfde';
 		}
 
-		if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'] && !$s_admin)
+		if (!$s_admin)
 		{
-			$t_account = ($group_id == 'self') ? 'bestemmeling' : 'interletsrekening';
-			$errors[] = 'De ' . $t_account . ' heeft zijn maximum limiet bereikt.';
+			if ($touser['maxlimit'] === 999999999)
+			{
+				$maxlimit = readconfigfromdb('maxlimit');
+
+				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
+				{
+					$err = 'De ';
+					$err .= $group_id == 'self' ? 'bestemmeling' : 'interletsrekening';
+					$err .= ' heeft zijn maximum limiet bereikt. ';
+					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
+					$err .= ' en de maximum ';
+					$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
+					$errors[] = $err;
+				}
+			}
+			else
+			{
+				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
+				{
+					$err = 'De ';
+					$err .= $group_id == 'self' ? 'bestemmeling' : 'interletsrekening';
+					$err .= ' heeft zijn maximum limiet bereikt. ';
+					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
+					$err .= ' en de maximum ';
+					$err .= 'limiet bedraagt ' . $touser['maxlimit'] . ' ' . $currency . '.';
+					$errors[] = $err;
+				}
+			}
 		}
 
 		if($group_id == 'self'
@@ -518,19 +569,63 @@ if ($add)
 				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.';
 			} 
 
-			if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+			if ($remote_interlets_account['minlimit'] === -999999999)
 			{
-				$errors[] = 'De interlets account van de remote interlets groep heeft onvoldoende saldo beschikbaar.';
-			}
+				$minlimit = readconfigfromdb('minlimit', $remote_schema);
 
-			if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+				if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
+				{
+					$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+					$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+					$err .= $remote_currency . ' ';
+					$err .= 'en de remote minimum groepslimiet bedraagt ' . $minlimit . ' ';
+					$err .= $remote_currency . '.';
+					$errors[] = $err;
+				}
+			}
+			else
 			{
-				$errors[] = 'De interlets gebruiker in de remote interlets groep heeft zijn maximum limiet bereikt.';
+				if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+				{
+					$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+					$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+					$err .= $remote_currency . ' ';
+					$err .= 'en de remote minimum limiet bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
+					$err .= $remote_currency . '.';
+					$errors[] = $err;
+				}
 			}
 
 			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
 			{
 				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . readconfigfromdb('currency') . ').';
+			}
+
+			if ($to_remote_user['maxlimit'] === 999999999)
+			{
+				$maxlimit = readconfigfromdb('maxlimit', $remote_schema);
+
+				if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
+				{
+					$err = 'De bestemmeling in de andere groep ';
+					$err .= 'heeft de maximum groepslimiet bereikt. ';
+					$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+					$err .= ' en de maximum ';
+					$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
+					$errors[] = $err;
+				}
+			}
+			else
+			{
+				if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+				{
+					$err = 'De bestemmeling in de andere groep ';
+					$err .= 'heeft de maximum limiet bereikt. ';
+					$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+					$err .= ' en de maximum ';
+					$err .= 'limiet bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
+					$errors[] = $err;
+				}
 			}
 
 			if (($to_remote_user['status'] == 2) && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq))
@@ -1059,6 +1154,11 @@ if ($add)
 		echo '<li>';
 		echo readconfigfromdb('currencyratio');
 		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+	}
+
+	if ($s_admin)
+	{
+		echo '<li>Admins kunnen over en onder limieten gaan in de eigen groep.</li>';
 	}
 
 	echo '</i></small></ul>';
