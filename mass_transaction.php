@@ -405,15 +405,15 @@ if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
 
 	if (readconfigfromdb('minlimit') !== '')
 	{
-		echo '<li>Algemene minimum limiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+		echo '<li>Minimum groepslimiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
 	}
 
 	if (readconfigfromdb('maxlimit') !== '')
 	{
-		echo '<li>Algemene maximum limiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+		echo '<li>Maximum groepslimiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
 	}
 
-	echo '<li>De algemeen limieten gelden voor alle accounts behalve de ';
+	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
 	echo 'accounts waarbij eigen limieten ingesteld zijn.</li>';
 
 	echo '</ul>';
