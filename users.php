@@ -642,8 +642,8 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'reply_to' 	=> $s_id,
 		]);
 
-		$to_log[] = link_user($sel_user, false, false);
-		$alert_msg_users[] = link_user($sel_user);
+		$to_log[] = link_user($sel_user['id'], false, false);
+		$alert_msg_users[] = link_user($sel_user['id']);
 
 		$count++;
 	}
@@ -651,7 +651,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	if ($count)
 	{
 		$alert_msg = 'Mail verzonden naar ' . $count . ' ';
-		$alert_msg .= ($count > 1) ? 'accounts' : 'account';
+		$alert_msg .= $count > 1 ? 'accounts' : 'account';
 		$alert_msg .= '<br>';
 		$alert_msg .= implode('<br>', $alert_msg_users);
 

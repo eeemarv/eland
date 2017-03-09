@@ -192,7 +192,7 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 		return '<i>** leeg **</i>';
 	}
 
-	$user = (is_array($user)) ? $user : readuser($user, false, $sch);
+	$user = is_array($user) ? $user : readuser($user, false, $sch);
 	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
 
