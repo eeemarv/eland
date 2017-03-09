@@ -776,6 +776,7 @@ if ($add)
 
 	$minlimit = $session_user['minlimit'];
 
+/*
 	if (!$s_master)
 	{
 		echo '<div>';
@@ -784,53 +785,56 @@ if ($add)
 		echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
 		echo '</div>';
 	}
+*/
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
 	echo '<form  method="post" class="form-horizontal" autocomplete="off">';
 
-	echo ($s_admin) ? '' : '<div style="display:none;">';
-
 	echo '<div class="form-group"';
-	echo ($s_admin) ? '' : ' disabled="disabled" ';
+	echo $s_admin ? '' : ' disabled" ';
 	echo '>';
 	echo '<label for="letscode_from" class="col-sm-2 control-label">';
-	echo '<span class="label label-info">Admin</span> ';
+	echo $s_admin ? '<span class="label label-info">Admin</span> ' : '';
 	echo 'Van letscode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
 	echo 'data-typeahead-source="';
 	echo $groups_en ? 'group_self' : 'letscode_to';
 	echo '" ';
-	echo 'value="' . $transaction['letscode_from'] . '" required>';
+	echo 'value="' . $transaction['letscode_from'] . '" required';
+	echo $s_admin ? '' : ' disabled';
+	echo '>';
+/*
+	echo '<ul class="account-info">';
 
-	echo '<ul>';
+	echo '<li class="info-balance">Huidige saldo: <span class="num">';
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '<li class="" id="info_from_bal">Huidige saldo: <strong><span>';
-	echo '</span></span></strong> ';
-	echo readconfigfromdb('currency') . '</li>';
+	echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '<li class="" id="info_from_minlimit">Minimum limiet: <strong><span>';
-	echo '</span></strong> ';
-	echo readconfigfromdb('currency') . '</li>';	
+	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
+	echo '<span class="num">';
+	echo readconfigfromdb('balance_equilibrium');
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
-	if (readconfigfromdb('minlimit') !== '')
-	{
-		echo '<li class="" id="info_from_groupminlimit">Minimum groepslimiet: <strong><span>';
-		echo readconfigfromdb('minlimit');
-		echo '</span></strong> ';
-		echo readconfigfromdb('currency') . '</li>';
-	}
+	echo '<li class="info-groupminlimit">Minimum groepslimiet: ';
+	echo '<span class="num">';
+	echo readconfigfromdb('minlimit');
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
 	echo '</ul>';
-
+*/
 	echo '</div>';
 	echo '</div>';
 
-	echo ($s_admin) ? '' : '</div>';
-
-	if (count($groups) > 1 && readconfigfromdb('currencyratio') > 0)
+	if ($groups_en)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
@@ -883,17 +887,31 @@ if ($add)
 		}
 
 		echo '</select>';
+/*
+		echo '<ul class="account-info">';
 
-		echo '<ul>';
-		echo '<li>';
-		echo 'Maximum groepslimiet: <strong>' . readconfigfromdb('maxlimit');
-		echo '</strong> ';
-		echo readconfigfromdb('currency');
+		echo '<li class="info-balance">Huidige saldo: <span class="num">';
+		echo '</span> <span class="cur">';
+		echo readconfigfromdb('currency') . '</span></li>';
 
-		echo '</li>';
+		echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
+		echo '</span> <span class="cur">';
+		echo readconfigfromdb('currency') . '</span></li>';
+
+		echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
+		echo '<span class="num">';
+		echo readconfigfromdb('balance_equilibrium');
+		echo '</span> <span class="cur">';
+		echo readconfigfromdb('currency') . '</span></li>';
+
+		echo '<li class="info-groupminlimit">Minimum groepslimiet: ';
+		echo '<span class="num">';
+		echo readconfigfromdb('minlimit');
+		echo '</span> <span class="cur">';
+		echo readconfigfromdb('currency') . '</span></li>';
 
 		echo '</ul>';
-
+*/
 		echo '</div>';
 		echo '</div>';
 	}
@@ -918,7 +936,7 @@ if ($add)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
 
-	if (count($groups) > 1 && readconfigfromdb('currencyratio') > 0)
+	if ($groups_en)
 	{
 		echo 'data-typeahead-source="group_id" ';
 	}
@@ -930,21 +948,31 @@ if ($add)
 	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
+/*
+	echo '<ul class="account-info">';
 
-	echo '<ul>';
-	echo '<li>';
-	echo 'Huidig saldo: <strong>';
+	echo '<li class="info-balance">Huidige saldo: <span class="num">45';
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '</strong> ' . readconfigfromdb('currency');
-	echo '</li>';
-	echo '<li>';
-	echo 'Maximum limiet <strong>46</strong> ';
-	echo readconfigfromdb('currency');
-	echo '</li>';
+	echo '<li class="info-maxlimit">Maximum limiet: <span class="num">';
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '<li>';
+	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
+	echo '<span class="num">';
+	echo readconfigfromdb('balance_equilibrium');
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
+
+	echo '<li class="info-groupmaxlimit">Maximum groepslimiet: ';
+	echo '<span class="num">';
+	echo readconfigfromdb('maxlimit');
+	echo '</span> <span class="cur">';
+	echo readconfigfromdb('currency') . '</span></li>';
+
 	echo '</ul>';
-
+*/
 	echo '</div>';
 	echo '</div>';
 
@@ -971,23 +999,36 @@ if ($add)
 	echo '</span>';
 
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
-	echo 'value="' . $transaction['amount'] . '" required>';
+	echo 'value="' . $transaction['amount'] . '" min="1" required>';
 
 	echo '</div>';
-	echo '<ul><li>Maximum <strong>15</strong> ' . readconfigfromdb('currency') . ' mogelijk.</li></ul>';
+/*
+	echo '<ul><li id="info_amount">Maximum <span class="num"></span> ';
+	echo '<span class="cur">' . readconfigfromdb('currency') . '</span></li>';
 
+	echo '<li id="info_amount_unknown">Het maximum is niet gekend wegens ';
+	echo 'overschrijving naar een externe niet-eLAND installatie.</li>';
+
+	echo '</ul>';
+*/
 	echo '</div>';
 
-	echo '<div class="col-sm-5 collapse">';
+/*
+	echo '<div class="col-sm-5">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
-	echo '';
 	echo '</span>';
-	echo '<input type="number" class="form-control" id="amount" name="amount" ';
-	echo 'value="" required>';
-	echo '</div>';	
+	echo '<input type="number" class="form-control" ';
+	echo 'id="remote_amount" name="remote_amount" ';
+	echo 'value="">';
+
 	echo '</div>';
 
+	echo '<ul><li id="info_remote_amount">Maximum <span class="num"></span> ';
+	echo '<span class="cur"></span></li></ul>';
+
+	echo '</div>';
+*/
 	echo '</div>';
 
 	echo '<div class="form-group">';

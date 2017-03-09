@@ -720,3 +720,9 @@ div.pan-sub {
 	padding: 2px 5px;
 	margin: 5px 0;
 }
+
+/** **/
+
+span.num {
+	font-weight: bold;
+}

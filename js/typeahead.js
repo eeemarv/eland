@@ -68,7 +68,10 @@ $(document).ready(function(){
 							letscode: user.c,
 							name: user.n,
 							class: cl,
-							postcode: user.p
+							postcode: user.p,
+							balance: user.b,
+							min: user.min,
+							max: user.max
 						};
 					});
 				}
@@ -129,6 +132,26 @@ $(document).ready(function(){
 		if ($(this).prop('tagName').toLowerCase() == 'input'){
 
 			$(this).typeahead.apply($(this), args);
+
+
+			/*
+			$(this).bind('typeahead:select', function(ev, suggestion){
+
+
+				console.log('selection: ' + JSON.stringify(suggestion));
+				console.log(suggestion.balance);
+
+				var $account_info = $(this).next('ul.account-info');
+
+				var $balance = $account_info.find('li.info-balance');
+
+				var $num = $balance.find('span.num');
+
+				$num.text(suggestion.balance);
+				
+
+			});
+			*/
 		}
 	});
 
@@ -160,5 +183,28 @@ $(document).ready(function(){
 				});
 			}
 		}
+/*
+		$(this).bind('typeahead:select', function(ev, suggestion){
+			console.log('selection: ' + JSON.stringify(suggestion));
+
+			console.log(suggestion.balance);
+
+			console.log($(this).parent());
+
+			var $account_info = $(this).parent().next('ul.account-info');
+
+			console.log($account_info);
+
+			var $balance = $account_info.find('li.info-balance');
+
+			var $num = $balance.find('span.num');
+
+			$num.text(suggestion.balance);
+
+
+		});
+*/
 	});
+
+	
 });
