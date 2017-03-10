@@ -400,30 +400,6 @@ $fa = 'exchange';
 
 include __DIR__ . '/include/header.php';
 
-if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
-{
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading">';
-	echo '<ul>';
-
-	if (readconfigfromdb('minlimit') !== '')
-	{
-		echo '<li>Minimum groepslimiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
-	}
-
-	if (readconfigfromdb('maxlimit') !== '')
-	{
-		echo '<li>Maximum groepslimiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
-	}
-
-	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
-	echo 'accounts waarbij eigen limieten ingesteld zijn.</li>';
-
-	echo '</ul>';
-	echo '</div>';
-	echo '</div>';
-}
-
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
 echo '<button class="btn btn-default" title="Toon invul-hulp" data-toggle="collapse" ';
@@ -472,6 +448,26 @@ echo '<div class="col-sm-9">';
 echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo '</div>';
 echo '</div>';
+
+if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
+{
+	echo '<ul>';
+
+	if (readconfigfromdb('minlimit') !== '')
+	{
+		echo '<li>Minimum groepslimiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+	}
+
+	if (readconfigfromdb('maxlimit') !== '')
+	{
+		echo '<li>Maximum groepslimiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+	}
+
+	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
+	echo 'accounts waarbij eigen limieten ingesteld zijn.</li>';
+
+	echo '</ul>';
+}
 
 echo '<button class="btn btn-default" id="fill-in">Vul in</button>';
 
