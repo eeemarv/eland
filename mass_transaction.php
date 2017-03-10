@@ -390,6 +390,9 @@ if ($from_letscode)
 	}
 }
 
+$group_minlimit = readconfigfromdb('minlimit');
+$group_maxlimit = readconfigfromdb('maxlimit');
+
 $app['eland.assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
 $h1 = 'Massa transactie';
@@ -535,8 +538,11 @@ echo '</div>';
 
 echo '</div>';
 
-echo '<table class="table table-bordered table-striped table-hover panel-body footable"';
-echo ' data-filter="#combined-filter" data-filter-minimum="1">';
+echo '<table class="table table-bordered table-striped table-hover panel-body footable" ';
+echo 'data-filter="#combined-filter" data-filter-minimum="1" ';
+echo 'data-minlimit="' . $group_minlimit . '" ';
+echo 'data-maxlimit="' . $group_maxlimit . '"';
+echo '>';
 echo '<thead>';
 
 echo '<tr>';
@@ -586,8 +592,14 @@ foreach($users as $user_id => $user)
 	echo '</td>';
 
 	echo '<td>';
+
 	$balance = $user['saldo'];
-	if($balance < $user['minlimit'] || ($user['maxlimit'] != NULL && $balance > $user['maxlimit']))
+
+	$minlimit = $user['minlimit'] === '' ? $group_minlimit : $user['minlimit'];
+	$maxlimit = $user['maxlimit'] === '' ? $group_maxlimit : $user['maxlimit'];
+
+	if (($minlimit !== '' && $balance < $minlimit)
+		|| ($maxlimit !== '' && $balance > $maxlimit))
 	{
 		echo '<span class="text-danger">' . $balance . '</span>';
 	}
@@ -595,6 +607,7 @@ foreach($users as $user_id => $user)
 	{
 		echo $balance;
 	}
+
 	echo '</td>';
 
 	echo '<td>' . $user['minlimit'] . '</td>';

@@ -1,4 +1,10 @@
 $(document).ready(function(){
+
+	var group_minlimit = $('table').data('minlimit');
+	var group_maxlimit = $('table').data('maxlimit');
+
+	console.log(group_minlimit, group_maxlimit);
+
 	$('table input[type="number"]').keyup(function(){
 		recalc_sum();
 	});
