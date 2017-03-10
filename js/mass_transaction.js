@@ -3,8 +3,6 @@ $(document).ready(function(){
 	var group_minlimit = $('table').data('minlimit');
 	var group_maxlimit = $('table').data('maxlimit');
 
-	console.log(group_minlimit, group_maxlimit);
-
 	$('table input[type="number"]').keyup(function(){
 		recalc_sum();
 	});
@@ -83,10 +81,20 @@ $(document).ready(function(){
 			amount = (amount < 0) ? 0 : amount;
 			amount = amount + fixed;
 			var minlimit = $(this).data('minlimit');
-			var blockByMinlimit = ((minlimit > (balance - amount)) && respectMinlimit) ? true : false; 
+
+			if (minlimit === ''){
+				minlimit = group_minlimit;
+			}
+
+			var blockByMinlimit = false;
+
+			if (minlimit !== ''){
+				blockByMinlimit = ((minlimit > (balance - amount)) && respectMinlimit) ? true : false;
+			}
+
 			var ignore = ($(this).attr('data-letscode') == ignoreLetscode) ? true : false;
 
-			if (amount == 0 || ignore || blockByMinlimit){
+			if (amount === 0 || ignore || blockByMinlimit){
 				$(this).val('');
 			} else {
 				$(this).val(amount);
