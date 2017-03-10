@@ -587,8 +587,6 @@ if ($s_admin)
 
 if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
 {
-	$to_log = '';
-
 	if ($bulk_mail_test)
 	{
 		$sel_ary = [$s_id => true];
@@ -652,8 +650,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'reply_to' 	=> $s_id,
 		]);
 
-		$to_log[] = link_user($sel_user['id'], false, false);
-		$alert_msg_users[] = link_user($sel_user['id']);
+		$alert_msg_users[] = link_user($sel_user);
 
 		$count++;
 	}
