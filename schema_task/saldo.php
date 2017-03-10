@@ -62,7 +62,7 @@ class saldo extends schema_task
 		$base_url = $this->protocol . $host;
 
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays', $this->schema) * 86400);
- 	
+
 		$msg_url = $base_url . '/messages.php?id=';
 		$msgs_url = $base_url . '/messages.php';
 		$news_url = $base_url . '/news.php?id=';

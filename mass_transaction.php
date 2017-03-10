@@ -611,8 +611,8 @@ foreach($users as $user_id => $user)
 	echo '<td>' . $user['postcode'] . '</td>';
 
 	echo '</tr>';
-
 }
+
 echo '</tbody>';
 echo '</table>';
 

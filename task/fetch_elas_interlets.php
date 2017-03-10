@@ -404,7 +404,7 @@ class fetch_elas_interlets extends task
 				$href = $a->attr('href');
 				list($dummy, $id) = explode('=', $href);
 
-				$user['b'] = trim($next_tds->eq(6)->text());
+				$user['b'] = trim($next_tds->eq(5)->text());
 
 				$users[$id] = $user;
 			});
