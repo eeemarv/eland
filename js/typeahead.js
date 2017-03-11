@@ -148,8 +148,6 @@ $(document).ready(function(){
 				var $num = $balance.find('span.num');
 
 				$num.text(suggestion.balance);
-				
-
 			});
 			*/
 		}
