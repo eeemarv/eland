@@ -103,12 +103,17 @@ class queue
 
 		$this->db->beginTransaction();
 
+		error_log('queue query: ' . $query);
+
 		try{
 
-		$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
+			$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
 
 			if ($row = $stmt->fetch())
 			{
+
+				error_log('delete: ' . $row['id']);
+
 				$this->db->delete('xdb.queue', ['id' => $row['id']]);
 
 				$this->db->commit();
@@ -121,8 +126,12 @@ class queue
 				];
 			}
 
-		} catch (\Exception $e) {
-			$conn->rollBack();
+		}
+		catch (\Exception $e)
+		{
+			error_log('err queue: ' . $e->getMessage());
+
+			$this->db->rollBack();
 			throw $e;
 
 			return [];

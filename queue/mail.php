@@ -161,6 +161,8 @@ class mail extends queue_model implements queue_interface
 			$message->setCc($data['cc']);
 		}
 
+		error_log('text: ' . $data['text']);
+
 		if ($this->mailer->send($message, $failed_recipients))
 		{
 			$this->monolog->info('mail: message send to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);

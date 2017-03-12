@@ -114,8 +114,8 @@ if ($s_admin)
 
 if ($user_mail_submit && $id && $post)
 {
-	$user_mail_content = $_POST['user_mail_content'];
-	$user_mail_cc = $_POST['user_mail_cc'];
+	$user_mail_content = $_POST['user_mail_content'] ?? '';
+	$user_mail_cc = $_POST['user_mail_cc'] ?? false; 
 
 	$user = readuser($id);
 
