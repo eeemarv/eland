@@ -521,7 +521,7 @@ if ($uid)
 		{
 			echo '<td>';
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
-			if ($c['abbrev'] == 'adr')
+			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
 				echo $app['eland.distance']->set_from_geo('', $s_id, $s_schema)
 					->set_to_geo(trim($c['value']))
