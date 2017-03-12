@@ -1092,7 +1092,7 @@ if ($add || $edit)
 	else
 	{
 		$username_edit = $fullname_edit = false;
-	}	
+	}
 
 	if ($submit)
 	{
@@ -1609,6 +1609,9 @@ if ($add || $edit)
 			{
 				$user['adate'] = $user_prefetch['adate'];
 			}
+
+			$user['minlimit'] = $user['minlimit'] === -999999999 ? '' : $user['minlimit'];
+			$user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : $user['maxlimit'];
 		}
 	}
 	else
@@ -1712,6 +1715,8 @@ if ($add || $edit)
 			}
 		}
 	}
+
+	
 
 	array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
@@ -1851,6 +1856,34 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
+		if (!$user['adate'] && $s_admin)
+		{
+			echo '<div id="activate" class="bg-success pan-sub">';
+
+			echo '<div class="form-group">';
+			echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+			echo '<div class="col-sm-10 controls">';
+			echo '<div class="input-group">';
+			echo '<input type="text" class="form-control" id="password" name="password" ';
+			echo 'value="' . $password . '" required>';
+			echo '<span class="input-group-btn">';
+			echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+			echo '</span>';
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
+
+			echo '<div class="form-group">';
+			echo '<label for="notify" class="col-sm-2 control-label">Zend mail met paswoord naar gebruiker (enkel wanneer account actief is.)</label>';
+			echo '<div class="col-sm-10">';
+			echo '<input type="checkbox" name="notify" id="notify"';
+			echo ' checked="checked"';
+			echo '>';
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
+		}
+
 		echo '<div class="form-group">';
 		echo '<label for="admincomment" class="col-sm-2 control-label">Commentaar van de admin</label>';
 		echo '<div class="col-sm-10">';
@@ -1978,34 +2011,6 @@ if ($add || $edit)
 		echo ($add) ? 'nadat de gebruiker gecreëerd is' : '';
 		echo '.</small></p>';
 		echo '</div>';
-
-		if (!$user['adate'] && $s_admin)
-		{
-			echo '<div id="activate">';
-
-			echo '<div class="form-group">';
-			echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
-			echo '<div class="col-sm-10 controls">';
-			echo '<div class="input-group">';
-			echo '<input type="text" class="form-control" id="password" name="password" ';
-			echo 'value="' . $password . '" required>';
-			echo '<span class="input-group-btn">';
-			echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
-			echo '</span>';
-			echo '</div>';
-			echo '</div>';
-			echo '</div>';
-
-			echo '<div class="form-group">';
-			echo '<label for="notify" class="col-sm-2 control-label">Zend mail met paswoord naar gebruiker (enkel wanneer account actief is.)</label>';
-			echo '<div class="col-sm-10">';
-			echo '<input type="checkbox" name="notify" id="notify"';
-			echo ' checked="checked"';
-			echo '>';
-			echo '</div>';
-			echo '</div>';
-			echo '</div>';
-		}
 	}
 
 	$canc = ($edit) ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
