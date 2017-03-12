@@ -28,6 +28,7 @@ class saldo extends schema_task
 	private $protocol;
 	private $date_format;
 	private $distance;
+	private $interlets_groups;
 
 	public function __construct(db $db, xdb $xdb, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,

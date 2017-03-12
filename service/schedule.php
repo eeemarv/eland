@@ -3,10 +3,12 @@
 namespace eland;
 
 use eland\cache;
+use Predis\Client as Redis;
 
 class schedule
 {
 	private $cache;
+	private $redis;
 
 	private $tasks;
 	private $time;
@@ -14,9 +16,10 @@ class schedule
 	private $interval;
 	private $id;
 
-	public function __construct(cache $cache)
+	public function __construct(cache $cache, Redis $redis)
 	{
 		$this->cache = $cache;
+		$this->redis = $redis;
 
 		$this->tasks = $this->cache->get('tasks');
 
@@ -79,8 +82,16 @@ class schedule
 
 	public function should_run()
 	{
+		if ($this->redis->get('block_task'))
+		{
+			return false;
+		}
+
 		if (!$this->exists())
 		{
+			$this->redis->set('block_task', '1');
+			$this->redis->expire('block_task', 3);
+			$this->update();
 			return true;
 		}
 
@@ -90,13 +101,16 @@ class schedule
 
 		if ($this->next < $this->time)
 		{
+			$this->redis->set('block_task', '1');
+			$this->redis->expire('block_task', 3);
+			$this->update();
 			return true;
 		}
 
 		return false;
 	}
 
-	public function update()
+	private function update()
 	{
 		$next = ((($this->time - $this->next) > 43200) || ($this->interval < 43201)) ? $this->time : $this->next;
 

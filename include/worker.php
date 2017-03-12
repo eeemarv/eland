@@ -88,7 +88,7 @@ $app['eland.new_schema_task'] = function ($app){
 };
 
 $app['eland.schedule'] = function ($app){
-	return new eland\schedule($app['eland.cache']);
+	return new eland\schedule($app['eland.cache'], $app['redis']);
 };
 
 // queue

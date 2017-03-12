@@ -36,8 +36,7 @@ abstract class schema_task extends task implements task_interface
 				continue;
 			}
 
-			$should_run = $this->schedule->set_time()
-				->set_id($this->schema . '_' . $this->get_class_name())
+			$should_run = $this->schedule->set_id($this->schema . '_' . $this->get_class_name())
 				->set_interval($this->get_interval())
 				->should_run();
 

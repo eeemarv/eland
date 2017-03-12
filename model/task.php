@@ -33,7 +33,6 @@ abstract class task extends job implements task_interface
 		error_log('>> ' . $this->schedule->get_id());
 
 		$this->process();
-		$this->schedule->update();
 		return $this;
 	}
 

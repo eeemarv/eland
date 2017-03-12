@@ -143,6 +143,6 @@ class autominlimit extends queue_model implements queue_interface
 
 	public function get_interval()
 	{
-		return 1;
+		return 10;
 	}
 }
