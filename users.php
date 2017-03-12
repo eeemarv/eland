@@ -401,6 +401,7 @@ if ($bulk_submit && $post && $s_admin)
 	{
 		$bulk_mail_subject = $_POST['bulk_mail_subject'];
 		$bulk_mail_content = $_POST['bulk_mail_content'];
+		$bulk_mail_cc = $_POST['bulk_mail_cc'] ?? false;
 
 		if (!$bulk_mail_subject)
 		{
@@ -678,12 +679,46 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
 
-		$app['eland.alert']->warning('Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users);
+		$alert_warning = 'Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users;
+
+		$app['eland.alert']->warning($alert_warning);
 	}
 
 	if ($bulk_mail_submit && $count)
 	{
-		$app['monolog']->debug('cancel #245');
+
+//
+
+		$template_vars = [];
+
+		foreach ($map_template_vars as $key => $trans)
+		{
+			$template_vars[$key] = '{{ ' . $trans . ' }}';
+		}
+
+		$replace = $app['eland.protocol'] . $app['eland.this_group']->get_host() . '/users.php?';
+
+		$out = str_replace('./users.php?', $replace, $alert_msg);
+		$out .= '<br><br>';
+		if (isset($alert_warning))
+		{
+			$out .= str_replace('./users.php?', $replace, $alert_warning);
+			$out .= '<br><br>';
+		}
+
+		$out .= '<hr><br>';
+
+		$template = $app['twig']->createTemplate($out . $bulk_mail_content);
+		$html = $template->render($template_vars);
+
+		$app['eland.queue.mail']->queue([
+			'to' 		=> $s_id,
+			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
+			'html' 		=> $html,
+		]);
+//
+
+		$app['monolog']->debug('#bulk mail');
 
 		cancel();
 	}
@@ -2480,7 +2515,7 @@ if ($id)
 	echo '<div class="col-sm-12">';
 	echo '<input type="checkbox" name="user_mail_cc"';
 	echo ($user_mail_cc) ? ' checked="checked"' : '';
-	echo ' value="1" >Stuur een kopie naar mijzelf';
+	echo ' value="1" > Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';
 
@@ -3475,6 +3510,8 @@ if ($v_list)
 
 	if ($s_admin & isset($show_columns['u']))
 	{
+		$bulk_mail_cc = ($post) ? $bulk_mail_cc : true;
+
 		$form_token = $app['eland.form_token']->generate(false);
 		$pw_name_suffix = substr($form_token, 0, 5);
 
@@ -3549,6 +3586,14 @@ if ($v_list)
 		echo 'required>';
 		echo $bulk_mail_content ?? '';
 		echo '</textarea>';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="form-group">';
+		echo '<div class="col-sm-12">';
+		echo '<input type="checkbox" name="bulk_mail_cc"';
+		echo ($bulk_mail_cc) ? ' checked="checked"' : '';
+		echo ' value="1" > Stuur een kopie met verzendinfo naar mijzelf';
 		echo '</div>';
 		echo '</div>';
 
