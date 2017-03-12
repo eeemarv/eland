@@ -124,7 +124,6 @@ class queue
 		{
 			error_log('err queue: ' . $e->getMessage());
 
-			$this->db->rollBack();
 			throw $e;
 
 			return [];
