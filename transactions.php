@@ -800,7 +800,7 @@ if ($add)
 		}
 	}
 
-	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
+	$app['eland.assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
 
 	$balance = $session_user['saldo'];
 
@@ -1086,7 +1086,7 @@ if ($add)
 	echo '</div>';
 */
 
-	echo '<div class="col-sm-10">';
+	echo '<div class="col-sm-10" id="amount_container">';
 	echo '<div class="input-group">';
 
 	echo '<span class="input-group-addon">';
@@ -1097,19 +1097,29 @@ if ($add)
 	echo 'value="' . $transaction['amount'] . '" min="1" required>';
 
 	echo '</div>';
+
+	echo '<ul>';
+
+	if (readconfigfromdb('currencyratio') > 0)
+	{
+		echo '<li id="info_ratio">Valuatie: <span class="num">';
+		echo readconfigfromdb('currencyratio');
+		echo '</span> per LETS uur</li>';
+	}
+
 /*
-	echo '<ul><li id="info_amount">Maximum <span class="num"></span> ';
+	echo '<li id="info_amount">Maximum <span class="num"></span> ';
 	echo '<span class="cur">' . readconfigfromdb('currency') . '</span></li>';
 
 	echo '<li id="info_amount_unknown">Het maximum is niet gekend wegens ';
 	echo 'overschrijving naar een externe niet-eLAND installatie.</li>';
+*/
 
 	echo '</ul>';
-*/
+
 	echo '</div>';
 
-/*
-	echo '<div class="col-sm-5">';
+	echo '<div class="col-sm-5 collapse" id="remote_amount_container">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '</span>';
@@ -1119,11 +1129,16 @@ if ($add)
 
 	echo '</div>';
 
-	echo '<ul><li id="info_remote_amount">Maximum <span class="num"></span> ';
-	echo '<span class="cur"></span></li></ul>';
+	echo '<ul>';
 
-	echo '</div>';
+	echo '<li id="info_ratio">Valuatie: <span class="num"></span> per LETS uur</li>';
+
+
+/*	echo '<li id="info_remote_amount">Maximum <span class="num"></span> ';
+	echo '<span class="cur"></span></li></ul>';
 */
+	echo '</div>';
+
 	echo '</div>';
 
 	echo '<div class="form-group">';
@@ -1149,12 +1164,14 @@ if ($add)
 	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
 
+/*
 	if (readconfigfromdb('currencyratio') > 0)
 	{
-		echo '<li>';
+		echo '<li>Valuatie: ';
 		echo readconfigfromdb('currencyratio');
 		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
 	}
+*/
 
 	if ($s_admin)
 	{
@@ -1405,9 +1422,9 @@ if ($edit)
 
 	if (readconfigfromdb('currencyratio') > 0)
 	{
-		echo '<li>';
+		echo '<li>Valuatie: <span class="sum">';
 		echo readconfigfromdb('currencyratio');
-		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+		echo '</span> ' . readconfigfromdb('currency') . ' per LETS-uur.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1580,9 +1597,9 @@ if ($id)
 
 	if (readconfigfromdb('currencyratio') > 0)
 	{
-		echo '<li>';
+		echo '<li>Valuatie: <span class="num">';
 		echo readconfigfromdb('currencyratio');
-		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+		echo '</span> ' . readconfigfromdb('currency') . ' per LETS uur.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -2271,9 +2288,9 @@ else
 
 	if (readconfigfromdb('currencyratio') > 0)
 	{
-		echo '<li>';
+		echo '<li>Valuatie: <span class="num">';
 		echo readconfigfromdb('currencyratio');
-		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
+		echo '</span> ' . readconfigfromdb('currency') . ' per LETS uur.</li>';
 	}
 
 	echo '</i></small></ul>';
