@@ -101,29 +101,22 @@ class queue
 				order by priority desc, id asc
 				limit 1';
 
-		$this->db->beginTransaction();
-
-		error_log('queue query: ' . $query);
-
 		try{
 
 			$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
 
 			if ($row = $stmt->fetch())
 			{
-
-				error_log('delete: ' . $row['id']);
-
-				$this->db->delete('xdb.queue', ['id' => $row['id']]);
-
-				$this->db->commit();
-
-				return [
+				$return = [
 					'data'		=> json_decode($row['data'], true),
 					'id'		=> $row['id'],
 					'topic'		=> $row['topic'],
 					'priority'	=> $row['priority'],
 				];
+
+				error_log('delete: ' . $row['id'] . ' : ' . $this->db->delete('xdb.queue', ['id' => $row['id']]));
+
+				return $return;
 			}
 
 		}
