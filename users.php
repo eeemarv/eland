@@ -374,22 +374,12 @@ if ($img_del && $id)
 
 if ($bulk_submit && $post && $s_admin)
 {
-	$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-	$password = ($bulk_mail_submit || $bulk_mail_test) ? 'mail_password_' : $bulk_field . '_password_';
-	$password = $_POST[$password . $pw_name_suffix];
+	$verify = ($bulk_mail_submit || $bulk_mail_test) ? 'verify_mail' : 'verify_' . $bulk_field;
+	$verify = isset($_POST[$verify]) ? true : false;
 
-	if (!$password)
+	if (!$verify)
 	{
-		$errors[] = 'Vul je paswoord in.';
-	}
-
-	$password = hash('sha512', $password);
-
-	$fetched_password = ($s_master) ? getenv('MASTER_PASSWORD') : $session_user['password'];
-
-	if ($password != $fetched_password)
-	{
-		$errors[] = 'Het paswoord is niet juist.';
+		$errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
 	}
 
 	if ($bulk_field_submit)
@@ -3512,9 +3502,6 @@ if ($v_list)
 	{
 		$bulk_mail_cc = ($post) ? $bulk_mail_cc : true;
 
-		$form_token = $app['eland.form_token']->generate(false);
-		$pw_name_suffix = substr($form_token, 0, 5);
-
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
 		$inp .=  '<div class="col-sm-10">';
@@ -3597,8 +3584,13 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo sprintf($inp, 'mail_password_' . $pw_name_suffix,
-			'Je paswoord (extra veiligheid)', 'password', 'class="form-control" required', 'mail_password');
+		echo '<div class="form-group">';
+		echo '<div class="col-sm-12">';
+		echo '<input type="checkbox" name="verify_mail"';
+		echo ' value="1" > ';
+		echo 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.';
+		echo '</div>';
+		echo '</div>';
 
 		echo '<input type="submit" value="Zend test mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
@@ -3634,8 +3626,13 @@ if ($v_list)
 				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
 			}
 
-			echo sprintf($inp, $k . '_password_' . $pw_name_suffix,
-				'Paswoord', 'password', 'class="form-control" required', $k . '_password');
+			echo '<div class="form-group">';
+			echo '<div class="col-sm-12">';
+			echo '<input type="checkbox" name="verify_' . $k . '"';
+			echo ' value="1" > ';
+			echo 'Ik heb nagekeken dat de juiste gebruikers geselecteerd zijn en veld en ingevulde waarde nagekeken.';
+			echo '</div>';
+			echo '</div>';
 
 			echo '<input type="hidden" value="' . $k . '" name="bulk_field">';
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
