@@ -897,159 +897,136 @@ if ($del)
 		if ($error_token = $app['eland.form_token']->get_error())
 		{
 			$app['eland.alert']->error($error_token);
-			cancel();
+			cancel($del);
 		}
 
-		$pw_name_suffix = substr($_POST['form_token'], 0, 5);
-		$password = $_POST['password_' . $pw_name_suffix];
+		$verify = isset($_POST['verify']) ? true : false;
 
-		if ($password)
+		if (!$verify)
 		{
-			$sha512 = hash('sha512', $password);
-
-			if ($s_master)
-			{
-				$enc_password = getenv('MASTER_PASSWORD');
-			}
-			else
-			{
-				$enc_password = $app['db']->fetchColumn('select password from users where id = ?', [$s_id]);
-			}
-
-			if ($sha512 == $enc_password)
-			{
-				$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
-				$msgs = '';
-				$st = $app['db']->prepare('SELECT id, content, id_category, msg_type
-					FROM messages
-					WHERE id_user = ?');
-
-				$st->bindValue(1, $del);
-				$st->execute();
-
-				while ($row = $st->fetch())
-				{
-					$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
-				}
-				$msgs = trim($msgs, '\n\r\t ,;:');
-
-				if ($msgs)
-				{
-					$app['monolog']->info('Delete user ' . $usr . ', deleted Messages ' . $msgs);
-
-					$app['db']->delete('messages', ['id_user' => $del]);
-				}
-
-				// remove orphaned images.
-
-				$rs = $app['db']->prepare('SELECT mp.id, mp."PictureFile"
-					FROM msgpictures mp
-					LEFT JOIN messages m ON mp.msgid = m.id
-					WHERE m.id IS NULL');
-
-				$rs->execute();
-
-				while ($row = $rs->fetch())
-				{
-					$app['db']->delete('msgpictures', ['id' => $row['id']]);
-				}
-
-				// update counts for each category
-
-				$offer_count = $want_count = [];
-
-				$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
-					FROM messages m, users u
-					WHERE  m.id_user = u.id
-						AND u.status IN (1, 2, 3)
-						AND msg_type = 1
-					GROUP BY m.id_category');
-
-				$rs->execute();
-
-				while ($row = $rs->fetch())
-				{
-					$offer_count[$row['id_category']] = $row['count'];
-				}
-
-				$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
-					FROM messages m, users u
-					WHERE  m.id_user = u.id
-						AND u.status IN (1, 2, 3)
-						AND msg_type = 0
-					GROUP BY m.id_category');
-
-				$rs->execute();
-
-				while ($row = $rs->fetch())
-				{
-					$want_count[$row['id_category']] = $row['count'];
-				}
-
-				$all_cat = $app['db']->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
-					FROM categories
-					WHERE id_parent IS NOT NULL');
-
-				foreach ($all_cat as $val)
-				{
-					$offers = $val['stat_msgs_offers'];
-					$wants = $val['stat_msgs_wanted'];
-					$cat_id = $val['id'];
-
-					$want_count[$cat_id] = $want_count[$cat_id] ?? 0;
-					$offer_count[$cat_id] = $offer_count[$cat_id] ?? 0;
-
-					if ($want_count[$cat_id] == $wants && $offer_count[$cat_id] == $offers)
-					{
-						continue;
-					}
-
-					$stats = [
-						'stat_msgs_offers'	=> $offer_count[$cat_id] ?? 0,
-						'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
-					];
-
-					$app['db']->update('categories', $stats, ['id' => $cat_id]);
-				}
-
-				//delete contacts
-				$app['db']->delete('contact', ['id_user' => $del]);
-
-				//delete fullname access record.
-				$app['eland.xdb']->del('user_fullname_access', $del);
-
-				//finally, the user
-				$app['db']->delete('users', ['id' => $del]);
-				$app['redis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
-
-				$app['eland.alert']->success('De gebruiker is verwijderd.');
-
-				if ($user['status'] == 1 || $user['status'] == 2)
-				{
-					$app['eland.typeahead']->invalidate_thumbprint('users_active');
-				}
-				else if ($user['status'] == 7)
-				{
-					$app['eland.typeahead']->invalidate_thumbprint('users_extern');
-				}
-
-				$app['eland.interlets_groups']->clear_cache($s_schema);
-
-				cancel();
-			}
-			else
-			{
-				$app['eland.alert']->error('Het paswoord is niet correct.');
-			}
+			$app['eland.alert']->error('Het controle nazichts-vakje is niet aangevinkt.');
+			cancel($del);
 		}
-		else
+
+		$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
+		$msgs = '';
+		$st = $app['db']->prepare('SELECT id, content, id_category, msg_type
+			FROM messages
+			WHERE id_user = ?');
+
+		$st->bindValue(1, $del);
+		$st->execute();
+
+		while ($row = $st->fetch())
 		{
-			$app['eland.alert']->error('Het paswoord is niet ingevuld.');
+			$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
 		}
+		$msgs = trim($msgs, '\n\r\t ,;:');
+
+		if ($msgs)
+		{
+			$app['monolog']->info('Delete user ' . $usr . ', deleted Messages ' . $msgs);
+
+			$app['db']->delete('messages', ['id_user' => $del]);
+		}
+
+		// remove orphaned images.
+
+		$rs = $app['db']->prepare('SELECT mp.id, mp."PictureFile"
+			FROM msgpictures mp
+			LEFT JOIN messages m ON mp.msgid = m.id
+			WHERE m.id IS NULL');
+
+		$rs->execute();
+
+		while ($row = $rs->fetch())
+		{
+			$app['db']->delete('msgpictures', ['id' => $row['id']]);
+		}
+
+		// update counts for each category
+
+		$offer_count = $want_count = [];
+
+		$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
+			FROM messages m, users u
+			WHERE  m.id_user = u.id
+				AND u.status IN (1, 2, 3)
+				AND msg_type = 1
+			GROUP BY m.id_category');
+
+		$rs->execute();
+
+		while ($row = $rs->fetch())
+		{
+			$offer_count[$row['id_category']] = $row['count'];
+		}
+
+		$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
+			FROM messages m, users u
+			WHERE  m.id_user = u.id
+				AND u.status IN (1, 2, 3)
+				AND msg_type = 0
+			GROUP BY m.id_category');
+
+		$rs->execute();
+
+		while ($row = $rs->fetch())
+		{
+			$want_count[$row['id_category']] = $row['count'];
+		}
+
+		$all_cat = $app['db']->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
+			FROM categories
+			WHERE id_parent IS NOT NULL');
+
+		foreach ($all_cat as $val)
+		{
+			$offers = $val['stat_msgs_offers'];
+			$wants = $val['stat_msgs_wanted'];
+			$cat_id = $val['id'];
+
+			$want_count[$cat_id] = $want_count[$cat_id] ?? 0;
+			$offer_count[$cat_id] = $offer_count[$cat_id] ?? 0;
+
+			if ($want_count[$cat_id] == $wants && $offer_count[$cat_id] == $offers)
+			{
+				continue;
+			}
+
+			$stats = [
+				'stat_msgs_offers'	=> $offer_count[$cat_id] ?? 0,
+				'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
+			];
+
+			$app['db']->update('categories', $stats, ['id' => $cat_id]);
+		}
+
+		//delete contacts
+		$app['db']->delete('contact', ['id_user' => $del]);
+
+		//delete fullname access record.
+		$app['eland.xdb']->del('user_fullname_access', $del);
+
+		//finally, the user
+		$app['db']->delete('users', ['id' => $del]);
+		$app['redis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
+
+		$app['eland.alert']->success('De gebruiker is verwijderd.');
+
+		if ($user['status'] == 1 || $user['status'] == 2)
+		{
+			$app['eland.typeahead']->invalidate_thumbprint('users_active');
+		}
+		else if ($user['status'] == 7)
+		{
+			$app['eland.typeahead']->invalidate_thumbprint('users_extern');
+		}
+
+		$app['eland.interlets_groups']->clear_cache($s_schema);
+
+		cancel();
 	}
-
-	$form_token = $app['eland.form_token']->generate(false);
-	$pw_name_suffix = substr($form_token, 0, 5);
 
 	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
 	$fa = 'user';
@@ -1065,10 +1042,10 @@ if ($del)
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-	echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="password" class="form-control" id="password" name="password_' . $pw_name_suffix . '" ';
-	echo 'value="" required autocomplete="off">';
+	echo '<div class="col-sm-12">';
+	echo '<input type="checkbox" name="verify"';
+	echo ' value="1"> ';
+	echo 'Ik ben wis en waarachtig zeker dat ik deze gebruiker wil verwijderen.';
 	echo '</div>';
 	echo '</div>';
 
