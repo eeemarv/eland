@@ -20,8 +20,12 @@
 <li>Je letscode: <strong>{{ user.letscode }}</strong></li>
 <li>Je gebruikersnaam: <strong>{{ user.name }}</strong></li>
 <li>Je saldo bedraagt momenteel <strong>{{ user.saldo }}</strong> {{ group.currency }}</li>
+{% if user.minlimit != '' and user.minlimit != -999999999 %}
 <li>Minimum limiet: <strong>{{ user.minlimit }}</strong> {{ group.currency }}</li>
+{% endif %}
+{% if user.maxlimit != '' and user.maxlimit != 999999999 %}
 <li>Maximum limiet: <strong>{{ user.maxlimit }}</strong> {{ group.currency }}</li>
+{% endif %}
 <li>Status: <strong>{% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}</strong></li>
 <li><a href="{{ url_login }}">Login</a></li>
 

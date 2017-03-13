@@ -14,8 +14,12 @@ Je account
 Je letscode: {{ user.letscode }}
 Je gebruikersnaam: {{ user.name }}
 Je saldo bedraagt momenteel {{ user.saldo }} {{ group.currency }}
+{% if user.minlimit != '' and user.minlimit != 999999999 %}
 Minimum limiet: {{ user.minlimit }} {{ group.currency }}
+{% endif %}
+{% if user.maxlimit != '' and user.maxlimit != 999999999 %}
 Maximum limiet: {{ user.maxlimit }} {{ group.currency }}
+{% endif %}
 Status: {% if user.status == 1 %}Actief{% elseif user.status == 2 %}Uitstapper{% endif %}
 
 Login: {{ url_login }}

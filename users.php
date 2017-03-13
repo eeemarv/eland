@@ -1741,8 +1741,6 @@ if ($add || $edit)
 		}
 	}
 
-	
-
 	array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
 
@@ -3587,7 +3585,7 @@ if ($v_list)
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<input type="checkbox" name="verify_mail"';
-		echo ' value="1" > ';
+		echo ' value="1" required> ';
 		echo 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.';
 		echo '</div>';
 		echo '</div>';
@@ -3629,7 +3627,7 @@ if ($v_list)
 			echo '<div class="form-group">';
 			echo '<div class="col-sm-12">';
 			echo '<input type="checkbox" name="verify_' . $k . '"';
-			echo ' value="1" > ';
+			echo ' value="1" required> ';
 			echo 'Ik heb nagekeken dat de juiste gebruikers geselecteerd zijn en veld en ingevulde waarde nagekeken.';
 			echo '</div>';
 			echo '</div>';

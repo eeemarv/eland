@@ -790,8 +790,6 @@ if ($add)
 		{
 			$from_user = readuser($fuid);
 			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
-
-			
 		}
 
 		if ($tuid == $s_id && !$fuid && $tus != $app['eland.this_group']->get_schema())
@@ -869,9 +867,9 @@ if ($add)
 
 	include __DIR__ . '/include/header.php';
 
+/*
 	$minlimit = $session_user['minlimit'];
 
-/*
 	if (!$s_master)
 	{
 		echo '<div>';

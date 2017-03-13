@@ -365,4 +365,3 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 	return $user;
 }
-
