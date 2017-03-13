@@ -614,6 +614,9 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		unset($sel_ary[$sel_user['id']]);
 
+		$sel_user['minlimit'] = $sel_user['minlimit'] == -999999999 ? '' : $sel_user['minlimit'];
+		$sel_user['maxlimit'] = $sel_user['maxlimit'] == 999999999 ? '' : $sel_user['maxlimit'];
+
 		$template_vars = [];
 
 		foreach ($map_template_vars as $key => $val)
