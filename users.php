@@ -1189,13 +1189,19 @@ if ($add || $edit)
 
 						$row = $st->fetch();
 
+						$warning = 'Omdat deze gebruikers niet meer een uniek email adres hebben zullen zij ';
+						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
+						$warning .= 'email adres. Zie ' . aphp('status', [], 'Status');
+
 						if ($row['count'] == 1)
 						{
-							$errors[] = 'Emailadres ' . $mailadr . ' bestaat al onder de actieve gebruikers.';
+							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
+							$app['eland.alert']->warning($warning);
 						}
 						else if ($row['count'] > 1)
 						{
-							$errors[] = 'Emailadres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers.';
+							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers. ' . $warning;
+							$app['eland.alert']->warniing($warning);
 						}
 					}
 				}

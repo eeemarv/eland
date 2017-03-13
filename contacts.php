@@ -148,9 +148,9 @@ if ($edit || $add)
 {
 	if ($edit)
 	{
-		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', array($edit))))
+		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', [$edit])))
 		{
-			$app['eland.alert']->error('Dit contact heeft geen eigenaar.');
+			$app['eland.alert']->error('Dit contact heeft geen eigenaar of bestaat niet.');
 			cancel();
 		}
 
@@ -273,10 +273,28 @@ if ($edit || $add)
 					and u.id <> ?
 					and c.value = ?', array($user_id, $contact['value']));
 
-			if ($mail_count)
+			if ($mail_count & $s_admin)
+			{
+				$warning = 'Omdat deze gebruikers niet meer een uniek email adres hebben zullen zij ';
+				$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
+				$warning .= 'email adres. Zie ' . aphp('status', [], 'Status');
+
+				if ($mail_count == 1)
+				{
+					$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
+					$app['eland.alert']->warning($warning);
+				}
+				else if ($mail_count > 1)
+				{
+					$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers. ' . $warning;
+					$app['eland.alert']->warniing($warning);
+				}
+			}
+			else if ($mail_count)
 			{
 				$errors[] = 'Dit mailadres komt reeds voor onder de actieve gebruikers.';
 			}
+			
 		}
 
 		if(!count($errors))
