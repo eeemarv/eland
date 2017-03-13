@@ -101,38 +101,17 @@ $amount = $_POST['amount'] ?? [];
 $description = $_POST['description'] ?? '';
 $description = trim($description);
 
-$pw_name_suffix = substr($_POST['form_token'] ?? '', 0, 5);
-
-$password = $_POST['password_' . $pw_name_suffix] ?? '';
-$password = trim($password);
-
 $transid = $_POST['transid'] ?? '';
 
 $mail_en = isset($_POST['mail_en']) ? true : false;
 
 if ($submit)
 {
-	if (!$password)
-	{
-		$errors[] = 'Paswoord is niet ingevuld.';
-	}
-	else
-	{
-		$password = hash('sha512', $password);
+	$verify = isset($_POST['verify']) ? true : false;
 
-		if ($s_master)
-		{
-			$enc_password = getenv('MASTER_PASSWORD');
-		}
-		else
-		{
-			$enc_password = $app['db']->fetchColumn('select password from users where id = ?', [$s_id]);
-		}
-
-		if ($password != $enc_password)
-		{
-			$errors[] = 'Paswoord is niet juist.';
-		}
+	if (!$verify)
+	{
+		$errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
 	}
 
 	if (!$description)
@@ -372,6 +351,10 @@ if ($submit)
 		cancel();
 	}
 }
+else
+{
+	$mail_en = true;
+}
 
 $transid = generate_transid();
 
@@ -520,7 +503,7 @@ echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
 echo '<label for="from_letscode" class="col-sm-2 control-label">';
-echo "Van letscode (gebruik dit voor een 'één naar veel' transactie)";
+echo 'Van letscode';
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
@@ -529,6 +512,8 @@ echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'data-typeahead="';
 echo $app['eland.typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
+echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
+echo 'Alle ingevulde bedragen hieronder worden van dit account gehaald.</p>';
 echo '</div>';
 echo '</div>';
 
@@ -627,12 +612,14 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="to_letscode" class="col-sm-2 control-label">';
-echo "Aan letscode (gebruik dit voor een 'veel naar één' transactie)";
+echo 'Aan letscode';
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="' . $to_letscode . '" ';
 echo 'data-typeahead-source="from_letscode">';
+echo '<p>Gebruik dit voor een "Veel naar één" transactie. Bijvoorbeeld, een ledenbijdrage. ';
+echo 'Alle ingevulde bedragen hierboven gaan naar dit account.</p>';
 echo '</div>';
 echo '</div>';
 
@@ -650,20 +637,16 @@ echo '<label for="mail_en" class="col-sm-2 control-label">';
 echo 'Verstuur notificatie mails</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
-echo ($mail_en) ? ' checked="checked"' : '';
+echo $mail_en ? ' checked="checked"' : '';
 echo '>';
 echo '</div>';
 echo '</div>';
 
-$form_token = $app['eland.form_token']->generate(false);
-$pw_name_suffix = substr($form_token, 0, 5);
-
 echo '<div class="form-group">';
-echo '<label for="password" class="col-sm-2 control-label">Je paswoord (extra veiligheid)</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="password" class="form-control" id="password" ';
-echo 'name="password_' . $pw_name_suffix . '" ';
-echo 'autocomplete="off" required>';
+echo '<div class="col-sm-12">';
+echo '<input type="checkbox" name="verify"';
+echo ' value="1" required> ';
+echo 'Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" LETScode ingevuld zijn.';
 echo '</div>';
 echo '</div>';
 
