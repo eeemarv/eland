@@ -13,14 +13,8 @@ if (isset($_POST['zend']))
 
 	$a = array(
 		'enabled'						=> (isset($_POST['enabled'])) ? true : false,
-		'active_no_new_or_leaving'		=> (isset($_POST['active_no_new_or_leaving'])) ? true : false,
-		'new'							=> (isset($_POST['new'])) ? true : false,
-		'leaving'						=> (isset($_POST['leaving'])) ? true : false,
-		'inclusive'						=> $_POST['inclusive'],
 		'exclusive'						=> $_POST['exclusive'],
-		'min'							=> $_POST['min'],
 		'trans_percentage'				=> $_POST['trans_percentage'],
-		'account_base'					=> $_POST['account_base'],
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
@@ -41,14 +35,8 @@ else
 	{
 		$a = [
 			'enabled'					=> false,
-			'active_no_new_or_leaving'	=> false,
-			'new'						=> false,
-			'leaving'					=> false,
-			'inclusive'					=> '',
 			'exclusive'					=> '',
-			'min'						=> 0,
 			'trans_percentage'			=> 100,
-			'account_base'				=> 0,
 			'trans_exclusive'			=> '',
 		];
 	}
@@ -63,7 +51,10 @@ echo '<div class="panel panel-info">';
 
 echo '<div class="panel-body"><p>';
 echo 'Met dit formulier kan een automatische minimum limiet ingesteld worden. ';
-echo 'De minimum limiet van gebruikers zal zo automatisch lager worden door ontvangen transacties</p></div>';
+echo 'De individuele minimum limiet van gebruikers zal zo automatisch lager worden door ontvangen transacties ';
+echo 'tot de ' . aphp('config', [], 'minimum groepslimiet') .  ' bereikt wordt. ';
+echo 'De individuele minimum limiet wordt gewist wanneer de ' . aphp('config', [], 'minimum groepslimiet') . ' ';
+echo 'bereikt of onderschreden wordt.</p></div>';
 echo '<div class="panel-heading">';
 
 echo '<form class="form-horizontal" method="post">';
@@ -81,70 +72,19 @@ echo '</div>';
 echo '<hr>';
 
 echo '<h3>Voor accounts</h3>';
-echo '<p>Enkel actieve accounts kunnen een automatische minimum limiet hebben.</p>';
-
-echo '<div class="form-group">';
-echo '<label for="active_no_new_or_leaving" class="col-sm-3 control-label">';
-echo 'Alle actieve zonder in- en uitstappers</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="checkbox" id="active_no_new_or_leaving" name="active_no_new_or_leaving" value="1" ';
-echo ($a['active_no_new_or_leaving']) ? ' checked="checked"' : '';
-echo '>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="new" class="col-sm-3 control-label">';
-echo 'Instappers</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="checkbox" id="new" name="new" value="1" ';
-echo ($a['new']) ? ' checked="checked"' : '';
-echo '>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="leaving" class="col-sm-3 control-label">';
-echo 'Uitstappers</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="checkbox" id="leaving" name="leaving" value="1" ';
-echo ($a['leaving']) ? ' checked="checked"' : '';
-echo '>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="inclusive" class="col-sm-3 control-label">';
-echo 'Inclusief (letscodes gescheiden door comma\'s)</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="text" id="inclusive" name="inclusive" ';
-echo 'value="' . $a['inclusive'] . '" ';
-echo 'class="form-control">';
-echo '</div>';
-echo '</div>';
+echo '<p>De automatische minimum limiet is enkel van toepassing op actieve accounts die ';
+echo 'rol van gewone gebruiker hebben (geen admins of interlets) en die ';
+echo 'niet de status uitstapper hebben. Hieronder kunnnen nog verder individuele accounts uitgesloten ';
+echo 'worden.</p>';
 
 echo '<div class="form-group">';
 echo '<label for="exclusive" class="col-sm-3 control-label">';
-echo 'Exclusief (letscodes gescheiden door comma\'s)</label>';
+echo 'Exclusief</label>';
 echo '<div class="col-sm-9">';
 echo '<input type="text" id="exclusive" name="exclusive" ';
 echo 'value="' . $a['exclusive'] . '" ';
 echo 'class="form-control">';
-echo '</div>';
-echo '</div>';
-
-echo '<hr>';
-
-echo '<h3>Begrenzing</h3>';
-echo '<p>Grens van de automatische minimum limiet (in ' . readconfigfromdb('currency') . ').</p>';
-
-echo '<div class="form-group">';
-echo '<label for="max" class="col-sm-3 control-label">';
-echo 'Ondergrens</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="number" id="min" name="min" ';
-echo 'value="' . $a['min'] . '" ';
-echo 'class="form-control">';
+echo '<p>LETS codes gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -164,22 +104,13 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="account_base" class="col-sm-3 control-label">';
-echo 'Enkel wanneer account is boven bedrag (' . readconfigfromdb('currency') . ')</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="number" id="account_base" name="account_base" ';
-echo 'value="' . $a['account_base'] . '" ';
-echo 'class="form-control">';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="form-group">';
 echo '<label for="trans_exclusive" class="col-sm-3 control-label">';
-echo 'Exclusief tegenpartijen (letscodes gescheiden door comma\'s)</label>';
+echo 'Exclusief tegenpartijen</label>';
 echo '<div class="col-sm-9">';
 echo '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
 echo 'value="' . $a['trans_exclusive'] . '" ';
 echo 'class="form-control">';
+echo '<p>LETS codes gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 
