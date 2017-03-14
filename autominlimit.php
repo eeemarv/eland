@@ -53,8 +53,14 @@ echo '<div class="panel-body"><p>';
 echo 'Met dit formulier kan een automatische minimum limiet ingesteld worden. ';
 echo 'De individuele minimum limiet van gebruikers zal zo automatisch lager worden door ontvangen transacties ';
 echo 'tot de ' . aphp('config', [], 'minimum groepslimiet') .  ' bereikt wordt. ';
-echo 'De individuele minimum limiet wordt gewist wanneer de ' . aphp('config', [], 'minimum groepslimiet') . ' ';
-echo 'bereikt of onderschreden wordt.</p></div>';
+echo 'De individuele minimum limiet wordt gewist wanneer de ';
+echo aphp('config', ['active_tab' => 'balance'], 'minimum groepslimiet') . ' ';
+echo 'bereikt of onderschreden wordt.</p>';
+echo '<p>Individuele minimum limieten die lager zijn dan de algemene groepslimiet blijven altijd ongewijzigd.</p>';
+echo '<p>Wanneer de automatische minimum limiet systematisch voor instappende leden gebruikt wordt, is het ';
+echo 'nuttig de ' . aphp('config', ['active_tab' => 'balance'], 'preset individuele minimum limiet') . ' ';
+echo 'in te vullen in de instellingen.</p>';
+echo '</div>';
 echo '<div class="panel-heading">';
 
 echo '<form class="form-horizontal" method="post">';

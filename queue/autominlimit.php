@@ -35,7 +35,7 @@ class autominlimit extends queue_model implements queue_interface
 
 		if (!$to_id || !$from_id || !$amount || !$sch)
 		{
-			error_log('autominlimit 1');
+			error_log('autominlimit exit: 1, to_id, from_id, amount or schema is missing.');
 			return;
 		}
 
@@ -45,13 +45,36 @@ class autominlimit extends queue_model implements queue_interface
 		if (!$user
 			|| !$amount
 			|| !is_array($user)
-			|| !in_array($user['status'], [1, 2])
+			|| $user['status'] != 1
 			|| !$from_user
 			|| !is_array($from_user)
 			|| !$from_user['letscode']
 		)
 		{
-			error_log('autominlimit 2');
+			error_log('autominlimit exit: 2 user status: ' . $user['status']);
+			return;
+		}
+
+		if ($user['minlimit'] === '')
+		{
+			error_log('autominlimit exit: 3 user ' . link_user($user, $sch, false, true) .
+				' has no individual minlimit');
+			return;
+		}
+
+		$group_minlimit = readconfigfromdb('minlimit', $sch);
+
+		if ($group_minlimit === '')
+		{
+			error_log('autominlimit exit: 3 no group minlimit');
+			return;
+		}
+
+		if ($user['minlimit'] < $group_minlimit)
+		{
+			error_log('autominlimit exit: 4 individual minlimit of user ' .
+				link_user($user, $sch, false, true) . ' ' . $user['minlimit'] . ' is lower than group minlimit ' .
+				$group_minlimit);
 			return;
 		}
 
@@ -59,36 +82,26 @@ class autominlimit extends queue_model implements queue_interface
 
 		$a = $row['data'];
 
-		$new_user_time_treshold = time() - readconfigfromdb('newuserdays', $sch) * 86400;
-
-		$user['status'] = ($new_user_time_treshold < strtotime($user['adate'] && $user['status'] == 1)) ? 3 : $user['status'];
-
-		$inclusive = explode(',', $a['inclusive']);
 		$exclusive = explode(',', $a['exclusive']);
 		$trans_exclusive = explode(',', $a['trans_exclusive']);
 
-		array_walk($inclusive, function(&$val){ return strtolower(trim($val)); });	
 		array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
 		array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
 
-		$inclusive = array_fill_keys($inclusive, true);
 		$exclusive = array_fill_keys($exclusive, true);
 		$trans_exclusive = array_fill_keys($trans_exclusive, true);
 
-		$inc = (isset($inclusive[strtolower($user['letscode'])])) ? true :false; 
-
 		if (!is_array($a)
 			|| !$a['enabled']
-			|| ($user['status'] == 1 && !$a['active_no_new_or_leaving'] && !$inc)
-			|| ($user['status'] == 2 && !$a['leaving'] && !$inc)
-			|| ($user['status'] == 3 && !$a['new'] && !$inc) 
-			|| (isset($exclusive[trim(strtolower($user['letscode']))]))
-			|| (isset($trans_exclusive[trim(strtolower($from_user['letscode']))]))
-			|| ($a['min'] >= $user['minlimit'])
-			|| ($a['account_base'] >= $user['saldo']) 
+			|| !$a['trans_percentage']
+			|| isset($exclusive[trim(strtolower($user['letscode']))])
+			|| isset($trans_exclusive[trim(strtolower($from_user['letscode']))])
 		)
 		{
-			$this->monolog->debug('autominlimit: no new minlimit for user ' . link_user($user, $sch, false), ['schema' => $sch]);
+			$debug = 'autominlimit: ';
+			$debug .= $a['enabled'] ? '' : '(not enabled) ';
+			$debug .= 'no new minlimit for user ' . link_user($user, $sch, false);
+			$this->monolog->debug($debug, ['schema' => $sch]);
 			return;
 		}
 
@@ -96,11 +109,29 @@ class autominlimit extends queue_model implements queue_interface
 
 		if (!$extract)
 		{
+			$debug = 'autominlimit: (extract = 0) ';
+			$debug .= 'no new minlimit for user ' . link_user($user, $sch, false);
+			$this->monolog->debug($debug, ['schema' => $sch]);
 			return;
 		}
 
 		$new_minlimit = $user['minlimit'] - $extract;
-		$new_minlimit = ($new_minlimit < $a['min']) ? $a['min'] : $new_minlimit;
+
+
+		error_log('group_minlimit : ' . $group_minlimit);
+		error_log('new_minlimit : ' . $new_minlimit);
+
+		if ($new_minlimit <= $group_minlimit)
+		{
+			$this->xdb->set('autominlimit', $to_id, ['minlimit' => $group_minlimit, 'erased' => true], $sch);
+			$this->db->update($sch . '.users', ['minlimit' => -999999999], ['id' => $to_id]);
+			readuser($to_id, true, $sch);
+
+			$debug = 'autominlimit: minlimit reached group minlimit, ';
+			$debug .= 'individual minlimit erased for user ' . link_user($user, $sch, false);
+			$this->monolog->debug($debug, ['schema' => $sch]);
+			return;
+		}
 
 		$this->xdb->set('autominlimit', $to_id, ['minlimit' => $new_minlimit], $sch);
 
@@ -108,7 +139,7 @@ class autominlimit extends queue_model implements queue_interface
 
 		readuser($to_id, true, $sch);
 
-		$this->monolog->info('(cron) autominlimit: new minlimit : ' . $new_minlimit .
+		$this->monolog->info('autominlimit: new minlimit : ' . $new_minlimit .
 			' for user ' . link_user($user, $sch, false) . ' (id:' . $to_id . ') ', ['schema' => $sch]);
 	}
 

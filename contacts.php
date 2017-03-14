@@ -273,7 +273,7 @@ if ($edit || $add)
 					and u.id <> ?
 					and c.value = ?', array($user_id, $contact['value']));
 
-			if ($mail_count & $s_admin)
+			if ($mail_count && $s_admin)
 			{
 				$warning = 'Omdat deze gebruikers niet meer een uniek email adres hebben zullen zij ';
 				$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
