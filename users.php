@@ -1672,8 +1672,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> '', 
-				'maxlimit'		=> '',
+				'minlimit'		=> readconfigfromdb('preset_minlimit'), 
+				'maxlimit'		=> readconfigfromdb('preset_maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -1929,7 +1929,8 @@ if ($add || $edit)
 		echo 'value="' . $user['minlimit'] . '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
-		echo 'voor dit account. ls dit veld leeg is, dan is de algemene geldende minimum groepslimiet ';
+		echo 'voor dit account. ls dit veld leeg is, dan is de algemeen geldende ';
+		echo aphp('config', ['active_tab' => 'balance'], 'minimum groepslimiet') . ' ';
 		echo 'van toepassing. ';
 
 		if (readconfigfromdb('minlimit') === '')
@@ -1943,6 +1944,17 @@ if ($add || $edit)
 		}
 
 		echo '</p>';
+
+		echo '<p>Dit veld wordt vooraf ingevuld bij aanmaak gebruiker wanneer ';
+		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele minimum limiet') . ' ';
+		echo 'is ingevuld in de instellingen.';
+
+		if (readconfigfromdb('preset_minlimit') !== '')
+		{
+			echo ' De preset bedraagt momenteel <strong>' . readconfigfromdb('preset_minlimit') . '</strong>.';
+		}
+
+		echo '</p>';
 		echo '</div>';
 		echo '</div>';
 
@@ -1953,7 +1965,8 @@ if ($add || $edit)
 		echo 'value="' . $user['maxlimit'] . '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
-		echo 'voor dit account. Als dit veld leeg is, dan is de algemene geldende maximum groepslimiet ';
+		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
+		echo aphp('config', ['active_tab' => 'balance'], 'maximum groepslimiet') . ' ';
 		echo 'van toepassing. ';
 
 		if (readconfigfromdb('maxlimit') === '')
@@ -1965,7 +1978,20 @@ if ($add || $edit)
 			echo 'De algemeen geldende maximum groepslimiet bedraagt <strong>';
 			echo readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
 		}
-	
+
+		echo '</p>';
+
+		echo '<p>Dit veld wordt vooraf ingevuld bij aanmaak gebruiker wanneer ';
+		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele maximum limiet') . ' ';
+		echo 'is ingevuld in de instellingen.';
+
+		if (readconfigfromdb('preset_maxlimit') !== '')
+		{
+			echo ' De preset bedraagt momenteel <strong>' . readconfigfromdb('preset_maxlimit') . '</strong>.';
+		}
+
+		echo '</p>';
+
 		echo '</div>';
 		echo '</div>';
 	}

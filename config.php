@@ -46,22 +46,40 @@ $landing_page_options = [
 
 unset($periodic_mail_item_show_options_not_all['all']);
 
+$currency = readconfigfromdb('currency');
+
 $tab_panes = [
 
 	'balance'		=> [
 		'lbl'		=> 'Saldo',
 		'inputs'	=> [
 			'minlimit'	=> [
+				'addon'	=> $currency,
 				'lbl'	=> 'Minimum groepslimiet',
 				'type'	=> 'number',
 				'explain'	=> 'Minimum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele minimum limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'maxlimit'	=> [
+				'addon'	=> $currency,
 				'lbl'	=> 'Maximum groepslimiet',
 				'type'	=> 'number',
 				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is. Kan leeg gelaten worden.',
 			],
+			'preset_minlimit'	=> [
+				'addon'	=> $currency,
+				'lbl'	=> 'Preset individuele minimum limiet',
+				'type'	=> 'number',
+				'explain'	=> 'Bij aanmaak van een nieuwe gebruiker wordt deze individuele minimum limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende individuele minimum limiet hebben van de minimum groepslimiet. Deze instelling is ook nuttig wanneer de automatische minimum limiet gebruikt wordt. Dit veld kan leeg gelaten worden.',
+			],
+			'preset_maxlimit'	=> [
+				'addon'	=> $currency,
+				'lbl'	=> 'Preset individuele maximum limiet',
+				'type'	=> 'number',
+				'explain'	=> 'Bij aanmaak van een nieuwe gebruiker wordt deze individuele maximum limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende individuele maximum limiet hebben van de maximum groepslimiet. Dit veld kan leeg gelaten worden.',
+
+			],
 			'balance_equilibrium'	=> [
+				'addon'		=> $currency,
 				'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
 				'type'		=> 'number',
 				'required'	=> true,
@@ -76,7 +94,8 @@ $tab_panes = [
 		'inputs'	=> [
 
 			'msgs_days_default'	=> [
-				'lbl'	=> 'Standaard geldigheidsduur in aantal dagen', 
+				'addon'	=> 'dagen',
+				'lbl'	=> 'Standaard geldigheidsduur', 
 				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 1, 'max' => 1460],
@@ -142,7 +161,7 @@ $tab_panes = [
 		'inputs'	=> [
 			'admin'	=> [
 				'lbl'	=> 'Algemeen admin/beheerder',
-				'attr' => ['minlength' => 7],
+				'attr' 	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
 				'add_btn_text' => 'Extra mailadres',
@@ -311,7 +330,8 @@ $tab_panes = [
 		'lbl'	=> 'Leden',
 		'inputs'	=> [
 			'newuserdays' => [
-				'lbl'		=> 'Aantal dagen dat een nieuw lid als instapper getoond wordt.',
+				'addon'		=> 'dagen',
+				'lbl'		=> 'Periode dat een nieuw lid als instapper getoond wordt.',
 				'type'		=> 'number',
 				'attr'		=> ['min' => 0, 'max' => 365],
 				'required'	=> true,
@@ -760,6 +780,14 @@ foreach ($tab_panes as $id => $pane)
 				echo '<div class="col-sm-12">';
 			}
 
+			if (isset($input['addon']))
+			{
+				echo '<div class="input-group margin-bottom">';
+				echo '<span class="input-group-addon">';
+				echo $input['addon'];
+				echo '</span>';
+			}
+
 			if (isset($input['type']) && $input['type'] == 'select')
 			{
 				echo '<select class="form-control" name="' . $name . '"';
@@ -816,6 +844,7 @@ foreach ($tab_panes as $id => $pane)
 				echo '>';
 			}
 
+			echo isset($input['addon']) ? '</div>' : '';
 			echo '</div>';
 			echo '</div>';
 		}
