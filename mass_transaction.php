@@ -289,14 +289,19 @@ if ($submit)
 			throw $e;
 		}
 
+		$app['eland.autominlimit']->init();
+
 		foreach($transactions as $t)
 		{
+			$app['eland.autominlimit']->process($t['id_from'], $t['id_to'], $t['amount']);
+/*
 			$app['eland.queue.autominlimit']->queue([
 				'from_id'	=> $t['id_from'],
 				'to_id'		=> $t['id_to'],
 				'amount'	=> $t['amount'],
 				'schema'	=> $app['eland.this_group']->get_schema(),
 			]);
+*/
 		}
 
 		if ($to_one)

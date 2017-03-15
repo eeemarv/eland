@@ -60,12 +60,17 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
+	$app['eland.autominlimit']->init()
+		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
+
+/*
 	$app['eland.queue.autominlimit']->queue([
 		'from_id'	=> $transaction['id_from'],
 		'to_id'		=> $transaction['id_to'],
 		'amount'	=> $transaction['amount'],
 		'schema'	=> $app['eland.this_group']->get_schema(),
 	]);
+*/
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .

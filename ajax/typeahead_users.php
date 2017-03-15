@@ -125,12 +125,8 @@ function users_to_json($sch, $status_sql = 'in (1, 2)')
 
 	$users = [];
 
-//	$new_user_days = readconfigfromdb('newuserdays', $sch);
-
 	foreach ($fetched_users as $user)
 	{
-//		$user['nd'] = $new_user_days;
-
 		if ($user['s'] == 1)
 		{
 			unset($user['s']);

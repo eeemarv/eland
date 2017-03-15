@@ -121,6 +121,10 @@ $app['eland.user'] = function ($app){
 	return new eland\user($app['eland.this_group'], $app['monolog'], $app['session'], $app['eland.page_access']);
 };
 
+$app['eland.autominlimit'] = function ($app){
+	return new eland\autominlimit($app['monolog'], $app['eland.xdb'], $app['db'], $app['eland.this_group']);
+};
+
 // init
 
 $app['eland.elas_db_upgrade'] = function ($app){

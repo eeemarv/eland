@@ -117,7 +117,6 @@ class autominlimit extends queue_model implements queue_interface
 
 		$new_minlimit = $user['minlimit'] - $extract;
 
-
 		error_log('group_minlimit : ' . $group_minlimit);
 		error_log('new_minlimit : ' . $new_minlimit);
 
@@ -145,6 +144,9 @@ class autominlimit extends queue_model implements queue_interface
 
 	public function queue(array $data)
 	{
+		$this->monolog->error('the autominlimit queue is disabled.');
+		return;
+
 		if (!isset($data['schema']))
 		{
 			$this->monolog->debug('no schema set for autominlimit');
