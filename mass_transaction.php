@@ -420,6 +420,7 @@ echo '</div>';
 
 echo '</div>';
 
+/*
 echo '<div class="pan-sub bg-warning">';
 
 echo '<h4>Variabel deel</h4>';
@@ -530,12 +531,6 @@ echo '<input type="number" class="form-control margin-bottom" id="var_minimum">'
 echo '</div>';
 echo '</div>';
 
-/*
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control margin-bottom" id="percentage_balance_days" ';
-echo 'placeholder="aantal dagen" min="0">';
-echo '</div>';
-*/
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
@@ -548,6 +543,7 @@ echo '</div>';
 echo '</div>';
 
 echo '</div>';
+*/
 
 echo '<div class="form-group">';
 echo '<label for="respect_minlimit" class="col-sm-3 control-label">';

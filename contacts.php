@@ -287,7 +287,7 @@ if ($edit || $add)
 				else if ($mail_count > 1)
 				{
 					$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers. ' . $warning;
-					$app['eland.alert']->warniing($warning);
+					$app['eland.alert']->warning($warning);
 				}
 			}
 			else if ($mail_count)
@@ -342,7 +342,7 @@ if ($edit || $add)
 		);
 	}
 
-	$tc = array();
+	$tc = [];
 
 	$rs = $app['db']->prepare('SELECT id, name FROM type_contact');
 
