@@ -403,30 +403,150 @@ echo '</p>';
 
 echo '<form class="form form-horizontal" id="fill_in_aid">';
 
+echo '<div class="pan-sub bg-warning">';
+
 echo '<div class="form-group">';
-echo '<label for="fixed" class="col-sm-3 control-label">Vast bedrag</label>';
-echo '<div class="col-sm-9">';
-echo '<input type="number" class="form-control margin-bottom" id="fixed" placeholder="vast bedrag" ';
+echo '<label for="fixed" class="col-sm-2 control-label">Vast bedrag</label>';
+echo '<div class="col-sm-10">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">';
+echo readconfigfromdb('currency');
+echo '</span>';
+echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
 echo '</div>';
 echo '</div>';
-
-echo '<div class="form-group">';
-echo '<label for="percentage_balance" class="col-sm-3 control-label">';
-echo 'Percentage op saldo (kan ook negatief zijn)</label>';
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control margin-bottom" id="percentage_balance"';
-echo ' placeholder="percentage op saldo">';
 echo '</div>';
 
+echo '</div>';
+
+echo '<div class="pan-sub bg-warning">';
+
+echo '<h4>Variabel deel</h4>';
+
+//
+echo '<div class="form-group">';
+echo '<label for="fixed" class="col-sm-2 control-label">Over periode</label>';
+echo '<div class="col-sm-10">';
+echo '<div class="input-group margin-bottom">';
+echo '<span class="input-group-addon">dagen</span>';
+echo '<input type="number" class="form-control margin-bottom" id="var_days" ';
+echo 'min="0">';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+
+//
+echo '<div class="form-group">';
+echo '<label for="percentage_balance" class="col-sm-2 control-label">';
+echo 'Promille op saldo</label>';
+echo '<div class="col-sm-5">';
+
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">&permil;</span>';
+
+echo '<input type="number" class="form-control margin-bottom" id="var_balance">';
+
+echo '</div>';
+echo '<p>Berekend op gewogen gemiddelde van saldo. Kan ook negatief zijn!</p>';
+echo '</div>';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo readconfigfromdb('currency') . ': basis';
+echo '</span>';
+
+echo '<input type="number" class="form-control" id="var_trans_in">';
+echo '</div>';
+echo '<p>De basis waartegenover berekend wordt kan ook afwijkend van nul zijn.</p>';
+echo '</div>';
+echo '</div>';
+
+//
+echo '<div class="form-group">';
+echo '<label for="var_trans_in" class="col-sm-2 control-label">';
+echo 'Promille op transacties in</label>';
+echo '<div class="col-sm-5">';
+
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">&permil;</span>';
+
+echo '<input type="number" class="form-control" id="var_trans_in">';
+
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo 'excl. LETS codes';
+echo '</span>';
+
+echo '<input type="number" class="form-control" id="var_trans_ex_code_in">';
+echo '</div>';
+echo '<p>Exclusief tegenpartijen: LETS codes gescheiden door komma\'s</p>';
+echo '</div>';
+echo '</div>';
+
+//
+echo '<div class="form-group">';
+echo '<label for="var_trans_out" class="col-sm-2 control-label">';
+echo 'Promille op transacties uit</label>';
+echo '<div class="col-sm-5">';
+
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">&permil;</span>';
+
+echo '<input type="number" class="form-control" id="var_trans_out">';
+
+echo '</div>';
+echo '</div>';
+
+echo '<div class="col-sm-5">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo 'excl. LETS codes';
+echo '</span>';
+
+echo '<input type="number" class="form-control" id="var_trans_excl_code_out">';
+echo '</div>';
+echo '<p>Exclusief tegenpartijen: LETS codes gescheiden door komma\'s</p>';
+echo '</div>';
+echo '</div>';
+
+//
+echo '<div class="form-group">';
+echo '<label for="var_minimum" class="col-sm-2 control-label">';
+echo 'Minimum - maximum</label>';
+echo '<div class="col-sm-5">';
+
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo readconfigfromdb('currency') . ': min';
+echo '</span>';
+
+echo '<input type="number" class="form-control margin-bottom" id="var_minimum">';
+echo '</div>';
+echo '</div>';
+
+/*
 echo '<div class="col-sm-3">';
 echo '<input type="number" class="form-control margin-bottom" id="percentage_balance_days" ';
 echo 'placeholder="aantal dagen" min="0">';
 echo '</div>';
-echo '<div class="col-sm-3">';
-echo '<input type="number" class="form-control" id="percentage_balance_base" ';
-echo 'placeholder="basis">';
+*/
+echo '<div class="col-sm-5">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo readconfigfromdb('currency') . ': max';
+echo '</span>';
+
+echo '<input type="number" class="form-control" id="var_maximum">';
 echo '</div>';
+echo '</div>';
+echo '</div>';
+
 echo '</div>';
 
 echo '<div class="form-group">';
