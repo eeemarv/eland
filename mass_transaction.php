@@ -420,7 +420,7 @@ echo '</div>';
 
 echo '</div>';
 
-/*
+/**/
 echo '<div class="pan-sub bg-warning">';
 
 echo '<h4>Variabel deel</h4>';
@@ -543,7 +543,7 @@ echo '</div>';
 echo '</div>';
 
 echo '</div>';
-*/
+/**/
 
 echo '<div class="form-group">';
 echo '<label for="respect_minlimit" class="col-sm-3 control-label">';
