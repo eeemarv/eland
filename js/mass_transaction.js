@@ -43,18 +43,39 @@ $(document).ready(function(){
 
 	$('#fill_in_aid').submit(function(e){
 
-		var days = $('#percentage_balance_days').val();
+		var days = $('#var_days').val();
+
 		if (days > 1){
+
+			var var_ex_code_in = $('#var_ex_code_in').val().split(',');
+			var var_ex_code_out = $('#var_ex_code_out').val().split(',');
+
+			$.map(var_ex_code_in, function(s){
+				return $.trim(s);
+			});
+
+			$.map(var_ex_code_out, function(s){
+				return $.trim(s);
+			});
+
+			console.log(var_ex_code_in);
+			console.log(var_ex_code_out);
 
 			var session_params = $('body').data('session-params');
 			var params = {"days": days};
+			var params_out = {"days": days, "ex": var_ex_code_out};
+			var params_in = {"days": days, "in": 1, "ex": var_ex_code_in};
 
 			$.extend(params, session_params);
+			$.extend(params_out, session_params);
+			$.extend(params_in, session_params);
 
-			var jqxhr = $.get('./ajax/weighted_balances.php', params)
-
-			.done(function(data){
-				fill_in(data);
+			$.when(
+				$.get('./ajax/weighted_balances.php', params),
+				$.get('./ajax/transactions_sum.php', params_out),
+				$.get('./ajax/transactions_sum.php', params_in)
+			).done(function(weighted_balances, trans_sum_out, trans_sum_in){
+				fill_in(weighted_balances, trans_sum_out, trans_sum_in);
 			})
 			.fail(function(){
 				alert('Data ophalen mislukt.');
@@ -66,39 +87,109 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 
-	function fill_in(data){	
-		var ignoreLetscode = $('#to_letscode').val().split(' ');
-		ignoreLetscode = ignoreLetscode[0];
+	function fill_in(weighted_balances, trans_sum_in, trans_sum_out){
+
+		var ignore_letscode = $('#to_letscode').val().split(' ');
+		ignore_letscode = ignore_letscode[0];
+
+		if (ignore_letscode === ''){
+			ignore_letscode = $('#from_letscode').val().split(' ');
+			ignore_letscode = ignore_letscode[0];
+		}
+
 		var fixed = Number($('#fixed').val());
-		var perc = Number($('#percentage_balance').val() / 100);
-		var base = Number($('#percentage_balance_base').val());
-		var respectMinlimit = $('#respect_minlimit').prop('checked');
+
+		var var_balance = Number($('#var_balance').val() / 1000);
+		var var_base = Number($('#var_base').val());
+
+		var var_trans_in = Number($('#var_trans_in').val() / 1000);
+		var var_trans_out = Number($('#var_trans_out').val() / 1000);
+
+		var var_min = Number($('#var_min').val());
+		var var_max = Number($('#var_max').val());
+
+		var respect_minlimit = $('#respect_minlimit').prop('checked');
+
 		$('table input[type="number"]:visible').each(function() {
-			var balance = $(this).data('balance');
-			var am = (typeof data == 'object') ? data[$(this).data('user-id')] : balance;
-			am =  +am - base;
-			var amount = Math.round(am * perc);
-			amount = (amount < 0) ? 0 : amount;
-			amount = amount + fixed;
+
+			if ($(this).attr('data-letscode') == ignore_letscode){
+				$(this).val('');
+				return true;
+			};
+
+			var balance = Number($(this).data('balance'));
+
 			var minlimit = $(this).data('minlimit');
 
-			if (minlimit === ''){
-				minlimit = group_minlimit;
+			var has_minlimit = minlimit !== '' && group_minlimit !== '' ? true : false;
+
+			minlimit = has_minlimit && minlimit === '' ? group_minlimit : minlimit;
+
+			if (has_minlimit){
+				var room = balance - minlimit;
+
+				if (respect_minlimit && room <= 0){
+					return true;
+				} 
 			}
 
-			var blockByMinlimit = false;
+			var user_id = $(this).data('user-id');
 
-			if (minlimit !== ''){
-				blockByMinlimit = ((minlimit > (balance - amount)) && respectMinlimit) ? true : false;
+			var bal = 0;
+
+			if (var_balance !== 0){
+
+				if (typeof weighted_balances == 'object' && typeof weighted_balances[user_id] !== 'undefined'){
+					bal = Number(weighted_balances[user_id]);
+				} else {
+					bal = balance;
+				}
+
+				bal = +bal - var_base;
+				bal = Math.round(bal * var_balance);
+				bal = bal < 0 ? 0 : bal;
 			}
 
-			var ignore = ($(this).attr('data-letscode') == ignoreLetscode) ? true : false;
+			var trans_in = 0;
 
-			if (amount === 0 || ignore || blockByMinlimit){
-				$(this).val('');
-			} else {
-				$(this).val(amount);
+			if (var_trans_in !== 0){
+
+				if (typeof trans_sum_in == 'object' && typeof trans_sum_in[user_id] !== 'undefined'){
+					trans_in = Number(trans_in[user_id]);
+
+					trans_in = Math.round(trans_in * var_trans_in);
+					trans_in = trans_in < 0 ? 0 : trans_in;
+				}
 			}
+
+			var trans_out = 0;
+
+			if (var_trans_out !== 0){
+
+				if (typeof trans_sum_out == 'object' && typeof trans_sum_out[user_id] !== 'undefined'){
+					trans_out = Number(trans_out[user_id]);
+
+					trans_out = Math.round(trans_out * var_trans_out);
+					trans_out = trans_out < 0 ? 0 : trans_out;
+				}
+			}
+
+			var amount = +bal + trans_in + trans_out;
+
+			amount = amount < var_min ? var_min : amount;
+			amount = amount > var_max ? var_max : amount;
+
+			amount = amount + fixed;
+			amount = amount < 0 ? 0 : amount;
+
+			if (has_minlimit && amount !== 0){
+				if (amount > room){
+					$(this).val('');
+					return true;
+				}
+			}
+
+			$(this).val(amount);
 
 		});
 
