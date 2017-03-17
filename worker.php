@@ -59,7 +59,7 @@ while (true)
 
 	if ($loop_count % 5 === 0)
 	{
-		$boot_test = $app['cache']->get('boot');
+		$boot_test = $app['eland.cache']->get('boot');
 
 		if ($boot_test['count'] < $boot['count'])
 		{
