@@ -585,7 +585,7 @@ if ($mail && $post && $id)
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'message',
 		'vars'		=> $vars,
-	]);
+	], 600);
 
 
 	if ($cc)
@@ -594,7 +594,7 @@ if ($mail && $post && $id)
 			'to'		=> $s_schema . '.' . $s_id,
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
-		]);
+		], 600);
 	}
 
 	$app['eland.alert']->success('Mail verzonden.');

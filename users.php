@@ -170,7 +170,7 @@ if ($user_mail_submit && $id && $post)
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'user',
 		'vars'		=> $vars,
-	]);
+	], 600);
 
 	if ($user_mail_cc)
 	{
@@ -178,7 +178,7 @@ if ($user_mail_submit && $id && $post)
 			'to' 		=> $s_schema . '.' . $s_id,
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
-		]);
+		], 600);
 	}
 
 	$app['eland.alert']->success('Mail verzonden.');

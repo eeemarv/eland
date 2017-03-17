@@ -116,8 +116,6 @@ class schedule
 
 		$next = gmdate('Y-m-d H:i:s', $next);
 
-		unset($this->tasks[$this->id]);
-
 		$this->tasks[$this->id] = $next;
 
 		$this->cache->set('tasks', $this->tasks);
