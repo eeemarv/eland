@@ -57,6 +57,7 @@ while (true)
 		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
 	}
 
+/*
 	if ($loop_count % 5 === 0)
 	{
 		$boot_test = $app['eland.cache']->get('boot');
@@ -66,6 +67,7 @@ while (true)
 			exit;
 		}
 	}
+*/
 
 	$loop_count++;
 }
