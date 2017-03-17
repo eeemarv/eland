@@ -52,9 +52,19 @@ while (true)
 		$schema_task->run();
 	}
 
-	if ($loop_count % 1000 == 0)
+	if ($loop_count % 1000 === 0)
 	{
 		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
+	}
+
+	if ($loop_count % 5 === 0)
+	{
+		$boot_test = $app['cache']->get('boot');
+
+		if ($boot_test['count'] < $boot['count'])
+		{
+			exit;
+		}
 	}
 
 	$loop_count++;
