@@ -904,6 +904,7 @@ if ($add)
 	echo $s_admin ? '' : ' disabled';
 	echo '>';
 
+/*
 	echo '<ul class="account-info">';
 
 	echo '<li class="info-balance">Huidige saldo: <span class="num">';
@@ -927,7 +928,7 @@ if ($add)
 	echo readconfigfromdb('currency') . '</span></li>';
 
 	echo '</ul>';
-
+*/
 	echo '</div>';
 	echo '</div>';
 

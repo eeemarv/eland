@@ -135,7 +135,7 @@ $(document).ready(function(){
 			$(this).typeahead.apply($(this), args);
 
 
-//
+/*
 			$(this).bind('typeahead:select', function(ev, suggestion){
 
 
@@ -150,7 +150,7 @@ $(document).ready(function(){
 
 				$num.text(suggestion.balance);
 			});
-//
+*/
 		}
 	});
 
@@ -182,7 +182,7 @@ $(document).ready(function(){
 				});
 			}
 		}
-//
+/*
 		$(this).bind('typeahead:select', function(ev, suggestion){
 			console.log('selection: ' + JSON.stringify(suggestion));
 
@@ -212,7 +212,7 @@ $(document).ready(function(){
 
 
 		});
-//
+*/
 	});
 
 	
