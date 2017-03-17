@@ -457,7 +457,7 @@ echo readconfigfromdb('currency') . ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
 echo '</div>';
-echo '<p>De basis waartegenover berekend wordt kan ook afwijkend van nul zijn.</p>';
+echo '<p>De basis waartegenover berekend wordt. Kan ook afwijkend van nul zijn.</p>';
 echo '</div>';
 echo '</div>';
 
@@ -561,7 +561,7 @@ if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
 	}
 
 	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
-	echo 'accounts waarbij eigen limieten ingesteld zijn.</li>';
+	echo 'accounts waarbij individuele limieten ingesteld zijn.</li>';
 
 	echo '</ul>';
 }
