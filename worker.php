@@ -57,17 +57,37 @@ while (true)
 		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
 	}
 
-/*
-	if ($loop_count % 5 === 0)
+	if ($loop_count % 10 === 0)
 	{
 		$boot_test = $app['eland.cache']->get('boot');
 
 		if ($boot_test['count'] < $boot['count'])
 		{
-			exit;
+			while (true)
+			{
+				$subject = 'Sleeping worker.';
+				$msg = 'Sleeping worker. Worker(boot count): ' . $boot_test['count'];
+				$msg .= ', loop count:' . $loop_count;
+				$msg .= ', current(boot count): ' . $boot['count'] . ', ';
+				$msg .= 'PID: ' . getmypid() . ', GID: ' . getmygid() . ', UID:' . getmyuid() . ', Inode:';
+				$msg .= getmyinode();
+				error_log($msg);
+				if (getenv('MAIL_NOTIFY'))
+				{
+					$app['eland.queue.mail']->queue([
+						'to'		=> getenv('MAIL_NOTIFY'),
+						'subject'	=> 'Sleeping worker',
+						'text'		=> $msg,
+					], 2000);
+				}
+				else
+				{
+					error_log('env var MAIL_NOTIFY not set.');
+				}
+				sleep(86400);
+			}
 		}
 	}
-*/
 
 	$loop_count++;
 }
