@@ -903,7 +903,7 @@ if ($add)
 	echo 'value="' . $transaction['letscode_from'] . '" required';
 	echo $s_admin ? '' : ' disabled';
 	echo '>';
-/*
+
 	echo '<ul class="account-info">';
 
 	echo '<li class="info-balance">Huidige saldo: <span class="num">';
@@ -920,14 +920,14 @@ if ($add)
 	echo '</span> <span class="cur">';
 	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '<li class="info-groupminlimit">Minimum groepslimiet: ';
+	echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
 	echo '<span class="num">';
 	echo readconfigfromdb('minlimit');
 	echo '</span> <span class="cur">';
 	echo readconfigfromdb('currency') . '</span></li>';
 
 	echo '</ul>';
-*/
+
 	echo '</div>';
 	echo '</div>';
 
@@ -1001,7 +1001,7 @@ if ($add)
 		echo '</span> <span class="cur">';
 		echo readconfigfromdb('currency') . '</span></li>';
 
-		echo '<li class="info-groupminlimit">Minimum groepslimiet: ';
+		echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
 		echo '<span class="num">';
 		echo readconfigfromdb('minlimit');
 		echo '</span> <span class="cur">';
@@ -1062,7 +1062,7 @@ if ($add)
 	echo '</span> <span class="cur">';
 	echo readconfigfromdb('currency') . '</span></li>';
 
-	echo '<li class="info-groupmaxlimit">Maximum groepslimiet: ';
+	echo '<li class="info-group-maxlimit">Maximum groepslimiet: ';
 	echo '<span class="num">';
 	echo readconfigfromdb('maxlimit');
 	echo '</span> <span class="cur">';

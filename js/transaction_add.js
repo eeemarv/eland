@@ -37,11 +37,11 @@ $(document).ready(function(){
 
 			$remote_amount_input.val(Math.round(($amount_input.val() / ratio_self) * ratio));
 
-			$amount_input.keyup(function(){
+			$amount_input.on('keyup change blur keypress', function(){
 				$remote_amount_input.val(Math.round(($(this).val() / ratio_self) * ratio));
 			});
 
-			$remote_amount_input.keyup(function(){
+			$remote_amount_input.on('keyup change blur keypress', function(){
 				$amount_input.val(Math.round(($(this).val() / ratio) * ratio_self));
 			});
 

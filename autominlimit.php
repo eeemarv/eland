@@ -56,10 +56,14 @@ echo 'tot de ' . aphp('config', [], 'minimum groepslimiet') .  ' bereikt wordt. 
 echo 'De individuele minimum limiet wordt gewist wanneer de ';
 echo aphp('config', ['active_tab' => 'balance'], 'minimum groepslimiet') . ' ';
 echo 'bereikt of onderschreden wordt.</p>';
+echo '<p>Wanneer geen minimum groepslimiet is ingesteld, dan blijft de individuele minimum limiet bij elke ';
+echo 'transactie naar het account telkens dalen.</p>';
+
 echo '<p>Individuele minimum limieten die lager zijn dan de algemene groepslimiet blijven altijd ongewijzigd.</p>';
 echo '<p>Wanneer de automatische minimum limiet systematisch voor instappende leden gebruikt wordt, is het ';
 echo 'nuttig de ' . aphp('config', ['active_tab' => 'balance'], 'preset individuele minimum limiet') . ' ';
 echo 'in te vullen in de instellingen.</p>';
+
 echo '</div>';
 echo '<div class="panel-heading">';
 

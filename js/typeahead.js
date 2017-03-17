@@ -68,6 +68,7 @@ $(document).ready(function(){
 							letscode: user.c,
 							name: user.n,
 							class: cl,
+							leaving: user.s === 2,
 							postcode: user.p,
 							balance: user.b,
 							min: user.min,
@@ -134,7 +135,7 @@ $(document).ready(function(){
 			$(this).typeahead.apply($(this), args);
 
 
-			/*
+//
 			$(this).bind('typeahead:select', function(ev, suggestion){
 
 
@@ -149,7 +150,7 @@ $(document).ready(function(){
 
 				$num.text(suggestion.balance);
 			});
-			*/
+//
 		}
 	});
 
@@ -181,27 +182,37 @@ $(document).ready(function(){
 				});
 			}
 		}
-/*
+//
 		$(this).bind('typeahead:select', function(ev, suggestion){
 			console.log('selection: ' + JSON.stringify(suggestion));
 
-			console.log(suggestion.balance);
-
-			console.log($(this).parent());
-
 			var $account_info = $(this).parent().next('ul.account-info');
-
-			console.log($account_info);
 
 			var $balance = $account_info.find('li.info-balance');
 
-			var $num = $balance.find('span.num');
+			var $balance_num = $balance.find('span.num');
 
-			$num.text(suggestion.balance);
+			$balance_num.text(suggestion.balance);
+
+			var $equilibrium = $account_info.find('li.info-equilibrium');
+			var $minlimit = $account_info.find('li.info-minlimit');
+			var $minlimit_num = $minlimit.find('span.num');
+			var $group_minlimit = $account_info.find('li.info-group-minlimit');
+
+			$minlimit_num.text(suggestion.min);
+
+			if (suggestion.leaving){
+				$equilibrium.show();
+				$minlimit.hide();
+				$group_minlimit.hide();
+			} else {
+				$equilibrium.hide();
+				$minlimit.show();
+			}
 
 
 		});
-*/
+//
 	});
 
 	
