@@ -6,7 +6,7 @@ if ($css = readconfigfromdb('css'))
 } 
 
 echo '<!DOCTYPE html>';
-echo '<html>';
+echo '<html lang="nl">';
 echo '<head>';
 echo '<title>' . readconfigfromdb('systemname') .'</title>';
 
