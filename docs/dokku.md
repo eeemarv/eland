@@ -35,7 +35,9 @@ sudo service nginx reload
 
 A CNAME record with wildcard should point to the Dokku app url.
 
-set a config var for each subdomain to the name of the schema in the database
+##Match subdomains and database schemas (groups)
+
+Set a config var for each subdomain to the name of the schema in the database
 ```shell
 dokku config:set appname SCHEMA_FLUPKE___AND___SABRINA=flupkesabrina
 ```
