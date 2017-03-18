@@ -72,10 +72,10 @@ while (true)
 				$msg .= 'PID: ' . getmypid() . ', GID: ' . getmygid() . ', UID:' . getmyuid() . ', Inode:';
 				$msg .= getmyinode();
 				error_log($msg);
-				if (getenv('MAIL_NOTIFY'))
+				if (getenv('MAIL_NOTIFY_ADDRESS'))
 				{
 					$app['eland.queue.mail']->queue([
-						'to'		=> getenv('MAIL_NOTIFY'),
+						'to'		=> getenv('MAIL_NOTIFY_ADDRESS'),
 						'subject'	=> 'Sleeping worker',
 						'text'		=> $msg,
 					], 2000);

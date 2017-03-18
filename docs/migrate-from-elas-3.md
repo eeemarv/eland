@@ -1,28 +1,35 @@
 ##Migrating a group from eLAS 3.x to eLAND
 
-####Domain
-
-* Set your domain in DNS with CNAME to the domain of the Heroku app.
-* Add the domain in Heroku with command
-```shell
-heroku domains:add my-domain.com
-```
-note that wildcards can be set on heroku.  
-```shell
-heroku domains:add *.example.com
-```
-will add all subdomains of example.com
-
 ####Database
 
-* To import the database of the letsgroup use postgres command psql to log in with your local computer on the postgres server directly. Get host, port, username and password from the dsn of DATABASE_URL which you can find with `heroku config`. (or on the Heroku website)
+* Upload the SQL dump file to the server:
+
+```shell
+scp myletsgroupdumpfile.sql myusername@app.mydomain.com:myletsgroupdumpfile.sql
+```
+
 In eLAND all letsgroups are stored as schemas in one database.
+First create an empty public schema where the dump will be imported into.
+
+Log into postgres:
+```
+dokku postgres:connect databasename
+```
+
+```sql
+create schema public;
+```
+
 You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).
 ```sql
-\i myletsgroupdumpfile.sql
+\i ./myusername/home/myletsgroupdumpfile.sql
 ```
+
+Or, use on of the [dokku-postgres](https://github.com/dokku/dokku-postgres) commands according to the format of the file.
+
+
 The tables of the imported letsgroup are now in the default schema named public.
-You can truncate the city_distance table which is not used anymore and which is very big. (More than a 1M rows.)
+You can truncate the city_distance table which is not used anymore and which is more than a 1M rows big.
 ```sql
 TRUNCATE TABLE city_distance;
 ```
@@ -48,15 +55,22 @@ Rename then the public schema to the letsgroup code
 ALTER SCHEMA public RENAME TO abc;
 ```
 This way of importing letsgroups leaves the already present letsgroups data untouched. This can not be done with the Heroku tools.
-Now there is no public schema anymore. this is no problem, but you need schema public to be present when you import the next letsgroup.
-```sql
-CREATE SCHEMA public;
-```
 
-* Match a domain to a schema with config variable `SCHEMA_domain=schema`
+* Match a subdomain to a schema with config variable `SCHEMA_subdomain=schema`
 In domain all characters must be converted to uppercase. A dot must be converted to a double underscore. A h
-yphen must be converted to a triple underscore and a colon (for defining port number) with quadruple underscore.
+yphen must be converted to a triple underscore.
 
+Example:
+
+```shell
+dokku config:set appname SCHEMA_FLUPKE___AND___SABRINA=flupkesabrina
+```
+matches flupke-and-sabrina.my-domain.com to database schema flupkesabrina.
+
+The overall domain my-domain.com was set with
+```shell
+dokku config:set appname OVERALL_DOMAIN=my___domain__com
+```
 
 ####Images
 

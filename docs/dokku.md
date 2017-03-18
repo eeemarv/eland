@@ -8,10 +8,10 @@ See the [Dokku installation guide](http://dokku.viewdocs.io/dokku/getting-starte
 
 * Domains: don't set a global domain, but set a domain for the app with a wildchart
 
-(run command on server)
+(all dokku commands are on the server)
 
 ```
-dokku domains:set app-name *.letsa.net
+dokku domains:set app-name *.my-domain.com
 ```
 
 * Create app, install postgres and redis plugins and bind them the app (see Dokku guide).
@@ -37,16 +37,22 @@ A CNAME record with wildcard should point to the Dokku app url.
 
 set a config var for each subdomain to the name of the schema in the database
 ```shell
-dokku config:set appname SCHEMA_MYGROUP=mygroup
+dokku config:set appname SCHEMA_FLUPKE___AND___SABRINA=flupkesabrina
 ```
 
-Above example couples domain mygroup.letsa.net to database schema mygroup.
+Above example couples domain flupke-and-sabrina.my-domain.com to database schema flupkesabrina.
 
 The environment variable SCHEMA_domain: couples a subdomain to a schema
 
 * Dots in subdomain are replaced by double underscore __
 * Hyphens in domain are replaced by triple underscore ___
 * all characters should be uppercase in the environment variable.
+
+Set the overall domain with:
+
+```shell
+dokku config:set appname OVERALL_DOMAIN=my-domain.com
+```
 
 ##AWS S3
 Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
@@ -89,9 +95,11 @@ You need to set up CORS configuration on bucket S3_RES for the fonts of footable
 
 * MAIL_FROM_ADDRESS: a mail address when a reply-to address has been set.
 * MAIL_NOREPLY_ADDRESS: a notification mail you can not reply to
-* MAIL_HOSTER_ADDRESS: used for request-hosting form.
+* MAIL_HOSTER_ADDRESS: used for the request-hosting form.
+* MAIL_NOTIFY_ADDRESS: mail system notifications.
 
-Mail is sent only from these addresses. 
+Mail is sent only from MAIL_FROM_ADDRESS and MAIL_NOREPLY_ADDRESS.
+These addresses should be set up for DKIM in the mailserver.
 
 ## Request hosting form
 
