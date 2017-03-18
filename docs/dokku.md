@@ -58,7 +58,7 @@ dokku config:set appname OVERALL_DOMAIN=my-domain.com
 
 ##AWS S3
 Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
-See (file inludes/default.php)[includes/default.php] for which libraries are to be uploaded. 
+See [file include/default.php](includes/default.php) for which libraries are to be uploaded. 
 The buckets should have the same name as the url.
 
 ```shell
