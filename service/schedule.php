@@ -24,7 +24,7 @@ class schedule
 		$this->tasks = $this->cache->get('tasks');
 	}
 
-	public function set_time(int $time)
+	public function set_time(int $time = 0)
 	{
 		$this->time = $time ? $time : time();
 		return $this;
