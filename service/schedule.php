@@ -22,19 +22,6 @@ class schedule
 		$this->redis = $redis;
 
 		$this->tasks = $this->cache->get('tasks');
-
-		if (!count($this->tasks))
-		{
-			$cronjob_ary = $this->cache->get('cronjob_ary');
-
-			foreach ($cronjob_ary as $cronjob => $ary)
-			{
-				$task = str_replace('_cronjob', '', $cronjob);
-				$this->tasks[$task] = $ary['event_time'];
-			}
-
-			$this->cache->set('tasks', $this->tasks);
-		}
 	}
 
 	public function set_time(int $time = 0)
