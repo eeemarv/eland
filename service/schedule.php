@@ -24,7 +24,7 @@ class schedule
 		$this->tasks = $this->cache->get('tasks');
 	}
 
-	public function set_time(int $time = 0)
+	public function set_time(int $time)
 	{
 		$this->time = $time ? $time : time();
 		return $this;
@@ -79,7 +79,7 @@ class schedule
 			$this->redis->set('block_task', '1');
 			$this->redis->expire('block_task', 3);
 			$this->update();
-			return true;
+			return false;
 		}
 
 		$last = strtotime($this->tasks[$this->id] . ' UTC');
