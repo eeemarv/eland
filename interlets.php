@@ -666,8 +666,7 @@ function render_schemas_groups()
 	echo '<table class="table table-bordered table-hover table-striped footable">';
 	echo '<thead>';
 	echo '<tr>';
-	echo '<th data-sort-initial="true" data-hide="phone, tablet">tag</th>';
-	echo '<th>groepsnaam</th>';
+	echo '<th data-sort-initial="true">groepsnaam</th>';
 	echo '<th data-hide="phone, tablet">domein</th>';
 	echo '<th data-hide="phone, tablet">leden</th>';
 	echo '<th>lok.groep</th>';
@@ -682,10 +681,6 @@ function render_schemas_groups()
 	foreach($app['eland.groups']->get_schemas() as $h => $s)
 	{
 		echo '<tr>';
-
-		echo '<td>';
-		echo readconfigfromdb('systemtag', $s);
-		echo '</td>';
 
 		echo '<td>';
 		echo readconfigfromdb('systemname', $s);
