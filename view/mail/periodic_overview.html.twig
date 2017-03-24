@@ -8,7 +8,6 @@
 <ul>
 {% for msg in messages %}
 <li><strong><a href="{{ msg.url }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
-({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
 <br>
 {% if msg.images|length %}<br><img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
 {{ msg.description }}
@@ -29,7 +28,7 @@
 {% endif %}
 
 <p><a href="{{ new_message_url }}">Geef zelf je eigen vraag of aanbod in.</a></p>
-	
+
 {% if interlets %}
 <h4>Recent interLETS vraag en aanbod</h4>
 
@@ -162,7 +161,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 naar
 {% if tr.real_to %}
 {{ tr.real_to }} [ {{ tr.to_name }} ]
-{% else %} 
+{% else %}
 <a href="{{ tr.to_user_url }}">{{ tr.to_user }}</a>
 {% endif %}
 <br>
@@ -179,7 +178,7 @@ naar
 {% endblock body %}
 
 {% block unsubscribe %}
-<p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen. 
+<p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen.
 Klik <a href="{{ account_edit_url }}">hier</a> om aan te passen</p>
 {% endblock unsubscribe %}
 

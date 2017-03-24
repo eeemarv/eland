@@ -62,8 +62,6 @@ class get_elas_interlets_domains extends task
 
 		$this->cache->set('elas_interlets_domains', $domains);
 
-		error_log('update domains: ' . json_encode($domains));
-
 		return;
 	}
 
