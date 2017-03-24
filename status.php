@@ -145,14 +145,6 @@ if (count($no_msgs_users))
 	$status_msgs = true;
 }
 
-$env_x = getenv('SCHEMA_X');
-$env_y = getenv('SCHEMA_Y');
-
-if ($env_x !== false || $env_y !== false)
-{
-	$status_msgs = true;
-}
-
 $h1 = 'Status';
 $fa = 'exclamation-triangle';
 
@@ -401,25 +393,6 @@ if ($status_msgs)
 		echo '</ul>';
 		echo '</li>';
 	}
-
-// test for unset config bug.
-	if ($env_x !== false)
-	{
-		echo '<li class="list-group-item">';
-		echo 'env x: ';
-		var_dump($env_x);
-		echo '</li>';
-	}
-
-	if ($env_y !== false)
-	{
-		echo '<li class="list-group-item">';
-		echo 'env y: ';
-		var_dump($env_y);
-		echo '</li>';
-	}
-
-//
 
 	echo '</ul>';
 	echo '</div>';
