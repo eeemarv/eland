@@ -84,6 +84,12 @@ class schedule
 
 		$last = strtotime($this->tasks[$this->id] . ' UTC');
 
+		// test 12 min
+		if (($this->time - $last) < 720)
+		{
+			return false;
+		}
+
 		$this->next = $last + $this->interval;
 
 		if ($this->next < $this->time)
