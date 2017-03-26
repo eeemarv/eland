@@ -78,6 +78,9 @@ class schedule
 		{
 			$this->redis->set('block_task', '1');
 			$this->redis->expire('block_task', 3);
+
+			error_log('insert task: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+
 			$this->update();
 			return false;
 		}
@@ -87,6 +90,8 @@ class schedule
 		// test 12 min
 		if (($this->time - $last) < 720)
 		{
+			error_log('blocked lt 720: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+
 			return false;
 		}
 
@@ -97,6 +102,9 @@ class schedule
 			$this->redis->set('block_task', '1');
 			$this->redis->expire('block_task', 3);
 			$this->update();
+
+			error_log('schould run: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+
 			return true;
 		}
 
@@ -112,6 +120,8 @@ class schedule
 		$this->tasks[$this->id] = $next;
 
 		$this->cache->set('tasks', $this->tasks);
+
+		error_log('update tasks: ' . $this->id . ', next: ' . $next . ', PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
 		return $this;
 	}
