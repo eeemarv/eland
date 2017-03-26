@@ -152,7 +152,7 @@ class saldo extends schema_task
 
 		while ($row = $rs->fetch())
 		{
-			$addr[$row['id']] = $row['value']; 
+			$addr[$row['id']] = $row['value'];
 			$addr_public[$row['id']] = $row['flag_public'];
 			$users[$row['id']]['adr'] = $row['value'];
 
@@ -608,6 +608,8 @@ class saldo extends schema_task
 
 			$log_to[] = $users[$id]['letscode'] . ' ' . $users[$id]['name'] . ' (' . $id . ')';
 		}
+
+		$this->monolog->debug('x-saldomail', 'schema: ' . $this->schema . ' host:' . $host . ' pid: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
 		if (count($log_to))
 		{
