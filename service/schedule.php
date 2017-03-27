@@ -62,11 +62,6 @@ class schedule
 		return $this->interval;
 	}
 
-	public function exists()
-	{
-		return isset($this->tasks[$this->id]) ? true : false;
-	}
-
 	public function should_run()
 	{
 		if ($this->redis->get('block_task'))
@@ -74,14 +69,17 @@ class schedule
 			return false;
 		}
 
-		if (!$this->exists())
+		if (!isset($this->tasks[$this->id]) || !$this->tasks[$this->id])
 		{
 			$this->redis->set('block_task', '1');
 			$this->redis->expire('block_task', 3);
 
 			error_log('insert task: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
-			$this->update();
+			$this->tasks[$this->id] = gmdate('Y-m-d H:i:s', $this->time + mt_rand(60, 900));
+
+			$this->cache->set('tasks', $this->tasks);
+
 			return false;
 		}
 
