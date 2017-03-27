@@ -4,6 +4,7 @@ namespace eland\schema_task;
 
 use eland\model\schema_task;
 use Doctrine\DBAL\Connection as db;
+use Predis\Client as Redis;
 use eland\xdb;
 use eland\cache;
 use Monolog\Logger;
@@ -20,6 +21,7 @@ class saldo extends schema_task
 {
 	private $db;
 	private $xdb;
+	private $redis;
 	private $cache;
 	private $monolog;
 	private $mail;
@@ -30,7 +32,7 @@ class saldo extends schema_task
 	private $distance;
 	private $interlets_groups;
 
-	public function __construct(db $db, xdb $xdb, cache $cache, Logger $monolog, mail $mail,
+	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
 		date_format $date_format, distance $distance, schedule $schedule,
 		groups $groups, this_group $this_group,
@@ -39,6 +41,7 @@ class saldo extends schema_task
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->xdb = $xdb;
+		$this->redis = $redis;
 		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
@@ -51,6 +54,23 @@ class saldo extends schema_task
 
 	function process()
 	{
+
+		//safety, block 23h
+
+		$redis_key = 'block_task_' . $this->schedule->get_id();
+
+		if ($this->redis->get($redis_key))
+		{
+			error_log(':::: ' . $redis_key);
+			$this->monolog->debug(':::: ' . $redis_key, ['schema' => $this->schema]);
+			return;
+		}
+
+		error_log(':::: pass ' . $this->shedule->get_id());
+
+		$this->redis->set($redis_key, '1');
+		$this->redis->expire($redis_key, 82800);
+
 		// vars
 
 		$host = $this->groups->get_host($this->schema);
