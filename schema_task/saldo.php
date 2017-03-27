@@ -609,7 +609,7 @@ class saldo extends schema_task
 			$log_to[] = $users[$id]['letscode'] . ' ' . $users[$id]['name'] . ' (' . $id . ')';
 		}
 
-		$this->monolog->debug('x-saldomail', 'schema: ' . $this->schema . ' host:' . $host . ' pid: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+		$this->monolog->debug('x-saldomail, schema: ' . $this->schema . ' host:' . $host . ' pid: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode(), ['schema' => $this->schema]);
 
 		if (count($log_to))
 		{
