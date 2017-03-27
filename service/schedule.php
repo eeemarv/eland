@@ -90,8 +90,8 @@ class schedule
 		// test 12 min
 		if (($this->time - $last) < 720)
 		{
-			// too many logs
-		//	error_log('blocked lt 720: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+
+			error_log('blocked lt 720: ' . $this->id . ', last: ' . $last . ' diff: ' . ($this->time - $last) . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
 			return false;
 		}
