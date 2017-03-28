@@ -64,16 +64,8 @@ class schedule
 
 	public function should_run()
 	{
-		if ($this->redis->get('block_task'))
-		{
-			return false;
-		}
-
 		if (!isset($this->tasks[$this->id]) || !$this->tasks[$this->id])
 		{
-			$this->redis->set('block_task', '1');
-			$this->redis->expire('block_task', 3);
-
 			error_log('insert task: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
 			$this->tasks[$this->id] = gmdate('Y-m-d H:i:s', $this->time + mt_rand(60, 900));
@@ -98,30 +90,19 @@ class schedule
 
 		if ($this->next < $this->time)
 		{
-			$this->redis->set('block_task', '1');
-			$this->redis->expire('block_task', 3);
-			$this->update();
+			$next = ((($this->time - $this->next) > 43200) || ($this->interval < 43201)) ? $this->time : $this->next;
 
-			error_log('schould run: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+			$next = gmdate('Y-m-d H:i:s', $next);
+
+			$this->tasks[$this->id] = $next;
+
+			$this->cache->set('tasks', $this->tasks);
+
+			error_log('update & run: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
 
 			return true;
 		}
 
 		return false;
-	}
-
-	private function update()
-	{
-		$next = ((($this->time - $this->next) > 43200) || ($this->interval < 43201)) ? $this->time : $this->next;
-
-		$next = gmdate('Y-m-d H:i:s', $next);
-
-		$this->tasks[$this->id] = $next;
-
-		$this->cache->set('tasks', $this->tasks);
-
-		error_log('update tasks: ' . $this->id . ', next: ' . $next . ', PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
-
-		return $this;
 	}
 }
