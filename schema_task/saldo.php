@@ -66,7 +66,7 @@ class saldo extends schema_task
 			return;
 		}
 
-		error_log(':::: pass ' . $this->shedule->get_id());
+		error_log(':::: pass ' . $this->schedule->get_id());
 
 		$this->redis->set($redis_key, '1');
 		$this->redis->expire($redis_key, 82800);
