@@ -55,7 +55,9 @@ class saldo extends schema_task
 	function process()
 	{
 
-		//safety, block 23h
+		//safety, block 23h // to counter worker processes that weren't stopped.
+
+		usleep(mt_rand(200000, 2000000));
 
 		$redis_key = 'block_task_' . $this->schedule->get_id();
 
