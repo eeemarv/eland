@@ -32,7 +32,7 @@
 {% if interlets %}
 <h4>Recent interLETS vraag en aanbod</h4>
 
-<p><a href="url_login">Log in</a> en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.</p>
+<p><a href="{{ url_login }}">Log in</a> en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.</p>
 
 {% for grp in interlets %}
 <h5>Groep: {{ grp.group }}</h5>
