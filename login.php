@@ -56,7 +56,7 @@ if($token)
 
 if ($submit)
 {
-	$login = trim($_POST['login']);
+	$login = trim(strtolower($_POST['login']));
 	$password = trim($_POST['password']);
 
 	if (!($login && $password))
@@ -88,7 +88,7 @@ if ($submit)
 				and tc.abbrev = \'mail\'
 				and c.id_user = u.id
 				and u.status in (1, 2)
-				and c.value = ?', [$login]);
+				and lower(c.value) = ?', [$login]);
 
 		if ($count_email == 1)
 		{
@@ -98,7 +98,7 @@ if ($submit)
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
 					and u.status in (1, 2)
-					and c.value = ?', [$login]);
+					and lower(c.value) = ?', [$login]);
 		}
 		else
 		{
@@ -112,7 +112,7 @@ if ($submit)
 	{
 		$count_letscode = $app['db']->fetchColumn('select count(u.*)
 			from users u
-			where letscode = ?', [$login]);
+			where lower(letscode) = ?', [$login]);
 
 		if ($count_letscode > 1)
 		{
@@ -122,7 +122,7 @@ if ($submit)
 		}
 		else if ($count_letscode == 1)
 		{
-			$user_id = $app['db']->fetchColumn('select id from users where letscode = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id from users where lower(letscode) = ?', [$login]);
 		}
 	}
 
@@ -130,7 +130,7 @@ if ($submit)
 	{
 		$count_name = $app['db']->fetchColumn('select count(u.*)
 			from users u
-			where name = ?', [$login]);
+			where lower(name) = ?', [$login]);
 
 		if ($count_name > 1)
 		{
@@ -140,7 +140,7 @@ if ($submit)
 		}
 		else if ($count_name == 1)
 		{
-			$user_id = $app['db']->fetchColumn('select id from users where name = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id from users where lower(name) = ?', [$login]);
 		}
 	}
 
