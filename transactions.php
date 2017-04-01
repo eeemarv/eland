@@ -400,7 +400,7 @@ if ($add)
 			if ($error)
 			{
 				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-				cancel();				
+				cancel();
 			}
 
 			$result = $client->call('dopayment', [
@@ -456,7 +456,7 @@ if ($add)
 			{
 				$errors[] = 'De interlets transactie kon niet verwerkt worden. ' . $contact_admin;
 			}
-				
+
 			if (count($errors))
 			{
 				$app['eland.alert']->error($errors);
@@ -506,8 +506,7 @@ if ($add)
 			{
 				$errors[] = 'De interlets gebruiker bestaat niet.';
 			}
-
-			if (!in_array($to_remote_user['status'], ['1', '2']))
+			else if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
 				$errors[] = 'De interlets gebruiker is niet actief.';
 			}
@@ -567,7 +566,7 @@ if ($add)
 			if ($remote_amount < 1)
 			{
 				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.';
-			} 
+			}
 
 			if ($remote_interlets_account['minlimit'] === -999999999)
 			{
@@ -1284,7 +1283,7 @@ if ($edit)
 			cancel($id);
 		}
 
-		$app['eland.alert']->error($errors);		
+		$app['eland.alert']->error($errors);
 	}
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
@@ -1433,13 +1432,13 @@ if ($edit)
 	echo '</i></small></ul>';
 
 	include __DIR__ . '/include/footer.php';
-	exit;	
+	exit;
 }
 
 /**
  * show a transaction
  */
- 
+
 if ($id)
 {
 	$next = $app['db']->fetchColumn('select id
@@ -2067,7 +2066,7 @@ if (!$inline)
 	echo '</form>';
 
 	echo '</div>';
-	echo '</div>';	
+	echo '</div>';
 }
 else
 {
