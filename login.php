@@ -6,7 +6,7 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
-$monitor_key = $_GET['monitor_key'] ?? false;
+$monitor = $_GET['monitor'] ?? false;
 
 $location = $_GET['location'] ?? false;
 
@@ -24,7 +24,7 @@ if (!$location
 
 $submit = isset($_POST['zend']) ? true : false;
 
-if ($monitor_key && $monitor_key === getenv('MONITOR_KEY'))
+if ($monitor)
 {
 	try
 	{
