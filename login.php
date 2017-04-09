@@ -39,7 +39,7 @@ if ($monitor_key && $monitor_key === getenv('MONITOR_KEY'))
 	}
 	try
 	{
-		$app['redis']->set('eland_monitor');
+		$app['redis']->set('eland_monitor', '1');
 		$app['redis']->expire('eland_monitor', 400);
 		$app['redis']->get('eland_monitor');
 	}
