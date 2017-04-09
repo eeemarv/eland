@@ -6,6 +6,7 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
+$monitor_key = $_GET['monitor_key'] ?? false;
 
 $location = $_GET['location'] ?? false;
 
@@ -23,7 +24,36 @@ if (!$location
 
 $submit = isset($_POST['zend']) ? true : false;
 
-if($token)
+if ($monitor_key && $monitor_key === getenv('MONITOR_KEY'))
+{
+	try
+	{
+		$app['db']->fetchColumn('select min(id) from users');
+	}
+	catch(Exception $e)
+	{
+		echo 'db fail';
+		error_log('db_fail: ' . $e->getMessage());
+		throw $e;
+		exit;
+	}
+	try
+	{
+		$app['redis']->set('eland_monitor');
+		$app['redis']->expire('eland_monitor', 400);
+		$app['redis']->get('eland_monitor');
+	}
+	catch(Exception $e)
+	{
+		echo 'redis fail';
+		error_log('redis_fail: ' . $e->getMessage());
+		throw $e;
+		exit;
+	}
+	exit;
+}
+
+if ($token)
 {
 	if($apikey = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 	{
