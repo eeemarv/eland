@@ -63,15 +63,6 @@ function insert_transaction($transaction)
 	$app['eland.autominlimit']->init()
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-/*
-	$app['eland.queue.autominlimit']->queue([
-		'from_id'	=> $transaction['id_from'],
-		'to_id'		=> $transaction['id_to'],
-		'amount'	=> $transaction['amount'],
-		'schema'	=> $app['eland.this_group']->get_schema(),
-	]);
-*/
-
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .

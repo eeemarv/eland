@@ -174,11 +174,6 @@ $app['eland.queue.mail'] = function ($app){
 		$app['eland.this_group'], $app['eland.mailaddr'], $app['twig']);
 };
 
-$app['eland.queue.autominlimit'] = function ($app){
-	return new eland\queue\autominlimit($app['eland.queue'], $app['monolog'],
-		$app['eland.xdb'], $app['db']);
-};
-
 /**
  * functions
  */

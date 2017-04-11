@@ -699,14 +699,6 @@ if ($add)
 
 			$app['eland.autominlimit']->init()
 				->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
-/*
-			$app['eland.queue.autominlimit']->queue([
-				'from_id'	=> $transaction['id_from'],
-				'to_id'		=> $transaction['id_to'],
-				'amount'	=> $remote_amount,
-				'schema'	=> $remote_schema,
-			]);
-*/
 
 			$app['eland.alert']->success('Interlets transactie uitgevoerd.');
 			cancel();
@@ -861,19 +853,6 @@ if ($add)
 	$fa = 'exchange';
 
 	include __DIR__ . '/include/header.php';
-
-/*
-	$minlimit = $session_user['minlimit'];
-
-	if (!$s_master)
-	{
-		echo '<div>';
-		echo '<p><strong>' . link_user($session_user) . ' huidige ' . readconfigfromdb('currency') . ' stand: ';
-		echo '<span class="label label-info">' . $balance . '</span></strong> ';
-		echo '<strong>Minimum limiet: <span class="label label-danger">' . $minlimit . '</span></strong></p>';
-		echo '</div>';
-	}
-*/
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';

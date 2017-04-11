@@ -294,14 +294,6 @@ if ($submit)
 		foreach($transactions as $t)
 		{
 			$app['eland.autominlimit']->process($t['id_from'], $t['id_to'], $t['amount']);
-/*
-			$app['eland.queue.autominlimit']->queue([
-				'from_id'	=> $t['id_from'],
-				'to_id'		=> $t['id_to'],
-				'amount'	=> $t['amount'],
-				'schema'	=> $app['eland.this_group']->get_schema(),
-			]);
-*/
 		}
 
 		if ($to_one)
@@ -326,7 +318,7 @@ if ($submit)
 		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');
 		$app['eland.alert']->success($alert_success);
 
-		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')'; 
+		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')';
 		$log_many = rtrim($log_many, ', ');
 		$log_str = 'Mass transaction from ';
 		$log_str .= ($to_one) ? $log_many : $log_one;
@@ -338,7 +330,7 @@ if ($submit)
 		if ($s_master)
 		{
 			$app['eland.alert']->warning('Master account: geen mails verzonden.');
-		} 
+		}
 		else if ($mail_en)
 		{
 			$mail_ary['transid_ary'] = $transid_ary;
@@ -351,7 +343,7 @@ if ($submit)
 			{
 				$app['eland.alert']->error('Fout bij het verzenden van notificatie mails.');
 			}
-		} 
+		}
 
 		cancel();
 	}
