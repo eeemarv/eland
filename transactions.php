@@ -496,23 +496,23 @@ if ($add)
 
 			if (!$to_remote_user)
 			{
-				$errors[] = 'De interlets gebruiker bestaat niet.';
+				$errors[] = 'De interlets gebruiker (bestemmeling "Aan letscode") bestaat niet.';
 			}
 			else if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
-				$errors[] = 'De interlets gebruiker is niet actief.';
+				$errors[] = 'De interlets gebruiker (bestemmeling "Aan letscode") is niet actief.';
 			}
 
 			$remote_group = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
 				where url = ?', [$app['eland.base_url']]);
 
-			if (!$remote_group)
+			if (!$remote_group && !count($errors))
 			{
 				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. readconfigfromdb('systemname') . ') niet geconfigureerd.';
 			}
 
-			if (!$remote_group['localletscode'])
+			if (!$remote_group['localletscode'] && !count($errors))
 			{
 				$errors[] = 'Er is geen interlets account gedefiniëerd in de remote interlets groep.';
 			}
@@ -521,17 +521,17 @@ if ($add)
 				from ' . $remote_schema . '.users
 				where letscode = ?', [$remote_group['localletscode']]);
 
-			if (!$remote_interlets_account)
+			if (!$remote_interlets_account && !count($errors))
 			{
 				$errors[] = 'Er is geen interlets account in de remote interlets group.';
 			}
 
-			if ($remote_interlets_account['accountrole'] != 'interlets')
+			if ($remote_interlets_account['accountrole'] !== 'interlets' && !count($errors))
 			{
 				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.';
 			}
 
-			if (!in_array($remote_interlets_account['status'], [1, 2, 7]))
+			if (!in_array($remote_interlets_account['status'], [1, 2, 7]) && !count($errors))
 			{
 				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
 			}
@@ -541,167 +541,180 @@ if ($add)
 			$remote_balance_eq = readconfigfromdb('balance_equilibrium', $remote_schema);
 			$currencyratio = readconfigfromdb('currencyratio');
 
-			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
+			if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
+				&& !count($errors))
 			{
 				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
 			}
 
-			if (!$remote_currencyratio ||
+			if ((!$remote_currencyratio ||
 				!ctype_digit((string) $remote_currencyratio)
-				|| $remote_currencyratio < 1)
+				|| $remote_currencyratio < 1) && !count($errors))
 			{
 				$errors[] = 'De currencyratio van de andere groep is niet correct ingesteld. ' . $contact_admin;
 			}
 
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
-			if ($remote_amount < 1)
+			if (($remote_amount < 1) && !count($errors))
 			{
 				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.';
 			}
 
-			if ($remote_interlets_account['minlimit'] === -999999999)
+			if (!count($errors))
 			{
-				$minlimit = readconfigfromdb('minlimit', $remote_schema);
-
-				if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
+				if ($remote_interlets_account['minlimit'] === -999999999)
 				{
-					$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
-					$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
-					$err .= $remote_currency . ' ';
-					$err .= 'en de remote minimum groepslimiet bedraagt ' . $minlimit . ' ';
-					$err .= $remote_currency . '.';
-					$errors[] = $err;
+					$minlimit = readconfigfromdb('minlimit', $remote_schema);
+
+					if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
+					{
+						$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+						$err .= $remote_currency . ' ';
+						$err .= 'en de remote minimum groepslimiet bedraagt ' . $minlimit . ' ';
+						$err .= $remote_currency . '.';
+						$errors[] = $err;
+					}
+				}
+				else
+				{
+					if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+					{
+						$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+						$err .= $remote_currency . ' ';
+						$err .= 'en de remote minimum limiet bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
+						$err .= $remote_currency . '.';
+						$errors[] = $err;
+					}
 				}
 			}
-			else
-			{
-				if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
-				{
-					$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
-					$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
-					$err .= $remote_currency . ' ';
-					$err .= 'en de remote minimum limiet bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
-					$err .= $remote_currency . '.';
-					$errors[] = $err;
-				}
-			}
 
-			if (($remote_interlets_account['status'] == 2) && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq))
+			if (($remote_interlets_account['status'] == 2)
+				&& (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq)
+				&& !count($errors))
 			{
 				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . readconfigfromdb('currency') . ').';
 			}
 
-			if ($to_remote_user['maxlimit'] === 999999999)
+			if (!count($errors))
 			{
-				$maxlimit = readconfigfromdb('maxlimit', $remote_schema);
-
-				if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
+				if ($to_remote_user['maxlimit'] === 999999999)
 				{
-					$err = 'De bestemmeling in de andere groep ';
-					$err .= 'heeft de maximum groepslimiet bereikt. ';
-					$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
-					$err .= ' en de maximum ';
-					$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
-					$errors[] = $err;
+					$maxlimit = readconfigfromdb('maxlimit', $remote_schema);
+
+					if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
+					{
+						$err = 'De bestemmeling in de andere groep ';
+						$err .= 'heeft de maximum groepslimiet bereikt. ';
+						$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+						$err .= ' en de maximum ';
+						$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
+						$errors[] = $err;
+					}
+				}
+				else
+				{
+					if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+					{
+						$err = 'De bestemmeling in de andere groep ';
+						$err .= 'heeft de maximum limiet bereikt. ';
+						$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+						$err .= ' en de maximum ';
+						$err .= 'limiet bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
+						$errors[] = $err;
+					}
 				}
 			}
-			else
-			{
-				if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
-				{
-					$err = 'De bestemmeling in de andere groep ';
-					$err .= 'heeft de maximum limiet bereikt. ';
-					$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
-					$err .= ' en de maximum ';
-					$err .= 'limiet bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
-					$errors[] = $err;
-				}
-			}
 
-			if (($to_remote_user['status'] == 2) && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq))
+			if (($to_remote_user['status'] == 2)
+				&& (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq)
+				&& !count($errors))
 			{
-				$errors[] = 'De remote bestemmeling is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . readconfigfromdb('currency') . ').';
+				$errors[] = 'De remote bestemmeling (Aan letscode) is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . readconfigfromdb('currency') . ').';
 			}
 
 			if (count($errors))
 			{
 				$app['eland.alert']->error($errors);
+//				cancel();
+			}
+			else
+			{
+			//
+				$transaction['creator'] = ($s_master) ? 0 : $s_id;
+				$transaction['cdate'] = gmdate('Y-m-d H:i:s');
+				$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
+
+				$app['db']->beginTransaction();
+
+				try
+				{
+					$app['db']->insert('transactions', $transaction);
+					$id = $app['db']->lastInsertId('transactions_id_seq');
+					$app['db']->executeUpdate('update users
+						set saldo = saldo + ? where id = ?',
+						[$transaction['amount'], $transaction['id_to']]);
+					$app['db']->executeUpdate('update users
+						set saldo = saldo - ? where id = ?',
+						[$transaction['amount'], $transaction['id_from']]);
+
+					$trans_org = $transaction;
+					$trans_org['id'] = $id;
+
+					$transaction['creator'] = 0;
+					$transaction['amount'] = $remote_amount;
+					$transaction['id_from'] = $remote_interlets_account['id'];
+					$transaction['id_to'] = $to_remote_user['id'];
+					$transaction['real_from'] = link_user($fromuser['id'], false, false);
+					unset($transaction['real_to']);
+
+					$app['db']->insert($remote_schema . '.transactions', $transaction);
+					$id = $app['db']->lastInsertId($remote_schema . '.transactions_id_seq');
+					$app['db']->executeUpdate('update ' . $remote_schema . '.users
+						set saldo = saldo + ? where id = ?',
+						[$remote_amount, $transaction['id_to']]);
+					$app['db']->executeUpdate('update ' . $remote_schema . '.users
+						set saldo = saldo - ? where id = ?',
+						[$transaction['amount'], $transaction['id_from']]);
+					$transaction['id'] = $id;
+
+					$app['db']->commit();
+
+				}
+				catch(Exception $e)
+				{
+					$app['db']->rollback();
+					$app['eland.alert']->error('Transactie niet gelukt.');
+					throw $e;
+					exit;
+				}
+
+				readuser($fromuser['id'], true);
+				readuser($touser['id'], true);
+
+				readuser($remote_interlets_account['id'], true, $remote_schema);
+				readuser($to_remote_user['id'], true, $remote_schema);
+
+				mail_transaction($trans_org);
+				mail_transaction($transaction, $remote_schema);
+
+				$app['monolog']->info('direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+					$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
+					' to user: ' . link_user($touser['id'], false, false));
+
+				$app['monolog']->info('direct interlets transaction (receiving) ' . $transaction['transid'] .
+					' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
+					$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
+					$to_remote_user['name'], ['schema' => $remote_schema]);
+
+				$app['eland.autominlimit']->init()
+					->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
+
+				$app['eland.alert']->success('Interlets transactie uitgevoerd.');
 				cancel();
 			}
-
-			//
-			$transaction['creator'] = ($s_master) ? 0 : $s_id;
-			$transaction['cdate'] = gmdate('Y-m-d H:i:s');
-			$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
-
-			$app['db']->beginTransaction();
-
-			try
-			{
-				$app['db']->insert('transactions', $transaction);
-				$id = $app['db']->lastInsertId('transactions_id_seq');
-				$app['db']->executeUpdate('update users
-					set saldo = saldo + ? where id = ?',
-					[$transaction['amount'], $transaction['id_to']]);
-				$app['db']->executeUpdate('update users
-					set saldo = saldo - ? where id = ?',
-					[$transaction['amount'], $transaction['id_from']]);
-
-				$trans_org = $transaction;
-				$trans_org['id'] = $id;
-
-				$transaction['creator'] = 0;
-				$transaction['amount'] = $remote_amount;
-				$transaction['id_from'] = $remote_interlets_account['id'];
-				$transaction['id_to'] = $to_remote_user['id'];
-				$transaction['real_from'] = link_user($fromuser['id'], false, false);
-				unset($transaction['real_to']);
-
-				$app['db']->insert($remote_schema . '.transactions', $transaction);
-				$id = $app['db']->lastInsertId($remote_schema . '.transactions_id_seq');
-				$app['db']->executeUpdate('update ' . $remote_schema . '.users
-					set saldo = saldo + ? where id = ?',
-					[$remote_amount, $transaction['id_to']]);
-				$app['db']->executeUpdate('update ' . $remote_schema . '.users
-					set saldo = saldo - ? where id = ?',
-					[$transaction['amount'], $transaction['id_from']]);
-				$transaction['id'] = $id;
-
-				$app['db']->commit();
-
-			}
-			catch(Exception $e)
-			{
-				$app['db']->rollback();
-				$app['eland.alert']->error('Transactie niet gelukt.');
-				throw $e;
-				exit;
-			}
-
-			readuser($fromuser['id'], true);
-			readuser($touser['id'], true);
-
-			readuser($remote_interlets_account['id'], true, $remote_schema);
-			readuser($to_remote_user['id'], true, $remote_schema);
-
-			mail_transaction($trans_org);
-			mail_transaction($transaction, $remote_schema);
-
-			$app['monolog']->info('direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
-				$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
-				' to user: ' . link_user($touser['id'], false, false));
-
-			$app['monolog']->info('direct interlets transaction (receiving) ' . $transaction['transid'] .
-				' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
-				$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
-				$to_remote_user['name'], ['schema' => $remote_schema]);
-
-			$app['eland.autominlimit']->init()
-				->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
-
-			$app['eland.alert']->success('Interlets transactie uitgevoerd.');
-			cancel();
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
