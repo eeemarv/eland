@@ -20,11 +20,13 @@
 <p>Omschrijving<br>
 <strong>{{ description }}</strong></p>
 
+{#
 <p>Transactie id<br>
 <strong>{{ transid }}</strong></p>
+#}
 
 <p>Link<br>
-{{ transaction_url }}</p>
+<a href="{{ transaction_url }}">{{ transaction_url }}</a></p>
 
 {% endblock body %}
 
