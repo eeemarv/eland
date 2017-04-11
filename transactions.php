@@ -1016,9 +1016,14 @@ if ($add)
 	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
-/*
+
 	echo '<ul class="account-info">';
 
+	echo '<li>Dit veld geeft autosuggesties door naam of letscode te typen. ';
+	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
+	echo '</li>';
+
+/*
 	echo '<li class="info-balance">Huidige saldo: <span class="num">45';
 	echo '</span> <span class="cur">';
 	echo readconfigfromdb('currency') . '</span></li>';
@@ -1038,9 +1043,9 @@ if ($add)
 	echo readconfigfromdb('maxlimit');
 	echo '</span> <span class="cur">';
 	echo readconfigfromdb('currency') . '</span></li>';
-
-	echo '</ul>';
 */
+	echo '</ul>';
+
 	echo '</div>';
 	echo '</div>';
 
@@ -1132,19 +1137,6 @@ if ($add)
 	echo '</div>';
 
 	echo '<ul><small><i>';
-
-	echo '<li>Tip: Het veld Aan LETSCode geeft autosuggesties door naam of letscode in te typen. ';
-	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
-	echo '</li>';
-
-/*
-	if (readconfigfromdb('currencyratio') > 0)
-	{
-		echo '<li>Valuatie: ';
-		echo readconfigfromdb('currencyratio');
-		echo ' ' . readconfigfromdb('currency') . ' staat gelijk aan 1 LETS-uur.</li>';
-	}
-*/
 
 	if ($s_admin)
 	{
