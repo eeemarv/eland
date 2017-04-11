@@ -113,18 +113,18 @@ if ($add)
 
 		if (!strlen($letscode_to))
 		{
-			$errors[] = 'Geen "Aan letscode" ingevuld';
+			$errors[] = 'Geen bestemmeling (Aan letscode) ingevuld';
 		}
 
 		if(empty($touser) && !count($errors))
 		{
 			if ($group_id == 'self')
 			{
-				$errors[] = 'Bestemmeling bestaat niet';
+				$errors[] = 'Bestemmeling (Aan letscode) bestaat niet';
 			}
 			else
 			{
-				$errors[] = 'De interletsrekening bestaat niet';
+				$errors[] = 'De interletsrekening (in deze groep) bestaat niet';
 			}
 		}
 
@@ -201,7 +201,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling' : 'interletsrekening';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan letscode)' : 'interletsrekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -214,7 +214,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling' : 'interletsrekening';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan letscode)' : 'interletsrekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -229,7 +229,7 @@ if ($add)
 			&& !($touser['status'] == '1' || $touser['status'] == '2')
 			&& !count($errors))
 		{
-			$errors[] = 'De bestemmeling is niet actief';
+			$errors[] = 'De bestemmeling (Aan letscode) is niet actief';
 		}
 
 		if ($s_user && !count($errors))
@@ -243,7 +243,7 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($group_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
+				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan letscode)' : 'De interletsrekening van de letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . readconfigfromdb('currency') . ' ontvangen.';
 			}
 		}
