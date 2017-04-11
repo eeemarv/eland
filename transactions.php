@@ -106,7 +106,29 @@ if ($add)
 
 		$touser = $app['db']->fetchAssoc('select * from users where letscode = ?', [$letscode_touser]);
 
-		if ($group_id == 'self')
+		if(empty($fromuser))
+		{
+			$errors[] = 'Gebruiker "Van letscode" bestaat niet';
+		}
+
+		if (!strlen($letscode_to))
+		{
+			$errors[] = 'Geen "Aan letscode" ingevuld';
+		}
+
+		if(empty($touser) && !count($errors))
+		{
+			if ($group_id == 'self')
+			{
+				$errors[] = 'Bestemmeling bestaat niet';
+			}
+			else
+			{
+				$errors[] = 'De interletsrekening bestaat niet';
+			}
+		}
+
+		if ($group_id == 'self' && !count($errors))
 		{
 			if ($touser['status'] == 7)
 			{
@@ -114,7 +136,7 @@ if ($add)
 			}
 		}
 
-		if ($fromuser['status'] == 7)
+		if ($fromuser['status'] == 7 && !count($errors))
 		{
 			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
 		}
@@ -132,12 +154,12 @@ if ($add)
 			$errors[] = 'Bedrag is niet ingevuld';
 		}
 
-		else if (!(ctype_digit((string) $transaction['amount'])))
+		else if (!(ctype_digit((string) $transaction['amount'])) && !count($errors))
 		{
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}
 
-		if (!$s_admin)
+		if (!$s_admin && !count($errors))
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
@@ -165,34 +187,12 @@ if ($add)
 			}
 		}
 
-		if(empty($fromuser))
-		{
-			$errors[] = 'Gebruiker bestaat niet';
-		}
-
-		if (!strlen($letscode_to))
-		{
-			$errors[] = 'Geen letscode ingevuld';
-		}
-
-		if(empty($touser))
-		{
-			if ($group_id == 'self')
-			{
-				$errors[] = 'Bestemmeling bestaat niet';
-			}
-			else
-			{
-				$errors[] = 'De interletsrekening bestaat niet';
-			}
-		}
-
-		if($fromuser['letscode'] == $touser['letscode'])
+		if(($fromuser['letscode'] == $touser['letscode']) && !count($errors))
 		{
 			$errors[] = 'Van en Aan letscode zijn hetzelfde';
 		}
 
-		if (!$s_admin)
+		if (!$s_admin && !count($errors))
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
@@ -226,12 +226,13 @@ if ($add)
 
 		if($group_id == 'self'
 			&& !$s_admin
-			&& !($touser['status'] == '1' || $touser['status'] == '2'))
+			&& !($touser['status'] == '1' || $touser['status'] == '2')
+			&& !count($errors))
 		{
 			$errors[] = 'De bestemmeling is niet actief';
 		}
 
-		if ($s_user)
+		if ($s_user && !count($errors))
 		{
 			$balance_eq = readconfigfromdb('balance_equilibrium');
 
@@ -245,15 +246,6 @@ if ($add)
 				$dest = ($group_id == 'self') ? 'De bestemmeling' : 'De letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . readconfigfromdb('currency') . ' ontvangen.';
 			}
-		}
-
-		if (!$transaction['date'])
-		{
-			$errors[] = 'Datum is niet ingevuld';
-		}
-		else if (strtotime($transaction['date']) == -1)
-		{
-			$errors[] = 'Fout in datumformaat (jjjj-mm-dd)';
 		}
 
 		if ($error_token = $app['eland.form_token']->get_error())
