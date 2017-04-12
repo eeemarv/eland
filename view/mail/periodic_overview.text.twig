@@ -1,172 +1,24 @@
 {% extends 'mail/base.text.twig' %}
+{% import 'mail/macro_periodic_overview.text.twig' as m %}
 
 {% block body %}
 {% autoescape false %}
 
-Recent LETS vraag en aanbod
----------------------------
-
-{% if messages %}
-Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.
-{% for msg in messages %}
-
-{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
-{{ msg.url }}
-	Ingegeven door: {{ msg.user}}
-{% endfor %}
-{% else %}
-Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.
-{% endif %}
-
-Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
-
-{% if interlets %}
-
-Recent vraag en aanbod in interLETS groepen
--------------------------------------------
-
-Log in ({{ url_login }}) en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.
-
-{% for grp in interlets %}
-
-** GROEP: {{ grp.group }} **
-
-{% for msg in grp.messages %}
-
-    {% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}
-	    Ingegeven door: {{ msg.user}} [{{ grp.group }}]
-{% endfor %}
-{% endfor %}
-{% endif %}
-
-{% if forum_en and show_forum != 'none' %}
-
-Forum
------
-
-{% for f in forum %}
-* {{ f.subject }} {{ f.url }}
-{% else %}
-Er zijn geen nieuwe forumberichten.
-{% endfor %}
-
-{% endif %}
-
-{% if show_news != 'none' %}
-
-Nieuws
-------
-
-Bekijk online: {{ news_url }}
-
-{% for n in news %}
-*** {{ n.headline }} ***
-
-{{ n.newsitem }}
-
-{% if n.location %}Plaats: {{ n.location }}{% endif %}
-
-{% if n.itemdate %}Datum: {{ n.itemdate_formatted }}{% endif %}
-
-Ingegeven door: {{ n.user }}
-
-{% else %}
-
-{% if show_news == 'recent' %}
-Momenteel zijn er geen nieuwe nieuwsberichten.
-{% else %}
-Momenteel zijn er geen nieuwsberichten.
-{% endif %}
-
-{% endfor %}
-
-{% endif %}
-
-{% if show_docs != 'none' %}
-
-Nieuwe Documenten
------------------
-
-{% for d in docs %}
-* {{ d.name }} {{ d.url }}
-{% else %}
-Er zijn geen nieuwe documenten.
-{% endfor %}
-
-{% endif %}
-
-{% if show_new_users != 'none' %}
-
-Nieuwe leden
-------------
-
-{% for u in new_users %}
-* {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
-
-{% else %}
-
-{% if show_new_users == 'recent' %}
-Er zijn geen nieuwe leden bijgekomen.
-{% else %}
-Momenteel zijn er geen nieuwe leden.
-{% endif %}
-
-{% endfor %}
-
-{% endif %}
-
-{% if show_leaving_users != 'none' %}
-
-Uitstappende leden
-------------------
-
-{% for u in leaving_users %}
-* {{ u.text }}{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}
-
-{% else %}
-
-{% if show_leaving_users == 'recent' %}
-Er zijn geen extra uitstappende leden.
-{% else %}
-Momenteel zijn er geen uitstappende leden.
-{% endif %}
-
-{% endfor %}
-
-{% endif %}
-
-{% if show_transactions != 'none' %}
-
-Recente transacties
--------------------
-
-{% if transactions %}
-Deze lijst toont de transacties van de laatste {{ group.saldofreqdays }} dagen.
-{% endif %}
-
-{% for tr in transactions %}
-* {{ tr.amount }} {{ group.currency }} van {% if tr.real_from %}{{ tr.real_from }} [ {{ tr.from_name }} ]{% else %}{{ tr.from_user }}{% endif %}
- naar {% if tr.real_to %}{{ tr.real_to }} [ {{ tr.to_name }} ]{% else %} {{ tr.to_user }}{% endif %}
-
-	{{ tr.description }}
-
-{% else %}
-Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dagen.
-{% endfor %}
-
-Nieuwe transactie ingeven: {{ new_transaction_url }}
-
-{% endif %}
+{{ m.messages(messages, group, new_message_url, messages_url, s3_img) }}
+{{ m.interlets(interlets, url_login) }}
+{{ m.forum(forum, forum_en, show_forum, forum_url) }}
+{{ m.news(news, show_news, news_url) }}
+{{ m.docs(docs, show_docs) }}
+{{ m.new_users(new_users, show_new_users) }}
+{{ m.leaving_users(leaving_users, show_leaving_users) }}
+{{ m.transactions(transactions, show_transactions, group, new_transaction_url, transactions_url) }}
 
 {% endautoescape %}
 {% endblock body %}
 
 {% block unsubscribe %}
 {% autoescape false %}
-
-Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen:
-
-{{ account_edit_url }}
+{{ m.unsubscribe(account_edit_url) }}
 {% endautoescape %}
 {% endblock unsubscribe %}
 
