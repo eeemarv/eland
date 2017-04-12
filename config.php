@@ -30,11 +30,15 @@ $map_template_vars = [
 	'postcode'			=> 'postcode',
 ];
 
-
 $periodic_mail_item_show_options = $periodic_mail_item_show_options_not_all = [
 	'all'		=> 'Alle',
 	'recent'	=> 'Recente',
 	'none'		=> 'Geen',
+];
+
+$periodic_mail_template = [
+	'messages_top'	=> 'Vraag en aanbod bovenaan',
+	'news_top'		=> 'Nieuws bovenaan',
 ];
 
 $landing_page_options = [
@@ -95,7 +99,7 @@ $tab_panes = [
 
 			'msgs_days_default'	=> [
 				'addon'	=> 'dagen',
-				'lbl'	=> 'Standaard geldigheidsduur', 
+				'lbl'	=> 'Standaard geldigheidsduur',
 				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 1, 'max' => 1460],
@@ -241,6 +245,12 @@ $tab_panes = [
 				'lbl'		=> 'Toon Uitstappers',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options,
+			],
+
+			'weekly_mail_template'	=> [
+				'lbl'		=> 'Template',
+				'type'		=> 'select',
+				'options'	=> $periodic_mail_template,
 			],
 
 		],
@@ -675,7 +685,7 @@ echo '<div>';
 echo '<ul class="nav nav-pills" role="tablist">';
 
 foreach ($tab_panes as $id => $pane)
-{	
+{
 	echo '<li role="presentation"';
 	echo ($id == $active_tab) ? ' class="active"' : '';
 	echo '>';

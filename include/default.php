@@ -243,6 +243,7 @@ function readconfigfromdb($key, $sch = null)
 		'weekly_mail_show_transactions'		=> 'recent',
 		'weekly_mail_show_leaving_users'	=> 'recent',
 		'weekly_mail_show_new_users'		=> 'recent',
+		'weekly_mail_template'				=> 'messages_top',
 		'default_landing_page'				=> 'messages',
 		'homepage_url'						=> '',
 	];
