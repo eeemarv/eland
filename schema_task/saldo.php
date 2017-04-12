@@ -599,6 +599,8 @@ class saldo extends schema_task
 
 		$log_to = [];
 
+		$template = 'periodic_overview_' . readconfigfromdb('weekly_mail_template', $this->schema);
+
 		foreach ($saldo_mail as $id => $b)
 		{
 			if (isset($users_geo[$id]))
@@ -620,7 +622,7 @@ class saldo extends schema_task
 			$this->mail->queue([
 				'schema'	=> $this->schema,
 				'to'		=> $id,
-				'template'	=> 'periodic_overview_' . readconfigfromdb('weekly_mail_template', $this->schema),
+				'template'	=> $template,
 				'vars'		=> array_merge($vars, [
 					'user'	=> $users[$id],
 					'url_login'	=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
