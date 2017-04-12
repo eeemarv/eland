@@ -32,7 +32,11 @@ Login: {{ url_login }}
 Support
 -------
 
-Als je een vraag of probleem hebt, kan je mailen naar {{ group.support }}
+Als je een vraag of probleem hebt, kan je mailen naar
+
+{% for mail in group.support %}
+{{ mail }}
+{% endfor %}
 
 {% endautoescape %}
 {% endblock support %}
