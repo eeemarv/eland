@@ -14,7 +14,7 @@ See the [Dokku installation guide](http://dokku.viewdocs.io/dokku/getting-starte
 dokku domains:set app-name *.my-domain.com
 ```
 
-* Create app, install postgres and redis plugins and bind them the app (see Dokku guide).
+* Create app, install postgres and redis plugins and bind them to the app (see Dokku guide).
 
 * install the nl language pack if not present (for translating dates)
 
@@ -57,12 +57,12 @@ dokku config:set appname OVERALL_DOMAIN=my-domain.com
 ```
 
 ##AWS S3
-Create a IAM user on AWS with access only to S3. Then create 3 buckets in your region for images, documents and 3th party (javascript + css) libraries.
-See [file include/default.php](includes/default.php) for which libraries are to be uploaded. 
+Create a IAM user on AWS with access only to S3. Then create 2 buckets in your region for images and documents
+See [file include/default.php](includes/default.php) for which libraries are to be uploaded.
 The buckets should have the same name as the url.
 
 ```shell
-dokku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net S3_RES=res.letsa.net
+dokku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net
 dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
 ```
 
