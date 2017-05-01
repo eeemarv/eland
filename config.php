@@ -405,6 +405,7 @@ $tab_panes = [
 				'lbl'		=> 'Stijl (css)',
 				'type' 		=> 'url',
 				'explain'	=> 'Url van extra stijlblad (css-bestand)',
+				'attr'		=> ['maxlength'	=> 100],
 			],
 		],
 	],
