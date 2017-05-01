@@ -51,14 +51,20 @@ if ($token)
 			}
 		}
 
+		$minlimit = readconfigfromdb('preset_minlimit');
+		$minlimit = $minlimit === '' ? -999999999 : $minlimit;
+
+		$maxlimit = readconfigfromdb('preset_maxlimit');
+		$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
+
 		$user = [
 			'name'			=> $name,
 			'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
 			'postcode'		=> $data['postcode'],
 //			'letscode'		=> '',
 			'login'			=> sha1(microtime()),
-			'minlimit'		=> readconfigfromdb('minlimit'),
-			'maxlimit'		=> readconfigfromdb('maxlimit'),
+			'minlimit'		=> $minlimit,
+			'maxlimit'		=> $maxlimit,
 			'status'		=> 5,
 			'accountrole'	=> 'user',
 			'cron_saldo'	=> 't',
