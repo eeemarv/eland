@@ -262,7 +262,7 @@ if ($post && $img && $images && !$s_guest)
 		{
 			$ret_ary[] = ['error' => 'Geen form token gedefiniëerd.'];
 		}
-		else if (!$app['redis']->get('form_token_' . $form_token))
+		else if (!$app['predis']->get('form_token_' . $form_token))
 		{
 			$ret_ary[] = ['error' => 'Formulier verlopen of ongeldig.'];
 		}
@@ -1282,7 +1282,7 @@ if (($edit || $add))
 	echo 'multiple></span>&nbsp;';
 
 	echo '<p><small>Afbeeldingen moeten in het jpg/jpeg formaat zijn. Je kan ook afbeeldingen hierheen ';
-	echo 'verslepen.</small></p>';	
+	echo 'verslepen.</small></p>';
 	echo '</div>';
 	echo '</div>';
 
@@ -1554,10 +1554,10 @@ if ($id)
 	echo '</dl>';
 
 	echo '</div>';
-	echo '</div>'; 
+	echo '</div>';
 
 	echo '</div>';
-	echo '</div>'; 
+	echo '</div>';
 
 	echo '<div id="contacts" ';
 	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];

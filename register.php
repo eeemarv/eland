@@ -22,10 +22,10 @@ if ($token)
 {
 	$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
 
-	if ($data = $app['redis']->get($key))
+	if ($data = $app['predis']->get($key))
 	{
 		$data = json_decode($data, true);
-		$app['redis']->del($key);
+		$app['predis']->del($key);
 
 		for ($i = 0; $i < 60; $i++)
 		{
@@ -265,11 +265,11 @@ if ($submit)
 	{
 		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
 		$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
-		$app['redis']->set($key, json_encode($reg));
-		$app['redis']->expire($key, 86400);
+		$app['predis']->set($key, json_encode($reg));
+		$app['predis']->expire($key, 86400);
 		$key = $app['eland.this_group']->get_schema() . '_register_email_' . $email;
-		$app['redis']->set($key, '1');
-		$app['redis']->expire($key, 86400);
+		$app['predis']->set($key, '1');
+		$app['predis']->expire($key, 86400);
 
 		$vars = [
 			'group'		=> [

@@ -300,19 +300,19 @@ if ($submit)
 		{
 			foreach ($transactions as $t)
 			{
-				$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
+				$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
 			}
 
-			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
+			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
 		}
 		else
 		{
 			foreach ($transactions as $t)
 			{
-				$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
+				$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
 			}
 
-			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
+			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');

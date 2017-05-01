@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 $app->register(new Silex\Provider\SessionServiceProvider(), [
-	'session.storage.handler'	=> new eland\redis_session($app['redis']),
+	'session.storage.handler'	=> new eland\redis_session($app['predis']),
 	'session.storage.options'	=> [
 		'name'						=> 'eland',
 		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
@@ -423,7 +423,7 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 $app['eland.xdb']->set_user($s_schema, $s_id);
 
 $app['eland.form_token'] = function ($app){
-	return new eland\form_token($app['redis'], $app['monolog'], $app['eland.script_name']);
+	return new eland\form_token($app['predis'], $app['monolog'], $app['eland.script_name']);
 };
 
 /* view (global for all groups) */
@@ -458,7 +458,7 @@ if ($view || $inline)
 /**
  * remember adapted role in own group (for links to own group)
  */
- 
+
 if (!$s_anonymous)
 {
 	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
@@ -587,7 +587,7 @@ function get_session_query_param($sch = false)
 
 		if ($s_schema)
 		{
-			$param_ary = ['r' => 'guest', 'u' => $s_id, 's' => $s_schema]; 
+			$param_ary = ['r' => 'guest', 'u' => $s_id, 's' => $s_schema];
 
 			return $param_ary;
 		}

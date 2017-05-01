@@ -8,7 +8,7 @@ $token = $_GET['token'] ?? false;
 
 if ($token)
 {
-	$data = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token);
+	$data = $app['predis']->get($app['eland.this_group']->get_schema() . '_token_' . $token);
 	$data = json_decode($data, true);
 
 	$user_id = $data['user_id'];
@@ -128,8 +128,8 @@ if (isset($_POST['zend']))
 				$token = substr(hash('sha512', $user['id'] . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
 				$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
 
-				$app['redis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
-				$app['redis']->expire($key, 3600);
+				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
+				$app['predis']->expire($key, 3600);
 
 				$vars = [
 					'group'		=> [

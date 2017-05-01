@@ -30,8 +30,8 @@ $schema_task = new task_container($app, 'schema_task');
 
 $loop_count = 1;
 
-$app['redis']->set('block_task', '1');
-$app['redis']->expire('block_task', 3);
+$app['predis']->set('block_task', '1');
+$app['predis']->expire('block_task', 3);
 
 while (true)
 {

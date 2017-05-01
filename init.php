@@ -276,7 +276,7 @@ else if ($step == 4)
 
 	foreach ($users as $u)
 	{
-		$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $u['id']);
+		$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $u['id']);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=5');

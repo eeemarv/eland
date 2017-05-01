@@ -23,7 +23,7 @@ $app['eland.task.get_elas_interlets_domains'] = function ($app){
 };
 
 $app['eland.task.fetch_elas_interlets'] = function ($app){
-	return new eland\task\fetch_elas_interlets($app['eland.cache'], $app['redis'], $app['eland.typeahead'],
+	return new eland\task\fetch_elas_interlets($app['eland.cache'], $app['predis'], $app['eland.typeahead'],
 		$app['monolog'], $app['eland.schedule']);
 };
 
@@ -57,7 +57,7 @@ $app['eland.schema_task.user_exp_msgs'] = function ($app){
 };
 
 $app['eland.schema_task.saldo'] = function ($app){
-	return new eland\schema_task\saldo($app['db'], $app['eland.xdb'], $app['redis'], $app['eland.cache'],
+	return new eland\schema_task\saldo($app['db'], $app['eland.xdb'], $app['predis'], $app['eland.cache'],
 		$app['monolog'], $app['eland.queue.mail'],
 		$app['eland.s3_img_url'], $app['eland.s3_doc_url'], $app['eland.protocol'],
 		$app['eland.date_format'], $app['eland.distance'],
@@ -66,7 +66,7 @@ $app['eland.schema_task.saldo'] = function ($app){
 };
 
 $app['eland.schema_task.interlets_fetch'] = function ($app){
-	return new eland\schema_task\interlets_fetch($app['redis'], $app['db'], $app['eland.xdb'], $app['eland.cache'],
+	return new eland\schema_task\interlets_fetch($app['predis'], $app['db'], $app['eland.xdb'], $app['eland.cache'],
 		$app['eland.typeahead'], $app['monolog'],
 		$app['eland.schedule'], $app['eland.groups'], $app['eland.this_group']);
 };
@@ -88,7 +88,7 @@ $app['eland.new_schema_task'] = function ($app){
 };
 
 $app['eland.schedule'] = function ($app){
-	return new eland\schedule($app['eland.cache'], $app['redis']);
+	return new eland\schedule($app['eland.cache'], $app['predis']);
 };
 
 // queue

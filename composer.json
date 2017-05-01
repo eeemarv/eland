@@ -24,7 +24,8 @@
 		"silex/silex": "~2.0",
 		"symfony/twig-bridge": "^3.2",
 		"symfony/security": "^3.2",
-		"symfony/finder": "^3.2"
+		"symfony/finder": "^3.2",
+		"predis/service-provider": "^2.0"
 	},
 
     "minimum-stability": "stable",

@@ -46,7 +46,7 @@ if ($add)
 
 	if ($submit)
 	{
-		$stored_transid = $app['redis']->get($redis_transid_key);
+		$stored_transid = $app['predis']->get($redis_transid_key);
 
 		if (!$stored_transid)
 		{
@@ -726,8 +726,8 @@ if ($add)
 
 		$transid = generate_transid();
 
-		$app['redis']->set($redis_transid_key, $transid);
-		$app['redis']->expire($redis_transid_key, 3600);
+		$app['predis']->set($redis_transid_key, $transid);
+		$app['predis']->expire($redis_transid_key, 3600);
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),

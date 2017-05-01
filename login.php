@@ -39,9 +39,9 @@ if ($monitor)
 	}
 	try
 	{
-		$app['redis']->set('eland_monitor', '1');
-		$app['redis']->expire('eland_monitor', 400);
-		$app['redis']->get('eland_monitor');
+		$app['predis']->set('eland_monitor', '1');
+		$app['predis']->expire('eland_monitor', 400);
+		$app['predis']->get('eland_monitor');
 	}
 	catch(Exception $e)
 	{
@@ -55,7 +55,7 @@ if ($monitor)
 
 if ($token)
 {
-	if($apikey = $app['redis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
+	if($apikey = $app['predis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
 	{
 		$logins = $app['session']->get('logins');
 		$logins[$app['eland.this_group']->get_schema()] = 'elas';

@@ -8,7 +8,8 @@ $app['debug'] = getenv('DEBUG');
 
 $app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 
-$app['redis'] = function () {
+/*
+$app['predis'] = function () {
 	try
 	{
 		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
@@ -30,6 +31,14 @@ $app['redis'] = function () {
 		exit;
 	}
 };
+*/
+$app->register(new Predis\Silex\ClientServiceProvider(), [
+	'predis.parameters' => getenv('REDIS_URL'),
+	'predis.options'    => [
+		'prefix'  => 'eland_',
+	],
+]);
+
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
@@ -62,7 +71,7 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Bramus\Monolog\Formatter\ColoredLineFormatter());
 	$monolog->pushHandler($handler);
 
-	$handler = new \Monolog\Handler\RedisHandler($app['redis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20);
+	$handler = new \Monolog\Handler\RedisHandler($app['predis'], 'monolog_logs', \Monolog\Logger::DEBUG, true, 20);
 	$handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
 	$monolog->pushHandler($handler);
 
@@ -120,11 +129,11 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['eland.typeahead'] = function($app){
-	return new eland\typeahead($app['redis'], $app['monolog']);
+	return new eland\typeahead($app['predis'], $app['monolog']);
 };
 
 $app['eland.log_db'] = function($app){
-	return new eland\log_db($app['db'], $app['redis']);
+	return new eland\log_db($app['db'], $app['predis']);
 };
 
 /**
@@ -136,15 +145,15 @@ $app['eland.groups'] = function ($app){
 };
 
 $app['eland.this_group'] = function($app){
-	return new eland\this_group($app['eland.groups'], $app['db'], $app['redis'], $app['twig']);
+	return new eland\this_group($app['eland.groups'], $app['db'], $app['predis'], $app['twig']);
 };
 
 $app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['redis'], $app['monolog'], $app['eland.this_group']);
+	return new eland\xdb($app['db'], $app['predis'], $app['monolog'], $app['eland.this_group']);
 };
 
 $app['eland.cache'] = function ($app){
-	return new eland\cache($app['db'], $app['redis'], $app['monolog']);
+	return new eland\cache($app['db'], $app['predis'], $app['monolog']);
 };
 
 $app['eland.queue'] = function ($app){
@@ -160,7 +169,7 @@ $app['eland.mailaddr'] = function ($app){
 };
 
 $app['eland.interlets_groups'] = function ($app){
-	return new eland\interlets_groups($app['db'], $app['redis'], $app['eland.groups'], $app['eland.protocol']);
+	return new eland\interlets_groups($app['db'], $app['predis'], $app['eland.groups'], $app['eland.protocol']);
 };
 
 $app['eland.distance'] = function ($app){
@@ -265,9 +274,9 @@ function readconfigfromdb($key, $sch = null)
 
 	$redis_key = $sch . '_config_' . $key;
 
-	if ($app['redis']->exists($redis_key))// && $key != 'date_format')
+	if ($app['predis']->exists($redis_key))// && $key != 'date_format')
 	{
-		return $cache[$sch][$key] = $app['redis']->get($redis_key);
+		return $cache[$sch][$key] = $app['predis']->get($redis_key);
 	}
 
 	$row = $app['eland.xdb']->get('setting', $key, $sch);
@@ -292,8 +301,8 @@ function readconfigfromdb($key, $sch = null)
 
 	if (isset($value))
 	{
-		$app['redis']->set($redis_key, $value);
-		$app['redis']->expire($redis_key, 2592000);
+		$app['predis']->set($redis_key, $value);
+		$app['predis']->expire($redis_key, 2592000);
 		$cache[$sch][$key] = $value;
 	}
 
@@ -324,9 +333,9 @@ function readuser($id, $refresh = false, $remote_schema = false)
 			return $cache[$s][$id];
 		}
 
-		if ($app['redis']->exists($redis_key))
+		if ($app['predis']->exists($redis_key))
 		{
-			return $cache[$s][$id] = unserialize($app['redis']->get($redis_key));
+			return $cache[$s][$id] = unserialize($app['predis']->get($redis_key));
 		}
 	}
 
@@ -356,8 +365,8 @@ function readuser($id, $refresh = false, $remote_schema = false)
 
 	if (isset($user))
 	{
-		$app['redis']->set($redis_key, serialize($user));
-		$app['redis']->expire($redis_key, 2592000);
+		$app['predis']->set($redis_key, serialize($user));
+		$app['predis']->expire($redis_key, 2592000);
 		$cache[$s][$id] = $user;
 	}
 

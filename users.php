@@ -115,7 +115,7 @@ if ($s_admin)
 if ($user_mail_submit && $id && $post)
 {
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
-	$user_mail_cc = $_POST['user_mail_cc'] ?? false; 
+	$user_mail_cc = $_POST['user_mail_cc'] ?? false;
 
 	$user = readuser($id);
 
@@ -443,7 +443,7 @@ if ($bulk_submit && $post && $s_admin)
 		$user_ids = $selected_users;
 	}
 
-	$selected_users = array_combine($selected_users, $selected_users);	
+	$selected_users = array_combine($selected_users, $selected_users);
 }
 
 /**
@@ -471,7 +471,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		foreach ($user_ids as $user_id)
 		{
 			$app['eland.xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
-			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
@@ -501,7 +501,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		if ($bulk_field == 'status')
@@ -513,7 +513,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 
 		$app['eland.interlets_groups']->clear_cache($s_schema);
-		
+
 		$app['eland.alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -543,7 +543,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['redis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		$value = $value ? 'on' : 'off';
@@ -1013,7 +1013,7 @@ if ($del)
 
 		//finally, the user
 		$app['db']->delete('users', ['id' => $del]);
-		$app['redis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
+		$app['predis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
 
 		$app['eland.alert']->success('De gebruiker is verwijderd.');
 
@@ -1401,7 +1401,7 @@ if ($add || $edit)
 				if ($user['status'] == 1)
 				{
 					$user['adate'] = gmdate('Y-m-d H:i:s');
-					$user['password'] = hash('sha512', $password);	
+					$user['password'] = hash('sha512', $password);
 				}
 				else
 				{
@@ -1672,7 +1672,7 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> readconfigfromdb('preset_minlimit'), 
+				'minlimit'		=> readconfigfromdb('preset_minlimit'),
 				'maxlimit'		=> readconfigfromdb('preset_maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
@@ -3858,7 +3858,7 @@ function send_activation_mail($password, $user)
 		],
 		'user'		=> $user,
 		'password'	=> $password,
-		'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],	
+		'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
 	];
 
 	$app['eland.queue.mail']->queue([

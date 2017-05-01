@@ -15,11 +15,11 @@ if (!readconfigfromdb('contact_form_en'))
 if ($token)
 {
 	$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
-	$data = $app['redis']->get($key);
+	$data = $app['predis']->get($key);
 
 	if ($data)
 	{
-		$app['redis']->del($key);
+		$app['predis']->del($key);
 
 		$data = json_decode($data, true);
 
@@ -138,8 +138,8 @@ if($post && isset($_POST['zend']))
 
 		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime()), 0, 10);
 		$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
-		$app['redis']->set($key, json_encode($contact));
-		$app['redis']->expire($key, 86400);
+		$app['predis']->set($key, json_encode($contact));
+		$app['predis']->expire($key, 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
 
