@@ -8,30 +8,7 @@ $app['debug'] = getenv('DEBUG');
 
 $app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 
-/*
-$app['predis'] = function () {
-	try
-	{
-		$url = getenv('REDIS_URL') ?: getenv('REDISCLOUD_URL');
-		$con = parse_url($url);
 
-		if (isset($con['pass']))
-		{
-			$con['password'] = $con['pass'];
-		}
-
-		$con['scheme'] = 'tcp';
-
-		return new Predis\Client($con);
-	}
-	catch (Exception $e)
-	{
-		echo 'Couldn\'t connected to Redis: ';
-		echo $e->getMessage();
-		exit;
-	}
-};
-*/
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
 	'predis.options'    => [
