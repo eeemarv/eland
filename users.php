@@ -1201,7 +1201,7 @@ if ($add || $edit)
 						else if ($row['count'] > 1)
 						{
 							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers. ' . $warning;
-							$app['eland.alert']->warniing($warning);
+							$app['eland.alert']->warning($warning);
 						}
 					}
 				}
