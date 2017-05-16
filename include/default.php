@@ -2,12 +2,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$app = new Silex\Application();
+$app = new eland\util\app();
 
 $app['debug'] = getenv('DEBUG');
 
-$app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+$app['route_class'] = 'eland\util\route';
 
+$app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -15,7 +16,6 @@ $app->register(new Predis\Silex\ClientServiceProvider(), [
 		'prefix'  => 'eland_',
 	],
 ]);
-
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
@@ -29,11 +29,16 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 		'cache'		=> __DIR__ . '/../cache',
 		'debug'		=> getenv('DEBUG'),
 	],
+	'twig.form.templates'	=> [
+		'bootstrap_3_horizontal_layout.html.twig',
+	],
 ]);
 
 $app->extend('twig', function($twig, $app) {
 
 	$twig->addExtension(new eland\twig_extension($app));
+	$twig->addGlobal('s3_img', getenv('S3_IMG'));
+	$twig->addGlobal('s3_doc', getenv('S3_DOC'));
 
 	return $twig;
 });
