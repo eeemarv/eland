@@ -379,7 +379,7 @@ if ($status_msgs)
 
 		echo '<ul>';
 
-		$currency = readconfigfromdb('currency');
+		$currency = $app['config']->get('currency');
 
 		foreach ($no_msgs_users as $u)
 		{

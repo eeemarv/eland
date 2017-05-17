@@ -116,7 +116,7 @@ header('Content-type: application/json');
 echo json_encode([
 	'user_id' 		=> $user_id,
 	'ticks' 		=> ($days == 365) ? 12 : 4,
-	'currency' 		=> readconfigfromdb('currency'),
+	'currency' 		=> $app['config']->get('currency'),
 	'transactions' 	=> $transactions,
 	'users' 		=> $users,
 	'beginBalance' 	=> $balance,

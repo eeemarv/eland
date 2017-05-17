@@ -14,7 +14,7 @@ if (isset($_POST['zend']))
 		$errors[] = 'Het bericht is leeg.';
 	}
 
-	if (!trim(readconfigfromdb('support')))
+	if (!trim($app['config']->get('support')))
 	{
 		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
 	}
@@ -52,8 +52,8 @@ if (isset($_POST['zend']))
 
 		$vars = [
 			'group'	=> [
-				'name'		=> readconfigfromdb('systemname'),
-				'tag'		=> readconfigfromdb('systemtag'),
+				'name'		=> $app['config']->get('systemname'),
+				'tag'		=> $app['config']->get('systemtag'),
 			],
 			'user'	=> [
 				'text'			=> link_user($s_id, false, false),
@@ -120,11 +120,11 @@ else
 	}
 }
 
-if (!readconfigfromdb('mailenabled'))
+if (!$app['config']->get('mailenabled'))
 {
 	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
-else if (!readconfigfromdb('support'))
+else if (!$app['config']->get('support'))
 {
 	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }

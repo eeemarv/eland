@@ -12,7 +12,7 @@ if ($s_id)
 	redirect_default_page();
 }
 
-if (!readconfigfromdb('registration_en'))
+if (!$app['config']->get('registration_en'))
 {
 	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
@@ -51,10 +51,10 @@ if ($token)
 			}
 		}
 
-		$minlimit = readconfigfromdb('preset_minlimit');
+		$minlimit = $app['config']->get('preset_minlimit');
 		$minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-		$maxlimit = readconfigfromdb('preset_maxlimit');
+		$maxlimit = $app['config']->get('preset_maxlimit');
 		$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
 		$user = [
@@ -147,8 +147,8 @@ if ($token)
 
 		$vars = [
 			'group'	=> [
-				'name'	=> readconfigfromdb('systemname'),
-				'tag'	=> readconfigfromdb('systemtag'),
+				'name'	=> $app['config']->get('systemname'),
+				'tag'	=> $app['config']->get('systemtag'),
 			],
 			'user'	=> $user,
 			'email'	=> $data['email'],
@@ -183,7 +183,7 @@ if ($token)
 
 		require_once __DIR__ . '/include/header.php';
 
-		$registration_success_text = readconfigfromdb('registration_success_text');
+		$registration_success_text = $app['config']->get('registration_success_text');
 
 		if ($registration_success_text)
 		{
@@ -273,8 +273,8 @@ if ($submit)
 
 		$vars = [
 			'group'		=> [
-				'name'	=> readconfigfromdb('systemname'),
-				'tag'	=> readconfigfromdb('systemtag'),
+				'name'	=> $app['config']->get('systemname'),
+				'tag'	=> $app['config']->get('systemtag'),
 			],
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
@@ -296,7 +296,7 @@ $fa = 'check-square-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = readconfigfromdb('registration_top_text');
+$top_text = $app['config']->get('registration_top_text');
 
 if ($top_text)
 {
@@ -376,7 +376,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = readconfigfromdb('registration_bottom_text');
+$bottom_text = $app['config']->get('registration_bottom_text');
 
 if ($bottom_text)
 {

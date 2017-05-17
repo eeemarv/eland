@@ -9,23 +9,27 @@ use Monolog\Logger;
 use service\schedule;
 use service\groups;
 use service\this_group;
+use service\config;
 
 class cleanup_messages extends schema_task
 {
 	private $db;
 	private $monolog;
+	private $config;
 
-	public function __construct(db $db, Logger $monolog, schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(db $db, Logger $monolog, schedule $schedule,
+		groups $groups, this_group $this_group, config $config)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->monolog = $monolog;
+		$this->config = $config;
 	}
 
 	function process()
 	{
 		$msgs = '';
-		$testdate = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('msgexpcleanupdays', $this->schema) * 86400);
+		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config->get('msgexpcleanupdays', $this->schema) * 86400);
 
 		$st = $this->db->prepare('SELECT id, content, id_category, msg_type
 			FROM ' . $this->schema . '.messages

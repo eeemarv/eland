@@ -122,7 +122,8 @@ $app['user'] = function ($app){
 };
 
 $app['autominlimit'] = function ($app){
-	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'], $app['this_group']);
+	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
+		$app['this_group'], $app['config']);
 };
 
 // init
@@ -410,7 +411,7 @@ if ($page_access != 'anonymous'
 	exit;
 }
 
-if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
+if ($page_access != 'anonymous' && !$s_admin && $app['config']->get('maintenance'))
 {
 	echo $app['twig']->render('maintenance.html.twig');
 	exit;
@@ -484,15 +485,15 @@ if (!$s_anonymous)
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
-$newusertreshold = time() - readconfigfromdb('newuserdays') * 86400;
+$newusertreshold = time() - $app['config']->get('newuserdays') * 86400;
 
 /** welcome message **/
 
 if (isset($_GET['welcome']) && $s_guest)
 {
-	$msg = '<strong>Welkom bij ' . readconfigfromdb('systemname') . '</strong><br>';
-	$msg .= 'Waardering bij ' . readconfigfromdb('systemname') . ' gebeurt met \'' . readconfigfromdb('currency') . '\'. ';
-	$msg .= readconfigfromdb('currencyratio') . ' ' . readconfigfromdb('currency');
+	$msg = '<strong>Welkom bij ' . $app['config']->get('systemname') . '</strong><br>';
+	$msg .= 'Waardering bij ' . $app['config']->get('systemname') . ' gebeurt met \'' . $app['config']->get('currency') . '\'. ';
+	$msg .= $app['config']->get('currencyratio') . ' ' . $app['config']->get('currency');
 	$msg .= ' stemt overeen met 1 LETS uur.<br>';
 
 	if ($s_elas_guest)
@@ -633,7 +634,7 @@ function redirect_default_page()
 
 function get_default_page()
 {
-	global $view_messages, $view_users, $view_news;
+	global $view_messages, $view_users, $view_news, $app;
 	static $default_page;
 
 	if (isset($default_page))
@@ -641,7 +642,7 @@ function get_default_page()
 		return $default_page;
 	}
 
-	$page = readconfigfromdb('default_landing_page');
+	$page = $app['config']->get('default_landing_page');
 
 	$param = [];
 

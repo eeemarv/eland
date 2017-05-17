@@ -114,8 +114,8 @@ if ($add && $submit && !count($errors))
 		{
 			$vars = [
 				'group'		=> [
-					'name'	=> readconfigfromdb('systemname'),
-					'tag'	=> readconfigfromdb('systemtag'),
+					'name'	=> $app['config']->get('systemname'),
+					'tag'	=> $app['config']->get('systemtag'),
 				],
 				'news'	=> $news,
 				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,

@@ -6,18 +6,22 @@ use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
 use service\this_group;
+use service\config;
 
 class mailaddr
 {
 	private $db;
 	private $monolog;
 	private $schema;
+	private $this_group;
+	private $config;
 
-	public function __construct(db $db, Logger $monolog, this_group $this_group)
+	public function __construct(db $db, Logger $monolog, this_group $this_group, config $config)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
+		$this->config = $config;
 	}
 
 	/*
@@ -49,7 +53,7 @@ class mailaddr
 
 			if (in_array($in, ['admin', 'newsadmin', 'support']))
 			{
-				$ary = explode(',', readconfigfromdb($in));
+				$ary = explode(',', $this->config->get($in));
 
 				foreach ($ary as $mail)
 				{
@@ -61,7 +65,7 @@ class mailaddr
 						continue;
 					}
 
-					$out[$mail] = readconfigfromdb('systemname');
+					$out[$mail] = $this->config->get('systemname');
 				}
 			}
 			else if (in_array($in, ['from', 'noreply']))
@@ -76,7 +80,7 @@ class mailaddr
 					continue;
 				}
 
-				$out[$mail] = readconfigfromdb('systemname', $sch);
+				$out[$mail] = $this->config->get('systemname', $sch);
 			}
 			else if (ctype_digit((string) $in))
 			{

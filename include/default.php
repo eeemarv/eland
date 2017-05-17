@@ -152,8 +152,12 @@ $app['groups'] = function ($app){
 	return new service\groups($app['db']);
 };
 
+$app['template_vars'] = function ($app){
+	return new service\template_vars($app['config']);
+};
+
 $app['this_group'] = function($app){
-	return new service\this_group($app['groups'], $app['db'], $app['predis'], $app['twig']);
+	return new service\this_group($app['groups'], $app['db'], $app['predis']);
 };
 
 $app['xdb'] = function ($app){
@@ -168,12 +172,12 @@ $app['queue'] = function ($app){
 	return new service\queue($app['db'], $app['monolog']);
 };
 
-$app['date_format'] = function(){
-	return new service\date_format();
+$app['date_format'] = function($app){
+	return new service\date_format($app['config']);
 };
 
 $app['mailaddr'] = function ($app){
-	return new service\mailaddr($app['db'], $app['monolog'], $app['this_group']);
+	return new service\mailaddr($app['db'], $app['monolog'], $app['this_group'], $app['config']);
 };
 
 $app['interlets_groups'] = function ($app){
@@ -184,11 +188,15 @@ $app['distance'] = function ($app){
 	return new service\distance($app['db'], $app['cache']);
 };
 
+$app['config'] = function ($app){
+	return new service\config($app['monolog'], $app['db'], $app['xdb'], $app['predis'], $app['this_group']);
+};
+
 // queue
 
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
-		$app['this_group'], $app['mailaddr'], $app['twig']);
+		$app['this_group'], $app['mailaddr'], $app['twig'], $app['config']);
 };
 
 /**
@@ -227,94 +235,6 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
 
 	return $out;
-}
-
-/*
- *
- */
-
-function readconfigfromdb($key, $sch = null)
-{
-    global $app, $s_guest, $s_master;
-    static $cache;
-
-	$eland_config_default = [
-		'preset_minlimit'					=> '',
-		'preset_maxlimit'					=> '',
-		'users_can_edit_username'			=> '0',
-		'users_can_edit_fullname'			=> '0',
-		'registration_en'					=> '0',
-		'registration_top_text'				=> '',
-		'registration_bottom_text'			=> '',
-		'registration_success_text'			=> '',
-		'registration_success_url'			=> '',
-		'forum_en'							=> '0',
-		'css'								=> '0',
-		'msgs_days_default'					=> '365',
-		'balance_equilibrium'				=> '0',
-		'date_format'						=> '%e %b %Y, %H:%M:%S',
-		'weekly_mail_show_interlets'		=> 'recent',
-		'weekly_mail_show_news'				=> 'recent',
-		'weekly_mail_show_docs'				=> 'recent',
-		'weekly_mail_show_forum'			=> 'recent',
-		'weekly_mail_show_transactions'		=> 'recent',
-		'weekly_mail_show_leaving_users'	=> 'recent',
-		'weekly_mail_show_new_users'		=> 'recent',
-		'weekly_mail_template'				=> 'messages_top',
-		'default_landing_page'				=> 'messages',
-		'homepage_url'						=> '',
-	];
-
-    if (!isset($sch))
-    {
-		$sch = $app['this_group']->get_schema();
-	}
-
-	if (!$sch)
-	{
-		$app['monolog']->error('no schema set in readconfigfromdb');
-	}
-
-	if (isset($cache[$sch][$key]))
-	{
-		return $cache[$sch][$key];
-	}
-
-	$redis_key = $sch . '_config_' . $key;
-
-	if ($app['predis']->exists($redis_key))// && $key != 'date_format')
-	{
-		return $cache[$sch][$key] = $app['predis']->get($redis_key);
-	}
-
-	$row = $app['xdb']->get('setting', $key, $sch);
-
-	if ($row)
-	{
-		$value = $row['data']['value'];
-	}
-	else if (isset($eland_config_default[$key]))
-	{
-		$value = $eland_config_default[$key];
-	}
-	else
-	{
-		$value = $app['db']->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
-
-		if (!$s_guest && !$s_master)
-		{
-			$app['xdb']->set('setting', $key, ['value' => $value], $sch);
-		}
-	}
-
-	if (isset($value))
-	{
-		$app['predis']->set($redis_key, $value);
-		$app['predis']->expire($redis_key, 2592000);
-		$cache[$sch][$key] = $value;
-	}
-
-	return $value;
 }
 
 /**

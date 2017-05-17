@@ -19,6 +19,7 @@ class this_group
 		$this->db = $db;
 		$this->redis = $redis;
 		$this->groups = $groups;
+
 		$this->host = $_SERVER['SERVER_NAME'] ?? '';
 		$this->schema = $this->host ? $this->groups->get_schema($this->host) : '';
 
@@ -43,35 +44,5 @@ class this_group
 	public function get_host()
 	{
 		return $this->host;
-	}
-
-	public function get_name()
-	{
-		return readconfigfromdb('systemname', $this->schema);
-	}
-
-	public function get_tag()
-	{
-		return readconfigfromdb('systemtag', $this->schema);
-	}
-
-	public function get_currency()
-	{
-		return readconfigfromdb('currency', $this->schema);
-	}
-
-	public function get_currencyratio()
-	{
-		return readconfigfromdb('currencyratio', $this->schema);
-	}
-
-	public function get_newusertreshold()
-	{
-		return time() - readconfigfromdb('newuserdays', $this->schema) * 86400;
-	}
-
-	public function get_newuserdays()
-	{
-		return readconfigfromdb('newuserdays', $this->schema);
 	}
 }

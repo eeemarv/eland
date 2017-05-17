@@ -6,6 +6,7 @@ use service\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
 use service\this_group;
+use service\config;
 
 class autominlimit
 {
@@ -13,6 +14,7 @@ class autominlimit
 	private $xdb;
 	private $db;
 	private $this_group;
+	private $config;
 
 	private $exclusive;
 	private $trans_exclusive;
@@ -21,7 +23,7 @@ class autominlimit
 	private $group_minlimit;
 	private $schema;
 
-	public function __construct(Logger $monolog, xdb $xdb, db $db, this_group $this_group)
+	public function __construct(Logger $monolog, xdb $xdb, db $db, this_group $this_group, config $config)
 	{
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
@@ -49,7 +51,7 @@ class autominlimit
 		$this->enabled = $a['enabled'];
 		$this->trans_percentage = $a['trans_percentage'];
 
-		$this->group_minlimit = readconfigfromdb('minlimit', $this->schema);
+		$this->group_minlimit = $this->config->get('minlimit', $this->schema);
 
 		return $this;
 	}

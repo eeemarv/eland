@@ -16,7 +16,7 @@ if (!$location
 	|| $location == ''
 	|| $location == '/')
 {
-	$location = readconfigfromdb('default_landing_page');
+	$location = $app['config']->get('default_landing_page');
 	$param = 'view_' . $location;
 	$param = in_array($location, ['messages', 'users', 'news']) ? ['view' => $$param] : [];
 	$location .= '.php?' . http_build_query($param);
@@ -220,7 +220,7 @@ if ($submit)
 		$errors[] = 'Het account beschikt niet over de juiste rechten.';
 	}
 
-	if (!count($errors) && readconfigfromdb('maintenance') && $user['accountrole'] != 'admin')
+	if (!count($errors) && $app['config']->get('maintenance') && $user['accountrole'] != 'admin')
 	{
 		$errors[] = 'De website is in onderhoud, probeer later opnieuw';
 	}
@@ -256,7 +256,7 @@ if ($submit)
 	$app['alert']->error($errors);
 }
 
-if(readconfigfromdb('maintenance'))
+if($app['config']->get('maintenance'))
 {
 	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }

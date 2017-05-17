@@ -37,7 +37,7 @@ header('Content-Type:text/plain');
 echo '*** Init eLAND ***' . $r;
 echo 'php_sapi_name: ' . $php_sapi_name . $r;
 echo 'php version: ' . phpversion() . $r;
-echo "schema: " . $app['this_group']->get_schema() . ' systemtag: ' . readconfigfromdb('systemtag') . $r;
+echo "schema: " . $app['this_group']->get_schema() . ' systemtag: ' . $app['config']->get('systemtag') . $r;
 */
 
 if ($step == 2 || $step == 3)

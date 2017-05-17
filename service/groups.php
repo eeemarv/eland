@@ -3,10 +3,10 @@
 namespace service;
 
 use Doctrine\DBAL\Connection as db;
-// use Predis\Client as redis;
 
 class groups
 {
+	private $db;
 	private $schemas = [];
 	private $hosts = [];
 	private $overall_domain;
@@ -64,19 +64,5 @@ class groups
 	public function count()
 	{
 		return count($this->schemas);
-	}
-
-	public function get_template_vars($schema)
-	{
-		$return = [
-			'tag'				=> readconfigfromdb('systemtag', $schema),
-			'name'				=> readconfigfromdb('systemname', $schema),
-			'currency'			=> readconfigfromdb('currency', $schema),
-			'support'			=> explode(',', readconfigfromdb('support', $schema)),
-			'admin'				=> readconfigfromdb('admin', $schema),
-			'msgexpcleanupdays'	=> readconfigfromdb('msgexpcleanupdays', $schema),
-		];
-
-		return $return;
 	}
 }

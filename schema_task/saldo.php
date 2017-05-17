@@ -16,6 +16,7 @@ use service\schedule;
 use service\groups;
 use service\this_group;
 use service\interlets_groups;
+use service\config;
 
 class saldo extends schema_task
 {
@@ -31,12 +32,14 @@ class saldo extends schema_task
 	private $date_format;
 	private $distance;
 	private $interlets_groups;
+	private $config;
 
 	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache, Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
 		date_format $date_format, distance $distance, schedule $schedule,
 		groups $groups, this_group $this_group,
-		interlets_groups $interlets_groups)
+		interlets_groups $interlets_groups,
+		config $config)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -50,6 +53,7 @@ class saldo extends schema_task
 		$this->protocol = $protocol;
 		$this->date_format = $date_format;
 		$this->interlets_groups = $interlets_groups;
+		$this->config = $config;
 	}
 
 	function process()
@@ -84,7 +88,7 @@ class saldo extends schema_task
 
 		$base_url = $this->protocol . $host;
 
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('saldofreqdays', $this->schema) * 86400);
+		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
 
 		$msg_url = $base_url . '/messages.php?id=';
 		$msgs_url = $base_url . '/messages.php';
@@ -230,7 +234,7 @@ class saldo extends schema_task
 
 	// interlets messages
 
-		if (readconfigfromdb('weekly_mail_show_interlets', $this->schema) == 'recent')
+		if ($this->config->get('weekly_mail_show_interlets', $this->schema) == 'recent')
 		{
 			$eland_ary = $this->interlets_groups->get_eland($this->schema);
 
@@ -265,7 +269,7 @@ class saldo extends schema_task
 				if (count($interlets_msgs))
 				{
 					$interlets[] = [
-						'group'		=> readconfigfromdb('systemname', $sch),
+						'group'		=> $this->config->get('systemname', $sch),
 						'messages'	=> $interlets_msgs,
 					];
 				}
@@ -307,7 +311,7 @@ class saldo extends schema_task
 
 	// news
 
-		$show_news = readconfigfromdb('weekly_mail_show_news', $this->schema);
+		$show_news = $this->config->get('weekly_mail_show_news', $this->schema);
 
 		if ($show_news != 'none')
 		{
@@ -365,7 +369,7 @@ class saldo extends schema_task
 
 	// new users
 
-		$show_new_users = readconfigfromdb('weekly_mail_show_new_users', $this->schema);
+		$show_new_users = $this->config->get('weekly_mail_show_new_users', $this->schema);
 
 		if ($show_new_users != 'none')
 		{
@@ -375,7 +379,7 @@ class saldo extends schema_task
 				where u.status = 1
 					and u.adate > ?');
 
-			$time = gmdate('Y-m-d H:i:s', time() - readconfigfromdb('newuserdays', $this->schema) * 86400);
+			$time = gmdate('Y-m-d H:i:s', time() - $this->config->get('newuserdays', $this->schema) * 86400);
 			$time = ($show_new_users == 'recent') ? $treshold_time: $time;
 
 			$rs->bindValue(1, $time);
@@ -392,7 +396,7 @@ class saldo extends schema_task
 
 	// leaving users
 
-		$show_leaving_users = readconfigfromdb('weekly_mail_show_leaving_users', $this->schema);
+		$show_leaving_users = $this->config->get('weekly_mail_show_leaving_users', $this->schema);
 
 		if ($show_leaving_users != 'none')
 		{
@@ -423,7 +427,7 @@ class saldo extends schema_task
 
 	// transactions
 
-		$show_transactions = readconfigfromdb('weekly_mail_show_transactions', $this->schema);
+		$show_transactions = $this->config->get('weekly_mail_show_transactions', $this->schema);
 
 		if ($show_transactions != 'none')
 		{
@@ -461,9 +465,9 @@ class saldo extends schema_task
 
 		$forum_topics = $forum_topics_replied = [];
 
-		$forum_en = readconfigfromdb('forum_en', $this->schema);
+		$forum_en = $this->config->get('forum_en', $this->schema);
 
-		$show_forum = $forum_en ? readconfigfromdb('weekly_mail_show_forum', $this->schema) : 'none';
+		$show_forum = $forum_en ? $this->config->get('weekly_mail_show_forum', $this->schema) : 'none';
 
 		if ($show_forum != 'none')
 		{
@@ -534,7 +538,7 @@ class saldo extends schema_task
 
 	// docs
 
-		$show_docs = readconfigfromdb('weekly_mail_show_docs', $this->schema);
+		$show_docs = $this->config->get('weekly_mail_show_docs', $this->schema);
 
 		if ($show_docs != 'none')
 		{
@@ -564,11 +568,11 @@ class saldo extends schema_task
 
 		$vars = [
 			'group'		=> [
-				'name'				=> readconfigfromdb('systemname', $this->schema),
-				'tag'				=> readconfigfromdb('systemtag', $this->schema),
-				'currency'			=> readconfigfromdb('currency', $this->schema),
-				'support'			=> explode(',', readconfigfromdb('support', $this->schema)),
-				'saldofreqdays'		=> readconfigfromdb('saldofreqdays', $this->schema),
+				'name'				=> $this->config->get('systemname', $this->schema),
+				'tag'				=> $this->config->get('systemtag', $this->schema),
+				'currency'			=> $this->config->get('currency', $this->schema),
+				'support'			=> explode(',', $this->config->get('support', $this->schema)),
+				'saldofreqdays'		=> $this->config->get('saldofreqdays', $this->schema),
 			],
 			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
@@ -599,7 +603,7 @@ class saldo extends schema_task
 
 		$log_to = [];
 
-		$template = 'periodic_overview_' . readconfigfromdb('weekly_mail_template', $this->schema);
+		$template = 'periodic_overview_' . $this->config->get('weekly_mail_template', $this->schema);
 
 		foreach ($saldo_mail as $id => $b)
 		{
@@ -654,7 +658,7 @@ class saldo extends schema_task
 	{
 		if (isset($this->schema))
 		{
-			$days = readconfigfromdb('saldofreqdays', $this->schema);
+			$days = $this->config->get('saldofreqdays', $this->schema);
 			$days = $days < 1 ? 7 : $days;
 
 			return 86400 * $days;

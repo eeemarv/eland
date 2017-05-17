@@ -126,7 +126,7 @@
 		'help'		=> array('ambulance', 'Help'),
 	);
 
-	if (readconfigfromdb('registration_en'))
+	if ($app['config']->get('registration_en'))
 	{
 		$menu['register'] = array('check-square-o', 'Inschrijven');
 	}
@@ -145,7 +145,7 @@
 
 	$menu['docs'] = array('files-o', 'Documenten');
 
-	if (readconfigfromdb('forum_en'))
+	if ($app['config']->get('forum_en'))
 	{
 		$menu['forum'] = array('comments-o', 'Forum');
 	}

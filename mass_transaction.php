@@ -241,7 +241,7 @@ if ($submit)
 
 				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
 				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
-				$alert_success .= '  met bedrag ' . $amo .' ' . readconfigfromdb('currency') . ' uitgevoerd.<br>';
+				$alert_success .= '  met bedrag ' . $amo .' ' . $app['config']->get('currency') . ' uitgevoerd.<br>';
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
@@ -315,10 +315,10 @@ if ($submit)
 			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_from']);
 		}
 
-		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');
+		$alert_success .= 'Totaal: ' . $total . ' ' . $app['config']->get('currency');
 		$app['alert']->success($alert_success);
 
-		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')';
+		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . $app['config']->get('currency') . ')';
 		$log_many = rtrim($log_many, ', ');
 		$log_str = 'Mass transaction from ';
 		$log_str .= ($to_one) ? $log_many : $log_one;
@@ -370,8 +370,8 @@ if ($from_letscode)
 	}
 }
 
-$group_minlimit = readconfigfromdb('minlimit');
-$group_maxlimit = readconfigfromdb('maxlimit');
+$group_minlimit = $app['config']->get('minlimit');
+$group_maxlimit = $app['config']->get('maxlimit');
 
 $app['assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
@@ -402,7 +402,7 @@ echo '<label for="fixed" class="col-sm-2 control-label">Vast bedrag</label>';
 echo '<div class="col-sm-10">';
 echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon">';
-echo readconfigfromdb('currency');
+echo $app['config']->get('currency');
 echo '</span>';
 echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
@@ -445,7 +445,7 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo readconfigfromdb('currency') . ': basis';
+echo $app['config']->get('currency') . ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
 echo '</div>';
@@ -509,7 +509,7 @@ echo '<div class="col-sm-5">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo readconfigfromdb('currency') . ': min';
+echo $app['config']->get('currency') . ': min';
 echo '</span>';
 
 echo '<input type="number" class="form-control margin-bottom" id="var_min">';
@@ -519,7 +519,7 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo readconfigfromdb('currency') . ': max';
+echo $app['config']->get('currency') . ': max';
 echo '</span>';
 
 echo '<input type="number" class="form-control" id="var_max">';
@@ -538,18 +538,18 @@ echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo '</div>';
 echo '</div>';
 
-if (readconfigfromdb('minlimit') !== '' || readconfigfromdb('maxlimit') !== '')
+if ($app['config']->get('minlimit') !== '' || $app['config']->get('maxlimit') !== '')
 {
 	echo '<ul>';
 
-	if (readconfigfromdb('minlimit') !== '')
+	if ($app['config']->get('minlimit') !== '')
 	{
-		echo '<li>Minimum groepslimiet: ' . readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+		echo '<li>Minimum groepslimiet: ' . $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</li>';
 	}
 
-	if (readconfigfromdb('maxlimit') !== '')
+	if ($app['config']->get('maxlimit') !== '')
 	{
-		echo '<li>Maximum groepslimiet: ' . readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</li>';
+		echo '<li>Maximum groepslimiet: ' . $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</li>';
 	}
 
 	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
@@ -614,7 +614,7 @@ echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="' . $from_letscode . '" ';
-echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 echo 'data-typeahead="';
 echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
@@ -710,7 +710,7 @@ echo '</table>';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="total" class="col-sm-2 control-label">Totaal ' . readconfigfromdb('currency') . '</label>';
+echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $app['config']->get('currency') . '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
@@ -778,7 +778,7 @@ function mail_mass_transaction($mail_ary)
 {
 	global $app, $s_id;
 
-	if (!readconfigfromdb('mailenabled'))
+	if (!$app['config']->get('mailenabled'))
 	{
 		$app['alert']->warning('Mail functions are not enabled. ');
 		return;
@@ -807,10 +807,10 @@ function mail_mass_transaction($mail_ary)
 
 	$common_vars = [
 		'group'		=> [
-			'name'			=> readconfigfromdb('systemname'),
-			'tag'			=> readconfigfromdb('systemtag'),
-			'support'		=> readconfigfromdb('support'),
-			'currency'		=> readconfigfromdb('currency'),
+			'name'			=> $app['config']->get('systemname'),
+			'tag'			=> $app['config']->get('systemtag'),
+			'support'		=> $app['config']->get('support'),
+			'currency'		=> $app['config']->get('currency'),
 		],
 		'description'			=> $mail_ary['description'],
 		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',

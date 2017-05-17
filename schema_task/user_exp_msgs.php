@@ -9,20 +9,26 @@ use queue\mail;
 use service\schedule;
 use service\groups;
 use service\this_group;
+use service\config;
+use service\template_vars;
 
 class user_exp_msgs extends schema_task
 {
 	private $db;
 	private $mail;
 	private $protocol;
+	private $config;
 
 	public function __construct(db $db, mail $mail, string $protocol,
-		schedule $schedule, groups $groups, this_group $this_group)
+		schedule $schedule, groups $groups, this_group $this_group, config $config,
+		template_vars $template_vars)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
 		$this->mail = $mail;
 		$this->protocol = $protocol;
+		$this->config = $config;
+		$this->template_vars = $template_vars;
 	}
 
 	function process()
@@ -31,7 +37,7 @@ class user_exp_msgs extends schema_task
 
 		$base_url = $this->protocol . $this->groups->get_host($this->schema);
 
-		$group_vars = $this->groups->get_template_vars($this->schema);
+		$group_vars = $this->template_vars->get($this->schema);
 
 		$warn_messages  = $this->db->fetchAll('select m.*
 			from ' . $this->schema . '.messages m, ' . $this->schema . '.users u
@@ -79,7 +85,7 @@ class user_exp_msgs extends schema_task
 
 	public function is_enabled()
 	{
-		return readconfigfromdb('msgexpwarnenabled', $this->schema) ? true : false;
+		return $this->config->get('msgexpwarnenabled', $this->schema) ? true : false;
 	}
 
 	public function get_interval()

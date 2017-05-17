@@ -127,7 +127,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	if (check_apikey($apikey, 'interlets'))
 	{
-		if(readconfigfromdb('maintenance'))
+		if($app['config']->get('maintenance'))
 		{
 			$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' deferred (offline)');
 			return 'OFFLINE';
@@ -197,7 +197,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 				return 'SIGFAIL';
 			}
 
-			$transaction['amount'] = round($amount * readconfigfromdb('currencyratio'));
+			$transaction['amount'] = round($amount * $app['config']->get('currencyratio'));
 
 			if ($transaction['amount'] < 1)
 			{
@@ -299,7 +299,7 @@ function getstatus($apikey)
 
 	if (check_apikey($apikey, 'interlets'))
 	{
-		return (readconfigfromdb('maintenance')) ? 'OFFLINE' : 'OK - eLAND';
+		return ($app['config']->get('maintenance')) ? 'OFFLINE' : 'OK - eLAND';
 	}
 	else
 	{

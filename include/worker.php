@@ -31,7 +31,7 @@ $app['task.fetch_elas_interlets'] = function ($app){
 
 $app['schema_task.cleanup_messages'] = function ($app){
 	return new schema_task\cleanup_messages($app['db'], $app['monolog'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+		$app['schedule'], $app['groups'], $app['this_group'], $app['config']);
 };
 
 $app['schema_task.cleanup_news'] = function ($app){
@@ -53,7 +53,8 @@ $app['schema_task.saldo_update'] = function ($app){
 $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
 		$app['protocol'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+		$app['schedule'], $app['groups'], $app['this_group'],
+		$app['config'], $app['template_vars']);
 };
 
 $app['schema_task.saldo'] = function ($app){
@@ -62,7 +63,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['s3_img_url'], $app['s3_doc_url'], $app['protocol'],
 		$app['date_format'], $app['distance'],
 		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['interlets_groups']);
+		$app['interlets_groups'], $app['config']);
 };
 
 $app['schema_task.interlets_fetch'] = function ($app){

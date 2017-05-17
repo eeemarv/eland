@@ -1,6 +1,6 @@
 <?php
 
-if ($css = readconfigfromdb('css'))
+if ($css = $app['config']->get('css'))
 {
 	$app['assets']->add($css);
 }
@@ -8,7 +8,7 @@ if ($css = readconfigfromdb('css'))
 echo '<!DOCTYPE html>';
 echo '<html lang="nl">';
 echo '<head>';
-echo '<title>' . readconfigfromdb('systemname') .'</title>';
+echo '<title>' . $app['config']->get('systemname') .'</title>';
 
 echo $app['assets']->render_css();
 
@@ -44,7 +44,7 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-$homepage_url = readconfigfromdb('homepage_url');
+$homepage_url = $app['config']->get('homepage_url');
 
 if (!$homepage_url)
 {
@@ -56,7 +56,7 @@ echo '<div class="logo"></div>';
 echo '</a>';
 
 echo '<a href="' . $homepage_url . '" class="navbar-brand">';
-echo readconfigfromdb('systemname');
+echo $app['config']->get('systemname');
 echo '</a>';
 echo '</div>';
 
@@ -87,7 +87,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		echo '&u=' . $login_id;
 		echo '">';
 
-		echo readconfigfromdb('systemname', $login_schema);
+		echo $app['config']->get('systemname', $login_schema);
 		echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
 		echo '</a>';
 		echo '</li>';
@@ -109,7 +109,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 				$page = (isset($allowed_interlets_landing_pages[$app['script_name']])) ? $app['script_name'] : 'messages';
 
 				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
-				echo readconfigfromdb('systemname', $sch) . '</a>';
+				echo $app['config']->get('systemname', $sch) . '</a>';
 				echo '</li>';
 			}
 		}
@@ -209,7 +209,7 @@ if (!$s_anonymous)
 
 		if ($page_access == 'admin')
 		{
-			$user_url = readconfigfromdb('default_landing_page') . '.php';
+			$user_url = $app['config']->get('default_landing_page') . '.php';
 
 			$u_param = 'view_' . $user_url;
 			$u_param = in_array($user_url, ['messages', 'users', 'news']) ? ['view' => $$u_param] : [];
@@ -263,12 +263,12 @@ if ($s_anonymous)
 		'login'			=> ['sign-in', 'Login', []],
 	];
 
-	if (readconfigfromdb('contact_form_en'))
+	if ($app['config']->get('contact_form_en'))
 	{
 		$menu['contact'] = ['comment-o', 'Contact', []];
 	}
 
-	if (readconfigfromdb('registration_en'))
+	if ($app['config']->get('registration_en'))
 	{
 		$menu['register'] = ['check-square-o', 'Inschrijven', []];
 	}
@@ -284,7 +284,7 @@ else
 
 	$menu['docs'] = ['files-o', 'Documenten', []];
 
-	if (readconfigfromdb('forum_en'))
+	if ($app['config']->get('forum_en'))
 	{
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}

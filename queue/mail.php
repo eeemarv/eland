@@ -10,24 +10,28 @@ use Monolog\Logger;
 use service\this_group;
 use service\mailaddr;
 use Twig_Environment as Twig;
+use service\config;
 
 class mail extends queue_model implements queue_interface
 {
-	protected $converter;
-	protected $mailer;
-	protected $queue;
-	protected $monolog;
-	protected $this_group;
-	protected $mailaddr;
-	protected $twig;
+	private $converter;
+	private $mailer;
+	private $queue;
+	private $monolog;
+	private $this_group;
+	private $mailaddr;
+	private $twig;
+	private $config;
 
-	public function __construct(queue $queue, Logger $monolog, this_group $this_group, mailaddr $mailaddr, Twig $twig)
+	public function __construct(queue $queue, Logger $monolog,
+		this_group $this_group, mailaddr $mailaddr, Twig $twig, config $config)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->this_group = $this_group;
 		$this->mailaddr = $mailaddr;
 		$this->twig = $twig;
+		$this->config = $config;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
@@ -62,7 +66,7 @@ class mail extends queue_model implements queue_interface
 		$sch = $data['schema'];
 		unset($data['schema']);
 
-		if (!readconfigfromdb('mailenabled', $sch))
+		if (!$this->config->get('mailenabled', $sch))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			echo $m;
@@ -82,7 +86,7 @@ class mail extends queue_model implements queue_interface
 		}
 		else if (isset($data['template_from_config']) && isset($data['vars']))
 		{
-			$template = readconfigfromdb($data['template_from_config'], $sch);
+			$template = $this->config->get($data['template_from_config'], $sch);
 
 			if (!$template)
 			{
@@ -185,7 +189,7 @@ class mail extends queue_model implements queue_interface
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
-		if (!readconfigfromdb('mailenabled', $data['schema']))
+		if (!$this->config->get('mailenabled', $data['schema']))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
 			$this->monolog->info('mail: ' . $m, ['schema' => $data['schema']]);
@@ -209,7 +213,7 @@ class mail extends queue_model implements queue_interface
 				return $m;
 			}
 
-			$data['subject'] = '[' . readconfigfromdb('systemtag', $data['schema']) . '] ' . $data['subject'];
+			$data['subject'] = '[' . $this->config->get('systemtag', $data['schema']) . '] ' . $data['subject'];
 		}
 
 		if (!isset($data['to']) || !$data['to'])

@@ -2,6 +2,8 @@
 
 namespace service;
 
+use service\config;
+
 class date_format
 {
 	private static $formats = [
@@ -42,9 +44,11 @@ class date_format
 	 *
 	 */
 
-	public function __construct()
+	public function __construct(config $config)
 	{
-		$this->format = readconfigfromdb('date_format');
+		$this->config = $config;
+
+		$this->format = $this->config->get('date_format');
 
 		if (!$this->format)
 		{
@@ -219,7 +223,7 @@ class date_format
 
 		if (!isset($format_ary))
 		{
-			$format = readconfigfromdb('date_format');
+			$format = $this->config->get('date_format');
 
 			if (!$format)
 			{
@@ -252,7 +256,7 @@ class date_format
 
 		if (!isset($format_ary))
 		{
-			$format = readconfigfromdb('date_format');
+			$format = $this->config->get('date_format');
 
 			if (!$format)
 			{

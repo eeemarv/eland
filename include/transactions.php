@@ -64,7 +64,7 @@ function insert_transaction($transaction)
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
-		$transaction['amount'] . ' ' . readconfigfromdb('currency') . ' from user ' .
+		$transaction['amount'] . ' ' . $app['config']->get('currency') . ' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .
 		link_user($transaction['id_to'], false, false, true));
 
@@ -89,14 +89,14 @@ function mail_mailtype_interlets_transaction($transaction)
 		'to_user'	=> $to_user,
 		'to_group'	=> $to_group,
 		'amount'			=> $transaction['amount'],
-		'amount_hours'		=> round($transaction['amount'] / readconfigfromdb('currencyratio'), 4),
+		'amount_hours'		=> round($transaction['amount'] / $app['config']->get('currencyratio'), 4),
 		'transid'			=> $transaction['transid'],
 		'description'		=> $transaction['description'],
 		'group'				=> [
-			'name'			=> readconfigfromdb('systemname'),
-			'tag'			=> readconfigfromdb('systemtag'),
-			'currency'		=> readconfigfromdb('currency'),
-			'currencyratio'	=> readconfigfromdb('currencyratio'),
+			'name'			=> $app['config']->get('systemname'),
+			'tag'			=> $app['config']->get('systemtag'),
+			'currency'		=> $app['config']->get('currency'),
+			'currencyratio'	=> $app['config']->get('currencyratio'),
 		],
 	];
 
@@ -148,10 +148,10 @@ function mail_transaction($transaction, $remote_schema = null)
 		'description'		=> $transaction['description'],
 		'transaction_url'	=> $url . '/transactions.php?id=' . $transaction['id'],
 		'group'				=> [
-			'name'			=> readconfigfromdb('systemname', $sch),
-			'tag'			=> readconfigfromdb('systemtag', $sch),
-			'currency'		=> readconfigfromdb('currency', $sch),
-			'support'		=> explode(',', readconfigfromdb('support', $sch)),
+			'name'			=> $app['config']->get('systemname', $sch),
+			'tag'			=> $app['config']->get('systemtag', $sch),
+			'currency'		=> $app['config']->get('currency', $sch),
+			'support'		=> explode(',', $app['config']->get('support', $sch)),
 		],
 	];
 

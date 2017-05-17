@@ -176,8 +176,8 @@ if ($add || $edit)
 		if ($app['groups']->get_host($add_schema))
 		{
 			$group['url'] = $app['protocol'] . $app['groups']->get_host($add_schema);
-			$group['groupname'] = readconfigfromdb('systemname', $add_schema);
-			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
+			$group['groupname'] = $app['config']->get('systemname', $add_schema);
+			$group['localletscode'] = $app['config']->get('systemtag', $add_schema);
 		}
 	}
 
@@ -683,7 +683,7 @@ function render_schemas_groups()
 		echo '<tr>';
 
 		echo '<td>';
-		echo readconfigfromdb('systemname', $s);
+		echo $app['config']->get('systemname', $s);
 		echo '</td>';
 
 		echo '<td>';

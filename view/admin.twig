@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>' . readconfigfromdb('systemname') .'</title>
+<title>' . $app['config']->get('systemname') .'</title>
 
  $app['assets']->render_css();
 
@@ -40,7 +40,7 @@ if (!$s_anonymous)
 <div class="logo"></div>
 </a>
 
- aphp('messages', ['view' => $view_messages], readconfigfromdb('systemname'), 'navbar-brand');
+ aphp('messages', ['view' => $view_messages], $app['config']->get('systemname'), 'navbar-brand');
 
 </div>
 
@@ -73,7 +73,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		&u=' . $login_id;
 		">
 
-		 readconfigfromdb('systemname', $login_schema);
+		 $app['config']->get('systemname', $login_schema);
 		 ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)
 		</a>
 		</li>
@@ -95,7 +95,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 				$page = (isset($allowed_interlets_landing_pages[$app['script_name']])) ? $app['script_name'] : 'messages
 
 				<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">
-				 readconfigfromdb('systemname', $sch) . '</a>
+				 $app['config']->get('systemname', $sch) . '</a>
 				</li>
 			}
 		}
@@ -168,7 +168,7 @@ if (!$s_anonymous)
 			'categories'	 				=> ['clone', 'Categorieën'],
 			'type_contact'					=> ['circle-o-notch', 'Contact types'],
 			'contacts'						=> ['map-marker', 'Contacten'],
-			'config'						=> ['gears', 'Instellingen'],
+			'settings'						=> ['gears', 'Instellingen'],
 			'interlets'						=> ['share-alt', 'InterLETS'],
 			'apikeys'						=> ['key', 'Apikeys'],
 			'export'						=> ['download', 'Export'],
@@ -233,12 +233,12 @@ if ($s_anonymous)
 		'login'			=> ['sign-in', 'Login', []],
 	];
 
-	if (readconfigfromdb('contact_form_en'))
+	if ($app['config']->get('contact_form_en'))
 	{
 		$menu['contact'] = ['comment-o', 'Contact', []];
 	}
 
-	if (readconfigfromdb('registration_en'))
+	if ($app['config']->get('registration_en'))
 	{
 		$menu['register'] = ['check-square-o', 'Inschrijven', []];
 	}
@@ -255,7 +255,7 @@ else
 
 	$menu['docs'] = ['files-o', 'Documenten', []];
 
-	if (readconfigfromdb('forum_en'))
+	if ($app['config']->get('forum_en'))
 	{
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}

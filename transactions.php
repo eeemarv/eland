@@ -27,7 +27,7 @@ $andor = $_GET['andor'] ?? 'and';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
 
-$currency = readconfigfromdb('currency');
+$currency = $app['config']->get('currency');
 
 /**
  * add
@@ -163,7 +163,7 @@ if ($add)
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
-				$minlimit = readconfigfromdb('minlimit');
+				$minlimit = $app['config']->get('minlimit');
 
 				if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
 				{
@@ -196,7 +196,7 @@ if ($add)
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
-				$maxlimit = readconfigfromdb('maxlimit');
+				$maxlimit = $app['config']->get('maxlimit');
 
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
@@ -234,17 +234,17 @@ if ($add)
 
 		if ($s_user && !count($errors))
 		{
-			$balance_eq = readconfigfromdb('balance_equilibrium');
+			$balance_eq = $app['config']->get('balance_equilibrium');
 
 			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
-				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . readconfigfromdb('currency') . ' uitgeven.';
+				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $app['config']->get('currency') . ' uitgeven.';
 			}
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
 				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan letscode)' : 'De interletsrekening van de letsgroep';
-				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . readconfigfromdb('currency') . ' ontvangen.';
+				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
 			}
 		}
 
@@ -332,7 +332,7 @@ if ($add)
 				$errors[] = 'Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin;
 			}
 
-			$currencyratio = readconfigfromdb('currencyratio');
+			$currencyratio = $app['config']->get('currencyratio');
 
 			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 			{
@@ -509,7 +509,7 @@ if ($add)
 
 			if (!$remote_group && !count($errors))
 			{
-				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. readconfigfromdb('systemname') . ') niet geconfigureerd.';
+				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. $app['config']->get('systemname') . ') niet geconfigureerd.';
 			}
 
 			if (!$remote_group['localletscode'] && !count($errors))
@@ -536,10 +536,10 @@ if ($add)
 				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
 			}
 
-			$remote_currency = readconfigfromdb('currency', $remote_schema);
-			$remote_currencyratio = readconfigfromdb('currencyratio', $remote_schema);
-			$remote_balance_eq = readconfigfromdb('balance_equilibrium', $remote_schema);
-			$currencyratio = readconfigfromdb('currencyratio');
+			$remote_currency = $app['config']->get('currency', $remote_schema);
+			$remote_currencyratio = $app['config']->get('currencyratio', $remote_schema);
+			$remote_balance_eq = $app['config']->get('balance_equilibrium', $remote_schema);
+			$currencyratio = $app['config']->get('currencyratio');
 
 			if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 				&& !count($errors))
@@ -565,7 +565,7 @@ if ($add)
 			{
 				if ($remote_interlets_account['minlimit'] === -999999999)
 				{
-					$minlimit = readconfigfromdb('minlimit', $remote_schema);
+					$minlimit = $app['config']->get('minlimit', $remote_schema);
 
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
 					{
@@ -595,14 +595,14 @@ if ($add)
 				&& (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq)
 				&& !count($errors))
 			{
-				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . readconfigfromdb('currency') . ').';
+				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $app['config']->get('currency') . ').';
 			}
 
 			if (!count($errors))
 			{
 				if ($to_remote_user['maxlimit'] === 999999999)
 				{
-					$maxlimit = readconfigfromdb('maxlimit', $remote_schema);
+					$maxlimit = $app['config']->get('maxlimit', $remote_schema);
 
 					if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
 					{
@@ -632,7 +632,7 @@ if ($add)
 				&& (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq)
 				&& !count($errors))
 			{
-				$errors[] = 'De remote bestemmeling (Aan letscode) is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . readconfigfromdb('currency') . ').';
+				$errors[] = 'De remote bestemmeling (Aan letscode) is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $app['config']->get('currency') . ').';
 			}
 
 			if (count($errors))
@@ -770,7 +770,7 @@ if ($add)
 				$amount = $row['amount'];
 				if ($tus)
 				{
-					$amount = round((readconfigfromdb('currencyratio') * $amount) / readconfigfromdb('currencyratio', $tus));
+					$amount = round(($app['config']->get('currencyratio') * $amount) / $app['config']->get('currencyratio', $tus));
 				}
 				$transaction['amount'] = $amount;
 				$tuid = $row['tuid'];
@@ -805,7 +805,7 @@ if ($add)
 	$groups = [];
 
 	$groups[] = [
-		'groupname' => readconfigfromdb('systemname') . ' (eigen groep)',
+		'groupname' => $app['config']->get('systemname') . ' (eigen groep)',
 		'id'		=> 'self',
 	];
 
@@ -853,7 +853,7 @@ if ($add)
 		}
 	}
 
-	$groups_en = count($groups) > 1 && readconfigfromdb('currencyratio') > 0 ? true : false;
+	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio') > 0 ? true : false;
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
@@ -892,23 +892,23 @@ if ($add)
 
 	echo '<li class="info-balance">Huidige saldo: <span class="num">';
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
 	echo '<span class="num">';
-	echo readconfigfromdb('balance_equilibrium');
+	echo $app['config']->get('balance_equilibrium');
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
 	echo '<span class="num">';
-	echo readconfigfromdb('minlimit');
+	echo $app['config']->get('minlimit');
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '</ul>';
 */
@@ -954,12 +954,12 @@ if ($add)
 
 			if ($sch)
 			{
-				echo ' data-newuserdays="' . readconfigfromdb('newuserdays', $sch) . '"';
-				echo ' data-minlimit="' . readconfigfromdb('minlimit', $sch) . '"';
-				echo ' data-maxlimit="' . readconfigfromdb('maxlimit', $sch) . '"';
-				echo ' data-currency="' . readconfigfromdb('currency', $sch) . '"';
-				echo ' data-currencyratio="' . readconfigfromdb('currencyratio', $sch) . '"';
-				echo ' data-balance-equilibrium="' . readconfigfromdb('balance_equilibrium', $sch) . '"';
+				echo ' data-newuserdays="' . $app['config']->get('newuserdays', $sch) . '"';
+				echo ' data-minlimit="' . $app['config']->get('minlimit', $sch) . '"';
+				echo ' data-maxlimit="' . $app['config']->get('maxlimit', $sch) . '"';
+				echo ' data-currency="' . $app['config']->get('currency', $sch) . '"';
+				echo ' data-currencyratio="' . $app['config']->get('currencyratio', $sch) . '"';
+				echo ' data-balance-equilibrium="' . $app['config']->get('balance_equilibrium', $sch) . '"';
 			}
 
 			echo ' data-typeahead="' . $typeahead . '"';
@@ -973,23 +973,23 @@ if ($add)
 
 		echo '<li class="info-balance">Huidige saldo: <span class="num">';
 		echo '</span> <span class="cur">';
-		echo readconfigfromdb('currency') . '</span></li>';
+		echo $app['config']->get('currency') . '</span></li>';
 
 		echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
 		echo '</span> <span class="cur">';
-		echo readconfigfromdb('currency') . '</span></li>';
+		echo $app['config']->get('currency') . '</span></li>';
 
 		echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
 		echo '<span class="num">';
-		echo readconfigfromdb('balance_equilibrium');
+		echo $app['config']->get('balance_equilibrium');
 		echo '</span> <span class="cur">';
-		echo readconfigfromdb('currency') . '</span></li>';
+		echo $app['config']->get('currency') . '</span></li>';
 
 		echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
 		echo '<span class="num">';
-		echo readconfigfromdb('minlimit');
+		echo $app['config']->get('minlimit');
 		echo '</span> <span class="cur">';
-		echo readconfigfromdb('currency') . '</span></li>';
+		echo $app['config']->get('currency') . '</span></li>';
 
 		echo '</ul>';
 */
@@ -1026,7 +1026,7 @@ if ($add)
 		echo 'data-typeahead="' . $typeahead . '" ';
 	}
 
-	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
 
@@ -1039,23 +1039,23 @@ if ($add)
 /*
 	echo '<li class="info-balance">Huidige saldo: <span class="num">45';
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-maxlimit">Maximum limiet: <span class="num">';
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
 	echo '<span class="num">';
-	echo readconfigfromdb('balance_equilibrium');
+	echo $app['config']->get('balance_equilibrium');
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 
 	echo '<li class="info-group-maxlimit">Maximum groepslimiet: ';
 	echo '<span class="num">';
-	echo readconfigfromdb('maxlimit');
+	echo $app['config']->get('maxlimit');
 	echo '</span> <span class="cur">';
-	echo readconfigfromdb('currency') . '</span></li>';
+	echo $app['config']->get('currency') . '</span></li>';
 */
 	echo '</ul>';
 
@@ -1081,7 +1081,7 @@ if ($add)
 	echo '<div class="input-group">';
 
 	echo '<span class="input-group-addon">';
-	echo readconfigfromdb('currency');
+	echo $app['config']->get('currency');
 	echo '</span>';
 
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
@@ -1091,16 +1091,16 @@ if ($add)
 
 	echo '<ul>';
 
-	if (readconfigfromdb('currencyratio') > 0)
+	if ($app['config']->get('currencyratio') > 0)
 	{
 		echo '<li id="info_ratio">Valuatie: <span class="num">';
-		echo readconfigfromdb('currencyratio');
+		echo $app['config']->get('currencyratio');
 		echo '</span> per LETS uur</li>';
 	}
 
 /*
 	echo '<li id="info_amount">Maximum <span class="num"></span> ';
-	echo '<span class="cur">' . readconfigfromdb('currency') . '</span></li>';
+	echo '<span class="cur">' . $app['config']->get('currency') . '</span></li>';
 
 	echo '<li id="info_amount_unknown">Het maximum is niet gekend wegens ';
 	echo 'overschrijving naar een externe niet-eLAND installatie.</li>';
@@ -1362,7 +1362,7 @@ if ($edit)
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
-	echo $transaction['amount'] . ' ' . readconfigfromdb('currency');
+	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
 	echo '</dd>';
 
 	echo '<br>';
@@ -1398,11 +1398,11 @@ if ($edit)
 	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
 	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
 
-	if (readconfigfromdb('currencyratio') > 0)
+	if ($app['config']->get('currencyratio') > 0)
 	{
 		echo '<li>Valuatie: <span class="sum">';
-		echo readconfigfromdb('currencyratio');
-		echo '</span> ' . readconfigfromdb('currency') . ' per LETS-uur.</li>';
+		echo $app['config']->get('currencyratio');
+		echo '</span> ' . $app['config']->get('currency') . ' per LETS-uur.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1550,7 +1550,7 @@ if ($id)
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
-	echo $transaction['amount'] . ' ' . readconfigfromdb('currency');
+	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
 	echo '</dd>';
 
 	echo '<br>';
@@ -1573,11 +1573,11 @@ if ($id)
 
 	echo '<ul><small><i>';
 
-	if (readconfigfromdb('currencyratio') > 0)
+	if ($app['config']->get('currencyratio') > 0)
 	{
 		echo '<li>Valuatie: <span class="num">';
-		echo readconfigfromdb('currencyratio');
-		echo '</span> ' . readconfigfromdb('currency') . ' per LETS uur.</li>';
+		echo $app['config']->get('currencyratio');
+		echo '</span> ' . $app['config']->get('currency') . ' per LETS uur.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1774,7 +1774,7 @@ $tableheader_ary = [
 	'description' => array_merge($asc_preset_ary, [
 		'lbl' => 'Omschrijving']),
 	'amount' => array_merge($asc_preset_ary, [
-		'lbl' => readconfigfromdb('currency')]),
+		'lbl' => $app['config']->get('currency')]),
 	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'])
@@ -1931,7 +1931,7 @@ if (!$inline)
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
-	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 
@@ -2264,11 +2264,11 @@ else
 {
 	echo '<ul><small><i>';
 
-	if (readconfigfromdb('currencyratio') > 0)
+	if ($app['config']->get('currencyratio') > 0)
 	{
 		echo '<li>Valuatie: <span class="num">';
-		echo readconfigfromdb('currencyratio');
-		echo '</span> ' . readconfigfromdb('currency') . ' per LETS uur.</li>';
+		echo $app['config']->get('currencyratio');
+		echo '</span> ' . $app['config']->get('currency') . ' per LETS uur.</li>';
 	}
 
 	echo '</i></small></ul>';

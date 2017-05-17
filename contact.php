@@ -6,7 +6,7 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 
-if (!readconfigfromdb('contact_form_en'))
+if (!$app['config']->get('contact_form_en'))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
@@ -48,8 +48,8 @@ if ($token)
 			'browser'		=> $data['browser'],
 			'mail'			=> $data['mail'],
 			'group'			=> [
-				'name' =>	readconfigfromdb('systemname'),
-				'tag' => 	readconfigfromdb('systemtag'),
+				'name' =>	$app['config']->get('systemname'),
+				'tag' => 	$app['config']->get('systemtag'),
 			],
 		];
 
@@ -68,7 +68,7 @@ if ($token)
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
-		$success_text = readconfigfromdb('contact_form_success_text');
+		$success_text = $app['config']->get('contact_form_success_text');
 
 		header('Location: ' . generate_url('contact'));
 		exit;
@@ -112,7 +112,7 @@ if($post && isset($_POST['zend']))
 		$errors[] = 'Geef een bericht in.';
 	}
 
-	if (!trim(readconfigfromdb('support')))
+	if (!trim($app['config']->get('support')))
 	{
 		$errors[] = 'Het support mailadres is niet ingesteld op deze installatie';
 	}
@@ -145,8 +145,8 @@ if($post && isset($_POST['zend']))
 
 		$vars = [
 			'group' => [
-				'tag'	=> readconfigfromdb('systemtag'),
-				'name'	=> readconfigfromdb('systemname'),
+				'tag'	=> $app['config']->get('systemtag'),
+				'name'	=> $app['config']->get('systemname'),
 			],
 			'contact_url'	=> $app['base_url'] . '/contact.php',
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
@@ -178,11 +178,11 @@ else
 	$mail = '';
 }
 
-if (!readconfigfromdb('mailenabled'))
+if (!$app['config']->get('mailenabled'))
 {
 	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
-else if (!readconfigfromdb('support'))
+else if (!$app['config']->get('support'))
 {
 	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
@@ -194,7 +194,7 @@ $fa = 'comment-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = readconfigfromdb('contact_form_top_text');
+$top_text = $app['config']->get('contact_form_top_text');
 
 if ($top_text)
 {
@@ -231,7 +231,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = readconfigfromdb('contact_form_bottom_text');
+$bottom_text = $app['config']->get('contact_form_bottom_text');
 
 if ($bottom_text)
 {

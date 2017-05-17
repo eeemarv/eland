@@ -50,7 +50,7 @@ $landing_page_options = [
 
 unset($periodic_mail_item_show_options_not_all['all']);
 
-$currency = readconfigfromdb('currency');
+$currency = $app['config']->get('currency');
 
 $tab_panes = [
 
@@ -423,13 +423,13 @@ foreach ($tab_panes as $pane)
 			{
 				foreach ($input['inputs'] as $sub_name => $sub_input)
 				{
-					$config[$sub_name] = readconfigfromdb($sub_name);
+					$config[$sub_name] = $app['config']->get($sub_name);
 				}
 
 				continue;
 			}
 
-			$config[$name] = readconfigfromdb($name);
+			$config[$name] = $app['config']->get($name);
 		}
 	}
 }

@@ -28,10 +28,10 @@ if ($token)
 
 				$vars = [
 					'group'		=> [
-						'name'		=> readconfigfromdb('systemname'),
-						'tag'		=> readconfigfromdb('systemtag'),
-						'currency'	=> readconfigfromdb('currency'),
-						'support'	=> readconfigfromdb('support'),
+						'name'		=> $app['config']->get('systemname'),
+						'tag'		=> $app['config']->get('systemtag'),
+						'currency'	=> $app['config']->get('currency'),
+						'support'	=> $app['config']->get('support'),
 					],
 					'password'	=> $password,
 					'user'		=> $user,
@@ -133,10 +133,10 @@ if (isset($_POST['zend']))
 
 				$vars = [
 					'group'		=> [
-						'name'		=> readconfigfromdb('systemname'),
-						'tag'		=> readconfigfromdb('systemtag'),
-						'currency'	=> readconfigfromdb('currency'),
-						'support'	=> readconfigfromdb('support'),
+						'name'		=> $app['config']->get('systemname'),
+						'tag'		=> $app['config']->get('systemtag'),
+						'currency'	=> $app['config']->get('currency'),
+						'support'	=> $app['config']->get('support'),
 					],
 					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,

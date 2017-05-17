@@ -32,7 +32,7 @@ if (!($s_user || $s_admin))
 
 $submit = isset($_POST['zend']) ? true : false;
 
-if (!readconfigfromdb('forum_en'))
+if (!$app['config']->get('forum_en'))
 {
 	$app['alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_default_page();

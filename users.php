@@ -151,15 +151,15 @@ if ($user_mail_submit && $id && $post)
 
 	$vars = [
 		'group'		=> [
-			'tag'	=> readconfigfromdb('systemtag'),
-			'name'	=> readconfigfromdb('systemname'),
+			'tag'	=> $app['config']->get('systemtag'),
+			'name'	=> $app['config']->get('systemname'),
 		],
 		'to_user'		=> link_user($user, false, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : readconfigfromdb('systemname'),
-		'from_group'	=> $s_group_self ? '' : readconfigfromdb('systemname', $s_schema),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname'),
+		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
 		'login_url'		=> $app['base_url'].'/login.php',
@@ -403,7 +403,7 @@ if ($bulk_submit && $post && $s_admin)
 			$errors[] = 'Het mail bericht is leeg.';
 		}
 
-		if (!readconfigfromdb('mailenabled'))
+		if (!$app['config']->get('mailenabled'))
 		{
 			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
@@ -774,10 +774,10 @@ if ($pw)
 					{
 						$vars = [
 							'group'		=> [
-								'name'		=> readconfigfromdb('systemname'),
-								'tag'		=> readconfigfromdb('systemtag'),
-								'support'	=> readconfigfromdb('support'),
-								'currency'	=> readconfigfromdb('currency'),
+								'name'		=> $app['config']->get('systemname'),
+								'tag'		=> $app['config']->get('systemtag'),
+								'support'	=> $app['config']->get('support'),
+								'currency'	=> $app['config']->get('currency'),
 							],
 							'user'			=> $user,
 							'password'		=> $password,
@@ -1091,8 +1091,8 @@ if ($add || $edit)
 	}
 	else if ($s_owner)
 	{
-		$username_edit = readconfigfromdb('users_can_edit_username');
-		$fullname_edit = readconfigfromdb('users_can_edit_fullname');
+		$username_edit = $app['config']->get('users_can_edit_username');
+		$fullname_edit = $app['config']->get('users_can_edit_fullname');
 	}
 	else
 	{
@@ -1443,7 +1443,7 @@ if ($add || $edit)
 						{
 							$user['mail'] = $mailadr;
 
-							if (readconfigfromdb('mailenabled'))
+							if ($app['config']->get('mailenabled'))
 							{
 								send_activation_mail($password, $user);
 
@@ -1569,7 +1569,7 @@ if ($add || $edit)
 						{
 							if ($notify && !empty($mailadr) && $password)
 							{
-								if (readconfigfromdb('mailenabled'))
+								if ($app['config']->get('mailenabled'))
 								{
 									$user['mail'] = $mailadr;
 
@@ -1672,8 +1672,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> readconfigfromdb('preset_minlimit'),
-				'maxlimit'		=> readconfigfromdb('preset_maxlimit'),
+				'minlimit'		=> $app['config']->get('preset_minlimit'),
+				'maxlimit'		=> $app['config']->get('preset_maxlimit'),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -1696,7 +1696,7 @@ if ($add || $edit)
 						{
 							$remote_schema = $app['groups']->get_schema($group['domain']);
 
-							$admin_mail = readconfigfromdb('admin', $remote_schema);
+							$admin_mail = $app['config']->get('admin', $remote_schema);
 
 							foreach ($contact as $k => $c)
 							{
@@ -1708,7 +1708,7 @@ if ($add || $edit)
 							}
 
 							// name from source is preferable
-							$user['name'] = $user['fullname'] = readconfigfromdb('systemname', $remote_schema);
+							$user['name'] = $user['fullname'] = $app['config']->get('systemname', $remote_schema);
 						}
 					}
 				}
@@ -1933,14 +1933,14 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'minimum groepslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if (readconfigfromdb('minlimit') === '')
+		if ($app['config']->get('minlimit') === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen geledende minimum groepslimiet ingesteld.';
 		}
 		else
 		{
 			echo 'De algemeen geldende minimum groepslimiet bedraagt <strong>';
-			echo readconfigfromdb('minlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
+			echo $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -1949,9 +1949,9 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele minimum limiet') . ' ';
 		echo 'is ingevuld in de instellingen.';
 
-		if (readconfigfromdb('preset_minlimit') !== '')
+		if ($app['config']->get('preset_minlimit') !== '')
 		{
-			echo ' De preset bedraagt momenteel <strong>' . readconfigfromdb('preset_minlimit') . '</strong>.';
+			echo ' De preset bedraagt momenteel <strong>' . $app['config']->get('preset_minlimit') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -1969,14 +1969,14 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'maximum groepslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if (readconfigfromdb('maxlimit') === '')
+		if ($app['config']->get('maxlimit') === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen geledende maximum groepslimiet ingesteld.';
 		}
 		else
 		{
 			echo 'De algemeen geldende maximum groepslimiet bedraagt <strong>';
-			echo readconfigfromdb('maxlimit') . ' ' . readconfigfromdb('currency') . '</strong>.';
+			echo $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -1985,9 +1985,9 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele maximum limiet') . ' ';
 		echo 'is ingevuld in de instellingen.';
 
-		if (readconfigfromdb('preset_maxlimit') !== '')
+		if ($app['config']->get('preset_maxlimit') !== '')
 		{
-			echo ' De preset bedraagt momenteel <strong>' . readconfigfromdb('preset_maxlimit') . '</strong>.';
+			echo ' De preset bedraagt momenteel <strong>' . $app['config']->get('preset_maxlimit') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -2432,7 +2432,7 @@ if ($id)
 	echo '<dt>Saldo</dt>';
 	echo '<dd>';
 	echo '<span class="label label-info">' . $user['saldo'] . '</span>&nbsp;';
-	echo readconfigfromdb('currency');
+	echo $app['config']->get('currency');
 	echo '</dd>';
 
 	if ($user['minlimit'] !== '')
@@ -2440,7 +2440,7 @@ if ($id)
 		echo '<dt>Minimum limiet</dt>';
 		echo '<dd>';
 		echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
-		echo readconfigfromdb('currency');
+		echo $app['config']->get('currency');
 		echo '</dd>';
 	}
 
@@ -2449,7 +2449,7 @@ if ($id)
 		echo '<dt>Maximum limiet</dt>';
 		echo '<dd>';
 		echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
-		echo readconfigfromdb('currency');
+		echo $app['config']->get('currency');
 		echo '</dd>';
 	}
 
@@ -2533,7 +2533,7 @@ if ($id)
 	echo '<div class="col-md-12">';
 
 	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
-	echo readconfigfromdb('currency') . '</h3>';
+	echo $app['config']->get('currency') . '</h3>';
 	echo '</div></div>';
 
 	echo '<div class="row print-hide">';
@@ -2664,9 +2664,9 @@ if ($v_list && $s_admin)
 		'trans_in'		=> 'Transacties in',
 		'trans_out'		=> 'Transacties uit',
 		'trans_total'	=> 'Transacties totaal',
-		'amount_in'		=> readconfigfromdb('currency') . ' in',
-		'amount_out'	=> readconfigfromdb('currency') . ' uit',
-		'amount_total'	=> readconfigfromdb('currency') . ' totaal',
+		'amount_in'		=> $app['config']->get('currency') . ' in',
+		'amount_out'	=> $app['config']->get('currency') . ' uit',
+		'amount_total'	=> $app['config']->get('currency') . ' totaal',
 	];
 
 	$users = $app['db']->fetchAll('select u.*
@@ -3146,7 +3146,7 @@ if ($s_admin && $v_list)
 			echo '<input type="text" name="sh[p][activity_filter_letscode]" ';
 			echo 'value="' . $activity_filter_letscode . '" ';
 			echo 'class="form-control" ';
-			echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+			echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 			echo 'data-typeahead="';
 			echo $app['typeahead']->get(['users_active', 'users_extern',
 				'users_inactive', 'users_im', 'users_ip']);
@@ -3493,7 +3493,7 @@ if ($v_list)
 	echo '</div></div>';
 
 	echo '<div class="row"><div class="col-md-12">';
-	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . readconfigfromdb('currency') . '</span></p>';
+	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $app['config']->get('currency') . '</span></p>';
 	echo '</div></div>';
 
 /*
@@ -3836,8 +3836,8 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'	=> readconfigfromdb('systemname'),
-			'tag'	=> readconfigfromdb('systemtag'),
+			'name'	=> $app['config']->get('systemname'),
+			'tag'	=> $app['config']->get('systemtag'),
 		],
 		'user'			=> link_user($user, false, false),
 		'user_mail'		=> $user['mail'],
@@ -3851,10 +3851,10 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'		=> readconfigfromdb('systemname'),
-			'tag'		=> readconfigfromdb('systemtag'),
-			'support'	=> readconfigfromdb('support'),
-			'currency'	=> readconfigfromdb('currency'),
+			'name'		=> $app['config']->get('systemname'),
+			'tag'		=> $app['config']->get('systemtag'),
+			'support'	=> $app['config']->get('support'),
+			'currency'	=> $app['config']->get('currency'),
 		],
 		'user'		=> $user,
 		'password'	=> $password,

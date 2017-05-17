@@ -565,15 +565,15 @@ if ($mail && $post && $id)
 
 	$vars = [
 		'group'		=> [
-			'tag'	=> readconfigfromdb('systemtag'),
-			'name'	=> readconfigfromdb('systemname'),
+			'tag'	=> $app['config']->get('systemtag'),
+			'name'	=> $app['config']->get('systemname'),
 		],
 		'to_user'		=> link_user($user, false, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : readconfigfromdb('systemname'),
-		'from_group'	=> $s_group_self ? '' : readconfigfromdb('systemname', $s_schema),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname'),
+		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
@@ -781,7 +781,7 @@ if (($edit || $add))
 
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
-			$errors[] = 'De (richt)prijs in ' . readconfigfromdb('currency') . ' moet nul of een positief getal zijn.';
+			$errors[] = 'De (richt)prijs in ' . $app['config']->get('currency') . ' moet nul of een positief getal zijn.';
 		}
 
 		if (!$msg['id_category'])
@@ -1091,7 +1091,7 @@ if (($edit || $add))
 	else if ($add)
 	{
 		$msg = [
-			'validity'		=> readconfigfromdb('msgs_days_default'),
+			'validity'		=> $app['config']->get('msgs_days_default'),
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> '1',
@@ -1163,7 +1163,7 @@ if (($edit || $add))
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
-		echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+		echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 		echo 'value="' . $user_letscode . '" required>';
 		echo '</div>';
 		echo '</div>';
@@ -1213,7 +1213,7 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . readconfigfromdb('currency') . '</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $app['config']->get('currency') . '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
 	echo 'value="' . $msg['amount'] . '">';
@@ -1516,14 +1516,14 @@ if ($id)
 	echo '</dt>';
 	echo '<dd>';
 	$units = ($message['units']) ? ' per ' . $message['units'] : '';
-	echo (empty($message['amount'])) ? 'niet opgegeven.' : $message['amount'] . ' ' . readconfigfromdb('currency') . $units;
+	echo (empty($message['amount'])) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency') . $units;
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
 	echo '</dt>';
 	echo '<dd>';
 	echo link_user($user);
-	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .readconfigfromdb('currency') . ')';
+	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .$app['config']->get('currency') . ')';
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';
@@ -2105,7 +2105,7 @@ if (!$inline)
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
-	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
+	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
 	echo '</div>';
