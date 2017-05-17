@@ -36,13 +36,13 @@ if ($add)
 {
 	if ($s_guest)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
+		$app['alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
 		cancel();
 	}
 
 	$transaction = [];
 
-	$redis_transid_key = $app['eland.this_group']->get_schema() . '_transid_u_' . $s_id;
+	$redis_transid_key = $app['this_group']->get_schema() . '_transid_u_' . $s_id;
 
 	if ($submit)
 	{
@@ -248,7 +248,7 @@ if ($add)
 			}
 		}
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -266,7 +266,7 @@ if ($add)
 
 		if(count($errors))
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 		}
 		else if ($group_id == 'self')
 		{
@@ -274,11 +274,11 @@ if ($add)
 			{
 				$transaction['id'] = $id;
 				mail_transaction($transaction);
-				$app['eland.alert']->success('Transactie opgeslagen');
+				$app['alert']->success('Transactie opgeslagen');
 			}
 			else
 			{
-				$app['eland.alert']->error('Gefaalde transactie');
+				$app['alert']->error('Gefaalde transactie');
 			}
 
 			cancel();
@@ -292,28 +292,28 @@ if ($add)
 
 				mail_mailtype_interlets_transaction($transaction);
 
-				$app['eland.alert']->success('Interlets transactie opgeslagen (verwerking per mail).');
+				$app['alert']->success('Interlets transactie opgeslagen (verwerking per mail).');
 			}
 			else
 			{
-				$app['eland.alert']->error('Gefaalde interlets transactie');
+				$app['alert']->error('Gefaalde interlets transactie');
 			}
 
 			cancel();
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
-			$app['eland.alert']->error('Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
+			$app['alert']->error('Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$group_domain)
 		{
-			$app['eland.alert']->error('Geen url voor interlets groep ' . $group['groupname'] . '. ' . $contact_admin);
+			$app['alert']->error('Geen url voor interlets groep ' . $group['groupname'] . '. ' . $contact_admin);
 
 			cancel();
 		}
-		else if (!$app['eland.groups']->get_schema($group_domain))
+		else if (!$app['groups']->get_schema($group_domain))
 		{
 			// The interlets group uses eLAS or is on another server
 
@@ -341,7 +341,7 @@ if ($add)
 
 			if (strlen($letscode_to))
 			{
-				$active_users = $app['eland.cache']->get($group['domain'] . '_typeahead_data');
+				$active_users = $app['cache']->get($group['domain'] . '_typeahead_data');
 
 				$user_letscode_found = false;
 
@@ -370,7 +370,7 @@ if ($add)
 
 			if (count($errors))
 			{
-				$app['eland.alert']->error($errors);
+				$app['alert']->error($errors);
 				cancel();
 			}
 
@@ -391,7 +391,7 @@ if ($add)
 
 			if ($error)
 			{
-				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				$app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();
 			}
 
@@ -410,7 +410,7 @@ if ($add)
 
 			if ($error)
 			{
-				$app['eland.alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+				$app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
 				cancel();
 			}
 
@@ -451,7 +451,7 @@ if ($add)
 
 			if (count($errors))
 			{
-				$app['eland.alert']->error($errors);
+				$app['alert']->error($errors);
 				cancel();
 			}
 
@@ -467,13 +467,13 @@ if ($add)
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 				$text .= ' group:' . $group['groupname'];
 
-				$app['eland.queue.mail']->queue([
+				$app['queue.mail']->queue([
 					'to' => 'admin',
 					'subject' => $subject,
 					'text' => $text,
 				]);
 
-				$app['eland.alert']->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
+				$app['alert']->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
 				cancel();
 			}
 
@@ -481,14 +481,14 @@ if ($add)
 
 			mail_transaction($transaction);
 
-			$app['eland.alert']->success('De interlets transactie werd verwerkt.');
+			$app['alert']->success('De interlets transactie werd verwerkt.');
 			cancel();
 		}
 		else
 		{
 			// the interlets group is on the same server (eLAND)
 
-			$remote_schema = $app['eland.groups']->get_schema($group_domain);
+			$remote_schema = $app['groups']->get_schema($group_domain);
 
 			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -505,7 +505,7 @@ if ($add)
 
 			$remote_group = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.letsgroups
-				where url = ?', [$app['eland.base_url']]);
+				where url = ?', [$app['base_url']]);
 
 			if (!$remote_group && !count($errors))
 			{
@@ -637,7 +637,7 @@ if ($add)
 
 			if (count($errors))
 			{
-				$app['eland.alert']->error($errors);
+				$app['alert']->error($errors);
 //				cancel();
 			}
 			else
@@ -686,7 +686,7 @@ if ($add)
 				catch(Exception $e)
 				{
 					$app['db']->rollback();
-					$app['eland.alert']->error('Transactie niet gelukt.');
+					$app['alert']->error('Transactie niet gelukt.');
 					throw $e;
 					exit;
 				}
@@ -709,10 +709,10 @@ if ($add)
 					$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 					$to_remote_user['name'], ['schema' => $remote_schema]);
 
-				$app['eland.autominlimit']->init()
+				$app['autominlimit']->init()
 					->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-				$app['eland.alert']->success('Interlets transactie uitgevoerd.');
+				$app['alert']->success('Interlets transactie uitgevoerd.');
 				cancel();
 			}
 		}
@@ -743,13 +743,13 @@ if ($add)
 
 		if ($tus)
 		{
-			if ($app['eland.groups']->get_host($tus))
+			if ($app['groups']->get_host($tus))
 			{
-				$host_from_tus = $app['eland.groups']->get_host($tus);
+				$host_from_tus = $app['groups']->get_host($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
 					from letsgroups
-					where url = ?', [$app['eland.protocol'] . $host_from_tus]);
+					where url = ?', [$app['protocol'] . $host_from_tus]);
 				$to_schema_table = $tus . '.';
 			}
 		}
@@ -792,13 +792,13 @@ if ($add)
 			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
 		}
 
-		if ($tuid == $s_id && !$fuid && $tus != $app['eland.this_group']->get_schema())
+		if ($tuid == $s_id && !$fuid && $tus != $app['this_group']->get_schema())
 		{
 			$transaction['letscode_from'] = '';
 		}
 	}
 
-	$app['eland.assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
+	$app['assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
 
 	$balance = $session_user['saldo'];
 
@@ -815,7 +815,7 @@ if ($add)
 
 		foreach ($eland_interlets_groups as $h)
 		{
-			$urls[] = $app['eland.protocol'] . $h;
+			$urls[] = $app['protocol'] . $h;
 		}
 
 		$eland_groups = $app['db']->executeQuery('select id, groupname, url
@@ -939,17 +939,17 @@ if ($add)
 					$typeahead = 'users_active';
 				}
 
-				$typeahead = $app['eland.typeahead']->get($typeahead);
+				$typeahead = $app['typeahead']->get($typeahead);
 
-				$sch = $app['eland.this_group']->get_schema();
+				$sch = $app['this_group']->get_schema();
 			}
 			else
 			{
 				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
 
-				$typeahead = $app['eland.typeahead']->get('users_active', $domain, $l['id']);
+				$typeahead = $app['typeahead']->get('users_active', $domain, $l['id']);
 
-				$sch = $app['eland.groups']->get_schema($domain);
+				$sch = $app['groups']->get_schema($domain);
 			}
 
 			if ($sch)
@@ -1007,7 +1007,7 @@ if ($add)
 			$typeahead = 'users_active';
 		}
 
-		$typeahead = $app['eland.typeahead']->get($typeahead);
+		$typeahead = $app['typeahead']->get($typeahead);
 
 		echo '<input type="hidden" id="group_id" name="group_id" value="self">';
 	}
@@ -1142,7 +1142,7 @@ if ($add)
 
 	echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';
@@ -1166,7 +1166,7 @@ if ($add)
  * interlets accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['eland.interlets_groups']->get_eland_accounts_schemas($app['eland.this_group']->get_schema());
+$interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['this_group']->get_schema());
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 
@@ -1213,13 +1213,13 @@ if ($edit)
 {
 	if (!$s_admin)
 	{
-		$app['eland.alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
 		cancel($edit);
 	}
 
 	if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
 	{
-		$app['eland.alert']->error('De omschrijving van een transactie naar een eLAS installatie kan niet aangepast worden.');
+		$app['alert']->error('De omschrijving van een transactie naar een eLAS installatie kan niet aangepast worden.');
 		cancel($edit);
 	}
 
@@ -1227,7 +1227,7 @@ if ($edit)
 	{
 		$description = trim($_POST['description'] ?? '');
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -1254,12 +1254,12 @@ if ($edit)
 			$app['monolog']->info('Transaction description edited from "' . $transaction['description'] .
 				'" to "' . $description . '", transid: ' . $transaction['transid']);
 
-			$app['eland.alert']->success('Omschrijving transactie aangepast.');
+			$app['alert']->success('Omschrijving transactie aangepast.');
 
 			cancel($id);
 		}
 
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
@@ -1280,7 +1280,7 @@ if ($edit)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['eland.date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate']);
 	echo '</dd>';
 
 	echo '<br>';
@@ -1385,7 +1385,7 @@ if ($edit)
 
 	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';
@@ -1468,7 +1468,7 @@ if ($id)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['eland.date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate']);
 	echo '</dd>';
 
 	echo '<br>';
@@ -1679,11 +1679,11 @@ $where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
-	$fdate_sql = $app['eland.date_format']->reverse($fdate);
+	$fdate_sql = $app['date_format']->reverse($fdate);
 
 	if ($fdate_sql === false)
 	{
-		$app['eland.alert']->warning('De begindatum is fout geformateerd.');
+		$app['alert']->warning('De begindatum is fout geformateerd.');
 	}
 	else
 	{
@@ -1695,11 +1695,11 @@ if ($fdate)
 
 if ($tdate)
 {
-	$tdate_sql = $app['eland.date_format']->reverse($tdate);
+	$tdate_sql = $app['date_format']->reverse($tdate);
 
 	if ($tdate_sql === false)
 	{
-		$app['eland.alert']->warning('De einddatum is fout geformateerd.');
+		$app['alert']->warning('De einddatum is fout geformateerd.');
 	}
 	else
 	{
@@ -1763,7 +1763,7 @@ foreach ($transactions as $key => $t)
 $row_count = $app['db']->fetchColumn('select count(t.*)
 	from transactions t ' . $where_sql, $params_sql);
 
-$app['eland.pagination']->init('transactions', $row_count, $params, $inline);
+$app['pagination']->init('transactions', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -1883,7 +1883,7 @@ if (!$inline)
 	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
 
-	$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
+	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
 	include __DIR__ . '/include/header.php';
 
@@ -1930,7 +1930,7 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" ';
+	echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 	echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="letscode" ';
 	echo 'value="' . $fcode . '">';
@@ -1975,7 +1975,7 @@ if (!$inline)
 	echo 'id="fdate" name="fdate" ';
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
@@ -1983,7 +1983,7 @@ if (!$inline)
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -1999,14 +1999,14 @@ if (!$inline)
 	echo 'id="tdate" name="tdate" ';
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -2054,7 +2054,7 @@ else
 	echo '</h3>';
 }
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 if (!count($transactions))
 {
@@ -2063,7 +2063,7 @@ if (!count($transactions))
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
-	$app['eland.pagination']->render();
+	$app['pagination']->render();
 
 	if (!$inline)
 	{
@@ -2122,7 +2122,7 @@ if ($uid)
 		echo '</span></td>';
 
 		echo '<td>';
-		echo $app['eland.date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';
@@ -2194,7 +2194,7 @@ else
 		echo '</td>';
 
 		echo '<td>';
-		echo $app['eland.date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate']);
 		echo '</td>';
 
 		echo '<td>';
@@ -2254,7 +2254,7 @@ else
 }
 echo '</table></div></div>';
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 if ($inline)
 {

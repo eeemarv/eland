@@ -12,18 +12,18 @@ if ($del)
 {
 	if($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('apikeys', ['id' => $del]))
 		{
-			$app['eland.alert']->success('Apikey verwijderd.');
+			$app['alert']->success('Apikey verwijderd.');
 			cancel();
 		}
-		$app['eland.alert']->error('Apikey niet verwijderd.');
+		$app['alert']->error('Apikey niet verwijderd.');
 	}
 	$apikey = $app['db']->fetchAssoc('SELECT * FROM apikeys WHERE id = ?', [$del]);
 
@@ -44,7 +44,7 @@ if ($del)
 	echo '</dl>';
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 	echo '</form>';
 
 	echo '</div>';
@@ -62,9 +62,9 @@ if ($add)
 {
 	if ($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
@@ -76,15 +76,15 @@ if ($add)
 
 		if($app['db']->insert('apikeys', $apikey))
 		{
-			$app['eland.alert']->success('Apikey opgeslagen.');
+			$app['alert']->success('Apikey opgeslagen.');
 			cancel();
 		}
-		$app['eland.alert']->error('Apikey niet opgeslagen.');
+		$app['alert']->error('Apikey niet opgeslagen.');
 	}
 
 	$key = sha1(readconfigfromdb('systemname') . microtime());
 
-	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true); 
+	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true);
 
 	$h1 = 'Apikey toevoegen';
 	$fa = 'key';
@@ -114,7 +114,7 @@ if ($add)
 
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -160,7 +160,7 @@ foreach($apikeys as $a)
 	echo '<td>' . $a['id'] . '</td>';
 	echo '<td>' . $a['comment'] . '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
-	echo $app['eland.date_format']->get_td($a['created']);
+	echo $app['date_format']->get_td($a['created']);
 	echo '<td>';
 	echo aphp('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	echo '</td>';

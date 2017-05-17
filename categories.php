@@ -32,7 +32,7 @@ if ($add)
 			$errors[] = 'Vul hoofdrubriek in!';
 		}
 
-		if ($token_error = $app['eland.form_token']->get_error())
+		if ($token_error = $app['form_token']->get_error())
 		{
 			$errors[] = $token_error;
 		}
@@ -46,15 +46,15 @@ if ($add)
 
 			if ($app['db']->insert('categories', $cat))
 			{
-				$app['eland.alert']->success('Categorie toegevoegd.');
+				$app['alert']->success('Categorie toegevoegd.');
 				cancel();
 			}
 
-			$app['eland.alert']->error('Categorie niet toegevoegd.');
+			$app['alert']->error('Categorie niet toegevoegd.');
 		}
 		else
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 		}
 	}
 
@@ -100,7 +100,7 @@ if ($add)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -141,19 +141,19 @@ if ($edit)
 
 		if (!$cat['name'])
 		{
-			$app['eland.alert']->error('Vul naam in!');	
+			$app['alert']->error('Vul naam in!');
 		}
 		else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 		{
-			$app['eland.alert']->error('Hoofdcategoriën kunnen geen berichten bevatten.');
+			$app['alert']->error('Hoofdcategoriën kunnen geen berichten bevatten.');
 		}
 		else if ($cat['leafnote'] && $child_count_ary[$edit])
 		{
-			$app['eland.alert']->error('Subcategoriën kunnen geen categoriën bevatten.');
+			$app['alert']->error('Subcategoriën kunnen geen categoriën bevatten.');
 		}
-		else if ($token_error = $app['eland.form_token']->get_error())
+		else if ($token_error = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($token_error);
+			$app['alert']->error($token_error);
 		}
 		else
 		{
@@ -163,12 +163,12 @@ if ($edit)
 
 			if ($app['db']->update('categories', $cat, ['id' => $edit]))
 			{
-				$app['eland.alert']->success('Categorie aangepast.');
+				$app['alert']->success('Categorie aangepast.');
 				$app['db']->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', [$cat['name'], $edit]);
 				cancel();
 			}
 
-			$app['eland.alert']->error('Categorie niet aangepast.');
+			$app['alert']->error('Categorie niet aangepast.');
 		}
 	}
 
@@ -215,7 +215,7 @@ if ($edit)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -230,19 +230,19 @@ if ($del)
 {
 	if(isset($_POST['zend']))
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('categories', ['id' => $del]))
 		{
-			$app['eland.alert']->success('Categorie verwijderd.');
+			$app['alert']->success('Categorie verwijderd.');
 			cancel();
 		}
 
-		$app['eland.alert']->error('Categorie niet verwijderd.');
+		$app['alert']->error('Categorie niet verwijderd.');
 	}
 
 	$fullname = $app['db']->fetchColumn('SELECT fullname FROM categories WHERE id = ?', [$del]);
@@ -261,7 +261,7 @@ if ($del)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 	echo '</form>';
 
 	echo '</div>';
@@ -363,7 +363,7 @@ function cancel($id = '')
 	{
 		$params['id'] = $id;
 	}
-	
+
 	header('Location: ' . generate_url('categories', $params));
 	exit;
 }

@@ -102,7 +102,7 @@ foreach ($export_ary as $ex_key => $export)
 {
 	if (isset($_GET['db']) && function_exists('exec'))
 	{
-		$schema = $app['eland.this_group']->get_schema();
+		$schema = $app['this_group']->get_schema();
 		$filename = $schema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
 
 		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $schema . ' --no-owner --no-acl > ' . $filename);
@@ -178,7 +178,7 @@ foreach ($export_ary as $ex_key => $export)
 
 	$buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
 	$buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom">';
-	$buttons .= '<input type="hidden" value="admin" name="r">';	
+	$buttons .= '<input type="hidden" value="admin" name="r">';
 	$buttons .= '<input type="hidden" value="' . $s_id . '" name="u">';
 	$buttons .= '</form>';
 }

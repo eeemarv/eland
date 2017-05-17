@@ -55,10 +55,10 @@ if ($monitor)
 
 if ($token)
 {
-	if($apikey = $app['predis']->get($app['eland.this_group']->get_schema() . '_token_' . $token))
+	if($apikey = $app['predis']->get($app['this_group']->get_schema() . '_token_' . $token))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['eland.this_group']->get_schema()] = 'elas';
+		$logins[$app['this_group']->get_schema()] = 'elas';
 		$app['session']->set('logins', $logins);
 
 		$param = 'welcome=1&r=guest&u=elas';
@@ -69,7 +69,7 @@ if ($token)
 		{
 			// record logins to link the apikeys to domains and groups
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
-			$app['eland.xdb']->set('apikey_login', $apikey, ['domain' => $domain_referrer]);
+			$app['xdb']->set('apikey_login', $apikey, ['domain' => $domain_referrer]);
 		}
 
 		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: ' . $referrer);
@@ -80,7 +80,7 @@ if ($token)
 	}
 	else
 	{
-		$app['eland.alert']->error('De interlets login is mislukt.');
+		$app['alert']->error('De interlets login is mislukt.');
 	}
 }
 
@@ -99,10 +99,10 @@ if ($submit)
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['eland.this_group']->get_schema()] = 'master';
+		$logins[$app['this_group']->get_schema()] = 'master';
 		$app['session']->set('logins', $logins);
 
-		$app['eland.alert']->success('OK - Gebruiker ingelogd als master.');
+		$app['alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
 		exit;
@@ -228,11 +228,11 @@ if ($submit)
 	if (!count($errors))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['eland.this_group']->get_schema()] = $user['id'];
+		$logins[$app['this_group']->get_schema()] = $user['id'];
 		$app['session']->set('logins', $logins);
 
 		$s_id = $user['id'];
-		$s_schema = $app['eland.this_group']->get_schema();
+		$s_schema = $app['this_group']->get_schema();
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
@@ -241,9 +241,9 @@ if ($submit)
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		readuser($user['id'], true);
 
-		$app['eland.xdb']->set('login', $user['id'], ['browser' => $browser, 'time' => time()], $s_schema);
+		$app['xdb']->set('login', $user['id'], ['browser' => $browser, 'time' => time()], $s_schema);
 
-		$app['eland.alert']->success('Je bent ingelogd.');
+		$app['alert']->success('Je bent ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 
@@ -253,12 +253,12 @@ if ($submit)
 		exit;
 	}
 
-	$app['eland.alert']->error($errors);
+	$app['alert']->error($errors);
 }
 
 if(readconfigfromdb('maintenance'))
 {
-	$app['eland.alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
+	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
 }
 
 $h1 = 'Login';

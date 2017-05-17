@@ -34,15 +34,15 @@ $balance = (int) $user['saldo'];
 $begin_date = date('Y-m-d H:i:s', time() - (86400 * $days));
 $end_date = date('Y-m-d H:i:s');
 
-$query = 'SELECT t.id, t.amount, t.id_from, t.id_to, 
-		t.real_from, t.real_to, t.date, t.description, 
-		u.id as user_id, u.name, u.letscode, u.accountrole, u.status 
+$query = 'SELECT t.id, t.amount, t.id_from, t.id_to,
+		t.real_from, t.real_to, t.date, t.description,
+		u.id as user_id, u.name, u.letscode, u.accountrole, u.status
 	FROM transactions t, users u
-	WHERE (t.id_to = ? OR t.id_from = ?) 
-		AND (u.id = t.id_to OR u.id = t.id_from) 
-		AND u.id <> ? 
-		AND t.date >= ? 
-		AND t.date <= ? 
+	WHERE (t.id_to = ? OR t.id_from = ?)
+		AND (u.id = t.id_to OR u.id = t.id_from)
+		AND u.id <> ?
+		AND t.date >= ?
+		AND t.date <= ?
 	ORDER BY t.date DESC';
 $trans = $app['db']->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
@@ -64,7 +64,7 @@ foreach ($trans as $t)
 	{
 		$group = $_groups[$t['letscode']];
 
-		if ($sch = $app['eland.groups']->get_schema($group['domain']))
+		if ($sch = $app['groups']->get_schema($group['domain']))
 		{
 			list($code, $name) = explode(' ', $real);
 		}

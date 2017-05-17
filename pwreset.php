@@ -8,7 +8,7 @@ $token = $_GET['token'] ?? false;
 
 if ($token)
 {
-	$data = $app['predis']->get($app['eland.this_group']->get_schema() . '_token_' . $token);
+	$data = $app['predis']->get($app['this_group']->get_schema() . '_token_' . $token);
 	$data = json_decode($data, true);
 
 	$user_id = $data['user_id'];
@@ -18,13 +18,13 @@ if ($token)
 	{
 		$password = $_POST['password'];
 
-		if (!($app['eland.password_strength']->get($password) < 50))
+		if (!($app['password_strength']->get($password) < 50))
 		{
 			if ($user_id)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$user = readuser($user_id, true);
-				$app['eland.alert']->success('Paswoord opgeslagen.');
+				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [
 					'group'		=> [
@@ -35,10 +35,10 @@ if ($token)
 					],
 					'password'	=> $password,
 					'user'		=> $user,
-					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
-				$app['eland.queue.mail']->queue([
+				$app['queue.mail']->queue([
 					'to' 		=> $user_id,
 					'template'	=> 'password_reset',
 					'vars'		=> $vars,
@@ -48,13 +48,13 @@ if ($token)
 				exit;
 			}
 
-			$app['eland.alert']->error('Het reset-token is niet meer geldig.');
+			$app['alert']->error('Het reset-token is niet meer geldig.');
 			header('Location: pwreset.php');
 			exit;
 		}
 		else
 		{
-			$app['eland.alert']->error('Te zwak paswoord.');
+			$app['alert']->error('Te zwak paswoord.');
 		}
 	}
 
@@ -67,13 +67,13 @@ if ($token)
 			'email'			=> strtolower($email),
 		];
 
-		$app['eland.xdb']->set('email_validated', $email, $ev_data);
+		$app['xdb']->set('email_validated', $email, $ev_data);
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 
-	$app['eland.assets']->add('generate_password.js');
+	$app['assets']->add('generate_password.js');
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -125,8 +125,8 @@ if (isset($_POST['zend']))
 
 			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user['id'] . $app['eland.this_group']->get_schema() . time() . $email), 0, 12);
-				$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
+				$token = substr(hash('sha512', $user['id'] . $app['this_group']->get_schema() . time() . $email), 0, 12);
+				$key = $app['this_group']->get_schema() . '_token_' . $token;
 
 				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
 				$app['predis']->expire($key, 3600);
@@ -138,35 +138,35 @@ if (isset($_POST['zend']))
 						'currency'	=> readconfigfromdb('currency'),
 						'support'	=> readconfigfromdb('support'),
 					],
-					'token_url'	=> $app['eland.base_url'] . '/pwreset.php?token=' . $token,
+					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,
-					'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
-				$app['eland.queue.mail']->queue([
+				$app['queue.mail']->queue([
 					'to' 		=> $email,
 					'template'	=> 'password_reset_confirm',
 					'vars'		=> $vars,
 				], 1000);
 
-				$app['eland.alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
+				$app['alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 
 				header('Location: login.php');
 				exit;
 			}
 			else
 			{
-				$app['eland.alert']->error('Mailadres niet bekend');
+				$app['alert']->error('Mailadres niet bekend');
 			}
 		}
 		else
 		{
-			$app['eland.alert']->error('Mailadres niet uniek.');
+			$app['alert']->error('Mailadres niet uniek.');
 		}
 	}
 	else
 	{
-		$app['eland.alert']->error('Geef een mailadres op');
+		$app['alert']->error('Geef een mailadres op');
 	}
 }
 

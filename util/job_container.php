@@ -29,7 +29,7 @@ abstract class job_container
 
 			$job = basename($path, '.php');
 
-			$this->jobs[$job] = $app['eland.' . $this->job_type . '.' . $job];
+			$this->jobs[$job] = $app[$this->job_type . '.' . $job];
 
 			error_log('- ' . $job . ' : ' . $this->jobs[$job]->get_interval());
 		}

@@ -8,7 +8,7 @@ $app['debug'] = getenv('DEBUG');
 
 $app['route_class'] = 'eland\util\route';
 
-$app['eland.protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+$app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -61,7 +61,7 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
-		$record['extra']['schema'] = $app['eland.this_group']->get_schema();
+		$record['extra']['schema'] = $app['this_group']->get_schema();
 
 		if (isset($app['s_ary_user']))
 		{
@@ -83,23 +83,48 @@ $app->extend('monolog', function($monolog, $app) {
 	return $monolog;
 });
 
+$app->register(new Silex\Provider\SecurityServiceProvider(), [
+
+	'security.firewalls' => [
+
+		'unsecured'	=> [
+			'anonymous'	=> true,
+		],
+
+		'secured'	=> [
+			'host'		=> '^l.',
+			'users'		=> function () use ($app) {
+				return new eland\util\user_provider($app['xdb']);
+			},
+
+		],
+	],
+
+	'security.role_hierarchy' => [
+		'ROLE_ADMIN' => ['ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH'],
+	],
+
+]);
+
+
+
 if(!isset($rootpath))
 {
 	$rootpath = './';
 }
 
-$app['eland.rootpath'] = $rootpath;
+$app['rootpath'] = $rootpath;
 
-$app['eland.s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
-$app['eland.s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
+$app['s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
+$app['s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
-$app['eland.s3_protocol'] = 'http://';
+$app['s3_protocol'] = 'http://';
 
-$app['eland.s3_img_url'] = $app['eland.s3_protocol'] . $app['eland.s3_img'] . '/';
-$app['eland.s3_doc_url'] = $app['eland.s3_protocol'] . $app['eland.s3_doc'] . '/';
+$app['s3_img_url'] = $app['s3_protocol'] . $app['s3_img'] . '/';
+$app['s3_doc_url'] = $app['s3_protocol'] . $app['s3_doc'] . '/';
 
-$app['eland.s3'] = function($app){
-	return new eland\s3($app['eland.s3_img'], $app['eland.s3_doc']);
+$app['s3'] = function($app){
+	return new eland\s3($app['s3_img'], $app['s3_doc']);
 };
 
 /*
@@ -110,11 +135,11 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
 
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
-$app['eland.typeahead'] = function($app){
+$app['typeahead'] = function($app){
 	return new eland\typeahead($app['predis'], $app['monolog']);
 };
 
-$app['eland.log_db'] = function($app){
+$app['log_db'] = function($app){
 	return new eland\log_db($app['db'], $app['predis']);
 };
 
@@ -122,47 +147,47 @@ $app['eland.log_db'] = function($app){
  * Get all eland schemas and domains
  */
 
-$app['eland.groups'] = function ($app){
+$app['groups'] = function ($app){
 	return new eland\groups($app['db']);
 };
 
-$app['eland.this_group'] = function($app){
-	return new eland\this_group($app['eland.groups'], $app['db'], $app['predis'], $app['twig']);
+$app['this_group'] = function($app){
+	return new eland\this_group($app['groups'], $app['db'], $app['predis'], $app['twig']);
 };
 
-$app['eland.xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['predis'], $app['monolog'], $app['eland.this_group']);
+$app['xdb'] = function ($app){
+	return new eland\xdb($app['db'], $app['predis'], $app['monolog'], $app['this_group']);
 };
 
-$app['eland.cache'] = function ($app){
+$app['cache'] = function ($app){
 	return new eland\cache($app['db'], $app['predis'], $app['monolog']);
 };
 
-$app['eland.queue'] = function ($app){
+$app['queue'] = function ($app){
 	return new eland\queue($app['db'], $app['monolog']);
 };
 
-$app['eland.date_format'] = function(){
+$app['date_format'] = function(){
 	return new eland\date_format();
 };
 
-$app['eland.mailaddr'] = function ($app){
-	return new eland\mailaddr($app['db'], $app['monolog'], $app['eland.this_group']);
+$app['mailaddr'] = function ($app){
+	return new eland\mailaddr($app['db'], $app['monolog'], $app['this_group']);
 };
 
-$app['eland.interlets_groups'] = function ($app){
-	return new eland\interlets_groups($app['db'], $app['predis'], $app['eland.groups'], $app['eland.protocol']);
+$app['interlets_groups'] = function ($app){
+	return new eland\interlets_groups($app['db'], $app['predis'], $app['groups'], $app['protocol']);
 };
 
-$app['eland.distance'] = function ($app){
-	return new eland\distance($app['db'], $app['eland.cache']);
+$app['distance'] = function ($app){
+	return new eland\distance($app['db'], $app['cache']);
 };
 
 // queue
 
-$app['eland.queue.mail'] = function ($app){
-	return new eland\queue\mail($app['eland.queue'], $app['monolog'],
-		$app['eland.this_group'], $app['eland.mailaddr'], $app['twig']);
+$app['queue.mail'] = function ($app){
+	return new eland\queue\mail($app['queue'], $app['monolog'],
+		$app['this_group'], $app['mailaddr'], $app['twig']);
 };
 
 /**
@@ -241,7 +266,7 @@ function readconfigfromdb($key, $sch = null)
 
     if (!isset($sch))
     {
-		$sch = $app['eland.this_group']->get_schema();
+		$sch = $app['this_group']->get_schema();
 	}
 
 	if (!$sch)
@@ -261,7 +286,7 @@ function readconfigfromdb($key, $sch = null)
 		return $cache[$sch][$key] = $app['predis']->get($redis_key);
 	}
 
-	$row = $app['eland.xdb']->get('setting', $key, $sch);
+	$row = $app['xdb']->get('setting', $key, $sch);
 
 	if ($row)
 	{
@@ -277,7 +302,7 @@ function readconfigfromdb($key, $sch = null)
 
 		if (!$s_guest && !$s_master)
 		{
-			$app['eland.xdb']->set('setting', $key, ['value' => $value], $sch);
+			$app['xdb']->set('setting', $key, ['value' => $value], $sch);
 		}
 	}
 
@@ -304,7 +329,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 		return [];
 	}
 
-	$s = ($remote_schema) ?: $app['eland.this_group']->get_schema();
+	$s = ($remote_schema) ?: $app['this_group']->get_schema();
 
 	$redis_key = $s . '_user_' . $id;
 
@@ -332,7 +357,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	$user['minlimit'] = $user['minlimit'] == -999999999 ? '' : $user['minlimit'];
 	$user['maxlimit'] = $user['maxlimit'] == 999999999 ? '' : $user['maxlimit'];
 
-	$row = $app['eland.xdb']->get('user_fullname_access', $id, $s);
+	$row = $app['xdb']->get('user_fullname_access', $id, $s);
 
 	if ($row)
 	{
@@ -342,7 +367,7 @@ function readuser($id, $refresh = false, $remote_schema = false)
 	{
 		$user += ['fullname_access' => 'admin'];
 
-		$app['eland.xdb']->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
+		$app['xdb']->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
 	}
 
 	if (isset($user))

@@ -15,17 +15,17 @@ if (!($s_user || $s_admin))
 {
 	if ($del)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om te verwijderen.');
+		$app['alert']->error('Je hebt geen rechten om te verwijderen.');
 		cancel();
 	}
 	if ($add)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om te toe te voegen.');
+		$app['alert']->error('Je hebt geen rechten om te toe te voegen.');
 		cancel();
 	}
 	if ($edit)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om aan te passen.');
+		$app['alert']->error('Je hebt geen rechten om aan te passen.');
 		cancel();
 	}
 }
@@ -34,7 +34,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if (!readconfigfromdb('forum_en'))
 {
-	$app['eland.alert']->warning('De forum pagina is niet ingeschakeld.');
+	$app['alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_default_page();
 }
 
@@ -42,7 +42,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$row = $app['eland.xdb']->get('forum', $t);
+	$row = $app['xdb']->get('forum', $t);
 
 	if ($row)
 	{
@@ -53,7 +53,7 @@ if ($del || $edit)
 
 	if (!isset($forum_post))
 	{
-		$app['eland.alert']->error('Post niet gevonden.');
+		$app['alert']->error('Post niet gevonden.');
 		cancel();
 	}
 
@@ -65,11 +65,11 @@ if ($del || $edit)
 
 		if ($del)
 		{
-			$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $str . ' te verwijderen.');
+			$app['alert']->error('Je hebt onvoldoende rechten om ' . $str . ' te verwijderen.');
 		}
 		else
 		{
-			$app['eland.alert']->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
+			$app['alert']->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
 		}
 
 		cancel(($forum_post['parent_id']) ?: $t);
@@ -82,30 +82,30 @@ if ($submit)
 {
 	if ($del)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
-		$app['eland.xdb']->del('forum', $del);
+		$app['xdb']->del('forum', $del);
 
 		if (!isset($forum_post['parent_id']))
 		{
-			$rows = $app['eland.xdb']->get_many(['agg_type' => 'forum',
-				'agg_schema' => $app['eland.this_group']->get_schema(),
+			$rows = $app['xdb']->get_many(['agg_type' => 'forum',
+				'agg_schema' => $app['this_group']->get_schema(),
 				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$app['eland.xdb']->del('forum', $row['eland_id']); 
+				$app['xdb']->del('forum', $row['eland_id']);
 			}
 
-			$app['eland.alert']->success('Het forum onderwerp is verwijderd.');
+			$app['alert']->success('Het forum onderwerp is verwijderd.');
 			cancel();
 		}
 
-		$app['eland.alert']->success('De reactie is verwijderd.');
+		$app['alert']->success('De reactie is verwijderd.');
 
 		cancel($forum_post['parent_id']);
 	}
@@ -152,7 +152,7 @@ if ($submit)
 
 	if (!$topic)
 	{
-		$access_error = $app['eland.access_control']->get_post_error();
+		$access_error = $app['access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -160,30 +160,30 @@ if ($submit)
 		}
 	}
 
-	if ($token_error = $app['eland.form_token']->get_error())
+	if ($token_error = $app['form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 	else if ($edit)
 	{
-		$app['eland.xdb']->set('forum', $edit, $forum_post);
+		$app['xdb']->set('forum', $edit, $forum_post);
 
-		$app['eland.alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
+		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
 		cancel($topic);
 	}
 	else
 	{
-		$new_id = substr(sha1(microtime() . $app['eland.this_group']->get_schema()), 0, 24);
+		$new_id = substr(sha1(microtime() . $app['this_group']->get_schema()), 0, 24);
 
-		$app['eland.xdb']->set('forum', $new_id, $forum_post);
+		$app['xdb']->set('forum', $new_id, $forum_post);
 
-		$app['eland.alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
+		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
 		cancel($topic);
 	}
@@ -215,7 +215,7 @@ if ($del)
 
 	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -231,20 +231,20 @@ if ($del)
 
 if ($add || $edit)
 {
-	$app['eland.assets']->add(['summernote', 'rich_edit.js', 'access_input_cache.js']);
+	$app['assets']->add(['summernote', 'rich_edit.js', 'access_input_cache.js']);
 
 	if ($topic)
 	{
-		$row = $app['eland.xdb']->get('forum', $topic);
+		$row = $app['xdb']->get('forum', $topic);
 
 		if ($row)
 		{
 			$topic_post = $row['data'];
 		}
 
-		if (!$app['eland.access_control']->is_visible($topic_post['access']))
+		if (!$app['access_control']->is_visible($topic_post['access']))
 		{
-			$app['eland.alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
+			$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 			cancel();
 		}
 	}
@@ -301,7 +301,7 @@ if ($add || $edit)
 			$omit_access = false;
 		}
 
-		echo $app['eland.access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
+		echo $app['access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
 	}
 
 	$str = ($topic) ? 'Reactie' : 'Onderwerp';
@@ -311,7 +311,7 @@ if ($add || $edit)
 
 	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -325,12 +325,12 @@ if ($add || $edit)
 /**
  * Show topic
  */
- 
+
 if ($topic)
 {
 	$forum_posts = [];
 
-	$row = $app['eland.xdb']->get('forum', $topic);
+	$row = $app['xdb']->get('forum', $topic);
 
 	if ($row)
 	{
@@ -343,19 +343,19 @@ if ($topic)
 		}
 	}
 
-	$topic_post['id'] = $topic;	
+	$topic_post['id'] = $topic;
 
 	$s_owner = ($topic_post['uid'] && $topic_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
 
-	if (!$app['eland.access_control']->is_visible($topic_post['access']) && !$s_owner)
+	if (!$app['access_control']->is_visible($topic_post['access']) && !$s_owner)
 	{
-		$app['eland.alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
+		$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 		cancel();
 	}
 
 	$forum_posts[] = $topic_post;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
@@ -374,17 +374,17 @@ if ($topic)
 		}
 	}
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc limit 1');
+		'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc limit 1');
+		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
@@ -407,7 +407,7 @@ if ($topic)
 
 	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
 
-	$app['eland.assets']->add(['summernote', 'rich_edit.js']);
+	$app['assets']->add(['summernote', 'rich_edit.js']);
 
 	$h1 = $topic_post['subject'];
 
@@ -416,7 +416,7 @@ if ($topic)
 	if (!$s_guest)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $app['eland.access_control']->get_label($topic_post['access']);
+		echo $app['access_control']->get_label($topic_post['access']);
 		echo '</p>';
 	}
 
@@ -433,7 +433,7 @@ if ($topic)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p>' . link_user((int) $p['uid']) . ' @' . $app['eland.date_format']->get($p['ts']);
+		echo '<p>' . link_user((int) $p['uid']) . ' @' . $app['date_format']->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
@@ -472,7 +472,7 @@ if ($topic)
 		$action = ($edit) ? 'aanpassen' : 'toevoegen';
 
 		echo '<input type="submit" name="zend" value="Reactie toevoegen" class="btn btn-success">';
-		$app['eland.form_token']->generate();
+		$app['form_token']->generate();
 
 		echo '</form>';
 
@@ -488,9 +488,9 @@ if ($topic)
  * show topic list
  */
 
-$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 	'agg_type' => 'forum',
-	'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time desc');
+	'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc');
 
 if (count($rows))
 {
@@ -498,7 +498,7 @@ if (count($rows))
 
 	foreach ($rows as $row)
 	{
-		$replies = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+		$replies = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 			'agg_type' => 'forum',
 			'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -543,7 +543,7 @@ $forum_empty = true;
 
 foreach($forum_posts as $p)
 {
-	if ($app['eland.access_control']->is_visible($p['access']))
+	if ($app['access_control']->is_visible($p['access']))
 	{
 		$forum_empty = false;
 		break;
@@ -583,7 +583,7 @@ echo '<tbody>';
 
 foreach($forum_posts as $p)
 {
-	if (!$app['eland.access_control']->is_visible($p['access']))
+	if (!$app['access_control']->is_visible($p['access']))
 	{
 		continue;
 	}
@@ -604,11 +604,11 @@ foreach($forum_posts as $p)
 
 	echo '<td>' . link_user($p['uid']) . '</td>';
 
-	echo $app['eland.date_format']->get_td($p['ts']);
-	
+	echo $app['date_format']->get_td($p['ts']);
+
 	if (!$s_guest)
 	{
-		echo '<td>' . $app['eland.access_control']->get_label($p['access']) . '</td>';
+		echo '<td>' . $app['access_control']->get_label($p['access']) . '</td>';
 	}
 
 	if ($s_admin)

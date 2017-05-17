@@ -3,7 +3,7 @@
 <head>
 <title>' . readconfigfromdb('systemname') .'</title>
 
- $app['eland.assets']->render_css();
+ $app['assets']->render_css();
 
 <link type="text/css" rel="stylesheet" href="' . $rootpath . 'gfx/print.css" media="print">
 
@@ -53,22 +53,22 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 {
 	<li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-	<span class="fa fa-share-alt"></span> 
+	<span class="fa fa-share-alt"></span>
 	Groep
-	<span class="caret"></span></a> 
+	<span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu">
 
 	foreach ($logins as $login_schema => $login_id)
 	{
 		$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '
-		$class = ($login_schema == $app['eland.this_group']->get_schema() && $login_schema == $s_schema) ? ' class="active"' : $class;
+		$class = ($login_schema == $app['this_group']->get_schema() && $login_schema == $s_schema) ? ' class="active"' : $class;
 
 		<li
 		 $class;
 		>
-		
+
 		<a href="
-		 $app['eland.protocol'] . $app['eland.groups']->get_host($login_schema) . '/' . $app['eland.script_name'] . '.php?r=
+		 $app['protocol'] . $app['groups']->get_host($login_schema) . '/' . $app['script_name'] . '.php?r=
 		 ($login_id == 'elas') ? 'guest' : $app['session']->get('role.' . $login_schema);
 		&u=' . $login_id;
 		">
@@ -89,10 +89,10 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 			foreach ($eland_interlets_groups as $sch => $h)
 			{
 				<li
-				 ($app['eland.this_group']->get_schema() == $sch) ? ' class="active"' : '
+				 ($app['this_group']->get_schema() == $sch) ? ' class="active"' : '
 				>
 
-				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'messages
+				$page = (isset($allowed_interlets_landing_pages[$app['script_name']])) ? $app['script_name'] : 'messages
 
 				<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">
 				 readconfigfromdb('systemname', $sch) . '</a>
@@ -120,7 +120,7 @@ if (!$s_anonymous)
 {
 	<li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-	<span class="fa fa-user"></span> 
+	<span class="fa fa-user"></span>
 
 	if ($s_master)
 	{
@@ -136,7 +136,7 @@ if (!$s_anonymous)
 		 link_user($s_id, $s_schema, false);
 	}
 
-	<span class="caret"></span></a> 
+	<span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu">
 	if ($s_schema && !$s_master && !$s_guest)
 	{
@@ -178,15 +178,15 @@ if (!$s_anonymous)
 		];
 
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"
 		role="button" aria-expanded="false">
-		<span class="fa fa-cog"></span> 
+		<span class="fa fa-cog"></span>
 		Admin modus
-		<span class="caret"></span></a> 
+		<span class="caret"></span></a>
 		<ul class="dropdown-menu" role="menu">
 		foreach ($menu as $link => $item)
 		{
-			$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
+			$active = ($app['script_name'] == $link) ? ' class="active"' : '
 			<li' . $active . '>
 			 aphp($link, [], $item[1], false, false, $item[0]);
 			</li>
@@ -209,11 +209,11 @@ if (!$s_anonymous)
 		$get_params = $_GET;
 		$get_params['r'] = 'admin
 
-		<a href="' . $admin_url . '?' . http_build_query($get_params) . '" 
+		<a href="' . $admin_url . '?' . http_build_query($get_params) . '"
 		title="Admin modus inschakelen">
-		<span class="fa fa-times text-danger"></span> 
+		<span class="fa fa-times text-danger"></span>
 		Admin modus
-		</a> 
+		</a>
 	}
 
 }
@@ -271,7 +271,7 @@ else
 
 foreach ($menu as $link => $item)
 {
-	$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
+	$active = ($app['script_name'] == $link) ? ' class="active"' : '
 	<li' . $active . '>
 	 aphp($link, $item[2],
 		$item[1], false, false, $item[0]);
@@ -286,7 +286,7 @@ $class_admin = ($page_access == 'admin') ? ' admin' : '
 <div id="wrap">
 <div id="main" class="container-fluid clear-top' . $class_admin . '">
 
-$app['eland.alert']->render();
+$app['alert']->render();
 
 <div class="row">
 <div class="col-md-12 top-buttons">

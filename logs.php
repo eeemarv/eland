@@ -15,7 +15,7 @@ $asc = $_GET['asc'] ?? 0;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
 
-$app['eland.log_db']->update();
+$app['log_db']->update();
 
 $params = [
 	'orderby'	=> $orderby,
@@ -26,7 +26,7 @@ $params = [
 
 $params_sql = $where_sql = [];
 
-$params_sql[] = $app['eland.this_group']->get_schema();
+$params_sql[] = $app['this_group']->get_schema();
 
 if ($letscode)
 {
@@ -88,7 +88,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
-$app['eland.pagination']->init('logs', $row_count, $params, $inline);
+$app['pagination']->init('logs', $row_count, $params, $inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -122,7 +122,7 @@ $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
 $top_right .= '&nbsp;csv</a>';
 
-$app['eland.assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
+$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
 $filtered = $q || $type || $letscode || $fdate || $tdate;
 
@@ -159,7 +159,7 @@ echo 'Type</span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
-echo 'data-typeahead="' . $app['eland.typeahead']->get('log_types') . '" '; 
+echo 'data-typeahead="' . $app['typeahead']->get('log_types') . '" ';
 echo 'name="type" id="type" placeholder="Type" ';
 echo 'value="' . $type . '">';
 echo '</div>';
@@ -174,8 +174,8 @@ echo '<span class="fa fa-user"></span></span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_users_ary) . '" ';
-echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" '; 
+echo 'data-typeahead="' . $app['typeahead']->get($typeahead_users_ary) . '" ';
+echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'name="letscode" id="letscode" placeholder="Letscode" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
@@ -253,7 +253,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 echo '<div class="panel panel-default printview">';
 
@@ -296,7 +296,7 @@ echo '<tbody>';
 foreach($rows as $value)
 {
 	echo '<tr>';
-	echo '<td>' . $app['eland.date_format']->get($value['ts'], 'sec') .'</td>';
+	echo '<td>' . $app['date_format']->get($value['ts'], 'sec') .'</td>';
 	echo '<td>' . $value['type'] . '</td>';
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';
@@ -310,6 +310,6 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 include __DIR__ . '/include/footer.php';

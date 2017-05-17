@@ -10,7 +10,7 @@ $active_tab = 'balance';
 $active_tab = $_GET['active_tab'] ?? $active_tab;
 $active_tab = $_POST['active_tab'] ?? $active_tab;
 
-$register_link = $app['eland.base_url'] . '/register.php';
+$register_link = $app['base_url'] . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
 $register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonder letscode aangemaakt met status info-pakket.';
@@ -20,7 +20,7 @@ $register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verde
 $register_success_explain .= 'Als je groep een website heeft, is het nuttig om een link op te nemen ';
 $register_success_explain .= 'om de gebruiker terug te voeren.';
 
-$contact_link = $app['eland.base_url'] . '/contact.php';
+$contact_link = $app['base_url'] . '/contact.php';
 $contact_link_explain = 'Het contactformulier kan je terugvinden op <a href="' . $contact_link;
 $contact_link_explain .= '">' . $contact_link . '</a>.';
 
@@ -398,7 +398,7 @@ $tab_panes = [
 			'date_format'	=> [
 				'lbl'		=> 'Datum- en tijdsweergave',
 				'type'		=> 'select',
-				'options'	=> $app['eland.date_format']->get_options(),
+				'options'	=> $app['date_format']->get_options(),
 			],
 
 			'css'	=> [
@@ -441,7 +441,7 @@ if ($post)
 		$errors[] = 'Form submit error';
 	}
 
-	if ($error_token = $app['eland.form_token']->get_error())
+	if ($error_token = $app['form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
@@ -509,7 +509,7 @@ if ($post)
 
 		if ($name == 'date_format')
 		{
-			$error = $app['eland.date_format']->get_error($value);
+			$error = $app['date_format']->get_error($value);
 
 			if ($error)
 			{
@@ -631,21 +631,21 @@ if ($post)
 
 	if (!count($posted_configs))
 	{
-		$app['eland.alert']->warning('Geen gewijzigde waarden.');
+		$app['alert']->warning('Geen gewijzigde waarden.');
 		cancel();
 	}
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 		cancel();
 	}
 
 	foreach ($posted_configs as $name => $value)
 	{
-		$app['eland.xdb']->set('setting', $name, ['value' => $value]);
+		$app['xdb']->set('setting', $name, ['value' => $value]);
 
-		$app['predis']->del($app['eland.this_group']->get_schema() . '_config_' . $name);
+		$app['predis']->del($app['this_group']->get_schema() . '_config_' . $name);
 
 		// prevent string too long error for eLAS database
 
@@ -665,17 +665,17 @@ if ($post)
 
 	if (count($posted_configs) > 1)
 	{
-		$app['eland.alert']->success('De instellingen zijn aangepast.');
+		$app['alert']->success('De instellingen zijn aangepast.');
 	}
 	else
 	{
-		$app['eland.alert']->success('De instelling is aangepast.');
+		$app['alert']->success('De instelling is aangepast.');
 	}
 
 	cancel();
 }
 
-$app['eland.assets']->add(['summernote', 'rich_edit.js', 'config.js']);
+$app['assets']->add(['summernote', 'rich_edit.js', 'config.js']);
 
 $h1 = 'Instellingen';
 $fa = 'gears';
@@ -886,7 +886,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '<input type="hidden" name="active_tab" value="' . $id . '">';
 	echo '<input type="submit" class="btn btn-primary" value="Aanpassen" name="' . $id . '_submit">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</div>';
 

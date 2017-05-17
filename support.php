@@ -24,7 +24,7 @@ if (isset($_POST['zend']))
 		$errors[] = 'Het master account kan geen berichten versturen.';
 	}
 
-	if ($token_error = $app['eland.form_token']->get_error())
+	if ($token_error = $app['form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
@@ -36,7 +36,7 @@ if (isset($_POST['zend']))
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$s_id]);
 
-		$mailaddr = $app['eland.mailaddr']->get($s_id);
+		$mailaddr = $app['mailaddr']->get($s_id);
 
 		$config_htmlpurifier = \HTMLPurifier_Config::createDefault();
 		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
@@ -57,13 +57,13 @@ if (isset($_POST['zend']))
 			],
 			'user'	=> [
 				'text'			=> link_user($s_id, false, false),
-				'url'			=> $app['eland.base_url'] . '/users.php?id=' . $s_id,
+				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,
 				'mail'			=> $mailaddr,
 			],
 			'contacts'		=> $contacts,
 			'msg_html'		=> $msg_html,
 			'msg_text'		=> $msg_text,
-			'config_url'	=> $app['eland.base_url'] . '/config.php?active_tab=mailaddresses',
+			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 		];
 
 		$mail_ary = [
@@ -74,7 +74,7 @@ if (isset($_POST['zend']))
 
 		if ($mailaddr)
 		{
-			$app['eland.queue.mail']->queue([
+			$app['queue.mail']->queue([
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
 				'to'		=> $s_id,
@@ -83,22 +83,22 @@ if (isset($_POST['zend']))
 			$mail_ary['reply_to'] = $s_id;
 		}
 
-		$return_message =  $app['eland.queue.mail']->queue($mail_ary);
+		$return_message =  $app['queue.mail']->queue($mail_ary);
 
 		if (!$return_message)
 		{
-			$app['eland.alert']->success('De support mail is verzonden.');
+			$app['alert']->success('De support mail is verzonden.');
 			redirect_default_page();
 
 //			header('Location: ' . generate_url('messages'));
 //			exit;
 		}
 
-		$app['eland.alert']->error('Mail niet verstuurd. ' . $return_message);
+		$app['alert']->error('Mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 }
 else
@@ -107,32 +107,32 @@ else
 
 	if ($s_master)
 	{
-		$app['eland.alert']->warning('Het master account kan geen berichten versturen.');
+		$app['alert']->warning('Het master account kan geen berichten versturen.');
 	}
 	else
 	{
-		$mail = $app['eland.mailaddr']->get($s_id);
+		$mail = $app['mailaddr']->get($s_id);
 
 		if (!count($mail))
 		{
-			$app['eland.alert']->warning('Je hebt geen email adres ingesteld voor je account. ');
+			$app['alert']->warning('Je hebt geen email adres ingesteld voor je account. ');
 		}
 	}
 }
 
 if (!readconfigfromdb('mailenabled'))
 {
-	$app['eland.alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!readconfigfromdb('support'))
 {
-	$app['eland.alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Help / Probleem melden';
 $fa = 'ambulance';
 
-$app['eland.assets']->add(['summernote', 'rich_edit.js']);
+$app['assets']->add(['summernote', 'rich_edit.js']);
 
 require_once __DIR__ . '/include/header.php';
 
@@ -150,7 +150,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-$app['eland.form_token']->generate();
+$app['form_token']->generate();
 
 echo '</form>';
 

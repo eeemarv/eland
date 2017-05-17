@@ -7,7 +7,7 @@ $logins = $app['session']->get('logins') ?? [];
 
 foreach($logins as $sch => $uid)
 {
-	$app['eland.xdb']->set('logout', $uid, ['time' => time()], $sch);
+	$app['xdb']->set('logout', $uid, ['time' => time()], $sch);
 }
 
 $app['session']->invalidate();

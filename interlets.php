@@ -19,7 +19,7 @@ if ($id || $edit || $del)
 
 	if (!$group)
 	{
-		$app['eland.alert']->error('Groep niet gevonden.');
+		$app['alert']->error('Groep niet gevonden.');
 		cancel();
 	}
 }
@@ -82,7 +82,7 @@ if ($add || $edit)
 			$errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
 		}
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -113,14 +113,14 @@ if ($add || $edit)
 			{
 				if ($app['db']->update('letsgroups', $group, ['id' => $id]))
 				{
-					$app['eland.alert']->success('Letsgroep aangepast.');
+					$app['alert']->success('Letsgroep aangepast.');
 
-					$app['eland.interlets_groups']->clear_cache($s_schema);
+					$app['interlets_groups']->clear_cache($s_schema);
 
 					cancel($edit);
 				}
 
-				$app['eland.alert']->error('Letsgroep niet aangepast.');
+				$app['alert']->error('Letsgroep niet aangepast.');
 			}
 		}
 		else
@@ -139,22 +139,22 @@ if ($add || $edit)
 			{
 				if ($app['db']->insert('letsgroups', $group))
 				{
-					$app['eland.alert']->success('Letsgroep opgeslagen.');
+					$app['alert']->success('Letsgroep opgeslagen.');
 
 					$id = $app['db']->lastInsertId('letsgroups_id_seq');
 
-					$app['eland.interlets_groups']->clear_cache($s_schema);
+					$app['interlets_groups']->clear_cache($s_schema);
 
 					cancel($id);
 				}
 
-				$app['eland.alert']->error('Letsgroep niet opgeslagen.');
+				$app['alert']->error('Letsgroep niet opgeslagen.');
 			}
 		}
 
 		if (count($errors))
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 		}
 	}
 
@@ -173,9 +173,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if ($app['eland.groups']->get_host($add_schema))
+		if ($app['groups']->get_host($add_schema))
 		{
-			$group['url'] = $app['eland.protocol'] . $app['eland.groups']->get_host($add_schema);
+			$group['url'] = $app['protocol'] . $app['groups']->get_host($add_schema);
 			$group['groupname'] = readconfigfromdb('systemname', $add_schema);
 			$group['localletscode'] = readconfigfromdb('systemtag', $add_schema);
 		}
@@ -269,7 +269,7 @@ if ($add || $edit)
 	$canc = ($edit) ? ['id' => $edit] : [];
 	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -290,22 +290,22 @@ if ($del)
 	if ($submit)
 	{
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		if($app['db']->delete('letsgroups', ['id' => $del]))
 		{
-			$app['eland.alert']->success('Letsgroep verwijderd.');
+			$app['alert']->success('Letsgroep verwijderd.');
 
-			$app['eland.interlets_groups']->clear_cache($s_schema);
+			$app['interlets_groups']->clear_cache($s_schema);
 
 			cancel();
 		}
 
-		$app['eland.alert']->error('Letsgroep niet verwijderd.');
+		$app['alert']->error('Letsgroep niet verwijderd.');
 	}
 
 	$h1 = 'Letsgroep verwijderen: ' . $group['groupname'];
@@ -323,7 +323,7 @@ if ($del)
 
 	echo aphp('interlets', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo "</form></p>";
 	echo "</div>";
@@ -350,7 +350,7 @@ if ($id)
 	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
 	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
-	$app['eland.assets']->add('elas_soap_status.js');
+	$app['assets']->add('elas_soap_status.js');
 
 	$h1 = $group['groupname'];
 	$fa = 'share-alt';
@@ -363,7 +363,7 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($app['eland.groups']->get_schema($group['host']))
+	if ($app['groups']->get_schema($group['host']))
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span></dd>';
 	}
@@ -419,9 +419,9 @@ foreach ($groups as $key => $g)
 
 	$letscodes[] = $g['localletscode'];
 
-	if ($app['eland.groups']->get_schema($h))
+	if ($app['groups']->get_schema($h))
 	{
-		$s = $app['eland.groups']->get_schema($h);
+		$s = $app['groups']->get_schema($h);
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
@@ -600,9 +600,9 @@ function render_schemas_groups()
 
 	$url_ary = [];
 
-	foreach ($app['eland.groups']->get_hosts() as $h)
+	foreach ($app['groups']->get_hosts() as $h)
 	{
-		$url_ary[] = $app['eland.protocol'] . $h;
+		$url_ary[] = $app['protocol'] . $h;
 	}
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = [];
@@ -632,11 +632,11 @@ function render_schemas_groups()
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($app['eland.groups']->get_schemas() as $h => $s)
+	foreach ($app['groups']->get_schemas() as $h => $s)
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
-			where url = ?', [$app['eland.base_url']]);
+			where url = ?', [$app['base_url']]);
 
 		$group_user_count_ary[$s] = $app['db']->fetchColumn('select count(*)
 			from ' . $s . '.users
@@ -678,7 +678,7 @@ function render_schemas_groups()
 
 	echo '<tbody>';
 
-	foreach($app['eland.groups']->get_schemas() as $h => $s)
+	foreach($app['groups']->get_schemas() as $h => $s)
 	{
 		echo '<tr>';
 
@@ -694,7 +694,7 @@ function render_schemas_groups()
 		echo $group_user_count_ary[$s];
 		echo '</td>';
 
-		if ($app['eland.this_group']->get_schema() == $s)
+		if ($app['this_group']->get_schema() == $s)
 		{
 			echo '<td colspan="4">';
 			echo 'eigen groep';

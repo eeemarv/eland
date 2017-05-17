@@ -8,13 +8,13 @@ $token = $_GET['token'] ?? false;
 
 if (!readconfigfromdb('contact_form_en'))
 {
-	$app['eland.alert']->warning('De contactpagina is niet ingeschakeld.');
+	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
 }
 
 if ($token)
 {
-	$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
+	$key = $app['this_group']->get_schema() . '_contact_' . $token;
 	$data = $app['predis']->get($key);
 
 	if ($data)
@@ -29,7 +29,7 @@ if ($token)
 			'email'			=> strtolower($data['mail']),
 		];
 
-		$app['eland.xdb']->set('email_validated', $data['mail'], $ev_data);
+		$app['xdb']->set('email_validated', $data['mail'], $ev_data);
 
 		$msg_html = $data['html'];
 
@@ -43,7 +43,7 @@ if ($token)
 		$vars = [
 			'msg_html'		=> $msg_html,
 			'msg_text'		=> $msg_text,
-			'config_url'	=> $app['eland.base_url'] . '/config.php?active_tab=mailaddresses',
+			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			'ip'			=> $data['ip'],
 			'browser'		=> $data['browser'],
 			'mail'			=> $data['mail'],
@@ -53,20 +53,20 @@ if ($token)
 			],
 		];
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
 			'to'		=> $data['mail'],
 		]);
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'template'	=> 'contact',
 			'vars'		=> $vars,
 			'to'		=> 'support',
 			'reply_to'	=> $data['mail'],
 		]);
 
-		$app['eland.alert']->success('Je bericht werd succesvol verzonden.');
+		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
 		$success_text = readconfigfromdb('contact_form_success_text');
 
@@ -74,7 +74,7 @@ if ($token)
 		exit;
 	}
 
-	$app['eland.alert']->error('Ongeldig of verlopen token.');
+	$app['alert']->error('Ongeldig of verlopen token.');
 }
 
 if($post && isset($_POST['zend']))
@@ -117,7 +117,7 @@ if($post && isset($_POST['zend']))
 		$errors[] = 'Het support mailadres is niet ingesteld op deze installatie';
 	}
 
-	if ($token_error = $app['eland.form_token']->get_error())
+	if ($token_error = $app['form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
@@ -136,8 +136,8 @@ if($post && isset($_POST['zend']))
 			'ip'		=> $ip,
 		];
 
-		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime()), 0, 10);
-		$key = $app['eland.this_group']->get_schema() . '_contact_' . $token;
+		$token = substr(hash('sha512', $app['this_group']->get_schema() . microtime()), 0, 10);
+		$key = $app['this_group']->get_schema() . '_contact_' . $token;
 		$app['predis']->set($key, json_encode($contact));
 		$app['predis']->expire($key, 86400);
 
@@ -148,11 +148,11 @@ if($post && isset($_POST['zend']))
 				'tag'	=> readconfigfromdb('systemtag'),
 				'name'	=> readconfigfromdb('systemname'),
 			],
-			'contact_url'	=> $app['eland.base_url'] . '/contact.php',
-			'confirm_url'	=> $app['eland.base_url'] . '/contact.php?token=' . $token,
+			'contact_url'	=> $app['base_url'] . '/contact.php',
+			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
 		];
 
-		$return_message =  $app['eland.queue.mail']->queue([
+		$return_message =  $app['queue.mail']->queue([
 			'to' 		=> $mail,
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,
@@ -160,16 +160,16 @@ if($post && isset($_POST['zend']))
 
 		if (!$return_message)
 		{
-			$app['eland.alert']->success('Open je mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
+			$app['alert']->success('Open je mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
 			header('Location: ' . generate_url('contact'));
 			exit;
 		}
 
-		$app['eland.alert']->error('Mail niet verstuurd. ' . $return_message);
+		$app['alert']->error('Mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 }
 else
@@ -180,14 +180,14 @@ else
 
 if (!readconfigfromdb('mailenabled'))
 {
-	$app['eland.alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!readconfigfromdb('support'))
 {
-	$app['eland.alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
-$app['eland.assets']->add(['summernote', 'rich_edit.js']);
+$app['assets']->add(['summernote', 'rich_edit.js']);
 
 $h1 = 'Contact';
 $fa = 'comment-o';
@@ -224,7 +224,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-$app['eland.form_token']->generate();
+$app['form_token']->generate();
 
 echo '</form>';
 

@@ -189,14 +189,14 @@ if ($submit)
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
 	}
 
-	if ($error_token = $app['eland.form_token']->get_error())
+	if ($error_token = $app['form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 	else
 	{
@@ -284,39 +284,39 @@ if ($submit)
 		}
 		catch (Exception $e)
 		{
-			$app['eland.alert']->error('Fout bij het opslaan.');
+			$app['alert']->error('Fout bij het opslaan.');
 			$app['db']->rollback();
 			throw $e;
 		}
 
-		$app['eland.autominlimit']->init();
+		$app['autominlimit']->init();
 
 		foreach($transactions as $t)
 		{
-			$app['eland.autominlimit']->process($t['id_from'], $t['id_to'], $t['amount']);
+			$app['autominlimit']->process($t['id_from'], $t['id_to'], $t['amount']);
 		}
 
 		if ($to_one)
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
+				$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_from']);
 			}
 
-			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
+			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_to']);
 		}
 		else
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_to']);
+				$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_to']);
 			}
 
-			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $t['id_from']);
+			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_from']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ' . readconfigfromdb('currency');
-		$app['eland.alert']->success($alert_success);
+		$app['alert']->success($alert_success);
 
 		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . readconfigfromdb('currency') . ')';
 		$log_many = rtrim($log_many, ', ');
@@ -329,7 +329,7 @@ if ($submit)
 
 		if ($s_master)
 		{
-			$app['eland.alert']->warning('Master account: geen mails verzonden.');
+			$app['alert']->warning('Master account: geen mails verzonden.');
 		}
 		else if ($mail_en)
 		{
@@ -337,11 +337,11 @@ if ($submit)
 
 			if (mail_mass_transaction($mail_ary))
 			{
-				$app['eland.alert']->success('Notificatie mails verzonden.');
+				$app['alert']->success('Notificatie mails verzonden.');
 			}
 			else
 			{
-				$app['eland.alert']->error('Fout bij het verzenden van notificatie mails.');
+				$app['alert']->error('Fout bij het verzenden van notificatie mails.');
 			}
 		}
 
@@ -373,7 +373,7 @@ if ($from_letscode)
 $group_minlimit = readconfigfromdb('minlimit');
 $group_maxlimit = readconfigfromdb('maxlimit');
 
-$app['eland.assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
+$app['assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
 $h1 = 'Massa transactie';
 $fa = 'exchange';
@@ -616,7 +616,7 @@ echo '<input type="text" class="form-control" id="from_letscode" name="from_lets
 echo 'value="' . $from_letscode . '" ';
 echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'data-typeahead="';
-echo $app['eland.typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
+echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
 echo 'Alle ingevulde bedragen hieronder worden van dit account gehaald.</p>';
@@ -758,7 +758,7 @@ echo '</div>';
 
 echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
-$app['eland.form_token']->generate();
+$app['form_token']->generate();
 
 echo '</div>';
 echo '</div>';
@@ -780,7 +780,7 @@ function mail_mass_transaction($mail_ary)
 
 	if (!readconfigfromdb('mailenabled'))
 	{
-		$app['eland.alert']->warning('Mail functions are not enabled. ');
+		$app['alert']->warning('Mail functions are not enabled. ');
 		return;
 	}
 
@@ -813,7 +813,7 @@ function mail_mass_transaction($mail_ary)
 			'currency'		=> readconfigfromdb('currency'),
 		],
 		'description'			=> $mail_ary['description'],
-		'new_transaction_url'	=> $app['eland.base_url'] . '/transactions.php?add=1',
+		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',
 		'from_many'				=> $from_many_bool,
 	];
 
@@ -846,13 +846,13 @@ function mail_mass_transaction($mail_ary)
 			'transid' 			=> $many_ary[$user_id]['transid'],
 			'from_user' 		=> link_user($from_user_id, false, false),
 			'to_user'			=> link_user($to_user_id, false, false),
-			'transaction_url'	=> $app['eland.base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
+			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
 			'user'				=> $user,
 			'interlets'			=> false,
-			'url_login'			=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+			'url_login'			=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 		]);
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to'		=> $user_id,
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
@@ -874,7 +874,7 @@ function mail_mass_transaction($mail_ary)
 		$user_id = $u['id'];
 
 		$users[] = [
-			'url'		=> $app['eland.base_url'] . '/users.php?id=' . $user_id,
+			'url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
 			'text'		=> link_user($user_id, false, false),
 			'amount'	=> $many_ary[$user_id]['amount'],
 			'id'		=> $user_id,
@@ -889,13 +889,13 @@ function mail_mass_transaction($mail_ary)
 	$vars = array_merge($common_vars, [
 		'users'		=> $users,
 		'user'		=> [
-			'url'	=> $app['eland.base_url'] . '/users.php?id=' . $one_user_id,
+			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
 			'text'	=> link_user($one_user_id, false, false),
 		],
 		'total'		=> $total,
 	]);
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to' 		=> ['admin', $s_id, $one_user_id],
 		'subject' 	=> $subject,
 		'text' 		=> $text,

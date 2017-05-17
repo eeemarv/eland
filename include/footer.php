@@ -14,7 +14,7 @@ echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>
 
 echo '</footer>';
 
-echo $app['eland.assets']->render_js();
+echo $app['assets']->render_js();
 
 echo '</body>';
 echo '</html>';

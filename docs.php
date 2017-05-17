@@ -18,7 +18,7 @@ $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
 if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
 {
-	$app['eland.alert']->error('Je hebt onvoldoende rechten voor deze actie.');
+	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
 }
 
@@ -28,7 +28,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$row = $app['eland.xdb']->get('doc', $map_edit);
+	$row = $app['xdb']->get('doc', $map_edit);
 
 	if ($row)
 	{
@@ -37,15 +37,15 @@ if ($map_edit)
 
 	if (!$map_name)
 	{
-		$app['eland.alert']->error('Map niet gevonden.');
+		$app['alert']->error('Map niet gevonden.');
 		cancel();
 	}
 
 	if ($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 
 			cancel($map_edit);
 		}
@@ -60,7 +60,7 @@ if ($map_edit)
 		if (!count($errors))
 		{
 
-			$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]);
@@ -73,19 +73,19 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
-			$app['eland.xdb']->set('doc', $map_edit, ['map_name' => $posted_map_name]);
+			$app['xdb']->set('doc', $map_edit, ['map_name' => $posted_map_name]);
 
-			$app['eland.alert']->success('Map naam aangepast.');
+			$app['alert']->success('Map naam aangepast.');
 
-			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+			$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
 			cancel($map_edit);
 		}
 
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 
-	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
+	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$h1 = 'Map aanpassen: ' . aphp('docs', ['map' => $map_edit], $map_name);
 
@@ -100,14 +100,14 @@ if ($map_edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '" ';
+	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '" ';
 	echo 'value="' . $map_name . '">';
 	echo '</div>';
 	echo '</div>';
 
 	echo aphp('docs', ['map' => $map_edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
-	$app['eland.form_token']->generate();	
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -124,7 +124,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $app['eland.xdb']->get('doc', $edit);
+	$row = $app['xdb']->get('doc', $edit);
 
 	if ($row)
 	{
@@ -142,7 +142,7 @@ if ($edit)
 			'access'		=> $_POST['access'],
 		];
 
-		$access_error = $app['eland.access_control']->get_post_error();
+		$access_error = $app['access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -155,8 +155,8 @@ if ($edit)
 
 			if (strlen($map_name))
 			{
-				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['eland.this_group']->get_schema(),
+				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
+					'agg_schema' => $app['this_group']->get_schema(),
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
 				if (count($rows))
@@ -168,9 +168,9 @@ if ($edit)
 				{
 					$map = ['map_name' => $map_name];
 
-					$mid = substr(sha1(microtime() . $app['eland.this_group']->get_schema() . $map_name), 0, 24);
+					$mid = substr(sha1(microtime() . $app['this_group']->get_schema() . $map_name), 0, 24);
 
-					$app['eland.xdb']->set('doc', $mid, $map);
+					$app['xdb']->set('doc', $mid, $map);
 
 					$map['id'] = $mid;
 				}
@@ -186,36 +186,36 @@ if ($edit)
 				&& ((isset($update['map_id']) && $update['map_id'] != $doc['map_id'])
 					|| !strlen($map_name)))
 			{
-				$rows = $app['eland.xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['eland.this_group']->get_schema(),
+				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
+					'agg_schema' => $app['this_group']->get_schema(),
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
 				{
-					$app['eland.xdb']->del('doc', $doc['map_id']);
+					$app['xdb']->del('doc', $doc['map_id']);
 				}
 			}
 
-			$app['eland.xdb']->set('doc', $edit, $update);
+			$app['xdb']->set('doc', $edit, $update);
 
-			$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+			$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
-			$app['eland.alert']->success('Document aangepast');
+			$app['alert']->success('Document aangepast');
 
 			cancel($update['map_id']);
 		}
 
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 
 	if (isset($doc['map_id']) && $doc['map_id'] != '')
 	{
 		$map_id = $doc['map_id'];
 
-		$map = $app['eland.xdb']->get('doc', $map_id)['data'];
+		$map = $app['xdb']->get('doc', $map_id)['data'];
 	}
 
-	$app['eland.assets']->add(['typeahead', 'typeahead.js']);
+	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$h1 = 'Document aanpassen';
 
@@ -224,13 +224,13 @@ if ($edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';	
+	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
 	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="location" ';
-	echo 'name="location" value="' . $app['eland.s3_doc_url'] . $doc['filename'] . '" readonly>';
+	echo 'name="location" value="' . $app['s3_doc_url'] . $doc['filename'] . '" readonly>';
 	echo '</div>';
 	echo '</div>';
 
@@ -249,7 +249,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['eland.access_control']->get_radio_buttons('docs', $doc['access']);
+	echo $app['access_control']->get_radio_buttons('docs', $doc['access']);
 
 	$map_name = $map['map_name'] ?? '';
 
@@ -257,7 +257,7 @@ if ($edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '">';
+	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
@@ -279,13 +279,13 @@ if ($edit)
  */
 if ($confirm_del && $del)
 {
-	if ($error_token = $app['eland.form_token']->get_error())
+	if ($error_token = $app['form_token']->get_error())
 	{
-		$app['eland.alert']->error($error_token);
+		$app['alert']->error($error_token);
 		cancel();
 	}
 
-	$row = $app['eland.xdb']->get('doc', $del);
+	$row = $app['xdb']->get('doc', $del);
 
 	if ($row)
 	{
@@ -294,7 +294,7 @@ if ($confirm_del && $del)
 
 	if ($doc)
 	{
-		$err = $app['eland.s3']->doc_del($doc['filename']);
+		$err = $app['s3']->doc_del($doc['filename']);
 
 		if ($err)
 		{
@@ -303,33 +303,33 @@ if ($confirm_del && $del)
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
 			if (count($rows) < 2)
 			{
-				$app['eland.xdb']->del('doc', $doc['map_id']);
+				$app['xdb']->del('doc', $doc['map_id']);
 
-				$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+				$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
 				unset($doc['map_id']);
 			}
 		}
 
-		$app['eland.xdb']->del('doc', $del);
+		$app['xdb']->del('doc', $del);
 
-		$app['eland.alert']->success('Het document werd verwijderd.');
+		$app['alert']->success('Het document werd verwijderd.');
 
 		cancel($doc['map_id'] ?? false);
 	}
 
-	$app['eland.alert']->error('Document niet gevonden.');
+	$app['alert']->error('Document niet gevonden.');
 }
 
 if ($del)
 {
-	$row = $app['eland.xdb']->get('doc', $del);
+	$row = $app['xdb']->get('doc', $del);
 
 	if ($row)
 	{
@@ -341,20 +341,20 @@ if ($del)
 		$h1 = 'Document verwijderen?';
 
 		require_once __DIR__ . '/include/header.php';
-		
+
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
 		echo '<form method="post">';
 
 		echo '<p>';
-		echo '<a href="' . $app['eland.s3_doc_url'] . $doc['filename'] . '" target="_self">';
+		echo '<a href="' . $app['s3_doc_url'] . $doc['filename'] . '" target="_self">';
 		echo $doc['name'] ?? $doc['org_filename'];
 		echo '</a>';
 		echo '</p>';
 
 		echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
-		$app['eland.form_token']->generate();
+		$app['form_token']->generate();
 		echo '</form>';
 
 		echo '</div>';
@@ -364,7 +364,7 @@ if ($del)
 		exit;
 	}
 
-	$app['eland.alert']->error('Document niet gevonden.');
+	$app['alert']->error('Document niet gevonden.');
 }
 
 /**
@@ -389,34 +389,34 @@ if ($submit)
 		$errors[] = 'Geen bestand geselecteerd.';
 	}
 
-	$access_error = $app['eland.access_control']->get_post_error();
+	$access_error = $app['access_control']->get_post_error();
 
 	if ($access_error)
 	{
 		$errors[] = $access_error;
 	}
 
-	if ($token_error = $app['eland.form_token']->get_error())
+	if ($token_error = $app['form_token']->get_error())
 	{
 		$errors[] = $token_error;
 	}
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 	else
 	{
 		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
-		$filename = $app['eland.this_group']->get_schema() . '_d_' . $doc_id . '.' . $ext;
+		$filename = $app['this_group']->get_schema() . '_d_' . $doc_id . '.' . $ext;
 
-		$error = $app['eland.s3']->doc_upload($filename, $tmpfile);
+		$error = $app['s3']->doc_upload($filename, $tmpfile);
 
 		if ($error)
 		{
 			$app['monolog']->error('doc upload fail: ' . $error);
-			$app['eland.alert']->error('Bestand opladen mislukt.');
+			$app['alert']->error('Bestand opladen mislukt.');
 		}
 		else
 		{
@@ -431,7 +431,7 @@ if ($submit)
 
 			if (strlen($map_name))
 			{
-				$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+				$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -447,9 +447,9 @@ if ($submit)
 
 					$map = ['map_name' => $map_name];
 
-					$app['eland.xdb']->set('doc', $map_id, $map);
+					$app['xdb']->set('doc', $map_id, $map);
 
-					$app['eland.typeahead']->invalidate_thumbprint('doc_map_names');
+					$app['typeahead']->invalidate_thumbprint('doc_map_names');
 				}
 
 				$doc['map_id'] = $map_id;
@@ -462,10 +462,10 @@ if ($submit)
 				$doc['name'] = $name;
 			}
 
-			$app['eland.xdb']->set('doc', $doc_id, $doc);
+			$app['xdb']->set('doc', $doc_id, $doc);
 
 
-			$app['eland.alert']->success('Het bestand is opgeladen.');
+			$app['alert']->success('Het bestand is opgeladen.');
 
 			cancel($doc['map_id'] ?? false);
 		}
@@ -480,7 +480,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $app['eland.xdb']->get('doc', $map);
+		$row = $app['xdb']->get('doc', $map);
 
 		if ($row)
 		{
@@ -488,7 +488,7 @@ if ($add)
 		}
 	}
 
-	$app['eland.assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
+	$app['assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
 
 	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 
@@ -499,7 +499,7 @@ if ($add)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';	
+	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
 
 	echo '<div class="form-group">';
 	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
@@ -516,7 +516,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['eland.access_control']->get_radio_buttons('docs');
+	echo $app['access_control']->get_radio_buttons('docs');
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
@@ -524,7 +524,7 @@ if ($add)
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
 	echo $map_name ?? '';
 	echo '" ';
-	echo 'data-typeahead="' . $app['eland.typeahead']->get('doc_map_names') . '">';
+	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
@@ -532,7 +532,7 @@ if ($add)
 	$map_context = ($map) ? ['map' => $map] : [];
 	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -549,7 +549,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $app['eland.xdb']->get('doc', $map);
+	$row = $app['xdb']->get('doc', $map);
 
 	if ($row)
 	{
@@ -558,15 +558,15 @@ if ($map)
 
 	if (!$map_name)
 	{
-		$app['eland.alert']->error('Onbestaande map id.');
+		$app['alert']->error('Onbestaande map id.');
 		cancel();
 	}
 //
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 
@@ -589,7 +589,7 @@ if ($map)
 }
 else
 {
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -610,10 +610,10 @@ else
 		}
 	}
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
 
 	$docs = [];
 
@@ -773,15 +773,15 @@ if (count($docs))
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="' . $app['eland.s3_doc_url'] . $d['filename'] . '" target="_self">';
+		echo '<a href="' . $app['s3_doc_url'] . $d['filename'] . '" target="_self">';
 		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';
-		echo '<td>' . $app['eland.date_format']->get($d['ts']) . '</td>';
+		echo '<td>' . $app['date_format']->get($d['ts']) . '</td>';
 
 		if (!$s_guest)
 		{
-			echo '<td>' . $app['eland.access_control']->get_label($d['access']) . '</td>';
+			echo '<td>' . $app['access_control']->get_label($d['access']) . '</td>';
 		}
 
 		if ($s_admin)
@@ -819,7 +819,7 @@ function cancel($map = false)
 	{
 		$params['map'] = $map;
 	}
-	
+
 	header('Location: ' . generate_url('docs', $params));
 	exit;
 }

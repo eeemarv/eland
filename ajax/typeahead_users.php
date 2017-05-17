@@ -42,9 +42,9 @@ if ($group_id == 'self')
 			exit;
 	}
 
-	$users = users_to_json($app['eland.this_group']->get_schema(), $status_sql);
+	$users = users_to_json($app['this_group']->get_schema(), $status_sql);
 
-	$app['eland.typeahead']->invalidate_thumbprint('users_' . $status, false, crc32($users));
+	$app['typeahead']->invalidate_thumbprint('users_' . $status, false, crc32($users));
 
 	header('Content-type: application/json');
 	echo $users;
@@ -68,15 +68,15 @@ if ($group['apimethod'] != 'elassoap')
 	exit;
 }
 
-if ($app['eland.groups']->get_schema($group['domain']))
+if ($app['groups']->get_schema($group['domain']))
 {
-	$remote_schema = $app['eland.groups']->get_schema($group['domain']);
+	$remote_schema = $app['groups']->get_schema($group['domain']);
 
-	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$app['eland.base_url']]))
+	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$app['base_url']]))
 	{
 		$active_users = users_to_json($remote_schema);
 
-		$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['domain'], crc32($active_users));
+		$app['typeahead']->invalidate_thumbprint('users_active', $group['domain'], crc32($active_users));
 
 		header('Content-type: application/json');
 		echo $active_users;
@@ -87,11 +87,11 @@ if ($app['eland.groups']->get_schema($group['domain']))
 	exit;
 }
 
-$active_users = $app['eland.cache']->get($group['domain'] . '_typeahead_data', false);
+$active_users = $app['cache']->get($group['domain'] . '_typeahead_data', false);
 
 if ($active_users)
 {
-	$app['eland.typeahead']->invalidate_thumbprint('users_active', $group['domain'], crc32($active_users));
+	$app['typeahead']->invalidate_thumbprint('users_active', $group['domain'], crc32($active_users));
 
 	header('Content-type: application/json');
 	echo $active_users;

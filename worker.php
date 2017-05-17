@@ -12,7 +12,7 @@ if (php_sapi_name() !== 'cli')
 
 require_once __DIR__ . '/include/worker.php';
 
-$boot = $app['eland.cache']->get('boot');
+$boot = $app['cache']->get('boot');
 
 if (!count($boot))
 {
@@ -20,7 +20,7 @@ if (!count($boot))
 }
 
 $boot['count']++;
-$app['eland.cache']->set('boot', $boot);
+$app['cache']->set('boot', $boot);
 
 echo 'worker started .. ' . $boot['count'] . "\n";
 
@@ -35,7 +35,7 @@ $app['predis']->expire('block_task', 3);
 
 while (true)
 {
-	$app['eland.log_db']->update();
+	$app['log_db']->update();
 
 	sleep(1);
 
@@ -59,7 +59,7 @@ while (true)
 
 	if ($loop_count % 10 === 0)
 	{
-		$boot_test = $app['eland.cache']->get('boot');
+		$boot_test = $app['cache']->get('boot');
 
 		if ($boot_test['count'] < $boot['count'])
 		{
@@ -74,7 +74,7 @@ while (true)
 				error_log($msg);
 				if (getenv('MAIL_NOTIFY_ADDRESS'))
 				{
-					$app['eland.queue.mail']->queue([
+					$app['queue.mail']->queue([
 						'to'		=> getenv('MAIL_NOTIFY_ADDRESS'),
 						'subject'	=> 'Sleeping worker',
 						'text'		=> $msg,

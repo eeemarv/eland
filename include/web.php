@@ -14,10 +14,10 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 	],
 ]);
 
-$app['eland.page_access'] = $page_access;
+$app['page_access'] = $page_access;
 
-$header_allow_origin = $app['eland.s3_protocol'] . $app['eland.s3_img'] . ', ';
-$header_allow_origin .= $app['eland.s3_protocol'] . $app['eland.s3_doc'];
+$header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
+$header_allow_origin .= $app['s3_protocol'] . $app['s3_doc'];
 
 if (!isset($no_headers))
 {
@@ -25,19 +25,19 @@ if (!isset($no_headers))
 	header('Access-Control-Allow-Origin: ' . $header_allow_origin);
 }
 
-$app['eland.assets'] = function($app){
-	return new eland\assets($app['eland.rootpath']);
+$app['assets'] = function($app){
+	return new eland\assets($app['rootpath']);
 };
 
-$app['eland.assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'swiper', 'base.css', 'print.css', 'base.js']);
+$app['assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'swiper', 'base.css', 'print.css', 'base.js']);
 
-$app['eland.script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
+$app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
-$app['eland.base_url'] = $app['eland.protocol'] . $_SERVER['SERVER_NAME'];
+$app['base_url'] = $app['protocol'] . $_SERVER['SERVER_NAME'];
 
 $post = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
-$app['eland.mapbox_token'] = getenv('MAPBOX_TOKEN');
+$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /**
  * vars
@@ -85,7 +85,7 @@ $allowed_interlets_landing_pages = [
  */
 $key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($_SERVER['SERVER_NAME']));
 
-if ($app['eland.script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
+if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {
 	$page_access = 'anonymous';
 	$hosting_form = true;
@@ -99,41 +99,41 @@ if ($app['eland.script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_e
 if ($redirect = getenv('REDIRECT_' . $key_host_env))
 {
 	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['eland.protocol'] . $redirect . $_SERVER['REQUEST_URI']);
+	header('Location: ' . $app['protocol'] . $redirect . $_SERVER['REQUEST_URI']);
 	exit;
 }
 
 /* */
 
-$app['eland.alert'] = function ($app){
+$app['alert'] = function ($app){
 	return new eland\alert($app['monolog'], $app['session']);
 };
 
-$app['eland.pagination'] = function (){
+$app['pagination'] = function (){
 	return new eland\pagination();
 };
 
-$app['eland.password_strength'] = function ($app){
+$app['password_strength'] = function ($app){
 	return new eland\password_strength();
 };
 
-$app['eland.user'] = function ($app){
-	return new eland\user($app['eland.this_group'], $app['monolog'], $app['session'], $app['eland.page_access']);
+$app['user'] = function ($app){
+	return new eland\user($app['this_group'], $app['monolog'], $app['session'], $app['page_access']);
 };
 
-$app['eland.autominlimit'] = function ($app){
-	return new eland\autominlimit($app['monolog'], $app['eland.xdb'], $app['db'], $app['eland.this_group']);
+$app['autominlimit'] = function ($app){
+	return new eland\autominlimit($app['monolog'], $app['xdb'], $app['db'], $app['this_group']);
 };
 
 // init
 
-$app['eland.elas_db_upgrade'] = function ($app){
+$app['elas_db_upgrade'] = function ($app){
 	return new eland\elas_db_upgrade($app['db']);
 };
 
 /** **/
 
-if (!$app['eland.this_group']->get_schema())
+if (!$app['this_group']->get_schema())
 {
 	http_response_code(404);
 
@@ -147,11 +147,11 @@ $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = ($p_schema) ?: $app['eland.this_group']->get_schema();
+$s_schema = ($p_schema) ?: $app['this_group']->get_schema();
 $s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = ($s_schema == $app['eland.this_group']->get_schema()) ? true : false;
+$s_group_self = ($s_schema == $app['this_group']->get_schema()) ? true : false;
 
 /** access user **/
 
@@ -253,7 +253,7 @@ else if (ctype_digit((string) $s_id))
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/messages.php?r=';
+		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=';
 		$location .= $session_user['accountrole'] . '&u=' . $s_id;
 		header('Location: ' . $location);
 		exit;
@@ -292,7 +292,7 @@ else if ($s_id == 'master')
 	{
 		$app['monolog']->debug('redirect 3a');
 
-		$location = $app['eland.protocol'] . $app['eland.groups']->get_host($s_schema) . '/messages.php?r=admin&u=master';
+		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -371,8 +371,8 @@ switch ($s_accountrole)
 		break;
 }
 
-$app['eland.access_control'] = function($app){
-	return new eland\access_control($app['eland.this_group']);
+$app['access_control'] = function($app){
+	return new eland\access_control($app['this_group']);
 };
 
 /**
@@ -392,8 +392,8 @@ $errors = [];
  * check access to groups
  **/
 
-$elas_interlets_groups = $app['eland.interlets_groups']->get_elas($s_schema);
-$eland_interlets_groups = $app['eland.interlets_groups']->get_eland($s_schema);
+$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
+$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
 
 if ($s_group_self && $s_guest)
 {
@@ -404,7 +404,7 @@ $count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets
 
 if ($page_access != 'anonymous'
 	&& !$s_group_self
-	&& !$eland_interlets_groups[$app['eland.this_group']->get_schema()])
+	&& !$eland_interlets_groups[$app['this_group']->get_schema()])
 {
 	header('Location: ' . generate_url('messages', ['view' => $view_messages], $s_schema));
 	exit;
@@ -420,10 +420,10 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
   *
   */
 
-$app['eland.xdb']->set_user($s_schema, $s_id);
+$app['xdb']->set_user($s_schema, $s_id);
 
-$app['eland.form_token'] = function ($app){
-	return new eland\form_token($app['predis'], $app['monolog'], $app['eland.script_name']);
+$app['form_token'] = function ($app){
+	return new eland\form_token($app['predis'], $app['monolog'], $app['script_name']);
 };
 
 /* view (global for all groups) */
@@ -438,17 +438,17 @@ $view_news = $app['session']->get('view.news') ?? 'extended';
 
 if ($view || $inline)
 {
-	if ($app['eland.script_name'] == 'users' && $view != $view_users)
+	if ($app['script_name'] == 'users' && $view != $view_users)
 	{
 		$view = $view_users = ($view) ?: $view_users;
 		$app['session']->set('view.users', $view_users);
 	}
-	else if ($app['eland.script_name'] == 'messages' && $view != $view_messages)
+	else if ($app['script_name'] == 'messages' && $view != $view_messages)
 	{
 		$view = $view_messages = ($view) ?: $view_messages;
 		$app['session']->set('view.messages', $view);
 	}
-	else if ($app['eland.script_name'] == 'news' && $view != $view_news)
+	else if ($app['script_name'] == 'news' && $view != $view_news)
 	{
 		$view = $view_news = ($view) ?: $view_news;
 		$app['session']->set('view.news', $view);
@@ -463,9 +463,9 @@ if (!$s_anonymous)
 {
 	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		if (isset($logins[$app['eland.this_group']->get_schema()]) && $s_group_self)
+		if (isset($logins[$app['this_group']->get_schema()]) && $s_group_self)
 		{
-			$app['session']->set('role.' . $app['eland.this_group']->get_schema(), $s_accountrole);
+			$app['session']->set('role.' . $app['this_group']->get_schema(), $s_accountrole);
 		}
 
 		$s_user_params_own_group = [
@@ -507,7 +507,7 @@ if (isset($_GET['welcome']) && $s_guest)
 		$msg .= 'boven in de navigatiebalk.';
 	}
 
-	$app['eland.alert']->info($msg);
+	$app['alert']->info($msg);
 }
 
 /**************** FUNCTIONS ***************/
@@ -553,7 +553,7 @@ function generate_url($entity = 'messages', $params = [], $sch = false)
 {
 	global $rootpath, $app;
 
-	if ($app['eland.alert']->is_set())
+	if ($app['alert']->is_set())
 	{
 		$params['a'] = '1';
 	}
@@ -564,7 +564,7 @@ function generate_url($entity = 'messages', $params = [], $sch = false)
 
 	$params = ($params) ? '?' . $params : '';
 
-	$path = ($sch) ? $app['eland.protocol'] . $app['eland.groups']->get_host($sch) . '/' : $rootpath;
+	$path = ($sch) ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $rootpath;
 
 	return $path . $entity . '.php' . $params;
 }

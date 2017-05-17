@@ -14,13 +14,13 @@ if ($s_id)
 
 if (!readconfigfromdb('registration_en'))
 {
-	$app['eland.alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
+	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
 }
 
 if ($token)
 {
-	$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
+	$key = $app['this_group']->get_schema() . '_register_' . $token;
 
 	if ($data = $app['predis']->get($key))
 	{
@@ -41,7 +41,7 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $app['eland.this_group']->get_schema() . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $app['this_group']->get_schema() . time() . mt_rand(0, 100000), 0, 4));
 				}
 			}
 
@@ -110,7 +110,7 @@ if ($token)
 				'email'			=> $data['email'],
 			];
 
-			$app['eland.xdb']->set('email_validated', $data['email'], $ev_data);
+			$app['xdb']->set('email_validated', $data['email'], $ev_data);
 
 			if ($data['gsm'] || $data['tel'])
 			{
@@ -152,10 +152,10 @@ if ($token)
 			],
 			'user'	=> $user,
 			'email'	=> $data['email'],
-			'user_url'	=> $app['eland.base_url'] . '/users.php?id=' . $user_id,
+			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
 		];
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 			=> 'admin',
 			'vars'			=> $vars,
 			'template'		=> 'admin_registration',
@@ -172,14 +172,14 @@ if ($token)
 			$vars[$k] = $data[$v];
 		}
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 					=> $data['email'],
 			'reply_to'				=> 'admin',
 			'template_from_config'	=> 'registration_success_mail',
 			'vars'		=> $vars,
 		], 1000);
 
-		$app['eland.alert']->success('Inschrijving voltooid.');
+		$app['alert']->success('Inschrijving voltooid.');
 
 		require_once __DIR__ . '/include/header.php';
 
@@ -195,7 +195,7 @@ if ($token)
 		exit;
 	}
 
-	$app['eland.alert']->error('Geen geldig token.');
+	$app['alert']->error('Geen geldig token.');
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -231,11 +231,11 @@ if ($submit)
 
 	if(!$reg['email'])
 	{
-		$app['eland.alert']->error('Vul een email adres in.');
+		$app['alert']->error('Vul een email adres in.');
 	}
 	else if (!filter_var($reg['email'], FILTER_VALIDATE_EMAIL))
 	{
-		$app['eland.alert']->error('Geen geldig email adres.');
+		$app['alert']->error('Geen geldig email adres.');
 	}
 	else if ($app['db']->fetchColumn('select c.id_user
 		from contact c, type_contact tc
@@ -243,31 +243,31 @@ if ($submit)
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))
 	{
-		$app['eland.alert']->error('Er bestaat reeds een inschrijving met dit mailadres.');
+		$app['alert']->error('Er bestaat reeds een inschrijving met dit mailadres.');
 	}
 	else if (!$reg['first_name'])
 	{
-		$app['eland.alert']->error('Vul een voornaam in.');
+		$app['alert']->error('Vul een voornaam in.');
 	}
 	else if (!$reg['last_name'])
 	{
-		$app['eland.alert']->error('Vul een achternaam in.');
+		$app['alert']->error('Vul een achternaam in.');
 	}
 	else if (!$reg['postcode'])
 	{
-		$app['eland.alert']->error('Vul een postcode in.');
+		$app['alert']->error('Vul een postcode in.');
 	}
-	else if ($error_token = $app['eland.form_token']->get_error())
+	else if ($error_token = $app['form_token']->get_error())
 	{
-		$app['eland.alert']->error($error_token);
+		$app['alert']->error($error_token);
 	}
 	else
 	{
-		$token = substr(hash('sha512', $app['eland.this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
-		$key = $app['eland.this_group']->get_schema() . '_register_' . $token;
+		$token = substr(hash('sha512', $app['this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
+		$key = $app['this_group']->get_schema() . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
 		$app['predis']->expire($key, 86400);
-		$key = $app['eland.this_group']->get_schema() . '_register_email_' . $email;
+		$key = $app['this_group']->get_schema() . '_register_email_' . $email;
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 86400);
 
@@ -276,16 +276,16 @@ if ($submit)
 				'name'	=> readconfigfromdb('systemname'),
 				'tag'	=> readconfigfromdb('systemtag'),
 			],
-			'confirm_url'	=> $app['eland.base_url'] . '/register.php?token=' . $token,
+			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $reg['email'],
 			'vars'		=> $vars,
 			'template'	=> 'registration_confirm',
 		], 1000);
 
-		$app['eland.alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
+		$app['alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}
@@ -369,7 +369,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
-$app['eland.form_token']->generate();
+$app['form_token']->generate();
 
 echo '</form>';
 

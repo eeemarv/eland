@@ -19,11 +19,11 @@ if ($approve)
 
 	if ($app['db']->update('news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
-		$app['eland.alert']->success('Nieuwsbericht goedgekeurd');
+		$app['alert']->success('Nieuwsbericht goedgekeurd');
 	}
 	else
 	{
-		$app['eland.alert']->error('Goedkeuren nieuwsbericht mislukt.');
+		$app['alert']->error('Goedkeuren nieuwsbericht mislukt.');
 	}
 	cancel($approve);
 }
@@ -49,7 +49,7 @@ if ($add || $edit)
 			'headline'		=> trim($_POST['headline'] ?? ''),
 		];
 
-		$access_error = $app['eland.access_control']->get_post_error();
+		$access_error = $app['access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -58,7 +58,7 @@ if ($add || $edit)
 
 		if ($news['itemdate'])
 		{
-			$news['itemdate'] = $app['eland.date_format']->reverse($news['itemdate']);
+			$news['itemdate'] = $app['date_format']->reverse($news['itemdate']);
 
 			if ($news['itemdate'] === false)
 			{
@@ -83,7 +83,7 @@ if ($add || $edit)
 			$errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
 		}
 
-		if ($token_error = $app['eland.form_token']->get_error())
+		if ($token_error = $app['form_token']->get_error())
 		{
 			$errors[] = $token_error;
 		}
@@ -91,7 +91,7 @@ if ($add || $edit)
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 }
 
@@ -101,14 +101,14 @@ if ($add && $submit && !count($errors))
 	$news['published'] = ($s_admin) ? 't' : 'f';
 	$news['id_user'] = ($s_master) ? 0 : $s_id;
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
-	
+
 	if ($app['db']->insert('news', $news))
 	{
 		$id = $app['db']->lastInsertId('news_id_seq');
 
-		$app['eland.xdb']->set('news_access', $id, ['access' => $_POST['access']]);
+		$app['xdb']->set('news_access', $id, ['access' => $_POST['access']]);
 
-		$app['eland.alert']->success('Nieuwsbericht opgeslagen.');
+		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
 		if(!$s_admin)
 		{
@@ -118,23 +118,23 @@ if ($add && $submit && !count($errors))
 					'tag'	=> readconfigfromdb('systemtag'),
 				],
 				'news'	=> $news,
-				'news_url'	=> $app['eland.base_url'] . '/news.php?id=' . $id,
+				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,
 			];
 
-			$app['eland.queue.mail']->queue([
+			$app['queue.mail']->queue([
 				'to' 		=> 'newsadmin',
 				'template'	=> 'admin_news_approve',
 				'vars'		=> $vars,
 			]);
 
-			$app['eland.alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
+			$app['alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
 			cancel();
 		}
 		cancel($id);
 	}
 	else
 	{
-		$app['eland.alert']->error('Nieuwsbericht niet opgeslagen.');
+		$app['alert']->error('Nieuwsbericht niet opgeslagen.');
 	}
 }
 
@@ -142,14 +142,14 @@ if ($edit && $submit && !count($errors))
 {
 	if($app['db']->update('news', $news, ['id' => $edit]))
 	{
-		$app['eland.xdb']->set('news_access', $edit, ['access' => $_POST['access']]);
+		$app['xdb']->set('news_access', $edit, ['access' => $_POST['access']]);
 
-		$app['eland.alert']->success('Nieuwsbericht aangepast.');
+		$app['alert']->success('Nieuwsbericht aangepast.');
 		cancel($edit);
 	}
 	else
 	{
-		$app['eland.alert']->error('Nieuwsbericht niet aangepast.');
+		$app['alert']->error('Nieuwsbericht niet aangepast.');
 	}
 }
 
@@ -158,7 +158,7 @@ if ($edit)
 	$news = $app['db']->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	list($news['itemdate']) = explode(' ', $news['itemdate']);
 
-	$news_access = $app['eland.xdb']->get('news_access', $edit)['data']['access'];
+	$news_access = $app['xdb']->get('news_access', $edit)['data']['access'];
 }
 
 if ($add)
@@ -168,7 +168,7 @@ if ($add)
 
 if ($add || $edit)
 {
-	$app['eland.assets']->add('datepicker');
+	$app['assets']->add('datepicker');
 
 	$h1 = 'Nieuwsbericht ';
 	$h1 .= ($add) ? 'toevoegen' : 'aanpassen';
@@ -186,13 +186,13 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'value="' . $app['eland.date_format']->get($news['itemdate'], 'day') . '" ';
-	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '">';
+	echo 'value="' . $app['date_format']->get($news['itemdate'], 'day') . '" ';
+	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '">';
 	echo '<p><small>Wanneer gaat dit door?</small></p>';
 	echo '</div>';
 	echo '</div>';
@@ -241,12 +241,12 @@ if ($add || $edit)
 		$omit_access = false;
 	}
 
-	echo $app['eland.access_control']->get_radio_buttons('news', $news_access, $omit_access);
+	echo $app['access_control']->get_radio_buttons('news', $news_access, $omit_access);
 
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -268,28 +268,28 @@ if ($del)
 
 	if ($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		if($app['db']->delete('news', ['id' => $del]))
 		{
-			$app['eland.xdb']->del('news_access', $del);
+			$app['xdb']->del('news_access', $del);
 
-			$app['eland.alert']->success('Nieuwsbericht verwijderd.');
+			$app['alert']->success('Nieuwsbericht verwijderd.');
 			cancel();
 		}
 
-		$app['eland.alert']->error('Nieuwsbericht niet verwijderd.');
+		$app['alert']->error('Nieuwsbericht niet verwijderd.');
 	}
 
 	$news = $app['db']->fetchAssoc('SELECT n.*
-		FROM news n  
+		FROM news n
 		WHERE n.id = ?', [$del]);
 
-	$news_access = $app['eland.xdb']->get('news_access', $del)['data']['access'];
+	$news_access = $app['xdb']->get('news_access', $del)['data']['access'];
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar';
@@ -312,7 +312,7 @@ if ($del)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo ($itemdate) ? $app['eland.date_format']->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
+	echo ($itemdate) ? $app['date_format']->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -337,7 +337,7 @@ if ($del)
 
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
-	echo $app['eland.access_control']->get_label($news_access);
+	echo $app['access_control']->get_label($news_access);
 	echo '</dd>';
 
 	echo '</dl>';
@@ -353,7 +353,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 	echo '</form>';
 
 	echo '</div>';
@@ -374,36 +374,36 @@ if ($id)
 	require_once __DIR__ . '/include/web.php';
 
 	$news = $app['db']->fetchAssoc('SELECT n.*
-		FROM news n  
+		FROM news n
 		WHERE n.id = ?', [$id]);
 
 	if (!$s_admin && !$news['approved'])
 	{
-		$app['eland.alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
-	$news_access = $app['eland.xdb']->get('news_access', $id)['data']['access'];
+	$news_access = $app['xdb']->get('news_access', $id)['data']['access'];
 
-	if (!$app['eland.access_control']->is_visible($news_access))
+	if (!$app['access_control']->is_visible($news_access))
 	{
-		$app['eland.alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
+		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
 	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id desc limit 1');
+		'access' => $app['access_control']->get_visible_ary()], 'order by eland_id desc limit 1');
 
 	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
 
-	$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
-		'access' => $app['eland.access_control']->get_visible_ary()], 'order by eland_id asc limit 1');
+		'access' => $app['access_control']->get_visible_ary()], 'order by eland_id asc limit 1');
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
@@ -445,7 +445,7 @@ if ($id)
 	if (!$s_guest)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $app['eland.access_control']->get_label($news_access);
+		echo $app['access_control']->get_label($news_access);
 		echo '</p>';
 	}
 
@@ -468,7 +468,7 @@ if ($id)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo ($news['itemdate']) ? $app['eland.date_format']->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
+	echo ($news['itemdate']) ? $app['date_format']->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -534,7 +534,7 @@ $news = $app['db']->fetchAll($query);
 
 $news_access_ary = [];
 
-$rows = $app['eland.xdb']->get_many(['agg_schema' => $app['eland.this_group']->get_schema(), 'agg_type' => 'news_access']);
+$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(), 'agg_type' => 'news_access']);
 
 foreach ($rows as $row)
 {
@@ -548,14 +548,14 @@ foreach ($news as $k => $n)
 
 	if (!isset($news_access_ary[$news_id]))
 	{
-		$app['eland.xdb']->set('news_access', $news_id, ['access' => 'interlets']);
+		$app['xdb']->set('news_access', $news_id, ['access' => 'interlets']);
 		$news[$k]['access'] = 'interlets';
 		continue;
 	}
 
 	$news[$k]['access'] = $news_access_ary[$news_id];
 
-	if (!$app['eland.access_control']->is_visible($news[$k]['access']))
+	if (!$app['access_control']->is_visible($news[$k]['access']))
 	{
 		unset($news[$k]);
 	}
@@ -639,7 +639,7 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
-		echo $app['eland.date_format']->get_td($n['itemdate'], 'day');
+		echo $app['date_format']->get_td($n['itemdate'], 'day');
 
 		if ($s_admin && !$inline)
 		{
@@ -651,7 +651,7 @@ if ($v_list)
 		if (!$s_guest)
 		{
 			echo '<td>';
-			echo $app['eland.access_control']->get_label($n['access']);
+			echo $app['access_control']->get_label($n['access']);
 			echo '</td>';
 		}
 
@@ -694,7 +694,7 @@ else if ($v_extended)
 			echo 'Agendadatum';
 			echo '</dt>';
 			echo '<dd>';
-			echo $app['eland.date_format']->get($n['itemdate'], 'day');
+			echo $app['date_format']->get($n['itemdate'], 'day');
 
 			if ($n['sticky'])
 			{
@@ -709,7 +709,7 @@ else if ($v_extended)
 			echo 'Zichtbaarheid';
 			echo '</dt>';
 			echo '<dd>';
-			echo $app['eland.access_control']->get_label($n['access']);
+			echo $app['access_control']->get_label($n['access']);
 			echo '</dd>';
 		}
 

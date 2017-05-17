@@ -25,7 +25,18 @@
 		"symfony/twig-bridge": "^3.2",
 		"symfony/security": "^3.2",
 		"symfony/finder": "^3.2",
-		"predis/service-provider": "^2.0"
+		"predis/service-provider": "^2.0",
+		"symfony/form": "^3.2",
+		"symfony/validator": "^3.2",
+		"symfony/yaml": "^3.2",
+		"symfony/process": "^3.2",
+		"symfony/console": "^3.2",
+		"knplabs/console-service-provider": "^2.0",
+		"symfony/config": "^3.2",
+		"symfony/security-csrf": "^3.2",
+		"symfony/monolog-bridge": "^3.2",
+		"symfony/translation": "^3.2",
+		"symfony/asset": "^3.2"
 	},
 
     "minimum-stability": "stable",

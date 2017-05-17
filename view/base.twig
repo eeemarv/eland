@@ -9,7 +9,7 @@
   <link type="text/css" rel="stylesheet" href="print.css" media="print">
   {% for css in includecss %}
     <link type="text/css" rel="stylesheet" href="{{css}}" media="screen">
-  {% endfor %}      
+  {% endfor %}
   {% if config.css %}
     <link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">
   {% endif %}
@@ -21,7 +21,7 @@
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-	
+
 {% if not s_anonymous %}
 	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
 	<span class="sr-only"></span>
@@ -44,7 +44,7 @@
 	{% if master %}master{% endif %}
 	<a href="" >{{user}}</a>
 	($s_group_self) ? '' : $s_schema . '.
-	<span class="caret"></span></a> 
+	<span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu">
 	{% if s_user or s_admin %}
 		<li>' . aphp('users', 'id=' . $s_id, 'Mijn gegevens', false, false, 'user') . '</li>
@@ -72,15 +72,15 @@
 		);
 
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"
 		role="button" aria-expanded="false">
-		<span class="fa fa-cog"></span> 
+		<span class="fa fa-cog"></span>
 		Admin modus
-		<span class="caret"></span></a> 
+		<span class="caret"></span></a>
 		<ul class="dropdown-menu" role="menu">
 		foreach ($menu as $link => $label)
 		{
-			$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
+			$active = ($app['script_name'] == $link) ? ' class="active"' : '
 			<li' . $active . '>
 			 aphp($link, '', $label[1], false, false, $label[0]);
 			</li>
@@ -103,11 +103,11 @@
 		$get_params = $_GET;
 		$get_params['r'] = 'admin
 
-		<a href="' . $admin_url . '?' . http_build_query($get_params) . '" 
+		<a href="' . $admin_url . '?' . http_build_query($get_params) . '"
 		title="Admin modus inschakelen">
-		<span class="fa fa-times text-danger"></span> 
+		<span class="fa fa-times text-danger"></span>
 		Admin modus
-		</a> 
+		</a>
 	}
 	</ul>
 	</div>
@@ -161,7 +161,7 @@
 
 foreach ($menu as $link => $label)
 {
-	$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '
+	$active = ($app['script_name'] == $link) ? ' class="active"' : '
 	<li' . $active . '>
 	 aphp($link, (isset($label[2])) ? $label[2] : '',
 		$label[1], false, false, $label[0]);

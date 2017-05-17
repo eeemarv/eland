@@ -121,25 +121,25 @@ if ($user_mail_submit && $id && $post)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
 		cancel($id);
 	}
 
 	if ($s_master)
 	{
-		$app['eland.alert']->error('Het master account kan geen berichten versturen.');
+		$app['alert']->error('Het master account kan geen berichten versturen.');
 		cancel($id);
 	}
 
 	if (!$s_schema)
 	{
-		$app['eland.alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
 		cancel($id);
 	}
 
 	if (!$user_mail_content)
 	{
-		$app['eland.alert']->error('Fout: leeg bericht. Mail niet verzonden.');
+		$app['alert']->error('Fout: leeg bericht. Mail niet verzonden.');
 		cancel($id);
 	}
 
@@ -162,10 +162,10 @@ if ($user_mail_submit && $id && $post)
 		'from_group'	=> $s_group_self ? '' : readconfigfromdb('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
-		'login_url'		=> $app['eland.base_url'].'/login.php',
+		'login_url'		=> $app['base_url'].'/login.php',
 	];
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to'		=> $id,
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'user',
@@ -174,14 +174,14 @@ if ($user_mail_submit && $id && $post)
 
 	if ($user_mail_cc)
 	{
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $s_schema . '.' . $s_id,
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
 		], 600);
 	}
 
-	$app['eland.alert']->success('Mail verzonden.');
+	$app['alert']->success('Mail verzonden.');
 
 	cancel($id);
 }
@@ -261,10 +261,10 @@ if ($post && $img && $id )
 
 	//
 
-	$filename = $app['eland.this_group']->get_schema() . '_u_' . $id . '_';
+	$filename = $app['this_group']->get_schema() . '_u_' . $id . '_';
 	$filename .= sha1($filename . microtime()) . '.jpg';
 
-	$err = $app['eland.s3']->img_upload($filename, $tmpfile);
+	$err = $app['s3']->img_upload($filename, $tmpfile);
 
 	if ($err)
 	{
@@ -309,7 +309,7 @@ if ($img_del && $id)
 
 	if (!($s_owner || $s_admin))
 	{
-		$app['eland.alert']->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
 		cancel($id);
 	}
 
@@ -317,7 +317,7 @@ if ($img_del && $id)
 
 	if (!$user)
 	{
-		$app['eland.alert']->error('De gebruiker bestaat niet.');
+		$app['alert']->error('De gebruiker bestaat niet.');
 		cancel();
 	}
 
@@ -325,7 +325,7 @@ if ($img_del && $id)
 
 	if ($file == '' || !$file)
 	{
-		$app['eland.alert']->error('De gebruiker heeft geen foto.');
+		$app['alert']->error('De gebruiker heeft geen foto.');
 		cancel($id);
 	}
 
@@ -333,7 +333,7 @@ if ($img_del && $id)
 	{
 		$app['db']->update('users', ['"PictureFile"' => ''], ['id' => $id]);
 		readuser($id, true);
-		$app['eland.alert']->success('Profielfoto verwijderd.');
+		$app['alert']->success('Profielfoto verwijderd.');
 		cancel($id);
 	}
 
@@ -344,7 +344,7 @@ if ($img_del && $id)
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
-	echo '<img src="' . $app['eland.s3_img_url'] . $file . '" class="img-rounded">';
+	echo '<img src="' . $app['s3_img_url'] . $file . '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
 
@@ -419,16 +419,16 @@ if ($bulk_submit && $post && $s_admin)
 		$errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
 	}
 
-	if ($error_token = $app['eland.form_token']->get_error())
+	if ($error_token = $app['form_token']->get_error())
 	{
 		$errors[] = $error_token;
 	}
 
 	if ($bulk_field && strpos($bulk_field, '_access') !== false)
 	{
-		$access_value = $app['eland.access_control']->get_post_value();
+		$access_value = $app['access_control']->get_post_value();
 
-		if ($access_error = $app['eland.access_control']->get_post_error())
+		if ($access_error = $app['access_control']->get_post_error())
 		{
 			$errors[] = $access_error;
 		}
@@ -436,7 +436,7 @@ if ($bulk_submit && $post && $s_admin)
 
 	if (count($errors))
 	{
-		$app['eland.alert']->error($errors);
+		$app['alert']->error($errors);
 	}
 	else
 	{
@@ -466,17 +466,17 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 	if ($bulk_field == 'fullname_access')
 	{
-		$fullname_access_role = $app['eland.access_control']->get_role($access_value);
+		$fullname_access_role = $app['access_control']->get_role($access_value);
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['eland.xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
-			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
+			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
 
-		$app['eland.alert']->success('De zichtbaarheid van de volledige naam werd aangepast.');
+		$app['alert']->success('De zichtbaarheid van de volledige naam werd aangepast.');
 
 		cancel();
 	}
@@ -501,20 +501,20 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		if ($bulk_field == 'status')
 		{
-			$app['eland.typeahead']->invalidate_thumbprint('users_active');
-			$app['eland.typeahead']->invalidate_thumbprint('users_extern');
+			$app['typeahead']->invalidate_thumbprint('users_active');
+			$app['typeahead']->invalidate_thumbprint('users_extern');
 		}
 
 		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
 
-		$app['eland.interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($s_schema);
 
-		$app['eland.alert']->success('Het veld werd aangepast.');
+		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
 	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$bulk_field])
@@ -527,10 +527,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-		$access_role = $app['eland.access_control']->get_role($access_value);
+		$access_role = $app['access_control']->get_role($access_value);
 
 		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
-		$app['eland.alert']->success('Het veld werd aangepast.');
+		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
 	else if ($bulk_field == 'cron_saldo')
@@ -543,16 +543,16 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['predis']->del($app['eland.this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
 		}
 
 		$value = $value ? 'on' : 'off';
 
 		$app['monolog']->info('bulk: Set periodic mail to ' . $value . ' for users ' . $users_log);
 
-		$app['eland.interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($s_schema);
 
-		$app['eland.alert']->success('Het veld werd aangepast.');
+		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
 }
@@ -631,13 +631,13 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		}
 		catch (Exception $e)
 		{
-			$app['eland.alert']->error('Fout in mail template: ' . $e->getMessage());
+			$app['alert']->error('Fout in mail template: ' . $e->getMessage());
 			$sel_ary = [];
 
 			break;
 		}
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $sel_user['id'],
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
@@ -656,11 +656,11 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		$alert_msg .= '<br>';
 		$alert_msg .= implode('<br>', $alert_msg_users);
 
-		$app['eland.alert']->success($alert_msg);
+		$app['alert']->success($alert_msg);
 	}
 	else
 	{
-		$app['eland.alert']->warning('Geen mails verzonden.');
+		$app['alert']->warning('Geen mails verzonden.');
 	}
 
 	if (count($sel_ary))
@@ -674,7 +674,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$alert_warning = 'Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users;
 
-		$app['eland.alert']->warning($alert_warning);
+		$app['alert']->warning($alert_warning);
 	}
 
 	if ($bulk_mail_submit && $count)
@@ -689,7 +689,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$template_vars[$key] = '{{ ' . $trans . ' }}';
 		}
 
-		$replace = $app['eland.protocol'] . $app['eland.this_group']->get_host() . '/users.php?';
+		$replace = $app['protocol'] . $app['this_group']->get_host() . '/users.php?';
 
 		$out = str_replace('./users.php?', $replace, $alert_msg);
 		$out .= '<br><br>';
@@ -704,7 +704,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		$template = $app['twig']->createTemplate($out . $bulk_mail_content);
 		$html = $template->render($template_vars);
 
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $s_id,
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
@@ -727,7 +727,7 @@ if ($pw)
 
 	if (!$s_admin && !$s_owner)
 	{
-		$app['eland.alert']->error('Je hebt onvoldoende rechten om het paswoord aan te passen voor deze gebruiker.');
+		$app['alert']->error('Je hebt onvoldoende rechten om het paswoord aan te passen voor deze gebruiker.');
 		cancel($pw);
 	}
 
@@ -740,12 +740,12 @@ if ($pw)
 			$errors[] = 'Vul paswoord in!';
 		}
 
-		if (!$s_admin && $app['eland.password_strength']->get($password) < 50)
+		if (!$s_admin && $app['password_strength']->get($password) < 50)
 		{
 			$errors[] = 'Te zwak paswoord.';
 		}
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -760,7 +760,7 @@ if ($pw)
 			if ($app['db']->update('users', $update, ['id' => $pw]))
 			{
 				$user = readuser($pw, true);
-				$app['eland.alert']->success('Paswoord opgeslagen.');
+				$app['alert']->success('Paswoord opgeslagen.');
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
@@ -781,40 +781,40 @@ if ($pw)
 							],
 							'user'			=> $user,
 							'password'		=> $password,
-							'url_login'		=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+							'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 						];
 
-						$app['eland.queue.mail']->queue([
+						$app['queue.mail']->queue([
 							'to' 		=> $pw,
 							'reply_to'	=> 'support',
 							'template'	=> 'password_reset',
 							'vars'		=> $vars,
 						]);
 
-						$app['eland.alert']->success('Notificatie mail verzonden');
+						$app['alert']->success('Notificatie mail verzonden');
 					}
 					else
 					{
-						$app['eland.alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+						$app['alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
 					}
 				}
 				cancel($pw);
 			}
 			else
 			{
-				$app['eland.alert']->error('Paswoord niet opgeslagen.');
+				$app['alert']->error('Paswoord niet opgeslagen.');
 			}
 		}
 		else
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 		}
 
 	}
 
 	$user = readuser($pw);
 
-	$app['eland.assets']->add('generate_password.js');
+	$app['assets']->add('generate_password.js');
 
 	$h1 = 'Paswoord aanpassen';
 	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
@@ -852,7 +852,7 @@ if ($pw)
 
 	echo aphp('users', ['id' => $pw], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -871,19 +871,19 @@ if ($del)
 {
 	if (!$s_admin)
 	{
-		$app['eland.alert']->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om een gebruiker te verwijderen.');
 		cancel($del);
 	}
 
 	if ($s_id == $del)
 	{
-		$app['eland.alert']->error('Je kan jezelf niet verwijderen.');
+		$app['alert']->error('Je kan jezelf niet verwijderen.');
 		cancel($del);
 	}
 
 	if ($app['db']->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
 	{
-		$app['eland.alert']->error('Een gebruiker met transacties kan niet worden verwijderd.');
+		$app['alert']->error('Een gebruiker met transacties kan niet worden verwijderd.');
 		cancel($del);
 	}
 
@@ -891,15 +891,15 @@ if ($del)
 
 	if (!$user)
 	{
-		$app['eland.alert']->error('Gebruiker bestaat niet.');
+		$app['alert']->error('Gebruiker bestaat niet.');
 		cancel();
 	}
 
 	if ($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel($del);
 		}
 
@@ -907,7 +907,7 @@ if ($del)
 
 		if (!$verify)
 		{
-			$app['eland.alert']->error('Het controle nazichts-vakje is niet aangevinkt.');
+			$app['alert']->error('Het controle nazichts-vakje is niet aangevinkt.');
 			cancel($del);
 		}
 
@@ -1009,24 +1009,24 @@ if ($del)
 		$app['db']->delete('contact', ['id_user' => $del]);
 
 		//delete fullname access record.
-		$app['eland.xdb']->del('user_fullname_access', $del);
+		$app['xdb']->del('user_fullname_access', $del);
 
 		//finally, the user
 		$app['db']->delete('users', ['id' => $del]);
-		$app['predis']->expire($app['eland.this_group']->get_schema() . '_user_' . $del, 0);
+		$app['predis']->expire($app['this_group']->get_schema() . '_user_' . $del, 0);
 
-		$app['eland.alert']->success('De gebruiker is verwijderd.');
+		$app['alert']->success('De gebruiker is verwijderd.');
 
 		if ($user['status'] == 1 || $user['status'] == 2)
 		{
-			$app['eland.typeahead']->invalidate_thumbprint('users_active');
+			$app['typeahead']->invalidate_thumbprint('users_active');
 		}
 		else if ($user['status'] == 7)
 		{
-			$app['eland.typeahead']->invalidate_thumbprint('users_extern');
+			$app['typeahead']->invalidate_thumbprint('users_extern');
 		}
 
-		$app['eland.interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($s_schema);
 
 		cancel();
 	}
@@ -1054,7 +1054,7 @@ if ($del)
 
 	echo aphp('users', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -1073,7 +1073,7 @@ if ($add || $edit)
 {
 	if ($add && !$s_admin)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om een gebruiker toe te voegen.');
+		$app['alert']->error('Je hebt geen rechten om een gebruiker toe te voegen.');
 		cancel();
 	}
 
@@ -1081,7 +1081,7 @@ if ($add || $edit)
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om deze gebruiker aan te passen.');
+		$app['alert']->error('Je hebt geen rechten om deze gebruiker aan te passen.');
 		cancel($edit);
 	}
 
@@ -1152,11 +1152,11 @@ if ($add || $edit)
 
 			foreach ($contact as $key => $c)
 			{
-				$contact[$key]['flag_public'] = $app['eland.access_control']->get_post_value('contact_access_' . $key);
+				$contact[$key]['flag_public'] = $app['access_control']->get_post_value('contact_access_' . $key);
 
 				if ($c['value'])
 				{
-					$contact_post_error = $app['eland.access_control']->get_post_error('contact_access_' . $key);
+					$contact_post_error = $app['access_control']->get_post_error('contact_access_' . $key);
 
 					if ($contact_post_error)
 					{
@@ -1196,12 +1196,12 @@ if ($add || $edit)
 						if ($row['count'] == 1)
 						{
 							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
-							$app['eland.alert']->warning($warning);
+							$app['alert']->warning($warning);
 						}
 						else if ($row['count'] > 1)
 						{
 							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers. ' . $warning;
-							$app['eland.alert']->warning($warning);
+							$app['alert']->warning($warning);
 						}
 					}
 				}
@@ -1211,7 +1211,7 @@ if ($add || $edit)
 			{
 				if (!$mailadr)
 				{
-					$app['eland.alert']->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
+					$app['alert']->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
 				}
 			}
 
@@ -1231,7 +1231,7 @@ if ($add || $edit)
 			$user['fullname'] = trim($_POST['fullname']);
 		}
 
-		$fullname_access = $app['eland.access_control']->get_post_value('fullname_access');
+		$fullname_access = $app['access_control']->get_post_value('fullname_access');
 
 		$name_sql = 'select name
 			from users
@@ -1255,7 +1255,7 @@ if ($add || $edit)
 			$user_prefetch = readuser($edit);
 		}
 
-		$fullname_access_error = $app['eland.access_control']->get_post_error('fullname_access');
+		$fullname_access_error = $app['access_control']->get_post_error('fullname_access');
 
 		if ($fullname_access_error)
 		{
@@ -1338,7 +1338,7 @@ if ($add || $edit)
 
 		if ($user['birthday'])
 		{
-			$user['birthday'] = $app['eland.date_format']->reverse($user['birthday']);
+			$user['birthday'] = $app['date_format']->reverse($user['birthday']);
 
 			if ($user['birthday'] === false)
 			{
@@ -1368,13 +1368,13 @@ if ($add || $edit)
 			{
 				$errors[] = 'Gelieve een paswoord in te vullen.';
 			}
-			else if (!$app['eland.password_strength']->get($password))
+			else if (!$app['password_strength']->get($password))
 			{
 				$errors[] = 'Het paswoord is niet sterk genoeg.';
 			}
 		}
 
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -1412,11 +1412,11 @@ if ($add || $edit)
 				{
 					$id = $app['db']->lastInsertId('users_id_seq');
 
-					$fullname_access_role = $app['eland.access_control']->get_role($fullname_access);
+					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
-					$app['eland.xdb']->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
+					$app['xdb']->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
 
-					$app['eland.alert']->success('Gebruiker opgeslagen.');
+					$app['alert']->success('Gebruiker opgeslagen.');
 
 					$user = readuser($id, true);
 
@@ -1447,36 +1447,36 @@ if ($add || $edit)
 							{
 								send_activation_mail($password, $user);
 
-								$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 							}
 							else
 							{
-								$app['eland.alert']->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 						else
 						{
-							$app['eland.alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+							$app['alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 						}
 					}
 
 					if ($user['status'] == 2 | $user['status'] == 1)
 					{
-						$app['eland.typeahead']->invalidate_thumbprint('users_active');
+						$app['typeahead']->invalidate_thumbprint('users_active');
 					}
 
 					if ($user['status'] == 7)
 					{
-						$app['eland.typeahead']->invalidate_thumbprint('users_extern');
+						$app['typeahead']->invalidate_thumbprint('users_extern');
 					}
 
-					$app['eland.interlets_groups']->clear_cache($s_schema);
+					$app['interlets_groups']->clear_cache($s_schema);
 
 					cancel($id);
 				}
 				else
 				{
-					$app['eland.alert']->error('Gebruiker niet opgeslagen.');
+					$app['alert']->error('Gebruiker niet opgeslagen.');
 				}
 			}
 			else if ($edit)
@@ -1498,13 +1498,13 @@ if ($add || $edit)
 				if($app['db']->update('users', $user, ['id' => $edit]))
 				{
 
-					$fullname_access_role = $app['eland.access_control']->get_role($fullname_access);
+					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
-					$app['eland.xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
+					$app['xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
 
 					$user = readuser($edit, true);
 
-					$app['eland.alert']->success('Gebruiker aangepast.');
+					$app['alert']->success('Gebruiker aangepast.');
 
 					if ($s_admin)
 					{
@@ -1575,16 +1575,16 @@ if ($add || $edit)
 
 									send_activation_mail($password, $user);
 
-									$app['eland.alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
+									$app['alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
 								}
 								else
 								{
-									$app['eland.alert']->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+									$app['alert']->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
 								}
 							}
 							else
 							{
-								$app['eland.alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 
@@ -1593,28 +1593,28 @@ if ($add || $edit)
 							|| $user_stored['status'] == 1
 							|| $user_stored['status'] == 2)
 						{
-							$app['eland.typeahead']->invalidate_thumbprint('users_active');
+							$app['typeahead']->invalidate_thumbprint('users_active');
 						}
 
 						if ($user['status'] == 7
 							|| $user_stored['status'] == 7)
 						{
-							$app['eland.typeahead']->invalidate_thumbprint('users_extern');
+							$app['typeahead']->invalidate_thumbprint('users_extern');
 						}
 
-						$app['eland.interlets_groups']->clear_cache($s_schema);
+						$app['interlets_groups']->clear_cache($s_schema);
 					}
 					cancel($edit);
 				}
 				else
 				{
-					$app['eland.alert']->error('Gebruiker niet aangepast.');
+					$app['alert']->error('Gebruiker niet aangepast.');
 				}
 			}
 		}
 		else
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 
 			if ($edit)
 			{
@@ -1688,13 +1688,13 @@ if ($add || $edit)
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($group['url'] && ($remote_schema = $app['eland.groups']->get_schema($group['url'])))
+					if ($group['url'] && ($remote_schema = $app['groups']->get_schema($group['url'])))
 					{
 						$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-						if ($app['eland.groups']->get_schema($group['domain']))
+						if ($app['groups']->get_schema($group['domain']))
 						{
-							$remote_schema = $app['eland.groups']->get_schema($group['domain']);
+							$remote_schema = $app['groups']->get_schema($group['domain']);
 
 							$admin_mail = readconfigfromdb('admin', $remote_schema);
 
@@ -1732,7 +1732,7 @@ if ($add || $edit)
 
 	$top_buttons .= aphp('users', ['status' => 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
 
-	$app['eland.assets']->add(['datepicker', 'generate_password.js',
+	$app['assets']->add(['datepicker', 'generate_password.js',
 		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
 
 	$h1 = 'Gebruiker ' . (($edit) ? 'aanpassen: ' . link_user($user) : 'toevoegen');
@@ -1784,7 +1784,7 @@ if ($add || $edit)
 		$fullname_access = ($add && !$interlets) ? false : 'admin';
 	}
 
-	echo $app['eland.access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
+	echo $app['access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
 
 	echo '<div class="form-group">';
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
@@ -1799,19 +1799,19 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
 	echo 'value="';
-	echo $user['birthday'] ? $app['eland.date_format']->get($user['birthday'], 'day') : '';
+	echo $user['birthday'] ? $app['date_format']->get($user['birthday'], 'day') : '';
 	echo '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
 	echo 'data-date-default-view="2" ';
-	echo 'data-date-end-date="' . $app['eland.date_format']->get(false, 'day') . '" ';
+	echo 'data-date-end-date="' . $app['date_format']->get(false, 'day') . '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-start-view="2" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '"';
+	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -2032,7 +2032,7 @@ if ($add || $edit)
 				$c['flag_public'] = false;
 			}
 
-			echo $app['eland.access_control']->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
+			echo $app['access_control']->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
 
 			echo '<input type="hidden" name="contact['. $key . '][id]" value="' . $c['id'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
@@ -2052,7 +2052,7 @@ if ($add || $edit)
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -2145,7 +2145,7 @@ if ($id)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$app['eland.alert']->error('Je hebt geen toegang tot deze gebruiker.');
+		$app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
 		cancel();
 	}
 
@@ -2157,8 +2157,8 @@ if ($id)
 				or id_to = ?', [$id, $id]);
 	}
 
-	$mail_to = $app['eland.mailaddr']->get($user['id']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['eland.mailaddr']->get($s_schema . '.' . $s_id) : [];
+	$mail_to = $app['mailaddr']->get($user['id']);
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mailaddr']->get($s_schema . '.' . $s_id) : [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -2190,11 +2190,11 @@ if ($id)
 		order by u.letscode desc
 		limit 1', $sql_bind);
 
-	$app['eland.assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
+	$app['assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
 	if ($s_admin || $s_owner)
 	{
-		$app['eland.assets']->add(['fileupload', 'user_img.js']);
+		$app['assets']->add(['fileupload', 'user_img.js']);
 	}
 
 	if ($s_admin)
@@ -2221,7 +2221,7 @@ if ($id)
 
 			if (!$s_group_self)
 			{
-				$tus['tus'] = $app['eland.this_group']->get_schema();
+				$tus['tus'] = $app['this_group']->get_schema();
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
@@ -2284,10 +2284,10 @@ if ($id)
 	$user_img = ($show_img) ? '' : ' style="display:none;"';
 	$no_user_img = ($show_img) ? ' style="display:none;"' : '';
 
-	$img_src = ($user['PictureFile']) ? $app['eland.s3_img_url'] . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
+	$img_src = ($user['PictureFile']) ? $app['s3_img_url'] . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
 	echo '<img id="user_img"' . $user_img . ' class="img-rounded img-responsive center-block" ';
 	echo 'src="' . $img_src . '" ';
-	echo 'data-bucket-url="' . $app['eland.s3_img_url'] . '"></img>';
+	echo 'data-bucket-url="' . $app['s3_img_url'] . '"></img>';
 
 	echo '<div id="no_user_img"' . $no_user_img . '>';
 	echo '<i class="fa fa-user fa-5x text-muted"></i><br>Geen profielfoto</div>';
@@ -2329,7 +2329,7 @@ if ($id)
 
 	$fullname_access = ($user['fullname_access']) ?: 'admin';
 
-	if ($s_admin || $s_owner || $app['eland.access_control']->is_visible($fullname_access))
+	if ($s_admin || $s_owner || $app['access_control']->is_visible($fullname_access))
 	{
 		echo '<dt>';
 		echo 'Volledige naam';
@@ -2338,7 +2338,7 @@ if ($id)
 
 		echo '<dt>Zichtbaarheid volledige naam</dt>';
 		echo '<dd>';
-		echo $app['eland.access_control']->get_label($fullname_access);
+		echo $app['access_control']->get_label($fullname_access);
 		echo '</dd>';
 	}
 
@@ -2354,7 +2354,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			dd_render($app['eland.date_format']->get($user['birthday'], 'day'));
+			dd_render($app['date_format']->get($user['birthday'], 'day'));
 		}
 		else
 		{
@@ -2380,7 +2380,7 @@ if ($id)
 
 		if (isset($user['cdate']))
 		{
-			dd_render($app['eland.date_format']->get($user['cdate']));
+			dd_render($app['date_format']->get($user['cdate']));
 		}
 		else
 		{
@@ -2393,7 +2393,7 @@ if ($id)
 
 		if (isset($user['adate']))
 		{
-			dd_render($app['eland.date_format']->get($user['adate']));
+			dd_render($app['date_format']->get($user['adate']));
 		}
 		else
 		{
@@ -2406,7 +2406,7 @@ if ($id)
 
 		if (isset($user['lastlogin']))
 		{
-			dd_render($app['eland.date_format']->get($user['lastlogin']));
+			dd_render($app['date_format']->get($user['lastlogin']));
 		}
 		else
 		{
@@ -2689,12 +2689,12 @@ if ($v_list && $s_admin)
 	{
 		if ($saldo_date)
 		{
-			$saldo_date_rev = $app['eland.date_format']->reverse($saldo_date);
+			$saldo_date_rev = $app['date_format']->reverse($saldo_date);
 		}
 
 		if ($saldo_date_rev === false || $saldo_date == '')
 		{
-			$saldo_date = $app['eland.date_format']->get(false, 'day');
+			$saldo_date = $app['date_format']->get(false, 'day');
 
 			array_walk($users, function(&$user, $user_id){
 				$user['saldo_date'] = $user['saldo'];
@@ -2905,7 +2905,7 @@ else
 
 			if (isset($my_adr))
 			{
-				$geo = $app['eland.cache']->get('geo_' . $my_adr);
+				$geo = $app['cache']->get('geo_' . $my_adr);
 
 				if ($geo)
 				{
@@ -2988,21 +2988,21 @@ $fa = 'users';
 
 if ($v_list)
 {
-	$app['eland.assets']->add(['calc_sum.js', 'users_distance.js']);
+	$app['assets']->add(['calc_sum.js', 'users_distance.js']);
 
 	if ($s_admin)
 	{
-		$app['eland.assets']->add(['datepicker', 'summernote', 'typeahead',
+		$app['assets']->add(['datepicker', 'summernote', 'typeahead',
 			'csv.js', 'table_sel.js', 'rich_edit.js', 'typeahead.js']);
 	}
 }
 else if ($v_tiles)
 {
-	$app['eland.assets']->add(['isotope', 'users_tiles.js']);
+	$app['assets']->add(['isotope', 'users_tiles.js']);
 }
 else if ($v_map)
 {
-	$app['eland.assets']->add(['leaflet', 'users_map.js']);
+	$app['assets']->add(['leaflet', 'users_map.js']);
 }
 
 include __DIR__ . '/include/header.php';
@@ -3021,7 +3021,7 @@ if ($v_map)
 		{
 			if ($adr[1] >= $access_level)
 			{
-				$geo = $app['eland.cache']->get('geo_' . $adr[0]);
+				$geo = $app['cache']->get('geo_' . $adr[0]);
 
 				if ($geo)
 				{
@@ -3066,7 +3066,7 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
-	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $app['eland.mapbox_token'] . '" ';
+	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $app['mapbox_token'] . '" ';
 	echo 'data-session-param="';
 	echo http_build_query(get_session_query_param());
 	echo '"></div>';
@@ -3148,7 +3148,7 @@ if ($s_admin && $v_list)
 			echo 'class="form-control" ';
 			echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 			echo 'data-typeahead="';
-			echo $app['eland.typeahead']->get(['users_active', 'users_extern',
+			echo $app['typeahead']->get(['users_active', 'users_extern',
 				'users_inactive', 'users_im', 'users_ip']);
 			echo '">';
 			echo '</div></div>';
@@ -3172,14 +3172,14 @@ if ($s_admin && $v_list)
 			{
 				echo '<input type="text" name="sh[p][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
-				echo 'data-date-format="' . $app['eland.date_format']->datepicker_format() . '" ';
+				echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
 				echo 'data-date-language="nl" ';
 				echo 'data-date-today-highlight="true" ';
 				echo 'data-date-autoclose="true" ';
 				echo 'data-date-enable-on-readonly="false" ';
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
-				echo 'placeholder="' . $app['eland.date_format']->datepicker_placeholder() . '" ';
+				echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
 				echo 'value="' . $saldo_date . '">';
 
 				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
@@ -3353,7 +3353,7 @@ if ($v_list)
 					}
 					else if (isset($date_keys[$key]))
 					{
-						echo $u[$key] ? $app['eland.date_format']->get($u[$key], 'day') : '&nbsp;';
+						echo $u[$key] ? $app['date_format']->get($u[$key], 'day') : '&nbsp;';
 					}
 					else
 					{
@@ -3465,7 +3465,7 @@ if ($v_list)
 
 				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
-					$geo = $app['eland.cache']->get('geo_' . $adr_ary[0]);
+					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
 
 					if ($geo)
 					{
@@ -3606,7 +3606,7 @@ if ($v_list)
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 
 		echo '</div>';
-		$app['eland.form_token']->generate();
+		$app['form_token']->generate();
 		echo '</form>';
 
 		foreach($edit_fields_tabs as $k => $t)
@@ -3629,7 +3629,7 @@ if ($v_list)
 			}
 			else if (isset($t['access_control']))
 			{
-				echo $app['eland.access_control']->get_radio_buttons();
+				echo $app['access_control']->get_radio_buttons();
 			}
 			else
 			{
@@ -3646,7 +3646,7 @@ if ($v_list)
 
 			echo '<input type="hidden" value="' . $k . '" name="bulk_field">';
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
-			$app['eland.form_token']->generate();
+			$app['form_token']->generate();
 			echo '</form>';
 
 			echo '</div>';
@@ -3677,7 +3677,7 @@ else if ($v_extended)
 		{
 			echo '<div class="media-left">';
 			echo '<a href="' . generate_url('users', ['id' => $u['id']]) . '">';
-			echo '<img class="media-object" src="' . $app['eland.s3_img_url'] . $u['PictureFile'] . '" width="150">';
+			echo '<img class="media-object" src="' . $app['s3_img_url'] . $u['PictureFile'] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}
@@ -3742,7 +3742,7 @@ else if ($v_tiles)
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
-			echo '<img src="' . $app['eland.s3_img_url'] . $u['PictureFile'] . '" class="img-rounded">';
+			echo '<img src="' . $app['s3_img_url'] . $u['PictureFile'] . '" class="img-rounded">';
 		}
 		else
 		{
@@ -3843,7 +3843,7 @@ function send_activation_mail($password, $user)
 		'user_mail'		=> $user['mail'],
 	];
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to' 		=> 'admin',
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
@@ -3858,10 +3858,10 @@ function send_activation_mail($password, $user)
 		],
 		'user'		=> $user,
 		'password'	=> $password,
-		'url_login'	=> $app['eland.base_url'] . '/login.php?login=' . $user['letscode'],
+		'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 	];
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to' 		=> $user['id'],
 		'reply_to' 	=> 'support',
 		'template'	=> 'user_activation',

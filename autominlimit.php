@@ -5,9 +5,9 @@ require_once __DIR__ . '/include/web.php';
 
 if (isset($_POST['zend']))
 {
-	if ($error_token = $app['eland.form_token']->get_error())
+	if ($error_token = $app['form_token']->get_error())
 	{
-		$app['eland.alert']->error($error_token);
+		$app['alert']->error($error_token);
 		cancel();
 	}
 
@@ -18,14 +18,14 @@ if (isset($_POST['zend']))
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
-	$app['eland.xdb']->set('setting', 'autominlimit', $a);
+	$app['xdb']->set('setting', 'autominlimit', $a);
 
-	$app['eland.alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
+	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
-else 
+else
 {
-	$row = $app['eland.xdb']->get('setting', 'autominlimit');
+	$row = $app['xdb']->get('setting', 'autominlimit');
 
 	if ($row)
 	{
@@ -125,7 +125,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
-$app['eland.form_token']->generate();
+$app['form_token']->generate();
 
 echo '</form>';
 

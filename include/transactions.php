@@ -60,7 +60,7 @@ function insert_transaction($transaction)
 	$to_user = readuser($transaction['id_to'], true);
 	$from_user = readuser($transaction['id_from'], true);
 
-	$app['eland.autominlimit']->init()
+	$app['autominlimit']->init()
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
@@ -100,7 +100,7 @@ function mail_mailtype_interlets_transaction($transaction)
 		],
 	];
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to' 		=> $transaction['id_to'],
 		'reply_to' 	=> 'admin',
 		'template'	=> 'mailtype_interlets_transaction',
@@ -109,7 +109,7 @@ function mail_mailtype_interlets_transaction($transaction)
 
 	$vars['copy'] = true;
 
-	$app['eland.queue.mail']->queue([
+	$app['queue.mail']->queue([
 		'to' 		=> $transaction['id_from'],
 		'cc' 		=> 'admin',
 		'template'	=> 'mailtype_interlets_transaction',
@@ -124,7 +124,7 @@ function mail_transaction($transaction, $remote_schema = null)
 {
 	global $app;
 
-	$sch = isset($remote_schema) ? $remote_schema : $app['eland.this_group']->get_schema();
+	$sch = isset($remote_schema) ? $remote_schema : $app['this_group']->get_schema();
 
 	$userfrom = readuser($transaction['id_from'], false, $sch);
 	$userto = readuser($transaction['id_to'], false, $sch);
@@ -137,7 +137,7 @@ function mail_transaction($transaction, $remote_schema = null)
 	$from_user = ($real_from) ? $real_from . ' [' . $userfrom['fullname'] . ']' : $userfrom['letscode'] . ' ' . $userfrom['name'];
 	$to_user = ($real_to) ? $real_to . ' [' . $userto['fullname'] . ']' : $userto['letscode'] . ' ' . $userto['name'];
 
-	$url = isset($remote_schema) ? $app['eland.protocol'] . $app['eland.groups']->get_host($sch) : $app['eland.base_url'];
+	$url = isset($remote_schema) ? $app['protocol'] . $app['groups']->get_host($sch) : $app['base_url'];
 
 	$vars = [
 		'from_user' => $from_user,
@@ -157,11 +157,11 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$t_schema = ($remote_schema) ? $remote_schema . '.' : '';
 
-	$base_url = $app['eland.protocol'] . $app['eland.groups']->get_host($sch);
+	$base_url = $app['protocol'] . $app['groups']->get_host($sch);
 
 	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
 	{
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $userfrom['id'],
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
@@ -173,7 +173,7 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
 	{
-		$app['eland.queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'to' 		=> $t_schema . $userto['id'],
 			'schema'	=> $sch,
 			'template'	=> 'transaction',

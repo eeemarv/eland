@@ -12,7 +12,7 @@ $st = $app['db']->prepare('select distinct data->>\'map_name\' as map_name
 		and data->>\'map_name\' <> \'\'
 	order by data->>\'map_name\' asc');
 
-$st->bindValue(1, $app['eland.this_group']->get_schema());
+$st->bindValue(1, $app['this_group']->get_schema());
 
 $st->execute();
 
@@ -23,7 +23,7 @@ while ($row = $st->fetch())
 
 $map_names = json_encode($map_names);
 
-$app['eland.typeahead']->invalidate_thumbprint('doc_map_names', false, crc32($map_names));
+$app['typeahead']->invalidate_thumbprint('doc_map_names', false, crc32($map_names));
 
 header('Content-type: application/json');
 

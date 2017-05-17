@@ -27,13 +27,13 @@ if ($del)
 {
 	if (!($user_id = $app['db']->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
 	{
-		$app['eland.alert']->error('Het contact bestaat niet.');
+		$app['alert']->error('Het contact bestaat niet.');
 		cancel();
 	}
 
 	if ($uid && $uid != $user_id)
 	{
-		$app['eland.alert']->error('uid in url is niet de eigenaar van contact.');
+		$app['alert']->error('uid in url is niet de eigenaar van contact.');
 		cancel();
 	}
 
@@ -43,7 +43,7 @@ if ($del)
 
 	if (!($s_admin || $s_owner))
 	{
-		$app['eland.alert']->error('Je hebt geen rechten om het contact te verwijderen.');
+		$app['alert']->error('Je hebt geen rechten om het contact te verwijderen.');
 		cancel($uid);
 	}
 
@@ -63,26 +63,26 @@ if ($del)
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
 		{
 			$err = ($s_owner) ? 'je enige email adres' : 'het enige email adres van een actieve gebruiker';
-			$app['eland.alert']->warning('Waarschuwing: dit is ' . $err);
+			$app['alert']->warning('Waarschuwing: dit is ' . $err);
 			//cancel($uid);
 		}
 	}
 
 	if ($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel($uid);
 		}
 
 		if ($app['db']->delete('contact', array('id' => $del)))
 		{
-			$app['eland.alert']->success('Contact verwijderd.');
+			$app['alert']->success('Contact verwijderd.');
 		}
 		else
 		{
-			$app['eland.alert']->error('Fout bij verwijderen van het contact.');
+			$app['alert']->error('Fout bij verwijderen van het contact.');
 		}
 		cancel($uid);
 	}
@@ -116,7 +116,7 @@ if ($del)
 	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>' . $app['eland.access_control']->get_label($contact['flag_public']) . '</dd>';
+	echo '<dd>' . $app['access_control']->get_label($contact['flag_public']) . '</dd>';
 	echo '</dl>';
 
 	echo '<form method="post" class="form-horizontal">';
@@ -133,7 +133,7 @@ if ($del)
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -150,13 +150,13 @@ if ($edit || $add)
 	{
 		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', [$edit])))
 		{
-			$app['eland.alert']->error('Dit contact heeft geen eigenaar of bestaat niet.');
+			$app['alert']->error('Dit contact heeft geen eigenaar of bestaat niet.');
 			cancel();
 		}
 
 		if ($uid && $uid != $user_id)
 		{
-			$app['eland.alert']->error('uid in url is niet de eigenaar van contact.');
+			$app['alert']->error('uid in url is niet de eigenaar van contact.');
 			cancel();
 		}
 	}
@@ -172,13 +172,13 @@ if ($edit || $add)
 	if (!($s_admin || $s_owner))
 	{
 		$err = ($edit) ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
-		$app['eland.alert']->error('Je hebt geen rechten om ' . $err);
+		$app['alert']->error('Je hebt geen rechten om ' . $err);
 		cancel($uid);
 	}
 
 	if($submit)
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
 		}
@@ -197,14 +197,14 @@ if ($edit || $add)
 			else
 			{
 				$errors[] = 'Ongeldige letscode.';
-			}	
+			}
 		}
 
 		$contact = array(
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> trim($_POST['value']),
 			'comments' 				=> trim($_POST['comments']),
-			'flag_public'			=> $app['eland.access_control']->get_post_value(), //$_POST['flag_public'],
+			'flag_public'			=> $app['access_control']->get_post_value(), //$_POST['flag_public'],
 			'id_user'				=> $user_id,
 		);
 
@@ -235,7 +235,7 @@ if ($edit || $add)
 			$errors[] = 'Contacttype bestaat niet!';
 		}
 
-		$access_error = $app['eland.access_control']->get_post_error();
+		$access_error = $app['access_control']->get_post_error();
 
 		if ($access_error)
 		{
@@ -258,8 +258,8 @@ if ($edit || $add)
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
-				$app['eland.alert']->warning('Waarschuwing: de gebruiker heeft geen mailadres.');
-			} 
+				$app['alert']->warning('Waarschuwing: de gebruiker heeft geen mailadres.');
+			}
 		}
 
 		if ($contact['id_type_contact'] == $mail_type_id)
@@ -282,19 +282,19 @@ if ($edit || $add)
 				if ($mail_count == 1)
 				{
 					$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
-					$app['eland.alert']->warning($warning);
+					$app['alert']->warning($warning);
 				}
 				else if ($mail_count > 1)
 				{
 					$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers. ' . $warning;
-					$app['eland.alert']->warning($warning);
+					$app['alert']->warning($warning);
 				}
 			}
 			else if ($mail_count)
 			{
 				$errors[] = 'Dit mailadres komt reeds voor onder de actieve gebruikers.';
 			}
-			
+
 		}
 
 		if(!count($errors))
@@ -303,30 +303,30 @@ if ($edit || $add)
 			{
 				if ($app['db']->update('contact', $contact, array('id' => $edit)))
 				{
-					$app['eland.alert']->success('Contact aangepast.');
+					$app['alert']->success('Contact aangepast.');
 					cancel($uid);
 				}
 				else
 				{
-					$app['eland.alert']->error('Fout bij het opslaan');
+					$app['alert']->error('Fout bij het opslaan');
 				}
 			}
 			else
 			{
 				if ($app['db']->insert('contact', $contact))
 				{
-					$app['eland.alert']->success('Contact opgeslagen.');
+					$app['alert']->success('Contact opgeslagen.');
 					cancel($uid);
 				}
 				else
 				{
-					$app['eland.alert']->error('Fout bij het opslaan');
+					$app['alert']->error('Fout bij het opslaan');
 				}
 			}
 		}
 		else
 		{
-			$app['eland.alert']->error($errors);
+			$app['alert']->error($errors);
 		}
 	}
 	else if ($edit)
@@ -362,7 +362,7 @@ if ($edit || $add)
 
 	if ($s_admin && $add && !$uid)
 	{
-		$app['eland.assets']->add(['typeahead', 'typeahead.js']);
+		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
 
 	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
@@ -383,7 +383,7 @@ if ($edit || $add)
 		echo '<label for="letscode" class="col-sm-2 control-label">Voor</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-		echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_ary) . '" ';
+		echo 'data-typeahead="' . $app['typeahead']->get($typeahead_ary) . '" ';
 		echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 		echo 'placeholder="letscode" ';
 		echo 'value="' . $letscode . '" required>';
@@ -416,7 +416,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['eland.access_control']->get_radio_buttons(false, $contact['flag_public']);
+	echo $app['access_control']->get_radio_buttons(false, $contact['flag_public']);
 
 	if ($uid)
 	{
@@ -438,7 +438,7 @@ if ($edit || $add)
 	{
 		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
 	}
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 
@@ -541,7 +541,7 @@ if ($uid)
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['eland.distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -560,7 +560,7 @@ if ($uid)
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['eland.distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -571,7 +571,7 @@ if ($uid)
 
 		if ($s_admin || $s_owner)
 		{
-			echo '<td>' . $app['eland.access_control']->get_label($c['flag_public']) . '</td>';
+			echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
 
 			echo '<td>';
 			echo aphp('contacts', ['del' => $c['id'], 'uid' => $uid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
@@ -584,13 +584,13 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($app['eland.distance']->get_to_geo() && $inline)
+	if ($app['distance']->get_to_geo() && $inline)
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-markers="';
-		echo $app['eland.distance']->get_to_data();
+		echo $app['distance']->get_to_data();
 		echo '" ';
-		echo 'data-token="' . $app['eland.mapbox_token'] . '"></div>';
+		echo 'data-token="' . $app['mapbox_token'] . '"></div>';
 		echo '</div>';
 	}
 
@@ -613,7 +613,7 @@ if ($uid)
 
 if (!$s_admin)
 {
-	$app['eland.alert']->error('Je hebt geen toegang tot deze pagina.');
+	$app['alert']->error('Je hebt geen toegang tot deze pagina.');
 	redirect_default_page();
 }
 
@@ -770,7 +770,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$app['eland.pagination']->init('contacts', $row_count, $params, $inline);
+$app['pagination']->init('contacts', $row_count, $params, $inline);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -819,7 +819,7 @@ $top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', '
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
 
-$app['eland.assets']->add(['csv.js', 'typeahead', 'typeahead.js']);
+$app['assets']->add(['csv.js', 'typeahead', 'typeahead.js']);
 
 $h1 = 'Contacten';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
@@ -917,7 +917,7 @@ $typeahead_name_ary = array('users_active', 'users_inactive', 'users_ip', 'users
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['eland.typeahead']->get($typeahead_name_ary) . '" ';
+echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 echo 'data-newuserdays="' . readconfigfromdb('newuserdays') . '" ';
 echo 'name="letscode" id="letscode" placeholder="letscode" ';
 echo 'value="' . $letscode . '">';
@@ -951,7 +951,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 if (!count($contacts))
 {
@@ -961,7 +961,7 @@ if (!count($contacts))
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 
-	$app['eland.pagination']->render();
+	$app['pagination']->render();
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -1011,7 +1011,7 @@ foreach ($contacts as $c)
 	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['value']) . '</td>';
 	echo '<td>' . link_user($c['id_user']) . '</td>';
 	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['comments']) . '</td>';
-	echo '<td>' . $app['eland.access_control']->get_label($c['flag_public']) . '</td>';
+	echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
 
 	echo '<td>';
 	echo aphp('contacts', ['del' => $c['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
@@ -1026,7 +1026,7 @@ echo '</table>';
 
 echo '</div></div>';
 
-$app['eland.pagination']->render();
+$app['pagination']->render();
 
 include __DIR__ . '/include/footer.php';
 
@@ -1039,6 +1039,6 @@ function cancel($uid = false)
 	else
 	{
 		header('Location: ' . generate_url('contacts'));
-	} 
+	}
 	exit;
 }

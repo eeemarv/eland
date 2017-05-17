@@ -89,9 +89,9 @@ function gettoken($apikey)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = 'elasv2' . substr(md5(microtime() . $app['eland.this_group']->get_schema()), 0, 12);
+		$token = 'elasv2' . substr(md5(microtime() . $app['this_group']->get_schema()), 0, 12);
 
-		$key = $app['eland.this_group']->get_schema() . '_token_' . $token;
+		$key = $app['this_group']->get_schema() . '_token_' . $token;
 
 		$app['predis']->set($key, $apikey);
 		$app['predis']->expire($key, 600);

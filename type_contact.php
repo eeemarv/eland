@@ -11,16 +11,16 @@ if ($add)
 {
 	if (isset($_POST['zend']))
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		$tc = [];
 		$tc['name'] = $_POST['name'];
 		$tc['abbrev'] = $_POST['abbrev'];
-		
+
 		$error = (empty($tc['name'])) ? 'Geen naam ingevuld! ' : '';
 		$error .= (empty($tc['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
 
@@ -28,17 +28,17 @@ if ($add)
 		{
 			if ($app['db']->insert('type_contact', $tc))
 			{
-				$app['eland.alert']->success('Contact type toegevoegd.');
+				$app['alert']->success('Contact type toegevoegd.');
 			}
 			else
 			{
-				$app['eland.alert']->error('Fout bij het opslaan');
+				$app['alert']->error('Fout bij het opslaan');
 			}
 
 			cancel();
 		}
 
-		$app['eland.alert']->error('Corrigeer één of meerdere velden.');
+		$app['alert']->error('Corrigeer één of meerdere velden.');
 	}
 
 	$h1 = 'Contact type toevoegen';
@@ -68,7 +68,7 @@ if ($add)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';
@@ -84,16 +84,16 @@ if ($edit)
 
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
-		$app['eland.alert']->warning('Beschermd contact type.');
+		$app['alert']->warning('Beschermd contact type.');
 
 		cancel();
 	}
 
 	if(isset($_POST['zend']))
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
@@ -110,18 +110,18 @@ if ($edit)
 		{
 			if ($app['db']->update('type_contact', $tc, ['id' => $edit]))
 			{
-				$app['eland.alert']->success('Contact type aangepast.');
+				$app['alert']->success('Contact type aangepast.');
 
 				cancel();
 			}
 			else
 			{
-				$app['eland.alert']->error('Fout bij het opslaan.');
+				$app['alert']->error('Fout bij het opslaan.');
 			}
 		}
 		else
 		{
-			$app['eland.alert']->error('Fout in één of meer velden. ' . $error);
+			$app['alert']->error('Fout in één of meer velden. ' . $error);
 		}
 	}
 	else
@@ -156,7 +156,7 @@ if ($edit)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';
@@ -172,27 +172,27 @@ if ($del)
 
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
-		$app['eland.alert']->warning('Beschermd contact type.');
+		$app['alert']->warning('Beschermd contact type.');
 		cancel();
 	}
 
 	if ($app['db']->fetchColumn('select id from contact where id_type_contact = ?', [$del]))
 	{
-		$app['eland.alert']->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
+		$app['alert']->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
 		cancel();
 	}
 
 	if(isset($_POST['zend']))
 	{
-		if ($error_token = $app['eland.form_token']->get_error())
+		if ($error_token = $app['form_token']->get_error())
 		{
-			$app['eland.alert']->error($error_token);
+			$app['alert']->error($error_token);
 			cancel();
 		}
 
 		if ($app['db']->delete('type_contact', ['id' => $del]))
 		{
-			$app['eland.alert']->success('Contact type verwijderd.');
+			$app['alert']->success('Contact type verwijderd.');
 		}
 		else
 		{
@@ -205,7 +205,7 @@ if ($del)
 	$h1 = 'Contact type verwijderen: ' . $ct['name'];
 	$fa = 'circle-o-notch';
 
-	include __DIR__ . '/include/header.php';	
+	include __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -213,7 +213,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['eland.form_token']->generate();
+	$app['form_token']->generate();
 
 	echo '</form>';
 	echo '</div>';
@@ -321,7 +321,7 @@ function cancel($id = '')
 	{
 		$params['id'] = $id;
 	}
-	
+
 	header('Location: ' . generate_url('type_contact', $params));
 	exit;
 }

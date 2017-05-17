@@ -10,7 +10,7 @@ $st = $app['db']->prepare('select distinct type
 	where schema = ?
 	order by type asc');
 
-$st->bindValue(1, $app['eland.this_group']->get_schema());
+$st->bindValue(1, $app['this_group']->get_schema());
 
 $st->execute();
 
@@ -21,7 +21,7 @@ while ($row = $st->fetch())
 
 $log_types = json_encode($log_types);
 
-$app['eland.typeahead']->invalidate_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
+$app['typeahead']->invalidate_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
 
 header('Content-type: application/json');
 

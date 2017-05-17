@@ -2,15 +2,15 @@
 
 if ($css = readconfigfromdb('css'))
 {
-	$app['eland.assets']->add($css);
-} 
+	$app['assets']->add($css);
+}
 
 echo '<!DOCTYPE html>';
 echo '<html lang="nl">';
 echo '<head>';
 echo '<title>' . readconfigfromdb('systemname') .'</title>';
 
-echo $app['eland.assets']->render_css();
+echo $app['assets']->render_css();
 
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
@@ -27,7 +27,7 @@ echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
 echo '">';
 
-echo '<img src="/gfx/loading.gif' . $app['eland.assets']->get_version_param() . '" class="ajax-loader">';
+echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" class="ajax-loader">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
@@ -69,20 +69,20 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-share-alt"></span> ';
 	echo 'Groep';
-	echo '<span class="caret"></span></a>'; 
+	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
 
 	foreach ($logins as $login_schema => $login_id)
 	{
 		$class = ($s_schema == $login_schema && count($logins) > 1) ? ' class="active-group"' : '';
-		$class = ($login_schema == $app['eland.this_group']->get_schema() && $login_schema == $s_schema) ? ' class="active"' : $class;
+		$class = ($login_schema == $app['this_group']->get_schema() && $login_schema == $s_schema) ? ' class="active"' : $class;
 
 		echo '<li';
 		echo $class;
 		echo '>';
-		
+
 		echo '<a href="';
-		echo $app['eland.protocol'] . $app['eland.groups']->get_host($login_schema) . '/' . $app['eland.script_name'] . '.php?r=';
+		echo $app['protocol'] . $app['groups']->get_host($login_schema) . '/' . $app['script_name'] . '.php?r=';
 		echo ($login_id == 'elas') ? 'guest' : $app['session']->get('role.' . $login_schema);
 		echo '&u=' . $login_id;
 		echo '">';
@@ -103,10 +103,10 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 			foreach ($eland_interlets_groups as $sch => $h)
 			{
 				echo '<li';
-				echo ($app['eland.this_group']->get_schema() == $sch) ? ' class="active"' : '';
+				echo ($app['this_group']->get_schema() == $sch) ? ' class="active"' : '';
 				echo '>';
 
-				$page = (isset($allowed_interlets_landing_pages[$app['eland.script_name']])) ? $app['eland.script_name'] : 'messages';
+				$page = (isset($allowed_interlets_landing_pages[$app['script_name']])) ? $app['script_name'] : 'messages';
 
 				echo '<a href="' . generate_url($page,  ['welcome' => 1], $sch) . '">';
 				echo readconfigfromdb('systemname', $sch) . '</a>';
@@ -150,7 +150,7 @@ if (!$s_anonymous)
 		echo link_user($s_id, $s_schema, false);
 	}
 
-	echo '<span class="caret"></span></a>'; 
+	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
 	if ($s_schema && !$s_master && !$s_guest)
 	{
@@ -196,11 +196,11 @@ if (!$s_anonymous)
 		echo 'role="button" aria-expanded="false">';
 		echo '<span class="fa fa-cog"></span> ';
 		echo 'Admin modus';
-		echo '<span class="caret"></span></a>'; 
+		echo '<span class="caret"></span></a>';
 		echo '<ul class="dropdown-menu" role="menu">';
 		foreach ($menu as $link => $item)
 		{
-			$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '';
+			$active = ($app['script_name'] == $link) ? ' class="active"' : '';
 			echo '<li' . $active . '>';
 			echo aphp($link, [], $item[1], false, false, $item[0]);
 			echo '</li>';
@@ -242,7 +242,7 @@ if (!$s_anonymous)
 		echo 'title="Admin modus inschakelen">';
 		echo '<span class="fa fa-times text-danger"></span> ';
 		echo 'Admin modus';
-		echo '</a>'; 
+		echo '</a>';
 	}
 
 }
@@ -300,7 +300,7 @@ echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $link => $item)
 {
-	$active = ($app['eland.script_name'] == $link) ? ' class="active"' : '';
+	$active = ($app['script_name'] == $link) ? ' class="active"' : '';
 	echo '<li' . $active . '>';
 	echo aphp($link, $item[2],
 		$item[1], false, false, $item[0]);
@@ -315,7 +315,7 @@ $class_admin = ($page_access == 'admin') ? ' admin' : '';
 echo '<div id="wrap">';
 echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
 
-$app['eland.alert']->render();
+$app['alert']->render();
 
 echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';
