@@ -1,9 +1,9 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
-use eland\cache;
+use service\cache;
 
 class distance
 {

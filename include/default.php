@@ -2,11 +2,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$app = new eland\util\app();
+$app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
 
-$app['route_class'] = 'eland\util\route';
+$app['route_class'] = 'util\route';
 
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 
@@ -36,7 +36,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
 
-	$twig->addExtension(new eland\twig_extension($app));
+	$twig->addExtension(new service\twig_extension($app));
 	$twig->addGlobal('s3_img', getenv('S3_IMG'));
 	$twig->addGlobal('s3_doc', getenv('S3_DOC'));
 
@@ -83,6 +83,7 @@ $app->extend('monolog', function($monolog, $app) {
 	return $monolog;
 });
 
+/*
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
 
 	'security.firewalls' => [
@@ -94,7 +95,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
 		'secured'	=> [
 			'host'		=> '^l.',
 			'users'		=> function () use ($app) {
-				return new eland\util\user_provider($app['xdb']);
+				return new util\user_provider($app['xdb']);
 			},
 
 		],
@@ -105,7 +106,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
 	],
 
 ]);
-
+*/
 
 
 if(!isset($rootpath))
@@ -124,7 +125,7 @@ $app['s3_img_url'] = $app['s3_protocol'] . $app['s3_img'] . '/';
 $app['s3_doc_url'] = $app['s3_protocol'] . $app['s3_doc'] . '/';
 
 $app['s3'] = function($app){
-	return new eland\s3($app['s3_img'], $app['s3_doc']);
+	return new service\s3($app['s3_img'], $app['s3_doc']);
 };
 
 /*
@@ -136,11 +137,11 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['typeahead'] = function($app){
-	return new eland\typeahead($app['predis'], $app['monolog']);
+	return new service\typeahead($app['predis'], $app['monolog']);
 };
 
 $app['log_db'] = function($app){
-	return new eland\log_db($app['db'], $app['predis']);
+	return new service\log_db($app['db'], $app['predis']);
 };
 
 /**
@@ -148,45 +149,45 @@ $app['log_db'] = function($app){
  */
 
 $app['groups'] = function ($app){
-	return new eland\groups($app['db']);
+	return new service\groups($app['db']);
 };
 
 $app['this_group'] = function($app){
-	return new eland\this_group($app['groups'], $app['db'], $app['predis'], $app['twig']);
+	return new service\this_group($app['groups'], $app['db'], $app['predis'], $app['twig']);
 };
 
 $app['xdb'] = function ($app){
-	return new eland\xdb($app['db'], $app['predis'], $app['monolog'], $app['this_group']);
+	return new service\xdb($app['db'], $app['predis'], $app['monolog'], $app['this_group']);
 };
 
 $app['cache'] = function ($app){
-	return new eland\cache($app['db'], $app['predis'], $app['monolog']);
+	return new service\cache($app['db'], $app['predis'], $app['monolog']);
 };
 
 $app['queue'] = function ($app){
-	return new eland\queue($app['db'], $app['monolog']);
+	return new service\queue($app['db'], $app['monolog']);
 };
 
 $app['date_format'] = function(){
-	return new eland\date_format();
+	return new service\date_format();
 };
 
 $app['mailaddr'] = function ($app){
-	return new eland\mailaddr($app['db'], $app['monolog'], $app['this_group']);
+	return new service\mailaddr($app['db'], $app['monolog'], $app['this_group']);
 };
 
 $app['interlets_groups'] = function ($app){
-	return new eland\interlets_groups($app['db'], $app['predis'], $app['groups'], $app['protocol']);
+	return new service\interlets_groups($app['db'], $app['predis'], $app['groups'], $app['protocol']);
 };
 
 $app['distance'] = function ($app){
-	return new eland\distance($app['db'], $app['cache']);
+	return new service\distance($app['db'], $app['cache']);
 };
 
 // queue
 
 $app['queue.mail'] = function ($app){
-	return new eland\queue\mail($app['queue'], $app['monolog'],
+	return new queue\mail($app['queue'], $app['monolog'],
 		$app['this_group'], $app['mailaddr'], $app['twig']);
 };
 

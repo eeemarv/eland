@@ -43,12 +43,12 @@
 
 	"autoload": {
 		"psr-4": {
-			"eland\\": "service/",
-			"eland\\model\\": "model/",
-			"eland\\queue\\": "queue/",
-			"eland\\task\\": "task/",
-			"eland\\schema_task\\": "schema_task/",
-			"eland\\util\\": "util/"
+			"service\\": "service/",
+			"model\\": "model/",
+			"queue\\": "queue/",
+			"task\\": "task/",
+			"schema_task\\": "schema_task/",
+			"util\\": "util/"
         }
     }
 }

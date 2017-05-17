@@ -1,8 +1,8 @@
 <?php
 
 use Symfony\Component\Finder\Finder;
-use eland\util\queue_container;
-use eland\util\task_container;
+use util\queue_container;
+use util\task_container;
 
 if (php_sapi_name() !== 'cli')
 {

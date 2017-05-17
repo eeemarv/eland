@@ -1,11 +1,11 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
 interface task_interface
 {
 	/*
-	 * if this task should run 
+	 * if this task should run
 	 */
 	public function should_run();
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-use eland\this_group;
+use service\this_group;
 
 class mailaddr
 {
@@ -154,7 +154,7 @@ class mailaddr
 		{
 			$this->monolog->error('mail error: no valid mail adress found for: ' . implode('|', $m));
 			return $out;
-		} 
+		}
 
 		return $out;
 	}

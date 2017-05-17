@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Predis\Client as Redis;
 use Monolog\Logger;

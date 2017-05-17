@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Aws\S3\S3Client;
 

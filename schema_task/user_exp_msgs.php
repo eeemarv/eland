@@ -1,14 +1,14 @@
 <?php
 
-namespace eland\schema_task;
+namespace schema_task;
 
-use eland\model\schema_task;
+use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use eland\queue\mail;
+use queue\mail;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
+use service\schedule;
+use service\groups;
+use service\this_group;
 
 class user_exp_msgs extends schema_task
 {
@@ -47,7 +47,7 @@ class user_exp_msgs extends schema_task
 			if (!($user['status'] == 1 || $user['status'] == 2))
 			{
 				continue;
-			} 
+			}
 
 			$msg['type'] = ($msg['msg_type']) ? 'offer' : 'want';
 

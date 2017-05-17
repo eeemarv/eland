@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as Redis;
@@ -8,12 +8,12 @@ use Monolog\Logger;
 
 /*
                           Table "xdb.cache"
- Column  |            Type             |              Modifiers               
+ Column  |            Type             |              Modifiers
 ---------+-----------------------------+--------------------------------------
  id      | character varying(255)      | not null
- data    | jsonb                       | 
+ data    | jsonb                       |
  ts      | timestamp without time zone | default timezone('utc'::text, now())
- expires | timestamp without time zone | 
+ expires | timestamp without time zone |
 Indexes:
     "cache_pkey" PRIMARY KEY, btree (id)
 */
@@ -231,7 +231,7 @@ class cache
 		$this->db->executeQuery('delete from xdb.cache
 			where expires < timezone(\'utc\'::text, now()) and expires is not null');
 
-		return; 
+		return;
 	}
 }
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace eland\task;
+namespace task;
 
-use eland\model\task;
+use model\task;
 use Predis\Client as Redis;
-use eland\cache;
+use service\cache;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
-use eland\s3;
-use eland\groups;
+use service\s3;
+use service\groups;
 
-use eland\schedule;
+use service\schedule;
 
 class cleanup_image_files extends task
 {
@@ -139,7 +139,7 @@ class cleanup_image_files extends task
 	private function table_exists(string $table, string $schema)
 	{
 		return $this->db->fetchColumn('
-			select 1 
+			select 1
 			from   pg_catalog.pg_class c
 			join   pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 			where  n.nspname = \'' . $schema . '\'

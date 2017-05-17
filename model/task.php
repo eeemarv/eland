@@ -1,10 +1,10 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
-use eland\model\job;
-use eland\model\task_interface;
-use eland\schedule;
+use model\job;
+use model\task_interface;
+use service\schedule;
 
 abstract class task extends job implements task_interface
 {

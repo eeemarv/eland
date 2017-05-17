@@ -1,13 +1,13 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as redis;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
-use eland\this_group;
+use service\this_group;
 
 class user implements UserInterface
 {

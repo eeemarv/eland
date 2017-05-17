@@ -1,12 +1,12 @@
 <?php
 
-namespace eland\queue;
+namespace queue;
 
-use eland\model\queue as queue_model;
-use eland\model\queue_interface;
+use model\queue as queue_model;
+use model\queue_interface;
 use Doctrine\DBAL\Connection as db;
-use eland\cache;
-use eland\queue;
+use service\cache;
+use service\queue;
 use Monolog\Logger;
 
 class geocode extends queue_model implements queue_interface

@@ -1,14 +1,14 @@
 <?php
 
-namespace eland\schema_task;
+namespace schema_task;
 
-use eland\model\schema_task;
+use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
+use service\schedule;
+use service\groups;
+use service\this_group;
 
 class saldo_update extends schema_task
 {

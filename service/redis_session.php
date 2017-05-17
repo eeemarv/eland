@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 class redis_session implements \SessionHandlerInterface
 {

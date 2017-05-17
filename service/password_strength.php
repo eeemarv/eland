@@ -1,5 +1,5 @@
 <?php
-namespace eland;
+namespace service;
 
 class password_strength
 {

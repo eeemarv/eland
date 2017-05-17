@@ -1,6 +1,6 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
 abstract class job
 {

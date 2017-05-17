@@ -1,5 +1,5 @@
 <?php
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 
@@ -48,7 +48,7 @@ class elas_db_upgrade
 				default:
 
 					break;
-						
+
 			}
 			$this->db->update('parameters', ['value' => $version], ['parameter' => 'schemaversion']);
 			$this->db->commit();

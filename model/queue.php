@@ -1,8 +1,8 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
-use eland\model\job;
+use model\job;
 
 abstract class queue extends job
 {

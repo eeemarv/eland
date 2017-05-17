@@ -1,11 +1,11 @@
 <?php
 
-namespace eland\task;
+namespace task;
 
-use eland\model\task;
+use model\task;
 use Doctrine\DBAL\Connection as db;
 
-use eland\schedule;
+use service\schedule;
 
 class cleanup_logs extends task
 {

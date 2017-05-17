@@ -1,15 +1,15 @@
 <?php
 
-namespace eland;
+namespace service;
 
 class pagination
 {
 	private $start;
 	private $limit;
-	private $page = 0; 
-	private $table; 
-	
-	private $adjacent_num = 1; 	
+	private $page = 0;
+	private $table;
+
+	private $adjacent_num = 1;
 	private $row_count = 0;
 	private $page_num = 0;
 	private $entity = '';
@@ -59,13 +59,13 @@ class pagination
 		{
 			echo $this->add_link($this->page - 1, '&#9668;');
 		}
-		
+
 		$min_adjacent = $this->page - $this->adjacent_num;
 		$max_adjacent = $this->page + $this->adjacent_num;
-		
+
 		$min_adjacent = ($min_adjacent < 0) ? 0 : $min_adjacent;
 		$max_adjacent = ($max_adjacent > $this->page_num - 1) ? $this->page_num - 1 : $max_adjacent;
-		
+
 		if ($min_adjacent)
 		{
 			echo $this->add_link(0);

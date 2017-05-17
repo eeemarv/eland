@@ -1,11 +1,11 @@
 <?php
 
-namespace eland\task;
+namespace task;
 
-use eland\cache;
-use eland\model\task;
+use service\cache;
+use model\task;
 
-use eland\schedule;
+use service\schedule;
 
 class cleanup_cache extends task
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace eland;
+namespace service;
 
-use eland\this_group;
-use eland\groups;
-use eland\alert;
+use service\this_group;
+use service\groups;
+use service\alert;
 
 class url
 {
@@ -60,7 +60,7 @@ class url
 
 			if ($this->s_schema)
 			{
-				$param_ary = ['r' => 'guest', 'u' => $this->s_id, 's' => $this->s_schema]; 
+				$param_ary = ['r' => 'guest', 'u' => $this->s_id, 's' => $this->s_schema];
 
 				return $param_ary;
 			}

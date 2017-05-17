@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as Redis;

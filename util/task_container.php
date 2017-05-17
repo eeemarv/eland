@@ -1,8 +1,8 @@
 <?php
 
-namespace eland\util;
+namespace util;
 
-use eland\util\job_container;
+use util\job_container;
 
 class task_container extends job_container
 {

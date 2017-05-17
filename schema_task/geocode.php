@@ -1,16 +1,16 @@
 <?php
 
-namespace eland\schema_task;
+namespace schema_task;
 
-use eland\model\schema_task;
+use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use eland\cache;
+use service\cache;
 use Monolog\Logger;
-use eland\queue\geocode as geocode_queue;
+use queue\geocode as geocode_queue;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
+use service\schedule;
+use service\groups;
+use service\this_group;
 
 class geocode extends schema_task
 {

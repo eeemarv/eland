@@ -1,8 +1,8 @@
 <?php
 
-namespace eland;
+namespace service;
 
-use eland\this_group;
+use service\this_group;
 
 class access_control
 {
@@ -129,7 +129,7 @@ class access_control
 		{
 			return false;
 		}
- 
+
 		if (isset($this->acc_ary[$_POST[$name]]))
 		{
 			return $this->acc_ary[$_POST[$name]]['level'];

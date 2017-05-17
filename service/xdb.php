@@ -1,46 +1,46 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as Redis;
 use Monolog\Logger;
-use eland\this_group;
+use service\this_group;
 
 /*
                             Table "xdb.events"
-   Column    |            Type             |              Modifiers               
+   Column    |            Type             |              Modifiers
 -------------+-----------------------------+--------------------------------------
  ts          | timestamp without time zone | default timezone('utc'::text, now())
  user_id     | integer                     | default 0
- user_schema | character varying(60)       | 
+ user_schema | character varying(60)       |
  agg_id      | character varying(255)      | not null
- agg_type    | character varying(60)       | 
+ agg_type    | character varying(60)       |
  agg_version | integer                     | not null
- data        | jsonb                       | 
+ data        | jsonb                       |
  event_time  | timestamp without time zone | default timezone('utc'::text, now())
- ip          | character varying(60)       | 
- event       | character varying(128)      | 
- agg_schema  | character varying(60)       | 
- eland_id    | character varying(40)       | 
+ ip          | character varying(60)       |
+ event       | character varying(128)      |
+ agg_schema  | character varying(60)       |
+ eland_id    | character varying(40)       |
 Indexes:
     "events_pkey" PRIMARY KEY, btree (agg_id, agg_version)
 
                              Table "xdb.aggs"
-   Column    |            Type             |              Modifiers               
+   Column    |            Type             |              Modifiers
 -------------+-----------------------------+--------------------------------------
  agg_id      | character varying(255)      | not null
  agg_version | integer                     | not null
- data        | jsonb                       | 
+ data        | jsonb                       |
  user_id     | integer                     | default 0
  user_schema | character varying(60)       | default ''::character varying
  ts          | timestamp without time zone | default timezone('utc'::text, now())
  event_time  | timestamp without time zone | default timezone('utc'::text, now())
  agg_type    | character varying(60)       | not null
  agg_schema  | character varying(60)       | not null
- ip          | character varying(60)       | 
- event       | character varying(128)      | 
- eland_id    | character varying(40)       | 
+ ip          | character varying(60)       |
+ event       | character varying(128)      |
+ eland_id    | character varying(40)       |
 Indexes:
     "aggs_pkey" PRIMARY KEY, btree (agg_id)
     "aggs_agg_schema_idx" btree (agg_schema)

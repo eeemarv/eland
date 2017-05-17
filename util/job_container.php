@@ -1,6 +1,6 @@
 <?php
 
-namespace eland\util;
+namespace util;
 
 use Silex\Application;
 use Symfony\Component\Finder\Finder;

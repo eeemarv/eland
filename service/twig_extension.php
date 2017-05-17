@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 class twig_extension extends \Twig_Extension
 {
@@ -18,7 +18,7 @@ class twig_extension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return [
-			new \Twig_Function('distance_p', ['eland\util\distance', 'format_p']),
+			new \Twig_Function('distance_p', ['util\distance', 'format_p']),
 		];
 	}
 

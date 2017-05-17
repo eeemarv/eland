@@ -1,6 +1,6 @@
 <?php
 
-namespace eland\util;
+namespace util;
 
 class distance
 {

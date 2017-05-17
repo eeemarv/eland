@@ -1,8 +1,8 @@
 <?php
 
-namespace eland;
+namespace service;
 
-use eland\cache;
+use service\cache;
 use Predis\Client as Redis;
 
 class schedule

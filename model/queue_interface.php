@@ -1,6 +1,6 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
 interface queue_interface
 {

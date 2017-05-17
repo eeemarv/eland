@@ -1,16 +1,16 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
 /*
                                         Table "xdb.queue"
-  Column  |            Type             |                           Modifiers                            
+  Column  |            Type             |                           Modifiers
 ----------+-----------------------------+----------------------------------------------------------------
  ts       | timestamp without time zone | default timezone('utc'::text, now())
- data     | jsonb                       | 
+ data     | jsonb                       |
  topic    | character varying(60)       | not null
  priority | integer                     | default 0
  id       | bigint                      | not null default nextval('xdb.queue_id_seq'::regclass)

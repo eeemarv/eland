@@ -1,13 +1,13 @@
 <?php
 
-namespace eland\task;
+namespace task;
 
 use Doctrine\DBAL\Connection as db;
-use eland\cache;
-use eland\model\task;
-use eland\groups;
+use service\cache;
+use model\task;
+use service\groups;
 
-use eland\schedule;
+use service\schedule;
 
 class get_elas_interlets_domains extends task
 {

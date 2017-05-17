@@ -1,13 +1,13 @@
 <?php
 
-namespace eland\model;
+namespace model;
 
-use eland\model\task_interface;
-use eland\model\task;
+use model\task_interface;
+use model\task;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
+use service\schedule;
+use service\groups;
+use service\this_group;
 
 abstract class schema_task extends task implements task_interface
 {

@@ -5,59 +5,59 @@ require_once __DIR__ . '/default.php';
 // tasks
 
 $app['task.cleanup_cache'] = function ($app){
-	return new eland\task\cleanup_cache($app['cache'], $app['schedule']);
+	return new task\cleanup_cache($app['cache'], $app['schedule']);
 };
 
 $app['task.cleanup_image_files'] = function ($app){
-	return new eland\task\cleanup_image_files($app['cache'], $app['db'], $app['monolog'],
+	return new task\cleanup_image_files($app['cache'], $app['db'], $app['monolog'],
 		$app['s3'], $app['groups'], $app['schedule']);
 };
 
 $app['task.cleanup_logs'] = function ($app){
-	return new eland\task\cleanup_logs($app['db'], $app['schedule']);
+	return new task\cleanup_logs($app['db'], $app['schedule']);
 };
 
 $app['task.get_elas_interlets_domains'] = function ($app){
-	return new eland\task\get_elas_interlets_domains($app['db'], $app['cache'],
+	return new task\get_elas_interlets_domains($app['db'], $app['cache'],
 		$app['schedule'], $app['groups']);
 };
 
 $app['task.fetch_elas_interlets'] = function ($app){
-	return new eland\task\fetch_elas_interlets($app['cache'], $app['predis'], $app['typeahead'],
+	return new task\fetch_elas_interlets($app['cache'], $app['predis'], $app['typeahead'],
 		$app['monolog'], $app['schedule']);
 };
 
 // schema tasks (tasks applied to every group seperate)
 
 $app['schema_task.cleanup_messages'] = function ($app){
-	return new eland\schema_task\cleanup_messages($app['db'], $app['monolog'],
+	return new schema_task\cleanup_messages($app['db'], $app['monolog'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 $app['schema_task.cleanup_news'] = function ($app){
-	return new eland\schema_task\cleanup_news($app['db'], $app['xdb'], $app['monolog'],
+	return new schema_task\cleanup_news($app['db'], $app['xdb'], $app['monolog'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 $app['schema_task.geocode'] = function ($app){
-	return new eland\schema_task\geocode($app['db'], $app['cache'],
+	return new schema_task\geocode($app['db'], $app['cache'],
 		$app['monolog'], $app['queue.geocode'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 $app['schema_task.saldo_update'] = function ($app){
-	return new eland\schema_task\saldo_update($app['db'], $app['monolog'],
+	return new schema_task\saldo_update($app['db'], $app['monolog'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 $app['schema_task.user_exp_msgs'] = function ($app){
-	return new eland\schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
+	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
 		$app['protocol'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 $app['schema_task.saldo'] = function ($app){
-	return new eland\schema_task\saldo($app['db'], $app['xdb'], $app['predis'], $app['cache'],
+	return new schema_task\saldo($app['db'], $app['xdb'], $app['predis'], $app['cache'],
 		$app['monolog'], $app['queue.mail'],
 		$app['s3_img_url'], $app['s3_doc_url'], $app['protocol'],
 		$app['date_format'], $app['distance'],
@@ -66,34 +66,20 @@ $app['schema_task.saldo'] = function ($app){
 };
 
 $app['schema_task.interlets_fetch'] = function ($app){
-	return new eland\schema_task\interlets_fetch($app['predis'], $app['db'], $app['xdb'], $app['cache'],
+	return new schema_task\interlets_fetch($app['predis'], $app['db'], $app['xdb'], $app['cache'],
 		$app['typeahead'], $app['monolog'],
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
 //
 
-$app['task'] = function ($app){
-	return new eland\task($app['db'], $app['monolog'], $app['schedule'],
-		$app['groups'], $app['this_group']);
-};
-
-$app['schema_task'] = function ($app){
-	return new eland\task($app['schedule'], $app['new_schema_task'],
-		$app['groups'], $app['this_group']);
-};
-
-$app['new_schema_task'] = function ($app){
-	return new eland\task($app['db'], $app['monolog'], $app['schedule']);
-};
-
 $app['schedule'] = function ($app){
-	return new eland\schedule($app['cache'], $app['predis']);
+	return new service\schedule($app['cache'], $app['predis']);
 };
 
 // queue
 
 $app['queue.geocode'] = function ($app){
-	return new \eland\queue\geocode($app['db'], $app['cache'], $app['queue'], $app['monolog']);
+	return new queue\geocode($app['db'], $app['cache'], $app['queue'], $app['monolog']);
 };
 

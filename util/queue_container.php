@@ -1,8 +1,8 @@
 <?php
 
-namespace eland\util;
+namespace util;
 
-use eland\util\job_container;
+use util\job_container;
 
 class queue_container extends job_container
 {
@@ -23,7 +23,7 @@ class queue_container extends job_container
 			}
 		}
 
-		$record = $this->app['eland.queue']->get($omit_ary);
+		$record = $this->app['queue']->get($omit_ary);
 
 		if (!$record)
 		{
@@ -50,7 +50,7 @@ class queue_container extends job_container
 
 		error_log('queue should run: ' . $topic . ' priority: ' . $record['priority'] . ' id: ' . $record['id']);
 
-		$this->queue_task = $this->app['eland.queue.' . $topic];
+		$this->queue_task = $this->app['queue.' . $topic];
 
 		return true;
 	}

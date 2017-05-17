@@ -1,14 +1,14 @@
 <?php
 
-namespace eland\schema_task;
+namespace schema_task;
 
-use eland\model\schema_task;
+use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
+use service\schedule;
+use service\groups;
+use service\this_group;
 
 class cleanup_messages extends schema_task
 {
@@ -151,7 +151,7 @@ class cleanup_messages extends schema_task
 				'stat_msgs_offers'	=> $offer_count[$id] ?? 0,
 				'stat_msgs_wanted'	=> $want_count[$id] ?? 0,
 			];
-			
+
 			$this->db->update($this->schema . '.categories', $stats, ['id' => $id]);
 		}
 	}

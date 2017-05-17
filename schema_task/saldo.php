@@ -1,21 +1,21 @@
 <?php
 
-namespace eland\schema_task;
+namespace schema_task;
 
-use eland\model\schema_task;
+use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as Redis;
-use eland\xdb;
-use eland\cache;
+use service\xdb;
+use service\cache;
 use Monolog\Logger;
-use eland\queue\mail;
-use eland\date_format;
-use eland\distance;
+use queue\mail;
+use service\date_format;
+use service\distance;
 
-use eland\schedule;
-use eland\groups;
-use eland\this_group;
-use eland\interlets_groups;
+use service\schedule;
+use service\groups;
+use service\this_group;
+use service\interlets_groups;
 
 class saldo extends schema_task
 {

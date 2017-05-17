@@ -1,6 +1,6 @@
 <?php
 
-namespace eland;
+namespace service;
 
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,7 +17,7 @@ class alert
 		$this->monolog = $monolog;
 		$this->session = $session;
 		$this->flashbag = $this->session->getFlashBag();
-	} 
+	}
 
 	private function add($type, $msg)
 	{

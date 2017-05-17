@@ -1,11 +1,11 @@
 <?php
 
-namespace eland;
+namespace service;
 
-use eland\xdb;
+use service\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
-use eland\this_group;
+use service\this_group;
 
 class autominlimit
 {

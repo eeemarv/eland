@@ -1,14 +1,14 @@
 <?php
 
-namespace eland\task;
+namespace task;
 
-use eland\cache;
+use service\cache;
 use Predis\Client as redis;
-use eland\model\task;
-use eland\typeahead;
+use model\task;
+use service\typeahead;
 use Monolog\Logger;
 
-use eland\schedule;
+use service\schedule;
 
 class fetch_elas_interlets extends task
 {
@@ -76,7 +76,7 @@ class fetch_elas_interlets extends task
 		if (count($diff))
 		{
 			$one_week_ago = $this->now - 604800;
- 
+
 			$one_week_ago = gmdate('Y-m-d H:i:s', $one_week_ago);
 
 			foreach ($diff as $domain => $ary)
@@ -283,7 +283,7 @@ class fetch_elas_interlets extends task
 					'ow'			=> $va == 'v' || $va == 'V' ? 'w' : 'o',
 					'content'		=> trim($content),
 					'user'			=> $user,
-					'fetch_count'	=> $count, 
+					'fetch_count'	=> $count,
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
 
@@ -340,7 +340,7 @@ class fetch_elas_interlets extends task
 					'ow'			=> $va == 'v' || $va == 'V' ? 'w' : 'o',
 					'content'		=> trim($content),
 					'user'			=> $user,
-					'fetch_count'	=> $count, 
+					'fetch_count'	=> $count,
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
 
@@ -419,9 +419,9 @@ class fetch_elas_interlets extends task
 				$user = $h_user = [];
 
 				$td = $node->filter('td')->first();
-	
+
 				$bgcolor = trim($td->attr('bgcolor'));
-				$next_tds = $td->siblings();		
+				$next_tds = $td->siblings();
 				$postcode = trim($next_tds->eq(3)->text());
 				$balance = trim($next_tds->eq(5)->text());
 
@@ -444,10 +444,10 @@ class fetch_elas_interlets extends task
 				if ($postcode)
 				{
 					$user['p'] = $postcode;
-				} 
+				}
 
 				$users[$id] = $user;
-			}); 
+			});
 		}
 
 		$thumbprint = crc32(json_encode($users));

@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 $app->register(new Silex\Provider\SessionServiceProvider(), [
-	'session.storage.handler'	=> new eland\redis_session($app['predis']),
+	'session.storage.handler'	=> new service\redis_session($app['predis']),
 	'session.storage.options'	=> [
 		'name'						=> 'eland',
 		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
@@ -26,7 +26,7 @@ if (!isset($no_headers))
 }
 
 $app['assets'] = function($app){
-	return new eland\assets($app['rootpath']);
+	return new service\assets($app['rootpath']);
 };
 
 $app['assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'swiper', 'base.css', 'print.css', 'base.js']);
@@ -106,29 +106,29 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
 /* */
 
 $app['alert'] = function ($app){
-	return new eland\alert($app['monolog'], $app['session']);
+	return new service\alert($app['monolog'], $app['session']);
 };
 
 $app['pagination'] = function (){
-	return new eland\pagination();
+	return new service\pagination();
 };
 
 $app['password_strength'] = function ($app){
-	return new eland\password_strength();
+	return new service\password_strength();
 };
 
 $app['user'] = function ($app){
-	return new eland\user($app['this_group'], $app['monolog'], $app['session'], $app['page_access']);
+	return new service\user($app['this_group'], $app['monolog'], $app['session'], $app['page_access']);
 };
 
 $app['autominlimit'] = function ($app){
-	return new eland\autominlimit($app['monolog'], $app['xdb'], $app['db'], $app['this_group']);
+	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'], $app['this_group']);
 };
 
 // init
 
 $app['elas_db_upgrade'] = function ($app){
-	return new eland\elas_db_upgrade($app['db']);
+	return new service\elas_db_upgrade($app['db']);
 };
 
 /** **/
@@ -372,7 +372,7 @@ switch ($s_accountrole)
 }
 
 $app['access_control'] = function($app){
-	return new eland\access_control($app['this_group']);
+	return new service\access_control($app['this_group']);
 };
 
 /**
@@ -423,7 +423,7 @@ if ($page_access != 'anonymous' && !$s_admin && readconfigfromdb('maintenance'))
 $app['xdb']->set_user($s_schema, $s_id);
 
 $app['form_token'] = function ($app){
-	return new eland\form_token($app['predis'], $app['monolog'], $app['script_name']);
+	return new service\form_token($app['predis'], $app['monolog'], $app['script_name']);
 };
 
 /* view (global for all groups) */

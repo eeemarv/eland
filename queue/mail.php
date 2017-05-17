@@ -1,14 +1,14 @@
 <?php
 
-namespace eland\queue;
+namespace queue;
 
-use eland\model\queue as queue_model;
-use eland\model\queue_interface;
+use model\queue as queue_model;
+use model\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
-use eland\queue;
+use service\queue;
 use Monolog\Logger;
-use eland\this_group;
-use eland\mailaddr;
+use service\this_group;
+use service\mailaddr;
 use Twig_Environment as Twig;
 
 class mail extends queue_model implements queue_interface
@@ -138,7 +138,7 @@ class mail extends queue_model implements queue_interface
 		{
 			$this->monolog->error('mail error: mail without "from" | subject: ' . $data['subject'], ['schema' => $sch]);
 			return;
-		} 
+		}
 
 		$message = \Swift_Message::newInstance()
 			->setSubject($data['subject'])
@@ -181,7 +181,7 @@ class mail extends queue_model implements queue_interface
 	public function queue(array $data, int $priority = 100)
 	{
 		// only the interlets transactions receiving side has a different schema
-		// always set schema in cron 
+		// always set schema in cron
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
@@ -226,7 +226,7 @@ class mail extends queue_model implements queue_interface
 			$m = 'error: mail without "to" | subject: ' . $data['subject'];
 			$this->monolog->error('mail: ' . $m);
 			return $m;
-		} 
+		}
 
 		if (isset($data['reply_to']))
 		{
