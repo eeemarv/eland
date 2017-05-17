@@ -8,12 +8,14 @@ use Predis\Client as redis;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
 use service\this_group;
+use service\user_cache;
 
 class user implements UserInterface
 {
 	private $this_group;
 	private $monolog;
 	private $session;
+	private $user_cache;
 
 	private $schema;
 
@@ -32,11 +34,13 @@ class user implements UserInterface
 		'ROLE_ADMIN'		=> 'admin',
 	];
 
-	public function __construct(this_group $this_group, Logger $monolog, Session $session, string $page_access)
+	public function __construct(this_group $this_group, Logger $monolog,
+		Session $session, user_cache $user_cache, string $page_access)
 	{
 		$this->this_group = $this_group;
 		$this->monolog = $monolog;
 		$this->session = $session;
+		$this->user_cache = $user_cache;
 		$this->page_access = $page_access;
 
 		$this->schema = $_GET['s'] ?? $this->this_group->get_schema();
@@ -69,7 +73,7 @@ class user implements UserInterface
 
 					unset($get['u'], $get['s'], $get['r']);
 
-					$this->data = readuser($this->id, false, $this->schema);
+					$this->data = $this->user_cache->get($this->id, $this->schema);
 
 					$get['r'] = $this->data['accountrole'];
 					$get['u'] = $this->id;

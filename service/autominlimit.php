@@ -7,6 +7,7 @@ use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
 use service\this_group;
 use service\config;
+use service\user_cache;
 
 class autominlimit
 {
@@ -15,6 +16,7 @@ class autominlimit
 	private $db;
 	private $this_group;
 	private $config;
+	private $user_cache;
 
 	private $exclusive;
 	private $trans_exclusive;
@@ -23,12 +25,14 @@ class autominlimit
 	private $group_minlimit;
 	private $schema;
 
-	public function __construct(Logger $monolog, xdb $xdb, db $db, this_group $this_group, config $config)
+	public function __construct(Logger $monolog, xdb $xdb, db $db,
+		this_group $this_group, config $config, user_cache $user_cache)
 	{
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->db = $db;
 		$this->this_group = $this_group;
+		$this->user_cache = $user_cache;
 	}
 
 	public function init(string $schema = '')
@@ -70,7 +74,7 @@ class autominlimit
 			return;
 		}
 
-		$user = readuser($to_id, false, $this->schema);
+		$user = $this->user_cache->get($to_id, $this->schema);
 
 		if (!$user || !is_array($user))
 		{
@@ -99,7 +103,7 @@ class autominlimit
 			return;
 		}
 
-		$from_user = readuser($from_id, false, $this->schema);
+		$from_user = $this->user_cache->get($from_id, $this->schema);
 
 		if (!$from_user || !is_array($from_user))
 		{
@@ -129,7 +133,7 @@ class autominlimit
 		{
 			$this->xdb->set('autominlimit', $to_id, ['minlimit' => '', 'erased' => true], $this->schema);
 			$this->db->update($this->schema . '.users', ['minlimit' => -999999999], ['id' => $to_id]);
-			readuser($to_id, true, $this->schema);
+			$this->user_cache->clear($to_id, $this->schema);
 
 			$debug = 'autominlimit: minlimit reached group minlimit, ';
 			$debug .= 'individual minlimit erased for user ' . link_user($user, $this->schema, false);
@@ -141,7 +145,7 @@ class autominlimit
 
 		$this->db->update($this->schema . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
 
-		readuser($to_id, true, $this->schema);
+		$this->user_cache->clear($to_id, $this->schema);
 
 		$this->monolog->info('autominlimit: new minlimit : ' . $new_minlimit .
 			' for user ' . link_user($user, $this->schema, false, true), ['schema' => $this->schema]);

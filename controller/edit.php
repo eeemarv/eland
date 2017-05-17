@@ -133,7 +133,7 @@ class edit
 
 		$app['monolog']->info('User image ' . $filename . ' uploaded. User: ' . $id);
 
-		readuser($id, true);
+		$app['user_cache']->clear($id);
 
 		$response = ['success' => 1, 'filename' => $filename];
 	}

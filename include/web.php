@@ -123,7 +123,7 @@ $app['user'] = function ($app){
 
 $app['autominlimit'] = function ($app){
 	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
-		$app['this_group'], $app['config']);
+		$app['this_group'], $app['config'], $app['user_cache']);
 };
 
 // init
@@ -182,7 +182,7 @@ if (!$s_id)
 
 			unset($get['u'], $get['s'], $get['r']);
 
-			$session_user = readuser($s_id, false, $s_schema);
+			$session_user = $app['user_cache']->get($s_id, $s_schema);
 
 			$get['r'] = $session_user['accountrole'];
 			$get['u'] = $s_id;
@@ -228,7 +228,7 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 
 		unset($get['u'], $get['s'], $get['r']);
 
-		$session_user = readuser($s_id, false, $s_schema);
+		$session_user = $app['user_cache']->get($s_id, $s_schema);
 
 		$get['r'] = $session_user['accountrole'];
 		$get['u'] = $s_id;
@@ -250,7 +250,7 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 }
 else if (ctype_digit((string) $s_id))
 {
-	$session_user = readuser($s_id, false, $s_schema);
+	$session_user = $app['user_cache']->get($s_id, $s_schema);
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{

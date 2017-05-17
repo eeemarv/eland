@@ -691,11 +691,11 @@ if ($add)
 					exit;
 				}
 
-				readuser($fromuser['id'], true);
-				readuser($touser['id'], true);
+				$app['user_cache']->clear($fromuser['id']);
+				$app['user_cache']->clear($touser['id']);
 
-				readuser($remote_interlets_account['id'], true, $remote_schema);
-				readuser($to_remote_user['id'], true, $remote_schema);
+				$app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
+				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
 
 				mail_transaction($trans_org);
 				mail_transaction($transaction, $remote_schema);
@@ -778,7 +778,7 @@ if ($add)
 		}
 		else if ($tuid)
 		{
-			$to_user = readuser($tuid, false, ((isset($host_from_tus)) ? $tus : false));
+			$to_user = $app['user_cache']->get($tuid, ((isset($host_from_tus)) ? $tus : false));
 
 			if (($s_admin && !$tus) || $to_user['status'] == 1 || $to_user['status'] == 2)
 			{
@@ -788,7 +788,7 @@ if ($add)
 
 		if ($fuid && $s_admin && ($fuid != $tuid))
 		{
-			$from_user = readuser($fuid);
+			$from_user = $app['user_cache']->get($fuid);
 			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
 		}
 
@@ -1602,7 +1602,7 @@ $params = [
 
 if ($uid)
 {
-	$user = readuser($uid);
+	$user = $app['user_cache']->get($uid);
 
 	$where_sql[] = 't.id_from = ? or t.id_to = ?';
 	$params_sql[] = $uid;

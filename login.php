@@ -180,7 +180,7 @@ if ($submit)
 	}
 	else if ($user_id && !count($errors))
 	{
-		$user = readuser($user_id);
+		$user = $app['user_cache']->get($user_id);
 
 		if (!$user)
 		{
@@ -239,7 +239,7 @@ if ($submit)
 		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser, $log_ary);
 
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
-		readuser($user['id'], true);
+		$app['user_cache']->clear($user['id']);
 
 		$app['xdb']->set('login', $user['id'], ['browser' => $browser, 'time' => time()], $s_schema);
 

@@ -7,24 +7,27 @@ use model\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
 use service\queue;
+use service\user_cache;
 use Monolog\Logger;
 
 class geocode extends queue_model implements queue_interface
 {
-	protected $queue;
-	protected $monolog;
-	protected $cache;
-	protected $db;
+	private $queue;
+	private $monolog;
+	private $cache;
+	private $db;
+	private $user_cache;
 
-	protected $curl;
-	protected $geocoder;
+	private $curl;
+	private $geocoder;
 
-	public function __construct(db $db, cache $cache, queue $queue, Logger $monolog)
+	public function __construct(db $db, cache $cache, queue $queue, Logger $monolog, user_cache $user_cache)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->cache = $cache;
 		$this->db = $db;
+		$this->user_cache = $user_cache;
 
 		$this->curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 		$this->geocoder = new \Geocoder\ProviderAggregator();
@@ -58,7 +61,7 @@ class geocode extends queue_model implements queue_interface
 			return;
 		}
 
-		$user = readuser($uid, false, $sch);
+		$user = $this->user_cache->get($uid, $sch);
 
 		$log_user = 'user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
 

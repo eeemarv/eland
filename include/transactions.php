@@ -57,8 +57,8 @@ function insert_transaction($transaction)
 		return false;
 	}
 
-	$to_user = readuser($transaction['id_to'], true);
-	$from_user = readuser($transaction['id_from'], true);
+	$to_user = $app['user_cache']->clear($transaction['id_to']);
+	$from_user = $app['user_cache']->get($transaction['id_from']);
 
 	$app['autominlimit']->init()
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
@@ -126,8 +126,8 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$sch = isset($remote_schema) ? $remote_schema : $app['this_group']->get_schema();
 
-	$userfrom = readuser($transaction['id_from'], false, $sch);
-	$userto = readuser($transaction['id_to'], false, $sch);
+	$userfrom = $app['user_cache']->get($transaction['id_from'], $sch);
+	$userto = $app['user_cache']->get($transaction['id_to'], $sch);
 
 	$interlets = ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? 'interlets ' : '';
 

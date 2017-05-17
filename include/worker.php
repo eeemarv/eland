@@ -54,7 +54,7 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
 		$app['protocol'],
 		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['config'], $app['template_vars']);
+		$app['config'], $app['template_vars'], $app['user_cache']);
 };
 
 $app['schema_task.saldo'] = function ($app){
@@ -81,6 +81,6 @@ $app['schedule'] = function ($app){
 // queue
 
 $app['queue.geocode'] = function ($app){
-	return new queue\geocode($app['db'], $app['cache'], $app['queue'], $app['monolog']);
+	return new queue\geocode($app['db'], $app['cache'], $app['queue'], $app['monolog'], $app['user_cache']);
 };
 

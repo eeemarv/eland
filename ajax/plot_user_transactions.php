@@ -12,7 +12,7 @@ if (!$user_id)
 	exit;
 }
 
-$user = readuser($user_id);
+$user = $app['user_cache']->get($user_id);
 
 if (!$user)
 {

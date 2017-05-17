@@ -189,8 +189,18 @@ $app['distance'] = function ($app){
 };
 
 $app['config'] = function ($app){
-	return new service\config($app['monolog'], $app['db'], $app['xdb'], $app['predis'], $app['this_group']);
+	return new service\config($app['monolog'], $app['db'], $app['xdb'],
+		$app['predis'], $app['this_group']);
 };
+
+$app['user_cache'] = function ($app){
+	return new service\user_cache($app['db'], $app['xdb'], $app['predis'], $app['this_group']);
+};
+
+$app['token'] = function ($app){
+	return new service\token();
+};
+
 
 // queue
 
@@ -203,16 +213,16 @@ $app['queue.mail'] = function ($app){
  * functions
  */
 
-function link_user($user, $sch = false, $link = true, $show_id = false, $field = false)
+function link_user($user, string $sch = '', $link = true, $show_id = false, $field = '')
 {
-	global $rootpath;
+	global $rootpath, $app;
 
 	if (!$user)
 	{
 		return '<i>** leeg **</i>';
 	}
 
-	$user = is_array($user) ? $user : readuser($user, false, $sch);
+	$user = is_array($user) ? $user : $app['user_cache']->get($user, $sch);
 	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
 
@@ -237,66 +247,3 @@ function link_user($user, $sch = false, $link = true, $show_id = false, $field =
 	return $out;
 }
 
-/**
- *
- */
-function readuser($id, $refresh = false, $remote_schema = false)
-{
-    global $app;
-    static $cache;
-
-	if (!$id)
-	{
-		return [];
-	}
-
-	$s = ($remote_schema) ?: $app['this_group']->get_schema();
-
-	$redis_key = $s . '_user_' . $id;
-
-	if (!$refresh)
-	{
-		if (isset($cache[$s][$id]))
-		{
-			return $cache[$s][$id];
-		}
-
-		if ($app['predis']->exists($redis_key))
-		{
-			return $cache[$s][$id] = unserialize($app['predis']->get($redis_key));
-		}
-	}
-
-	$user = $app['db']->fetchAssoc('select * from ' . $s . '.users where id = ?', [$id]);
-
-	if (!is_array($user))
-	{
-		return [];
-	}
-
-	// hack eLAS compatibility (in eLAND limits can be null)
-	$user['minlimit'] = $user['minlimit'] == -999999999 ? '' : $user['minlimit'];
-	$user['maxlimit'] = $user['maxlimit'] == 999999999 ? '' : $user['maxlimit'];
-
-	$row = $app['xdb']->get('user_fullname_access', $id, $s);
-
-	if ($row)
-	{
-		$user += ['fullname_access' => $row['data']['fullname_access']];
-	}
-	else
-	{
-		$user += ['fullname_access' => 'admin'];
-
-		$app['xdb']->set('user_fullname_access', $id, ['fullname_access' => 'admin'], $s);
-	}
-
-	if (isset($user))
-	{
-		$app['predis']->set($redis_key, serialize($user));
-		$app['predis']->expire($redis_key, 2592000);
-		$cache[$s][$id] = $user;
-	}
-
-	return $user;
-}

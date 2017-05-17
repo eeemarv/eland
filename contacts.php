@@ -52,7 +52,7 @@ if ($del)
 		where c.id = ?
 			and tc.id = c.id_type_contact', array($del));
 
-	$owner = readuser($contact['id_user']);
+	$owner = $app['user_cache']->get($contact['id_user']);
 
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
@@ -462,7 +462,7 @@ if ($uid)
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
-	$user = readuser($uid);
+	$user = $app['user_cache']->get($uid);
 
 	if ($s_admin || $s_owner)
 	{
@@ -630,7 +630,7 @@ $params_sql = $where_sql = array();
 
 if ($uid)
 {
-	$user = readuser($uid);
+	$user = $app['user_cache']->get($uid);
 
 	$where_sql[] = 'c.id_user = ?';
 	$params_sql[] = $uid;

@@ -529,7 +529,7 @@ if ($mail && $post && $id)
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
 
-	$user = readuser($message['id_user']);
+	$user = $app['user_cache']->get($message['id_user']);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
@@ -1082,7 +1082,7 @@ if (($edit || $add))
 		$rev = round((strtotime($msg['validity']) - time()) / (86400));
 		$msg['validity'] = ($rev < 1) ? 0 : $rev;
 
-		$user = readuser($msg['id_user']);
+		$user = $app['user_cache']->get($msg['id_user']);
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 
@@ -1110,7 +1110,7 @@ if (($edit || $add))
 		}
 		else
 		{
-			$user = readuser($uid);
+			$user = $app['user_cache']->get($uid);
 
 			$user_letscode = $user['letscode'] . ' ' . $user['name'];
 		}
@@ -1331,7 +1331,7 @@ if ($id)
 {
 	$cc = ($post) ? $cc : 1;
 
-	$user = readuser($message['id_user']);
+	$user = $app['user_cache']->get($message['id_user']);
 
 	$to = $app['db']->fetchColumn('select c.value
 		from contact c, type_contact tc
@@ -1654,7 +1654,7 @@ $params_sql = $where_sql = [];
 
 if ($uid)
 {
-	$user = readuser($uid);
+	$user = $app['user_cache']->get($uid);
 
 	$where_sql[] = 'u.id = ?';
 	$params_sql[] = $uid;

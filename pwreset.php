@@ -23,7 +23,8 @@ if ($token)
 			if ($user_id)
 			{
 				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
-				$user = readuser($user_id, true);
+				$app['user_cache']->clear($user_id);
+				$user = $app['user_cache']->get($user_id);
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [

@@ -11,10 +11,8 @@ class token
 	private $chars_len;
 	private $chars_h_len;
 
-	public function __construct(int $length = 8, int $hyphen_chance = 2)
+	public function __construct()
 	{
-		$this->length = $length;
-		$this->hyphen_chance = $hyphen_chance;
 		$this->set_len();
 	}
 

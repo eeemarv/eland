@@ -117,7 +117,7 @@ if ($user_mail_submit && $id && $post)
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
 	$user_mail_cc = $_POST['user_mail_cc'] ?? false;
 
-	$user = readuser($id);
+	$user = $app['user_cache']->get($id);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
@@ -200,7 +200,7 @@ if ($post && $img && $id )
 		exit;
 	}
 
-	$user = readuser($id);
+	$user = $app['user_cache']->get($id);
 
 	$image = ($_FILES['image']) ?: null;
 
@@ -280,7 +280,7 @@ if ($post && $img && $id )
 
 		$app['monolog']->info('User image ' . $filename . ' uploaded. User: ' . $id);
 
-		readuser($id, true);
+		$app['user_cache']->clear($id);
 
 		$response = ['success' => 1, 'filename' => $filename];
 	}
@@ -313,7 +313,7 @@ if ($img_del && $id)
 		cancel($id);
 	}
 
-	$user = readuser($id);
+	$user = $app['user_cache']->get($id);
 
 	if (!$user)
 	{
@@ -332,7 +332,7 @@ if ($img_del && $id)
 	if ($post)
 	{
 		$app['db']->update('users', ['"PictureFile"' => ''], ['id' => $id]);
-		readuser($id, true);
+		$app['user_cache']->clear($id);
 		$app['alert']->success('Profielfoto verwijderd.');
 		cancel($id);
 	}
@@ -759,7 +759,8 @@ if ($pw)
 
 			if ($app['db']->update('users', $update, ['id' => $pw]))
 			{
-				$user = readuser($pw, true);
+				$app['user_cache']->clear($pw);
+				$user = $app['user_cache']->get($pw);
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
@@ -812,7 +813,7 @@ if ($pw)
 
 	}
 
-	$user = readuser($pw);
+	$user = $app['user_cache']->get($pw);
 
 	$app['assets']->add('generate_password.js');
 
@@ -887,7 +888,7 @@ if ($del)
 		cancel($del);
 	}
 
-	$user = readuser($del);
+	$user = $app['user_cache']->get($del);
 
 	if (!$user)
 	{
@@ -1252,7 +1253,7 @@ if ($add || $edit)
 			$fullname_sql .= 'and id <> ?';
 			$fullname_sql_params[] = $edit;
 
-			$user_prefetch = readuser($edit);
+			$user_prefetch = $app['user_cache']->get($edit);
 		}
 
 		$fullname_access_error = $app['access_control']->get_post_error('fullname_access');
@@ -1418,7 +1419,8 @@ if ($add || $edit)
 
 					$app['alert']->success('Gebruiker opgeslagen.');
 
-					$user = readuser($id, true);
+					$app['user_cache']->clear($id);
+					$user = $app['user_cache']->get($id);
 
 					foreach ($contact as $value)
 					{
@@ -1481,7 +1483,7 @@ if ($add || $edit)
 			}
 			else if ($edit)
 			{
-				$user_stored = readuser($edit);
+				$user_stored = $app['user_cache']->get($edit);
 
 				$user['mdate'] = gmdate('Y-m-d H:i:s');
 
@@ -1502,7 +1504,8 @@ if ($add || $edit)
 
 					$app['xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
 
-					$user = readuser($edit, true);
+					$app['user_cache']->clear($edit);
+					$user = $app['user_cache']->get($edit);
 
 					$app['alert']->success('Gebruiker aangepast.');
 
@@ -1629,7 +1632,7 @@ if ($add || $edit)
 	{
 		if ($edit)
 		{
-			$user = readuser($edit);
+			$user = $app['user_cache']->get($edit);
 			$fullname_access = $user['fullname_access'];
 		}
 
@@ -2141,7 +2144,7 @@ if ($id)
 
 	$user_mail_cc = ($post) ? $user_mail_cc : 1;
 
-	$user = readuser($id);
+	$user = $app['user_cache']->get($id);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{

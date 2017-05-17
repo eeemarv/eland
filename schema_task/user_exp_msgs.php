@@ -11,6 +11,7 @@ use service\groups;
 use service\this_group;
 use service\config;
 use service\template_vars;
+use service\user_cache;
 
 class user_exp_msgs extends schema_task
 {
@@ -18,10 +19,11 @@ class user_exp_msgs extends schema_task
 	private $mail;
 	private $protocol;
 	private $config;
+	private $user_cache;
 
 	public function __construct(db $db, mail $mail, string $protocol,
 		schedule $schedule, groups $groups, this_group $this_group, config $config,
-		template_vars $template_vars)
+		template_vars $template_vars, user_cache $user_cache)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -29,6 +31,7 @@ class user_exp_msgs extends schema_task
 		$this->protocol = $protocol;
 		$this->config = $config;
 		$this->template_vars = $template_vars;
+		$this->user_cache = $user_cache;
 	}
 
 	function process()
@@ -48,7 +51,7 @@ class user_exp_msgs extends schema_task
 
 		foreach ($warn_messages as $msg)
 		{
-			$user = readuser($msg['id_user'], $this->schema);
+			$user = $this->user_cache->get($msg['id_user'], $this->schema);
 
 			if (!($user['status'] == 1 || $user['status'] == 2))
 			{
