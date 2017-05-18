@@ -10,7 +10,7 @@ if (php_sapi_name() !== 'cli')
 	exit;
 }
 
-require_once __DIR__ . '/include/worker.php';
+require_once __DIR__ . '/include/default.php';
 
 $boot = $app['cache']->get('boot');
 
