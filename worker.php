@@ -35,6 +35,7 @@ $app['predis']->expire('block_task', 3);
 
 while (true)
 {
+
 	$app['log_db']->update();
 
 	sleep(1);
@@ -59,34 +60,8 @@ while (true)
 
 	if ($loop_count % 10 === 0)
 	{
-		$boot_test = $app['cache']->get('boot');
-
-		if ($boot_test['count'] < $boot['count'])
-		{
-			while (true)
-			{
-				$subject = 'Sleeping worker.';
-				$msg = 'Sleeping worker. Worker(boot count): ' . $boot_test['count'];
-				$msg .= ', loop count:' . $loop_count;
-				$msg .= ', current(boot count): ' . $boot['count'] . ', ';
-				$msg .= 'PID: ' . getmypid() . ', GID: ' . getmygid() . ', UID:' . getmyuid() . ', Inode:';
-				$msg .= getmyinode();
-				error_log($msg);
-				if (getenv('MAIL_NOTIFY_ADDRESS'))
-				{
-					$app['queue.mail']->queue([
-						'to'		=> getenv('MAIL_NOTIFY_ADDRESS'),
-						'subject'	=> 'Sleeping worker',
-						'text'		=> $msg,
-					], 2000);
-				}
-				else
-				{
-					error_log('env var MAIL_NOTIFY not set.');
-				}
-				sleep(86400);
-			}
-		}
+		$app['predis']->set('monitor_service_worker');
+		$app['predis']->expire('monitor_service_worker', 900);
 	}
 
 	$loop_count++;

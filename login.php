@@ -39,9 +39,21 @@ if ($monitor)
 	}
 	try
 	{
-		$app['predis']->set('eland_monitor', '1');
+		$app['predis']->incr('eland_monitor');
 		$app['predis']->expire('eland_monitor', 400);
-		$app['predis']->get('eland_monitor');
+		$monitor_count = $app['predis']->get('eland_monitor');
+
+		if ($monitor_count > 2)
+		{
+			$monitor_service_worker = $app['predis']->get('monitor_service_worker');
+
+			if (!$monitor_service_worker)
+			{
+				http_response_code(503);
+				echo 'web service is up but service worker is down';
+				exit;
+			}
+		}
 	}
 	catch(Exception $e)
 	{
@@ -50,6 +62,10 @@ if ($monitor)
 		throw $e;
 		exit;
 	}
+
+
+
+
 	exit;
 }
 
