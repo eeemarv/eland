@@ -60,7 +60,7 @@ while (true)
 
 	if ($loop_count % 10 === 0)
 	{
-		$app['predis']->set('monitor_service_worker');
+		$app['predis']->set('monitor_service_worker', '1');
 		$app['predis']->expire('monitor_service_worker', 900);
 	}
 
