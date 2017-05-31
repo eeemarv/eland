@@ -33,6 +33,7 @@ class autominlimit
 		$this->db = $db;
 		$this->this_group = $this_group;
 		$this->user_cache = $user_cache;
+		$this->config = $config;
 	}
 
 	public function init(string $schema = '')
