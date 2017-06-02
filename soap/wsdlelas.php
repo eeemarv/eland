@@ -4,6 +4,16 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/../include/web.php';
 require_once __DIR__ . '/../include/transactions.php';
 
+if (!$app['config']->get('template_lets'))
+{
+	exit;
+}
+
+if (!$app['config']->get('interlets_en'))
+{
+	exit;
+}
+
 $server = new soap_server();
 $server->configureWSDL('interletswsdl', 'urn:interletswsdl');
 
