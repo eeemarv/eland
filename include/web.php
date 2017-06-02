@@ -372,9 +372,6 @@ switch ($s_accountrole)
 		break;
 }
 
-$app['access_control'] = function($app){
-	return new service\access_control($app['this_group']);
-};
 
 /**
  * some vars
@@ -382,7 +379,7 @@ $app['access_control'] = function($app){
 
 $access_level = $access_ary[$s_accountrole];
 
-$s_admin = ($s_accountrole == 'admin') ? true : false;
+$app['s_admin'] = $s_admin = ($s_accountrole == 'admin') ? true : false;
 $s_user = ($s_accountrole == 'user') ? true : false;
 $s_guest = ($s_accountrole == 'guest') ? true : false;
 $s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
@@ -393,8 +390,15 @@ $errors = [];
  * check access to groups
  **/
 
-$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
-$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
+if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+{
+	$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
+	$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
+}
+else
+{
+	$elas_interlets_groups = $eland_interlets_groups = [];
+}
 
 if ($s_group_self && $s_guest)
 {
@@ -402,6 +406,7 @@ if ($s_group_self && $s_guest)
 }
 
 $count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
+$app['count_interlets_groups'] = $count_interlets_groups;
 
 if ($page_access != 'anonymous'
 	&& !$s_group_self
@@ -510,6 +515,10 @@ if (isset($_GET['welcome']) && $s_guest)
 
 	$app['alert']->info($msg);
 }
+
+$app['access_control'] = function($app){
+	return new service\access_control($app['this_group'], $app['config']);
+};
 
 /**************** FUNCTIONS ***************/
 

@@ -191,6 +191,11 @@ if (!$s_anonymous)
 			'logs'							=> ['history', 'Logs'],
 		];
 
+		if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))
+		{
+			unset($menu['interlets'], $menu['apikeys']);
+		}
+
 		echo '<li class="dropdown">';
 		echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" ';
 		echo 'role="button" aria-expanded="false">';

@@ -863,12 +863,17 @@ echo '</select>';
 echo '</div>';
 echo '</div>';
 
-$access_options = array(
+$access_options = [
 	'all'		=> '',
 	'admin'		=> 'admin',
 	'users'		=> 'leden',
 	'interlets'	=> 'interlets',
-);
+];
+
+if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))
+{
+	unset($access_options['interlets']);
+}
 
 echo '<div class="col-sm-4">';
 echo '<div class="input-group margin-bottom">';

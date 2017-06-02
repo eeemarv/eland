@@ -3,10 +3,12 @@
 namespace service;
 
 use service\this_group;
+use service\config;
 
 class access_control
 {
 	private $this_group;
+	private $type_template;
 
 	private $acc_ary = [
 		'admin'	=> [
@@ -36,9 +38,15 @@ class access_control
 	 *
 	 */
 
-	public function __construct(this_group $this_group)
+	public function __construct(this_group $this_group, config $config)
 	{
 		$this->this_group = $this_group;
+		$this->config = $config;
+
+		if (!$this->config->get('template_lets') || !$this->config->get('interlets_en'))
+		{
+			unset($this->acc_ary['interlets'], $this->acc_ary_search[2]);
+		}
 	}
 
 	/*
@@ -116,6 +124,11 @@ class access_control
 
 		$acc = $this->acc_ary[$access];
 
+		if (!isset($acc))
+		{
+			$acc = $this->acc_ary['users'];
+		}
+
 		return '<span class="label label-' . $acc['class'] . ' label-' . $size . '">' . $acc['label'] . '</span>';
 	}
 
@@ -170,6 +183,10 @@ class access_control
 		else if (isset($this->acc_ary_search[$value]))
 		{
 			$selected = $this->acc_ary_search[$value];
+		}
+		else if ($value === 2 || $value === 'interlets')
+		{
+			$selected = 'users';
 		}
 		else
 		{

@@ -13,6 +13,8 @@ $selected_users = array_combine($selected_users, $selected_users);
 
 $submit = isset($_POST['zend']) ? true : false;
 
+$str_code = $app['type_template']->get('code');
+
 $st = [
 	'active'	=> [
 		'lbl'	=> 'Actief',
@@ -121,11 +123,11 @@ if ($submit)
 
 	if ($to_letscode && $from_letscode)
 	{
-		$errors[] = '\'Van letscode\' en \'Aan letscode\' kunnen niet beide ingevuld worden.';
+		$errors[] = '\'Van ' . $str_code . '\' en \'Aan ' . $str_code . '\' kunnen niet beide ingevuld worden.';
 	}
 	else if (!($to_letscode || $from_letscode))
 	{
-		$errors[] = '\'Van letscode\' OF \'Aan letscode\' moet ingevuld worden.';
+		$errors[] = '\'Van ' . $str_code . '\' OF \'Aan ' . $str_code . '\' moet ingevuld worden.';
 	}
 	else
 	{
@@ -136,8 +138,9 @@ if ($submit)
 
 		if (!$one_uid)
 		{
-			$field = ($to_one) ? '\'Aan letscode\'' : '\'Van letscode\'';
-			$errors[] = 'Geen bestaande letscode in veld ' . $field . '.';
+			$field = ($to_one) ? '\'Aan ': '\'Van ';
+			$field .= $app['type_template']->get('code') . '\'';
+			$errors[] = 'Geen bestaande code in veld ' . $field . '.';
 		}
 		else
 		{
@@ -467,11 +470,13 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. LETS codes';
+echo 'excl. ' . $app['type_template']->get('codes');
 echo '</span>';
 echo '<input type="text" class="form-control" id="var_ex_code_in">';
 echo '</div>';
-echo '<p>Exclusief tegenpartijen: LETS codes gescheiden door komma\'s</p>';
+echo '<p>Exclusief tegenpartijen: ';
+echo $app['type_template']->get('codes');
+echo ' gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -492,12 +497,15 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. LETS codes';
+echo 'excl. ';
+echo $app['type_template']->get('codes');
 echo '</span>';
 
 echo '<input type="text" class="form-control" id="var_ex_code_out">';
 echo '</div>';
-echo '<p>Exclusief tegenpartijen: LETS codes gescheiden door komma\'s</p>';
+echo '<p>Exclusief tegenpartijen: ';
+echo $app['type_template']->get('codes');
+echo ' gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -609,7 +617,8 @@ echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
 echo '<label for="from_letscode" class="col-sm-2 control-label">';
-echo 'Van letscode';
+echo 'Van ';
+echo $app['type_template']->get('code');
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
@@ -718,7 +727,8 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="to_letscode" class="col-sm-2 control-label">';
-echo 'Aan letscode';
+echo 'Aan ';
+echo $app['type_template']->get('code');
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
@@ -752,7 +762,9 @@ echo '<div class="form-group">';
 echo '<div class="col-sm-12">';
 echo '<input type="checkbox" name="verify"';
 echo ' value="1" required> ';
-echo 'Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" LETScode ingevuld zijn.';
+echo 'Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" ';
+echo $app['type_template']->get('code');
+echo ' ingevuld zijn.';
 echo '</div>';
 echo '</div>';
 

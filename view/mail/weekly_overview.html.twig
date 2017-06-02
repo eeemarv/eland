@@ -24,18 +24,7 @@
 
 <p><a href="{{ msgs_url }}">Bekijk alle vraag en aanbod online.</a></p>
 
-<h4>Interlets vraag en aanbod</h4>
-
-{% for group in inter_messages %}
-<h5>Groep: {{ group.name }}</h5>
-<ul>
-	{% for msg in group.msgs %}
-		<li>{{ msg.content }} <br>Ingegeven door: {{ msg.user }}</li>
-	{% endfor %}
-</ul>
-{% else %}
-<p>Er werd deze week geen nieuw interlets vraag en aanbod geplaatst.</p>
-{% endfor %}
+{# #}
 
 {% if forum_en %}
 <h4><a href="{{ forum_url }}">Forum</a></h4>

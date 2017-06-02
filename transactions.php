@@ -85,7 +85,7 @@ if ($add)
 
 			if (!isset($group))
 			{
-				$errors[] = 'Letsgroep niet gevonden.';
+				$errors[] =  'groep niet gevonden.';
 			}
 			else
 			{
@@ -108,19 +108,19 @@ if ($add)
 
 		if(empty($fromuser))
 		{
-			$errors[] = 'Gebruiker "Van letscode" bestaat niet';
+			$errors[] = 'Gebruiker "Van ' . $app['type_template']->get('code') . '" bestaat niet';
 		}
 
 		if (!strlen($letscode_to))
 		{
-			$errors[] = 'Geen bestemmeling (Aan letscode) ingevuld';
+			$errors[] = 'Geen bestemmeling (Aan ' . $app['type_template']->get('code') . ') ingevuld';
 		}
 
 		if(empty($touser) && !count($errors))
 		{
 			if ($group_id == 'self')
 			{
-				$errors[] = 'Bestemmeling (Aan letscode) bestaat niet';
+				$errors[] = 'Bestemmeling (Aan ' . $app['type_template']->get('code') . ') bestaat niet';
 			}
 			else
 			{
@@ -189,7 +189,7 @@ if ($add)
 
 		if(($fromuser['letscode'] == $touser['letscode']) && !count($errors))
 		{
-			$errors[] = 'Van en Aan letscode zijn hetzelfde';
+			$errors[] = 'Van en Aan ' . $app['type_template']->get('code') . ' zijn hetzelfde';
 		}
 
 		if (!$s_admin && !count($errors))
@@ -201,7 +201,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan letscode)' : 'interletsrekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interletsrekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -214,7 +214,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan letscode)' : 'interletsrekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interletsrekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -229,7 +229,7 @@ if ($add)
 			&& !($touser['status'] == '1' || $touser['status'] == '2')
 			&& !count($errors))
 		{
-			$errors[] = 'De bestemmeling (Aan letscode) is niet actief';
+			$errors[] = 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ') is niet actief';
 		}
 
 		if ($s_user && !count($errors))
@@ -243,7 +243,7 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan letscode)' : 'De interletsrekening van de letsgroep';
+				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interletsrekening van de letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
 			}
 		}
@@ -364,7 +364,7 @@ if ($add)
 				}
 				else
 				{
-					$errors[] = 'Er werd geen gebruiker gevonden met letscode ' . $letscode_to;
+					$errors[] = 'Er werd geen gebruiker gevonden met ' . $app['type_template']->get('code') . ' ' . $letscode_to;
 				}
 			}
 
@@ -877,7 +877,9 @@ if ($add)
 	echo '>';
 	echo '<label for="letscode_from" class="col-sm-2 control-label">';
 	echo $s_admin ? '<span class="label label-info">Admin</span> ' : '';
-	echo 'Van letscode</label>';
+	echo 'Van ';
+	echo $app['type_template']->get('code');
+	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
 	echo 'data-typeahead-source="';
@@ -1013,7 +1015,9 @@ if ($add)
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan letscode</label>';
+	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan ';
+	echo $app['type_template']->get('code');
+	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
 
@@ -1032,7 +1036,7 @@ if ($add)
 
 	echo '<ul class="account-info">';
 
-	echo '<li>Dit veld geeft autosuggesties door naam of letscode te typen. ';
+	echo '<li>Dit veld geeft autosuggesties door naam of ' . $app['type_template']->get('code') . ' te typen. ';
 	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
 
@@ -1095,7 +1099,7 @@ if ($add)
 	{
 		echo '<li id="info_ratio">Valuatie: <span class="num">';
 		echo $app['config']->get('currencyratio');
-		echo '</span> per LETS uur</li>';
+		echo '</span> per uur</li>';
 	}
 
 /*
@@ -1122,7 +1126,7 @@ if ($add)
 
 	echo '<ul>';
 
-	echo '<li id="info_ratio">Valuatie: <span class="num"></span> per LETS uur</li>';
+	echo '<li id="info_ratio">Valuatie: <span class="num"></span> per uur</li>';
 
 
 /*	echo '<li id="info_remote_amount">Maximum <span class="num"></span> ';
@@ -1577,7 +1581,7 @@ if ($id)
 	{
 		echo '<li>Valuatie: <span class="num">';
 		echo $app['config']->get('currencyratio');
-		echo '</span> ' . $app['config']->get('currency') . ' per LETS uur.</li>';
+		echo '</span> ' . $app['config']->get('currency') . ' per uur.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1932,7 +1936,7 @@ if (!$inline)
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-	echo 'name="fcode" id="fcode" placeholder="letscode" ';
+	echo 'name="fcode" id="fcode" placeholder="' . $app['type_template']->get('code') . '" ';
 	echo 'value="' . $fcode . '">';
 
 	echo '</div>';
@@ -1955,7 +1959,7 @@ if (!$inline)
 	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'data-typeahead-source="fcode" ';
-	echo 'placeholder="letscode" ';
+	echo 'placeholder="' . $app['type_template']->get('code') . '" ';
 	echo 'aria-describedby="tcode_addon" ';
 	echo 'name="tcode" value="' . $tcode . '">';
 	echo '</div>';
@@ -2268,7 +2272,7 @@ else
 	{
 		echo '<li>Valuatie: <span class="num">';
 		echo $app['config']->get('currencyratio');
-		echo '</span> ' . $app['config']->get('currency') . ' per LETS uur.</li>';
+		echo '</span> ' . $app['config']->get('currency') . ' per uur.</li>';
 	}
 
 	echo '</i></small></ul>';

@@ -24,6 +24,16 @@ if ($id || $edit || $del)
 	}
 }
 
+if (!$app['config']->get('template_lets'))
+{
+	redirect_default_page();
+}
+
+if (!$app['config']->get('interlets_en'))
+{
+	redirect_default_page();
+}
+
 /**
  *	add
  */

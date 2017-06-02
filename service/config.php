@@ -41,6 +41,8 @@ class config
 		'weekly_mail_template'				=> 'messages_top',
 		'default_landing_page'				=> 'messages',
 		'homepage_url'						=> '',
+		'template_lets'						=> '1',
+		'interlets_en'						=> '1',
 	];
 
 	public function __construct(monolog $monolog, db $db, xdb $xdb, predis $predis, this_group $this_group)

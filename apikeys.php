@@ -8,6 +8,16 @@ $add = $_GET['add'] ?? false;
 
 $submit = isset($_POST['zend']) ? true : false;
 
+if (!$app['config']->get('template_lets'))
+{
+	redirect_default_page();
+}
+
+if (!$app['config']->get('interlets_en'))
+{
+	redirect_default_page();
+}
+
 if ($del)
 {
 	if($submit)

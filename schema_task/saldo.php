@@ -234,7 +234,9 @@ class saldo extends schema_task
 
 	// interlets messages
 
-		if ($this->config->get('weekly_mail_show_interlets', $this->schema) == 'recent')
+		if ($this->config->get('weekly_mail_show_interlets', $this->schema) == 'recent'
+			&& $this->config->get('interlets_en') && $this->config->get('template_lets')
+		)
 		{
 			$eland_ary = $this->interlets_groups->get_eland($this->schema);
 

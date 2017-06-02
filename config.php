@@ -13,7 +13,7 @@ $active_tab = $_POST['active_tab'] ?? $active_tab;
 $register_link = $app['base_url'] . '/register.php';
 $register_link_explain = 'Het registratieformulier kan je terugvinden op <a href="' . $register_link;
 $register_link_explain .= '">' . $register_link . '</a>. Plaats deze link op je website.';
-$register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonder letscode aangemaakt met status info-pakket.';
+$register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonder code aangemaakt met status info-pakket.';
 $register_link_explain .= '<br>De admin krijgt een notificatie-email bij elke inschrijving.';
 
 $register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verder gaat gebeuren. <br>';
@@ -145,17 +145,17 @@ $tab_panes = [
 	],
 
 	'currency'		=> [
-		'lbl'	=> 'LETS-Eenheid',
+		'lbl'	=> 'Munteenheid',
 		'inputs'	=> [
 			'currency'	=> [
-				'lbl'		=> 'Naam van LETS-Eenheid (meervoud)',
+				'lbl'		=> 'Naam van Munt (meervoud)',
 				'required'	=> true,
 			],
 			'currencyratio'	=> [
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
-				'explain'	=> 'Deze instelling is vereist voor eLAS/eLAND interLETS',
+				'explain'	=> 'Deze instelling heeft enkel betrekking op en is vereist voor eLAS/eLAND interLETS',
 			],
 		],
 	],
@@ -207,7 +207,7 @@ $tab_panes = [
 				'lbl'		=> 'Toon interlets vraag en aanbod',
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_item_show_options_not_all,
-				'explain'	=> 'Deze instelling heeft enkel invloed wanneer interlets groepen ingesteld zijn.',
+				'explain'	=> 'Deze instelling is enkel van toepassing wanneer eLAS/eLAND interlets groepen ingesteld zijn.',
 			],
 
 			'weekly_mail_show_news'	=> [
@@ -295,24 +295,28 @@ $tab_panes = [
 				],
 				'explain' => $register_link_explain,
 			],
+
 			'registration_top_text' => [
 				'lbl'	=> 'Tekst boven het inschrijvingsformulier',
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
 				'explain' => 'Geschikt bijvoorbeeld om nadere uitleg bij de inschrijving te geven.',
 			],
+
 			'registration_bottom_text' => [
 				'lbl'		=> 'Tekst onder het inschrijvingsformulier',
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
 			],
+
 			'registration_success_text'	=> [
 				'lbl'	=> 'Tekst na succesvol indienen formulier.',
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
 				'explain'	=> $register_success_explain,
 			],
+
 			'registration_success_mail'	=> [
 				'lbl'		=> 'Mail naar gebruiker bij succesvol indienen formulier',
 				'type'		=> 'textarea',
@@ -346,6 +350,7 @@ $tab_panes = [
 				'attr'		=> ['min' => 0, 'max' => 365],
 				'required'	=> true,
 			],
+
 			'li_2' => [
 				'inline' => '%1$s Leden kunnen zelf hun gebruikersnaam aanpassen.',
 				'inputs' => [
@@ -354,6 +359,7 @@ $tab_panes = [
 					],
 				],
 			],
+
 			'li_3' => [
 				'inline' => '%1$s Leden kunnen zelf hun volledige naam aanpassen.',
 				'inputs' => [
@@ -368,6 +374,7 @@ $tab_panes = [
 	'system'	=> [
 		'lbl'		=> 'Systeem',
 		'inputs'	=> [
+
 			'li_1'	=> [
 				'inline'	=> '%1$s Mail functionaliteit aan: het systeem verstuurt mails.',
 				'inputs'	=> [
@@ -376,6 +383,7 @@ $tab_panes = [
 					],
 				],
 			],
+
 			'li_2' => [
 				'inline' => '%1$s Onderhoudsmodus: alleen admins kunnen inloggen.',
 				'inputs' => [
@@ -384,17 +392,38 @@ $tab_panes = [
 					],
 				],
 			],
+
+			'li_3' => [
+				'inline'	=> '%1$s Dit is een "LETS" groep',
+				'inputs'	=> [
+					'template_lets'	=> [
+						'type'	=> 'checkbox',
+					],
+				],
+			],
+
+			'li_4'	=> [
+				'inline'	=> '%1$s Gebruik eLAS/eLAND "interlets" (enkel geldig wanneer hierboven "LETS" groep geselecteerd is)',
+				'inputs'	=> [
+					'interlets_en'	=> [
+						'type'	=> 'checkbox',
+					],
+				],
+			],
+
 			'default_landing_page'	=> [
 				'lbl'		=> 'Standaard landingspagina',
 				'type'		=> 'select',
 				'options'	=> $landing_page_options,
 				'required'	=> true,
 			],
+
 			'homepage_url'	=> [
 				'lbl'		=> 'Website url',
 				'type'		=> 'url',
 				'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
 			],
+
 			'date_format'	=> [
 				'lbl'		=> 'Datum- en tijdsweergave',
 				'type'		=> 'select',

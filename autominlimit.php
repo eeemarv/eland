@@ -83,7 +83,7 @@ echo '<hr>';
 
 echo '<h3>Voor accounts</h3>';
 echo '<p>De automatische minimum limiet is enkel van toepassing op actieve accounts die ';
-echo 'rol van gewone gebruiker hebben (geen admins of interlets) en die ';
+echo 'rol van gewone gebruiker hebben (user) en die ';
 echo 'niet de status uitstapper hebben. Hieronder kunnnen nog verder individuele accounts uitgesloten ';
 echo 'worden.</p>';
 
@@ -94,7 +94,9 @@ echo '<div class="col-sm-9">';
 echo '<input type="text" id="exclusive" name="exclusive" ';
 echo 'value="' . $a['exclusive'] . '" ';
 echo 'class="form-control">';
-echo '<p>LETS codes gescheiden door comma\'s</p>';
+echo '<p>';
+echo $app['type_template']->get_cap('codes');
+echo ' gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -120,7 +122,9 @@ echo '<div class="col-sm-9">';
 echo '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
 echo 'value="' . $a['trans_exclusive'] . '" ';
 echo 'class="form-control">';
-echo '<p>LETS codes gescheiden door comma\'s</p>';
+echo '<p>';
+echo $app['type_template']->get_cap('codes');
+echo ' gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 
