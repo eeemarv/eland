@@ -181,7 +181,8 @@ $app['mailaddr'] = function ($app){
 };
 
 $app['interlets_groups'] = function ($app){
-	return new service\interlets_groups($app['db'], $app['predis'], $app['groups'], $app['protocol']);
+	return new service\interlets_groups($app['db'], $app['predis'], $app['groups'],
+		$app['config'], $app['protocol']);
 };
 
 $app['distance'] = function ($app){

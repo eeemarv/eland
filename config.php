@@ -398,6 +398,7 @@ $tab_panes = [
 				'inputs'	=> [
 					'template_lets'	=> [
 						'type'	=> 'checkbox',
+						'post_action'	=> 'clear_eland_interlets_cache',
 					],
 				],
 			],
@@ -407,6 +408,7 @@ $tab_panes = [
 				'inputs'	=> [
 					'interlets_en'	=> [
 						'type'	=> 'checkbox',
+						'post_action'	=> 'clear_eland_interlets_cache',
 					],
 				],
 			],
@@ -475,7 +477,7 @@ if ($post)
 		$errors[] = $error_token;
 	}
 
-	$posted_configs = $validators = [];
+	$posted_configs = $validators = $post_actions = [];
 
 	foreach ($tab_panes[$active_tab]['inputs'] as $name => $input)
 	{
@@ -489,6 +491,8 @@ if ($post)
 				$validators[$sub_name]['attr'] = $sub_input['attr'] ?? [];
 				$validators[$sub_name]['required'] = isset($sub_input['required']) ? true : false;
 				$validators[$sub_name]['max_inputs'] = $sub_input['max_inputs'] ?? 1;
+
+				$post_actions[$sub_name] = $sub_input['post_action'] ?? [];
 			}
 
 			continue;
@@ -501,6 +505,7 @@ if ($post)
 		$validators[$name]['required'] = isset($input['required']) ? true : false;
 		$validators[$name]['max_inputs'] = $input['max_inputs'] ?? 1;
 
+		$post_actions[$name] = $input['post_action'] ?? [];
 	}
 
 	foreach ($posted_configs as $name => $value)
@@ -670,6 +675,8 @@ if ($post)
 		cancel();
 	}
 
+	$execute_post_actions = [];
+
 	foreach ($posted_configs as $name => $value)
 	{
 		$app['xdb']->set('setting', $name, ['value' => $value]);
@@ -690,6 +697,18 @@ if ($post)
 		{
 			$app['db']->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 		}
+
+		$p_acts = is_array($post_actions[$name]) ? $post_actons[$name] : [$post_actions[$name]];
+
+		foreach($p_acts as $p_act)
+		{
+			$execute_post_actions[$p_act] = true;
+		}
+	}
+
+	if (isset($execute_post_actions['clear_eland_interlets_cache']))
+	{
+		$app['interlets_groups']->clear_eland_cache();
 	}
 
 	if (count($posted_configs) > 1)

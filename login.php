@@ -290,7 +290,7 @@ if(empty($token))
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-    echo '<label for="login" class="col-sm-2 control-label">Email, letscode of gebruikersnaam</label>';
+    echo '<label for="login" class="col-sm-2 control-label">Email, code of gebruikersnaam</label>';
     echo '<div class="col-sm-10">';
     echo '<input type="text" class="form-control" id="login" name="login" ';
     echo 'value="' . $login . '" required>';

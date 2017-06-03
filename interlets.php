@@ -346,13 +346,22 @@ if ($del)
 }
 
 /**
- * See settings of a group
+ * Show settings of a group
  */
 if ($id)
 {
 	if (isset($group['url']))
 	{
 		$group['host'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
+	}
+
+	if ($group['localletscode'] === '')
+	{
+		$user = false;
+	}
+	else
+	{
+		$user = $app['db']->fetchAssoc('select * from users where letscode = ?', [$group['localletscode']]);
 	}
 
 	$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
@@ -373,9 +382,21 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($app['groups']->get_schema($group['host']))
+	if ($group_schema = $app['groups']->get_schema($group['host']))
 	{
-		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span></dd>';
+		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span>';
+
+		if (!$app['config']->get('template_lets', $group_schema))
+		{
+			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> niet geconfigureerd als LETS-groep</span>';
+		}
+
+		if (!$app['config']->get('interlets_en', $group_schema))
+		{
+			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> interLETS niet ingeschakeld in configuratie</span>';
+		}
+
+		echo '</dd>';
 	}
 	else
 	{
@@ -395,7 +416,37 @@ if ($id)
 	echo '<dd>' . $group['remoteapikey'] .'</dd>';
 
 	echo '<dt>Lokale LETS code</dt>';
-	echo '<dd>' . $group['localletscode'] .'</dd>';
+	echo '<dd>';
+
+	if ($user)
+	{
+		echo aphp('users', ['id' => $user['id']], $group['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+
+		if (!in_array($user['status'], [1, 2, 7]))
+		{
+			echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
+				'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+				'exclamation-triangle');
+		}
+		if ($user['accountrole'] != 'interlets')
+		{
+			echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
+				'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+				'fa-exclamation-triangle');
+		}
+	}
+	else
+	{
+		echo $group['localletscode'];
+
+		if ($group['apimethod'] != 'internal' && !$user)
+		{
+			echo ' <span class="label label-danger" title="Er is geen account gevonden met deze code">';
+			echo '<i class="fa fa-exclamation-triangle"></i> Account</span>';
+		}
+	}
+
+	echo '</dd>';
 
 	echo '<dt>Remote LETS code</dt>';
 	echo '<dd>' . $group['myremoteletscode'] .'</dd>';
@@ -435,6 +486,7 @@ foreach ($groups as $key => $g)
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
+
 		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
 			from ' . $s . '.users
 			where status in (1, 2)');
@@ -470,7 +522,7 @@ foreach ($interlets_users as $u)
 
 $top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 
-$h1 = 'InterLETS groepen';
+$h1 = 'eLAS/eLAND InterLETS';
 $fa = 'share-alt';
 
 include __DIR__ . '/include/header.php';
@@ -500,18 +552,19 @@ if (count($groups))
 		if ($g['apimethod'] == 'elassoap')
 		{
 			$user = $users_letscode[$g['localletscode']];
+
 			if ($user)
 			{
 				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
 				if (!in_array($user['status'], [1, 2, 7]))
 				{
-					echo aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-default btn-xs text-danger',
+					echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
 						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
 						'exclamation-triangle');
 				}
 				if ($user['accountrole'] != 'interlets')
 				{
-					echo aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-default btn-xs text-danger',
+					echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
 						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
 						'fa-exclamation-triangle');
 				}
@@ -522,9 +575,8 @@ if (count($groups))
 
 				if ($g['apimethod'] != 'internal' && !$user)
 				{
-					echo aphp('users', ['add' => 1, 'interlets' => $g['localletscode']], 'Account!', 'btn btn-default btn-xs text-danger',
-						'Creëer een interlets-account met gelijke letscode en status extern.',
-						'exclamation-triangle');
+					echo ' <span class="label label-danger" title="Er is geen account gevonden met deze code">';
+					echo '<i class="fa fa-exclamation-triangle"></i> Account</span>';
 				}
 			}
 		}
@@ -538,6 +590,18 @@ if (count($groups))
 		{
 			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
 			echo 'eLAND</span>';
+
+			if (!$app['config']->get('template_lets', $g['schema']))
+			{
+				echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als LETS groep.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> geen LETS</span>';
+			}
+
+			if (!$app['config']->get('interlets_en', $g['schema']))
+			{
+				echo ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie van deze groep.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> geen interLETS</span>';
+			}
 		}
 
 		echo '</td>';
@@ -582,7 +646,7 @@ function render_schemas_groups()
 	echo '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
 	echo '</div>';
 	echo '<ul>';
-	echo '<li> API methode bepaalt de connectie naar de andere groep, geldige waarden zijn internal, elassoap en mail. Internal wordt genegeerd in eLAND.</li>';
+	echo '<li> Kies \'elassoap\' als API methode.</li>';
 	echo '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
 	echo '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
 	echo '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
@@ -690,10 +754,32 @@ function render_schemas_groups()
 
 	foreach($app['groups']->get_schemas() as $h => $s)
 	{
-		echo '<tr>';
+		echo '<tr';
+
+		if (!$app['config']->get('template_lets', $s) || !$app['config']->get('interlets_en', $s))
+		{
+			echo ' class="danger"';
+		}
+
+		echo '>';
 
 		echo '<td>';
 		echo $app['config']->get('systemname', $s);
+
+		if (!$app['config']->get('template_lets', $s))
+		{
+			echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als LETS groep">';
+			echo '<i class="fa fa-exclamation-triangle">';
+			echo '</i></span>';
+		}
+
+		if (!$app['config']->get('interlets_en', $s))
+		{
+			echo ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie">';
+			echo '<i class="fa fa-exclamation-triangle">';
+			echo '</i></span>';
+		}
+
 		echo '</td>';
 
 		echo '<td>';
@@ -727,6 +813,7 @@ function render_schemas_groups()
 
 			echo '</td>';
 			echo '<td>';
+
 			if (isset($loc_group_ary[$h]))
 			{
 				$loc_group = $loc_group_ary[$h];
@@ -770,6 +857,7 @@ function render_schemas_groups()
 			}
 			echo '</td>';
 			echo '<td>';
+
 			if (isset($rem_account_ary[$h]))
 			{
 				$rem_acc = $rem_account_ary[$h];
@@ -793,6 +881,7 @@ function render_schemas_groups()
 			{
 				echo '<i class="fa fa-times text-danger"></i>';
 			}
+
 			echo '</td>';
 
 			echo '</tr>';

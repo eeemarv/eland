@@ -45,7 +45,8 @@ class config
 		'interlets_en'						=> '1',
 	];
 
-	public function __construct(monolog $monolog, db $db, xdb $xdb, predis $predis, this_group $this_group)
+	public function __construct(monolog $monolog, db $db, xdb $xdb,
+		predis $predis, this_group $this_group)
 	{
 		$this->this_group = $this_group;
 		$this->monolog = $monolog;

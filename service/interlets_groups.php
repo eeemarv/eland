@@ -4,6 +4,8 @@ namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as redis;
+use service\groups;
+use service\config;
 
 class interlets_groups
 {
@@ -11,6 +13,7 @@ class interlets_groups
 	private $redis;
 	private $db;
 	private $groups;
+	private $config;
 	private $app_protocol;
 
 	private $eland_ary;
@@ -19,11 +22,12 @@ class interlets_groups
 	private $eland_accounts_schemas;
 	private $ttl_eland_accounts_schemas = 86400; // 1 day
 
-	public function __construct(db $db, redis $redis, groups $groups, string $app_protocol)
+	public function __construct(db $db, redis $redis, groups $groups, config $config, string $app_protocol)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
 		$this->groups = $groups;
+		$this->config = $config;
 		$this->app_protocol = $app_protocol;
 	}
 
@@ -31,7 +35,7 @@ class interlets_groups
 	 *
 	 */
 
-	function get_eland_accounts_schemas($schema)
+	public function get_eland_accounts_schemas($schema)
 	{
 		$ret = json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);
 
@@ -49,10 +53,28 @@ class interlets_groups
 	*
 	*/
 
-	function clear_cache(string $s_schema)
+	public function clear_cache(string $s_schema)
+	{
+		$this->clear_elas_cache($s_schema . '_elas_interlets_groups');
+
+		$this->clear_eland_cache();
+	}
+
+	/**
+	 *
+	 */
+
+	public function clear_elas_cache(string $s_schema)
 	{
 		$this->redis->del($s_schema . '_elas_interlets_groups');
+	}
 
+	/**
+	 *
+	 */
+
+	public function clear_eland_cache()
+	{
 		foreach ($this->groups->get_schemas() as $s)
 		{
 			$this->redis->del($s . '_eland_interlets_groups');
@@ -63,7 +85,7 @@ class interlets_groups
 	 *
 	 */
 
-	function get_eland(string $s_schema, bool $refresh = false)
+	public function get_eland(string $s_schema, bool $refresh = false)
 	{
 		if (!$s_schema)
 		{
@@ -95,11 +117,23 @@ class interlets_groups
 		{
 			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
-			if ($this->groups->get_schema($h))
+			if ($s = $this->groups->get_schema($h))
 			{
+				// ignore if the group is not LETS or not interLETS
+
+				if (!$this->config->get('template_lets', $s))
+				{
+					continue;
+				}
+
+				if (!$this->config->get('interlets_en', $s))
+				{
+					continue;
+				}
+
 				$interlets_hosts[] = $h;
 
-				$this->eland_accounts_schemas[$row['id']] = $this->groups->get_schema($h);
+				$this->eland_accounts_schemas[$row['id']] = $s;
 			}
 		}
 
@@ -145,7 +179,7 @@ class interlets_groups
 	 *
 	 */
 
-	function get_elas(string $s_schema)
+	public function get_elas(string $s_schema)
 	{
 		if (!$s_schema)
 		{
