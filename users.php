@@ -2192,6 +2192,25 @@ if ($id)
 		order by u.letscode desc
 		limit 1', $sql_bind);
 
+	$interlets_group_missing = false;
+
+	if ($s_admin && $user['accountrole'] === 'interlets'
+		&& $app['config']->get('interlets_en') && $app['config']->get('template_lets'))
+	{
+		$interlets_group_id = $app['db']->fetchColumn('select id
+			from letsgroups
+			where localletscode = ?', [$user['letscode']]);
+
+		if (!$interlets_group_id)
+		{
+			$interlets_group_missing = true;
+		}
+	}
+	else
+	{
+		$interlets_group_id = false;
+	}
+
 	$app['assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
 	if ($s_admin || $s_owner)
@@ -2269,6 +2288,19 @@ if ($id)
 	{
 		$h1 .= ' <small><span class="text-' . $st_class_ary[$status] . '">';
 		$h1 .= $h_status_ary[$status] . '</span></small>';
+	}
+
+	if ($s_admin)
+	{
+		if ($interlets_group_missing)
+		{
+			$h1 .= ' <span class="label label-warning label-sm"><i class="fa fa-exclamation-triangle"></i> ';
+			$h1 .= 'Gekoppelde Interlets groep ontbreekt</span>';
+		}
+		else if ($interlets_group_id)
+		{
+			$h1 .= ' ' . aphp('interlets', ['id' => $interlets_group_id], 'Gekoppelde groep', 'btn btn-default', 'Gekoppelde groep');
+		}
 	}
 
 	$fa = 'user';
@@ -2416,7 +2448,7 @@ if ($id)
 		}
 
 		echo '<dt>';
-		echo 'Rechten';
+		echo 'Rechten / rol';
 		echo '</dt>';
 		dd_render($user['accountrole']);
 
