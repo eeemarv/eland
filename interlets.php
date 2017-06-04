@@ -752,6 +752,8 @@ function render_schemas_groups()
 
 	echo '<tbody>';
 
+	$unavailable_explain = false;
+
 	foreach($app['groups']->get_schemas() as $h => $s)
 	{
 		echo '<tr';
@@ -759,6 +761,8 @@ function render_schemas_groups()
 		if (!$app['config']->get('template_lets', $s) || !$app['config']->get('interlets_en', $s))
 		{
 			echo ' class="danger"';
+
+			$unavailable_explain = true;
 		}
 
 		echo '>';
@@ -808,7 +812,14 @@ function render_schemas_groups()
 			}
 			else
 			{
-				echo aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
+				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
+				{
+					echo aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
+				}
+				else
+				{
+					echo '<i class="fa fa-times text-danger"></i>';
+				}
 			}
 
 			echo '</td>';
@@ -889,6 +900,15 @@ function render_schemas_groups()
 	}
 	echo '</tbody>';
 	echo '</table>';
+
+	if ($unavailable_explain)
+	{
+		echo '<ul class="list-group">';
+		echo '<li class="list-group-item danger"><span class="bg-danger">Groepen gemarkeerd in Rood ';
+		echo 'zijn niet beschikbaar voor interLETS.</span></li>';
+		echo '</ul>';
+	}
+
 	echo '</div></div>';
 }
 
