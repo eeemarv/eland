@@ -734,7 +734,7 @@ function render_schemas_groups()
 	}
 
 	echo '<div class="panel-heading">';
-	echo '<h3>eLAND interlets groepen</h3>';
+	echo '<h3>Groepen die eLAND gebruiken</h3>';
 	echo '</div>';
 
 	echo '<table class="table table-bordered table-hover table-striped footable">';
