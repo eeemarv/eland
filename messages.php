@@ -2375,7 +2375,12 @@ else if ($v_list)
 
 		echo '<ul class="nav nav-tabs" role="tablist">';
 		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
-		echo '<li><a href="#access_tab" data-toggle="tab">Zichtbaarheid</a><li>';
+
+		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		{
+			echo '<li><a href="#access_tab" data-toggle="tab">Zichtbaarheid</a><li>';
+		}
+
 		echo '</ul>';
 
 		echo '<div class="tab-content">';
@@ -2402,20 +2407,24 @@ else if ($v_list)
 
 		echo '</div>';
 
-		echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
-		echo '<h3>Zichtbaarheid instellen</h3>';
+		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		{
+			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
+			echo '<h3>Zichtbaarheid instellen</h3>';
 
-		echo '<form method="post" class="form-horizontal">';
+			echo '<form method="post" class="form-horizontal">';
 
-		echo $app['access_control']->get_radio_buttons(false, false, 'admin');
+			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
 
-		echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
+			echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
 
-		$app['form_token']->generate();
+			$app['form_token']->generate();
 
-		echo '</form>';
+			echo '</form>';
 
-		echo '</div>';
+			echo '</div>';
+		}
+
 		echo '</div>';
 
 		echo '<div class="clearfix"></div>';
