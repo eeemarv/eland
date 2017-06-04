@@ -749,6 +749,9 @@ if (!$map && count($maps))
 
 if (count($docs))
 {
+	$show_visibility = (!$s_guest && $app['config']->get('template_lets')
+		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+
 	echo '<div class="panel panel-default printview">';
 
 	echo '<div class="table-responsive">';
@@ -759,7 +762,10 @@ if (count($docs))
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Naam</th>';
 	echo '<th data-hide="phone, tablet">Tijdstip</th>';
-	echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+	if ($show_visibility)
+	{
+		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+	}
 	echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 	echo '</tr>';
 
@@ -779,7 +785,7 @@ if (count($docs))
 		echo '</td>';
 		echo '<td>' . $app['date_format']->get($d['ts']) . '</td>';
 
-		if (!$s_guest)
+		if ($show_visibility)
 		{
 			echo '<td>' . $app['access_control']->get_label($d['access']) . '</td>';
 		}
@@ -792,6 +798,7 @@ if (count($docs))
 			echo aphp('docs', ['del' => $did], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</td>';
 		}
+
 		echo '</tr>';
 	}
 

@@ -407,6 +407,9 @@ if ($id)
 
 	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
 
+	$show_visibility = (!$s_guest && $app['config']->get('template_lets')
+		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+
 	$top_buttons = '';
 
 	if($s_user || $s_admin)
@@ -442,7 +445,7 @@ if ($id)
 
 	include __DIR__ . '/include/header.php';
 
-	if (!$s_guest)
+	if ($show_visibility)
 	{
 		echo '<p>Zichtbaarheid: ';
 		echo $app['access_control']->get_label($news_access);

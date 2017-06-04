@@ -34,6 +34,18 @@ class access_control
 		2 => 'interlets',
 	];
 
+	private $input_ary = [
+		'admin'	=> 'admin',
+		'users'	=> 'users',
+		'interlets'	=> 'interlets',
+	];
+
+	private $label_ary = [
+		'admin'	=> 'admin',
+		'users'	=> 'users',
+		'interlets' => 'interlets',
+	];
+
 	/**
 	 *
 	 */
@@ -45,7 +57,9 @@ class access_control
 
 		if (!$this->config->get('template_lets') || !$this->config->get('interlets_en'))
 		{
-			unset($this->acc_ary['interlets'], $this->acc_ary_search[2]);
+//			unset($this->acc_ary['interlets'], $this->acc_ary_search[2]);
+			unset($this->input_ary['interlets']);
+			$this->label_ary['interlets'] = 'users';
 		}
 	}
 
@@ -122,12 +136,7 @@ class access_control
 			$access = $this->acc_ary_search[$access];
 		}
 
-		$acc = $this->acc_ary[$access];
-
-		if (!isset($acc))
-		{
-			$acc = $this->acc_ary['users'];
-		}
+		$acc = $this->acc_ary[$this->label_ary[$access]];
 
 		return '<span class="label label-' . $acc['class'] . ' label-' . $size . '">' . $acc['label'] . '</span>';
 	}
@@ -145,7 +154,7 @@ class access_control
 
 		if (isset($this->acc_ary[$_POST[$name]]))
 		{
-			return $this->acc_ary[$_POST[$name]]['level'];
+			return $this->acc_ary[$this->input_ary[$_POST[$name]]]['level'];
 		}
 
 		return false;
@@ -161,6 +170,7 @@ class access_control
 		{
 			return false;
 		}
+
 		return 'Kies een zichtbaarheid.';
 	}
 
@@ -176,13 +186,13 @@ class access_control
 		{
 			$selected = false;
 		}
-		else if (isset($this->acc_ary[$value]))
+		else if (isset($this->acc_ary[$this->input_ary[$value]]))
 		{
 			$selected = $value;
 		}
-		else if (isset($this->acc_ary_search[$value]))
+		else if (isset($this->input_ary[$this->acc_ary_search[$value]]))
 		{
-			$selected = $this->acc_ary_search[$value];
+			$selected = $this->input_ary[$this->acc_ary_search[$value]];
 		}
 		else if ($value === 2 || $value === 'interlets')
 		{
@@ -214,6 +224,11 @@ class access_control
 
 		foreach ($acc_ary as $key => $ary)
 		{
+			if (!isset($this->input_ary[$key]))
+			{
+				continue;
+			}
+
 			$out .= '<label class="radio-inline">';
 			$out .= '<input type="radio" name="' . $name . '"';
 			$out .= ($key === $selected) ? ' checked="checked"' : '';

@@ -515,6 +515,9 @@ if ($s_admin || $s_user)
 	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
 }
 
+$show_visibility = (!$s_guest && $app['config']->get('template_lets')
+	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+
 $h1 = 'Forum';
 
 require_once __DIR__ . '/include/header.php';
@@ -574,7 +577,7 @@ echo '<th>Reacties</th>';
 echo '<th data-hide="phone, tablet">Gebruiker</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="descending" ';
 echo 'data-type="numeric">Tijdstip</th>';
-echo ($s_guest) ? '' : '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+echo ($show_visibility) ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
 echo ($s_admin) ? '<th data-hide="phone,tablet">Acties</th>' : '';
 echo '</tr>';
 
@@ -606,7 +609,7 @@ foreach($forum_posts as $p)
 
 	echo $app['date_format']->get_td($p['ts']);
 
-	if (!$s_guest)
+	if ($show_visibility)
 	{
 		echo '<td>' . $app['access_control']->get_label($p['access']) . '</td>';
 	}
