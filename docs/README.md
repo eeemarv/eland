@@ -4,7 +4,7 @@ Webtoepassing voor gemeenschapsmunten, gebaseerd op wederzijds krediet
 * Voor registreren van leden, transacties, vraag en aanbod.
 * Wordt gratis gehost. Wil je eLAND voor je gemeenschapsmunt of LETSgroep, gebruik dan vrijblijvend het <a href="http://hosting.letsa.net">contactformulier</a>.
 * Is gevorkt van [eLAS](http://www.elasproject.org) 3.1.17 in 2015 (Groepen die eLAS gebruiken kunnen gemakkelijk overgezet worden.)
-* "eLAS interLETS" (intertrading voor groepen die tijd als basis voor hun munt nemen en die zichzelf een LETSgroep noemen) is mogelijk
+* "eLAS interLETS" (geautomatiseerde intertrading tussen groepen die tijd als basis voor hun munt nemen en die zichzelf een LETSgroep noemen) is mogelijk
 tussen eLAND en eLAS op dezelfde wijze als tussen eLAS installaties.
 * "eLAS interLETS" tussen eLAND installaties is mogelijk zonder uitwisseling van codes.
 * Voorlopig wordt enkel de Nederlandse taal versie ondersteund.

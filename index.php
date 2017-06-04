@@ -133,7 +133,7 @@ if (isset($hosting_form))
 		echo '<form method="post" class="form-horizontal">';
 
 		echo '<div class="form-group">';
-		echo '<label for="subject" class="col-sm-2 control-label">Naam letsgroep</label>';
+		echo '<label for="subject" class="col-sm-2 control-label">Naam groep</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" name="group_name" ';
 		echo 'value="' . $group_name . '" required>';
@@ -177,7 +177,7 @@ if (isset($hosting_form))
 	echo '<footer class="footer">';
 
 	echo '<p><a href="http://letsa.net">eLAND';
-	echo '</a>&nbsp; web app voor letsgroepen</p>';
+	echo '</a>&nbsp; web app voor gemeenschapsmunten</p>';
 
 	echo '</footer>';
 	echo '</div>';
