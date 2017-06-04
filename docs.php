@@ -749,7 +749,7 @@ if (!$map && count($maps))
 
 if (count($docs))
 {
-	$show_visibility = (!$s_guest && $app['config']->get('template_lets')
+	$show_visibility = ($s_user && $app['config']->get('template_lets')
 		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
 
 	echo '<div class="panel panel-default printview">';

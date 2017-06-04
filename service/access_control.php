@@ -57,7 +57,6 @@ class access_control
 
 		if (!$this->config->get('template_lets') || !$this->config->get('interlets_en'))
 		{
-//			unset($this->acc_ary['interlets'], $this->acc_ary_search[2]);
 			unset($this->input_ary['interlets']);
 			$this->label_ary['interlets'] = 'users';
 		}
