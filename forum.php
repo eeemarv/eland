@@ -328,6 +328,9 @@ if ($add || $edit)
 
 if ($topic)
 {
+	$show_visibility = ($s_user && $app['config']->get('template_lets')
+		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+
 	$forum_posts = [];
 
 	$row = $app['xdb']->get('forum', $topic);
@@ -413,7 +416,7 @@ if ($topic)
 
 	require_once __DIR__ . '/include/header.php';
 
-	if (!$s_guest)
+	if ($show_visibility)
 	{
 		echo '<p>Zichtbaarheid: ';
 		echo $app['access_control']->get_label($topic_post['access']);

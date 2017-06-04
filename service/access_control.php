@@ -215,6 +215,17 @@ class access_control
 			}
 		}
 
+		$acc_ary = array_intersect_key($acc_ary, $this->input_ary);
+
+		if (count($acc_ary) === 0)
+		{
+			return '';
+		}
+		else if (count($acc_ary) === 1)
+		{
+			return '<input type="hidden" name="' . $name . '" value="' . key($acc_ary) . '">';
+		}
+
 		$out = '<div class="form-group">';
 		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">' . $label . '</label>';
 		$out .= '<div class="col-sm-10"';
@@ -223,11 +234,6 @@ class access_control
 
 		foreach ($acc_ary as $key => $ary)
 		{
-			if (!isset($this->input_ary[$key]))
-			{
-				continue;
-			}
-
 			$out .= '<label class="radio-inline">';
 			$out .= '<input type="radio" name="' . $name . '"';
 			$out .= ($key === $selected) ? ' checked="checked"' : '';
