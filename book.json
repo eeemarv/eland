@@ -1,6 +1,6 @@
-{ 
+{
   "gitbook": "3.2.2",
   "title": "eLAND",
-  "description": "webtoepassing voor letsgroepen",
+  "description": "webtoepassing voor gemeenschapsmunten",
   "root": "./docs"
 }

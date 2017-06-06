@@ -1,8 +1,11 @@
 ### Je vraag en aanbod
 
-Je kan bij elk van je vraag of aanbod bepalen wie het kan zien.
+Alleen leden van je groep kunnen vraag en aanbod bekijken.
 
-  * _leden_ : je eigen letsgroep.
-  * _interlets_ : je eigen letsgroep en aangesloten letsgroepen.
+Indien de interlets functionaliteit is ingeschakeld kan je kiezen bij
+elk vraag of aanbod kiezen of het ook zichtbaar is in de andere groepen.
+
+  * _leden_ : je eigen groep.
+  * _interlets_ : je eigen groep en aangesloten groepen.
 
 <img src="img/message_access.png" width="250">

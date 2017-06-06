@@ -25,7 +25,7 @@ if (isset($hosting_form))
 
 		if (!$group_name)
 		{
-			$errors[] = 'De naam van de letsgroep is niet ingevuld.';
+			$errors[] = 'De naam van de groep is niet ingevuld.';
 		}
 
 		if (!$message)
