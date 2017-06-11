@@ -11,6 +11,8 @@ use service\this_group;
 use service\mailaddr;
 use Twig_Environment as Twig;
 use service\config;
+use service\token;
+use service\email_validate;
 
 class mail extends queue_model implements queue_interface
 {
@@ -21,10 +23,11 @@ class mail extends queue_model implements queue_interface
 	private $this_group;
 	private $mailaddr;
 	private $twig;
-	private $config;
+	private $email_validate;
 
 	public function __construct(queue $queue, Logger $monolog,
-		this_group $this_group, mailaddr $mailaddr, Twig $twig, config $config)
+		this_group $this_group, mailaddr $mailaddr, Twig $twig, config $config,
+		email_validate $email_validate)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
@@ -32,6 +35,7 @@ class mail extends queue_model implements queue_interface
 		$this->mailaddr = $mailaddr;
 		$this->twig = $twig;
 		$this->config = $config;
+		$this->email_validate = $email_validate;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = \Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
@@ -189,6 +193,8 @@ class mail extends queue_model implements queue_interface
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
+		$data['vars']['validate_param'] = '';
+
 		if (!$this->config->get('mailenabled', $data['schema']))
 		{
 			$m = 'Mail functions are not enabled. ' . "\n";
@@ -228,8 +234,28 @@ class mail extends queue_model implements queue_interface
 		if (!count($data['to']))
 		{
 			$m = 'error: mail without "to" | subject: ' . $data['subject'];
-			$this->monolog->error('mail: ' . $m);
+			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
 			return $m;
+		}
+
+		$validate_ary = [];
+
+		if (isset($data['validate_email']) && isset($data['template']))
+		{
+			foreach ($data['to'] as $email => $name)
+			{
+				if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+				{
+					continue;
+				}
+
+				if (!$this->email_validate->is_validated($email, $data['schema']))
+				{
+					$token = $this->email_validate->get_token($email, $data['schema'], $data['template']);
+
+					$validate_ary[$email] = $token;
+				}
+			}
 		}
 
 		if (isset($data['reply_to']))
@@ -267,12 +293,39 @@ class mail extends queue_model implements queue_interface
 			}
 		}
 
+		$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
+
+		foreach ($validate_ary as $email_to => $validate_token)
+		{
+			$val_data = $data;
+
+			$val_data['to'] = [$email_to => $data['to'][$email]];
+			$val_data['vars']['validate_param'] = '&ev=' . $validate_token;
+
+			unset($data['to'][$email_to]);
+
+			$error = $this->queue->set('mail', $val_data, $priority);
+
+			if (!$error)
+			{
+
+				$this->monolog->info('mail: Mail in queue with validate token ' . $validate_token .
+					', subject: ' .
+					($data['subject'] ?? '(template)') . ', from : ' .
+					json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+					$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
+			}
+		}
+
+		if (!count($data['to']))
+		{
+			return;
+		}
+
 		$error = $this->queue->set('mail', $data, $priority);
 
 		if (!$error)
 		{
-			$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
-
 			$this->monolog->info('mail: Mail in queue, subject: ' .
 				($data['subject'] ?? '(template)') . ', from : ' .
 				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .

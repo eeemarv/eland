@@ -1,15 +1,15 @@
-{% macro messages(messages, group, new_message_url, messages_url, s3_img) %}
-<h3><a href="{{ messages_url }}">Vraag en aanbod</a></h3>
+{% macro messages(messages, group, new_message_url, messages_url, s3_img, validate_param) %}
+<h3><a href="{{ messages_url }}{{ validate_param }}">Vraag en aanbod</a></h3>
 {% if messages %}
 <p>Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.</p>
 <ul>
 {% for msg in messages %}
-<li><strong><a href="{{ msg.url }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
+<li><strong><a href="{{ msg.url }}{{ validate_param }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
 <br>
 {% if msg.images|length %}<br><img src="{{ s3_img }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
 {{ msg.description }}
 {% if msg.amount %}<br>(Richt-)prijs: {{ msg.amount }} {{ group.currency }}{% if msg.units %} per {{ msg.units }}{% endif %}{% endif %}
-<br>Ingegeven door: <a href="{{ msg.user_url }}">{{ msg.user }}</a>
+<br>Ingegeven door: <a href="{{ msg.user_url }}{{ validate_param }}">{{ msg.user }}</a>
 {% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a>
 {% if msg.geo is defined and user.geo is defined %}{{ distance_p(user.geo, msg.geo) }}{% endif %} | {% endif %}
 {% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
@@ -24,16 +24,16 @@
 <p>Er werd geen nieuw vraag of aanbod online geplaatst.</p>
 {% endif %}
 
-<p><a href="{{ new_message_url }}">Geef zelf je eigen vraag of aanbod in.</a></p>
+<p><a href="{{ new_message_url }}{{ validate_param }}">Geef zelf je eigen vraag of aanbod in.</a></p>
 
 {% endmacro messages %}
 
-{% macro interlets(interlets, url_login) %}
+{% macro interlets(interlets, url_login, validate_param) %}
 
 {% if interlets %}
 <h4>Recent interLETS vraag en aanbod</h4>
 
-<p><a href="{{ url_login }}">Log in</a> en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.</p>
+<p><a href="{{ url_login }}{{ validate_param }}">Log in</a> en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.</p>
 
 {% for grp in interlets %}
 <h5>Groep: {{ grp.group }}</h5>
@@ -49,15 +49,15 @@
 
 {% endmacro interlets %}
 
-{% macro forum(forum, forum_en, show_forum, forum_url) %}
+{% macro forum(forum, forum_en, show_forum, forum_url, validate_param) %}
 
 {% if forum_en and show_forum != 'none' %}
-<h3><a href="{{ forum_url }}">Forum</a></h3>
+<h3><a href="{{ forum_url }}{{ validate_param }}">Forum</a></h3>
 
 	{% if forum %}
 	<ul>
 	{% for f in forum %}
-	<li><a href="{{ f.url }}">{{ f.subject }}</a>
+	<li><a href="{{ f.url }}{{ validate_param }}">{{ f.subject }}</a>
 {#	&nbsp;[{{ msg.new_reply_count }}]  #}
 	</li>
 	{% endfor %}
@@ -69,21 +69,21 @@
 
 {% endmacro forum %}
 
-{% macro news(news, show_news, news_url) %}
+{% macro news(news, show_news, news_url, validate_param) %}
 
 {% if show_news != 'none' %}
 
-<h3><a href="{{ news_url }}">Nieuws</a></h3>
+<h3><a href="{{ news_url }}{{ validate_param }}">Nieuws</a></h3>
 
 {% if news %}
 <ul>
 {% for n in news %}
-<li><a href="{{ n.url }}">{{ n.headline }}</a><br><br>
+<li><a href="{{ n.url }}{{ validate_param }}">{{ n.headline }}</a><br><br>
 {{ n.newsitem }}<br><br>
 {% if n.location %}Plaats: <strong>{{ n.location }}</strong><br>{% endif %}
 {% if n.itemdate %}Datum: <strong>{{ n.itemdate_formatted }}</strong><br>{% endif %}
 
-Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
+Ingegeven door: <a href="{{ n.user_url }}{{ validate_param }}">{{ n.user }}</a>
 </li><br><br>
 {% endfor %}
 </ul>
@@ -99,7 +99,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 
 {% endmacro news %}
 
-{% macro docs(docs, show_docs) %}
+{% macro docs(docs, show_docs, validate_param) %}
 
 {% if show_docs != 'none' %}
 
@@ -119,7 +119,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 
 {% endmacro docs %}
 
-{% macro new_users(new_users, show_new_users) %}
+{% macro new_users(new_users, show_new_users, validate_param) %}
 
 {% if show_new_users != 'none' %}
 
@@ -128,7 +128,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 {% if new_users %}
 <ul>
 	{% for u in new_users %}
-<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
+<li><a href="{{ u.url }}{{ validate_param }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
 	{% endfor %}
 </ul>
 {% else %}
@@ -143,7 +143,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 
 {% endmacro new_users %}
 
-{% macro leaving_users(leaving_users, show_leaving_users) %}
+{% macro leaving_users(leaving_users, show_leaving_users, validate_param) %}
 
 {% if show_leaving_users != 'none' %}
 
@@ -152,7 +152,7 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 	{% if leaving_users %}
 	<ul>
 		{% for u in leaving_users %}
-	<li><a href="{{ u.url }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
+	<li><a href="{{ u.url }}{{ validate_param }}">{{ u.text }}</a>{% if u.postcode %} | postcode: {{ u.postcode }}{% endif %}</li>
 		{% endfor %}
 	</ul>
 	{% else %}
@@ -167,11 +167,11 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 
 {% endmacro leaving_users %}
 
-{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url) %}
+{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url, validate_param) %}
 
 {% if show_transactions != 'none' %}
 
-<h3><a href="{{ transactions_url }}">Recente transacties</a></h3>
+<h3><a href="{{ transactions_url }}{{ validate_param }}">Recente transacties</a></h3>
 
 {% if transactions %}
 <ul>
@@ -180,13 +180,13 @@ Ingegeven door: <a href="{{ n.user_url }}">{{ n.user }}</a>
 {% if tr.real_from %}
 {{ tr.real_from }} [ {{ tr.from_name }} ]
 {% else %}
-<a href="{{ tr.from_user_url }}">{{ tr.from_user }}</a>
+<a href="{{ tr.from_user_url }}{{ validate_param }}">{{ tr.from_user }}</a>
 {% endif %}
 naar
 {% if tr.real_to %}
 {{ tr.real_to }} [ {{ tr.to_name }} ]
 {% else %}
-<a href="{{ tr.to_user_url }}">{{ tr.to_user }}</a>
+<a href="{{ tr.to_user_url }}{{ validate_param }}">{{ tr.to_user }}</a>
 {% endif %}
 <br>
 {{ tr.description }}
@@ -201,9 +201,9 @@ naar
 
 {% endmacro transactions %}
 
-{% macro unsubscribe(account_edit_url) %}
+{% macro unsubscribe(account_edit_url, validate_param) %}
 
 <p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen.
-Klik <a href="{{ account_edit_url }}">hier</a> om aan te passen</p>
+Klik <a href="{{ account_edit_url }}{{ validate_param }}">hier</a> om aan te passen</p>
 {% endmacro unsubscribe %}
 

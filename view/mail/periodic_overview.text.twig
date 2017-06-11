@@ -4,21 +4,21 @@
 {% block body %}
 {% autoescape false %}
 
-{{ m.messages(messages, group, new_message_url, messages_url, s3_img) }}
-{{ m.interlets(interlets, url_login) }}
-{{ m.forum(forum, forum_en, show_forum, forum_url) }}
-{{ m.news(news, show_news, news_url) }}
-{{ m.docs(docs, show_docs) }}
-{{ m.new_users(new_users, show_new_users) }}
-{{ m.leaving_users(leaving_users, show_leaving_users) }}
-{{ m.transactions(transactions, show_transactions, group, new_transaction_url, transactions_url) }}
+{{ m.messages(messages, group, new_message_url, messages_url, s3_img, validate_param) }}
+{{ m.interlets(interlets, url_login, validate_param) }}
+{{ m.forum(forum, forum_en, show_forum, forum_url, validate_param) }}
+{{ m.news(news, show_news, news_url, validate_param) }}
+{{ m.docs(docs, show_docs, validate_param) }}
+{{ m.new_users(new_users, show_new_users, validate_param) }}
+{{ m.leaving_users(leaving_users, show_leaving_users, validate_param) }}
+{{ m.transactions(transactions, show_transactions, group, new_transaction_url, transactions_url, validate_param) }}
 
 {% endautoescape %}
 {% endblock body %}
 
 {% block unsubscribe %}
 {% autoescape false %}
-{{ m.unsubscribe(account_edit_url) }}
+{{ m.unsubscribe(account_edit_url, validate_param) }}
 {% endautoescape %}
 {% endblock unsubscribe %}
 

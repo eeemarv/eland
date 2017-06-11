@@ -1,4 +1,4 @@
-{% macro messages(messages, group, new_message_url, messages_url, s3_img) %}
+{% macro messages(messages, group, new_message_url, messages_url, s3_img, validate_param) %}
 
 Recent LETS vraag en aanbod
 ---------------------------
@@ -8,25 +8,25 @@ Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dage
 {% for msg in messages %}
 
 {% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
-{{ msg.url }}
-	Ingegeven door: {{ msg.user}}
+{{ msg.url }}{{ validate_param }}
+	Ingegeven door: {{ msg.user}}{{ validate_param }}
 {% endfor %}
 {% else %}
 Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.
 {% endif %}
 
-Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}
+Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}{{ validate_param }}
 
 {% endmacro messages %}
 
-{% macro interlets(interlets, url_login) %}
+{% macro interlets(interlets, url_login, validate_param) %}
 
 {% if interlets %}
 
 Recent vraag en aanbod in interLETS groepen
 -------------------------------------------
 
-Log in ({{ url_login }}) en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.
+Log in ({{ url_login }}{{ validate_param }}) en ga via 'Groep' in de navigatiebalk naar de betreffende interLETS groep voor meer informatie.
 
 {% for grp in interlets %}
 
@@ -42,7 +42,7 @@ Log in ({{ url_login }}) en ga via 'Groep' in de navigatiebalk naar de betreffen
 
 {% endmacro interlets %}
 
-{% macro forum(forum, forum_en, show_forum, forum_url) %}
+{% macro forum(forum, forum_en, show_forum, forum_url, validate_param) %}
 
 {% if forum_en and show_forum != 'none' %}
 
@@ -50,7 +50,7 @@ Forum
 -----
 
 {% for f in forum %}
-* {{ f.subject }} {{ f.url }}
+* {{ f.subject }} {{ f.url }}{{ validate_param }}
 {% else %}
 Er zijn geen nieuwe forumberichten.
 {% endfor %}
@@ -59,14 +59,14 @@ Er zijn geen nieuwe forumberichten.
 
 {% endmacro forum %}
 
-{% macro news(news, show_news, news_url) %}
+{% macro news(news, show_news, news_url, validate_param) %}
 
 {% if show_news != 'none' %}
 
 Nieuws
 ------
 
-Bekijk online: {{ news_url }}
+Bekijk online: {{ news_url }}{{ validate_param }}
 
 {% for n in news %}
 *** {{ n.headline }} ***
@@ -93,7 +93,7 @@ Momenteel zijn er geen nieuwsberichten.
 
 {% endmacro news %}
 
-{% macro docs(docs, show_docs) %}
+{% macro docs(docs, show_docs, validate_param) %}
 
 {% if show_docs != 'none' %}
 
@@ -110,7 +110,7 @@ Er zijn geen nieuwe documenten.
 
 {% endmacro docs %}
 
-{% macro new_users(new_users, show_new_users) %}
+{% macro new_users(new_users, show_new_users, validate_param) %}
 
 {% if show_new_users != 'none' %}
 
@@ -134,7 +134,7 @@ Momenteel zijn er geen nieuwe leden.
 
 {% endmacro new_users %}
 
-{% macro leaving_users(leaving_users, show_leaving_users) %}
+{% macro leaving_users(leaving_users, show_leaving_users, validate_param) %}
 
 {% if show_leaving_users != 'none' %}
 
@@ -158,7 +158,7 @@ Momenteel zijn er geen uitstappende leden.
 
 {% endmacro leaving_users %}
 
-{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url) %}
+{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url, validate_param) %}
 
 {% if show_transactions != 'none' %}
 
@@ -179,17 +179,17 @@ Deze lijst toont de transacties van de laatste {{ group.saldofreqdays }} dagen.
 Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dagen.
 {% endfor %}
 
-Nieuwe transactie ingeven: {{ new_transaction_url }}
+Nieuwe transactie ingeven: {{ new_transaction_url }}{{ validate_param }}
 
 {% endif %}
 
 {% endmacro transactions %}
 
-{% macro unsubscribe(account_edit_url) %}
+{% macro unsubscribe(account_edit_url, validate_param) %}
 
 Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen:
 
-{{ account_edit_url }}
+{{ account_edit_url }}{{ validate_param }}
 
 {% endmacro unsubscribe %}
 

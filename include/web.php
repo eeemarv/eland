@@ -39,6 +39,11 @@ $post = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
+if (isset($_GET['ev']))
+{
+	$app['email_validate']->validate($_GET['ev']);
+}
+
 /**
  * vars
  **/

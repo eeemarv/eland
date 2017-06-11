@@ -206,12 +206,17 @@ $app['token'] = function ($app){
 	return new service\token();
 };
 
+$app['email_validate'] = function ($app){
+	return new service\email_validate($app['cache'], $app['xdb'], $app['token'], $app['monolog']);
+};
+
 
 // queue
 
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
-		$app['this_group'], $app['mailaddr'], $app['twig'], $app['config']);
+		$app['this_group'], $app['mailaddr'], $app['twig'],
+		$app['config'], $app['email_validate']);
 };
 
 // tasks

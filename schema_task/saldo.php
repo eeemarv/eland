@@ -59,24 +59,6 @@ class saldo extends schema_task
 	function process()
 	{
 
-		//safety, block 23h // to counter worker processes that weren't stopped.
-
-		usleep(mt_rand(200000, 2000000));
-
-		$redis_key = 'block_task_' . $this->schedule->get_id();
-
-		if ($this->redis->get($redis_key))
-		{
-			error_log(':::: ' . $redis_key);
-			$this->monolog->debug(':::: ' . $redis_key, ['schema' => $this->schema]);
-			return;
-		}
-
-		error_log(':::: pass ' . $this->schedule->get_id());
-
-		$this->redis->set($redis_key, '1');
-		$this->redis->expire($redis_key, 82800);
-
 		// vars
 
 		$host = $this->groups->get_host($this->schema);
@@ -91,7 +73,7 @@ class saldo extends schema_task
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
 
 		$msg_url = $base_url . '/messages.php?id=';
-		$msgs_url = $base_url . '/messages.php';
+		$msgs_url = $base_url . '/messages.php?src=p';
 		$news_url = $base_url . '/news.php?id=';
 		$user_url = $base_url . '/users.php?id=';
 		$login_url = $base_url . '/login.php?login=';
@@ -576,27 +558,28 @@ class saldo extends schema_task
 				'support'			=> explode(',', $this->config->get('support', $this->schema)),
 				'saldofreqdays'		=> $this->config->get('saldofreqdays', $this->schema),
 			],
+
 			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
 			'show_new_users'		=> $show_new_users,
 			'leaving_users'			=> $leaving_users,
 			'show_leaving_users'	=> $show_leaving_users,
 			'news'					=> $news,
-			'news_url'				=> $base_url . '/news.php',
+			'news_url'				=> $base_url . '/news.php?src=p',
 			'show_news'				=> $show_news,
 			'transactions'			=> $transactions,
-			'transactions_url'		=> $base_url . '/transactions.php',
+			'transactions_url'		=> $base_url . '/transactions.php?src=p',
 			'show_transactions'		=> $show_transactions,
 			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
 			'forum'					=> $forum,
-			'forum_url'				=> $base_url . '/forum.php',
+			'forum_url'				=> $base_url . '/forum.php?src=p',
 			'show_forum'			=> $show_forum,
 			'forum_en'				=> $forum_en,
 			'docs'					=> $docs,
-			'docs_url'				=> $base_url . '/docs.php',
+			'docs_url'				=> $base_url . '/docs.php?src=p',
 			'show_docs'				=> $show_docs,
 			'messages'				=> $messages,
-			'messages_url'			=> $base_url . '/messages.php',
+			'messages_url'			=> $base_url . '/messages.php?src=p',
 			'new_message_url'		=> $base_url . '/messages.php?add=1',
 			'interlets'				=> $interlets,
 		];
@@ -626,12 +609,13 @@ class saldo extends schema_task
 			}
 
 			$this->mail->queue([
+				'validate_email'	=> true,
 				'schema'	=> $this->schema,
 				'to'		=> $id,
 				'template'	=> $template,
 				'vars'		=> array_merge($vars, [
-					'user'	=> $users[$id],
-					'url_login'	=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
+					'user'			=> $users[$id],
+					'url_login'		=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
 					'account_edit_url'	=> $base_url . '/users.php?edit=' . $id,
 				]),
 			], random_int(50, 500));
