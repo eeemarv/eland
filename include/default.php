@@ -267,6 +267,11 @@ $app['schema_task.saldo_update'] = function ($app){
 		$app['schedule'], $app['groups'], $app['this_group']);
 };
 
+$app['schema_task.sync_user_cache'] = function ($app){
+	return new schema_task\sync_user_cache($app['db'], $app['user_cache'],
+		$app['schedule'], $app['groups'], $app['this_group']);
+};
+
 $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
 		$app['protocol'],
