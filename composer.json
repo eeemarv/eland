@@ -10,7 +10,7 @@
 		"swiftmailer/swiftmailer": "~5.4",
 		"monolog/monolog": "^1",
 		"bramus/monolog-colored-line-formatter": "2.0.*",
-		"fergusean/nusoap": "~0.9",
+		"econea/nusoap": "v0.9.5.3",
 		"fabpot/goutte": "^3",
 		"ext-imagick": "*",
 		"ext-exif": "*",
