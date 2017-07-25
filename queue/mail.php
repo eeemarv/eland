@@ -169,8 +169,6 @@ class mail extends queue_model implements queue_interface
 			$message->setCc($data['cc']);
 		}
 
-		$failed_recipients = false;
-
 		try
 		{
 			if ($this->mailer->send($message, $failed_recipients))
@@ -180,6 +178,7 @@ class mail extends queue_model implements queue_interface
 			else
 			{
 				$this->monolog->error('mail error: failed sending message to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
+				$this->monolog->error('Failed recipients: ' . implode(', ', $failed_recipients), ['schema' => $sch]);
 			}
 		}
 		catch (Exception $e)
@@ -187,11 +186,6 @@ class mail extends queue_model implements queue_interface
 			$err = $e->getMessage();
 			error_log('mail queue: ' . $err);
 			$this->monolog->error('mail queue error: ' . $err . ' | subject: ' . $data['subject'] . ' ' . implode(', ', $data['to']), ['schema' => $sch]);		
-		}
-
-		if ($failed_recipients)
-		{
-			$this->monolog->error('mail: failed recipients: ' . $failed_recipients, ['schema' => $sch]);
 		}
 
 		$this->mailer->getTransport()->stop();
