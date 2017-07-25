@@ -169,13 +169,24 @@ class mail extends queue_model implements queue_interface
 			$message->setCc($data['cc']);
 		}
 
-		if ($this->mailer->send($message, $failed_recipients))
+		$failed_recipients = false;
+
+		try
 		{
-			$this->monolog->info('mail: message send to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
+			if ($this->mailer->send($message, $failed_recipients))
+			{
+				$this->monolog->info('mail: message send to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
+			}
+			else
+			{
+				$this->monolog->error('mail error: failed sending message to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
+			}
 		}
-		else
+		catch (Exception $e)
 		{
-			$this->monolog->error('mail error: failed sending message to ' . implode(', ', $data['to']) . ' subject: ' . $data['subject'], ['schema' => $sch]);
+			$err = $e->getMessage();
+			error_log('mail queue: ' . $err);
+			$this->monolog->error('mail queue error: ' . $err . ' | subject: ' . $data['subject'] . ' ' . implode(', ', $data['to']), ['schema' => $sch]);		
 		}
 
 		if ($failed_recipients)
