@@ -4,7 +4,7 @@
 {% block body %}
 {% autoescape false %}
 
-{% for b in content_ary %}
+{% for b in block_ary %}
 
 {% if b == 'messages' %}
     {{ m.messages(messages, group, new_message_url, messages_url, 
@@ -13,7 +13,7 @@
     {{ m.interlets(interlets, url_login, validate_param) }}
 {% elseif b == 'forum' %}
     {{ m.forum(forum, forum_en, show_forum, forum_url, validate_param) }}
-{% elseif b == 'forum' %}
+{% elseif b == 'news' %}
     {{ m.news(news, show_news, news_url, validate_param) }}
 {% elseif b == 'docs' %}
     {{ m.docs(docs, show_docs, validate_param) }}
