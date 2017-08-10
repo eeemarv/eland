@@ -34,7 +34,8 @@ class saldo extends schema_task
 	private $interlets_groups;
 	private $config;
 
-	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache, Logger $monolog, mail $mail,
+	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache, 
+		Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
 		date_format $date_format, distance $distance, schedule $schedule,
 		groups $groups, this_group $this_group,

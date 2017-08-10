@@ -50,6 +50,36 @@ $landing_page_options = [
 
 unset($periodic_mail_item_show_options_not_all['all']);
 
+$periodic_mail_block_ary = [
+	'messages'		=> [
+		'recent'	=> 'Recent vraag en aanbod',
+	],
+	'interlets'		=> [
+		'recent'	=> 'Recent interLETS vraag en aanbod',
+	],
+	'forum'			=> [
+		'recent'	=> 'Recente forumberichten',
+	],
+	'news'			=> [
+		'all'		=> 'Alle nieuwsberichten',
+		'recent'	=> 'Recente nieuwsberichten',
+	],
+	'docs'			=> [
+		'recent'	=> 'Recente documenten',
+	],
+	'new_users'		=> [
+		'all'		=> 'Alle nieuwe leden',
+		'recent'	=> 'Recente nieuwe leden',
+	],
+	'leaving_users'	=> [
+		'all'		=> 'Alle uitstappende leden',
+		'recent'	=> 'Recent uitstappende leden',
+	],
+	'transactions' => [
+		'recent'	=> 'Recente transacties',
+	],
+];
+
 $currency = $app['config']->get('currency');
 
 $tab_panes = [
@@ -189,7 +219,7 @@ $tab_panes = [
 
 	'saldomail'		=> [
 		'lbl'	=> 'Overzichtsmail',
-		'lbl_pane'	=> 'Overzichtsmail met recent vraag en aanbod',
+		'lbl_pane'	=> 'Periodieke overzichtsmail',
 		'inputs' => [
 			'li_1'	=> [
 				'inline' => 'Verstuur de overzichtsmail met recent vraag en aanbod om de %1$s dagen',
@@ -203,6 +233,16 @@ $tab_panes = [
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
 			],
 
+			'periodic_mail_block_ary' => [
+				'lbl'				=> 'Mail opmaak',
+				'type'				=> 'sortable',
+				'explain'			=> 'Versleep de blokken om blokken te ordenen en activeren en desactiveren',
+				'lbl_active' 		=> 'Inhoud',
+				'lbl_inactive'		=> 'Niet gebruikte blokken',
+				'ary'				=> $periodic_mail_block_ary,
+			],
+
+/*
 			'weekly_mail_show_interlets'	=> [
 				'lbl'		=> 'Toon interlets vraag en aanbod',
 				'type'		=> 'select',
@@ -252,7 +292,7 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $periodic_mail_template,
 			],
-
+*/
 		],
 	],
 
@@ -530,7 +570,7 @@ if ($post)
 
 		$value = (strip_tags($value) !== '') ? $value : '';
 
-		if ($validator['type'] == 'checkbox')
+		if ($validator['type'] === 'checkbox')
 		{
 			$value = ($value) ? '1' : '0';
 		}
@@ -553,7 +593,7 @@ if ($post)
 			continue;
 		}
 
-		if ($validator['type'] == 'text')
+		if ($validator['type'] === 'text')
 		{
 			$posted_configs[$name] = $value;
 
@@ -570,7 +610,7 @@ if ($post)
 			continue;
 		}
 
-		if ($validator['type'] == 'number')
+		if ($validator['type'] === 'number')
 		{
 			if ($value === '' && !$validator['required'])
 			{
@@ -595,14 +635,14 @@ if ($post)
 			continue;
 		}
 
-		if ($validator['type'] == 'checkbox')
+		if ($validator['type'] === 'checkbox')
 		{
 			$posted_configs[$name] = $value;
 
 			continue;
 		}
 
-		if ($validator['type'] == 'email')
+		if ($validator['type'] === 'email')
 		{
 			if (isset($validator['max_inputs']))
 			{
@@ -634,7 +674,7 @@ if ($post)
 			continue;
 		}
 
-		if ($validator['type'] == 'url')
+		if ($validator['type'] === 'url')
 		{
 			if ($value != '')
 			{
@@ -647,7 +687,7 @@ if ($post)
 			continue;
 		}
 
-		if ($validator['type'] == 'textarea')
+		if ($validator['type'] === 'textarea')
 		{
 			$posted_configs[$name] = $value;
 
@@ -660,6 +700,11 @@ if ($post)
 			{
 				$errors[] = 'Fout: de waarde moet minimaal ' . $validator['attr']['minlength'] . ' tekens lang zijn.' . $err_n;
 			}
+		}
+
+		if ($validator['type'] === 'sortable')
+		{
+
 		}
 	}
 
@@ -723,7 +768,7 @@ if ($post)
 	cancel();
 }
 
-$app['assets']->add(['summernote', 'rich_edit.js', 'config.js']);
+$app['assets']->add(['sortable', 'summernote', 'rich_edit.js', 'config.js']);
 
 $h1 = 'Instellingen';
 $fa = 'gears';
@@ -823,6 +868,86 @@ foreach ($tab_panes as $id => $pane)
 
 			echo '<p>' . vsprintf($input['inline'], $input_ary) . '</p>';
 		}
+		else if (isset($input['type']) && $input['type'] === 'sortable')
+		{
+			echo isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
+
+			echo '<div class="row">';
+
+			echo '<div class="col-md-6">';
+			echo '<div class="panel panel-default">';
+			echo '<div class="panel-heading">';
+			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';
+			echo '</div>';
+			echo '<div class="panel-body">';
+
+			echo '			<div class="input-group">
+			<div class="input-group-btn">
+
+  <button type="button" class="btn btn-danger form-control">Action</button>
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+  </ul>
+</div>
+</div>';
+
+			echo '
+			
+			
+			<div class="input-group">
+
+  <button type="button" class="btn btn-danger form-control" value="action">actin</button>
+  <div class="input-group-btn">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+  </ul>
+  </div>
+  </div>';
+			echo '<div class="input-group">
+
+  <button type="button" class="btn btn-danger form-control" value="action">actin</button>
+  <div class="input-group-btn">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+  </ul>
+  </div>
+  </div>';
+
+
+
+			echo $input['value'];
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
+
+			echo '<div class="col-md-6">';
+			echo '<div class="panel panel-default">';
+			echo '<div class="panel-heading">';
+			echo isset($input['lbl_inactive']) ? '<h5>' . $input['lbl_inactive'] . '</h5>' : '';
+			echo '</div>';
+			echo '<div class="panel-body">';
+			echo 'bbbbbbbbbbbbbbb';
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
+
+			echo '</div>';
+		}
 		else
 		{
 			echo '<div class="form-group">';
@@ -847,7 +972,7 @@ foreach ($tab_panes as $id => $pane)
 				echo '</span>';
 			}
 
-			if (isset($input['type']) && $input['type'] == 'select')
+			if (isset($input['type']) && $input['type'] === 'select')
 			{
 				echo '<select class="form-control" name="' . $name . '"';
 				echo isset($input['required']) ? ' required' : '';
@@ -857,7 +982,7 @@ foreach ($tab_panes as $id => $pane)
 
 				echo '</select>';
 			}
-			else if (isset($input['type']) && $input['type'] == 'textarea')
+			else if (isset($input['type']) && $input['type'] === 'textarea')
 			{
 				echo '<textarea name="' . $name . '" id="' . $name . '" class="form-control';
 				echo isset($input['rich_edit']) ? ' rich-edit' : '';

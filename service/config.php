@@ -39,6 +39,10 @@ class config
 		'weekly_mail_show_leaving_users'	=> 'recent',
 		'weekly_mail_show_new_users'		=> 'recent',
 		'weekly_mail_template'				=> 'messages_top',
+		'periodic_mail_block_ary'			=> 'messages.recent,interlets.recent,' .
+				'forum.recent,news.recent,' .
+				'docs.recent,new_users.recent,'	.
+				'leaving_users.recent,transactions.recent',
 		'default_landing_page'				=> 'messages',
 		'homepage_url'						=> '',
 		'template_lets'						=> '1',
