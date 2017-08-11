@@ -101,24 +101,24 @@ span.twitter-typeahead {
 
 /********************colors typeahead******************/
 
-p.success.tt-suggestion 
+p.success.tt-suggestion, .btn-l-success
 {
 	background-color: #dff0d8;;
 }
 
-p.danger.tt-suggestion
+p.danger.tt-suggestion, .btn-l-danger
 {
 	background-color: #f2dede;
 }
-p.warning.tt-suggestion
+p.warning.tt-suggestion, .btn-l-warning
 {
 	background-color: #fcf8e3;
 }
-p.info.tt-suggestion 
+p.info.tt-suggestion, .btn-l-info
 {
 	background-color: #d9edf7;
 }
-p.inactive.tt-suggestion 
+p.inactive.tt-suggestion, .btn-l-inactive
 {
 	background-color: #ddd;
 }

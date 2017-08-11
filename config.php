@@ -870,6 +870,27 @@ foreach ($tab_panes as $id => $pane)
 		}
 		else if (isset($input['type']) && $input['type'] === 'sortable')
 		{
+			$v_options = $active = $inactive = [];			
+			$value_ary = explode(',', $input['value']);
+			
+			foreach ($value_ary as $v)
+			{
+				list($block, $option) = explode('.', $v);
+				$v_options[$block] = $option; 
+			}
+
+			foreach ($input['ary'] as $block => $options)
+			{
+				if (isset($v_options[$block]))
+				{
+					$active[] = $block;
+				}
+				else
+				{
+					$inactive[] = $block;
+				}
+			}
+
 			echo isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
 
 			echo '<div class="row">';
@@ -881,56 +902,8 @@ foreach ($tab_panes as $id => $pane)
 			echo '</div>';
 			echo '<div class="panel-body">';
 
-			echo '			<div class="input-group">
-			<div class="input-group-btn">
+			render_sortable_items($input['ary'], $v_options, $active, 'btn-l-success');
 
-  <button type="button" class="btn btn-danger form-control">Action</button>
-  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-  </ul>
-</div>
-</div>';
-
-			echo '
-			
-			
-			<div class="input-group">
-
-  <button type="button" class="btn btn-danger form-control" value="action">actin</button>
-  <div class="input-group-btn">
-  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-  </ul>
-  </div>
-  </div>';
-			echo '<div class="input-group">
-
-  <button type="button" class="btn btn-danger form-control" value="action">actin</button>
-  <div class="input-group-btn">
-  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-  </ul>
-  </div>
-  </div>';
-
-
-
-			echo $input['value'];
 			echo '</div>';
 			echo '</div>';
 			echo '</div>';
@@ -941,7 +914,9 @@ foreach ($tab_panes as $id => $pane)
 			echo isset($input['lbl_inactive']) ? '<h5>' . $input['lbl_inactive'] . '</h5>' : '';
 			echo '</div>';
 			echo '<div class="panel-body">';
-			echo 'bbbbbbbbbbbbbbb';
+
+			render_sortable_items($input['ary'], $v_options, $inactive, 'btn-l-danger');
+
 			echo '</div>';
 			echo '</div>';
 			echo '</div>';
@@ -1081,4 +1056,55 @@ function cancel()
 
 	header('Location: ' . generate_url('config', ['active_tab' => $active_tab]));
 	exit;
+}
+
+function render_sortable_items($input_ary, $v_options, $items, $class)
+{
+	foreach ($items as $a)
+	{
+		$options = $input_ary[$a];
+
+		if (!count($options))
+		{
+			continue;
+		}
+		else if (count($options) === 1)
+		{
+			$lbl = reset($options);
+			$option = key($options);
+			echo '<button type="button" ';
+			echo 'data-block="';
+			echo $a;
+			echo '" ';
+			echo 'data-option="';
+			echo $option;
+			echo '" ';
+			echo 'class="btn btn-default btn-block ';
+			echo $class;
+			echo ' margin-button">';
+			echo $lbl;
+			echo '</button>';
+
+			continue;
+		}
+
+		echo '<div class="btn-group btn-block margin-button">';
+		echo '<button type="button" class="btn btn-default ';
+		echo 'btn-block dropdown-toggle ';
+		echo $class;
+		echo '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+		echo isset($v_options[$a]) ? $options[$v_options[$a]] : reset($options);
+		echo ' <span class="caret"></span>';
+		echo '</button>';
+		echo '<ul class="dropdown-menu">';
+
+		foreach ($options as $k => $lbl)
+		{
+			echo '<li><a href="#">';
+			echo $lbl;
+			echo '</a></li>';
+		}
+
+		echo '</ul></div>';
+	}
 }
