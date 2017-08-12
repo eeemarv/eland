@@ -101,28 +101,28 @@ span.twitter-typeahead {
 
 /********************colors typeahead******************/
 
-p.success.tt-suggestion, .btn-l-success
+p.success.tt-suggestion, .bg-success
 {
 	background-color: #dff0d8;;
 }
 
-p.danger.tt-suggestion, .btn-l-danger
+p.danger.tt-suggestion, .bg-danger
 {
 	background-color: #f2dede;
 }
-p.warning.tt-suggestion, .btn-l-warning
+p.warning.tt-suggestion, .bg-warning
 {
 	background-color: #fcf8e3;
 }
-p.info.tt-suggestion, .btn-l-info
+p.info.tt-suggestion, .bg-info
 {
 	background-color: #d9edf7;
 }
-p.inactive.tt-suggestion, .btn-l-inactive
+p.inactive.tt-suggestion, .bg-inactive
 {
 	background-color: #ddd;
 }
-p.extern.tt-suggestion 
+p.extern.tt-suggestion, .bg-extern 
 {
   background-color: #ffdbfc;
 }

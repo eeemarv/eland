@@ -236,7 +236,10 @@ $tab_panes = [
 			'periodic_mail_block_ary' => [
 				'lbl'				=> 'Mail opmaak',
 				'type'				=> 'sortable',
-				'explain'			=> 'Versleep de blokken om blokken te ordenen en activeren en desactiveren',
+				'explain'			=> 'Versleep de blokken om blokken te ordenen en 
+					activeren en desactiveren. Dit werkt waarschijnlijk alleen met 
+					muis of touchpad, maar niet met touch-screen. "Recent" betekent "sinds
+					de laatste periodieke overzichtsmail".',
 				'lbl_active' 		=> 'Inhoud',
 				'lbl_inactive'		=> 'Niet gebruikte blokken',
 				'ary'				=> $periodic_mail_block_ary,
@@ -738,10 +741,7 @@ if ($post)
 
 		$value = substr($value, 0, 60);
 
-		if ($app['db']->fetchColumn('select setting from config where setting = ?', [$name]))
-		{
-			$app['db']->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
-		}
+		$app['db']->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 
 		$p_acts = is_array($post_actions[$name]) ? $post_actons[$name] : [$post_actions[$name]];
 
@@ -871,7 +871,7 @@ foreach ($tab_panes as $id => $pane)
 		else if (isset($input['type']) && $input['type'] === 'sortable')
 		{
 			$v_options = $active = $inactive = [];			
-			$value_ary = explode(',', $input['value']);
+			$value_ary = explode(',', $config[$name]);
 			
 			foreach ($value_ary as $v)
 			{
@@ -901,9 +901,11 @@ foreach ($tab_panes as $id => $pane)
 			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';
 			echo '</div>';
 			echo '<div class="panel-body">';
+			echo '<ul id="list_active" class="list-group">';
 
-			render_sortable_items($input['ary'], $v_options, $active, 'btn-l-success');
+			render_sortable_items($input['ary'], $v_options, $active, 'bg-success');
 
+			echo '</ul>';
 			echo '</div>';
 			echo '</div>';
 			echo '</div>';
@@ -914,14 +916,19 @@ foreach ($tab_panes as $id => $pane)
 			echo isset($input['lbl_inactive']) ? '<h5>' . $input['lbl_inactive'] . '</h5>' : '';
 			echo '</div>';
 			echo '<div class="panel-body">';
+			echo '<ul id="list_inactive" class="list-group">';
 
-			render_sortable_items($input['ary'], $v_options, $inactive, 'btn-l-danger');
+			render_sortable_items($input['ary'], $v_options, $inactive, 'bg-danger');
+
+			echo '</ul';
+			echo '</div>';
+			echo '</div>';
+			echo '</div>';
 
 			echo '</div>';
-			echo '</div>';
-			echo '</div>';
 
-			echo '</div>';
+			echo '<input type="hidden" name="' . $name . '" ';
+			echo 'value="' . $config[$name] . '" id="' . $name . '">';
 		}
 		else
 		{
@@ -1072,39 +1079,58 @@ function render_sortable_items($input_ary, $v_options, $items, $class)
 		{
 			$lbl = reset($options);
 			$option = key($options);
-			echo '<button type="button" ';
+			echo '<li class="list-group-item ' . $class . '" ';
 			echo 'data-block="';
 			echo $a;
 			echo '" ';
 			echo 'data-option="';
 			echo $option;
-			echo '" ';
-			echo 'class="btn btn-default btn-block ';
-			echo $class;
-			echo ' margin-button">';
+			echo '" >';
+			echo '<span class="lbl">';
 			echo $lbl;
-			echo '</button>';
+			echo '</span>';
+			echo '</li>';
 
 			continue;
 		}
 
-		echo '<div class="btn-group btn-block margin-button">';
+		if (isset($v_options[$a]))
+		{
+			$option = $v_options[$a];
+			$lbl = $options[$option];
+		}
+		else
+		{
+			$lbl = reset($options);
+			$option = key($options);
+		}
+
+		echo '<li class="list-group-item ' . $class . '" ';
+		echo 'data-block="' . $a . '" ';
+		echo 'data-option="' . $option . '">';
+		echo '<span class="lbl">';
+		echo $lbl;
+		echo '</span>';
+		echo '&nbsp;&nbsp;';		
 		echo '<button type="button" class="btn btn-default ';
-		echo 'btn-block dropdown-toggle ';
-		echo $class;
-		echo '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-		echo isset($v_options[$a]) ? $options[$v_options[$a]] : reset($options);
+		echo 'dropdown-toggle" ';
+		echo 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
 		echo ' <span class="caret"></span>';
 		echo '</button>';
 		echo '<ul class="dropdown-menu">';
 
 		foreach ($options as $k => $lbl)
 		{
-			echo '<li><a href="#">';
+			echo '<li><a href="#" data-o="' . $k . '">';
 			echo $lbl;
 			echo '</a></li>';
 		}
 
-		echo '</ul></div>';
+		echo '</ul></li>';
+	}
+
+	for($i = 0; $i < 5; $i++)
+	{
+		echo '<li class="list-group-item"></li>';
 	}
 }
