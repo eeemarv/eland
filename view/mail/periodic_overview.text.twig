@@ -4,7 +4,7 @@
 {% block body %}
 {% autoescape false %}
 
-{% for b in block_ary %}
+{% for b in blocks_sorted %}
 
 {% if b == 'messages' %}
     {{ m.messages(messages, group, new_message_url, messages_url, 
