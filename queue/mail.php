@@ -78,6 +78,14 @@ class mail extends queue_model implements queue_interface
 			return ;
 		}
 
+		if ($data['template'] === 'periodic_mail_messages_top'
+			|| $data['template'] === 'periodic_mail_news_top')
+		{
+			$this->monolog->error('mail error: template not found ' . $data['template'],
+				['schema' => $sch]);
+			return;
+		}
+
 		if (isset($data['template']) && isset($data['vars']))
 		{
 			$template_subject = $this->twig->loadTemplate('mail/' . $data['template'] . '.subject.twig');
