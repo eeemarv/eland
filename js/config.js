@@ -138,6 +138,7 @@ $(document).ready(function(){
 			p_string += ul_el.attr('data-option') + ',';
 		});
 		p_string = p_string.slice(0, -1);
+		p_string = '+' + p_string;
 		$('#periodic_mail_block_ary').val(p_string);
 	});	
 });

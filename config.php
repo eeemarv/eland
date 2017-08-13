@@ -234,10 +234,9 @@ $tab_panes = [
 			],
 
 			'periodic_mail_block_ary' => [
-				'lbl'				=> 'Mail opmaak',
+				'lbl'				=> 'Mail opmaak (versleep blokken)',
 				'type'				=> 'sortable',
-				'explain'			=> 'Versleep de blokken om blokken te ordenen en 
-					activeren en desactiveren. Dit werkt waarschijnlijk alleen met 
+				'explain'			=> 'Verslepen werkt waarschijnlijk alleen met 
 					muis of touchpad, maar niet met touch-screen. "Recent" betekent "sinds
 					de laatste periodieke overzichtsmail".',
 				'lbl_active' 		=> 'Inhoud',
@@ -870,22 +869,19 @@ foreach ($tab_panes as $id => $pane)
 		}
 		else if (isset($input['type']) && $input['type'] === 'sortable')
 		{
-			$v_options = $active = $inactive = [];			
-			$value_ary = explode(',', $config[$name]);
+			$v_options = $active = $inactive = [];		
+			$value_ary = explode(',', ltrim($config[$name], '+ '));
 			
 			foreach ($value_ary as $v)
 			{
 				list($block, $option) = explode('.', $v);
-				$v_options[$block] = $option; 
+				$v_options[$block] = $option;
+				$active[] = $block;
 			}
 
 			foreach ($input['ary'] as $block => $options)
 			{
-				if (isset($v_options[$block]))
-				{
-					$active[] = $block;
-				}
-				else
+				if (!isset($v_options[$block]))
 				{
 					$inactive[] = $block;
 				}
