@@ -78,8 +78,8 @@ class mail extends queue_model implements queue_interface
 			return ;
 		}
 
-		if ($data['template'] === 'periodic_mail_messages_top'
-			|| $data['template'] === 'periodic_mail_news_top')
+		if ($data['template'] === 'periodic_overview_messages_top'
+			|| $data['template'] === 'periodic_overview_news_top')
 		{
 			$this->monolog->error('mail error: template not found ' . $data['template'],
 				['schema' => $sch]);
