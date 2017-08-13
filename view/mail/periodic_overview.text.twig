@@ -12,17 +12,17 @@
 {% elseif b == 'interlets' %}
     {{ m.interlets(interlets, url_login, validate_param) }}
 {% elseif b == 'forum' %}
-    {{ m.forum(forum, forum_en, show_forum, forum_url, validate_param) }}
+    {{ m.forum(forum, forum_url, validate_param) }}
 {% elseif b == 'news' %}
-    {{ m.news(news, show_news, news_url, validate_param) }}
+    {{ m.news(news, block_options.news, news_url, validate_param) }}
 {% elseif b == 'docs' %}
-    {{ m.docs(docs, show_docs, validate_param) }}
+    {{ m.docs(docs, validate_param) }}
 {% elseif b == 'new_users' %}
-    {{ m.new_users(new_users, show_new_users, validate_param) }}
+    {{ m.new_users(new_users, block_options.new_users, validate_param) }}
 {% elseif b == 'leaving_users' %}
-    {{ m.leaving_users(leaving_users, show_leaving_users, validate_param) }}
+    {{ m.leaving_users(leaving_users, block_options.leaving_users, validate_param) }}
 {% elseif b == 'transactions' %}
-    {{ m.transactions(transactions, show_transactions, 
+    {{ m.transactions(transactions,
         group, new_transaction_url, transactions_url, validate_param) }}
 {% endif %}
 

@@ -90,6 +90,10 @@ class saldo extends schema_task
 
 	// get blocks
 
+		$forum_en = $this->config->get('forum_en', $this->schema) ? true : false;
+		$interlets_en = $this->config->get('interlets_en', $this->schema) ? true : false;
+		$interlets_en = $interlets_en && $this->config->get('template_lets', $this->schema) ? true : false;
+
 		$blocks_sorted = $block_options = [];
 	
 		$block_ary = $this->config->get('periodic_mail_block_ary', $this->schema);
@@ -99,6 +103,17 @@ class saldo extends schema_task
 		foreach ($block_ary as $v)
 		{
 			list($block, $option) = explode('.', $v);
+
+			if ($block === 'forum' && !$forum_en)
+			{
+				continue;
+			}
+
+			if ($block === 'interlets' && !$interlets_en)
+			{
+				continue;
+			}
+
 			$block_options[$block] = $option;
 			$blocks_sorted[] = $block;
 		}
@@ -235,9 +250,7 @@ class saldo extends schema_task
 
 	// interlets messages
 
-		if ($block_options['interlets'] == 'recent'
-			&& $this->config->get('interlets_en') && $this->config->get('template_lets')
-		)
+		if ($block_options['interlets'] == 'recent')
 		{
 			$eland_ary = $this->interlets_groups->get_eland($this->schema);
 
@@ -314,7 +327,7 @@ class saldo extends schema_task
 
 	// news
 
-		if (isset($block_optins['news']))
+		if (isset($block_options['news']))
 		{
 			$rows = $this->xdb->get_many(['agg_schema' => $this->schema, 'agg_type' => 'news_access']);
 
@@ -329,7 +342,7 @@ class saldo extends schema_task
 					and n.published = \'t\'
 					and n.id_user = u.id ';
 
-			$query .= ($show_news == 'recent') ? 'and n.cdate > ? ' : '';
+			$query .= ($block_options['news'] == 'recent') ? 'and n.cdate > ? ' : '';
 
 			$query .= 'order by n.cdate desc';
 
@@ -401,7 +414,7 @@ class saldo extends schema_task
 				from ' . $this->schema . '.users u
 				where u.status = 2';
 
-			$query .= ($show_leaving_users == 'recent') ? ' and mdate > ?' : '';
+			$query .= ($block_options['leaving_users'] == 'recent') ? ' and mdate > ?' : '';
 
 			$rs = $this->db->prepare($query);
 
@@ -458,9 +471,7 @@ class saldo extends schema_task
 
 		$forum_topics = $forum_topics_replied = [];
 
-		$forum_en = $this->config->get('forum_en', $this->schema);
-
-		if (isset($block_options['forum']) && $forum_en)
+		if (isset($block_options['forum']))
 		{
 
 			// new topics
@@ -566,27 +577,21 @@ class saldo extends schema_task
 
 			's3_img'				=> $this->s3_img_url,
 			'new_users'				=> $new_users,
-			'show_new_users'		=> $show_new_users,
 			'leaving_users'			=> $leaving_users,
-			'show_leaving_users'	=> $show_leaving_users,
 			'news'					=> $news,
 			'news_url'				=> $base_url . '/news.php?src=p',
-			'show_news'				=> $show_news,
 			'transactions'			=> $transactions,
 			'transactions_url'		=> $base_url . '/transactions.php?src=p',
-			'show_transactions'		=> $show_transactions,
 			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
 			'forum'					=> $forum,
 			'forum_url'				=> $base_url . '/forum.php?src=p',
-			'show_forum'			=> $show_forum,
-			'forum_en'				=> $forum_en,
 			'docs'					=> $docs,
 			'docs_url'				=> $base_url . '/docs.php?src=p',
-			'show_docs'				=> $show_docs,
 			'messages'				=> $messages,
 			'messages_url'			=> $base_url . '/messages.php?src=p',
 			'new_message_url'		=> $base_url . '/messages.php?add=1',
 			'interlets'				=> $interlets,
+			'block_options'			=> $block_options,
 			'blocks_sorted'			=> $blocks_sorted,
 		];
 

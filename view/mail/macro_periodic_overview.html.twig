@@ -49,9 +49,8 @@
 
 {% endmacro interlets %}
 
-{% macro forum(forum, forum_en, show_forum, forum_url, validate_param) %}
+{% macro forum(forum, forum_url, validate_param) %}
 
-{% if forum_en and show_forum != 'none' %}
 <h3><a href="{{ forum_url }}{{ validate_param }}">Forum</a></h3>
 
 	{% if forum %}
@@ -65,13 +64,10 @@
 	{% else %}
 	<p>Er zijn geen nieuwe forumberichten.</p>
 	{% endif %}
-{% endif %}
 
 {% endmacro forum %}
 
-{% macro news(news, show_news, news_url, validate_param) %}
-
-{% if show_news != 'none' %}
+{% macro news(news, option, news_url, validate_param) %}
 
 <h3><a href="{{ news_url }}{{ validate_param }}">Nieuws</a></h3>
 
@@ -88,20 +84,16 @@ Ingegeven door: <a href="{{ n.user_url }}{{ validate_param }}">{{ n.user }}</a>
 {% endfor %}
 </ul>
 {% else %}
-	{% if show_news == 'recent' %}
+	{% if option == 'recent' %}
 	<p>Er zijn geen recente nieuwsberichten.</p>
 	{% else %}
 	<p>Er zijn geen nieuwe nieuwsberichten.</p>
 	{% endif %}
 {% endif %}
 
-{% endif %}
-
 {% endmacro news %}
 
-{% macro docs(docs, show_docs, validate_param) %}
-
-{% if show_docs != 'none' %}
+{% macro docs(docs, validate_param) %}
 
 <h3>Nieuwe Documenten</h3>
 
@@ -115,13 +107,9 @@ Ingegeven door: <a href="{{ n.user_url }}{{ validate_param }}">{{ n.user }}</a>
 <p>Er zijn geen nieuwe documenten.</p>
 {% endif %}
 
-{% endif %}
-
 {% endmacro docs %}
 
-{% macro new_users(new_users, show_new_users, validate_param) %}
-
-{% if show_new_users != 'none' %}
+{% macro new_users(new_users, option, validate_param) %}
 
 <h3>Nieuwe leden</h3>
 
@@ -132,20 +120,16 @@ Ingegeven door: <a href="{{ n.user_url }}{{ validate_param }}">{{ n.user }}</a>
 	{% endfor %}
 </ul>
 {% else %}
-	{% if show_new_users == 'recent' %}
+	{% if option == 'recent' %}
 		<p>Er zijn geen nieuwe leden bijgekomen.</p>
 	{% else %}
 		<p>Momenteel zijn er geen nieuwe leden.</p>
 	{% endif %}
 {% endif %}
 
-{% endif %}
-
 {% endmacro new_users %}
 
-{% macro leaving_users(leaving_users, show_leaving_users, validate_param) %}
-
-{% if show_leaving_users != 'none' %}
+{% macro leaving_users(leaving_users, option, validate_param) %}
 
 	<h3>Uitstappende leden</h3>
 
@@ -156,20 +140,16 @@ Ingegeven door: <a href="{{ n.user_url }}{{ validate_param }}">{{ n.user }}</a>
 		{% endfor %}
 	</ul>
 	{% else %}
-		{% if show_leaving_users == 'recent' %}
+		{% if option == 'recent' %}
 			<p>Er zijn geen extra uitstappende leden.</p>
 		{% else %}
 			<p>Momenteel zijn er geen uitstappende leden.</p>
 		{% endif %}
 	{% endif %}
 
-{% endif %}
-
 {% endmacro leaving_users %}
 
-{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url, validate_param) %}
-
-{% if show_transactions != 'none' %}
+{% macro transactions(transactions, group, new_transaction_url, transactions_url, validate_param) %}
 
 <h3><a href="{{ transactions_url }}{{ validate_param }}">Recente transacties</a></h3>
 
@@ -195,8 +175,6 @@ naar
 </ul>
 {% else %}
 <p>Er zijn geen recente transacties.</p>
-{% endif %}
-
 {% endif %}
 
 {% endmacro transactions %}

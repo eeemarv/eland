@@ -42,9 +42,7 @@ Log in ({{ url_login }}{{ validate_param }}) en ga via 'Groep' in de navigatieba
 
 {% endmacro interlets %}
 
-{% macro forum(forum, forum_en, show_forum, forum_url, validate_param) %}
-
-{% if forum_en and show_forum != 'none' %}
+{% macro forum(forum, forum_url, validate_param) %}
 
 Forum
 -----
@@ -55,13 +53,9 @@ Forum
 Er zijn geen nieuwe forumberichten.
 {% endfor %}
 
-{% endif %}
-
 {% endmacro forum %}
 
-{% macro news(news, show_news, news_url, validate_param) %}
-
-{% if show_news != 'none' %}
+{% macro news(news, option, news_url, validate_param) %}
 
 Nieuws
 ------
@@ -81,7 +75,7 @@ Ingegeven door: {{ n.user }}
 
 {% else %}
 
-{% if show_news == 'recent' %}
+{% if option == 'recent' %}
 Momenteel zijn er geen nieuwe nieuwsberichten.
 {% else %}
 Momenteel zijn er geen nieuwsberichten.
@@ -89,13 +83,9 @@ Momenteel zijn er geen nieuwsberichten.
 
 {% endfor %}
 
-{% endif %}
-
 {% endmacro news %}
 
-{% macro docs(docs, show_docs, validate_param) %}
-
-{% if show_docs != 'none' %}
+{% macro docs(docs, validate_param) %}
 
 Nieuwe Documenten
 -----------------
@@ -106,13 +96,9 @@ Nieuwe Documenten
 Er zijn geen nieuwe documenten.
 {% endfor %}
 
-{% endif %}
-
 {% endmacro docs %}
 
-{% macro new_users(new_users, show_new_users, validate_param) %}
-
-{% if show_new_users != 'none' %}
+{% macro new_users(new_users, option, validate_param) %}
 
 Nieuwe leden
 ------------
@@ -122,7 +108,7 @@ Nieuwe leden
 
 {% else %}
 
-{% if show_new_users == 'recent' %}
+{% if option == 'recent' %}
 Er zijn geen nieuwe leden bijgekomen.
 {% else %}
 Momenteel zijn er geen nieuwe leden.
@@ -130,13 +116,9 @@ Momenteel zijn er geen nieuwe leden.
 
 {% endfor %}
 
-{% endif %}
-
 {% endmacro new_users %}
 
-{% macro leaving_users(leaving_users, show_leaving_users, validate_param) %}
-
-{% if show_leaving_users != 'none' %}
+{% macro leaving_users(leaving_users, option, validate_param) %}
 
 Uitstappende leden
 ------------------
@@ -146,7 +128,7 @@ Uitstappende leden
 
 {% else %}
 
-{% if show_leaving_users == 'recent' %}
+{% if option == 'recent' %}
 Er zijn geen extra uitstappende leden.
 {% else %}
 Momenteel zijn er geen uitstappende leden.
@@ -154,13 +136,9 @@ Momenteel zijn er geen uitstappende leden.
 
 {% endfor %}
 
-{% endif %}
-
 {% endmacro leaving_users %}
 
-{% macro transactions(transactions, show_transactions, group, new_transaction_url, transactions_url, validate_param) %}
-
-{% if show_transactions != 'none' %}
+{% macro transactions(transactions, group, new_transaction_url, transactions_url, validate_param) %}
 
 Recente transacties
 -------------------
@@ -180,8 +158,6 @@ Er werden geen nieuwe transacties gedaan afgelopen {{ group.saldofreqdays }} dag
 {% endfor %}
 
 Nieuwe transactie ingeven: {{ new_transaction_url }}{{ validate_param }}
-
-{% endif %}
 
 {% endmacro transactions %}
 
