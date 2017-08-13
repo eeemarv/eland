@@ -250,7 +250,7 @@ class saldo extends schema_task
 
 	// interlets messages
 
-		if ($block_options['interlets'] == 'recent')
+		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
 		{
 			$eland_ary = $this->interlets_groups->get_eland($this->schema);
 
@@ -651,8 +651,6 @@ class saldo extends schema_task
 	 */
 	public function get_interval()
 	{
-		return 600;
-
 		if (isset($this->schema))
 		{
 			$days = $this->config->get('saldofreqdays', $this->schema);
