@@ -24,6 +24,10 @@ $app['cache']->set('boot', $boot);
 
 echo 'worker started .. ' . $boot['count'] . "\n";
 
+error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
+error_log('schemas: ' . json_encode($app['groups']->get_schemas()));
+error_log('hosts: ' . json_encode($app['groups']->get_hosts()));
+
 $queue = new queue_container($app, 'queue');
 $task = new task_container($app, 'task');
 $schema_task = new task_container($app, 'schema_task');

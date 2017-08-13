@@ -19,22 +19,23 @@ class groups
 
 		$schemas_db = $this->db->fetchAll('select schema_name from information_schema.schemata') ?: [];
 		$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
-		$schemas_db = array_fill_keys($schemas_db, true);
 
-		foreach ($_ENV as $key => $s)
+		foreach ($schemas_db as $s)
 		{
-			if (strpos($key, 'SCHEMA_') !== 0 || (!isset($schemas_db[$s])))
+			$up_s = strtoupper($s);
+			$env = getenv('SCHEMA_' . $up_s);
+			$h = $s;
+			if (!$env && strpos($s, 'lets') === 0) 
+			{
+				$h = substr($s, 4);
+				$env = getenv('SCHEMA_' . strtoupper($h));
+			}
+			if (!$env)
 			{
 				continue;
 			}
 
-			$h = str_replace(['SCHEMA_', '___', '__'], ['', '-', '.'], $key);
-			$h = strtolower($h);
-
-			if (!strpos($h, '.' . $this->overall_domain))
-			{
-				$h .= '.' . $this->overall_domain;
-			}
+			$h .= '.' . $this->overall_domain;
 
 			$this->schemas[$h] = $s;
 			$this->hosts[$s] = $h;

@@ -646,6 +646,8 @@ class saldo extends schema_task
 	 */
 	public function get_interval()
 	{
+		return 600;
+
 		if (isset($this->schema))
 		{
 			$days = $this->config->get('saldofreqdays', $this->schema);

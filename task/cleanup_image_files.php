@@ -70,7 +70,7 @@ class cleanup_image_files extends task
 
 		if (!$this->groups->get_host($sch))
 		{
-			error_log('-> unknown schema. (no delete)');
+			error_log('-> unknown schema. ' . $sch . ' (no delete)');
 			return;
 		}
 
