@@ -80,6 +80,16 @@ $periodic_mail_block_ary = [
 	],
 ];
 
+if (!$app['config']->get('forum_en'))
+{
+	unset($periodic_mail_block_ary['forum']);
+}
+
+if (!$app['config']->get('interlets_en') || !$app['config']->get('template_lets'))
+{
+	unset($periodic_mail_block_ary['interlets']);
+}
+
 $currency = $app['config']->get('currency');
 
 $tab_panes = [
@@ -243,58 +253,6 @@ $tab_panes = [
 				'lbl_inactive'		=> 'Niet gebruikte blokken',
 				'ary'				=> $periodic_mail_block_ary,
 			],
-
-/*
-			'weekly_mail_show_interlets'	=> [
-				'lbl'		=> 'Toon interlets vraag en aanbod',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options_not_all,
-				'explain'	=> 'Deze instelling is enkel van toepassing wanneer eLAS/eLAND interlets groepen ingesteld zijn.',
-			],
-
-			'weekly_mail_show_news'	=> [
-				'lbl'		=> 'Toon nieuwsberichten',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options,
-			],
-
-			'weekly_mail_show_docs'	=> [
-				'lbl'		=> 'Toon documenten',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options_not_all,
-			],
-
-			'weekly_mail_show_forum'	=> [
-				'lbl'		=> 'Toon forumberichten',
-				'type'		=> 'select',
-				'explain'	=> 'Deze instelling heeft enkel invloed wanneer de forumpagina geactiveerd is.',
-				'options'	=> $periodic_mail_item_show_options_not_all,
-			],
-
-			'weekly_mail_show_transactions'	=> [
-				'lbl'		=> 'Toon transacties',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options_not_all,
-			],
-
-			'weekly_mail_show_new_users'	=> [
-				'lbl'		=> 'Toon Instappers',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options,
-			],
-
-			'weekly_mail_show_leaving_users'	=> [
-				'lbl'		=> 'Toon Uitstappers',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_item_show_options,
-			],
-
-			'weekly_mail_template'	=> [
-				'lbl'		=> 'Template',
-				'type'		=> 'select',
-				'options'	=> $periodic_mail_template,
-			],
-*/
 		],
 	],
 
