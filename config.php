@@ -862,7 +862,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '</ul>';
 			echo '</div>';
 			echo '</div>';
-			echo '</div>';
+			echo '</div>'; // col
 
 			echo '<div class="col-md-6">';
 			echo '<div class="panel panel-default">';
@@ -877,9 +877,9 @@ foreach ($tab_panes as $id => $pane)
 			echo '</ul';
 			echo '</div>';
 			echo '</div>';
-			echo '</div>';
+			echo '</div>'; // col
 
-			echo '</div>';
+			echo '</div>'; // row
 
 			echo '<input type="hidden" name="' . $name . '" ';
 			echo 'value="' . $config[$name] . '" id="' . $name . '">';

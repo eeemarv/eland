@@ -14,6 +14,8 @@ echo ' (Maak eerst een <a href="https://github.com">Github</a> account aan.)</p>
 
 echo '</footer>';
 
+echo '</div>';
+
 echo $app['assets']->render_js();
 
 echo '</body>';

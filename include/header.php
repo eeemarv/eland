@@ -27,7 +27,8 @@ echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
 echo '">';
 
-echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" class="ajax-loader">';
+echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
+echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top">';
 echo '<div class="container-fluid">';
