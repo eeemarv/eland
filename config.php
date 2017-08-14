@@ -246,8 +246,9 @@ $tab_panes = [
 			'periodic_mail_block_ary' => [
 				'lbl'				=> 'Mail opmaak (versleep blokken)',
 				'type'				=> 'sortable',
-				'explain'			=> 'Verslepen werkt waarschijnlijk alleen met 
-					muis of touchpad, maar niet met touch-screen. "Recent" betekent "sinds
+				'explain_top'		=> 'Verslepen gaat met 
+					muis of touchpad, maar misschien niet met touch-screen. 
+					"Recent" betekent "sinds
 					de laatste periodieke overzichtsmail".',
 				'lbl_active' 		=> 'Inhoud',
 				'lbl_inactive'		=> 'Niet gebruikte blokken',
@@ -847,12 +848,17 @@ foreach ($tab_panes as $id => $pane)
 
 			echo isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
 
+			if (isset($input['explain_top']))
+			{
+				echo '<p><small>' . $input['explain_top'] . '</small></p>';
+			}
+
 			echo '<div class="row">';
 
 			echo '<div class="col-md-6">';
 			echo '<div class="panel panel-default">';
 			echo '<div class="panel-heading">';
-			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';
+			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';		
 			echo '</div>';
 			echo '<div class="panel-body">';
 			echo '<ul id="list_active" class="list-group">';
