@@ -248,7 +248,7 @@ class fetch_elas_interlets extends task
 			{
 				error_log($this->domain . ' not responsive: status : ' . $status_code . ' --');
 
-				$this->last_fetch[$subject][$this->domain] = gmdate('Y-m-d H:i:s', $this->now + 21600);
+				$this->last_fetch['msgs'][$this->domain] = gmdate('Y-m-d H:i:s', $this->now + 21600);
 
 				return;
 			}
@@ -383,7 +383,7 @@ class fetch_elas_interlets extends task
 			{
 				error_log($this->domain . ' not responsive: status : ' . $status_code . ' --');
 
-				$this->last_fetch[$subject][$this->domain] = gmdate('Y-m-d H:i:s', $this->now + 21600);
+				$this->last_fetch['users'][$this->domain] = gmdate('Y-m-d H:i:s', $this->now + 21600);
 				$this->update_cache();
 
 				return;
