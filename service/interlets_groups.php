@@ -55,7 +55,7 @@ class interlets_groups
 
 	public function clear_cache(string $s_schema)
 	{
-		$this->clear_elas_cache($s_schema . '_elas_interlets_groups');
+		$this->clear_elas_cache($s_schema);
 
 		$this->clear_eland_cache();
 	}
