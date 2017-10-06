@@ -15,6 +15,7 @@ class config
 	private $xdb;
 	private $predis;
 	private $this_group;
+	private $is_cli;
 
 	private $default = [
 		'preset_minlimit'					=> '',
@@ -53,6 +54,7 @@ class config
 		$this->predis = $predis;
 		$this->db = $db;
 		$this->xdb = $xdb;
+		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
 	public function set(string $name, string $value)
@@ -83,7 +85,7 @@ class config
 			return '';
 		}
 
-		if (isset($this->local_cache[$sch][$key]))
+		if (isset($this->local_cache[$sch][$key]) && !$this->is_cli)
 		{
 			return $this->local_cache[$sch][$key];
 		}
