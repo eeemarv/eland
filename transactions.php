@@ -1102,6 +1102,9 @@ if ($add)
 		echo '</span> per uur</li>';
 	}
 
+	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe valuta ';
+	echo 'is niet gekend omdat de interLETS groep geen eLAND installatie gebruikt.</li>';	
+
 /*
 	echo '<li id="info_amount">Maximum <span class="num"></span> ';
 	echo '<span class="cur">' . $app['config']->get('currency') . '</span></li>';

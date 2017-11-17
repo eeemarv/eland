@@ -24,6 +24,9 @@ $(document).ready(function(){
 	var $amount_input = $amount_container.find('input');
 	var $remote_amount_input = $remote_amount_container.find('input');
 
+	var $info = $amount_container.find('ul');
+	var $info_remote_amount_unknown = $info.find('#info_remote_amount_unknown');
+
 	console.log(ratio_self);
 
 	var select_change = function(){
@@ -65,6 +68,15 @@ $(document).ready(function(){
 				$amount_container.addClass('col-sm-10');
 			}
 		}
+
+		if (currency || $option.attr('id') === 'group_self'){
+			if (!$info_remote_amount_unknown.hasClass('hidden')){
+				$info_remote_amount_unknown.addClass('hidden');
+		  	}
+		} else {
+			$info_remote_amount_unknown.removeClass('hidden');			
+		}
+
 	};
 
 	select_change();
@@ -72,5 +84,4 @@ $(document).ready(function(){
 	$select.change(function(){
 		select_change();
 	});
-
 });
