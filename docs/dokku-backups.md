@@ -62,7 +62,7 @@ export AWS_ACCESS_KEY_ID=XXXX
 export AWS_SECRET_ACCESS_KEY=XXXX
 export AWS_DEFAULT_REGION=eu-central-1
 
-dokku postgres:export eland > /home/dokku/eland.sql
+dokku postgres:export database_name > /home/dokku/eland.sql
 aws s3 cp /home/dokku/eland.sql s3://backup.letsa.net
 
 ```
@@ -92,6 +92,11 @@ To download the latest backup to your local directory:
 aws s3 sync s3://backup.letsa.net . --region=eu-central-1
 ```
 
+###How to create a SQL plain text database dump 
+
+```shell
+dokku run app-name 'pg_dump $DATABASE_URL --no-owner --no-acl' > dev.sql
+```
 
 
 
