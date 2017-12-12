@@ -120,11 +120,14 @@ $app->extend('translator', function($translator, $app) {
 	return $translator;
 });
 
-
 $app->register(new Silex\Provider\SessionServiceProvider(), [
-	'session.storage.handler'	=> new service\redis_session($app['predis']),
+	'session.storage.handler'	=> function ($app) {
+		return new Predis\Session\Handler(
+			$app['predis'], ['gc_maxlifetime' => 172800]
+		);	
+	},
 	'session.storage.options'	=> [
-		'name'						=> 'omv',
+		'name'						=> 'eland',
 		'cookie_lifetime'			=> 172800,
 	],
 ]);
@@ -147,10 +150,6 @@ $app['uuid'] = function($app){
 
 $app['mail'] = function($app){
 	return new service\mail($app['predis']);
-};
-
-$app['redis_session'] = function($app){
-	return new service\redis_session($app['predis']);
 };
 
 /*

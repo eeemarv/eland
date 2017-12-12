@@ -17,7 +17,6 @@
         "imagine/imagine": "^0.6",
         "doctrine/dbal": "~2.5",
         "willdurand/geocoder": "^3",
-        "predis/predis": "~1.1",
         "twig/twig": "^2",
         "ezyang/htmlpurifier": "^4.8",
 		"league/html-to-markdown": "^4.4",
