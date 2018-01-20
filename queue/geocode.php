@@ -55,6 +55,12 @@ class geocode extends queue_model implements queue_interface
 			return;
 		}
 
+		if (getenv('GEO_BLOCK'))
+		{
+			error_log('geo coding is blocked. not processing: ' . json_encode($data));
+			return;
+		}
+
 		if ($this->cache->exists('geo_sleep'))
 		{
 			$this->monolog->debug('geocoding task is at sleep.', ['schema' => $sch]);
