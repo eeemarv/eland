@@ -91,7 +91,7 @@ class geocode extends queue_model implements queue_interface
 
 		try
 		{
-			$addresCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($adr));
+			$addressCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($adr));
 
 //			$address_collection = $this->geocoder->geocode($adr);
 
