@@ -115,13 +115,13 @@ class geocode extends queue_model implements queue_interface
 				return;
 			}
 
-			$log_1 = 'Geocode return NULL for: ' . $adr;
+			$log = 'Geocode return NULL for: ' . $adr;
 
 		}
 
 		catch (Exception $e)
 		{
-			$log = 'Geocode adr: ' . $adr . ' exception: ' . $e->getMessage();
+			$this->monolog->info('Geocode adr: ' . $adr . ' exception: ' . $e->getMessage());
 
 			return;
 		}
