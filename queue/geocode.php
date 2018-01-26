@@ -10,6 +10,8 @@ use service\queue;
 use service\user_cache;
 use Monolog\Logger;
 
+use Geocoder\Query\GeocodeQuery;
+
 class geocode extends queue_model implements queue_interface
 {
 	private $queue;
@@ -18,7 +20,6 @@ class geocode extends queue_model implements queue_interface
 	private $db;
 	private $user_cache;
 
-	private $curl;
 	private $geocoder;
 
 	public function __construct(db $db, cache $cache, queue $queue, Logger $monolog, user_cache $user_cache)
@@ -29,6 +30,11 @@ class geocode extends queue_model implements queue_interface
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 
+		$httpClient = new \Http\Adapter\Guzzle6\Client();
+		$provider = new \Geocoder\Provider\GoogleMaps\GoogleMaps($httpClient, 'be', getenv('GOOGLE_GEO_API_KEY'));
+		$this->geocoder = new \Geocoder\StatefulGeocoder($provider, 'nl');
+		$this->geocoder->setLimit(1);
+/*		
 		$this->curl = new \Ivory\HttpAdapter\CurlHttpAdapter();
 		$this->geocoder = new \Geocoder\ProviderAggregator();
 
@@ -39,7 +45,8 @@ class geocode extends queue_model implements queue_interface
 		]);
 
 		$this->geocoder->using('google_maps')->limit(1);
-
+*/
+	
 		parent::__construct();
 	}
 
@@ -84,11 +91,13 @@ class geocode extends queue_model implements queue_interface
 
 		try
 		{
-			$address_collection = $this->geocoder->geocode($adr);
+			$addresCollection = $geocoder->geocodeQuery(GeocodeQuery::create($adr));
 
-			if (is_object($address_collection))
+//			$address_collection = $this->geocoder->geocode($adr);
+
+			if (is_object($addressCollection))
 			{
-				$address = $address_collection->first();
+				$address = $addressCollection->first();
 
 				$ary = [
 					'lat'	=> $address->getLatitude(),

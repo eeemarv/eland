@@ -16,7 +16,7 @@
 		"ext-exif": "*",
         "imagine/imagine": "^0.6",
         "doctrine/dbal": "~2.5",
-        "willdurand/geocoder": "^3",
+
         "twig/twig": "^2",
         "ezyang/htmlpurifier": "^4.8",
 		"league/html-to-markdown": "^4.4",
@@ -35,7 +35,10 @@
 		"symfony/security-csrf": "^3.2",
 		"symfony/monolog-bridge": "^3.2",
 		"symfony/translation": "^3.2",
-		"symfony/asset": "^3.2"
+		"symfony/asset": "^3.2",
+		"geocoder-php/google-maps-provider": "^4.1",
+		"php-http/guzzle6-adapter": "^1.1",
+		"php-http/message": "^1.6"
 	},
 
     "minimum-stability": "stable",
@@ -49,5 +52,10 @@
 			"schema_task\\": "schema_task/",
 			"util\\": "util/"
         }
-    }
+    },
+	"scripts": {
+		"auto-scripts": {
+
+		}
+	}
 }
