@@ -1,17 +1,21 @@
-### Using Gitbook
+# Using Gitbook
 
 [Gitbook documentation](http://toolchain.gitbook.com/)
 
 [Installation](http://toolchain.gitbook.com/setup.html)
+
 ```shell
 npm install gitbook-cli -g
 ```
+
 Serve locally
-```
+
+```shell
 gitbook serve
 ```
 
 Build static html and publish [online](http://letsa.net) (pushing to the gh-pages branch)
+
 ```shell
 npm run docs:publish
 ```

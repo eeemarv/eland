@@ -1,6 +1,5 @@
-
-### Categorieën
+# Categorieën
 
 De vraag en aanbod berichten zijn opgedeeld in categorieën die je hier kan aanmaken of aanpassen. De categorieën bestaan uit hoofd- en subcategorieën. Vraag en aanbod kan enkel geplaatst worden in de subcategorieën.
 
-<img src="img/categories.png" width="500">
+![categorieën](img/categories.png)
