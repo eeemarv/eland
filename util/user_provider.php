@@ -25,7 +25,7 @@ class user_provider implements UserProviderInterface
 
     public function loadUserByUsername(string $username)
     {
-        $data = $this->xdb->get('user_auth_' . $username)
+        $data = $this->xdb->get('user_auth_' . $username);
 
         if ($data === '{}')
         {

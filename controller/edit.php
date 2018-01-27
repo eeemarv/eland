@@ -50,7 +50,7 @@ class edit
 			'url'		=> $host . '/' . $token,s
 		]);
 
-		return $app->json(['notice' => $app->trans('notice.token_send_email');
+		return $app->json(['notice' => $app->trans('notice.token_send_email')]);
 	}
 
 	public function upload_img(Request $request, app $app)

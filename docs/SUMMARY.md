@@ -1,4 +1,4 @@
-#Overzicht
+# Overzicht
 
 * [eLAND](README.md)
 
@@ -11,7 +11,7 @@
     * [Export](admin-export.md)
     * [Automatische mimimum limiet](admin-automatische-minimum-limiet.md)
     * [Massa transactie](admin-massa-transactie.md)
-    * [Logs](admin-logs.md)    
+    * [Logs](admin-logs.md)
   * [Gebruikers beheren](admin-gebruikers-beheren.md)
   * [Stijl](admin-stijl.md)
     * [Logo toevoegen](admin-logo-toevoegen.md)
@@ -24,4 +24,3 @@
   * [Migrate from eLAS 3.x](migrate-from-elas-3.md)
   * [Import CSV](import-csv.md)
   * [Using Gitbook](using-gitbook.md)
-
