@@ -1,12 +1,8 @@
 #<img src="img/eland-w200.png" width="120">eLAND
 Webtoepassing voor gemeenschapsmunten, gebaseerd op wederzijds krediet
 
-* Voor registreren van leden, transacties, vraag en aanbod.
-* Wordt gratis gehost. Wil je eLAND voor je gemeenschapsmunt of LETSgroep, gebruik dan vrijblijvend het <a href="http://hosting.letsa.net">contactformulier</a>.
-* Is gevorkt van [eLAS](http://www.elasproject.org) 3.1.17 in 2015 (Groepen die eLAS gebruiken kunnen gemakkelijk overgezet worden.)
-* "eLAS interLETS" (geautomatiseerde intertrading tussen groepen die tijd als basis voor hun munt nemen en die zichzelf een LETSgroep noemen) is mogelijk
-tussen eLAND en eLAS op dezelfde wijze als tussen eLAS installaties.
-* "eLAS interLETS" tussen eLAND installaties is mogelijk zonder uitwisseling van codes.
+* Voor registreren van leden, transacties, publiceren van vraag en aanbod.
+* Is gevorkt van [eLAS](http://www.elasproject.org) 3.1.17 in 2015 
 * Voorlopig wordt enkel de Nederlandse taal versie ondersteund.
 
 ###Testen
@@ -19,8 +15,22 @@ Je kan eLAND uitproberen op deze twee testinstallaties:
 Voor beide is de gebruikersnaam admin en het wachtwoord eland.
 Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 
-###Deze documentatie
-wil niet volledig zijn. Enkel zaken die minder relevant zijn komen aan bod.
-
-###De code
+###De code & hosting
 is open source en te vinden op [Github](https://github.com/eeemarv/eland).
+Onder de [rubriek "Hosting"](hosting.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
+
+Gratis hosting is beschikbaar voor je gemeenschapsmunt of LETS. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).  De serverkosten worden momenteel gesponserd door [LETS Antwerpen Stad vzw](http://groepen.letsvlaanderen.be/antwerpen-stad/) 
+
+eLAND is een persoonlijk en onafhankelijk project. 
+
+Melden van bugs en feature requests kan je doen op [Github](https://github.com/eeemarv/eland/issues). Zie daar ook voor aankondigingen.
+
+###Wat is LETS? 
+ 
+LETS is een concept van gemeenschapsmunt dat in 1982/1983 werd ontwikkeld door Michael Linton. Ik maakte een vertaling naar het Nederlands van Linton's referentiewerk [the LETSystem Design Manual](http://manual.letsa.net/nl/1.1.html)
+
+eLAND zal in de toekomst compatibel worden met het ["MultiLETS" concept zoals uiteengezet in de Manual](http://manual.letsa.net/nl/2.2.html).
+
+Maarten Vandekeybus [("eeemarv" op Github)](https://github.com/eeemarv)
+
+[contactformulier](http://hosting.letsa.net)
