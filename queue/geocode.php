@@ -67,7 +67,7 @@ class geocode extends queue_model implements queue_interface
 
 		$this->cache->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
 
-		if (getenv('GEO_BLOCK'))
+		if (getenv('GEO_BLOCK') === '1')
 		{
 			error_log('geo coding is blocked. not processing: ' . json_encode($data));
 			return;

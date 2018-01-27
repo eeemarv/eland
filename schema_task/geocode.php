@@ -36,7 +36,7 @@ class geocode extends schema_task
 
 	public function process()
 	{
-		if (getenv('GEO_BLOCK'))
+		if (getenv('GEO_BLOCK') === '1')
 		{
 			error_log('geo coding is blocked.');
 			return;
