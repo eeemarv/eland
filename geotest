@@ -1,0 +1,32 @@
+#!/usr/bin/php
+
+<?php
+
+use Symfony\Component\Dotenv\Dotenv;
+
+if (php_sapi_name() !== 'cli')
+{
+	echo '-- cli only --';
+	exit;
+}
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+include __DIR__ . '/include/default.php';
+
+if (!isset($argv[1]))
+{
+	echo 'provide addres, please.',"\n";
+	exit;
+}
+
+$result = $app['geocode']->getCoordinates($argv[1]);
+
+echo 'result: ', "\n";
+
+var_dump($result);
+
+echo "\n";

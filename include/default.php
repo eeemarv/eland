@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
@@ -303,12 +301,13 @@ $app['schedule'] = function ($app){
 // queue
 
 $app['queue.geocode'] = function ($app){
-	return new queue\geocode($app['db'], $app['cache'], $app['queue'], $app['monolog'], $app['user_cache']);
+	return new queue\geocode($app['db'], $app['cache'], 
+		$app['queue'], $app['monolog'], $app['user_cache'], $app['geocode']);
 };
 
-
-
-
+$app['geocode'] = function($app){
+	return new service\geocode();
+};
 
 /**
  * functions

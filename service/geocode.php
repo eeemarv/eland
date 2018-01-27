@@ -19,7 +19,7 @@ class geocode
         $this->geocoder->setLimit(1);
     }
 
-    public function getCoordinates(string $adress):array
+    public function getCoordinates(string $adress)
     {
         try 
         {
@@ -27,11 +27,13 @@ class geocode
 
             if (is_object($addressCollection))
             {
-                $address = $addressCollection->first();
+                $location = $addressCollection->first();
+
+                $coordinates = $location->getCoordinates();
 
                 $ary = [
-                    'lat'	=> $address->getLatitude(),
-                    'lng'	=> $address->getLongitude(),
+                    'lat'	=> $coordinates->getLatitude(),
+                    'lng'	=> $coordinates->getLongitude(),
                 ];
         
                 return $ary;

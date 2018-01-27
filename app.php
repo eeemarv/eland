@@ -71,12 +71,6 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
 
 ]);
 
-$app->register(new Knp\Provider\ConsoleServiceProvider(), [
-    'console.name'              => 'omv',
-    'console.version'           => '01',
-    'console.project_directory' => __DIR__,
-]);
-
 $app->register(new Silex\Provider\FormServiceProvider());
 
 $app->register(new Silex\Provider\CsrfServiceProvider());
@@ -152,17 +146,8 @@ $app['mail'] = function($app){
 	return new service\mail($app['predis']);
 };
 
-/*
-$app->register(new Silex\Provider\HttpFragmentServiceProvider());
-$app->register(new Silex\Provider\ServiceControllerServiceProvider());
-
-$app->register(new Silex\Provider\WebProfilerServiceProvider(), array(
-    'profiler.cache_dir' => __DIR__.'/../cache/profiler',
-    'profiler.mount_prefix' => '/_profiler',
-));
-*/
-
 $app->error(function (\Exception $e, Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+
     if ($app['debug'])
     {
         return;
