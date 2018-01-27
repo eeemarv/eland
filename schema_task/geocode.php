@@ -36,6 +36,12 @@ class geocode extends schema_task
 
 	public function process()
 	{
+		if (getenv('GEO_BLOCK'))
+		{
+			error_log('geo coding is blocked.');
+			return;
+		}
+
 		$log_ary = [];
 
 		$st = $this->db->prepare('select c.value, c.id_user
