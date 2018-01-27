@@ -19,7 +19,6 @@ Je kan eLAND uitproberen op deze twee testinstallaties:
 Voor beide is de gebruikersnaam admin en het wachtwoord eland.
 Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 
-
 ###Deze documentatie
 wil niet volledig zijn. Enkel zaken die minder relevant zijn komen aan bod.
 

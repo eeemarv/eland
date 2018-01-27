@@ -2,16 +2,6 @@
 
 * [eLAND](README.md)
 
-* Gebruikers
-  * [Bulk acties met je vraag en aanbod](bulk-acties-met-je-vraag-en-aanbod.md)
-    * [Selectie](bulk-selectie.md)
-    * [Verlengen](bulk-verlengen.md)
-    * [Zichtbaarheid](bulk-zichtbaarheid.md)
-  * [Zichtbaarheid van je gegevens](zichtbaarheid.md)
-    * [Volledige naam](zichtbaarheid-volledige-naam.md)
-    * [Contactgegevens](zichtbaarheid-contactgegevens.md)
-    * [Vraag en aanbod](zichtbaarheid-vraag-en-aanbod.md)
-
 * [Admin](admin.md)
   * [Admin pagina's](admin-paginas.md)
     * [Categorieën](admin-categorieen.md)

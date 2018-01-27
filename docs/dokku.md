@@ -39,16 +39,10 @@ A CNAME record with wildcard should point to the Dokku app url.
 
 Set a config var for each subdomain to the name of the schema in the database
 ```shell
-dokku config:set appname SCHEMA_FLUPKE___AND___SABRINA=flupkesabrina
+dokku config:set appname SCHEMA_FLUPKESUBDOMAIN=flupkeschema
 ```
 
-Above example couples domain flupke-and-sabrina.my-domain.com to database schema flupkesabrina.
-
-The environment variable SCHEMA_domain: couples a subdomain to a schema
-
-* Dots in subdomain are replaced by double underscore __
-* Hyphens in domain are replaced by triple underscore ___
-* all characters should be uppercase in the environment variable.
+Above example couples domain flupkesubdomain.my-domain.com to database schema flupkeschema.
 
 Set the overall domain with:
 
@@ -103,6 +97,14 @@ You need to set up CORS configuration on bucket S3_RES for the fonts of footable
 Mail is sent only from MAIL_FROM_ADDRESS and MAIL_NOREPLY_ADDRESS.
 These addresses should be set up for DKIM in the mailserver.
 
+### Google geocoding
+
+Coordinates of addresses are looked up and cached from the Google geocoding service in order to show the location on maps. At maximum every 2 minutes a request is sent to the API in order not to hit the daily free limit. You need to get a key from https://developers.google.com/maps/documentation/geocoding/intro
+and put the key in the environment variable 
+GOOGLE_GEO_API_KEY
+
+The geocoding service can be blocked by setting GEO_BLOCK to 1.
+
 ## Request hosting form
 
 The Domain of a request-hosting form can be set with:
@@ -126,10 +128,16 @@ domain of the hosting form and redirects is formatted the same way as the schema
 
 ##Postgres
 
-See [https://github.com/dokku/dokku-postgres]
+Link a postgres database to the app.
+See https://github.com/dokku/dokku-postgres
+
+Schemas to be set up can be found in the /setup directory: https://github.com/eeemarv/eland/tree/master/setup
+See also [Migrate from eLAS 3.x](migrate-from-elas-3.md)
+
 
 ##Redis
 
-See [https://github.com/dokku/dokku-redis]
+Link a redis instance to the app.
+See https://github.com/dokku/dokku-redis
 
 
