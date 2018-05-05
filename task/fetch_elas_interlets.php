@@ -315,7 +315,7 @@ class fetch_elas_interlets extends task
 			$a = $next_tds->eq(0)->filter('a');
 			$del = $a->filter('del')->count();
 
-			if (!$del)
+			if (!$del && count($next_tds))
 			{
 				$href = $a->attr('href');
 				$content = $a->text();
@@ -343,8 +343,6 @@ class fetch_elas_interlets extends task
 					'fetch_count'	=> $count,
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
-
-//				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
 
 				$msgs[$id] = $msg;
 			}
