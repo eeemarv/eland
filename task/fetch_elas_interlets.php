@@ -304,8 +304,14 @@ class fetch_elas_interlets extends task
 			->last()
 			->filter('tr')
 			->first()
-			->nextAll()
-			->each(function ($node) use (&$msgs, $cached)
+			->nextAll();
+
+		if (!count($msgs_table))
+		{
+			return;
+		}
+
+		$msgs_table->each(function ($node) use (&$msgs, $cached)
 		{
 			$first_td = $node->filter('td')->first();
 			$va = $first_td->text();
