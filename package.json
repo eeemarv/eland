@@ -1,0 +1,26 @@
+{
+    "name": "eland",
+    "license": "AGPL-3.0",
+    "version": "0.1.0",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/eeemarv/eland.git"
+    },
+    "bugs": "https://github.com/eeemarv/eland/issues",
+    "engines": {
+      "node": "9",
+      "npm": "5"
+    },
+    "devDependencies": {
+        "gitbook-cli": "^2.3.2"
+    },
+    "scripts": {
+      "docs:prepare": "gitbook install",
+      "docs:watch": "npm run docs:prepare && gitbook serve",
+      "docs:build": "npm run docs:prepare && rm -rf _book && gitbook build",
+      "docs:publish": "npm run docs:build && cd _book && git init && git commit --allow-empty -m 'Update docs' && git checkout -b gh-pages && git add --all && git commit -am 'Update docs' && git push https://github.com/eeemarv/eland gh-pages --force"
+    },
+    "dependencies": {
+
+    }
+}
