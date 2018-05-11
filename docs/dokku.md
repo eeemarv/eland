@@ -18,14 +18,6 @@ dokku domains:set app-name *.my-domain.com
 
 * Create app, install postgres and redis plugins and bind them to the app (see Dokku guide).
 
-* install the nl language pack if not present (for translating dates)
-
-```shell
-
-sudo apt-get install language-pack-nl
-
-```
-
 * Configure nginx to allow bigger uploads (for documents)
 
 ```shell
