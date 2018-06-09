@@ -2,4 +2,4 @@
 
 Webapplication for community currencies
 
-[http://letsa.net]
+[Info page in Dutch](https://eland.letsa.net)
