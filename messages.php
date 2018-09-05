@@ -394,6 +394,10 @@ if ($post && $img && $images && !$s_guest)
 	exit;
 }
 
+/**
+ * Delete all images
+ */
+
 if ($img_del == 'all' && $id && $post)
 {
 	if (!($s_owner || $s_admin))
@@ -600,7 +604,6 @@ if ($mail && $post && $id)
 	$app['alert']->success('Mail verzonden.');
 
 	cancel($id);
-
 }
 
 /*
@@ -2461,4 +2464,3 @@ function cancel($id = null)
 	header('Location: ' . generate_url('messages', $params));
 	exit;
 }
-
