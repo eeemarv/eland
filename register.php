@@ -266,10 +266,10 @@ if ($submit)
 		$token = substr(hash('sha512', $app['this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
 		$key = $app['this_group']->get_schema() . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
-		$app['predis']->expire($key, 86400);
+		$app['predis']->expire($key, 604800); // 1 week
 		$key = $app['this_group']->get_schema() . '_register_email_' . $email;
 		$app['predis']->set($key, '1');
-		$app['predis']->expire($key, 86400);
+		$app['predis']->expire($key, 604800);
 
 		$vars = [
 			'group'		=> [
