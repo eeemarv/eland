@@ -10,7 +10,7 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 	'session.storage.handler'	=> function ($app) {
 		return new Predis\Session\Handler(
 			$app['predis'], ['gc_maxlifetime' => 172800]
-		);	
+		);
 	},
 	'session.storage.options'	=> [
 		'name'						=> 'eland',
@@ -93,7 +93,7 @@ $allowed_interlets_landing_pages = [
 /*
  * check if we are on the request hosting url.
  */
-$key_host_env = str_replace(['.', '-'], ['__', '___'], strtoupper($_SERVER['SERVER_NAME']));
+$key_host_env = str_replace('.', '__', strtoupper($_SERVER['SERVER_NAME']));
 
 if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 {

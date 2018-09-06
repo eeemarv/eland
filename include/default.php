@@ -55,8 +55,6 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
 	$monolog->pushHandler($handler);
 
-//	$monolog->pushProcessor(new Monolog\Processor\WebProcessor());
-
 	$monolog->pushProcessor(function ($record) use ($app){
 
 		$record['extra']['schema'] = $app['this_group']->get_schema();
@@ -80,32 +78,6 @@ $app->extend('monolog', function($monolog, $app) {
 
 	return $monolog;
 });
-
-/*
-$app->register(new Silex\Provider\SecurityServiceProvider(), [
-
-	'security.firewalls' => [
-
-		'unsecured'	=> [
-			'anonymous'	=> true,
-		],
-
-		'secured'	=> [
-			'host'		=> '^l.',
-			'users'		=> function () use ($app) {
-				return new util\user_provider($app['xdb']);
-			},
-
-		],
-	],
-
-	'security.role_hierarchy' => [
-		'ROLE_ADMIN' => ['ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH'],
-	],
-
-]);
-*/
-
 
 if(!isset($rootpath))
 {
@@ -301,7 +273,7 @@ $app['schedule'] = function ($app){
 // queue
 
 $app['queue.geocode'] = function ($app){
-	return new queue\geocode($app['db'], $app['cache'], 
+	return new queue\geocode($app['db'], $app['cache'],
 		$app['queue'], $app['monolog'], $app['user_cache'], $app['geocode']);
 };
 
@@ -346,4 +318,3 @@ function link_user($user, string $sch = '', $link = true, $show_id = false, $fie
 
 	return $out;
 }
-
