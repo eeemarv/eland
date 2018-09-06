@@ -246,8 +246,8 @@ $tab_panes = [
 			'periodic_mail_block_ary' => [
 				'lbl'				=> 'Mail opmaak (versleep blokken)',
 				'type'				=> 'sortable',
-				'explain_top'		=> 'Verslepen gaat met 
-					muis of touchpad, maar misschien niet met touch-screen. 
+				'explain_top'		=> 'Verslepen gaat met
+					muis of touchpad, maar misschien niet met touch-screen.
 					"Recent" betekent "sinds
 					de laatste periodieke overzichtsmail".',
 				'lbl_active' 		=> 'Inhoud',
@@ -324,6 +324,20 @@ $tab_panes = [
 				'rich_edit'	=> true,
 				'attr'		=> ['data-template-vars' => implode(',', array_keys($map_template_vars))],
 			],
+		],
+	],
+
+	'news'	=> [
+		'lbl'	=> 'Nieuws',
+		'inputs'	=> [
+			'li_1'	=> [
+				'inline' => '%1$s Sorteer nieuwsberichten chronologisch op agendadatum.',
+				'inputs' => [
+					'news_order_asc'	=> [
+						'type'	=> 'checkbox',
+					],
+				]
+			]
 		],
 	],
 
@@ -828,9 +842,9 @@ foreach ($tab_panes as $id => $pane)
 		}
 		else if (isset($input['type']) && $input['type'] === 'sortable')
 		{
-			$v_options = $active = $inactive = [];		
+			$v_options = $active = $inactive = [];
 			$value_ary = explode(',', ltrim($config[$name], '+ '));
-			
+
 			foreach ($value_ary as $v)
 			{
 				list($block, $option) = explode('.', $v);
@@ -858,7 +872,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="col-md-6">';
 			echo '<div class="panel panel-default">';
 			echo '<div class="panel-heading">';
-			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';		
+			echo isset($input['lbl_active']) ? '<h5>' . $input['lbl_active'] . '</h5>' : '';
 			echo '</div>';
 			echo '<div class="panel-body">';
 			echo '<ul id="list_active" class="list-group">';
@@ -1071,7 +1085,7 @@ function render_sortable_items($input_ary, $v_options, $items, $class)
 		echo '<span class="lbl">';
 		echo $lbl;
 		echo '</span>';
-		echo '&nbsp;&nbsp;';		
+		echo '&nbsp;&nbsp;';
 		echo '<button type="button" class="btn btn-default ';
 		echo 'dropdown-toggle" ';
 		echo 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';

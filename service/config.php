@@ -28,6 +28,7 @@ class config
 		'registration_success_text'			=> '',
 		'registration_success_url'			=> '',
 		'forum_en'							=> '0',
+		'news_order_asc'					=> '0',
 		'css'								=> '0',
 		'msgs_days_default'					=> '365',
 		'balance_equilibrium'				=> '0',
@@ -118,11 +119,11 @@ class config
 			$interlets_en = $this->get('interlets_en', $sch);
 			$transactions = $this->get('weekly_mail_show_transactions', $sch);
 
-			$value .= $template === 'news_top' && $news !== 'none' ? 'news.' . $news . ',' : ''; 
+			$value .= $template === 'news_top' && $news !== 'none' ? 'news.' . $news . ',' : '';
 			$value .= 'messages.recent,';
 			$value .= $interlets_en && $template_lets && $interlets === 'recent' ? 'interlets.recent,' : '';
 			$value .= $forum_en && $forum === 'recent' ? 'forum.recent,' : '';
-			$value .= $template === 'messages_top' && $news !== 'none' ? 'news.' . $news . ',' : ''; 
+			$value .= $template === 'messages_top' && $news !== 'none' ? 'news.' . $news . ',' : '';
 			$value .= $docs === 'recent' ? 'docs.recent,' : '';
 			$value .= $new_users === 'none' ? '' : 'new_users.' . $new_users . ',';
 			$value .= $leaving_users === 'none' ? '' : 'leaving_users.' . $leaving_users . ',';

@@ -34,7 +34,7 @@ class saldo extends schema_task
 	private $interlets_groups;
 	private $config;
 
-	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache, 
+	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache,
 		Logger $monolog, mail $mail,
 		string $s3_img_url, string $s3_doc_url, string $protocol,
 		date_format $date_format, distance $distance, schedule $schedule,
@@ -95,7 +95,7 @@ class saldo extends schema_task
 		$interlets_en = $interlets_en && $this->config->get('template_lets', $this->schema) ? true : false;
 
 		$blocks_sorted = $block_options = [];
-	
+
 		$block_ary = $this->config->get('periodic_mail_block_ary', $this->schema);
 
 		$block_ary = explode(',', ltrim($block_ary, '+'));
@@ -342,9 +342,10 @@ class saldo extends schema_task
 					and n.published = \'t\'
 					and n.id_user = u.id ';
 
-			$query .= ($block_options['news'] == 'recent') ? 'and n.cdate > ? ' : '';
+			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
 
-			$query .= 'order by n.cdate desc';
+			$query .= 'order by n.itemdate ';
+			$query .= $this->config->get('news_order_asc', $this->schema) === '1' ? 'asc' : 'desc';
 
 			$rs = $this->db->prepare($query);
 

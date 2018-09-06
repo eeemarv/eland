@@ -534,7 +534,8 @@ if(!$s_admin)
 	$query .= ' where approved = \'t\'';
 }
 
-$query .= ' order by itemdate desc';
+$query .= ' order by itemdate ';
+$query .= $app['config']->get('news_order_asc') === '1' ? 'asc' : 'desc';
 
 $news = $app['db']->fetchAll($query);
 
