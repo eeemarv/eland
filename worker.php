@@ -40,7 +40,6 @@ $app['predis']->expire('block_task', 3);
 
 while (true)
 {
-
 	$app['log_db']->update();
 
 	sleep(1);
@@ -71,4 +70,3 @@ while (true)
 
 	$loop_count++;
 }
-
