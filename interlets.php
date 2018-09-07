@@ -642,7 +642,7 @@ function render_schemas_groups()
 	echo '</ul></p>';
 
 	echo '<div class="panel panel-default"><div class="panel-heading">';
-	echo '<h3>Verbindingen met eLAS. Zie <a href="http://letsa.net/admin-elas-interlets-koppeling-maken.html">hier</a> voor de procedure.</h3>';
+	echo '<h3>Verbindingen met eLAS. Zie <a href="https://eland.letsa.net/admin-elas-interlets-koppeling-maken.html">hier</a> voor de procedure.</h3>';
 	echo '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
 	echo '</div>';
 	echo '<ul>';
