@@ -101,9 +101,9 @@ if ($add || $edit)
 
 if ($add && $submit && !count($errors))
 {
-	$news['approved'] = ($s_admin) ? 't' : 'f';
-	$news['published'] = ($s_admin) ? 't' : 'f';
-	$news['id_user'] = ($s_master) ? 0 : $s_id;
+	$news['approved'] = $s_admin ? 't' : 'f';
+	$news['published'] = $s_admin ? 't' : 'f';
+	$news['id_user'] = $s_master ? 0 : $s_id;
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
 	if ($app['db']->insert('news', $news))
