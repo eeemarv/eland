@@ -1103,15 +1103,7 @@ if ($add)
 	}
 
 	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe valuta ';
-	echo 'is niet gekend omdat de interLETS groep geen eLAND installatie gebruikt.</li>';	
-
-/*
-	echo '<li id="info_amount">Maximum <span class="num"></span> ';
-	echo '<span class="cur">' . $app['config']->get('currency') . '</span></li>';
-
-	echo '<li id="info_amount_unknown">Het maximum is niet gekend wegens ';
-	echo 'overschrijving naar een externe niet-eLAND installatie.</li>';
-*/
+	echo 'is niet gekend omdat de interLETS groep geen eLAND installatie gebruikt.</li>';
 
 	echo '</ul>';
 
@@ -1131,10 +1123,6 @@ if ($add)
 
 	echo '<li id="info_ratio">Valuatie: <span class="num"></span> per uur</li>';
 
-
-/*	echo '<li id="info_remote_amount">Maximum <span class="num"></span> ';
-	echo '<span class="cur"></span></li></ul>';
-*/
 	echo '</div>';
 
 	echo '</div>';

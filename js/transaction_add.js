@@ -27,8 +27,6 @@ $(document).ready(function(){
 	var $info = $amount_container.find('ul');
 	var $info_remote_amount_unknown = $info.find('#info_remote_amount_unknown');
 
-	console.log(ratio_self);
-
 	var select_change = function(){
 
 		var $option = $select.find('option:selected');
@@ -74,14 +72,16 @@ $(document).ready(function(){
 				$info_remote_amount_unknown.addClass('hidden');
 		  	}
 		} else {
-			$info_remote_amount_unknown.removeClass('hidden');			
+			$info_remote_amount_unknown.removeClass('hidden');
 		}
 
 	};
 
-	select_change();
-
-	$select.change(function(){
+	if ($select.length){
 		select_change();
-	});
+
+		$select.change(function(){
+			select_change();
+		});
+	}
 });
