@@ -128,7 +128,6 @@ The Domain of a request-hosting form can be set with:
 domain of the hosting form and redirects is formatted the same way as the schema subdomains.
 
 * Dots are replaced by double underscore `__`
-* Hyphens are replaced by triple underscore `___`
 * all characters should be uppercase in the environment variable.
 
 ## Other environment vars
