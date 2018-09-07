@@ -6,7 +6,7 @@ use service\config;
 
 class date_format
 {
-	private static $formats = [
+	const FORMATS = [
 		'%Y-%m-%d %H:%M:%S' => [
 			'day'	=> '%Y-%m-%d',
 			'min'	=> '%Y-%m-%d %H:%M',
@@ -30,19 +30,14 @@ class date_format
 	];
 
 	private $format;
-
 	private $format_ary = [];
 
-	private $month_translate_ary = [
+	const MONTHS_TRANS = [
 		['jan', 'januari'], ['feb', 'februari'], ['mrt', 'maart'],
 		['apr', 'april'], ['mei', 'mei'], ['jun', 'juni'],
 		['jul', 'juli'], ['aug', 'augustus'], ['sep', 'september'],
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
 	];
-
-	/**
-	 *
-	 */
 
 	public function __construct(config $config)
 	{
@@ -57,18 +52,14 @@ class date_format
 
 		$sec = $this->format;
 
-		if (!isset(self::$formats[$sec]))
+		if (!isset(self::FORMATS[$sec]))
 		{
 			$sec = '%e %b %Y, %H:%M:%S';
 		}
 
-		$this->format_ary = self::$formats[$sec];
+		$this->format_ary = self::FORMATS[$sec];
 		$this->format_ary['sec'] = $sec;
 	}
-
-	/*
-	 *
-	 */
 
 	public function datepicker_format()
 	{
@@ -78,10 +69,6 @@ class date_format
 		return trim(str_replace($search, $replace, $this->format_ary['day']));
 	}
 
-	/**
-	 *
-	 */
-
 	public function datepicker_placeholder()
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
@@ -90,17 +77,13 @@ class date_format
 		return trim(str_replace($search, $replace, $this->format_ary['day']));
 	}
 
-	/**
-	 *
-	 */
-
-	public function reverse($from_datepicker)
+	public function reverse(string $from_datepicker)
 	{
 		$from_datepicker = trim($from_datepicker);
 
 		$months_search = $months_replace = [];
 
-		foreach ($this->month_translate_ary as $k => $m)
+		foreach (MONTH_TRANS as $k => $m)
 		{
 			$months_search[] = $m[0];
 			$months_search[] = $m[1];
@@ -176,15 +159,11 @@ class date_format
 		return gmdate('Y-m-d H:i:s', $time);
 	}
 
-	/**
-	 *
-	 */
-
 	public function get_options()
 	{
 		$options = [];
 
-		foreach (self::$formats as $format => $prec)
+		foreach (self::FORMATS as $format => $prec)
 		{
 			$options[$format] = strftime($format);
 		}
@@ -192,13 +171,9 @@ class date_format
 		return $options;
 	}
 
-	/**
-	 *
-	 */
-
-	public function get_error($format)
+	public function get_error(string $format)
 	{
-		if (!isset(self::$formats[$format]))
+		if (!isset(self::FORMATS[$format]))
 		{
 			return 'Fout: dit datum- en tijdsformaat wordt niet ondersteund.';
 		}
@@ -210,13 +185,18 @@ class date_format
 	 * to do: get schema for static method version
 	 */
 
-	public function get($ts = false, $precision = 'min')
+	public function get(string $ts, string $precision = 'min'):string
 	{
 		static $format_ary, $format;
 
+		if (!$ts)
+		{
+			return '';
+		}
+
 		$time = strtotime($ts . ' UTC');
 
-		if (isset($this))
+		if (isset($this->format_ary))
 		{
 			return strftime($this->format_ary[$precision], $time);
 		}
@@ -232,21 +212,17 @@ class date_format
 
 			$sec = $format;
 
-			if (!isset(self::$formats[$sec]))
+			if (!isset(self::FORMATS[$sec]))
 			{
 				$sec = '%e %b %Y, %H:%M:%S';
 			}
 
-			$format_ary = self::$formats[$sec];
+			$format_ary = self::FORMATS[$sec];
 			$format_ary['sec'] = $sec;
 		}
 
 		return strftime($format_ary[$precision], $time);
 	}
-
-	/**
-	 *
-	 */
 
 	public function twig_get($environment, $context, $ts = false, $precision = 'min')
 	{
@@ -265,22 +241,17 @@ class date_format
 
 			$sec = $format;
 
-			if (!isset(self::$formats[$sec]))
+			if (!isset(self::FORMATS[$sec]))
 			{
 				$sec = '%e %b %Y, %H:%M:%S';
 			}
 
-			$format_ary = self::$formats[$sec];
+			$format_ary = self::FORMATS[$sec];
 			$format_ary['sec'] = $sec;
 		}
 
 		return strftime($format_ary[$precision], $time);
 	}
-
-
-	/**
-	 *
-	 */
 
 	public function get_td($ts = false, $precision = 'min')
 	{

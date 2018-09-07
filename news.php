@@ -67,6 +67,10 @@ if ($add || $edit)
 				$news['itemdate'] = '';
 			}
 		}
+		else
+		{
+			$errors[] = 'Geef een agendadatum op.';
+		}
 
 		if (!isset($news['headline']) || (trim($news['headline']) == ''))
 		{
@@ -161,7 +165,7 @@ if ($edit)
 	$news_access = $app['xdb']->get('news_access', $edit)['data']['access'];
 }
 
-if ($add)
+if ($add && !$submit)
 {
 	$news['itemdate'] = gmdate('Y-m-d');
 }
