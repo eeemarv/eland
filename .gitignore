@@ -15,6 +15,7 @@ node_modules
 *.pdf
 assets
 .env
+.env_m
 cache
 .local
 .dist
