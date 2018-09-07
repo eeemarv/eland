@@ -196,7 +196,8 @@ if ($add || $edit)
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
 	echo 'value="' . $app['date_format']->get($news['itemdate'], 'day') . '" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '">';
+	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
+	echo 'required>';
 	echo '<p><small>Wanneer gaat dit door?</small></p>';
 	echo '</div>';
 	echo '</div>';
