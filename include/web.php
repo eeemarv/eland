@@ -158,11 +158,11 @@ $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = ($p_schema) ?: $app['this_group']->get_schema();
+$s_schema = $p_schema ?: $app['this_group']->get_schema();
 $s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = ($s_schema == $app['this_group']->get_schema()) ? true : false;
+$s_group_self = $s_schema == $app['this_group']->get_schema() ? true : false;
 
 /** access user **/
 
@@ -174,7 +174,6 @@ if (!count($logins))
 {
 	if ($s_accountrole != 'anonymous')
 	{
-		$app['monolog']->debug('redirect a');
 		redirect_login();
 	}
 }
@@ -202,21 +201,16 @@ if (!$s_id)
 				$get['s'] = $s_schema;
 			}
 
-			$app['monolog']->debug('redirect p');
-
 			$get = http_build_query($get);
 			header('Location: ' . $location . '?' . $get);
 			exit;
-
 		}
 
-		$app['monolog']->debug('redirect b');
 		redirect_login();
 	}
 
 	if ($s_accountrole != 'anonymous')
 	{
-		$app['monolog']->debug('redirect c');
 		redirect_login();
 	}
 }
@@ -248,14 +242,11 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 			$get['s'] = $s_schema;
 		}
 
-		$app['monolog']->debug('redirect d');
-
 		$get = http_build_query($get);
 		header('Location: ' . $location . '?' . $get);
 		exit;
 	}
 
-	$app['monolog']->debug('redirect 1');
 	redirect_login();
 }
 else if (ctype_digit((string) $s_id))
@@ -272,8 +263,6 @@ else if (ctype_digit((string) $s_id))
 
 	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
 	{
-		$app['monolog']->debug('redirect 2');
-
 		$s_accountrole = $session_user['accountrole'];
 
 		redirect_default_page();
@@ -281,8 +270,6 @@ else if (ctype_digit((string) $s_id))
 
 	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
 	{
-		$app['monolog']->debug('redirect 2a');
-
 		$app['session']->invalidate();
 		redirect_login();
 	}
@@ -291,7 +278,6 @@ else if ($s_id == 'elas')
 {
 	if ($s_accountrole != 'guest' || !$s_group_self)
 	{
-		$app['monolog']->debug('redirect 3');
 		redirect_login();
 	}
 
@@ -301,8 +287,6 @@ else if ($s_id == 'master')
 {
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$app['monolog']->debug('redirect 3a');
-
 		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
@@ -312,7 +296,6 @@ else if ($s_id == 'master')
 }
 else
 {
-	$app['monolog']->debug('redirect 4');
 	redirect_login();
 }
 
@@ -338,7 +321,6 @@ switch ($s_accountrole)
 
 		if ($page_access != 'anonymous')
 		{
-			$app['monolog']->debug('redirect 5');
 			redirect_login();
 		}
 
@@ -348,7 +330,6 @@ switch ($s_accountrole)
 
 		if ($page_access != 'guest')
 		{
-			$app['monolog']->debug('redirect 6');
 			redirect_default_page();
 		}
 
@@ -358,7 +339,6 @@ switch ($s_accountrole)
 
 		if (!($page_access == 'user' || $page_access == 'guest'))
 		{
-			$app['monolog']->debug('redirect 7');
 			redirect_default_page();
 		}
 
@@ -368,7 +348,6 @@ switch ($s_accountrole)
 
 		if ($page_access == 'anonymous')
 		{
-			$app['monolog']->debug('redirect 8');
 			redirect_default_page();
 		}
 
@@ -376,7 +355,6 @@ switch ($s_accountrole)
 
 	default:
 
-		$app['monolog']->debug('redirect 9');
 		redirect_login();
 
 		break;
@@ -389,10 +367,10 @@ switch ($s_accountrole)
 
 $access_level = $access_ary[$s_accountrole];
 
-$app['s_admin'] = $s_admin = ($s_accountrole == 'admin') ? true : false;
-$s_user = ($s_accountrole == 'user') ? true : false;
-$s_guest = ($s_accountrole == 'guest') ? true : false;
-$s_anonymous = ($s_admin || $s_user || $s_guest) ? false : true;
+$app['s_admin'] = $s_admin = $s_accountrole === 'admin';
+$s_user = $s_accountrole === 'user';
+$s_guest = $s_accountrole === 'guest';
+$s_anonymous = !($s_admin || $s_user || $s_guest);
 
 $errors = [];
 
@@ -456,17 +434,17 @@ if ($view || $inline)
 {
 	if ($app['script_name'] == 'users' && $view != $view_users)
 	{
-		$view = $view_users = ($view) ?: $view_users;
+		$view = $view_users = $view ?: $view_users;
 		$app['session']->set('view.users', $view_users);
 	}
 	else if ($app['script_name'] == 'messages' && $view != $view_messages)
 	{
-		$view = $view_messages = ($view) ?: $view_messages;
+		$view = $view_messages = $view ?: $view_messages;
 		$app['session']->set('view.messages', $view);
 	}
 	else if ($app['script_name'] == 'news' && $view != $view_news)
 	{
-		$view = $view_news = ($view) ?: $view_news;
+		$view = $view_news = $view ?: $view_news;
 		$app['session']->set('view.news', $view);
 	}
 }
@@ -509,11 +487,11 @@ if (isset($_GET['welcome']) && $s_guest)
 	$msg = '<strong>Welkom bij ' . $app['config']->get('systemname') . '</strong><br>';
 	$msg .= 'Waardering bij ' . $app['config']->get('systemname') . ' gebeurt met \'' . $app['config']->get('currency') . '\'. ';
 	$msg .= $app['config']->get('currencyratio') . ' ' . $app['config']->get('currency');
-	$msg .= ' stemt overeen met 1 LETS uur.<br>';
+	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($s_elas_guest)
 	{
-		$msg .= 'Je bent ingelogd als LETS-gast, je kan informatie ';
+		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
 		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
 		$msg .= 'ingeven in de installatie van je eigen groep.';
 	}
@@ -569,7 +547,7 @@ function aphp(
 /**
  * generate url
  */
-function generate_url($entity = 'messages', $params = [], $sch = false)
+function generate_url(string $entity, $params = [], $sch = false)
 {
 	global $rootpath, $app;
 
