@@ -83,7 +83,7 @@ class date_format
 
 		$months_search = $months_replace = [];
 
-		foreach (MONTH_TRANS as $k => $m)
+		foreach (self::MONTHS_TRANS as $k => $m)
 		{
 			$months_search[] = $m[0];
 			$months_search[] = $m[1];
