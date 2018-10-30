@@ -23,7 +23,7 @@ class assets
 			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/css/footable.core.min.css',
 		],
 		'jssor'		=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/22.1.8/jssor.slider.min.js',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/27.5.0/jssor.slider.min.js',
 		],
 		'jqplot'	=> [
 			'js'	=> [
@@ -37,52 +37,58 @@ class assets
 			],
 		],
 		'jquery'	=> [
-			'js'	=> '//code.jquery.com/jquery-3.1.1.min.js',
+			'js'	=> '//code.jquery.com/jquery-3.3.1.min.js',
 		],
 		'fileupload'	=> [
 			'js'	=>	[
 
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/vendor/jquery.ui.widget.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.iframe-transport.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/vendor/jquery.ui.widget.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.iframe-transport.min.js',
 				'//cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.7.0/js/canvas-to-blob.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-process.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-image.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/js/jquery.fileupload-validate.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-process.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-image.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-validate.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.17.0/css/jquery.fileupload.min.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/css/jquery.fileupload.min.css',
 		],
 		'typeahead'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
 		],
+		'autocomplete'	=> [
+			'js'	=> [
+				'https://cdnjs.cloudflare.com/ajax/libs/algoliasearch/3.30.0/algoliasearch.min.js',
+				'https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.31.0/autocomplete.jquery.min.js',
+			],
+		],
 		'datepicker'	=> [
 			'js'	=>	[
-				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.nl.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.nl.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.min.css',
 		],
 		'isotope'	=> [
 			'js' => [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.2/isotope.pkgd.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js',
 			],
 		],
 		'leaflet'	=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js',
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css',
 		],
 		'summernote' => [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/lang/summernote-nl-NL.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.min.js',
+				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/lang/summernote-nl-NL.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.css',
 		],
 		'swiper' => [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.1/js/swiper.jquery.min.js',
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.1/css/swiper.min.css',
+			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.jquery.min.js',
+			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.min.css',
 		],
 		'sortable' => [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js',

@@ -147,4 +147,3 @@ function users_to_json($sch, $status_sql = 'in (1, 2)')
 
 	return json_encode($users);
 }
-

@@ -34,7 +34,7 @@ $app['assets'] = function($app){
 	return new service\assets($app['rootpath']);
 };
 
-$app['assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'swiper', 'base.css', 'print.css', 'base.js']);
+$app['assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'autocomplete', 'base.css', 'print.css', 'base.js']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
