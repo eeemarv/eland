@@ -4,19 +4,19 @@
 
 {% block body %}
 
-<p>Gebruiker <a href="{{ user.url }}">{{ user.text }}</a> deed melding via het supportformulier op de website.</p>
+<p>Gebruiker <a href="{{ user.url }}">{{ user.text }}</a> deed melding via het support formulier op de website.</p>
 
 <hr>
 
-{{ msg_html|raw }}
+{{ message }}
 
 <hr>
 
 <p>
-{% if user.mail %}
+{% if user.email %}
 Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken.
 {% else %}
-Er is geen mailadres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. Contacteer de gebruiker op andere wijze.
+Er is geen email adres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. Contacteer de gebruiker op andere wijze.
 {% endif %}
 </p>
 
@@ -31,11 +31,11 @@ Er is geen mailadres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. Co
 {% else %}
 <p>Er zijn geen contactgegevens bekend van <a href="{{ user.url }}>{{ user.text }}</a></p>.
 {% endif %}
-		
+
 {% endblock body %}
 
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}
-<p>Je ontvangt dit bericht omdat je mailadres vermeld staat als support-mailadres in de <a href="{{ config_url }}">instellingen</a>.</p>
+<p>Je ontvangt dit bericht omdat je email adres vermeld staat als support email adres in de <a href="{{ config_url }}">instellingen</a>.</p>
 {% endblock unsubscribe %}

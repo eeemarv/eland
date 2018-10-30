@@ -6,10 +6,10 @@ require_once __DIR__ . '/include/web.php';
 
 if (isset($_POST['zend']))
 {
-	$description = $_POST['description'] ?? '';
-	$desctiption = trim($description);
+	$message = $_POST['message'] ?? '';
+	$message = trim($message);
 
-	if(empty($description) || strip_tags($description) == '' || $description === false)
+	if(empty($message) || strip_tags($message) == '' || $message === false)
 	{
 		$errors[] = 'Het bericht is leeg.';
 	}
@@ -21,7 +21,7 @@ if (isset($_POST['zend']))
 
 	if ($s_master)
 	{
-		$errors[] = 'Het master account kan geen berichten versturen.';
+		$errors[] = 'Het master account kan geen email berichten versturen.';
 	}
 
 	if ($token_error = $app['form_token']->get_error())
@@ -36,19 +36,7 @@ if (isset($_POST['zend']))
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$s_id]);
 
-		$mailaddr = $app['mailaddr']->get($s_id);
-
-		$config_htmlpurifier = \HTMLPurifier_Config::createDefault();
-		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
-		$htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
-		$msg_html = $htmlpurifier->purify($description);
-
-		$converter = new \League\HTMLToMarkdown\HtmlConverter();
-		$converter_config = $converter->getConfig();
-		$converter_config->setOption('strip_tags', true);
-		$converter_config->setOption('remove_nodes', 'img');
-
-		$msg_text = $converter->convert($msg_html);
+		$email = $app['mailaddr']->get($s_id);
 
 		$vars = [
 			'group'	=> [
@@ -58,21 +46,20 @@ if (isset($_POST['zend']))
 			'user'	=> [
 				'text'			=> link_user($s_id, false, false),
 				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,
-				'mail'			=> $mailaddr,
+				'email'			=> $email,
 			],
 			'contacts'		=> $contacts,
-			'msg_html'		=> $msg_html,
-			'msg_text'		=> $msg_text,
+			'message'		=> $message,
 			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 		];
 
-		$mail_ary = [
+		$email_ary = [
 			'to'		=> 'support',
 			'template'	=> 'support',
 			'vars'		=> $vars,
 		];
 
-		if ($mailaddr)
+		if ($email)
 		{
 			$app['queue.mail']->queue([
 				'template'	=> 'support_copy',
@@ -80,21 +67,18 @@ if (isset($_POST['zend']))
 				'to'		=> $s_id,
 			]);
 
-			$mail_ary['reply_to'] = $s_id;
+			$email_ary['reply_to'] = $s_id;
 		}
 
-		$return_message =  $app['queue.mail']->queue($mail_ary);
+		$return_message =  $app['queue.mail']->queue($email_ary);
 
 		if (!$return_message)
 		{
-			$app['alert']->success('De support mail is verzonden.');
+			$app['alert']->success('De support email is verzonden.');
 			redirect_default_page();
-
-//			header('Location: ' . generate_url('messages'));
-//			exit;
 		}
 
-		$app['alert']->error('Mail niet verstuurd. ' . $return_message);
+		$app['alert']->error('Email niet verstuurd. ' . $return_message);
 	}
 	else
 	{
@@ -103,17 +87,17 @@ if (isset($_POST['zend']))
 }
 else
 {
-	$description = '';
+	$message = '';
 
 	if ($s_master)
 	{
-		$app['alert']->warning('Het master account kan geen berichten versturen.');
+		$app['alert']->warning('Het master account kan geen email berichten versturen.');
 	}
 	else
 	{
-		$mail = $app['mailaddr']->get($s_id);
+		$email = $app['mailaddr']->get($s_id);
 
-		if (!count($mail))
+		if (!count($email))
 		{
 			$app['alert']->warning('Je hebt geen email adres ingesteld voor je account. ');
 		}
@@ -122,31 +106,28 @@ else
 
 if (!$app['config']->get('mailenabled'))
 {
-	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('De email functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!$app['config']->get('support'))
 {
-	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support email adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Help / Probleem melden';
 $fa = 'ambulance';
-
-$app['assets']->add(['summernote', 'rich_edit.js']);
 
 require_once __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<div class="col-sm-12">';
-echo '<textarea name="description" class="form-control rich-edit" id="description" rows="4">';
-echo $description;
+echo '<label for="message">Je Bericht</label>';
+echo '<textarea name="message" class="form-control" id="message" rows="4">';
+echo $message;
 echo '</textarea>';
-echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';

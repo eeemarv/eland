@@ -5,17 +5,17 @@
 {% block body %}
 {% autoescape false %}
 Gebruiker {{ user.text }} deed melding via het supportformulier op de website.
-		
-- - - - - -
-
-{{ msg_text }}
 
 - - - - - -
 
-{% if user.mail %}
+{{ message }}
+
+- - - - - -
+
+{% if user.email %}
 Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken.
 {% else %}
-Er is geen mailadres gekend van {{ user.text }}. Contacteer de gebruiker op andere wijze.
+Er is geen email adres gekend van {{ user.text }}. Contacteer de gebruiker op andere wijze.
 {% endif %}
 
 Contactgegevens van {{ user.text }}:
@@ -34,5 +34,5 @@ Er zijn geen contactgegevens bekend van {{ user.text }}.
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}
-Je ontvangt dit bericht omdat je mailadres vermeld staat als support-mailadres in de instellingen: {{ config_url }}
+Je ontvangt dit bericht omdat je email adres vermeld staat als support email adres in de instellingen: {{ config_url }}
 {% endblock unsubscribe %}
