@@ -7,15 +7,10 @@ $(document).ready(function(){
 	var $presharedkey_panel = $('#presharedkey_panel');
 
 	status_change();
-
 	accountrole_change();
-
 	$status.change(status_change);
-
 	$accountrole.change(accountrole_change);
-	
 	$contact_input.each(access_required);
-
 	$contact_input.keyup(access_required);
 
 	function access_required(){

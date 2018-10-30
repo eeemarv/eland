@@ -87,28 +87,6 @@ $(document).ready(function(){
 			buttons: {
 				tpl_vars: template_vars_button,
 			}
-
-/*
-			hint: {
-
-				match: hint_match,
-
-				search: function (keyword, callback) {
-
-					callback($.grep(hint_ary, function (item) {
-
-						return item.indexOf(keyword) == 0;
-
-					}));
-				},
-
-				content: function (item) {
-					return hint_prefix + item + hint_suffix;
-				}
-
-			}
-*/
-
 		});
 
 		$('form').submit(function(){
@@ -116,8 +94,5 @@ $(document).ready(function(){
 			$self.html($self.summernote('code'));
 
 		});
-
 	});
 });
-
-

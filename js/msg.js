@@ -40,7 +40,7 @@ function jssor_init(imgs)
 			$AutoCenter: 1,
 			$ChanceToShow: 2,
 			$SpacingX: 10,
-			$SpacingY: 10   
+			$SpacingY: 10
 		},
 		$ArrowNavigatorOptions: {
 			$Class: $JssorArrowNavigator$,
@@ -83,8 +83,6 @@ $(document).ready(function(){
 
 		$('#no_images').css('display', 'inherit');
 	}
-
-	//
 
 	var contacts_div = $('#contacts');
 

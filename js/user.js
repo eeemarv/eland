@@ -7,9 +7,7 @@ $(document).ready(function(){
 		contacts_div.html(data);
 	}).done(function(){
 		var $map = $('#map');
-
 		var markers = $map.data('markers');
-
 		var lat = 0;
 		var lng = 0;
 

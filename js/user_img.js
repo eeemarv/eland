@@ -7,13 +7,9 @@ $(document).ready(function () {
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageOrientation: true
-
 	}).on('fileuploadadd', function (e, data) {
-
 		$('#img_plus').removeClass('fa-plus').addClass('fa-spinner fa-spin');
-
 	}).on('fileuploaddone', function (e, data) {
-
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
 
 		if (data.result.filename) {
@@ -29,4 +25,3 @@ $(document).ready(function () {
 	}).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 });
-

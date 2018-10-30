@@ -21,6 +21,4 @@ $(document).ready(function() {
 			window.location.href = './users.php?id=' + id + '&' + sessionParam;
 		}).bindTooltip(user.letscode + ' ' + user.name);
 	});
-
 });
-

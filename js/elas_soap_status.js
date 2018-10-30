@@ -12,6 +12,5 @@ $(document).ready(function() {
 		$.get(url, function(data){
 			span.text(data);
 		});
-
 	});
 });

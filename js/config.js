@@ -3,13 +3,9 @@ $(document).ready(function(){
 	$('input[data-max-inputs]').each(function(){
 
 		var max_inputs = $(this).data('max-inputs');
-
 		var value_ary = $(this).val().split(',');
-
 		var name = $(this).prop('name');
-
 		var $li = $(this).parent();
-
 		var data_input = $(this);
 
 		$(this).closest('form').submit(function(){
@@ -30,9 +26,7 @@ $(document).ready(function(){
 		});
 
 		var $form_group = $(this).next('div.form-group');
-
 		var $add_input = $(this).siblings('div.add-input');
-
 		var $input = $form_group.find('input');
 
 		if (value_ary[0] && value_ary.length > 1){
@@ -45,7 +39,6 @@ $(document).ready(function(){
 		if (value_ary.length < max_inputs){
 
 			$add_input.removeClass('hidden');
-
 			$add_input.find('span.btn').click(function(){
 
 				var $cloned_group = $form_group.clone();
@@ -66,9 +59,7 @@ $(document).ready(function(){
 				$cloned_group.insertBefore($add_input);
 
 				if ((inputs_num + 2) > max_inputs){
-
 					$add_input.addClass('hidden');
-
 				}
 			});
 		}
@@ -87,7 +78,7 @@ $(document).ready(function(){
 			$cloned_input.prop('id', name + '_' + i);
 
 			if (value_ary[i]){
-			
+
 				$cloned_input.val(value_ary[i].trim());
 			}
 
@@ -103,16 +94,14 @@ $(document).ready(function(){
 	var list_inactive = document.getElementById('list_inactive');
 	var sortable_active = Sortable.create(list_active, {
 		group: "periodic_mail",
-		onAdd: function (evt){ 
-//			console.log('onAdd.foo:', evt.item); 
+		onAdd: function (evt){
 			evt.item.classList.remove('bg-danger');
 			evt.item.classList.add('bg-success');
 		}
 	});
 	var sortable_inactive = Sortable.create(list_inactive, {
 		group: "periodic_mail",
-		onAdd: function (evt){ 
-//			console.log('onAdd.foo:', evt.item);
+		onAdd: function (evt){
 			evt.item.classList.remove('bg-success');
 			evt.item.classList.add('bg-danger');
 		}
@@ -140,7 +129,5 @@ $(document).ready(function(){
 		p_string = p_string.slice(0, -1);
 		p_string = '+' + p_string;
 		$('#periodic_mail_block_ary').val(p_string);
-	});	
+	});
 });
-
-
