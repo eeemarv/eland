@@ -642,7 +642,6 @@ if ($add)
 			}
 			else
 			{
-			//
 				$transaction['creator'] = ($s_master) ? 0 : $s_id;
 				$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 				$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
@@ -889,31 +888,6 @@ if ($add)
 	echo $s_admin ? '' : ' disabled';
 	echo '>';
 
-/*
-	echo '<ul class="account-info">';
-
-	echo '<li class="info-balance">Huidige saldo: <span class="num">';
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
-	echo '<span class="num">';
-	echo $app['config']->get('balance_equilibrium');
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
-	echo '<span class="num">';
-	echo $app['config']->get('minlimit');
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '</ul>';
-*/
 	echo '</div>';
 	echo '</div>';
 
@@ -970,31 +944,6 @@ if ($add)
 		}
 
 		echo '</select>';
-/*
-		echo '<ul class="account-info">';
-
-		echo '<li class="info-balance">Huidige saldo: <span class="num">';
-		echo '</span> <span class="cur">';
-		echo $app['config']->get('currency') . '</span></li>';
-
-		echo '<li class="info-minlimit">Minimum limiet: <span class="num">';
-		echo '</span> <span class="cur">';
-		echo $app['config']->get('currency') . '</span></li>';
-
-		echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
-		echo '<span class="num">';
-		echo $app['config']->get('balance_equilibrium');
-		echo '</span> <span class="cur">';
-		echo $app['config']->get('currency') . '</span></li>';
-
-		echo '<li class="info-group-minlimit">Minimum groepslimiet: ';
-		echo '<span class="num">';
-		echo $app['config']->get('minlimit');
-		echo '</span> <span class="cur">';
-		echo $app['config']->get('currency') . '</span></li>';
-
-		echo '</ul>';
-*/
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1039,28 +988,6 @@ if ($add)
 	echo '<li>Dit veld geeft autosuggesties door naam of ' . $app['type_template']->get('code') . ' te typen. ';
 	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
-
-/*
-	echo '<li class="info-balance">Huidige saldo: <span class="num">45';
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-maxlimit">Maximum limiet: <span class="num">';
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-equilibrium text-danger">Uitstapsaldo: ';
-	echo '<span class="num">';
-	echo $app['config']->get('balance_equilibrium');
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-
-	echo '<li class="info-group-maxlimit">Maximum groepslimiet: ';
-	echo '<span class="num">';
-	echo $app['config']->get('maxlimit');
-	echo '</span> <span class="cur">';
-	echo $app['config']->get('currency') . '</span></li>';
-*/
 	echo '</ul>';
 
 	echo '</div>';
@@ -1068,19 +995,6 @@ if ($add)
 
 	echo '<div class="form-group">';
 	echo '<label for="amount" class="col-sm-2 control-label">Aantal</label>';
-//	echo '<div class="col-sm-10">';
-
-/*
-	echo '<div class="col-sm-12">';
-	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon">';
-	echo '<i class="fa fa-search"></i>';
-	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoekterm">';
-	echo '</div>';
-	echo '</div>';
-*/
-
 	echo '<div class="col-sm-10" id="amount_container">';
 	echo '<div class="input-group">';
 
@@ -1369,7 +1283,6 @@ if ($edit)
 
 	echo '</dl>';
 
-//
 	echo '<div class="form-group">';
 	echo '<label for="description" class="col-sm-2 control-label">Nieuwe omschrijving</label>';
 	echo '<div class="col-sm-10">';

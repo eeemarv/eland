@@ -19,10 +19,6 @@ class typeahead
 		$this->version = getenv('TYPEAHEAD_VERSION') ?: '';
 	}
 
-	/*
-	*
-	*/
-
 	public function get($name_ary, $group_domain = false, $group_id = false)
 	{
 		$out = [];
@@ -34,24 +30,6 @@ class typeahead
 
 		foreach($name_ary as $name)
 		{
-			$rec = [];
-
-/*
-			$rec =  . '|';
-
-			if (strpos($name, 'users_') !== false)
-			{
-				$status = str_replace('users_', '', $name);
-				$out .= './ajax/typeahead_users.php?status=' . $status;
-				$out .= ($group_id) ? '&group_id=' . $group_id : '';
-				$out .= '&' . http_build_query(get_session_query_param());
-			}
-			else
-			{
-				$out .= './ajax/typeahead_' . $name . '.php?';
-				$out .= http_build_query(get_session_query_param());
-			}
-*/
 			$users_en = strpos($name, 'users_') === false ? false : true;
 
 			$rec = [
@@ -77,17 +55,11 @@ class typeahead
 		}
 
 		return htmlspecialchars(json_encode($out));
-
-//		return rtrim($out, '|');
 	}
 
-	/**
-	*
-	*/
-
-	private function get_thumbprint(string $name = 'users_active', $group_domain = false)
+	private function get_thumbprint(string $name, $group_domain = false)
 	{
-		$group_domain = ($group_domain) ?: $_SERVER['SERVER_NAME'];
+		$group_domain = $group_domain ?: $_SERVER['SERVER_NAME'];
 
 		$key = $group_domain . '_typeahead_thumbprint_' . $name;
 
@@ -100,10 +72,6 @@ class typeahead
 
 		return $this->version . $thumbprint;
 	}
-
-	/**
-	*
-	*/
 
 	public function invalidate_thumbprint(string $name = 'users_active', $group_domain = false, $new_thumbprint = false)
 	{
