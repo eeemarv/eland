@@ -62,7 +62,7 @@ $(document).ready(function(){
 								break;
 						}
 
-						return { 
+						return {
 							value: user.c + ' ' + user.n,
 							tokens : [ user.c, user.n ],
 							letscode: user.c,
@@ -77,8 +77,8 @@ $(document).ready(function(){
 					});
 				}
 
-				var tokenizer = function(d) { 
-					return Bloodhound.tokenizers.whitespace(d.value); 
+				var tokenizer = function(d) {
+					return Bloodhound.tokenizers.whitespace(d.value);
 				};
 
 				var templates = {
@@ -88,7 +88,7 @@ $(document).ready(function(){
 					}
 				};
 
-				var displayKey =  function(user){ 
+				var displayKey =  function(user){
 					return user.value;
 				};
 
@@ -214,6 +214,4 @@ $(document).ready(function(){
 		});
 */
 	});
-
-	
 });

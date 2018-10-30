@@ -1,7 +1,5 @@
 <?php
 
-$no_headers = true;
-
 $step = $_GET['step'] ?? 1;
 $start = $_GET['start'] ?? 0;
 
@@ -17,7 +15,6 @@ if (!ctype_digit((string) $step))
 	exit;
 }
 
-
 $php_sapi_name = php_sapi_name();
 
 if ($php_sapi_name == 'cli')
@@ -31,14 +28,6 @@ chdir(__DIR__);
 
 $page_access = 'anonymous';
 require_once __DIR__ . '/include/web.php';
-
-/*
-header('Content-Type:text/plain');
-echo '*** Init eLAND ***' . $r;
-echo 'php_sapi_name: ' . $php_sapi_name . $r;
-echo 'php version: ' . phpversion() . $r;
-echo "schema: " . $app['this_group']->get_schema() . ' systemtag: ' . $app['config']->get('systemtag') . $r;
-*/
 
 if ($step == 2 || $step == 3)
 {
@@ -226,47 +215,6 @@ else if ($step == 3)
 	header('Location: ' . $rootpath . 'init.php?step=3&start=' . $start);
 	exit;
 }
-
-/*
-error_log('Cleanup orphaned contacts. ');
-
-$orphaned_contacts = [];
-
-$rs = $app['db']->prepare('select c.id, c.value
-	from contact c
-	left join users u
-		on c.id_user = u.id
-	where u.id IS NULL');
-
-$rs->execute();
-
-while($row = $rs->fetch())
-{
-	$orphaned_contacts[$row['id']] = $row['value'];
-}
-
-$count = count($orphaned_contacts);
-
-if ($count)
-{
-	$app['db']->executeQuery('delete * from contact where id IN (?)',
-		[implode(', ', array_keys($orphaned_contacts))],
-		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
-	);
-
-	error_log('Found & deleted ' . $count . ' orphaned contacts.');
-
-	foreach ($orphaned_contacts as $id => $val)
-	{
-		error_log('  ' . $id . ' => ' . $val . '  -- ');
-	}
-}
-else
-{
-	error_log('none found.');
-}
-*/
-
 else if ($step == 4)
 {
 
