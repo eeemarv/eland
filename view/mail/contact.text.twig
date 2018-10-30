@@ -5,14 +5,14 @@
 {% block body %}
 {% autoescape false %}
 
-{{ msg_text }}
+{{ message }}
 
 - - - - -
 
-Dit bericht werd ingegeven in het contactformulier van {{ group.name }}. Het mailadres werd gevalideerd.
+Dit bericht werd ingegeven in het contactformulier van {{ group.name }}. Het email adres werd gevalideerd.
 Je kan reply kiezen om te reageren.
 
-mailadres: {{ mail }}
+Email adres: {{ email }}
 ip: {{ ip }}
 browser: {{ browser }}
 
@@ -22,5 +22,5 @@ browser: {{ browser }}
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}
-Je ontvangt dit bericht omdat je mailadres vermeld staat als support-mailadres in de instellingen: {{ config_url }}
+Je ontvangt dit bericht omdat je email adres vermeld staat als support email adres in de instellingen: {{ config_url }}
 {% endblock unsubscribe %}

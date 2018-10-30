@@ -26,27 +26,17 @@ if ($token)
 		$ev_data = [
 			'token'			=> $token,
 			'script_name'	=> 'contact',
-			'email'			=> strtolower($data['mail']),
+			'email'			=> $data['email'],
 		];
 
-		$app['xdb']->set('email_validated', $data['mail'], $ev_data);
-
-		$msg_html = $data['html'];
-
-		$converter = new \League\HTMLToMarkdown\HtmlConverter();
-		$converter_config = $converter->getConfig();
-		$converter_config->setOption('strip_tags', true);
-		$converter_config->setOption('remove_nodes', 'img');
-
-		$msg_text = $converter->convert($msg_html);
+		$app['xdb']->set('email_validated', $data['email'], $ev_data);
 
 		$vars = [
-			'msg_html'		=> $msg_html,
-			'msg_text'		=> $msg_text,
+			'message'		=> $data['message'],
 			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			'ip'			=> $data['ip'],
 			'browser'		=> $data['browser'],
-			'mail'			=> $data['mail'],
+			'email'			=> $data['email'],
 			'group'			=> [
 				'name' =>	$app['config']->get('systemname'),
 				'tag' => 	$app['config']->get('systemtag'),
@@ -56,14 +46,14 @@ if ($token)
 		$app['queue.mail']->queue([
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
-			'to'		=> $data['mail'],
+			'to'		=> $data['email'],
 		]);
 
 		$app['queue.mail']->queue([
 			'template'	=> 'contact',
 			'vars'		=> $vars,
 			'to'		=> 'support',
-			'reply_to'	=> $data['mail'],
+			'reply_to'	=> $data['email'],
 		]);
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
@@ -79,8 +69,8 @@ if ($token)
 
 if($post && isset($_POST['zend']))
 {
-	$mail = isset($_POST['mail']) ? trim($_POST['mail']) : false;
-	$description = isset($_POST['description']) ? trim($_POST['description']) : false;
+	$email = trim(strtolower($_POST['email']));
+	$message = trim($_POST['message']);
 
 	$browser = $_SERVER['HTTP_USER_AGENT'];
 
@@ -97,24 +87,24 @@ if($post && isset($_POST['zend']))
 		$ip = $_SERVER['REMOTE_ADDR'];
 	}
 
-	if (empty($mail) || !$mail)
+	if (empty($email) || !$email)
 	{
-		$errors[] = 'Vul je mailadres in';
+		$errors[] = 'Vul je email adres in';
 	}
 
-	if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 	{
-		$errors[] = 'Geen geldig mailadres';
+		$errors[] = 'Geen geldig email adres';
 	}
 
-	if (empty($description) || strip_tags($description) == '')
+	if (empty($message) || strip_tags($message) == '' || !$message)
 	{
 		$errors[] = 'Geef een bericht in.';
 	}
 
 	if (!trim($app['config']->get('support')))
 	{
-		$errors[] = 'Het support mailadres is niet ingesteld op deze installatie';
+		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
 	}
 
 	if ($token_error = $app['form_token']->get_error())
@@ -124,14 +114,9 @@ if($post && isset($_POST['zend']))
 
 	if(!count($errors))
 	{
-		$config_htmlpurifier = HTMLPurifier_Config::createDefault();
-		$config_htmlpurifier->set('Cache.DefinitionImpl', null);
-		$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
-		$html = $htmlpurifier->purify($description);
-
 		$contact = [
-			'html' 		=> $html,
-			'mail'		=> $mail,
+			'message' 	=> $message,
+			'email'		=> $email,
 			'browser'	=> $browser,
 			'ip'		=> $ip,
 		];
@@ -141,7 +126,7 @@ if($post && isset($_POST['zend']))
 		$app['predis']->set($key, json_encode($contact));
 		$app['predis']->expire($key, 86400);
 
-		$app['monolog']->info('Contact form filled in with address ' . $mail . '(not confirmed yet) content: ' . $html);
+		$app['monolog']->info('Contact form filled in with address ' . $email . '(not confirmed yet) content: ' . $html);
 
 		$vars = [
 			'group' => [
@@ -153,7 +138,7 @@ if($post && isset($_POST['zend']))
 		];
 
 		$return_message =  $app['queue.mail']->queue([
-			'to' 		=> $mail,
+			'to' 		=> $email,
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,
 		]);
@@ -165,7 +150,7 @@ if($post && isset($_POST['zend']))
 			exit;
 		}
 
-		$app['alert']->error('Mail niet verstuurd. ' . $return_message);
+		$app['alert']->error('Email niet verstuurd. ' . $return_message);
 	}
 	else
 	{
@@ -174,20 +159,18 @@ if($post && isset($_POST['zend']))
 }
 else
 {
-	$description = '';
-	$mail = '';
+	$message = '';
+	$email = '';
 }
 
 if (!$app['config']->get('mailenabled'))
 {
-	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('Email functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!$app['config']->get('support'))
 {
-	$app['alert']->warning('Er is geen support mailadres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support email adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
-
-$app['assets']->add(['summernote', 'rich_edit.js']);
 
 $h1 = 'Contact';
 $fa = 'comment-o';
@@ -204,23 +187,20 @@ if ($top_text)
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="mail" class="col-sm-2 control-label">Je mailadres</label>';
-echo '<div class="col-sm-10">';
-echo '<input type="email" class="form-control" id="mail" name="mail" ';
-echo 'value="' . $mail . '" required>';
+echo '<label for="mail">Je Email Adres</label>';
+echo '<input type="email" class="form-control" id="email" name="email" ';
+echo 'value="' . $email . '" required>';
 echo '<p><small>Er wordt een validatielink naar je gestuurd die je moet aanklikken.</small></p>';
 echo '</div>';
-echo '</div>';
 
 echo '<div class="form-group">';
-echo '<div class="col-sm-12">';
-echo '<textarea name="description" class="form-control rich-edit" rows="4">';
-echo $description;
+echo '<label for="message">Je Bericht</label>';
+echo '<textarea name="message" id="message" class="form-control" rows="4">';
+echo $message;
 echo '</textarea>';
-echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
@@ -240,6 +220,6 @@ if ($bottom_text)
 
 echo '<p><small>Leden: indien mogelijk, login en gebruik het supportformulier. ';
 echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';
-echo 'aanvragen met je mailadres vanuit de login-pagina!</i></small></p>';
+echo 'aanvragen met je email adres vanuit de login-pagina!</i></small></p>';
 
 include __DIR__ . '/include/footer.php';
