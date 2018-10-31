@@ -679,7 +679,8 @@ foreach($users as $user_id => $user)
 	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
 	echo 'value="';
 	echo $amount[$user_id] ?? '';
-	echo  '" ';
+	echo '" ';
+	echo 'min="0" ';
 	echo 'data-letscode="' . $user['letscode'] . '" ';
 	echo 'data-user-id="' . $user_id . '" ';
 	echo 'data-balance="' . $user['saldo'] . '" ';
