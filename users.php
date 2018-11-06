@@ -2948,18 +2948,13 @@ else
 
 if ($s_admin)
 {
-	if ($v_list)
-	{
-		$top_right .= '<a href="#" class="csv">';
-		$top_right .= '<i class="fa fa-file"></i>';
-		$top_right .= '&nbsp;csv</a>&nbsp;';
-	}
+	$csv_en = $v_list;
 
 	$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
 
 	if ($v_list)
 	{
-		$top_buttons .= '<a href="#actions" class="btn btn-default"';
+		$top_buttons .= '<a href="#actions" class="btn btn-info"';
 		$top_buttons .= ' title="Bulk acties"><i class="fa fa-envelope-o"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Bulk acties</span></a>';
 	}
@@ -2971,40 +2966,32 @@ else
 	$h1 = 'Leden';
 }
 
-$h1 .= '<span class="pull-right hidden-xs">';
-$h1 .= '<span class="btn-group" role="group">';
+$top_buttons_right = '';
+
+if ($s_admin && $v_list)
+{
+	$top_buttons_right .= '<button class="btn btn-info" title="Toon kolommen" ';
+	$top_buttons_right .= 'data-toggle="collapse" data-target="#columns_show"';
+	$top_buttons_right .= '><i class="fa fa-columns"></i></button>&nbsp;';
+}
+
+$top_buttons_right .= '<span class="btn-group" role="group">';
 
 $active = ($v_list) ? ' active' : '';
 $v_params = $params;
 $v_params['view'] = 'list';
-$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
-
-/*
-$active = ($v_extended) ? ' active' : '';
-$v_params = $params;
-$v_params['view'] = 'extended';
-$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst met omschrijvingen', 'th-list');
-*/
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
 
 $active = ($v_tiles) ? ' active' : '';
 $v_params['view'] = 'tiles';
-$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
 
 $active = ($v_map) ? ' active' : '';
 $v_params['view'] = 'map';
 unset($v_params['status']);
-$h1 .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'kaart', 'map-marker');
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'kaart', 'map-marker');
 
-$h1 .= '</span>';
-
-if ($s_admin && $v_list)
-{
-	$h1 .= '&nbsp;<button class="btn btn-info" title="Toon kolommen" ';
-	$h1 .= 'data-toggle="collapse" data-target="#columns_show"';
-	$h1 .= '><i class="fa fa-columns"></i></button>';
-}
-
-$h1 .= '</span>';
+$top_buttons_right .= '</span>';
 
 $fa = 'users';
 
@@ -3015,7 +3002,7 @@ if ($v_list)
 	if ($s_admin)
 	{
 		$app['assets']->add(['datepicker', 'summernote', 'typeahead',
-			'csv.js', 'table_sel.js', 'rich_edit.js', 'typeahead.js']);
+			'table_sel.js', 'rich_edit.js', 'typeahead.js']);
 	}
 }
 else if ($v_tiles)

@@ -584,18 +584,20 @@ else
 	$h1 = 'Nieuws';
 
 	$v_params = $params;
-	$h1 .= '<span class="pull-right hidden-xs">';
-	$h1 .= '<span class="btn-group" role="group">';
 
-	$active = ($v_list) ? ' active' : '';
+	$csv_en = $s_admin && $v_list;
+
+	$top_buttons_right = '<span class="btn-group" role="group">';
+
+	$active = $v_list ? ' active' : '';
 	$v_params['view'] = 'list';
-	$h1 .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$top_buttons_right .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
 
-	$active = ($v_extended) ? ' active' : '';
+	$active = $v_extended ? ' active' : '';
 	$v_params['view'] = 'extended';
-	$h1 .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$top_buttons_right .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
 
-	$h1 .= '</span></span>';
+	$top_buttons_right .= '</span>';
 
 	$fa = 'calendar';
 
@@ -620,7 +622,7 @@ if ($v_list)
 {
 	echo '<div class="panel panel-warning printview">';
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-hover table-bordered footable">';
+	echo '<table class="table table-striped table-hover table-bordered footable csv">';
 
 	if (!$inline)
 	{

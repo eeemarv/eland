@@ -558,7 +558,6 @@ if ($map)
 		$app['alert']->error('Onbestaande map id.');
 		cancel();
 	}
-//
 
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'doc',
@@ -673,8 +672,10 @@ if ($map)
 	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 }
 
+$csv_en = $s_admin;
+
 $h1 = aphp('docs', [], 'Documenten');
-$h1 .= ($map) ? ': map "' . $map_name . '"' : '';
+$h1 .= $map ? ': map "' . $map_name . '"' : '';
 
 include __DIR__ . '/include/header.php';
 
@@ -752,7 +753,7 @@ if (count($docs))
 	echo '<div class="panel panel-default printview">';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-bordered table-striped table-hover footable"';
+	echo '<table class="table table-bordered table-striped table-hover footable csv"';
 	echo ' data-filter="#q" data-filter-minimum="1">';
 	echo '<thead>';
 

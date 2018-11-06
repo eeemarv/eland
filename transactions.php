@@ -1730,12 +1730,7 @@ if ($s_admin || $s_user)
 	}
 }
 
-if ($s_admin)
-{
-	$top_right .= '<a href="#" class="csv">';
-	$top_right .= '<i class="fa fa-file"></i>';
-	$top_right .= '&nbsp;csv</a>';
-}
+$csv_en = $s_admin;
 
 $filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
 
@@ -1767,7 +1762,7 @@ if (!$inline)
 	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
 	$h1 .= '</div>';
 
-	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
+	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js']);
 
 	include __DIR__ . '/include/header.php';
 

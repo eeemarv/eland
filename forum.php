@@ -517,6 +517,8 @@ if ($s_admin || $s_user)
 	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
 }
 
+$csv_en = $s_admin;
+
 $show_visibility = (!$s_guest && $app['config']->get('template_lets')
 	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
 
@@ -569,7 +571,7 @@ if ($forum_empty)
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable"';
+echo '<table class="table table-bordered table-striped table-hover footable csv"';
 echo ' data-filter="#q" data-filter-minimum="1">';
 echo '<thead>';
 
@@ -579,8 +581,7 @@ echo '<th>Reacties</th>';
 echo '<th data-hide="phone, tablet">Gebruiker</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="descending" ';
 echo 'data-type="numeric">Tijdstip</th>';
-echo ($show_visibility) ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
-echo ($s_admin) ? '<th data-hide="phone,tablet">Acties</th>' : '';
+echo $show_visibility ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
 echo '</tr>';
 
 echo '</thead>';
@@ -616,16 +617,7 @@ foreach($forum_posts as $p)
 		echo '<td>' . $app['access_control']->get_label($p['access']) . '</td>';
 	}
 
-	if ($s_admin)
-	{
-		echo '<td>';
-		echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-		echo '&nbsp;';
-		echo aphp('forum', ['del' => $pid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-		echo '</td>';
-	}
 	echo '</tr>';
-
 }
 
 echo '</tbody>';

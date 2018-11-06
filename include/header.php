@@ -327,10 +327,29 @@ echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';
 
 echo '<div class="visible-xs pull-left button-offcanvas menu-button">';
-echo '<button type="button" class="btn btn-primary btn-md " data-toggle="offcanvas"';
+echo '<button type="button" class="btn btn-primary btn-md" data-toggle="offcanvas"';
 echo ' title="Menu"><i class="fa fa-chevron-left"></i></button>';
 echo '</div>';
+
 echo $top_buttons ?? '';
+
+if ($top_buttons_right || $csv_en)
+{
+	echo '<div class="pull-right">';
+
+	if ($csv_en)
+	{
+		$app['assets']->add('csv.js');
+
+		echo '<a href="#" class="csv btn btn-info btn-md" title="Download CSV">';
+		echo '<i class="fa fa-file"></i>';
+		echo '</a>&nbsp;';
+	}
+
+	echo $top_buttons_right;
+	echo '</div';
+}
+
 echo '</div>';
 echo '</div>';
 

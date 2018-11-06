@@ -1912,12 +1912,7 @@ if ($s_admin || $s_user)
 	}
 }
 
-if ($s_admin && $v_list)
-{
-	$top_right .= '<a href="#" class="csv">';
-	$top_right .= '<i class="fa fa-file"></i>';
-	$top_right .= '&nbsp;csv</a>';
-}
+$csv_en = $s_admin && $v_list;
 
 $panel_collapse = (($fcode && !$uid) || $ow != 'all' || $valid != 'all' || $ustatus != 'active') ? false : true;
 
@@ -1952,20 +1947,20 @@ $fa = 'newspaper-o';
 if (!$inline)
 {
 	$v_params = $params;
-	$h1 .= '<span class="pull-right hidden-xs">';
-	$h1 .= '<span class="btn-group" role="group">';
+
+	$top_buttons_right = '<span class="btn-group" role="group">';
 
 	$active = ($v_list) ? ' active' : '';
 	$v_params['view'] = 'list';
-	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
 
 	$active = ($v_extended) ? ' active' : '';
 	$v_params['view'] = 'extended';
-	$h1 .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
 
-	$h1 .= '</span></span>';
+	$top_buttons_right .= '</span>';
 
-	$app['assets']->add(['csv.js', 'msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
+	$app['assets']->add(['msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
 
 	include __DIR__ . '/include/header.php';
 
