@@ -7,7 +7,6 @@ require_once __DIR__ . '/include/web.php';
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 $monitor = $_GET['monitor'] ?? false;
-
 $location = $_GET['location'] ?? false;
 
 if (!$location

@@ -12,7 +12,6 @@ $edit = $_GET['edit'] ?? false;
 $map = $_GET['map'] ?? false;
 $map_edit = $_GET['map_edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
-
 $submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
@@ -489,8 +488,6 @@ if ($add)
 	}
 
 	$app['assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
-
-	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
 
 	$h1 = 'Nieuw document opladen';
 

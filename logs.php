@@ -8,10 +8,8 @@ $letscode = $_GET['letscode'] ?? '';
 $type = $_GET['type'] ?? '';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
-
 $orderby = $_GET['orderby'] ?? 'ts';
 $asc = $_GET['asc'] ?? 0;
-
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
 

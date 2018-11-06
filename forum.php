@@ -10,6 +10,7 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
+$submit = isset($_POST['zend']) ? true : false;
 
 if (!($s_user || $s_admin))
 {
@@ -29,8 +30,6 @@ if (!($s_user || $s_admin))
 		cancel();
 	}
 }
-
-$submit = isset($_POST['zend']) ? true : false;
 
 if (!$app['config']->get('forum_en'))
 {
@@ -648,4 +647,3 @@ function cancel($topic = null)
 	header('Location: ' . generate_url('forum', $params));
 	exit;
 }
-

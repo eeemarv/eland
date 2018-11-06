@@ -8,36 +8,25 @@ $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
-
 $uid = $_GET['uid'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
-
 $orderby = $_GET['orderby'] ?? 'm.cdate';
 $asc = $_GET['asc'] ?? 0;
-
 $recent = isset($_GET['recent']) ? true : false;
-
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
-
 $q = $_GET['q'] ?? '';
 $cid = $_GET['cid'] ?? '';
-
 $ow = $_GET['ow'] ?? 'all';
 $valid = $_GET['valid'] ?? 'all';
 $ustatus = $_GET['ustatus'] ?? 'active';
 $fcode = $_GET['fcode'] ?? '';
-
 $img = isset($_GET['img']) ? true : false;
 $insert_img = isset($_GET['insert_img']) ? true : false;
 $img_del = $_GET['img_del'] ?? false;
-
 $images = $_FILES['images'] ?? false;
-
 $mail = isset($_POST['mail']) ? true : false;
-
 $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
-
 $extend_submit = isset($_POST['extend_submit']) ? true : false;
 $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']) ? true : false;
@@ -1133,8 +1122,6 @@ if (($edit || $add))
 	}
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
-
-	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
 	if ($s_admin)
 	{

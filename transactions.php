@@ -854,8 +854,6 @@ if ($add)
 
 	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio') > 0 ? true : false;
 
-	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
-
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
 
@@ -1165,8 +1163,6 @@ if ($edit)
 
 		$app['alert']->error($errors);
 	}
-
-	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
 	$h1 = 'Omschrijving transactie aanpassen';
 	$fa = 'exchange';
