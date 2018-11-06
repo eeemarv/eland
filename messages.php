@@ -1136,11 +1136,6 @@ if (($edit || $add))
 
 	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
 
-	if (!$s_master)
-	{
-		$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
-	}
-
 	if ($s_admin)
 	{
 		$app['assets']->add(['typeahead', 'typeahead.js']);
@@ -1428,11 +1423,6 @@ if ($id)
 	}
 
 	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
-
-	if (($s_user || $s_admin) && !$s_master)
-	{
-		$top_buttons .= aphp('messages', ['uid' => $s_id, 'view' => $view_messages], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
-	}
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
@@ -1937,10 +1927,6 @@ if ($s_admin || $s_user)
 		{
 			$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
 		}
-	}
-	else if (!$s_master)
-	{
-		$top_buttons .= aphp('messages', ['uid' => $s_id], 'Mijn vraag en aanbod', 'btn btn-default', 'Mijn vraag en aanbod', 'user', true);
 	}
 }
 

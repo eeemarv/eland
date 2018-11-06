@@ -856,11 +856,6 @@ if ($add)
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
-	if (!$s_master)
-	{
-		$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
-	}
-
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
 
@@ -1359,11 +1354,6 @@ if ($id)
 
 	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 
-	if ($s_user || $s_admin)
-	{
-		$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
-	}
-
 	$h1 = 'Transactie';
 	$fa = 'exchange';
 
@@ -1746,11 +1736,6 @@ if ($s_admin || $s_user)
 	else
 	{
 		$top_buttons .= aphp('transactions', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
-
-		if (!$s_master)
-		{
-			$top_buttons .= aphp('transactions', ['uid' => $s_id], 'Mijn transacties', 'btn btn-default', 'Mijn transacties', 'user', true);
-		}
 	}
 }
 

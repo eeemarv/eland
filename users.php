@@ -3013,11 +3013,6 @@ if ($s_admin && $v_list)
 
 $h1 .= '</span>';
 
-if (($s_user || $s_admin) && !$s_master)
-{
-	$top_buttons .= aphp('users', ['id' => $s_id], 'Mijn gegevens', 'btn btn-default', 'Mijn gegevens', 'user', true);
-}
-
 $fa = 'users';
 
 if ($v_list)
