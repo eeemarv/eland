@@ -4,8 +4,8 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
-$days = (isset($_GET['days'])) ? $_GET['days'] : 365;
-$user_id = (isset($_GET['user_id'])) ? $_GET['user_id'] : false;
+$days = $_GET['days'] ?? 365;
+$user_id = $_GET['user_id'] ?? false;
 
 if (!$user_id)
 {
@@ -124,5 +124,3 @@ echo json_encode([
 	'end' 			=> $end_date,
 	'groups'		=> $groups,
 ]);
-
-

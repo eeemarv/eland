@@ -3,7 +3,7 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
-$group_id = $_GET['group_id'];
+$group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: text/plain');
 

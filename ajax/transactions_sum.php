@@ -3,25 +3,23 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
-$days = $_GET['days'];
-$ex_letscodes = $_GET['ex'];
+$days = $_GET['days'] ?? false;
+$ex_letscodes = $_GET['ex'] ?? [];
+$in = isset($_GET['in']) && $_GET['in'] ? true : false;
 
-if (!isset($days))
+if (!$days)
 {
 	http_response_code(404);
 	exit;
 }
 
-if (!isset($ex_letscodes))
+if (!is_array($ex_letscodes))
 {
-	$ex_letscodes = [];
-}
-else
-{
-	array_walk($ex_letscodes, function(&$value){ $value = trim($value); });
+	http_response_code(500);
+	exit;
 }
 
-$in = isset($_GET['in']) && $_GET['in'] ? true : false;
+array_walk($ex_letscodes, function(&$value){ $value = trim($value); });
 
 $res = $in ? 'to' : 'from';
 $inp = $in ? 'from' : 'to';

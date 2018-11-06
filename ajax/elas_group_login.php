@@ -3,7 +3,7 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
-$group_id = isset($_GET['group_id']) ? $_GET['group_id'] : false;
+$group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: application/json');
 
