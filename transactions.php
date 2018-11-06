@@ -1328,11 +1328,6 @@ if ($id)
 		order by id desc
 		limit 1', [$id]);
 
-	if ($s_user || $s_admin)
-	{
-		$top_buttons .= aphp('transactions', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
-	}
-
 	if ($s_admin && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
 	{
 		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);

@@ -2216,11 +2216,6 @@ if ($id)
 		$app['assets']->add(['fileupload', 'user_img.js']);
 	}
 
-	if ($s_admin)
-	{
-		$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
-	}
-
 	if ($s_admin || $s_owner)
 	{
 		$title = ($s_admin) ? 'Gebruiker' : 'Mijn gegevens';

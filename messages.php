@@ -1371,15 +1371,10 @@ if ($id)
 		$app['assets']->add(['fileupload', 'msg_img.js']);
 	}
 
-	if ($s_user || $s_admin)
+	if ($s_admin || $s_owner)
 	{
-		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
-
-		if ($s_admin || $s_owner)
-		{
-			$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
-			$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
-		}
+		$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
+		$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 	}
 
 	if ($message['msg_type'] == 1
