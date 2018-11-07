@@ -176,6 +176,7 @@ if (!$s_anonymous)
 
 	echo '</ul>';
 	echo '</li>';
+
 	if ($s_admin)
 	{
 		$menu = [
@@ -231,9 +232,19 @@ if (!$s_anonymous)
 		$u_param['u'] = $_GET['u'];
 
 		echo '<li>';
-		echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '"><i class="fa fa-times"></i>';
-		echo ' Admin modus uit</a>';
+		echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '">';
+		echo '<i class="fa fa-user"></i>';
+		echo ' Leden modus</a>';
 		echo '</li>';
+
+		$u_param['r'] = 'guest';
+
+		echo '<li>';
+		echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '">';
+		echo '<i class="fa fa-share-alt"></i>';
+		echo ' Gast modus</a>';
+		echo '</li>';
+
 		echo '</ul>';
 		echo '</li>';
 	}
