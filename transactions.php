@@ -1183,14 +1183,10 @@ if ($edit)
 	echo $app['date_format']->get($transaction['cdate']);
 	echo '</dd>';
 
-	echo '<br>';
-
 	echo '<dt>Transactie ID</dt>';
 	echo '<dd>';
 	echo $transaction['transid'];
 	echo '</dd>';
-
-	echo '<br>';
 
 	if ($transaction['real_from'])
 	{
@@ -1224,8 +1220,6 @@ if ($edit)
 		echo '</dd>';
 	}
 
-	echo '<br>';
-
 	if ($transaction['real_to'])
 	{
 		echo '<dt>Naar interlets account</dt>';
@@ -1258,14 +1252,10 @@ if ($edit)
 		echo '</dd>';
 	}
 
-	echo '<br>';
-
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
 	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
 	echo '</dd>';
-
-	echo '<br>';
 
 	echo '<dt>Omschrijving</dt>';
 	echo '<dd>';
@@ -1358,14 +1348,10 @@ if ($id)
 	echo $app['date_format']->get($transaction['cdate']);
 	echo '</dd>';
 
-	echo '<br>';
-
 	echo '<dt>Transactie ID</dt>';
 	echo '<dd>';
 	echo $transaction['transid'];
 	echo '</dd>';
-
-	echo '<br>';
 
 	if ($transaction['real_from'])
 	{
@@ -1399,8 +1385,6 @@ if ($id)
 		echo '</dd>';
 	}
 
-	echo '<br>';
-
 	if ($transaction['real_to'])
 	{
 		echo '<dt>Naar interlets account</dt>';
@@ -1433,14 +1417,10 @@ if ($id)
 		echo '</dd>';
 	}
 
-	echo '<br>';
-
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
 	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
 	echo '</dd>';
-
-	echo '<br>';
 
 	echo '<dt>Omschrijving</dt>';
 	echo '<dd>';
