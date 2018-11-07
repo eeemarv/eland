@@ -667,10 +667,6 @@ if ($s_admin)
 		$top_buttons .= aphp('docs', ['map_edit' => $map], 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'pencil', true);
 	}
 }
-if ($map)
-{
-	$top_buttons .= aphp('docs', [], 'Lijst', 'btn btn-default', 'Lijst', 'files-o', true);
-}
 
 $csv_en = $s_admin;
 

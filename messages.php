@@ -1394,17 +1394,15 @@ if ($id)
 				'exchange', true, false, $s_schema);
 	}
 
-	if ($prev)
-	{
-		$top_buttons .= aphp('messages', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
-	}
+	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	if ($next)
-	{
-		$top_buttons .= aphp('messages', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
-	}
+	$prev_url = $prev ? generate_url('messages', ['id' => $prev]) : '';
+	$next_url = $next ? generate_url('messages', ['id' => $next]) : '';
 
-	$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o', true);
+	$top_buttons_right .= btn_prev($prev_url);
+	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= aphp('messages', ['view' => $view_messages], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
+	$top_buttons_right .= '</span>';
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);

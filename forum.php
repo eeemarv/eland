@@ -397,17 +397,15 @@ if ($topic)
 		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
 
-	if ($prev)
-	{
-		$top_buttons .= aphp('forum', ['t' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
-	}
+	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	if ($next)
-	{
-		$top_buttons .= aphp('forum', ['t' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
-	}
+	$prev_url = $prev ? generate_url('forum', ['t' => $prev]) : '';
+	$next_url = $next ? generate_url('forum', ['t' => $next]) : '';
 
-	$top_buttons .= aphp('forum', [], 'Forum onderwerpen', 'btn btn-default', 'Forum onderwerpen', 'comments', true);
+	$top_buttons_right .= btn_prev($prev_url);
+	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= aphp('forum', [], '', 'btn btn-default', 'Forum onderwerpen', 'comments');
+	$top_buttons_right .= '</span>';
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);
 

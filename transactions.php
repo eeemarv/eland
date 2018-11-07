@@ -1333,17 +1333,15 @@ if ($id)
 		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);
 	}
 
-	if ($prev)
-	{
-		$top_buttons .= aphp('transactions', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
-	}
+	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	if ($next)
-	{
-		$top_buttons .= aphp('transactions', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
-	}
+	$prev_url = $prev ? generate_url('transactions', ['id' => $prev]) : '';
+	$next_url = $next ? generate_url('transactions', ['id' => $next]) : '';
 
-	$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
+	$top_buttons_right .= btn_prev($prev_url);
+	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= aphp('transactions', [], '', 'btn btn-default', 'Transactielijst', 'exchange');
+	$top_buttons_right .= '</span>';
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';

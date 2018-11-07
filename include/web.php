@@ -507,6 +507,30 @@ $app['access_control'] = function($app){
 
 /**************** FUNCTIONS ***************/
 
+function btn_next(string $url):string
+{
+	$ret = ' class="btn btn-default" title="Volgende"><i class="fa fa-chevron-down"></i>';
+
+	if ($url)
+	{
+		return '<a href="' . $url . '"' . $ret . '</a>';
+	}
+
+	return '<button disabled="disabled"' . $ret . '</button>';
+}
+
+function btn_prev(string $url):string
+{
+	$ret = ' class="btn btn-default" title="Vorige"><i class="fa fa-chevron-up"></i>';
+
+	if ($url)
+	{
+		return '<a href="' . $url . '"' . $ret . '</a>';
+	}
+
+	return '<button disabled="disabled"' . $ret . '</button>';
+}
+
 /*
  * create link within eland with query parameters depending on user and role
  */
@@ -520,11 +544,11 @@ function aphp(
 	$fa = false,
 	$collapse = false,
 	$attr = false,
-	$sch = false)
+	$sch = false):string
 {
 	$out = '<a href="' .  generate_url($entity, $params, $sch) . '"';
-	$out .= ($class) ? ' class="' . $class . '"' : '';
-	$out .= ($title) ? ' title="' . $title . '"' : '';
+	$out .= $class ? ' class="' . $class . '"' : '';
+	$out .= $title ? ' title="' . $title . '"' : '';
 	if (is_array($attr))
 	{
 		foreach ($attr as $name => $val)
@@ -533,10 +557,10 @@ function aphp(
 		}
 	}
 	$out .= '>';
-	$out .= ($fa) ? '<i class="fa fa-' . $fa .'"></i>' : '';
-	$out .= ($collapse) ? '<span class="hidden-xs hidden-sm"> ' : ' ';
+	$out .= $fa ? '<i class="fa fa-' . $fa .'"></i>' : '';
+	$out .= $collapse ? '<span class="hidden-xs hidden-sm"> ' : ' ';
 	$out .= htmlspecialchars($label, ENT_QUOTES);
-	$out .= ($collapse) ? '</span>' : '';
+	$out .= $collapse ? '</span>' : '';
 	$out .= '</a>';
 	return $out;
 }
@@ -544,7 +568,7 @@ function aphp(
 /**
  * generate url
  */
-function generate_url(string $entity, $params = [], $sch = false)
+function generate_url(string $entity, $params = [], $sch = false):string
 {
 	global $rootpath, $app;
 
@@ -557,9 +581,9 @@ function generate_url(string $entity, $params = [], $sch = false)
 
 	$params = http_build_query($params);
 
-	$params = ($params) ? '?' . $params : '';
+	$params = $params ? '?' . $params : '';
 
-	$path = ($sch) ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $rootpath;
+	$path = $sch ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $rootpath;
 
 	return $path . $entity . '.php' . $params;
 }
@@ -567,7 +591,7 @@ function generate_url(string $entity, $params = [], $sch = false)
 /**
  * get session query param
  */
-function get_session_query_param($sch = false)
+function get_session_query_param($sch = false):array
 {
 	global $p_role, $p_user, $p_schema, $access_level;
 	global $s_user_params_own_group, $s_id, $s_schema;
@@ -626,7 +650,7 @@ function redirect_default_page()
 	exit;
 }
 
-function get_default_page()
+function get_default_page():string
 {
 	global $view_messages, $view_users, $view_news, $app;
 	static $default_page;

@@ -175,8 +175,8 @@ if ($add || $edit)
 	$app['assets']->add('datepicker');
 
 	$h1 = 'Nieuwsbericht ';
-	$h1 .= ($add) ? 'toevoegen' : 'aanpassen';
-	$fa = 'calendar';
+	$h1 .= $add ? 'toevoegen' : 'aanpassen';
+	$fa = 'calendar-o';
 
 	include __DIR__ . '/include/header.php';
 
@@ -297,7 +297,7 @@ if ($del)
 	$news_access = $app['xdb']->get('news_access', $del)['data']['access'];
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
-	$fa = 'calendar';
+	$fa = 'calendar-o';
 
 	include __DIR__ . '/include/header.php';
 
@@ -428,20 +428,18 @@ if ($id)
 		}
 	}
 
-	if ($prev)
-	{
-		$top_buttons .= aphp('news', ['id' => $prev], 'Vorige', 'btn btn-default', 'Vorige', 'chevron-down', true);
-	}
+	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	if ($next)
-	{
-		$top_buttons .= aphp('news', ['id' => $next], 'Volgende', 'btn btn-default', 'Volgende', 'chevron-up', true);
-	}
+	$prev_url = $prev ? generate_url('news', ['id' => $prev]) : '';
+	$next_url = $next ? generate_url('news', ['id' => $next]) : '';
 
-	$top_buttons .= aphp('news', ['view' => $view_news], 'Lijst', 'btn btn-default', 'Lijst', 'calendar', true);
+	$top_buttons_right .= btn_prev($prev_url);
+	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= aphp('news', ['view' => $view_news], '', 'btn btn-default', 'Lijst', 'calendar-o');
+	$top_buttons_right .= '</span>';
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
-	$fa = 'calendar';
+	$fa = 'calendar-o';
 
 	include __DIR__ . '/include/header.php';
 
@@ -576,7 +574,7 @@ if(($s_user || $s_admin) && !$inline)
 if ($inline)
 {
 	echo '<h3>';
-	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar');
+	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar-o');
 	echo '</h3>';
 }
 else
@@ -599,7 +597,7 @@ else
 
 	$top_buttons_right .= '</span>';
 
-	$fa = 'calendar';
+	$fa = 'calendar-o';
 
 	include __DIR__ . '/include/header.php';
 }

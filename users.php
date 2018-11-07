@@ -2243,6 +2243,10 @@ if ($id)
 				'exchange', true, false, $s_schema);
 	}
 
+	$top_buttons_right = '<span class="btn-group" role="group">';
+
+	$prev_url = $next_url = '';
+
 	if ($prev)
 	{
 		$param_prev = ['id' => $prev];
@@ -2252,7 +2256,7 @@ if ($id)
 			$param_prev['link'] = $link;
 		}
 
-		$top_buttons .= aphp('users', $param_prev, 'Vorige', 'btn btn-default', 'Vorige', 'chevron-up', true);
+		$prev_url .= generate_url('users', $param_prev);
 	}
 
 	if ($next)
@@ -2264,10 +2268,13 @@ if ($id)
 			$param_next['link'] = $link;
 		}
 
-		$top_buttons .= aphp('users', $param_next, 'Volgende', 'btn btn-default', 'Volgende', 'chevron-down', true);
+		$next_url = generate_url('users', $param_next);
 	}
 
-	$top_buttons .= aphp('users', ['status' => $link ? $link : 'active', 'view' => $view_users], 'Lijst', 'btn btn-default', 'Lijst', 'users', true);
+	$top_buttons_right .= btn_prev($prev_url);
+	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= aphp('users', ['status' => $link ? $link : 'active', 'view' => $view_users], '', 'btn btn-default', 'Lijst', 'users');
+	$top_buttons_right .= '</span>';
 
 	$status = $user['status'];
 	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
@@ -2954,8 +2961,8 @@ if ($s_admin)
 
 	if ($v_list)
 	{
-		$top_buttons .= '<a href="#actions" class="btn btn-info"';
-		$top_buttons .= ' title="Bulk acties"><i class="fa fa-envelope-o"></i>';
+		$top_buttons .= '<a href="#actions" class="btn btn-info" ';
+		$top_buttons .= 'title="Bulk acties"><i class="fa fa-envelope-o"></i>';
 		$top_buttons .= '<span class="hidden-xs hidden-sm"> Bulk acties</span></a>';
 	}
 
@@ -2977,19 +2984,19 @@ if ($s_admin && $v_list)
 
 $top_buttons_right .= '<span class="btn-group" role="group">';
 
-$active = ($v_list) ? ' active' : '';
+$active = $v_list ? ' active' : '';
 $v_params = $params;
 $v_params['view'] = 'list';
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Lijst', 'align-justify');
 
-$active = ($v_tiles) ? ' active' : '';
+$active = $v_tiles ? ' active' : '';
 $v_params['view'] = 'tiles';
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'tegels met foto\'s', 'th');
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Tegels met foto\'s', 'th');
 
-$active = ($v_map) ? ' active' : '';
+$active = $v_map ? ' active' : '';
 $v_params['view'] = 'map';
 unset($v_params['status']);
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'kaart', 'map-marker');
+$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Kaart', 'map-marker');
 
 $top_buttons_right .= '</span>';
 
