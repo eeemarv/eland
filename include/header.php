@@ -8,7 +8,10 @@ if ($css = $app['config']->get('css'))
 echo '<!DOCTYPE html>';
 echo '<html lang="nl">';
 echo '<head>';
-echo '<title>' . $app['config']->get('systemname') .'</title>';
+
+echo '<title>';
+echo $app['config']->get('systemname');
+echo '</title>';
 
 echo $app['assets']->render_css();
 
@@ -25,12 +28,17 @@ echo '<meta name="theme-color" content="#ffffff">';
 echo '</head>';
 echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
+echo '" class="';
+echo $s_admin ? 'admin' : ($s_guest ? 'guest' : 'member');
 echo '">';
 
 echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
 echo 'class="ajax-loader" alt="waiting">';
 
-echo '<div class="navbar navbar-default navbar-fixed-top">';
+echo '<div class="navbar navbar-default navbar-fixed-top';
+echo $s_admin ? ' bg-info' : '';
+echo $s_guest ? ' bg-warning' : '';
+echo '">';
 echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
@@ -205,6 +213,7 @@ if (!$s_anonymous)
 		echo 'Admin modus';
 		echo '<span class="caret"></span></a>';
 		echo '<ul class="dropdown-menu" role="menu">';
+
 		foreach ($menu as $link => $item)
 		{
 			$active = ($app['script_name'] == $link) ? ' class="active"' : '';
@@ -237,13 +246,16 @@ if (!$s_anonymous)
 		echo ' Leden modus</a>';
 		echo '</li>';
 
-		$u_param['r'] = 'guest';
+		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		{
+			$u_param['r'] = 'guest';
 
-		echo '<li>';
-		echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '">';
-		echo '<i class="fa fa-share-alt"></i>';
-		echo ' Gast modus</a>';
-		echo '</li>';
+			echo '<li>';
+			echo '<a href="' . $user_url . '?' . http_build_query($u_param) . '">';
+			echo '<i class="fa fa-share-alt"></i>';
+			echo ' Gast modus</a>';
+			echo '</li>';
+		}
 
 		echo '</ul>';
 		echo '</li>';
@@ -261,7 +273,6 @@ if (!$s_anonymous)
 		echo 'Admin modus';
 		echo '</a>';
 	}
-
 }
 
 echo '</ul>';
@@ -294,7 +305,7 @@ else
 {
 	$menu = [
 		'messages'				=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
-		'users'					=> ['users', (($s_admin) ? 'Gebruikers' : 'Leden'), ['status' => 'active', 'view' => $view_users]],
+		'users'					=> ['users', $s_admin ? 'Gebruikers' : 'Leden', ['status' => 'active', 'view' => $view_users]],
 		'transactions'			=> ['exchange', 'Transacties', []],
 		'news'					=> ['calendar-o', 'Nieuws', ['view' => $view_news]],
 	];
@@ -317,7 +328,7 @@ echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $link => $item)
 {
-	$active = ($app['script_name'] == $link) ? ' class="active"' : '';
+	$active = $app['script_name'] == $link ? ' class="active"' : '';
 	echo '<li' . $active . '>';
 	echo aphp($link, $item[2],
 		$item[1], false, false, $item[0]);
@@ -327,7 +338,7 @@ echo '</ul>';
 
 echo '</div>';
 
-$class_admin = ($page_access == 'admin') ? ' admin' : '';
+$class_admin = $page_access === 'admin' ? ' admin' : '';
 
 echo '<div id="wrap">';
 echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
@@ -374,7 +385,6 @@ if (isset($top_right))
 if (isset($h1))
 {
 	echo '<h1>';
-	echo ($page_access == 'admin' || $s_admin) ? '<small><span class="label label-info">Admin</span></small> ' : '';
-	echo (isset($fa)) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
+	echo isset($fa) ? '<i class="fa fa-' . $fa . '"></i> ' : '';
 	echo $h1 . '</h1>';
 }
