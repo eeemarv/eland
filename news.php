@@ -369,55 +369,108 @@ if ($del)
 }
 
 /**
+ * Show newsitem/List all newsitems
+ * Fetch all newsitems
+ */
+
+$page_access = 'guest';
+require_once __DIR__ . '/include/web.php';
+
+$show_visibility = ($s_user && $app['config']->get('template_lets')
+	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+
+$news_access_ary = $no_access_ary = [];
+
+$rows = $app['xdb']->get_many([
+	'agg_schema' => $app['this_group']->get_schema(),
+	'agg_type' => 'news_access',
+]);
+
+foreach ($rows as $row)
+{
+	$access = $row['data']['access'];
+	$news_access_ary[$row['eland_id']] = $access;
+}
+
+$query = 'select * from news';
+
+if(!$s_admin)
+{
+	$query .= ' where approved = \'t\'';
+}
+
+$query .= ' order by itemdate ';
+$query .= $app['config']->get('news_order_asc') === '1' ? 'asc' : 'desc';
+
+$st = $app['db']->prepare($query);
+$st->execute();
+
+while ($row = $st->fetch())
+{
+	$news_id = $row['id'];
+	$news[$news_id] = $row;
+
+	if (!isset($news_access_ary[$news_id]))
+	{
+		$app['xdb']->set('news_access', $news_id, ['access' => 'interlets']);
+		$news[$k]['access'] = 'interlets';
+	}
+	else
+	{
+		$news[$news_id]['access'] = $news_access_ary[$news_id];
+	}
+
+	if (!$app['access_control']->is_visible($news[$news_id]['access']))
+	{
+		unset($news[$news_id]);
+		$no_access_ary[$news_id] = true;
+	}
+}
+
+/**
  * show a newsitem
  */
 
 if ($id)
 {
-	$page_access = 'guest';
+	if (!isset($news[$id]))
+	{
+		$app['alert']->error('Dit nieuwsbericht bestaat niet.');
+		cancel();
+	}
 
-	require_once __DIR__ . '/include/web.php';
+	$news_item = $news[$id];
 
-	$show_visibility = ($s_user && $app['config']->get('template_lets')
-		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
-
-	$news = $app['db']->fetchAssoc('SELECT n.*
-		FROM news n
-		WHERE n.id = ?', [$id]);
-
-	if (!$s_admin && !$news['approved'])
+	if (!$s_admin && !$news_item['approved'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
-	$news_access = $app['xdb']->get('news_access', $id)['data']['access'];
-
-	if (!$app['access_control']->is_visible($news_access))
+	if ($no_access_ary[$id])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
 	}
 
-	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
+	$next = $prev = $current_news = false;
 
-	$rows = $app['xdb']->get_many([
-		'agg_schema' => $app['this_group']->get_schema(),
-		'agg_type' => 'news_access',
-		'eland_id' => ['<' => $news['id']],
-		'access' => $app['access_control']->get_visible_ary(),
-	], 'order by eland_id desc limit 1');
+	foreach($news as $nid => $ndata)
+	{
+		if ($current_news)
+		{
+			$next = $nid;
+			break;
+		}
 
-	$prev = count($rows) ? reset($rows)['eland_id'] : false;
+		if ($id == $nid)
+		{
+			$current_news = true;
+			continue;
+		}
 
-	$rows = $app['xdb']->get_many([
-		'agg_schema' => $app['this_group']->get_schema(),
-		'agg_type' => 'news_access',
-		'eland_id' => ['>' => $news['id']],
-		'access' => $app['access_control']->get_visible_ary(),
-	], 'order by eland_id asc limit 1');
-
-	$next = count($rows) ? reset($rows)['eland_id'] : false;
+		$prev = $nid;
+	}
 
 	$top_buttons = '';
 
@@ -426,7 +479,7 @@ if ($id)
 		$top_buttons .= aphp('news', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
 		$top_buttons .= aphp('news', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
 
-		if (!$news['approved'])
+		if (!$news_item['approved'])
 		{
 			$top_buttons .= aphp('news', ['approve' => $id], 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
 		}
@@ -442,7 +495,7 @@ if ($id)
 	$top_buttons_right .= aphp('news', ['view' => $view_news], '', 'btn btn-default', 'Lijst', 'calendar-o');
 	$top_buttons_right .= '</span>';
 
-	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news['headline'], ENT_QUOTES);
+	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
 	$fa = 'calendar-o';
 
 	include __DIR__ . '/include/header.php';
@@ -450,11 +503,11 @@ if ($id)
 	if ($show_visibility)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $app['access_control']->get_label($news_access);
+		echo $app['access_control']->get_label($news_item['access']);
 		echo '</p>';
 	}
 
-	$background = ($news['approved']) ? '' : ' bg-warning';
+	$background = $news_item['approved'] ? '' : ' bg-warning';
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
@@ -462,7 +515,7 @@ if ($id)
 	echo '<p>Bericht</p>';
 	echo '</div>';
 	echo '<div class="panel-body' . $background . '">';
-	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
+	echo nl2br(htmlspecialchars($news_item['newsitem'],ENT_QUOTES));
 	echo '</div></div>';
 
 	echo '<div class="panel panel-default printview">';
@@ -473,29 +526,29 @@ if ($id)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo ($news['itemdate']) ? $app['date_format']->get($news['itemdate'], 'day') : '<i class="fa fa-times"></i>';
+	echo $news_item['itemdate'] ? $app['date_format']->get($news_item['itemdate'], 'day') : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
-	echo ($news['location']) ? htmlspecialchars($news['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+	echo $news_item['location'] ? htmlspecialchars($news_item['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news['id_user']);
+	echo link_user($news_item['id_user']);
 	echo '</dd>';
 
 	if ($s_admin)
 	{
 		echo '<dt>Goedgekeurd</dt>';
 		echo '<dd>';
-		echo ($news['approved']) ? 'Ja' : 'Nee';
+		echo $news_item['approved'] ? 'Ja' : 'Nee';
 		echo '</dd>';
 
 		echo '<dt>Behoud na datum?</dt>';
 		echo '<dd>';
-		echo ($news['sticky']) ? 'Ja' : 'Nee';
+		echo $news_item['sticky'] ? 'Ja' : 'Nee';
 		echo '</dd>';
 	}
 	echo '</dl>';
@@ -511,12 +564,6 @@ if ($id)
  * show all newsitems
  */
 
-$page_access = 'guest';
-require_once __DIR__ . '/include/web.php';
-
-$show_visibility = ($s_user && $app['config']->get('template_lets')
-	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
-
 if (!($view || $inline))
 {
 	cancel();
@@ -528,47 +575,6 @@ $v_extended = ($view == 'extended' && !$inline) ? true : false;
 $params = [
 	'view'	=> $view,
 ];
-
-$query = 'select * from news';
-
-if(!$s_admin)
-{
-	$query .= ' where approved = \'t\'';
-}
-
-$query .= ' order by itemdate ';
-$query .= $app['config']->get('news_order_asc') === '1' ? 'asc' : 'desc';
-
-$news = $app['db']->fetchAll($query);
-
-$news_access_ary = [];
-
-$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(), 'agg_type' => 'news_access']);
-
-foreach ($rows as $row)
-{
-	$access = $row['data']['access'];
-	$news_access_ary[$row['eland_id']] = $access;
-}
-
-foreach ($news as $k => $n)
-{
-	$news_id = $n['id'];
-
-	if (!isset($news_access_ary[$news_id]))
-	{
-		$app['xdb']->set('news_access', $news_id, ['access' => 'interlets']);
-		$news[$k]['access'] = 'interlets';
-		continue;
-	}
-
-	$news[$k]['access'] = $news_access_ary[$news_id];
-
-	if (!$app['access_control']->is_visible($news[$k]['access']))
-	{
-		unset($news[$k]);
-	}
-}
 
 if(($s_user || $s_admin) && !$inline)
 {
