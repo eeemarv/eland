@@ -2069,7 +2069,7 @@ if ($add || $edit)
 
 $st = [
 	'active'	=> [
-		'lbl'	=> 'Actief',
+		'lbl'	=> $s_admin ? 'Actief' : 'Alle',
 		'sql'	=> 'u.status in (1, 2)',
 		'st'	=> [1, 2],
 	],
