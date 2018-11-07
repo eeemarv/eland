@@ -376,24 +376,27 @@ if ($topic)
 		}
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
-		'agg_type' => 'forum',
-		'event_time' => ['<' => $topic_post['ts']],
-		'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc limit 1');
-
-	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
-
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many([
+		'agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
-		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc limit 1');
+		'access' => $app['access_control']->get_visible_ary(),
+	], 'order by event_time asc limit 1');
 
-	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
+	$prev = count($rows) ? reset($rows)['eland_id'] : false;
+
+	$rows = $app['xdb']->get_many([
+		'agg_schema' => $app['this_group']->get_schema(),
+		'agg_type' => 'forum',
+		'event_time' => ['<' => $topic_post['ts']],
+		'access' => $app['access_control']->get_visible_ary(),
+	], 'order by event_time desc limit 1');
+
+	$next = count($rows) ? reset($rows)['eland_id'] : false;
 
 	if ($s_admin || $s_owner)
 	{
 		$top_buttons .= aphp('forum', ['edit' => $topic], 'Onderwerp aanpassen', 'btn btn-primary', 'Onderwerp aanpassen', 'pencil', true);
-
 		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
 	}
 
@@ -402,8 +405,8 @@ if ($topic)
 	$prev_url = $prev ? generate_url('forum', ['t' => $prev]) : '';
 	$next_url = $next ? generate_url('forum', ['t' => $next]) : '';
 
-	$top_buttons_right .= btn_prev($prev_url);
-	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= btn_item_nav($prev_url, false, false);
+	$top_buttons_right .= btn_item_nav($next_url, true, true);
 	$top_buttons_right .= aphp('forum', [], '', 'btn btn-default', 'Forum onderwerpen', 'comments');
 	$top_buttons_right .= '</span>';
 

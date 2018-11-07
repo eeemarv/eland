@@ -2271,8 +2271,8 @@ if ($id)
 		$next_url = generate_url('users', $param_next);
 	}
 
-	$top_buttons_right .= btn_prev($prev_url);
-	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= btn_item_nav($prev_url, false, false);
+	$top_buttons_right .= btn_item_nav($next_url, true, true);
 	$top_buttons_right .= aphp('users', ['status' => $link ? $link : 'active', 'view' => $view_users], '', 'btn btn-default', 'Lijst', 'users');
 	$top_buttons_right .= '</span>';
 

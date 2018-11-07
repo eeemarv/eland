@@ -1328,8 +1328,8 @@ if ($id)
 	$prev_url = $prev ? generate_url('transactions', ['id' => $prev]) : '';
 	$next_url = $next ? generate_url('transactions', ['id' => $next]) : '';
 
-	$top_buttons_right .= btn_prev($prev_url);
-	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= btn_item_nav($next_url, true, false);
+	$top_buttons_right .= btn_item_nav($prev_url, false, true);
 	$top_buttons_right .= aphp('transactions', [], '', 'btn btn-default', 'Transactielijst', 'exchange');
 	$top_buttons_right .= '</span>';
 

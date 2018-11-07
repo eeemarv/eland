@@ -507,21 +507,13 @@ $app['access_control'] = function($app){
 
 /**************** FUNCTIONS ***************/
 
-function btn_next(string $url):string
+function btn_item_nav(string $url, bool $next, bool $down):string
 {
-	$ret = ' class="btn btn-default" title="Volgende"><i class="fa fa-chevron-down"></i>';
-
-	if ($url)
-	{
-		return '<a href="' . $url . '"' . $ret . '</a>';
-	}
-
-	return '<button disabled="disabled"' . $ret . '</button>';
-}
-
-function btn_prev(string $url):string
-{
-	$ret = ' class="btn btn-default" title="Vorige"><i class="fa fa-chevron-up"></i>';
+	$ret = ' class="btn btn-default" title="';
+	$ret .= $next ? 'Volgende' : 'Vorige';
+	$ret .= '"><i class="fa fa-chevron-';
+	$ret .= $down ? 'down' : 'up';
+	$ret .= '"></i>';
 
 	if ($url)
 	{

@@ -401,19 +401,23 @@ if ($id)
 
 	$and_approved_sql = ($s_admin) ? '' : ' and approved = \'t\' ';
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many([
+		'agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['<' => $news['id']],
-		'access' => $app['access_control']->get_visible_ary()], 'order by eland_id desc limit 1');
+		'access' => $app['access_control']->get_visible_ary(),
+	], 'order by eland_id desc limit 1');
 
-	$prev = (count($rows)) ? reset($rows)['eland_id'] : false;
+	$prev = count($rows) ? reset($rows)['eland_id'] : false;
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many([
+		'agg_schema' => $app['this_group']->get_schema(),
 		'agg_type' => 'news_access',
 		'eland_id' => ['>' => $news['id']],
-		'access' => $app['access_control']->get_visible_ary()], 'order by eland_id asc limit 1');
+		'access' => $app['access_control']->get_visible_ary(),
+	], 'order by eland_id asc limit 1');
 
-	$next = (count($rows)) ? reset($rows)['eland_id'] : false;
+	$next = count($rows) ? reset($rows)['eland_id'] : false;
 
 	$top_buttons = '';
 
@@ -433,8 +437,8 @@ if ($id)
 	$prev_url = $prev ? generate_url('news', ['id' => $prev]) : '';
 	$next_url = $next ? generate_url('news', ['id' => $next]) : '';
 
-	$top_buttons_right .= btn_prev($prev_url);
-	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= btn_item_nav($prev_url, false, false);
+	$top_buttons_right .= btn_item_nav($next_url, true, true);
 	$top_buttons_right .= aphp('news', ['view' => $view_news], '', 'btn btn-default', 'Lijst', 'calendar-o');
 	$top_buttons_right .= '</span>';
 

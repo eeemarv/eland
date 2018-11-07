@@ -1399,8 +1399,8 @@ if ($id)
 	$prev_url = $prev ? generate_url('messages', ['id' => $prev]) : '';
 	$next_url = $next ? generate_url('messages', ['id' => $next]) : '';
 
-	$top_buttons_right .= btn_prev($prev_url);
-	$top_buttons_right .= btn_next($next_url);
+	$top_buttons_right .= btn_item_nav($prev_url, false, false);
+	$top_buttons_right .= btn_item_nav($next_url, true, true);
 	$top_buttons_right .= aphp('messages', ['view' => $view_messages], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
 	$top_buttons_right .= '</span>';
 
