@@ -531,6 +531,16 @@ function btn_prev(string $url):string
 	return '<button disabled="disabled"' . $ret . '</button>';
 }
 
+function btn_filter():string
+{
+	$ret = '<div class="pull-right">';
+	$ret .= '&nbsp;<button class="btn btn-default hidden-xs" title="Filters" ';
+	$ret .= 'data-toggle="collapse" data-target="#filter"';
+	$ret .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
+	$ret .= '</div>';
+	return $ret;
+}
+
 /*
  * create link within eland with query parameters depending on user and role
  */

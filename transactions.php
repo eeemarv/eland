@@ -1747,18 +1747,14 @@ if ($uid)
 else
 {
 	$h1 = 'Transacties';
-	$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+	$h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 }
 
 $fa = 'exchange';
 
 if (!$inline)
 {
-	$h1 .= '<div class="pull-right">';
-	$h1 .= '&nbsp;<button class="btn btn-default hidden-xs" title="Filters" ';
-	$h1 .= 'data-toggle="collapse" data-target="#filter"';
-	$h1 .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
-	$h1 .= '</div>';
+	$h1 .= btn_filter();
 
 	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js']);
 
