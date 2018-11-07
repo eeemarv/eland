@@ -810,16 +810,14 @@ while($row = $rs->fetch())
 	$abbrev_ary[$row['abbrev']] = $row['abbrev'];
 }
 
-$top_right .= '<a href="#" class="csv">';
-$top_right .= '<i class="fa fa-file"></i>';
-$top_right .= '&nbsp;csv</a>';
+$csv_en = true;
 
 $top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = ($panel_collapse) ? false : true;
 
-$app['assets']->add(['csv.js', 'typeahead', 'typeahead.js']);
+$app['assets']->add(['typeahead', 'typeahead.js']);
 
 $h1 = 'Contacten';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
