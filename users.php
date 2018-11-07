@@ -3134,14 +3134,20 @@ if ($s_admin && $v_list)
 	echo '<h3>Toon kolommen</h3>';
 	echo '</div>';
 	echo '<div class="panel-body">';
+	echo '<div class="row">';
 
 	foreach ($columns as $group => $ary)
 	{
-		if ($group == 'c')
+		if ($group !== 'a')
+		{
+			echo '<div class="col-md-4">';
+		}
+
+		if ($group === 'c')
 		{
 			echo '<h3>Contacten</h3>';
 		}
-		else if ($group == 'a')
+		else if ($group === 'a')
 		{
 			echo '<h3>Transacties/activiteit</h3>';
 			echo '<div class="form-horizontal">';
@@ -3171,7 +3177,7 @@ if ($s_admin && $v_list)
 			echo '</div></div>';
 			echo '</div>';
 		}
-		else if ($group == 'm')
+		else if ($group === 'm')
 		{
 			echo '<h3>Vraag en aanbod</h3>';
 		}
@@ -3181,11 +3187,11 @@ if ($s_admin && $v_list)
 			echo '<div class="checkbox">';
 			echo '<label>';
 			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" value="1"';
-			echo (isset($show_columns[$group][$key])) ? ' checked="checked"' : '';
+			echo isset($show_columns[$group][$key]) ? ' checked="checked"' : '';
 			echo '> ' . $lbl;
-			echo ($key == 'adr') ? ', split door teken: <input type="text" name="sh[p][adr_split]" size="1" value="' . $adr_split . '">' : '';
+			echo $key === 'adr' ? ', split door teken: <input type="text" name="sh[p][adr_split]" size="1" value="' . $adr_split . '">' : '';
 
-			if ($key == 'saldo_date')
+			if ($key === 'saldo_date')
 			{
 				echo '<input type="text" name="sh[p][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
@@ -3205,8 +3211,14 @@ if ($s_admin && $v_list)
 			echo '</label>';
 			echo '</div>';
 		}
+
+		if ($group !== 'm')
+		{
+			echo '</div>';
+		}
 	}
 
+	echo '</div>';
 	echo '</div>';
 	echo '<div class="panel-footer">';
 	echo '<input type="submit" name="show" class="btn btn-default" value="Toon">';
