@@ -2607,10 +2607,10 @@ if (!$view)
 	cancel();
 }
 
-$v_list = ($view == 'list') ? true : false;
-$v_extended = ($view == 'extended') ? true : false;
-$v_tiles = ($view == 'tiles') ? true : false;
-$v_map = ($view == 'map') ? true : false;
+$v_list = $view === 'list';
+$v_extended = $view === 'extended';
+$v_tiles = $view === 'tiles';
+$v_map = $view === 'map';
 
 $sql_bind = [];
 $params = [];
@@ -2654,7 +2654,7 @@ if ($v_list && $s_admin)
 
 	$adr_split = $show_columns['p']['adr_split'] ?? '';
 	$activity_days = $show_columns['p']['activity_days'] ?? 365;
-	$activity_days = ($activity_days < 1) ? 365 : $activity_days;
+	$activity_days = $activity_days < 1 ? 365 : $activity_days;
 	$activity_filter_letscode = $show_columns['p']['activity_filter_letscode'] ?? '';
 	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
@@ -3095,13 +3095,14 @@ if ($v_map)
 	if ($hidden_count || $not_present_count || $not_geocoded_count)
 	{
 
-		echo ($hidden_count + $not_present_count + $not_geocoded_count) . ' ';
-		echo ($s_admin) ? 'gebruikers' : 'leden';
+		echo $hidden_count + $not_present_count + $not_geocoded_count;
+		echo ' ';
+		echo $s_admin ? 'gebruikers' : 'leden';
 		echo ' worden niet getoond in de kaart wegens: ';
 		echo '<ul>';
-		echo ($hidden_count) ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
-		echo ($not_present_count) ? '<li>' . $not_present_count . ' geen adres gekend</li>' : '';
-		echo ($not_geocoded_count) ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
+		echo $hidden_count ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
+		echo $not_present_count ? '<li>' . $not_present_count . ' geen adres gekend</li>' : '';
+		echo $not_geocoded_count ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
 		echo '</ul>';
 		if ($not_geocoded_count)
 		{
@@ -3266,8 +3267,10 @@ if ($v_list)
 	echo '<table class="table table-bordered table-striped table-hover footable csv" ';
 	echo 'data-filtering="true" data-filter-delay="0" ';
 	echo 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
-	echo 'data-empty="Er zijn geen ' . (($s_admin) ? 'gebruikers' : 'leden') . ' volgens ';
-	echo 'de selectiecriteria" data-sorting="true" data-filter-placeholder="Zoeken" ';
+	echo 'data-empty="Er zijn geen ';
+	echo $s_admin ? 'gebruikers' : 'leden';
+	echo ' volgens de selectiecriteria" data-sorting="true" ';
+	echo 'data-filter-placeholder="Zoeken" ';
 	echo 'data-filter-position="left"';
 
 	if (isset($my_geo))
@@ -3282,7 +3285,6 @@ if ($v_list)
 
 	if ($s_admin)
 	{
-
 		$numeric_groups = [
 			'a'				=> true,
 			'm'				=> true,
