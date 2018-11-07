@@ -15,12 +15,7 @@ $asc = $_GET['asc'] ?? 0;
 $recent = isset($_GET['recent']) ? true : false;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
-$q = $_GET['q'] ?? '';
-$cid = $_GET['cid'] ?? '';
-$ow = $_GET['ow'] ?? 'all';
-$valid = $_GET['valid'] ?? 'all';
-$ustatus = $_GET['ustatus'] ?? 'active';
-$fcode = $_GET['fcode'] ?? '';
+$filter = $_GET['f'] ?? [];
 $img = isset($_GET['img']) ? true : false;
 $insert_img = isset($_GET['insert_img']) ? true : false;
 $img_del = $_GET['img_del'] ?? false;
@@ -1406,7 +1401,7 @@ if ($id)
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
-	$h1 .= (strtotime($message['validity']) < time()) ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
+	$h1 .= strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
 	$fa = 'newspaper-o';
 
 	include __DIR__ . '/include/header.php';
@@ -1414,7 +1409,9 @@ if ($id)
 	if ($message['cid'])
 	{
 		echo '<p>Categorie: ';
-		echo '<a href="' . generate_url('messages', ['cid' => $message['cid'], 'view' => $view_messages]) . '">';
+		echo '<a href="';
+		echo generate_url('messages', ['cid' => $message['cid'], 'view' => $view_messages]);
+		echo '">';
 		echo $message['catname'];
 		echo '</a></p>';
 	}
@@ -1443,7 +1440,9 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
-		echo 'data-url="' . generate_url('messages', ['img' => 1, 'id' => $id, 'insert_img' => 1]) . '" ';
+		echo 'data-url="';
+		echo generate_url('messages', ['img' => 1, 'id' => $id, 'insert_img' => 1]);
+		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
@@ -1488,8 +1487,8 @@ if ($id)
 	echo '(Richt)prijs';
 	echo '</dt>';
 	echo '<dd>';
-	$units = ($message['units']) ? ' per ' . $message['units'] : '';
-	echo (empty($message['amount'])) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency') . $units;
+	$units = $message['units'] ? ' per ' . $message['units'] : '';
+	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency') . $units;
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
@@ -1572,7 +1571,7 @@ if ($id)
 	echo '<div class="col-sm-12">';
 	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
-	echo ($disabled) ? ' disabled' : '';
+	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo $content ?? '';
 	echo '</textarea>';
@@ -1582,13 +1581,13 @@ if ($id)
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
 	echo '<input type="checkbox" name="cc"';
-	echo ($cc) ? ' checked="checked"' : '';
+	echo $cc ? ' checked="checked"' : '';
 	echo ' value="1" >Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<input type="submit" name="mail" value="Versturen" class="btn btn-default"';
-	echo ($disabled) ? ' disabled' : '';
+	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
 
@@ -1611,9 +1610,9 @@ if (!($view || $inline))
 
 $s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
 
-$v_list = (($view == 'list' || $inline) && !$recent) ? true : false;
-$v_extended = (($view == 'extended' && !$inline) || $recent) ? true : false;
-$v_map = ($view == 'map' && !($inline || $recent)) ? true : false;
+$v_list = ($view === 'list' || $inline) && !$recent ? true : false;
+$v_extended = $view === 'extended' && !$inline || $recent ? true : false;
+$v_map = $view === 'map' && !($inline || $recent) ? true : false;
 
 $params = [
 	'view'		=> $view,
@@ -1623,7 +1622,8 @@ $params = [
 	'start'		=> $start,
 ];
 
-$params_sql = $where_sql = [];
+$params_sql = $where_sql = $type_sql = $valid_sql = $ustatus_sql = [];
+$filter_en = isset($filter['s']);
 
 if ($uid)
 {
@@ -1633,111 +1633,133 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = link_user($user, false, false);
+	$filter['fcode'] = link_user($user, false, false);
 }
 
-if (!$uid)
+if ($filter_en)
 {
-	if ($fcode)
+	if (!$uid)
 	{
-		list($fcode) = explode(' ', trim($fcode));
-
-		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
-
-		if ($fuid)
+		if (isset($filter['fcode']) && $filter['fcode']);
 		{
-			$where_sql[] = 'u.id = ?';
-			$params_sql[] = $fuid;
+			list($fcode) = explode(' ', trim($filter['fcode']));
+			$fcode = trim($fcode);
+			$fuid = $app['db']->fetchColumn('select id from users where letscode = ?', [$fcode]);
 
-			$fcode = link_user($fuid, false, false);
+			if ($fuid)
+			{
+				$where_sql[] = 'u.id = ?';
+				$params_sql[] = $fuid;
+
+				$filter['fcode'] = link_user($fuid, false, false);
+			}
+			else if ($fcode !== '')
+			{
+				$where_sql[] = '1 = 2';
+			}
+		}
+	}
+
+	if (isset($filter['q']) && $filter['q'])
+	{
+		$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
+		$params_sql[] = '%' . $filter['q'] . '%';
+		$params_sql[] = '%' . $filter['q'] . '%';
+	}
+
+	if (isset($filter['cid']) && $filter['cid'])
+	{
+		$cat_ary = [];
+
+		$st = $app['db']->prepare('select id
+			from categories
+			where id_parent = ?');
+		$st->bindValue(1, $filter['cid']);
+		$st->execute();
+
+		while ($row = $st->fetch())
+		{
+			$cat_ary[] = $row['id'];
+		}
+
+		if (count($cat_ary))
+		{
+			$where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
 		}
 		else
 		{
-			$where_sql[] = '1 = 2';
+			$where_sql[] = 'm.id_category = ?';
+			$params_sql[] = $filter['cid'];
 		}
-
-		$params['fcode'] = $fcode;
 	}
-}
 
-if ($q)
-{
-	$where_sql[] = 'm.content ilike ?';
-	$params_sql[] = '%' . $q . '%';
-	$params['q'] = $q;
-}
-
-if ($cid)
-{
-	$cat_ary = [];
-
-	$st = $app['db']->prepare('select id from categories where id_parent = ?');
-	$st->bindValue(1, $cid);
-	$st->execute();
-
-	while ($row = $st->fetch())
+	if (isset($filter['valid']['yes']))
 	{
-		$cat_ary[] = $row['id'];
+		$valid_sql[] = 'm.validity >= now()';
 	}
 
-	if (count($cat_ary))
+	if (isset($filter['valid']['no']))
 	{
-		$where_sql[] = 'm.id_category in (' . implode(',', $cat_ary) . ')';
+		$valid_sql[] = 'm.validity < now()';
 	}
-	else
+
+	if (count($valid_sql))
 	{
-		$where_sql[] = 'm.id_category = ?';
-		$params_sql[] = $cid;
+		$where_sql[] = '(' . implode(' or ', $valid_sql) . ')';
 	}
 
-	$params['cid'] = $cid;
-}
+	if (isset($filter['type']['want']))
+	{
+		$type_sql[] = 'm.msg_type = 1';
+	}
 
-switch ($valid)
-{
-	case 'n':
-		$where_sql[] = 'm.validity < now()';
-		$params['valid'] = 'n';
-		break;
-	case 'y':
-		$where_sql[] = 'm.validity >= now()';
-		$params['valid'] = 'y';
-		break;
-	default:
-		$params['valid'] = 'all';
-		break;
-}
+	if (isset($filter['type']['offer']))
+	{
+		$type_sql[] = 'm.msg_type = 0';
+	}
 
-switch ($ow)
-{
-	case 'o':
-		$where_sql[] = 'm.msg_type = 1';
-		$params['ow'] = 'o';
-		break;
-	case 'w':
-		$where_sql[] = 'm.msg_type = 0';
-		$params['ow'] = 'w';
-		break;
-	default:
-		$params['ow'] = 'all';
-		break;
-}
+	if (count($type_sql))
+	{
+		$where_sql[] = '(' . implode(' or ', $type_sql) . ')';
+	}
 
-switch ($ustatus)
-{
-	case 'new':
-		$where_sql[] = 'u.adate > ? and u.status = 1';
+	if (isset($filter['ustatus']['new']))
+	{
+		$ustatus_sql[] = 'u.adate > ? and u.status = 1';
 		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
-		$params['ustatus'] = 'new';
-		break;
-	case 'leaving':
-		$where_sql[] = 'u.status = 2';
-		$params['ustatus'] = 'leaving';
-		break;
-	default:
-		$where_sql[] = 'u.status in (1, 2)';
-		$params['ustatus'] = 'active';
-		break;
+	}
+
+	if (isset($filter['ustatus']['leaving']))
+	{
+		$ustatus_sql[] = 'u.status = 2';
+	}
+
+	if (isset($filter['ustatus']['active']))
+	{
+		$ustatus_sql[] = 'u.adate <= ? and u.status = 1';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+	}
+
+	if (count($ustatus_sql))
+	{
+		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+	}
+}
+else
+{
+	$filter['type'] = [
+		'offer'	=> 'on',
+		'want'	=> 'on',
+	];
+	$filter['ustatus'] = [
+		'active' 	=> 'on',
+		'new'		=> 'on',
+		'leaving'	=> 'on',
+	];
+	$filter['valid'] = [
+		'yes'	=> 'on',
+		'no'	=> 'on',
+	];
 }
 
 if ($s_guest)
@@ -1763,8 +1785,11 @@ $row_count = $app['db']->fetchColumn('select count(m.*)
 	from messages m, users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
-$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= $asc ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
+
+error_log($query);
+error_log(json_encode($params_sql));
 
 $messages = $app['db']->fetchAll($query, $params_sql);
 
@@ -1822,7 +1847,7 @@ if (!$uid)
 	];
 }
 
-if (!$cid)
+if (!$filter['cid'])
 {
 	$tableheader_ary += [
 		'm.id_category' => array_merge($asc_preset_ary, [
@@ -1849,8 +1874,8 @@ if (!$s_guest && $count_interlets_groups)
 	];
 }
 
-$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
 
 unset($tableheader_ary['m.cdate']);
 
@@ -1910,11 +1935,12 @@ if ($s_admin || $s_user)
 	}
 }
 
-$csv_en = $s_admin && $v_list;
+$filter_panel_open = ($filter['fcode'] && !$uid)
+	|| count($filter['type']) !== 2
+	|| count($filter['valid']) !== 2
+	|| count($filter['ustatus']) !== 3;
 
-$panel_collapse = (($fcode && !$uid) || $ow != 'all' || $valid != 'all' || $ustatus != 'active') ? false : true;
-
-$filtered = ($q || !$panel_collapse) ? true : false;
+$filtered = $filter['q'] || $filter_panel_open;
 
 if ($uid)
 {
@@ -1937,8 +1963,8 @@ else
 	$h1 = 'Vraag en aanbod';
 }
 
-$h1 .= ($cid) ? ', categorie "' . $categories[$cid] . '"' : '';
-$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+$h1 .= $filter['cid'] ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
+$h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
 
@@ -1948,11 +1974,11 @@ if (!$inline)
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	$active = ($v_list) ? ' active' : '';
+	$active = $v_list ? ' active' : '';
 	$v_params['view'] = 'list';
 	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
 
-	$active = ($v_extended) ? ' active' : '';
+	$active = $v_extended ? ' active' : '';
 	$v_params['view'] = 'extended';
 	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
 
@@ -1974,7 +2000,9 @@ if (!$inline)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoeken">';
+	echo '<input type="text" class="form-control" id="q" value="';
+	echo $filter['q'];
+	echo '" name="f[q]" placeholder="Zoeken">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1983,8 +2011,10 @@ if (!$inline)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-clone"></i>';
 	echo '</span>';
-	echo '<select class="form-control" id="cid" name="cid">';
-	render_select_options($cats, $cid);
+	echo '<select class="form-control" id="cid" name="f[cid]">';
+
+	render_select_options($cats, $filter['cid']);
+
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -2000,42 +2030,48 @@ if (!$inline)
 	echo '</div>';
 
 	echo '<div id="filters"';
-	echo ($panel_collapse) ? ' class="collapse"' : '';
+	echo $filter_panel_open ? '' : ' class="collapse"';
 	echo '>';
 
 	echo '<div class="row">';
 
 	$offerwant_options = [
-		'all'	=> 'Vraag en aanbod',
-		'o'		=> 'Enkel aanbod',
-		'w'		=> 'Enkel vraag',
+		'want'		=> 'Vraag',
+		'offer'		=> 'Aanbod',
 	];
 
-	echo '<div class="col-sm-6">';
+	echo '<div class="col-md-3">';
 	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon">';
-	echo 'V/A';
-	echo '</span>';
-	echo '<select class="form-control" id="ow" name="ow">';
-	render_select_options($offerwant_options, $ow);
-	echo '</select>';
+
+	echo get_checkbox_filter($offerwant_options, 'type', $filter);
+
 	echo '</div>';
 	echo '</div>';
 
 	$valid_options = [
-		'all'	=> 'Geldig en vervallen',
-		'y'		=> 'Enkel geldig',
-		'n'		=> 'Enkel vervallen',
+		'yes'		=> 'Geldig',
+		'no'		=> 'Vervallen',
 	];
 
-	echo '<div class="col-sm-6">';
+	echo '<div class="col-md-3">';
 	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon">';
-	echo '<i class="fa fa-check-square-o"></i>';
-	echo '</span>';
-	echo '<select class="form-control" id="valid" name="valid">';
-	render_select_options($valid_options, $valid);
-	echo '</select>';
+
+	echo get_checkbox_filter($valid_options, 'valid', $filter);
+
+	echo '</div>';
+	echo '</div>';
+
+	$user_status_options = [
+		'active'	=> 'Niet in- of uitstappers',
+		'new'		=> 'Instappers',
+		'leaving'	=> 'Uitstappers',
+	];
+
+	echo '<div class="col-md-6">';
+	echo '<div class="input-group margin-bottom">';
+
+	echo get_checkbox_filter($user_status_options, 'ustatus', $filter);
+
 	echo '</div>';
 	echo '</div>';
 
@@ -2043,25 +2079,7 @@ if (!$inline)
 
 	echo '<div class="row">';
 
-	$user_status_options = [
-		'active'	=> 'Alle leden',
-		'new'		=> 'Enkel instappers',
-		'leaving'	=> 'Enkel uitstappers',
-	];
-
-	echo '<div class="col-sm-5">';
-	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon">';
-	echo 'Van ';
-	echo '<i class="fa fa-user"></i>';
-	echo '</span>';
-	echo '<select class="form-control" id="ustatus" name="ustatus">';
-	render_select_options($user_status_options, $ustatus);
-	echo '</select>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="col-sm-5">';
+	echo '<div class="col-sm-10">';
 	echo '<div class="input-group margin-bottom">';
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
@@ -2070,22 +2088,20 @@ if (!$inline)
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
 	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-	echo 'name="fcode" id="fcode" placeholder="letscode" ';
-	echo 'value="' . $fcode . '">';
+	echo 'name="f[fcode]" id="fcode" placeholder="Account" ';
+	echo 'value="' . $filter['fcode'] . '">';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="col-sm-2">';
-	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+	echo '<input type="submit" id="filter_submit" value="Toon" class="btn btn-default btn-block" name="f[s]">';
 	echo '</div>';
 
 	echo '</div>';
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['cid'], $params_form['q'], $params_form['valid'], $params_form['ow']);
-	unset($params_form['fcode'], $params_form['ustatus'], $params_form['uid']);
-	unset($params_form['start']);
+	unset($params_form['f'], $params_form['start']);
 
 	$params_form['r'] = $s_accountrole;
 	$params_form['u'] = $s_id;
@@ -2103,6 +2119,7 @@ if (!$inline)
 		}
 	}
 
+//	echo '<input type="hidden" name="f[en]" value="1">';
 	echo '</form>';
 
 	echo '</div>';
@@ -2218,7 +2235,7 @@ if ($v_list)
 			echo '</td>';
 		}
 
-		if (!$cid)
+		if (!$filter['cid'])
 		{
 			echo '<td>';
 			echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);
@@ -2424,4 +2441,21 @@ function cancel($id = null)
 
 	header('Location: ' . generate_url('messages', $params));
 	exit;
+}
+
+function get_checkbox_filter(array $checkbox_ary, string $filter_id, array $filter_ary):string
+{
+	$out = '';
+
+	foreach ($checkbox_ary as $key => $label)
+	{
+		$out .= '<span class="input-group-addon">';
+		$out .= '<input type="checkbox" name="f[' . $filter_id . '][' . $key . ']"';
+		$out .= isset($filter_ary[$filter_id][$key]) ? ' checked="checked"' : '';
+		$out .= '>&nbsp;';
+		$out .= $label;
+		$out .= '</span>';
+	}
+
+	return $out;
 }

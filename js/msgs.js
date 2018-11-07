@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('#cid').change(function() {
-        this.form.submit();
+		$('#filter_submit').click();
     });
 
 	$('form#bulk').submit(function(){
@@ -8,4 +8,3 @@ $(document).ready(function() {
 		return true;
 	});
 });
-

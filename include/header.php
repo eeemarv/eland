@@ -355,11 +355,11 @@ echo '</div>';
 
 echo $top_buttons ?? '';
 
-if ($top_buttons_right || $csv_en)
+if ($top_buttons_right || isset($csv_en))
 {
 	echo '<div class="pull-right">';
 
-	if ($csv_en)
+	if (isset($csv_en))
 	{
 		$app['assets']->add('csv.js');
 
