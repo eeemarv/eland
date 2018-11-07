@@ -1517,12 +1517,15 @@ if (!$uid)
 
 		if ($fuid)
 		{
-			$where_code_sql[] = 't.id_from = ?';
+			$fuid_sql = 't.id_from ';
+			$fuid_sql .= $andor === 'nor' ? '<>' : '=';
+			$fuid_sql .= ' ?';
+			$where_code_sql[] = $fuid_sql;
 			$params_sql[] = $fuid;
 
 			$fcode = link_user($fuid, false, false);
 		}
-		else
+		else if ($andor !== 'nor')
 		{
 			$where_code_sql[] = '1 = 2';
 		}
@@ -1538,12 +1541,15 @@ if (!$uid)
 
 		if ($tuid)
 		{
-			$where_code_sql[] = 't.id_to = ?';
+			$tuid_sql = 't.id_to ';
+			$tuid_sql .= $andor === 'nor' ? '<>' : '=';
+			$tuid_sql .= ' ?';
+			$where_code_sql[] = $tuid_sql;
 			$params_sql[] = $tuid;
 
 			$tcode = link_user($tuid, false, false);
 		}
-		else
+		else if ($andor !== 'nor')
 		{
 			$where_code_sql[] = '1 = 2';
 		}
@@ -1553,7 +1559,7 @@ if (!$uid)
 
 	if (count($where_code_sql) > 1)
 	{
-		if ($andor == 'or')
+		if ($andor === 'or')
 		{
 			$where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
 		}
@@ -1814,6 +1820,7 @@ if (!$inline)
 	$andor_options = [
 		'and'	=> 'EN',
 		'or'	=> 'OF',
+		'nor'	=> 'NOCH',
 	];
 
 	echo '<div class="col-sm-2">';
