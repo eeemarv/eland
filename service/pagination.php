@@ -42,7 +42,7 @@ class pagination
 		$this->page_num = ceil($this->row_count / $this->limit);
 		$this->page = floor($this->start / $this->limit);
 
-		if (!$this->limit_options[$this->limit])
+		if (!isset($this->limit_options[$this->limit]))
 		{
 			$this->limit_options[$this->limit] = $this->limit;
 			ksort($this->limit_options);
@@ -51,7 +51,6 @@ class pagination
 
 	public function render()
 	{
-
 		echo '<div class="row print-hide"><div class="col-md-12">';
 		echo '<ul class="pagination">';
 
@@ -63,8 +62,8 @@ class pagination
 		$min_adjacent = $this->page - $this->adjacent_num;
 		$max_adjacent = $this->page + $this->adjacent_num;
 
-		$min_adjacent = ($min_adjacent < 0) ? 0 : $min_adjacent;
-		$max_adjacent = ($max_adjacent > $this->page_num - 1) ? $this->page_num - 1 : $max_adjacent;
+		$min_adjacent = $min_adjacent < 0 ? 0 : $min_adjacent;
+		$max_adjacent = $max_adjacent > ($this->page_num - 1) ? $this->page_num - 1 : $max_adjacent;
 
 		if ($min_adjacent)
 		{
@@ -90,7 +89,12 @@ class pagination
 
 		echo '<div class="pull-right hidden-xs">';
 		echo '<div>';
-		echo 'Totaal '.$this->row_count.', Pagina ' . ($this->page + 1).' van ' . $this->page_num;
+		echo 'Totaal ';
+		echo $this->row_count;
+		echo ', Pagina ';
+		echo $this->page + 1;
+		echo ' van ';
+		echo $this->page_num;
 		echo '</div>';
 
 		if (!$this->inline)
@@ -108,12 +112,14 @@ class pagination
 			$action_params['start'] = 0;
 			$action_params = array_merge($action_params,  get_session_query_param());
 
-			foreach ($action_params as $name => $value)
+			$action_params = http_build_query($action_params, 'prefix', '&');
+			$action_params = urldecode($action_params);
+			$action_params = explode('&', $action_params);
+
+			foreach ($action_params as $param)
 			{
-				if (isset($value))
-				{
-					echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
-				}
+				[$name, $value] = explode('=', $param);
+				echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
 			}
 
 			echo '</form>';
@@ -131,10 +137,10 @@ class pagination
 		$params['limit'] = $this->limit;
 
 		$pag_link = '<li';
-		$pag_link .= ($page == $this->page) ? ' class="active"' : '';
+		$pag_link .= $page == $this->page ? ' class="active"' : '';
 		$pag_link .= '>';
 		$pag_link .= '<a href="' . generate_url($this->entity, $params) . '">';
-		$pag_link .= ($text == '') ? ($page + 1) : $text;
+		$pag_link .= $text == '' ? $page + 1 : $text;
 		$pag_link .= '</a></li>';
 
 		return $pag_link;

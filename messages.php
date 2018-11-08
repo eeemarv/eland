@@ -1622,7 +1622,7 @@ $params = [
 	'start'		=> $start,
 ];
 
-$params_sql = $where_sql = $type_sql = $valid_sql = $ustatus_sql = [];
+$params_sql = $where_sql = $ustatus_sql = [];
 $filter_en = isset($filter['s']);
 
 if ($uid)
@@ -1693,56 +1693,57 @@ if ($filter_en)
 		}
 	}
 
-	if (isset($filter['valid']['yes']))
+	if (isset($filter['valid']) && count($filter['valid']) !== 2)
 	{
-		$valid_sql[] = 'm.validity >= now()';
+		if (isset($filter['valid']['yes']))
+		{
+			$where_sql[] = 'm.validity >= now()';
+		}
+		else if (isset($filter['valid']['no']))
+		{
+			$where_sql[] = 'm.validity < now()';
+		}
 	}
 
-	if (isset($filter['valid']['no']))
+	if (isset($filter['type']) && count($filter['type']) !== 2)
 	{
-		$valid_sql[] = 'm.validity < now()';
+		if (isset($filter['type']['want']))
+		{
+			$where_sql[] = 'm.msg_type = 0';
+		}
+		else if (isset($filter['type']['offer']))
+		{
+			$where_sql[] = 'm.msg_type = 1';
+		}
 	}
 
-	if (count($valid_sql))
+	if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
 	{
-		$where_sql[] = '(' . implode(' or ', $valid_sql) . ')';
+		$where_sql[] = 'u.status in (1, 2)';
 	}
-
-	if (isset($filter['type']['want']))
+	else
 	{
-		$type_sql[] = 'm.msg_type = 1';
-	}
+		if (isset($filter['ustatus']['new']))
+		{
+			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		}
 
-	if (isset($filter['type']['offer']))
-	{
-		$type_sql[] = 'm.msg_type = 0';
-	}
+		if (isset($filter['ustatus']['leaving']))
+		{
+			$ustatus_sql[] = 'u.status = 2';
+		}
 
-	if (count($type_sql))
-	{
-		$where_sql[] = '(' . implode(' or ', $type_sql) . ')';
-	}
+		if (isset($filter['ustatus']['active']))
+		{
+			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		}
 
-	if (isset($filter['ustatus']['new']))
-	{
-		$ustatus_sql[] = 'u.adate > ? and u.status = 1';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
-	}
-
-	if (isset($filter['ustatus']['leaving']))
-	{
-		$ustatus_sql[] = 'u.status = 2';
-	}
-
-	if (isset($filter['ustatus']['active']))
-	{
-		$ustatus_sql[] = 'u.adate <= ? and u.status = 1';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
-	}
-
-	if (count($ustatus_sql))
-	{
-		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+		if (count($ustatus_sql))
+		{
+			$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+		}
 	}
 }
 else
@@ -1761,6 +1762,8 @@ else
 		'no'	=> 'on',
 	];
 }
+
+$params['f'] = $filter;
 
 if ($s_guest)
 {
@@ -1787,9 +1790,6 @@ $row_count = $app['db']->fetchColumn('select count(m.*)
 
 $query .= $asc ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
-
-error_log($query);
-error_log(json_encode($params_sql));
 
 $messages = $app['db']->fetchAll($query, $params_sql);
 
