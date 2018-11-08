@@ -152,6 +152,16 @@ body
   background-color: #f9f9ff;
 }
 
+body.admin
+{
+  background-color: #f3fcff;
+}
+
+body.guest
+{
+  background-color: #fffbf3;
+}
+
 #sidebar
 {
   width: inherit;
