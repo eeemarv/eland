@@ -9,7 +9,7 @@ class pagination
 	private $page = 0;
 	private $table;
 
-	private $adjacent_num = 1;
+	private $adjacent_num = 2;
 	private $row_count = 0;
 	private $page_num = 0;
 	private $entity = '';
@@ -62,10 +62,12 @@ class pagination
 		$this->out .= '<div class="row print-hide"><div class="col-md-12">';
 		$this->out .= '<ul class="pagination">';
 
+/*
 		if ($this->page)
 		{
-			$this->out .= $this->add_link($this->page - 1, '&#9668;');
+			$this->out .= $this->get_link($this->page - 1, '&#9668;');
 		}
+*/
 
 		$min_adjacent = $this->page - $this->adjacent_num;
 		$max_adjacent = $this->page + $this->adjacent_num;
@@ -75,23 +77,25 @@ class pagination
 
 		if ($min_adjacent)
 		{
-			$this->out .= $this->add_link(0);
+			$this->out .= $this->get_link(0);
 		}
 
 		for($page = $min_adjacent; $page < $max_adjacent + 1; $page++)
 		{
-			$this->out .= $this->add_link($page);
+			$this->out .= $this->get_link($page);
 		}
 
 		if ($max_adjacent != $this->page_num - 1)
 		{
-			$this->out .= $this->add_link($this->page_num - 1);
+			$this->out .= $this->get_link($this->page_num - 1);
 		}
 
+/*
 		if ($this->page < $this->page_num - 1)
 		{
-			$this->out .= $this->add_link($this->page + 1, '&#9658;');
+			$this->out .= $this->get_link($this->page + 1, '&#9658;');
 		}
+*/
 
 		$this->out .= '</ul>';
 
@@ -139,7 +143,7 @@ class pagination
 		echo $this->out;
 	}
 
-	public function add_link($page, $text = '')
+	public function get_link($page, $text = '')
 	{
 		$params = $this->params;
 		$params['start'] = $page * $this->limit;
@@ -148,7 +152,9 @@ class pagination
 		$pag_link = '<li';
 		$pag_link .= $page == $this->page ? ' class="active"' : '';
 		$pag_link .= '>';
-		$pag_link .= '<a href="' . generate_url($this->entity, $params) . '">';
+		$pag_link .= '<a href="';
+		$pag_link .= generate_url($this->entity, $params);
+		$pag_link .= '">';
 		$pag_link .= $text == '' ? $page + 1 : $text;
 		$pag_link .= '</a></li>';
 
