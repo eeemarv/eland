@@ -1839,7 +1839,7 @@ if ($add || $edit)
 		echo '<label for="accountrole" class="col-sm-2 control-label">Rechten / Rol</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select id="accountrole" name="accountrole" class="form-control">';
-		render_select_options($role_ary, $user['accountrole']);
+		echo get_select_options($role_ary, $user['accountrole']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -1860,7 +1860,7 @@ if ($add || $edit)
 		echo '<label for="status" class="col-sm-2 control-label">Status</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select id="status" name="status" class="form-control">';
-		render_select_options($status_ary, $user['status']);
+		echo get_select_options($status_ary, $user['status']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -3651,7 +3651,7 @@ if ($v_list)
 			if (isset($t['options']))
 			{
 				$options = $t['options'];
-				echo sprintf($acc_sel, $k, $t['lbl'], render_select_options($$options, 0, false));
+				echo sprintf($acc_sel, $k, $t['lbl'], get_select_options($$options, 0));
 			}
 			else if (isset($t['type']) && $t['type'] == 'checkbox')
 			{

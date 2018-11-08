@@ -216,7 +216,7 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
 
-	render_select_options([
+	echo get_select_options([
 		'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
 		'internal'	=> 'Intern (eigen installatie - niet gebruiken)',
 		'mail'		=> 'E-mail',

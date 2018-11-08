@@ -715,15 +715,3 @@ function get_select_options(array $option_ary, $selected):string
 
 	return $str;
 }
-
-function render_select_options($option_ary, $selected, $print = true)
-{
-	$str = get_select_options($option_ary, $selected);
-
-	if ($print)
-	{
-		echo $str;
-	}
-
-	return $str;
-}

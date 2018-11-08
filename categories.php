@@ -93,7 +93,7 @@ if ($add)
 	echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select name="id_parent" id="id_parent" class="form-control">';
-	render_select_options($parent_cats, $id_parent);
+	echo get_select_options($parent_cats, $id_parent);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';
@@ -208,7 +208,7 @@ if ($edit)
 	echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select class="form-control" id="id_parent" name="id_parent">';
-	render_select_options($parent_cats, $id_parent);
+	echo get_select_options($parent_cats, $id_parent);
 	echo '</select>';
 	echo '</div>';
 	echo '</div>';

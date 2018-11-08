@@ -934,7 +934,7 @@ foreach ($tab_panes as $id => $pane)
 				echo isset($input['required']) ? ' required' : '';
 				echo '>';
 
-				render_select_options($input['options'], $config[$name]);
+				echo get_select_options($input['options'], $config[$name]);
 
 				echo '</select>';
 			}

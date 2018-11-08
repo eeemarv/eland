@@ -1153,7 +1153,7 @@ if (($edit || $add))
 	echo '<label for="msg_type" class="col-sm-2 control-label">Vraag/Aanbod</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select name="msg_type" id="msg_type" class="form-control" required>';
-	render_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
+	echo get_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
@@ -1179,7 +1179,7 @@ if (($edit || $add))
 	echo '<label for="id_category" class="col-sm-2 control-label">Categorie</label>';
 	echo '<div class="col-sm-10">';
 	echo '<select name="id_category" id="id_category" class="form-control" required>';
-	render_select_options($cat_list, $msg['id_category']);
+	echo get_select_options($cat_list, $msg['id_category']);
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
@@ -2013,7 +2013,7 @@ if (!$inline)
 	echo '</span>';
 	echo '<select class="form-control" id="cid" name="f[cid]">';
 
-	render_select_options($cats, $filter['cid']);
+	echo get_select_options($cats, $filter['cid']);
 
 	echo '</select>';
 	echo '</div>';
@@ -2375,7 +2375,7 @@ else if ($v_list)
 		echo '<label for="extend" class="col-sm-2 control-label">Verlengen met</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select name="extend" id="extend" class="form-control">';
-		render_select_options($extend_options, '30');
+		echo get_select_options($extend_options, '30');
 		echo "</select>";
 		echo '</div>';
 		echo '</div>';

@@ -1805,7 +1805,7 @@ if (!$inline)
 
 	echo '<div class="col-sm-2">';
 	echo '<select class="form-control margin-bottom" name="andor">';
-	render_select_options($andor_options, $andor);
+	echo get_select_options($andor_options, $andor);
 	echo '</select>';
 	echo '</div>';
 
