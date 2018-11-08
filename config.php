@@ -877,7 +877,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="panel-body">';
 			echo '<ul id="list_active" class="list-group">';
 
-			render_sortable_items($input['ary'], $v_options, $active, 'bg-success');
+			echo get_sortable_items($input['ary'], $v_options, $active, 'bg-success');
 
 			echo '</ul>';
 			echo '</div>';
@@ -892,7 +892,7 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="panel-body">';
 			echo '<ul id="list_inactive" class="list-group">';
 
-			render_sortable_items($input['ary'], $v_options, $inactive, 'bg-danger');
+			echo get_sortable_items($input['ary'], $v_options, $inactive, 'bg-danger');
 
 			echo '</ul';
 			echo '</div>';
@@ -1039,7 +1039,7 @@ function cancel()
 	exit;
 }
 
-function render_sortable_items($input_ary, $v_options, $items, $class)
+function get_sortable_items($input_ary, $v_options, $items, $class)
 {
 	foreach ($items as $a)
 	{

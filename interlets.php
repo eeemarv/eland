@@ -197,8 +197,8 @@ if ($add || $edit)
 
 	include __DIR__ . '/include/header.php';
 
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
+	$out .= '<div class="panel panel-info">';
+	$out .= '<div class="panel-heading">';
 
 	echo '<form method="post" class="form-horizontal">';
 
@@ -286,7 +286,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	render_schemas_groups();
+	echo get_schemas_groups();
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -460,7 +460,7 @@ if ($id)
 
 	echo '</div></div>';
 
-	render_schemas_groups();
+	echo get_schemas_groups();
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -470,7 +470,7 @@ if ($id)
  * list
  */
 
-$groups = $app['db']->fetchAll('SELECT * FROM letsgroups');
+$groups = $app['db']->fetchAll('select * from letsgroups');
 
 $letscodes = [];
 
@@ -624,7 +624,7 @@ else
 	echo '</div></div>';
 }
 
-render_schemas_groups();
+echo get_schemas_groups();
 
 include __DIR__ . '/include/footer.php';
 exit;
@@ -633,44 +633,44 @@ exit;
  *
  */
 
-function render_schemas_groups()
+function get_schemas_groups():string
 {
 	global $app;
 
-	echo '<p><ul>';
-	echo '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
-	echo '</ul></p>';
+	$out .= '<p><ul>';
+	$out .= '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
+	$out .= '</ul></p>';
 
-	echo '<div class="panel panel-default"><div class="panel-heading">';
-	echo '<h3>Verbindingen met eLAS. Zie <a href="https://eland.letsa.net/admin-elas-interlets-koppeling-maken.html">hier</a> voor de procedure.</h3>';
-	echo '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
-	echo '</div>';
-	echo '<ul>';
-	echo '<li> Kies \'elassoap\' als API methode.</li>';
-	echo '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
-	echo '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
-	echo '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
-	echo '<li> URL is de weblocatie van de andere installatie';
-	echo '<li> Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
-	echo '</ul>';
-	echo '</div>';
+	$out .= '<div class="panel panel-default"><div class="panel-heading">';
+	$out .= '<h3>Verbindingen met eLAS. Zie <a href="https://eland.letsa.net/admin-elas-interlets-koppeling-maken.html">hier</a> voor de procedure.</h3>';
+	$out .= '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
+	$out .= '</div>';
+	$out .= '<ul>';
+	$out .= '<li> Kies \'elassoap\' als API methode.</li>';
+	$out .= '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
+	$out .= '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
+	$out .= '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
+	$out .= '<li> URL is de weblocatie van de andere installatie';
+	$out .= '<li> Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
+	$out .= '</ul>';
+	$out .= '</div>';
 
-	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading">';
-	echo '<h3>Verbindingen leggen met andere eLAND installaties.</h3>';
-	echo '</div>';
-	echo '<ul>';
-	echo '<li>Met letsgroepen die eLAND gebruiken kan op een vereenvoudigde manier verbinding gelegd worden zonder ';
-	echo 'het uitwisselen van apikeys, preshared keys en remote letscodes. Dit is mogelijk omdat alle eLAND installaties zich op ';
-	echo 'dezelfde server bevinden.</li>';
-	echo '<li>Contacteer altijd eerst vooraf de andere groep waarmee je wil interletsen. Vraag of zij ook geïnteresseerd zijn in een verbinding.</li>';
-	echo '<li>Voor het leggen van een verbinding, kijk in de tabel hieronder. ';
-	echo 'Maak de referentie naar de letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
-	echo 'klik je op knop \'Creëer\' in de kolom \'lok.account\'. ';
-	echo 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';
-	echo 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
-	echo 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
-	echo '</ul>';
+	$out .= '<div class="panel panel-default">';
+	$out .= '<div class="panel-heading">';
+	$out .= '<h3>Verbindingen leggen met andere eLAND installaties.</h3>';
+	$out .= '</div>';
+	$out .= '<ul>';
+	$out .= '<li>Met letsgroepen die eLAND gebruiken kan op een vereenvoudigde manier verbinding gelegd worden zonder ';
+	$out .= 'het uitwisselen van apikeys, preshared keys en remote letscodes. Dit is mogelijk omdat alle eLAND installaties zich op ';
+	$out .= 'dezelfde server bevinden.</li>';
+	$out .= '<li>Contacteer altijd eerst vooraf de andere groep waarmee je wil interletsen. Vraag of zij ook geïnteresseerd zijn in een verbinding.</li>';
+	$out .= '<li>Voor het leggen van een verbinding, kijk in de tabel hieronder. ';
+	$out .= 'Maak de referentie naar de letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
+	$out .= 'klik je op knop \'Creëer\' in de kolom \'lok.account\'. ';
+	$out .= 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';
+	$out .= 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
+	$out .= 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
+	$out .= '</ul>';
 
 	$url_ary = [];
 
@@ -733,97 +733,97 @@ function render_schemas_groups()
 		}
 	}
 
-	echo '<div class="panel-heading">';
-	echo '<h3>Groepen die eLAND gebruiken</h3>';
-	echo '</div>';
+	$out .= '<div class="panel-heading">';
+	$out .= '<h3>Groepen die eLAND gebruiken</h3>';
+	$out .= '</div>';
 
-	echo '<table class="table table-bordered table-hover table-striped footable">';
-	echo '<thead>';
-	echo '<tr>';
-	echo '<th data-sort-initial="true">groepsnaam</th>';
-	echo '<th data-hide="phone, tablet">domein</th>';
-	echo '<th data-hide="phone, tablet">leden</th>';
-	echo '<th>lok.groep</th>';
-	echo '<th>lok.account</th>';
-	echo '<th>rem.groep</th>';
-	echo '<th>rem.account</th>';
-	echo '</tr>';
-	echo '</thead>';
+	$out .= '<table class="table table-bordered table-hover table-striped footable">';
+	$out .= '<thead>';
+	$out .= '<tr>';
+	$out .= '<th data-sort-initial="true">groepsnaam</th>';
+	$out .= '<th data-hide="phone, tablet">domein</th>';
+	$out .= '<th data-hide="phone, tablet">leden</th>';
+	$out .= '<th>lok.groep</th>';
+	$out .= '<th>lok.account</th>';
+	$out .= '<th>rem.groep</th>';
+	$out .= '<th>rem.account</th>';
+	$out .= '</tr>';
+	$out .= '</thead>';
 
-	echo '<tbody>';
+	$out .= '<tbody>';
 
 	$unavailable_explain = false;
 
 	foreach($app['groups']->get_schemas() as $h => $s)
 	{
-		echo '<tr';
+		$out .= '<tr';
 
 		if (!$app['config']->get('template_lets', $s) || !$app['config']->get('interlets_en', $s))
 		{
-			echo ' class="danger"';
+			$out .= ' class="danger"';
 
 			$unavailable_explain = true;
 		}
 
-		echo '>';
+		$out .= '>';
 
-		echo '<td>';
-		echo $app['config']->get('systemname', $s);
+		$out .= '<td>';
+		$out .= $app['config']->get('systemname', $s);
 
 		if (!$app['config']->get('template_lets', $s))
 		{
-			echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als LETS groep">';
-			echo '<i class="fa fa-exclamation-triangle">';
-			echo '</i></span>';
+			$out .= ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als LETS groep">';
+			$out .= '<i class="fa fa-exclamation-triangle">';
+			$out .= '</i></span>';
 		}
 
 		if (!$app['config']->get('interlets_en', $s))
 		{
-			echo ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie">';
-			echo '<i class="fa fa-exclamation-triangle">';
-			echo '</i></span>';
+			$out .= ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie">';
+			$out .= '<i class="fa fa-exclamation-triangle">';
+			$out .= '</i></span>';
 		}
 
-		echo '</td>';
+		$out .= '</td>';
 
-		echo '<td>';
-		echo $h;
-		echo '</td>';
+		$out .= '<td>';
+		$out .= $h;
+		$out .= '</td>';
 
-		echo '<td>';
-		echo $group_user_count_ary[$s];
-		echo '</td>';
+		$out .= '<td>';
+		$out .= $group_user_count_ary[$s];
+		$out .= '</td>';
 
 		if ($app['this_group']->get_schema() == $s)
 		{
-			echo '<td colspan="4">';
-			echo 'eigen groep';
-			echo '</td>';
+			$out .= '<td colspan="4">';
+			$out .= 'eigen groep';
+			$out .= '</td>';
 		}
 		else
 		{
-			echo '<td>';
+			$out .= '<td>';
 
 			if (isset($loc_group_ary[$h]) && is_array($loc_group_ary[$h]))
 			{
 				$loc_group = $loc_group_ary[$h];
 
-				echo aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
+				$out .= aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
 			else
 			{
 				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
 				{
-					echo aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
+					$out .= aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
 				}
 				else
 				{
-					echo '<i class="fa fa-times text-danger"></i>';
+					$out .= '<i class="fa fa-times text-danger"></i>';
 				}
 			}
 
-			echo '</td>';
-			echo '<td>';
+			$out .= '</td>';
+			$out .= '<td>';
 
 			if (isset($loc_group_ary[$h]))
 			{
@@ -833,41 +833,41 @@ function render_schemas_groups()
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
-						echo aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
+						$out .= aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
 							'De rol van het account moet van het type interlets zijn.');
 					}
 					else if (!in_array($loc_acc['status'], [1, 2, 7]))
 					{
-						echo aphp('users', ['edit' => $loc_acc['id']], 'status', 'btn btn-warning btn-xs',
+						$out .= aphp('users', ['edit' => $loc_acc['id']], 'status', 'btn btn-warning btn-xs',
 							'De status van het account moet actief, uitstapper of extern zijn.');
 					}
 					else
 					{
-						echo aphp('users', ['id' => $loc_acc['id']], 'OK', 'btn btn-success btn-xs');
+						$out .= aphp('users', ['id' => $loc_acc['id']], 'OK', 'btn btn-success btn-xs');
 					}
 				}
 				else
 				{
-					echo aphp('users', ['add' => 1, 'interlets' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
+					$out .= aphp('users', ['add' => 1, 'interlets' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
 						'Creëer een interlets-account met gelijke letscode en status extern.');
 				}
 			}
 			else
 			{
-				echo '<i class="fa fa-times text-danger"></i>';
+				$out .= '<i class="fa fa-times text-danger"></i>';
 			}
-			echo '</td>';
-			echo '<td>';
+			$out .= '</td>';
+			$out .= '<td>';
 			if (isset($rem_group_ary[$h]))
 			{
-				echo '<span class="btn btn-success btn-xs">OK</span>';
+				$out .= '<span class="btn btn-success btn-xs">OK</span>';
 			}
 			else
 			{
-				echo '<i class="fa fa-times text-danger"></i>';
+				$out .= '<i class="fa fa-times text-danger"></i>';
 			}
-			echo '</td>';
-			echo '<td>';
+			$out .= '</td>';
+			$out .= '<td>';
 
 			if (isset($rem_account_ary[$h]))
 			{
@@ -875,41 +875,41 @@ function render_schemas_groups()
 
 				if ($rem_acc['accountrole'] != 'interlets')
 				{
-					echo '<span class="btn btn-warning btn-xs" title="De rol van het account ';
-					echo 'moet van het type interlets zijn.">rol</span>';
+					$out .= '<span class="btn btn-warning btn-xs" title="De rol van het account ';
+					$out .= 'moet van het type interlets zijn.">rol</span>';
 				}
 				else if (!in_array($rem_acc['status'], [1, 2, 7]))
 				{
-					echo '<span class="btn btn-warning btn-xs" title="De status van het account ';
-					echo 'moet actief, uitstapper of extern zijn.">rol</span>';
+					$out .= '<span class="btn btn-warning btn-xs" title="De status van het account ';
+					$out .= 'moet actief, uitstapper of extern zijn.">rol</span>';
 				}
 				else
 				{
-					echo '<span class="btn btn-success btn-xs">OK</span>';
+					$out .= '<span class="btn btn-success btn-xs">OK</span>';
 				}
 			}
 			else
 			{
-				echo '<i class="fa fa-times text-danger"></i>';
+				$out .= '<i class="fa fa-times text-danger"></i>';
 			}
 
-			echo '</td>';
+			$out .= '</td>';
 
-			echo '</tr>';
+			$out .= '</tr>';
 		}
 	}
-	echo '</tbody>';
-	echo '</table>';
+	$out .= '</tbody>';
+	$out .= '</table>';
 
 	if ($unavailable_explain)
 	{
-		echo '<ul class="list-group">';
-		echo '<li class="list-group-item danger"><span class="bg-danger">Groepen gemarkeerd in Rood ';
-		echo 'zijn niet beschikbaar voor interLETS.</span></li>';
-		echo '</ul>';
+		$out .= '<ul class="list-group">';
+		$out .= '<li class="list-group-item danger"><span class="bg-danger">Groepen gemarkeerd in Rood ';
+		$out .= 'zijn niet beschikbaar voor interLETS.</span></li>';
+		$out .= '</ul>';
 	}
 
-	echo '</div></div>';
+	$out .= '</div></div>';
 }
 
 function cancel($id = null)

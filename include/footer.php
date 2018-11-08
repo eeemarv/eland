@@ -16,8 +16,7 @@ echo '</footer>';
 
 echo '</div>';
 
-echo $app['assets']->render_js();
+echo $app['assets']->get_js();
 
 echo '</body>';
 echo '</html>';
-

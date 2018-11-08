@@ -170,7 +170,7 @@ class assets
 	*
 	*/
 
-	public function render_js()
+	public function get_js():string
 	{
 		$out = '';
 
@@ -183,19 +183,10 @@ class assets
 	}
 
 	/*
-	 *
-	 */
-
-	public function get_js()
-	{
-		return $this->include_js;
-	}
-
-	/*
 	*
 	*/
 
-	public function render_css()
+	public function get_css():string
 	{
 		$out = '';
 
@@ -219,15 +210,6 @@ class assets
 	public function get_version_param()
 	{
 		return '?v=' . $this->version;
-	}
-
-	/*
-	 *
-	 */
-
-	public function get_css()
-	{
-		return $this->include_css;
 	}
 
 	/*

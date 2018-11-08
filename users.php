@@ -3409,7 +3409,7 @@ if ($v_list)
 					}
 					else if (isset($contacts[$id][$key]))
 					{
-						echo render_contacts($contacts[$id][$key], $key);
+						echo get_contacts($contacts[$id][$key], $key);
 					}
 					else
 					{
@@ -3478,13 +3478,13 @@ if ($v_list)
 			echo '<td>';
 			if (isset($contacts[$id]['tel']))
 			{
-				echo render_contacts($contacts[$id]['tel']);
+				echo get_contacts($contacts[$id]['tel']);
 			}
 			echo '</td>';
 			echo '<td>';
 			if (isset($contacts[$id]['gsm']))
 			{
-				echo render_contacts($contacts[$id]['gsm']);
+				echo get_contacts($contacts[$id]['gsm']);
 			}
 			echo '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
@@ -3509,7 +3509,7 @@ if ($v_list)
 
 			if (isset($contacts[$id]['mail']))
 			{
-				echo render_contacts($contacts[$id]['mail'], 'mail');
+				echo get_contacts($contacts[$id]['mail'], 'mail');
 			}
 
 			echo '</td>';
@@ -3799,7 +3799,7 @@ else if ($v_tiles)
 
 include __DIR__ . '/include/footer.php';
 
-function render_contacts($contacts, $abbrev = null)
+function get_contacts(array $contacts, $abbrev = null):string
 {
 	global $access_level;
 
