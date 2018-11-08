@@ -369,7 +369,7 @@ if (($top_buttons_right ?? false) || ($csv_en ?? false))
 	}
 
 	echo $top_buttons_right ?? '';
-	echo '</div';
+	echo '</div>';
 }
 
 echo '</div>';
