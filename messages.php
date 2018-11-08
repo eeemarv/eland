@@ -1150,11 +1150,16 @@ if (($edit || $add))
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="msg_type" class="col-sm-2 control-label">Vraag/Aanbod</label>';
+	echo '<label for="msg_type" class="col-sm-2 control-label">&nbsp;</label>';
 	echo '<div class="col-sm-10">';
-	echo '<select name="msg_type" id="msg_type" class="form-control" required>';
-	echo get_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
-	echo "</select>";
+//	echo '<select name="msg_type" id="msg_type" class="form-control" required>';
+
+//	echo get_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
+
+//	echo "</select>";
+
+	echo get_radio(['1' => 'Aanbod', '0' => 'Vraag'], 'msg_type', $msg['msg_type'], true);
+
 	echo '</div>';
 	echo '</div>';
 
@@ -2121,7 +2126,6 @@ if (!$inline)
 		}
 	}
 
-//	echo '<input type="hidden" name="f[en]" value="1">';
 	echo '</form>';
 
 	echo '</div>';
@@ -2133,8 +2137,9 @@ if ($inline)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	echo '<h3><i class="fa fa-newspaper-o"></i> ' . $h1;
-	echo ($recent) ? '' : '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo '<h3><i class="fa fa-newspaper-o"></i> ';
+	echo $h1;
+	echo $recent ? '' : '<span class="inline-buttons">' . $top_buttons . '</span>';
 	echo '</h3>';
 }
 
@@ -2452,10 +2457,33 @@ function get_checkbox_filter(array $checkbox_ary, string $filter_id, array $filt
 	foreach ($checkbox_ary as $key => $label)
 	{
 		$out .= '<span class="input-group-addon">';
+		$out .= '<label class="col-xs-12">';
 		$out .= '<input type="checkbox" name="f[' . $filter_id . '][' . $key . ']"';
-		$out .= isset($filter_ary[$filter_id][$key]) ? ' checked="checked"' : '';
+		$out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
 		$out .= '>&nbsp;';
 		$out .= $label;
+		$out .= '</label>';
+		$out .= '</span>';
+	}
+
+	return $out;
+}
+
+function get_radio(array $radio_ary, string $name, string $selected, bool $required):string
+{
+	$out = '';
+
+	foreach ($radio_ary as $value => $label)
+	{
+		$out .= '<span class="input-group-addon">';
+		$out .= '<label class="col-xs-12">';
+		$out .= '<input type="radio" name="' . $name . '" ';
+		$out .= 'value="' . $value . '"';
+		$out .= (string) $value === $selected ? ' checked' : '';
+		$out .= $required ? ' required' : '';
+		$out .= '>&nbsp;';
+		$out .= $label;
+		$out .= '</label>';
 		$out .= '</span>';
 	}
 

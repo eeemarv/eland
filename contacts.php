@@ -547,7 +547,9 @@ if ($uid)
 					->format_parenthesis();
 			}
 			echo '</td>';
-			echo '<td>' . aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) . '</td>';
+			echo '<td>';
+			echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) : '';
+			echo '</td>';
 		}
 		else if ($c['abbrev'] == 'mail')
 		{
