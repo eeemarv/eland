@@ -15,6 +15,7 @@ class pagination
 	private $entity = '';
 	private $params = [];
 	private $inline = false;
+	private $out;
 
 	private $limit_options = [
 		10 		=> 10,
@@ -32,6 +33,7 @@ class pagination
 
 	public function init($entity = '', $row_count = 0, $params = [], $inline = false)
 	{
+		$this->out = '';
 		$this->limit = $params['limit'] ?: 25;
 		$this->start = $params['start'] ?: 0;
 		$this->row_count = $row_count;
@@ -51,12 +53,18 @@ class pagination
 
 	public function render()
 	{
-		echo '<div class="row print-hide"><div class="col-md-12">';
-		echo '<ul class="pagination">';
+		if ($this->out)
+		{
+			echo $this->out;
+			return;
+		}
+
+		$this->out .= '<div class="row print-hide"><div class="col-md-12">';
+		$this->out .= '<ul class="pagination">';
 
 		if ($this->page)
 		{
-			echo $this->add_link($this->page - 1, '&#9668;');
+			$this->out .= $this->add_link($this->page - 1, '&#9668;');
 		}
 
 		$min_adjacent = $this->page - $this->adjacent_num;
@@ -67,45 +75,45 @@ class pagination
 
 		if ($min_adjacent)
 		{
-			echo $this->add_link(0);
+			$this->out .= $this->add_link(0);
 		}
 
 		for($page = $min_adjacent; $page < $max_adjacent + 1; $page++)
 		{
-			echo $this->add_link($page);
+			$this->out .= $this->add_link($page);
 		}
 
 		if ($max_adjacent != $this->page_num - 1)
 		{
-			echo $this->add_link($this->page_num - 1);
+			$this->out .= $this->add_link($this->page_num - 1);
 		}
 
 		if ($this->page < $this->page_num - 1)
 		{
-			echo $this->add_link($this->page + 1, '&#9658;');
+			$this->out .= $this->add_link($this->page + 1, '&#9658;');
 		}
 
-		echo '</ul>';
+		$this->out .= '</ul>';
 
-		echo '<div class="pull-right hidden-xs">';
-		echo '<div>';
-		echo 'Totaal ';
-		echo $this->row_count;
-		echo ', Pagina ';
-		echo $this->page + 1;
-		echo ' van ';
-		echo $this->page_num;
-		echo '</div>';
+		$this->out .= '<div class="pull-right hidden-xs">';
+		$this->out .= '<div>';
+		$this->out .= 'Totaal ';
+		$this->out .= $this->row_count;
+		$this->out .= ', Pagina ';
+		$this->out .= $this->page + 1;
+		$this->out .= ' van ';
+		$this->out .= $this->page_num;
+		$this->out .= '</div>';
 
 		if (!$this->inline)
 		{
-			echo '<div>';
-			echo '<form action="' . $this->entity . '.php">';
+			$this->out .= '<div>';
+			$this->out .= '<form action="' . $this->entity . '.php">';
 
-			echo 'Per pagina: ';
-			echo '<select name="limit" onchange="this.form.submit();">';
-			render_select_options($this->limit_options, $this->limit);
-			echo '</select>';
+			$this->out .= 'Per pagina: ';
+			$this->out .= '<select name="limit" onchange="this.form.submit();">';
+			$this->out .= get_select_options($this->limit_options, $this->limit);
+			$this->out .= '</select>';
 
 			$action_params = $this->params;
 			unset($action_params['limit']);
@@ -119,15 +127,16 @@ class pagination
 			foreach ($action_params as $param)
 			{
 				[$name, $value] = explode('=', $param);
-				echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+				$this->out .= '<input name="' . $name . '" value="' . $value . '" type="hidden">';
 			}
 
-			echo '</form>';
-			echo '</div>';
+			$this->out .= '</form>';
+			$this->out .= '</div>';
 		}
-		echo '</div>';
+		$this->out .= '</div>';
+		$this->out .= '</div></div>';
 
-		echo '</div></div>';
+		echo $this->out;
 	}
 
 	public function add_link($page, $text = '')

@@ -355,7 +355,7 @@ echo '</div>';
 
 echo $top_buttons ?? '';
 
-if ($top_buttons_right || isset($csv_en))
+if ($top_buttons_right ?? false || $csv_en ?? false)
 {
 	echo '<div class="pull-right">';
 

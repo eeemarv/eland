@@ -538,9 +538,9 @@ function btn_filter():string
  */
 
 function aphp(
-	$entity = '',
-	$params = [],
-	$label = '*link*',
+	string $entity = '',
+	array $params = [],
+	string $label = '*link*',
 	$class = false,
 	$title = false,
 	$fa = false,
@@ -702,19 +702,23 @@ function redirect_login()
 	exit;
 }
 
- /*
-  *
-  */
-function render_select_options($option_ary, $selected, $print = true)
+function get_select_options(array $option_ary, $selected):string
 {
 	$str = '';
 
 	foreach ($option_ary as $key => $value)
 	{
 		$str .= '<option value="' . $key . '"';
-		$str .= ($key == $selected) ? ' selected="selected"' : '';
+		$str .= $key == $selected ? ' selected="selected"' : '';
 		$str .= '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
 	}
+
+	return $str;
+}
+
+function render_select_options($option_ary, $selected, $print = true)
+{
+	$str = get_select_options($option_ary, $selected);
 
 	if ($print)
 	{
