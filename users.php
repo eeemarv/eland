@@ -679,9 +679,6 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 	if ($bulk_mail_submit && $count)
 	{
-
-//
-
 		$template_vars = [];
 
 		foreach ($map_template_vars as $key => $trans)
@@ -710,7 +707,6 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
 		]);
-//
 
 		$app['monolog']->debug('#bulk mail');
 
@@ -2368,7 +2364,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Volledige naam';
 		echo '</dt>';
-		dd_render($user['fullname']);
+		echo get_dd($user['fullname']);
 
 		echo '<dt>Zichtbaarheid volledige naam</dt>';
 		echo '<dd>';
@@ -2379,7 +2375,7 @@ if ($id)
 	echo '<dt>';
 	echo 'Postcode';
 	echo '</dt>';
-	dd_render($user['postcode']);
+	echo get_dd($user['postcode']);
 
 	if ($s_admin || $s_owner)
 	{
@@ -2388,7 +2384,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			dd_render($app['date_format']->get($user['birthday'], 'day'));
+			echo get_dd($app['date_format']->get($user['birthday'], 'day'));
 		}
 		else
 		{
@@ -2399,12 +2395,12 @@ if ($id)
 	echo '<dt>';
 	echo 'Hobbies / Interesses';
 	echo '</dt>';
-	dd_render($user['hobbies']);
+	echo get_dd($user['hobbies']);
 
 	echo '<dt>';
 	echo 'Commentaar';
 	echo '</dt>';
-	dd_render($user['comments']);
+	echo get_dd($user['comments']);
 
 	if ($s_admin)
 	{
@@ -2414,7 +2410,7 @@ if ($id)
 
 		if (isset($user['cdate']))
 		{
-			dd_render($app['date_format']->get($user['cdate']));
+			echo get_dd($app['date_format']->get($user['cdate']));
 		}
 		else
 		{
@@ -2427,7 +2423,7 @@ if ($id)
 
 		if (isset($user['adate']))
 		{
-			dd_render($app['date_format']->get($user['adate']));
+			echo get_dd($app['date_format']->get($user['adate']));
 		}
 		else
 		{
@@ -2440,7 +2436,7 @@ if ($id)
 
 		if (isset($user['lastlogin']))
 		{
-			dd_render($app['date_format']->get($user['lastlogin']));
+			echo get_dd($app['date_format']->get($user['lastlogin']));
 		}
 		else
 		{
@@ -2450,17 +2446,17 @@ if ($id)
 		echo '<dt>';
 		echo 'Rechten / rol';
 		echo '</dt>';
-		dd_render($user['accountrole']);
+		echo get_dd($user['accountrole']);
 
 		echo '<dt>';
 		echo 'Status';
 		echo '</dt>';
-		dd_render($status_ary[$user['status']]);
+		echo get_dd($status_ary[$user['status']]);
 
 		echo '<dt>';
 		echo 'Commentaar van de admin';
 		echo '</dt>';
-		dd_render($user['admincomment']);
+		echo get_dd($user['admincomment']);
 	}
 
 	echo '<dt>Saldo</dt>';
@@ -2492,7 +2488,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Periodieke mail met recent vraag en aanbod';
 		echo '</dt>';
-		dd_render(($user['cron_saldo']) ? 'Aan' : 'Uit');
+		echo (($user['cron_saldo']) ? 'Aan' : 'Uit');
 		echo '</dl>';
 	}
 
@@ -3854,11 +3850,12 @@ function cancel($id = null)
 	exit;
 }
 
-function dd_render($str)
+function get_dd(string $str):string
 {
-	echo '<dd>';
-	echo ($str) ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
-	echo '</dd>';
+	$out =  '<dd>';
+	$out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
+	$out .=  '</dd>';
+	return $out;
 }
 
 function send_activation_mail($password, $user)

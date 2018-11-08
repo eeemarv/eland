@@ -197,8 +197,8 @@ if ($add || $edit)
 
 	include __DIR__ . '/include/header.php';
 
-	$out .= '<div class="panel panel-info">';
-	$out .= '<div class="panel-heading">';
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
 
 	echo '<form method="post" class="form-horizontal">';
 
@@ -637,7 +637,7 @@ function get_schemas_groups():string
 {
 	global $app;
 
-	$out .= '<p><ul>';
+	$out = '<p><ul>';
 	$out .= '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
 	$out .= '</ul></p>';
 
@@ -910,6 +910,8 @@ function get_schemas_groups():string
 	}
 
 	$out .= '</div></div>';
+
+	return $out;
 }
 
 function cancel($id = null)
