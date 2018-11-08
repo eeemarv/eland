@@ -681,6 +681,7 @@ function get_schemas_groups():string
 
 	$loc_url_ary = $loc_group_ary = $loc_account_ary = [];
 	$rem_group_ary =  $rem_account_ary = $group_user_count_ary = [];
+	$loc_letscode_ary = [];
 
 	$groups = $app['db']->executeQuery('select localletscode, url, id
 		from letsgroups

@@ -1847,7 +1847,7 @@ if (!$uid)
 	];
 }
 
-if (!$filter['cid'])
+if (!($filter['cid'] ?? false))
 {
 	$tableheader_ary += [
 		'm.id_category' => array_merge($asc_preset_ary, [
@@ -1935,12 +1935,12 @@ if ($s_admin || $s_user)
 	}
 }
 
-$filter_panel_open = ($filter['fcode'] && !$uid)
+$filter_panel_open = (($filter['fcode'] ?? false) && !$uid)
 	|| count($filter['type']) !== 2
 	|| count($filter['valid']) !== 2
 	|| count($filter['ustatus']) !== 3;
 
-$filtered = $filter['q'] || $filter_panel_open;
+$filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
 if ($uid)
 {
@@ -1963,7 +1963,7 @@ else
 	$h1 = 'Vraag en aanbod';
 }
 
-$h1 .= $filter['cid'] ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
+$h1 .= isset($filter['cid']) ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
 $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
@@ -2001,7 +2001,7 @@ if (!$inline)
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="';
-	echo $filter['q'];
+	echo $filter['q'] ?? '';
 	echo '" name="f[q]" placeholder="Zoeken">';
 	echo '</div>';
 	echo '</div>';
@@ -2013,7 +2013,7 @@ if (!$inline)
 	echo '</span>';
 	echo '<select class="form-control" id="cid" name="f[cid]">';
 
-	echo get_select_options($cats, $filter['cid']);
+	echo get_select_options($cats, $filter['cid'] ?? 0);
 
 	echo '</select>';
 	echo '</div>';
@@ -2089,7 +2089,9 @@ if (!$inline)
 	echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
 	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 	echo 'name="f[fcode]" id="fcode" placeholder="Account" ';
-	echo 'value="' . $filter['fcode'] . '">';
+	echo 'value="';
+	echo $filter['fcode'] ?? '';
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -2231,11 +2233,11 @@ if ($v_list)
 			echo '</td>';
 
 			echo '<td>';
-			echo $msg['postcode'];
+			echo $msg['postcode'] ?? '';
 			echo '</td>';
 		}
 
-		if (!$filter['cid'])
+		if (!($filter['cid'] ?? false))
 		{
 			echo '<td>';
 			echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);

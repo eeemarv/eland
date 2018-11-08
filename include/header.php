@@ -355,7 +355,7 @@ echo '</div>';
 
 echo $top_buttons ?? '';
 
-if ($top_buttons_right ?? false || $csv_en ?? false)
+if (($top_buttons_right ?? false) || ($csv_en ?? false))
 {
 	echo '<div class="pull-right">';
 
@@ -368,7 +368,7 @@ if ($top_buttons_right ?? false || $csv_en ?? false)
 		echo '</a>&nbsp;';
 	}
 
-	echo $top_buttons_right;
+	echo $top_buttons_right ?? '';
 	echo '</div';
 }
 

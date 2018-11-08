@@ -1007,9 +1007,13 @@ foreach ($contacts as $c)
 	echo '<tr>';
 	echo '<td>' . $c['abbrev'] . '</td>';
 
-	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['value']) . '</td>';
+	echo '<td>';
+	echo isset($c['value']) ? aphp('contacts', ['edit' => $c['id']], $c['value']) : '';
+	echo '</td>';
 	echo '<td>' . link_user($c['id_user']) . '</td>';
-	echo '<td>' . aphp('contacts', ['edit' => $c['id']], $c['comments']) . '</td>';
+	echo '<td>';
+	echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id']], $c['comments']) : '';
+	echo '</td>';
 	echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
 
 	echo '<td>';
