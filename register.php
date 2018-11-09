@@ -369,7 +369,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
-$app['form_token']->generate();
+echo $app['form_token']->get_input();
 
 echo '</form>';
 

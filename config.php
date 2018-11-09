@@ -1015,7 +1015,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '<input type="hidden" name="active_tab" value="' . $id . '">';
 	echo '<input type="submit" class="btn btn-primary" value="Aanpassen" name="' . $id . '_submit">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</div>';
 

@@ -20,7 +20,7 @@ class form_token
 		$this->script_name = $script_name;
 	}
 
-	public function generate($print = true)
+	public function get():string
 	{
 		if (!isset($this->token))
 		{
@@ -30,17 +30,13 @@ class form_token
 			$this->redis->expire($key, $this->ttl);
 		}
 
-		if ($print)
-		{
-			echo '<input type="hidden" name="form_token" value="' . $this->token . '">';
-		}
-
 		return $this->token;
 	}
 
-	/**
-	*
-	*/
+	public function get_input_field():string
+	{
+		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
+	}
 
 	public function get_error()
 	{

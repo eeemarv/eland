@@ -106,7 +106,7 @@ if ($map_edit)
 
 	echo aphp('docs', ['map' => $map_edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 
@@ -353,7 +353,7 @@ if ($del)
 
 		echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
-		$app['form_token']->generate();
+		echo $app['form_token']->get_input();
 		echo '</form>';
 
 		echo '</div>';
@@ -526,10 +526,11 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	$map_context = ($map) ? ['map' => $map] : [];
+	$map_context = $map ? ['map' => $map] : [];
+
 	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 

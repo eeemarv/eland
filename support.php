@@ -131,7 +131,7 @@ echo '</textarea>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-$app['form_token']->generate();
+echo $app['form_token']->get_input();
 
 echo '</form>';
 

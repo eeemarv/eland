@@ -1044,7 +1044,7 @@ if ($add)
 
 	echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';
@@ -1274,7 +1274,7 @@ if ($edit)
 
 	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
 
 	echo '</form>';

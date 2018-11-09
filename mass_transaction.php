@@ -771,7 +771,7 @@ echo '</div>';
 
 echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
-$app['form_token']->generate();
+echo $app['form_token']->get_input();
 
 echo '</div>';
 echo '</div>';

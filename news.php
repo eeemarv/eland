@@ -251,7 +251,7 @@ if ($add || $edit)
 	$btn = ($add) ? 'success' : 'primary';
 	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 
@@ -358,7 +358,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 	echo '</form>';
 
 	echo '</div>';

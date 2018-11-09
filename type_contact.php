@@ -68,7 +68,7 @@ if ($add)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 	echo '</div>';
@@ -156,7 +156,7 @@ if ($edit)
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 	echo '</div>';
@@ -213,7 +213,7 @@ if ($del)
 	echo '<form method="post">';
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 	echo '</div>';

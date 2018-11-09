@@ -54,7 +54,7 @@ if ($del)
 	echo '</dl>';
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 	echo '</form>';
 
 	echo '</div>';
@@ -124,7 +124,7 @@ if ($add)
 
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	echo '</form>';
 

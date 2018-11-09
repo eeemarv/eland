@@ -680,7 +680,7 @@ if ($del)
 
 	echo aphp('messages', ['id' => $del], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 	echo '</form></p>';
 
 	echo '</div>';
@@ -1252,7 +1252,7 @@ if (($edit || $add))
 
 	$upload_img_param = [
 		'img'	=> 1,
-		'form_token' => $upload_img_param['form_token'] = $app['form_token']->generate(false),
+		'form_token' => $upload_img_param['form_token'] = $app['form_token']->get(),
 	];
 
 	if ($edit)
@@ -1287,7 +1287,7 @@ if (($edit || $add))
 
 	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
-	$app['form_token']->generate();
+	echo $app['form_token']->get_input();
 
 	if (isset($uploaded_images) && count($uploaded_images))
 	{
@@ -2394,7 +2394,7 @@ else if ($v_list)
 
 		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
 
-		$app['form_token']->generate();
+		echo $app['form_token']->get_input();
 
 		echo '</form>';
 
@@ -2411,7 +2411,7 @@ else if ($v_list)
 
 			echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
 
-			$app['form_token']->generate();
+			echo $app['form_token']->get_input();
 
 			echo '</form>';
 
