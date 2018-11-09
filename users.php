@@ -1791,17 +1791,22 @@ if ($add || $edit)
 	echo $user['birthday'] ? $app['date_format']->get($user['birthday'], 'day') : '';
 	echo '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="';
+	echo $app['date_format']->datepicker_format();
+	echo '" ';
 	echo 'data-date-default-view="2" ';
-	echo 'data-date-end-date="' . $app['date_format']->get(false, 'day') . '" ';
+	echo 'data-date-end-date="';
+	echo $app['date_format']->get(false, 'day');
+	echo '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-start-view="2" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
-	echo '>';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder();
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1818,7 +1823,9 @@ if ($add || $edit)
 	echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
-	echo 'value="' . $user['comments'] . '">';
+	echo 'value="';
+	echo $user['comments'];
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -2684,12 +2691,16 @@ if ($v_list && $s_admin)
 	];
 
 	$columns['a'] = [
-		'trans_in'		=> 'Transacties in',
-		'trans_out'		=> 'Transacties uit',
-		'trans_total'	=> 'Transacties totaal',
-		'amount_in'		=> $app['config']->get('currency') . ' in',
-		'amount_out'	=> $app['config']->get('currency') . ' uit',
-		'amount_total'	=> $app['config']->get('currency') . ' totaal',
+		'trans'		=> [
+			'in'	=> 'Transacties in',
+			'out'	=> 'Transacties uit',
+			'total'	=> 'Transacties totaal',
+		],
+		'amount'	=> [
+			'in'	=> $app['config']->get('currency') . ' in',
+			'out'	=> $app['config']->get('currency') . ' uit',
+			'total'	=> $app['config']->get('currency') . ' totaal',
+		],
 	];
 
 	$users = $app['db']->fetchAll('select u.*
@@ -2863,28 +2874,32 @@ if ($v_list && $s_admin)
 		{
 			if (!isset($activity[$in['id_to']]))
 			{
-				$activity[$in['id_to']]['trans_total'] = 0;
-				$activity[$in['id_to']]['amount_total'] = 0;
+				$activity[$in['id_to']] = [
+					'trans'	=> ['total' => 0],
+					'amount' => ['total' => 0],
+				];
 			}
 
-			$activity[$in['id_to']]['trans_in'] = $in['count'];
-			$activity[$in['id_to']]['amount_in'] = $in['sum'];
-			$activity[$in['id_to']]['trans_total'] += $in['count'];
-			$activity[$in['id_to']]['amount_total'] += $in['sum'];
+			$activity[$in['id_to']]['trans']['in'] = $in['count'];
+			$activity[$in['id_to']]['amount']['in'] = $in['sum'];
+			$activity[$in['id_to']]['trans']['total'] += $in['count'];
+			$activity[$in['id_to']]['amount']['total'] += $in['sum'];
 		}
 
 		foreach ($out_ary as $out)
 		{
 			if (!isset($activity[$out['id_from']]))
 			{
-				$activity[$out['id_from']]['trans_total'] = 0;
-				$activity[$out['id_from']]['amount_total'] = 0;
+				$activity[$out['id_from']] = [
+					'trans'	=> ['total' => 0],
+					'amount' => ['total' => 0],
+				];
 			}
 
-			$activity[$out['id_from']]['trans_out'] = $out['count'];
-			$activity[$out['id_from']]['amount_out'] = $out['sum'];
-			$activity[$out['id_from']]['trans_total'] += $out['count'];
-			$activity[$out['id_from']]['amount_total'] += $out['sum'];
+			$activity[$out['id_from']]['trans']['out'] = $out['count'];
+			$activity[$out['id_from']]['amount']['out'] = $out['sum'];
+			$activity[$out['id_from']]['trans']['total'] += $out['count'];
+			$activity[$out['id_from']]['amount']['total'] += $out['sum'];
 		}
 	}
 }
@@ -3165,6 +3180,26 @@ if ($s_admin && $v_list)
 			echo '">';
 			echo '</div></div>';
 			echo '</div>';
+
+			foreach ($ary as $a_type => $a_ary)
+			{
+				foreach($a_ary as $key => $lbl)
+				{
+					echo '<div class="checkbox">';
+					echo '<label>';
+					echo '<input type="checkbox" ';
+					echo 'name="sh[' . $group . '][' . $a_type . '][' . $key . ']" ';
+					echo 'value="1"';
+					echo isset($show_columns[$group][$a_type][$key]) ? ' checked="checked"' : '';
+					echo '> ' . $lbl;
+					echo '</label>';
+					echo '</div>';
+				}
+			}
+
+			echo '</div>';
+
+			continue;
 		}
 		else if ($group === 'm')
 		{
@@ -3310,8 +3345,22 @@ if ($v_list)
 
 		foreach ($show_columns as $group => $ary)
 		{
-			if ($group == 'p')
+			if ($group === 'p')
 			{
+				continue;
+			}
+			else if ($group === 'a')
+			{
+				foreach ($ary as $a_key => $a_ary)
+				{
+					foreach ($a_ary as $key => $one)
+					{
+						echo '<th data-type="numeric">';
+						echo $columns[$group][$a_key][$key];
+						echo '</th>';
+					}
+				}
+
 				continue;
 			}
 
@@ -3330,7 +3379,9 @@ if ($v_list)
 
 				$sort_initial = isset($sort_initial) ? '' : ' data-sort-initial="true"';
 
-				echo '<th' . $sort_initial . $data_sort_ignore . $data_type . '>' . $columns[$group][$key] . '</th>';
+				echo '<th' . $sort_initial . $data_sort_ignore . $data_type . '>';
+				echo $columns[$group][$key];
+				echo '</th>';
 			}
 		}
 
@@ -3414,6 +3465,7 @@ if ($v_list)
 				foreach($show_columns['m'] as $key => $one)
 				{
 					echo '<td>';
+
 					if (isset($msgs_count[$id][$key]))
 					{
 						echo aphp('messages', [
@@ -3422,26 +3474,33 @@ if ($v_list)
 							'type' 	=> $key,
 						], $msgs_count[$id][$key]);
 					}
+
 					echo '</td>';
 				}
 			}
 
 			if (isset($show_columns['a']))
 			{
-				$column_link_params = [
-					'trans_in'		=> 'Transacties in',
-					'trans_out'		=> 'Transacties uit',
-					'trans_total'	=> 'Transacties totaal',
-					'amount_in'		=> [],
-					'amount_out'	=> $app['config']->get('currency') . ' uit',
-					'amount_total'	=> $app['config']->get('currency') . ' totaal',
-				];
+				$from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day');
 
-				foreach($show_columns['a'] as $key => $one)
+				foreach($show_columns['a'] as $a_key => $a_ary)
 				{
-					echo '<td>';
-					echo $activity[$id][$key] ?? '';
-					echo '</td>';
+					foreach ($a_ary as $key => $one)
+					{
+						echo '<td>';
+
+						if (isset($activity[$id][$a_key][$key]))
+						{
+							echo aphp('transactions', [
+								'fcode'	=> $key === 'in' ? '' : $u['letscode'],
+								'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+								'andor'	=> $key === 'total' ? 'or' : 'and',
+								'fdate' => $from_date,
+							], $activity[$id][$a_key][$key]);
+						}
+
+						echo '</td>';
+					}
 				}
 			}
 

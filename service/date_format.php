@@ -181,24 +181,11 @@ class date_format
 		return false;
 	}
 
-	/**
-	 * to do: get schema for static method version
-	 */
-
-	public function get(string $ts, string $precision = 'min'):string
+	public function get_from_unix(int $unix, string $precision = 'min'):string
 	{
-		static $format_ary, $format;
-
-		if (!$ts)
-		{
-			return '';
-		}
-
-		$time = strtotime($ts . ' UTC');
-
 		if (isset($this->format_ary))
 		{
-			return strftime($this->format_ary[$precision], $time);
+			return strftime($this->format_ary[$precision], $unix);
 		}
 
 		if (!isset($format_ary))
@@ -221,7 +208,23 @@ class date_format
 			$format_ary['sec'] = $sec;
 		}
 
-		return strftime($format_ary[$precision], $time);
+		return strftime($format_ary[$precision], $unix);
+	}
+
+	/**
+	 * to do: get schema for static method version
+	 */
+
+	public function get(string $ts, string $precision = 'min'):string
+	{
+		static $format_ary, $format;
+
+		if (!$ts)
+		{
+			return '';
+		}
+
+		return $this->get_from_unix(strtotime($ts . ' UTC'), $precision);
 	}
 
 	public function twig_get($environment, $context, $ts = false, $precision = 'min')
