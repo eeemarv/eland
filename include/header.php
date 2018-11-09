@@ -343,7 +343,7 @@ $class_admin = $page_access === 'admin' ? ' admin' : '';
 echo '<div id="wrap">';
 echo '<div id="main" class="container-fluid clear-top' . $class_admin . '">';
 
-$app['alert']->render();
+echo $app['alert']->get();
 
 echo '<div class="row">';
 echo '<div class="col-md-12 top-buttons">';

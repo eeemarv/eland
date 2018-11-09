@@ -19,7 +19,7 @@ class alert
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
-	private function add($type, $msg)
+	private function add(string $type, string $msg):void
 	{
 		$url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
@@ -37,47 +37,51 @@ class alert
 		$this->flashbag->add('alert', [$type, $msg]);
 	}
 
-	public function error($msg)
+	public function error(string $msg):void
 	{
 		$this->add('error', $msg);
 	}
 
-	function success($msg)
+	function success(string $msg):void
 	{
 		$this->add('success', $msg);
 	}
 
-	public function info($msg)
+	public function info(string $msg):void
 	{
 		$this->add('info', $msg);
 	}
 
-	public function warning($msg)
+	public function warning(string $msg):void
 	{
 		$this->add('warning', $msg);
 	}
 
-	public function render()
+	public function get():string
 	{
 		if (!$this->flashbag->has('alert'))
 		{
-			return;
+			return '';
 		}
+
+		$out = '';
 
 		foreach ($this->flashbag->get('alert') as $alert)
 		{
-			$alert[0] = ($alert[0] == 'error') ? 'danger' : $alert[0];
+			$alert[0] = $alert[0] === 'error' ? 'danger' : $alert[0];
 
-			echo '<div class="row">';
-			echo '<div class="col-xs-12">';
-			echo '<div class="alert alert-' . $alert[0] . ' alert-dismissible" role="alert">';
-			echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-			echo '<span aria-hidden="true">&times;</span></button>';
-			echo $alert[1] . '</div></div></div>';
+			$out .= '<div class="row">';
+			$out .= '<div class="col-xs-12">';
+			$out .= '<div class="alert alert-' . $alert[0] . ' alert-dismissible" role="alert">';
+			$out .= '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+			$out .= '<span aria-hidden="true">&times;</span></button>';
+			$out .= $alert[1] . '</div></div></div>';
 		}
+
+		return $out;
 	}
 
-	public function is_set()
+	public function is_set():bool
 	{
 		$is_set = (!isset($this->send_once) && $this->flashbag->has('alert')) ? true : false;
 
@@ -86,4 +90,3 @@ class alert
 		return $is_set;
 	}
 }
-
