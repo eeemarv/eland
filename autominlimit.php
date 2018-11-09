@@ -129,7 +129,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
-echo $app['form_token']->get_input();
+echo $app['form_token']->get_hidden_input();
 
 echo '</form>';
 

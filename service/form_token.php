@@ -33,7 +33,7 @@ class form_token
 		return $this->token;
 	}
 
-	public function get_input_field():string
+	public function get_hidden_input():string
 	{
 		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
 	}
@@ -42,7 +42,7 @@ class form_token
 	{
 		if (!isset($_POST['form_token']))
 		{
-			return 'Het formulier bevat geen token';
+			return 'Het formulier bevat geen form token';
 		}
 
 		$token = $_POST['form_token'];

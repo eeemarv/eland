@@ -204,7 +204,7 @@ echo '</textarea>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-echo $app['form_token']->get_input();
+echo $app['form_token']->get_hidden_input();
 
 echo '</form>';
 

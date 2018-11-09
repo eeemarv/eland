@@ -850,7 +850,7 @@ if ($pw)
 
 	echo aphp('users', ['id' => $pw], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -1052,7 +1052,7 @@ if ($del)
 
 	echo aphp('users', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -2048,7 +2048,7 @@ if ($add || $edit)
 	$btn = ($edit) ? 'primary' : 'success';
 	echo aphp('users', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -3632,7 +3632,7 @@ if ($v_list)
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 
 		echo '</div>';
-		echo $app['form_token']->get_input();
+		echo $app['form_token']->get_hidden_input();
 		echo '</form>';
 
 		foreach($edit_fields_tabs as $k => $t)
@@ -3672,7 +3672,7 @@ if ($v_list)
 
 			echo '<input type="hidden" value="' . $k . '" name="bulk_field">';
 			echo '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
-			echo $app['form_token']->get_input();
+			echo $app['form_token']->get_hidden_input();
 			echo '</form>';
 
 			echo '</div>';

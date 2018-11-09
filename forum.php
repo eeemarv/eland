@@ -214,7 +214,7 @@ if ($del)
 
 	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -310,7 +310,7 @@ if ($add || $edit)
 
 	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -475,7 +475,7 @@ if ($topic)
 		$action = ($edit) ? 'aanpassen' : 'toevoegen';
 
 		echo '<input type="submit" name="zend" value="Reactie toevoegen" class="btn btn-success">';
-		echo $app['form_token']->get_input();
+		echo $app['form_token']->get_hidden_input();
 
 		echo '</form>';
 

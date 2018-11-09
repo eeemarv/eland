@@ -100,7 +100,7 @@ if ($add)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -215,7 +215,7 @@ if ($edit)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -261,7 +261,7 @@ if ($del)
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 	echo '</form>';
 
 	echo '</div>';

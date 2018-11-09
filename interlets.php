@@ -279,7 +279,7 @@ if ($add || $edit)
 	$canc = ($edit) ? ['id' => $edit] : [];
 	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -333,7 +333,7 @@ if ($del)
 
 	echo aphp('interlets', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo "</form></p>";
 	echo "</div>";

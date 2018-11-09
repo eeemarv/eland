@@ -133,7 +133,7 @@ if ($del)
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
@@ -438,7 +438,7 @@ if ($edit || $add)
 	{
 		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
 	}
-	echo $app['form_token']->get_input();
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
