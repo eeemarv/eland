@@ -163,9 +163,9 @@ if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_a
  */
 if ($id || $edit || $del)
 {
-	$id = ($id) ?: (($edit) ?: $del);
+	$id = $id ?: ($edit ?: $del);
 
-	$message = $app['db']->fetchAssoc('SELECT m.*,
+	$message = $app['db']->fetchAssoc('select m.*,
 			c.id as cid,
 			c.fullname as catname
 		FROM messages m, categories c
@@ -186,9 +186,9 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$ow_type = ($message['msg_type']) ? 'aanbod' : 'vraag';
-	$ow_type_this = ($message['msg_type']) ? 'dit aanbod' : 'deze vraag';
-	$ow_type_the = ($message['msg_type']) ? 'het aanbod' : 'de vraag';
+	$ow_type = $message['msg_type'] ? 'aanbod' : 'vraag';
+	$ow_type_this = $message['msg_type'] ? 'dit aanbod' : 'deze vraag';
+	$ow_type_the = $message['msg_type'] ? 'het aanbod' : 'de vraag';
 	$ow_type_uc = ucfirst($ow_type);
 	$ow_type_uc_the = ucfirst($ow_type_the);
 }
@@ -371,7 +371,6 @@ if ($post && $img && $images && !$s_guest)
 	header('Content-Disposition: inline; filename="files.json"');
 	header('X-Content-Type-Options: nosniff');
 	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
-
 	header('Vary: Accept');
 
 	echo json_encode($ret_ary);
@@ -484,7 +483,6 @@ if ($img_del == 'all' && $id)
 		echo '</div>';
  		echo '</div>';
 		echo '</div>';
-
 	}
 
 	echo '</div>';
@@ -549,7 +547,7 @@ if ($mail && $post && $id)
 			and c.id_user = ?
 			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
-	$message['type'] = ($message['msg_type']) ? 'offer' : 'want';
+	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
 	$vars = [
 		'group'		=> [
@@ -1152,11 +1150,6 @@ if (($edit || $add))
 	echo '<div class="form-group">';
 	echo '<label for="msg_type" class="col-sm-2 control-label">&nbsp;</label>';
 	echo '<div class="col-sm-10">';
-//	echo '<select name="msg_type" id="msg_type" class="form-control" required>';
-
-//	echo get_select_options(['1' => 'Aanbod', '0' => 'Vraag'], $msg['msg_type']);
-
-//	echo "</select>";
 
 	echo get_radio(['1' => 'Aanbod', '0' => 'Vraag'], 'msg_type', $msg['msg_type'], true);
 
@@ -1193,7 +1186,9 @@ if (($edit || $add))
 	echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in dagen</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="validity" name="validity" min="1" ';
-	echo 'value="' . $msg['validity'] . '" required>';
+	echo 'value="';
+	echo $msg['validity'];
+	echo '" required>';
 	echo '</div>';
 	echo '</div>';
 
@@ -1201,7 +1196,9 @@ if (($edit || $add))
 	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $app['config']->get('currency') . '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
-	echo 'value="' . $msg['amount'] . '">';
+	echo 'value="';
+	echo $msg['amount'];
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1209,7 +1206,9 @@ if (($edit || $add))
 	echo '<label for="units" class="col-sm-2 control-label">Per (uur, stuk, ...)</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="units" name="units" ';
-	echo 'value="' . $msg['units'] . '">';
+	echo 'value="';
+	echo $msg['units'];
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1220,7 +1219,9 @@ if (($edit || $add))
 	echo '<div class="row">';
 
 	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
-	echo 'data-s3-url="' . $app['s3_img_url'] . '">';
+	echo 'data-s3-url="';
+	echo $app['s3_img_url'];
+	echo '">';
 	echo '<div class="thumbnail">';
 	echo '<img src="" alt="afbeelding">';
 	echo '<div class="caption">';
@@ -1235,7 +1236,9 @@ if (($edit || $add))
 	{
 		echo '<div class="col-sm-3 col-md-2 thumbnail-col">';
 		echo '<div class="thumbnail">';
-		echo '<img src="' . $app['s3_img_url'] . $img['PictureFile'] . '" alt="afbeelding">';
+		echo '<img src="';
+		echo $app['s3_img_url'] . $img['PictureFile'];
+		echo '" alt="afbeelding">';
 		echo '<div class="caption">';
 
 		echo '<p><span class="btn btn-danger img-delete" role="button">';
@@ -1260,7 +1263,9 @@ if (($edit || $add))
 	echo '<span class="btn btn-default fileinput-button">';
 	echo '<i class="fa fa-plus" id="img_plus"></i> Opladen';
 	echo '<input id="fileupload" type="file" name="images[]" ';
-	echo 'data-url="' . generate_url('messages', $upload_img_param) . '" ';
+	echo 'data-url="';
+	echo generate_url('messages', $upload_img_param);
+	echo '" ';
 	echo 'data-data-type="json" data-auto-upload="true" ';
 	echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 	echo 'data-max-file-size="999000" ';
@@ -2145,7 +2150,7 @@ if ($inline)
 
 if (!$recent)
 {
-	$app['pagination']->render();
+	echo $app['pagination']->get();
 }
 
 if (!count($messages))
@@ -2158,7 +2163,7 @@ if (!count($messages))
 
 	if (!$recent)
 	{
-		$app['pagination']->render();
+		echo $app['pagination']->get();
 	}
 
 	if (!$inline)
@@ -2327,7 +2332,7 @@ else if ($v_extended)
 
 if (!$recent)
 {
-	$app['pagination']->render();
+	echo $app['pagination']->get();
 }
 
 if ($inline)

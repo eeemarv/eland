@@ -31,7 +31,7 @@ class pagination
 	{
 	}
 
-	public function init($entity = '', $row_count = 0, $params = [], $inline = false)
+	public function init($entity = '', $row_count = 0, $params = [], $inline = false):void
 	{
 		$this->out = '';
 		$this->limit = $params['limit'] ?: 25;
@@ -51,12 +51,11 @@ class pagination
 		}
 	}
 
-	public function render()
+	public function get():string
 	{
 		if ($this->out)
 		{
-			echo $this->out;
-			return;
+			return $this->out;
 		}
 
 		$this->out .= '<div class="row print-hide"><div class="col-md-12">';
@@ -140,10 +139,10 @@ class pagination
 		$this->out .= '</div>';
 		$this->out .= '</div></div>';
 
-		echo $this->out;
+		return $this->out;
 	}
 
-	public function get_link($page, $text = '')
+	private function get_link($page, $text = '')
 	{
 		$params = $this->params;
 		$params['start'] = $page * $this->limit;
@@ -155,7 +154,7 @@ class pagination
 		$pag_link .= '<a href="';
 		$pag_link .= generate_url($this->entity, $params);
 		$pag_link .= '">';
-		$pag_link .= $text == '' ? $page + 1 : $text;
+		$pag_link .= $text === '' ? $page + 1 : $text;
 		$pag_link .= '</a></li>';
 
 		return $pag_link;

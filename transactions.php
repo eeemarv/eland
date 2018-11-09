@@ -1914,7 +1914,7 @@ else
 	echo '</h3>';
 }
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 if (!count($transactions))
 {
@@ -1923,7 +1923,7 @@ if (!count($transactions))
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
-	$app['pagination']->render();
+	echo $app['pagination']->get();
 
 	if (!$inline)
 	{
@@ -2114,7 +2114,7 @@ else
 }
 echo '</table></div></div>';
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 if ($inline)
 {

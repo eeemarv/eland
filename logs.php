@@ -251,7 +251,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 echo '<div class="panel panel-default printview">';
 
@@ -308,6 +308,6 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 include __DIR__ . '/include/footer.php';

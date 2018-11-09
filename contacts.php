@@ -952,7 +952,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 if (!count($contacts))
 {
@@ -962,7 +962,7 @@ if (!count($contacts))
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 
-	$app['pagination']->render();
+	echo $app['pagination']->get();
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -1031,7 +1031,7 @@ echo '</table>';
 
 echo '</div></div>';
 
-$app['pagination']->render();
+echo $app['pagination']->get();
 
 include __DIR__ . '/include/footer.php';
 
