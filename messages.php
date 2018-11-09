@@ -9,6 +9,7 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $uid = $_GET['uid'] ?? false;
+$type = $_GET['type'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 $orderby = $_GET['orderby'] ?? 'm.cdate';
 $asc = $_GET['asc'] ?? 0;
@@ -1646,6 +1647,20 @@ if ($uid)
 	$filter['fcode'] = link_user($user, false, false);
 }
 
+if ($type)
+{
+	if ($type === 'wants')
+	{
+		$where_sql[] = 'm.msg_type = 0';
+		$filter['type']['want'] = 'on';
+	}
+	else if ($type === 'offers')
+	{
+		$where_sql[] = 'm.msg_type = 1';
+		$filter['type']['offer'] = 'on';
+	}
+}
+
 if ($filter_en)
 {
 	if (!$uid)
@@ -1758,10 +1773,14 @@ if ($filter_en)
 }
 else
 {
-	$filter['type'] = [
-		'offer'	=> 'on',
-		'want'	=> 'on',
-	];
+	if ($type !== 'wants')
+	{
+		$filter['type']['offer'] = 'on';
+	}
+	if ($type !== 'offers')
+	{
+		$filter['type']['want'] = 'on';
+	}
 	$filter['ustatus'] = [
 		'active' 	=> 'on',
 		'new'		=> 'on',
@@ -1973,7 +1992,7 @@ else
 	$h1 = 'Vraag en aanbod';
 }
 
-$h1 .= isset($filter['cid']) ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
+$h1 .= isset($filter['cid']) && $filter['cid'] ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
 $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';

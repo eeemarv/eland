@@ -2,10 +2,8 @@
 
 $q = $_GET['q'] ?? '';
 $status = $_GET['status'] ?? false;
-
 $id = $_GET['id'] ?? false;
 $tdays = $_GET['tdays'] ?? 365;
-
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
@@ -16,15 +14,11 @@ $img_del = isset($_GET['img_del']) ? true : false;
 $interlets = $_GET['interlets'] ?? false;
 $password = $_POST['password'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
-
 $user_mail_submit = isset($_POST['user_mail_submit']) ? true : false;
-
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
-
 $bulk_field = $_POST['bulk_field'] ?? false;
-
-$selected_users = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
+$selected_users = isset($_POST['sel']) && $_POST['sel'] != '' ? explode(',', $_POST['sel']) : [];
 
 /*
  * general access
@@ -32,7 +26,7 @@ $selected_users = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $
 
 $page_access = ($edit || $pw || $img_del || $password || $submit || $img) ? 'user' : 'guest';
 $page_access = ($add || $del || $bulk_mail_submit || $bulk_mail_test) ? 'admin' : $page_access;
-$allow_guest_post = ($page_access == 'guest' && $user_mail_submit) ? true : false;
+$allow_guest_post = $page_access == 'guest' && $user_mail_submit ? true : false;
 
 require_once __DIR__ . '/include/web.php';
 
@@ -292,7 +286,6 @@ if ($post && $img && $id )
 	header('Content-Disposition: inline; filename="files.json"');
 	header('X-Content-Type-Options: nosniff');
 	header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
-
 	header('Vary: Accept');
 
 	echo json_encode($response);
@@ -493,7 +486,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$value = $value == '' ? 999999999 : $value;
 		}
 
-		$type = ($edit_fields_tabs[$bulk_field]['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+		$type = $edit_fields_tabs[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
 		$app['db']->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
 			[$value, $user_ids],
@@ -2685,7 +2678,7 @@ if ($v_list && $s_admin)
 	}
 
 	$columns['m'] = [
-		'demands'	=> 'Vraag',
+		'wants'		=> 'Vraag',
 		'offers'	=> 'Aanbod',
 		'total'		=> 'Vraag en aanbod',
 	];
@@ -2804,7 +2797,7 @@ if ($v_list && $s_admin)
 			}
 		}
 
-		if (isset($show_columns['m']['demands']))
+		if (isset($show_columns['m']['wants']))
 		{
 			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
 				from messages m, users u
@@ -2815,7 +2808,7 @@ if ($v_list && $s_admin)
 
 			foreach ($ary as $a)
 			{
-				$msgs_count[$a['id_user']]['demands'] = $a['count'];
+				$msgs_count[$a['id_user']]['wants'] = $a['count'];
 			}
 		}
 
@@ -3322,7 +3315,7 @@ if ($v_list)
 				continue;
 			}
 
-			$data_sort_ignore = ($group == 'c') ? ' data-sort-ignore="true"' : '';
+			$data_sort_ignore = $group === 'c' ? ' data-sort-ignore="true"' : '';
 
 			foreach ($ary as $key => $one)
 			{
@@ -3352,10 +3345,10 @@ if ($v_list)
 
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
 
-			$class = (isset($st_class_ary[$row_stat])) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
+			$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
 
 			$checkbox = '<input type="checkbox" name="sel_' . $id . '" value="1"';
-			$checkbox .= (isset($selected_users[$id])) ? ' checked="checked"' : '';
+			$checkbox .= isset($selected_users[$id]) ? ' checked="checked"' : '';
 			$checkbox .= '>&nbsp;';
 
 			$first = true;
@@ -3370,7 +3363,7 @@ if ($v_list)
 					echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
 					echo '>';
 
-					echo ($first) ? $checkbox : '';
+					echo $first ? $checkbox : '';
 					$first = false;
 
 					if (isset($link_user_keys[$key]))
@@ -3421,13 +3414,29 @@ if ($v_list)
 				foreach($show_columns['m'] as $key => $one)
 				{
 					echo '<td>';
-					echo $msgs_count[$id][$key];
+					if (isset($msgs_count[$id][$key]))
+					{
+						echo aphp('messages', [
+							'view' 	=> $view_messages,
+							'uid' 	=> $id,
+							'type' 	=> $key,
+						], $msgs_count[$id][$key]);
+					}
 					echo '</td>';
 				}
 			}
 
 			if (isset($show_columns['a']))
 			{
+				$column_link_params = [
+					'trans_in'		=> 'Transacties in',
+					'trans_out'		=> 'Transacties uit',
+					'trans_total'	=> 'Transacties totaal',
+					'amount_in'		=> [],
+					'amount_out'	=> $app['config']->get('currency') . ' uit',
+					'amount_total'	=> $app['config']->get('currency') . ' totaal',
+				];
+
 				foreach($show_columns['a'] as $key => $one)
 				{
 					echo '<td>';
