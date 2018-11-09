@@ -19,7 +19,7 @@ class alert
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
-	private function add(string $type, string $msg):void
+	private function add(string $type, $msg):void
 	{
 		$url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
@@ -37,22 +37,22 @@ class alert
 		$this->flashbag->add('alert', [$type, $msg]);
 	}
 
-	public function error(string $msg):void
+	public function error($msg):void
 	{
 		$this->add('error', $msg);
 	}
 
-	function success(string $msg):void
+	function success($msg):void
 	{
 		$this->add('success', $msg);
 	}
 
-	public function info(string $msg):void
+	public function info($msg):void
 	{
 		$this->add('info', $msg);
 	}
 
-	public function warning(string $msg):void
+	public function warning($msg):void
 	{
 		$this->add('warning', $msg);
 	}
