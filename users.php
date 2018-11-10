@@ -2626,6 +2626,8 @@ $params = [
 	'view'		=> $view,
 ];
 
+$ref_geo = [];
+
 if ($v_list && $s_admin)
 {
 	if (isset($_GET['sh']))
@@ -2683,6 +2685,10 @@ if ($v_list && $s_admin)
 	{
 		$columns['c'][$tc['abbrev']] = $tc['name'];
 	}
+
+	$columns['d'] = [
+		'distance'	=> 'Afstand',
+	];
 
 	$columns['m'] = [
 		'wants'		=> 'Vraag',
@@ -2773,12 +2779,13 @@ if ($v_list && $s_admin)
 		}
 	}
 
-	if (isset($show_columns['c']))
+	if (isset($show_columns['c']) || (isset($show_columns['d']) && !$s_master))
 	{
-		$c_ary = $app['db']->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
-			FROM contact c, type_contact tc, users u
-			WHERE tc.id = c.id_type_contact
-				and c.id_user = u.id
+		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
+			from contact c, type_contact tc, users u
+			where tc.id = c.id_type_contact ' .
+				(isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
+				'and c.id_user = u.id
 				and ' . $st[$status]['sql'], $sql_bind);
 
 		$contacts = [];
@@ -2786,6 +2793,27 @@ if ($v_list && $s_admin)
 		foreach ($c_ary as $c)
 		{
 			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
+		}
+	}
+
+	if (isset($show_columns['d']) && !$s_master)
+	{
+		if (($s_guest && $s_schema && !$s_elas_guest) || !isset($contacts[$s_id]['adr']))
+		{
+			$my_adr = $app['db']->fetchColumn('select c.value
+				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+				where c.id_user = ?
+					and c.id_type_contact = tc.id
+					and tc.abbrev = \'adr\'', [$s_id]);
+		}
+		else if (!$s_guest)
+		{
+			$my_adr = trim($contacts[$s_id]['adr'][0][0]);
+		}
+
+		if (isset($my_adr))
+		{
+			$ref_geo = $app['cache']->get('geo_' . $my_adr);
 		}
 	}
 
@@ -2939,19 +2967,9 @@ else
 				$my_adr = trim($contacts[$s_id]['adr'][0][0]);
 			}
 
-			$my_geo = false;
-
 			if (isset($my_adr))
 			{
-				$geo = $app['cache']->get('geo_' . $my_adr);
-
-				if ($geo)
-				{
-					$lat = $geo['lat'];
-					$lng = $geo['lng'];
-
-					$my_geo = true;
-				}
+				$ref_geo = $app['cache']->get('geo_' . $my_adr);
 			}
 		}
 	}
@@ -3075,10 +3093,10 @@ if ($v_map)
 
 	$shown_count = count($data_users);
 
-	if (!($lat && $lng) && $shown_count)
+	if (!count($ref_geo) && $shown_count)
 	{
-		$lat = $lat_add / $shown_count;
-		$lng = $lng_add / $shown_count;
+		$ref_geo['lat'] = $lat_add / $shown_count;
+		$ref_geo['lng'] = $lng_add / $shown_count;
 	}
 
 	$data_users = json_encode($data_users);
@@ -3086,7 +3104,9 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
-	echo 'data-lat="' . $lat . '" data-lng="' . $lng . '" data-token="' . $app['mapbox_token'] . '" ';
+	echo 'data-lat="' . $ref_geo['lat'] ?? '' . '" ';
+	echo 'data-lng="' . $ref_geo['lng'] ?? '' . '" ';
+	echo 'data-token="' . $app['mapbox_token'] . '" ';
 	echo 'data-session-param="';
 	echo http_build_query(get_session_query_param());
 	echo '"></div>';
@@ -3142,7 +3162,7 @@ if ($s_admin && $v_list)
 
 	foreach ($columns as $group => $ary)
 	{
-		if ($group !== 'a')
+		if ($group === 'u' || $group === 'c' || $group === 'm')
 		{
 			echo '<div class="col-md-4">';
 		}
@@ -3150,6 +3170,13 @@ if ($s_admin && $v_list)
 		if ($group === 'c')
 		{
 			echo '<h3>Contacten</h3>';
+		}
+		else if ($group === 'd')
+		{
+			echo '<h3>Afstand</h3>';
+			echo '<p>Tussen eigen adres en adres van gebruiiker. ';
+			echo 'De kolom wordt niet getoond wanneer het eigen adres ';
+			echo 'niet ingesteld is.</p>';
 		}
 		else if ($group === 'a')
 		{
@@ -3236,7 +3263,7 @@ if ($s_admin && $v_list)
 			echo '</div>';
 		}
 
-		if ($group !== 'm')
+		if ($group === 'u' || $group === 'd')
 		{
 			echo '</div>';
 		}
@@ -3305,13 +3332,15 @@ if ($v_list)
 	echo 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
 	echo 'data-empty="Er zijn geen ';
 	echo $s_admin ? 'gebruikers' : 'leden';
-	echo ' volgens de selectiecriteria" data-sorting="true" ';
+	echo ' volgens de selectiecriteria" ';
+	echo 'data-sorting="true" ';
 	echo 'data-filter-placeholder="Zoeken" ';
 	echo 'data-filter-position="left"';
 
-	if (isset($my_geo))
+	if (count($ref_geo))
 	{
-		echo ' data-lat="' . $lat . '" data-lng="' . $lng . '"';
+		echo ' data-lat="' . $ref_geo['lat'] . '" ';
+		echo 'data-lng="' . $ref_geo['lng'] . '"';
 	}
 
 	echo '>';
@@ -3321,13 +3350,9 @@ if ($v_list)
 
 	if ($s_admin)
 	{
-		$numeric_groups = [
-			'a'				=> true,
-			'm'				=> true,
-		];
-
 		$numeric_keys = [
 			'saldo'			=> true,
+			'saldo_date'	=> true,
 		];
 
 		$date_keys = [
@@ -3363,6 +3388,20 @@ if ($v_list)
 
 				continue;
 			}
+			else if ($group === 'd')
+			{
+				if (count($ref_geo))
+				{
+					foreach($ary as $key => $one)
+					{
+						echo '<th>';
+						echo $columns[$group][$key];
+						echo '</th>';
+					}
+				}
+
+				continue;
+			}
 
 			$data_sort_ignore = $group === 'c' ? ' data-sort-ignore="true"' : '';
 
@@ -3375,7 +3414,7 @@ if ($v_list)
 					continue;
 				}
 
-				$data_type =  isset($numeric_groups[$group]) || isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
+				$data_type =  $group === 'm' || isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
 
 				$sort_initial = isset($sort_initial) ? '' : ' data-sort-initial="true"';
 
@@ -3442,7 +3481,7 @@ if ($v_list)
 
 					if ($key == 'adr' && $adr_split != '')
 					{
-						list($adr_1, $adr_2) = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
+						[$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
 						echo $adr_1;
 						echo '</td><td>';
 						echo $adr_2;
@@ -3458,6 +3497,27 @@ if ($v_list)
 
 					echo '</td>';
 				}
+			}
+
+			if (isset($show_columns['d']) && count($ref_geo))
+			{
+				echo '<td data-value="5000"';
+
+				$adr_ary = $contacts[$id]['adr'][0] ?? [];
+
+				error_log(json_encode($adr_ary));
+
+				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
+				{
+					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
+
+					if ($geo)
+					{
+						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+					}
+				}
+
+				echo '><i class="fa fa-times"></i></td>';
 			}
 
 			if (isset($show_columns['m']))
@@ -3514,7 +3574,7 @@ if ($v_list)
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
 		echo '<th data-hide="phone">Postcode</th>';
-		echo ($my_geo) ? '<th data-hide="phone" data-type="numeric">Afstand</th>' : '';
+		echo count($ref_geo) ? '<th data-hide="phone" data-type="numeric">Afstand</th>' : '';
 		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
 		echo '<th data-hide="phone">Saldo</th>';
 
@@ -3553,7 +3613,7 @@ if ($v_list)
 			echo '</td>';
 			echo '<td>' . $u['postcode'] . '</td>';
 
-			if ($my_geo)
+			if (count($ref_geo))
 			{
 				echo '<td data-value="5000"';
 
@@ -3671,7 +3731,7 @@ if ($v_list)
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
 		echo '<input type="checkbox" name="bulk_mail_cc"';
-		echo ($bulk_mail_cc) ? ' checked="checked"' : '';
+		echo $bulk_mail_cc ? ' checked="checked"' : '';
 		echo ' value="1" > Stuur een kopie met verzendinfo naar mijzelf';
 		echo '</div>';
 		echo '</div>';
