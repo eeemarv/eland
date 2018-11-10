@@ -147,7 +147,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	$app['monolog']->debug('Looking up Interlets user ' . $from);
 
-	if ($fromuser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$from]))
+	if ($fromuser = get_user_by_letscode($from))
 	{
 		$app['monolog']->debug('Found Interlets fromuser ' . json_encode($fromuser));
 	}
@@ -156,7 +156,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		$app['monolog']->debug('NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
 	}
 
-	if ($touser = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$to]))
+	if ($touser = get_user_by_letscode($to))
 	{
 		$app['monolog']->debug('Found Interlets touser ' . json_encode($touser));
 	}
@@ -256,16 +256,20 @@ function userbyletscode($apikey, $letscode)
 		return '---';
 	}
 
-	$user = $app['db']->fetchAssoc('SELECT * FROM users WHERE letscode = ?', [$letscode]);
+	$user = get_user_by_letscode($letscode);
 
-	if($user['name'] == '')
+	if ($user['status'] != 1 && $user['status'] != 2)
+	{
+		$app['monolog']->debug('User not active (lookup request for letscode ' . $letscode . ')');
+		return 'Onbekend';
+	}
+
+	if(!$user['name'])
 	{
 		return 'Onbekend';
 	}
-	else
-	{
-		return $user['name'];
-	}
+
+	return $user['name'];
 }
 
 function userbyname($apikey, $name)
@@ -334,8 +338,20 @@ function check_apikey($apikey, $type)
 {
 	global $app;
 
-	return ($app['db']->fetchColumn('select apikey
+	return $app['db']->fetchColumn('select apikey
 		from apikeys
 		where apikey = ?
-		and type = ?', [$apikey, $type])) ? true : false;
+		and type = ?', [trim($apikey), trim($type)]) ? true : false;
+}
+
+function get_user_by_letscode(string $letscode)
+{
+	global $app;
+
+	$letscode = trim($letscode);
+	[$letscode] = explode(' ', $letscode);
+
+	return $app['db']->fetchAssoc('select *
+		from users
+		where letscode = ?', [$letscode]);
 }
