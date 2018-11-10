@@ -707,7 +707,7 @@ if ($post)
 
 		if ($validators[$name]['max_inputs'] > 1)
 		{
-			list($value) = explode(',', $value);
+			[$value] = explode(',', $value);
 			$value = trim($value);
 		}
 
@@ -847,7 +847,7 @@ foreach ($tab_panes as $id => $pane)
 
 			foreach ($value_ary as $v)
 			{
-				list($block, $option) = explode('.', $v);
+				[$block, $option] = explode('.', $v);
 				$v_options[$block] = $option;
 				$active[] = $block;
 			}

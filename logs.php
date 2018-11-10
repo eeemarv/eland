@@ -28,7 +28,7 @@ $params_sql[] = $app['this_group']->get_schema();
 
 if ($letscode)
 {
-	list($l) = explode(' ', $letscode);
+	[$l] = explode(' ', $letscode);
 
 	$where_sql[] = 'letscode = ?';
 	$params_sql[] = strtolower($l);

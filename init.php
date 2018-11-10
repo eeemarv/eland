@@ -91,7 +91,7 @@ else if ($step == 2)
 		$filename = $row['PictureFile'];
 		$user_id = $row['id'];
 
-		list($f_schema) = explode('_', $filename);
+		[$f_schema] = explode('_', $filename);
 
 		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
 
@@ -165,7 +165,7 @@ else if ($step == 3)
 		$msg_id = $image['msgid'];
 		$id = $image['id'];
 
-		list($f_schema) = explode('_', $filename);
+		[$f_schema] = explode('_', $filename);
 
 		$filename_no_ext = pathinfo($filename, PATHINFO_FILENAME);
 

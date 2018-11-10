@@ -66,11 +66,11 @@ foreach ($trans as $t)
 
 		if ($sch = $app['groups']->get_schema($group['domain']))
 		{
-			list($code, $name) = explode(' ', $real);
+			[$code, $name] = explode(' ', $real);
 		}
 		else
 		{
-			list($name, $code) = explode('(', $real);
+			[$name, $code] = explode('(', $real);
 			$name = trim($name);
 		}
 		$code = $t['letscode'] . '.' . trim($code, ' ()\t\n\r\0\x0B');

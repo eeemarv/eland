@@ -66,7 +66,7 @@ class cleanup_image_files extends task
 			return;
 		}
 
-		list($sch, $type, $id, $hash) = explode('_', $object['Key']);
+		[$sch, $type, $id, $hash] = explode('_', $object['Key']);
 
 		if (!$this->groups->get_host($sch))
 		{

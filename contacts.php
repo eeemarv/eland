@@ -186,7 +186,7 @@ if ($edit || $add)
 		if ($s_admin && $add && !$uid)
 		{
 			$letscode = $_POST['letscode'];
-			list($letscode) = explode(' ', trim($letscode));
+			[$letscode] = explode(' ', trim($letscode));
 
 			$user_id = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
 
@@ -645,7 +645,7 @@ if (!$uid)
 {
 	if ($letscode)
 	{
-		list($letscode) = explode(' ', trim($letscode));
+		[$letscode] = explode(' ', trim($letscode));
 
 		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
 

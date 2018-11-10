@@ -160,7 +160,7 @@ if ($edit && $submit && !count($errors))
 if ($edit)
 {
 	$news = $app['db']->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
-	list($news['itemdate']) = explode(' ', $news['itemdate']);
+	[$news['itemdate']] = explode(' ', $news['itemdate']);
 
 	$news_access = $app['xdb']->get('news_access', $edit)['data']['access'];
 }

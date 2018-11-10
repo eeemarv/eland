@@ -56,8 +56,8 @@ if ($add)
 		$transaction['transid'] = trim($_POST['transid']);
 		$transaction['description'] = trim($_POST['description']);
 
-		list($letscode_from) = explode(' ', $_POST['letscode_from']);
-		list($letscode_to) = explode(' ', $_POST['letscode_to']);
+		[$letscode_from] = explode(' ', trim($_POST['letscode_from']));
+		[$letscode_to] = explode(' ', trim($_POST['letscode_to']));
 
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = gmdate('Y-m-d H:i:s');
@@ -1491,7 +1491,7 @@ if (!$uid)
 {
 	if ($fcode)
 	{
-		list($fcode) = explode(' ', trim($fcode));
+		[$fcode] = explode(' ', trim($fcode));
 
 		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $fcode . '\'');
 
@@ -1515,7 +1515,7 @@ if (!$uid)
 
 	if ($tcode)
 	{
-		list($tcode) = explode(' ', trim($tcode));
+		[$tcode] = explode(' ', trim($tcode));
 
 		$tuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $tcode . '\'');
 

@@ -512,7 +512,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	}
 	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$bulk_field])
 	{
-		list($abbrev) = explode('_', $bulk_field);
+		[$abbrev] = explode('_', $bulk_field);
 
 		$id_type_contact = $app['db']->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
 
@@ -2877,7 +2877,7 @@ if ($v_list && $s_admin)
 
 		if ($activity_filter_letscode)
 		{
-			list($code_only_activity_filter_letscode) = explode(' ', $activity_filter_letscode);
+			[$code_only_activity_filter_letscode] = explode(' ', $activity_filter_letscode);
 			$and = ' and u.letscode <> ? ';
 			$sql_bind[] = trim($code_only_activity_filter_letscode);
 		}

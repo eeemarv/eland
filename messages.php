@@ -722,7 +722,7 @@ if (($edit || $add))
 
 		if ($s_admin)
 		{
-			list($user_letscode) = explode(' ', $_POST['user_letscode']);
+			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
 			$user = $app['db']->fetchAssoc('select *
 				from users
@@ -840,7 +840,7 @@ if (($edit || $add))
 					{
 						$img_errors = [];
 
-						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
+						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
 						if ($sch != $app['this_group']->get_schema())
 						{
@@ -975,7 +975,7 @@ if (($edit || $add))
 					{
 						$img_errors = [];
 
-						list($sch, $img_type, $msgid, $hash) = explode('_', $img);
+						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
 						if ($sch != $app['this_group']->get_schema())
 						{
@@ -1667,7 +1667,7 @@ if ($filter_en)
 	{
 		if (isset($filter['fcode']) && $filter['fcode']);
 		{
-			list($fcode) = explode(' ', trim($filter['fcode']));
+			[$fcode] = explode(' ', trim($filter['fcode']));
 			$fcode = trim($fcode);
 			$fuid = $app['db']->fetchColumn('select id from users where letscode = ?', [$fcode]);
 

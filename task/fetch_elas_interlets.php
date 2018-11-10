@@ -270,7 +270,7 @@ class fetch_elas_interlets extends task
 				$content = $a->text();
 				$user = $next_tds->eq(1)->text();
 
-				list($dummy, $id) = explode('=', $href);
+				[$dummy, $id] = explode('=', $href);
 
 				$id = rtrim($id, '&r ');
 
@@ -355,7 +355,7 @@ class fetch_elas_interlets extends task
 
 				$user = $letscode . ' ' . $username;
 
-				list($dummy, $id) = explode('=', $href);
+				[$dummy, $id] = explode('=', $href);
 
 				$c = $cached[$id] ?? false;
 
@@ -426,7 +426,7 @@ class fetch_elas_interlets extends task
 				$next_tds = $td->siblings();
 				$a = $next_tds->eq(0)->filter('a');
 				$href = $a->attr('href');
-				list($dummy, $id) = explode('=', $href);
+				[$dummy, $id] = explode('=', $href);
 
 				$user['b'] = trim($next_tds->eq(5)->text());
 
@@ -454,7 +454,7 @@ class fetch_elas_interlets extends task
 
 				$a = $next_tds->eq(0)->filter('a');
 				$href = $a->attr('href');
-				list($dummy, $id) = explode('=', $href);
+				[$dummy, $id] = explode('=', $href);
 
 				$user['c'] = $code;
 				$user['n'] = $name;

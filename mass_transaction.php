@@ -96,8 +96,8 @@ while ($row = $rs->fetch())
 	$users[$row['id']] = $row;
 }
 
-list($to_letscode) = isset($_POST['to_letscode']) ? explode(' ', $_POST['to_letscode']) : [''];
-list($from_letscode) = isset($_POST['from_letscode']) ? explode(' ', $_POST['from_letscode']) : [''];
+[$to_letscode] = isset($_POST['to_letscode']) ? explode(' ', trim($_POST['to_letscode'])) : [''];
+[$from_letscode] = isset($_POST['from_letscode']) ? explode(' ', trim($_POST['from_letscode'])) : [''];
 
 $amount = $_POST['amount'] ?? [];
 $description = $_POST['description'] ?? '';

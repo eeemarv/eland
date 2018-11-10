@@ -102,7 +102,7 @@ class saldo extends schema_task
 
 		foreach ($block_ary as $v)
 		{
-			list($block, $option) = explode('.', $v);
+			[$block, $option] = explode('.', $v);
 
 			if ($block === 'forum' && !$forum_en)
 			{
