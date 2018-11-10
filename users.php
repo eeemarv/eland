@@ -3590,18 +3590,6 @@ if ($v_list)
 	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $app['config']->get('currency') . '</span></p>';
 	echo '</div></div>';
 
-/*
-	echo '<ul>';
-	if ($s_user)
-	{
-		echo '<li>Je kan enkel de afstand tot andere leden waarvan de zichtbaarheid van het adres ';
-		echo 'staat ingesteld op <span class="label label-warning">leden</span> of ';
-		echo '<span class="label label-success">interlets</span> en als je zelf je adres in je contacten hebt staan.';
-		echo '</li>';
-	}
-	echo '</ul>';
-*/
-
 	if ($s_admin & isset($show_columns['u']))
 	{
 		$bulk_mail_cc = ($post) ? $bulk_mail_cc : true;
