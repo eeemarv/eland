@@ -2364,7 +2364,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Volledige naam';
 		echo '</dt>';
-		echo get_dd($user['fullname']);
+		echo get_dd($user['fullname'] ?? '');
 
 		echo '<dt>Zichtbaarheid volledige naam</dt>';
 		echo '<dd>';
@@ -2375,7 +2375,7 @@ if ($id)
 	echo '<dt>';
 	echo 'Postcode';
 	echo '</dt>';
-	echo get_dd($user['postcode']);
+	echo get_dd($user['postcode'] ?? '');
 
 	if ($s_admin || $s_owner)
 	{
@@ -2384,7 +2384,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			echo get_dd($app['date_format']->get($user['birthday'], 'day'));
+			echo ($app['date_format']->get($user['birthday'], 'day'));
 		}
 		else
 		{
@@ -2395,12 +2395,12 @@ if ($id)
 	echo '<dt>';
 	echo 'Hobbies / Interesses';
 	echo '</dt>';
-	echo get_dd($user['hobbies']);
+	echo get_dd($user['hobbies'] ?? '');
 
 	echo '<dt>';
 	echo 'Commentaar';
 	echo '</dt>';
-	echo get_dd($user['comments']);
+	echo get_dd($user['comments'] ?? '');
 
 	if ($s_admin)
 	{
@@ -2456,7 +2456,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Commentaar van de admin';
 		echo '</dt>';
-		echo get_dd($user['admincomment']);
+		echo get_dd($user['admincomment'] ?? '');
 	}
 
 	echo '<dt>Saldo</dt>';
@@ -2628,13 +2628,16 @@ $params = [
 
 $ref_geo = [];
 
-if ($v_list && $s_admin)
+if ($v_list)
 {
+	$session_users_columns_key = 'users_columns_' . $s_accountrole;
+
+
 	if (isset($_GET['sh']))
 	{
 		$show_columns = $_GET['sh'];
 
-		$app['session']->set('users_columns', $show_columns);
+		$app['session']->set($session_users_columns_key, $show_columns);
 	}
 	else
 	{
@@ -2647,7 +2650,7 @@ if ($v_list && $s_admin)
 			],
 		];
 
-		$show_columns = $app['session']->get('users_columns') ?? $preset_columns;
+		$show_columns = $app['session']->get($session_users_columns_key) ?? $preset_columns;
 	}
 
 	$adr_split = $show_columns['p']['adr_split'] ?? '';
@@ -2657,7 +2660,8 @@ if ($v_list && $s_admin)
 	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
 
-	$type_contact = $app['db']->fetchAll('select id, abbrev, name from type_contact');
+	$type_contact = $app['db']->fetchAll('select id, abbrev, name
+		from type_contact');
 
 	$columns = [
 		'u'		=> [
@@ -2671,24 +2675,33 @@ if ($v_list && $s_admin)
 			'minlimit'		=> 'Min',
 			'maxlimit'		=> 'Max',
 			'comments'		=> 'Commentaar',
-			'admincomment'	=> 'Admin commentaar',
 			'hobbies'		=> 'Hobbies/interesses',
+		],
+	];
+
+	if ($s_admin)
+	{
+		$columns['u'] += [
+			'admincomment'	=> 'Admin commentaar',
 			'cron_saldo'	=> 'Periodieke mail',
 			'cdate'			=> 'Gecreëerd',
 			'mdate'			=> 'Aangepast',
 			'adate'			=> 'Geactiveerd',
 			'lastlogin'		=> 'Laatst ingelogd',
-		],
-	];
+		];
+	}
 
 	foreach ($type_contact as $tc)
 	{
 		$columns['c'][$tc['abbrev']] = $tc['name'];
 	}
 
-	$columns['d'] = [
-		'distance'	=> 'Afstand',
-	];
+	if (!$s_elas_guest)
+	{
+		$columns['d'] = [
+			'distance'	=> 'Afstand',
+		];
+	}
 
 	$columns['m'] = [
 		'wants'		=> 'Vraag',
@@ -2722,6 +2735,15 @@ if ($v_list && $s_admin)
 		{
 			$user['minlimit'] = $user['minlimit'] === -999999999 ? '' : $user['minlimit'];
 			$user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : $user['maxlimit'];
+		}
+	}
+
+	if (isset($show_columns['u']['fullname']))
+	{
+		foreach ($users as &$user)
+		{
+			$user['fullname_access'] = $app['xdb']->get('user_fullname_access', $user['id'])['data']['fullname_access'] ?? 'admin';
+			error_log($user['fullname_access']);
 		}
 	}
 
@@ -2773,8 +2795,9 @@ if ($v_list && $s_admin)
 			}
 
 			array_walk($users, function(&$user) use ($out, $in){
-				$user['saldo_date'] += $in[$user['id']];
-				$user['saldo_date'] -= $out[$user['id']];
+				$user['saldo_date'] = 0;
+				$user['saldo_date'] += $in[$user['id']] ?? 0;
+				$user['saldo_date'] -= $out[$user['id']] ?? 0;
 			});
 		}
 	}
@@ -2940,10 +2963,10 @@ else
 
 	if ($v_list || $v_map)
 	{
-		$c_ary = $app['db']->fetchAll('SELECT tc.abbrev, c.id_user, c.value, c.flag_public
-			FROM contact c, type_contact tc
-			WHERE tc.id = c.id_type_contact
-				AND tc.abbrev IN (\'mail\', \'tel\', \'gsm\', \'adr\')');
+		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
+			from contact c, type_contact tc
+			where tc.id = c.id_type_contact
+				and tc.abbrev in (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
 		$contacts = [];
 
@@ -2997,9 +3020,9 @@ else
 
 $top_buttons_right = '';
 
-if ($s_admin && $v_list)
+if ($v_list)
 {
-	$top_buttons_right .= '<button class="btn btn-info" title="Toon kolommen" ';
+	$top_buttons_right .= '<button class="btn btn-default" title="Toon kolommen" ';
 	$top_buttons_right .= 'data-toggle="collapse" data-target="#columns_show"';
 	$top_buttons_right .= '><i class="fa fa-columns"></i></button>&nbsp;';
 }
@@ -3026,12 +3049,13 @@ $fa = 'users';
 
 if ($v_list)
 {
-	$app['assets']->add(['calc_sum.js', 'users_distance.js']);
+	$app['assets']->add(['calc_sum.js', 'users_distance.js',
+		'datepicker', 'typeahead', 'typeahead.js']);
 
 	if ($s_admin)
 	{
-		$app['assets']->add(['datepicker', 'summernote', 'typeahead',
-			'table_sel.js', 'rich_edit.js', 'typeahead.js']);
+		$app['assets']->add(['summernote',
+			'table_sel.js', 'rich_edit.js']);
 	}
 }
 else if ($v_tiles)
@@ -3103,9 +3127,14 @@ if ($v_map)
 
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
-	echo '<div class="users_map" id="map" data-users="' . htmlspecialchars($data_users) . '" ';
-	echo 'data-lat="' . $ref_geo['lat'] ?? '' . '" ';
-	echo 'data-lng="' . $ref_geo['lng'] ?? '' . '" ';
+	echo '<div class="users_map" id="map" ';
+	echo 'data-users="' . htmlspecialchars($data_users) . '" ';
+	echo 'data-lat="';
+	echo $ref_geo['lat'] ?? '';
+	echo '" ';
+	echo 'data-lng="';
+	echo $ref_geo['lng'] ?? '';
+	echo '" ';
 	echo 'data-token="' . $app['mapbox_token'] . '" ';
 	echo 'data-session-param="';
 	echo http_build_query(get_session_query_param());
@@ -3151,7 +3180,7 @@ if ($v_list || $v_extended || $v_tiles)
 	}
 }
 
-if ($s_admin && $v_list)
+if ($v_list)
 {
 	echo '<div class="panel panel-info collapse" id="columns_show">';
 	echo '<div class="panel-heading">';
@@ -3348,7 +3377,7 @@ if ($v_list)
 
 	echo '<tr>';
 
-	if ($s_admin)
+	if (true)
 	{
 		$numeric_keys = [
 			'saldo'			=> true,
@@ -3365,7 +3394,6 @@ if ($v_list)
 		$link_user_keys = [
 			'letscode'		=> true,
 			'name'			=> true,
-			'fullname'		=> true,
 		];
 
 		foreach ($show_columns as $group => $ary)
@@ -3429,6 +3457,8 @@ if ($v_list)
 		echo '</thead>';
 		echo '<tbody>';
 
+		$checkbox = '<input type="checkbox" name="sel_%1$s" value="1"%2$s>&nbsp;';
+
 		foreach($users as $u)
 		{
 			$id = $u['id'];
@@ -3436,10 +3466,6 @@ if ($v_list)
 			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
 
 			$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
-
-			$checkbox = '<input type="checkbox" name="sel_' . $id . '" value="1"';
-			$checkbox .= isset($selected_users[$id]) ? ' checked="checked"' : '';
-			$checkbox .= '>&nbsp;';
 
 			$first = true;
 
@@ -3453,7 +3479,7 @@ if ($v_list)
 					echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
 					echo '>';
 
-					echo $first ? $checkbox : '';
+					echo $s_admin && $first ? sprintf($checkbox, $id, isset($selected_users[$id]) ? ' checked="checked"' : '') : '';
 					$first = false;
 
 					if (isset($link_user_keys[$key]))
@@ -3463,6 +3489,22 @@ if ($v_list)
 					else if (isset($date_keys[$key]))
 					{
 						echo $u[$key] ? $app['date_format']->get($u[$key], 'day') : '&nbsp;';
+					}
+					else if ($key === 'fullname')
+					{
+						if ($s_admin || $u['fullname_access'] === 'interlets')
+						{
+							echo link_user($u, false, $status, false, $fullname);
+						}
+						else if ($s_user && $u['fullname_access'] !== 'admin')
+						{
+							echo link_user($u, false, $status, false, $key);
+						}
+						else
+						{
+							echo '<span class="btn btn-default btn-xs">';
+							echo 'verborgen</span>';
+						}
 					}
 					else
 					{
@@ -3481,10 +3523,17 @@ if ($v_list)
 
 					if ($key == 'adr' && $adr_split != '')
 					{
+						if (!isset($contacts[$id][$key]))
+						{
+							echo '&nbsp;</td><td>&nbsp;</td>';
+							continue;
+						}
+
 						[$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
-						echo $adr_1;
+
+						echo get_contacts([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
 						echo '</td><td>';
-						echo $adr_2;
+						echo get_contacts([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
 					}
 					else if (isset($contacts[$id][$key]))
 					{
@@ -3504,8 +3553,6 @@ if ($v_list)
 				echo '<td data-value="5000"';
 
 				$adr_ary = $contacts[$id]['adr'][0] ?? [];
-
-				error_log(json_encode($adr_ary));
 
 				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
 				{
@@ -3652,7 +3699,7 @@ if ($v_list)
 
 	if ($s_admin & isset($show_columns['u']))
 	{
-		$bulk_mail_cc = ($post) ? $bulk_mail_cc : true;
+		$bulk_mail_cc = $post ? $bulk_mail_cc : true;
 
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
@@ -3922,7 +3969,7 @@ function get_contacts(array $contacts, $abbrev = null):string
 		end($contacts);
 		$end = key($contacts);
 
-		$f = ($abbrev == 'mail') ? '<a href="mailto:%1$s">%1$s</a>' : '%1$s';
+		$f = $abbrev === 'mail' ? '<a href="mailto:%1$s">%1$s</a>' : '%1$s';
 
 		foreach ($contacts as $key => $contact)
 		{
@@ -3930,12 +3977,19 @@ function get_contacts(array $contacts, $abbrev = null):string
 			{
 				$ret .= sprintf($f, htmlspecialchars($contact[0], ENT_QUOTES));
 
-				if ($key == $end)
+				if ($key === $end)
 				{
 					break;
 				}
+
 				$ret .= ',<br>';
+
+				continue;
 			}
+
+			$ret .= '<span class="btn btn-default btn-xs">';
+			$ret .= 'verborgen</span>';
+			$ret .= '<br>';
 		}
 	}
 	else
