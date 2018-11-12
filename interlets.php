@@ -364,7 +364,6 @@ if ($id)
 		$user = $app['db']->fetchAssoc('select * from users where letscode = ?', [$group['localletscode']]);
 	}
 
-	$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Letsgroep toevoegen', 'plus', true);
 	$top_buttons .= aphp('interlets', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
 	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
 	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
