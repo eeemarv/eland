@@ -1669,18 +1669,26 @@ if ($filter_en)
 		{
 			[$fcode] = explode(' ', trim($filter['fcode']));
 			$fcode = trim($fcode);
-			$fuid = $app['db']->fetchColumn('select id from users where letscode = ?', [$fcode]);
 
-			if ($fuid)
+			if ($fcode)
 			{
-				$where_sql[] = 'u.id = ?';
-				$params_sql[] = $fuid;
+				$fuid = $app['db']->fetchColumn('select id from users where letscode = ?', [$fcode]);
 
-				$filter['fcode'] = link_user($fuid, false, false);
+				if ($fuid)
+				{
+					$where_sql[] = 'u.id = ?';
+					$params_sql[] = $fuid;
+
+					$filter['fcode'] = link_user($fuid, false, false);
+				}
+				else if ($fcode !== '')
+				{
+					$where_sql[] = '1 = 2';
+				}
 			}
-			else if ($fcode !== '')
+			else
 			{
-				$where_sql[] = '1 = 2';
+				$filter['fcode'] = '';
 			}
 		}
 	}
