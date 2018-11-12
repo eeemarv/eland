@@ -3677,17 +3677,26 @@ if ($v_list)
 
 			$adr_ary = $contacts[$id]['adr'][0] ?? [];
 
-			if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
+			if ($adr_ary[1] >= $access_level)
 			{
-				$geo = $app['cache']->get('geo_' . $adr_ary[0]);
-
-				if ($geo)
+				if (count($adr_ary) && $adr_ary[0])
 				{
-					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
+
+					if ($geo)
+					{
+						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+					}
 				}
+
+				echo '><i class="fa fa-times"></i>';
+			}
+			else
+			{
+				echo '><span class="btn btn-default btn-xs">verborgen</span>';
 			}
 
-			echo '><i class="fa fa-times"></i></td>';
+			echo '</td>';
 		}
 
 		if (isset($show_columns['m']))
