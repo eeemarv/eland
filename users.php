@@ -3685,23 +3685,30 @@ if ($v_list)
 
 			$adr_ary = $contacts[$id]['adr'][0] ?? [];
 
-			if ($adr_ary[1] >= $access_level)
+			if (isset($adr_ary[1]))
 			{
-				if (count($adr_ary) && $adr_ary[0])
+				if ($adr_ary[1] >= $access_level)
 				{
-					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
-
-					if ($geo)
+					if (count($adr_ary) && $adr_ary[0])
 					{
-						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
-					}
-				}
+						$geo = $app['cache']->get('geo_' . $adr_ary[0]);
 
-				echo '><i class="fa fa-times"></i>';
+						if ($geo)
+						{
+							echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+						}
+					}
+
+					echo '><i class="fa fa-times"></i>';
+				}
+				else
+				{
+					echo '><span class="btn btn-default btn-xs">verborgen</span>';
+				}
 			}
 			else
 			{
-				echo '><span class="btn btn-default btn-xs">verborgen</span>';
+				echo '><i class="fa fa-times"></i>';
 			}
 
 			echo '</td>';
