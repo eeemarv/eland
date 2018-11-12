@@ -715,3 +715,26 @@ function get_select_options(array $option_ary, $selected):string
 
 	return $str;
 }
+
+function array_intersect_key_recursive(array $ary_1, array $ary_2)
+{
+	$ary_1 = array_intersect_key($ary_1, $ary_2);
+
+    foreach ($ary_1 as $key => &$val)
+    {
+        if (is_array($val))
+        {
+            $val = is_array($ary_2[$key]) ? array_intersect_key_recursive($val, $ary_2[$key]) : $val;
+        }
+	}
+
+    return $ary_1;
+}
+
+/** (dev) */
+function print_r2($val)
+{
+	echo '<pre>';
+	print_r($val);
+	echo  '</pre>';
+}

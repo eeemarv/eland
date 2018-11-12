@@ -2630,25 +2630,123 @@ $ref_geo = [];
 
 if ($v_list)
 {
-	$session_users_columns_key = 'users_columns_' . $s_accountrole;
+	$type_contact = $app['db']->fetchAll('select id, abbrev, name
+		from type_contact');
 
+	$columns = [
+		'u'		=> [
+			'letscode'		=> 'Code',
+			'name'			=> 'Naam',
+			'fullname'		=> 'Volledige naam',
+			'postcode'		=> 'Postcode',
+			'accountrole'	=> 'Rol',
+			'saldo'			=> 'Saldo',
+			'saldo_date'	=> 'Saldo op ',
+			'minlimit'		=> 'Min',
+			'maxlimit'		=> 'Max',
+			'comments'		=> 'Commentaar',
+			'hobbies'		=> 'Hobbies/interesses',
+		],
+	];
+
+	if ($s_admin)
+	{
+		$columns['u'] += [
+			'admincomment'	=> 'Admin commentaar',
+			'cron_saldo'	=> 'Periodieke mail',
+			'cdate'			=> 'Gecreëerd',
+			'mdate'			=> 'Aangepast',
+			'adate'			=> 'Geactiveerd',
+			'lastlogin'		=> 'Laatst ingelogd',
+		];
+	}
+
+	foreach ($type_contact as $tc)
+	{
+		$columns['c'][$tc['abbrev']] = $tc['name'];
+	}
+
+	if (!$s_elas_guest)
+	{
+		$columns['d'] = [
+			'distance'	=> 'Afstand',
+		];
+	}
+
+	$columns['m'] = [
+		'wants'		=> 'Vraag',
+		'offers'	=> 'Aanbod',
+		'total'		=> 'Vraag en aanbod',
+	];
+
+	$columns['a'] = [
+		'trans'		=> [
+			'in'	=> 'Transacties in',
+			'out'	=> 'Transacties uit',
+			'total'	=> 'Transacties totaal',
+		],
+		'amount'	=> [
+			'in'	=> $app['config']->get('currency') . ' in',
+			'out'	=> $app['config']->get('currency') . ' uit',
+			'total'	=> $app['config']->get('currency') . ' totaal',
+		],
+	];
+
+	$columns['p'] = [
+		'adr_split'					=> '.',
+		'activity_days'				=> '.',
+		'activity_filter_letscode'	=> '.',
+		'saldo_date'				=> '.',
+	];
+
+	$session_users_columns_key = 'users_columns_' . $s_accountrole;
+	$session_users_columns_key .= $s_elas_guest ? '_elas' : '';
 
 	if (isset($_GET['sh']))
 	{
-		$show_columns = $_GET['sh'];
+		$show_columns = $_GET['sh'] ?? [];
+
+		$show_columns = array_intersect_key_recursive($show_columns, $columns);
 
 		$app['session']->set($session_users_columns_key, $show_columns);
 	}
 	else
 	{
-		$preset_columns = [
-			'u'	=> [
-				'letscode'	=> 1,
-				'name'		=> 1,
-				'postcode'	=> 1,
-				'saldo'		=> 1,
-			],
-		];
+		if ($s_admin || $s_guest)
+		{
+			$preset_columns = [
+				'u'	=> [
+					'letscode'	=> 1,
+					'name'		=> 1,
+					'postcode'	=> 1,
+					'saldo'		=> 1,
+				],
+			];
+		}
+		else
+		{
+			$preset_columns = [
+				'u' => [
+					'letscode'	=> 1,
+					'name'		=> 1,
+					'postcode'	=> 1,
+					'saldo'		=> 1,
+				],
+				'c'	=> [
+					'gsm'	=> 1,
+					'tel'	=> 1,
+					'adr'	=> 1,
+				],
+				'd'	=> [
+					'distance'	=> 1,
+				],
+			];
+		}
+
+		if ($s_elas_guest)
+		{
+			unset($columns['d']['distance']);
+		}
 
 		$show_columns = $app['session']->get($session_users_columns_key) ?? $preset_columns;
 	}
@@ -3022,7 +3120,7 @@ $top_buttons_right = '';
 
 if ($v_list)
 {
-	$top_buttons_right .= '<button class="btn btn-default" title="Toon kolommen" ';
+	$top_buttons_right .= '<button class="btn btn-default" title="Weergave kolommen" ';
 	$top_buttons_right .= 'data-toggle="collapse" data-target="#columns_show"';
 	$top_buttons_right .= '><i class="fa fa-columns"></i></button>&nbsp;';
 }
@@ -3184,9 +3282,8 @@ if ($v_list)
 {
 	echo '<div class="panel panel-info collapse" id="columns_show">';
 	echo '<div class="panel-heading">';
-	echo '<h3>Toon kolommen</h3>';
-	echo '</div>';
-	echo '<div class="panel-body">';
+	echo '<h2>Weergave kolommen</h2>';
+
 	echo '<div class="row">';
 
 	foreach ($columns as $group => $ary)
@@ -3299,9 +3396,7 @@ if ($v_list)
 	}
 
 	echo '</div>';
-	echo '</div>';
-	echo '<div class="panel-footer">';
-	echo '<input type="submit" name="show" class="btn btn-default" value="Toon">';
+	echo '<input type="submit" name="show" class="btn btn-default" value="Pas weergave kolommen aan">';
 	echo '</div>';
 	echo '</div>';
 }
@@ -3377,316 +3472,262 @@ if ($v_list)
 
 	echo '<tr>';
 
-	if (true)
+	$numeric_keys = [
+		'saldo'			=> true,
+		'saldo_date'	=> true,
+	];
+
+	$date_keys = [
+		'cdate'			=> true,
+		'mdate'			=> true,
+		'adate'			=> true,
+		'lastlogin'		=> true,
+	];
+
+	$link_user_keys = [
+		'letscode'		=> true,
+		'name'			=> true,
+	];
+
+	foreach ($show_columns as $group => $ary)
 	{
-		$numeric_keys = [
-			'saldo'			=> true,
-			'saldo_date'	=> true,
-		];
-
-		$date_keys = [
-			'cdate'			=> true,
-			'mdate'			=> true,
-			'adate'			=> true,
-			'lastlogin'		=> true,
-		];
-
-		$link_user_keys = [
-			'letscode'		=> true,
-			'name'			=> true,
-		];
-
-		foreach ($show_columns as $group => $ary)
+		if ($group === 'p')
 		{
-			if ($group === 'p')
+			continue;
+		}
+		else if ($group === 'a')
+		{
+			foreach ($ary as $a_key => $a_ary)
 			{
-				continue;
-			}
-			else if ($group === 'a')
-			{
-				foreach ($ary as $a_key => $a_ary)
+				foreach ($a_ary as $key => $one)
 				{
-					foreach ($a_ary as $key => $one)
-					{
-						echo '<th data-type="numeric">';
-						echo $columns[$group][$a_key][$key];
-						echo '</th>';
-					}
+					echo '<th data-type="numeric">';
+					echo $columns[$group][$a_key][$key];
+					echo '</th>';
 				}
-
-				continue;
 			}
-			else if ($group === 'd')
+
+			continue;
+		}
+		else if ($group === 'd')
+		{
+			if (count($ref_geo))
 			{
-				if (count($ref_geo))
+				foreach($ary as $key => $one)
 				{
-					foreach($ary as $key => $one)
-					{
-						echo '<th>';
-						echo $columns[$group][$key];
-						echo '</th>';
-					}
+					echo '<th>';
+					echo $columns[$group][$key];
+					echo '</th>';
 				}
-
-				continue;
 			}
 
-			$data_sort_ignore = $group === 'c' ? ' data-sort-ignore="true"' : '';
+			continue;
+		}
+		else if ($group === 'c')
+		{
+			$tpl = '<th data-hide="tablet, phone" data-sort-ignore="true">%1$s</th>';
 
 			foreach ($ary as $key => $one)
 			{
 				if ($key == 'adr' && $adr_split != '')
 				{
-					echo '<th data-sort-ignore="true">Adres (1)</th>';
-					echo '<th data-sort-ignore="true">Adres (2)</th>';
+					echo sprintf($tpl, 'Adres (1)');
+					echo sprintf($tpl, 'Adres (2)');
 					continue;
 				}
 
-				$data_type =  $group === 'm' || isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
+				echo sprintf($tpl, $columns[$group][$key]);
+			}
 
-				$sort_initial = isset($sort_initial) ? '' : ' data-sort-initial="true"';
+			continue;
+		}
+		else if ($group === 'u')
+		{
+			foreach ($ary as $key => $one)
+			{
+				$data_type =  isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
+				$data_sort_initial = $key === 'letscode' ? ' data-sort-initial="true"' : '';
 
-				echo '<th' . $sort_initial . $data_sort_ignore . $data_type . '>';
+				echo '<th' . $data_type . $data_sort_initial . '>';
 				echo $columns[$group][$key];
 				echo '</th>';
 			}
+
+			continue;
 		}
-
-		echo '</tr>';
-
-		echo '</thead>';
-		echo '<tbody>';
-
-		$checkbox = '<input type="checkbox" name="sel_%1$s" value="1"%2$s>&nbsp;';
-
-		foreach($users as $u)
+		else if ($group === 'm')
 		{
-			$id = $u['id'];
-
-			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-
-			$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
-
-			$first = true;
-
-			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
-
-			if (isset($show_columns['u']))
+			foreach ($ary as $key => $one)
 			{
-				foreach ($show_columns['u'] as $key => $one)
+				echo '<th data-type="numeric">';
+				echo $columns[$group][$key];
+				echo '</th>';
+			}
+
+			continue;
+		}
+	}
+
+	echo '</tr>';
+
+	echo '</thead>';
+	echo '<tbody>';
+
+	$checkbox = '<input type="checkbox" name="sel_%1$s" value="1"%2$s>&nbsp;';
+
+	foreach($users as $u)
+	{
+		$id = $u['id'];
+
+		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+
+		$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
+
+		$first = true;
+
+		echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+
+		if (isset($show_columns['u']))
+		{
+			foreach ($show_columns['u'] as $key => $one)
+			{
+				echo '<td';
+				echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
+				echo '>';
+
+				echo $s_admin && $first ? sprintf($checkbox, $id, isset($selected_users[$id]) ? ' checked="checked"' : '') : '';
+				$first = false;
+
+				if (isset($link_user_keys[$key]))
 				{
-					echo '<td';
-					echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
-					echo '>';
-
-					echo $s_admin && $first ? sprintf($checkbox, $id, isset($selected_users[$id]) ? ' checked="checked"' : '') : '';
-					$first = false;
-
-					if (isset($link_user_keys[$key]))
+					echo link_user($u, false, $status, false, $key);
+				}
+				else if (isset($date_keys[$key]))
+				{
+					echo $u[$key] ? $app['date_format']->get($u[$key], 'day') : '&nbsp;';
+				}
+				else if ($key === 'fullname')
+				{
+					if ($s_admin || $u['fullname_access'] === 'interlets')
+					{
+						echo link_user($u, false, $status, false, $fullname);
+					}
+					else if ($s_user && $u['fullname_access'] !== 'admin')
 					{
 						echo link_user($u, false, $status, false, $key);
 					}
-					else if (isset($date_keys[$key]))
-					{
-						echo $u[$key] ? $app['date_format']->get($u[$key], 'day') : '&nbsp;';
-					}
-					else if ($key === 'fullname')
-					{
-						if ($s_admin || $u['fullname_access'] === 'interlets')
-						{
-							echo link_user($u, false, $status, false, $fullname);
-						}
-						else if ($s_user && $u['fullname_access'] !== 'admin')
-						{
-							echo link_user($u, false, $status, false, $key);
-						}
-						else
-						{
-							echo '<span class="btn btn-default btn-xs">';
-							echo 'verborgen</span>';
-						}
-					}
 					else
 					{
-						echo $u[$key];
+						echo '<span class="btn btn-default btn-xs">';
+						echo 'verborgen</span>';
 					}
-
-					echo '</td>';
 				}
-			}
-
-			if (isset($show_columns['c']))
-			{
-				foreach ($show_columns['c'] as $key => $one)
+				else
 				{
-					echo '<td>';
-
-					if ($key == 'adr' && $adr_split != '')
-					{
-						if (!isset($contacts[$id][$key]))
-						{
-							echo '&nbsp;</td><td>&nbsp;</td>';
-							continue;
-						}
-
-						[$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
-
-						echo get_contacts([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
-						echo '</td><td>';
-						echo get_contacts([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
-					}
-					else if (isset($contacts[$id][$key]))
-					{
-						echo get_contacts($contacts[$id][$key], $key);
-					}
-					else
-					{
-						echo '&nbsp;';
-					}
-
-					echo '</td>';
-				}
-			}
-
-			if (isset($show_columns['d']) && count($ref_geo))
-			{
-				echo '<td data-value="5000"';
-
-				$adr_ary = $contacts[$id]['adr'][0] ?? [];
-
-				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
-				{
-					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
-
-					if ($geo)
-					{
-						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
-					}
+					echo $u[$key];
 				}
 
-				echo '><i class="fa fa-times"></i></td>';
+				echo '</td>';
 			}
-
-			if (isset($show_columns['m']))
-			{
-				foreach($show_columns['m'] as $key => $one)
-				{
-					echo '<td>';
-
-					if (isset($msgs_count[$id][$key]))
-					{
-						echo aphp('messages', [
-							'view' 	=> $view_messages,
-							'uid' 	=> $id,
-							'type' 	=> $key,
-						], $msgs_count[$id][$key]);
-					}
-
-					echo '</td>';
-				}
-			}
-
-			if (isset($show_columns['a']))
-			{
-				$from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day');
-
-				foreach($show_columns['a'] as $a_key => $a_ary)
-				{
-					foreach ($a_ary as $key => $one)
-					{
-						echo '<td>';
-
-						if (isset($activity[$id][$a_key][$key]))
-						{
-							echo aphp('transactions', [
-								'fcode'	=> $key === 'in' ? '' : $u['letscode'],
-								'tcode'	=> $key === 'out' ? '' : $u['letscode'],
-								'andor'	=> $key === 'total' ? 'or' : 'and',
-								'fdate' => $from_date,
-							], $activity[$id][$a_key][$key]);
-						}
-
-						echo '</td>';
-					}
-				}
-			}
-
-			echo '</tr>';
 		}
-	}
-	else
-	{
-		echo '<th data-sort-initial="true">Code</th>';
-		echo '<th>Naam</th>';
-		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Tel</th>';
-		echo '<th data-hide="tablet, phone" data-sort-ignore="true">gsm</th>';
-		echo '<th data-hide="phone">Postcode</th>';
-		echo count($ref_geo) ? '<th data-hide="phone" data-type="numeric">Afstand</th>' : '';
-		echo '<th data-hide="tablet, phone" data-sort-ignore="true">Mail</th>';
-		echo '<th data-hide="phone">Saldo</th>';
 
-		echo '</tr>';
-
-		echo '</thead>';
-		echo '<tbody>';
-
-		foreach($users as $u)
+		if (isset($show_columns['c']))
 		{
-			$id = $u['id'];
+			foreach ($show_columns['c'] as $key => $one)
+			{
+				echo '<td>';
+
+				if ($key == 'adr' && $adr_split != '')
+				{
+					if (!isset($contacts[$id][$key]))
+					{
+						echo '&nbsp;</td><td>&nbsp;</td>';
+						continue;
+					}
+
+					[$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
+
+					echo get_contacts([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
+					echo '</td><td>';
+					echo get_contacts([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
+				}
+				else if (isset($contacts[$id][$key]))
+				{
+					echo get_contacts($contacts[$id][$key], $key);
+				}
+				else
+				{
+					echo '&nbsp;';
+				}
+
+				echo '</td>';
+			}
+		}
+
+		if (isset($show_columns['d']) && count($ref_geo))
+		{
+			echo '<td data-value="5000"';
+
 			$adr_ary = $contacts[$id]['adr'][0] ?? [];
 
-			$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
-			$class = (isset($st_class_ary[$row_stat])) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
-
-			$balance = $u['saldo'];
-			$balance_class = ($balance < $u['minlimit'] || $balance > $u['maxlimit']) ? ' class="text-danger"' : '';
-
-			echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '"';
-
-			echo '>';
-			echo '<td>' . link_user($u, false, $status, false, 'letscode') . '</td>';
-			echo '<td>' . link_user($u, false, $status, false, 'name') . '</td>';
-			echo '<td>';
-			if (isset($contacts[$id]['tel']))
+			if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
 			{
-				echo get_contacts($contacts[$id]['tel']);
-			}
-			echo '</td>';
-			echo '<td>';
-			if (isset($contacts[$id]['gsm']))
-			{
-				echo get_contacts($contacts[$id]['gsm']);
-			}
-			echo '</td>';
-			echo '<td>' . $u['postcode'] . '</td>';
+				$geo = $app['cache']->get('geo_' . $adr_ary[0]);
 
-			if (count($ref_geo))
-			{
-				echo '<td data-value="5000"';
-
-				if (count($adr_ary) && $adr_ary[0] && $adr_ary[1] >= $access_level)
+				if ($geo)
 				{
-					$geo = $app['cache']->get('geo_' . $adr_ary[0]);
+					echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+				}
+			}
 
-					if ($geo)
-					{
-						echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
-					}
+			echo '><i class="fa fa-times"></i></td>';
+		}
+
+		if (isset($show_columns['m']))
+		{
+			foreach($show_columns['m'] as $key => $one)
+			{
+				echo '<td>';
+
+				if (isset($msgs_count[$id][$key]))
+				{
+					echo aphp('messages', [
+						'view' 	=> $view_messages,
+						'uid' 	=> $id,
+						'type' 	=> $key,
+					], $msgs_count[$id][$key]);
 				}
 
-				echo '><i class="fa fa-times"></i></td>';
+				echo '</td>';
 			}
-			echo '<td>';
-
-			if (isset($contacts[$id]['mail']))
-			{
-				echo get_contacts($contacts[$id]['mail'], 'mail');
-			}
-
-			echo '</td>';
-			echo '<td><span class="' . $balance_class  . '">' . $balance . '</span></td>';
-			echo '</tr>';
 		}
+
+		if (isset($show_columns['a']))
+		{
+			$from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day');
+
+			foreach($show_columns['a'] as $a_key => $a_ary)
+			{
+				foreach ($a_ary as $key => $one)
+				{
+					echo '<td>';
+
+					if (isset($activity[$id][$a_key][$key]))
+					{
+						echo aphp('transactions', [
+							'fcode'	=> $key === 'in' ? '' : $u['letscode'],
+							'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+							'andor'	=> $key === 'total' ? 'or' : 'and',
+							'fdate' => $from_date,
+						], $activity[$id][$a_key][$key]);
+					}
+
+					echo '</td>';
+				}
+			}
+		}
+
+		echo '</tr>';
 	}
 
 	echo '</tbody>';
