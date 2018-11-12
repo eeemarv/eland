@@ -1770,7 +1770,7 @@ if ($add || $edit)
 
 	if (!isset($fullname_access))
 	{
-		$fullname_access = ($add && !$interlets) ? false : 'admin';
+		$fullname_access = $add && !$interlets ? false : 'admin';
 	}
 
 	echo $app['access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
@@ -2357,20 +2357,27 @@ if ($id)
 	echo '<div class="panel-heading">';
 	echo '<dl>';
 
-	$fullname_access = ($user['fullname_access']) ?: 'admin';
+	$fullname_access = $user['fullname_access'] ?: 'admin';
+
+	echo '<dt>';
+	echo 'Volledige naam';
+	echo '</dt>';
 
 	if ($s_admin || $s_owner || $app['access_control']->is_visible($fullname_access))
 	{
-		echo '<dt>';
-		echo 'Volledige naam';
-		echo '</dt>';
 		echo get_dd($user['fullname'] ?? '');
-
-		echo '<dt>Zichtbaarheid volledige naam</dt>';
+	}
+	else
+	{
 		echo '<dd>';
-		echo $app['access_control']->get_label($fullname_access);
+		echo '<span class="btn btn-default btn-xs">verborgen</span>';
 		echo '</dd>';
 	}
+
+	echo '<dt>Zichtbaarheid volledige naam</dt>';
+	echo '<dd>';
+	echo $app['access_control']->get_label($fullname_access);
+	echo '</dd>';
 
 	echo '<dt>';
 	echo 'Postcode';
