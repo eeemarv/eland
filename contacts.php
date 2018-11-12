@@ -829,8 +829,8 @@ $fa = 'map-marker';
 
 include __DIR__ . '/include/header.php';
 
-echo '<div id="filters" class="panel panel-info';
-echo ($panel_collapse) ? ' collapse' : '';
+echo '<div id="filter" class="panel panel-info';
+echo $panel_collapse ? ' collapse' : '';
 echo '">';
 
 echo '<div class="panel-heading">';
