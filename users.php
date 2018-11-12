@@ -3325,6 +3325,15 @@ if ($v_list)
 			echo 'size="4" min="1" class="form-control">';
 			echo '</div></div>';
 
+			$typeahead_ary = ['users_active'];
+
+			if ($s_admin)
+			{
+				$typeahead_ary = array_merge($typeahead_ary, [
+					'users_extern', 'users_inactive', 'users_im', 'users_ip'
+				]);
+			}
+
 			echo '<div class="form-group">';
 			echo '<label for="activity_filter_letscode" class="col-sm-3 control-label">';
 			echo 'Exclusief tegenpartij (letscode)';
@@ -3335,8 +3344,7 @@ if ($v_list)
 			echo 'class="form-control" ';
 			echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 			echo 'data-typeahead="';
-			echo $app['typeahead']->get(['users_active', 'users_extern',
-				'users_inactive', 'users_im', 'users_ip']);
+			echo $app['typeahead']->get($typeahead_ary);
 			echo '">';
 			echo '</div></div>';
 			echo '</div>';
