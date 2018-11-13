@@ -6,6 +6,10 @@ $(document).ready(function(){
 	var $contact_input = $('input[data-access]');
 	var $presharedkey_panel = $('#presharedkey_panel');
 
+	$('body').delay(100, function(){
+		$('input[type="email"]').prop('disabled', false);
+	});
+
 	status_change();
 	accountrole_change();
 	$status.change(status_change);

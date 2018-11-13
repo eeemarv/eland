@@ -1741,7 +1741,9 @@ if ($add || $edit)
 		echo '</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-		echo 'value="' . $user['letscode'] . '" required maxlength="20">';
+		echo 'value="';
+		echo $user['letscode'] ?? '';
+		echo '" required maxlength="20">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1752,7 +1754,9 @@ if ($add || $edit)
 		echo '<label for="name" class="col-sm-2 control-label">Gebruikersnaam</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="name" name="name" ';
-		echo 'value="' . $user['name'] . '" required maxlength="50">';
+		echo 'value="';
+		echo $user['name'] ?? '';
+		echo '" required maxlength="50">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1763,7 +1767,9 @@ if ($add || $edit)
 		echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
-		echo 'value="' . $user['fullname'] . '" maxlength="100">';
+		echo 'value="';
+		echo $user['fullname'] ?? '';
+		echo '" maxlength="100">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1779,7 +1785,9 @@ if ($add || $edit)
 	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
-	echo 'value="' . $user['postcode'] . '" required maxlength="6">';
+	echo 'value="';
+	echo $user['postcode'] ?? '';
+	echo '" required maxlength="6">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1814,7 +1822,7 @@ if ($add || $edit)
 	echo '<label for="hobbies" class="col-sm-2 control-label">Hobbies, interesses</label>';
 	echo '<div class="col-sm-10">';
 	echo '<textarea name="hobbies" id="hobbies" class="form-control" maxlength="500">';
-	echo $user['hobbies'];
+	echo $user['hobbies'] ?? '';
 	echo '</textarea>';
 	echo '</div>';
 	echo '</div>';
@@ -1824,7 +1832,7 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
 	echo 'value="';
-	echo $user['comments'];
+	echo $user['comments'] ?? '';
 	echo '">';
 	echo '</div>';
 	echo '</div>';
@@ -1870,7 +1878,9 @@ if ($add || $edit)
 			echo '<div class="col-sm-10 controls">';
 			echo '<div class="input-group">';
 			echo '<input type="text" class="form-control" id="password" name="password" ';
-			echo 'value="' . $password . '" required>';
+			echo 'value="';
+			echo $password ?? '';
+			echo '" required>';
 			echo '<span class="input-group-btn">';
 			echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
 			echo '</span>';
@@ -1893,7 +1903,7 @@ if ($add || $edit)
 		echo '<label for="admincomment" class="col-sm-2 control-label">Commentaar van de admin</label>';
 		echo '<div class="col-sm-10">';
 		echo '<textarea name="admincomment" id="admincomment" class="form-control" maxlength="200">';
-		echo $user['admincomment'];
+		echo $user['admincomment'] ?? '';
 		echo '</textarea>';
 		echo '</div>';
 		echo '</div>';
@@ -1922,7 +1932,9 @@ if ($add || $edit)
 		echo '<label for="minlimit" class="col-sm-2 control-label">Minimum limiet saldo</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="minlimit" name="minlimit" ';
-		echo 'value="' . $user['minlimit'] . '">';
+		echo 'value="';
+		echo $user['minlimit'] ?? '';
+		echo '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
 		echo 'voor dit account. ls dit veld leeg is, dan is de algemeen geldende ';
@@ -1958,7 +1970,9 @@ if ($add || $edit)
 		echo '<label for="maxlimit" class="col-sm-2 control-label">Maximum limiet saldo</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="maxlimit" name="maxlimit" ';
-		echo 'value="' . $user['maxlimit'] . '">';
+		echo 'value="';
+		echo $user['maxlimit'] ?? '';
+		echo '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
@@ -2017,8 +2031,11 @@ if ($add || $edit)
 			echo '<label for="' . $name . '" class="col-sm-2 control-label">' . $c['abbrev'] . '</label>';
 			echo '<div class="col-sm-10">';
 			echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
-			echo 'value="' . $c['value'] . '"';
-			echo $c['abbrev'] === 'mail' ? ' type="email"' : ' type="text"';
+			echo 'value="';
+			echo $c['value'] ?? '';
+			echo '"';
+			// The disabled property gets removed with a delay by js to prevent population by the browser.
+			echo $c['abbrev'] === 'mail' ? ' type="email" disabled' : ' type="text"';
 			echo ' data-access="contact_access_' . $key . '">';
 			echo '</div>';
 			echo '</div>';
