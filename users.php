@@ -2374,10 +2374,13 @@ if ($id)
 		echo '</dd>';
 	}
 
-	echo '<dt>Zichtbaarheid volledige naam</dt>';
-	echo '<dd>';
-	echo $app['access_control']->get_label($fullname_access);
-	echo '</dd>';
+	if ($s_admin)
+	{
+		echo '<dt>Zichtbaarheid volledige naam</dt>';
+		echo '<dd>';
+		echo $app['access_control']->get_label($fullname_access);
+		echo '</dd>';
+	}
 
 	echo '<dt>';
 	echo 'Postcode';
