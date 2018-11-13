@@ -44,7 +44,7 @@ while (true)
 
 	if (isset($monitor) && $monitor !== '1')
 	{
-		$monitor = json_decode($service_worker, true);
+		$monitor = json_decode($monitor, true);
 	}
 	else
 	{
