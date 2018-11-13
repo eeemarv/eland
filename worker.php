@@ -92,7 +92,7 @@ while (true)
 		{
 			if ($time < $half_hour_ago)
 			{
-				unset($monitor['worker'])
+				unset($monitor['worker']);
 			}
 		}
 
