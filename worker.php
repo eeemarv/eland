@@ -52,9 +52,9 @@ while (true)
 	}
 
 	$now = time();
-	$monitor[$bool['count']] = $now;
+	$monitor[$boot['count']] = $now;
 
-	if (max(array_keys($monitor)) !== $bool['count'])
+	if (max(array_keys($monitor)) !== $boot['count'])
 	{
 		$app['predis']->set('monitor_service_worker', json_encode($monitor));
 		error_log('..worker..asleep.. ' . $boot['count']);
