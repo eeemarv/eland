@@ -48,7 +48,7 @@ if ($monitor)
 
 			if ($monitor_service_worker)
 			{
-				error_log('monitor worker: ' . $monitor_service_worker)
+				error_log('monitor worker: ' . $monitor_service_worker);
 			}
 			else
 			{
