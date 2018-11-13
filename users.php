@@ -1999,7 +1999,7 @@ if ($add || $edit)
 	echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke mail met recent vraag en aanbod</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
-	echo ($user['cron_saldo']) ? ' checked="checked"' : '';
+	echo $user['cron_saldo'] ? ' checked="checked"' : '';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -2018,7 +2018,7 @@ if ($add || $edit)
 			echo '<div class="col-sm-10">';
 			echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
 			echo 'value="' . $c['value'] . '"';
-			echo ($c['abbrev'] == 'mail') ? ' type="email"' : ' type="text"';
+			echo $c['abbrev'] === 'mail' ? ' type="email"' : ' type="text"';
 			echo ' data-access="contact_access_' . $key . '">';
 			echo '</div>';
 			echo '</div>';
@@ -2039,13 +2039,13 @@ if ($add || $edit)
 
 		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
 		echo 'Toevoegen bij de contactinfo ';
-		echo ($add) ? 'nadat de gebruiker gecreëerd is' : '';
+		echo $add ? 'nadat de gebruiker gecreëerd is' : '';
 		echo '.</small></p>';
 		echo '</div>';
 	}
 
-	$canc = ($edit) ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
-	$btn = ($edit) ? 'primary' : 'success';
+	$canc = $edit ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
+	$btn = $edit ? 'primary' : 'success';
 	echo aphp('users', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
@@ -2541,7 +2541,7 @@ if ($id)
 	echo '<div class="col-sm-12">';
 	echo '<textarea name="user_mail_content" rows="6" placeholder="' . $placeholder . '" ';
 	echo 'class="form-control" required';
-	echo ($disabled) ? ' disabled' : '';
+	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo $user_mail_content ?? '';
 	echo '</textarea>';
@@ -2551,13 +2551,13 @@ if ($id)
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
 	echo '<input type="checkbox" name="user_mail_cc"';
-	echo ($user_mail_cc) ? ' checked="checked"' : '';
+	echo $user_mail_cc ? ' checked="checked"' : '';
 	echo ' value="1" > Stuur een kopie naar mijzelf';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<input type="submit" name="user_mail_submit" value="Versturen" class="btn btn-default"';
-	echo ($disabled) ? ' disabled' : '';
+	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
 

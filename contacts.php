@@ -854,7 +854,7 @@ echo '<span class="input-group-addon">';
 echo 'Type';
 echo '</span>';
 echo '<select class="form-control" id="abbrev" name="abbrev">';
-echo get_select_options(array_merge(array('' => ''), $abbrev_ary), $abbrev);
+echo get_select_options(array_merge(['' => ''], $abbrev_ary), $abbrev);
 echo '</select>';
 echo '</div>';
 echo '</div>';
