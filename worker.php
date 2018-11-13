@@ -40,6 +40,28 @@ $app['predis']->expire('block_task', 3);
 
 while (true)
 {
+	$monitor = $app['predis']->get('monitor_service_worker');
+
+	if (isset($monitor) && $monitor !== '1')
+	{
+		$monitor = json_decode($service_worker, true);
+	}
+	else
+	{
+		$monitor = [];
+	}
+
+	$now = time();
+	$monitor[$bool['count']] = $now;
+
+	if (max(array_keys($monitor)) !== $bool['count'])
+	{
+		$app['predis']->set('monitor_service_worker', json_encode($monitor));
+		error_log('..worker..asleep.. ' . $boot['count']);
+		sleep(300);
+		continue;
+	}
+
 	$app['log_db']->update();
 
 	sleep(1);
@@ -64,7 +86,17 @@ while (true)
 
 	if ($loop_count % 10 === 0)
 	{
-		$app['predis']->set('monitor_service_worker', '1');
+		$half_hour_ago = $now - 1800;
+
+		foreach ($monitor as $worker => $time)
+		{
+			if ($time < $half_hour_ago)
+			{
+				unset($monitor['worker'])
+			}
+		}
+
+		$app['predis']->set('monitor_service_worker', json_encode($monitor));
 		$app['predis']->expire('monitor_service_worker', 900);
 	}
 

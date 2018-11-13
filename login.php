@@ -46,7 +46,11 @@ if ($monitor)
 		{
 			$monitor_service_worker = $app['predis']->get('monitor_service_worker');
 
-			if (!$monitor_service_worker)
+			if ($monitor_service_worker)
+			{
+				error_log('monitor worker: ' . $monitor_service_worker)
+			}
+			else
 			{
 				http_response_code(503);
 				echo 'web service is up but service worker is down';
