@@ -1796,7 +1796,7 @@ if ($add || $edit)
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
 	echo 'value="';
-	echo $user['birthday'] ? $app['date_format']->get($user['birthday'], 'day') : '';
+	echo isset($user['birthday']) && !empty($user['birtday']) ? $app['date_format']->get($user['birthday'], 'day') : '';
 	echo '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
@@ -1854,7 +1854,9 @@ if ($add || $edit)
 		echo 'Preshared key</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-		echo 'value="' . $user['presharedkey'] . '" maxlength="80">';
+		echo 'value="';
+		echo $user['presharedkey'] ?? '';
+		echo '" maxlength="80">';
 		echo '<p>Vul dit enkel in voor een interletsaccount van een eLAS-installatie.</p>';
 		echo '</div>';
 		echo '</div>';
@@ -1869,7 +1871,7 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
-		if (!$user['adate'] && $s_admin)
+		if (!isset($user['adate']) && empty($user['adate']) && $s_admin)
 		{
 			echo '<div id="activate" class="bg-success pan-sub">';
 
