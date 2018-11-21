@@ -116,16 +116,16 @@ if ($add || $edit)
 				where localletscode = ?
 					and id <> ?', [$group['localletscode'], $edit]))
 			{
-				$errors[] = 'Er bestaat al een groep met deze lokale code.';
+				$errors[] = 'Er bestaat al een interSysteem met deze lokale code.';
 			}
 
 			if (!count($errors))
 			{
 				if ($app['db']->update('letsgroups', $group, ['id' => $id]))
 				{
-					$app['alert']->success('Groep aangepast.');
+					$app['alert']->success('interSysteem aangepast.');
 
-					$app['interlets_groups']->clear_cache($s_schema);
+					$app['inter_groups']->clear_cache($s_schema);
 
 					cancel($edit);
 				}
@@ -142,23 +142,23 @@ if ($add || $edit)
 
 			if ($app['db']->fetchColumn('select id from letsgroups where localletscode = ?', [$group['localletscode']]))
 			{
-				$errors[] = 'Er bestaat al een groep met deze lokale code.';
+				$errors[] = 'Er bestaat al een interSysteem met deze lokale code.';
 			}
 
 			if (!count($errors))
 			{
-				if ($app['db']->insert('letsgroups', $group))
+				if ($app['db']->insert('groups', $group))
 				{
 					$app['alert']->success('Groep opgeslagen.');
 
-					$id = $app['db']->lastInsertId('letsgroups_id_seq');
+					$id = $app['db']->lastInsertId('groups_id_seq');
 
-					$app['interlets_groups']->clear_cache($s_schema);
+					$app['inter_groups']->clear_cache($s_schema);
 
 					cancel($id);
 				}
 
-				$app['alert']->error('Letsgroep niet opgeslagen.');
+				$app['alert']->error('InterSysteem niet opgeslagen.');
 			}
 		}
 
@@ -191,8 +191,8 @@ if ($add || $edit)
 		}
 	}
 
-	$h1 = 'LETS groep ';
-	$h1 .= ($edit) ? 'aanpassen' : 'toevoegen';
+	$h1 = 'InterSysteem ';
+	$h1 .= $edit ? 'aanpassen' : 'toevoegen';
 	$fa = 'share-alt';
 
 	include __DIR__ . '/include/header.php';
@@ -237,8 +237,8 @@ if ($add || $edit)
 
 	echo '<div class="form-group">';
 	echo '<label for="localletscode" class="col-sm-2 control-label">';
-	echo 'Lokale letscode <small><i>(de letscode waarmee de andere ';
-	echo 'groep op deze installatie bekend is.)</i></small></label>';
+	echo 'Lokale Account Code <small><i>(de Account Code waarmee het ';
+	echo 'interSysteem op deze installatie bekend is.)</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
 	echo 'value="' . $group['localletscode'] . '" maxlength="20">';
@@ -247,7 +247,7 @@ if ($add || $edit)
 
 	echo '<div class="form-group">';
 	echo '<label for="myremoteletscode" class="col-sm-2 control-label">';
-	echo 'Remote LETS code <small><i>De letscode waarmee deze groep bij de andere bekend is, enkel voor eLAS';
+	echo 'Remote Account Code <small><i>De Account Code waarmee dit systeem bij het andere systeem bekend is, enkel voor eLAS';
 	echo '</i></small></label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="myremoteletscode" name="myremoteletscode" ';
@@ -261,7 +261,9 @@ if ($add || $edit)
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="url" class="form-control" id="url" name="url" ';
-	echo 'value="' . $group['url'] . '" maxlength="256">';
+	echo 'value="';
+	echo $group['url'];
+	echo '" maxlength="256">';
 	echo '</div>';
 	echo '</div>';
 
@@ -271,12 +273,14 @@ if ($add || $edit)
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-	echo 'value="' . $group['presharedkey'] . '" maxlength="80">';
+	echo 'value="';
+	echo $group['presharedkey'];
+	echo '" maxlength="80">';
 	echo '</div>';
 	echo '</div>';
 
-	$btn = ($edit) ? 'primary' : 'success';
-	$canc = ($edit) ? ['id' => $edit] : [];
+	$btn = $edit ? 'primary' : 'success';
+	$canc = $edit ? ['id' => $edit] : [];
 	echo aphp('intersystem', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
@@ -308,17 +312,17 @@ if ($del)
 
 		if($app['db']->delete('letsgroups', ['id' => $del]))
 		{
-			$app['alert']->success('Letsgroep verwijderd.');
+			$app['alert']->success('InterSysteem verwijderd.');
 
 			$app['interlets_groups']->clear_cache($s_schema);
 
 			cancel();
 		}
 
-		$app['alert']->error('Letsgroep niet verwijderd.');
+		$app['alert']->error('InterSysteem niet verwijderd.');
 	}
 
-	$h1 = 'Letsgroep verwijderen: ' . $group['groupname'];
+	$h1 = 'InterSysteem verwijderen: ' . $group['groupname'];
 	$fa = 'share-alt';
 
 	include __DIR__ . '/include/header.php';
@@ -364,9 +368,9 @@ if ($id)
 		$user = $app['db']->fetchAssoc('select * from users where letscode = ?', [$group['localletscode']]);
 	}
 
-	$top_buttons .= aphp('intersystem', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
-	$top_buttons .= aphp('intersystem', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
-	$top_buttons .= aphp('intersystem', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
+	$top_buttons .= aphp('intersystem', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Intersysteem aanpassen', 'pencil', true);
+	$top_buttons .= aphp('intersystem', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Intersysteem verwijderen', 'times', true);
+	$top_buttons .= aphp('intersystem', [], 'Lijst', 'btn btn-default', 'Lijst Intersystemen', 'share-alt', true);
 
 	$app['assets']->add('elas_soap_status.js');
 
@@ -387,12 +391,12 @@ if ($id)
 
 		if (!$app['config']->get('template_lets', $group_schema))
 		{
-			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> niet geconfigureerd als LETS-groep</span>';
+			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> niet geconfigureerd als Tijdsbank</span>';
 		}
 
 		if (!$app['config']->get('interlets_en', $group_schema))
 		{
-			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> interLETS niet ingeschakeld in configuratie</span>';
+			echo ' <span class="btn btn-danger btn-xs"><i class="fa fa-exclamation-triangle"></i> InterSysteem-mogelijkheid niet ingeschakeld in configuratie</span>';
 		}
 
 		echo '</dd>';
@@ -405,16 +409,22 @@ if ($id)
 
 	}
 
-	echo '<dt>Groepsnaam</dt>';
-	echo '<dd>' . $group['groupname'] .'</dd>';
+	echo '<dt>Systeem naam</dt>';
+	echo '<dd>';
+	echo $group['groupname'];
+	echo '</dd>';
 
 	echo '<dt>API methode</dt>';
-	echo '<dd>' . $group['apimethod'] .'</dd>';
+	echo '<dd>';
+	echo $group['apimethod'];
+	echo '</dd>';
 
 	echo '<dt>API key</dt>';
-	echo '<dd>' . $group['remoteapikey'] .'</dd>';
+	echo '<dd>';
+	echo $group['remoteapikey'];
+	echo '</dd>';
 
-	echo '<dt>Lokale LETS code</dt>';
+	echo '<dt>Lokale Account Code</dt>';
 	echo '<dd>';
 
 	if ($user)
@@ -447,7 +457,7 @@ if ($id)
 
 	echo '</dd>';
 
-	echo '<dt>Remote code</dt>';
+	echo '<dt>Remote Account Code</dt>';
 	echo '<dd>';
 	echo $group['myremoteletscode'];
 	echo '</dd>';
@@ -593,7 +603,7 @@ if (count($groups))
 
 		if (isset($g['eland']))
 		{
-			echo ' <span class="label label-info" title="Deze letsgroep bevindt zich op dezelfde eland-server">';
+			echo ' <span class="label label-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
 			echo 'eLAND</span>';
 
 			if (!$app['config']->get('template_lets', $g['schema']))
@@ -604,16 +614,20 @@ if (count($groups))
 
 			if (!$app['config']->get('interlets_en', $g['schema']))
 			{
-				echo ' <span class="label label-danger" title="interSysteem is niet ingeschakeld in de configuratie van deze groep.">';
+				echo ' <span class="label label-danger" title="InterSysteem-mogelijkheid is niet ingeschakeld in de configuratie van dit systeem.">';
 				echo '<i class="fa fa-exclamation-triangle"></i> geen interSysteem</span>';
 			}
 		}
 
 		echo '</td>';
 
-		echo '<td>' . $g['user_count'] . '</td>';
+		echo '<td>';
+		echo $g['user_count'];
+		echo '</td>';
 
-		echo '<td>' . $g['apimethod'] . '</td>';
+		echo '<td>';
+		echo $g['apimethod'];
+		echo '</td>';
 		echo '</tr>';
 	}
 
@@ -643,38 +657,53 @@ function get_schemas_groups():string
 	global $app;
 
 	$out = '<p><ul>';
-	$out .= '<li>Een groep van het type internal aanmaken is niet nodig in eLAND (in tegenstelling tot eLAS). Interne groepen worden genegeerd!</li>';
+	$out .= '<li>Een interSysteem van het type internal aanmaken is niet nodig in eLAND. ';
+	$out .= 'Dit is enkel nodig in eLAS. Interne interSystemen worden genegeerd!</li>';
 	$out .= '</ul></p>';
 
 	$out .= '<div class="panel panel-default"><div class="panel-heading">';
-	$out .= '<h3>Verbindingen met eLAS. Zie <a href="https://eland.letsa.net/admin-elas-interlets-koppeling-maken.html">hier</a> voor de procedure.</h3>';
-	$out .= '<p><small>Voor verbindingen met eLAND zie onder!</small></p>';
+	$out .= '<h3>InterSysteem verbindingen met eLAS. Zie <a href="https://eland.letsa.net/admin-elas-intersysteem-koppeling-maken.html">hier</a> voor de procedure.</h3>';
+	$out .= '<p>Dit wil zeggen: het andere Systeem draait op eLAS.</p>';
+	$out .= '<p><small>Voor Intersysteem verbindingen met eLAND zie onder!</small></p>';
 	$out .= '</div>';
 	$out .= '<ul>';
 	$out .= '<li> Kies \'elassoap\' als API methode.</li>';
-	$out .= '<li> De API key moet je aanvragen bij de beheerder van de andere installatie, het is een sleutel die je eigen eLAS toelaat om met de andere eLAS te praten. </li>';
-	$out .= '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
-	$out .= '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
-	$out .= '<li> URL is de weblocatie van de andere installatie';
-	$out .= '<li> Preshared Key is een gedeelde sleutel waarmee interSysteem transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
+	$out .= '<li> De API key moet je aanvragen bij de beheerder van het andere Systeem. ';
+	$out .= 'Het is een sleutel die je eigen Systeem toelaat om met het andere Systeem (in eLAS) te praten. </li>';
+	$out .= '<li> De Lokale Account Code is de account code waarmee het interSysteem op deze installatie bekend is. ';
+	$out .= 'Dit account moet al bestaan.</li>';
+	$out .= '<li> De Remote Account Code is de account code waarmee dit Systeem bij het ';
+	$out .= 'andere Systeem bekend is. Deze moet in het andere Systeem aangemaakt zijn.</li>';
+	$out .= '<li> URL is de weblocatie van het andere Systeem. </li>';
+	$out .= '<li> Preshared Key is een gedeelde sleutel waarmee interSysteem ';
+	$out .= 'transacties ondertekend worden.  Deze moet identiek zijn aan de Preshared Key ';
+	$out .= 'voor het Account van dit Systeem bij het andere Systeem.</li>';
 	$out .= '</ul>';
 	$out .= '</div>';
 
 	$out .= '<div class="panel panel-default">';
 	$out .= '<div class="panel-heading">';
-	$out .= '<h3>Verbindingen leggen met andere eLAND installaties.</h3>';
+	$out .= '<h3>interSysteem Verbindingen leggen met andere Systemen op deze eLAND server.</h3>';
 	$out .= '</div>';
 	$out .= '<ul>';
-	$out .= '<li>Met letsgroepen die eLAND gebruiken kan op een vereenvoudigde manier verbinding gelegd worden zonder ';
-	$out .= 'het uitwisselen van apikeys, preshared keys en remote letscodes. Dit is mogelijk omdat alle eLAND installaties zich op ';
+	$out .= '<li>Met een Tijdsgebaseerd Systeem (Tijdsbank) die eLAND gebruikt kan ';
+	$out .= 'op een vereenvoudigde manier verbinding gelegd worden zonder ';
+	$out .= 'het uitwisselen van Apikey, Preshared Keys en Remote Account Code. ';
+	$out .= 'Dit is mogelijk omdat alle Systemen in eLAND zich (momenteel) op ';
 	$out .= 'dezelfde server bevinden.</li>';
-	$out .= '<li>Contacteer altijd eerst vooraf de andere groep waarmee je een interSysteem verbinding wil opzetten. Vraag of zij ook geïnteresseerd zijn.</li>';
-	$out .= '<li>Voor het leggen van een verbinding, kijk in de tabel hieronder. ';
-	$out .= 'Maak de referentie naar de Tijdsbank aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
-	$out .= 'klik je op knop \'Creëer\' in de kolom \'lok.account\'. ';
-	$out .= 'Vul een postcode in en klik op \'toevoegen\'. Nu de Tijdsbank en het interSysteem account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep voor de interSysteem verbinding. Wanneer ';
-	$out .= 'de andere groep op dezelfde wijze een groep en interSysteem account aanmaakt is de verbinding compleet. ';
-	$out .= 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
+	$out .= '<li>Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
+	$out .= 'waarmee je een interSysteem verbinding wil opzetten. ';
+	$out .= 'Vraag of zij ook geïnteresseerd zijn.</li>';
+	$out .= '<li>Voor het leggen van een InterSysteem-verbinding, kijk in de tabel hieronder. ';
+	$out .= 'Maak het interSysteem aan door op \'Creëer\' in kolom \'lok.interSysteem\' te klikken en vervolgens op Toevoegen. ';
+	$out .= 'Dan, weer in de tabel onder, ';
+	$out .= 'klik je op knop \'Creëer\' in de kolom \'lok.Account\'. ';
+	$out .= 'Vul een postcode in en klik op \'Toevoegen\'. ';
+	$out .= 'Nu het interSysteem en haar Account aangemaakt zijn wil dat zeggen dat jouw Systeem toestemming ';
+	$out .= 'geeft aan het andere Systeem voor de interSysteem verbinding. Wanneer ';
+	$out .= 'het andere Systeem op dezelfde wijze een interSysteem en Account aanmaakt ';
+	$out .= 'is de InterSysteem-verbinding compleet. ';
+	$out .= 'In alle vier kolommen (lok.interSysteem, lok.Account, rem.interSysteem, rem.Account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	$out .= '</ul>';
 
 	$url_ary = [];
@@ -740,19 +769,19 @@ function get_schemas_groups():string
 	}
 
 	$out .= '<div class="panel-heading">';
-	$out .= '<h3>Groepen die eLAND gebruiken</h3>';
+	$out .= '<h3>Systemen op deze eLAND server</h3>';
 	$out .= '</div>';
 
 	$out .= '<table class="table table-bordered table-hover table-striped footable">';
 	$out .= '<thead>';
 	$out .= '<tr>';
-	$out .= '<th data-sort-initial="true">groepsnaam</th>';
-	$out .= '<th data-hide="phone, tablet">domein</th>';
-	$out .= '<th data-hide="phone, tablet">leden</th>';
-	$out .= '<th>lok.groep</th>';
-	$out .= '<th>lok.account</th>';
-	$out .= '<th>rem.groep</th>';
-	$out .= '<th>rem.account</th>';
+	$out .= '<th data-sort-initial="true">Systeem Naam</th>';
+	$out .= '<th data-hide="phone, tablet">Domein</th>';
+	$out .= '<th data-hide="phone, tablet">Leden</th>';
+	$out .= '<th>lok.interSysteem</th>';
+	$out .= '<th>lok.Account</th>';
+	$out .= '<th>rem.interSysteem</th>';
+	$out .= '<th>rem.Account</th>';
 	$out .= '</tr>';
 	$out .= '</thead>';
 
