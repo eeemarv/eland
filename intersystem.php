@@ -854,7 +854,7 @@ function get_schemas_groups():string
 				}
 				else
 				{
-					$out .= aphp('users', ['add' => 1, 'interlets' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
+					$out .= aphp('users', ['add' => 1, 'intersystem_code' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
 						'Creëer een interSysteem-account met gelijke code en status extern.');
 				}
 			}

@@ -11,7 +11,7 @@ $link = $_GET['link'] ?? false;
 $pw = $_GET['pw'] ?? false;
 $img = isset($_GET['img']) ? true : false;
 $img_del = isset($_GET['img_del']) ? true : false;
-$interlets = $_GET['interlets'] ?? false;
+$intersystem_code = $_GET['intersystem_code'] ?? false;
 $password = $_POST['password'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 $user_mail_submit = isset($_POST['user_mail_submit']) ? true : false;
@@ -1668,12 +1668,12 @@ if ($add || $edit)
 				'cron_saldo'	=> 1,
 			];
 
-			if ($interlets)
+			if ($intersystem_code)
 			{
 				if ($group = $app['db']->fetchAssoc('select *
 					from letsgroups
 					where localletscode = ?
-						and apimethod <> \'internal\'', [$interlets]))
+						and apimethod <> \'internal\'', [$intersystem_code]))
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
@@ -1705,7 +1705,7 @@ if ($add || $edit)
 				$user['cron_saldo'] = 0;
 				$user['status'] = '7';
 				$user['accountrole'] = 'interlets';
-				$user['letscode'] = $interlets;
+				$user['letscode'] = $intersystem_code;
 			}
 			else
 			{
@@ -1776,7 +1776,7 @@ if ($add || $edit)
 
 	if (!isset($fullname_access))
 	{
-		$fullname_access = $add && !$interlets ? false : 'admin';
+		$fullname_access = $add && !$intersystem_code ? false : 'admin';
 	}
 
 	echo $app['access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');

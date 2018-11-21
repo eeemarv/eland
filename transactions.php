@@ -711,7 +711,7 @@ if ($add)
 				$app['autominlimit']->init()
 					->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-				$app['alert']->success('Interlets transactie uitgevoerd.');
+				$app['alert']->success('InterSysteem transactie uitgevoerd.');
 				cancel();
 			}
 		}
