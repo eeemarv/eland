@@ -113,8 +113,8 @@ $tableheader_ary = [
 	]),
 ];
 
-$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
+$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
 
 $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
@@ -242,7 +242,8 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$th_params['asc'] = $data['asc'];
 
 		echo '<a href="' . generate_url('logs', $th_params) . '">';
-		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo $data['lbl'] . '&nbsp;';
+		echo '<i class="fa fa-sort' . $data['indicator'] . '"></i>';
 		echo '</a>';
 	}
 	echo '</th>';

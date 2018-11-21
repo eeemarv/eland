@@ -447,7 +447,7 @@ if ($id)
 		cancel();
 	}
 
-	if ($no_access_ary[$id])
+	if (isset($no_access_ary[$id]))
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
