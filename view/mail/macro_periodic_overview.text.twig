@@ -23,14 +23,14 @@ Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}{{ validate_param }}
 
 {% if interlets %}
 
-Recent vraag en aanbod in interSysteem groepen
-----------------------------------------------
+Recent vraag en aanbod in interSystemen
+---------------------------------------
 
-Log in ({{ url_login }}{{ validate_param }}) en ga via 'Groep' in de navigatiebalk naar de betreffende interSysteem groep voor meer informatie.
+Log in ({{ url_login }}{{ validate_param }}) en ga via 'Systeem' in de navigatiebalk naar het betreffende interSysteem voor meer informatie.
 
 {% for grp in interlets %}
 
-** GROEP: {{ grp.group }} **
+** Systeem: {{ grp.group }} **
 
 {% for msg in grp.messages %}
 

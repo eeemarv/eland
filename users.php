@@ -1940,16 +1940,16 @@ if ($add || $edit)
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
 		echo 'voor dit account. ls dit veld leeg is, dan is de algemeen geldende ';
-		echo aphp('config', ['active_tab' => 'balance'], 'minimum groepslimiet') . ' ';
+		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
 		if ($app['config']->get('minlimit') === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende minimum groepslimiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende Minimum Systeemslimiet ingesteld.';
 		}
 		else
 		{
-			echo 'De algemeen geldende minimum groepslimiet bedraagt <strong>';
+			echo 'De algemeen geldende Minimum Systeemslimiet bedraagt <strong>';
 			echo $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
 		}
 
@@ -1978,16 +1978,16 @@ if ($add || $edit)
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
-		echo aphp('config', ['active_tab' => 'balance'], 'maximum groepslimiet') . ' ';
+		echo aphp('config', ['active_tab' => 'balance'], 'Maximum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
 		if ($app['config']->get('maxlimit') === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende maximum groepslimiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen geledende Maximum Systeemslimiet ingesteld.';
 		}
 		else
 		{
-			echo 'De algemeen geldende maximum groepslimiet bedraagt <strong>';
+			echo 'De algemeen geldende Maximum Systeemslimiet bedraagt <strong>';
 			echo $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
 		}
 
@@ -2310,11 +2310,11 @@ if ($id)
 		if ($interlets_group_missing)
 		{
 			$h1 .= ' <span class="label label-warning label-sm"><i class="fa fa-exclamation-triangle"></i> ';
-			$h1 .= 'Gekoppelde InterSysteem groep ontbreekt</span>';
+			$h1 .= 'De interSysteem-verbinding ontbreekt</span>';
 		}
 		else if ($interlets_group_id)
 		{
-			$h1 .= ' ' . aphp('intersystem', ['id' => $interlets_group_id], 'Gekoppelde groep', 'btn btn-default', 'Gekoppelde groep');
+			$h1 .= ' ' . aphp('intersystem', ['id' => $interlets_group_id], 'Gekoppeld interSysteem', 'btn btn-default', 'Gekoppelde interSysteem');
 		}
 	}
 

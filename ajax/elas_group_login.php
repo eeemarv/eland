@@ -15,13 +15,13 @@ if (!$s_schema || $s_elas_guest)
 
 if (!$group_id)
 {
-	echo json_encode(['error' => 'Het groep id ontbreekt.']);
+	echo json_encode(['error' => 'Het interSysteem id ontbreekt.']);
 	exit;
 }
 
 if (!isset($elas_interlets_groups[$group_id]))
 {
-	echo json_encode(['error' => 'Er is geen interSysteem verbinding met deze groep.']);
+	echo json_encode(['error' => 'Er is geen interSysteem verbinding met dit Systeem.']);
 	exit;
 }
 
@@ -29,25 +29,25 @@ $group = $app['db']->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHER
 
 if (!$group)
 {
-	echo json_encode(['error' => 'Groep niet gevonden.']);
+	echo json_encode(['error' => 'InterSysteem niet gevonden.']);
 	exit;
 }
 
 if ($group['apimethod'] != 'elassoap')
 {
-	echo json_encode(['error' => 'De apimethod voor deze groep is niet elassoap.']);
+	echo json_encode(['error' => 'De Api Methode voor dit interSysteem is niet elassoap.']);
 	exit;
 }
 
 if (!$group['remoteapikey'])
 {
-	echo json_encode(['error' => 'De remote apikey is niet ingesteld voor deze groep.']);
+	echo json_encode(['error' => 'De Remote Apikey is niet ingesteld voor dit interSysteem.']);
 	exit;
 }
 
 if (!$group['presharedkey'])
 {
-	echo json_encode(['error' => 'De preshared key is niet ingesteld voor deze groep.']);
+	echo json_encode(['error' => 'De Preshared Key is niet ingesteld voor dit interSysteem.']);
 	exit;
 }
 
@@ -74,7 +74,7 @@ $err = $client->getError();
 
 if ($err)
 {
-	$m = $err_group . ' Kan geen token krijgen.';
+	$m = $err_group . ' Kan geen token krijgen voor dit interSysteem.';
 	echo json_encode(['error' => $m]);
 	$app['monolog']->error('elas-token: ' . $m . ' ' . $err);
 	exit;

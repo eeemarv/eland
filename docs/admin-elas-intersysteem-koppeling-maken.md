@@ -50,7 +50,7 @@ Van het Systeem waarmee je wil koppelen heb je een gelijkaardige mail als hierbo
 * In het beheer blok, kies InterSysteem > Toevoegen (in eLAS: LETS Groepen > Groep toevoegen)
 * Vul volgende velden in:
   * Systeem Naam: naam van het Systeem waarmee je een verbinding legt, bv Tijdsbank Geel
-  * (niet in eLAND) korte naam: korte naam zonder hoofdletters of spaties van de groep waarmee je koppelt, bv tijdsbankgeel
+  * (niet in eLAND) korte naam: korte naam zonder hoofdletters of spaties van het Systeem waarmee je koppelt, bv tijdsbankgeel
   * (niet in eLAND:) prefix: LEEG laten
   * API Method: elassaop (standaardwaarde)
   * Remote API Key: de apikey uit de mail die je aankreeg

@@ -17,7 +17,7 @@ $register_link_explain .= '<br>Bij inschrijving wordt een nieuwe gebruiker zonde
 $register_link_explain .= '<br>De admin krijgt een notificatie-email bij elke inschrijving.';
 
 $register_success_explain = 'Hier kan je aan de gebruiker uitleggen wat er verder gaat gebeuren. <br>';
-$register_success_explain .= 'Als je groep een website heeft, is het nuttig om een link op te nemen ';
+$register_success_explain .= 'Als je Systeem een website heeft, is het nuttig om een link op te nemen ';
 $register_success_explain .= 'om de gebruiker terug te voeren.';
 
 $contact_link = $app['base_url'] . '/contact.php';
@@ -34,11 +34,6 @@ $periodic_mail_item_show_options = $periodic_mail_item_show_options_not_all = [
 	'all'		=> 'Alle',
 	'recent'	=> 'Recente',
 	'none'		=> 'Geen',
-];
-
-$periodic_mail_template = [
-	'messages_top'	=> 'Vraag en aanbod bovenaan',
-	'news_top'		=> 'Nieuws bovenaan',
 ];
 
 $landing_page_options = [
@@ -99,27 +94,27 @@ $tab_panes = [
 		'inputs'	=> [
 			'minlimit'	=> [
 				'addon'	=> $currency,
-				'lbl'	=> 'Minimum groepslimiet',
+				'lbl'	=> 'Minimum Systeemslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Minimum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele minimum limiet ingesteld is. Kan leeg gelaten worden.',
+				'explain'	=> 'Minimum Limiet die geldt voor alle Accounts, behalve voor die Accounts waarbij een Minimum Account Limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'maxlimit'	=> [
 				'addon'	=> $currency,
-				'lbl'	=> 'Maximum groepslimiet',
+				'lbl'	=> 'Maximum Systeemslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Maximum limiet die geldt voor alle accounts, behalve voor die accounts waarbij een individuele maximum limiet ingesteld is. Kan leeg gelaten worden.',
+				'explain'	=> 'Maximum Limiet die geldt voor alle Accounts, behalve voor die Accounts waarbij een Maximum Account Limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'preset_minlimit'	=> [
 				'addon'	=> $currency,
-				'lbl'	=> 'Preset individuele minimum limiet',
+				'lbl'	=> 'Preset Minimum Account Limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Bij aanmaak van een nieuwe gebruiker wordt deze individuele minimum limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende individuele minimum limiet hebben van de minimum groepslimiet. Deze instelling is ook nuttig wanneer de automatische minimum limiet gebruikt wordt. Dit veld kan leeg gelaten worden.',
+				'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze Minimum Account Limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende Minimum Account Limiet hebben van de Minimum Systeemslimiet. Deze instelling is ook nuttig wanneer de Automatische Minimum Limiet gebruikt wordt. Dit veld kan leeg gelaten worden.',
 			],
 			'preset_maxlimit'	=> [
 				'addon'	=> $currency,
-				'lbl'	=> 'Preset individuele maximum limiet',
+				'lbl'	=> 'Preset Maximum Account Limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Bij aanmaak van een nieuwe gebruiker wordt deze individuele maximum limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende individuele maximum limiet hebben van de maximum groepslimiet. Dit veld kan leeg gelaten worden.',
+				'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze Maximum Account Limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende Maximum Account Limiet hebben van de Maximum Systeemslimiet. Dit veld kan leeg gelaten worden.',
 
 			],
 			'balance_equilibrium'	=> [
@@ -170,10 +165,10 @@ $tab_panes = [
 	],
 
 	'systemname'	=> [
-		'lbl'	=> 'Groepsnaam',
+		'lbl'	=> 'Systeemsnaam',
 		'inputs' => [
 			'systemname' => [
-				'lbl'		=> 'Groepsnaam',
+				'lbl'		=> 'Systeemsnaam',
 				'required'	=> true,
 			],
 			'systemtag' => [

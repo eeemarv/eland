@@ -490,11 +490,11 @@ if (isset($_GET['welcome']) && $s_guest)
 	{
 		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
 		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
-		$msg .= 'ingeven in de installatie van je eigen groep.';
+		$msg .= 'ingeven in je eigen Systeem.';
 	}
 	else
 	{
-		$msg .= 'Je kan steeds terug naar je eigen groep via het menu <strong>Groep</strong> ';
+		$msg .= 'Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong> ';
 		$msg .= 'boven in de navigatiebalk.';
 	}
 

@@ -33,10 +33,10 @@
 {% if interlets %}
 <h4>Recent interSysteem vraag en aanbod</h4>
 
-<p><a href="{{ url_login }}{{ validate_param }}">Log in</a> en ga via 'Groep' in de navigatiebalk naar de betreffende interSysteem groep voor meer informatie.</p>
+<p><a href="{{ url_login }}{{ validate_param }}">Log in</a> en ga via 'Systeem' in de navigatiebalk naar het betreffende interSysteem voor meer informatie.</p>
 
 {% for grp in interlets %}
-<h5>Groep: {{ grp.group }}</h5>
+<h5>Systeem: {{ grp.group }}</h5>
 <ul>
 	{% for msg in grp.messages %}
 		<li>{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} <br>

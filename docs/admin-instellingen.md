@@ -56,19 +56,19 @@
 
 ## support
 
-   'Mailadres van de support persoon of groep'
+   'Mailadres van de support persoon'
    __Mails van het helpformulier worden naar dit adres gestuurd.__
    Vul een mailadres in.
 
 ## currency
 
-   'LETS-eenheid voor de groep'
-   Vul de naam van je Letseenheid in.
+   'Naam van de munteenheid voor het Systeem'
+   Vul de naam van je eenheid in.
 
 ## currencyratio
 
-   'letseenheden per uur'
-   __De waarde van de LETSeenheid uitgedrukt in tijd__
+   'eenheden per uur'
+   __De waarde van de eenheid uitgedrukt in tijd__ (enkel voor Tijdsbanken)
    Vul een geheel getal in.
 
 ## maintenance
@@ -84,21 +84,21 @@
 ## systemname
 
    'Systeemnaam'
-   __De naam van de groep.__
+   __De naam van het Systeem.__
 
 ## systemtag
 
    'Systeemtag'
-   __Een korte code voor de groep__
+   __Een korte code voor het Systeem__
 
 ## maxlimit
 
-   'Limiet voor maxstand voor nieuwe gebruikers'
+   'Maximum Limiet voor nieuwe Accounts'
    Vul een geheel getal in.
 
 ## minlimit
 
-   'Limiet voor minstand voor nieuwe gebruikers'
+   'Minimum Limiet voor nieuwe Accounts'
    Vul een geheel getal in.
 
 ## users_can_edit_username
@@ -124,7 +124,7 @@
 ## css
 
    'Extra stijl: url van .css bestand'
-   __Vul eventueel hier een url van een css bestand in om stijlkenmerken te overschrijven. Bvb. om een logo of een (lichte) achtergrond kleur toe te voegen. Wanneer niet gebruikt, vul 0 (nul) in.__
+   __Vul eventueel hier een url van een css bestand in om stijlkenmerken te overschrijven. Bvb. om een logo of een (lichte) achtergrond kleur toe te voegen. Wanneer niet gebruikt, vul niets in.__
 
 ## msgs_days_default
 

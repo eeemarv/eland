@@ -85,7 +85,7 @@ if ($add)
 
 			if (!isset($group))
 			{
-				$errors[] =  'groep niet gevonden.';
+				$errors[] =  'InterSysteem niet gevonden.';
 			}
 			else
 			{
@@ -124,7 +124,7 @@ if ($add)
 			}
 			else
 			{
-				$errors[] = 'De interSysteem rekening (in deze groep) bestaat niet';
+				$errors[] = 'De interSysteem rekening (in dit Systeem) bestaat niet';
 			}
 		}
 
@@ -169,7 +169,7 @@ if ($add)
 				{
 					$err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
 					$err .= 'Je saldo bedraagt ' . $fromuser['saldo'] . ' ' . $currency . ' ';
-					$err .= 'en de minimum groepslimiet bedraagt ';
+					$err .= 'en de minimum Systeemslimiet bedraagt ';
 					$err .= $minlimit . ' ' . $currency;
 					$errors[] = $err;
 				}
@@ -201,11 +201,11 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in dit Systeem)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
-					$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
+					$err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
 					$errors[] = $err;
 				}
 			}
@@ -214,7 +214,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in dit Systeem)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -243,8 +243,8 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interSysteem rekening van de letsgroep';
-				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
+				$dest = $group_id == 'self' ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interSysteem rekening ';
+				$errors[] = $dest . ' heeft de status \'Uitstapper\' en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
 			}
 		}
 
@@ -303,13 +303,13 @@ if ($add)
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
-			$app['alert']->error('InterSysteem groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
+			$app['alert']->error('InterSysteem ' . $group['groupname'] . ' heeft geen geldige Api Methode.' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$group_domain)
 		{
-			$app['alert']->error('Geen url voor interSysteem groep ' . $group['groupname'] . '. ' . $contact_admin);
+			$app['alert']->error('Geen URL ingesteld voor interSysteem ' . $group['groupname'] . '. ' . $contact_admin);
 
 			cancel();
 		}
@@ -319,17 +319,17 @@ if ($add)
 
 			if (!$group['remoteapikey'])
 			{
-				$errors[] = 'Geen apikey voor deze interSysteem groep ingesteld.' . $contact_admin;
+				$errors[] = 'Geen Apikey voor dit interSysteem ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['presharedkey'])
 			{
-				$errors[] = 'Geen preshared key voor deze interSysteem groep ingesteld.' . $contact_admin;
+				$errors[] = 'Geen Preshared Key voor deze interSysteem ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['myremoteletscode'])
 			{
-				$errors[] = 'Geen remote letscode ingesteld voor deze interSysteem groep.' . $contact_admin;
+				$errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
 			}
 
 			$currencyratio = $app['config']->get('currencyratio');
@@ -359,12 +359,12 @@ if ($add)
 				{
 					if(!$real_name_to)
 					{
-						$errors[] = 'Er werd geen naam gevonden voor de gebruiker van de interSysteem groep.';
+						$errors[] = 'Er werd geen naam gevonden voor het Account van het interSysteem.';
 					}
 				}
 				else
 				{
-					$errors[] = 'Er werd geen gebruiker gevonden met ' . $app['type_template']->get('code') . ' ' . $letscode_to;
+					$errors[] = 'Er werd geen Account gevonden met ' . $app['type_template']->get('code') . ' ' . $letscode_to;
 				}
 			}
 
@@ -416,7 +416,7 @@ if ($add)
 
 			if ($result == 'OFFLINE')
 			{
-				$errors[] = 'De andere letsgroep is offline. Probeer het later opnieuw. ';
+				$errors[] = 'Het andere Systeem is offline. Probeer het later opnieuw. ';
 			}
 
 			if ($result == 'FAILED')
@@ -431,17 +431,17 @@ if ($add)
 
 			if ($result == 'DUPLICATE')
 			{
-				$errors[] = 'De transactie bestaat reeds in de andere letsgroep. ' . $contact_admin;
+				$errors[] = 'De transactie bestaat reeds in het andere Systeem. ' . $contact_admin;
 			}
 
 			if ($result == 'NOUSER')
 			{
-				$errors[] = 'De gebruiker in de interSysteem groep werd niet gevonden. ';
+				$errors[] = 'Het Account in het andere Systeem werd niet gevonden. ';
 			}
 
 			if ($result == 'APIKEYFAIL')
 			{
-				$errors[] = 'De apikey is niet correct. ' . $contact_admin;
+				$errors[] = 'De Apikey is niet correct. ' . $contact_admin;
 			}
 
 			if (!count($errors) && $result != 'SUCCESS')
@@ -509,12 +509,12 @@ if ($add)
 
 			if (!$remote_group && !count($errors))
 			{
-				$errors[] = 'De remote interSysteem groep heeft deze groep ('. $app['config']->get('systemname') . ') niet geconfigureerd.';
+				$errors[] = 'Het andere Systeem heeft dit Systeem ('. $app['config']->get('systemname') . ') niet geconfigureerd als interSysteem.';
 			}
 
 			if (!$remote_group['localletscode'] && !count($errors))
 			{
-				$errors[] = 'Er is geen interSysteem account gedefiniëerd in de remote interSysteem groep.';
+				$errors[] = 'Er is geen interSysteem Account gedefiniëerd in het andere Systeem.';
 			}
 
 			$remote_interlets_account = $app['db']->fetchAssoc('select *
@@ -523,17 +523,17 @@ if ($add)
 
 			if (!$remote_interlets_account && !count($errors))
 			{
-				$errors[] = 'Er is geen interSysteem account in de remote interSysteem groep.';
+				$errors[] = 'Er is geen interSysteem Account in het andere Systeem.';
 			}
 
 			if ($remote_interlets_account['accountrole'] !== 'interlets' && !count($errors))
 			{
-				$errors[] = 'Het interSysteem account in de remote interSysteem groep heeft geen juiste rol. Deze moet van het type interSysteem zijn.';
+				$errors[] = 'Het Account in het andere Systeem is niet ingesteld met rol "interSysteem".';
 			}
 
 			if (!in_array($remote_interlets_account['status'], [1, 2, 7]) && !count($errors))
 			{
-				$errors[] = 'Het interSysteem account in de remote interSysteem groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
+				$errors[] = 'Het interSysteem Account in het andere Systeem heeft geen actieve status.';
 			}
 
 			$remote_currency = $app['config']->get('currency', $remote_schema);
@@ -551,14 +551,14 @@ if ($add)
 				!ctype_digit((string) $remote_currencyratio)
 				|| $remote_currencyratio < 1) && !count($errors))
 			{
-				$errors[] = 'De currencyratio van de andere groep is niet correct ingesteld. ' . $contact_admin;
+				$errors[] = 'De currencyratio van het andere Systeem is niet correct ingesteld. ' . $contact_admin;
 			}
 
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
 			if (($remote_amount < 1) && !count($errors))
 			{
-				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interSysteem groep.';
+				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van het andere Systeem.';
 			}
 
 			if (!count($errors))
@@ -569,10 +569,10 @@ if ($add)
 
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
 					{
-						$err = 'Het interSysteem account van de remote interSysteem groep heeft onvoldoende saldo ';
+						$err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende saldo ';
 						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
 						$err .= $remote_currency . ' ';
-						$err .= 'en de remote minimum groepslimiet bedraagt ' . $minlimit . ' ';
+						$err .= 'en de Minimum Systeemslimiet in het andere Systeem bedraagt ' . $minlimit . ' ';
 						$err .= $remote_currency . '.';
 						$errors[] = $err;
 					}
@@ -581,10 +581,11 @@ if ($add)
 				{
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
 					{
-						$err = 'Het interSysteem account van de remote interSysteem groep heeft onvoldoende saldo ';
+						$err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende saldo ';
 						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
 						$err .= $remote_currency . ' ';
-						$err .= 'en de remote minimum limiet bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
+						$err .= 'en de Minimum Limiet van het Account in het andere Systeem ';
+						$err .= 'bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
 						$err .= $remote_currency . '.';
 						$errors[] = $err;
 					}
@@ -595,7 +596,12 @@ if ($add)
 				&& (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq)
 				&& !count($errors))
 			{
-				$errors[] = 'Het remote interSysteem account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $app['config']->get('currency') . ').';
+				$err = 'Het interSysteem Account van dit Systeem in het andere Systeem ';
+				$err .= 'heeft de status uitstapper ';
+				$err .= 'en kan geen ' . $remote_amount . ' ';
+				$err .= $remote_currency . ' uitgeven ';
+				$err .= '(' . $amount . ' ' . $app['config']->get('currency') . ').';
+				$errors[] = $err;
 			}
 
 			if (!count($errors))
@@ -606,11 +612,11 @@ if ($add)
 
 					if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
 					{
-						$err = 'De bestemmeling in de andere groep ';
-						$err .= 'heeft de maximum groepslimiet bereikt. ';
+						$err = 'Het bestemmings-Account in het andere Systeem ';
+						$err .= 'heeft de maximum Systeemslimiet bereikt. ';
 						$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
 						$err .= ' en de maximum ';
-						$err .= 'groepslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
+						$err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
 						$errors[] = $err;
 					}
 				}
@@ -618,11 +624,11 @@ if ($add)
 				{
 					if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
 					{
-						$err = 'De bestemmeling in de andere groep ';
+						$err = 'Het bestemmings-Account in het andere Systeem ';
 						$err .= 'heeft de maximum limiet bereikt. ';
 						$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
 						$err .= ' en de maximum ';
-						$err .= 'limiet bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
+						$err .= 'limiet voor het Account bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
 						$errors[] = $err;
 					}
 				}
@@ -632,13 +638,17 @@ if ($add)
 				&& (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq)
 				&& !count($errors))
 			{
-				$errors[] = 'De remote bestemmeling (Aan letscode) is uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' ontvangen (' . $amount . ' ' . $app['config']->get('currency') . ').';
+				$err = 'Het bestemmings-Account heeft status uitstapper ';
+				$err .= 'en kan geen ' . $remote_amount . ' ';
+				$err .= $remote_currency . ' ontvangen (';
+				$err .= $amount . ' ';
+				$err .= $app['config']->get('currency') . ').';
+				$errors[] = $err;
 			}
 
 			if (count($errors))
 			{
 				$app['alert']->error($errors);
-//				cancel();
 			}
 			else
 			{
@@ -804,7 +814,7 @@ if ($add)
 	$groups = [];
 
 	$groups[] = [
-		'groupname' => $app['config']->get('systemname') . ' (eigen groep)',
+		'groupname' => $app['config']->get('systemname') . ' (eigen Systeem)',
 		'id'		=> 'self',
 	];
 
@@ -889,7 +899,7 @@ if ($add)
 	if ($groups_en)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="group_id" class="col-sm-2 control-label">Aan letsgroep</label>';
+		echo '<label for="group_id" class="col-sm-2 control-label">Aan interSysteem</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
@@ -981,7 +991,7 @@ if ($add)
 	echo '<ul class="account-info">';
 
 	echo '<li>Dit veld geeft autosuggesties door naam of ' . $app['type_template']->get('code') . ' te typen. ';
-	echo (count($groups) > 1) ? 'Kies eerst de juiste letsgroep om de juiste suggesties te krijgen.' : '';
+	echo count($groups) > 1 ? 'Indien je een interSysteem transactie doet, kies dan eerst het juiste interSysteem om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
 	echo '</ul>';
 
@@ -989,7 +999,8 @@ if ($add)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">';
+	echo 'Aantal</label>';
 	echo '<div class="col-sm-10" id="amount_container">';
 	echo '<div class="input-group">';
 
@@ -998,7 +1009,9 @@ if ($add)
 	echo '</span>';
 
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
-	echo 'value="' . $transaction['amount'] . '" min="1" required>';
+	echo 'value="';
+	echo $transaction['amount'];
+	echo '" min="1" required>';
 
 	echo '</div>';
 
@@ -1012,7 +1025,7 @@ if ($add)
 	}
 
 	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe tijdsvaluta ';
-	echo 'is niet gekend omdat de interSysteem groep geen eLAND installatie gebruikt.</li>';
+	echo 'is niet gekend omdat het andere Systeem zich niet op de eLAND-server bevindt.</li>';
 
 	echo '</ul>';
 
@@ -1057,7 +1070,7 @@ if ($add)
 
 	if ($s_admin)
 	{
-		echo '<li>Admins kunnen over en onder limieten gaan in de eigen groep.</li>';
+		echo '<li>Admins kunnen over en onder limieten gaan in het eigen Systeem.</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1435,7 +1448,8 @@ if ($id)
 	{
 		echo '<p><a href="';
 		echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
-		echo '">Zie de complementaire transactie in de andere groep.</a></p>';
+		echo '">Zie de complementaire transactie ';
+		echo 'in het andere Systeem.</a></p>';
 	}
 
 	echo '</div></div>';
@@ -1446,7 +1460,9 @@ if ($id)
 	{
 		echo '<li>Valuatie: <span class="num">';
 		echo $app['config']->get('currencyratio');
-		echo '</span> ' . $app['config']->get('currency') . ' per uur.</li>';
+		echo '</span> ';
+		echo $app['config']->get('currency');
+		echo ' per uur.</li>';
 	}
 
 	echo '</i></small></ul>';

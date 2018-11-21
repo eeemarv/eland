@@ -552,16 +552,16 @@ if ($app['config']->get('minlimit') !== '' || $app['config']->get('maxlimit') !=
 
 	if ($app['config']->get('minlimit') !== '')
 	{
-		echo '<li>Minimum groepslimiet: ' . $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</li>';
+		echo '<li>Minimum Systeemslimiet: ' . $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</li>';
 	}
 
 	if ($app['config']->get('maxlimit') !== '')
 	{
-		echo '<li>Maximum groepslimiet: ' . $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</li>';
+		echo '<li>Maximum Systeemslimiet: ' . $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</li>';
 	}
 
-	echo '<li>De groepslimieten gelden voor alle accounts behalve de ';
-	echo 'accounts waarbij individuele limieten ingesteld zijn.</li>';
+	echo '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
+	echo 'Accounts waarbij individuele limieten ingesteld zijn.</li>';
 
 	echo '</ul>';
 }

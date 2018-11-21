@@ -19,7 +19,7 @@ if ($id || $edit || $del)
 
 	if (!$group)
 	{
-		$app['alert']->error('Groep niet gevonden.');
+		$app['alert']->error('Systeem niet gevonden.');
 		cancel();
 	}
 }
@@ -117,7 +117,7 @@ if ($add || $edit)
 				where url = ?
 					and id <> ?', [$group['url'], $edit]))
 			{
-				$errors[] = 'Er bestaat al een groep met deze url.';
+				$errors[] = 'Er bestaat al een interSysteem met deze url.';
 			}
 
 			if ($app['db']->fetchColumn('select id
@@ -586,7 +586,7 @@ foreach ($interlets_users as $u)
 	];
 }
 
-$top_buttons .= aphp('intersystem', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
+$top_buttons .= aphp('intersystem', ['add' => 1], 'Toevoegen', 'btn btn-success', 'InterSysteem toevoegen', 'plus', true);
 
 $h1 = 'eLAS/eLAND InterSysteem';
 $fa = 'share-alt';
@@ -602,7 +602,7 @@ if (count($groups))
 	echo '<thead>';
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Account</th>';
-	echo '<th>Groep</th>';
+	echo '<th>Systeem</th>';
 	echo '<th data-hide="phone">leden</th>';
 	echo '<th data-hide="phone, tablet" data-sort-ignore="true">api</th>';
 	echo '</tr>';
@@ -631,7 +631,7 @@ if (count($groups))
 				if ($user['accountrole'] != 'interlets')
 				{
 					echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
-						'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+						'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
 						'fa-exclamation-triangle');
 				}
 			}
@@ -659,7 +659,7 @@ if (count($groups))
 
 			if (!$app['config']->get('template_lets', $g['schema']))
 			{
-				echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als Tijdsbank.">';
+				echo ' <span class="label label-danger" title="Dit Systeem is niet geconfigureerd als Tijdsbank.">';
 				echo '<i class="fa fa-exclamation-triangle"></i> geen Tijdsbank</span>';
 			}
 
@@ -690,7 +690,7 @@ else
 {
 	echo '<div class="panel panel-primary">';
 	echo '<div class="panel-heading">';
-	echo '<p>Er zijn nog geen interSysteem groepen.</p>';
+	echo '<p>Er zijn nog geen interSysteem-verbindingen.</p>';
 	echo '</div></div>';
 }
 

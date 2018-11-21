@@ -81,7 +81,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-share-alt"></span> ';
-	echo 'Groep';
+	echo 'Systeem';
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
 
@@ -96,15 +96,14 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 
 		echo '<a href="';
 		echo $app['protocol'] . $app['groups']->get_host($login_schema) . '/' . $app['script_name'] . '.php?r=';
-		echo ($login_id == 'elas') ? 'guest' : $app['session']->get('role.' . $login_schema);
+		echo $login_id == 'elas' ? 'guest' : $app['session']->get('role.' . $login_schema);
 		echo '&u=' . $login_id;
 		echo '">';
 
 		echo $app['config']->get('systemname', $login_schema);
-		echo ($login_id == 'elas') ? ' (eLAS gast login)' : ' (eigen groep)';
+		echo $login_id == 'elas' ? ' (eLAS gast login)' : ' (eigen Systeem)';
 		echo '</a>';
 		echo '</li>';
-
 	}
 
 	if ($count_interlets_groups)

@@ -4,10 +4,10 @@ Voor admins worden zijn alle gebruikers toegankelijk, zowel de actieve leden als
 
 ![Gebruikers](img/users.png)
 
-Met de gekleurde tabs boven de tabel kan je een groep gebruikers met een bepaalde status selecteren:
+Met de gekleurde tabs boven de tabel kan je gebruikers op status filteren:
 
 * _Actief_ : alle leden, ook de instappers en de uitstappers zijn hierbij. Al deze leden hebben toegang tot de webtoepassing.
-* _Uitstappers_ : deze leden gaan de groep verlaten.
+* _Uitstappers_ : deze leden gaan het Systeem verlaten.
 * _Instappers_ : de nieuwe leden. Het aantal dagen dat een lid als instapper getoond wordt, kan je aanpassen in de [Instellingen](./instellingen).
 * _Inactief_ : status te geven aan gebruikers die lid waren maar uitgestapt zijn. Zij hebben geen login toegang meer.
 * _Info-pakket_ : Status te geven aan gebruikers die net ingeschreven zijn maar nog geen info-moment gevolgd hebben. Zij hebben nog geen login toegang.

@@ -14,6 +14,6 @@ Het formulier 'Automatische minimum limiet' bevat nogal wat opties, een standaar
 
 ![formulier automatische minimum limiet](img/am_accounts.png)
 
-De ondergrens is de algemeen geldende minimum limiet in je groep. De minimum limieten zullen slechts dalen tot de ingestelde ondergrens.
+De ondergrens is de algemeen geldende minimum limiet in je Systeem. De minimum limieten zullen slechts dalen tot de ingestelde ondergrens.
 
 ![automatische minimum limiet triggers](img/am_triggers.png)
