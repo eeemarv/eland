@@ -1,4 +1,5 @@
 <?php
+
 $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
@@ -15,7 +16,7 @@ if (!$s_schema)
 
 if (!$group_id)
 {
-	echo 'Het groep id ontbreekt.';
+	echo 'Het interSysteem id ontbreekt.';
 	exit;
 }
 
@@ -23,19 +24,19 @@ $group = $app['db']->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHER
 
 if (!$group)
 {
-	echo 'Groep niet gevonden.';
+	echo 'InterSysteem niet gevonden.';
 	exit;
 }
 
 if ($group['apimethod'] != 'elassoap')
 {
-	echo 'De apimethod voor deze groep is niet elassoap.';
+	echo 'De apimethod voor dit interSysteem is niet elassoap.';
 	exit;
 }
 
 if (!$group['remoteapikey'])
 {
-	echo 'De remote apikey is niet ingesteld voor deze groep.';
+	echo 'De Remote Apikey is niet ingesteld voor dit interSysteem.';
 	exit;
 }
 
