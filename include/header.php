@@ -60,11 +60,15 @@ if (!$homepage_url)
 	$homepage_url = get_default_page();
 }
 
-echo '<a href="' . $homepage_url . '" class="pull-left hidden-xs">';
+echo '<a href="';
+echo $homepage_url;
+echo '" class="pull-left hidden-xs">';
 echo '<div class="logo"></div>';
 echo '</a>';
 
-echo '<a href="' . $homepage_url . '" class="navbar-brand">';
+echo '<a href="';
+echo $homepage_url;
+echo '" class="navbar-brand">';
 echo $app['config']->get('systemname');
 echo '</a>';
 echo '</div>';
@@ -193,7 +197,7 @@ if (!$s_anonymous)
 			'type_contact'					=> ['circle-o-notch', 'Contact types'],
 			'contacts'						=> ['map-marker', 'Contacten'],
 			'config'						=> ['gears', 'Instellingen'],
-			'interlets'						=> ['share-alt', 'InterSysteem'],
+			'intersystem'					=> ['share-alt', 'InterSysteem'],
 			'apikeys'						=> ['key', 'Apikeys'],
 			'export'						=> ['download', 'Export'],
 			'autominlimit'					=> ['arrows-v', 'Auto min limiet'],
@@ -203,7 +207,7 @@ if (!$s_anonymous)
 
 		if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))
 		{
-			unset($menu['interlets'], $menu['apikeys']);
+			unset($menu['intersystem'], $menu['apikeys']);
 		}
 
 		echo '<li class="dropdown">';

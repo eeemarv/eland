@@ -2314,7 +2314,7 @@ if ($id)
 		}
 		else if ($interlets_group_id)
 		{
-			$h1 .= ' ' . aphp('interlets', ['id' => $interlets_group_id], 'Gekoppelde groep', 'btn btn-default', 'Gekoppelde groep');
+			$h1 .= ' ' . aphp('intersystem', ['id' => $interlets_group_id], 'Gekoppelde groep', 'btn btn-default', 'Gekoppelde groep');
 		}
 	}
 

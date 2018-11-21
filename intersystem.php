@@ -277,7 +277,7 @@ if ($add || $edit)
 
 	$btn = ($edit) ? 'primary' : 'success';
 	$canc = ($edit) ? ['id' => $edit] : [];
-	echo aphp('interlets', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('intersystem', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 
@@ -331,7 +331,7 @@ if ($del)
 	echo '<div><p>';
 	echo '<form method="post">';
 
-	echo aphp('interlets', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('intersystem', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 
@@ -364,9 +364,9 @@ if ($id)
 		$user = $app['db']->fetchAssoc('select * from users where letscode = ?', [$group['localletscode']]);
 	}
 
-	$top_buttons .= aphp('interlets', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
-	$top_buttons .= aphp('interlets', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
-	$top_buttons .= aphp('interlets', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
+	$top_buttons .= aphp('intersystem', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Letsgroep aanpassen', 'pencil', true);
+	$top_buttons .= aphp('intersystem', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Letsgroep verwijderen', 'times', true);
+	$top_buttons .= aphp('intersystem', [], 'Lijst', 'btn btn-default', 'Lijst letsgroepen', 'share-alt', true);
 
 	$app['assets']->add('elas_soap_status.js');
 
@@ -525,7 +525,7 @@ foreach ($interlets_users as $u)
 	];
 }
 
-$top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
+$top_buttons .= aphp('intersystem', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 
 $h1 = 'eLAS/eLAND InterSysteem';
 $fa = 'share-alt';
@@ -589,7 +589,7 @@ if (count($groups))
 
 		echo '<td>';
 
-		echo aphp('interlets', ['id' => $g['id']], $g['groupname']);
+		echo aphp('intersystem', ['id' => $g['id']], $g['groupname']);
 
 		if (isset($g['eland']))
 		{
@@ -814,13 +814,13 @@ function get_schemas_groups():string
 			{
 				$loc_group = $loc_group_ary[$h];
 
-				$out .= aphp('interlets', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
+				$out .= aphp('intersystem', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
 			}
 			else
 			{
 				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
 				{
-					$out .= aphp('interlets', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
+					$out .= aphp('intersystem', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
 				}
 				else
 				{
