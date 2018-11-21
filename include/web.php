@@ -57,7 +57,7 @@ $role_ary = [
 	'admin'		=> 'Admin',
 	'user'		=> 'User',
 	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
-	'interlets'	=> 'Interlets',
+	'interlets'	=> 'InterSysteem',
 ];
 
 $status_ary = [

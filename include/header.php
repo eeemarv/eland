@@ -193,7 +193,7 @@ if (!$s_anonymous)
 			'type_contact'					=> ['circle-o-notch', 'Contact types'],
 			'contacts'						=> ['map-marker', 'Contacten'],
 			'config'						=> ['gears', 'Instellingen'],
-			'interlets'						=> ['share-alt', 'InterLETS'],
+			'interlets'						=> ['share-alt', 'InterSysteem'],
 			'apikeys'						=> ['key', 'Apikeys'],
 			'export'						=> ['download', 'Export'],
 			'autominlimit'					=> ['arrows-v', 'Auto min limiet'],

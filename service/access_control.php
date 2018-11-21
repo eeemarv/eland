@@ -19,12 +19,12 @@ class access_control
 		'users'	=> [
 			'level'	=> 1,
 			'label'	=> 'leden',
-			'class'	=> 'warning',
+			'class'	=> 'default',
 		],
 		'interlets'	=> [
 			'level'	=> 2,
-			'label'	=> 'interlets',
-			'class'	=> 'success',
+			'label'	=> 'interSysteem',
+			'class'	=> 'warning',
 		],
 	];
 
@@ -43,7 +43,7 @@ class access_control
 	private $label_ary = [
 		'admin'	=> 'admin',
 		'users'	=> 'users',
-		'interlets' => 'interlets',
+		'interlets' => 'interSysteem',
 	];
 
 	/**

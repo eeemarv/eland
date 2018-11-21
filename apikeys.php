@@ -131,8 +131,8 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van  verbindingen naar letsgroepen die ';
-	echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
+	echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen naar groepen die ';
+	echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere groepen met eLAND ';
 	echo 'moet je geen apikey aanmaken.</li></ul>';
 
 	include __DIR__ . '/include/footer.php';
@@ -182,8 +182,8 @@ echo '</table>';
 
 echo '</div></div>';
 
-echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interlets verbindingen naar letsgroepen die ';
-echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
+echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen naar groepen die ';
+echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere groepen met eLAND ';
 echo 'moet je geen apikey aanmaken.</li></ul>';
 
 include __DIR__ . '/include/footer.php';

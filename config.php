@@ -55,7 +55,7 @@ $periodic_mail_block_ary = [
 		'recent'	=> 'Recent vraag en aanbod',
 	],
 	'interlets'		=> [
-		'recent'	=> 'Recent interLETS vraag en aanbod',
+		'recent'	=> 'Recent interSysteem vraag en aanbod',
 	],
 	'forum'			=> [
 		'recent'	=> 'Recente forumberichten',
@@ -195,7 +195,7 @@ $tab_panes = [
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
-				'explain'	=> 'Deze instelling heeft enkel betrekking op en is vereist voor eLAS/eLAND interLETS',
+				'explain'	=> 'Deze instelling heeft enkel betrekking op en is vereist voor eLAS/eLAND interSysteem',
 			],
 		],
 	],
@@ -409,7 +409,7 @@ $tab_panes = [
 			],
 
 			'li_3' => [
-				'inline'	=> '%1$s Dit is een "LETS" groep',
+				'inline'	=> '%1$s Dit is een Tijdsbank (munt met tijdsbasis).',
 				'inputs'	=> [
 					'template_lets'	=> [
 						'type'	=> 'checkbox',
@@ -419,7 +419,9 @@ $tab_panes = [
 			],
 
 			'li_4'	=> [
-				'inline'	=> '%1$s Gebruik eLAS/eLAND "interlets" (enkel geldig wanneer hierboven "LETS" groep geselecteerd is)',
+				'inline'	=> '%1$s Gebruik eLAS/eLAND interSysteem (enkel geldig wanneer hierboven
+					Tijdsbank geselecteerd is. eLAS/eLAND interSysteem is enkel mogelijk met
+					munten met gemeenschappelijke tijdsbasis)',
 				'inputs'	=> [
 					'interlets_en'	=> [
 						'type'	=> 'checkbox',

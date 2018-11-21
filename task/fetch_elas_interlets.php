@@ -187,12 +187,12 @@ class fetch_elas_interlets extends task
 
 			if ($subject == 'msgs')
 			{
-				error_log($this->domain . ': fetch interlets messages');
+				error_log($this->domain . ': fetch interSystem messages');
 				$this->fetch_msgs();
 			}
 			else
 			{
-				error_log($this->domain . ' : fetch interlets users data');
+				error_log($this->domain . ' : fetch interSystem users data');
 				$this->fetch_users();
 			}
 

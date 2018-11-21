@@ -15,7 +15,7 @@
   * [Gebruikers beheren](admin-gebruikers-beheren.md)
   * [Stijl](admin-stijl.md)
     * [Logo toevoegen](admin-logo-toevoegen.md)
-  * [eLAS interlets koppeling maken](admin-elas-interlets-koppeling-maken.md)
+  * [eLAS interSysteem koppeling maken](admin-elas-intersysteem-koppeling-maken.md)
 
 * [Server & Hosting](hosting.md)
   * [Dokku](dokku.md)

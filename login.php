@@ -96,7 +96,7 @@ if ($token)
 	}
 	else
 	{
-		$app['alert']->error('De interlets login is mislukt.');
+		$app['alert']->error('De interSysteem login is mislukt.');
 	}
 }
 
@@ -262,8 +262,6 @@ if ($submit)
 		$app['alert']->success('Je bent ingelogd.');
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
-
-		//$accountrole = ($user['accountrole'] == 'interlets') ? 'guest' : $user['accountrole'];
 
 		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
 		exit;

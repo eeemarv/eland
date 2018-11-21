@@ -4,7 +4,7 @@ Disallow: /messages
 Disallow: /transactions
 Disallow: /contacts
 Disallow: /apikeys
-Disallow: /interlets
+Disallow: /intersystem
 Disallow: /mass_transaction
 Disallow: /news
 Disallow: /docs

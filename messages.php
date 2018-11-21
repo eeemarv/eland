@@ -2398,7 +2398,9 @@ else if ($v_list)
 
 		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
 		{
-			echo '<li><a href="#access_tab" data-toggle="tab">Zichtbaarheid</a><li>';
+			echo '<li>';
+			echo '<a href="#access_tab" data-toggle="tab">';
+			echo 'Zichtbaarheid</a><li>';
 		}
 
 		echo '</ul>';

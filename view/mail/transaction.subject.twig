@@ -1,3 +1,3 @@
 {% extends 'mail/base.subject.twig' %}
 
-{% block line %}{% if interlets %}Interlets transactie{% else %}Transactie{% endif %}, {{ amount|raw }} {{ group.currency|raw }} van {{ from_user|raw }} aan {{ to_user|raw }}{% endblock line %}
+{% block line %}{% if interlets %}InterSysteem transactie{% else %}Transactie{% endif %}, {{ amount|raw }} {{ group.currency|raw }} van {{ from_user|raw }} aan {{ to_user|raw }}{% endblock line %}

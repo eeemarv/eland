@@ -1,6 +1,6 @@
 # Gebruikers beheren
 
-Voor admins worden zijn alle gebruikers toegankelijk, zowel de actieve leden als de niet-actieve gebruikers, als de externe rekeningen (interlets rekeningen).
+Voor admins worden zijn alle gebruikers toegankelijk, zowel de actieve leden als de niet-actieve gebruikers, als de externe rekeningen (interSysteem rekeningen).
 
 ![Gebruikers](img/users.png)
 
@@ -12,7 +12,7 @@ Met de gekleurde tabs boven de tabel kan je een groep gebruikers met een bepaald
 * _Inactief_ : status te geven aan gebruikers die lid waren maar uitgestapt zijn. Zij hebben geen login toegang meer.
 * _Info-pakket_ : Status te geven aan gebruikers die net ingeschreven zijn maar nog geen info-moment gevolgd hebben. Zij hebben nog geen login toegang.
 * _Info-moment_ : Status te geven aan gebruikers die een info-moment gevolgd hebben. Zij hebben nog geen login toegang.
-* _Extern_ : Status te geven aan interletsrekeningen.
+* _Extern_ : Status te geven aan interSysteem rekeningen.
 
 ![Gebruikers selecteren](img/users_select.png)
 
@@ -20,10 +20,10 @@ Rechtsboven zie je een knop om de gebruikerstabel te exporteren als csv.
 
 ![Csv knop](img/users_csv_button.png)
 
-## Toon kolommen
+## Weergave kolommen
 
-Met de blauwe knop klap je een panel open alwaar je de kolommen kan selecteren die getoond moeten worden.
-Dit is handig voor de admin! Om je selectie te zien, druk op de knop 'Toon' onderaan het paneel.
+Met de knop klap je een panel open alwaar je de kolommen kan selecteren die getoond moeten worden.
+Dit is handig voor de admin! Om je selectie te zien, druk op de knop 'Pas weergave kolommen aan' onderaan het paneel.
 
 ![Gebruikers kolommen tonen](img/users_show_columns_1.png)
 

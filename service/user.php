@@ -29,7 +29,6 @@ class user implements UserInterface
 	private $possible_roles = [
 		'ROLE_ANONUMOUS' 	=> 'anonymous',
 		'ROLE_GUEST'		=> 'guest',
-		'ROLE_INTERLETS'	=> 'interlets',
 		'ROLE_USER'			=> 'user',
 		'ROLE_ADMIN'		=> 'admin',
 	];

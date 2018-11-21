@@ -69,12 +69,12 @@ if ($add || $edit)
 
 		if (strlen($group['localletscode']) > 20)
 		{
-			$errors[] = 'De lokale letscode mag maximaal 20 tekens lang zijn.';
+			$errors[] = 'De lokale code mag maximaal 20 tekens lang zijn.';
 		}
 
 		if (strlen($group['myremoteletscode']) > 20)
 		{
-			$errors[] = 'De remote letscode mag maximaal 20 tekens lang zijn.';
+			$errors[] = 'De remote code mag maximaal 20 tekens lang zijn.';
 		}
 
 		if (strlen($group['url']) > 256)
@@ -108,7 +108,7 @@ if ($add || $edit)
 				where url = ?
 					and id <> ?', [$group['url'], $edit]))
 			{
-				$errors[] = 'Er bestaat al een letsgroep met deze url.';
+				$errors[] = 'Er bestaat al een groep met deze url.';
 			}
 
 			if ($app['db']->fetchColumn('select id
@@ -116,40 +116,40 @@ if ($add || $edit)
 				where localletscode = ?
 					and id <> ?', [$group['localletscode'], $edit]))
 			{
-				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
+				$errors[] = 'Er bestaat al een groep met deze lokale code.';
 			}
 
 			if (!count($errors))
 			{
 				if ($app['db']->update('letsgroups', $group, ['id' => $id]))
 				{
-					$app['alert']->success('Letsgroep aangepast.');
+					$app['alert']->success('Groep aangepast.');
 
 					$app['interlets_groups']->clear_cache($s_schema);
 
 					cancel($edit);
 				}
 
-				$app['alert']->error('Letsgroep niet aangepast.');
+				$app['alert']->error('Groep niet aangepast.');
 			}
 		}
 		else
 		{
 			if ($app['db']->fetchColumn('select id from letsgroups where url = ?', [$group['url']]))
 			{
-				$errors[] = 'Er bestaat al een letsgroep met deze url.';
+				$errors[] = 'Er bestaat al een groep met deze url.';
 			}
 
 			if ($app['db']->fetchColumn('select id from letsgroups where localletscode = ?', [$group['localletscode']]))
 			{
-				$errors[] = 'Er bestaat al een letsgroep met deze lokale letscode.';
+				$errors[] = 'Er bestaat al een groep met deze lokale code.';
 			}
 
 			if (!count($errors))
 			{
 				if ($app['db']->insert('letsgroups', $group))
 				{
-					$app['alert']->success('Letsgroep opgeslagen.');
+					$app['alert']->success('Groep opgeslagen.');
 
 					$id = $app['db']->lastInsertId('letsgroups_id_seq');
 
@@ -419,18 +419,18 @@ if ($id)
 
 	if ($user)
 	{
-		echo aphp('users', ['id' => $user['id']], $group['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+		echo aphp('users', ['id' => $user['id']], $group['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interSysteem account');
 
 		if (!in_array($user['status'], [1, 2, 7]))
 		{
 			echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
-				'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+				'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
 				'exclamation-triangle');
 		}
 		if ($user['accountrole'] != 'interlets')
 		{
 			echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
-				'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+				'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
 				'fa-exclamation-triangle');
 		}
 	}
@@ -447,14 +447,20 @@ if ($id)
 
 	echo '</dd>';
 
-	echo '<dt>Remote LETS code</dt>';
-	echo '<dd>' . $group['myremoteletscode'] .'</dd>';
+	echo '<dt>Remote code</dt>';
+	echo '<dd>';
+	echo $group['myremoteletscode'];
+	echo '</dd>';
 
 	echo '<dt>URL</dt>';
-	echo '<dd>' . $group['url'] .'</dd>';
+	echo '<dd>';
+	echo $group['url'];
+	echo '</dd>';
 
 	echo '<dt>Preshared Key</dt>';
-	echo '<dd>' . $group['presharedkey'].'</dd>';
+	echo '<dd>';
+	echo $group['presharedkey'];
+	echo '</dd>';
 	echo '</dl>';
 
 	echo '</div></div>';
@@ -521,7 +527,7 @@ foreach ($interlets_users as $u)
 
 $top_buttons .= aphp('interlets', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Groep toevoegen', 'plus', true);
 
-$h1 = 'eLAS/eLAND InterLETS';
+$h1 = 'eLAS/eLAND InterSysteem';
 $fa = 'share-alt';
 
 include __DIR__ . '/include/header.php';
@@ -554,17 +560,17 @@ if (count($groups))
 
 			if ($user)
 			{
-				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interlets account');
+				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interSysteem account');
 				if (!in_array($user['status'], [1, 2, 7]))
 				{
 					echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
-						'Het interlets-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+						'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
 						'exclamation-triangle');
 				}
 				if ($user['accountrole'] != 'interlets')
 				{
 					echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
-						'Het interlets-account heeft een ongeldige rol. De rol moet van het type interlets zijn.',
+						'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
 						'fa-exclamation-triangle');
 				}
 			}
@@ -592,14 +598,14 @@ if (count($groups))
 
 			if (!$app['config']->get('template_lets', $g['schema']))
 			{
-				echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als LETS groep.">';
-				echo '<i class="fa fa-exclamation-triangle"></i> geen LETS</span>';
+				echo ' <span class="label label-danger" title="Deze groep is niet geconfigureerd als Tijdsbank.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> geen Tijdsbank</span>';
 			}
 
 			if (!$app['config']->get('interlets_en', $g['schema']))
 			{
-				echo ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie van deze groep.">';
-				echo '<i class="fa fa-exclamation-triangle"></i> geen interLETS</span>';
+				echo ' <span class="label label-danger" title="interSysteem is niet ingeschakeld in de configuratie van deze groep.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> geen interSysteem</span>';
 			}
 		}
 
@@ -619,7 +625,7 @@ else
 {
 	echo '<div class="panel panel-primary">';
 	echo '<div class="panel-heading">';
-	echo '<p>Er zijn nog geen interletsgroepen.</p>';
+	echo '<p>Er zijn nog geen interSysteem groepen.</p>';
 	echo '</div></div>';
 }
 
@@ -650,7 +656,7 @@ function get_schemas_groups():string
 	$out .= '<li> Lokale LETS Code is de letscode waarmee de andere groep op deze installatie bekend is, deze gebruiker moet al bestaan</li>';
 	$out .= '<li> Remote LETS code is de letscode waarmee deze installatie bij de andere groep bekend is, deze moet aan de andere kant aangemaakt zijn.</li>';
 	$out .= '<li> URL is de weblocatie van de andere installatie';
-	$out .= '<li> Preshared Key is een gedeelde sleutel waarmee interlets transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
+	$out .= '<li> Preshared Key is een gedeelde sleutel waarmee interSysteem transacties ondertekend worden.  Deze moet identiek zijn aan de preshared key voor de lets-rekening van deze installatie aan de andere kant</li>';
 	$out .= '</ul>';
 	$out .= '</div>';
 
@@ -662,12 +668,12 @@ function get_schemas_groups():string
 	$out .= '<li>Met letsgroepen die eLAND gebruiken kan op een vereenvoudigde manier verbinding gelegd worden zonder ';
 	$out .= 'het uitwisselen van apikeys, preshared keys en remote letscodes. Dit is mogelijk omdat alle eLAND installaties zich op ';
 	$out .= 'dezelfde server bevinden.</li>';
-	$out .= '<li>Contacteer altijd eerst vooraf de andere groep waarmee je wil interletsen. Vraag of zij ook geïnteresseerd zijn in een verbinding.</li>';
+	$out .= '<li>Contacteer altijd eerst vooraf de andere groep waarmee je een interSysteem verbinding wil opzetten. Vraag of zij ook geïnteresseerd zijn.</li>';
 	$out .= '<li>Voor het leggen van een verbinding, kijk in de tabel hieronder. ';
-	$out .= 'Maak de referentie naar de letsgroep aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
+	$out .= 'Maak de referentie naar de Tijdsbank aan door op \'Creëer\' in kolom \'lok.groep\' te klikken en vervolgens toevoegen. Dan, weer in de tabel onder, ';
 	$out .= 'klik je op knop \'Creëer\' in de kolom \'lok.account\'. ';
-	$out .= 'Vul een postcode in en klik op \'toevoegen\'. Nu de letsgroep en het interlets account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep om te interletsen. Wanneer ';
-	$out .= 'de andere groep op dezelfde wijze een letsgroep en interlets account aanmaakt is de verbinding compleet. ';
+	$out .= 'Vul een postcode in en klik op \'toevoegen\'. Nu de Tijdsbank en het interSysteem account aangemaakt zijn wil dat zeggen dat jouw groep toestemming geeft aan de andere groep voor de interSysteem verbinding. Wanneer ';
+	$out .= 'de andere groep op dezelfde wijze een groep en interSysteem account aanmaakt is de verbinding compleet. ';
 	$out .= 'In alle vier kolommen (lok.groep, lok.account, rem.groep, rem.account) zie je dan <span class="btn btn-success btn-xs">OK</span>.</li>';
 	$out .= '</ul>';
 
@@ -779,7 +785,7 @@ function get_schemas_groups():string
 
 		if (!$app['config']->get('interlets_en', $s))
 		{
-			$out .= ' <span class="label label-danger" title="interLETS is niet ingeschakeld in de configuratie">';
+			$out .= ' <span class="label label-danger" title="interSysteem is niet ingeschakeld in de configuratie">';
 			$out .= '<i class="fa fa-exclamation-triangle">';
 			$out .= '</i></span>';
 		}
@@ -834,7 +840,7 @@ function get_schemas_groups():string
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
 						$out .= aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
-							'De rol van het account moet van het type interlets zijn.');
+							'De rol van het account moet van het type interSysteem zijn.');
 					}
 					else if (!in_array($loc_acc['status'], [1, 2, 7]))
 					{
@@ -849,7 +855,7 @@ function get_schemas_groups():string
 				else
 				{
 					$out .= aphp('users', ['add' => 1, 'interlets' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
-						'Creëer een interlets-account met gelijke letscode en status extern.');
+						'Creëer een interSysteem-account met gelijke code en status extern.');
 				}
 			}
 			else
@@ -876,7 +882,7 @@ function get_schemas_groups():string
 				if ($rem_acc['accountrole'] != 'interlets')
 				{
 					$out .= '<span class="btn btn-warning btn-xs" title="De rol van het account ';
-					$out .= 'moet van het type interlets zijn.">rol</span>';
+					$out .= 'moet van het type interSysteem zijn.">rol</span>';
 				}
 				else if (!in_array($rem_acc['status'], [1, 2, 7]))
 				{
@@ -905,7 +911,7 @@ function get_schemas_groups():string
 	{
 		$out .= '<ul class="list-group">';
 		$out .= '<li class="list-group-item danger"><span class="bg-danger">Groepen gemarkeerd in Rood ';
-		$out .= 'zijn niet beschikbaar voor interLETS.</span></li>';
+		$out .= 'zijn niet beschikbaar voor interSysteem verbindingen.</span></li>';
 		$out .= '</ul>';
 	}
 

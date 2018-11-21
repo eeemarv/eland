@@ -124,7 +124,7 @@ if ($add)
 			}
 			else
 			{
-				$errors[] = 'De interletsrekening (in deze groep) bestaat niet';
+				$errors[] = 'De interSysteem rekening (in deze groep) bestaat niet';
 			}
 		}
 
@@ -132,13 +132,13 @@ if ($add)
 		{
 			if ($touser['status'] == 7)
 			{
-				$errors[] = 'Je kan niet rechtstreeks naar een interletsrekening overschrijven.';
+				$errors[] = 'Je kan niet rechtstreeks naar een interSysteem rekening overschrijven.';
 			}
 		}
 
 		if ($fromuser['status'] == 7 && !count($errors))
 		{
-			$errors[] = 'Je kan niet rechtstreeks van een interletsrekening overschrijven.';
+			$errors[] = 'Je kan niet rechtstreeks van een interSysteem rekening overschrijven.';
 		}
 
 		$transaction['id_from'] = $fromuser['id'];
@@ -201,7 +201,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interletsrekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -214,7 +214,7 @@ if ($add)
 				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
 				{
 					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interletsrekening (in deze groep)';
+					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in deze groep)';
 					$err .= ' heeft zijn maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
@@ -243,7 +243,7 @@ if ($add)
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interletsrekening van de letsgroep';
+				$dest = ($group_id == 'self') ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interSysteem rekening van de letsgroep';
 				$errors[] = $dest . ' is uitstapper en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
 			}
 		}
@@ -292,44 +292,44 @@ if ($add)
 
 				mail_mailtype_interlets_transaction($transaction);
 
-				$app['alert']->success('Interlets transactie opgeslagen (verwerking per mail).');
+				$app['alert']->success('InterSysteem transactie opgeslagen (verwerking per mail).');
 			}
 			else
 			{
-				$app['alert']->error('Gefaalde interlets transactie');
+				$app['alert']->error('Gefaalde interSysteem transactie');
 			}
 
 			cancel();
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
-			$app['alert']->error('Interlets groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
+			$app['alert']->error('InterSysteem groep ' . $group['groupname'] . ' heeft geen geldige api methode.' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$group_domain)
 		{
-			$app['alert']->error('Geen url voor interlets groep ' . $group['groupname'] . '. ' . $contact_admin);
+			$app['alert']->error('Geen url voor interSysteem groep ' . $group['groupname'] . '. ' . $contact_admin);
 
 			cancel();
 		}
 		else if (!$app['groups']->get_schema($group_domain))
 		{
-			// The interlets group uses eLAS or is on another server
+			// The interSysteem group uses eLAS or is on another server
 
 			if (!$group['remoteapikey'])
 			{
-				$errors[] = 'Geen apikey voor deze interlets groep ingesteld.' . $contact_admin;
+				$errors[] = 'Geen apikey voor deze interSysteem groep ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['presharedkey'])
 			{
-				$errors[] = 'Geen preshared key voor deze interlets groep ingesteld.' . $contact_admin;
+				$errors[] = 'Geen preshared key voor deze interSysteem groep ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['myremoteletscode'])
 			{
-				$errors[] = 'Geen remote letscode ingesteld voor deze interlets groep.' . $contact_admin;
+				$errors[] = 'Geen remote letscode ingesteld voor deze interSysteem groep.' . $contact_admin;
 			}
 
 			$currencyratio = $app['config']->get('currencyratio');
@@ -359,7 +359,7 @@ if ($add)
 				{
 					if(!$real_name_to)
 					{
-						$errors[] = 'Er werd geen naam gevonden voor de gebruiker van de interlets groep.';
+						$errors[] = 'Er werd geen naam gevonden voor de gebruiker van de interSysteem groep.';
 					}
 				}
 				else
@@ -421,12 +421,12 @@ if ($add)
 
 			if ($result == 'FAILED')
 			{
-				$errors[] = 'De interlets transactie is gefaald.' . $contact_admin;
+				$errors[] = 'De interSysteem transactie is gefaald.' . $contact_admin;
 			}
 
 			if ($result == 'SIGFAIL')
 			{
-				$errors[] = 'De signatuur van de interlets transactie is gefaald. ' . $contact_admin;
+				$errors[] = 'De signatuur van de interSysteem transactie is gefaald. ' . $contact_admin;
 			}
 
 			if ($result == 'DUPLICATE')
@@ -436,7 +436,7 @@ if ($add)
 
 			if ($result == 'NOUSER')
 			{
-				$errors[] = 'De gebruiker in de interletsgroep werd niet gevonden. ';
+				$errors[] = 'De gebruiker in de interSysteem groep werd niet gevonden. ';
 			}
 
 			if ($result == 'APIKEYFAIL')
@@ -446,7 +446,7 @@ if ($add)
 
 			if (!count($errors) && $result != 'SUCCESS')
 			{
-				$errors[] = 'De interlets transactie kon niet verwerkt worden. ' . $contact_admin;
+				$errors[] = 'De interSysteem transactie kon niet verwerkt worden. ' . $contact_admin;
 			}
 
 			if (count($errors))
@@ -463,7 +463,7 @@ if ($add)
 
 			if (!$id)
 			{
-				$subject = 'Interlets FAILURE!';
+				$subject = 'interSysteem FAILURE!';
 				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
 				$text .= ' group:' . $group['groupname'];
 
@@ -473,7 +473,7 @@ if ($add)
 					'text' => $text,
 				]);
 
-				$app['alert']->error('De lokale commit van de interlets transactie is niet geslaagd. ' . $contact_admin);
+				$app['alert']->error('De lokale commit van de interSysteem transactie is niet geslaagd. ' . $contact_admin);
 				cancel();
 			}
 
@@ -481,12 +481,12 @@ if ($add)
 
 			mail_transaction($transaction);
 
-			$app['alert']->success('De interlets transactie werd verwerkt.');
+			$app['alert']->success('De interSysteem transactie werd verwerkt.');
 			cancel();
 		}
 		else
 		{
-			// the interlets group is on the same server (eLAND)
+			// the interSysteem group is on the same server (eLAND)
 
 			$remote_schema = $app['groups']->get_schema($group_domain);
 
@@ -496,11 +496,11 @@ if ($add)
 
 			if (!$to_remote_user)
 			{
-				$errors[] = 'De interlets gebruiker (bestemmeling "Aan letscode") bestaat niet.';
+				$errors[] = 'De interSysteem gebruiker (bestemmeling "Aan code") bestaat niet.';
 			}
 			else if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
-				$errors[] = 'De interlets gebruiker (bestemmeling "Aan letscode") is niet actief.';
+				$errors[] = 'De interSysteem gebruiker (bestemmeling "Aan code") is niet actief.';
 			}
 
 			$remote_group = $app['db']->fetchAssoc('select *
@@ -509,12 +509,12 @@ if ($add)
 
 			if (!$remote_group && !count($errors))
 			{
-				$errors[] = 'De remote interlets groep heeft deze letsgroep ('. $app['config']->get('systemname') . ') niet geconfigureerd.';
+				$errors[] = 'De remote interSysteem groep heeft deze groep ('. $app['config']->get('systemname') . ') niet geconfigureerd.';
 			}
 
 			if (!$remote_group['localletscode'] && !count($errors))
 			{
-				$errors[] = 'Er is geen interlets account gedefiniëerd in de remote interlets groep.';
+				$errors[] = 'Er is geen interSysteem account gedefiniëerd in de remote interSysteem groep.';
 			}
 
 			$remote_interlets_account = $app['db']->fetchAssoc('select *
@@ -523,17 +523,17 @@ if ($add)
 
 			if (!$remote_interlets_account && !count($errors))
 			{
-				$errors[] = 'Er is geen interlets account in de remote interlets group.';
+				$errors[] = 'Er is geen interSysteem account in de remote interSysteem groep.';
 			}
 
 			if ($remote_interlets_account['accountrole'] !== 'interlets' && !count($errors))
 			{
-				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste rol. Deze moet van het type interlets zijn.';
+				$errors[] = 'Het interSysteem account in de remote interSysteem groep heeft geen juiste rol. Deze moet van het type interSysteem zijn.';
 			}
 
 			if (!in_array($remote_interlets_account['status'], [1, 2, 7]) && !count($errors))
 			{
-				$errors[] = 'Het interlets account in de remote interlets groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
+				$errors[] = 'Het interSysteem account in de remote interSysteem groep heeft geen juiste status. Deze moet van het type extern, actief of uitstapper zijn.';
 			}
 
 			$remote_currency = $app['config']->get('currency', $remote_schema);
@@ -558,7 +558,7 @@ if ($add)
 
 			if (($remote_amount < 1) && !count($errors))
 			{
-				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interletsgroep.';
+				$errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van de interSysteem groep.';
 			}
 
 			if (!count($errors))
@@ -569,7 +569,7 @@ if ($add)
 
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
 					{
-						$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+						$err = 'Het interSysteem account van de remote interSysteem groep heeft onvoldoende saldo ';
 						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
 						$err .= $remote_currency . ' ';
 						$err .= 'en de remote minimum groepslimiet bedraagt ' . $minlimit . ' ';
@@ -581,7 +581,7 @@ if ($add)
 				{
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
 					{
-						$err = 'Het interlets account van de remote interlets groep heeft onvoldoende saldo ';
+						$err = 'Het interSysteem account van de remote interSysteem groep heeft onvoldoende saldo ';
 						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
 						$err .= $remote_currency . ' ';
 						$err .= 'en de remote minimum limiet bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
@@ -595,7 +595,7 @@ if ($add)
 				&& (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq)
 				&& !count($errors))
 			{
-				$errors[] = 'Het remote interlets account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $app['config']->get('currency') . ').';
+				$errors[] = 'Het remote interSysteem account heeft de status uitstapper en kan geen ' . $remote_amount . ' ' . $remote_currency . ' uitgeven (' . $amount . ' ' . $app['config']->get('currency') . ').';
 			}
 
 			if (!count($errors))
@@ -699,11 +699,11 @@ if ($add)
 				mail_transaction($trans_org);
 				mail_transaction($transaction, $remote_schema);
 
-				$app['monolog']->info('direct interlets transaction ' . $transaction['transid'] . ' amount: ' .
+				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
 					$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
 					' to user: ' . link_user($touser['id'], false, false));
 
-				$app['monolog']->info('direct interlets transaction (receiving) ' . $transaction['transid'] .
+				$app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
 					' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
 					$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 					$to_remote_user['name'], ['schema' => $remote_schema]);
@@ -877,7 +877,9 @@ if ($add)
 	echo 'data-typeahead-source="';
 	echo $groups_en ? 'group_self' : 'letscode_to';
 	echo '" ';
-	echo 'value="' . $transaction['letscode_from'] . '" required';
+	echo 'value="';
+	echo $transaction['letscode_from'];
+	echo '" required';
 	echo $s_admin ? '' : ' disabled';
 	echo '>';
 
@@ -1009,8 +1011,8 @@ if ($add)
 		echo '</span> per uur</li>';
 	}
 
-	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe valuta ';
-	echo 'is niet gekend omdat de interLETS groep geen eLAND installatie gebruikt.</li>';
+	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe tijdsvaluta ';
+	echo 'is niet gekend omdat de interSysteem groep geen eLAND installatie gebruikt.</li>';
 
 	echo '</ul>';
 
@@ -1065,7 +1067,7 @@ if ($add)
 }
 
 /*
- * interlets accounts schemas needed for interlinking users.
+ * interSystem accounts schemas needed for interlinking users.
  */
 
 $interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['this_group']->get_schema());
@@ -1190,12 +1192,12 @@ if ($edit)
 
 	if ($transaction['real_from'])
 	{
-		echo '<dt>Van interlets account</dt>';
+		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_from'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Van interlets gebruiker</dt>';
+		echo '<dt>Van interSysteem gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
@@ -1222,12 +1224,12 @@ if ($edit)
 
 	if ($transaction['real_to'])
 	{
-		echo '<dt>Naar interlets account</dt>';
+		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_to'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Naar interlets gebruiker</dt>';
+		echo '<dt>Naar interSysteem gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
@@ -1355,12 +1357,12 @@ if ($id)
 
 	if ($transaction['real_from'])
 	{
-		echo '<dt>Van interlets account</dt>';
+		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_from'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Van interlets gebruiker</dt>';
+		echo '<dt>Van interSysteem gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
@@ -1387,12 +1389,12 @@ if ($id)
 
 	if ($transaction['real_to'])
 	{
-		echo '<dt>Naar interlets account</dt>';
+		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_to'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Naar interlets gebruiker</dt>';
+		echo '<dt>Naar interSysteem gebruiker</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 

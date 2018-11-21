@@ -863,7 +863,7 @@ $access_options = [
 	'all'		=> '',
 	'admin'		=> 'admin',
 	'users'		=> 'leden',
-	'interlets'	=> 'interlets',
+	'interlets'	=> 'interSysteem',
 ];
 
 if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))

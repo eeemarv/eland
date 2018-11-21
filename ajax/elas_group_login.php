@@ -21,7 +21,7 @@ if (!$group_id)
 
 if (!isset($elas_interlets_groups[$group_id]))
 {
-	echo json_encode(['error' => 'Er is geen interletsconnectie met deze groep.']);
+	echo json_encode(['error' => 'Er is geen interSysteem verbinding met deze groep.']);
 	exit;
 }
 

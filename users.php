@@ -1857,7 +1857,7 @@ if ($add || $edit)
 		echo 'value="';
 		echo $user['presharedkey'] ?? '';
 		echo '" maxlength="80">';
-		echo '<p>Vul dit enkel in voor een interletsaccount van een eLAS-installatie.</p>';
+		echo '<p>Vul dit enkel in voor een interSysteem account van een eLAS-installatie.</p>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -2310,7 +2310,7 @@ if ($id)
 		if ($interlets_group_missing)
 		{
 			$h1 .= ' <span class="label label-warning label-sm"><i class="fa fa-exclamation-triangle"></i> ';
-			$h1 .= 'Gekoppelde Interlets groep ontbreekt</span>';
+			$h1 .= 'Gekoppelde InterSysteem groep ontbreekt</span>';
 		}
 		else if ($interlets_group_id)
 		{

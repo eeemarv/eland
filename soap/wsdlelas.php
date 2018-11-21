@@ -6,13 +6,13 @@ require_once __DIR__ . '/../include/transactions.php';
 
 if (!$app['config']->get('template_lets'))
 {
-	echo 'NO_ELAS_LETS';
+	echo 'NO_ELAS_TIMEBANK';
 	exit;
 }
 
 if (!$app['config']->get('interlets_en'))
 {
-	echo 'NO_INTERLETS';
+	echo 'NO_INTERSYSTEM';
 	exit;
 }
 
@@ -145,24 +145,24 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'APIKEYFAIL';
 	}
 
-	$app['monolog']->debug('Looking up Interlets user ' . $from);
+	$app['monolog']->debug('Looking up interSystem user ' . $from);
 
 	if ($fromuser = get_user_by_letscode($from))
 	{
-		$app['monolog']->debug('Found Interlets fromuser ' . json_encode($fromuser));
+		$app['monolog']->debug('Found interSystem fromuser ' . json_encode($fromuser));
 	}
 	else
 	{
-		$app['monolog']->debug('NOT found interlets fromuser ' . $from . ' transid: ' . $transid);
+		$app['monolog']->debug('NOT found interSystem fromuser ' . $from . ' transid: ' . $transid);
 	}
 
 	if ($touser = get_user_by_letscode($to))
 	{
-		$app['monolog']->debug('Found Interlets touser ' . json_encode($touser));
+		$app['monolog']->debug('Found InterSystem touser ' . json_encode($touser));
 	}
 	else
 	{
-		$app['monolog']->debug('Not found Interlets touser ' . $to . ' transid: ' . $transid);
+		$app['monolog']->debug('Not found InterSystem touser ' . $to . ' transid: ' . $transid);
 	}
 
 	$transaction = [

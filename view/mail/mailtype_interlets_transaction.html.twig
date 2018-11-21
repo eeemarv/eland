@@ -4,9 +4,9 @@
 
 {% block body %}
 
-<h3>Notificatie interlets transactie</h3>
+<h3>Notificatie interSysteem transactie</h3>
 
-<p>Er werd een interlets transactie ingegeven op de installatie van {{ group.name }}
+<p>Er werd een interSysteem transactie ingegeven op de installatie van {{ group.name }}
 met de volgende gegevens:</p>
 
 <p>Van<br>
@@ -17,7 +17,7 @@ met de volgende gegevens:</p>
 
 <p>Aantal<br>
 <strong>{{ amount }} {{ group.currency }}</strong>, ofwel
-<strong>{{ amount_hours }}</strong> LETS uren ({{ group.currencyratio }} {{ group.currency }} = 1 uur)</p>
+<strong>{{ amount_hours }}</strong> uren ({{ group.currencyratio }} {{ group.currency }} = 1 uur)</p>
 
 <p>Omschrijving<br>
 <strong>{{ description }}</strong></p>
@@ -26,7 +26,7 @@ met de volgende gegevens:</p>
 <strong>{{ transid }}</strong></p>
 
 <p>Je moet deze transactie in je eigen systeem verder verwerken.
-Als dit niet mogelijk is, moet je de kern van de andere groep 
+Als dit niet mogelijk is, moet je de kern van de andere groep
 verwittigen zodat ze de transactie aan hun kant annuleren.
 Je kan dit doen door een reply te sturen op dit bericht.</p>
 
@@ -35,6 +35,3 @@ Je kan dit doen door een reply te sturen op dit bericht.</p>
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}{% endblock unsubscribe %}
-
-
-

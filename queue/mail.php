@@ -201,7 +201,7 @@ class mail extends queue_model implements queue_interface
 
 	public function queue(array $data, int $priority = 100)
 	{
-		// only the interlets transactions receiving side has a different schema
+		// only the interSystem transactions receiving side has a different schema
 		// always set schema in cron
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
