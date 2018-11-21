@@ -131,7 +131,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interlets verbindingen naar letsgroepen die ';
+	echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van  verbindingen naar letsgroepen die ';
 	echo 'eLAS draaien. Voor het leggen van interlets verbindingen naar andere letsgroepen met eLAND ';
 	echo 'moet je geen apikey aanmaken.</li></ul>';
 
