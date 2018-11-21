@@ -4,7 +4,7 @@ $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
 $q = $_GET['q'] ?? '';
-$letscode = $_GET['letscode'] ?? '';
+$code = $_GET['code'] ?? '';
 $type = $_GET['type'] ?? '';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
@@ -26,13 +26,13 @@ $params_sql = $where_sql = [];
 
 $params_sql[] = $app['this_group']->get_schema();
 
-if ($letscode)
+if ($code)
 {
-	[$l] = explode(' ', $letscode);
+	[$l] = explode(' ', $code);
 
 	$where_sql[] = 'letscode = ?';
 	$params_sql[] = strtolower($l);
-	$params['letscode'] = $l;
+	$params['code'] = $l;
 }
 
 if ($type)
@@ -103,7 +103,7 @@ $tableheader_ary = [
 		'lbl' 		=> 'ip',
 		'data_hide' => 'phone, tablet',
 	]),
-	'letscode'	=> array_merge($asc_preset_ary, [
+	'code'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Gebruiker',
 		'data_hide'	=> 'phone, tablet',
 	]),
@@ -122,7 +122,7 @@ $top_right .= '&nbsp;csv</a>';
 
 $app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
-$filtered = $q || $type || $letscode || $fdate || $tdate;
+$filtered = $q || $type || $code || $fdate || $tdate;
 
 $h1 = 'Logs';
 $h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
@@ -145,8 +145,10 @@ echo '<i class="fa fa-search"></i></span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="q_addon" ';
-echo 'name="q" id="q" placeholder="Zoek event" ';
-echo 'value="' . $q . '">';
+echo 'name="q" id="q" placeholder="Zoek Event" ';
+echo 'value="';
+echo $q;
+echo '">';
 echo '</div>';
 echo '</div>';
 
@@ -157,25 +159,36 @@ echo 'Type</span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
-echo 'data-typeahead="' . $app['typeahead']->get('log_types') . '" ';
+echo 'data-typeahead="';
+echo $app['typeahead']->get('log_types');
+echo '" ';
 echo 'name="type" id="type" placeholder="Type" ';
-echo 'value="' . $type . '">';
+echo 'value="';
+echo $type;
+echo '">';
 echo '</div>';
 echo '</div>';
 
-$typeahead_users_ary = ['users_active', 'users_extern', 'users_inactive', 'users_im', 'users_ip'];
+$typeahead_users_ary = ['users_active', 'users_extern',
+	'users_inactive', 'users_im', 'users_ip'];
 
 echo '<div class="col-sm-3">';
 echo '<div class="input-group margin-bottom">';
-echo '<span class="input-group-addon" id="letscode_addon">';
+echo '<span class="input-group-addon" id="code_addon">';
 echo '<span class="fa fa-user"></span></span>';
 
 echo '<input type="text" class="form-control" ';
-echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['typeahead']->get($typeahead_users_ary) . '" ';
-echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-echo 'name="letscode" id="letscode" placeholder="Letscode" ';
-echo 'value="' . $letscode . '">';
+echo 'aria-describedby="code_addon" ';
+echo 'data-typeahead="';
+echo $app['typeahead']->get($typeahead_users_ary);
+echo '" ';
+echo 'data-newuserdays="';
+echo $app['config']->get('newuserdays');
+echo '" ';
+echo 'name="code" id="code" placeholder="Account Code" ';
+echo 'value="';
+echo $code;
+echo '">';
 echo '</div>';
 echo '</div>';
 
@@ -184,57 +197,6 @@ echo '<input type="submit" value="Toon" class="btn btn-default btn-block" name="
 echo '</div>';
 
 echo '</div>';
-
-/*
-echo '<div class="row">';
-
-echo '<div class="col-sm-5">';
-echo '<div class="input-group margin-bottom">';
-echo '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-echo '<span class="fa fa-calendar"></span></span>';
-echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
-echo 'aria-describedby="fdate_addon" ';
-
-echo 'id="fdate" name="fdate" ';
-echo 'value="' . $fdate . '" ';
-echo 'data-provide="datepicker" ';
-echo 'data-date-format="yyyy-mm-dd" ';
-echo 'data-date-default-view-date="-1y" ';
-echo 'data-date-end-date="' . date('Y-m-d') . '" ';
-echo 'data-date-language="nl" ';
-echo 'data-date-today-highlight="true" ';
-echo 'data-date-autoclose="true" ';
-echo 'data-date-immediate-updates="true" ';
-echo 'data-date-orientation="bottom" ';
-echo '>';
-
-echo '</div>';
-echo '</div>';
-
-echo '<div class="col-sm-5">';
-echo '<div class="input-group margin-bottom">';
-echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
-echo '<span class="fa fa-calendar"></span></span>';
-echo '<input type="text" class="form-control margin-bottom" placeholder="datum: jjjj-mm-dd" ';
-echo 'aria-describedby="tdate_addon" ';
-
-echo 'id="tdate" name="tdate" ';
-echo 'value="' . $tdate . '" ';
-echo 'data-provide="datepicker" ';
-echo 'data-date-format="yyyy-mm-dd" ';
-echo 'data-date-end-date="' . date('Y-m-d') . '" ';
-echo 'data-date-language="nl" ';
-echo 'data-date-today-highlight="true" ';
-echo 'data-date-autoclose="true" ';
-echo 'data-date-immediate-updates="true" ';
-echo 'data-date-orientation="bottom" ';
-echo '>';
-
-echo '</div>';
-echo '</div>';
-
-echo '</div>';
-*/
 
 $params_form = ['r' => 'admin', 'u' => $s_id];
 
