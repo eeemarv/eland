@@ -173,7 +173,7 @@ $tab_panes = [
 			],
 			'systemtag' => [
 				'lbl'		=> 'Tag',
-				'explain'	=> 'Prefix tussen haken [tag] in onderwerp van alle E-mails',
+				'explain'	=> 'Prefix tussen haken [tag] in onderwerp van alle E-mail-berichten',
 				'required'	=> true,
 				'attr'		=> ['maxlength' => 30],
 			],
@@ -187,7 +187,9 @@ $tab_panes = [
 				'lbl'		=> 'Naam van Munt (meervoud)',
 				'required'	=> true,
 			],
+
 			'currencyratio'	=> [
+				'cond'		=> $app['config']->get('template_lets') ? true : false,
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
@@ -363,7 +365,7 @@ $tab_panes = [
 			],
 
 			'li_2' => [
-				'inline' => '%1$s Leden kunnen zelf hun gebruikersnaam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf de Gebruikersnaam aanpassen.',
 				'inputs' => [
 					'users_can_edit_username' => [
 						'type'	=> 'checkbox',
@@ -372,7 +374,7 @@ $tab_panes = [
 			],
 
 			'li_3' => [
-				'inline' => '%1$s Leden kunnen zelf hun volledige naam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf het veld Volledige Naam aanpassen.',
 				'inputs' => [
 					'users_can_edit_fullname' => [
 						'type'	=> 'checkbox',
@@ -494,6 +496,11 @@ if ($post)
 
 	foreach ($tab_panes[$active_tab]['inputs'] as $name => $input)
 	{
+		if (isset($input['cond']) && !$input['cond'])
+		{
+			continue;
+		}
+
 		if (isset($input['inputs']))
 		{
 			foreach ($input['inputs'] as $sub_name => $sub_input)
@@ -751,7 +758,7 @@ echo '<ul class="nav nav-pills" role="tablist">';
 foreach ($tab_panes as $id => $pane)
 {
 	echo '<li role="presentation"';
-	echo ($id == $active_tab) ? ' class="active"' : '';
+	echo $id === $active_tab ? ' class="active"' : '';
 	echo '>';
 	echo '<a href="#' . $id . '" aria-controls="' . $id . '" role="tab" data-toggle="tab">';
 	echo $pane['lbl'];
@@ -767,9 +774,10 @@ echo '<div class="tab-content">';
 
 foreach ($tab_panes as $id => $pane)
 {
-	$active = ($id == $active_tab) ? ' active' : '';
+	$active = $id === $active_tab ? ' active' : '';
 
-	echo '<div role="tabpanel" class="tab-pane' . $active . '" id="' . $id . '">';
+	echo '<div role="tabpanel" ';
+	echo 'class="tab-pane' . $active . '" id="' . $id . '">';
 
 	echo '<form method="post" class="form form-horizontal">';
 
@@ -782,6 +790,11 @@ foreach ($tab_panes as $id => $pane)
 
 	foreach ($pane['inputs'] as $name => $input)
 	{
+		if (isset($input['cond']) && !$input['cond'])
+		{
+			continue;
+		}
+
 		echo '<li class="list-group-item">';
 
 		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
