@@ -89,12 +89,12 @@ if($post && isset($_POST['zend']))
 
 	if (empty($email) || !$email)
 	{
-		$errors[] = 'Vul je email adres in';
+		$errors[] = 'Vul je E-mail adres in';
 	}
 
 	if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 	{
-		$errors[] = 'Geen geldig email adres';
+		$errors[] = 'Geen geldig E-mail adres';
 	}
 
 	if (empty($message) || strip_tags($message) == '' || !$message)
@@ -104,7 +104,7 @@ if($post && isset($_POST['zend']))
 
 	if (!trim($app['config']->get('support')))
 	{
-		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
+		$errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
 	}
 
 	if ($token_error = $app['form_token']->get_error())
@@ -150,7 +150,7 @@ if($post && isset($_POST['zend']))
 			exit;
 		}
 
-		$app['alert']->error('Email niet verstuurd. ' . $return_message);
+		$app['alert']->error('E-mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
@@ -190,9 +190,11 @@ echo '<div class="panel-heading">';
 echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="mail">Je Email Adres</label>';
+echo '<label for="mail">Je E-mail Adres</label>';
 echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $email . '" required>';
+echo 'value="';
+echo $email;
+echo '" required>';
 echo '<p><small>Er wordt een validatielink naar je gestuurd die je moet aanklikken.</small></p>';
 echo '</div>';
 

@@ -716,8 +716,8 @@ function get_schemas_groups():string
 	$out .= '<ul>';
 	$out .= '<li> Kies \'elassoap\' als API methode.</li>';
 	$out .= '<li> De API key moet je aanvragen bij de beheerder van het andere Systeem. ';
-	$out .= 'Het is een sleutel die je eigen Systeem toelaat om met het andere Systeem (in eLAS) te praten. </li>';
-	$out .= '<li> De Lokale Account Code is de account code waarmee het interSysteem op deze installatie bekend is. ';
+	$out .= 'Het is een sleutel die je eigen Systeem toelaat om met het andere Systeem (in eLAS) te communiceren. </li>';
+	$out .= '<li> De Lokale Account Code is de account code waarmee het interSysteem in dit Systeem bekend is. ';
 	$out .= 'Dit account moet al bestaan.</li>';
 	$out .= '<li> De Remote Account Code is de account code waarmee dit Systeem bij het ';
 	$out .= 'andere Systeem bekend is. Deze moet in het andere Systeem aangemaakt zijn.</li>';

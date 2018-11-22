@@ -16,12 +16,12 @@ if (isset($_POST['zend']))
 
 	if (!trim($app['config']->get('support')))
 	{
-		$errors[] = 'Het support email adres is niet ingesteld op deze installatie';
+		$errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
 	}
 
 	if ($s_master)
 	{
-		$errors[] = 'Het master account kan geen email berichten versturen.';
+		$errors[] = 'Het master account kan geen E-mail berichten versturen.';
 	}
 
 	if ($token_error = $app['form_token']->get_error())
@@ -74,11 +74,11 @@ if (isset($_POST['zend']))
 
 		if (!$return_message)
 		{
-			$app['alert']->success('De support email is verzonden.');
+			$app['alert']->success('De Support E-mail is verzonden.');
 			redirect_default_page();
 		}
 
-		$app['alert']->error('Email niet verstuurd. ' . $return_message);
+		$app['alert']->error('E-mail niet verstuurd. ' . $return_message);
 	}
 	else
 	{
@@ -91,7 +91,7 @@ else
 
 	if ($s_master)
 	{
-		$app['alert']->warning('Het master account kan geen email berichten versturen.');
+		$app['alert']->warning('Het master account kan geen E-mail berichten versturen.');
 	}
 	else
 	{
@@ -99,18 +99,18 @@ else
 
 		if (!count($email))
 		{
-			$app['alert']->warning('Je hebt geen email adres ingesteld voor je account. ');
+			$app['alert']->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
 		}
 	}
 }
 
 if (!$app['config']->get('mailenabled'))
 {
-	$app['alert']->warning('De email functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!$app['config']->get('support'))
 {
-	$app['alert']->warning('Er is geen support email adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Help / Probleem melden';

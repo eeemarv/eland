@@ -1137,7 +1137,7 @@ if ($edit)
 
 	if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
 	{
-		$app['alert']->error('De omschrijving van een transactie naar een eLAS installatie kan niet aangepast worden.');
+		$app['alert']->error('De omschrijving van een transactie naar een interSysteem dat draait op eLAS kan niet aangepast worden.');
 		cancel($edit);
 	}
 

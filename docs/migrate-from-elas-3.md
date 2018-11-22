@@ -36,7 +36,7 @@ You can truncate the city_distance table which is not used anymore and which is 
 TRUNCATE TABLE city_distance;
 ```
 
-In eLAS there are only 2 levels of access for contacts. Public and private. In eLAND public is further divided in 'members' and 'interlets'. To keep consistent the 'public' access level of eLAS should be transformed into the 'interlets' access level of eLAND.
+In eLAS there are only 2 levels of access for contacts. Public and private. In eLAND public is further divided in 'members' and 'interSystem'. To keep consistent the 'public' access level of eLAS should be transformed into the 'interlets' access level of eLAND.
 
 ```sql
 UPDATE contact SET flag_public = 2 where flag_public = 1;

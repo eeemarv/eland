@@ -8,7 +8,7 @@ Webtoepassing voor gemeenschapsmunten, gebaseerd op wederzijds krediet
 
 ## Testen
 
-Je kan eLAND uitproberen op deze twee testinstallaties:
+Je kan eLAND uitproberen in deze twee test-Systemen:
 
 * [Test A](http://a.letsa.net)
 * [Test B](http://b.letsa.net)
@@ -21,7 +21,7 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 is open source en te vinden op [Github](https://github.com/eeemarv/eland).
 Onder de [rubriek "Hosting"](hosting.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt of LETS. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).  De serverkosten worden momenteel gesponserd door [LETS Antwerpen Stad vzw](http://groepen.letsvlaanderen.be/antwerpen-stad/)
+Gratis hosting is beschikbaar voor je gemeenschapsmunt of LETS. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net). De serverkosten worden momenteel gesponserd door [LETS Antwerpen Stad vzw](http://groepen.letsvlaanderen.be/antwerpen-stad/)
 
 eLAND is een persoonlijk en onafhankelijk project.
 
