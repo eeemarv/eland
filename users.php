@@ -39,7 +39,7 @@ if ($s_admin)
 {
 	$edit_fields_tabs = [
 		'fullname_access'	=> [
-			'lbl'				=> 'Zichtbaarheid volledige naam',
+			'lbl'				=> 'Zichtbaarheid Volledige Naam',
 			'access_control'	=> true,
 		],
 		'adr_access'		=> [
@@ -47,7 +47,7 @@ if ($s_admin)
 			'access_control'	=> true,
 		],
 		'mail_access'		=> [
-			'lbl'		=> 'Zichtbaarheid email adres',
+			'lbl'		=> 'Zichtbaarheid E-mail adres',
 			'access_control'	=> true,
 		],
 		'tel_access'		=> [
@@ -55,7 +55,7 @@ if ($s_admin)
 			'access_control'	=> true,
 		],
 		'gsm_access'		=> [
-			'lbl'		=> 'Zichtbaarheid gsmnummer',
+			'lbl'		=> 'Zichtbaarheid GSM-nummer',
 			'access_control'	=> true,
 		],
 		'comments'			=> [
@@ -78,11 +78,11 @@ if ($s_admin)
 			'string'	=> true,
 		],
 		'minlimit'			=> [
-			'lbl'		=> 'Minimum limiet saldo',
+			'lbl'		=> 'Minimum Account Limiet',
 			'type'		=> 'number',
 		],
 		'maxlimit'			=> [
-			'lbl'		=> 'Maximum limiet saldo',
+			'lbl'		=> 'Maximum Account Limiet',
 			'type'		=> 'number',
 		],
 		'cron_saldo'		=> [
@@ -115,25 +115,25 @@ if ($user_mail_submit && $id && $post)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['alert']->error('Je hebt geen rechten om een E-mail bericht naar een niet-actieve gebruiker te sturen');
 		cancel($id);
 	}
 
 	if ($s_master)
 	{
-		$app['alert']->error('Het master account kan geen berichten versturen.');
+		$app['alert']->error('Het master account kan geen E-mail berichten versturen.');
 		cancel($id);
 	}
 
 	if (!$s_schema)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om een E-mail bericht te versturen.');
 		cancel($id);
 	}
 
 	if (!$user_mail_content)
 	{
-		$app['alert']->error('Fout: leeg bericht. Mail niet verzonden.');
+		$app['alert']->error('Fout: leeg bericht. E-mail niet verzonden.');
 		cancel($id);
 	}
 
@@ -175,7 +175,7 @@ if ($user_mail_submit && $id && $post)
 		], 600);
 	}
 
-	$app['alert']->success('Mail verzonden.');
+	$app['alert']->success('E-mail verzonden.');
 
 	cancel($id);
 }
@@ -388,22 +388,22 @@ if ($bulk_submit && $post && $s_admin)
 
 		if (!$bulk_mail_subject)
 		{
-			$errors[] = 'Gelieve een onderwerp in te vullen voor je mail.';
+			$errors[] = 'Gelieve een onderwerp in te vullen voor je E-mail.';
 		}
 
 		if (!$bulk_mail_content)
 		{
-			$errors[] = 'Het mail bericht is leeg.';
+			$errors[] = 'Het E-mail bericht is leeg.';
 		}
 
 		if (!$app['config']->get('mailenabled'))
 		{
-			$errors[] = 'Mail functies zijn niet ingeschakeld. Zie instellingen.';
+			$errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
 
 		if ($s_master)
 		{
-			$errors[] = 'Het master account kan geen berichten verzenden.';
+			$errors[] = 'Het master account kan geen E-mail berichten verzenden.';
 		}
 	}
 
@@ -514,9 +514,13 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		[$abbrev] = explode('_', $bulk_field);
 
-		$id_type_contact = $app['db']->fetchColumn('select id from type_contact where abbrev = ?', [$abbrev]);
+		$id_type_contact = $app['db']->fetchColumn('select id
+			from type_contact
+			where abbrev = ?', [$abbrev]);
 
-		$app['db']->executeUpdate('update contact set flag_public = ? where id_user in (?) and id_type_contact = ?',
+		$app['db']->executeUpdate('update contact
+		set flag_public = ?
+		where id_user in (?) and id_type_contact = ?',
 			[$access_value, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
@@ -530,7 +534,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		$value = $value ? true : false;
 
-		$app['db']->executeUpdate('update users set cron_saldo = ? where id in (?)',
+		$app['db']->executeUpdate('update users
+			set cron_saldo = ?
+			where id in (?)',
 			[$value, $user_ids],
 			[\PDO::PARAM_BOOL, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
@@ -621,7 +627,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		}
 		catch (Exception $e)
 		{
-			$app['alert']->error('Fout in mail template: ' . $e->getMessage());
+			$app['alert']->error('Fout in E-mail template: ' . $e->getMessage());
 			$sel_ary = [];
 
 			break;
@@ -641,7 +647,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 	if ($count)
 	{
-		$alert_msg = 'Mail verzonden naar ' . $count . ' ';
+		$alert_msg = 'E-mail verzonden naar ' . $count . ' ';
 		$alert_msg .= $count > 1 ? 'accounts' : 'account';
 		$alert_msg .= '<br>';
 		$alert_msg .= implode('<br>', $alert_msg_users);
@@ -650,7 +656,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	}
 	else
 	{
-		$app['alert']->warning('Geen mails verzonden.');
+		$app['alert']->warning('Geen E-mails verzonden.');
 	}
 
 	if (count($sel_ary))
@@ -662,7 +668,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
 
-		$alert_warning = 'Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van E-mail adres: <br>' . $missing_users;
+		$alert_warning = 'Naar volgende gebruikers werd geen E-mail verzonden wegens ontbreken van E-mail adres: <br>' . $missing_users;
 
 		$app['alert']->warning($alert_warning);
 	}
@@ -805,7 +811,7 @@ if ($pw)
 	$app['assets']->add('generate_password.js');
 
 	$h1 = 'Paswoord aanpassen';
-	$h1 .= ($s_owner) ? '' : ' voor ' . link_user($user);
+	$h1 .= $s_owner ? '' : ' voor ' . link_user($user);
 	$fa = 'key';
 
 	include __DIR__ . '/include/header.php';
@@ -820,7 +826,9 @@ if ($pw)
 	echo '<div class="col-sm-10 controls">';
 	echo '<div class="input-group">';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
-	echo 'value="' . $password . '" required>';
+	echo 'value="';
+	echo $password;
+	echo '" required>';
 	echo '<span class="input-group-btn">';
 	echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
 	echo '</span>';
@@ -832,7 +840,7 @@ if ($pw)
 	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="notify" id="notify"';
-	echo ($user['status'] == 1 || $user['status'] == 2) ? ' checked="checked"' : ' readonly';
+	echo $user['status'] == 1 || $user['status'] == 2 ? ' checked="checked"' : ' readonly';
 	echo '>';
 	echo '<p><small>Notificatie is enkel mogelijk wanneer de Status actief is en E-mail adres ingesteld.</small></p>';
 	echo '</div>';
@@ -879,7 +887,7 @@ if ($del)
 
 	if (!$user)
 	{
-		$app['alert']->error('Gebruiker bestaat niet.');
+		$app['alert']->error('De gebruiker bestaat niet.');
 		cancel();
 	}
 
@@ -901,9 +909,9 @@ if ($del)
 
 		$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 		$msgs = '';
-		$st = $app['db']->prepare('SELECT id, content, id_category, msg_type
-			FROM messages
-			WHERE id_user = ?');
+		$st = $app['db']->prepare('select id, content, id_category, msg_type
+			from messages
+			where id_user = ?');
 
 		$st->bindValue(1, $del);
 		$st->execute();
@@ -967,9 +975,9 @@ if ($del)
 			$want_count[$row['id_category']] = $row['count'];
 		}
 
-		$all_cat = $app['db']->fetchAll('SELECT id, stat_msgs_offers, stat_msgs_wanted
-			FROM categories
-			WHERE id_parent IS NOT NULL');
+		$all_cat = $app['db']->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
+			from categories
+			where id_parent is not null');
 
 		foreach ($all_cat as $val)
 		{
@@ -1024,7 +1032,9 @@ if ($del)
 
 	include __DIR__ . '/include/header.php';
 
-	echo '<p><font color="red">Alle gegevens, Vraag en aanbod, contacten en afbeeldingen van ' . $user['letscode'] . ' ' . $user['name'];
+	echo '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
+	echo 'Contacten en Afbeeldingen van ';
+	echo $user['letscode'] . ' ' . $user['name'];
 	echo ' worden verwijderd.</font></p>';
 
 	echo '<div class="panel panel-info">';
@@ -1177,20 +1187,23 @@ if ($add || $edit)
 
 						$row = $st->fetch();
 
-						$warning = 'Omdat deze gebruikers niet meer een uniek email adres hebben zullen zij ';
+						$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
-						$warning .= 'email adres. Zie ' . aphp('status', [], 'Status');
+						$warning .= 'E-mail adres. Zie ' . aphp('status', [], 'Status');
 
 						if ($row['count'] == 1)
 						{
-							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
-							$app['alert']->warning($warning);
+							$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
+							$warning_2 .= ' bestaat al onder de actieve gebruikers.';
 						}
 						else if ($row['count'] > 1)
 						{
-							$warning = 'Waarschuwing: email adres ' . $mailadr . ' bestaat al ' . $row['count'] . ' maal onder de actieve gebruikers. ' . $warning;
-							$app['alert']->warning($warning);
+							$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
+							$warning_2 .= ' bestaat al ' . $row['count'];
+							$warning_2 .= ' maal onder de actieve gebruikers.';
 						}
+
+						$app['alert']->warning($warning_2 . ' ' . $warning);
 					}
 				}
 			}
@@ -1199,7 +1212,10 @@ if ($add || $edit)
 			{
 				if (!$mailadr)
 				{
-					$app['alert']->warning('Waarschuwing: Geen E-mail adres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
+					$err = 'Waarschuwing: Geen E-mail adres ingevuld. ';
+					$err .= 'De gebruiker kan geen berichten en notificaties ';
+					$err .= 'ontvangen en zijn/haar paswoord niet resetten.';
+					$app['alert']->warning($err);
 				}
 			}
 
@@ -1270,17 +1286,17 @@ if ($add || $edit)
 		{
 			if (!$user['fullname'])
 			{
-				$errors[] = 'Vul de volledige naam in!';
+				$errors[] = 'Vul de Volledige Naam in!';
 			}
 
 			if ($app['db']->fetchColumn($fullname_sql, $fullname_sql_params))
 			{
-				$errors[] = 'De volledige naam is al in gebruik!';
+				$errors[] = 'Deze Volledige Naam is al in gebruik!';
 			}
 
 			if (strlen($user['fullname']) > 100)
 			{
-				$errors[] = 'De volledige naam mag maximaal 100 tekens lang zijn.';
+				$errors[] = 'De Volledige Naam mag maximaal 100 tekens lang zijn.';
 			}
 		}
 
@@ -1432,16 +1448,16 @@ if ($add || $edit)
 							{
 								send_activation_mail($password, $user);
 
-								$app['alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->success('Een E-mail met paswoord is naar de gebruiker verstuurd.');
 							}
 							else
 							{
-								$app['alert']->warning('Mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->warning('De E-mail functies zijn uitgeschakeld. Geen E-mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 						else
 						{
-							$app['alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+							$app['alert']->warning('Geen E-mail met paswoord naar de gebruiker verstuurd.');
 						}
 					}
 
@@ -1561,16 +1577,16 @@ if ($add || $edit)
 
 									send_activation_mail($password, $user);
 
-									$app['alert']->success('Mail met paswoord naar de gebruiker verstuurd.');
+									$app['alert']->success('E-mail met paswoord naar de gebruiker verstuurd.');
 								}
 								else
 								{
-									$app['alert']->warning('De mailfuncties zijn uitgeschakeld. Geen mail met paswoord naar de gebruiker verstuurd.');
+									$app['alert']->warning('De E-mail functies zijn uitgeschakeld. Geen E-mail met paswoord naar de gebruiker verstuurd.');
 								}
 							}
 							else
 							{
-								$app['alert']->warning('Geen mail met paswoord naar de gebruiker verstuurd.');
+								$app['alert']->warning('Geen E-mail met paswoord naar de gebruiker verstuurd.');
 							}
 						}
 
@@ -1635,10 +1651,10 @@ if ($add || $edit)
 				$contact_keys[$c['abbrev']] = $key;
 			}
 
-			$st = $app['db']->prepare('SELECT tc.abbrev, c.value, tc.name, c.flag_public, c.id
-				FROM type_contact tc, contact c
-				WHERE tc.id = c.id_type_contact
-					AND c.id_user = ?');
+			$st = $app['db']->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
+				from type_contact tc, contact c
+				where tc.id = c.id_type_contact
+					and c.id_user = ?');
 
 			$st->bindValue(1, $edit);
 			$st->execute();
@@ -1899,7 +1915,8 @@ if ($add || $edit)
 			echo ' checked="checked"';
 			echo '>';
 			echo '<p>';
-			echo 'Verstuur een E-mail met het paswoord naar de gebruiker, enkel wanneer het account actief is.';
+			echo 'Verstuur een E-mail met het paswoord naar de gebruiker, ';
+			echo 'enkel wanneer het account actief is.';
 			echo '</p>';
 			echo '</div>';
 			echo '</div>';
@@ -1907,7 +1924,8 @@ if ($add || $edit)
 		}
 
 		echo '<div class="form-group">';
-		echo '<label for="admincomment" class="col-sm-2 control-label">Commentaar van de admin</label>';
+		echo '<label for="admincomment" class="col-sm-2 control-label">';
+		echo 'Commentaar van de admin</label>';
 		echo '<div class="col-sm-10">';
 		echo '<textarea name="admincomment" id="admincomment" class="form-control" maxlength="200">';
 		echo $user['admincomment'] ?? '';
@@ -2537,19 +2555,19 @@ if ($id)
 
 	if ($s_elas_guest)
 	{
-		$placeholder = 'Als eLAS gast kan je niet het mail formulier gebruiken.';
+		$placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
 	}
 	else if ($s_owner)
 	{
-		$placeholder = 'Je kan geen berichten naar jezelf mailen.';
+		$placeholder = 'Je kan geen E-mail berichten naar jezelf verzenden.';
 	}
 	else if (!count($mail_to))
 	{
-		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+		$placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
 	}
 	else if (!count($mail_from))
 	{
-		$placeholder = 'Om het mail formulier te gebruiken moet een mail adres ingesteld zijn voor je eigen account.';
+		$placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
 	}
 	else
 	{
@@ -2567,7 +2585,8 @@ if ($id)
 
 	echo '<div class="form-group">';
 	echo '<div class="col-sm-12">';
-	echo '<textarea name="user_mail_content" rows="6" placeholder="' . $placeholder . '" ';
+	echo '<textarea name="user_mail_content" rows="6" placeholder="';
+	echo $placeholder . '" ';
 	echo 'class="form-control" required';
 	echo $disabled ? ' disabled' : '';
 	echo '>';
