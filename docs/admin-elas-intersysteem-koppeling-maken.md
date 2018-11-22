@@ -7,7 +7,7 @@ Onderstaande tekst werd aangepast vanuit [de eLAS documentatie](http://old.elasp
 
 **In eLAS wordt interSysteem interLETS genoemd, maar omdat LETS geen munt
 met tijdsbasis is en omdat LETS expliciet ontworpen is als middel om de eigen gemeenschap onafhankelijker van externe economische invloed te maken, worden
-deze verbindingen in eLAND interSysteem genoemd.** (Zie de [LETS-documentatie])(https://manual.letsa.net/nl/1.3.html)
+deze verbindingen in eLAND interSysteem genoemd.** (Zie de [LETS-documentatie](https://manual.letsa.net/nl/1.3.html))
 
 ## Hoe maak ik een eLAS interSysteem koppeling
 

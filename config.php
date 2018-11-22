@@ -407,7 +407,7 @@ $tab_panes = [
 			],
 
 			'li_3' => [
-				'inline'	=> '%1$s Dit is een Tijdsbank (munt met tijdsbasis).',
+				'inline'	=> '%1$s Dit Systeem is een Tijdsbank (munt met tijdsbasis).',
 				'inputs'	=> [
 					'template_lets'	=> [
 						'type'	=> 'checkbox',
