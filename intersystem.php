@@ -593,6 +593,8 @@ $fa = 'share-alt';
 
 include __DIR__ . '/include/header.php';
 
+echo get_intersystem_explain();
+
 if (count($groups))
 {
 	echo '<div class="panel panel-primary printview">';
@@ -711,15 +713,15 @@ function get_schemas_groups():string
 	$out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
 	$out .= 'Zie <a href="https://eland.letsa.net/admin-elas-intersysteem-koppeling-maken.html">hier</a> ';
 	$out .= 'voor de procedure.</h3>';
-	$out .= '<p><small>Voor Intersysteem verbindingen in deze eLAND-server zie onder!</small></p>';
+	$out .= '<p><small>Voor het aanmaken van interSysteem verbindingen in deze eLAND-server zie onder!</small></p>';
 	$out .= '</div>';
 	$out .= '<ul>';
 	$out .= '<li> Kies \'elassoap\' als API methode.</li>';
-	$out .= '<li> De API key moet je aanvragen bij de beheerder van het andere Systeem. ';
+	$out .= '<li> De API Key moet je aanvragen bij de beheerder van het andere Systeem. ';
 	$out .= 'Het is een sleutel die je eigen Systeem toelaat om met het andere Systeem (in eLAS) te communiceren. </li>';
-	$out .= '<li> De Lokale Account Code is de account code waarmee het interSysteem in dit Systeem bekend is. ';
+	$out .= '<li> De Lokale Account Code is de Account Code waarmee het andere Systeem in dit Systeem bekend is. ';
 	$out .= 'Dit account moet al bestaan.</li>';
-	$out .= '<li> De Remote Account Code is de account code waarmee dit Systeem bij het ';
+	$out .= '<li> De Remote Account Code is de Account Code waarmee dit Systeem bij het ';
 	$out .= 'andere Systeem bekend is. Deze moet in het andere Systeem aangemaakt zijn.</li>';
 	$out .= '<li> De URL is de weblocatie van het andere Systeem. </li>';
 	$out .= '<li> De Preshared Key is een gedeelde sleutel waarmee de interSysteem ';
@@ -733,13 +735,14 @@ function get_schemas_groups():string
 	$out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
 	$out .= '</div>';
 	$out .= '<ul>';
-	$out .= '<li> Met een Tijdsgebaseerd Systeem (Tijdsbank) die eLAND gebruikt kan ';
-	$out .= 'op een vereenvoudigde manier verbinding gelegd worden zonder ';
-	$out .= 'het uitwisselen van Apikey, Preshared Key en Remote Account Code. ';
-	$out .= 'Dit is mogelijk met Systemen die zich op dezelfde eLAND-server bevinden.</li>';
-	$out .= '<li> Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
+	$out .= '<li> Je kan een ander Tijdsbank-Systeem dat dezelfde eLAND-server gebruikt ';
+	$out .= 'op vereenvoudigde manier verbinding leggen zonder ';
+	$out .= 'het uitwisselen van Api Key, Preshared Key en Remote Account Code. ';
+	$out .= '</li>';
+	$out .= '<li> ';
+	$out .= 'Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
 	$out .= 'waarmee je een interSysteem verbinding wil opzetten. ';
-	$out .= 'En verifiëer of zij geïnteresseerd zijn.</li>';
+	$out .= 'En verifiëer of zij ook een Tijdsbank Systeem hebben en of zij geïnteresseerd zijn.</li>';
 	$out .= '<li> Voor het leggen van een InterSysteem-verbinding, kijk in de tabel hieronder. ';
 	$out .= 'Maak het interSysteem aan door op \'Creëer\' in ';
 	$out .= 'kolom \'lok.interSysteem\' te klikken en vervolgens op Toevoegen. ';
@@ -996,6 +999,19 @@ function get_schemas_groups():string
 
 	$out .= '</div></div>';
 
+	return $out;
+}
+
+function get_intersystem_explain():string
+{
+	$out = '<p>';
+	$out .= 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
+	$out .= 'je eigen Systeem en een ander Systeem dat draait op eLAS of eLAND software.';
+	$out .= 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
+	$out .= 'op tijd. Ze zijn dus Tijdsbanken en dienen zo ';
+	$out .= 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
+	$out .= 'Wanneer je deze pagina kan zien is dit reeds het geval.';
+	$out .= '</p>';
 	return $out;
 }
 
