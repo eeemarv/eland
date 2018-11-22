@@ -48,9 +48,13 @@ if ($del)
 	echo '<form method="post" class="form-horizontal">';
 	echo '<dl>';
 	echo '<dt>Apikey</dt>';
-	echo '<dd>' . $apikey['apikey'] . '</dd>';
-	echo '<dt>Comment</dt>';
-	echo '<dd>' . $apikey['comment'] .  '</dd>';
+	echo '<dd>';
+	echo $apikey['apikey'] ?: '<i class="fa fa-times"></i>';
+	echo '</dd>';
+	echo '<dt>Commentaar</dt>';
+	echo '<dd>';
+	echo $apikey['comment'] ?: '<i class="fa fa-times"></i>';
+	echo '</dd>';
 	echo '</dl>';
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -115,10 +119,12 @@ if ($add)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comment" class="col-sm-2 control-label">Comment</label>';
+	echo '<label for="comment" class="col-sm-2 control-label">Commentaar</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comment" name="comment" ';
-	echo 'value="' . $apikey['comment'] . '">';
+	echo 'value="';
+	echo $apikey['comment'];
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -149,6 +155,13 @@ $fa = 'key';
 
 include __DIR__ . '/include/header.php';
 
+echo '<p>';
+echo 'Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen naar andere Systemen die ';
+echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere Systemen op ';
+echo 'deze eLAND-server ';
+echo 'moet je geen Apikey aanmaken.';
+echo '</p>';
+
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
@@ -156,7 +169,7 @@ echo '<table class="table table-bordered table-hover table-striped footable">';
 echo '<thead>';
 echo '<tr>';
 echo '<th>Id</th>';
-echo '<th>Comment</th>';
+echo '<th>Commentaar</th>';
 echo '<th data-hide="phone">Apikey</th>';
 echo '<th data-hide="phone, tablet" data-sort-initial="true">Creatietijdstip</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>';
@@ -168,8 +181,12 @@ echo '<tbody>';
 foreach($apikeys as $a)
 {
 	echo '<tr>';
-	echo '<td>' . $a['id'] . '</td>';
-	echo '<td>' . $a['comment'] . '</td>';
+	echo '<td>';
+	echo $a['id'];
+	echo '</td>';
+	echo '<td>';
+	echo $a['comment'];
+	echo '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
 	echo $app['date_format']->get_td($a['created']);
 	echo '<td>';
@@ -181,11 +198,6 @@ foreach($apikeys as $a)
 echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
-
-echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen naar en die ';
-echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere Systemen op '
-echo 'deze eLAND-server ';
-echo 'moet je geen apikey aanmaken.</li></ul>';
 
 include __DIR__ . '/include/footer.php';
 
