@@ -8,12 +8,10 @@
 Account {{ user }} werd geactiveerd met een nieuw paswoord.
 
 {% if user_mail %}
-Er werd een mail verstuurd naar de gebruiker.
+Er werd een E-mail verstuurd naar de gebruiker.
 {% else %}
-Er werd GEEN mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.
+Er werd GEEN E-mail verstuurd omdat er geen E-mail adres bekend is voor de gebruiker.
 {% endif %}
-
-OPMERKING: Vergeet niet om de gebruiker eventueel toe te voegen aan andere LETS programma's zoals email-lijsten.
 
 {% endautoescape %}
 {% endblock body %}

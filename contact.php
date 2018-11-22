@@ -145,7 +145,7 @@ if($post && isset($_POST['zend']))
 
 		if (!$return_message)
 		{
-			$app['alert']->success('Open je mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
+			$app['alert']->success('Open je E-mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
 			header('Location: ' . generate_url('contact'));
 			exit;
 		}
@@ -165,11 +165,11 @@ else
 
 if (!$app['config']->get('mailenabled'))
 {
-	$app['alert']->warning('Email functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
 else if (!$app['config']->get('support'))
 {
-	$app['alert']->warning('Er is geen support email adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Contact';
@@ -218,8 +218,8 @@ if ($bottom_text)
 	echo $bottom_text;
 }
 
-echo '<p><small>Leden: indien mogelijk, login en gebruik het supportformulier. ';
+echo '<p><small>Leden: indien mogelijk, login en gebruik het Support formulier. ';
 echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';
-echo 'aanvragen met je email adres vanuit de login-pagina!</i></small></p>';
+echo 'aanvragen met je E-mail adres vanuit de login-pagina!</i></small></p>';
 
 include __DIR__ . '/include/footer.php';

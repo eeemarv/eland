@@ -231,11 +231,11 @@ if ($submit)
 
 	if(!$reg['email'])
 	{
-		$app['alert']->error('Vul een email adres in.');
+		$app['alert']->error('Vul een E-mail adres in.');
 	}
 	else if (!filter_var($reg['email'], FILTER_VALIDATE_EMAIL))
 	{
-		$app['alert']->error('Geen geldig email adres.');
+		$app['alert']->error('Geen geldig E-mail adres.');
 	}
 	else if ($app['db']->fetchColumn('select c.id_user
 		from contact c, type_contact tc
@@ -243,19 +243,19 @@ if ($submit)
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))
 	{
-		$app['alert']->error('Er bestaat reeds een inschrijving met dit mailadres.');
+		$app['alert']->error('Er bestaat reeds een inschrijving met dit E-mail adres.');
 	}
 	else if (!$reg['first_name'])
 	{
-		$app['alert']->error('Vul een voornaam in.');
+		$app['alert']->error('Vul een Voornaam in.');
 	}
 	else if (!$reg['last_name'])
 	{
-		$app['alert']->error('Vul een achternaam in.');
+		$app['alert']->error('Vul een Achternaam in.');
 	}
 	else if (!$reg['postcode'])
 	{
-		$app['alert']->error('Vul een postcode in.');
+		$app['alert']->error('Vul een Postcode in.');
 	}
 	else if ($error_token = $app['form_token']->get_error())
 	{
@@ -285,7 +285,7 @@ if ($submit)
 			'template'	=> 'registration_confirm',
 		], 1000);
 
-		$app['alert']->warning('Open je mailbox en klik op de bevestigingslink in de email die we naar je gestuurd hebben om je inschrijving te voltooien.');
+		$app['alert']->warning('Open je E-mailbox en klik op de bevestigingslink in de E-mail die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}
@@ -329,7 +329,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="email" class="col-sm-2 control-label">Email*</label>';
+echo '<label for="email" class="col-sm-2 control-label">E-mail*</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="';

@@ -532,13 +532,13 @@ if ($mail && $post && $id)
 
 	if (!$s_schema)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om een E-mail bericht te versturen.');
 		cancel();
 	}
 
 	if (!$content)
 	{
-		$app['alert']->error('Fout: leeg bericht. Mail niet verzonden.');
+		$app['alert']->error('Fout: leeg bericht. E-mail niet verzonden.');
 		cancel($id);
 	}
 
@@ -1550,7 +1550,7 @@ if ($id)
 
 	if ($s_elas_guest)
 	{
-		$placeholder = 'Als eLAS gast kan je niet het mail formulier gebruiken.';
+		$placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
 	}
 	else if ($s_owner)
 	{
@@ -1558,11 +1558,11 @@ if ($id)
 	}
 	else if (!count($mail_to))
 	{
-		$placeholder = 'Er is geen email adres bekend van deze gebruiker.';
+		$placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
 	}
 	else if (!count($mail_from))
 	{
-		$placeholder = 'Om het mail formulier te gebruiken moet een mail adres ingesteld zijn voor je eigen account.';
+		$placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
 	}
 	else
 	{

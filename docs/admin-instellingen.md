@@ -40,7 +40,7 @@
 ## admin
 
    'Mailadres van de site admin'
-   Vul een mailadres in.
+   Vul een E-mail adres in.
 
 ## mailenabled
 

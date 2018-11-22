@@ -1,6 +1,6 @@
 {% extends 'mail/base.text.twig' %}
 
-{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup|raw }} verstuurd werd. mailadres: {{ to_mail }}{% endif %}{% endblock pretext %}
+{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup|raw }} verstuurd werd. E-mail adres: {{ to_mail }}{% endif %}{% endblock pretext %}
 
 {% block body %}
 {% autoescape false %}

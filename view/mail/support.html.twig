@@ -16,7 +16,7 @@
 {% if user.email %}
 Om te antwoorden kan je gewoon reply kiezen of de contactgegevens hieronder gebruiken.
 {% else %}
-Er is geen email adres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. Contacteer de gebruiker op andere wijze.
+Er is geen E-mail adres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. Contacteer de gebruiker op andere wijze.
 {% endif %}
 </p>
 
@@ -37,5 +37,5 @@ Er is geen email adres gekend van <a href="{{ user.url }}">{{ user.text }}</a>. 
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}
-<p>Je ontvangt dit bericht omdat je email adres vermeld staat als support email adres in de <a href="{{ config_url }}">instellingen</a>.</p>
+<p>Je ontvangt dit bericht omdat je E-mail adres vermeld staat als Support E-mail adres in de <a href="{{ config_url }}">instellingen</a>.</p>
 {% endblock unsubscribe %}

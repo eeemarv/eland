@@ -6,10 +6,10 @@
 
 {{ message }}
 
-<hr><p>Dit bericht werd ingegeven in het contactformulier van {{ group.name }}. Het email adres werd gevalideerd.
+<hr><p>Dit bericht werd ingegeven in het contactformulier van {{ group.name }}. Het E-mail adres werd gevalideerd.
 Je kan reply kiezen om te reageren.</p>
 <ul>
-<li>Email adres: {{ email }}
+<li>E-mail adres: {{ email }}
 <li>ip: {{ ip }}
 <li>browser: {{ browser}}</li>
 </ul>
@@ -19,5 +19,5 @@ Je kan reply kiezen om te reageren.</p>
 {% block accountinfo %}{% endblock accountinfo %}
 {% block support %}{% endblock support %}
 {% block unsubscribe %}
-<p>Je ontvangt dit bericht omdat je email adres vermeld staat als support email adres in de <a href="{{ config_url }}">instellingen</a>.</p>
+<p>Je ontvangt dit bericht omdat je E-mail adres vermeld staat als Support E-mail adres in de <a href="{{ config_url }}">instellingen</a>.</p>
 {% endblock unsubscribe %}

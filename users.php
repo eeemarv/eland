@@ -662,7 +662,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$missing_users .= link_user($warning_user_id) . '<br>';
 		}
 
-		$alert_warning = 'Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van mailadres: <br>' . $missing_users;
+		$alert_warning = 'Naar volgende gebruikers werd geen mail verzonden wegens ontbreken van E-mail adres: <br>' . $missing_users;
 
 		$app['alert']->warning($alert_warning);
 	}
@@ -834,7 +834,7 @@ if ($pw)
 	echo '<input type="checkbox" name="notify" id="notify"';
 	echo ($user['status'] == 1 || $user['status'] == 2) ? ' checked="checked"' : ' readonly';
 	echo '>';
-	echo '<p><small>Notificatie is enkel mogelijk wanneer status actief is en mailadres ingesteld.</small></p>';
+	echo '<p><small>Notificatie is enkel mogelijk wanneer de Status actief is en E-mail adres ingesteld.</small></p>';
 	echo '</div>';
 	echo '</div>';
 
@@ -1199,7 +1199,7 @@ if ($add || $edit)
 			{
 				if (!$mailadr)
 				{
-					$app['alert']->warning('Waarschuwing: Geen mailadres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
+					$app['alert']->warning('Waarschuwing: Geen E-mail adres ingevuld. De gebruiker kan geen berichten en notificaties ontvangen en zijn/haar paswoord niet resetten.');
 				}
 			}
 

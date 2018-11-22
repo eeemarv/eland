@@ -13,7 +13,7 @@
 {% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a>
 {% if msg.geo is defined and user.geo is defined %}{{ distance_p(user.geo, msg.geo) }}{% endif %} | {% endif %}
 {% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
-{% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">email</a>
+{% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">E-mail</a>
 {% if not loop.last %}|{% endif %} {% endfor %}
 </li><br>
 
@@ -181,6 +181,6 @@ naar
 
 {% macro unsubscribe(account_edit_url, validate_param) %}
 
-<p>Je ontvangt deze mail omdat de optie 'Periodieke mail met recent vraag en aanbod' aangevinkt staat in je instellingen.
+<p>Je ontvangt deze E-mail omdat de optie 'Periodieke Overzichts E-mail' aangevinkt staat in je instellingen.
 Klik <a href="{{ account_edit_url }}{{ validate_param }}">hier</a> om aan te passen</p>
 {% endmacro unsubscribe %}

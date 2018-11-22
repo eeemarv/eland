@@ -20,12 +20,12 @@ if (isset($hosting_form))
 
 		if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 		{
-			$errors[] = 'Geen geldig mail adres ingevuld.';
+			$errors[] = 'Geen geldig E-mail adres ingevuld.';
 		}
 
 		if (!$system_name)
 		{
-			$errors[] = 'De naam van het Systeem is niet ingevuld.';
+			$errors[] = 'De Naam van het Systeem is niet ingevuld.';
 		}
 
 		if (!$message)
@@ -136,12 +136,14 @@ if (isset($hosting_form))
 		echo '<label for="subject" class="col-sm-2 control-label">Naam Systeem</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" name="system_name" ';
-		echo 'value="' . $system_name . '" required>';
+		echo 'value="';
+		echo $system_name;
+		echo '" required>';
 		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="mail" class="col-sm-2 control-label">Email*</label>';
+		echo '<label for="mail" class="col-sm-2 control-label">E-mail*</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="email" class="form-control" id="mail" name="mail" ';
 		echo 'value="';
@@ -167,7 +169,8 @@ if (isset($hosting_form))
 		echo '</div>';
 
 		echo '<br>';
-		echo '<p>*Privacy: uw email adres wordt voor geen enkel ander doel gebruikt dan u terug te kunnen ';
+		echo '<p>*Privacy: uw E-mail adres wordt voor ';
+		echo 'geen enkel ander doel gebruikt dan u terug te kunnen ';
 		echo 'contacteren.</p>';
 
 	}
@@ -178,7 +181,7 @@ if (isset($hosting_form))
 	echo '<br><br><br><br><br><br>';
 	echo '<footer class="footer">';
 
-	echo '<p><a href="http://letsa.net">eLAND';
+	echo '<p><a href="https://eland.letsa.net">eLAND';
 	echo '</a>&nbsp; web app voor gemeenschapsmunten</p>';
 
 	echo '</footer>';

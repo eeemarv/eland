@@ -196,38 +196,38 @@ $tab_panes = [
 	],
 
 	'mailaddresses'	=> [
-		'lbl'		=> 'Mailadressen',
+		'lbl'		=> 'E-Mail Adressen',
 		'inputs'	=> [
 			'admin'	=> [
 				'lbl'	=> 'Algemeen admin/beheerder',
 				'attr' 	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
-				'add_btn_text' => 'Extra mailadres',
+				'add_btn_text' => 'Extra E-mail Adres',
 			],
 			'newsadmin'	=> [
 				'lbl'	=> 'Nieuwsbeheerder',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
-				'add_btn_text'	=> 'Extra mailadres',
+				'add_btn_text'	=> 'Extra E-mail Adres',
 			],
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'max_inputs'	=> 5,
-				'add_btn_text'	=> 'Extra mailadres',
+				'add_btn_text'	=> 'Extra E-mail Adres',
 			],
 		]
 	],
 
 	'saldomail'		=> [
 		'lbl'	=> 'Overzichtsmail',
-		'lbl_pane'	=> 'Periodieke overzichtsmail',
+		'lbl_pane'	=> 'Periodieke Overzichtsmail',
 		'inputs' => [
 			'li_1'	=> [
-				'inline' => 'Verstuur de overzichtsmail met recent vraag en aanbod om de %1$s dagen',
+				'inline' => 'Verstuur de overzichtsmail om de %1$s dagen',
 				'inputs' => [
 					'saldofreqdays'	=> [
 						'type'		=> 'number',
@@ -254,10 +254,10 @@ $tab_panes = [
 
 	'contact'	=> [
 		'lbl'	=> 'Contact',
-		'lbl_pane'	=> 'Contactformulier',
+		'lbl_pane'	=> 'Contact Formulier',
 		'inputs'	=> [
 			'li_1'	=> [
-				'inline' => '%1$s contactformulier aan.',
+				'inline' => '%1$s contact formulier aan.',
 				'inputs' => [
 					'contact_form_en' => [
 						'type' => 'checkbox',
@@ -266,12 +266,12 @@ $tab_panes = [
 				'explain' => $contact_link_explain,
 			],
 			'contact_form_top_text' => [
-				'lbl'	=> 'Tekst boven het contactformulier',
+				'lbl'	=> 'Tekst boven het contact formulier',
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
 			],
 			'contact_form_bottom_text' => [
-				'lbl'		=> 'Tekst onder het contactformulier',
+				'lbl'		=> 'Tekst onder het contact formulier',
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 			],
@@ -622,7 +622,7 @@ if ($post)
 
 				if (count($mail_ary) > $validator['max_inputs'])
 				{
-					$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' mailadressen mogen ingegeven worden.' . $err_n;
+					$errors[] = 'Maximaal ' . $validator['max_inputs'] . ' E-mail adressen mogen ingegeven worden.' . $err_n;
 				}
 
 				foreach ($mail_ary as $m)
@@ -631,7 +631,7 @@ if ($post)
 
 					if (!filter_var($m, FILTER_VALIDATE_EMAIL))
 					{
-						$errors[] =  $m . ' is geen geldig email adres.' . $err_n;
+						$errors[] =  $m . ' is geen geldig E-mail adres.' . $err_n;
 					}
 				}
 
@@ -640,7 +640,7 @@ if ($post)
 
 			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 			{
-				$errors[] =  $value . ' is geen geldig email adres.' . $err_n;
+				$errors[] =  $value . ' is geen geldig E-mail adres.' . $err_n;
 			}
 
 			continue;

@@ -150,24 +150,24 @@ if (isset($_POST['zend']))
 					'vars'		=> $vars,
 				], 1000);
 
-				$app['alert']->success('Een link om je paswoord te resetten werd naar je mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
+				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
 
 				header('Location: login.php');
 				exit;
 			}
 			else
 			{
-				$app['alert']->error('Mailadres niet bekend');
+				$app['alert']->error('E-Mail adres niet bekend');
 			}
 		}
 		else
 		{
-			$app['alert']->error('Mailadres niet uniek.');
+			$app['alert']->error('Het E-Mail adres niet uniek in dit Systeem.');
 		}
 	}
 	else
 	{
-		$app['alert']->error('Geef een mailadres op');
+		$app['alert']->error('Geef een E-mail adres op');
 	}
 }
 
@@ -175,7 +175,7 @@ $h1 = 'Paswoord vergeten';
 
 require_once __DIR__ . '/include/header.php';
 
-echo '<p>Met onderstaand formulier stuur je een link om je paswoord te resetten naar je mailbox. </p>';
+echo '<p>Met onderstaand formulier stuur je een link om je paswoord te resetten naar je E-mailbox. </p>';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -183,10 +183,12 @@ echo '<div class="panel-heading">';
 echo '<form method="post" class="form-horizontal">';
 
 echo '<div class="form-group">';
-echo '<label for="email" class="col-sm-2 control-label">Email</label>';
+echo '<label for="email" class="col-sm-2 control-label">E-mail</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="email" class="form-control" id="email" name="email" ';
-echo 'value="' . $email . '" required>';
+echo 'value="';
+echo $email;
+echo '" required>';
 echo '</div>';
 echo '</div>';
 

@@ -128,7 +128,7 @@ if ($submit)
 
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
-		$count_email = $app['db']->fetchColumn('select count(c.*)
+		$count_ = $app['db']->fetchColumn('select count(c.*)
 			from contact c, type_contact tc, users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
@@ -148,8 +148,8 @@ if ($submit)
 		}
 		else
 		{
-			$err = 'Je kan dit email adres niet gebruiken om in te loggen want het is niet ';
-			$err .= 'uniek aanwezig in deze installatie. Gebruik je letscode of gebruikersnaam.';
+			$err = 'Je kan dit E-mail adres niet gebruiken om in te loggen want het is niet ';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik je Account Code of Gebruikersnaam.';
 			$errors[] = $err;
 		}
 	}
@@ -162,8 +162,8 @@ if ($submit)
 
 		if ($count_letscode > 1)
 		{
-			$err = 'Je kan deze letscode niet gebruiken om in te loggen want deze is niet ';
-			$err .= 'uniek aanwezig in deze installatie. Gebruik je mailadres of gebruikersnaam.';
+			$err = 'Je kan deze Account Code niet gebruiken om in te loggen want deze is niet ';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik je E-mail adres of gebruikersnaam.';
 			$errors[] = $err;
 		}
 		else if ($count_letscode == 1)
@@ -181,7 +181,7 @@ if ($submit)
 		if ($count_name > 1)
 		{
 			$err = 'Je kan deze gebruikersnaam niet gebruiken om in te loggen want deze is niet ';
-			$err .= 'uniek aanwezig in deze installatie. Gebruik je mailadres of letscode.';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik je E-mail adres of Account Code.';
 			$errors[] = $err;
 		}
 		else if ($count_name == 1)
@@ -272,7 +272,7 @@ if ($submit)
 
 if($app['config']->get('maintenance'))
 {
-	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admin gebruikers kunnen inloggen');
+	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admins kunnen inloggen');
 }
 
 $h1 = 'Login';

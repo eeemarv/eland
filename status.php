@@ -162,14 +162,14 @@ if ($status_msgs)
 
 		if (count($non_unique_mail) == 1)
 		{
-			echo 'Een mailadres komt meer dan eens voor onder de actieve gebruikers ';
-			echo 'in de installatie. ';
-			echo 'Gebruikers met dit mailadres kunnen niet inloggen met mailadres. ';
+			echo 'Een E-mail adres komt meer dan eens voor onder de actieve Accounts ';
+			echo 'in dit Systeem. ';
+			echo 'Gebruikers met dit E-mail adres kunnen niet inloggen met E-mail adres. ';
 		}
 		else
 		{
-			echo 'Meerdere mailadressen komen meer dan eens voor onder de actieve gebruikers in de installatie. ';
-			echo 'Gebruikers met een mailadres dat meer dan eens voorkomt, kunnen niet inloggen met mailadres.';
+			echo 'Meerdere E-mail adressen komen meer dan eens voor onder de actieve Accounts in dit Systeem. ';
+			echo 'Gebruikers met een E-mail adres dat meer dan eens voorkomt, kunnen niet inloggen met E-mail adres.';
 		}
 
 		echo '<ul>';
@@ -271,11 +271,11 @@ if ($status_msgs)
 		echo '<li class="list-group-item">';
 		if (count($unvalid_mail) == 1)
 		{
-			echo 'Deze installatie bevat een fout geformateerd email adres. Pas het aan of verwijder het!';
+			echo 'Deze installatie bevat een fout geformateerd E-mail adres. Pas het aan of verwijder het!';
 		}
 		else
 		{
-			echo 'Deze installatie bevat fout geformateerde emails. Verwijder deze of pas deze aan!';
+			echo 'Deze installatie bevat fout geformateerde E-mail adressen. Verwijder deze of pas deze aan!';
 		}
 
 		echo '<ul>';
@@ -298,11 +298,11 @@ if ($status_msgs)
 		echo '<li class="list-group-item">';
 		if (count($no_mail) == 1)
 		{
-			echo 'Eén actieve gebruiker heeft geen emailadres.';
+			echo 'Eén actieve gebruiker heeft geen E-mail adres.';
 		}
 		else
 		{
-			echo count($no_mail) . ' actieve gebruikers hebben geen mailadres.';
+			echo count($no_mail) . ' actieve gebruikers hebben geen E-mail adres.';
 		}
 
 		echo '<ul>';
@@ -346,11 +346,11 @@ if ($status_msgs)
 		echo '<li class="list-group-item">';
 		if (count($empty_letscode) == 1)
 		{
-			echo 'Eén actieve gebruiker heeft geen letscode.';
+			echo 'Eén actieve gebruiker heeft geen Account Code.';
 		}
 		else
 		{
-			echo count($empty_letscode) . ' actieve gebruikers hebben geen letscode.';
+			echo count($empty_letscode) . ' actieve gebruikers hebben geen Account Code.';
 		}
 
 		echo '<ul>';
