@@ -162,7 +162,7 @@ if ($status_msgs)
 
 		if (count($non_unique_mail) == 1)
 		{
-			echo 'Een E-mail adres komt meer dan eens voor onder de actieve Accounts ';
+			echo 'Een E-mail adres komt meer dan eens voor onder de actieve accounts ';
 			echo 'in dit Systeem. ';
 			echo 'Gebruikers met dit E-mail adres kunnen niet inloggen met E-mail adres. ';
 		}

@@ -172,7 +172,8 @@ $tab_panes = [
 				'required'	=> true,
 			],
 			'systemtag' => [
-				'lbl'		=> 'Tag (hoofding voor emails)',
+				'lbl'		=> 'Tag',
+				'explain'	=> 'Prefix tussen haken [tag] in onderwerp van alle E-mails',
 				'required'	=> true,
 				'attr'		=> ['maxlength' => 30],
 			],
@@ -223,11 +224,11 @@ $tab_panes = [
 	],
 
 	'saldomail'		=> [
-		'lbl'	=> 'Overzichtsmail',
-		'lbl_pane'	=> 'Periodieke Overzichtsmail',
+		'lbl'	=> 'Overzichts E-mail',
+		'lbl_pane'	=> 'Periodieke Overzichts E-mail',
 		'inputs' => [
 			'li_1'	=> [
-				'inline' => 'Verstuur de overzichtsmail om de %1$s dagen',
+				'inline' => 'Verstuur de Periodieke Overzichts E-mail om de %1$s dagen',
 				'inputs' => [
 					'saldofreqdays'	=> [
 						'type'		=> 'number',
@@ -235,11 +236,11 @@ $tab_panes = [
 						'required'	=> true,
 					],
 				],
-				'explain' => 'Noot: Leden kunnen steeds ontvangst van de overzichtsmail aan- of afzetten in hun profielinstellingen.',
+				'explain' => 'Noot: Leden kunnen steeds ontvangst van de Periodieke Overzichts E-mail aan- of afzetten in hun profielinstellingen.',
 			],
 
 			'periodic_mail_block_ary' => [
-				'lbl'				=> 'Mail opmaak (versleep blokken)',
+				'lbl'				=> 'E-mail opmaak (versleep blokken)',
 				'type'				=> 'sortable',
 				'explain_top'		=> 'Verslepen gaat met
 					muis of touchpad, maar misschien niet met touch-screen.
@@ -386,7 +387,7 @@ $tab_panes = [
 		'inputs'	=> [
 
 			'li_1'	=> [
-				'inline'	=> '%1$s Mail functionaliteit aan: het systeem verstuurt mails.',
+				'inline'	=> '%1$s Mail functionaliteit aan: het systeem verstuurt E-mails.',
 				'inputs'	=> [
 					'mailenabled'	=> [
 						'type'	=> 'checkbox',

@@ -86,7 +86,7 @@ if ($s_admin)
 			'type'		=> 'number',
 		],
 		'cron_saldo'		=> [
-			'lbl'	=> 'Periodieke mail met recent vraag en aanbod (aan/uit)',
+			'lbl'	=> 'Periodieke Overzichts E-mail (aan/uit)',
 			'type'	=> 'checkbox',
 		],
 	];
@@ -1761,12 +1761,15 @@ if ($add || $edit)
 	if ($fullname_edit)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="fullname" class="col-sm-2 control-label">Volledige naam (Voornaam en Achternaam)</label>';
+		echo '<label for="fullname" class="col-sm-2 control-label">Volledige Naam</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
 		echo 'value="';
 		echo $user['fullname'] ?? '';
 		echo '" maxlength="100">';
+		echo '<p>';
+		echo 'Voornaam en Achternaam';
+		echo '</p>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1848,13 +1851,13 @@ if ($add || $edit)
 		echo '<div class="bg-danger pan-sub" id="presharedkey_panel">';
 		echo '<div class="form-group" id="presharedkey_formgroup">';
 		echo '<label for="presharedkey" class="col-sm-2 control-label">';
-		echo 'Preshared key</label>';
+		echo 'Preshared Key</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
 		echo 'value="';
 		echo $user['presharedkey'] ?? '';
 		echo '" maxlength="80">';
-		echo '<p>Vul dit enkel in voor een interSysteem account van een eLAS-installatie.</p>';
+		echo '<p>Vul dit enkel in voor een interSysteem account van een Systeem op een eLAS-server.</p>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -1881,18 +1884,23 @@ if ($add || $edit)
 			echo $password ?? '';
 			echo '" required>';
 			echo '<span class="input-group-btn">';
-			echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+			echo '<button class="btn btn-default" type="button" id="generate">';
+			echo 'Genereer</button>';
 			echo '</span>';
 			echo '</div>';
 			echo '</div>';
 			echo '</div>';
 
 			echo '<div class="form-group">';
-			echo '<label for="notify" class="col-sm-2 control-label">Zend mail met paswoord naar gebruiker (enkel wanneer account actief is.)</label>';
+			echo '<label for="notify" class="col-sm-2 control-label">';
+			echo 'Notificatie Paswoord</label>';
 			echo '<div class="col-sm-10">';
 			echo '<input type="checkbox" name="notify" id="notify"';
 			echo ' checked="checked"';
 			echo '>';
+			echo '<p>';
+			echo 'Verstuur een E-mail met het paswoord naar de gebruiker, enkel wanneer het account actief is.';
+			echo '</p>';
 			echo '</div>';
 			echo '</div>';
 			echo '</div>';
@@ -1928,7 +1936,7 @@ if ($add || $edit)
 
 		echo '>';
 		echo '<div class="form-group">';
-		echo '<label for="minlimit" class="col-sm-2 control-label">Minimum limiet saldo</label>';
+		echo '<label for="minlimit" class="col-sm-2 control-label">Minimum Account Limiet</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="minlimit" name="minlimit" ';
 		echo 'value="';
@@ -1936,7 +1944,7 @@ if ($add || $edit)
 		echo '">';
 
 		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
-		echo 'voor dit account. ls dit veld leeg is, dan is de algemeen geldende ';
+		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
 		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
@@ -1952,13 +1960,13 @@ if ($add || $edit)
 
 		echo '</p>';
 
-		echo '<p>Dit veld wordt vooraf ingevuld bij aanmaak gebruiker wanneer "';
-		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele minimum limiet') . '" ';
-		echo 'is ingevuld in de instellingen.';
+		echo '<p>Dit veld wordt bij aanmaak gebruiker vooraf ingevuld met de "';
+		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Minimum Account Limiet') . '" ';
+		echo 'die gedefiniëerd is in de instellingen.';
 
 		if ($app['config']->get('preset_minlimit') !== '')
 		{
-			echo ' De preset bedraagt momenteel <strong>' . $app['config']->get('preset_minlimit') . '</strong>.';
+			echo ' De Preset bedraagt momenteel <strong>' . $app['config']->get('preset_minlimit') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -1966,7 +1974,7 @@ if ($add || $edit)
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="maxlimit" class="col-sm-2 control-label">Maximum limiet saldo</label>';
+		echo '<label for="maxlimit" class="col-sm-2 control-label">Maximum Account Limiet</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="number" class="form-control" id="maxlimit" name="maxlimit" ';
 		echo 'value="';
@@ -1990,13 +1998,13 @@ if ($add || $edit)
 
 		echo '</p>';
 
-		echo '<p>Dit veld wordt vooraf ingevuld bij aanmaak gebruiker wanneer "';
-		echo aphp('config', ['active_tab' => 'balance'], 'preset individuele maximum limiet') . '" ';
+		echo '<p>Dit veld wordt bij aanmaak gebruiker vooraf ingevuld wanneer "';
+		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Maximum Account Limiet') . '" ';
 		echo 'is ingevuld in de instellingen.';
 
 		if ($app['config']->get('preset_maxlimit') !== '')
 		{
-			echo ' De preset bedraagt momenteel <strong>' . $app['config']->get('preset_maxlimit') . '</strong>.';
+			echo ' De Preset bedraagt momenteel <strong>' . $app['config']->get('preset_maxlimit') . '</strong>.';
 		}
 
 		echo '</p>';
@@ -2009,7 +2017,8 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="cron_saldo" class="col-sm-2 control-label">Periodieke mail met recent vraag en aanbod</label>';
+	echo '<label for="cron_saldo" class="col-sm-2 control-label">';
+	echo 'Periodieke Overzichts E-mail</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
 	echo $user['cron_saldo'] ? ' checked="checked"' : '';
@@ -2512,7 +2521,7 @@ if ($id)
 	if ($s_admin || $s_owner)
 	{
 		echo '<dt>';
-		echo 'Periodieke mail met recent vraag en aanbod';
+		echo 'Periodieke Overzichts E-mail';
 		echo '</dt>';
 		echo (($user['cron_saldo']) ? 'Aan' : 'Uit');
 		echo '</dl>';
@@ -2679,7 +2688,7 @@ if ($v_list)
 	{
 		$columns['u'] += [
 			'admincomment'	=> 'Admin commentaar',
-			'cron_saldo'	=> 'Periodieke mail',
+			'cron_saldo'	=> 'Periodieke Overzichts E-mail',
 			'cdate'			=> 'Gecreëerd',
 			'mdate'			=> 'Aangepast',
 			'adate'			=> 'Geactiveerd',
@@ -2807,7 +2816,7 @@ if ($v_list)
 	{
 		$columns['u'] += [
 			'admincomment'	=> 'Admin commentaar',
-			'cron_saldo'	=> 'Periodieke mail',
+			'cron_saldo'	=> 'Periodieke Overzichts E-mail',
 			'cdate'			=> 'Gecreëerd',
 			'mdate'			=> 'Aangepast',
 			'adate'			=> 'Geactiveerd',
@@ -3841,7 +3850,7 @@ if ($v_list)
 		echo '<div class="tab-content">';
 
 		echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
-		echo '<h3>Mail verzenden naar geselecteerde gebruikers</h3>';
+		echo '<h3>E-Mail verzenden naar geselecteerde gebruikers</h3>';
 
 		echo '<form method="post" class="form-horizontal">';
 
@@ -3882,7 +3891,7 @@ if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo '<input type="submit" value="Zend test mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
+		echo '<input type="submit" value="Zend test E-mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 
 		echo '</div>';
@@ -3892,7 +3901,7 @@ if ($v_list)
 		foreach($edit_fields_tabs as $k => $t)
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab"';
-			echo (isset($t['access_control'])) ? ' data-access-control="true"' : '';
+			echo isset($t['access_control']) ? ' data-access-control="true"' : '';
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
@@ -3956,7 +3965,9 @@ else if ($v_extended)
 		if ($u['PictureFile'])
 		{
 			echo '<div class="media-left">';
-			echo '<a href="' . generate_url('users', ['id' => $u['id']]) . '">';
+			echo '<a href="';
+			echo generate_url('users', ['id' => $u['id']]);
+			echo '">';
 			echo '<img class="media-object" src="' . $app['s3_img_url'] . $u['PictureFile'] . '" width="150">';
 			echo '</a>';
 			echo '</div>';
