@@ -593,7 +593,14 @@ $fa = 'share-alt';
 
 include __DIR__ . '/include/header.php';
 
-echo get_intersystem_explain();
+echo '<p>';
+echo 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
+echo 'je eigen Systeem en een ander Systeem dat draait op eLAS of eLAND software.';
+echo 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
+echo 'op tijd. Ze zijn dus Tijdsbanken en dienen zo ';
+echo 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
+echo 'Wanneer je deze pagina kan zien is dit reeds het geval.';
+echo '</p>';
 
 if (count($groups))
 {
@@ -999,19 +1006,6 @@ function get_schemas_groups():string
 
 	$out .= '</div></div>';
 
-	return $out;
-}
-
-function get_intersystem_explain():string
-{
-	$out = '<p>';
-	$out .= 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
-	$out .= 'je eigen Systeem en een ander Systeem dat draait op eLAS of eLAND software.';
-	$out .= 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
-	$out .= 'op tijd. Ze zijn dus Tijdsbanken en dienen zo ';
-	$out .= 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
-	$out .= 'Wanneer je deze pagina kan zien is dit reeds het geval.';
-	$out .= '</p>';
 	return $out;
 }
 
