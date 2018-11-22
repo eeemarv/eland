@@ -1018,15 +1018,10 @@ if ($add)
 
 	echo '<ul>';
 
-	if ($app['config']->get('currencyratio') > 0)
-	{
-		echo '<li id="info_ratio">Valuatie: <span class="num">';
-		echo $app['config']->get('currencyratio');
-		echo '</span> per uur</li>';
-	}
+	echo get_valuation();
 
 	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe tijdsvaluta ';
-	echo 'is niet gekend omdat het andere Systeem zich niet op de eLAND-server bevindt.</li>';
+	echo 'is niet gekend omdat het andere Systeem zich niet op dezelfde eLAND-server bevindt.</li>';
 
 	echo '</ul>';
 
@@ -1044,7 +1039,10 @@ if ($add)
 
 	echo '<ul>';
 
-	echo '<li id="info_ratio">Valuatie: <span class="num"></span> per uur</li>';
+	if ($app['config']->get('template_lets') && $app['config']->get('currencyratio') > 0)
+	{
+		echo '<li id="info_ratio">Valuatie: <span class="num"></span> per uur</li>';
+	}
 
 	echo '</div>';
 
@@ -1071,7 +1069,14 @@ if ($add)
 
 	if ($s_admin)
 	{
-		echo '<li>Admins kunnen over en onder limieten gaan in het eigen Systeem.</li>';
+		echo '<li>Admins kunnen over en onder limieten gaan';
+
+		if ($app['config']->get('interlets_en') && $app['config']->get('template_lets'))
+		{
+		echo ' in het eigen Systeem.';
+		}
+
+		echo '</li>';
 	}
 
 	echo '</i></small></ul>';
@@ -1303,12 +1308,7 @@ if ($edit)
 	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
 	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
 
-	if ($app['config']->get('currencyratio') > 0)
-	{
-		echo '<li>Valuatie: <span class="sum">';
-		echo $app['config']->get('currencyratio');
-		echo '</span> ' . $app['config']->get('currency') . ' per LETS-uur.</li>';
-	}
+	echo get_valuation();
 
 	echo '</i></small></ul>';
 
@@ -1457,14 +1457,7 @@ if ($id)
 
 	echo '<ul><small><i>';
 
-	if ($app['config']->get('currencyratio') > 0)
-	{
-		echo '<li>Valuatie: <span class="num">';
-		echo $app['config']->get('currencyratio');
-		echo '</span> ';
-		echo $app['config']->get('currency');
-		echo ' per uur.</li>';
-	}
+	echo get_valuation();
 
 	echo '</i></small></ul>';
 
@@ -2141,16 +2134,7 @@ if ($inline)
 }
 else
 {
-	echo '<ul><small><i>';
-
-	if ($app['config']->get('currencyratio') > 0)
-	{
-		echo '<li>Valuatie: <span class="num">';
-		echo $app['config']->get('currencyratio');
-		echo '</span> ' . $app['config']->get('currency') . ' per uur.</li>';
-	}
-
-	echo '</i></small></ul>';
+	echo get_valuation();
 
 	include __DIR__ . '/include/footer.php';
 }
@@ -2166,4 +2150,20 @@ function cancel($id = null)
 
 	header('Location: ' . generate_url('transactions', $params));
 	exit;
+}
+
+function get_valuation():string
+{
+	global $app;
+
+	$out = '';
+
+	if ($app['config']->get('template_lets') && $app['config']->get('currencyratio') > 0)
+	{
+		$out .= '<li id="info_ratio">Valuatie: <span class="num">';
+		$out .= $app['config']->get('currencyratio');
+		$out .= '</span> per uur</li>';
+	}
+
+	return $out;
 }
