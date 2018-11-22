@@ -557,15 +557,12 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 if ($s_admin)
 {
 	$map_template_vars = [
-		'naam' 				=> 'name',
-		'volledige_naam'	=> 'fullname',
-		'saldo'				=> 'saldo',
-		$app['type_template']->get('code')	=> 'letscode',
-		'postcode'			=> 'postcode',
-		'id'				=> 'id',
-		'status'			=> 'status',
-		'min_limiet'		=> 'minlimit',
-		'max_limiet'		=> 'maxlimit',
+		'naam' 					=> 'name',
+		'volledige_naam'		=> 'fullname',
+		'saldo'					=> 'saldo',
+		'account_code'			=> 'letscode',
+		'min_account_limiet'	=> 'minlimit',
+		'max_account_limiet'	=> 'maxlimit',
 	];
 }
 
@@ -1291,35 +1288,35 @@ if ($add || $edit)
 		{
 			if (!$user['letscode'])
 			{
-				$errors[] = 'Vul een ' . $app['type_template']->get('code') . ' in!';
+				$errors[] = 'Vul een Account Code in!';
 			}
 			else if ($app['db']->fetchColumn($letscode_sql, $letscode_sql_params))
 			{
-				$errors[] = 'De ' . $app['type_template']->get('code') . ' bestaat al!';
+				$errors[] = 'De Account Code bestaat al!';
 			}
 			else if (strlen($user['letscode']) > 20)
 			{
-				$errors[] = 'De ' . $app['type_template']->get('code') . ' mag maximaal 20 tekens lang zijn.';
+				$errors[] = 'De Account Code mag maximaal 20 tekens lang zijn.';
 			}
 
 			if (!preg_match("/^[A-Za-z0-9-]+$/", $user['letscode']))
 			{
-				$errors[] = 'De ' . $app['type_template']->get('code') . ' kan enkel uit letters, cijfers en koppeltekens bestaan.';
+				$errors[] = 'De Account Code kan enkel uit letters, cijfers en koppeltekens bestaan.';
 			}
 
 			if (filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
 			{
-				$errors[] = 'Geef getal of niets op voor de minimum limiet.';
+				$errors[] = 'Geef getal of niets op voor de Minimum Account Limiet.';
 			}
 
 			if (filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
 			{
-				$errors[] = 'Geef getal of niets op voor de maximum limiet.';
+				$errors[] = 'Geef getal of niets op voor de Maximum Account Limiet.';
 			}
 
 			if (strlen($user['presharedkey']) > 80)
 			{
-				$errors[] = 'De preshared key mag maximaal 80 tekens lang zijn.';
+				$errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
 			}
 		}
 
@@ -1336,7 +1333,7 @@ if ($add || $edit)
 
 		if (strlen($user['comments']) > 100)
 		{
-			$errors[] = 'Commentaar mag maximaal 100 tekens lang zijn.';
+			$errors[] = 'Het veld Commentaar mag maximaal 100 tekens lang zijn.';
 		}
 
 		if (strlen($user['postcode']) > 6)
@@ -1353,11 +1350,11 @@ if ($add || $edit)
 		{
 			if (!$password)
 			{
-				$errors[] = 'Gelieve een paswoord in te vullen.';
+				$errors[] = 'Gelieve een Paswoord in te vullen.';
 			}
 			else if (!$app['password_strength']->get($password))
 			{
-				$errors[] = 'Het paswoord is niet sterk genoeg.';
+				$errors[] = 'Het Paswoord is niet sterk genoeg.';
 			}
 		}
 
@@ -1737,7 +1734,7 @@ if ($add || $edit)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="col-sm-2 control-label">';
-		echo $app['type_template']->get('code');
+		echo 'Account Code';
 		echo '</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
@@ -4000,11 +3997,13 @@ else if ($v_tiles)
 	echo '<p>';
 	echo '<span class="btn-group sort-by" role="group">';
 	echo '<button class="btn btn-default active" data-sort-by="letscode">';
-	echo $app['type_template']->get('code') . ' ';
+	echo 'Account Code ';
 	echo '<i class="fa fa-sort-asc"></i></button>';
-	echo '<button class="btn btn-default" data-sort-by="name">naam ';
+	echo '<button class="btn btn-default" data-sort-by="name">';
+	echo 'Naam ';
 	echo '<i class="fa fa-sort"></i></button>';
-	echo '<button class="btn btn-default" data-sort-by="postcode">postcode ';
+	echo '<button class="btn btn-default" data-sort-by="postcode">';
+	echo 'Postcode ';
 	echo '<i class="fa fa-sort"></i></button>';
 	echo '</span>';
 	echo '</p>';

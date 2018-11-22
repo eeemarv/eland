@@ -164,10 +164,6 @@ $app['config'] = function ($app){
 		$app['predis'], $app['this_group']);
 };
 
-$app['type_template'] = function ($app){
-	return new service\type_template($app['config']);
-};
-
 $app['user_cache'] = function ($app){
 	return new service\user_cache($app['db'], $app['xdb'], $app['predis'], $app['this_group']);
 };

@@ -108,19 +108,19 @@ if ($add)
 
 		if(empty($fromuser))
 		{
-			$errors[] = 'Gebruiker "Van ' . $app['type_template']->get('code') . '" bestaat niet';
+			$errors[] = 'De "Van Account Code" bestaat niet';
 		}
 
 		if (!strlen($letscode_to))
 		{
-			$errors[] = 'Geen bestemmeling (Aan ' . $app['type_template']->get('code') . ') ingevuld';
+			$errors[] = 'Geen bestemmings Account (Aan Account Code) ingevuld';
 		}
 
 		if(empty($touser) && !count($errors))
 		{
 			if ($group_id == 'self')
 			{
-				$errors[] = 'Bestemmeling (Aan ' . $app['type_template']->get('code') . ') bestaat niet';
+				$errors[] = 'Bestemmings Account (Aan Account Code) bestaat niet';
 			}
 			else
 			{
@@ -189,7 +189,7 @@ if ($add)
 
 		if(($fromuser['letscode'] == $touser['letscode']) && !count($errors))
 		{
-			$errors[] = 'Van en Aan ' . $app['type_template']->get('code') . ' zijn hetzelfde';
+			$errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
 		}
 
 		if (!$s_admin && !count($errors))
@@ -200,9 +200,9 @@ if ($add)
 
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
-					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in dit Systeem)';
-					$err .= ' heeft zijn maximum limiet bereikt. ';
+					$err = 'Het ';
+					$err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
+					$err .= ' heeft haar maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
 					$err .= ' en de maximum ';
 					$err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
@@ -213,12 +213,12 @@ if ($add)
 			{
 				if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
 				{
-					$err = 'De ';
-					$err .= $group_id == 'self' ? 'bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'interSysteem rekening (in dit Systeem)';
-					$err .= ' heeft zijn maximum limiet bereikt. ';
+					$err = 'Het ';
+					$err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
+					$err .= ' heeft haar maximum limiet bereikt. ';
 					$err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
-					$err .= ' en de maximum ';
-					$err .= 'limiet bedraagt ' . $touser['maxlimit'] . ' ' . $currency . '.';
+					$err .= ' en de Maximum Account ';
+					$err .= 'Limiet bedraagt ' . $touser['maxlimit'] . ' ' . $currency . '.';
 					$errors[] = $err;
 				}
 			}
@@ -229,7 +229,7 @@ if ($add)
 			&& !($touser['status'] == '1' || $touser['status'] == '2')
 			&& !count($errors))
 		{
-			$errors[] = 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ') is niet actief';
+			$errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
 		}
 
 		if ($s_user && !count($errors))
@@ -238,13 +238,16 @@ if ($add)
 
 			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
-				$errors[] = 'Als uitstapper kan je geen ' . $amount . ' ' . $app['config']->get('currency') . ' uitgeven.';
+				$errors[] = 'Als Uitstapper kan je geen ' . $amount . ' ' . $app['config']->get('currency') . ' uitgeven.';
 			}
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
 			{
-				$dest = $group_id == 'self' ? 'De bestemmeling (Aan ' . $app['type_template']->get('code') . ')' : 'De interSysteem rekening ';
-				$errors[] = $dest . ' heeft de status \'Uitstapper\' en kan geen ' . $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
+				$err = 'Het ';
+				$err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
+				$err .= ' heeft de status \'Uitstapper\' en kan geen ';
+				$err .= $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
+				$errors[] = $err;
 			}
 		}
 
@@ -253,7 +256,7 @@ if ($add)
 			$errors[] = $error_token;
 		}
 
-		$contact_admin = ($s_admin) ? '' : ' Contacteer een admin.';
+		$contact_admin = $s_admin ? '' : ' Contacteer een admin.';
 
 		if (isset($group['url']))
 		{
@@ -319,12 +322,12 @@ if ($add)
 
 			if (!$group['remoteapikey'])
 			{
-				$errors[] = 'Geen Apikey voor dit interSysteem ingesteld.' . $contact_admin;
+				$errors[] = 'Geen Remote Apikey voor dit interSysteem ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['presharedkey'])
 			{
-				$errors[] = 'Geen Preshared Key voor deze interSysteem ingesteld.' . $contact_admin;
+				$errors[] = 'Geen Preshared Key voor dit interSysteem ingesteld.' . $contact_admin;
 			}
 
 			if (!$group['myremoteletscode'])
@@ -336,7 +339,7 @@ if ($add)
 
 			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 			{
-				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
+				$errors[] = 'De Currency Ratio is niet correct ingesteld. ' . $contact_admin;
 			}
 
 			if (strlen($letscode_to))
@@ -364,7 +367,7 @@ if ($add)
 				}
 				else
 				{
-					$errors[] = 'Er werd geen Account gevonden met ' . $app['type_template']->get('code') . ' ' . $letscode_to;
+					$errors[] = 'Er werd geen Account gevonden met Account Code ' . $letscode_to;
 				}
 			}
 
@@ -878,9 +881,7 @@ if ($add)
 	echo $s_admin ? '' : ' disabled" ';
 	echo '>';
 	echo '<label for="letscode_from" class="col-sm-2 control-label">';
-	echo $s_admin ? '<span class="label label-info">Admin</span> ' : '';
-	echo 'Van ';
-	echo $app['type_template']->get('code');
+	echo 'Van Account Code';
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
@@ -969,8 +970,8 @@ if ($add)
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="letscode_to" class="col-sm-2 control-label">Aan ';
-	echo $app['type_template']->get('code');
+	echo '<label for="letscode_to" class="col-sm-2 control-label">';
+	echo 'Aan Account Code';
 	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
@@ -990,7 +991,7 @@ if ($add)
 
 	echo '<ul class="account-info">';
 
-	echo '<li>Dit veld geeft autosuggesties door naam of ' . $app['type_template']->get('code') . ' te typen. ';
+	echo '<li>Dit veld geeft autosuggesties door Naam of Account Code te typen. ';
 	echo count($groups) > 1 ? 'Indien je een interSysteem transactie doet, kies dan eerst het juiste interSysteem om de juiste suggesties te krijgen.' : '';
 	echo '</li>';
 	echo '</ul>';
@@ -1809,7 +1810,7 @@ if (!$inline)
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-	echo 'name="fcode" id="fcode" placeholder="' . $app['type_template']->get('code') . '" ';
+	echo 'name="fcode" id="fcode" placeholder="Account Code" ';
 	echo 'value="' . $fcode . '">';
 
 	echo '</div>';
@@ -1833,7 +1834,7 @@ if (!$inline)
 	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'data-typeahead-source="fcode" ';
-	echo 'placeholder="' . $app['type_template']->get('code') . '" ';
+	echo 'placeholder="Account Code" ';
 	echo 'aria-describedby="tcode_addon" ';
 	echo 'name="tcode" value="' . $tcode . '">';
 	echo '</div>';

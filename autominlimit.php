@@ -104,8 +104,7 @@ echo '<input type="text" id="exclusive" name="exclusive" ';
 echo 'value="' . $a['exclusive'] . '" ';
 echo 'class="form-control">';
 echo '<p>';
-echo $app['type_template']->get_cap('codes');
-echo ' gescheiden door comma\'s</p>';
+echo 'Account Codes gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -136,8 +135,7 @@ echo $a['trans_exclusive'];
 echo '" ';
 echo 'class="form-control">';
 echo '<p>';
-echo $app['type_template']->get_cap('codes');
-echo ' gescheiden door comma\'s</p>';
+echo 'Account Codes gescheiden door comma\'s</p>';
 echo '</div>';
 echo '</div>';
 

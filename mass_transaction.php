@@ -13,8 +13,6 @@ $selected_users = array_combine($selected_users, $selected_users);
 
 $submit = isset($_POST['zend']) ? true : false;
 
-$str_code = $app['type_template']->get('code');
-
 $st = [
 	'active'	=> [
 		'lbl'	=> 'Actief',
@@ -123,24 +121,25 @@ if ($submit)
 
 	if ($to_letscode && $from_letscode)
 	{
-		$errors[] = '\'Van ' . $str_code . '\' en \'Aan ' . $str_code . '\' kunnen niet beide ingevuld worden.';
+		$errors[] = '\'Van Account Code\' en \'Aan Account Code\' kunnen niet beide ingevuld worden.';
 	}
 	else if (!($to_letscode || $from_letscode))
 	{
-		$errors[] = '\'Van ' . $str_code . '\' OF \'Aan ' . $str_code . '\' moet ingevuld worden.';
+		$errors[] = '\'Van Account Code\' OF \'Aan Account Code\' moet ingevuld worden.';
 	}
 	else
 	{
-		$to_one = ($to_letscode) ? true : false;
-		$letscode = ($to_one) ? $to_letscode : $from_letscode;
+		$to_one = $to_letscode ? true : false;
+		$letscode = $to_one ? $to_letscode : $from_letscode;
 
 		$one_uid = $app['db']->fetchColumn('select id from users where letscode = ?', [$letscode]);
 
 		if (!$one_uid)
 		{
-			$field = ($to_one) ? '\'Aan ': '\'Van ';
-			$field .= $app['type_template']->get('code') . '\'';
-			$errors[] = 'Geen bestaande code in veld ' . $field . '.';
+			$err = 'Geen bestaande Account Code in veld \'';
+			$err .= $to_one ? 'Aan': 'Van';
+			$err .= ' Account Code\'.';
+			$errors[] = $err;
 		}
 		else
 		{
@@ -470,13 +469,12 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. ' . $app['type_template']->get('codes');
+echo 'excl. Account Codes';
 echo '</span>';
 echo '<input type="text" class="form-control" id="var_ex_code_in">';
 echo '</div>';
 echo '<p>Exclusief tegenpartijen: ';
-echo $app['type_template']->get('codes');
-echo ' gescheiden door komma\'s</p>';
+echo 'Account Codes gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -497,15 +495,13 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. ';
-echo $app['type_template']->get('codes');
+echo 'excl. Account Codes';
 echo '</span>';
 
 echo '<input type="text" class="form-control" id="var_ex_code_out">';
 echo '</div>';
 echo '<p>Exclusief tegenpartijen: ';
-echo $app['type_template']->get('codes');
-echo ' gescheiden door komma\'s</p>';
+echo 'Account Codes gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
 
@@ -617,18 +613,19 @@ echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
 echo '<label for="from_letscode" class="col-sm-2 control-label">';
-echo 'Van ';
-echo $app['type_template']->get('code');
+echo 'Van Account Code';
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
-echo 'value="' . $from_letscode . '" ';
+echo 'value="';
+echo $from_letscode;
+echo '" ';
 echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 echo 'data-typeahead="';
 echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
-echo 'Alle ingevulde bedragen hieronder worden van dit account gehaald.</p>';
+echo 'Alle ingevulde bedragen hieronder worden van dit Account gehaald.</p>';
 echo '</div>';
 echo '</div>';
 
@@ -728,15 +725,16 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="to_letscode" class="col-sm-2 control-label">';
-echo 'Aan ';
-echo $app['type_template']->get('code');
+echo 'Aan Account Code';
 echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
-echo 'value="' . $to_letscode . '" ';
+echo 'value="';
+echo $to_letscode;
+echo '" ';
 echo 'data-typeahead-source="from_letscode">';
 echo '<p>Gebruik dit voor een "Veel naar één" transactie. Bijvoorbeeld, een ledenbijdrage. ';
-echo 'Alle ingevulde bedragen hierboven gaan naar dit account.</p>';
+echo 'Alle ingevulde bedragen hierboven gaan naar dit Account.</p>';
 echo '</div>';
 echo '</div>';
 
@@ -764,8 +762,7 @@ echo '<div class="col-sm-12">';
 echo '<input type="checkbox" name="verify"';
 echo ' value="1" required> ';
 echo 'Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" ';
-echo $app['type_template']->get('code');
-echo ' ingevuld zijn.';
+echo 'Account Code ingevuld zijn.';
 echo '</div>';
 echo '</div>';
 
