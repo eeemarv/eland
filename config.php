@@ -417,9 +417,9 @@ $tab_panes = [
 			],
 
 			'li_4'	=> [
-				'inline'	=> '%1$s Gebruik eLAS/eLAND interSysteem (enkel geldig wanneer hierboven
-					Tijdsbank geselecteerd is. eLAS/eLAND interSysteem is enkel mogelijk met
-					munten met gemeenschappelijke tijdsbasis)',
+				'inline'	=> '%1$s Gebruik eLAS/eLAND interSysteem. Deze instelling is enkel geldig wanneer hierboven
+					"Tijdsbank" geselecteerd is. eLAS/eLAND interSysteem is enkel mogelijk met
+					munten met gemeenschappelijke tijdsbasis.',
 				'inputs'	=> [
 					'interlets_en'	=> [
 						'type'	=> 'checkbox',
@@ -450,7 +450,7 @@ $tab_panes = [
 			'css'	=> [
 				'lbl'		=> 'Stijl (css)',
 				'type' 		=> 'url',
-				'explain'	=> 'Url van extra stijlblad (css-bestand)',
+				'explain'	=> 'Url van extra stijlblad (css-bestand). Laat leeg wanneer niet gebruikt.',
 				'attr'		=> ['maxlength'	=> 100],
 			],
 		],
