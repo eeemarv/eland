@@ -295,7 +295,7 @@ if ($add)
 
 				mail_mailtype_interlets_transaction($transaction);
 
-				$app['alert']->success('InterSysteem transactie opgeslagen (verwerking per mail).');
+				$app['alert']->success('InterSysteem transactie opgeslagen (verwerking per E-mail).');
 			}
 			else
 			{
@@ -367,7 +367,7 @@ if ($add)
 				}
 				else
 				{
-					$errors[] = 'Er werd geen Account gevonden met Account Code ' . $letscode_to;
+					$errors[] = 'Er werd geen Account gevonden met Code ' . $letscode_to;
 				}
 			}
 
@@ -489,7 +489,7 @@ if ($add)
 		}
 		else
 		{
-			// the interSysteem group is on the same server (eLAND)
+			// the interSystem group is on the same server (eLAND)
 
 			$remote_schema = $app['groups']->get_schema($group_domain);
 
@@ -499,11 +499,11 @@ if ($add)
 
 			if (!$to_remote_user)
 			{
-				$errors[] = 'De interSysteem gebruiker (bestemmeling "Aan code") bestaat niet.';
+				$errors[] = 'Het bestemmings Account ("Aan Account Code") in het andere Systeem bestaat niet.';
 			}
 			else if (!in_array($to_remote_user['status'], ['1', '2']))
 			{
-				$errors[] = 'De interSysteem gebruiker (bestemmeling "Aan code") is niet actief.';
+				$errors[] = 'Het bestemmings Account ("Aan Account Code") in het andere Systeem is niet actief.';
 			}
 
 			$remote_group = $app['db']->fetchAssoc('select *
@@ -547,16 +547,15 @@ if ($add)
 			if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 				&& !count($errors))
 			{
-				$errors[] = 'De currencyratio is niet correct ingesteld. ' . $contact_admin;
+				$errors[] = 'De Currency Ratio is niet correct ingesteld. ' . $contact_admin;
 			}
 
 			if ((!$remote_currencyratio ||
 				!ctype_digit((string) $remote_currencyratio)
 				|| $remote_currencyratio < 1) && !count($errors))
 			{
-				$errors[] = 'De currencyratio van het andere Systeem is niet correct ingesteld. ' . $contact_admin;
+				$errors[] = 'De Currency Ratio van het andere Systeem is niet correct ingesteld. ' . $contact_admin;
 			}
-
 			$remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
 			if (($remote_amount < 1) && !count($errors))
@@ -817,7 +816,7 @@ if ($add)
 	$groups = [];
 
 	$groups[] = [
-		'groupname' => $app['config']->get('systemname') . ' (eigen Systeem)',
+		'groupname' => $app['config']->get('systemname'),
 		'id'		=> 'self',
 	];
 
@@ -900,7 +899,7 @@ if ($add)
 	if ($groups_en)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="group_id" class="col-sm-2 control-label">Aan interSysteem</label>';
+		echo '<label for="group_id" class="col-sm-2 control-label">Aan Systeem</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
@@ -945,8 +944,11 @@ if ($add)
 			}
 
 			echo ' data-typeahead="' . $typeahead . '"';
-			echo ($l['id'] == $group_id) ? ' selected="selected"' : '';
-			echo '>' . htmlspecialchars($l['groupname'], ENT_QUOTES) . '</option>';
+			echo $l['id'] == $group_id ? ' selected="selected"' : '';
+			echo '>';
+			echo htmlspecialchars($l['groupname'], ENT_QUOTES);
+			echo $l['id'] === 'self' ? ' (eigen Systeem)' : ' (interSysteem)';
+			echo '</option>';
 		}
 
 		echo '</select>';
