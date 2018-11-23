@@ -1025,6 +1025,19 @@ if ($add)
 	echo '<li id="info_remote_amount_unknown" class="hidden">De omrekening naar de externe tijdsvaluta ';
 	echo 'is niet gekend omdat het andere Systeem zich niet op dezelfde eLAND-server bevindt.</li>';
 
+	if ($s_admin)
+	{
+		echo '<li id="info_admin_limit">';
+		echo 'Admins kunnen over en onder limieten gaan';
+
+		if ($app['config']->get('interlets_en') && $app['config']->get('template_lets'))
+		{
+			echo ' in het eigen Systeem.';
+		}
+
+		echo '</li>';
+	}
+
 	echo '</ul>';
 
 	echo '</div>';
@@ -1043,8 +1056,11 @@ if ($add)
 
 	if ($app['config']->get('template_lets') && $app['config']->get('currencyratio') > 0)
 	{
-		echo '<li id="info_ratio">Valuatie: <span class="num"></span> per uur</li>';
+		echo '<li id="info_ratio">Valuatie: <span class="num">';
+		echo '</span> per uur</li>';
 	}
+
+	echo '</ul>';
 
 	echo '</div>';
 
@@ -1054,7 +1070,9 @@ if ($add)
 	echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="description" name="description" ';
-	echo 'value="' . $transaction['description'] . '" required maxlength="60">';
+	echo 'value="';
+	echo $transaction['description'];
+	echo '" required maxlength="60">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1066,22 +1084,6 @@ if ($add)
 	echo '</form>';
 	echo '</div>';
 	echo '</div>';
-
-	echo '<ul><small><i>';
-
-	if ($s_admin)
-	{
-		echo '<li>Admins kunnen over en onder limieten gaan';
-
-		if ($app['config']->get('interlets_en') && $app['config']->get('template_lets'))
-		{
-		echo ' in het eigen Systeem.';
-		}
-
-		echo '</li>';
-	}
-
-	echo '</i></small></ul>';
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -1462,10 +1464,11 @@ if ($id)
 		echo 'Dit is een interSysteem transactie vanuit een ander Systeem';
 		echo '</h2>';
 		echo '<p>';
-		echo 'Een interSysteem transactie bestaat in feite altijd uit twee gekoppelde transacties, die ';
+		echo 'Een interSysteem transactie bestaat in ';
+		echo 'altijd uit twee gekoppelde transacties, die ';
 		echo 'elks binnen hun eigen Systeem plaatsvinden. ';
-		echo 'De zogenaamde interSysteem Accounts doen dienst als intermediair. ';
-
+		echo 'De zogenaamde interSysteem Accounts ';
+		echo 'doen dienst als intermediair.';
 		echo '</p>';
 		echo '</div>';
 		echo '<div class="col-md-6">';

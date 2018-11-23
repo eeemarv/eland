@@ -27,12 +27,20 @@ $(document).ready(function(){
 	var $info = $amount_container.find('ul');
 	var $info_remote_amount_unknown = $info.find('#info_remote_amount_unknown');
 
+	var $info_admin_limit = $amount_container.find('#info_admin_limit');
+
 	var select_change = function(){
 
 		var $option = $select.find('option:selected');
 
 		var currency = $option.data('currency');
 		var ratio = $option.data('currencyratio');
+
+		if ($option.attr('id') === 'group_self'){
+			$info_admin_limit.show();
+		} else {
+			$info_admin_limit.hide();
+		}
 
 		if (currency && $option.attr('id') !== 'group_self'){
 
