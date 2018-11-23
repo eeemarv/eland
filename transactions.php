@@ -1358,15 +1358,10 @@ if ($id)
 
 	include __DIR__ . '/include/header.php';
 
-	echo '<div class="panel panel-default printview">';
+	echo '<div class="panel panel-';
+	echo $transaction['real_from'] || $transaction['real_to'] ? 'warning' : 'default';
+	echo ' printview">';
 	echo '<div class="panel-heading">';
-
-	if ($transaction['real_to'])
-	{
-		echo '<p><strong>';
-
-		echo '</strong></p>';
-	}
 
 	echo '<dl>';
 
@@ -1389,18 +1384,21 @@ if ($id)
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+		echo '<span class="btn btn-default btn-xs">';
+		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_from'],
+			$user_from = link_user($inter_transaction['id_from'],
 				$inter_schema,
 				$s_inter_schema_check[$inter_schema]);
 		}
 		else
 		{
-			echo $transaction['real_from'];
+			$user_from = $transaction['real_from'];
 		}
+
+		echo $user_from;
 
 		echo '</dd>';
 	}
@@ -1421,18 +1419,21 @@ if ($id)
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+		echo '<span class="btn btn-default btn-xs">';
+		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_to'],
+			$user_to = link_user($inter_transaction['id_to'],
 				$inter_schema,
 				$s_inter_schema_check[$inter_schema]);
 		}
 		else
 		{
-			echo $transaction['real_to'];
+			$user_to = $transaction['real_to'];
 		}
+
+		echo $user_to;
 
 		echo '</dd>';
 	}
@@ -1446,7 +1447,8 @@ if ($id)
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
-	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
+	echo $transaction['amount'] . ' ';
+	echo $app['config']->get('currency');
 	echo '</dd>';
 
 	echo '<dt>Omschrijving</dt>';
@@ -1456,59 +1458,109 @@ if ($id)
 
 	echo '</dl>';
 
-	if (false && $transaction['real_from'])
+	if ($transaction['real_from'])
 	{
 		echo '<div class="row">';
 		echo '<div class="col-md-12">';
 		echo '<h2>';
-		echo 'Dit is een interSysteem transactie vanuit een ander Systeem';
+		echo 'Dit is een interSysteem transactie vanuit een ';
+		echo 'Account in ander Systeem';
 		echo '</h2>';
 		echo '<p>';
 		echo 'Een interSysteem transactie bestaat in ';
 		echo 'altijd uit twee gekoppelde transacties, die ';
 		echo 'elks binnen hun eigen Systeem plaatsvinden. ';
 		echo 'De zogenaamde interSysteem Accounts ';
+		echo '(in stippellijn) ';
 		echo 'doen dienst als intermediair.';
 		echo '</p>';
 		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="row">';
+
 		echo '<div class="col-md-6">';
 		echo '<div class="thumbnail">';
 		echo '<img src="gfx/there-from-inter.png">';
 		echo '</div>';
+		echo '<div class="caption">';
+		echo '<ul>';
+		echo '<li>';
+		echo '<strong>Acc-1</strong> ';
+		echo 'Het Account in het andere Systeem dat de ';
+		echo 'transactie initiëerde. ';
+		echo '(';
+		echo '<span class="btn btn-default btn-xs">';
+		echo '<i class="fa fa-share-alt"></i></span> ';
+		echo $user_from;
+		echo ')';
+		echo '</li>';
+		echo '<li>';
+		echo '<strong>Tr-1</strong> ';
+
+		if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+		{
+			echo '<a href="';
+			echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+			echo '">';
+		}
+
+		echo 'De transactie in het andere Systeem uitgedrukt ';
+		echo 'in de eigen tijdsmunt.';
+
+		if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+		{
+			echo '</a>';
+		}
+
+		echo '</li>';
+		echo '<li>';
+		echo '<strong>iAcc-1</strong> ';
+		echo 'Het interSysteem Account van dit Systeem in het ';
+		echo 'andere Systeem.';
+		echo '</li>';
+		echo '</ul>';
 		echo '</div>';
+		echo '</div>';
+
 		echo '<div class="col-md-6">';
 		echo '<div class="thumbnail">';
 		echo '<img src="gfx/here-from-inter.png">';
 		echo '</div>';
+		echo '<div class="caption bg-warning">';
+		echo '<ul>';
+		echo '<li>';
+		echo '<strong>iAcc-2</strong> ';
+		echo 'Het interSysteem Account van het andere Systeem in dit ';
+		echo 'Systeem. ';
+		echo '(';
+		echo link_user($transaction['id_from'], false, $s_admin);
+		echo ')';
+		echo '</li>';
+		echo '<li>';
+		echo '<strong>Tr-2</strong> ';
+		echo 'De transactie in dit Systeem uitgedrukt ';
+		echo 'in de eigen tijdsmunt. ';
+		echo '(';
+		echo $transaction['amount'] . ' ';
+		echo $app['config']->get('currency');
+		echo ') met gelijke tijdswaarde als Tr-1';
+		echo '</li>';
+		echo '<li>';
+		echo '<strong>Acc-2</strong> ';
+		echo 'Het bestemmings Account in dit Systeem. ';
+		echo '(';
+		echo link_user($transaction['id_to']);
+		echo ')';
+		echo '</li>';
+		echo '</ul>';
 		echo '</div>';
 		echo '</div>';
 
-		echo '<p><strong>';
-		echo 'Dit is een interSysteem transactie vanuit een Account ';
-		echo 'in een ander Systeem (een Gekoppeld interSysteem)';
-		echo 'Omdat transacties altijd slechts tussen Accounts binnen een Systeem kunnen ';
-		echo 'plaatsvinden, wordt er gebruik gemaakt van intermediaire ';
-		echo 'interSysteem Accounts, ';
-		echo 'en bestaat de interSysteem transactie in feite uit twee individuele transacties, ';
-		echo 'die elks binnen de aparte Systemen plaatsvinden.';
-		echo '</strong></p>';
-	}
-
-	if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
-	{
-		echo '<p><a href="';
-		echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
-		echo '">Zie de complementaire transactie ';
-		echo 'in het andere Systeem.</a></p>';
+		echo '</div>';
 	}
 
 	echo '</div></div>';
-
-	echo '<ul><small><i>';
-
-	echo get_valuation();
-
-	echo '</i></small></ul>';
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -1821,7 +1873,8 @@ if (!$inline)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoekterm">';
+	echo '<input type="text" class="form-control" id="q" value="';
+	echo $q . '" name="q" placeholder="Zoekterm">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1850,8 +1903,10 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
-	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get($typeahead_name_ary) . '" ';
+	echo 'data-newuserdays="';
+	echo $app['config']->get('newuserdays') . '" ';
 	echo 'name="fcode" id="fcode" placeholder="Account Code" ';
 	echo 'value="' . $fcode . '">';
 
@@ -2031,7 +2086,9 @@ if ($uid)
 {
 	foreach($transactions as $t)
 	{
-		echo '<tr>';
+		echo '<tr';
+		echo $t['real_to'] || $t['real_from'] ? ' class="bg-warning"' : '';
+		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
 		echo '</td>';
