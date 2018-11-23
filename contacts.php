@@ -108,15 +108,21 @@ if ($del)
 		echo '<dd>' . link_user($user_id) . '</dd>';
 	}
 	echo '<dt>Type</dt>';
-	echo '<dd>' . $contact['abbrev'] . '</dd>';
+	echo '<dd>';
+	echo $contact['abbrev'];
+	echo '</dd>';
 	echo '<dt>Waarde</dt>';
-	echo '<dd>' . $contact['value'] . '</dd>';
+	echo '<dd>';
+	echo $contact['value'];
+	echo '</dd>';
 	echo '<dt>Commentaar</dt>';
 	echo '<dd>';
-	echo ($contact['comments']) ?: '<i class="fa fa-times"></i>';
+	echo $contact['comments'] ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
-	echo '<dd>' . $app['access_control']->get_label($contact['flag_public']) . '</dd>';
+	echo '<dd>';
+	echo $app['access_control']->get_label($contact['flag_public']);
+	echo '</dd>';
 	echo '</dl>';
 
 	echo '<form method="post" class="form-horizontal">';
@@ -230,7 +236,7 @@ if ($edit || $add)
 			$errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
 		}
 
-		if(!$app['db']->fetchColumn('SELECT abbrev FROM type_contact WHERE id = ?', array($contact['id_type_contact'])))
+		if(!$app['db']->fetchColumn('select abbrev from type_contact where id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
 		}
@@ -281,14 +287,16 @@ if ($edit || $add)
 
 				if ($mail_count == 1)
 				{
-					$warning = 'Waarschuwing: E-mail adres ' . $mailadr . ' bestaat al onder de actieve gebruikers. ' . $warning;
-					$app['alert']->warning($warning);
+					$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
+					$warning_2 .= ' bestaat al onder de actieve gebruikers.';
 				}
 				else if ($mail_count > 1)
 				{
-					$warning = 'Waarschuwing: E-mail adres ' . $mailadr . ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers. ' . $warning;
-					$app['alert']->warning($warning);
+					$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
+					$warning_2 .= ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers.';
 				}
+
+				$app['alert']->warning($warning_2 . ' ' . $warning);
 			}
 			else if ($mail_count)
 			{
@@ -344,13 +352,14 @@ if ($edit || $add)
 
 	$tc = [];
 
-	$rs = $app['db']->prepare('SELECT id, name FROM type_contact');
+	$rs = $app['db']->prepare('select id, name, abbrev
+		from type_contact');
 
 	$rs->execute();
 
 	while ($row = $rs->fetch())
 	{
-		$tc[$row['id']] = $row['name'];
+		$tc[$row['id']] = $row;
 
 		if (isset($contact['id_type_contact']))
 		{
@@ -365,7 +374,32 @@ if ($edit || $add)
 		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
 
-	$h1 = ($edit) ? 'Contact aanpassen' : 'Contact toevoegen';
+	$app['assets']->add(['contacts_edit.js']);
+
+	$contacts_format = [
+		'adr'	=> [
+			'fa'		=> 'map-marker',
+			'lbl'		=> 'Adres',
+			'explain'	=> 'Voorbeeldstraat 23, 4520 Voorbeeldgemeente',
+		],
+		'gsm'	=> [
+			'fa'		=> 'mobile',
+			'lbl'		=> 'GSM',
+		],
+		'tel'	=> [
+			'fa'		=> 'phone',
+			'lbl'		=> 'Telefoon',
+		],
+		'mail'	=> [
+			'fa'		=> 'envelope-o',
+			'lbl'		=> 'E-mail',
+			'type'		=> 'email',
+		],
+	];
+
+	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
+
+	$h1 = $edit ? 'Contact aanpassen' : 'Contact toevoegen';
 	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id);
 
 	include __DIR__ . '/include/header.php';
@@ -383,10 +417,16 @@ if ($edit || $add)
 		echo '<label for="letscode" class="col-sm-2 control-label">Voor</label>';
 		echo '<div class="col-sm-10">';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
-		echo 'data-typeahead="' . $app['typeahead']->get($typeahead_ary) . '" ';
-		echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+		echo 'data-typeahead="';
+		echo $app['typeahead']->get($typeahead_ary);
+		echo '" ';
+		echo 'data-newuserdays="';
+		echo $app['config']->get('newuserdays');
+		echo '" ';
 		echo 'placeholder="letscode" ';
-		echo 'value="' . $letscode . '" required>';
+		echo 'value="';
+		echo $letscode;
+		echo '" required>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -394,8 +434,23 @@ if ($edit || $add)
 	echo '<div class="form-group">';
 	echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
 	echo '<div class="col-sm-10">';
-	echo '<select name="id_type_contact" id="id_type_contact" class="form-control" required>';
-	echo get_select_options($tc, $contact['id_type_contact']);
+	echo '<select name="id_type_contact" id="id_type_contact" ';
+	echo 'class="form-control" required>';
+
+	foreach ($tc as $id => $type)
+	{
+		echo '<option value="';
+		echo $id;
+		echo '" ';
+		echo 'data-abbrev="';
+		echo $type['abbrev'];
+		echo '" ';
+		echo $id == $contact['id_type_contact'] ? ' selected="selected"' : '';
+		echo '>';
+		echo $type['name'];
+		echo '</option>';
+	}
+
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
@@ -403,16 +458,40 @@ if ($edit || $add)
 	echo '<div class="form-group">';
 	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
 	echo '<div class="col-sm-10">';
+
+/*
+	echo '<div class="input-group">';
+
+
+	echo '<span class="input-group-addon" id="value_addon">';
+	echo '<i class="fa fa-';
+	echo $contacts_format[$abbrev]['fa'] ?? 'circle-o';
+	echo '"></i>';
+	echo '</span>';
+*/
+
 	echo '<input type="text" class="form-control" id="value" name="value" ';
-	echo 'value="' . $contact['value'] . '" required maxlength="130">';
+	echo 'value="';
+	echo $contact['value'];
+	echo '" required disabled maxlength="130" ';
+	echo 'data-contacts-format="';
+	echo htmlspecialchars(json_encode($contacts_format));
+	echo '">';
 	echo '</div>';
+	echo '<p id="contact_explain">';
+
+	echo '</p>';
+//	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
+	echo '<label for="comments" class="col-sm-2 control-label">';
+	echo 'Commentaar</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
-	echo 'value="' . $contact['comments'] . '" maxlength="50">';
+	echo 'value="';
+	echo $contact['comments'];
+	echo '" maxlength="50">';
 	echo '</div>';
 	echo '</div>';
 
