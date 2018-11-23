@@ -1101,7 +1101,7 @@ $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]
 
 if ($id || $edit)
 {
-	$id = ($edit) ? $edit : $id;
+	$id = $edit ?: $id;
 
 	$transaction = $app['db']->fetchAssoc('select t.*
 		from transactions t
@@ -1359,7 +1359,28 @@ if ($id)
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
-	echo '<dl class="dl-horizontal">';
+	if (false && $transaction['real_from'])
+	{
+		// disabled for now.
+		echo '<p><strong>';
+		echo 'Dit is een interSysteem transactie vanuit een Account ';
+		echo 'in een andere Systeem (een Gekoppeld interSysteem)';
+		echo 'Omdat transacties altijd slechts tussen Accounts binnen een Systeem kunnen ';
+		echo 'plaatsvinden, wordt er gebruik gemaakt van intermediaire ';
+		echo 'interSysteem Accounts, ';
+		echo 'en bestaat de interSysteem transactie in feite uit twee individuele transacties, ';
+		echo 'die elks binnen de aparte Systemen plaatsvinden.';
+		echo '</strong></p>';
+	}
+
+	if ($transaction['real_to'])
+	{
+		echo '<p><strong>';
+
+		echo '</strong></p>';
+	}
+
+	echo '<dl>';
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
@@ -1373,12 +1394,12 @@ if ($id)
 
 	if ($transaction['real_from'])
 	{
-		echo '<dt>Van interSysteem account</dt>';
+		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_from'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Van interSysteem gebruiker</dt>';
+		echo '<dt>Van Account in het andere Systeem</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
@@ -1397,7 +1418,7 @@ if ($id)
 	}
 	else
 	{
-		echo '<dt>Van gebruiker</dt>';
+		echo '<dt>Van Account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_from']);
 		echo '</dd>';
@@ -1405,12 +1426,12 @@ if ($id)
 
 	if ($transaction['real_to'])
 	{
-		echo '<dt>Naar interSysteem account</dt>';
+		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_to'], false, $s_admin);
 		echo '</dd>';
 
-		echo '<dt>Naar interSysteem gebruiker</dt>';
+		echo '<dt>Naar Account in het andere Systeem</dt>';
 		echo '<dd>';
 		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
 
@@ -1429,7 +1450,7 @@ if ($id)
 	}
 	else
 	{
-		echo '<dt>Naar gebruiker</dt>';
+		echo '<dt>Naar Account</dt>';
 		echo '<dd>';
 		echo link_user($transaction['id_to']);
 		echo '</dd>';
