@@ -1933,7 +1933,8 @@ if (!$inline)
 	echo 'data-typeahead-source="fcode" ';
 	echo 'placeholder="Account Code" ';
 	echo 'aria-describedby="tcode_addon" ';
-	echo 'name="tcode" value="' . $tcode . '">';
+	echo 'name="tcode" value="';
+	echo $tcode . '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -1959,7 +1960,8 @@ if (!$inline)
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder() . '"';
 	echo '>';
 
 	echo '</div>';
@@ -1975,7 +1977,8 @@ if (!$inline)
 	echo 'id="tdate" name="tdate" ';
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="';
+	echo $app['date_format']->datepicker_format() . '" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
@@ -2011,7 +2014,8 @@ if (!$inline)
 	{
 		if (isset($value))
 		{
-			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+			echo '<input name="' . $name . '" value="';
+			echo $value . '" type="hidden">';
 		}
 	}
 
@@ -2025,8 +2029,10 @@ else
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	echo '<h3><i class="fa fa-exchange"></i> ' . $h1;
-	echo '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo '<h3><i class="fa fa-exchange"></i> ';
+	echo $h1;
+	echo '<span class="inline-buttons">';
+	echo $top_buttons . '</span>';
 	echo '</h3>';
 }
 
@@ -2050,7 +2056,8 @@ if (!count($transactions))
 
 echo '<div class="panel panel-primary printview">';
 echo '<div class="table-responsive">';
-echo '<table class="table table-bordered table-striped table-hover footable csv transactions" ';
+echo '<table class="table table-bordered table-striped ';
+echo 'table-hover footable csv transactions" ';
 echo 'data-sort="false">';
 echo '<thead>';
 echo '<tr>';
@@ -2087,7 +2094,7 @@ if ($uid)
 	foreach($transactions as $t)
 	{
 		echo '<tr';
-		echo $t['real_to'] || $t['real_from'] ? ' class="bg-warning"' : '';
+		echo $t['real_to'] || $t['real_from'] ? ' class="warning"' : '';
 		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
@@ -2109,7 +2116,8 @@ if ($uid)
 		{
 			if ($t['real_to'])
 			{
-				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+				echo '<span class="btn btn-default btn-xs">';
+				echo '<i class="fa fa-share-alt"></i></span> ';
 
 				if (isset($t['inter_transaction']))
 				{
@@ -2162,7 +2170,9 @@ else
 {
 	foreach($transactions as $t)
 	{
-		echo '<tr>';
+		echo '<tr';
+		echo $t['real_to'] || $t['real_from'] ? ' class="warning"' : '';
+		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
 		echo '</td>';
