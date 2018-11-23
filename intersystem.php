@@ -718,7 +718,7 @@ function get_schemas_groups():string
 
 	$out = '<div class="panel panel-default"><div class="panel-heading">';
 	$out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
-	$out .= 'Zie <a href="https://eland.letsa.net/admin-elas-intersysteem-koppeling-maken.html">hier</a> ';
+	$out .= 'Zie <a href="https://eland.letsa.net/elas-intersysteem-koppeling-maken.html">hier</a> ';
 	$out .= 'voor de procedure.</h3>';
 	$out .= '<p><small>Voor het aanmaken van interSysteem verbindingen in deze eLAND-server zie onder!</small></p>';
 	$out .= '</div>';
