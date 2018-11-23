@@ -73,7 +73,7 @@ if ($s_admin)
 			'options'	=> 'status_ary',
 		],
 		'admincomment'		=> [
-			'lbl'		=> 'Commentaar van de admin',
+			'lbl'		=> 'Commentaar van de Admin',
 			'type'		=> 'text',
 			'string'	=> true,
 		],
@@ -1735,7 +1735,8 @@ if ($add || $edit)
 	$app['assets']->add(['datepicker', 'generate_password.js',
 		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
 
-	$h1 = 'Gebruiker ' . (($edit) ? 'aanpassen: ' . link_user($user) : 'toevoegen');
+	$h1 = 'Gebruiker ';
+	$h1 .= $edit ? 'aanpassen: ' . link_user($user) : 'toevoegen';
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
 	$fa = 'user';
 
@@ -2049,20 +2050,37 @@ if ($add || $edit)
 		echo '<div class="bg-warning pan-sub">';
 		echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
+		echo '<ul class="list-group pan">';
+
 		foreach ($contact as $key => $c)
 		{
 			$name = 'contact[' . $key . '][value]';
 
+			echo '<li class="list-group-item">';
+
 			echo '<div class="form-group">';
-			echo '<label for="' . $name . '" class="col-sm-2 control-label">' . $c['abbrev'] . '</label>';
+			echo '<label for="';
+			echo $name;
+			echo '" class="col-sm-2 control-label">';
+			echo $c['abbrev'];
+			echo '</label>';
 			echo '<div class="col-sm-10">';
-			echo '<input class="form-control" id="' . $name . '" name="' . $name . '" ';
+			echo '<div class="input-group">';
+			echo '<span class="input-group-addon">';
+			echo '<i class="fa fa-search"></i>';
+			echo '</span>';
+			echo '<input class="form-control" id="';
+			echo $name;
+			echo '" name="';
+			echo $name;
+			echo '" ';
 			echo 'value="';
 			echo $c['value'] ?? '';
 			echo '"';
 			// The disabled property gets removed with a delay by js to prevent population by the browser.
 			echo $c['abbrev'] === 'mail' ? ' type="email" disabled' : ' type="text"';
 			echo ' data-access="contact_access_' . $key . '">';
+			echo '</div>';
 			echo '</div>';
 			echo '</div>';
 
@@ -2077,8 +2095,10 @@ if ($add || $edit)
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
 
-			echo '<hr>';
+			echo '</li>';
 		}
+
+		echo '</ul>';
 
 		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
 		echo 'Toevoegen bij de contactinfo ';
