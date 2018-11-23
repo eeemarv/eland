@@ -1035,7 +1035,7 @@ if ($add)
 	echo '</span>';
 	echo '<input type="number" class="form-control" ';
 	echo 'id="remote_amount" name="remote_amount" ';
-	echo 'value="">';
+	echo 'value="" min="1">';
 
 	echo '</div>';
 
@@ -1359,20 +1359,6 @@ if ($id)
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
 
-	if (false && $transaction['real_from'])
-	{
-		// disabled for now.
-		echo '<p><strong>';
-		echo 'Dit is een interSysteem transactie vanuit een Account ';
-		echo 'in een andere Systeem (een Gekoppeld interSysteem)';
-		echo 'Omdat transacties altijd slechts tussen Accounts binnen een Systeem kunnen ';
-		echo 'plaatsvinden, wordt er gebruik gemaakt van intermediaire ';
-		echo 'interSysteem Accounts, ';
-		echo 'en bestaat de interSysteem transactie in feite uit twee individuele transacties, ';
-		echo 'die elks binnen de aparte Systemen plaatsvinden.';
-		echo '</strong></p>';
-	}
-
 	if ($transaction['real_to'])
 	{
 		echo '<p><strong>';
@@ -1467,6 +1453,43 @@ if ($id)
 	echo '</dd>';
 
 	echo '</dl>';
+
+	if (false && $transaction['real_from'])
+	{
+		echo '<div class="row">';
+		echo '<div class="col-md-12">';
+		echo '<h2>';
+		echo 'Dit is een interSysteem transactie vanuit een ander Systeem';
+		echo '</h2>';
+		echo '<p>';
+		echo 'Een interSysteem transactie bestaat in feite altijd uit twee gekoppelde transacties, die ';
+		echo 'elks binnen hun eigen Systeem plaatsvinden. ';
+		echo 'De zogenaamde interSysteem Accounts doen dienst als intermediair. ';
+
+		echo '</p>';
+		echo '</div>';
+		echo '<div class="col-md-6">';
+		echo '<div class="thumbnail">';
+		echo '<img src="gfx/there-from-inter.png">';
+		echo '</div>';
+		echo '</div>';
+		echo '<div class="col-md-6">';
+		echo '<div class="thumbnail">';
+		echo '<img src="gfx/here-from-inter.png">';
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<p><strong>';
+		echo 'Dit is een interSysteem transactie vanuit een Account ';
+		echo 'in een ander Systeem (een Gekoppeld interSysteem)';
+		echo 'Omdat transacties altijd slechts tussen Accounts binnen een Systeem kunnen ';
+		echo 'plaatsvinden, wordt er gebruik gemaakt van intermediaire ';
+		echo 'interSysteem Accounts, ';
+		echo 'en bestaat de interSysteem transactie in feite uit twee individuele transacties, ';
+		echo 'die elks binnen de aparte Systemen plaatsvinden.';
+		echo '</strong></p>';
+	}
 
 	if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
 	{
