@@ -317,7 +317,7 @@ $tab_panes = [
 			],
 
 			'registration_success_mail'	=> [
-				'lbl'		=> 'Mail naar gebruiker bij succesvol indienen formulier',
+				'lbl'		=> 'Verstuur E-mail naar gebruiker bij succesvol indienen formulier',
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'attr'		=> ['data-template-vars' => implode(',', array_keys($map_template_vars))],
