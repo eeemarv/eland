@@ -193,7 +193,7 @@ $tab_panes = [
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
-				'explain'	=> 'Deze instelling heeft enkel betrekking op en is vereist voor eLAS/eLAND interSysteem',
+				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdsbanken. Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat zij een gemeenschappelijke tijdsbasis kunnen hebben.',
 			],
 		],
 	],
