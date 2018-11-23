@@ -2067,6 +2067,11 @@ if ($add || $edit)
 				'type'		=> 'email',
 				'disabled'	=> true,     // Prevent browser fill-in, removed by js.
 			],
+			'web'	=> [
+				'fa'		=> 'link',
+				'lbl'		=> 'Website',
+				'type'		=> 'url',
+			],
 		];
 
 		echo '<div class="bg-warning pan-sub">';

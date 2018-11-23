@@ -395,6 +395,11 @@ if ($edit || $add)
 			'lbl'		=> 'E-mail',
 			'type'		=> 'email',
 		],
+		'web'	=> [
+			'fa'		=> 'link',
+			'lbl'		=> 'Website',
+			'type'		=> 'url',
+		],
 	];
 
 	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
@@ -459,16 +464,13 @@ if ($edit || $add)
 	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
 	echo '<div class="col-sm-10">';
 
-/*
 	echo '<div class="input-group">';
-
 
 	echo '<span class="input-group-addon" id="value_addon">';
 	echo '<i class="fa fa-';
 	echo $contacts_format[$abbrev]['fa'] ?? 'circle-o';
 	echo '"></i>';
 	echo '</span>';
-*/
 
 	echo '<input type="text" class="form-control" id="value" name="value" ';
 	echo 'value="';
@@ -478,10 +480,10 @@ if ($edit || $add)
 	echo htmlspecialchars(json_encode($contacts_format));
 	echo '">';
 	echo '</div>';
-	echo '<p id="contact_explain">';
+	echo '<p id="contact-explain">';
 
 	echo '</p>';
-//	echo '</div>';
+	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
