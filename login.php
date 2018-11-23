@@ -128,7 +128,7 @@ if ($submit)
 
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
-		$count_ = $app['db']->fetchColumn('select count(c.*)
+		$count_email = $app['db']->fetchColumn('select count(c.*)
 			from contact c, type_contact tc, users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
