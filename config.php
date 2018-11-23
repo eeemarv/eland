@@ -389,7 +389,7 @@ $tab_panes = [
 		'inputs'	=> [
 
 			'li_1'	=> [
-				'inline'	=> '%1$s Mail functionaliteit aan: het systeem verstuurt E-mails.',
+				'inline'	=> '%1$s E-mail functionaliteit aan: het systeem verstuurt E-mails.',
 				'inputs'	=> [
 					'mailenabled'	=> [
 						'type'	=> 'checkbox',
