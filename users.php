@@ -2047,10 +2047,37 @@ if ($add || $edit)
 
 	if ($s_admin)
 	{
+		$contacts_format = [
+			'adr'	=> [
+				'fa'		=> 'map-marker',
+				'lbl'		=> 'Adres',
+				'explain'	=> 'Voorbeeldstraat 23, 4520 Voorbeeldgemeente',
+			],
+			'gsm'	=> [
+				'fa'		=> 'mobile',
+				'lbl'		=> 'GSM',
+			],
+			'tel'	=> [
+				'fa'		=> 'phone',
+				'lbl'		=> 'Telefoon',
+			],
+			'mail'	=> [
+				'fa'		=> 'envelope-o',
+				'lbl'		=> 'E-mail',
+				'type'		=> 'email',
+				'disabled'	=> true,     // Prevent browser fill-in, removed by js.
+			],
+		];
+
 		echo '<div class="bg-warning pan-sub">';
 		echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
-		echo '<ul class="list-group pan">';
+		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
+		echo 'Toevoegen bij de contactinfo ';
+		echo $add ? 'nadat de gebruiker gecreëerd is' : '';
+		echo '.</small></p>';
+
+		echo '<ul class="list-group">';
 
 		foreach ($contact as $key => $c)
 		{
@@ -2062,12 +2089,14 @@ if ($add || $edit)
 			echo '<label for="';
 			echo $name;
 			echo '" class="col-sm-2 control-label">';
-			echo $c['abbrev'];
+			echo $contacts_format[$c['abbrev']]['lbl'] ?? $c['abbrev'];
 			echo '</label>';
 			echo '<div class="col-sm-10">';
 			echo '<div class="input-group">';
 			echo '<span class="input-group-addon">';
-			echo '<i class="fa fa-search"></i>';
+			echo '<i class="fa fa-';
+			echo $contacts_format[$c['abbrev']]['fa'] ?? 'question-mark';
+			echo '"></i>';
 			echo '</span>';
 			echo '<input class="form-control" id="';
 			echo $name;
@@ -2076,11 +2105,15 @@ if ($add || $edit)
 			echo '" ';
 			echo 'value="';
 			echo $c['value'] ?? '';
-			echo '"';
-			// The disabled property gets removed with a delay by js to prevent population by the browser.
-			echo $c['abbrev'] === 'mail' ? ' type="email" disabled' : ' type="text"';
-			echo ' data-access="contact_access_' . $key . '">';
+			echo '" type="';
+			echo $contacts_format[$c['abbrev']]['type'] ?? 'text';
+			echo '" ';
+			echo isset($contacts_format[$c['abbrev']]['disabled']) ? 'disabled ' : '';
+			echo 'data-access="contact_access_' . $key . '">';
 			echo '</div>';
+			echo '<p>';
+			echo $contacts_format[$c['abbrev']]['explain'] ?? '';
+			echo '</p>';
 			echo '</div>';
 			echo '</div>';
 
@@ -2099,11 +2132,6 @@ if ($add || $edit)
 		}
 
 		echo '</ul>';
-
-		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
-		echo 'Toevoegen bij de contactinfo ';
-		echo $add ? 'nadat de gebruiker gecreëerd is' : '';
-		echo '.</small></p>';
 		echo '</div>';
 	}
 
@@ -2439,7 +2467,7 @@ if ($id)
 
 	if ($s_admin)
 	{
-		echo '<dt>Zichtbaarheid volledige naam</dt>';
+		echo '<dt>Zichtbaarheid Volledige Naam</dt>';
 		echo '<dd>';
 		echo $app['access_control']->get_label($fullname_access);
 		echo '</dd>';
