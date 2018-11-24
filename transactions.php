@@ -1520,30 +1520,34 @@ if ($id)
 		echo '<li>';
 		echo '<strong>Tr-1</strong> ';
 
-		if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+		if ($real_from)
 		{
-			echo '<a href="';
-			echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
-			echo '">';
+			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			{
+				echo '<a href="';
+				echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+				echo '">';
+			}
+
+			echo 'De transactie in het andere ';
+			echo 'Systeem uitgedrukt ';
+			echo 'in de eigen tijdsmunt.';
+
+			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			{
+				echo '</a>';
+			}
 		}
-
-		echo 'De transactie in ';
-		echo $real_from ? 'het andere' : 'dit';
-		echo ' Systeem uitgedrukt ';
-		echo 'in de eigen tijdsmunt.';
-
-		if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+		else
 		{
-			echo '</a>';
-		}
-
-		if ($real_to)
-		{
+			echo 'De transactie in dit ';
+			echo 'Systeem uitgedrukt ';
+			echo 'in de eigen tijdsmunt';
 			echo ' (';
 			echo $transaction['amount'];
 			echo ' ';
 			echo $app['config']->get('currency');
-			echo ')';
+			echo ').';
 		}
 
 		echo '</li>';
@@ -1596,17 +1600,33 @@ if ($id)
 		echo '</li>';
 		echo '<li>';
 		echo '<strong>Tr-2</strong> ';
-		echo 'De transactie in ';
-		echo $real_from ? 'dit' : 'het andere';
-		echo ' Systeem uitgedrukt ';
-		echo 'in de eigen tijdsmunt ';
 
 		if ($real_from)
 		{
+			echo 'De transactie in dit Systeem uitgedrukt ';
+			echo 'in de eigen tijdsmunt ';
 			echo '(';
 			echo $transaction['amount'] . ' ';
 			echo $app['config']->get('currency');
-			echo ') ';
+			echo ').';
+		}
+		else
+		{
+			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			{
+				echo '<a href="';
+				echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+				echo '">';
+			}
+
+			echo 'De transactie in het andere ';
+			echo 'Systeem uitgedrukt ';
+			echo 'in de eigen tijdsmunt ';
+
+			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			{
+				echo '</a>';
+			}
 		}
 
 		echo 'met gelijke tijdswaarde als Tr-1';
