@@ -28,6 +28,7 @@ $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
 
 $currency = $app['config']->get('currency');
+$intersystem_en = $app['config']->get('template_lets') && $app['config']->get('interlets_en');
 
 /**
  * add
@@ -1358,8 +1359,13 @@ if ($id)
 
 	include __DIR__ . '/include/header.php';
 
+	$real_to = $transaction['real_to'] ? true : false;
+	$real_from = $transaction['real_from'] ? true : false;
+
+	$intersystem_trans = ($real_from || $real_to) && $intersystem_en;
+
 	echo '<div class="panel panel-';
-	echo $transaction['real_from'] || $transaction['real_to'] ? 'warning' : 'default';
+	echo $intersystem_trans ? 'warning' : 'default';
 	echo ' printview">';
 	echo '<div class="panel-heading">';
 
@@ -1375,7 +1381,7 @@ if ($id)
 	echo $transaction['transid'];
 	echo '</dd>';
 
-	if ($transaction['real_from'])
+	if ($real_from)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
@@ -1410,7 +1416,7 @@ if ($id)
 		echo '</dd>';
 	}
 
-	if ($transaction['real_to'])
+	if ($real_to)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
@@ -1458,18 +1464,21 @@ if ($id)
 
 	echo '</dl>';
 
-	if ($transaction['real_from'])
+	if ($intersystem_trans)
 	{
 		echo '<div class="row">';
 		echo '<div class="col-md-12">';
 		echo '<h2>';
-		echo 'Dit is een interSysteem transactie vanuit een ';
-		echo 'Account in ander Systeem';
+		echo 'Dit is een interSysteem transactie ';
+		echo $real_from ? 'vanuit' : 'naar';
+		echo ' een Account in ander Systeem';
 		echo '</h2>';
 		echo '<p>';
-		echo 'Een interSysteem transactie bestaat in ';
+		echo 'Een interSysteem transactie bestaat ';
 		echo 'altijd uit twee gekoppelde transacties, die ';
-		echo 'elks binnen hun eigen Systeem plaatsvinden. ';
+		echo 'elks binnen hun eigen Systeem plaatsvinden, ';
+		echo 'elks uitgedrukt in de eigen tijdsmunt, maar met ';
+		echo 'gelijke tijdswaarde in beide transacties. ';
 		echo 'De zogenaamde interSysteem Accounts ';
 		echo '(in stippellijn) ';
 		echo 'doen dienst als intermediair.';
@@ -1481,18 +1490,31 @@ if ($id)
 
 		echo '<div class="col-md-6">';
 		echo '<div class="thumbnail">';
-		echo '<img src="gfx/there-from-inter.png">';
+		echo '<img src="gfx/';
+		echo $real_from ? 'there-from' : 'here-to';
+		echo '-inter.png">';
 		echo '</div>';
 		echo '<div class="caption">';
 		echo '<ul>';
 		echo '<li>';
 		echo '<strong>Acc-1</strong> ';
-		echo 'Het Account in het andere Systeem dat de ';
+		echo 'Het Account in ';
+		echo $real_from ? 'het andere' : 'dit';
+		echo ' Systeem dat de ';
 		echo 'transactie initiëerde. ';
 		echo '(';
-		echo '<span class="btn btn-default btn-xs">';
-		echo '<i class="fa fa-share-alt"></i></span> ';
-		echo $user_from;
+
+		if ($real_from)
+		{
+			echo '<span class="btn btn-default btn-xs">';
+			echo '<i class="fa fa-share-alt"></i></span> ';
+			echo $user_from;
+		}
+		else
+		{
+			echo link_user($transaction['id_from']);
+		}
+
 		echo ')';
 		echo '</li>';
 		echo '<li>';
@@ -1505,7 +1527,9 @@ if ($id)
 			echo '">';
 		}
 
-		echo 'De transactie in het andere Systeem uitgedrukt ';
+		echo 'De transactie in ';
+		echo $real_from ? 'het andere' : 'dit';
+		echo ' Systeem uitgedrukt ';
 		echo 'in de eigen tijdsmunt.';
 
 		if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
@@ -1513,11 +1537,32 @@ if ($id)
 			echo '</a>';
 		}
 
+		if ($real_to)
+		{
+			echo ' (';
+			echo $transaction['amount'];
+			echo ' ';
+			echo $app['config']->get('currency');
+			echo ')';
+		}
+
 		echo '</li>';
 		echo '<li>';
 		echo '<strong>iAcc-1</strong> ';
-		echo 'Het interSysteem Account van dit Systeem in het ';
-		echo 'andere Systeem.';
+
+		if ($real_from)
+		{
+			echo 'Het interSysteem Account van dit Systeem in het ';
+			echo 'andere Systeem.';
+		}
+		else
+		{
+			echo 'Het interSysteem Account van het andere Systeem ';
+			echo 'in dit Systeem. (';
+			echo link_user($transaction['id_to'], false, $s_admin);
+			echo ')';
+		}
+
 		echo '</li>';
 		echo '</ul>';
 		echo '</div>';
@@ -1525,33 +1570,68 @@ if ($id)
 
 		echo '<div class="col-md-6">';
 		echo '<div class="thumbnail">';
-		echo '<img src="gfx/here-from-inter.png">';
+		echo '<img src="gfx/';
+		echo $real_from ? 'here-from' : 'there-to';
+		echo '-inter.png">';
 		echo '</div>';
 		echo '<div class="caption bg-warning">';
 		echo '<ul>';
 		echo '<li>';
 		echo '<strong>iAcc-2</strong> ';
-		echo 'Het interSysteem Account van het andere Systeem in dit ';
-		echo 'Systeem. ';
-		echo '(';
-		echo link_user($transaction['id_from'], false, $s_admin);
-		echo ')';
+
+		if ($real_from)
+		{
+			echo 'Het interSysteem Account van het andere Systeem in dit ';
+			echo 'Systeem. ';
+			echo '(';
+			echo link_user($transaction['id_from'], false, $s_admin);
+			echo ')';
+		}
+		else
+		{
+			echo 'Het interSysteem Account van dit Systeem in het ';
+			echo 'andere Systeem.';
+		}
+
 		echo '</li>';
 		echo '<li>';
 		echo '<strong>Tr-2</strong> ';
-		echo 'De transactie in dit Systeem uitgedrukt ';
-		echo 'in de eigen tijdsmunt. ';
-		echo '(';
-		echo $transaction['amount'] . ' ';
-		echo $app['config']->get('currency');
-		echo ') met gelijke tijdswaarde als Tr-1';
+		echo 'De transactie in ';
+		echo $real_from ? 'dit' : 'het andere';
+		echo ' Systeem uitgedrukt ';
+		echo 'in de eigen tijdsmunt ';
+
+		if ($real_from)
+		{
+			echo '(';
+			echo $transaction['amount'] . ' ';
+			echo $app['config']->get('currency');
+			echo ') ';
+		}
+
+		echo 'met gelijke tijdswaarde als Tr-1';
 		echo '</li>';
 		echo '<li>';
 		echo '<strong>Acc-2</strong> ';
-		echo 'Het bestemmings Account in dit Systeem. ';
-		echo '(';
-		echo link_user($transaction['id_to']);
-		echo ')';
+
+		if ($real_from)
+		{
+			echo 'Het bestemmings Account in dit Systeem ';
+			echo '(';
+			echo link_user($transaction['id_to']);
+			echo ').';
+		}
+		else
+		{
+			echo 'Het bestemmings Account in het andere ';
+			echo 'Systeem ';
+			echo '(';
+			echo '<span class="btn btn-default btn-xs">';
+			echo '<i class="fa fa-share-alt"></i></span> ';
+			echo $user_to;
+			echo ').';
+		}
+
 		echo '</li>';
 		echo '</ul>';
 		echo '</div>';
@@ -1861,7 +1941,9 @@ if (!$inline)
 
 	$panel_collapse = ($filtered && !$uid) ? '' : ' collapse';
 
-	echo '<div class="panel panel-info' . $panel_collapse . '" id="filter">';
+	echo '<div class="panel panel-info';
+	echo $panel_collapse;
+	echo '" id="filter">';
 	echo '<div class="panel-heading">';
 
 	echo '<form method="get" class="form-horizontal">';
@@ -2065,7 +2147,7 @@ echo '<tr>';
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo isset($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 	echo '>';
 	if (isset($data['no_sort']))
 	{
@@ -2094,7 +2176,7 @@ if ($uid)
 	foreach($transactions as $t)
 	{
 		echo '<tr';
-		echo $t['real_to'] || $t['real_from'] ? ' class="warning"' : '';
+		echo $intersystem_en && ($t['real_to'] || $t['real_from']) ? ' class="warning"' : '';
 		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
@@ -2102,7 +2184,7 @@ if ($uid)
 
 		echo '<td>';
 		echo '<span class="text-';
-		echo ($t['id_from'] == $uid) ? 'danger">-' : 'success">+';
+		echo $t['id_from'] == $uid ? 'danger">-' : 'success">+';
 		echo $t['amount'];
 		echo '</span></td>';
 
@@ -2171,7 +2253,7 @@ else
 	foreach($transactions as $t)
 	{
 		echo '<tr';
-		echo $t['real_to'] || $t['real_from'] ? ' class="warning"' : '';
+		echo $intersystem_en && ($t['real_to'] || $t['real_from']) ? ' class="warning"' : '';
 		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
