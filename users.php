@@ -1874,7 +1874,8 @@ if ($add || $edit)
 		echo 'value="';
 		echo $user['presharedkey'] ?? '';
 		echo '" maxlength="80">';
-		echo '<p>Vul dit enkel in voor een interSysteem account van een Systeem op een eLAS-server.</p>';
+		echo '<p>Vul dit enkel in voor een interSysteem Account ';
+		echo 'van een Systeem op een eLAS-server.</p>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -2250,7 +2251,7 @@ if ($id)
 	}
 
 	$mail_to = $app['mailaddr']->get($user['id']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mailaddr']->get($s_schema . '.' . $s_id) : [];
+	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mailaddr']->get($s_schema . '.' . $s_id) : [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -3395,6 +3396,11 @@ if ($v_list)
 
 	foreach ($columns as $group => $ary)
 	{
+		if ($group === 'm' || $group === 'c')
+		{
+			echo '</div>';
+		}
+
 		if ($group === 'u' || $group === 'c' || $group === 'm')
 		{
 			echo '<div class="col-md-4">';
@@ -3421,7 +3427,8 @@ if ($v_list)
 			echo 'In periode (dagen)';
 			echo '</label>';
 			echo '<div class="col-sm-9">';
-			echo '<input type="number" name="sh[p][activity_days]" value="' . $activity_days . '" ';
+			echo '<input type="number" name="sh[p][activity_days]" value="';
+			echo $activity_days . '" ';
 			echo 'size="4" min="1" class="form-control">';
 			echo '</div></div>';
 
@@ -3503,15 +3510,14 @@ if ($v_list)
 			echo '</label>';
 			echo '</div>';
 		}
-
-		if ($group === 'u' || $group === 'd')
-		{
-			echo '</div>';
-		}
 	}
 
 	echo '</div>';
+	echo '<div class="row">';
+	echo '<div class="col-md-12">';
 	echo '<input type="submit" name="show" class="btn btn-default" value="Pas weergave kolommen aan">';
+	echo '</div>';
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 }
