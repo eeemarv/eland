@@ -1608,7 +1608,8 @@ if ($id)
 			echo '(';
 			echo $transaction['amount'] . ' ';
 			echo $app['config']->get('currency');
-			echo ').';
+			echo ') ';
+			echo 'met gelijke tijdswaarde als Tr-1.';
 		}
 		else
 		{
@@ -1622,6 +1623,7 @@ if ($id)
 			echo 'De transactie in het andere ';
 			echo 'Systeem uitgedrukt ';
 			echo 'in de eigen tijdsmunt ';
+			echo 'met gelijke tijdswaarde als Tr-1.';
 
 			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
 			{
@@ -1629,7 +1631,6 @@ if ($id)
 			}
 		}
 
-		echo 'met gelijke tijdswaarde als Tr-1';
 		echo '</li>';
 		echo '<li>';
 		echo '<strong>Acc-2</strong> ';
