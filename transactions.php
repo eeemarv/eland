@@ -1312,9 +1312,6 @@ if ($edit)
 	echo 'de omschrijving aangepast worden door admins in het geval deze ongewenste informatie bevat (bvb. een opmerking die beledigend is).</li>';
 	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
 	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
-
-	echo get_valuation();
-
 	echo '</i></small></ul>';
 
 	include __DIR__ . '/include/footer.php';
