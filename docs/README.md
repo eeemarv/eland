@@ -18,10 +18,10 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 
 ## De code & hosting
 
-is open source en te vinden op [Github](https://github.com/eeemarv/eland).
-Onder de [rubriek "Hosting"](hosting.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
+De code is open source en te vinden op [Github](https://github.com/eeemarv/eland).
+Vanaf [rubriek "Dokku"](dokku.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt of LETS. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net). De serverkosten worden momenteel gesponserd door [LETS Antwerpen Stad vzw](http://groepen.letsvlaanderen.be/antwerpen-stad/)
+Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank of LETSysteem. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
 
 eLAND is een persoonlijk en onafhankelijk project.
 
@@ -29,7 +29,7 @@ Melden van bugs en feature requests kan je doen op [Github](https://github.com/e
 
 ## LETS (Wat is het?)
 
-LETS is een concept van gemeenschapsmunt dat in 1982/1983 werd ontwikkeld door Michael Linton. Ik maakte een vertaling naar het Nederlands van Linton's referentiewerk [the LETSystem Design Manual](http://manual.letsa.net/nl/1.1.html)
+LETS is een concept van gemeenschapsmunt dat in 1982/1983 werd ontwikkeld door Michael Linton. Ik maakte een vertaling naar het Nederlands van Linton's referentiewerk [the LETSystem Design Manual](http://manual.letsa.net/nl/1.3.html)
 
 eLAND zal in de toekomst compatibel worden met het ["MultiLETS" concept zoals uiteengezet in de Manual](http://manual.letsa.net/nl/2.2.html).
 
