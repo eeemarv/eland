@@ -186,8 +186,12 @@ if ($add || $edit)
 	echo '<form method="post" class="form-horizontal">';
 
 	echo '<div class="form-group">';
-	echo '<label for="itemdate" class="col-sm-2 control-label">Agendadatum</label>';
+	echo '<label for="itemdate" class="col-sm-2 control-label">Agenda datum</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-calendar"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
@@ -198,6 +202,7 @@ if ($add || $edit)
 	echo 'value="' . $app['date_format']->get($news['itemdate'], 'day') . '" ';
 	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
 	echo 'required>';
+	echo '</div>';
 	echo '<p><small>Wanneer gaat dit door?</small></p>';
 	echo '</div>';
 	echo '</div>';
@@ -205,8 +210,13 @@ if ($add || $edit)
 	echo '<div class="form-group">';
 	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-map-marker"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="location" name="location" ';
 	echo 'value="' . $news['location'] . '" maxlength="128">';
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 

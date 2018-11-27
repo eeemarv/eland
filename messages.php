@@ -1140,10 +1140,15 @@ if (($edit || $add))
 		echo '<label for="user_letscode" class="col-sm-2 control-label">';
 		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
 		echo '<div class="col-sm-10">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<i class="fa fa-user"></i>';
+		echo '</span>';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
 		echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 		echo 'value="' . $user_letscode . '" required>';
+		echo '</div>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1177,9 +1182,14 @@ if (($edit || $add))
 	echo '<div class="form-group">';
 	echo '<label for="id_category" class="col-sm-2 control-label">Categorie</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-clone"></i>';
+	echo '</span>';
 	echo '<select name="id_category" id="id_category" class="form-control" required>';
 	echo get_select_options($cat_list, $msg['id_category']);
 	echo "</select>";
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 

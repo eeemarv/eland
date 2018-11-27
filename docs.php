@@ -255,8 +255,13 @@ if ($edit)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-folder-o"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
 	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
+	echo '</div>';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
@@ -499,10 +504,16 @@ if ($add)
 	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
 
 	echo '<div class="form-group">';
-	echo '<label for="file" class="col-sm-2 control-label">Bestand</label>';
+	echo '<label for="file" class="col-sm-2 control-label">';
+	echo 'Bestand</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-file-o"></i>';
+	echo '</span>';
 	echo '<input type="file" class="form-control" id="file" name="file" ';
 	echo 'required>';
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 
@@ -518,10 +529,15 @@ if ($add)
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-folder-o"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
 	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
+	echo '</div>';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
