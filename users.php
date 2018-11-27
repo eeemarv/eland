@@ -3420,17 +3420,15 @@ if ($v_list)
 		else if ($group === 'a')
 		{
 			echo '<h3>Transacties/activiteit</h3>';
-			echo '<div class="form-horizontal">';
 
 			echo '<div class="form-group">';
-			echo '<label for="activity_days" class="col-sm-3 control-label">';
+			echo '<label for="activity_days" class="control-label">';
 			echo 'In periode (dagen)';
 			echo '</label>';
-			echo '<div class="col-sm-9">';
 			echo '<input type="number" name="sh[p][activity_days]" value="';
 			echo $activity_days . '" ';
 			echo 'size="4" min="1" class="form-control">';
-			echo '</div></div>';
+			echo '</div>';
 
 			$typeahead_ary = ['users_active'];
 
@@ -3442,18 +3440,19 @@ if ($v_list)
 			}
 
 			echo '<div class="form-group">';
-			echo '<label for="activity_filter_letscode" class="col-sm-3 control-label">';
-			echo 'Exclusief tegenpartij (letscode)';
+			echo '<label for="activity_filter_letscode" class="control-label">';
+			echo 'Exclusief tegenpartij';
 			echo '</label>';
-			echo '<div class="col-sm-9">';
 			echo '<input type="text" name="sh[p][activity_filter_letscode]" ';
-			echo 'value="' . $activity_filter_letscode . '" ';
+			echo 'value="';
+			echo $activity_filter_letscode;
+			echo '" ';
 			echo 'class="form-control" ';
 			echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 			echo 'data-typeahead="';
 			echo $app['typeahead']->get($typeahead_ary);
 			echo '">';
-			echo '</div></div>';
+			echo '<p>Account Code</p>';
 			echo '</div>';
 
 			foreach ($ary as $a_type => $a_ary)
