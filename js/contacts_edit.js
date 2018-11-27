@@ -37,11 +37,11 @@ $(document).ready(function(){
 			if (format.hasOwnProperty('explain')){
 				$contact_explain.text(format.explain);
 			} else {
-				$contact_explain.text();
+				$contact_explain.text('');
 			}
 		} else {
 			$input.attr('type', 'text');
-			$contact_explain.text();
+			$contact_explain.text('');
 		}
 	}
 
