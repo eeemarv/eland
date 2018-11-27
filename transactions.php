@@ -884,6 +884,10 @@ if ($add)
 	echo 'Van Account Code';
 	echo '</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-user"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="letscode_from" name="letscode_from" ';
 	echo 'data-typeahead-source="';
 	echo $groups_en ? 'group_self' : 'letscode_to';
@@ -896,12 +900,19 @@ if ($add)
 
 	echo '</div>';
 	echo '</div>';
+	echo '</div>';
 
 	if ($groups_en)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="group_id" class="col-sm-2 control-label">Aan Systeem</label>';
 		echo '<div class="col-sm-10">';
+
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<i class="fa fa-share-alt"></i>';
+		echo '</span>';
+
 		echo '<select type="text" class="form-control" id="group_id" name="group_id">';
 
 		foreach ($groups as $l)
@@ -955,6 +966,7 @@ if ($add)
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
+		echo '</div>';
 	}
 	else
 	{
@@ -977,6 +989,10 @@ if ($add)
 	echo 'Aan Account Code';
 	echo '</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-user"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="letscode_to" name="letscode_to" ';
 
 	if ($groups_en)
@@ -991,6 +1007,8 @@ if ($add)
 	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
 
 	echo 'value="' . $transaction['letscode_to'] . '" required>';
+
+	echo '</div>';
 
 	echo '<ul class="account-info">';
 
@@ -1070,10 +1088,15 @@ if ($add)
 	echo '<div class="form-group">';
 	echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
 	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-pencil"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="description" name="description" ';
 	echo 'value="';
 	echo $transaction['description'];
 	echo '" required maxlength="60">';
+	echo '</div>';
 	echo '</div>';
 	echo '</div>';
 
