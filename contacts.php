@@ -421,6 +421,9 @@ if ($edit || $add)
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="col-sm-2 control-label">Voor</label>';
 		echo '<div class="col-sm-10">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon" id="fcode_addon">';
+		echo '<span class="fa fa-user"></span></span>';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
 		echo 'data-typeahead="';
 		echo $app['typeahead']->get($typeahead_ary);
@@ -428,10 +431,11 @@ if ($edit || $add)
 		echo 'data-newuserdays="';
 		echo $app['config']->get('newuserdays');
 		echo '" ';
-		echo 'placeholder="letscode" ';
+		echo 'placeholder="Account Code" ';
 		echo 'value="';
 		echo $letscode;
 		echo '" required>';
+		echo '</div>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1001,7 +1005,7 @@ echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
 echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-echo 'name="letscode" id="letscode" placeholder="letscode" ';
+echo 'name="letscode" id="letscode" placeholder="Account Code" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';
 echo '</div>';
