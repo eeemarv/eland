@@ -20,7 +20,7 @@ $(document).ready(function(){
 	};
 
 	var len = {
-		'min': 6,
+		'min': 7,
 		'extra': 1,
 		'max_num': 2
 	};
@@ -54,8 +54,8 @@ $(document).ready(function(){
 		},
 		'begin': '%+$*#@',
 		'end': '!!??$%*+=',
-		'mid': '--------      ....::++=_*@',
-		'inter_con': '------    ..:+=_,',
+		'mid': '--------....::++=_*@',
+		'inter_con': '------..:+=_,',
 		'acc': {
 			'full': '[].{}.().<>',
 			'mid': '[].{}.()'
