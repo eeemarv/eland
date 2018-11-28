@@ -33,14 +33,7 @@ class config
 		'msgs_days_default'					=> '365',
 		'balance_equilibrium'				=> '0',
 		'date_format'						=> '%e %b %Y, %H:%M:%S',
-		'weekly_mail_show_interlets'		=> 'recent',
-		'weekly_mail_show_news'				=> 'recent',
-		'weekly_mail_show_docs'				=> 'recent',
-		'weekly_mail_show_forum'			=> 'recent',
-		'weekly_mail_show_transactions'		=> 'recent',
-		'weekly_mail_show_leaving_users'	=> 'recent',
-		'weekly_mail_show_new_users'		=> 'recent',
-		'weekly_mail_template'				=> 'messages_top',
+		'periodic_mail_block_ary'			=> '+messages.recent',
 		'default_landing_page'				=> 'messages',
 		'homepage_url'						=> '',
 		'template_lets'						=> '1',
@@ -103,32 +96,6 @@ class config
 		if ($row)
 		{
 			$value = $row['data']['value'];
-		}
-		else if ($key === 'periodic_mail_block_ary')
-		{
-			$value = '+';
-			$template = $this->get('weekly_mail_template', $sch);
-			$news = $this->get('weekly_mail_show_news', $sch);
-			$forum = $this->get('weekly_mail_show_forum', $sch);
-			$forum_en = $this->get('forum_en', $sch);
-			$docs = $this->get('weekly_mail_show_docs', $sch);
-			$new_users = $this->get('weekly_mail_show_new_users', $sch);
-			$leaving_users = $this->get('weekly_mail_show_leaving_users', $sch);
-			$interlets = $this->get('weekly_mail_show_interlets', $sch);
-			$template_lets = $this->get('template_lets', $sch);
-			$interlets_en = $this->get('interlets_en', $sch);
-			$transactions = $this->get('weekly_mail_show_transactions', $sch);
-
-			$value .= $template === 'news_top' && $news !== 'none' ? 'news.' . $news . ',' : '';
-			$value .= 'messages.recent,';
-			$value .= $interlets_en && $template_lets && $interlets === 'recent' ? 'interlets.recent,' : '';
-			$value .= $forum_en && $forum === 'recent' ? 'forum.recent,' : '';
-			$value .= $template === 'messages_top' && $news !== 'none' ? 'news.' . $news . ',' : '';
-			$value .= $docs === 'recent' ? 'docs.recent,' : '';
-			$value .= $new_users === 'none' ? '' : 'new_users.' . $new_users . ',';
-			$value .= $leaving_users === 'none' ? '' : 'leaving_users.' . $leaving_users . ',';
-			$value .= $transactions === 'recent' ? 'transactions.recent,' : '';
-			$value = trim($value, ',');
 		}
 		else if (isset($this->default[$key]))
 		{
