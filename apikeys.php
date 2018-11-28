@@ -171,7 +171,7 @@ echo '<tr>';
 echo '<th>Id</th>';
 echo '<th>Commentaar</th>';
 echo '<th data-hide="phone">Apikey</th>';
-echo '<th data-hide="phone, tablet" data-sort-initial="true">Creatietijdstip</th>';
+echo '<th data-hide="phone, tablet" data-sort-initial="true">Gecreëerd</th>';
 echo '<th data-hide="phone, tablet" data-sort-ignore="true">Verwijderen</th>';
 echo '</tr>';
 echo '</thead>';

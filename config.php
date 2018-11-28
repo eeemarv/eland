@@ -193,7 +193,9 @@ $tab_panes = [
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
-				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdsbanken. Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat zij een gemeenschappelijke tijdsbasis kunnen hebben.',
+				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
+					Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat zij
+					een gemeenschappelijke tijdbasis kunnen hebben.',
 			],
 		],
 	],
@@ -407,7 +409,7 @@ $tab_panes = [
 			],
 
 			'li_3' => [
-				'inline'	=> '%1$s Dit Systeem is een Tijdsbank (munt met tijdsbasis).',
+				'inline'	=> '%1$s Dit Systeem is een Tijdbank (munt met tijdbasis).',
 				'inputs'	=> [
 					'template_lets'	=> [
 						'type'	=> 'checkbox',
@@ -418,8 +420,8 @@ $tab_panes = [
 
 			'li_4'	=> [
 				'inline'	=> '%1$s Gebruik eLAS/eLAND interSysteem. Deze instelling is enkel geldig wanneer hierboven
-					"Tijdsbank" geselecteerd is. eLAS/eLAND interSysteem is enkel mogelijk met
-					munten met gemeenschappelijke tijdsbasis.',
+					"Tijdbank" geselecteerd is. eLAS/eLAND interSysteem is enkel mogelijk met
+					munten met gemeenschappelijke tijdbasis.',
 				'inputs'	=> [
 					'interlets_en'	=> [
 						'type'	=> 'checkbox',
@@ -442,7 +444,7 @@ $tab_panes = [
 			],
 
 			'date_format'	=> [
-				'lbl'		=> 'Datum- en tijdsweergave',
+				'lbl'		=> 'Datum- en tijdweergave',
 				'type'		=> 'select',
 				'options'	=> $app['date_format']->get_options(),
 			],

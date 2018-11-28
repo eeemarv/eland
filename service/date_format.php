@@ -175,7 +175,7 @@ class date_format
 	{
 		if (!isset(self::FORMATS[$format]))
 		{
-			return 'Fout: dit datum- en tijdsformaat wordt niet ondersteund.';
+			return 'Fout: dit datum- en tijdformaat wordt niet ondersteund.';
 		}
 
 		return false;
