@@ -51,7 +51,12 @@ class config
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
-	public function set(string $name, string $value)
+	public function is_valid_key(string $key):bool
+	{
+		return isset($this->default[$key]);
+	}
+
+	public function set(string $name, string $value):void
 	{
 		$this->xdb->set('setting', $name, ['value' => $value]);
 
@@ -64,7 +69,7 @@ class config
 		$this->db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 	}
 
-	public function get(string $key, string $sch = '')
+	public function get(string $key, string $sch = ''):string
 	{
 		global $s_guest, $s_master;
 
