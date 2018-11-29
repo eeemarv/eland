@@ -3,6 +3,8 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $q = $_GET['q'] ?? '';
 $code = $_GET['code'] ?? '';
 $type = $_GET['type'] ?? '';
@@ -24,7 +26,7 @@ $params = [
 
 $params_sql = $where_sql = [];
 
-$params_sql[] = $app['this_group']->get_schema();
+$params_sql[] = $tschema;
 
 if ($code)
 {
@@ -81,7 +83,7 @@ $row_count = $app['db']->fetchColumn('select count(*)
 	from xdb.logs
 	where schema = ?' . $where_sql, $params_sql);
 
-$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= $asc ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $app['db']->fetchAll($query, $params_sql);
@@ -183,7 +185,7 @@ echo 'data-typeahead="';
 echo $app['typeahead']->get($typeahead_users_ary);
 echo '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+echo $app['config']->get('newuserdays', $tschema);
 echo '" ';
 echo 'name="code" id="code" placeholder="Account Code" ';
 echo 'value="';

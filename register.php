@@ -48,7 +48,9 @@ if ($token)
 				}
 			}
 
-			if (!$app['db']->fetchColumn('select name from users where name = ?', [$name]))
+			if (!$app['db']->fetchColumn('select name
+				from ' . $tschema . '.users
+				where name = ?', [$name]))
 			{
 				break;
 			}
@@ -80,13 +82,14 @@ if ($token)
 
 		try
 		{
-			$app['db']->insert('users', $user);
+			$app['db']->insert($tschema . '.users', $user);
 
-			$user_id = $app['db']->lastInsertId('users_id_seq');
+			$user_id = $app['db']->lastInsertId($tschema . '.users_id_seq');
 
 			$tc = [];
 
-			$rs = $app['db']->prepare('select abbrev, id from type_contact');
+			$rs = $app['db']->prepare('select abbrev, id
+				from ' . $tschema . '.type_contact');
 
 			$rs->execute();
 
@@ -104,7 +107,7 @@ if ($token)
 				'id_type_contact'	=> $tc['mail'],
 			];
 
-			$app['db']->insert('contact', $mail);
+			$app['db']->insert($tschema . '.contact', $mail);
 
 			$ev_data = [
 				'token'			=> $token,
@@ -126,7 +129,7 @@ if ($token)
 						'id_type_contact'	=> $tc['gsm'],
 					];
 
-					$app['db']->insert('contact', $gsm);
+					$app['db']->insert($tschema . '.contact', $gsm);
 				}
 
 				if ($data['tel'])
@@ -137,7 +140,7 @@ if ($token)
 						'value'				=> $data['tel'],
 						'id_type_contact'	=> $tc['tel'],
 					];
-					$app['db']->insert('contact', $tel);
+					$app['db']->insert($tschema . '.contact', $tel);
 				}
 			}
 			$app['db']->commit();
@@ -241,7 +244,8 @@ if ($submit)
 		$app['alert']->error('Geen geldig E-mail adres.');
 	}
 	else if ($app['db']->fetchColumn('select c.id_user
-		from contact c, type_contact tc
+		from ' . $tschema . '.contact c, ' .
+			$tschema . '.type_contact tc
 		where c. value = ?
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))

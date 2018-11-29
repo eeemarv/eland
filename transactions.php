@@ -2454,7 +2454,7 @@ function cancel($id = null)
 
 function get_valuation():string
 {
-	global $app;
+	global $app, $tschema;
 
 	$out = '';
 

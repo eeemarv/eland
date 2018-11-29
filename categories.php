@@ -3,6 +3,8 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $edit = $_GET['edit'] ?? false;
 $del = $_GET['del'] ?? false;
 $add = $_GET['add'] ?? false;
@@ -41,10 +43,19 @@ if ($add)
 		{
 			$cat['cdate'] = date('Y-m-d H:i:s');
 			$cat['id_creator'] = ($s_master) ? 0 : $s_id;
-			$cat['fullname'] = ($cat['leafnote']) ? $app['db']->fetchColumn('SELECT name FROM categories WHERE id = ?', [(int) $cat['id_parent']]) . ' - ' : '';
+			$cat['fullname'] = '';
+
+			if ($cat['leafnote'])
+			{
+				$cat['fullname'] .= $app['db']->fetchColumn('select name
+					from ' . $tschema . '.categories
+					where id = ?', [(int) $cat['id_parent']]);
+				$cat['fullname'] .= ' - ';
+			}
+
 			$cat['fullname'] .= $cat['name'];
 
-			if ($app['db']->insert('categories', $cat))
+			if ($app['db']->insert($tschema . '.categories', $cat))
 			{
 				$app['alert']->success('Categorie toegevoegd.');
 				cancel();
@@ -60,7 +71,9 @@ if ($add)
 
 	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
-	$rs = $app['db']->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+	$rs = $app['db']->prepare('select id, name
+		from ' . $tschema . '.categories
+		where leafnote = 0 order by name');
 
 	$rs->execute();
 
@@ -115,7 +128,9 @@ if ($edit)
 {
 	$cats = [];
 
-	$rs = $app['db']->prepare('SELECT id, * FROM categories ORDER BY fullname');
+	$rs = $app['db']->prepare('select *
+		from ' . $tschema . '.categories
+		order by fullname');
 
 	$rs->execute();
 
@@ -157,14 +172,24 @@ if ($edit)
 		}
 		else
 		{
-			$prefix = ($cat['id_parent']) ? $app['db']->fetchColumn('SELECT name FROM categories WHERE id = ?', [$cat['id_parent']]) . ' - ' : '';
+			$prefix = '';
+
+			if ($cat['id_parent'])
+			{
+				$prefix .= $app['db']->fetchColumn('select name
+					from ' . $tschema . '.categories
+					where id = ?', [$cat['id_parent']]) . ' - ';
+			}
+
 			$cat['fullname'] = $prefix . $cat['name'];
 			unset($cat['id']);
 
-			if ($app['db']->update('categories', $cat, ['id' => $edit]))
+			if ($app['db']->update($tschema . '.categories', $cat, ['id' => $edit]))
 			{
 				$app['alert']->success('Categorie aangepast.');
-				$app['db']->executeUpdate('UPDATE categories SET fullname = ? || \' - \' || name WHERE id_parent = ?', [$cat['name'], $edit]);
+				$app['db']->executeUpdate('update ' . $tschema . '.categories
+					set fullname = ? || \' - \' || name
+					where id_parent = ?', [$cat['name'], $edit]);
 				cancel();
 			}
 
@@ -174,7 +199,10 @@ if ($edit)
 
 	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
-	$rs = $app['db']->prepare('SELECT id, name FROM categories WHERE leafnote = 0 ORDER BY name');
+	$rs = $app['db']->prepare('select id, name
+		from ' . $tschema . '.categories
+		where leafnote = 0
+		order by name');
 
 	$rs->execute();
 
@@ -200,7 +228,9 @@ if ($edit)
 	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
-	echo 'value="'. $cat["name"] . '" required>';
+	echo 'value="';
+	echo $cat["name"];
+	echo '" required>';
 	echo '</div>';
 	echo '</div>';
 
@@ -236,7 +266,7 @@ if ($del)
 			cancel();
 		}
 
-		if ($app['db']->delete('categories', ['id' => $del]))
+		if ($app['db']->delete($tschema . '.categories', ['id' => $del]))
 		{
 			$app['alert']->success('Categorie verwijderd.');
 			cancel();
@@ -245,7 +275,9 @@ if ($del)
 		$app['alert']->error('Categorie niet verwijderd.');
 	}
 
-	$fullname = $app['db']->fetchColumn('SELECT fullname FROM categories WHERE id = ?', [$del]);
+	$fullname = $app['db']->fetchColumn('select fullname
+		from ' . $tschema . '.categories
+		where id = ?', [$del]);
 
 	$h1 = 'Categorie verwijderen : ' . $fullname;
 	$fa = 'clone';
@@ -271,7 +303,9 @@ if ($del)
 	exit;
 }
 
-$cats = $app['db']->fetchAll('SELECT * FROM categories ORDER BY fullname');
+$cats = $app['db']->fetchAll('select *
+	from ' . $tschema . '.categories
+	order by fullname');
 
 $child_count_ary = [];
 

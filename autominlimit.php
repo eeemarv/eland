@@ -3,6 +3,8 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 if (isset($_POST['zend']))
 {
 	if ($error_token = $app['form_token']->get_error())
@@ -18,14 +20,14 @@ if (isset($_POST['zend']))
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
-	$app['xdb']->set('setting', 'autominlimit', $a, $app['this_group']->get_schema());
+	$app['xdb']->set('setting', 'autominlimit', $a, $tschema);
 
 	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
 else
 {
-	$row = $app['xdb']->get('setting', 'autominlimit', $app['this_group']->get_schema());
+	$row = $app['xdb']->get('setting', 'autominlimit', $tschema);
 
 	if ($row)
 	{

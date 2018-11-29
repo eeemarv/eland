@@ -23,9 +23,13 @@ $page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
 
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 if ($del)
 {
-	if (!($user_id = $app['db']->fetchColumn('select c.id_user from contact c where c.id = ?', array($del))))
+	if (!($user_id = $app['db']->fetchColumn('select c.id_user
+		from ' . $tschema . '.contact c
+		where c.id = ?', array($del))))
 	{
 		$app['alert']->error('Het contact bestaat niet.');
 		cancel();
@@ -48,7 +52,8 @@ if ($del)
 	}
 
 	$contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
-		from contact c, type_contact tc
+		from ' . $tschema . '.contact c, ' .
+			$tschema . '.type_contact tc
 		where c.id = ?
 			and tc.id = c.id_type_contact', array($del));
 
@@ -57,7 +62,8 @@ if ($del)
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
 		if ($app['db']->fetchColumn('select count(c.*)
-			from contact c, type_contact tc
+			from ' . $tschema . '.contact c, ' .
+				$tschema . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
@@ -76,7 +82,7 @@ if ($del)
 			cancel($uid);
 		}
 
-		if ($app['db']->delete('contact', array('id' => $del)))
+		if ($app['db']->delete($tschema . '.contact', array('id' => $del)))
 		{
 			$app['alert']->success('Contact verwijderd.');
 		}
@@ -88,7 +94,8 @@ if ($del)
 	}
 
 	$contact = $app['db']->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
-		from type_contact tc, contact c
+		from ' . $tschema . '.type_contact tc, ' .
+			$tschema . '.contact c
 		where c.id_type_contact = tc.id
 			and c.id = ?', array($del));
 
@@ -154,7 +161,9 @@ if ($edit || $add)
 {
 	if ($edit)
 	{
-		if (!($user_id = $app['db']->fetchColumn('select id_user from contact where id = ?', [$edit])))
+		if (!($user_id = $app['db']->fetchColumn('select id_user
+			from ' . $tschema . '.contact
+			where id = ?', [$edit])))
 		{
 			$app['alert']->error('Dit contact heeft geen eigenaar of bestaat niet.');
 			cancel();
@@ -194,7 +203,9 @@ if ($edit || $add)
 			$letscode = $_POST['letscode'];
 			[$letscode] = explode(' ', trim($letscode));
 
-			$user_id = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+			$user_id = $app['db']->fetchColumn('select id
+				from ' . $tschema . '.users
+				where letscode = ?', [$letscode]);
 
 			if ($user_id)
 			{
@@ -210,11 +221,13 @@ if ($edit || $add)
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> trim($_POST['value']),
 			'comments' 				=> trim($_POST['comments']),
-			'flag_public'			=> $app['access_control']->get_post_value(), //$_POST['flag_public'],
+			'flag_public'			=> $app['access_control']->get_post_value(),
 			'id_user'				=> $user_id,
 		);
 
-		$mail_type_id = $app['db']->fetchColumn('select id from type_contact where abbrev = \'mail\'');
+		$mail_type_id = $app['db']->fetchColumn('select id
+			from ' . $tschema . '.type_contact
+			where abbrev = \'mail\'');
 
 		if ($contact['id_type_contact'] == $mail_type_id && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
 		{
@@ -236,7 +249,9 @@ if ($edit || $add)
 			$errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
 		}
 
-		if(!$app['db']->fetchColumn('select abbrev from type_contact where id = ?', array($contact['id_type_contact'])))
+		if(!$app['db']->fetchColumn('select abbrev
+			from ' . $tschema . '.type_contact
+			where id = ?', array($contact['id_type_contact'])))
 		{
 			$errors[] = 'Contacttype bestaat niet!';
 		}
@@ -251,13 +266,13 @@ if ($edit || $add)
 		if ($edit)
 		{
 			$count_mail = $app['db']->fetchColumn('select count(*)
-				from contact
+				from ' . $tschema . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				array($user_id, $mail_type_id));
 
 			$mail_id = $app['db']->fetchColumn('select id
-				from contact
+				from ' . $tschema . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				array($user_id, $mail_type_id));
@@ -271,7 +286,9 @@ if ($edit || $add)
 		if ($contact['id_type_contact'] == $mail_type_id)
 		{
 			$mail_count = $app['db']->fetchColumn('select count(c.*)
-				from contact c, type_contact tc, users u
+				from ' . $tschema . '.contact c, ' .
+					$tschema . '.type_contact tc, ' .
+					$tschema . '.users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
@@ -309,7 +326,7 @@ if ($edit || $add)
 		{
 			if ($edit)
 			{
-				if ($app['db']->update('contact', $contact, array('id' => $edit)))
+				if ($app['db']->update($tschema . '.contact', $contact, array('id' => $edit)))
 				{
 					$app['alert']->success('Contact aangepast.');
 					cancel($uid);
@@ -321,7 +338,7 @@ if ($edit || $add)
 			}
 			else
 			{
-				if ($app['db']->insert('contact', $contact))
+				if ($app['db']->insert($tschema . '.contact', $contact))
 				{
 					$app['alert']->success('Contact opgeslagen.');
 					cancel($uid);
@@ -339,7 +356,9 @@ if ($edit || $add)
 	}
 	else if ($edit)
 	{
-		$contact = $app['db']->fetchAssoc('select * from contact where id = ?', array($edit));
+		$contact = $app['db']->fetchAssoc('select *
+			from ' . $tschema . '.contact
+			where id = ?', array($edit));
 	}
 	else if ($add)
 	{
@@ -353,7 +372,7 @@ if ($edit || $add)
 	$tc = [];
 
 	$rs = $app['db']->prepare('select id, name, abbrev
-		from type_contact');
+		from ' . $tschema . '.type_contact');
 
 	$rs->execute();
 
@@ -429,7 +448,7 @@ if ($edit || $add)
 		echo $app['typeahead']->get($typeahead_ary);
 		echo '" ';
 		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+		echo $app['config']->get('newuserdays', $tschema);
 		echo '" ';
 		echo 'placeholder="Account Code" ';
 		echo 'value="';
@@ -543,7 +562,8 @@ if ($uid)
 	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id && $uid) ? true : false;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-		from contact c, type_contact tc
+		from ' . $tschema . '.contact c, ' .
+			$tschema . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
@@ -732,7 +752,9 @@ if (!$uid)
 	{
 		[$letscode] = explode(' ', trim($letscode));
 
-		$fuid = $app['db']->fetchColumn('select id from users where letscode = \'' . $letscode . '\'');
+		$fuid = $app['db']->fetchColumn('select id
+			from ' . $tschema . '.users
+			where letscode = ?', [$letscode]);
 
 		if ($fuid)
 		{
@@ -830,7 +852,7 @@ $user_table_sql = '';
 
 if ($ustatus != 'all' || $orderby == 'u.letscode')
 {
-	$user_table_sql = ', users u ';
+	$user_table_sql = ', ' . $tschema . '.users u ';
 	$where_sql[] = 'u.id = c.id_user';
 }
 
@@ -844,15 +866,17 @@ else
 }
 
 $query = 'select c.*, tc.abbrev
-	from contact c, type_contact tc' . $user_table_sql . '
+	from ' . $tschema . '.contact c, ' .
+		$tschema . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql;
 
 $row_count = $app['db']->fetchColumn('select count(c.*)
-	from contact c, type_contact tc' . $user_table_sql . '
+	from ' . $tschema . '.contact c, ' .
+		$tschema . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
 $query .= ' order by ' . $orderby . ' ';
-$query .= ($asc) ? 'asc ' : 'desc ';
+$query .= $asc ? 'asc ' : 'desc ';
 $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
@@ -890,8 +914,11 @@ unset($tableheader_ary['c.id']);
 
 $abbrev_ary = array();
 
-$rs = $app['db']->prepare('select abbrev from type_contact');
+$rs = $app['db']->prepare('select abbrev
+	from ' . $tschema . '.type_contact');
+
 $rs->execute();
+
 while($row = $rs->fetch())
 {
 	$abbrev_ary[$row['abbrev']] = $row['abbrev'];
@@ -951,7 +978,8 @@ $access_options = [
 	'interlets'	=> 'interSysteem',
 ];
 
-if (!$app['config']->get('template_lets', $app['this_group']->get_schema()) || !$app['config']->get('interlets_en', $app['this_group']->get_schema()))
+if (!$app['config']->get('template_lets', $tschema)
+	|| !$app['config']->get('interlets_en', $tschema))
 {
 	unset($access_options['interlets']);
 }
@@ -1005,7 +1033,7 @@ echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
 echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+echo $app['config']->get('newuserdays', $tschema);
 echo '" ';
 echo 'name="letscode" id="letscode" placeholder="Account Code" ';
 echo 'value="' . $letscode . '">';

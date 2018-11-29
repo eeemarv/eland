@@ -5,10 +5,14 @@ set_time_limit(60);
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $export_ary = [
 	'users'		=> [
 		'label'		=> 'Gebruikers',
-		'sql'		=> 'select * from users order by letscode',
+		'sql'		=> 'select *
+			from ' . $tschema . '.users
+			order by letscode',
 		'columns'	=> [
 			'letscode',
 			'cdate',
@@ -32,7 +36,9 @@ $export_ary = [
 	'contacts'	=> [
 		'label'	=> 'Contactgegevens',
 		'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
-			from contact c, type_contact tc, users u
+			from ' . $tschema . '.contact c, ' .
+				$tschema . '.type_contact tc, ' .
+				$tschema . '.users u
 			where c.id_type_contact = tc.id
 				and c.id_user = u.id',
 		'columns'	=> [
@@ -46,7 +52,7 @@ $export_ary = [
 	],
 	'categories'	=> [
 		'label'		=> 'Categorieën',
-		'sql'		=> 'select * from categories',
+		'sql'		=> 'select * from ' . $tschema . '.categories',
 		'columns'	=> [
 			'name',
 			'id_parent',
@@ -59,7 +65,8 @@ $export_ary = [
 	'messages'	=> [
 		'label'		=> 'Vraag en Aanbod',
 		'sql'		=> 'select m.*, u.name as username, u.letscode
-			from messages m, users u
+			from ' . $tschema . '.messages m, ' .
+				$tschema . '.users u
 			where m.id_user = u.id
 				and validity > ?',
 		'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
@@ -78,7 +85,9 @@ $export_ary = [
 							concat(fu.letscode, \' \', fu.name) as from_user,
 							concat(tu.letscode, \' \', tu.name) as to_user,
 							t.cdate, t.real_from, t.real_to, t.amount
-						from transactions t, users fu, users tu
+						from ' . $tschema . '.transactions t, ' .
+							$tschema . '.users fu, ' .
+							$tschema . '.users tu
 						where t.id_to = tu.id
 							and t.id_from = fu.id
 						order by t.date desc',
@@ -102,10 +111,9 @@ foreach ($export_ary as $ex_key => $export)
 {
 	if (isset($_GET['db']) && function_exists('exec'))
 	{
-		$schema = $app['this_group']->get_schema();
-		$filename = $schema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
+		$filename = $tschema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
 
-		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $schema . ' --no-owner --no-acl > ' . $filename);
+		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $tschema . ' --no-owner --no-acl > ' . $filename);
 
 		header('Content-disposition: attachment; filename=' . $filename);
 		header('Content-Type: application/force-download');
@@ -201,7 +209,9 @@ if (function_exists('exec'))
 	echo '<form>';
 	echo '<input type="submit" value="Download" name="db" class="btn btn-default margin-bottom">';
 	echo '<input type="hidden" value="admin" name="r">';
-	echo '<input type="hidden" value="' . $s_id . '" name="u">';
+	echo '<input type="hidden" value="';
+	echo $s_id;
+	echo '" name="u">';
 	echo '</form>';
 
 	echo '</div></div>';

@@ -96,7 +96,8 @@ if (count($non_unique_name))
 //
 
 $unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
-	from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
+	from ' . $tschema . '.contact c, ' .
+		$tschema . '.type_contact tc
 	where c.id_type_contact = tc.id
 		and tc.abbrev = \'mail\'
 		and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
@@ -120,18 +121,14 @@ while ($row = $st->fetch())
 	$no_mail[] = $row['id'];
 	$status_msgs = true;
 }
-//
 
 $empty_letscode = $app['db']->fetchAll('select id
 	from ' . $tschema . '.users
 	where status in (1, 2) and letscode = \'\'');
 
-//
 $empty_name = $app['db']->fetchAll('select id
 	from ' . $tschema . '.users
 	where name = \'\'');
-
-//	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
 
 if ($unvalid_mail || $empty_letscode || $empty_name)
 {

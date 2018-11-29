@@ -4,6 +4,8 @@ $rootpath = '';
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $fa = 'files-o';
 
 $q = $_GET['q'] ?? '';
@@ -27,7 +29,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$row = $app['xdb']->get('doc', $map_edit, $app['this_group']->get_schema());
+	$row = $app['xdb']->get('doc', $map_edit, $tschema);
 
 	if ($row)
 	{
@@ -59,7 +61,7 @@ if ($map_edit)
 		if (!count($errors))
 		{
 
-			$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+			$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]);
@@ -74,7 +76,7 @@ if ($map_edit)
 		{
 			$app['xdb']->set('doc', $map_edit, [
 					'map_name' => $posted_map_name
-				], $app['this_group']->get_schema());
+				], $tschema);
 
 			$app['alert']->success('Map naam aangepast.');
 
@@ -101,12 +103,17 @@ if ($map_edit)
 	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" ';
-	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '" ';
-	echo 'value="' . $map_name . '">';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get('doc_map_names');
+	echo '" ';
+	echo 'value="';
+	echo $map_name;
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('docs', ['map' => $map_edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo aphp('docs', ['map' => $map_edit], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 	echo $app['form_token']->get_hidden_input();
 
@@ -125,7 +132,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $app['xdb']->get('doc', $edit, $app['this_group']->get_schema());
+	$row = $app['xdb']->get('doc', $edit, $tschema);
 
 	if ($row)
 	{
@@ -157,7 +164,7 @@ if ($edit)
 			if (strlen($map_name))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['this_group']->get_schema(),
+					'agg_schema' => $tschema,
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
 				if (count($rows))
@@ -169,9 +176,9 @@ if ($edit)
 				{
 					$map = ['map_name' => $map_name];
 
-					$mid = substr(sha1(microtime() . $app['this_group']->get_schema() . $map_name), 0, 24);
+					$mid = substr(sha1(microtime() . $tschema . $map_name), 0, 24);
 
-					$app['xdb']->set('doc', $mid, $map, $app['this_group']->get_schema());
+					$app['xdb']->set('doc', $mid, $map, $tschema);
 
 					$map['id'] = $mid;
 				}
@@ -188,16 +195,16 @@ if ($edit)
 					|| !strlen($map_name)))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['this_group']->get_schema(),
+					'agg_schema' => $tschema,
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
 				{
-					$app['xdb']->del('doc', $doc['map_id'], $app['this_group']->get_schema());
+					$app['xdb']->del('doc', $doc['map_id'], $tschema);
 				}
 			}
 
-			$app['xdb']->set('doc', $edit, $update, $app['this_group']->get_schema());
+			$app['xdb']->set('doc', $edit, $update, $tschema);
 
 			$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -214,7 +221,7 @@ if ($edit)
 		$map_id = $doc['map_id'];
 
 		$map = $app['xdb']->get('doc', $map_id,
-			$app['this_group']->get_schema())['data'];
+			$tschema)['data'];
 	}
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
@@ -232,7 +239,9 @@ if ($edit)
 	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="location" ';
-	echo 'name="location" value="' . $app['s3_doc_url'] . $doc['filename'] . '" readonly>';
+	echo 'name="location" value="';
+	echo $app['s3_doc_url'] . $doc['filename'];
+	echo '" readonly>';
 	echo '</div>';
 	echo '</div>';
 
@@ -240,14 +249,19 @@ if ($edit)
 	echo '<label for="org_filename" class="col-sm-2 control-label">Originele bestandsnaam</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="org_filename" ';
-	echo 'name="org_filename" value="' . $doc['org_filename'] . '" readonly>';
+	echo 'name="org_filename" value="';
+	echo $doc['org_filename'];
+	echo '" readonly>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
+	echo '<label for="name" class="col-sm-2 control-label">';
+	echo 'Naam (optioneel)</label>';
 	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name" value="' . $doc['name'] . '">';
+	echo '<input type="text" class="form-control" id="name" name="name" value="';
+	echo $doc['name'];
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -262,10 +276,15 @@ if ($edit)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-folder-o"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="' . $map_name . '" ';
-	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
+	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
+	echo $map_name;
+	echo '" ';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get('doc_map_names');
+	echo '">';
 	echo '</div>';
-	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
+	echo '<p><small>Optioneel. Creëer een nieuwe map ';
+	echo 'of selecteer een bestaande.</small></p>';
 	echo '</div>';
 	echo '</div>';
 
@@ -292,7 +311,7 @@ if ($confirm_del && $del)
 		cancel();
 	}
 
-	$row = $app['xdb']->get('doc', $del, $app['this_group']->get_schema());
+	$row = $app['xdb']->get('doc', $del, $tschema);
 
 	if ($row)
 	{
@@ -310,13 +329,13 @@ if ($confirm_del && $del)
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+			$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
 			if (count($rows) < 2)
 			{
-				$app['xdb']->del('doc', $doc['map_id'], $app['this_group']->get_schema());
+				$app['xdb']->del('doc', $doc['map_id'], $tschema);
 
 				$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -324,7 +343,7 @@ if ($confirm_del && $del)
 			}
 		}
 
-		$app['xdb']->del('doc', $del, $app['this_group']->get_schema());
+		$app['xdb']->del('doc', $del, $tschema);
 
 		$app['alert']->success('Het document werd verwijderd.');
 
@@ -336,7 +355,7 @@ if ($confirm_del && $del)
 
 if ($del)
 {
-	$row = $app['xdb']->get('doc', $del, $app['this_group']->get_schema());
+	$row = $app['xdb']->get('doc', $del, $tschema);
 
 	if ($row)
 	{
@@ -360,7 +379,8 @@ if ($del)
 		echo '</p>';
 
 		echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-		echo '<input type="submit" value="Verwijderen" name="confirm_del" class="btn btn-danger">';
+		echo '<input type="submit" value="Verwijderen" ';
+		echo 'name="confirm_del" class="btn btn-danger">';
 		echo $app['form_token']->get_hidden_input();
 		echo '</form>';
 
@@ -416,7 +436,7 @@ if ($submit)
 	{
 		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
-		$filename = $app['this_group']->get_schema() . '_d_' . $doc_id . '.' . $ext;
+		$filename = $tschema . '_d_' . $doc_id . '.' . $ext;
 
 		$error = $app['s3']->doc_upload($filename, $tmpfile);
 
@@ -438,7 +458,7 @@ if ($submit)
 
 			if (strlen($map_name))
 			{
-				$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+				$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -454,7 +474,7 @@ if ($submit)
 
 					$map = ['map_name' => $map_name];
 
-					$app['xdb']->set('doc', $map_id, $map, $app['this_group']->get_schema());
+					$app['xdb']->set('doc', $map_id, $map, $tschema);
 
 					$app['typeahead']->invalidate_thumbprint('doc_map_names');
 				}
@@ -469,7 +489,7 @@ if ($submit)
 				$doc['name'] = $name;
 			}
 
-			$app['xdb']->set('doc', $doc_id, $doc, $app['this_group']->get_schema());
+			$app['xdb']->set('doc', $doc_id, $doc, $tschema);
 
 
 			$app['alert']->success('Het bestand is opgeladen.');
@@ -487,7 +507,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $app['xdb']->get('doc', $map, $app['this_group']->get_schema());
+		$row = $app['xdb']->get('doc', $map, $tschema);
 
 		if ($row)
 		{
@@ -568,7 +588,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $app['xdb']->get('doc', $map, $app['this_group']->get_schema());
+	$row = $app['xdb']->get('doc', $map, $tschema);
 
 	if ($row)
 	{
@@ -581,7 +601,7 @@ if ($map)
 		cancel();
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
 		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
@@ -607,7 +627,7 @@ if ($map)
 }
 else
 {
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -628,7 +648,7 @@ else
 		}
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['this_group']->get_schema(),
+	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
 		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
@@ -707,7 +727,9 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '" ';
+echo '<input type="text" class="form-control" id="q" name="q" value="';
+echo $q;
+echo '" ';
 echo 'placeholder="Zoeken">';
 echo '</div>';
 echo '</div>';
@@ -766,24 +788,28 @@ if (!$map && count($maps))
 if (count($docs))
 {
 	$show_visibility = ($s_user
-		&& $app['config']->get('template_lets', $app['this_group']->get_schema())
-		&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+		&& $app['config']->get('template_lets', $tschema)
+		&& $app['config']->get('interlets_en', $tschema))
 		|| $s_admin ? true : false;
 
 	echo '<div class="panel panel-default printview">';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-bordered table-striped table-hover footable csv"';
-	echo ' data-filter="#q" data-filter-minimum="1">';
+	echo '<table class="table table-bordered ';
+	echo 'table-striped table-hover footable csv" ';
+	echo 'data-filter="#q" data-filter-minimum="1">';
 	echo '<thead>';
 
 	echo '<tr>';
-	echo '<th data-sort-initial="true">Naam</th>';
-	echo '<th data-hide="phone, tablet">Tijdstip</th>';
+	echo '<th data-sort-initial="true">';
+	echo 'Naam</th>';
+	echo '<th data-hide="phone, tablet">';
+	echo 'Tijdstip</th>';
 
 	if ($show_visibility)
 	{
-		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
+		echo '<th data-hide="phone, tablet">';
+		echo 'Zichtbaarheid</th>';
 	}
 
 	echo $s_admin ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';

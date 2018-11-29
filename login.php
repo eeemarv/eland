@@ -4,6 +4,8 @@ $page_access = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 $monitor = $_GET['monitor'] ?? false;
@@ -15,7 +17,7 @@ if (!$location
 	|| $location == ''
 	|| $location == '/')
 {
-	$location = $app['config']->get('default_landing_page', $app['this_group']->get_schema());
+	$location = $app['config']->get('default_landing_page', $tschema);
 	$param = 'view_' . $location;
 	$param = in_array($location, ['messages', 'users', 'news']) ? ['view' => $$param] : [];
 	$location .= '.php?' . http_build_query($param);
@@ -27,7 +29,7 @@ if ($monitor)
 {
 	try
 	{
-		$app['db']->fetchColumn('select min(id) from users');
+		$app['db']->fetchColumn('select min(id) from ' . $tschema . '.users');
 	}
 	catch(Exception $e)
 	{
@@ -71,10 +73,10 @@ if ($monitor)
 
 if ($token)
 {
-	if($apikey = $app['predis']->get($app['this_group']->get_schema() . '_token_' . $token))
+	if($apikey = $app['predis']->get($tschema . '_token_' . $token))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['this_group']->get_schema()] = 'elas';
+		$logins[$tschema] = 'elas';
 		$app['session']->set('logins', $logins);
 
 		$param = 'welcome=1&r=guest&u=elas';
@@ -87,7 +89,7 @@ if ($token)
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
 			$app['xdb']->set('apikey_login', $apikey, [
 				'domain' => $domain_referrer
-			], $app['this_group']->get_schema());
+			], $tschema);
 		}
 
 		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: ' . $referrer);
@@ -117,7 +119,7 @@ if ($submit)
 	if ($login == 'master' && hash('sha512', $password) == $master_password)
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['this_group']->get_schema()] = 'master';
+		$logins[$tschema] = 'master';
 		$app['session']->set('logins', $logins);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
@@ -131,7 +133,9 @@ if ($submit)
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
 		$count_email = $app['db']->fetchColumn('select count(c.*)
-			from contact c, type_contact tc, users u
+			from ' . $tschema . '.contact c, ' .
+				$tschema . '.type_contact tc, ' .
+				$tschema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.id_user = u.id
@@ -141,7 +145,9 @@ if ($submit)
 		if ($count_email == 1)
 		{
 			$user_id = $app['db']->fetchColumn('select u.id
-				from contact c, type_contact tc, users u
+				from ' . $tschema . '.contact c, ' .
+					$tschema . '.type_contact tc, ' .
+					$tschema . '.users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
@@ -159,7 +165,7 @@ if ($submit)
 	if (!$user_id && !count($errors))
 	{
 		$count_letscode = $app['db']->fetchColumn('select count(u.*)
-			from users u
+			from ' . $tschema . '.users u
 			where lower(letscode) = ?', [$login]);
 
 		if ($count_letscode > 1)
@@ -170,14 +176,16 @@ if ($submit)
 		}
 		else if ($count_letscode == 1)
 		{
-			$user_id = $app['db']->fetchColumn('select id from users where lower(letscode) = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id
+				from ' . $tschema . '.users
+				where lower(letscode) = ?', [$login]);
 		}
 	}
 
 	if (!$user_id && !count($errors))
 	{
 		$count_name = $app['db']->fetchColumn('select count(u.*)
-			from users u
+			from ' . $tschema . '.users u
 			where lower(name) = ?', [$login]);
 
 		if ($count_name > 1)
@@ -188,7 +196,9 @@ if ($submit)
 		}
 		else if ($count_name == 1)
 		{
-			$user_id = $app['db']->fetchColumn('select id from users where lower(name) = ?', [$login]);
+			$user_id = $app['db']->fetchColumn('select id
+				from ' . $tschema . '.users
+				where lower(name) = ?', [$login]);
 		}
 	}
 
@@ -222,7 +232,7 @@ if ($submit)
 			}
 			else if ($user['password'] != $sha512)
 			{
-				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
+				$app['db']->update($tschema . '.users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
 				$app['monolog']->info('Password encryption updated to sha512', $log_ary);
 			}
 		}
@@ -239,7 +249,7 @@ if ($submit)
 	}
 
 	if (!count($errors)
-		&& $app['config']->get('maintenance', $app['this_group']->get_schema())
+		&& $app['config']->get('maintenance', $tschema)
 		&& $user['accountrole'] != 'admin')
 	{
 		$errors[] = 'De website is in onderhoud, probeer later opnieuw';
@@ -248,17 +258,17 @@ if ($submit)
 	if (!count($errors))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$app['this_group']->get_schema()] = $user['id'];
+		$logins[$tschema] = $user['id'];
 		$app['session']->set('logins', $logins);
 
 		$s_id = $user['id'];
-		$s_schema = $app['this_group']->get_schema();
+		$s_schema = $tschema;
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
 		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser, $log_ary);
 
-		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
+		$app['db']->update($tschema . '.users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		$app['user_cache']->clear($user['id']);
 
 		$app['xdb']->set('login', $user['id'], [
@@ -276,7 +286,7 @@ if ($submit)
 	$app['alert']->error($errors);
 }
 
-if($app['config']->get('maintenance', $app['this_group']->get_schema()))
+if($app['config']->get('maintenance', $tschema))
 {
 	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admins kunnen inloggen');
 }

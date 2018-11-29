@@ -3,6 +3,8 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $setting = $_GET['edit'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 
@@ -75,18 +77,18 @@ $periodic_mail_block_ary = [
 	],
 ];
 
-if (!$app['config']->get('forum_en', $app['this_group']->get_schema()))
+if (!$app['config']->get('forum_en', $tschema))
 {
 	unset($periodic_mail_block_ary['forum']);
 }
 
-if (!$app['config']->get('interlets_en', $app['this_group']->get_schema())
-	|| !$app['config']->get('template_lets', $app['this_group']->get_schema()))
+if (!$app['config']->get('interlets_en', $tschema)
+	|| !$app['config']->get('template_lets', $tschema))
 {
 	unset($periodic_mail_block_ary['interlets']);
 }
 
-$currency = $app['config']->get('currency', $app['this_group']->get_schema());
+$currency = $app['config']->get('currency', $tschema);
 
 $tab_panes = [
 
@@ -190,7 +192,7 @@ $tab_panes = [
 			],
 
 			'currencyratio'	=> [
-				'cond'		=> $app['config']->get('template_lets', $app['this_group']->get_schema()) ? true : false,
+				'cond'		=> $app['config']->get('template_lets', $tschema) ? true : false,
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
@@ -472,13 +474,13 @@ foreach ($tab_panes as $pane)
 			{
 				foreach ($input['inputs'] as $sub_name => $sub_input)
 				{
-					$config[$sub_name] = $app['config']->get($sub_name, $app['this_group']->get_schema());
+					$config[$sub_name] = $app['config']->get($sub_name, $tschema);
 				}
 
 				continue;
 			}
 
-			$config[$name] = $app['config']->get($name, $app['this_group']->get_schema());
+			$config[$name] = $app['config']->get($name, $tschema);
 		}
 	}
 }
@@ -707,7 +709,7 @@ if ($post)
 
 	foreach ($posted_configs as $name => $value)
 	{
-		$app['config']->set($name, $app['this_group']->get_schema(), $value);
+		$app['config']->set($name, $tschema, $value);
 
 		// prevent string too long error for eLAS database
 
@@ -719,7 +721,7 @@ if ($post)
 
 		$value = substr($value, 0, 60);
 
-		$app['db']->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
+		$app['db']->update($tschema . '.config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 
 		$p_acts = is_array($post_actions[$name]) ? $post_actons[$name] : [$post_actions[$name]];
 

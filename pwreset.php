@@ -28,7 +28,7 @@ if ($token)
 		{
 			if ($user_id)
 			{
-				$app['db']->update('users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
+				$app['db']->update($tschema . '.users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
 				$app['user_cache']->clear($user_id);
 				$user = $app['user_cache']->get($user_id);
 				$app['alert']->success('Paswoord opgeslagen.');
@@ -127,7 +127,9 @@ if (isset($_POST['zend']))
 	else if($email)
 	{
 		$user = $app['db']->fetchAll('select u.*
-			from contact c, type_contact tc, users u
+			from ' . $tschema . '.contact c, ' .
+				$tschema . '.type_contact tc, ' .
+				$tschema . '.users u
 			where c. value = ?
 				and tc.id = c.id_type_contact
 				and tc.abbrev = \'mail\'
