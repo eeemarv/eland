@@ -118,8 +118,8 @@ if ($add && $submit && !count($errors))
 		{
 			$vars = [
 				'group'		=> [
-					'name'	=> $app['config']->get('systemname'),
-					'tag'	=> $app['config']->get('systemtag'),
+					'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+					'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
 				],
 				'news'	=> $news,
 				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,
@@ -386,8 +386,10 @@ if ($del)
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$show_visibility = ($s_user && $app['config']->get('template_lets')
-	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+$show_visibility = ($s_user
+	&& $app['config']->get('template_lets', $app['this_group']->get_schema())
+	&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+	|| $s_admin ? true : false;
 
 $news_access_ary = $no_access_ary = [];
 
@@ -410,7 +412,7 @@ if(!$s_admin)
 }
 
 $query .= ' order by itemdate ';
-$query .= $app['config']->get('news_order_asc') === '1' ? 'asc' : 'desc';
+$query .= $app['config']->get('news_order_asc', $app['this_group']->get_schema()) === '1' ? 'asc' : 'desc';
 
 $st = $app['db']->prepare($query);
 $st->execute();

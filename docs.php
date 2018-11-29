@@ -760,8 +760,10 @@ if (!$map && count($maps))
 
 if (count($docs))
 {
-	$show_visibility = ($s_user && $app['config']->get('template_lets')
-		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+	$show_visibility = ($s_user
+		&& $app['config']->get('template_lets', $app['this_group']->get_schema())
+		&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+		|| $s_admin ? true : false;
 
 	echo '<div class="panel panel-default printview">';
 
@@ -773,11 +775,13 @@ if (count($docs))
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Naam</th>';
 	echo '<th data-hide="phone, tablet">Tijdstip</th>';
+
 	if ($show_visibility)
 	{
 		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 	}
-	echo ($s_admin) ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+
+	echo $s_admin ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 	echo '</tr>';
 
 	echo '</thead>';

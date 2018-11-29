@@ -429,7 +429,7 @@ if ($edit || $add)
 		echo $app['typeahead']->get($typeahead_ary);
 		echo '" ';
 		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays');
+		echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
 		echo '" ';
 		echo 'placeholder="Account Code" ';
 		echo 'value="';
@@ -951,7 +951,7 @@ $access_options = [
 	'interlets'	=> 'interSysteem',
 ];
 
-if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))
+if (!$app['config']->get('template_lets', $app['this_group']->get_schema()) || !$app['config']->get('interlets_en', $app['this_group']->get_schema()))
 {
 	unset($access_options['interlets']);
 }
@@ -1004,7 +1004,9 @@ $typeahead_name_ary = array('users_active', 'users_inactive', 'users_ip', 'users
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
 echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
-echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+echo 'data-newuserdays="';
+echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+echo '" ';
 echo 'name="letscode" id="letscode" placeholder="Account Code" ';
 echo 'value="' . $letscode . '">';
 echo '</div>';

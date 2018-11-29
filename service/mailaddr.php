@@ -34,7 +34,7 @@ class mailaddr
 	{
 		global $s_admin;
 
-		$sch = ($sending_schema) ?: $this->this_group->get_schema();
+		$sch = $sending_schema ?: $this->this_group->get_schema();
 
 		if (!is_array($m))
 		{

@@ -145,14 +145,14 @@ if ($user_mail_submit && $id && $post)
 
 	$vars = [
 		'group'		=> [
-			'tag'	=> $app['config']->get('systemtag'),
-			'name'	=> $app['config']->get('systemname'),
+			'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
 		],
 		'to_user'		=> link_user($user, false, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname'),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['this_group']->get_schema()),
 		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
@@ -396,7 +396,7 @@ if ($bulk_submit && $post && $s_admin)
 			$errors[] = 'Het E-mail bericht is leeg.';
 		}
 
-		if (!$app['config']->get('mailenabled'))
+		if (!$app['config']->get('mailenabled', $app['this_group']->get_schema()))
 		{
 			$errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
@@ -768,10 +768,10 @@ if ($pw)
 					{
 						$vars = [
 							'group'		=> [
-								'name'		=> $app['config']->get('systemname'),
-								'tag'		=> $app['config']->get('systemtag'),
-								'support'	=> $app['config']->get('support'),
-								'currency'	=> $app['config']->get('currency'),
+								'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+								'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+								'support'	=> $app['config']->get('support', $app['this_group']->get_schema()),
+								'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
 							],
 							'user'			=> $user,
 							'password'		=> $password,
@@ -1089,8 +1089,8 @@ if ($add || $edit)
 	}
 	else if ($s_owner)
 	{
-		$username_edit = $app['config']->get('users_can_edit_username');
-		$fullname_edit = $app['config']->get('users_can_edit_fullname');
+		$username_edit = $app['config']->get('users_can_edit_username', $app['this_group']->get_schema());
+		$fullname_edit = $app['config']->get('users_can_edit_fullname', $app['this_group']->get_schema());
 	}
 	else
 	{
@@ -1444,7 +1444,7 @@ if ($add || $edit)
 						{
 							$user['mail'] = $mailadr;
 
-							if ($app['config']->get('mailenabled'))
+							if ($app['config']->get('mailenabled', $app['this_group']->get_schema()))
 							{
 								send_activation_mail($password, $user);
 
@@ -1571,7 +1571,7 @@ if ($add || $edit)
 						{
 							if ($notify && !empty($mailadr) && $password)
 							{
-								if ($app['config']->get('mailenabled'))
+								if ($app['config']->get('mailenabled', $app['this_group']->get_schema()))
 								{
 									$user['mail'] = $mailadr;
 
@@ -1674,8 +1674,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> $app['config']->get('preset_minlimit'),
-				'maxlimit'		=> $app['config']->get('preset_maxlimit'),
+				'minlimit'		=> $app['config']->get('preset_minlimit', $app['this_group']->get_schema()),
+				'maxlimit'		=> $app['config']->get('preset_maxlimit', $app['this_group']->get_schema()),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -1968,14 +1968,18 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if ($app['config']->get('minlimit') === '')
+		if ($app['config']->get('minlimit', $app['this_group']->get_schema()) === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende Minimum Systeemslimiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen ';
+			echo 'geledende Minimum Systeemslimiet ingesteld.';
 		}
 		else
 		{
 			echo 'De algemeen geldende Minimum Systeemslimiet bedraagt <strong>';
-			echo $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
+			echo $app['config']->get('minlimit', $app['this_group']->get_schema());
+			echo ' ';
+			echo $app['config']->get('currency', $app['this_group']->get_schema());
+			echo '</strong>.';
 		}
 
 		echo '</p>';
@@ -1984,9 +1988,11 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Minimum Account Limiet') . '" ';
 		echo 'die gedefiniëerd is in de instellingen.';
 
-		if ($app['config']->get('preset_minlimit') !== '')
+		if ($app['config']->get('preset_minlimit', $app['this_group']->get_schema()) !== '')
 		{
-			echo ' De Preset bedraagt momenteel <strong>' . $app['config']->get('preset_minlimit') . '</strong>.';
+			echo ' De Preset bedraagt momenteel <strong>';
+			echo $app['config']->get('preset_minlimit', $app['this_group']->get_schema());
+			echo '</strong>.';
 		}
 
 		echo '</p>';
@@ -2006,14 +2012,18 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Maximum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if ($app['config']->get('maxlimit') === '')
+		if ($app['config']->get('maxlimit', $app['this_group']->get_schema()) === '')
 		{
-			echo 'Er is momenteel <strong>geen</strong> algemeen geledende Maximum Systeemslimiet ingesteld.';
+			echo 'Er is momenteel <strong>geen</strong> algemeen ';
+			echo 'geledende Maximum Systeemslimiet ingesteld.';
 		}
 		else
 		{
 			echo 'De algemeen geldende Maximum Systeemslimiet bedraagt <strong>';
-			echo $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</strong>.';
+			echo $app['config']->get('maxlimit', $app['this_group']->get_schema());
+			echo ' ';
+			echo $app['config']->get('currency', $app['this_group']->get_schema());
+			echo '</strong>.';
 		}
 
 		echo '</p>';
@@ -2022,9 +2032,11 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Maximum Account Limiet') . '" ';
 		echo 'is ingevuld in de instellingen.';
 
-		if ($app['config']->get('preset_maxlimit') !== '')
+		if ($app['config']->get('preset_maxlimit', $app['this_group']->get_schema()) !== '')
 		{
-			echo ' De Preset bedraagt momenteel <strong>' . $app['config']->get('preset_maxlimit') . '</strong>.';
+			echo ' De Preset bedraagt momenteel <strong>';
+			echo $app['config']->get('preset_maxlimit', $app['this_group']->get_schema());
+			echo '</strong>.';
 		}
 
 		echo '</p>';
@@ -2286,7 +2298,8 @@ if ($id)
 	$interlets_group_missing = false;
 
 	if ($s_admin && $user['accountrole'] === 'interlets'
-		&& $app['config']->get('interlets_en') && $app['config']->get('template_lets'))
+		&& $app['config']->get('interlets_en', $app['this_group']->get_schema())
+		&& $app['config']->get('template_lets', $app['this_group']->get_schema()))
 	{
 		$interlets_group_id = $app['db']->fetchColumn('select id
 			from letsgroups
@@ -2568,16 +2581,20 @@ if ($id)
 
 	echo '<dt>Saldo</dt>';
 	echo '<dd>';
-	echo '<span class="label label-info">' . $user['saldo'] . '</span>&nbsp;';
-	echo $app['config']->get('currency');
+	echo '<span class="label label-info">';
+	echo $user['saldo'];
+	echo'</span>&nbsp;';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
 	echo '</dd>';
 
 	if ($user['minlimit'] !== '')
 	{
 		echo '<dt>Minimum limiet</dt>';
 		echo '<dd>';
-		echo '<span class="label label-danger">' . $user['minlimit'] . '</span>&nbsp;';
-		echo $app['config']->get('currency');
+		echo '<span class="label label-danger">';
+		echo $user['minlimit'];
+		echo '</span>&nbsp;';
+		echo $app['config']->get('currency', $app['this_group']->get_schema());
 		echo '</dd>';
 	}
 
@@ -2585,8 +2602,10 @@ if ($id)
 	{
 		echo '<dt>Maximum limiet</dt>';
 		echo '<dd>';
-		echo '<span class="label label-success">' . $user['maxlimit'] . '</span>&nbsp;';
-		echo $app['config']->get('currency');
+		echo '<span class="label label-success">';
+		echo $user['maxlimit'];
+		echo '</span>&nbsp;';
+		echo $app['config']->get('currency', $app['this_group']->get_schema());
 		echo '</dd>';
 	}
 
@@ -2671,7 +2690,8 @@ if ($id)
 	echo '<div class="col-md-12">';
 
 	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
-	echo $app['config']->get('currency') . '</h3>';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo '</h3>';
 	echo '</div></div>';
 
 	echo '<div class="row print-hide">';
@@ -2794,9 +2814,9 @@ if ($v_list)
 			'total'	=> 'Transacties totaal',
 		],
 		'amount'	=> [
-			'in'	=> $app['config']->get('currency') . ' in',
-			'out'	=> $app['config']->get('currency') . ' uit',
-			'total'	=> $app['config']->get('currency') . ' totaal',
+			'in'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' in',
+			'out'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' uit',
+			'total'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' totaal',
 		],
 	];
 
@@ -2922,9 +2942,9 @@ if ($v_list)
 			'total'	=> 'Transacties totaal',
 		],
 		'amount'	=> [
-			'in'	=> $app['config']->get('currency') . ' in',
-			'out'	=> $app['config']->get('currency') . ' uit',
-			'total'	=> $app['config']->get('currency') . ' totaal',
+			'in'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' in',
+			'out'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' uit',
+			'total'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' totaal',
 		],
 	];
 
@@ -3448,7 +3468,9 @@ if ($v_list)
 			echo $activity_filter_letscode;
 			echo '" ';
 			echo 'class="form-control" ';
-			echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+			echo 'data-newuserdays="';
+			echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+			echo '" ';
 			echo 'data-typeahead="';
 			echo $app['typeahead']->get($typeahead_ary);
 			echo '">';
@@ -3871,7 +3893,9 @@ if ($v_list)
 	echo '</div></div>';
 
 	echo '<div class="row"><div class="col-md-12">';
-	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ' . $app['config']->get('currency') . '</span></p>';
+	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo '</span></p>';
 	echo '</div></div>';
 
 	if ($s_admin & isset($show_columns['u']))
@@ -4215,8 +4239,8 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'	=> $app['config']->get('systemname'),
-			'tag'	=> $app['config']->get('systemtag'),
+			'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+			'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
 		],
 		'user'			=> link_user($user, false, false),
 		'user_mail'		=> $user['mail'],
@@ -4230,10 +4254,10 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'		=> $app['config']->get('systemname'),
-			'tag'		=> $app['config']->get('systemtag'),
-			'support'	=> $app['config']->get('support'),
-			'currency'	=> $app['config']->get('currency'),
+			'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+			'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'support'	=> $app['config']->get('support', $app['this_group']->get_schema()),
+			'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
 		],
 		'user'		=> $user,
 		'password'	=> $password,

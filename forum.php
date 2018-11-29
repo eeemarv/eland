@@ -31,7 +31,7 @@ if (!($s_user || $s_admin))
 	}
 }
 
-if (!$app['config']->get('forum_en'))
+if (!$app['config']->get('forum_en', $app['this_group']->get_schema()))
 {
 	$app['alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_default_page();
@@ -327,8 +327,10 @@ if ($add || $edit)
 
 if ($topic)
 {
-	$show_visibility = ($s_user && $app['config']->get('template_lets')
-		&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+	$show_visibility = ($s_user
+		&& $app['config']->get('template_lets', $app['this_group']->get_schema())
+		&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+		|| $s_admin ? true : false;
 
 	$forum_posts = [];
 
@@ -520,8 +522,10 @@ if ($s_admin || $s_user)
 
 $csv_en = $s_admin;
 
-$show_visibility = (!$s_guest && $app['config']->get('template_lets')
-	&& $app['config']->get('interlets_en')) || $s_admin ? true : false;
+$show_visibility = (!$s_guest
+	&& $app['config']->get('template_lets', $app['this_group']->get_schema())
+	&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+	|| $s_admin ? true : false;
 
 $h1 = 'Forum';
 

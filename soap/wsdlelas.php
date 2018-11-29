@@ -4,13 +4,13 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/../include/web.php';
 require_once __DIR__ . '/../include/transactions.php';
 
-if (!$app['config']->get('template_lets'))
+if (!$app['config']->get('template_lets', $app['this_group']->get_schema()))
 {
 	echo 'NO_ELAS_TIMEBANK';
 	exit;
 }
 
-if (!$app['config']->get('interlets_en'))
+if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()))
 {
 	echo 'NO_INTERSYSTEM';
 	exit;
@@ -89,7 +89,7 @@ function gettoken($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		$app['monolog']->debug('elas-soap: Transaction token request deferred (offline)');
 
@@ -121,7 +121,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 {
 	global $app;
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' deferred (offline)');
 
@@ -208,7 +208,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'SIGFAIL';
 	}
 
-	$transaction['amount'] = round($amount * $app['config']->get('currencyratio'));
+	$transaction['amount'] = round($amount * $app['config']->get('currencyratio', $app['this_group']->get_schema()));
 
 	if ($transaction['amount'] < 1)
 	{
@@ -244,7 +244,7 @@ function userbyletscode($apikey, $letscode)
 
 	$app['monolog']->debug('Lookup request for ' . $letscode);
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		return 'OFFLINE';
 	}
@@ -278,7 +278,7 @@ function userbyname($apikey, $name)
 
 	$app['monolog']->debug('Lookup request for user ' . $name);
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		return 'OFFLINE';
 	}
@@ -300,7 +300,7 @@ function getstatus($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		return 'OFFLINE';
 	}
@@ -319,7 +319,7 @@ function apiversion($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance'))
+	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
 	{
 		return 'OFFLINE';
 	}

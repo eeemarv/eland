@@ -183,7 +183,7 @@ echo 'data-typeahead="';
 echo $app['typeahead']->get($typeahead_users_ary);
 echo '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays');
+echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
 echo '" ';
 echo 'name="code" id="code" placeholder="Account Code" ';
 echo 'value="';

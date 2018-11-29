@@ -243,7 +243,9 @@ if ($submit)
 
 				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
 				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
-				$alert_success .= '  met bedrag ' . $amo .' ' . $app['config']->get('currency') . ' uitgevoerd.<br>';
+				$alert_success .= '  met bedrag ' . $amo .' ';
+				$alert_success .= $app['config']->get('currency', $app['this_group']->get_schema());
+				$alert_success .= ' uitgevoerd.<br>';
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
@@ -317,15 +319,21 @@ if ($submit)
 			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $t['id_from']);
 		}
 
-		$alert_success .= 'Totaal: ' . $total . ' ' . $app['config']->get('currency');
+		$alert_success .= 'Totaal: ' . $total . ' ';
+		$alert_success .= $app['config']->get('currency', $app['this_group']->get_schema());
 		$app['alert']->success($alert_success);
 
-		$log_one = $users[$one_uid]['letscode'] . ' ' . $users[$one_uid]['name'] . ' (Total amount: ' . $total . ' ' . $app['config']->get('currency') . ')';
+		$log_one = $users[$one_uid]['letscode'] . ' ';
+		$log_one .= $users[$one_uid]['name'];
+		$log_one .= '(Total amount: ' . $total . ' ';
+		$log_one .= $app['config']->get('currency', $app['this_group']->get_schema());
+		$log_one .= ')';
+
 		$log_many = rtrim($log_many, ', ');
 		$log_str = 'Mass transaction from ';
-		$log_str .= ($to_one) ? $log_many : $log_one;
+		$log_str .= $to_one ? $log_many : $log_one;
 		$log_str .= ' to ';
-		$log_str .= ($to_one) ? $log_one : $log_many;
+		$log_str .= $to_one ? $log_one : $log_many;
 
 		$app['monolog']->info('trans: ' . $log_str);
 
@@ -372,8 +380,8 @@ if ($from_letscode)
 	}
 }
 
-$group_minlimit = $app['config']->get('minlimit');
-$group_maxlimit = $app['config']->get('maxlimit');
+$group_minlimit = $app['config']->get('minlimit', $app['this_group']->get_schema());
+$group_maxlimit = $app['config']->get('maxlimit', $app['this_group']->get_schema());
 
 $app['assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
@@ -404,7 +412,7 @@ echo '<label for="fixed" class="col-sm-2 control-label">Vast bedrag</label>';
 echo '<div class="col-sm-10">';
 echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency');
+echo $app['config']->get('currency', $app['this_group']->get_schema());
 echo '</span>';
 echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
@@ -447,7 +455,8 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency') . ': basis';
+echo $app['config']->get('currency', $app['this_group']->get_schema());
+echo ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
 echo '</div>';
@@ -513,7 +522,8 @@ echo '<div class="col-sm-5">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency') . ': min';
+echo $app['config']->get('currency', $app['this_group']->get_schema());
+echo ': min';
 echo '</span>';
 
 echo '<input type="number" class="form-control margin-bottom" id="var_min">';
@@ -523,7 +533,8 @@ echo '</div>';
 echo '<div class="col-sm-5">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency') . ': max';
+echo $app['config']->get('currency', $app['this_group']->get_schema());
+echo ': max';
 echo '</span>';
 
 echo '<input type="number" class="form-control" id="var_max">';
@@ -542,18 +553,27 @@ echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo '</div>';
 echo '</div>';
 
-if ($app['config']->get('minlimit') !== '' || $app['config']->get('maxlimit') !== '')
+if ($app['config']->get('minlimit', $app['this_group']->get_schema()) !== ''
+	|| $app['config']->get('maxlimit', $app['this_group']->get_schema()) !== '')
 {
 	echo '<ul>';
 
-	if ($app['config']->get('minlimit') !== '')
+	if ($app['config']->get('minlimit', $app['this_group']->get_schema()) !== '')
 	{
-		echo '<li>Minimum Systeemslimiet: ' . $app['config']->get('minlimit') . ' ' . $app['config']->get('currency') . '</li>';
+		echo '<li>Minimum Systeemslimiet: ';
+		echo $app['config']->get('minlimit', $app['this_group']->get_schema());
+		echo ' ';
+		echo $app['config']->get('currency', $app['this_group']->get_schema());
+		echo '</li>';
 	}
 
-	if ($app['config']->get('maxlimit') !== '')
+	if ($app['config']->get('maxlimit', $app['this_group']->get_schema()) !== '')
 	{
-		echo '<li>Maximum Systeemslimiet: ' . $app['config']->get('maxlimit') . ' ' . $app['config']->get('currency') . '</li>';
+		echo '<li>Maximum Systeemslimiet: ';
+		echo $app['config']->get('maxlimit', $app['this_group']->get_schema());
+		echo ' ';
+		echo $app['config']->get('currency', $app['this_group']->get_schema());
+		echo '</li>';
 	}
 
 	echo '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
@@ -620,7 +640,9 @@ echo '<input type="text" class="form-control" id="from_letscode" name="from_lets
 echo 'value="';
 echo $from_letscode;
 echo '" ';
-echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+echo 'data-newuserdays="';
+echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+echo '" ';
 echo 'data-typeahead="';
 echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
@@ -717,7 +739,9 @@ echo '</table>';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="total" class="col-sm-2 control-label">Totaal ' . $app['config']->get('currency') . '</label>';
+echo '<label for="total" class="col-sm-2 control-label">Totaal ';
+echo $app['config']->get('currency', $app['this_group']->get_schema());
+echo '</label>';
 echo '<div class="col-sm-10">';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
@@ -788,7 +812,7 @@ function mail_mass_transaction($mail_ary)
 {
 	global $app, $s_id;
 
-	if (!$app['config']->get('mailenabled'))
+	if (!$app['config']->get('mailenabled', $app['this_group']->get_schema()))
 	{
 		$app['alert']->warning('Mail functions are not enabled. ');
 		return;
@@ -817,10 +841,10 @@ function mail_mass_transaction($mail_ary)
 
 	$common_vars = [
 		'group'		=> [
-			'name'			=> $app['config']->get('systemname'),
-			'tag'			=> $app['config']->get('systemtag'),
-			'support'		=> $app['config']->get('support'),
-			'currency'		=> $app['config']->get('currency'),
+			'name'			=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+			'tag'			=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'support'		=> $app['config']->get('support', $app['this_group']->get_schema()),
+			'currency'		=> $app['config']->get('currency', $app['this_group']->get_schema()),
 		],
 		'description'			=> $mail_ary['description'],
 		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',
@@ -829,11 +853,11 @@ function mail_mass_transaction($mail_ary)
 
 	$from_user_id = $to_user_id = $one_user_id;
 
-	$users = $app['db']->executeQuery('SELECT u.id,
+	$users = $app['db']->executeQuery('select u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.name, u.letscode
-		FROM users u
-		WHERE u.status in (1, 2)
+		from users u
+		where u.status in (1, 2)
 			AND u.id IN (?)',
 		[$many_user_ids],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);

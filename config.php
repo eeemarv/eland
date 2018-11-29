@@ -75,17 +75,17 @@ $periodic_mail_block_ary = [
 	],
 ];
 
-if (!$app['config']->get('forum_en'))
+if (!$app['config']->get('forum_en', $app['this_group']->get_schema()))
 {
 	unset($periodic_mail_block_ary['forum']);
 }
 
-if (!$app['config']->get('interlets_en') || !$app['config']->get('template_lets'))
+if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()) || !$app['config']->get('template_lets', $app['this_group']->get_schema()))
 {
 	unset($periodic_mail_block_ary['interlets']);
 }
 
-$currency = $app['config']->get('currency');
+$currency = $app['config']->get('currency', $app['this_group']->get_schema());
 
 $tab_panes = [
 
@@ -189,7 +189,7 @@ $tab_panes = [
 			],
 
 			'currencyratio'	=> [
-				'cond'		=> $app['config']->get('template_lets') ? true : false,
+				'cond'		=> $app['config']->get('template_lets', $app['this_group']->get_schema()) ? true : false,
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
@@ -471,13 +471,13 @@ foreach ($tab_panes as $pane)
 			{
 				foreach ($input['inputs'] as $sub_name => $sub_input)
 				{
-					$config[$sub_name] = $app['config']->get($sub_name);
+					$config[$sub_name] = $app['config']->get($sub_name, $app['this_group']->get_schema());
 				}
 
 				continue;
 			}
 
-			$config[$name] = $app['config']->get($name);
+			$config[$name] = $app['config']->get($name, $app['this_group']->get_schema());
 		}
 	}
 }

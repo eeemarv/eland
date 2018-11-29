@@ -27,8 +27,9 @@ $andor = $_GET['andor'] ?? 'and';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
 
-$currency = $app['config']->get('currency');
-$intersystem_en = $app['config']->get('template_lets') && $app['config']->get('interlets_en');
+$currency = $app['config']->get('currency', $app['this_group']->get_schema());
+$intersystem_en = $app['config']->get('template_lets', $app['this_group']->get_schema())
+	&& $app['config']->get('interlets_en', $app['this_group']->get_schema());
 
 /**
  * add
@@ -164,7 +165,7 @@ if ($add)
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
-				$minlimit = $app['config']->get('minlimit');
+				$minlimit = $app['config']->get('minlimit', $app['this_group']->get_schema());
 
 				if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
 				{
@@ -197,7 +198,7 @@ if ($add)
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
-				$maxlimit = $app['config']->get('maxlimit');
+				$maxlimit = $app['config']->get('maxlimit', $app['this_group']->get_schema());
 
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
@@ -235,11 +236,16 @@ if ($add)
 
 		if ($s_user && !count($errors))
 		{
-			$balance_eq = $app['config']->get('balance_equilibrium');
+			$balance_eq = $app['config']->get('balance_equilibrium', $app['this_group']->get_schema());
 
 			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
-				$errors[] = 'Als Uitstapper kan je geen ' . $amount . ' ' . $app['config']->get('currency') . ' uitgeven.';
+				$err = 'Als Uitstapper kan je geen ';
+				$err .= $amount;
+				$err .= ' ';
+				$err .= $app['config']->get('currency', $app['this_group']->get_schema());
+				$err .= ' uitgeven.';
+				$errors[] = $err;
 			}
 
 			if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
@@ -247,7 +253,9 @@ if ($add)
 				$err = 'Het ';
 				$err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
 				$err .= ' heeft de status \'Uitstapper\' en kan geen ';
-				$err .= $amount . ' ' . $app['config']->get('currency') . ' ontvangen.';
+				$err .= $amount . ' ';
+				$err .= $app['config']->get('currency', $app['this_group']->get_schema());
+				$err .= ' ontvangen.';
 				$errors[] = $err;
 			}
 		}
@@ -336,7 +344,7 @@ if ($add)
 				$errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
 			}
 
-			$currencyratio = $app['config']->get('currencyratio');
+			$currencyratio = $app['config']->get('currencyratio', $app['this_group']->get_schema());
 
 			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 			{
@@ -513,7 +521,10 @@ if ($add)
 
 			if (!$remote_group && !count($errors))
 			{
-				$errors[] = 'Het andere Systeem heeft dit Systeem ('. $app['config']->get('systemname') . ') niet geconfigureerd als interSysteem.';
+				$err = 'Het andere Systeem heeft dit Systeem (';
+				$err .= $app['config']->get('systemname', $app['this_group']->get_schema());
+				$err .= ') niet geconfigureerd als interSysteem.';
+				$errors[] = $err;
 			}
 
 			if (!$remote_group['localletscode'] && !count($errors))
@@ -543,7 +554,7 @@ if ($add)
 			$remote_currency = $app['config']->get('currency', $remote_schema);
 			$remote_currencyratio = $app['config']->get('currencyratio', $remote_schema);
 			$remote_balance_eq = $app['config']->get('balance_equilibrium', $remote_schema);
-			$currencyratio = $app['config']->get('currencyratio');
+			$currencyratio = $app['config']->get('currencyratio', $app['this_group']->get_schema());
 
 			if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 				&& !count($errors))
@@ -572,10 +583,14 @@ if ($add)
 
 					if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
 					{
-						$err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende saldo ';
-						$err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+						$err = 'Het interSysteem Account van dit Systeem ';
+						$err .= 'in het andere Systeem heeft onvoldoende saldo ';
+						$err .= 'beschikbaar. Het saldo bedraagt ';
+						$err .= $remote_interlets_account['saldo'] . ' ';
 						$err .= $remote_currency . ' ';
-						$err .= 'en de Minimum Systeemslimiet in het andere Systeem bedraagt ' . $minlimit . ' ';
+						$err .= 'en de Minimum Systeemslimiet ';
+						$err .= 'in het andere Systeem bedraagt ';
+						$err .= $minlimit . ' ';
 						$err .= $remote_currency . '.';
 						$errors[] = $err;
 					}
@@ -601,9 +616,12 @@ if ($add)
 			{
 				$err = 'Het interSysteem Account van dit Systeem in het andere Systeem ';
 				$err .= 'heeft de status uitstapper ';
-				$err .= 'en kan geen ' . $remote_amount . ' ';
+				$err .= 'en kan geen ';
+				$err .= $remote_amount . ' ';
 				$err .= $remote_currency . ' uitgeven ';
-				$err .= '(' . $amount . ' ' . $app['config']->get('currency') . ').';
+				$err .= '(' . $amount . ' ';
+				$err .= $app['config']->get('currency', $app['this_group']->get_schema());
+				$err .= ').';
 				$errors[] = $err;
 			}
 
@@ -617,9 +635,13 @@ if ($add)
 					{
 						$err = 'Het bestemmings-Account in het andere Systeem ';
 						$err .= 'heeft de maximum Systeemslimiet bereikt. ';
-						$err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+						$err .= 'Het saldo bedraagt ';
+						$err .= $to_remote_user['saldo'];
+						$err .= ' ';
+						$err .= $remote_currency;
 						$err .= ' en de maximum ';
-						$err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $remote_currency . '.';
+						$err .= 'Systeemslimiet bedraagt ';
+						$err .= $maxlimit . ' ' . $remote_currency . '.';
 						$errors[] = $err;
 					}
 				}
@@ -645,7 +667,8 @@ if ($add)
 				$err .= 'en kan geen ' . $remote_amount . ' ';
 				$err .= $remote_currency . ' ontvangen (';
 				$err .= $amount . ' ';
-				$err .= $app['config']->get('currency') . ').';
+				$err .= $app['config']->get('currency', $app['this_group']->get_schema());
+				$err .= ').';
 				$errors[] = $err;
 			}
 
@@ -782,7 +805,7 @@ if ($add)
 				$amount = $row['amount'];
 				if ($tus)
 				{
-					$amount = round(($app['config']->get('currencyratio') * $amount) / $app['config']->get('currencyratio', $tus));
+					$amount = round(($app['config']->get('currencyratio', $app['this_group']->get_schema()) * $amount) / $app['config']->get('currencyratio', $tus));
 				}
 				$transaction['amount'] = $amount;
 				$tuid = $row['tuid'];
@@ -817,7 +840,7 @@ if ($add)
 	$groups = [];
 
 	$groups[] = [
-		'groupname' => $app['config']->get('systemname'),
+		'groupname' => $app['config']->get('systemname', $app['this_group']->get_schema()),
 		'id'		=> 'self',
 	];
 
@@ -865,7 +888,7 @@ if ($add)
 		}
 	}
 
-	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio') > 0 ? true : false;
+	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio', $app['this_group']->get_schema()) > 0 ? true : false;
 
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
@@ -947,12 +970,18 @@ if ($add)
 
 			if ($sch)
 			{
-				echo ' data-newuserdays="' . $app['config']->get('newuserdays', $sch) . '"';
-				echo ' data-minlimit="' . $app['config']->get('minlimit', $sch) . '"';
-				echo ' data-maxlimit="' . $app['config']->get('maxlimit', $sch) . '"';
-				echo ' data-currency="' . $app['config']->get('currency', $sch) . '"';
-				echo ' data-currencyratio="' . $app['config']->get('currencyratio', $sch) . '"';
-				echo ' data-balance-equilibrium="' . $app['config']->get('balance_equilibrium', $sch) . '"';
+				echo ' data-newuserdays="';
+				echo $app['config']->get('newuserdays', $sch) . '"';
+				echo ' data-minlimit="';
+				echo $app['config']->get('minlimit', $sch) . '"';
+				echo ' data-maxlimit="';
+				echo $app['config']->get('maxlimit', $sch) . '"';
+				echo ' data-currency="';
+				echo $app['config']->get('currency', $sch) . '"';
+				echo ' data-currencyratio="';
+				echo $app['config']->get('currencyratio', $sch) . '"';
+				echo ' data-balance-equilibrium="';
+				echo $app['config']->get('balance_equilibrium', $sch) . '"';
 			}
 
 			echo ' data-typeahead="' . $typeahead . '"';
@@ -1004,16 +1033,25 @@ if ($add)
 		echo 'data-typeahead="' . $typeahead . '" ';
 	}
 
-	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-
-	echo 'value="' . $transaction['letscode_to'] . '" required>';
-
+	echo 'data-newuserdays="';
+	echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+	echo '" ';
+	echo 'value="';
+	echo $transaction['letscode_to'];
+	echo '" required>';
 	echo '</div>';
 
 	echo '<ul class="account-info">';
 
 	echo '<li>Dit veld geeft autosuggesties door Naam of Account Code te typen. ';
-	echo count($groups) > 1 ? 'Indien je een interSysteem transactie doet, kies dan eerst het juiste interSysteem om de juiste suggesties te krijgen.' : '';
+
+	if (count($groups) > 1)
+	{
+		echo 'Indien je een interSysteem transactie doet, ';
+		echo 'kies dan eerst het juiste interSysteem om de ';
+		echo 'juiste suggesties te krijgen.';
+	}
+
 	echo '</li>';
 	echo '</ul>';
 
@@ -1027,7 +1065,7 @@ if ($add)
 	echo '<div class="input-group">';
 
 	echo '<span class="input-group-addon">';
-	echo $app['config']->get('currency');
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
 	echo '</span>';
 
 	echo '<input type="number" class="form-control" id="amount" name="amount" ';
@@ -1049,7 +1087,8 @@ if ($add)
 		echo '<li id="info_admin_limit">';
 		echo 'Admins kunnen over en onder limieten gaan';
 
-		if ($app['config']->get('interlets_en') && $app['config']->get('template_lets'))
+		if ($app['config']->get('interlets_en', $app['this_group']->get_schema())
+			&& $app['config']->get('template_lets', $app['this_group']->get_schema()))
 		{
 			echo ' in het eigen Systeem.';
 		}
@@ -1073,7 +1112,8 @@ if ($add)
 
 	echo '<ul>';
 
-	if ($app['config']->get('template_lets') && $app['config']->get('currencyratio') > 0)
+	if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+		&& $app['config']->get('currencyratio', $app['this_group']->get_schema()) > 0)
 	{
 		echo '<li id="info_ratio">Valuatie: <span class="num">';
 		echo '</span> per uur</li>';
@@ -1303,7 +1343,8 @@ if ($edit)
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
-	echo $transaction['amount'] . ' ' . $app['config']->get('currency');
+	echo $transaction['amount'] . ' ';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
 	echo '</dd>';
 
 	echo '<dt>Omschrijving</dt>';
@@ -1474,7 +1515,7 @@ if ($id)
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
 	echo $transaction['amount'] . ' ';
-	echo $app['config']->get('currency');
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
 	echo '</dd>';
 
 	echo '<dt>Omschrijving</dt>';
@@ -1566,7 +1607,7 @@ if ($id)
 			echo ' (';
 			echo $transaction['amount'];
 			echo ' ';
-			echo $app['config']->get('currency');
+			echo $app['config']->get('currency', $app['this_group']->get_schema());
 			echo ').';
 		}
 
@@ -1627,7 +1668,7 @@ if ($id)
 			echo 'in de eigen tijdsmunt ';
 			echo '(';
 			echo $transaction['amount'] . ' ';
-			echo $app['config']->get('currency');
+			echo $app['config']->get('currency', $app['this_group']->get_schema());
 			echo ') ';
 			echo 'met gelijke tijdswaarde als Tr-1.';
 		}
@@ -1881,7 +1922,7 @@ $tableheader_ary = [
 	'description' => array_merge($asc_preset_ary, [
 		'lbl' => 'Omschrijving']),
 	'amount' => array_merge($asc_preset_ary, [
-		'lbl' => $app['config']->get('currency')]),
+		'lbl' => $app['config']->get('currency', $app['this_group']->get_schema())]),
 	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'])
@@ -2027,11 +2068,15 @@ if (!$inline)
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get($typeahead_name_ary) . '" ';
+	echo $app['typeahead']->get($typeahead_name_ary);
+	echo '" ';
 	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays') . '" ';
+	echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+	echo '" ';
 	echo 'name="fcode" id="fcode" placeholder="Account Code" ';
-	echo 'value="' . $fcode . '">';
+	echo 'value="';
+	echo $fcode;
+	echo '">';
 
 	echo '</div>';
 	echo '</div>';
@@ -2397,10 +2442,11 @@ function get_valuation():string
 
 	$out = '';
 
-	if ($app['config']->get('template_lets') && $app['config']->get('currencyratio') > 0)
+	if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+		&& $app['config']->get('currencyratio', $app['this_group']->get_schema()) > 0)
 	{
 		$out .= '<li id="info_ratio">Valuatie: <span class="num">';
-		$out .= $app['config']->get('currencyratio');
+		$out .= $app['config']->get('currencyratio', $app['this_group']->get_schema());
 		$out .= '</span> per uur</li>';
 	}
 

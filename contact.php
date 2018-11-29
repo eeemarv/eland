@@ -6,7 +6,7 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 
-if (!$app['config']->get('contact_form_en'))
+if (!$app['config']->get('contact_form_en', $app['this_group']->get_schema()))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
@@ -38,8 +38,8 @@ if ($token)
 			'browser'		=> $data['browser'],
 			'email'			=> $data['email'],
 			'group'			=> [
-				'name' =>	$app['config']->get('systemname'),
-				'tag' => 	$app['config']->get('systemtag'),
+				'name' =>	$app['config']->get('systemname', $app['this_group']->get_schema()),
+				'tag' => 	$app['config']->get('systemtag', $app['this_group']->get_schema()),
 			],
 		];
 
@@ -58,7 +58,7 @@ if ($token)
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
-		$success_text = $app['config']->get('contact_form_success_text');
+		$success_text = $app['config']->get('contact_form_success_text', $app['this_group']->get_schema());
 
 		header('Location: ' . generate_url('contact'));
 		exit;
@@ -102,7 +102,7 @@ if($post && isset($_POST['zend']))
 		$errors[] = 'Geef een bericht in.';
 	}
 
-	if (!trim($app['config']->get('support')))
+	if (!trim($app['config']->get('support', $app['this_group']->get_schema())))
 	{
 		$errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
 	}
@@ -130,8 +130,8 @@ if($post && isset($_POST['zend']))
 
 		$vars = [
 			'group' => [
-				'tag'	=> $app['config']->get('systemtag'),
-				'name'	=> $app['config']->get('systemname'),
+				'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+				'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
 			],
 			'contact_url'	=> $app['base_url'] . '/contact.php',
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
@@ -163,11 +163,11 @@ else
 	$email = '';
 }
 
-if (!$app['config']->get('mailenabled'))
+if (!$app['config']->get('mailenabled', $app['this_group']->get_schema()))
 {
 	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
-else if (!$app['config']->get('support'))
+else if (!$app['config']->get('support', $app['this_group']->get_schema()))
 {
 	$app['alert']->warning('Er is geen support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
@@ -177,7 +177,7 @@ $fa = 'comment-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = $app['config']->get('contact_form_top_text');
+$top_text = $app['config']->get('contact_form_top_text', $app['this_group']->get_schema());
 
 if ($top_text)
 {
@@ -213,7 +213,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = $app['config']->get('contact_form_bottom_text');
+$bottom_text = $app['config']->get('contact_form_bottom_text', $app['this_group']->get_schema());
 
 if ($bottom_text)
 {

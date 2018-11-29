@@ -64,7 +64,9 @@ function insert_transaction($transaction)
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
-		$transaction['amount'] . ' ' . $app['config']->get('currency') . ' from user ' .
+		$transaction['amount'] . ' ' .
+		$app['config']->get('currency', $app['this_group']->get_schema()) .
+		' from user ' .
 		link_user($transaction['id_from'], false, false, true) . ' to user ' .
 		link_user($transaction['id_to'], false, false, true));
 
@@ -89,14 +91,14 @@ function mail_mailtype_interlets_transaction($transaction)
 		'to_user'	=> $to_user,
 		'to_group'	=> $to_group,
 		'amount'			=> $transaction['amount'],
-		'amount_hours'		=> round($transaction['amount'] / $app['config']->get('currencyratio'), 4),
+		'amount_hours'		=> round($transaction['amount'] / $app['config']->get('currencyratio', $app['this_group']->get_schema()), 4),
 		'transid'			=> $transaction['transid'],
 		'description'		=> $transaction['description'],
 		'group'				=> [
-			'name'			=> $app['config']->get('systemname'),
-			'tag'			=> $app['config']->get('systemtag'),
-			'currency'		=> $app['config']->get('currency'),
-			'currencyratio'	=> $app['config']->get('currencyratio'),
+			'name'			=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+			'tag'			=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'currency'		=> $app['config']->get('currency', $app['this_group']->get_schema()),
+			'currencyratio'	=> $app['config']->get('currencyratio', $app['this_group']->get_schema()),
 		],
 	];
 

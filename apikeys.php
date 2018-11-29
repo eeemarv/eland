@@ -8,12 +8,12 @@ $add = $_GET['add'] ?? false;
 
 $submit = isset($_POST['zend']) ? true : false;
 
-if (!$app['config']->get('template_lets'))
+if (!$app['config']->get('template_lets', $app['this_group']->get_schema()))
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('interlets_en'))
+if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()))
 {
 	redirect_default_page();
 }
@@ -96,7 +96,7 @@ if ($add)
 		$app['alert']->error('Apikey niet opgeslagen.');
 	}
 
-	$key = sha1($app['config']->get('systemname') . microtime());
+	$key = sha1($app['config']->get('systemname', $app['this_group']->get_schema()) . microtime());
 
 	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true);
 

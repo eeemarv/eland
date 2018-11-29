@@ -7,10 +7,11 @@ use service\config;
 
 class access_control
 {
-	private $this_group;
-	private $type_template;
+	protected $config;
+	protected $schema;
+	protected $type_template;
 
-	private $acc_ary = [
+	protected $acc_ary = [
 		'admin'	=> [
 			'level'	=> 0,
 			'label'	=> 'admin',
@@ -28,34 +29,30 @@ class access_control
 		],
 	];
 
-	private $acc_ary_search = [
+	protected $acc_ary_search = [
 		0 => 'admin',
 		1 => 'users',
 		2 => 'interlets',
 	];
 
-	private $input_ary = [
+	protected $input_ary = [
 		'admin'	=> 'admin',
 		'users'	=> 'users',
 		'interlets'	=> 'interlets',
 	];
 
-	private $label_ary = [
+	protected $label_ary = [
 		'admin'	=> 'admin',
 		'users'	=> 'users',
 		'interlets' => 'interlets',
 	];
 
-	/**
-	 *
-	 */
-
 	public function __construct(this_group $this_group, config $config)
 	{
-		$this->this_group = $this_group;
 		$this->config = $config;
+		$this->schema = $this_group->get_schema();
 
-		if (!$this->config->get('template_lets') || !$this->config->get('interlets_en'))
+		if (!$this->config->get('template_lets', $this->schema) || !$this->config->get('interlets_en', $this->schema))
 		{
 			unset($this->input_ary['interlets']);
 			$this->label_ary['interlets'] = 'users';
@@ -164,10 +161,6 @@ class access_control
 		return false;
 	}
 
-	/**
-	 *
-	 */
-
 	public function get_post_error($name = 'access')
 	{
 		if ($this->acc_ary[$_POST[$name]])
@@ -177,10 +170,6 @@ class access_control
 
 		return 'Kies een zichtbaarheid.';
 	}
-
-	/*
-	 *
-	 */
 
 	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access', $size = 'xs', $label = 'Zichtbaarheid')
 	{
@@ -235,7 +224,13 @@ class access_control
 		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">';
 		$out .= $label . '</label>';
 		$out .= '<div class="col-sm-10"';
-		$out .= $access_cache_id ? ' data-access-cache-id="' . $this->this_group->get_schema() . '_' . $access_cache_id . '"' : '';
+
+		if ($access_cache_id)
+		{
+			$out .= ' data-access-cache-id="';
+			$out .= $this->schema . '_' . $access_cache_id . '"';
+		}
+
 		$out .= ' id="' . $name . '">';
 
 		foreach ($acc_ary as $key => $ary)

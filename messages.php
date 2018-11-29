@@ -552,14 +552,14 @@ if ($mail && $post && $id)
 
 	$vars = [
 		'group'		=> [
-			'tag'	=> $app['config']->get('systemtag'),
-			'name'	=> $app['config']->get('systemname'),
+			'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
 		],
 		'to_user'		=> link_user($user, false, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname'),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['this_group']->get_schema()),
 		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
@@ -767,7 +767,10 @@ if (($edit || $add))
 
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
-			$errors[] = 'De (richt)prijs in ' . $app['config']->get('currency') . ' moet nul of een positief getal zijn.';
+			$err = 'De (richt)prijs in ';
+			$err .= $app['config']->get('currency', $app['this_group']->get_schema());
+			$err .= ' moet nul of een positief getal zijn.';
+			$errors[] = $err;
 		}
 
 		if (!$msg['id_category'])
@@ -1077,7 +1080,7 @@ if (($edit || $add))
 	else if ($add)
 	{
 		$msg = [
-			'validity'		=> $app['config']->get('msgs_days_default'),
+			'validity'		=> $app['config']->get('msgs_days_default', $app['this_group']->get_schema()),
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
@@ -1146,8 +1149,12 @@ if (($edit || $add))
 		echo '</span>';
 		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
-		echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
-		echo 'value="' . $user_letscode . '" required>';
+		echo 'data-newuserdays="';
+		echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+		echo '" ';
+		echo 'value="';
+		echo $user_letscode;
+		echo '" required>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -1204,7 +1211,9 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ' . $app['config']->get('currency') . '</label>';
+	echo '<label for="amount" class="col-sm-2 control-label">Aantal ';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo '</label>';
 	echo '<div class="col-sm-10">';
 	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
 	echo 'value="';
@@ -1509,14 +1518,18 @@ if ($id)
 	echo '</dt>';
 	echo '<dd>';
 	$units = $message['units'] ? ' per ' . $message['units'] : '';
-	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency') . $units;
+	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency', $app['this_group']->get_schema()) . $units;
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
 	echo '</dt>';
 	echo '<dd>';
 	echo link_user($user);
-	echo ' (saldo: <span class="label label-info">' . $balance . '</span> ' .$app['config']->get('currency') . ')';
+	echo ' (saldo: <span class="label label-info">';
+	echo $balance;
+	echo '</span> ';
+	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo ')';
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';
@@ -2134,7 +2147,9 @@ if (!$inline)
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
-	echo 'data-newuserdays="' . $app['config']->get('newuserdays') . '" ';
+	echo 'data-newuserdays="';
+	echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+	echo '" ';
 	echo 'name="f[fcode]" id="fcode" placeholder="Account" ';
 	echo 'value="';
 	echo $filter['fcode'] ?? '';
@@ -2406,7 +2421,8 @@ else if ($v_list)
 		echo '<ul class="nav nav-tabs" role="tablist">';
 		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
 
-		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+			&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
 		{
 			echo '<li>';
 			echo '<a href="#access_tab" data-toggle="tab">';
@@ -2439,21 +2455,16 @@ else if ($v_list)
 
 		echo '</div>';
 
-		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+			&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';
-
 			echo '<form method="post" class="form-horizontal">';
-
 			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
-
 			echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
-
 			echo $app['form_token']->get_hidden_input();
-
 			echo '</form>';
-
 			echo '</div>';
 		}
 

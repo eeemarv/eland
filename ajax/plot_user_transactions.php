@@ -34,16 +34,16 @@ $balance = (int) $user['saldo'];
 $begin_date = date('Y-m-d H:i:s', time() - (86400 * $days));
 $end_date = date('Y-m-d H:i:s');
 
-$query = 'SELECT t.id, t.amount, t.id_from, t.id_to,
+$query = 'select t.id, t.amount, t.id_from, t.id_to,
 		t.real_from, t.real_to, t.date, t.description,
 		u.id as user_id, u.name, u.letscode, u.accountrole, u.status
-	FROM transactions t, users u
-	WHERE (t.id_to = ? OR t.id_from = ?)
-		AND (u.id = t.id_to OR u.id = t.id_from)
-		AND u.id <> ?
-		AND t.date >= ?
-		AND t.date <= ?
-	ORDER BY t.date DESC';
+	from transactions t, users u
+	where (t.id_to = ? OR t.id_from = ?)
+		and (u.id = t.id_to OR u.id = t.id_from)
+		and u.id <> ?
+		and t.date >= ?
+		and t.date <= ?
+	order by t.date DESC';
 $trans = $app['db']->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
 $begin_date = strtotime($begin_date);
@@ -52,13 +52,13 @@ $end_date = strtotime($end_date);
 foreach ($trans as $t)
 {
 	$date = strtotime($t['date']);
-	$out = ($t['id_from'] == $user_id) ? true : false;
-	$mul = ($out) ? 1 : -1;
+	$out = $t['id_from'] == $user_id ? true : false;
+	$mul = $out ? 1 : -1;
 	$balance += $t['amount'] * $mul;
 
 	$name = $t['name'];
-	$real = ($t['real_from']) ? $t['real_from'] : null;
-	$real = ($t['real_to']) ? $t['real_to'] : null;
+	$real = $t['real_from'] ? $t['real_from'] : null;
+	$real = $t['real_to'] ? $t['real_to'] : null;
 
 	if ($real)
 	{
@@ -73,6 +73,7 @@ foreach ($trans as $t)
 			[$name, $code] = explode('(', $real);
 			$name = trim($name);
 		}
+
 		$code = $t['letscode'] . '.' . trim($code, ' ()\t\n\r\0\x0B');
 	}
 	else
@@ -115,8 +116,8 @@ header('Content-type: application/json');
 
 echo json_encode([
 	'user_id' 		=> $user_id,
-	'ticks' 		=> ($days == 365) ? 12 : 4,
-	'currency' 		=> $app['config']->get('currency'),
+	'ticks' 		=> $days == 365 ? 12 : 4,
+	'currency' 		=> $app['config']->get('currency', $app['this_group']->get_schema()),
 	'transactions' 	=> $transactions,
 	'users' 		=> $users,
 	'beginBalance' 	=> $balance,

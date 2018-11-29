@@ -375,7 +375,8 @@ $errors = [];
  * check access to groups
  **/
 
-if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+	&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
 {
 	$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
 	$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
@@ -401,7 +402,8 @@ if ($page_access != 'anonymous'
 	exit;
 }
 
-if ($page_access != 'anonymous' && !$s_admin && $app['config']->get('maintenance'))
+if ($page_access != 'anonymous' && !$s_admin
+	&& $app['config']->get('maintenance', $app['this_group']->get_schema()))
 {
 	echo $app['twig']->render('maintenance.html.twig');
 	exit;
@@ -475,15 +477,23 @@ if (!$s_anonymous)
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
-$newusertreshold = time() - $app['config']->get('newuserdays') * 86400;
+$newusertreshold = time() - $app['config']->get('newuserdays', $app['this_group']->get_schema()) * 86400;
 
 /** welcome message **/
 
 if (isset($_GET['welcome']) && $s_guest)
 {
-	$msg = '<strong>Welkom bij ' . $app['config']->get('systemname') . '</strong><br>';
-	$msg .= 'Waardering bij ' . $app['config']->get('systemname') . ' gebeurt met \'' . $app['config']->get('currency') . '\'. ';
-	$msg .= $app['config']->get('currencyratio') . ' ' . $app['config']->get('currency');
+	$msg = '<strong>Welkom bij ';
+	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= '</strong><br>';
+	$msg .= 'Waardering bij ';
+	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= ' gebeurt met \'';
+	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
+	$msg .= '\'. ';
+	$msg .= $app['config']->get('currencyratio', $app['this_group']->get_schema());
+	$msg .= ' ';
+	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($s_elas_guest)
@@ -662,7 +672,7 @@ function get_default_page():string
 		return $default_page;
 	}
 
-	$page = $app['config']->get('default_landing_page');
+	$page = $app['config']->get('default_landing_page', $app['this_group']->get_schema());
 
 	$param = [];
 

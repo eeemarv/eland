@@ -12,7 +12,7 @@ if ($s_id)
 	redirect_default_page();
 }
 
-if (!$app['config']->get('registration_en'))
+if (!$app['config']->get('registration_en', $app['this_group']->get_schema()))
 {
 	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
@@ -20,7 +20,8 @@ if (!$app['config']->get('registration_en'))
 
 if ($token)
 {
-	$key = $app['this_group']->get_schema() . '_register_' . $token;
+	$key = $app['this_group']->get_schema();
+	$key .= '_register_' . $token;
 
 	if ($data = $app['predis']->get($key))
 	{
@@ -51,10 +52,10 @@ if ($token)
 			}
 		}
 
-		$minlimit = $app['config']->get('preset_minlimit');
+		$minlimit = $app['config']->get('preset_minlimit', $app['this_group']->get_schema());
 		$minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-		$maxlimit = $app['config']->get('preset_maxlimit');
+		$maxlimit = $app['config']->get('preset_maxlimit', $app['this_group']->get_schema());
 		$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
 		$user = [
@@ -147,8 +148,8 @@ if ($token)
 
 		$vars = [
 			'group'	=> [
-				'name'	=> $app['config']->get('systemname'),
-				'tag'	=> $app['config']->get('systemtag'),
+				'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+				'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
 			],
 			'user'	=> $user,
 			'email'	=> $data['email'],
@@ -183,7 +184,7 @@ if ($token)
 
 		require_once __DIR__ . '/include/header.php';
 
-		$registration_success_text = $app['config']->get('registration_success_text');
+		$registration_success_text = $app['config']->get('registration_success_text', $app['this_group']->get_schema());
 
 		if ($registration_success_text)
 		{
@@ -273,8 +274,8 @@ if ($submit)
 
 		$vars = [
 			'group'		=> [
-				'name'	=> $app['config']->get('systemname'),
-				'tag'	=> $app['config']->get('systemtag'),
+				'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+				'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
 			],
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
@@ -296,7 +297,7 @@ $fa = 'check-square-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = $app['config']->get('registration_top_text');
+$top_text = $app['config']->get('registration_top_text', $app['this_group']->get_schema());
 
 if ($top_text)
 {

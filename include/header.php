@@ -1,6 +1,6 @@
 <?php
 
-if ($css = $app['config']->get('css'))
+if ($css = $app['config']->get('css', $app['this_group']->get_schema()))
 {
 	$app['assets']->add($css);
 }
@@ -10,7 +10,7 @@ echo '<html lang="nl">';
 echo '<head>';
 
 echo '<title>';
-echo $app['config']->get('systemname');
+echo $app['config']->get('systemname', $app['this_group']->get_schema());
 echo '</title>';
 
 echo $app['assets']->get_css();
@@ -53,7 +53,7 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-$homepage_url = $app['config']->get('homepage_url');
+$homepage_url = $app['config']->get('homepage_url', $app['this_group']->get_schema());
 
 if (!$homepage_url)
 {
@@ -69,7 +69,7 @@ echo '</a>';
 echo '<a href="';
 echo $homepage_url;
 echo '" class="navbar-brand">';
-echo $app['config']->get('systemname');
+echo $app['config']->get('systemname', $app['this_group']->get_schema());
 echo '</a>';
 echo '</div>';
 
@@ -220,7 +220,8 @@ if (!$s_anonymous)
 			'logs'							=> ['history', 'Logs'],
 		];
 
-		if (!$app['config']->get('template_lets') || !$app['config']->get('interlets_en'))
+		if (!$app['config']->get('template_lets', $app['this_group']->get_schema())
+			|| !$app['config']->get('interlets_en', $app['this_group']->get_schema()))
 		{
 			unset($menu['intersystem'], $menu['apikeys']);
 		}
@@ -244,7 +245,7 @@ if (!$s_anonymous)
 
 		if ($page_access == 'admin')
 		{
-			$user_url = $app['config']->get('default_landing_page') . '.php';
+			$user_url = $app['config']->get('default_landing_page', $app['this_group']->get_schema()) . '.php';
 
 			$u_param = 'view_' . $user_url;
 			$u_param = in_array($user_url, ['messages', 'users', 'news']) ? ['view' => $$u_param] : [];
@@ -265,7 +266,8 @@ if (!$s_anonymous)
 		echo ' Leden modus</a>';
 		echo '</li>';
 
-		if ($app['config']->get('template_lets') && $app['config']->get('interlets_en'))
+		if ($app['config']->get('template_lets', $app['this_group']->get_schema())
+			&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
 		{
 			$u_param['r'] = 'guest';
 
@@ -310,12 +312,12 @@ if ($s_anonymous)
 		'login'			=> ['sign-in', 'Login', []],
 	];
 
-	if ($app['config']->get('contact_form_en'))
+	if ($app['config']->get('contact_form_en', $app['this_group']->get_schema()))
 	{
 		$menu['contact'] = ['comment-o', 'Contact', []];
 	}
 
-	if ($app['config']->get('registration_en'))
+	if ($app['config']->get('registration_en', $app['this_group']->get_schema()))
 	{
 		$menu['register'] = ['check-square-o', 'Inschrijven', []];
 	}
@@ -331,7 +333,7 @@ else
 
 	$menu['docs'] = ['files-o', 'Documenten', []];
 
-	if ($app['config']->get('forum_en'))
+	if ($app['config']->get('forum_en', $app['this_group']->get_schema()))
 	{
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}

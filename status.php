@@ -379,7 +379,7 @@ if ($status_msgs)
 
 		echo '<ul>';
 
-		$currency = $app['config']->get('currency');
+		$currency = $app['config']->get('currency', $app['this_group']->get_schema());
 
 		foreach ($no_msgs_users as $u)
 		{

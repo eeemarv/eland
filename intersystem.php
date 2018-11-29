@@ -24,12 +24,12 @@ if ($id || $edit || $del)
 	}
 }
 
-if (!$app['config']->get('template_lets'))
+if (!$app['config']->get('template_lets', $app['this_group']->get_schema()))
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('interlets_en'))
+if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()))
 {
 	redirect_default_page();
 }
