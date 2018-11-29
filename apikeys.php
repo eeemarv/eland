@@ -149,7 +149,8 @@ if ($add)
 	exit;
 }
 
-$apikeys = $app['db']->fetchAll($tschema . '.select * from apikeys');
+$apikeys = $app['db']->fetchAll('select *
+	from ' . $tschema . '.apikeys');
 
 $top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
 
