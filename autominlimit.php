@@ -12,20 +12,20 @@ if (isset($_POST['zend']))
 	}
 
 	$a = array(
-		'enabled'						=> (isset($_POST['enabled'])) ? true : false,
+		'enabled'						=> isset($_POST['enabled']),
 		'exclusive'						=> $_POST['exclusive'],
 		'trans_percentage'				=> $_POST['trans_percentage'],
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
 	);
 
-	$app['xdb']->set('setting', 'autominlimit', $a);
+	$app['xdb']->set('setting', 'autominlimit', $a, $app['this_group']->get_schema());
 
 	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
 }
 else
 {
-	$row = $app['xdb']->get('setting', 'autominlimit');
+	$row = $app['xdb']->get('setting', 'autominlimit', $app['this_group']->get_schema());
 
 	if ($row)
 	{

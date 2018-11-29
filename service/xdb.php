@@ -88,7 +88,7 @@ class xdb
 
 	public function set_user(string $user_schema = '', $user_id = 0)
 	{
-		$this->user_schema = ($user_schema) ? $user_schema : $this->this_group->get_schema();
+		$this->user_schema = $user_schema ? $user_schema : $this->this_group->get_schema();
 		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 	}
 
@@ -411,4 +411,3 @@ class xdb
 		return $this->db->fetchColumn('select count(*) from xdb.aggs' . $where, $sq_params);
 	}
 }
-

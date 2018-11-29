@@ -111,7 +111,7 @@ if ($token)
 				'email'			=> $data['email'],
 			];
 
-			$app['xdb']->set('email_validated', $data['email'], $ev_data);
+			$app['xdb']->set('email_validated', $data['email'], $ev_data, $app['this_group']->get_schema());
 
 			if ($data['gsm'] || $data['tel'])
 			{

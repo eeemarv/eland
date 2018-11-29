@@ -463,7 +463,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['xdb']->set('user_fullname_access', $user_id, ['fullname_access' => $fullname_access_role]);
+			$app['xdb']->set('user_fullname_access', $user_id, [
+				'fullname_access' => $fullname_access_role,
+			], $app['this_group']->get_schema());
 			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
 		}
 
@@ -1005,7 +1007,7 @@ if ($del)
 		$app['db']->delete('contact', ['id_user' => $del]);
 
 		//delete fullname access record.
-		$app['xdb']->del('user_fullname_access', $del);
+		$app['xdb']->del('user_fullname_access', $del, $app['this_group']->get_schema());
 
 		//finally, the user
 		$app['db']->delete('users', ['id' => $del]);
@@ -1414,7 +1416,9 @@ if ($add || $edit)
 
 					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
-					$app['xdb']->set('user_fullname_access', $id, ['fullname_access' => $fullname_access_role]);
+					$app['xdb']->set('user_fullname_access', $id, [
+						'fullname_access' => $fullname_access_role,
+					], $app['this_group']->get_schema());
 
 					$app['alert']->success('Gebruiker opgeslagen.');
 
@@ -1501,7 +1505,9 @@ if ($add || $edit)
 
 					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
-					$app['xdb']->set('user_fullname_access', $edit, ['fullname_access' => $fullname_access_role]);
+					$app['xdb']->set('user_fullname_access', $edit, [
+						'fullname_access' => $fullname_access_role,
+					], $app['this_group']->get_schema());
 
 					$app['user_cache']->clear($edit);
 					$user = $app['user_cache']->get($edit);
@@ -2968,7 +2974,12 @@ if ($v_list)
 	{
 		foreach ($users as &$user)
 		{
-			$user['fullname_access'] = $app['xdb']->get('user_fullname_access', $user['id'])['data']['fullname_access'] ?? 'admin';
+			$user['fullname_access'] = $app['xdb']->get(
+				'user_fullname_access',
+				$user['id'],
+				$app['this_group']->get_schema()
+			)['data']['fullname_access'] ?? 'admin';
+
 			error_log($user['fullname_access']);
 		}
 	}

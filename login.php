@@ -85,7 +85,9 @@ if ($token)
 		{
 			// record logins to link the apikeys to domains and groups
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
-			$app['xdb']->set('apikey_login', $apikey, ['domain' => $domain_referrer]);
+			$app['xdb']->set('apikey_login', $apikey, [
+				'domain' => $domain_referrer
+			], $app['this_group']->get_schema());
 		}
 
 		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: ' . $referrer);
@@ -259,7 +261,9 @@ if ($submit)
 		$app['db']->update('users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		$app['user_cache']->clear($user['id']);
 
-		$app['xdb']->set('login', $user['id'], ['browser' => $browser, 'time' => time()], $s_schema);
+		$app['xdb']->set('login', $user['id'], [
+			'browser' => $browser, 'time' => time()
+		], $s_schema);
 
 		$app['alert']->success('Je bent ingelogd.');
 

@@ -68,7 +68,7 @@ if ($token)
 			'email'			=> strtolower($email),
 		];
 
-		$app['xdb']->set('email_validated', $email, $ev_data);
+		$app['xdb']->set('email_validated', $email, $ev_data, $app['this_group']->get_schema());
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';

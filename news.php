@@ -110,7 +110,9 @@ if ($add && $submit && !count($errors))
 	{
 		$id = $app['db']->lastInsertId('news_id_seq');
 
-		$app['xdb']->set('news_access', $id, ['access' => $_POST['access']]);
+		$app['xdb']->set('news_access', $id, [
+			'access' => $_POST['access']
+		], $app['this_group']->get_schema());
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
@@ -146,7 +148,9 @@ if ($edit && $submit && !count($errors))
 {
 	if($app['db']->update('news', $news, ['id' => $edit]))
 	{
-		$app['xdb']->set('news_access', $edit, ['access' => $_POST['access']]);
+		$app['xdb']->set('news_access', $edit, [
+			'access' => $_POST['access']
+		], $app['this_group']->get_schema());
 
 		$app['alert']->success('Nieuwsbericht aangepast.');
 		cancel($edit);
@@ -162,7 +166,8 @@ if ($edit)
 	$news = $app['db']->fetchAssoc('SELECT * FROM news WHERE id = ?', [$edit]);
 	[$news['itemdate']] = explode(' ', $news['itemdate']);
 
-	$news_access = $app['xdb']->get('news_access', $edit)['data']['access'];
+	$news_access = $app['xdb']->get('news_access', $edit,
+		$app['this_group']->get_schema())['data']['access'];
 }
 
 if ($add && !$submit)
@@ -291,7 +296,7 @@ if ($del)
 
 		if($app['db']->delete('news', ['id' => $del]))
 		{
-			$app['xdb']->del('news_access', $del);
+			$app['xdb']->del('news_access', $del, $app['this_group']->get_schema());
 
 			$app['alert']->success('Nieuwsbericht verwijderd.');
 			cancel();
@@ -304,7 +309,8 @@ if ($del)
 		FROM news n
 		WHERE n.id = ?', [$del]);
 
-	$news_access = $app['xdb']->get('news_access', $del)['data']['access'];
+	$news_access = $app['xdb']->get('news_access', $del,
+		$app['this_group']->get_schema())['data']['access'];
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar-o';
@@ -424,7 +430,9 @@ while ($row = $st->fetch())
 
 	if (!isset($news_access_ary[$news_id]))
 	{
-		$app['xdb']->set('news_access', $news_id, ['access' => 'interlets']);
+		$app['xdb']->set('news_access', $news_id, [
+			'access' => 'interlets',
+		], $app['this_group']->get_schema());
 		$news[$k]['access'] = 'interlets';
 	}
 	else

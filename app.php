@@ -34,7 +34,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
     $twig->addGlobal('s3_img', getenv('S3_IMG'));
-/*    $twig->addGlobal('projects', $app['xdb']->get('projects')); */
     return $twig;
 });
 
@@ -118,7 +117,7 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 	'session.storage.handler'	=> function ($app) {
 		return new Predis\Session\Handler(
 			$app['predis'], ['gc_maxlifetime' => 172800]
-		);	
+		);
 	},
 	'session.storage.options'	=> [
 		'name'						=> 'eland',

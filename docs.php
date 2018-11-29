@@ -27,7 +27,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !
 
 if ($map_edit)
 {
-	$row = $app['xdb']->get('doc', $map_edit);
+	$row = $app['xdb']->get('doc', $map_edit, $app['this_group']->get_schema());
 
 	if ($row)
 	{
@@ -72,7 +72,9 @@ if ($map_edit)
 
 		if (!count($errors))
 		{
-			$app['xdb']->set('doc', $map_edit, ['map_name' => $posted_map_name]);
+			$app['xdb']->set('doc', $map_edit, [
+					'map_name' => $posted_map_name
+				], $app['this_group']->get_schema());
 
 			$app['alert']->success('Map naam aangepast.');
 
@@ -123,7 +125,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $app['xdb']->get('doc', $edit);
+	$row = $app['xdb']->get('doc', $edit, $app['this_group']->get_schema());
 
 	if ($row)
 	{
@@ -169,7 +171,7 @@ if ($edit)
 
 					$mid = substr(sha1(microtime() . $app['this_group']->get_schema() . $map_name), 0, 24);
 
-					$app['xdb']->set('doc', $mid, $map);
+					$app['xdb']->set('doc', $mid, $map, $app['this_group']->get_schema());
 
 					$map['id'] = $mid;
 				}
@@ -191,11 +193,11 @@ if ($edit)
 
 				if (count($rows) < 2)
 				{
-					$app['xdb']->del('doc', $doc['map_id']);
+					$app['xdb']->del('doc', $doc['map_id'], $app['this_group']->get_schema());
 				}
 			}
 
-			$app['xdb']->set('doc', $edit, $update);
+			$app['xdb']->set('doc', $edit, $update, $app['this_group']->get_schema());
 
 			$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -211,7 +213,8 @@ if ($edit)
 	{
 		$map_id = $doc['map_id'];
 
-		$map = $app['xdb']->get('doc', $map_id)['data'];
+		$map = $app['xdb']->get('doc', $map_id,
+			$app['this_group']->get_schema())['data'];
 	}
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
@@ -289,7 +292,7 @@ if ($confirm_del && $del)
 		cancel();
 	}
 
-	$row = $app['xdb']->get('doc', $del);
+	$row = $app['xdb']->get('doc', $del, $app['this_group']->get_schema());
 
 	if ($row)
 	{
@@ -313,7 +316,7 @@ if ($confirm_del && $del)
 
 			if (count($rows) < 2)
 			{
-				$app['xdb']->del('doc', $doc['map_id']);
+				$app['xdb']->del('doc', $doc['map_id'], $app['this_group']->get_schema());
 
 				$app['typeahead']->invalidate_thumbprint('doc_map_names');
 
@@ -321,7 +324,7 @@ if ($confirm_del && $del)
 			}
 		}
 
-		$app['xdb']->del('doc', $del);
+		$app['xdb']->del('doc', $del, $app['this_group']->get_schema());
 
 		$app['alert']->success('Het document werd verwijderd.');
 
@@ -333,7 +336,7 @@ if ($confirm_del && $del)
 
 if ($del)
 {
-	$row = $app['xdb']->get('doc', $del);
+	$row = $app['xdb']->get('doc', $del, $app['this_group']->get_schema());
 
 	if ($row)
 	{
@@ -451,7 +454,7 @@ if ($submit)
 
 					$map = ['map_name' => $map_name];
 
-					$app['xdb']->set('doc', $map_id, $map);
+					$app['xdb']->set('doc', $map_id, $map, $app['this_group']->get_schema());
 
 					$app['typeahead']->invalidate_thumbprint('doc_map_names');
 				}
@@ -466,7 +469,7 @@ if ($submit)
 				$doc['name'] = $name;
 			}
 
-			$app['xdb']->set('doc', $doc_id, $doc);
+			$app['xdb']->set('doc', $doc_id, $doc, $app['this_group']->get_schema());
 
 
 			$app['alert']->success('Het bestand is opgeladen.');
@@ -484,7 +487,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $app['xdb']->get('doc', $map);
+		$row = $app['xdb']->get('doc', $map, $app['this_group']->get_schema());
 
 		if ($row)
 		{
@@ -536,7 +539,9 @@ if ($add)
 	echo '<input type="text" class="form-control" id="map_name" name="map_name" value="';
 	echo $map_name ?? '';
 	echo '" ';
-	echo 'data-typeahead="' . $app['typeahead']->get('doc_map_names') . '">';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get('doc_map_names');
+	echo '">';
 	echo '</div>';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
@@ -563,7 +568,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $app['xdb']->get('doc', $map);
+	$row = $app['xdb']->get('doc', $map, $app['this_group']->get_schema());
 
 	if ($row)
 	{
