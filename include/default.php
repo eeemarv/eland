@@ -131,7 +131,7 @@ $app['this_group'] = function($app){
 };
 
 $app['xdb'] = function ($app){
-	return new service\xdb($app['db'], $app['predis'], $app['monolog'], $app['this_group']);
+	return new service\xdb($app['db'], $app['monolog']);
 };
 
 $app['cache'] = function ($app){

@@ -329,7 +329,10 @@ class saldo extends schema_task
 
 		if (isset($block_options['news']))
 		{
-			$rows = $this->xdb->get_many(['agg_schema' => $this->schema, 'agg_type' => 'news_access']);
+			$rows = $this->xdb->get_many([
+				'agg_schema' => $this->schema,
+				'agg_type' => 'news_access',
+			]);
 
 			foreach ($rows as $row)
 			{

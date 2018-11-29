@@ -3,9 +3,7 @@
 namespace service;
 
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as Redis;
 use Monolog\Logger;
-use service\this_group;
 
 /*
                             Table "xdb.events"
@@ -50,20 +48,16 @@ Indexes:
 
 class xdb
 {
-	private $ip;
-	private $user_schema = '';
-	private $user_id = 0;
-	private $db;
-	private $redis;
-	private $monolog;
-	private $this_group;
+	protected $ip;
+	protected $user_schema = '';
+	protected $user_id = 0;
+	protected $db;
+	protected $monolog;
 
-	public function __construct(db $db, Redis $redis, Logger $monolog, this_group $this_group)
+	public function __construct(db $db, Logger $monolog)
 	{
 		$this->db = $db;
-		$this->redis = $redis;
 		$this->monolog = $monolog;
-		$this->this_group = $this_group;
 
 		if (php_sapi_name() == 'cli')
 		{
@@ -83,38 +77,14 @@ class xdb
 		}
 	}
 
-	/*
-	 */
-
-	public function set_user(string $user_schema = '', $user_id = 0)
+	public function set_user(string $user_schema, int $user_id):void
 	{
-		$this->user_schema = $user_schema ? $user_schema : $this->this_group->get_schema();
-		$this->user_id = ctype_digit((string) $user_id) ? $user_id : 0;
+		$this->user_schema = $user_schema;
+		$this->user_id = $user_id;
 	}
 
-	/*
-	 *
-	 */
-
-	public function set(string $agg_type = '', string $eland_id = '', array $data = [], string $agg_schema = '', string $event_time = '')
+	public function set(string $agg_type, string $eland_id, array $data, string $agg_schema, string $event_time = ''):void
 	{
-		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
-
-		if (!strlen($agg_type))
-		{
-			return 'xdb: No agg type set';
-		}
-
-		if (!strlen($eland_id))
-		{
-			return 'xdb: No eland id set';
-		}
-
-		if (!isset($agg_schema) || !$agg_schema)
-		{
-			return 'xdb: No schema set';
-		}
-
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
 		$row = $this->db->fetchAssoc('select data, agg_version
@@ -137,7 +107,7 @@ class xdb
 
 		if (!count($data))
 		{
-			return 'xdb: no (new) data';
+			return;
 		}
 
 		$event = $agg_type . '_' . $ev;
@@ -180,42 +150,18 @@ class xdb
 			}
 
 			$this->db->commit();
-
-//			$this->redis->hmset('xdb_' . $agg_id, $data);
 		}
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			echo 'Database transactie niet gelukt.';
 			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
 			throw $e;
 			exit;
 		}
 	}
 
-	/*
-	 *
-	 */
-
-	public function del(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
+	public function del(string $agg_type, string $eland_id, string $agg_schema):void
 	{
-		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
-
-		if (!strlen($agg_type))
-		{
-			return 'No agg type set';
-		}
-
-		if (!strlen($eland_id))
-		{
-			return 'No eland id set';
-		}
-
-		if (!isset($agg_schema) || !$agg_schema)
-		{
-			return 'No schema set';
-		}
-
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
 		$agg_version = $this->db->fetchColumn('select agg_version
@@ -224,7 +170,8 @@ class xdb
 
 		if (!$agg_version)
 		{
-			return 'Not found: ' . $agg_id . ', could not delete';
+			// exception
+			return;
 		}
 
 		$insert = [
@@ -240,8 +187,6 @@ class xdb
 			'ip'			=> $this->ip,
 		];
 
-//		$this->redis->del('xdb_' . $agg_id);
-
 		try
 		{
 			$this->db->beginTransaction();
@@ -255,43 +200,22 @@ class xdb
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			echo 'Database transactie niet gelukt.';
 			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
 			throw $e;
 			exit;
 		}
 	}
 
-	/*
-	 *
-	 */
-
-	public function get(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
+	public function get(string $agg_type, string $eland_id, string $agg_schema):array
 	{
-		$agg_schema = ($agg_schema) ?: $this->this_group->get_schema();
-
-		if (!strlen($agg_type))
-		{
-			return [];
-		}
-
-		if (!strlen($eland_id))
-		{
-			return [];
-		}
-
-		if (!isset($agg_schema) || !$agg_schema)
-		{
-			return [];
-		}
-
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
 		$row = $this->db->fetchAssoc('select * from xdb.aggs where agg_id = ?', [$agg_id]);
 
 		if (!$row)
 		{
-			return false;
+			error_log('not found: ' . $agg_id);
+			return [];
 		}
 
 		$row['data'] = json_decode($row['data'], true);
@@ -301,11 +225,7 @@ class xdb
 		return $row;
 	}
 
-	/**
-	 *
-	 */
-
-	public function get_many(array $filters = [], string $query_extra = '')
+	public function get_many(array $filters, string $query_extra = ''):array
 	{
 		$sql_where = [];
 		$sql_params = [];
@@ -380,11 +300,7 @@ class xdb
 		return $ary;
 	}
 
-	/**
-	 *
-	 */
-
-	public function count(string $agg_type = '', string $eland_id = '', string $agg_schema = '')
+	public function count(string $agg_type = '', string $eland_id = '', string $agg_schema = ''):int
 	{
 		$sql_where = $sql_params = [];
 
