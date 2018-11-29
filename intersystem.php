@@ -48,12 +48,13 @@ if ($add || $edit)
 		$group = [
 			'url' 				=> $_POST['url'] ?? '',
 			'groupname' 		=> $_POST['groupname'] ?? '',
+			'apimethod' 		=> $_POST['apimethod'] ?? '',
 			'shortname' 		=> $_POST['shortname'] ?? '',
 			'prefix' 			=> $_POST['prefix'] ?? '',
 			'remoteapikey' 		=> $_POST['remoteapikey'] ?? '',
 			'localletscode' 	=> $_POST['localletscode'] ?? '',
 			'myremoteletscode'	=> $_POST['myremoteletscode'] ?? '',
-			'presharedkey' 		=> $_POST['localletscode'] ?? '',
+			'presharedkey' 		=> $_POST['presharedkey'] ?? '',
 		];
 
 		$group['elassoapurl'] = $group['url'] . '/soap';
@@ -95,7 +96,7 @@ if ($add || $edit)
 			$errors[] = 'De url mag maximaal 256 tekens lang zijn.';
 		}
 
-		if (strlen($group['soapurl']) > 256)
+		if (strlen($group['elassoapurl']) > 256)
 		{
 			$errors[] = 'De eLAS soap URL mag maximaal 256 tekens lang zijn.';
 		}
