@@ -147,11 +147,13 @@ $app['date_format'] = function($app){
 };
 
 $app['mailaddr'] = function ($app){
-	return new service\mailaddr($app['db'], $app['monolog'], $app['this_group'], $app['config']);
+	return new service\mailaddr($app['db'], $app['monolog'],
+		$app['this_group'], $app['config']);
 };
 
 $app['interlets_groups'] = function ($app){
-	return new service\interlets_groups($app['db'], $app['predis'], $app['groups'],
+	return new service\interlets_groups($app['db'], $app['predis'],
+		$app['groups'],
 		$app['config'], $app['protocol']);
 };
 
@@ -161,11 +163,12 @@ $app['distance'] = function ($app){
 
 $app['config'] = function ($app){
 	return new service\config($app['monolog'], $app['db'], $app['xdb'],
-		$app['predis'], $app['this_group']);
+		$app['predis']);
 };
 
 $app['user_cache'] = function ($app){
-	return new service\user_cache($app['db'], $app['xdb'], $app['predis'], $app['this_group']);
+	return new service\user_cache($app['db'], $app['xdb'],
+		$app['predis'], $app['this_group']);
 };
 
 $app['token'] = function ($app){
@@ -173,7 +176,8 @@ $app['token'] = function ($app){
 };
 
 $app['email_validate'] = function ($app){
-	return new service\email_validate($app['cache'], $app['xdb'], $app['token'], $app['monolog']);
+	return new service\email_validate($app['cache'], $app['xdb'],
+		$app['token'], $app['monolog']);
 };
 
 
@@ -297,10 +301,12 @@ function link_user($user, string $sch = '', $link = true, $show_id = false, $fie
 	if ($link)
 	{
 		$param = ['id' => $user['id']];
+
 		if (is_string($link))
 		{
 			$param['link'] = $link;
 		}
+
 		$out = '<a href="';
 		$out .= generate_url('users', $param, $sch);
 		$out .= '">' . $str . '</a>';

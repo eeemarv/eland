@@ -3,21 +3,19 @@
 namespace service;
 
 use service\xdb;
-use service\this_group;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 use Monolog\Logger as monolog;
 
 class config
 {
-	private $monolog;
-	private $db;
-	private $xdb;
-	private $predis;
-	private $this_group;
-	private $is_cli;
+	protected $monolog;
+	protected $db;
+	protected $xdb;
+	protected $predis;
+	protected $is_cli;
 
-	private $default = [
+	protected $default = [
 		'preset_minlimit'					=> '',
 		'preset_maxlimit'					=> '',
 		'users_can_edit_username'			=> '0',
@@ -40,10 +38,13 @@ class config
 		'interlets_en'						=> '1',
 	];
 
-	public function __construct(monolog $monolog, db $db, xdb $xdb,
-		predis $predis, this_group $this_group)
+	public function __construct(
+		monolog $monolog,
+		db $db,
+		xdb $xdb,
+		predis $predis
+	)
 	{
-		$this->this_group = $this_group;
 		$this->monolog = $monolog;
 		$this->predis = $predis;
 		$this->db = $db;
@@ -51,52 +52,31 @@ class config
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
-	public function is_valid_key(string $key):bool
+	public function set(string $name, string $schema, string $value):void
 	{
-		return isset($this->default[$key]);
+		$this->xdb->set('setting', $name, ['value' => $value], $schema);
+		$this->predis->del($schema . '_config_' . $name);
+
+		// here no update for eLAS database
 	}
 
-	public function set(string $name, string $value):void
-	{
-		$this->xdb->set('setting', $name, ['value' => $value]);
-
-		$this->predis->del($this->this_group->get_schema() . '_config_' . $name);
-
-		// prevent string too long error for eLAS database
-
-		$value = substr($value, 0, 60);
-
-		$this->db->update('config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
-	}
-
-	public function get(string $key, string $sch = ''):string
+	public function get(string $key, string $schema):string
 	{
 		global $s_guest, $s_master;
 
-		if (!$sch)
+		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
 		{
-			$sch = $this->this_group->get_schema();
+			return $this->local_cache[$schema][$key];
 		}
 
-		if (!$sch)
-		{
-			$this->monolog->error('no schema set in config:get');
-			return '';
-		}
-
-		if (isset($this->local_cache[$sch][$key]) && !$this->is_cli)
-		{
-			return $this->local_cache[$sch][$key];
-		}
-
-		$redis_key = $sch . '_config_' . $key;
+		$redis_key = $schema . '_config_' . $key;
 
 		if ($this->predis->exists($redis_key))
 		{
-			return $this->local_cache[$sch][$key] = $this->predis->get($redis_key);
+			return $this->local_cache[$schema][$key] = $this->predis->get($redis_key);
 		}
 
-		$row = $this->xdb->get('setting', $key, $sch);
+		$row = $this->xdb->get('setting', $key, $schema);
 
 		if ($row)
 		{
@@ -108,11 +88,11 @@ class config
 		}
 		else
 		{
-			$value = $this->db->fetchColumn('select value from ' . $sch . '.config where setting = ?', [$key]);
+			$value = $this->db->fetchColumn('select value from ' . $schema . '.config where setting = ?', [$key]);
 
 			if (!$s_guest && !$s_master)
 			{
-				$this->xdb->set('setting', $key, ['value' => $value], $sch);
+				$this->xdb->set('setting', $key, ['value' => $value], $schema);
 			}
 		}
 
@@ -120,7 +100,7 @@ class config
 		{
 			$this->predis->set($redis_key, $value);
 			$this->predis->expire($redis_key, 2592000);
-			$this->local_cache[$sch][$key] = $value;
+			$this->local_cache[$schema][$key] = $value;
 		}
 
 		return $value;

@@ -80,7 +80,8 @@ if (!$app['config']->get('forum_en', $app['this_group']->get_schema()))
 	unset($periodic_mail_block_ary['forum']);
 }
 
-if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()) || !$app['config']->get('template_lets', $app['this_group']->get_schema()))
+if (!$app['config']->get('interlets_en', $app['this_group']->get_schema())
+	|| !$app['config']->get('template_lets', $app['this_group']->get_schema()))
 {
 	unset($periodic_mail_block_ary['interlets']);
 }
@@ -706,9 +707,7 @@ if ($post)
 
 	foreach ($posted_configs as $name => $value)
 	{
-		$app['xdb']->set('setting', $name, ['value' => $value]);
-
-		$app['predis']->del($app['this_group']->get_schema() . '_config_' . $name);
+		$app['config']->set($name, $schema, $value);
 
 		// prevent string too long error for eLAS database
 
