@@ -707,7 +707,7 @@ if ($post)
 
 	foreach ($posted_configs as $name => $value)
 	{
-		$app['config']->set($name, $schema, $value);
+		$app['config']->set($name, $app['this_group']->get_schema(), $value);
 
 		// prevent string too long error for eLAS database
 
