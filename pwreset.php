@@ -18,7 +18,11 @@ if ($token)
 	{
 		$password = $_POST['password'];
 
-		if (!($app['password_strength']->get($password) < 50))
+		if ($error_token = $app['form_token']->get_error())
+		{
+			$app['alert']->error($error_token);
+		}
+		else if (!($app['password_strength']->get($password) < 50))
 		{
 			if ($user_id)
 			{
@@ -81,22 +85,26 @@ if ($token)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal" role="form">';
+	echo '<form method="post" role="form">';
 
 	echo '<div class="form-group">';
-	echo '<label for="password" class="col-sm-2 control-label">Nieuw paswoord</label>';
-	echo '<div class="col-sm-10 controls">';
+	echo '<label for="password">Nieuw paswoord</label>';
 	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-key"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
-	echo 'value="' . $password . '" required>';
+	echo 'value="';
+	echo $password;
+	echo '" required>';
 	echo '<span class="input-group-btn">';
     echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
     echo '</span>';
-    echo '</div>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<input type="submit" class="btn btn-default" value="Bewaar paswoord" name="zend">';
+	echo $app['form_token']->get_hidden_input();
 	echo '</form>';
 
 	echo '</div>';
@@ -110,7 +118,11 @@ if (isset($_POST['zend']))
 {
 	$email = trim($_POST['email']);
 
-	if($email)
+	if ($error_token = $app['form_token']->get_error())
+	{
+		$app['alert']->error($error_token);
+	}
+	else if($email)
 	{
 		$user = $app['db']->fetchAll('select u.*
 			from contact c, type_contact tc, users u
@@ -175,24 +187,30 @@ $h1 = 'Paswoord vergeten';
 
 require_once __DIR__ . '/include/header.php';
 
-echo '<p>Met onderstaand formulier stuur je een link om je paswoord te resetten naar je E-mailbox. </p>';
-
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="email" class="col-sm-2 control-label">E-mail</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="email" class="control-label">Je E-mail adres</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-envelope-o"></i>';
+echo '</span>';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="';
-echo $email;
+echo $email ?? '';
 echo '" required>';
 echo '</div>';
+echo '<p>';
+echo 'Vul hier het E-mail adres in waarmee je geregistreerd staat in het Systeem. ';
+echo 'Een link om je paswoord te resetten wordt naar je E-mailbox verstuurd.';
+echo '</p>';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Reset paswoord" name="zend">';
+echo $app['form_token']->get_hidden_input();
 echo '</form>';
 
 echo '</div>';

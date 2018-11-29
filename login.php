@@ -291,33 +291,37 @@ if(empty($token))
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="login" class="col-sm-2 control-label">';
+	echo '<label for="login">';
 	echo 'Login</label>';
-    echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-user"></i>';
+	echo '</span>';
     echo '<input type="text" class="form-control" id="login" name="login" ';
 	echo 'value="';
 	echo $login;
 	echo '" required>';
-
+    echo '</div>';
 	echo '<p>';
 	echo 'E-mail, Account Code of Gebruikersnaam';
 	echo '</p>';
-    echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-    echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
-    echo '<div class="col-sm-10">';
+    echo '<label for="password">Paswoord</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-key"></i>';
+	echo '</span>';
     echo '<input type="password" class="form-control" id="password" name="password" ';
 	echo 'value="" required>';
-
+    echo '</div>';
 	echo '<p>';
 	echo aphp('pwreset', [], 'Klik hier als je je paswoord vergeten bent.');
 	echo '</p>';
-    echo '</div>';
 	echo '</div>';
 
 	echo '<input type="submit" class="btn btn-default" value="Inloggen" name="zend">';

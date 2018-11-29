@@ -191,11 +191,18 @@ echo '<form method="post">';
 
 echo '<div class="form-group">';
 echo '<label for="mail">Je E-mail Adres</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-envelope-o"></i>';
+echo '</span>';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="';
 echo $email;
 echo '" required>';
-echo '<p><small>Er wordt een validatielink naar je gestuurd die je moet aanklikken.</small></p>';
+echo '</div>';
+echo '<p>';
+echo 'Er wordt een validatielink die je moet aanklikken naar je E-mailbox verstuurd.';
+echo '</p>';
 echo '</div>';
 
 echo '<div class="form-group">';

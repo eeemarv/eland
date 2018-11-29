@@ -307,11 +307,14 @@ if ($top_text)
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-echo '<form method="post" class="form-horizontal">';
+echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="first_name" class="col-sm-2 control-label">Voornaam*</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="first_name" class="control-label">Voornaam*</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-user"></i>';
+echo '</span>';
 echo '<input type="text" class="form-control" id="first_name" name="first_name" ';
 echo 'value="';
 echo $reg['first_name'] ?? '';
@@ -320,8 +323,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="last_name" class="col-sm-2 control-label">Achternaam*</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="last_name" class="control-label">Achternaam*</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-user"></i>';
+echo '</span>';
 echo '<input type="text" class="form-control" id="last_name" name="last_name" ';
 echo 'value="';
 echo $reg['last_name'] ?? '';
@@ -330,8 +336,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="email" class="col-sm-2 control-label">E-mail*</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="email" class="control-label">E-mail*</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-envelope-o"></i>';
+echo '</span>';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="';
 echo $reg['email'] ?? '';
@@ -340,8 +349,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="postcode" class="col-sm-2 control-label">Postcode*</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="postcode" class="control-label">Postcode*</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-map-marker"></i>';
+echo '</span>';
 echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
 echo 'value="';
 echo $reg['postcode'] ?? '';
@@ -350,8 +362,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="gsm" class="col-sm-2 control-label">Gsm</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="gsm" class="control-label">Gsm</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-mobile"></i>';
+echo '</span>';
 echo '<input type="text" class="form-control" id="gsm" name="gsm" ';
 echo 'value="';
 echo $reg['gsm'] ?? '';
@@ -360,8 +375,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="tel" class="col-sm-2 control-label">Telefoon</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="tel" class="control-label">Telefoon</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-phone"></i>';
+echo '</span>';
 echo '<input type="text" class="form-control" id="tel" name="tel" ';
 echo 'value="';
 echo $reg['tel'] ?? '';
