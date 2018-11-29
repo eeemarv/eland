@@ -770,7 +770,7 @@ if ($pw)
 							'group'		=> [
 								'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
 								'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-								'support'	=> $app['config']->get('support', $app['this_group']->get_schema()),
+								'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
 								'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
 							],
 							'user'			=> $user,
@@ -4256,7 +4256,7 @@ function send_activation_mail($password, $user)
 		'group'		=> [
 			'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
 			'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-			'support'	=> $app['config']->get('support', $app['this_group']->get_schema()),
+			'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
 			'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
 		],
 		'user'		=> $user,
