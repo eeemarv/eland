@@ -53,7 +53,7 @@ class mailaddr
 
 			if (in_array($in, ['admin', 'newsadmin', 'support']))
 			{
-				$ary = explode(',', $this->config->get($in));
+				$ary = explode(',', $this->config->get($in, $this->this_group->get_schema()));
 
 				foreach ($ary as $mail)
 				{
@@ -65,7 +65,7 @@ class mailaddr
 						continue;
 					}
 
-					$out[$mail] = $this->config->get('systemname');
+					$out[$mail] = $this->config->get('systemname', $this->this_group->get_schema());
 				}
 			}
 			else if (in_array($in, ['from', 'noreply']))

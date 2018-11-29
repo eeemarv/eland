@@ -52,7 +52,8 @@ class access_control
 		$this->config = $config;
 		$this->schema = $this_group->get_schema();
 
-		if (!$this->config->get('template_lets', $this->schema) || !$this->config->get('interlets_en', $this->schema))
+		if (!$this->config->get('template_lets', $this->schema)
+			|| !$this->config->get('interlets_en', $this->schema))
 		{
 			unset($this->input_ary['interlets']);
 			$this->label_ary['interlets'] = 'users';

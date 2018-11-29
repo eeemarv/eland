@@ -3,6 +3,7 @@
 namespace service;
 
 use service\config;
+use service\this_group;
 
 class date_format
 {
@@ -39,11 +40,12 @@ class date_format
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
 	];
 
-	public function __construct(config $config)
+	public function __construct(config $config, this_group $this_group)
 	{
 		$this->config = $config;
+		$this->this_group = $this_group;
 
-		$this->format = $this->config->get('date_format');
+		$this->format = $this->config->get('date_format', $this->this_group->get_schema());
 
 		if (!$this->format)
 		{
@@ -190,7 +192,7 @@ class date_format
 
 		if (!isset($format_ary))
 		{
-			$format = $this->config->get('date_format');
+			$format = $this->config->get('date_format', $this->this_group->get_schema());
 
 			if (!$format)
 			{

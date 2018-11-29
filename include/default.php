@@ -143,7 +143,7 @@ $app['queue'] = function ($app){
 };
 
 $app['date_format'] = function($app){
-	return new service\date_format($app['config']);
+	return new service\date_format($app['config'], $app['this_group']);
 };
 
 $app['mailaddr'] = function ($app){
