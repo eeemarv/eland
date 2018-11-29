@@ -1204,19 +1204,21 @@ if ($add || $edit)
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
 						$warning .= 'E-mail adres. Zie ' . aphp('status', [], 'Status');
 
+						$warning_2 = '';
+
 						if ($row['count'] == 1)
 						{
-							$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
-							$warning_2 .= ' bestaat al onder de actieve gebruikers.';
+							$warning_2 .= 'Waarschuwing: E-mail adres ' . $mailadr;
+							$warning_2 .= ' bestaat al onder de actieve gebruikers. ';
 						}
 						else if ($row['count'] > 1)
 						{
-							$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
+							$warning_2 .= 'Waarschuwing: E-mail adres ' . $mailadr;
 							$warning_2 .= ' bestaat al ' . $row['count'];
-							$warning_2 .= ' maal onder de actieve gebruikers.';
+							$warning_2 .= ' maal onder de actieve gebruikers. ';
 						}
 
-						$app['alert']->warning($warning_2 . ' ' . $warning);
+						$app['alert']->warning($warning_2 . $warning);
 					}
 				}
 			}
