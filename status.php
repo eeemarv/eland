@@ -4,9 +4,12 @@ $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
 $status_msgs = false;
+$tschema = $app['this_group']->get_schema();
 
 $non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
-	from contact c, type_contact tc, users u
+	from ' . $tschema . '.contact c, ' .
+		$tschema . '.type_contact tc, ' .
+		$tschema . '.users u
 	where c.id_type_contact = tc.id
 		and tc.abbrev = \'mail\'
 		and c.id_user = u.id
@@ -17,7 +20,7 @@ $non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
 if (count($non_unique_mail))
 {
 	$st = $app['db']->prepare('select id_user
-		from contact c
+		from ' . $tschema . '.contact c
 		where c.value = ?');
 
 	foreach ($non_unique_mail as $key => $ary)
@@ -37,7 +40,7 @@ if (count($non_unique_mail))
 //
 
 $non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
-	from users
+	from ' . $tschema . '.users
 	where letscode <> \'\'
 	group by letscode
 	having count(*) > 1');
@@ -45,7 +48,7 @@ $non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
 if (count($non_unique_letscode))
 {
 	$st = $app['db']->prepare('select id
-		from users
+		from ' . $tschema . '.users
 		where letscode = ?');
 
 	foreach ($non_unique_letscode as $key => $ary)
@@ -65,7 +68,7 @@ if (count($non_unique_letscode))
 //
 
 $non_unique_name = $app['db']->fetchAll('select name, count(*)
-	from users
+	from ' . $tschema . '.users
 	where name <> \'\'
 	group by name
 	having count(*) > 1');
@@ -73,7 +76,7 @@ $non_unique_name = $app['db']->fetchAll('select name, count(*)
 if (count($non_unique_name))
 {
 	$st = $app['db']->prepare('select id
-		from users
+		from ' . $tschema . '.users
 		where name = ?');
 
 	foreach ($non_unique_name as $key => $ary)
@@ -93,7 +96,7 @@ if (count($non_unique_name))
 //
 
 $unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
-	from contact c, type_contact tc
+	from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
 	where c.id_type_contact = tc.id
 		and tc.abbrev = \'mail\'
 		and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
@@ -102,10 +105,10 @@ $unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
 $no_mail = array();
 
 $st = $app['db']->prepare(' select u.id
-	from users u
+	from ' . $tschema . '.users u
 	where u.status in (1, 2)
 		and not exists (select c.id
-			from contact c, type_contact tc
+			from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
 			where c.id_user = u.id
 				and c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\')');
@@ -120,12 +123,12 @@ while ($row = $st->fetch())
 //
 
 $empty_letscode = $app['db']->fetchAll('select id
-	from users
+	from ' . $tschema . '.users
 	where status in (1, 2) and letscode = \'\'');
 
 //
 $empty_name = $app['db']->fetchAll('select id
-	from users
+	from ' . $tschema . '.users
 	where name = \'\'');
 
 //	$default_config = $app['db']->fetchColumn('select setting from config where "default" = True');
@@ -136,7 +139,7 @@ if ($unvalid_mail || $empty_letscode || $empty_name)
 }
 
 $no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
-	from users u
+	from ' . $tschema . '.users u
 	where status in (1, 2)
 		and not exists (select 1 from messages m where m.id_user = u.id)');
 
@@ -379,7 +382,7 @@ if ($status_msgs)
 
 		echo '<ul>';
 
-		$currency = $app['config']->get('currency', $app['this_group']->get_schema());
+		$currency = $app['config']->get('currency', $tschema);
 
 		foreach ($no_msgs_users as $u)
 		{

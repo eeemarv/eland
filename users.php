@@ -30,6 +30,8 @@ $allow_guest_post = $page_access == 'guest' && $user_mail_submit ? true : false;
 
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 /**
  * selectors for bulk actions
  */
@@ -145,14 +147,14 @@ if ($user_mail_submit && $id && $post)
 
 	$vars = [
 		'group'		=> [
-			'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-			'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
+			'tag'	=> $app['config']->get('systemtag', $tschema),
+			'name'	=> $app['config']->get('systemname', $tschema),
 		],
 		'to_user'		=> link_user($user, false, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['this_group']->get_schema()),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $tschema),
 		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
@@ -255,7 +257,7 @@ if ($post && $img && $id )
 
 	//
 
-	$filename = $app['this_group']->get_schema() . '_u_' . $id . '_';
+	$filename = $tschema . '_u_' . $id . '_';
 	$filename .= sha1($filename . microtime()) . '.jpg';
 
 	$err = $app['s3']->img_upload($filename, $tmpfile);
@@ -268,7 +270,7 @@ if ($post && $img && $id )
 	}
 	else
 	{
-		$app['db']->update('users', [
+		$app['db']->update($tschema . '.users', [
 			'"PictureFile"'	=> $filename
 		],['id' => $id]);
 
@@ -324,7 +326,7 @@ if ($img_del && $id)
 
 	if ($post)
 	{
-		$app['db']->update('users', ['"PictureFile"' => ''], ['id' => $id]);
+		$app['db']->update($tschema . '.users', ['"PictureFile"' => ''], ['id' => $id]);
 		$app['user_cache']->clear($id);
 		$app['alert']->success('Profielfoto verwijderd.');
 		cancel($id);
@@ -396,7 +398,7 @@ if ($bulk_submit && $post && $s_admin)
 			$errors[] = 'Het E-mail bericht is leeg.';
 		}
 
-		if (!$app['config']->get('mailenabled', $app['this_group']->get_schema()))
+		if (!$app['config']->get('mailenabled', $tschema))
 		{
 			$errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
@@ -447,8 +449,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 
-	$rows = $app['db']->executeQuery('select letscode, name, id from users where id in (?)',
-			[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+	$rows = $app['db']->executeQuery('select letscode, name, id
+		from ' . $tschema . '.users
+		where id in (?)',
+		[$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 	foreach ($rows as $row)
 	{
@@ -465,8 +469,8 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		{
 			$app['xdb']->set('user_fullname_access', $user_id, [
 				'fullname_access' => $fullname_access_role,
-			], $app['this_group']->get_schema());
-			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
+			], $tschema);
+			$app['predis']->del($tschema . '_user_' . $user_id);
 		}
 
 		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
@@ -490,13 +494,13 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		$type = $edit_fields_tabs[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-		$app['db']->executeUpdate('update users set ' . $bulk_field . ' = ? where id in (?)',
+		$app['db']->executeUpdate('update ' . $tschema . '.users set ' . $bulk_field . ' = ? where id in (?)',
 			[$value, $user_ids],
 			[$type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($tschema . '_user_' . $user_id);
 		}
 
 		if ($bulk_field == 'status')
@@ -517,10 +521,10 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 		[$abbrev] = explode('_', $bulk_field);
 
 		$id_type_contact = $app['db']->fetchColumn('select id
-			from type_contact
+			from ' . $tschema . '.type_contact
 			where abbrev = ?', [$abbrev]);
 
-		$app['db']->executeUpdate('update contact
+		$app['db']->executeUpdate('update ' . $tschema . '.contact
 		set flag_public = ?
 		where id_user in (?) and id_type_contact = ?',
 			[$access_value, $user_ids, $id_type_contact],
@@ -536,7 +540,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 	{
 		$value = $value ? true : false;
 
-		$app['db']->executeUpdate('update users
+		$app['db']->executeUpdate('update ' . $tschema . '.users
 			set cron_saldo = ?
 			where id in (?)',
 			[$value, $user_ids],
@@ -544,7 +548,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		foreach ($user_ids as $user_id)
 		{
-			$app['predis']->del($app['this_group']->get_schema() . '_user_' . $user_id);
+			$app['predis']->del($tschema . '_user_' . $user_id);
 		}
 
 		$value = $value ? 'on' : 'off';
@@ -595,7 +599,9 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 	$bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
 
 	$sel_users = $app['db']->executeQuery('select u.*, c.value as mail
-		from users u, contact c, type_contact tc
+		from ' . $tschema . '.users u, ' .
+			$tschema . '.contact c, ' .
+			$tschema . '.type_contact tc
 		where u.id in (?)
 			and u.id = c.id_user
 			and c.id_type_contact = tc.id
@@ -752,7 +758,7 @@ if ($pw)
 				'mdate'		=> gmdate('Y-m-d H:i:s'),
 			];
 
-			if ($app['db']->update('users', $update, ['id' => $pw]))
+			if ($app['db']->update($tschema . '.users', $update, ['id' => $pw]))
 			{
 				$app['user_cache']->clear($pw);
 				$user = $app['user_cache']->get($pw);
@@ -761,7 +767,8 @@ if ($pw)
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
 				{
 					$to = $app['db']->fetchColumn('select c.value
-						from contact c, type_contact tc
+						from ' . $tschema . '.contact c, ' .
+							$tschema . '.type_contact tc
 						where tc.id = c.id_type_contact
 							and tc.abbrev = \'mail\'
 							and c.id_user = ?', [$pw]);
@@ -770,10 +777,10 @@ if ($pw)
 					{
 						$vars = [
 							'group'		=> [
-								'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-								'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-								'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
-								'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
+								'name'		=> $app['config']->get('systemname', $tschema),
+								'tag'		=> $app['config']->get('systemtag', $tschema),
+								'support'	=> explode(',', $app['config']->get('support', $tschema)),
+								'currency'	=> $app['config']->get('currency', $tschema),
 							],
 							'user'			=> $user,
 							'password'		=> $password,
@@ -879,7 +886,9 @@ if ($del)
 		cancel($del);
 	}
 
-	if ($app['db']->fetchColumn('select id from transactions where id_to = ? or id_from = ?', [$del, $del]))
+	if ($app['db']->fetchColumn('select id
+		from ' . $tschema . '.transactions
+		where id_to = ? or id_from = ?', [$del, $del]))
 	{
 		$app['alert']->error('Een gebruiker met transacties kan niet worden verwijderd.');
 		cancel($del);
@@ -912,7 +921,7 @@ if ($del)
 		$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
 		$msgs = '';
 		$st = $app['db']->prepare('select id, content, id_category, msg_type
-			from messages
+			from ' . $tschema . '.messages
 			where id_user = ?');
 
 		$st->bindValue(1, $del);
@@ -928,33 +937,33 @@ if ($del)
 		{
 			$app['monolog']->info('Delete user ' . $usr . ', deleted Messages ' . $msgs);
 
-			$app['db']->delete('messages', ['id_user' => $del]);
+			$app['db']->delete($tschema . '.messages', ['id_user' => $del]);
 		}
 
 		// remove orphaned images.
 
-		$rs = $app['db']->prepare('SELECT mp.id, mp."PictureFile"
-			FROM msgpictures mp
-			LEFT JOIN messages m ON mp.msgid = m.id
-			WHERE m.id IS NULL');
+		$rs = $app['db']->prepare('select mp.id, mp."PictureFile"
+			from ' . $tschema . '.msgpictures mp
+				left join ' . $tschema . '.messages m on mp.msgid = m.id
+			where m.id is null');
 
 		$rs->execute();
 
 		while ($row = $rs->fetch())
 		{
-			$app['db']->delete('msgpictures', ['id' => $row['id']]);
+			$app['db']->delete($tschema . '.msgpictures', ['id' => $row['id']]);
 		}
 
 		// update counts for each category
 
 		$offer_count = $want_count = [];
 
-		$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
-			FROM messages m, users u
-			WHERE  m.id_user = u.id
-				AND u.status IN (1, 2, 3)
-				AND msg_type = 1
-			GROUP BY m.id_category');
+		$rs = $app['db']->prepare('select m.id_category, count(m.*)
+			from ' . $tschema . '.messages m, ' . $tschema . '.users u
+			where  m.id_user = u.id
+				and u.status IN (1, 2, 3)
+				and msg_type = 1
+			group by m.id_category');
 
 		$rs->execute();
 
@@ -963,12 +972,12 @@ if ($del)
 			$offer_count[$row['id_category']] = $row['count'];
 		}
 
-		$rs = $app['db']->prepare('SELECT m.id_category, count(m.*)
-			FROM messages m, users u
-			WHERE  m.id_user = u.id
-				AND u.status IN (1, 2, 3)
-				AND msg_type = 0
-			GROUP BY m.id_category');
+		$rs = $app['db']->prepare('select m.id_category, count(m.*)
+			from ' . $tschema . '.messages m, ' . $tschema . '.users u
+			where m.id_user = u.id
+				and u.status IN (1, 2, 3)
+				and msg_type = 0
+			group by m.id_category');
 
 		$rs->execute();
 
@@ -978,7 +987,7 @@ if ($del)
 		}
 
 		$all_cat = $app['db']->fetchAll('select id, stat_msgs_offers, stat_msgs_wanted
-			from categories
+			from ' . $tschema . '.categories
 			where id_parent is not null');
 
 		foreach ($all_cat as $val)
@@ -1000,18 +1009,18 @@ if ($del)
 				'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
 			];
 
-			$app['db']->update('categories', $stats, ['id' => $cat_id]);
+			$app['db']->update($tschema . '.categories', $stats, ['id' => $cat_id]);
 		}
 
 		//delete contacts
-		$app['db']->delete('contact', ['id_user' => $del]);
+		$app['db']->delete($tschema . '.contact', ['id_user' => $del]);
 
 		//delete fullname access record.
-		$app['xdb']->del('user_fullname_access', $del, $app['this_group']->get_schema());
+		$app['xdb']->del('user_fullname_access', $del, $tschema);
 
 		//finally, the user
-		$app['db']->delete('users', ['id' => $del]);
-		$app['predis']->expire($app['this_group']->get_schema() . '_user_' . $del, 0);
+		$app['db']->delete($tschema . '.users', ['id' => $del]);
+		$app['predis']->expire($tschema . '_user_' . $del, 0);
 
 		$app['alert']->success('De gebruiker is verwijderd.');
 
@@ -1091,8 +1100,8 @@ if ($add || $edit)
 	}
 	else if ($s_owner)
 	{
-		$username_edit = $app['config']->get('users_can_edit_username', $app['this_group']->get_schema());
-		$fullname_edit = $app['config']->get('users_can_edit_fullname', $app['this_group']->get_schema());
+		$username_edit = $app['config']->get('users_can_edit_username', $tschema);
+		$fullname_edit = $app['config']->get('users_can_edit_fullname', $tschema);
 	}
 	else
 	{
@@ -1134,7 +1143,9 @@ if ($add || $edit)
 			$password = trim($_POST['password']);
 
 			$mail_unique_check_sql = 'select count(c.value)
-					from contact c, type_contact tc, users u
+					from ' . $tschema . '.contact c, ' .
+						$tschema . '.type_contact tc, ' .
+						$tschema . '.users u
 					where c.id_type_contact = tc.id
 						and tc.abbrev = \'mail\'
 						and c.value = ?
@@ -1222,7 +1233,7 @@ if ($add || $edit)
 			}
 
 			$letscode_sql = 'select letscode
-				from users
+				from ' . $tschema . '.users
 				where letscode = ?';
 			$letscode_sql_params = [$user['letscode']];
 		}
@@ -1240,12 +1251,12 @@ if ($add || $edit)
 		$fullname_access = $app['access_control']->get_post_value('fullname_access');
 
 		$name_sql = 'select name
-			from users
+			from ' . $tschema . '.users
 			where name = ?';
 		$name_sql_params = [$user['name']];
 
 		$fullname_sql = 'select fullname
-			from users
+			from ' . $tschema . '.users
 			where fullname = ?';
 		$fullname_sql_params = [$user['fullname']];
 
@@ -1385,7 +1396,8 @@ if ($add || $edit)
 		{
 			$contact_types = [];
 
-			$rs = $app['db']->prepare('SELECT abbrev, id FROM type_contact');
+			$rs = $app['db']->prepare('select abbrev, id
+				from ' . $tschema . '.type_contact');
 
 			$rs->execute();
 
@@ -1410,15 +1422,15 @@ if ($add || $edit)
 					$user['password'] = hash('sha512', sha1(microtime()));
 				}
 
-				if ($app['db']->insert('users', $user))
+				if ($app['db']->insert($tschema . '.users', $user))
 				{
-					$id = $app['db']->lastInsertId('users_id_seq');
+					$id = $app['db']->lastInsertId($tschema . '.users_id_seq');
 
 					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
 					$app['xdb']->set('user_fullname_access', $id, [
 						'fullname_access' => $fullname_access_role,
-					], $app['this_group']->get_schema());
+					], $tschema);
 
 					$app['alert']->success('Gebruiker opgeslagen.');
 
@@ -1439,7 +1451,7 @@ if ($add || $edit)
 							'id_user'			=> $id,
 						];
 
-						$app['db']->insert('contact', $insert);
+						$app['db']->insert($tschema . '.contact', $insert);
 					}
 
 					if ($user['status'] == 1)
@@ -1448,7 +1460,7 @@ if ($add || $edit)
 						{
 							$user['mail'] = $mailadr;
 
-							if ($app['config']->get('mailenabled', $app['this_group']->get_schema()))
+							if ($app['config']->get('mailenabled', $tschema))
 							{
 								send_activation_mail($password, $user);
 
@@ -1500,14 +1512,14 @@ if ($add || $edit)
 					}
 				}
 
-				if($app['db']->update('users', $user, ['id' => $edit]))
+				if($app['db']->update($tschema . '.users', $user, ['id' => $edit]))
 				{
 
 					$fullname_access_role = $app['access_control']->get_role($fullname_access);
 
 					$app['xdb']->set('user_fullname_access', $edit, [
 						'fullname_access' => $fullname_access_role,
-					], $app['this_group']->get_schema());
+					], $tschema);
 
 					$app['user_cache']->clear($edit);
 					$user = $app['user_cache']->get($edit);
@@ -1518,8 +1530,9 @@ if ($add || $edit)
 					{
 						$stored_contacts = [];
 
-						$rs = $app['db']->prepare('SELECT c.id, tc.abbrev, c.value, c.flag_public
-							FROM type_contact tc, contact c
+						$rs = $app['db']->prepare('select c.id, tc.abbrev, c.value, c.flag_public
+							from ' . $tschema . '.type_contact tc, ' .
+								$tschema . '.contact c
 							WHERE tc.id = c.id_type_contact
 								AND c.id_user = ?');
 						$rs->bindValue(1, $edit);
@@ -1539,7 +1552,7 @@ if ($add || $edit)
 							{
 								if ($stored_contact)
 								{
-									$app['db']->delete('contact', ['id_user' => $edit, 'id' => $value['id']]);
+									$app['db']->delete($tschema . '.contact', ['id_user' => $edit, 'id' => $value['id']]);
 								}
 								continue;
 							}
@@ -1559,7 +1572,7 @@ if ($add || $edit)
 									'flag_public'		=> $value['flag_public'],
 									'id_user'			=> $edit,
 								];
-								$app['db']->insert('contact', $insert);
+								$app['db']->insert($tschema . '.contact', $insert);
 								continue;
 							}
 
@@ -1568,7 +1581,7 @@ if ($add || $edit)
 							unset($contact_update['id'], $contact_update['abbrev'],
 								$contact_update['name'], $contact_update['main_mail']);
 
-							$app['db']->update('contact', $contact_update,
+							$app['db']->update($tschema . '.contact', $contact_update,
 								['id' => $value['id'], 'id_user' => $edit]);
 						}
 
@@ -1577,7 +1590,7 @@ if ($add || $edit)
 						{
 							if ($notify && !empty($mailadr) && $password)
 							{
-								if ($app['config']->get('mailenabled', $app['this_group']->get_schema()))
+								if ($app['config']->get('mailenabled', $tschema))
 								{
 									$user['mail'] = $mailadr;
 
@@ -1644,7 +1657,7 @@ if ($add || $edit)
 		if ($s_admin)
 		{
 			$contact = $app['db']->fetchAll('select name, abbrev, \'\' as value, 0 as id
-				from type_contact
+				from ' . $tschema . '.type_contact
 				where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 		}
 
@@ -1658,7 +1671,8 @@ if ($add || $edit)
 			}
 
 			$st = $app['db']->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
-				from type_contact tc, contact c
+				from ' . $tschema . '.type_contact tc, ' .
+					$tschema . '.contact c
 				where tc.id = c.id_type_contact
 					and c.id_user = ?');
 
@@ -1680,8 +1694,8 @@ if ($add || $edit)
 		else if ($s_admin)
 		{
 			$user = [
-				'minlimit'		=> $app['config']->get('preset_minlimit', $app['this_group']->get_schema()),
-				'maxlimit'		=> $app['config']->get('preset_maxlimit', $app['this_group']->get_schema()),
+				'minlimit'		=> $app['config']->get('preset_minlimit', $tschema),
+				'maxlimit'		=> $app['config']->get('preset_maxlimit', $tschema),
 				'accountrole'	=> 'user',
 				'status'		=> '1',
 				'cron_saldo'	=> 1,
@@ -1690,7 +1704,7 @@ if ($add || $edit)
 			if ($intersystem_code)
 			{
 				if ($group = $app['db']->fetchAssoc('select *
-					from letsgroups
+					from ' . $tschema . '.letsgroups
 					where localletscode = ?
 						and apimethod <> \'internal\'', [$intersystem_code]))
 				{
@@ -1974,7 +1988,7 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if ($app['config']->get('minlimit', $app['this_group']->get_schema()) === '')
+		if ($app['config']->get('minlimit', $tschema) === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen ';
 			echo 'geledende Minimum Systeemslimiet ingesteld.';
@@ -1982,9 +1996,9 @@ if ($add || $edit)
 		else
 		{
 			echo 'De algemeen geldende Minimum Systeemslimiet bedraagt <strong>';
-			echo $app['config']->get('minlimit', $app['this_group']->get_schema());
+			echo $app['config']->get('minlimit', $tschema);
 			echo ' ';
-			echo $app['config']->get('currency', $app['this_group']->get_schema());
+			echo $app['config']->get('currency', $tschema);
 			echo '</strong>.';
 		}
 
@@ -1994,10 +2008,10 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Minimum Account Limiet') . '" ';
 		echo 'die gedefiniëerd is in de instellingen.';
 
-		if ($app['config']->get('preset_minlimit', $app['this_group']->get_schema()) !== '')
+		if ($app['config']->get('preset_minlimit', $tschema) !== '')
 		{
 			echo ' De Preset bedraagt momenteel <strong>';
-			echo $app['config']->get('preset_minlimit', $app['this_group']->get_schema());
+			echo $app['config']->get('preset_minlimit', $tschema);
 			echo '</strong>.';
 		}
 
@@ -2018,7 +2032,7 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Maximum Systeemslimiet') . ' ';
 		echo 'van toepassing. ';
 
-		if ($app['config']->get('maxlimit', $app['this_group']->get_schema()) === '')
+		if ($app['config']->get('maxlimit', $tschema) === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen ';
 			echo 'geledende Maximum Systeemslimiet ingesteld.';
@@ -2026,9 +2040,9 @@ if ($add || $edit)
 		else
 		{
 			echo 'De algemeen geldende Maximum Systeemslimiet bedraagt <strong>';
-			echo $app['config']->get('maxlimit', $app['this_group']->get_schema());
+			echo $app['config']->get('maxlimit', $tschema);
 			echo ' ';
-			echo $app['config']->get('currency', $app['this_group']->get_schema());
+			echo $app['config']->get('currency', $tschema);
 			echo '</strong>.';
 		}
 
@@ -2038,10 +2052,10 @@ if ($add || $edit)
 		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Maximum Account Limiet') . '" ';
 		echo 'is ingevuld in de instellingen.';
 
-		if ($app['config']->get('preset_maxlimit', $app['this_group']->get_schema()) !== '')
+		if ($app['config']->get('preset_maxlimit', $tschema) !== '')
 		{
 			echo ' De Preset bedraagt momenteel <strong>';
-			echo $app['config']->get('preset_maxlimit', $app['this_group']->get_schema());
+			echo $app['config']->get('preset_maxlimit', $tschema);
 			echo '</strong>.';
 		}
 
@@ -2263,7 +2277,7 @@ if ($id)
 	if ($s_admin)
 	{
 		$count_transactions = $app['db']->fetchColumn('select count(*)
-			from transactions
+			from ' . $tschema . '.transactions
 			where id_from = ?
 				or id_to = ?', [$id, $id]);
 	}
@@ -2288,14 +2302,14 @@ if ($id)
 	}
 
 	$next = $app['db']->fetchColumn('select id
-		from users u
+		from ' . $tschema . '.users u
 		where u.letscode > ?
 		' . $and_status . '
 		order by u.letscode asc
 		limit 1', $sql_bind);
 
 	$prev = $app['db']->fetchColumn('select id
-		from users u
+		from ' . $tschema . '.users u
 		where u.letscode < ?
 		' . $and_status . '
 		order by u.letscode desc
@@ -2304,11 +2318,11 @@ if ($id)
 	$interlets_group_missing = false;
 
 	if ($s_admin && $user['accountrole'] === 'interlets'
-		&& $app['config']->get('interlets_en', $app['this_group']->get_schema())
-		&& $app['config']->get('template_lets', $app['this_group']->get_schema()))
+		&& $app['config']->get('interlets_en', $tschema)
+		&& $app['config']->get('template_lets', $tschema))
 	{
 		$interlets_group_id = $app['db']->fetchColumn('select id
-			from letsgroups
+			from ' . $tschema . '.letsgroups
 			where localletscode = ?', [$user['letscode']]);
 
 		if (!$interlets_group_id)
@@ -2347,7 +2361,7 @@ if ($id)
 
 			if (!$s_group_self)
 			{
-				$tus['tus'] = $app['this_group']->get_schema();
+				$tus['tus'] = $tschema;
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
@@ -2590,7 +2604,7 @@ if ($id)
 	echo '<span class="label label-info">';
 	echo $user['saldo'];
 	echo'</span>&nbsp;';
-	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo $app['config']->get('currency', $tschema);
 	echo '</dd>';
 
 	if ($user['minlimit'] !== '')
@@ -2600,7 +2614,7 @@ if ($id)
 		echo '<span class="label label-danger">';
 		echo $user['minlimit'];
 		echo '</span>&nbsp;';
-		echo $app['config']->get('currency', $app['this_group']->get_schema());
+		echo $app['config']->get('currency', $tschema);
 		echo '</dd>';
 	}
 
@@ -2611,7 +2625,7 @@ if ($id)
 		echo '<span class="label label-success">';
 		echo $user['maxlimit'];
 		echo '</span>&nbsp;';
-		echo $app['config']->get('currency', $app['this_group']->get_schema());
+		echo $app['config']->get('currency', $tschema);
 		echo '</dd>';
 	}
 
@@ -2696,7 +2710,7 @@ if ($id)
 	echo '<div class="col-md-12">';
 
 	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
-	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo $app['config']->get('currency', $tschema);
 	echo '</h3>';
 	echo '</div></div>';
 
@@ -2765,7 +2779,7 @@ $ref_geo = [];
 if ($v_list)
 {
 	$type_contact = $app['db']->fetchAll('select id, abbrev, name
-		from type_contact');
+		from ' . $tschema . '.type_contact');
 
 	$columns = [
 		'u'		=> [
@@ -2820,9 +2834,9 @@ if ($v_list)
 			'total'	=> 'Transacties totaal',
 		],
 		'amount'	=> [
-			'in'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' in',
-			'out'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' uit',
-			'total'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' totaal',
+			'in'	=> $app['config']->get('currency', $tschema) . ' in',
+			'out'	=> $app['config']->get('currency', $tschema) . ' uit',
+			'total'	=> $app['config']->get('currency', $tschema) . ' totaal',
 		],
 	];
 
@@ -2893,7 +2907,7 @@ if ($v_list)
 	$saldo_date = trim($saldo_date);
 
 	$type_contact = $app['db']->fetchAll('select id, abbrev, name
-		from type_contact');
+		from ' . $tschema . '.type_contact');
 
 	$columns = [
 		'u'		=> [
@@ -2948,14 +2962,14 @@ if ($v_list)
 			'total'	=> 'Transacties totaal',
 		],
 		'amount'	=> [
-			'in'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' in',
-			'out'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' uit',
-			'total'	=> $app['config']->get('currency', $app['this_group']->get_schema()) . ' totaal',
+			'in'	=> $app['config']->get('currency', $tschema) . ' in',
+			'out'	=> $app['config']->get('currency', $tschema) . ' uit',
+			'total'	=> $app['config']->get('currency', $tschema) . ' totaal',
 		],
 	];
 
 	$users = $app['db']->fetchAll('select u.*
-		from users u
+		from ' . $tschema . '.users u
 		where ' . $st[$status]['sql'] . '
 		order by u.letscode asc', $sql_bind);
 
@@ -2977,7 +2991,7 @@ if ($v_list)
 			$user['fullname_access'] = $app['xdb']->get(
 				'user_fullname_access',
 				$user['id'],
-				$app['this_group']->get_schema()
+				$tschema
 			)['data']['fullname_access'] ?? 'admin';
 
 			error_log($user['fullname_access']);
@@ -3005,7 +3019,7 @@ if ($v_list)
 			$datetime = new \DateTime($saldo_date_rev);
 
 			$rs = $app['db']->prepare('select id_to, sum(amount)
-				from transactions
+				from ' . $tschema . '.transactions
 				where date <= ?
 				group by id_to');
 
@@ -3019,7 +3033,7 @@ if ($v_list)
 			}
 
 			$rs = $app['db']->prepare('select id_from, sum(amount)
-				from transactions
+				from ' . $tschema . '.transactions
 				where date <= ?
 				group by id_from');
 			$rs->bindValue(1, $datetime, 'datetime');
@@ -3042,7 +3056,9 @@ if ($v_list)
 	if (isset($show_columns['c']) || (isset($show_columns['d']) && !$s_master))
 	{
 		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
-			from contact c, type_contact tc, users u
+			from ' . $tschema . '.contact c, ' .
+				$tschema . '.type_contact tc, ' .
+				$tschema . '.users u
 			where tc.id = c.id_type_contact ' .
 				(isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
 				'and c.id_user = u.id
@@ -3084,7 +3100,7 @@ if ($v_list)
 		if (isset($show_columns['m']['offers']))
 		{
 			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
-				from messages m, users u
+				from ' . $tschema . '.messages m, ' . $tschema . '.users u
 				where msg_type = 1
 					and m.id_user = u.id
 					and ' . $st[$status]['sql'] . '
@@ -3099,7 +3115,7 @@ if ($v_list)
 		if (isset($show_columns['m']['wants']))
 		{
 			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
-				from messages m, users u
+				from ' . $tschema . '.messages m, ' . $tschema . '.users u
 				where msg_type = 0
 					and m.id_user = u.id
 					and ' . $st[$status]['sql'] . '
@@ -3114,7 +3130,7 @@ if ($v_list)
 		if (isset($show_columns['m']['total']))
 		{
 			$ary = $app['db']->fetchAll('select count(m.id), m.id_user
-				from messages m, users u
+				from ' . $tschema . '.messages m, ' . $tschema . '.users u
 				where m.id_user = u.id
 					and ' . $st[$status]['sql'] . '
 				group by m.id_user', $sql_bind);
@@ -3147,13 +3163,13 @@ if ($v_list)
 		}
 
 		$in_ary = $app['db']->fetchAll('select sum(t.amount), count(t.id), t.id_to
-			from transactions t, users u
+			from ' . $tschema . '.transactions t, ' . $tschema . '.users u
 			where t.id_from = u.id
 				and t.cdate > ?' . $and . '
 			group by t.id_to', $sql_bind);
 
 		$out_ary = $app['db']->fetchAll('select sum(t.amount), count(t.id), t.id_from
-			from transactions t, users u
+			from ' . $tschema . '.transactions t, ' . $tschema . '.users u
 			where t.id_to = u.id
 				and t.cdate > ?' . $and . '
 			group by t.id_from', $sql_bind);
@@ -3194,14 +3210,14 @@ if ($v_list)
 else
 {
 	$users = $app['db']->fetchAll('select u.*
-		from users u
+		from ' . $tschema . '.users u
 		where ' . $st[$status]['sql'] . '
 		order by u.letscode asc', $sql_bind);
 
 	if ($v_list || $v_map)
 	{
 		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
-			from contact c, type_contact tc
+			from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
 			where tc.id = c.id_type_contact
 				and tc.abbrev in (\'mail\', \'tel\', \'gsm\', \'adr\')');
 
@@ -3480,7 +3496,7 @@ if ($v_list)
 			echo '" ';
 			echo 'class="form-control" ';
 			echo 'data-newuserdays="';
-			echo $app['config']->get('newuserdays', $app['this_group']->get_schema());
+			echo $app['config']->get('newuserdays', $tschema);
 			echo '" ';
 			echo 'data-typeahead="';
 			echo $app['typeahead']->get($typeahead_ary);
@@ -3905,7 +3921,7 @@ if ($v_list)
 
 	echo '<div class="row"><div class="col-md-12">';
 	echo '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-	echo $app['config']->get('currency', $app['this_group']->get_schema());
+	echo $app['config']->get('currency', $tschema);
 	echo '</span></p>';
 	echo '</div></div>';
 
@@ -4250,8 +4266,8 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-			'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+			'name'	=> $app['config']->get('systemname', $tschema),
+			'tag'	=> $app['config']->get('systemtag', $tschema),
 		],
 		'user'			=> link_user($user, false, false),
 		'user_mail'		=> $user['mail'],
@@ -4265,10 +4281,10 @@ function send_activation_mail($password, $user)
 
 	$vars = [
 		'group'		=> [
-			'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-			'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-			'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
-			'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
+			'name'		=> $app['config']->get('systemname', $tschema),
+			'tag'		=> $app['config']->get('systemtag', $tschema),
+			'support'	=> explode(',', $app['config']->get('support', $tschema)),
+			'currency'	=> $app['config']->get('currency', $tschema),
 		],
 		'user'		=> $user,
 		'password'	=> $password,

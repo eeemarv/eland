@@ -4,6 +4,8 @@ $page_access = 'user';
 
 require_once __DIR__ . '/include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 if (isset($_POST['zend']))
 {
 	$message = $_POST['message'] ?? '';
@@ -14,7 +16,7 @@ if (isset($_POST['zend']))
 		$errors[] = 'Het bericht is leeg.';
 	}
 
-	if (!trim($app['config']->get('support', $app['this_group']->get_schema())))
+	if (!trim($app['config']->get('support', $tschema)))
 	{
 		$errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
 	}
@@ -32,7 +34,7 @@ if (isset($_POST['zend']))
 	if(!count($errors))
 	{
 		$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-			from contact c, type_contact tc
+			from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$s_id]);
 
@@ -40,8 +42,8 @@ if (isset($_POST['zend']))
 
 		$vars = [
 			'group'	=> [
-				'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-				'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+				'name'		=> $app['config']->get('systemname', $tschema),
+				'tag'		=> $app['config']->get('systemtag', $tschema),
 			],
 			'user'	=> [
 				'text'			=> link_user($s_id, false, false),
@@ -104,11 +106,11 @@ else
 	}
 }
 
-if (!$app['config']->get('mailenabled', $app['this_group']->get_schema()))
+if (!$app['config']->get('mailenabled', $tschema))
 {
 	$app['alert']->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
-else if (!$app['config']->get('support', $app['this_group']->get_schema()))
+else if (!$app['config']->get('support', $tschema))
 {
 	$app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }

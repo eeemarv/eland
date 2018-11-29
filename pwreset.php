@@ -6,9 +6,11 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 
+$tschema = $app['this_group']->get_schema();
+
 if ($token)
 {
-	$data = $app['predis']->get($app['this_group']->get_schema() . '_token_' . $token);
+	$data = $app['predis']->get($tschema . '_token_' . $token);
 	$data = json_decode($data, true);
 
 	$user_id = $data['user_id'];
@@ -33,10 +35,10 @@ if ($token)
 
 				$vars = [
 					'group'		=> [
-						'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-						'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-						'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
-						'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
+						'name'		=> $app['config']->get('systemname', $tschema),
+						'tag'		=> $app['config']->get('systemtag', $tschema),
+						'currency'	=> $app['config']->get('currency', $tschema),
+						'support'	=> explode(',', $app['config']->get('support', $tschema)),
 					],
 					'password'	=> $password,
 					'user'		=> $user,
@@ -72,7 +74,7 @@ if ($token)
 			'email'			=> strtolower($email),
 		];
 
-		$app['xdb']->set('email_validated', $email, $ev_data, $app['this_group']->get_schema());
+		$app['xdb']->set('email_validated', $email, $ev_data, $tschema);
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';
@@ -138,18 +140,18 @@ if (isset($_POST['zend']))
 
 			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user['id'] . $app['this_group']->get_schema() . time() . $email), 0, 12);
-				$key = $app['this_group']->get_schema() . '_token_' . $token;
+				$token = substr(hash('sha512', $user['id'] . $tschema . time() . $email), 0, 12);
+				$key = $tschema . '_token_' . $token;
 
 				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
 				$app['predis']->expire($key, 3600);
 
 				$vars = [
 					'group'		=> [
-						'name'		=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-						'tag'		=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
-						'currency'	=> $app['config']->get('currency', $app['this_group']->get_schema()),
-						'support'	=> explode(',', $app['config']->get('support', $app['this_group']->get_schema())),
+						'name'		=> $app['config']->get('systemname', $tschema),
+						'tag'		=> $app['config']->get('systemtag', $tschema),
+						'currency'	=> $app['config']->get('currency', $tschema),
+						'support'	=> explode(',', $app['config']->get('support', $tschema)),
 					],
 					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,

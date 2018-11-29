@@ -7,12 +7,14 @@ require_once __DIR__ . '/include/web.php';
 $submit = isset($_POST['zend']) ? true : false;
 $token = $_GET['token'] ?? false;
 
+$tschema = $app['this_group']->get_schema();
+
 if ($s_id)
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('registration_en', $app['this_group']->get_schema()))
+if (!$app['config']->get('registration_en', $tschema))
 {
 	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
@@ -20,7 +22,7 @@ if (!$app['config']->get('registration_en', $app['this_group']->get_schema()))
 
 if ($token)
 {
-	$key = $app['this_group']->get_schema();
+	$key = $tschema;
 	$key .= '_register_' . $token;
 
 	if ($data = $app['predis']->get($key))
@@ -42,7 +44,7 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $app['this_group']->get_schema() . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $tschema . time() . mt_rand(0, 100000), 0, 4));
 				}
 			}
 
@@ -52,10 +54,10 @@ if ($token)
 			}
 		}
 
-		$minlimit = $app['config']->get('preset_minlimit', $app['this_group']->get_schema());
+		$minlimit = $app['config']->get('preset_minlimit', $tschema);
 		$minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-		$maxlimit = $app['config']->get('preset_maxlimit', $app['this_group']->get_schema());
+		$maxlimit = $app['config']->get('preset_maxlimit', $tschema);
 		$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
 		$user = [
@@ -111,7 +113,7 @@ if ($token)
 				'email'			=> $data['email'],
 			];
 
-			$app['xdb']->set('email_validated', $data['email'], $ev_data, $app['this_group']->get_schema());
+			$app['xdb']->set('email_validated', $data['email'], $ev_data, $tschema);
 
 			if ($data['gsm'] || $data['tel'])
 			{
@@ -148,8 +150,8 @@ if ($token)
 
 		$vars = [
 			'group'	=> [
-				'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-				'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+				'name'	=> $app['config']->get('systemname', $tschema),
+				'tag'	=> $app['config']->get('systemtag', $tschema),
 			],
 			'user'	=> $user,
 			'email'	=> $data['email'],
@@ -184,7 +186,7 @@ if ($token)
 
 		require_once __DIR__ . '/include/header.php';
 
-		$registration_success_text = $app['config']->get('registration_success_text', $app['this_group']->get_schema());
+		$registration_success_text = $app['config']->get('registration_success_text', $tschema);
 
 		if ($registration_success_text)
 		{
@@ -264,18 +266,18 @@ if ($submit)
 	}
 	else
 	{
-		$token = substr(hash('sha512', $app['this_group']->get_schema() . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
-		$key = $app['this_group']->get_schema() . '_register_' . $token;
+		$token = substr(hash('sha512', $tschema . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
+		$key = $tschema . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
 		$app['predis']->expire($key, 604800); // 1 week
-		$key = $app['this_group']->get_schema() . '_register_email_' . $email;
+		$key = $tschema . '_register_email_' . $email;
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
 			'group'		=> [
-				'name'	=> $app['config']->get('systemname', $app['this_group']->get_schema()),
-				'tag'	=> $app['config']->get('systemtag', $app['this_group']->get_schema()),
+				'name'	=> $app['config']->get('systemname', $tschema),
+				'tag'	=> $app['config']->get('systemtag', $tschema),
 			],
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
@@ -297,7 +299,7 @@ $fa = 'check-square-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = $app['config']->get('registration_top_text', $app['this_group']->get_schema());
+$top_text = $app['config']->get('registration_top_text', $tschema);
 
 if ($top_text)
 {
