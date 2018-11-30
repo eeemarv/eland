@@ -402,7 +402,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = $app['config']->get('registration_bottom_text');
+$bottom_text = $app['config']->get('registration_bottom_text', $tschema);
 
 if ($bottom_text)
 {
