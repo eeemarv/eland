@@ -151,6 +151,10 @@ $app['mailaddr'] = function ($app){
 		$app['this_group'], $app['config']);
 };
 
+$app['mail_addr_system'] = function ($app){
+	return new service\mail_addr_system($app['monolog'], $app['config']);
+};
+
 $app['interlets_groups'] = function ($app){
 	return new service\interlets_groups($app['db'], $app['predis'],
 		$app['groups'],
@@ -186,7 +190,8 @@ $app['email_validate'] = function ($app){
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
 		$app['mailaddr'], $app['twig'],
-		$app['config'], $app['email_validate']);
+		$app['config'], $app['mail_addr_system'],
+		$app['email_validate']);
 };
 
 // tasks

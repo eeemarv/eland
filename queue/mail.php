@@ -10,28 +10,36 @@ use Monolog\Logger;
 use service\mailaddr;
 use Twig_Environment as Twig;
 use service\config;
+use service\mail_addr_system;
 use service\token;
 use service\email_validate;
 
 class mail extends queue_model implements queue_interface
 {
-	private $converter;
-	private $mailer;
-	private $queue;
-	private $monolog;
-	private $mailaddr;
-	private $twig;
-	private $email_validate;
+	protected $converter;
+	protected $mailer;
+	protected $queue;
+	protected $monolog;
+	protected $mailaddr;
+	protected $twig;
+	protected $email_validate;
 
-	public function __construct(queue $queue, Logger $monolog,
-		mailaddr $mailaddr, Twig $twig, config $config,
-		email_validate $email_validate)
+	public function __construct(
+		queue $queue,
+		Logger $monolog,
+		mailaddr $mailaddr,
+		Twig $twig,
+		config $config,
+		mail_addr_system $mail_addr_system,
+		email_validate $email_validate
+	)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->mailaddr = $mailaddr;
 		$this->twig = $twig;
 		$this->config = $config;
+		$this->mail_addr_system = $mail_addr_system;
 		$this->email_validate = $email_validate;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
@@ -294,11 +302,11 @@ class mail extends queue_model implements queue_interface
 				unset($data['reply_to']);
 			}
 
-			$data['from'] = $this->mailaddr->get('from', $data['schema']);
+			$data['from'] = $this->mail_addr_system->get_from($data['schema']);
 		}
 		else
 		{
-			$data['from'] = $this->mailaddr->get('noreply', $data['schema']);
+			$data['from'] = $this->mail_addr_system->get_noreply($data['schema']);
 		}
 
 		if (!count($data['from']))
