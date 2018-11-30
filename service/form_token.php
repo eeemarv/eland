@@ -3,20 +3,17 @@
 namespace service;
 
 use Predis\Client as Redis;
-use Monolog\Logger;
 
 class form_token
 {
-	public $ttl = 14400; // 4 hours
-	private $redis;
-	private $token;
-	private $monolog;
-	private $script_name;
+	protected $ttl = 14400; // 4 hours
+	protected $redis;
+	protected $token;
+	protected $script_name;
 
-	public function __construct(Redis $redis, Logger $monolog, string $script_name)
+	public function __construct(Redis $redis, string $script_name)
 	{
 		$this->redis = $redis;
-		$this->monolog = $monolog;
 		$this->script_name = $script_name;
 	}
 
@@ -53,7 +50,6 @@ class form_token
 		if (!$value)
 		{
 			$m = 'Het formulier is verlopen';
-			$this->monolog->debug('form_token: ' . $m . ': ' . $this->script_name);
 			return $m;
 		}
 
@@ -61,7 +57,6 @@ class form_token
 		{
 			$this->redis->incr($key);
 			$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-			$this->monolog->debug('form_token: ' . $m . '(count: ' . $value . ') : ' . $this->script_name);
 			return $m;
 		}
 

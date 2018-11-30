@@ -154,7 +154,8 @@ class xdb
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt. ' .
+				$e->getMessage(), ['schema' => $agg_schema]);
 			throw $e;
 			exit;
 		}
@@ -200,7 +201,8 @@ class xdb
 		catch(Exception $e)
 		{
 			$this->db->rollback();
-			$this->monolog->debug('Database transactie niet gelukt. ' . $e->getMessage());
+			$this->monolog->debug('Database transactie niet gelukt. ' .
+				$e->getMessage(), ['schema' => $agg_schema]);
 			throw $e;
 			exit;
 		}
@@ -210,7 +212,9 @@ class xdb
 	{
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
-		$row = $this->db->fetchAssoc('select * from xdb.aggs where agg_id = ?', [$agg_id]);
+		$row = $this->db->fetchAssoc('select *
+			from xdb.aggs
+			where agg_id = ?', [$agg_id]);
 
 		if (!$row)
 		{

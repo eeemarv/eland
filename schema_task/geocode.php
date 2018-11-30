@@ -84,7 +84,8 @@ class geocode extends schema_task
 
 		if (count($log_ary))
 		{
-			$this->monolog->info('Addresses queued for geocoding: ' . implode(', ', $log_ary), ['schema' => $this->schema]);
+			$this->monolog->info('Addresses queued for geocoding: ' . implode(', ', $log_ary),
+				['schema' => $this->schema]);
 		}
 	}
 

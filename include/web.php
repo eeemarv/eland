@@ -416,7 +416,7 @@ if ($page_access != 'anonymous' && !$s_admin
 $app['xdb']->set_user($s_schema, ctype_digit((string) $s_id) ? $s_id : 0);
 
 $app['form_token'] = function ($app){
-	return new service\form_token($app['predis'], $app['monolog'], $app['script_name']);
+	return new service\form_token($app['predis'], $app['script_name']);
 };
 
 /* view (global for all groups) */

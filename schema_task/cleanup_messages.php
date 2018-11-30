@@ -47,7 +47,8 @@ class cleanup_messages extends schema_task
 
 		if ($msgs)
 		{
-			$this->monolog->info('(cron) Expired and deleted Messages ' . $msgs, ['schema' => $this->schema]);
+			$this->monolog->info('(cron) Expired and deleted Messages ' . $msgs,
+				['schema' => $this->schema]);
 
 			$this->db->executeQuery('delete from ' . $this->schema . '.messages WHERE validity < ?', [$testdate]);
 		}
@@ -71,7 +72,8 @@ class cleanup_messages extends schema_task
 
 		if (count($ids))
 		{
-			$this->monolog->info('(cron) Cleanup messages from users: ' . $users, ['schema' => $this->schema]);
+			$this->monolog->info('(cron) Cleanup messages from users: ' . $users,
+				['schema' => $this->schema]);
 
 			echo 'Cleanup messages from users: ' . $users;
 

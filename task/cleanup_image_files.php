@@ -132,7 +132,8 @@ class cleanup_image_files extends task
 
 		if ($del_str)
 		{
-			$this->monolog->info('(cron) image file ' . $object['Key'] . ' deleted ' . $del_str, ['schema' => $sch]);
+			$this->monolog->info('(cron) image file ' . $object['Key'] .
+				' deleted ' . $del_str, ['schema' => $sch]);
 		}
 	}
 

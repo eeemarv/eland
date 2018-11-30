@@ -5,11 +5,9 @@ namespace service;
 use service\xdb;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
-use Monolog\Logger as monolog;
 
 class config
 {
-	protected $monolog;
 	protected $db;
 	protected $xdb;
 	protected $predis;
@@ -39,13 +37,11 @@ class config
 	];
 
 	public function __construct(
-		monolog $monolog,
 		db $db,
 		xdb $xdb,
 		predis $predis
 	)
 	{
-		$this->monolog = $monolog;
 		$this->predis = $predis;
 		$this->db = $db;
 		$this->xdb = $xdb;

@@ -27,7 +27,8 @@ class alert
 		{
 			$log = implode(' -- & ', $msg);
 			$msg = implode('<br>', $msg);
-			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $log, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $log,
+				['alert_type' => $type]);
 		}
 		else
 		{

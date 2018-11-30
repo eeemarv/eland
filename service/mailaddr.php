@@ -61,7 +61,8 @@ class mailaddr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$this->monolog->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
+						$this->monolog->error('mail error: invalid ' .
+							$in . ' mail address : ' . $mail);
 						continue;
 					}
 
@@ -75,7 +76,8 @@ class mailaddr
 
 				if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 				{
-					$this->monolog->error('mail error: invalid ' . $in . ' mail address : ' . $mail);
+					$this->monolog->error('mail error: invalid ' .
+						$in . ' mail address : ' . $mail);
 
 					continue;
 				}
@@ -105,7 +107,8 @@ class mailaddr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$this->monolog->error('mail error: invalid mail address : ' . $mail . ', user id: ' . $in);
+						$this->monolog->error('mail error: invalid mail address : ' .
+							$mail . ', user id: ' . $in);
 						continue;
 					}
 
@@ -137,7 +140,8 @@ class mailaddr
 
 					if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 					{
-						$this->monolog->error('mail error: invalid mail address from interSystem: ' . $mail . ', user: ' . $user);
+						$this->monolog->error('mail error: invalid mail address from interSystem: ' .
+							$mail . ', user: ' . $user);
 						continue;
 					}
 
@@ -150,13 +154,15 @@ class mailaddr
 			}
 			else
 			{
-				$this->monolog->error('mail error: no valid input for mail adr: ' . $in);
+				$this->monolog->error('mail error: no valid input for mail adr: ' .
+					$in);
 			}
 		}
 
 		if (!count($out))
 		{
-			$this->monolog->error('mail error: no valid mail adress found for: ' . implode('|', $m));
+			$this->monolog->error('mail error: no valid mail adress found for: ' .
+				implode('|', $m));
 			return $out;
 		}
 

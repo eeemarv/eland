@@ -65,13 +65,15 @@ class autominlimit
 	{
 		if (!$this->enabled)
 		{
-			$this->monolog->debug('autominlimit not enabled', ['schema' => $this->schema]);
+			$this->monolog->debug('autominlimit not enabled',
+				['schema' => $this->schema]);
 			return;
 		}
 
 		if (!$this->trans_percentage)
 		{
-			$this->monolog->debug('autominlimit percentage is zero.', ['schema' => $this->schema]);
+			$this->monolog->debug('autominlimit percentage is zero.',
+				['schema' => $this->schema]);
 			return;
 		}
 
@@ -79,28 +81,32 @@ class autominlimit
 
 		if (!$user || !is_array($user))
 		{
-			$this->monolog->debug('autominlimit: to user not found', ['schema' => $this->schema]);
+			$this->monolog->debug('autominlimit: to user not found',
+				['schema' => $this->schema]);
 			return;
 		}
 
 		if ($user['status'] != 1)
 		{
 			$this->monolog->debug('autominlimit: to user not active. ' .
-				link_user($user, $this->schema, false), ['schema' => $this->schema]);
+				link_user($user, $this->schema, false),
+				['schema' => $this->schema]);
 			return;
 		}
 
 		if ($user['minlimit'] === '')
 		{
 			$this->monolog->debug('autominlimit: to user has no minlimit. ' .
-				link_user($user, $this->schema, false), ['schema' => $this->schema]);
+				link_user($user, $this->schema, false),
+				['schema' => $this->schema]);
 			return;
 		}
 
 		if ($this->group_minlimit !== '' && $user['minlimit'] < $this->group_minlimit)
 		{
 			$this->monolog->debug('autominlimit: to user minlimit is lower than group minlimit. ' .
-				link_user($user, $this->schema, false), ['schema' => $this->schema]);
+				link_user($user, $this->schema, false),
+				['schema' => $this->schema]);
 			return;
 		}
 
@@ -108,13 +114,15 @@ class autominlimit
 
 		if (!$from_user || !is_array($from_user))
 		{
-			$this->monolog->debug('autominlimit: from user not found.', ['schema' => $this->schema]);
+			$this->monolog->debug('autominlimit: from user not found.',
+				['schema' => $this->schema]);
 			return;
 		}
 
 		if (!$from_user['letscode'])
 		{
-			$this->monolog->debug('autominlimit: from user has no letscode.', ['schema' => $this->schema]);
+			$this->monolog->debug('autominlimit: from user has no letscode.',
+				['schema' => $this->schema]);
 			return;
 		}
 
@@ -151,7 +159,8 @@ class autominlimit
 		$this->user_cache->clear($to_id, $this->schema);
 
 		$this->monolog->info('autominlimit: new minlimit : ' . $new_minlimit .
-			' for user ' . link_user($user, $this->schema, false, true), ['schema' => $this->schema]);
+			' for user ' . link_user($user, $this->schema, false, true),
+			['schema' => $this->schema]);
 
 		return;
 	}
