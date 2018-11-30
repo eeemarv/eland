@@ -285,7 +285,7 @@ $app['geocode'] = function($app){
  * functions
  */
 
-function link_user($user, string $sch = '', $link = true, $show_id = false, $field = ''):string
+function link_user($user, string $sch, $link = true, $show_id = false, $field = ''):string
 {
 	global $rootpath, $app;
 
