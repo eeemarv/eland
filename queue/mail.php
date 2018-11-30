@@ -7,7 +7,6 @@ use model\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use service\queue;
 use Monolog\Logger;
-use service\this_group;
 use service\mailaddr;
 use Twig_Environment as Twig;
 use service\config;
@@ -20,18 +19,16 @@ class mail extends queue_model implements queue_interface
 	private $mailer;
 	private $queue;
 	private $monolog;
-	private $this_group;
 	private $mailaddr;
 	private $twig;
 	private $email_validate;
 
 	public function __construct(queue $queue, Logger $monolog,
-		this_group $this_group, mailaddr $mailaddr, Twig $twig, config $config,
+		mailaddr $mailaddr, Twig $twig, config $config,
 		email_validate $email_validate)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
-		$this->this_group = $this_group;
 		$this->mailaddr = $mailaddr;
 		$this->twig = $twig;
 		$this->config = $config;

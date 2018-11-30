@@ -185,7 +185,7 @@ $app['email_validate'] = function ($app){
 
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
-		$app['this_group'], $app['mailaddr'], $app['twig'],
+		$app['mailaddr'], $app['twig'],
 		$app['config'], $app['email_validate']);
 };
 
