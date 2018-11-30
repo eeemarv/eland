@@ -2277,7 +2277,7 @@ if ($id)
 {
 	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
 
-	$user_mail_cc = ($post) ? $user_mail_cc : 1;
+	$user_mail_cc = $post ? $user_mail_cc : 1;
 
 	$user = $app['user_cache']->get($id, $tschema);
 

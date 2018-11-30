@@ -2,7 +2,6 @@
 
 namespace service;
 
-use service\this_group;
 use service\xdb;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
@@ -12,73 +11,67 @@ class user_cache
 	protected $db;
 	protected $xdb;
 	protected $predis;
-	protected $this_group;
 	protected $ttl = 2592000;
 	protected $is_cli;
 
 	protected $local;
 
-	public function __construct(db $db, xdb $xdb, predis $predis, this_group $this_group)
+	public function __construct(db $db, xdb $xdb, predis $predis)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->predis = $predis;
-		$this->this_group = $this_group;
 
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
-	public function clear(int $id, string $schema = '')
+	public function clear(int $id, string $schema):void
 	{
 		if (!$id)
 		{
 			return;
 		}
 
-		$s = $schema ?: $this->this_group->get_schema();
-
-		$redis_key = $s . '_user_' . $id;
+		$redis_key = $schema . '_user_' . $id;
 
 		$this->predis->del($redis_key);
-		unset($this->local[$s][$id]);
+		unset($this->local[$schema][$id]);
 
 		return;
 	}
 
-	public function get(int $id, string $schema = '')
+	public function get(int $id, string $schema):array
 	{
 		if (!$id)
 		{
 			return [];
 		}
 
-		$s = $schema ?: $this->this_group->get_schema();
+		$redis_key = $schema . '_user_' . $id;
 
-		$redis_key = $s . '_user_' . $id;
-
-		if (isset($this->local[$s][$id]) && !$this->is_cli)
+		if (isset($this->local[$schema][$id]) && !$this->is_cli)
 		{
-			return $this->local[$s][$id];
+			return $this->local[$schema][$id];
 		}
 
 		if ($this->predis->exists($redis_key))
 		{
-			return $this->local[$s][$id] = unserialize($this->predis->get($redis_key));
+			return $this->local[$schema][$id] = unserialize($this->predis->get($redis_key));
 		}
 
-		$user = $this->read_from_db($id, $s);
+		$user = $this->read_from_db($id, $schema);
 
 		if (isset($user))
 		{
 			$this->predis->set($redis_key, serialize($user));
 			$this->predis->expire($redis_key, $this->ttl);
-			$this->local[$s][$id] = $user;
+			$this->local[$schema][$id] = $user;
 		}
 
 		return $user;
 	}
 
-	protected function read_from_db(int $id, string $schema)
+	protected function read_from_db(int $id, string $schema):array
 	{
 		$user = $this->db->fetchAssoc('select * from ' . $schema . '.users where id = ?', [$id]);
 
@@ -110,7 +103,7 @@ class user_cache
 	/**
 	 * for periodic process for when cache gets out sync
 	 */
-	public function sync(int $id, string $schema)
+	public function sync(int $id, string $schema):void
 	{
 		$user = $this->read_from_db($id, $schema);
 

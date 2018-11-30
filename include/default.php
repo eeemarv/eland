@@ -168,7 +168,7 @@ $app['config'] = function ($app){
 
 $app['user_cache'] = function ($app){
 	return new service\user_cache($app['db'], $app['xdb'],
-		$app['predis'], $app['this_group']);
+		$app['predis']);
 };
 
 $app['token'] = function ($app){
