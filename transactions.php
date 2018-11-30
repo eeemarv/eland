@@ -738,8 +738,8 @@ if ($add)
 					exit;
 				}
 
-				$app['user_cache']->clear($fromuser['id']);
-				$app['user_cache']->clear($touser['id']);
+				$app['user_cache']->clear($fromuser['id'], $tschema);
+				$app['user_cache']->clear($touser['id'], $tschema);
 
 				$app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
 				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
@@ -825,7 +825,7 @@ if ($add)
 		}
 		else if ($tuid)
 		{
-			$to_user = $app['user_cache']->get($tuid, ((isset($host_from_tus)) ? $tus : false));
+			$to_user = $app['user_cache']->get($tuid, ((isset($host_from_tus)) ? $tus : $tschema));
 
 			if (($s_admin && !$tus) || $to_user['status'] == 1 || $to_user['status'] == 2)
 			{
@@ -835,7 +835,7 @@ if ($add)
 
 		if ($fuid && $s_admin && ($fuid != $tuid))
 		{
-			$from_user = $app['user_cache']->get($fuid);
+			$from_user = $app['user_cache']->get($fuid, $tschema);
 			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
 		}
 
@@ -1756,7 +1756,7 @@ $params = [
 
 if ($uid)
 {
-	$user = $app['user_cache']->get($uid);
+	$user = $app['user_cache']->get($uid, $tschema);
 
 	$where_sql[] = 't.id_from = ? or t.id_to = ?';
 	$params_sql[] = $uid;

@@ -14,7 +14,7 @@ if (!$user_id)
 	exit;
 }
 
-$user = $app['user_cache']->get($user_id);
+$user = $app['user_cache']->get($user_id, $tschema);
 
 if (!$user)
 {

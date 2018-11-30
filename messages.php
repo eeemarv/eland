@@ -525,7 +525,7 @@ if ($mail && $post && $id)
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
 
-	$user = $app['user_cache']->get($message['id_user']);
+	$user = $app['user_cache']->get($message['id_user'], $tschema);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
@@ -1089,7 +1089,7 @@ if (($edit || $add))
 		$rev = round((strtotime($msg['validity']) - time()) / (86400));
 		$msg['validity'] = $rev < 1 ? 0 : $rev;
 
-		$user = $app['user_cache']->get($msg['id_user']);
+		$user = $app['user_cache']->get($msg['id_user'], $tschema);
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 
@@ -1119,7 +1119,7 @@ if (($edit || $add))
 		}
 		else
 		{
-			$user = $app['user_cache']->get($uid);
+			$user = $app['user_cache']->get($uid, $tschema);
 
 			$user_letscode = $user['letscode'] . ' ' . $user['name'];
 		}
@@ -1364,7 +1364,7 @@ if ($id)
 {
 	$cc = ($post) ? $cc : 1;
 
-	$user = $app['user_cache']->get($message['id_user']);
+	$user = $app['user_cache']->get($message['id_user'], $tschema);
 
 	$to = $app['db']->fetchColumn('select c.value
 		from ' . $tschema . '.contact c, ' .
@@ -1689,7 +1689,7 @@ $filter_en = isset($filter['s']);
 
 if ($uid)
 {
-	$user = $app['user_cache']->get($uid);
+	$user = $app['user_cache']->get($uid, $tschema);
 
 	$where_sql[] = 'u.id = ?';
 	$params_sql[] = $uid;

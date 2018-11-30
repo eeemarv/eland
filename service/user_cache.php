@@ -9,14 +9,14 @@ use Predis\Client as predis;
 
 class user_cache
 {
-	private $db;
-	private $xdb;
-	private $predis;
-	private $this_group;
-	private $ttl = 2592000;
-	private $is_cli;
+	protected $db;
+	protected $xdb;
+	protected $predis;
+	protected $this_group;
+	protected $ttl = 2592000;
+	protected $is_cli;
 
-	private $local;
+	protected $local;
 
 	public function __construct(db $db, xdb $xdb, predis $predis, this_group $this_group)
 	{
@@ -78,7 +78,7 @@ class user_cache
 		return $user;
 	}
 
-	private function read_from_db(int $id, string $schema)
+	protected function read_from_db(int $id, string $schema)
 	{
 		$user = $this->db->fetchAssoc('select * from ' . $schema . '.users where id = ?', [$id]);
 

@@ -49,8 +49,8 @@ function insert_transaction($transaction)
 		return false;
 	}
 
-	$app['user_cache']->clear($transaction['id_to']);
-	$app['user_cache']->clear($transaction['id_from']);
+	$app['user_cache']->clear($transaction['id_to'], $tschema);
+	$app['user_cache']->clear($transaction['id_from'], $tschema);
 
 	$app['autominlimit']->init()
 		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);

@@ -113,7 +113,7 @@ if ($user_mail_submit && $id && $post)
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
 	$user_mail_cc = $_POST['user_mail_cc'] ?? false;
 
-	$user = $app['user_cache']->get($id);
+	$user = $app['user_cache']->get($id, $tschema);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
@@ -196,7 +196,7 @@ if ($post && $img && $id )
 		exit;
 	}
 
-	$user = $app['user_cache']->get($id);
+	$user = $app['user_cache']->get($id, $tschema);
 
 	$image = ($_FILES['image']) ?: null;
 
@@ -276,7 +276,7 @@ if ($post && $img && $id )
 
 		$app['monolog']->info('User image ' . $filename . ' uploaded. User: ' . $id);
 
-		$app['user_cache']->clear($id);
+		$app['user_cache']->clear($id, $tschema);
 
 		$response = ['success' => 1, 'filename' => $filename];
 	}
@@ -308,7 +308,7 @@ if ($img_del && $id)
 		cancel($id);
 	}
 
-	$user = $app['user_cache']->get($id);
+	$user = $app['user_cache']->get($id, $tschema);
 
 	if (!$user)
 	{
@@ -327,7 +327,7 @@ if ($img_del && $id)
 	if ($post)
 	{
 		$app['db']->update($tschema . '.users', ['"PictureFile"' => ''], ['id' => $id]);
-		$app['user_cache']->clear($id);
+		$app['user_cache']->clear($id, $tschema);
 		$app['alert']->success('Profielfoto verwijderd.');
 		cancel($id);
 	}
@@ -769,8 +769,8 @@ if ($pw)
 
 			if ($app['db']->update($tschema . '.users', $update, ['id' => $pw]))
 			{
-				$app['user_cache']->clear($pw);
-				$user = $app['user_cache']->get($pw);
+				$app['user_cache']->clear($pw, $tschema);
+				$user = $app['user_cache']->get($pw, $tschema);
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				if (($user['status'] == 1 || $user['status'] == 2) && $_POST['notify'])
@@ -824,7 +824,7 @@ if ($pw)
 
 	}
 
-	$user = $app['user_cache']->get($pw);
+	$user = $app['user_cache']->get($pw, $tschema);
 
 	$app['assets']->add('generate_password.js');
 
@@ -903,7 +903,7 @@ if ($del)
 		cancel($del);
 	}
 
-	$user = $app['user_cache']->get($del);
+	$user = $app['user_cache']->get($del, $tschema);
 
 	if (!$user)
 	{
@@ -1282,7 +1282,7 @@ if ($add || $edit)
 			$fullname_sql .= 'and id <> ?';
 			$fullname_sql_params[] = $edit;
 
-			$user_prefetch = $app['user_cache']->get($edit);
+			$user_prefetch = $app['user_cache']->get($edit, $tschema);
 		}
 
 		$fullname_access_error = $app['access_control']->get_post_error('fullname_access');
@@ -1447,8 +1447,8 @@ if ($add || $edit)
 
 					$app['alert']->success('Gebruiker opgeslagen.');
 
-					$app['user_cache']->clear($id);
-					$user = $app['user_cache']->get($id);
+					$app['user_cache']->clear($id, $tschema);
+					$user = $app['user_cache']->get($id, $tschema);
 
 					foreach ($contact as $value)
 					{
@@ -1511,7 +1511,7 @@ if ($add || $edit)
 			}
 			else if ($edit)
 			{
-				$user_stored = $app['user_cache']->get($edit);
+				$user_stored = $app['user_cache']->get($edit, $tschema);
 
 				$user['mdate'] = gmdate('Y-m-d H:i:s');
 
@@ -1534,8 +1534,8 @@ if ($add || $edit)
 						'fullname_access' => $fullname_access_role,
 					], $tschema);
 
-					$app['user_cache']->clear($edit);
-					$user = $app['user_cache']->get($edit);
+					$app['user_cache']->clear($edit, $tschema);
+					$user = $app['user_cache']->get($edit, $tschema);
 
 					$app['alert']->success('Gebruiker aangepast.');
 
@@ -1663,7 +1663,7 @@ if ($add || $edit)
 	{
 		if ($edit)
 		{
-			$user = $app['user_cache']->get($edit);
+			$user = $app['user_cache']->get($edit, $tschema);
 			$fullname_access = $user['fullname_access'];
 		}
 
@@ -2279,7 +2279,7 @@ if ($id)
 
 	$user_mail_cc = ($post) ? $user_mail_cc : 1;
 
-	$user = $app['user_cache']->get($id);
+	$user = $app['user_cache']->get($id, $tschema);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
