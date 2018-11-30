@@ -440,7 +440,9 @@ if ($topic)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p>' . link_user((int) $p['uid']) . ' @' . $app['date_format']->get($p['ts']);
+		echo '<p>';
+		echo link_user((int) $p['uid'], $tschema);
+		echo ' @' . $app['date_format']->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($s_admin || $s_owner)
@@ -615,7 +617,9 @@ foreach($forum_posts as $p)
 	echo $p['replies'];
 	echo '</td>';
 
-	echo '<td>' . link_user($p['uid']) . '</td>';
+	echo '<td>';
+	echo link_user($p['uid'], $tschema);
+	echo '</td>';
 
 	echo $app['date_format']->get_td($p['ts']);
 

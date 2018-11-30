@@ -46,7 +46,7 @@ if (isset($_POST['zend']))
 				'tag'		=> $app['config']->get('systemtag', $tschema),
 			],
 			'user'	=> [
-				'text'			=> link_user($s_id, false, false),
+				'text'			=> link_user($s_id, $tschema, false),
 				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,
 				'email'			=> $email,
 			],

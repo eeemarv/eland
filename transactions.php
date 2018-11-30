@@ -422,7 +422,7 @@ if ($add)
 			$result = $client->call('dopayment', [
 				'apikey' 		=> $group['remoteapikey'],
 				'from' 			=> $group['myremoteletscode'],
-				'real_from' 	=> link_user($fromuser, false, false),
+				'real_from' 	=> link_user($fromuser, $tschema, false),
 				'to' 			=> $letscode_to,
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
@@ -714,7 +714,7 @@ if ($add)
 					$transaction['amount'] = $remote_amount;
 					$transaction['id_from'] = $remote_interlets_account['id'];
 					$transaction['id_to'] = $to_remote_user['id'];
-					$transaction['real_from'] = link_user($fromuser['id'], false, false);
+					$transaction['real_from'] = link_user($fromuser['id'], $tschema, false);
 					unset($transaction['real_to']);
 
 					$app['db']->insert($remote_schema . '.transactions', $transaction);
@@ -748,8 +748,8 @@ if ($add)
 				mail_transaction($transaction, $remote_schema);
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-					$amount . ' from user: ' .  link_user($fromuser['id'], false, false) .
-					' to user: ' . link_user($touser['id'], false, false));
+					$amount . ' from user: ' .  link_user($fromuser['id'], $tschema, false) .
+					' to user: ' . link_user($touser['id'], $tschema, false));
 
 				$app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
 					' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
@@ -765,7 +765,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, false, false);
+		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, $tschema, false);
 	}
 	else
 	{
@@ -778,7 +778,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $s_master ? '' : link_user($s_id, false, false),
+			'letscode_from'	=> $s_master ? '' : link_user($s_id, $tschema, false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -1293,7 +1293,7 @@ if ($edit)
 	{
 		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], false, $s_admin);
+		echo link_user($transaction['id_from'], $tschema, $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
@@ -1317,7 +1317,7 @@ if ($edit)
 	{
 		echo '<dt>Van gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from']);
+		echo link_user($transaction['id_from'], $tschema);
 		echo '</dd>';
 	}
 
@@ -1325,7 +1325,7 @@ if ($edit)
 	{
 		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], false, $s_admin);
+		echo link_user($transaction['id_to'], $tschema, $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
@@ -1349,7 +1349,7 @@ if ($edit)
 	{
 		echo '<dt>Naar gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to']);
+		echo link_user($transaction['id_to'], $tschema);
 		echo '</dd>';
 	}
 
@@ -1458,7 +1458,7 @@ if ($id)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], false, $s_admin);
+		echo link_user($transaction['id_from'], $tschema, $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
@@ -1485,7 +1485,7 @@ if ($id)
 	{
 		echo '<dt>Van Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from']);
+		echo link_user($transaction['id_from'], $tschema);
 		echo '</dd>';
 	}
 
@@ -1493,7 +1493,7 @@ if ($id)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], false, $s_admin);
+		echo link_user($transaction['id_to'], $tschema, $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
@@ -1520,7 +1520,7 @@ if ($id)
 	{
 		echo '<dt>Naar Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to']);
+		echo link_user($transaction['id_to'], $tschema);
 		echo '</dd>';
 	}
 
@@ -1585,7 +1585,7 @@ if ($id)
 		}
 		else
 		{
-			echo link_user($transaction['id_from']);
+			echo link_user($transaction['id_from'], $tschema);
 		}
 
 		echo ')';
@@ -1636,7 +1636,7 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'], false, $s_admin);
+			echo link_user($transaction['id_to'], $tschema, $s_admin);
 			echo ')';
 		}
 
@@ -1661,7 +1661,7 @@ if ($id)
 			echo 'Het interSysteem Account van het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'], false, $s_admin);
+			echo link_user($transaction['id_from'], $tschema, $s_admin);
 			echo ')';
 		}
 		else
@@ -1712,7 +1712,7 @@ if ($id)
 		{
 			echo 'Het bestemmings Account in dit Systeem ';
 			echo '(';
-			echo link_user($transaction['id_to']);
+			echo link_user($transaction['id_to'], $tschema);
 			echo ').';
 		}
 		else
@@ -1763,7 +1763,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = $tcode = link_user($user, false, false);
+	$fcode = $tcode = link_user($user, $tschema, false);
 	$andor = 'or';
 }
 
@@ -1792,7 +1792,7 @@ if (!$uid)
 			$where_code_sql[] = $fuid_sql;
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, false, false);
+			$fcode = link_user($fuid, $tschema, false);
 		}
 		else if ($andor !== 'nor')
 		{
@@ -1818,7 +1818,7 @@ if (!$uid)
 			$where_code_sql[] = $tuid_sql;
 			$params_sql[] = $tuid;
 
-			$tcode = link_user($tuid, false, false);
+			$tcode = link_user($tuid, $tschema, false);
 		}
 		else if ($andor !== 'nor')
 		{
@@ -1975,7 +1975,7 @@ if ($s_admin || $s_user)
 {
 	if ($uid)
 	{
-		$user_str = link_user($user, false, false);
+		$user_str = link_user($user, $tschema, false);
 
 		if ($user['status'] != 7)
 		{
@@ -2018,7 +2018,8 @@ if ($uid)
 	else
 	{
 		$h1 = aphp('transactions', ['uid' => $uid], 'Transacties');
-		$h1 .= ' van ' . link_user($uid);
+		$h1 .= ' van ';
+		$h1 .= link_user($uid, $tschema);
 	}
 }
 else
@@ -2318,7 +2319,7 @@ if ($uid)
 			}
 			else
 			{
-				echo link_user($t['id_to']);
+				echo link_user($t['id_to'], $tschema);
 			}
 		}
 		else
@@ -2342,7 +2343,7 @@ if ($uid)
 			}
 			else
 			{
-				echo link_user($t['id_from']);
+				echo link_user($t['id_from'], $tschema);
 			}
 		}
 
@@ -2390,7 +2391,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_from']);
+			echo link_user($t['id_from'], $tschema);
 		}
 
 		echo '</td>';
@@ -2416,7 +2417,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_to']);
+			echo link_user($t['id_to'], $tschema);
 		}
 
 		echo '</td>';

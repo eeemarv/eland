@@ -348,7 +348,7 @@ if ($del)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news['id_user']);
+	echo link_user($news['id_user'], $tschema);
 	echo '</dd>';
 
 	echo '<dt>Goedgekeurd</dt>';
@@ -563,7 +563,7 @@ if ($id)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news_item['id_user']);
+	echo link_user($news_item['id_user'], $tschema);
 	echo '</dd>';
 
 	if ($s_admin)
@@ -764,7 +764,8 @@ else if ($v_extended)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i> ' . link_user($n['id_user']);
+		echo '<p><i class="fa fa-user"></i> ';
+		echo link_user($n['id_user'], $tschema);
 
 		if ($s_admin)
 		{

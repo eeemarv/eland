@@ -697,11 +697,11 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo link_user($user, false, true, false, 'letscode');
+	echo link_user($user, $tschema, true, false, 'letscode');
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($user, false, true, false, 'name');
+	echo link_user($user, $tschema, true, false, 'name');
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
@@ -888,8 +888,8 @@ function mail_mass_transaction($mail_ary)
 		$vars = array_merge($common_vars, [
 			'amount' 			=> $many_ary[$user_id]['amount'],
 			'transid' 			=> $many_ary[$user_id]['transid'],
-			'from_user' 		=> link_user($from_user_id, false, false),
-			'to_user'			=> link_user($to_user_id, false, false),
+			'from_user' 		=> link_user($from_user_id, $tschema, false),
+			'to_user'			=> link_user($to_user_id, $tschema, false),
 			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
 			'user'				=> $user,
 			'interlets'			=> false,
@@ -919,14 +919,14 @@ function mail_mass_transaction($mail_ary)
 
 		$users[] = [
 			'url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
-			'text'		=> link_user($user_id, false, false),
+			'text'		=> link_user($user_id, $tschema, false),
 			'amount'	=> $many_ary[$user_id]['amount'],
 			'id'		=> $user_id,
 		];
 
 		$total += $many_ary[$user_id]['amount'];
 
-		$text .= link_user($user_id, false, false) . $t . $t . $many_ary[$user_id]['amount'];
+		$text .= link_user($user_id, $tschema, false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
 	}
 
@@ -934,7 +934,7 @@ function mail_mass_transaction($mail_ary)
 		'users'		=> $users,
 		'user'		=> [
 			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
-			'text'	=> link_user($one_user_id, false, false),
+			'text'	=> link_user($one_user_id, $tschema, false),
 		],
 		'total'		=> $total,
 	]);

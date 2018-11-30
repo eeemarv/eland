@@ -285,7 +285,7 @@ $app['geocode'] = function($app){
  * functions
  */
 
-function link_user($user, string $sch = '', $link = true, $show_id = false, $field = '')
+function link_user($user, string $sch = '', $link = true, $show_id = false, $field = ''):string
 {
 	global $rootpath, $app;
 
@@ -316,7 +316,7 @@ function link_user($user, string $sch = '', $link = true, $show_id = false, $fie
 		$out = $str;
 	}
 
-	$out .= ($show_id) ? ' (id: ' . $user['id'] . ')' : '';
+	$out .= $show_id ? ' (id: ' . $user['id'] . ')' : '';
 
 	return $out;
 }

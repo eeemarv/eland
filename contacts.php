@@ -112,7 +112,9 @@ if ($del)
 	if (!$s_owner)
 	{
 		echo '<dt>Gebruiker</dt>';
-		echo '<dd>' . link_user($user_id) . '</dd>';
+		echo '<dd>';
+		echo link_user($user_id, $tschema);
+		echo '</dd>';
 	}
 	echo '<dt>Type</dt>';
 	echo '<dd>';
@@ -209,7 +211,7 @@ if ($edit || $add)
 
 			if ($user_id)
 			{
-				$letscode = link_user($user_id, false, false);
+				$letscode = link_user($user_id, $tschema, false);
 			}
 			else
 			{
@@ -424,7 +426,7 @@ if ($edit || $add)
 	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
 
 	$h1 = $edit ? 'Contact aanpassen' : 'Contact toevoegen';
-	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id);
+	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id, $tschema);
 
 	include __DIR__ . '/include/header.php';
 
@@ -576,7 +578,7 @@ if ($uid)
 
 	if (!$inline)
 	{
-		$h1 = ($s_owner) ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user);
+		$h1 = $s_owner ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user, $tschema);
 		$fa = 'map-marker';
 
 		include __DIR__ . '/include/header.php';
@@ -587,7 +589,9 @@ if ($uid)
 		echo '<div class="row">';
 		echo '<div class="col-md-12">';
 
-		echo '<h3><i class="fa fa-map-marker"></i> Contactinfo van ' . link_user($user) . ' ';
+		echo '<h3><i class="fa fa-map-marker"></i> Contactinfo van ';
+		echo link_user($user, $tschema);
+		echo ' ';
 		echo $top_buttons;
 		echo '</h3>';
 	}
@@ -743,7 +747,7 @@ if ($uid)
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$letscode = link_user($user, false, false);
+	$letscode = link_user($user, $tschema, false);
 }
 
 if (!$uid)
@@ -761,7 +765,7 @@ if (!$uid)
 			$where_sql[] = 'c.id_user = ?';
 			$params_sql[] = $fuid;
 
-			$letscode = link_user($fuid, false, false);
+			$letscode = link_user($fuid, $tschema, false);
 		}
 		else
 		{
@@ -1127,7 +1131,9 @@ foreach ($contacts as $c)
 	echo '<td>';
 	echo isset($c['value']) ? aphp('contacts', ['edit' => $c['id']], $c['value']) : '';
 	echo '</td>';
-	echo '<td>' . link_user($c['id_user']) . '</td>';
+	echo '<td>';
+	echo link_user($c['id_user'], $tschema);
+	echo '</td>';
 	echo '<td>';
 	echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id']], $c['comments']) : '';
 	echo '</td>';

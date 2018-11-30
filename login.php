@@ -266,7 +266,7 @@ if ($submit)
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
-		$app['monolog']->info('User ' . link_user($user, false, false, true) . ' logged in, agent: ' . $browser, $log_ary);
+		$app['monolog']->info('User ' . link_user($user, $tschema, false, true) . ' logged in, agent: ' . $browser, $log_ary);
 
 		$app['db']->update($tschema . '.users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		$app['user_cache']->clear($user['id']);

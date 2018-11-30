@@ -4,13 +4,13 @@ $page_access = 'anonymous';
 require_once __DIR__ . '/../include/web.php';
 require_once __DIR__ . '/../include/transactions.php';
 
-if (!$app['config']->get('template_lets', $app['this_group']->get_schema()))
+if (!$app['config']->get('template_lets', $tschema))
 {
 	echo 'NO_ELAS_TIMEBANK';
 	exit;
 }
 
-if (!$app['config']->get('interlets_en', $app['this_group']->get_schema()))
+if (!$app['config']->get('interlets_en', $tschema))
 {
 	echo 'NO_INTERSYSTEM';
 	exit;
@@ -89,7 +89,9 @@ function gettoken($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	$tschema = $app['this_group']->get_schema();
+
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		$app['monolog']->debug('elas-soap: Transaction token request deferred (offline)');
 
@@ -100,9 +102,9 @@ function gettoken($apikey)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = 'elasv2' . substr(md5(microtime() . $app['this_group']->get_schema()), 0, 12);
+		$token = 'elasv2' . substr(md5(microtime() . $tschema), 0, 12);
 
-		$key = $app['this_group']->get_schema() . '_token_' . $token;
+		$key = $tschema . '_token_' . $token;
 
 		$app['predis']->set($key, $apikey);
 		$app['predis']->expire($key, 600);
@@ -121,7 +123,9 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 {
 	global $app;
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	$tschema = $app['this_group']->get_schema();
+
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' deferred (offline)');
 
@@ -132,7 +136,9 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	$app['monolog']->debug('Transaction request from: ' . $from . ' real from: ' . $real_from . ' to: ' . $to . ' description: "' . $description . '" amount: ' . $amount . ' transid: ' . $transid);
 
-	if ($app['db']->fetchColumn('select * from transactions where transid = ?', [$transid]))
+	if ($app['db']->fetchColumn('select *
+		from ' . $tschema . '.transactions
+		where transid = ?', [$transid]))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' is a duplicate');
 		return 'DUPLICATE';
@@ -208,7 +214,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'SIGFAIL';
 	}
 
-	$transaction['amount'] = round($amount * $app['config']->get('currencyratio', $app['this_group']->get_schema()));
+	$transaction['amount'] = round($amount * $app['config']->get('currencyratio', $tschema));
 
 	if ($transaction['amount'] < 1)
 	{
@@ -218,7 +224,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	if (($transaction['amount'] + $touser['saldo']) > $touser['maxlimit'])
 	{
-		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' failed. ' . link_user($touser, false, false) . ' over maxlimit.');
+		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' amount ' . $transaction['amount'] . ' failed. ' . link_user($touser, $tschema, false) . ' over maxlimit.');
 		return 'FAILED';
 	}
 
@@ -242,9 +248,11 @@ function userbyletscode($apikey, $letscode)
 {
 	global $app;
 
+	$tschema = $app['this_group']->get_schema();
+
 	$app['monolog']->debug('Lookup request for ' . $letscode);
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		return 'OFFLINE';
 	}
@@ -276,9 +284,11 @@ function userbyname($apikey, $name)
 {
 	global $app;
 
+	$tschema = $app['this_group']->get_schema();
+
 	$app['monolog']->debug('Lookup request for user ' . $name);
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		return 'OFFLINE';
 	}
@@ -290,7 +300,7 @@ function userbyname($apikey, $name)
 	}
 
 	$letscode = $app['db']->fetchColumn('select letscode
-		from users
+		from ' . $tschema . '.users
 		where status in (1, 2)
 			and name ilike ?', ['%' . $name . '%']);
 	return $letscode ?? 'Onbekend';
@@ -300,7 +310,9 @@ function getstatus($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	$tschema = $app['this_group']->get_schema();
+
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		return 'OFFLINE';
 	}
@@ -319,7 +331,9 @@ function apiversion($apikey)
 {
 	global $app;
 
-	if ($app['config']->get('maintenance', $app['this_group']->get_schema()))
+	$tschema = $app['this_group']->get_schema();
+
+	if ($app['config']->get('maintenance', $tschema))
 	{
 		return 'OFFLINE';
 	}
@@ -338,8 +352,10 @@ function check_apikey($apikey, $type)
 {
 	global $app;
 
+	$tschema = $app['this_group']->get_schema();
+
 	return $app['db']->fetchColumn('select apikey
-		from apikeys
+		from ' . $tschema . '.apikeys
 		where apikey = ?
 		and type = ?', [trim($apikey), trim($type)]) ? true : false;
 }
@@ -348,10 +364,12 @@ function get_user_by_letscode(string $letscode)
 {
 	global $app;
 
+	$tschema = $app['this_group']->get_schema();
+
 	$letscode = trim($letscode);
 	[$letscode] = explode(' ', $letscode);
 
 	return $app['db']->fetchAssoc('select *
-		from users
+		from ' . $tschema . '.users
 		where letscode = ?', [$letscode]);
 }

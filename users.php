@@ -150,7 +150,7 @@ if ($user_mail_submit && $id && $post)
 			'tag'	=> $app['config']->get('systemtag', $tschema),
 			'name'	=> $app['config']->get('systemname', $tschema),
 		],
-		'to_user'		=> link_user($user, false, false),
+		'to_user'		=> link_user($user, $tschema, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
@@ -332,14 +332,23 @@ if ($img_del && $id)
 		cancel($id);
 	}
 
-	$h1 = 'Profielfoto ' . (($s_admin) ? 'van ' . link_user($id) . ' ' : '') . 'verwijderen?';
+	$h1 = 'Profielfoto ';
+
+	if ($s_admin)
+	{
+		$h1 .= 'van ' . link_user($id, $tschema) . ' ';
+	}
+
+	$h1 .= 'verwijderen?';
 
 	include __DIR__ . '/include/header.php';
 
 	echo '<div class="row">';
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
-	echo '<img src="' . $app['s3_img_url'] . $file . '" class="img-rounded">';
+	echo '<img src="';
+	echo $app['s3_img_url'] . $file;
+	echo '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
 
@@ -456,7 +465,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . link_user($row, false, false, true);
+		$users_log .= ', ' . link_user($row, $tschema, false, true);
 	}
 
 	$users_log = ltrim($users_log, ', ');
@@ -648,7 +657,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'reply_to' 	=> $s_id,
 		]);
 
-		$alert_msg_users[] = link_user($sel_user);
+		$alert_msg_users[] = link_user($sel_user, $tschema);
 
 		$count++;
 	}
@@ -673,7 +682,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		foreach ($sel_ary as $warning_user_id => $dummy)
 		{
-			$missing_users .= link_user($warning_user_id) . '<br>';
+			$missing_users .= link_user($warning_user_id, $tschema) . '<br>';
 		}
 
 		$alert_warning = 'Naar volgende gebruikers werd geen E-mail verzonden wegens ontbreken van E-mail adres: <br>' . $missing_users;
@@ -820,7 +829,7 @@ if ($pw)
 	$app['assets']->add('generate_password.js');
 
 	$h1 = 'Paswoord aanpassen';
-	$h1 .= $s_owner ? '' : ' voor ' . link_user($user);
+	$h1 .= $s_owner ? '' : ' voor ' . link_user($user, $tschema);
 	$fa = 'key';
 
 	include __DIR__ . '/include/header.php';
@@ -1038,7 +1047,9 @@ if ($del)
 		cancel();
 	}
 
-	$h1 = 'Gebruiker ' . link_user($del) . ' verwijderen?';
+	$h1 = 'Gebruiker ';
+	$h1 .= link_user($del, $tschema);
+	$h1 .= ' verwijderen?';
 	$fa = 'user';
 
 	include __DIR__ . '/include/header.php';
@@ -1758,7 +1769,7 @@ if ($add || $edit)
 		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
 
 	$h1 = 'Gebruiker ';
-	$h1 .= $edit ? 'aanpassen: ' . link_user($user) : 'toevoegen';
+	$h1 .= $edit ? 'aanpassen: ' . link_user($user, $tschema) : 'toevoegen';
 	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
 	$fa = 'user';
 
@@ -2367,7 +2378,7 @@ if ($id)
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
-				'btn btn-warning', 'Transactie naar ' . link_user($user, false, false),
+				'btn btn-warning', 'Transactie naar ' . link_user($user, $tschema, false),
 				'exchange', true, false, $s_schema);
 	}
 
@@ -2410,7 +2421,7 @@ if ($id)
 	$h_status_ary = $status_ary;
 	$h_status_ary[3] = 'Instapper';
 
-	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user);
+	$h1 = (($s_owner && !$s_admin) ? 'Mijn gegevens: ' : '') . link_user($user, $tschema);
 
 	if ($status != 1)
 	{
@@ -2671,8 +2682,10 @@ if ($id)
 
 	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
-	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een bericht naar ';
-	echo  link_user($id) . '</h3>';
+	echo '<h3><i class="fa fa-envelop-o"></i> ';
+	echo 'Stuur een bericht naar ';
+	echo  link_user($id, $tschema);
+	echo '</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
@@ -3771,7 +3784,7 @@ if ($v_list)
 
 				if (isset($link_user_keys[$key]))
 				{
-					echo link_user($u, false, $status, false, $key);
+					echo link_user($u, $tschema, $status, false, $key);
 				}
 				else if (isset($date_keys[$key]))
 				{
@@ -3781,11 +3794,11 @@ if ($v_list)
 				{
 					if ($s_admin || $u['fullname_access'] === 'interlets')
 					{
-						echo link_user($u, false, $status, false, $fullname);
+						echo link_user($u, $tschema, $status, false, $fullname);
 					}
 					else if ($s_user && $u['fullname_access'] !== 'admin')
 					{
-						echo link_user($u, false, $status, false, $key);
+						echo link_user($u, $tschema, $status, false, $key);
 					}
 					else
 					{
@@ -4105,7 +4118,7 @@ else if ($v_extended)
 		echo '<div class="media-body">';
 
 		echo '<h3 class="media-heading">';
-		echo link_user($u, false, $status);
+		echo link_user($u, $tschema, $status);
 		echo '</h3>';
 
 		echo htmlspecialchars($u['hobbies'], ENT_QUOTES);
@@ -4117,8 +4130,9 @@ else if ($v_extended)
 		echo '</div>';
 
 		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>' . link_user($msg['id_user'], false, $status);
-		echo ($msg['postcode']) ? ', postcode: ' . $u['postcode'] : '';
+		echo '<p><i class="fa fa-user"></i>';
+		echo link_user($msg['id_user'], $tschema, $status);
+		echo $msg['postcode'] ? ', postcode: ' . $u['postcode'] : '';
 
 		if ($s_admin)
 		{
@@ -4266,12 +4280,14 @@ function send_activation_mail($password, $user)
 {
 	global $app;
 
+	$tschema = $app['this_group']->get_schema();
+
 	$vars = [
 		'group'		=> [
 			'name'	=> $app['config']->get('systemname', $tschema),
 			'tag'	=> $app['config']->get('systemtag', $tschema),
 		],
-		'user'			=> link_user($user, false, false),
+		'user'			=> link_user($user, $tschema, false),
 		'user_mail'		=> $user['mail'],
 	];
 

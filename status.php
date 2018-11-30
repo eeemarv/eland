@@ -183,7 +183,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id);
+				$user_ary[] = link_user($user_id, $tschema);
 			}
 
 			echo implode(', ', $user_ary);
@@ -221,7 +221,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id);
+				$user_ary[] = link_user($user_id, $tschema);
 			}
 
 			echo implode(', ', $user_ary);
@@ -256,7 +256,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id);
+				$user_ary[] = link_user($user_id, $tschema);
 			}
 
 			echo implode(', ', $user_ary);
@@ -285,7 +285,8 @@ if ($status_msgs)
 			echo $ary['value'] .  ' ';
 			echo aphp('contacts', ['edit' => $ary['id']], 'Aanpassen', 'btn btn-default btn-xs') . ' ';
 			echo aphp('contacts', ['del' => $ary['id']], 'Verwijderen', 'btn btn-danger btn-xs') . ' ';
-			echo ' : ' . link_user($ary['id_user']);
+			echo ' : ';
+			echo link_user($ary['id_user'], $tschema);
 			echo '</li>';
 		}
 
@@ -309,7 +310,7 @@ if ($status_msgs)
 		foreach ($no_mail as $user_id)
 		{
 			echo '<li>';
-			echo link_user($user_id);
+			echo link_user($user_id, $tschema);
 			echo '</li>';
 		}
 
@@ -333,7 +334,7 @@ if ($status_msgs)
 		foreach ($empty_name as $ary)
 		{
 			echo '<li>';
-			echo link_user($ary['id']);
+			echo link_user($ary['id'], $tschema);
 			echo '</li>';
 		}
 
@@ -357,7 +358,7 @@ if ($status_msgs)
 		foreach ($empty_letscode as $ary)
 		{
 			echo '<li>';
-			echo link_user($ary['id']);
+			echo link_user($ary['id'], $tschema);
 			echo '</li>';
 		}
 
@@ -384,9 +385,12 @@ if ($status_msgs)
 		foreach ($no_msgs_users as $u)
 		{
 			echo '<li>';
-			echo link_user($u['id']);
+			echo link_user($u['id'], $tschema);
 			echo ($u['status'] == 2) ? ' <span class="text-danger">Uitstapper</span>' : '';
-			echo ', saldo: ' . $u['saldo'] . ' ' . $currency;
+			echo ', saldo: ';
+			echo $u['saldo'];
+			echo ' ';
+			echo $currency;
 			echo '</li>';
 		}
 
