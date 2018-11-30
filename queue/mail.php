@@ -220,6 +220,12 @@ class mail extends queue_model implements queue_interface
 
 		$data['schema'] = $data['schema'] ?? $this->this_group->get_schema();
 
+		if (!isset($data['schema']))
+		{
+			$this->monolog->error('Mail: no schema set ' . json_encode($data));
+			return;
+		}
+
 		$data['vars']['validate_param'] = '';
 
 		if (!$this->config->get('mailenabled', $data['schema']))

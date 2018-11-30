@@ -46,12 +46,14 @@ if ($token)
 		];
 
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
 			'to'		=> $data['email'],
 		]);
 
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'template'	=> 'contact',
 			'vars'		=> $vars,
 			'to'		=> 'support',
@@ -142,6 +144,7 @@ if($post && isset($_POST['zend']))
 		];
 
 		$return_message =  $app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to' 		=> $email,
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,

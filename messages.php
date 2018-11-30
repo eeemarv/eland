@@ -579,6 +579,7 @@ if ($mail && $post && $id)
 	];
 
 	$app['queue.mail']->queue([
+		'schema'	=> $tschema,
 		'to'		=> $user['id'],
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'message',
@@ -589,6 +590,7 @@ if ($mail && $post && $id)
 	if ($cc)
 	{
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to'		=> $s_schema . '.' . $s_id,
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,

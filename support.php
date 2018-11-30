@@ -56,6 +56,7 @@ if (isset($_POST['zend']))
 		];
 
 		$email_ary = [
+			'schema'	=> $tschema,
 			'to'		=> 'support',
 			'template'	=> 'support',
 			'vars'		=> $vars,
@@ -64,6 +65,7 @@ if (isset($_POST['zend']))
 		if ($email)
 		{
 			$app['queue.mail']->queue([
+				'schema'	=> $tschema,
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
 				'to'		=> $s_id,
@@ -72,15 +74,10 @@ if (isset($_POST['zend']))
 			$email_ary['reply_to'] = $s_id;
 		}
 
-		$return_message =  $app['queue.mail']->queue($email_ary);
+		$app['queue.mail']->queue($email_ary);
 
-		if (!$return_message)
-		{
-			$app['alert']->success('De Support E-mail is verzonden.');
-			redirect_default_page();
-		}
-
-		$app['alert']->error('E-mail niet verstuurd. ' . $return_message);
+		$app['alert']->success('De Support E-mail is verzonden.');
+		redirect_default_page();
 	}
 	else
 	{

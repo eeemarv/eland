@@ -494,9 +494,10 @@ if ($add)
 				$text .= ' group:' . $group['groupname'];
 
 				$app['queue.mail']->queue([
-					'to' => 'admin',
-					'subject' => $subject,
-					'text' => $text,
+					'schema'		=> $tschema,
+					'to' 			=> 'admin',
+					'subject' 		=> $subject,
+					'text' 			=> $text,
 				]);
 
 				$app['alert']->error('De lokale commit van de interSysteem transactie is niet geslaagd. ' . $contact_admin);

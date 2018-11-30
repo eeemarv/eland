@@ -899,6 +899,7 @@ function mail_mass_transaction($mail_ary)
 		]);
 
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to'		=> $user_id,
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
@@ -942,6 +943,7 @@ function mail_mass_transaction($mail_ary)
 	]);
 
 	$app['queue.mail']->queue([
+		'schema'	=> $tschema,
 		'to' 		=> ['admin', $s_id, $one_user_id],
 		'subject' 	=> $subject,
 		'text' 		=> $text,

@@ -162,6 +162,7 @@ if ($user_mail_submit && $id && $post)
 	];
 
 	$app['queue.mail']->queue([
+		'schema'	=> $tschema,
 		'to'		=> $id,
 		'reply_to'	=> $s_schema . '.' . $s_id,
 		'template'	=> 'user',
@@ -171,6 +172,7 @@ if ($user_mail_submit && $id && $post)
 	if ($user_mail_cc)
 	{
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to' 		=> $s_schema . '.' . $s_id,
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
@@ -661,6 +663,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		}
 
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to' 		=> $sel_user['id'],
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
@@ -726,6 +729,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 		$html = $template->render($template_vars);
 
 		$app['queue.mail']->queue([
+			'schema'	=> $tschema,
 			'to' 		=> $s_id,
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
@@ -807,6 +811,7 @@ if ($pw)
 						];
 
 						$app['queue.mail']->queue([
+							'schema'	=> $tschema,
 							'to' 		=> $pw,
 							'reply_to'	=> 'support',
 							'template'	=> 'password_reset',
@@ -4303,6 +4308,7 @@ function send_activation_mail($password, $user)
 	];
 
 	$app['queue.mail']->queue([
+		'schema'	=> $tschema,
 		'to' 		=> 'admin',
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
@@ -4321,6 +4327,7 @@ function send_activation_mail($password, $user)
 	];
 
 	$app['queue.mail']->queue([
+		'schema'	=> $tschema,
 		'to' 		=> $user['id'],
 		'reply_to' 	=> 'support',
 		'template'	=> 'user_activation',
