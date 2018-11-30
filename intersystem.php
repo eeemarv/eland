@@ -727,7 +727,9 @@ exit;
 
 function get_schemas_groups():string
 {
-	global $app, $tschema;
+	global $app;
+
+	$tschema = $app['this_group']->get_schema();
 
 	$out = '<div class="panel panel-default"><div class="panel-heading">';
 	$out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';

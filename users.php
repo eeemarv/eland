@@ -264,7 +264,8 @@ if ($post && $img && $id )
 
 	if ($err)
 	{
-		$app['monolog']->error('pict: ' .  $err . ' -- ' . $filename);
+		$app['monolog']->error('pict: ' .  $err . ' -- ' .
+			$filename, ['schema' => $tschema]);
 
 		$response = ['error' => 'Afbeelding opladen mislukt.'];
 	}
@@ -274,7 +275,8 @@ if ($post && $img && $id )
 			'"PictureFile"'	=> $filename
 		],['id' => $id]);
 
-		$app['monolog']->info('User image ' . $filename . ' uploaded. User: ' . $id);
+		$app['monolog']->info('User image ' . $filename .
+			' uploaded. User: ' . $id, ['schema' => $tschema]);
 
 		$app['user_cache']->clear($id, $tschema);
 
@@ -482,7 +484,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$app['predis']->del($tschema . '_user_' . $user_id);
 		}
 
-		$app['monolog']->info('bulk: Set fullname_access to ' . $fullname_access_role . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set fullname_access to ' .
+			$fullname_access_role . ' for users ' .
+			$users_log, ['schema' => $tschema]);
 
 		$app['alert']->success('De zichtbaarheid van de volledige naam werd aangepast.');
 
@@ -518,7 +522,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$app['typeahead']->invalidate_thumbprint('users_extern');
 		}
 
-		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $value . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set ' . $bulk_field .
+			' to ' . $value .
+			' for users ' . $users_log, ['schema' => $tschema]);
 
 		$app['interlets_groups']->clear_cache($s_schema);
 
@@ -541,7 +547,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		$access_role = $app['access_control']->get_role($access_value);
 
-		$app['monolog']->info('bulk: Set ' . $bulk_field . ' to ' . $access_role . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set ' . $bulk_field .
+			' to ' . $access_role .
+			' for users ' . $users_log, ['schema' => $tschema]);
 		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
 	}
@@ -562,7 +570,9 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		$value = $value ? 'on' : 'off';
 
-		$app['monolog']->info('bulk: Set periodic mail to ' . $value . ' for users ' . $users_log);
+		$app['monolog']->info('bulk: Set periodic mail to ' .
+			$value . ' for users ' .
+			$users_log, ['schema' => $tschema]);
 
 		$app['interlets_groups']->clear_cache($s_schema);
 
@@ -721,7 +731,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'html' 		=> $html,
 		]);
 
-		$app['monolog']->debug('#bulk mail');
+		$app['monolog']->debug('#bulk mail', ['schema' => $tschema]);
 
 		cancel();
 	}
@@ -944,7 +954,8 @@ if ($del)
 
 		if ($msgs)
 		{
-			$app['monolog']->info('Delete user ' . $usr . ', deleted Messages ' . $msgs);
+			$app['monolog']->info('Delete user ' . $usr .
+				', deleted Messages ' . $msgs, ['schema' => $tschema]);
 
 			$app['db']->delete($tschema . '.messages', ['id_user' => $del]);
 		}

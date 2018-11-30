@@ -481,7 +481,9 @@ if ($add)
 
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
-			$app['monolog']->debug('insert transation: --  ' . http_build_query($transaction) . ' --');
+			$app['monolog']->debug('insert transation: --  ' .
+				http_build_query($transaction) .
+				' --', ['schema' => $tschema]);
 
 			$id = insert_transaction($transaction);
 
@@ -749,7 +751,8 @@ if ($add)
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
 					$amount . ' from user: ' .  link_user($fromuser['id'], $tschema, false) .
-					' to user: ' . link_user($touser['id'], $tschema, false));
+					' to user: ' . link_user($touser['id'], $tschema, false),
+					['schema' => $tschema]);
 
 				$app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
 					' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
@@ -1255,7 +1258,8 @@ if ($edit)
 			}
 
 			$app['monolog']->info('Transaction description edited from "' . $transaction['description'] .
-				'" to "' . $description . '", transid: ' . $transaction['transid']);
+				'" to "' . $description . '", transid: ' .
+				$transaction['transid'], ['schema' => $tschema]);
 
 			$app['alert']->success('Omschrijving transactie aangepast.');
 
@@ -2455,7 +2459,9 @@ function cancel($id = null)
 
 function get_valuation():string
 {
-	global $app, $tschema;
+	global $app;
+
+	$tschema = $app['this_group']->get_schema();
 
 	$out = '';
 

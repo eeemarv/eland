@@ -68,7 +68,7 @@ if ($step == 1)
 
 		$m = 'Upgraded database from schema version ' . $dbversion . ' to ' . $currentversion;
 		error_log(' -- ' . $m . ' -- ');
-		$app['monolog']->info('DB: ' . $m);
+		$app['monolog']->info('DB: ' . $m, ['schema' => $tschema]);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=2');
@@ -114,7 +114,9 @@ else if ($step == 2)
 		{
 			$app['db']->update($tschema . '.users', ['"PictureFile"' => null], ['id' => $user_id]);
 			error_log(' -- Profile image not present, deleted in database: ' . $filename . ' -- ');
-			$app['monolog']->info('cron: Profile image file of user ' . $user_id . ' was not found in bucket: deleted from database. Deleted filename : ' . $filename);
+			$app['monolog']->info('cron: Profile image file of user ' .
+				$user_id . ' was not found in bucket: deleted from database. Deleted filename : ' .
+				$filename, ['schema' => $tschema]);
 		}
 		else if ($f_schema != $tschema)
 		{
@@ -125,13 +127,14 @@ else if ($step == 2)
 			if ($err)
 			{
 				error_log(' -- error: ' . $err . ' -- ');
-				$app['monolog']->info('init: copy img error: ' . $err);
+				$app['monolog']->info('init: copy img error: ' . $err, ['schema' => $tschema]);
 				continue;
 			}
 
 			$app['db']->update($tschema . '.users', ['"PictureFile"' => $new_filename], ['id' => $user_id]);
 			error_log(' -- Profile image renamed, old: ' . $filename . ' new: ' . $new_filename . ' -- ');
-			$app['monolog']->info('init: Profile image file renamed, Old: ' . $filename . ' New: ' . $new_filename);
+			$app['monolog']->info('init: Profile image file renamed, Old: ' .
+				$filename . ' New: ' . $new_filename, ['schema' => $tschema]);
 		}
 	}
 
@@ -188,7 +191,9 @@ else if ($step == 3)
 		{
 			$app['db']->delete($tschema . '.msgpictures', ['id' => $id]);
 			error_log(' -- Message image not present, deleted in database: ' . $filename . ' -- ');
-			$app['monolog']->info('init: Image file of message ' . $msg_id . ' not found in bucket: deleted from database. Deleted : ' . $filename . ' id: ' . $id);
+			$app['monolog']->info('init: Image file of message ' . $msg_id .
+				' not found in bucket: deleted from database. Deleted : ' .
+				$filename . ' id: ' . $id, ['schema' => $tschema]);
 		}
 		else if ($f_schema != $tschema)
 		{
@@ -199,13 +204,15 @@ else if ($step == 3)
 			if ($err)
 			{
 				error_log(' -- error: ' . $err . ' -- ');
-				$app['monolog']->info('init: copy img error: ' . $err);
+				$app['monolog']->info('init: copy img error: ' . $err,
+					['schema' => $tschema]);
 				continue;
 			}
 
 			$app['db']->update($tschema . '.msgpictures', ['"PictureFile"' => $new_filename], ['id' => $id]);
 			error_log('Profile image renamed, old: ' . $filename . ' new: ' . $new_filename);
-			$app['monolog']->info('init: Message image file renamed, Old : ' . $filename . ' New: ' . $new_filename);
+			$app['monolog']->info('init: Message image file renamed, Old : ' .
+				$filename . ' New: ' . $new_filename, ['schema' => $tschema]);
 
 		}
 	}

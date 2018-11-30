@@ -137,7 +137,7 @@ foreach ($export_ary as $ex_key => $export)
 
 		unlink($filename);
 
-		$app['monolog']->info('db downloaded');
+		$app['monolog']->info('db downloaded', ['schema' => $tschema]);
 
 		exit;
 	}
@@ -179,7 +179,8 @@ foreach ($export_ary as $ex_key => $export)
 
 		echo $out;
 
-		$app['monolog']->info('csv ' . $ex_key . ' exported.');
+		$app['monolog']->info('csv ' . $ex_key . ' exported.',
+			['schema' => $tschema]);
 
 		exit;
 	}

@@ -347,7 +347,7 @@ if ($post && $img && $images && !$s_guest)
 
 		if ($err)
 		{
-			$app['monolog']->error('Upload fail : ' . $err);
+			$app['monolog']->error('Upload fail : ' . $err, ['schema' => $tschema]);
 
 			$ret_ary = [['error' => 'Opladen mislukt.']];
 			break;
@@ -360,11 +360,13 @@ if ($post && $img && $images && !$s_guest)
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
-				$app['monolog']->info('Message-Picture ' . $filename . ' uploaded and inserted in db.');
+				$app['monolog']->info('Message-Picture ' .
+					$filename . ' uploaded and inserted in db.', ['schema' => $tschema]);
 			}
 			else
 			{
-				$app['monolog']->info('Message-Picture ' . $filename . ' uploaded, not (yet) inserted in db.');
+				$app['monolog']->info('Message-Picture ' .
+					$filename . ' uploaded, not (yet) inserted in db.', ['schema' => $tschema]);
 			}
 
 			unlink($tmpfile);
@@ -884,11 +886,13 @@ if (($edit || $add))
 								'msgid'			=> $id,
 							]))
 							{
-								$app['monolog']->info('message-picture ' . $img . ' inserted in db.');
+								$app['monolog']->info('message-picture ' . $img .
+									' inserted in db.', ['schema' => $tschema]);
 							}
 							else
 							{
-								$app['monolog']->error('error message-picture ' . $img . ' not inserted in db.');
+								$app['monolog']->error('error message-picture ' . $img .
+									' not inserted in db.', ['schema' => $tschema]);
 							}
 
 							continue;
@@ -901,22 +905,26 @@ if (($edit || $add))
 
 						if (isset($err))
 						{
-							$app['monolog']->error('message-picture renaming and storing in db ' . $img . ' not succeeded. ' . $err);
+							$app['monolog']->error('message-picture renaming and storing in db ' . $img .
+								' not succeeded. ' . $err, ['schema' => $tschema]);
 						}
 						else
 						{
-							$app['monolog']->info('renamed ' . $img . ' to ' . $new_filename);
+							$app['monolog']->info('renamed ' . $img . ' to ' .
+								$new_filename, ['schema' => $tschema]);
 
 							if ($app['db']->insert($tschema . '.msgpictures', [
 								'"PictureFile"'		=> $new_filename,
 								'msgid'				=> $id,
 							]))
 							{
-								$app['monolog']->info('message-picture ' . $new_filename . ' inserted in db.');
+								$app['monolog']->info('message-picture ' . $new_filename .
+									' inserted in db.', ['schema' => $tschema]);
 							}
 							else
 							{
-								$app['monolog']->error('error: message-picture ' . $new_filename . ' not inserted in db.');
+								$app['monolog']->error('error: message-picture ' . $new_filename .
+									' not inserted in db.', ['schema' => $tschema]);
 							}
 						}
 					}
@@ -982,7 +990,8 @@ if (($edit || $add))
 							'"PictureFile"'	=> $img,
 						]))
 						{
-							$app['monolog']->info('message-picture ' . $img . ' deleted from db.');
+							$app['monolog']->info('message-picture ' . $img .
+								' deleted from db.', ['schema' => $tschema]);
 						}
 					}
 				}
@@ -1022,11 +1031,13 @@ if (($edit || $add))
 							'msgid'			=> $edit,
 						]))
 						{
-							$app['monolog']->info('message-picture ' . $img . ' inserted in db.');
+							$app['monolog']->info('message-picture ' . $img .
+								' inserted in db.', ['schema' => $tschema]);
 						}
 						else
 						{
-							$app['monolog']->error('error message-picture ' . $img . ' not inserted in db.');
+							$app['monolog']->error('error message-picture ' . $img .
+								' not inserted in db.', ['schema' => $tschema]);
 						}
 					}
 				}

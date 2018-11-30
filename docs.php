@@ -324,7 +324,8 @@ if ($confirm_del && $del)
 
 		if ($err)
 		{
-			$app['monolog']->error('doc delete file fail: ' . $err);
+			$app['monolog']->error('doc delete file fail: ' . $err,
+				['schema' => $tschema]);
 		}
 
 		if (isset($doc['map_id']))
@@ -443,7 +444,8 @@ if ($submit)
 		if ($error)
 		{
 			$app['monolog']->error('doc upload fail: ' . $error);
-			$app['alert']->error('Bestand opladen mislukt.');
+			$app['alert']->error('Bestand opladen mislukt.',
+				['schema' => $tschema]);
 		}
 		else
 		{

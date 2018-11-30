@@ -341,7 +341,7 @@ if ($submit)
 		$log_str .= ' to ';
 		$log_str .= $to_one ? $log_one : $log_many;
 
-		$app['monolog']->info('trans: ' . $log_str);
+		$app['monolog']->info('trans: ' . $log_str, ['schema' => $tschema]);
 
 		if ($s_master)
 		{
@@ -820,7 +820,9 @@ include __DIR__ . '/include/footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $s_id, $tschema;
+	global $app, $s_id;
+
+	$tschema = $app['this_group']->get_schema();
 
 	if (!$app['config']->get('mailenabled', $tschema))
 	{
@@ -841,7 +843,7 @@ function mail_mass_transaction($mail_ary)
 		$trans_map[$t['transid']] = $t['id'];
 	}
 
-	$from_many_bool = (is_array($mail_ary['from'])) ? true : false;
+	$from_many_bool = is_array($mail_ary['from']) ? true : false;
 
 	$many_ary = ($from_many_bool) ? $mail_ary['from'] : $mail_ary['to'];
 

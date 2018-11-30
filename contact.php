@@ -128,7 +128,9 @@ if($post && isset($_POST['zend']))
 		$app['predis']->set($key, json_encode($contact));
 		$app['predis']->expire($key, 86400);
 
-		$app['monolog']->info('Contact form filled in with address ' . $email . '(not confirmed yet) content: ' . $html);
+		$app['monolog']->info('Contact form filled in with address ' .
+			$email . '(not confirmed yet) content: ' .
+			$html, ['schema' => $tschema]);
 
 		$vars = [
 			'group' => [

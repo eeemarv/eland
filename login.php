@@ -92,7 +92,8 @@ if ($token)
 			], $tschema);
 		}
 
-		$app['monolog']->info('eLAS guest login using token ' . $token . ' succeeded. referrer: ' . $referrer);
+		$app['monolog']->info('eLAS guest login using token ' .
+			$token . ' succeeded. referrer: ' . $referrer, ['schema' => $tschema]);
 
 		$glue = (strpos($location, '?') === false) ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -220,6 +221,7 @@ if ($submit)
 				'user_id'	=> $user['id'],
 				'letscode'	=> $user['letscode'],
 				'username'	=> $user['name'],
+				'schema' 	=> $tschema,
 			];
 
 			$sha512 = hash('sha512', $password);
@@ -266,7 +268,8 @@ if ($submit)
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
-		$app['monolog']->info('User ' . link_user($user, $tschema, false, true) . ' logged in, agent: ' . $browser, $log_ary);
+		$app['monolog']->info('User ' . link_user($user, $tschema, false, true) .
+			' logged in, agent: ' . $browser, $log_ary);
 
 		$app['db']->update($tschema . '.users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
 		$app['user_cache']->clear($user['id'], $tschema);

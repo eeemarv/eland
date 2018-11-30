@@ -4,6 +4,8 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: text/plain');
@@ -55,7 +57,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen verbinding maken.';
 	echo $m . ' ' . $err;
-	$app['monolog']->error('elas-token: ', $m . ' ' . $err);
+	$app['monolog']->error('elas-token: ' . $m . ' ' . $err, ['schema' => $tschema]);
 	exit;
 }
 
@@ -67,7 +69,7 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen status verkrijgen. ' . $err;
 	echo $m;
-	$app['monolog']->error('elas-token: ', $m . ' ' . $err);
+	$app['monolog']->error('elas-token: ' . $m . ' ' . $err, ['schema' => $tschema]);
 	exit;
 }
 

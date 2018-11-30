@@ -233,7 +233,8 @@ if ($submit)
 		'gsm'			=> $_POST['gsm'],
 	];
 
-	$app['monolog']->info('Registration request for ' . $reg['email']);
+	$app['monolog']->info('Registration request for ' .
+		$reg['email'], ['schema' => $tschema]);
 
 	if(!$reg['email'])
 	{

@@ -17,7 +17,7 @@ function sign_transaction($transaction, $sharedsecret)
 	$amount = round($amount);
 	$tosign = $sharedsecret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $amount;
 	$signature = sha1($tosign);
-	$app['monolog']->debug('Signing ' . $tosign . ' : ' . $signature);
+	$app['monolog']->debug('Signing ' . $tosign . ' : ' . $signature, ['schema' => $tschema]);
 
 	return $signature;
 }
@@ -60,7 +60,8 @@ function insert_transaction($transaction)
 		$app['config']->get('currency', $tschema) .
 		' from user ' .
 		link_user($transaction['id_from'], $tschema, false, true) . ' to user ' .
-		link_user($transaction['id_to'], $tschema, false, true));
+		link_user($transaction['id_to'], $tschema, false, true),
+		['schema' => $tschema]);
 
 	return $id;
 }
