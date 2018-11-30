@@ -15,11 +15,11 @@ use service\user_cache;
 
 class user_exp_msgs extends schema_task
 {
-	private $db;
-	private $mail;
-	private $protocol;
-	private $config;
-	private $user_cache;
+	protected $db;
+	protected $mail;
+	protected $protocol;
+	protected $config;
+	protected $user_cache;
 
 	public function __construct(db $db, mail $mail, string $protocol,
 		schedule $schedule, groups $groups, this_group $this_group, config $config,
@@ -77,13 +77,16 @@ class user_exp_msgs extends schema_task
 				'group'			=> $group_vars,
 			];
 
-			$this->mail->queue(['to' => $msg['id_user'],
+			$this->mail->queue([
+				'to' 		=> $msg['id_user'],
 				'schema' 	=> $this->schema,
 				'template' 	=> 'user_exp_msgs',
 				'vars' 		=> $vars]);
 		}
 
-		$this->db->executeUpdate('update ' . $this->schema . '.messages set exp_user_warn = \'t\' WHERE validity < ?', [$now]);
+		$this->db->executeUpdate('update ' . $this->schema . '.messages
+			set exp_user_warn = \'t\'
+			where validity < ?', [$now]);
 	}
 
 	public function is_enabled()

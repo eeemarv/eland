@@ -13,9 +13,9 @@ use service\this_group;
 
 class cleanup_news extends schema_task
 {
-	private $db;
-	private $xdb;
-	private $monolog;
+	protected $db;
+	protected $xdb;
+	protected $monolog;
 
 	public function __construct(db $db, xdb $xdb, Logger $monolog,
 		schedule $schedule, groups $groups, this_group $this_group)

@@ -20,19 +20,19 @@ use service\config;
 
 class saldo extends schema_task
 {
-	private $db;
-	private $xdb;
-	private $redis;
-	private $cache;
-	private $monolog;
-	private $mail;
-	private $s3_img_url;
-	private $s3_doc_url;
-	private $protocol;
-	private $date_format;
-	private $distance;
-	private $interlets_groups;
-	private $config;
+	protected $db;
+	protected $xdb;
+	protected $redis;
+	protected $cache;
+	protected $monolog;
+	protected $mail;
+	protected $s3_img_url;
+	protected $s3_doc_url;
+	protected $protocol;
+	protected $date_format;
+	protected $distance;
+	protected $interlets_groups;
+	protected $config;
 
 	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache,
 		Logger $monolog, mail $mail,
@@ -120,11 +120,11 @@ class saldo extends schema_task
 
 	// fetch active users
 
-		$rs = $this->db->prepare('SELECT u.id,
+		$rs = $this->db->prepare('select u.id,
 				u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
 				u.letscode, u.postcode, u.cron_saldo
-			FROM ' . $this->schema . '.users u
-			WHERE u.status in (1, 2)');
+			from ' . $this->schema . '.users u
+			where u.status in (1, 2)');
 
 		$rs->execute();
 

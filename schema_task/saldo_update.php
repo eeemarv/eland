@@ -12,10 +12,16 @@ use service\this_group;
 
 class saldo_update extends schema_task
 {
-	private $db;
-	private $monolog;
+	protected $db;
+	protected $monolog;
 
-	public function __construct(db $db, Logger $monolog, schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(
+		db $db,
+		Logger $monolog,
+		schedule $schedule,
+		groups $groups,
+		this_group $this_group
+	)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -26,7 +32,8 @@ class saldo_update extends schema_task
 	{
 		$user_balances = $min = $plus = [];
 
-		$rs = $this->db->prepare('select id, saldo from ' . $this->schema . '.users');
+		$rs = $this->db->prepare('select id, saldo
+			from ' . $this->schema . '.users');
 
 		$rs->execute();
 
