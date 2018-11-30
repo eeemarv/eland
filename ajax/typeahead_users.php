@@ -3,6 +3,8 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $group_id = $_GET['group_id'] ?? 'self';
 $status = $_GET['status'] ?? 'active';
 
@@ -42,7 +44,7 @@ if ($group_id == 'self')
 			exit;
 	}
 
-	$users = users_to_json($app['this_group']->get_schema(), $status_sql);
+	$users = users_to_json($tschema, $status_sql);
 
 	$app['typeahead']->invalidate_thumbprint('users_' . $status, false, crc32($users));
 
@@ -51,7 +53,9 @@ if ($group_id == 'self')
 	exit;
 }
 
-$group = $app['db']->fetchAssoc('SELECT * FROM letsgroups WHERE id = ?', [$group_id]);
+$group = $app['db']->fetchAssoc('select *
+	from ' . $tschema . '.letsgroups
+	where id = ?', [$group_id]);
 
 $group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
@@ -103,15 +107,12 @@ else
 	exit;
 }
 
-/*
- *
- */
 function users_to_json($sch, $status_sql = 'in (1, 2)')
 {
 	global $app;
 
 	$fetched_users = $app['db']->fetchAll(
-		'SELECT letscode as c,
+		'select letscode as c,
 			name as n,
 			extract(epoch from adate) as a,
 			status as s,
@@ -119,8 +120,9 @@ function users_to_json($sch, $status_sql = 'in (1, 2)')
 			saldo as b,
 			minlimit as min,
 			maxlimit as max
-		FROM ' . $sch . '.users
-		WHERE status ' . $status_sql
+		from ' . $sch . '.users
+		where status ' . $status_sql . '
+		order by id asc'
 	);
 
 	$users = [];

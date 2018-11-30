@@ -4,6 +4,8 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $days = $_GET['days'] ?? 365;
 $user_id = $_GET['user_id'] ?? false;
 
@@ -21,7 +23,8 @@ if (!$user)
 
 $groups = $_groups = $transactions = $users = $_users  = [];
 
-$groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, url from letsgroups');
+$groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, url
+	from ' . $tschema . '.letsgroups');
 
 foreach ($groups as $g)
 {
@@ -37,9 +40,9 @@ $end_date = date('Y-m-d H:i:s');
 $query = 'select t.id, t.amount, t.id_from, t.id_to,
 		t.real_from, t.real_to, t.date, t.description,
 		u.id as user_id, u.name, u.letscode, u.accountrole, u.status
-	from transactions t, users u
-	where (t.id_to = ? OR t.id_from = ?)
-		and (u.id = t.id_to OR u.id = t.id_from)
+	from ' . $tschema . '.transactions t, ' . $tschema . '.users u
+	where (t.id_to = ? or t.id_from = ?)
+		and (u.id = t.id_to or u.id = t.id_from)
 		and u.id <> ?
 		and t.date >= ?
 		and t.date <= ?
@@ -117,7 +120,7 @@ header('Content-type: application/json');
 echo json_encode([
 	'user_id' 		=> $user_id,
 	'ticks' 		=> $days == 365 ? 12 : 4,
-	'currency' 		=> $app['config']->get('currency', $app['this_group']->get_schema()),
+	'currency' 		=> $app['config']->get('currency', $tschema),
 	'transactions' 	=> $transactions,
 	'users' 		=> $users,
 	'beginBalance' 	=> $balance,

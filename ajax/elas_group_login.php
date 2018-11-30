@@ -25,7 +25,9 @@ if (!isset($elas_interlets_groups[$group_id]))
 	exit;
 }
 
-$group = $app['db']->fetchAssoc('SELECT * FROM ' . $s_schema . '.letsgroups WHERE id = ?', [$group_id]);
+$group = $app['db']->fetchAssoc('select *
+	from ' . $s_schema . '.letsgroups
+	where id = ?', [$group_id]);
 
 if (!$group)
 {
@@ -51,7 +53,7 @@ if (!$group['presharedkey'])
 	exit;
 }
 
-$soapurl = ($group['elassoapurl']) ? $group['elassoapurl'] : $group['url'] . '/soap';
+$soapurl = $group['elassoapurl'] ? $group['elassoapurl'] : $group['url'] . '/soap';
 $soapurl = $soapurl . '/wsdlelas.php?wsdl';
 
 $apikey = $group['remoteapikey'];

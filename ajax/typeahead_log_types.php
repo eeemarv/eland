@@ -3,6 +3,8 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $log_types = [];
 
 $st = $app['db']->prepare('select distinct type
@@ -10,7 +12,7 @@ $st = $app['db']->prepare('select distinct type
 	where schema = ?
 	order by type asc');
 
-$st->bindValue(1, $app['this_group']->get_schema());
+$st->bindValue(1, $tschema);
 
 $st->execute();
 

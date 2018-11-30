@@ -3,6 +3,8 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
+$tschema = $app['this_group']->get_schema();
+
 $days = $_GET['days'] ?? false;
 $ex_letscodes = $_GET['ex'] ?? [];
 $in = isset($_GET['in']) && $_GET['in'] ? true : false;
@@ -42,7 +44,7 @@ if (count($ex_letscodes))
 }
 
 $query = 'select sum(t.amount), t.id_' . $res . ' as uid
-	from transactions t, users u
+	from ' . $tschema . '.transactions t, ' . $tschema . '.users u
 	where u.id = t.id_' . $inp . '
 		and t.cdate > ?';
 
