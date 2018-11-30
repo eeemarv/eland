@@ -30,8 +30,8 @@ class date_format
 		],
 	];
 
-	private $format;
-	private $format_ary = [];
+	protected $format;
+	protected $format_ary = [];
 
 	const MONTHS_TRANS = [
 		['jan', 'januari'], ['feb', 'februari'], ['mrt', 'maart'],

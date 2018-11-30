@@ -7,8 +7,8 @@ use Predis\Client as Redis;
 
 class log_db
 {
-	private $db;
-	private $redis;
+	protected $db;
+	protected $redis;
 
 	public function __construct(db $db, Redis $redis)
 	{

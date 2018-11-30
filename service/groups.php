@@ -6,10 +6,10 @@ use Doctrine\DBAL\Connection as db;
 
 class groups
 {
-	private $db;
-	private $schemas = [];
-	private $hosts = [];
-	private $overall_domain;
+	protected $db;
+	protected $schemas = [];
+	protected $hosts = [];
+	protected $overall_domain;
 
 	public function __construct(db $db)
 	{
@@ -25,7 +25,7 @@ class groups
 			$up_s = strtoupper($s);
 			$env = getenv('SCHEMA_' . $up_s);
 			$h = $s;
-			if (!$env && strpos($s, 'lets') === 0) 
+			if (!$env && strpos($s, 'lets') === 0)
 			{
 				$h = substr($s, 4);
 				$env = getenv('SCHEMA_' . strtoupper($h));

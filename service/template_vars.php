@@ -6,7 +6,7 @@ use service\config;
 
 class template_vars
 {
-	private $config;
+	protected $config;
 
 	public function __construct(config $config)
 	{

@@ -8,10 +8,10 @@ use service\alert;
 
 class url
 {
-	private $this_group;
-	private $groups;
-	private $alert;
-	private $rootpath;
+	protected $this_group;
+	protected $groups;
+	protected $alert;
+	protected $rootpath;
 
 	public function __construct(this_group $this_group, groups $groups, alert $alert,
 		string $rootpath, string $protocol, array $s_user_params_own_group, string $s_id,

@@ -9,18 +9,18 @@ use service\config;
 
 class interlets_groups
 {
-	public $ttl = 14400; // 4 hours
-	private $redis;
-	private $db;
-	private $groups;
-	private $config;
-	private $app_protocol;
+	protected $ttl = 14400; // 4 hours
+	protected $redis;
+	protected $db;
+	protected $groups;
+	protected $config;
+	protected $app_protocol;
 
-	private $eland_ary;
-	private $elas_ary;
+	protected $eland_ary;
+	protected $elas_ary;
 
-	private $eland_accounts_schemas;
-	private $ttl_eland_accounts_schemas = 86400; // 1 day
+	protected $eland_accounts_schemas;
+	protected $ttl_eland_accounts_schemas = 86400; // 1 day
 
 	public function __construct(db $db, redis $redis, groups $groups, config $config, string $app_protocol)
 	{

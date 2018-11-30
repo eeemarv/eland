@@ -10,11 +10,11 @@ use service\config;
 
 class mailaddr
 {
-	private $db;
-	private $monolog;
-	private $schema;
-	private $this_group;
-	private $config;
+	protected $db;
+	protected $monolog;
+	protected $schema;
+	protected $this_group;
+	protected $config;
 
 	public function __construct(db $db, Logger $monolog, this_group $this_group, config $config)
 	{

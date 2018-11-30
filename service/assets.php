@@ -4,9 +4,9 @@ namespace service;
 
 class assets
 {
-	private $version = '21';
+	protected $version = '21';
 
-	private $asset_ary = [
+	protected $asset_ary = [
 		'bootstrap' => [
 			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
 			'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
@@ -95,9 +95,9 @@ class assets
 		],
 	];
 
-	private $include_css = [];
-	private $include_css_print = [];
-	private $include_js = [];
+	protected $include_css = [];
+	protected $include_css_print = [];
+	protected $include_js = [];
 
 	/**
 	 *

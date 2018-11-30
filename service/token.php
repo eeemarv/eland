@@ -4,19 +4,19 @@ namespace service;
 
 class token
 {
-	private $length = 16;
-	private $hyphen_chance = 2;
-	private $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-	private $chars_h;
-	private $chars_len;
-	private $chars_h_len;
+	protected $length = 16;
+	protected $hyphen_chance = 2;
+	protected $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+	protected $chars_h;
+	protected $chars_len;
+	protected $chars_h_len;
 
 	public function __construct()
 	{
 		$this->set_len();
 	}
 
-	private function set_len()
+	protected function set_len()
 	{
 		$this->chars_h = str_repeat('-', $this->hyphen_chance) . $this->chars;
 		$this->chars_len = strlen($this->chars) - 1;
@@ -77,4 +77,3 @@ class token
 		return $token;
 	}
 }
-

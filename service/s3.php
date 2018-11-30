@@ -6,18 +6,18 @@ use Aws\S3\S3Client;
 
 class s3
 {
-	private $img_bucket;
-	private $doc_bucket;
-	private $client;
+	protected $img_bucket;
+	protected $doc_bucket;
+	protected $client;
 
-	private $img_types = [
+	protected $img_types = [
 		'jpg'	=> 'image/jpeg',
 		'jpeg'	=> 'image/jpeg',
 		'png'	=> 'image/png',
 		'gif'	=> 'image/gif',
 	];
 
-	private $doc_types = [
+	protected $doc_types = [
 		'docx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 		'docm'		=> 'application/vnd.ms-word.document.macroEnabled.12',
 		'dotx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
@@ -56,10 +56,6 @@ class s3
 		'md'		=> 'text/markdown',
 	];
 
-	/**
-	 *
-	 */
-
 	public function __construct(string $img_bucket, string $doc_bucket)
 	{
 		$this->img_bucket = $img_bucket;
@@ -72,10 +68,6 @@ class s3
 		]);
 	}
 
-	/*
-	 *
-	 */
-
 	public function img_exists(string $filename)
 	{
 		return $this->client->doesObjectExist($this->img_bucket, $filename);
@@ -85,10 +77,6 @@ class s3
 	{
 		return $this->client->doesObjectExist($this->doc_bucket, $filename);
 	}
-
-	/*
-	 *
-	 */
 
 	public function img_upload(string $filename, string $tmpfile)
 	{
@@ -117,10 +105,6 @@ class s3
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
 	}
-
-	/*
-	 *
-	 */
 
 	public function doc_upload(string $filename, string $tmpfile)
 	{
@@ -154,10 +138,6 @@ class s3
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
 	}
-
-	/**
-	 *
-	 */
 
 	public function img_copy(string $source, string $destination)
 	{
@@ -193,10 +173,6 @@ class s3
 		}
 	}
 
-	/*
-	 *
-	 */
-
 	public function img_del(string $filename)
 	{
 		return $this->del($this->img_bucket, $filename);
@@ -221,10 +197,6 @@ class s3
 			return 'Verwijderen mislukt: ' . $e->getMessage();
 		}
 	}
-
-	/*
-	 *
-	 */
 
 	public function img_list(string $marker = '0')
 	{
@@ -256,10 +228,6 @@ class s3
 			echo $e->getMessage() . "\n\r\n\r";
 		}
 	}
-
-	/**
-	 *
-	 */
 
 	public function find_img(string $marker = '0')
 	{

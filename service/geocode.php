@@ -9,7 +9,7 @@ use Geocoder\StatefulGeocoder;
 
 class geocode
 {
-    private $geocoder;
+    protected $geocoder;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class geocode
 
     public function getCoordinates(string $adress)
     {
-        try 
+        try
         {
             $addressCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($adress));
 
@@ -35,7 +35,7 @@ class geocode
                     'lat'	=> $coordinates->getLatitude(),
                     'lng'	=> $coordinates->getLongitude(),
                 ];
-        
+
                 return $ary;
             }
 

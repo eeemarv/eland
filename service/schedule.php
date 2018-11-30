@@ -7,14 +7,14 @@ use Predis\Client as Redis;
 
 class schedule
 {
-	private $cache;
-	private $redis;
+	protected $cache;
+	protected $redis;
 
-	private $tasks;
-	private $time;
-	private $next;
-	private $interval;
-	private $id;
+	protected $tasks;
+	protected $time;
+	protected $next;
+	protected $interval;
+	protected $id;
 
 	public function __construct(cache $cache, Redis $redis)
 	{

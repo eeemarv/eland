@@ -12,21 +12,21 @@ use service\user_cache;
 
 class user implements UserInterface
 {
-	private $this_group;
-	private $monolog;
-	private $session;
-	private $user_cache;
+	protected $this_group;
+	protected $monolog;
+	protected $session;
+	protected $user_cache;
 
-	private $schema;
+	protected $schema;
 
-	private $id;
-	private $role;
+	protected $id;
+	protected $role;
 
-	private $data;
+	protected $data;
 
-	private $logins;
+	protected $logins;
 
-	private $possible_roles = [
+	protected $possible_roles = [
 		'ROLE_ANONUMOUS' 	=> 'anonymous',
 		'ROLE_GUEST'		=> 'guest',
 		'ROLE_USER'			=> 'user',

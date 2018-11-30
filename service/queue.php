@@ -22,18 +22,14 @@ Indexes:
 
 class queue
 {
-	private $db;
-	private $monolog;
+	protected $db;
+	protected $monolog;
 
 	public function __construct(db $db, Logger $monolog)
 	{
 		$this->db = $db;
 		$this->monolog = $monolog;
 	}
-
-	/*
-	 *
-	 */
 
 	public function set(string $topic, array $data, int $priority = 0, int $interval = 0)
 	{
@@ -150,4 +146,3 @@ class queue
 		return $this->db->fetchColumn('select count(*) from xdb.queue');
 	}
 }
-

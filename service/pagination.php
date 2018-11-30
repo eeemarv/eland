@@ -4,20 +4,20 @@ namespace service;
 
 class pagination
 {
-	private $start;
-	private $limit;
-	private $page = 0;
-	private $table;
+	protected $start;
+	protected $limit;
+	protected $page = 0;
+	protected $table;
 
-	private $adjacent_num = 2;
-	private $row_count = 0;
-	private $page_num = 0;
-	private $entity = '';
-	private $params = [];
-	private $inline = false;
-	private $out;
+	protected $adjacent_num = 2;
+	protected $row_count = 0;
+	protected $page_num = 0;
+	protected $entity = '';
+	protected $params = [];
+	protected $inline = false;
+	protected $out;
 
-	private $limit_options = [
+	protected $limit_options = [
 		10 		=> 10,
 		25 		=> 25,
 		50 		=> 50,
@@ -142,7 +142,7 @@ class pagination
 		return $this->out;
 	}
 
-	private function get_link($page, $text = '')
+	protected function get_link($page, $text = '')
 	{
 		$params = $this->params;
 		$params['start'] = $page * $this->limit;

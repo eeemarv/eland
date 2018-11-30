@@ -20,9 +20,9 @@ Indexes:
 
 class cache
 {
-	private $db;
-	private $redis;
-	private $monolog;
+	protected $db;
+	protected $redis;
+	protected $monolog;
 
 	public function __construct(db $db, Redis $redis, Logger $monolog)
 	{
@@ -234,4 +234,3 @@ class cache
 		return;
 	}
 }
-
