@@ -113,7 +113,8 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
 /* */
 
 $app['alert'] = function ($app){
-	return new service\alert($app['monolog'], $app['session']);
+	return new service\alert($app['monolog'], $app['session'],
+		$app['this_group']);
 };
 
 $app['pagination'] = function (){
@@ -125,7 +126,8 @@ $app['password_strength'] = function ($app){
 };
 
 $app['user'] = function ($app){
-	return new service\user($app['this_group'], $app['monolog'], $app['session'], $app['page_access']);
+	return new service\user($app['this_group'], $app['monolog'],
+		$app['session'], $app['page_access']);
 };
 
 $app['autominlimit'] = function ($app){

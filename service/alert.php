@@ -4,35 +4,49 @@ namespace service;
 
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
+use service\this_group;
 
 class alert
 {
-	private $send_once;
-	private $monolog;
-	private $session;
-	private $flashbag;
+	protected $send_once;
+	protected $monolog;
+	protected $session;
+	protected $this_group;
+	protected $flashbag;
+	protected $schema;
 
-	public function __construct(Logger $monolog, Session $session)
+	public function __construct(
+		Logger $monolog,
+		Session $session,
+		this_group $this_group
+	)
 	{
 		$this->monolog = $monolog;
 		$this->session = $session;
+		$this->this_group = $this_group;
+		$this->schema = $this->this_group->get_schema();
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
-	private function add(string $type, $msg):void
+	protected function add(string $type, $msg):void
 	{
 		$url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+		$log_ary = [
+			'schema'		=> $this->schema,
+			'alert_type'	=> $type,
+		];
 
 		if (is_array($msg))
 		{
 			$log = implode(' -- & ', $msg);
 			$msg = implode('<br>', $msg);
 			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $log,
-				['alert_type' => $type]);
+				$log_ary);
 		}
 		else
 		{
-			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $msg, ['alert_type' => $type]);
+			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $msg, $log_ary);
 		}
 
 		$this->flashbag->add('alert', [$type, $msg]);
