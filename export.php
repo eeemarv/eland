@@ -200,7 +200,7 @@ include __DIR__ . '/include/header.php';
 
 if (function_exists('exec'))
 {
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 	echo '<h3>eLAS database download (SQL)';
 	echo '</h3>';
@@ -219,7 +219,7 @@ if (function_exists('exec'))
 }
 
 
-echo '<div class="panel panel-default">';
+echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 echo '<h3>eLAS Csv export</h3>';
 echo '</div>';

@@ -358,7 +358,7 @@ if ($img_del && $id)
 
 	echo '</div>';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -852,12 +852,14 @@ if ($pw)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
-	echo '<div class="col-sm-10 controls">';
+	echo '<label for="password" class="control-label">';
+	echo 'Paswoord</label>';
 	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="password" name="password" ';
 	echo 'value="';
 	echo $password;
@@ -867,16 +869,16 @@ if ($pw)
 	echo '</span>';
 	echo '</div>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="notify" class="col-sm-2 control-label">Notificatie-mail</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="notify" class="control-label">';
 	echo '<input type="checkbox" name="notify" id="notify"';
 	echo $user['status'] == 1 || $user['status'] == 2 ? ' checked="checked"' : ' readonly';
 	echo '>';
-	echo '<p><small>Notificatie is enkel mogelijk wanneer de Status actief is en E-mail adres ingesteld.</small></p>';
-	echo '</div>';
+	echo ' Verzend notificatie E-mail met nieuw paswoord. ';
+	echo 'Dit is enkel mogelijk wanneer de Status ';
+	echo 'actief is en E-mail adres ingesteld.';
+	echo '</label>';
 	echo '</div>';
 
 	echo aphp('users', ['id' => $pw], 'Annuleren', 'btn btn-default') . '&nbsp;';
