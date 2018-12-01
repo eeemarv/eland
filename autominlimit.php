@@ -51,7 +51,7 @@ include __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-info">';
 
-echo '<div class="panel-body"><p>';
+echo '<div class="panel-heading"><p>';
 echo 'Met dit formulier kan een Automatische Minimum Limiet ingesteld worden. ';
 echo 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
 echo 'worden door ontvangen transacties ';
@@ -74,9 +74,6 @@ echo 'nuttig de ';
 echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Account Minimum Limiet');
 echo ' ';
 echo 'in te vullen in de instellingen.</p>';
-
-echo '</div>';
-echo '<div class="panel-heading">';
 
 echo '<form method="post">';
 
@@ -103,7 +100,9 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" id="exclusive" name="exclusive" ';
-echo 'value="' . $a['exclusive'] . '" ';
+echo 'value="';
+echo $a['exclusive'];
+echo '" ';
 echo 'class="form-control">';
 echo '</div>';
 echo '<p>';
