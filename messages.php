@@ -499,12 +499,14 @@ if ($img_del == 'all' && $id)
 
 	echo '</div>';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<h3>Alle afbeeldingen verwijderen voor ' . $str_this_ow . '?</h3>';
+	echo '<h3>Alle afbeeldingen verwijderen voor ';
+	echo $str_this_ow;
+	echo '?</h3>';
 
 	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
@@ -1171,20 +1173,23 @@ if (($edit || $add))
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	if($s_admin)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="user_letscode" class="col-sm-2 control-label">';
-		echo '<span class="label label-info">Admin</span> Gebruiker</label>';
-		echo '<div class="col-sm-10">';
+		echo '<label for="user_letscode" class="control-label">';
+		echo '<span class="label label-info">Admin</span> ';
+		echo 'Gebruiker</label>';
 		echo '<div class="input-group">';
 		echo '<span class="input-group-addon">';
 		echo '<i class="fa fa-user"></i>';
 		echo '</span>';
-		echo '<input type="text" class="form-control" id="user_letscode" name="user_letscode" ';
-		echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
+		echo '<input type="text" class="form-control" ';
+		echo 'id="user_letscode" name="user_letscode" ';
+		echo 'data-typeahead="';
+		echo $app['typeahead']->get('users_active');
+		echo '" ';
 		echo 'data-newuserdays="';
 		echo $app['config']->get('newuserdays', $tschema);
 		echo '" ';
@@ -1193,38 +1198,33 @@ if (($edit || $add))
 		echo '" required>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="msg_type" class="col-sm-2 control-label">&nbsp;</label>';
-	echo '<div class="col-sm-10">';
-
 	echo get_radio(['1' => 'Aanbod', '0' => 'Vraag'], 'msg_type', $msg['msg_type'], true);
-
-	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="content" class="col-sm-2 control-label">Titel</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="content" name="content" ';
-	echo 'value="' . $msg['content'] . '" maxlength="200" required>';
-	echo '</div>';
+	echo '<label for="content" class="control-label">';
+	echo 'Titel</label>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="content" name="content" ';
+	echo 'value="';
+	echo $msg['content'];
+	echo '" maxlength="200" required>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="description" class="control-label">';
+	echo 'Omschrijving</label>';
 	echo '<textarea name="description" class="form-control" id="description" rows="4" maxlength="2000">';
 	echo $msg['description'];
 	echo '</textarea>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="id_category" class="col-sm-2 control-label">Categorie</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="id_category" class="control-label">';
+	echo 'Categorie</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-clone"></i>';
@@ -1234,12 +1234,16 @@ if (($edit || $add))
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="validity" class="col-sm-2 control-label">Geldigheid in dagen</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="number" class="form-control" id="validity" name="validity" min="1" ';
+	echo '<label for="validity" class="control-label">';
+	echo 'Geldigheid</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo 'dagen';
+	echo '</span>';
+	echo '<input type="number" class="form-control" ';
+	echo 'id="validity" name="validity" min="1" ';
 	echo 'value="';
 	echo $msg['validity'];
 	echo '" required>';
@@ -1247,11 +1251,15 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="amount" class="col-sm-2 control-label">Aantal ';
-	echo $app['config']->get('currency', $tschema);
+	echo '<label for="amount" class="control-label">';
+	echo 'Aantal';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="number" class="form-control" id="amount" name="amount" min="0" ';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo $app['config']->get('currency', $tschema);
+	echo '</span>';
+	echo '<input type="number" class="form-control" ';
+	echo 'id="amount" name="amount" min="0" ';
 	echo 'value="';
 	echo $msg['amount'];
 	echo '">';
@@ -1259,9 +1267,14 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="units" class="col-sm-2 control-label">Per (uur, stuk, ...)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="units" name="units" ';
+	echo '<label for="units" class="control-label">';
+	echo 'Per (uur, stuk, ...)</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo 'eenheid';
+	echo '</span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="units" name="units" ';
 	echo 'value="';
 	echo $msg['units'];
 	echo '">';
@@ -1269,9 +1282,8 @@ if (($edit || $add))
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="fileupload" class="col-sm-2 control-label">Afbeeldingen</label>';
-	echo '<div class="col-sm-10">';
-
+	echo '<label for="fileupload" class="control-label">';
+	echo 'Afbeeldingen</label>';
 	echo '<div class="row">';
 
 	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
@@ -1327,9 +1339,9 @@ if (($edit || $add))
 	echo 'data-max-file-size="999000" ';
 	echo 'multiple></span>&nbsp;';
 
-	echo '<p><small>Afbeeldingen moeten in het jpg/jpeg formaat zijn. Je kan ook afbeeldingen hierheen ';
-	echo 'verslepen.</small></p>';
-	echo '</div>';
+	echo '<p>Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+	echo 'Je kan ook afbeeldingen hierheen ';
+	echo 'verslepen.</p>';
 	echo '</div>';
 
 	if ($count_interlets_groups)
@@ -1640,28 +1652,30 @@ if ($id)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<textarea name="content" rows="6" placeholder="' . $placeholder . '" ';
+	echo '<textarea name="content" rows="6" placeholder="';
+	echo $placeholder;
+	echo '" ';
 	echo 'class="form-control" required';
 	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo $content ?? '';
 	echo '</textarea>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<input type="checkbox" name="cc"';
+	echo '<label class="control-label" for="mail_cc">';
+	echo '<input type="checkbox" name="cc" ';
+	echo 'id="mail_cc" value="1"';
 	echo $cc ? ' checked="checked"' : '';
-	echo ' value="1" >Stuur een kopie naar mijzelf';
-	echo '</div>';
+	echo '> Stuur een kopie naar mijzelf';
+	echo '</label>';
 	echo '</div>';
 
-	echo '<input type="submit" name="mail" value="Versturen" class="btn btn-default"';
+	echo '<input type="submit" name="mail" ';
+	echo 'value="Versturen" class="btn btn-default"';
 	echo $disabled ? ' disabled' : '';
 	echo '>';
 	echo '</form>';
@@ -2581,16 +2595,16 @@ function get_radio(array $radio_ary, string $name, string $selected, bool $requi
 
 	foreach ($radio_ary as $value => $label)
 	{
-		$out .= '<span class="input-group-addon">';
-		$out .= '<label class="col-xs-12">';
+		$out .= '<label class="radio-inline">';
 		$out .= '<input type="radio" name="' . $name . '" ';
 		$out .= 'value="' . $value . '"';
 		$out .= (string) $value === $selected ? ' checked' : '';
 		$out .= $required ? ' required' : '';
 		$out .= '>&nbsp;';
+		$out .= '<span class="btn btn-default">';
 		$out .= $label;
-		$out .= '</label>';
 		$out .= '</span>';
+		$out .= '</label>';
 	}
 
 	return $out;
