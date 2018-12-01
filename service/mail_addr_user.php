@@ -31,7 +31,7 @@ class mail_addr_user
 				and tc.abbrev = \'mail\''
 				. $status_sql);
 
-			$st->bindValue(1, $in);
+			$st->bindValue(1, $user_id);
 			$st->execute();
 
 		while ($row = $st->fetch())
