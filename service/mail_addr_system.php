@@ -18,33 +18,54 @@ class mail_addr_system
 
 	public function get_from(string $schema):array
 	{
-		$mail = getenv('MAIL_FROM_ADDRESS');
-		$mail = trim($mail);
-
-		if ($this->validate($mail, 'from', $schema))
-		{
-			return get_mail_ary($mail, $schema);
-		}
-
-		return [];
+		$mail_ary = [getenv('MAIL_FROM_ADDRESS')];
+		return $this->get_validated_ary($mail_ary, 'from', $schema);
 	}
 
 	public function get_noreply(string $schema):array
 	{
-		$mail = getenv('MAIL_NOREPLY_ADDRESS');
-		$mail = trim($mail);
-
-		if ($this->validate($mail, 'noreply', $schema))
-		{
-			return get_mail_ary($mail, $schema);
-		}
-
-		return [];
+		$mail_ary = [getenv('MAIL_NOREPLY_ADDRESS')];
+		return $this->get_validated_ary($mail_ary, 'noreply', $schema);
 	}
 
-	protected function get_mail_ary(string $mail, string $schema):array
+	public function get_support(string $schema):array
 	{
-		return [$mail => $this->config->get('systemname', $schema)];
+		$mail_ary = explode(',', $this->config->get('support', $schema));
+		return $this->get_validated_ary($mail_ary, 'support', $schema);
+	}
+
+	public function get_admin(string $schema):array
+	{
+		$mail_ary = explode(',', $this->config->get('admin', $schema));
+		return $this->get_validated_ary($mail_ary, 'admin', $schema);
+	}
+
+	public function get_newsadmin(string $schema):array
+	{
+		$mail_ary = explode(',', $this->config->get('newsadmin', $schema));
+		return $this->get_validated_ary($mail_ary, 'newsadmin', $schema);
+	}
+
+	protected function get_validated_ary(
+		array $mail_ary,
+		string $mail_id,
+		string $schema
+	):array
+	{
+		$ary = explode(',', $this->config->get($mail_id, $schema));
+		$out = [];
+
+		foreach ($ary as $mail)
+		{
+			$mail = trim($mail);
+
+			if ($this->validate($mail, $mail_id, $schema))
+			{
+				$out[$mail] = $this->config->get('systemname', $schema);
+			}
+		}
+
+		return $out;
 	}
 
 	protected function validate(string $mail, string $name, string $schema):bool

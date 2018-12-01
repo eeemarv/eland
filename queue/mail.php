@@ -22,6 +22,8 @@ class mail extends queue_model implements queue_interface
 	protected $monolog;
 	protected $mailaddr;
 	protected $twig;
+	protected $config;
+	protected $mail_addr_system;
 	protected $email_validate;
 
 	public function __construct(
@@ -222,7 +224,7 @@ class mail extends queue_model implements queue_interface
 	{
 		if (!isset($data['schema']))
 		{
-			$this->monolog->error('Mail: no schema set ' . json_encode($data));
+			$this->monolog->error('mail queue: no schema set. ' . json_encode($data));
 			return;
 		}
 
@@ -230,26 +232,29 @@ class mail extends queue_model implements queue_interface
 
 		if (!$this->config->get('mailenabled', $data['schema']))
 		{
-			$m = 'Mail functions are not enabled. ' . "\n";
-			$this->monolog->info('mail: ' . $m, ['schema' => $data['schema']]);
-			return $m;
+			$this->monolog->info('mail queue: Mail functions are not enabled. ' .
+				json_encode($data),
+				['schema' => $data['schema']]);
+			return;
 		}
 
 		if (!isset($data['template']) && !isset($data['template_from_config']))
 		{
 			if (!isset($data['subject']) || $data['subject'] == '')
 			{
-				$m = 'Mail "subject" is missing.';
-				$this->monolog->error('mail: '. $m, ['schema' => $data['schema']]);
-				return $m;
+				$this->monolog->error('mail queue: Subject is missing. ' .
+					json_encode($data),
+					['schema' => $data['schema']]);
+				return;
 			}
 
 			if ((!isset($data['text']) || $data['text'] == '')
 				&& (!isset($data['html']) || $data['html'] == ''))
 			{
-				$m = 'Mail "body" (text or html) is missing.';
-				$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
-				return $m;
+				$this->monolog->error('mail queue: body (text or html) is missing. ' .
+					json_encode($data),
+					['schema' => $data['schema']]);
+				return;
 			}
 
 			$data['subject'] = '[' . $this->config->get('systemtag', $data['schema']) . '] ' . $data['subject'];
@@ -257,9 +262,9 @@ class mail extends queue_model implements queue_interface
 
 		if (!isset($data['to']) || !$data['to'])
 		{
-			$m = 'Mail "to" is missing for "' . $data['subject'] . '"';
-			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
-			return $m;
+			$this->monolog->error('mail queue: "To" addr is missing. ' .
+				json_encode($data), ['schema' => $data['schema']]);
+			return;
 		}
 
 		$data['to'] = $this->mailaddr->get($data['to']);
@@ -311,9 +316,9 @@ class mail extends queue_model implements queue_interface
 
 		if (!count($data['from']))
 		{
-			$m = 'error: mail without "from" | subject: ' . $data['subject'];
-			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
-			return $m;
+			$m = 'no "from" | subject: ' . $data['subject'];
+			$this->monolog->error('mail queue: ' . $m, ['schema' => $data['schema']]);
+			return;
 		}
 
 		if (isset($data['cc']))
