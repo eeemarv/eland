@@ -56,9 +56,9 @@ $(document).ready(function(){
 
 			$info_ratio_span.text(ratio);
 
-			if ($amount_container.hasClass('col-sm-10')){
-				$amount_container.removeClass('col-sm-10');
-				$amount_container.addClass('col-sm-5');
+			if ($amount_container.hasClass('col-sm-12')){
+				$amount_container.removeClass('col-sm-12');
+				$amount_container.addClass('col-sm-6');
 			}
 
 			$remote_amount_container.find('span.input-group-addon').eq(0).text(currency);
@@ -69,9 +69,9 @@ $(document).ready(function(){
 
 			$remote_amount_container.hide();
 
-			if ($amount_container.hasClass('col-sm-5')){
-				$amount_container.removeClass('col-sm-5');
-				$amount_container.addClass('col-sm-10');
+			if ($amount_container.hasClass('col-sm-6')){
+				$amount_container.removeClass('col-sm-6');
+				$amount_container.addClass('col-sm-12');
 			}
 		}
 
