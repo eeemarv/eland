@@ -506,10 +506,15 @@ if ($edit || $add)
 	echo '<div class="form-group">';
 	echo '<label for="comments" class="control-label">';
 	echo 'Commentaar</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<i class="fa fa-comment-o"></i>';
+	echo '</span>';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
 	echo 'value="';
 	echo $contact['comments'];
 	echo '" maxlength="50">';
+	echo '</div>';
 	echo '</div>';
 
 	echo $app['access_control']->get_radio_buttons(false, $contact['flag_public']);
