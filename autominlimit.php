@@ -78,16 +78,14 @@ echo 'in te vullen in de instellingen.</p>';
 echo '</div>';
 echo '<div class="panel-heading">';
 
-echo '<form class="form-horizontal" method="post">';
+echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="enabled" class="col-sm-3 control-label">';
-echo 'Zet de automatische minimum limiet aan</label>';
-echo '<div class="col-sm-9">';
+echo '<label for="enabled" class="control-label">';
 echo '<input type="checkbox" id="enabled" name="enabled" value="1" ';
 echo $a['enabled'] ? ' checked="checked"' : '';
 echo '>';
-echo '</div>';
+echo ' Zet de automatische minimum limiet aan</label>';
 echo '</div>';
 
 echo '<hr>';
@@ -99,15 +97,17 @@ echo 'niet de status uitstapper hebben. Hieronder kunnnen nog verder individuele
 echo 'worden.</p>';
 
 echo '<div class="form-group">';
-echo '<label for="exclusive" class="col-sm-3 control-label">';
+echo '<label for="exclusive" class="control-label">';
 echo 'Exclusief</label>';
-echo '<div class="col-sm-9">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" id="exclusive" name="exclusive" ';
 echo 'value="' . $a['exclusive'] . '" ';
 echo 'class="form-control">';
+echo '</div>';
 echo '<p>';
 echo 'Account Codes gescheiden door comma\'s</p>';
-echo '</div>';
 echo '</div>';
 
 echo '<hr>';
@@ -116,9 +116,11 @@ echo '<h3>Trigger voor daling van de minimum limiet.</h3>';
 echo '<h4>Ontvangen transacties laten de minimum limiet dalen.</h4>';
 
 echo '<div class="form-group">';
-echo '<label for="trans_percentage" class="col-sm-3 control-label">';
+echo '<label for="trans_percentage" class="control-label">';
 echo 'Percentage van ontvangen bedrag</label>';
-echo '<div class="col-sm-9">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-percent"></span></span>';
 echo '<input type="number" id="trans_percentage" name="trans_percentage" ';
 echo 'value="';
 echo $a['trans_percentage'];
@@ -128,17 +130,19 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="trans_exclusive" class="col-sm-3 control-label">';
+echo '<label for="trans_exclusive" class="control-label">';
 echo 'Exclusief tegenpartijen</label>';
-echo '<div class="col-sm-9">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
 echo 'value="';
 echo $a['trans_exclusive'];
 echo '" ';
 echo 'class="form-control">';
+echo '</div>';
 echo '<p>';
 echo 'Account Codes gescheiden door comma\'s</p>';
-echo '</div>';
 echo '</div>';
 
 echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
