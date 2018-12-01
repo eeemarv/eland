@@ -155,6 +155,10 @@ $app['mail_addr_system'] = function ($app){
 	return new service\mail_addr_system($app['monolog'], $app['config']);
 };
 
+$app['mail_addr_user'] = function ($app){
+	return new service\mail_addr_user($app['db'], $app['monolog']);
+};
+
 $app['interlets_groups'] = function ($app){
 	return new service\interlets_groups($app['db'], $app['predis'],
 		$app['groups'],

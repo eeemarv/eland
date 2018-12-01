@@ -52,10 +52,9 @@ class mail_addr_system
 		string $schema
 	):array
 	{
-		$ary = explode(',', $this->config->get($mail_id, $schema));
 		$out = [];
 
-		foreach ($ary as $mail)
+		foreach ($mail_ary as $mail)
 		{
 			$mail = trim($mail);
 
