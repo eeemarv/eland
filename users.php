@@ -1930,7 +1930,8 @@ if ($add || $edit)
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="status" class="col-sm-2 control-label">Status</label>';
+		echo '<label for="status" class="col-sm-2 control-label">';
+		echo 'Status</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select id="status" name="status" class="form-control">';
 		echo get_select_options($status_ary, $user['status']);
@@ -1938,15 +1939,17 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
-		if (!isset($user['adate']) && empty($user['adate']) && $s_admin)
+		if (empty($user['adate']) && $s_admin)
 		{
 			echo '<div id="activate" class="bg-success pan-sub">';
 
 			echo '<div class="form-group">';
-			echo '<label for="password" class="col-sm-2 control-label">Paswoord</label>';
+			echo '<label for="password" class="col-sm-2 control-label">';
+			echo 'Paswoord</label>';
 			echo '<div class="col-sm-10 controls">';
 			echo '<div class="input-group">';
-			echo '<input type="text" class="form-control" id="password" name="password" ';
+			echo '<input type="text" class="form-control" ';
+			echo 'id="password" name="password" ';
 			echo 'value="';
 			echo $password ?? '';
 			echo '" required>';
