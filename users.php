@@ -2757,10 +2757,9 @@ if ($id)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post"">';
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
 	echo '<textarea name="user_mail_content" rows="6" placeholder="';
 	echo $placeholder . '" ';
 	echo 'class="form-control" required';
@@ -2769,19 +2768,21 @@ if ($id)
 	echo $user_mail_content ?? '';
 	echo '</textarea>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<input type="checkbox" name="user_mail_cc"';
+	echo '<label for="user_mail_cc" class="control-label">';
+	echo '<input type="checkbox" name="user_mail_cc" ';
+	echo 'id="user_mail_cc" value="1"';
 	echo $user_mail_cc ? ' checked="checked"' : '';
-	echo ' value="1" > Stuur een kopie naar mijzelf';
-	echo '</div>';
+	echo '> Stuur een kopie naar mijzelf';
+	echo '</label>';
 	echo '</div>';
 
-	echo '<input type="submit" name="user_mail_submit" value="Versturen" class="btn btn-default"';
+	echo '<input type="submit" name="user_mail_submit" ';
+	echo 'value="Versturen" class="btn btn-default"';
 	echo $disabled ? ' disabled' : '';
 	echo '>';
+
 	echo '</form>';
 
 	echo '</div>';
@@ -4063,7 +4064,7 @@ if ($v_list)
 		echo '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
 		echo '<h3>E-Mail verzenden naar geselecteerde gebruikers</h3>';
 
-		echo '<form method="post" class="form-horizontal">';
+		echo '<form method="post">';
 
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-12">';
@@ -4087,19 +4088,22 @@ if ($v_list)
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
-		echo '<input type="checkbox" name="bulk_mail_cc"';
+		echo '<label for="bulk_mail_cc" class="control-label">';
+		echo '<input type="checkbox" name="bulk_mail_cc" ';
+		echo 'id="bulk_mail_cc"';
 		echo $bulk_mail_cc ? ' checked="checked"' : '';
-		echo ' value="1" > Stuur een kopie met verzendinfo naar mijzelf';
-		echo '</div>';
+		echo ' value="1" > ';
+		echo 'Stuur een kopie met verzendinfo naar mijzelf';
+		echo '</label>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
-		echo '<input type="checkbox" name="verify_mail"';
-		echo ' value="1" required> ';
+		echo '<label for="verify_mail" class="control-label">';
+		echo '<input type="checkbox" name="verify_mail" ';
+		echo 'id="verify_mail" ';
+		echo 'value="1" required> ';
 		echo 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.';
-		echo '</div>';
+		echo '</label>';
 		echo '</div>';
 
 		echo '<input type="submit" value="Zend test E-mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
@@ -4116,7 +4120,7 @@ if ($v_list)
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
-			echo '<form method="post" class="form-horizontal">';
+			echo '<form method="post">';
 
 			if (isset($t['options']))
 			{
