@@ -195,11 +195,11 @@ if ($add || $edit)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="itemdate" class="col-sm-2 control-label">Agenda datum</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="itemdate" class="control-label">';
+	echo 'Agenda datum</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-calendar"></i>';
@@ -217,46 +217,48 @@ if ($add || $edit)
 	echo '</div>';
 	echo '<p><small>Wanneer gaat dit door?</small></p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="location" class="control-label">';
+	echo 'Locatie</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-map-marker"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="location" name="location" ';
-	echo 'value="' . $news['location'] . '" maxlength="128">';
-	echo '</div>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="headline" class="col-sm-2 control-label">Titel</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="headline" name="headline" ';
-	echo 'value="' . $news['headline'] . '" required maxlength="200">';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="location" name="location" ';
+	echo 'value="';
+	echo $news['location'];
+	echo '" maxlength="128">';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="newsitem" class="col-sm-2 control-label">Bericht</label>';
-	echo '<div class="col-sm-10">';
-	echo '<textarea name="newsitem" id="newsitem" class="form-control" rows="10" required>';
+	echo '<label for="headline" class="control-label">';
+	echo 'Titel</label>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="headline" name="headline" ';
+	echo 'value="';
+	echo $news['headline'];
+	echo '" required maxlength="200">';
+	echo '</div>';
+
+	echo '<div class="form-group">';
+	echo '<label for="newsitem" class="control-label">';
+	echo 'Bericht</label>';
+	echo '<textarea name="newsitem" id="newsitem" ';
+	echo 'class="form-control" rows="10" required>';
 	echo $news['newsitem'];
 	echo '</textarea>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="sticky" class="col-sm-2 control-label">Behoud na datum</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="sticky" class="control-label">';
 	echo '<input type="checkbox" id="sticky" name="sticky" ';
 	echo 'value="1"';
 	echo  ($news['sticky'] == 't') ? ' checked="checked"' : '';
 	echo '>';
-	echo '</div>';
+	echo ' Behoud na datum</label>';
 	echo '</div>';
 
 	if ($s_user)
@@ -270,9 +272,11 @@ if ($add || $edit)
 
 	echo $app['access_control']->get_radio_buttons('news', $news_access, $omit_access);
 
-	$btn = ($add) ? 'success' : 'primary';
-	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	$btn = $add ? 'success' : 'primary';
+	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -292,6 +296,8 @@ if ($del)
 {
 	$page_access = 'admin';
 	require_once __DIR__ . '/include/web.php';
+
+	$tschema = $app['this_group']->get_schema();
 
 	if ($submit)
 	{
@@ -374,12 +380,15 @@ if ($del)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<p class="text-danger"><strong>Ben je zeker dat dit nieuwsbericht ';
+	echo '<p class="text-danger"><strong>';
+	echo 'Ben je zeker dat dit nieuwsbericht ';
 	echo 'moet verwijderd worden?</strong></p>';
 
 	echo '<form method="post">';
-	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" value="Verwijderen" ';
+	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 	echo '</form>';
 
