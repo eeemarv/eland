@@ -225,7 +225,7 @@ if ($add || $edit)
 	echo 'Systeem Naam';
 	echo '</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-share-alt"></span></span>';
 	echo '<input type="text" class="form-control" ';
 	echo 'id="groupname" name="groupname" ';
@@ -239,7 +239,7 @@ if ($add || $edit)
 	echo '<label for="apimethod" class="control-label">';
 	echo 'API methode</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo 'API</span>';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
 
@@ -263,7 +263,7 @@ if ($add || $edit)
 	echo 'Remote API Key ';
 	echo '</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
 	echo 'value="';
@@ -280,7 +280,7 @@ if ($add || $edit)
 	echo '<label for="localletscode" class="control-label">';
 	echo 'Lokale Account Code</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
 	echo 'value="';
@@ -298,7 +298,7 @@ if ($add || $edit)
 	echo 'Remote Account Code';
 	echo '</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control" ';
 	echo 'id="myremoteletscode" name="myremoteletscode" ';
@@ -317,7 +317,7 @@ if ($add || $edit)
 	echo 'URL ';
 	echo '</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-link"></span></span>';
 	echo '<input type="url" class="form-control" id="url" name="url" ';
 	echo 'value="';
@@ -334,7 +334,7 @@ if ($add || $edit)
 	echo 'Preshared Key';
 	echo '</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
 	echo 'value="';

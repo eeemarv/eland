@@ -97,7 +97,7 @@ if ($add)
 	echo '<div class="form-group">';
 	echo '<label for="name" class="control-label">Naam</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-clone"></span></span>';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
 	echo 'value="';
@@ -230,7 +230,7 @@ if ($edit)
 	echo '<div class="form-group">';
 	echo '<label for="name" class="control-label">Naam</label>';
 	echo '<div class="input-group">';
-	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-clone"></span></span>';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
 	echo 'value="';

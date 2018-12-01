@@ -413,20 +413,19 @@ echo '<p>Met deze invul-hulp kan je snel alle bedragen van de massa-transactie i
 echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
 echo '</p>';
 
-echo '<form class="form form-horizontal" id="fill_in_aid">';
+echo '<form class="form" id="fill_in_aid">';
 
 echo '<div class="pan-sub bg-warning">';
 
 echo '<div class="form-group">';
-echo '<label for="fixed" class="col-sm-2 control-label">Vast bedrag</label>';
-echo '<div class="col-sm-10">';
-echo '<div class="input-group margin-bottom">';
+echo '<label for="fixed" class="control-label">';
+echo 'Vast bedrag</label>';
+echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo $app['config']->get('currency', $tschema);
 echo '</span>';
 echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
-echo '</div>';
 echo '</div>';
 echo '</div>';
 
@@ -556,11 +555,9 @@ echo '</div>';
 /**/
 
 echo '<div class="form-group">';
-echo '<label for="respect_minlimit" class="col-sm-3 control-label">';
-echo 'Respecteer minimum limieten</label>';
-echo '<div class="col-sm-9">';
+echo '<label for="respect_minlimit" class="control-label">';
 echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
-echo '</div>';
+echo ' Respecteer minimum limieten</label>';
 echo '</div>';
 
 if ($app['config']->get('minlimit', $tschema) !== ''
@@ -592,7 +589,8 @@ if ($app['config']->get('minlimit', $tschema) !== ''
 	echo '</ul>';
 }
 
-echo '<button class="btn btn-default" id="fill-in">Vul in</button>';
+echo '<button class="btn btn-default" id="fill-in">';
+echo 'Vul in</button>';
 
 echo '</form>';
 
@@ -648,7 +646,7 @@ echo '<label for="from_letscode" class="control-label">';
 echo 'Van Account Code';
 echo '</label>';
 echo '<div class="input-group">';
-echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="';
@@ -760,7 +758,7 @@ echo '<div class="form-group">';
 echo '<label for="total" class="control-label">Totaal';
 echo '</label>';
 echo '<div class="input-group">';
-echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="input-group-addon">';
 echo $app['config']->get('currency', $tschema);
 echo '</span>';
 echo '<input type="number" class="form-control" id="total" readonly>';
@@ -772,7 +770,7 @@ echo '<label for="to_letscode" class="control-label">';
 echo 'Aan Account Code';
 echo '</label>';
 echo '<div class="input-group">';
-echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="';
@@ -788,7 +786,7 @@ echo '<div class="form-group">';
 echo '<label for="description" class="control-label">';
 echo 'Omschrijving</label>';
 echo '<div class="input-group">';
-echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="input-group-addon">';
 echo '<span class="fa fa-pencil"></span></span>';
 echo '<input type="text" class="form-control" id="description" ';
 echo 'name="description" ';
