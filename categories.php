@@ -82,7 +82,7 @@ if ($add)
 		$parent_cats[$row['id']] = $row['name'];
 	}
 
-	$id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
+	$id_parent = $cat['id_parent'] ?? 0;
 
 	$h1 = 'Categorie toevoegen';
 	$fa = 'clone';
@@ -92,23 +92,26 @@ if ($add)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form  method="post" class="form-horizontal">';
+	echo '<form  method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-clone"></span></span>';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
-	echo 'value="' . $cat['name'] . '" required maxlength="40">';
+	echo 'value="';
+	echo $cat['name'] ?? '';
+	echo '" required maxlength="40">';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="id_parent" class="control-label">';
+	echo 'Hoofdcategorie of deelcategorie van</label>';
 	echo '<select name="id_parent" id="id_parent" class="form-control">';
-	echo get_select_options($parent_cats, $id_parent);
+	echo get_select_options($parent_cats, $id_parent ?? 0);
 	echo '</select>';
-	echo '</div>';
 	echo '</div>';
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
@@ -211,7 +214,7 @@ if ($edit)
 		$parent_cats[$row['id']] = $row['name'];
 	}
 
-	$id_parent = ($cat['id_parent']) ? $cat['id_parent'] : 0;
+	$id_parent = $cat['id_parent'] ?? 0;
 
 
 	$h1 = 'Categorie aanpassen : ' . $cat['name'];
@@ -222,25 +225,26 @@ if ($edit)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-clone"></span></span>';
 	echo '<input type="text" class="form-control" id="name" name="name" ';
 	echo 'value="';
-	echo $cat["name"];
+	echo $cat["name"] ?? '';
 	echo '" required>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="id_parent" class="col-sm-2 control-label">Hoofdcategorie of deelcategorie van</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="id_parent" class="control-label">';
+	echo 'Hoofdcategorie of deelcategorie van</label>';
 	echo '<select class="form-control" id="id_parent" name="id_parent">';
 	echo get_select_options($parent_cats, $id_parent);
 	echo '</select>';
-	echo '</div>';
 	echo '</div>';
 
 	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
