@@ -214,8 +214,10 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" value="Verwijderen" ';
+	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -264,25 +266,26 @@ if ($add || $edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	if (!$topic)
 	{
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
-		echo '<input type="text" class="form-control" id="subject" name="subject" ';
+		echo '<input type="text" class="form-control" ';
+		echo 'id="subject" name="subject" ';
 		echo 'placeholder="Onderwerp" ';
-		echo 'value="' . $forum_post['subject'] . '" required>';
-		echo '</div>';
+		echo 'value="';
+		echo $forum_post['subject'];
+		echo '" required>';
 		echo '</div>';
 	}
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
-	echo '<textarea name="content" class="form-control rich-edit" id="content" rows="4" required>';
+	echo '<textarea name="content" ';
+	echo 'class="form-control rich-edit" ';
+	echo 'id="content" rows="4" required>';
 	echo $forum_post['content'];
 	echo '</textarea>';
-	echo '</div>';
 	echo '</div>';
 
 	if (!$topic)
@@ -310,8 +313,11 @@ if ($add || $edit)
 	$action = ($edit) ? 'aanpassen' : 'toevoegen';
 	$cancel_dest = ($topic) ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
 
-	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="' . $str . ' ' . $action . '" class="btn btn-' . $btn . '">';
+	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" value="';
+	echo $str . ' ' . $action . '" ';
+	echo 'class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -466,21 +472,23 @@ if ($topic)
 		echo '<div class="panel panel-info" id="add">';
 		echo '<div class="panel-heading">';
 
-		echo '<form method="post" class="form-horizontal">';
+		echo '<form method="post">';
 
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
-		echo '<textarea name="content" class="form-control rich-edit" id="content" rows="4" required>';
+		echo '<textarea name="content" ';
+		echo 'class="form-control rich-edit" ';
+		echo 'id="content" rows="4" required>';
 		echo $forum_post['content'] ?? '';
 		echo '</textarea>';
 		echo '</div>';
-		echo '</div>';
 
-		$str = ($topic) ? 'Reactie' : 'Onderwerp';
-		$btn = ($edit) ? 'primary' : 'success';
-		$action = ($edit) ? 'aanpassen' : 'toevoegen';
+		$str = $topic ? 'Reactie' : 'Onderwerp';
+		$btn = $edit ? 'primary' : 'success';
+		$action = $edit ? 'aanpassen' : 'toevoegen';
 
-		echo '<input type="submit" name="zend" value="Reactie toevoegen" class="btn btn-success">';
+		echo '<input type="submit" name="zend" ';
+		echo 'value="Reactie toevoegen" ';
+		echo 'class="btn btn-success">';
 		echo $app['form_token']->get_hidden_input();
 
 		echo '</form>';
