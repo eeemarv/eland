@@ -50,22 +50,26 @@ if ($add)
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-circle-o-notch"></span></span>';
 	echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
-	echo 'value="' . $ct['name'] . '" required>';
+	echo 'value="';
+	echo $tc['name'] ?? '';
+	echo '" required>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="abbrev" class="col-sm-2 control-label">Afkorting</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="abbrev" class="control-label">Afkorting</label>';
 	echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
-	echo 'value="'. $ct['abbrev'] . '" required>';
-	echo '</div>';
+	echo 'value="';
+	echo $tc['abbrev'] ?? '';
+	echo '" required>';
 	echo '</div>';
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
@@ -140,22 +144,28 @@ if ($edit)
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
-	echo 'value="' . $tc['name'] . '" required>';
+	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-circle-o-notch"></span></span>';
+	echo '<input type="text" class="form-control" id="name" ';
+	echo 'name="name" maxlength="20" ';
+	echo 'value="';
+	echo $tc['name'];
+	echo '" required>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="abbrev" class="col-sm-2 control-label">Afkorting</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
-	echo 'value="'. $tc['abbrev'] . '" required>';
-	echo '</div>';
+	echo '<label for="abbrev" class="control-label">Afkorting</label>';
+	echo '<input type="text" class="form-control" id="abbrev" ';
+	echo 'name="abbrev" maxlength="11" ';
+	echo 'value="';
+	echo $tc['abbrev'];
+	echo '" required>';
 	echo '</div>';
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
