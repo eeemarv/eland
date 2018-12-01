@@ -75,7 +75,7 @@ class mail_addr_system
 			return true;
 		}
 
-		$this->monolog->error('Mail error: invalid "' .
+		$this->monolog->error('Mail Addr System: invalid "' .
 			$name . '" mail address : ' . $mail,
 			['schema' => $schema]
 		);

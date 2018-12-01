@@ -31,27 +31,12 @@ class queue
 		$this->monolog = $monolog;
 	}
 
-	public function set(string $topic, array $data, int $priority = 0, int $interval = 0)
+	public function set(string $topic, array $data, int $priority = 0):void
 	{
 		if (!strlen($topic))
 		{
-			$error = 'No queue topic set for data ' . json_encode($data);
-			$this->monolog->error('queue: ' . $error);
-			return $error;
-		}
-
-		if (!$data)
-		{
-			$error = 'Queue topic: ' . $topic . ' -> No data set';
-			$this->monolog->error('queue: ', $error);
-			return $error;
-		}
-
-		if (!ctype_digit((string) $priority))
-		{
-			$error = 'Queue topic: ' . $topic . ' -> error Priority is no number: ' . $priority;
-			$this->monolog->error('queue error: ', $error);
-			return $error;
+			$this->monolog->error('queue: no topic. ' . json_encode($data));
+			return;
 		}
 
 		$insert = [
@@ -60,25 +45,10 @@ class queue
 			'priority'		=> $priority,
 		];
 
-		try
-		{
-			$this->db->insert('xdb.queue', $insert);
-		}
-		catch(Exception $e)
-		{
-			$this->db->rollback();
-			echo 'Database transactie niet gelukt (queue).';
-			$this->monolog->debug('Database transactie niet gelukt (queue). ' . $e->getMessage());
-			throw $e;
-			exit;
-		}
+		$this->db->insert('xdb.queue', $insert);
 	}
 
-	/*
-	 *
-	 */
-
-	public function get(array $omit_topics = [])
+	public function get(array $omit_topics = []):array
 	{
 		$sql_where = $sql_params = $sql_types = [];
 
@@ -97,45 +67,29 @@ class queue
 				order by priority desc, id asc
 				limit 1';
 
-		try{
+		$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
 
-			$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
-
-			if ($row = $stmt->fetch())
-			{
-				$return = [
-					'data'		=> json_decode($row['data'], true),
-					'id'		=> $row['id'],
-					'topic'		=> $row['topic'],
-					'priority'	=> $row['priority'],
-				];
-
-				error_log('delete: ' . $row['id'] . ' : ' . $this->db->delete('xdb.queue', ['id' => $row['id']]));
-
-				return $return;
-			}
-
-		}
-		catch (\Exception $e)
+		if ($row = $stmt->fetch())
 		{
-			error_log('err queue: ' . $e->getMessage());
+			$return = [
+				'data'		=> json_decode($row['data'], true),
+				'id'		=> $row['id'],
+				'topic'		=> $row['topic'],
+				'priority'	=> $row['priority'],
+			];
 
-			throw $e;
+			$this->db->delete('xdb.queue', ['id' => $row['id']]);
 
-			return [];
+			error_log('Queue delete: ' . $row['id']);
+
+			return $return;
 		}
 
 		return [];
 	}
 
-	/**
-	 *
-	 */
-
-	public function count(string $topic = '')
+	public function count(string $topic = ''):int
 	{
-		$topic = trim($topic);
-
 		if ($topic)
 		{
 			return $this->db->fetchColumn('select count(*)
