@@ -723,7 +723,7 @@ if ($post)
 
 		$app['db']->update($tschema . '.config', ['value' => $value, '"default"' => 'f'], ['setting' => $name]);
 
-		$p_acts = is_array($post_actions[$name]) ? $post_actons[$name] : [$post_actions[$name]];
+		$p_acts = is_array($post_actions[$name]) ? $post_actions[$name] : [$post_actions[$name]];
 
 		foreach($p_acts as $p_act)
 		{
