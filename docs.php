@@ -97,12 +97,16 @@ if ($map_edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="map_name" class="col-sm-2 control-label">Map naam</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="map_name" name="map_name" ';
+	echo '<label for="map_name" class="control-label">';
+	echo 'Map naam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-folder-o"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="map_name" name="map_name" ';
 	echo 'data-typeahead="';
 	echo $app['typeahead']->get('doc_map_names');
 	echo '" ';
@@ -233,11 +237,14 @@ if ($edit)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="location" class="col-sm-2 control-label">Locatie</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="location" class="control-label">';
+	echo 'Locatie</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-file-o"></span></span>';
 	echo '<input type="text" class="form-control" id="location" ';
 	echo 'name="location" value="';
 	echo $app['s3_doc_url'] . $doc['filename'];
@@ -246,8 +253,11 @@ if ($edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="org_filename" class="col-sm-2 control-label">Originele bestandsnaam</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="org_filename" class="control-label">';
+	echo 'Originele bestandsnaam</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-file-o"></span></span>';
 	echo '<input type="text" class="form-control" id="org_filename" ';
 	echo 'name="org_filename" value="';
 	echo $doc['org_filename'];
@@ -256,10 +266,13 @@ if ($edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">';
+	echo '<label for="name" class="control-label">';
 	echo 'Naam (optioneel)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name" value="';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-file-o"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="name" name="name" value="';
 	echo $doc['name'];
 	echo '">';
 	echo '</div>';
@@ -270,8 +283,8 @@ if ($edit)
 	$map_name = $map['map_name'] ?? '';
 
 	echo '<div class="form-group">';
-	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="map_name" class="control-label">';
+	echo 'Map</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-folder-o"></i>';
@@ -285,7 +298,6 @@ if ($edit)
 	echo '</div>';
 	echo '<p><small>Optioneel. Creëer een nieuwe map ';
 	echo 'of selecteer een bestaande.</small></p>';
-	echo '</div>';
 	echo '</div>';
 
 	echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
@@ -374,12 +386,15 @@ if ($del)
 		echo '<form method="post">';
 
 		echo '<p>';
-		echo '<a href="' . $app['s3_doc_url'] . $doc['filename'] . '" target="_self">';
+		echo '<a href="';
+		echo $app['s3_doc_url'] . $doc['filename'];
+		echo '" target="_self">';
 		echo $doc['name'] ?? $doc['org_filename'];
 		echo '</a>';
 		echo '</p>';
 
-		echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+		echo aphp('docs', [], 'Annuleren', 'btn btn-default');
+		echo '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" ';
 		echo 'name="confirm_del" class="btn btn-danger">';
 		echo $app['form_token']->get_hidden_input();
@@ -526,12 +541,11 @@ if ($add)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal" enctype="multipart/form-data">';
+	echo '<form method="post" enctype="multipart/form-data">';
 
 	echo '<div class="form-group">';
-	echo '<label for="file" class="col-sm-2 control-label">';
+	echo '<label for="file" class="control-label">';
 	echo 'Bestand</label>';
-	echo '<div class="col-sm-10">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-file-o"></i>';
@@ -540,20 +554,23 @@ if ($add)
 	echo 'required>';
 	echo '</div>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="col-sm-2 control-label">Naam (optioneel)</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="name" name="name">';
+	echo '<label for="name" class="control-label">';
+	echo 'Naam (optioneel)</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-file-o"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="name" name="name">';
 	echo '</div>';
 	echo '</div>';
 
 	echo $app['access_control']->get_radio_buttons('docs');
 
 	echo '<div class="form-group">';
-	echo '<label for="map_name" class="col-sm-2 control-label">Map</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="map_name" class="control-label">';
+	echo 'Map</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-folder-o"></i>';
@@ -567,12 +584,13 @@ if ($add)
 	echo '</div>';
 	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
 	echo '</div>';
-	echo '</div>';
 
 	$map_context = $map ? ['map' => $map] : [];
 
-	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Document opladen" class="btn btn-success">';
+	echo aphp('docs', $map_context, 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Document opladen" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
