@@ -407,7 +407,7 @@ echo 'data-target="#help" type="button">';
 echo '<i class="fa fa-question"></i>';
 echo ' Invul-hulp</button>';
 echo '</div>';
-echo '<div class="panel-body collapse" id="help">';
+echo '<div class="panel-heading collapse" id="help">';
 
 echo '<p>Met deze invul-hulp kan je snel alle bedragen van de massa-transactie invullen. ';
 echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
@@ -438,30 +438,32 @@ echo '<h4>Variabel deel</h4>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="fixed" class="col-sm-2 control-label">Over periode</label>';
-echo '<div class="col-sm-10">';
-echo '<div class="input-group margin-bottom">';
-echo '<span class="input-group-addon">dagen</span>';
-echo '<input type="number" class="form-control margin-bottom" id="var_days" ';
+echo '<label for="fixed" class="control-label">Over periode</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo 'dagen</span>';
+echo '<input type="number" ';
+echo 'class="form-control margin-bottom" id="var_days" ';
 echo 'min="0">';
-echo '</div>';
 echo '</div>';
 echo '</div>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="var_balance" class="col-sm-2 control-label">';
+echo '<label for="var_balance" class="control-label">';
 echo 'Promille op saldo</label>';
-echo '<div class="col-sm-5">';
+echo '<div class="row">';
+echo '<div class="col-sm-6">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">&permil;</span>';
-echo '<input type="number" class="form-control margin-bottom" id="var_balance">';
+echo '<input type="number" ';
+echo 'class="form-control margin-bottom" id="var_balance">';
 echo '</div>';
 echo '<p>Berekend op gewogen gemiddelde van saldo. Kan ook negatief zijn!</p>';
 echo '</div>';
 
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo $app['config']->get('currency', $tschema);
@@ -472,19 +474,21 @@ echo '</div>';
 echo '<p>De basis waartegenover berekend wordt. Kan ook afwijkend van nul zijn.</p>';
 echo '</div>';
 echo '</div>';
+echo '</div>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="var_trans_in" class="col-sm-2 control-label">';
+echo '<label for="var_trans_in" class="control-label">';
 echo 'Promille op transacties in</label>';
-echo '<div class="col-sm-5">';
+echo '<div class="row">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">&permil;</span>';
 echo '<input type="number" class="form-control" id="var_trans_in">';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo 'excl. Account Codes';
@@ -495,39 +499,39 @@ echo '<p>Exclusief tegenpartijen: ';
 echo 'Account Codes gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
+echo '</div>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="var_trans_out" class="col-sm-2 control-label">';
+echo '<label for="var_trans_out" class="control-label">';
 echo 'Promille op transacties uit</label>';
-echo '<div class="col-sm-5">';
-
+echo '<div class="row">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">&permil;</span>';
-
 echo '<input type="number" class="form-control" id="var_trans_out">';
-
 echo '</div>';
 echo '</div>';
 
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo 'excl. Account Codes';
 echo '</span>';
-
 echo '<input type="text" class="form-control" id="var_ex_code_out">';
 echo '</div>';
 echo '<p>Exclusief tegenpartijen: ';
 echo 'Account Codes gescheiden door komma\'s</p>';
 echo '</div>';
 echo '</div>';
+echo '</div>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="var_minimum" class="col-sm-2 control-label">';
+echo '<label for="var_minimum" class="control-label">';
 echo 'Minimum - maximum</label>';
-echo '<div class="col-sm-5">';
+echo '<div class="row">';
+echo '<div class="col-sm-6">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
@@ -539,14 +543,14 @@ echo '<input type="number" class="form-control margin-bottom" id="var_min">';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="col-sm-5">';
+echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo $app['config']->get('currency', $tschema);
 echo ': max';
 echo '</span>';
-
 echo '<input type="number" class="form-control" id="var_max">';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -621,7 +625,7 @@ echo '<ul class="nav nav-tabs" id="nav-tabs">';
 foreach ($st as $k => $s)
 {
 	$shsh = $s['hsh'] ?? '';
-	$class_li = ($shsh == $hsh) ? ' class="active"' : '';
+	$class_li = $shsh == $hsh ? ' class="active"' : '';
 	$class_a  = $s['cl'] ?? 'white';
 
 	echo '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
@@ -648,7 +652,8 @@ echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
-echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
+echo '<input type="text" class="form-control" ';
+echo 'id="from_letscode" name="from_letscode" ';
 echo 'value="';
 echo $from_letscode;
 echo '" ';
