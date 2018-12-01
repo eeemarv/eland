@@ -146,11 +146,6 @@ $app['date_format'] = function($app){
 	return new service\date_format($app['config'], $app['this_group']);
 };
 
-$app['mailaddr'] = function ($app){
-	return new service\mailaddr($app['db'], $app['monolog'],
-		$app['this_group'], $app['config']);
-};
-
 $app['mail_addr_system'] = function ($app){
 	return new service\mail_addr_system($app['monolog'], $app['config']);
 };
@@ -193,7 +188,7 @@ $app['email_validate'] = function ($app){
 
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
-		$app['mailaddr'], $app['twig'],
+		$app['twig'],
 		$app['config'], $app['mail_addr_system'],
 		$app['email_validate']);
 };

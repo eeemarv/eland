@@ -2311,8 +2311,8 @@ if ($id)
 				or id_to = ?', [$id, $id]);
 	}
 
-	$mail_to = $app['mailaddr']->get($user['id']);
-	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mailaddr']->get($s_schema . '.' . $s_id) : [];
+	$mail_to = $app['mail_addr_user']->get($user['id'], $tschema);
+	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($s_id, $s_schema) : [];
 
 	$sql_bind = [$user['letscode']];
 

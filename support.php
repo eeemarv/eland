@@ -38,7 +38,7 @@ if (isset($_POST['zend']))
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$s_id]);
 
-		$email = $app['mailaddr']->get($s_id);
+		$email = $app['mail_addr_user']->get($s_id, $tschema);
 
 		$vars = [
 			'group'	=> [
@@ -94,7 +94,7 @@ else
 	}
 	else
 	{
-		$email = $app['mailaddr']->get($s_id);
+		$email = $app['mail_addr_user']->get($s_id, $tschema);
 
 		if (!count($email))
 		{

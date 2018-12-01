@@ -7,7 +7,6 @@ use model\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use service\queue;
 use Monolog\Logger;
-use service\mailaddr;
 use Twig_Environment as Twig;
 use service\config;
 use service\mail_addr_system;
@@ -20,7 +19,6 @@ class mail extends queue_model implements queue_interface
 	protected $mailer;
 	protected $queue;
 	protected $monolog;
-	protected $mailaddr;
 	protected $twig;
 	protected $config;
 	protected $mail_addr_system;
@@ -29,7 +27,6 @@ class mail extends queue_model implements queue_interface
 	public function __construct(
 		queue $queue,
 		Logger $monolog,
-		mailaddr $mailaddr,
 		Twig $twig,
 		config $config,
 		mail_addr_system $mail_addr_system,
@@ -38,7 +35,6 @@ class mail extends queue_model implements queue_interface
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
-		$this->mailaddr = $mailaddr;
 		$this->twig = $twig;
 		$this->config = $config;
 		$this->mail_addr_system = $mail_addr_system;
@@ -70,27 +66,21 @@ class mail extends queue_model implements queue_interface
 	{
 		if (!isset($data['schema']))
 		{
-			$app->monolog->error('mail error: email in queue without schema');
+			$app->monolog->error('mail queue proces: no schema. ' .
+				json_encode($data));
 			return;
 		}
 
 		$sch = $data['schema'];
-		unset($data['schema']);
 
 		if (!$this->config->get('mailenabled', $sch))
 		{
 			$m = 'E-mail functions are not enabled. ' . "\n";
 			echo $m;
-			$this->monolog->error('E-mail: ' . $m, ['schema' => $sch]);
-			return ;
-		}
-
-		if ($data['template'] === 'periodic_overview_messages_top'
-			|| $data['template'] === 'periodic_overview_news_top')
-		{
-			$this->monolog->error('E-mail error: template not found ' . $data['template'],
+			$this->monolog->error('mail queue proces: mail functions not enabled. ' .
+				json_encode($data),
 				['schema' => $sch]);
-			return;
+			return ;
 		}
 
 		if (isset($data['template']) && isset($data['vars']))
@@ -109,7 +99,8 @@ class mail extends queue_model implements queue_interface
 
 			if (!$template)
 			{
-				$this->monolog->error('mail error: no template set in config for ' . $data['template_from_config'],
+				$this->monolog->error('mail queue process: no template set in config. ' .
+					json_encode($data),
 					['schema' => $sch]);
 				return;
 			}
@@ -125,7 +116,9 @@ class mail extends queue_model implements queue_interface
 			}
 			catch (Exception $e)
 			{
-				$this->monolog->error('Error in E-mail template: ' . $e->getMessage(),
+				$this->monolog->error('mail queue process, config template err: ' .
+					$e->getMessage() . ' ::: ' .
+					json_encode($data),
 					['schema' => $sch]);
 				return;
 			}
@@ -134,7 +127,8 @@ class mail extends queue_model implements queue_interface
 		{
 			if (!isset($data['subject']))
 			{
-				$this->monolog->error('mail error: mail without subject',
+				$this->monolog->error('mail queue process: mail without subject' .
+					json_encode($data),
 					['schema' => $sch]);
 				return;
 			}
@@ -147,24 +141,26 @@ class mail extends queue_model implements queue_interface
 				}
 				else
 				{
-					$this->monolog->error('mail error: mail without body content',
+					$this->monolog->error('mail queue process: mail without body content. ' .
+						json_encode($data),
 						['schema' => $sch]);
 					return;
 				}
 			}
 		}
 
-		if (!$data['to'])
+		if (!isset($data['to']))
 		{
-			$this->monolog->error('mail error: mail without "to" | subject: ' .
-				$data['subject'],
+			$this->monolog->error('mail queue process: mail without "to" ' .
+				json_encode($data),
 				['schema' => $sch]);
 			return;
 		}
 
 		if (!$data['from'])
 		{
-			$this->monolog->error('mail error: mail without "from" | subject: ' . $data['subject'],
+			$this->monolog->error('mail queue process: mail without "from" ' .
+				json_encode($data),
 				['schema' => $sch]);
 			return;
 		}
@@ -194,33 +190,33 @@ class mail extends queue_model implements queue_interface
 		{
 			if ($this->mailer->send($message, $failed_recipients))
 			{
-				$this->monolog->info('mail: message send to ' .
+				$this->monolog->info('mail queue process: sent ' .
 					implode(', ', $data['to']) . ' subject: ' . $data['subject'],
 					['schema' => $sch]);
 			}
 			else
 			{
-				$this->monolog->error('mail error: failed sending message to ' .
-					implode(', ', $data['to']) . ' subject: ' . $data['subject'],
+				$this->monolog->error('mail queue process: failed sending message ' .
+					json_encode($data),
 					['schema' => $sch]);
-				$this->monolog->error('Failed recipients: ' .
-					implode(', ', $failed_recipients),
+				$this->monolog->error('mail queue process, failed recipients: ' .
+					json_encode($failed_recipients),
 					['schema' => $sch]);
 			}
 		}
 		catch (Exception $e)
 		{
 			$err = $e->getMessage();
-			error_log('mail queue: ' . $err);
-			$this->monolog->error('mail queue error: ' . $err . ' | subject: ' .
-				$data['subject'] . ' ' . implode(', ', $data['to']),
+			error_log('mail queue process: ' . $err);
+			$this->monolog->error('mail queue process: ' . $err . ' | ' .
+				json_encode($data),
 				['schema' => $sch]);
 		}
 
 		$this->mailer->getTransport()->stop();
 	}
 
-	public function queue(array $data, int $priority = 100)
+	public function queue(array $data, int $priority = 100):void
 	{
 		if (!isset($data['schema']))
 		{
@@ -260,20 +256,11 @@ class mail extends queue_model implements queue_interface
 			$data['subject'] = '[' . $this->config->get('systemtag', $data['schema']) . '] ' . $data['subject'];
 		}
 
-		if (!isset($data['to']) || !$data['to'])
+		if (!isset($data['to']) || !is_array($data['to']) || !count($data['to']))
 		{
 			$this->monolog->error('mail queue: "To" addr is missing. ' .
 				json_encode($data), ['schema' => $data['schema']]);
 			return;
-		}
-
-		$data['to'] = $this->mailaddr->get($data['to']);
-
-		if (!count($data['to']))
-		{
-			$m = 'error: mail without "to" | subject: ' . $data['subject'];
-			$this->monolog->error('mail: ' . $m, ['schema' => $data['schema']]);
-			return $m;
 		}
 
 		$validate_ary = [];
@@ -296,41 +283,25 @@ class mail extends queue_model implements queue_interface
 			}
 		}
 
-		if (isset($data['reply_to']))
+		if (isset($data['reply_to']) && is_array($data['reply_to']) && count($data['reply_to']))
 		{
-			$data['reply_to'] = $this->mailaddr->get($data['reply_to']);
-
-			if (!count($data['reply_to']))
-			{
-				$this->monolog->error('mail: error: invalid "reply to" : ' .
-					$data['subject'], ['schema' => $data['schema']]);
-				unset($data['reply_to']);
-			}
-
 			$data['from'] = $this->mail_addr_system->get_from($data['schema']);
 		}
-		else
+ 		else
 		{
 			$data['from'] = $this->mail_addr_system->get_noreply($data['schema']);
 		}
 
 		if (!count($data['from']))
 		{
-			$m = 'no "from" | subject: ' . $data['subject'];
-			$this->monolog->error('mail queue: ' . $m, ['schema' => $data['schema']]);
+			$this->monolog->error('mail queue: no from field. ' .
+				json_encode($data), ['schema' => $data['schema']]);
 			return;
 		}
 
-		if (isset($data['cc']))
+		if (!(isset($data['cc']) && is_array($data['cc'] && count($data['cc']))))
 		{
-			$data['cc'] = $this->mailaddr->get($data['cc']);
-
-			if (!count($data['cc']))
-			{
-				$this->monolog->error('mail error: invalid "reply to" : ' . $data['subject'],
-					['schema' => $data['schema']]);
-				unset($data['cc']);
-			}
+			unset($data['cc']);
 		}
 
 		$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
@@ -357,20 +328,12 @@ class mail extends queue_model implements queue_interface
 			}
 		}
 
-		if (!count($data['to']))
-		{
-			return;
-		}
+		$this->queue->set('mail', $data, $priority);
 
-		$error = $this->queue->set('mail', $data, $priority);
-
-		if (!$error)
-		{
-			$this->monolog->info('mail: Mail in queue, subject: ' .
-				($data['subject'] ?? '(template)') . ', from : ' .
-				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-				$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
-		}
+		$this->monolog->info('mail: Mail in queue, subject: ' .
+			($data['subject'] ?? '(template)') . ', from : ' .
+			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+			$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
 	}
 
 	public function get_interval()
