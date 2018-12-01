@@ -181,7 +181,7 @@ if ($token)
 
 		$app['queue.mail']->queue([
 			'schema'				=> $tschema,
-			'to' 					=> $data['email'],
+			'to' 					=> [$data['email']],
 			'reply_to'				=> $app['mail_addr_system']->get_admin($tschema),
 			'template_from_config'	=> 'registration_success_mail',
 			'vars'		=> $vars,
@@ -291,7 +291,7 @@ if ($submit)
 
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $reg['email'],
+			'to' 		=> [$reg['email']],
 			'vars'		=> $vars,
 			'template'	=> 'registration_confirm',
 		], 1000);

@@ -580,8 +580,8 @@ if ($mail && $post && $id)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to'		=> $user['id'],
-		'reply_to'	=> $s_schema . '.' . $s_id,
+		'to'		=> $app['mail_addr_user']->get($user['id'], $tschema),
+		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
 		'template'	=> 'message',
 		'vars'		=> $vars,
 	], 600);
@@ -591,7 +591,7 @@ if ($mail && $post && $id)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to'		=> $s_schema . '.' . $s_id,
+			'to'		=> $app['mail_addr_user']->get($s_id, $s_schema),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
 		], 600);

@@ -99,7 +99,7 @@ function mail_mailtype_interlets_transaction($transaction)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to' 		=> $transaction['id_to'],
+		'to' 		=> $app['mail_addr_user']->get($transaction['id_to'], $tschema),
 		'reply_to' 	=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
@@ -109,7 +109,7 @@ function mail_mailtype_interlets_transaction($transaction)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to' 		=> $transaction['id_from'],
+		'to' 		=> $app['mail_addr_user']->get($transaction['id_from'], $tschema),
 		'cc' 		=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
@@ -164,7 +164,7 @@ function mail_transaction($transaction, $remote_schema = null)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $userfrom['id'],
+			'to' 		=> $app['mail_addr_user']->get($userfrom['id'], $tschema),
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user' 			=> $userfrom,
@@ -173,10 +173,10 @@ function mail_transaction($transaction, $remote_schema = null)
 		]);
 	}
 
-	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto == 2))
+	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto['status'] == 2))
 	{
 		$app['queue.mail']->queue([
-			'to' 		=> $t_schema . $userto['id'],
+			'to' 		=> $app['mail_addr_user']->get($userto['id'], $sch),
 			'schema'	=> $sch,
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [

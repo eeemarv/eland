@@ -49,7 +49,7 @@ if ($token)
 			'schema'	=> $tschema,
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
-			'to'		=> $data['email'],
+			'to'		=> [$data['email']],
 		]);
 
 		$app['queue.mail']->queue([
@@ -57,7 +57,7 @@ if ($token)
 			'template'	=> 'contact',
 			'vars'		=> $vars,
 			'to'		=> $app['mail_addr_system']->get_support($tschema),
-			'reply_to'	=> $data['email'],
+			'reply_to'	=> [$data['email']],
 		]);
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
@@ -143,21 +143,16 @@ if($post && isset($_POST['zend']))
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
 		];
 
-		$return_message =  $app['queue.mail']->queue([
+		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $email,
+			'to' 		=> [$email],
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,
 		]);
 
-		if (!$return_message)
-		{
-			$app['alert']->success('Open je E-mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
-			header('Location: ' . generate_url('contact'));
-			exit;
-		}
-
-		$app['alert']->error('E-mail niet verstuurd. ' . $return_message);
+		$app['alert']->success('Open je E-mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
+		header('Location: ' . generate_url('contact'));
+		exit;
 	}
 	else
 	{

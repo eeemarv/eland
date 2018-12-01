@@ -900,7 +900,7 @@ function mail_mass_transaction($mail_ary)
 
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to'		=> $user_id,
+			'to'		=> $app['mail_addr_user']->get($user_id, $tschema),
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
 		]);
@@ -946,7 +946,8 @@ function mail_mass_transaction($mail_ary)
 		'schema'	=> $tschema,
 		'to' 		=> array_merge(
 			$app['mail_addr_system']->get_support($tschema),
-			[$s_id, $one_user_id]
+			$app['mail_addr_user']->get($s_id, $tschema),
+			$app['mail_addr_user']->get($one_user_id, $tschema)
 		),
 		'subject' 	=> $subject,
 		'text' 		=> $text,

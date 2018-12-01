@@ -163,8 +163,8 @@ if ($user_mail_submit && $id && $post)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to'		=> $id,
-		'reply_to'	=> $s_schema . '.' . $s_id,
+		'to'		=> $app['mail_addr_user']->get($id, $tschema),
+		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
 		'template'	=> 'user',
 		'vars'		=> $vars,
 	], 600);
@@ -173,7 +173,7 @@ if ($user_mail_submit && $id && $post)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $s_schema . '.' . $s_id,
+			'to' 		=> $app['mail_addr_user']->get($s_id, $s_schema),
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
 		], 600);
@@ -664,10 +664,10 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $sel_user['id'],
+			'to' 		=> $app['mail_addr_user']->get($sel_user['id'], $tschema),
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
-			'reply_to' 	=> $s_id,
+			'reply_to' 	=> $app['mail_addr_user']->get($s_id, $tschema),
 		]);
 
 		$alert_msg_users[] = link_user($sel_user, $tschema);
@@ -730,7 +730,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$app['queue.mail']->queue([
 			'schema'	=> $tschema,
-			'to' 		=> $s_id,
+			'to' 		=> $app['mail_addr_user']->get($s_id, $tschema),
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
 		]);
@@ -812,7 +812,7 @@ if ($pw)
 
 						$app['queue.mail']->queue([
 							'schema'	=> $tschema,
-							'to' 		=> $pw,
+							'to' 		=> $app['mail_addr_user']->get($pw, $tschema),
 							'reply_to'	=> $app['mail_addr_system']->get_support($tschema),
 							'template'	=> 'password_reset',
 							'vars'		=> $vars,
@@ -4328,7 +4328,7 @@ function send_activation_mail($password, $user)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to' 		=> $user['id'],
+		'to' 		=> $app['mail_addr_user']->get($user['id'], $tschema),
 		'reply_to' 	=> $app['mail_addr_system']->get_support($tschema),
 		'template'	=> 'user_activation',
 		'vars'		=> $vars,

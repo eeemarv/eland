@@ -68,10 +68,10 @@ if (isset($_POST['zend']))
 				'schema'	=> $tschema,
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
-				'to'		=> $s_id,
+				'to'		=> $app['mail_addr_user']->get($s_id, $tschema),
 			]);
 
-			$email_ary['reply_to'] = $s_id;
+			$email_ary['reply_to'] = $app['mail_addr_user']->get($s_id, $tschema);
 		}
 
 		$app['queue.mail']->queue($email_ary);
