@@ -782,7 +782,7 @@ foreach ($tab_panes as $id => $pane)
 	echo '<div role="tabpanel" ';
 	echo 'class="tab-pane' . $active . '" id="' . $id . '">';
 
-	echo '<form method="post" class="form form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading"><h4>';
@@ -802,9 +802,15 @@ foreach ($tab_panes as $id => $pane)
 
 		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
-			echo '<input type="hidden" value="' . $config[$name] . '" ';
-			echo 'data-max-inputs="' . $input['max_inputs'] . '" ';
-			echo 'name="' . $name . '">';
+			echo '<input type="hidden" value="';
+			echo $config[$name];
+			echo '" ';
+			echo 'data-max-inputs="';
+			echo $input['max_inputs'];
+			echo '" ';
+			echo 'name="';
+			echo $name;
+			echo '">';
 
 			$name_suffix = '_0';
 		}
@@ -924,19 +930,14 @@ foreach ($tab_panes as $id => $pane)
 
 			if (isset($input['lbl']))
 			{
-				echo '<label class="col-sm-3 control-label">';
+				echo '<label class="control-label">';
 				echo $input['lbl'];
 				echo '</label>';
-				echo '<div class="col-sm-9">';
-			}
-			else
-			{
-				echo '<div class="col-sm-12">';
 			}
 
 			if (isset($input['addon']))
 			{
-				echo '<div class="input-group margin-bottom">';
+				echo '<div class="input-group">';
 				echo '<span class="input-group-addon">';
 				echo $input['addon'];
 				echo '</span>';
@@ -998,15 +999,18 @@ foreach ($tab_panes as $id => $pane)
 				echo '>';
 			}
 
-			echo isset($input['addon']) ? '</div>' : '';
-			echo '</div>';
+			if (isset($input['addon']))
+			{
+				echo '</div>';
+			}
+
 			echo '</div>';
 		}
 
 		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
 			echo '<div class="form-group hidden add-input">';
-			echo '<div class="extra-field col-sm-9 col-sm-offset-3">';
+			echo '<div class="extra-field">';
 			echo '<br>';
 			echo '<span class="btn btn-default"><i class="fa fa-plus" ></i> ';
 			echo $input['add_btn_text'] ?? 'Extra';
