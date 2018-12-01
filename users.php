@@ -1245,7 +1245,10 @@ if ($add || $edit)
 							$warning_2 .= ' maal onder de actieve gebruikers. ';
 						}
 
-						$app['alert']->warning($warning_2 . $warning);
+						if ($warning_2)
+						{
+							$app['alert']->warning($warning_2 . $warning);
+						}
 					}
 				}
 			}
