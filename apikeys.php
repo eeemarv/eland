@@ -48,7 +48,7 @@ if ($del)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 	echo '<dl>';
 	echo '<dt>Apikey</dt>';
 	echo '<dd>';
@@ -111,19 +111,25 @@ if ($add)
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal" >';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="apikey" class="col-sm-2 control-label">Apikey</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="apikey" class="control-label">Apikey</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="apikey" name="apikey" ';
-	echo 'value="' . $key . '" required readonly>';
+	echo 'value="';
+	echo $key;
+	echo '" required readonly>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comment" class="col-sm-2 control-label">Commentaar</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="comment" class="control-label">Commentaar</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-comment-o"></span></span>';
 	echo '<input type="text" class="form-control" id="comment" name="comment" ';
 	echo 'value="';
 	echo $apikey['comment'];
