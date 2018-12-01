@@ -100,7 +100,7 @@ function mail_mailtype_interlets_transaction($transaction)
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
 		'to' 		=> $transaction['id_to'],
-		'reply_to' 	=> 'admin',
+		'reply_to' 	=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
 	]);
@@ -110,7 +110,7 @@ function mail_mailtype_interlets_transaction($transaction)
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
 		'to' 		=> $transaction['id_from'],
-		'cc' 		=> 'admin',
+		'cc' 		=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
 	]);

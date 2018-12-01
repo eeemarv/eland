@@ -495,7 +495,7 @@ if ($add)
 
 				$app['queue.mail']->queue([
 					'schema'		=> $tschema,
-					'to' 			=> 'admin',
+					'to' 			=> $app['mail_addr_system']->get_admin($tschema),
 					'subject' 		=> $subject,
 					'text' 			=> $text,
 				]);

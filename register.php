@@ -163,7 +163,7 @@ if ($token)
 
 		$app['queue.mail']->queue([
 			'schema'		=> $tschema,
-			'to' 			=> 'admin',
+			'to' 			=> $app['mail_addr_system']->get_admin($tschema),
 			'vars'			=> $vars,
 			'template'		=> 'admin_registration',
 		]);
@@ -182,7 +182,7 @@ if ($token)
 		$app['queue.mail']->queue([
 			'schema'				=> $tschema,
 			'to' 					=> $data['email'],
-			'reply_to'				=> 'admin',
+			'reply_to'				=> $app['mail_addr_system']->get_admin($tschema),
 			'template_from_config'	=> 'registration_success_mail',
 			'vars'		=> $vars,
 		], 1000);

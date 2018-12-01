@@ -944,7 +944,10 @@ function mail_mass_transaction($mail_ary)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to' 		=> ['admin', $s_id, $one_user_id],
+		'to' 		=> array_merge(
+			$app['mail_addr_system']->get_support($tschema),
+			[$s_id, $one_user_id]
+		),
 		'subject' 	=> $subject,
 		'text' 		=> $text,
 		'template'	=> 'admin_mass_transaction',

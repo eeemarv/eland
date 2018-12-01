@@ -57,7 +57,7 @@ if (isset($_POST['zend']))
 
 		$email_ary = [
 			'schema'	=> $tschema,
-			'to'		=> 'support',
+			'to'		=> $app['mail_addr_system']->get_support($tschema),
 			'template'	=> 'support',
 			'vars'		=> $vars,
 		];

@@ -56,7 +56,7 @@ if ($token)
 			'schema'	=> $tschema,
 			'template'	=> 'contact',
 			'vars'		=> $vars,
-			'to'		=> 'support',
+			'to'		=> $app['mail_addr_system']->get_support($tschema),
 			'reply_to'	=> $data['email'],
 		]);
 

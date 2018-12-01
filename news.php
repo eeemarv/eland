@@ -133,7 +133,7 @@ if ($add && $submit && !count($errors))
 
 			$app['queue.mail']->queue([
 				'schema'	=> $tschema,
-				'to' 		=> 'newsadmin',
+				'to' 		=> $app['mail_addr_system']->get_newsadmin($tschema),
 				'template'	=> 'admin_news_approve',
 				'vars'		=> $vars,
 			]);

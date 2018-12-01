@@ -813,7 +813,7 @@ if ($pw)
 						$app['queue.mail']->queue([
 							'schema'	=> $tschema,
 							'to' 		=> $pw,
-							'reply_to'	=> 'support',
+							'reply_to'	=> $app['mail_addr_system']->get_support($tschema),
 							'template'	=> 'password_reset',
 							'vars'		=> $vars,
 						]);
@@ -4309,7 +4309,7 @@ function send_activation_mail($password, $user)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
-		'to' 		=> 'admin',
+		'to' 		=> $app['mail_addr_system']->get_admin($tschema),
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
 	]);
@@ -4329,7 +4329,7 @@ function send_activation_mail($password, $user)
 	$app['queue.mail']->queue([
 		'schema'	=> $tschema,
 		'to' 		=> $user['id'],
-		'reply_to' 	=> 'support',
+		'reply_to' 	=> $app['mail_addr_system']->get_support($tschema),
 		'template'	=> 'user_activation',
 		'vars'		=> $vars,
 	]);
