@@ -17,6 +17,7 @@ use service\groups;
 use service\this_group;
 use service\interlets_groups;
 use service\config;
+use service\mail_addr_user;
 
 class saldo extends schema_task
 {
@@ -33,6 +34,7 @@ class saldo extends schema_task
 	protected $distance;
 	protected $interlets_groups;
 	protected $config;
+	protected $mail_addr_user;
 
 	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache,
 		Logger $monolog, mail $mail,
@@ -40,7 +42,7 @@ class saldo extends schema_task
 		date_format $date_format, distance $distance, schedule $schedule,
 		groups $groups, this_group $this_group,
 		interlets_groups $interlets_groups,
-		config $config)
+		config $config, mail_addr_user $mail_addr_user)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -55,6 +57,7 @@ class saldo extends schema_task
 		$this->date_format = $date_format;
 		$this->interlets_groups = $interlets_groups;
 		$this->config = $config;
+		$this->mail_addr_user;
 	}
 
 	function process()
@@ -480,7 +483,8 @@ class saldo extends schema_task
 
 			// new topics
 
-			$rows = $this->xdb->get_many(['agg_schema' => $this->schema,
+			$rows = $this->xdb->get_many([
+				'agg_schema' => $this->schema,
 				'agg_type' => 'forum',
 				'data->>\'subject\'' => ['is not null'],
 				'ts' => ['>' => $treshold_time],
@@ -624,7 +628,7 @@ class saldo extends schema_task
 			$this->mail->queue([
 				'validate_email'	=> true,
 				'schema'	=> $this->schema,
-				'to'		=> $id,
+				'to'		=> $this->mail_addr_user->get($id, $this->schema),
 				'template'	=> 'periodic_overview',
 				'vars'		=> array_merge($vars, [
 					'user'			=> $users[$id],

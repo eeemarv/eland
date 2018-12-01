@@ -250,16 +250,20 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
 		$app['protocol'],
 		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['config'], $app['template_vars'], $app['user_cache']);
+		$app['config'], $app['template_vars'], $app['user_cache'],
+		$app['mail_addr_user']);
 };
 
 $app['schema_task.saldo'] = function ($app){
-	return new schema_task\saldo($app['db'], $app['xdb'], $app['predis'], $app['cache'],
+	return new schema_task\saldo(
+		$app['db'], $app['xdb'], $app['predis'], $app['cache'],
 		$app['monolog'], $app['queue.mail'],
 		$app['s3_img_url'], $app['s3_doc_url'], $app['protocol'],
 		$app['date_format'], $app['distance'],
 		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['interlets_groups'], $app['config']);
+		$app['interlets_groups'], $app['config'],
+		$app['mail_addr_user']
+	);
 };
 
 $app['schema_task.interlets_fetch'] = function ($app){

@@ -12,6 +12,7 @@ use service\this_group;
 use service\config;
 use service\template_vars;
 use service\user_cache;
+use service\mail_addr_user;
 
 class user_exp_msgs extends schema_task
 {
@@ -20,10 +21,12 @@ class user_exp_msgs extends schema_task
 	protected $protocol;
 	protected $config;
 	protected $user_cache;
+	protected $mail_addr_user;
 
 	public function __construct(db $db, mail $mail, string $protocol,
 		schedule $schedule, groups $groups, this_group $this_group, config $config,
-		template_vars $template_vars, user_cache $user_cache)
+		template_vars $template_vars, user_cache $user_cache,
+		mail_addr_user $mail_addr_user)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->db = $db;
@@ -32,6 +35,7 @@ class user_exp_msgs extends schema_task
 		$this->config = $config;
 		$this->template_vars = $template_vars;
 		$this->user_cache = $user_cache;
+		$this->mail_addr_user = $mail_addr_user;
 	}
 
 	function process()
@@ -78,7 +82,7 @@ class user_exp_msgs extends schema_task
 			];
 
 			$this->mail->queue([
-				'to' 		=> $msg['id_user'],
+				'to' 		=> $this->mail_addr_user->get($msg['id_user'], $this->schema),
 				'schema' 	=> $this->schema,
 				'template' 	=> 'user_exp_msgs',
 				'vars' 		=> $vars]);
