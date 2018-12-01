@@ -632,20 +632,24 @@ foreach ($st as $k => $s)
 
 echo '</ul>';
 
-echo '<form method="post" class="form-horizontal" autocomplete="off">';
+echo '<form method="post" autocomplete="off">';
 
 echo '<input type="hidden" value="" id="combined-filter">';
-echo '<input type="hidden" value="' . $hsh . '" name="hsh" id="hsh">';
+echo '<input type="hidden" value="';
+echo $hsh;
+echo '" name="hsh" id="hsh">';
 echo '<input type="hidden" value="" name="selected_users" id="selected_users">';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="from_letscode" class="col-sm-2 control-label">';
+echo '<label for="from_letscode" class="control-label">';
 echo 'Van Account Code';
 echo '</label>';
-echo '<div class="col-sm-10">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" id="from_letscode" name="from_letscode" ';
 echo 'value="';
 echo $from_letscode;
@@ -656,17 +660,21 @@ echo '" ';
 echo 'data-typeahead="';
 echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
 echo '">';
+echo '</div>';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
 echo 'Alle ingevulde bedragen hieronder worden van dit Account gehaald.</p>';
-echo '</div>';
 echo '</div>';
 
 echo '</div>';
 
 echo '<table class="table table-bordered table-striped table-hover panel-body footable" ';
 echo 'data-filter="#combined-filter" data-filter-minimum="1" ';
-echo 'data-minlimit="' . $group_minlimit . '" ';
-echo 'data-maxlimit="' . $group_maxlimit . '"';
+echo 'data-minlimit="';
+echo $group_minlimit;
+echo '" ';
+echo 'data-maxlimit="';
+echo $group_maxlimit;
+echo '"';
 echo '>';
 echo '<thead>';
 
@@ -688,9 +696,9 @@ foreach($users as $user_id => $user)
 	$status_key = $status_ary[$user['status']];
 	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($user['adate'])) ? 'new' : $status_key;
 
-	$hsh = ($st[$status_key]['hsh']) ?: '';
-	$hsh .= ($status_key == 'leaving' || $status_key == 'new') ? $st['active']['hsh'] : '';
-	$hsh .= ($status_key == 'active') ? $st['without-new-and-leaving']['hsh'] : '';
+	$hsh = $st[$status_key]['hsh'] ?: '';
+	$hsh .= $status_key == 'leaving' || $status_key == 'new' ? $st['active']['hsh'] : '';
+	$hsh .= $status_key == 'active' ? $st['without-new-and-leaving']['hsh'] : '';
 
 	$class = isset($st[$status_key]['cl']) ? ' class="' . $st[$status_key]['cl'] . '"' : '';
 
@@ -749,55 +757,62 @@ echo '</table>';
 echo '<div class="panel-heading">';
 
 echo '<div class="form-group">';
-echo '<label for="total" class="col-sm-2 control-label">Totaal ';
-echo $app['config']->get('currency', $tschema);
+echo '<label for="total" class="control-label">Totaal';
 echo '</label>';
-echo '<div class="col-sm-10">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo $app['config']->get('currency', $tschema);
+echo '</span>';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="to_letscode" class="col-sm-2 control-label">';
+echo '<label for="to_letscode" class="control-label">';
 echo 'Aan Account Code';
 echo '</label>';
-echo '<div class="col-sm-10">';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
 echo 'value="';
 echo $to_letscode;
 echo '" ';
 echo 'data-typeahead-source="from_letscode">';
+echo '</div>';
 echo '<p>Gebruik dit voor een "Veel naar één" transactie. Bijvoorbeeld, een ledenbijdrage. ';
 echo 'Alle ingevulde bedragen hierboven gaan naar dit Account.</p>';
 echo '</div>';
-echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="description" class="col-sm-2 control-label">Omschrijving</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="description" class="control-label">';
+echo 'Omschrijving</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon" id="name_addon">';
+echo '<span class="fa fa-pencil"></span></span>';
 echo '<input type="text" class="form-control" id="description" ';
 echo 'name="description" ';
-echo 'value="' . $description . '" required>';
+echo 'value="';
+echo $description;
+echo '" required>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label for="mail_en" class="col-sm-2 control-label">';
-echo 'Verstuur notificatie mails</label>';
-echo '<div class="col-sm-10">';
+echo '<label for="mail_en" class="control-label">';
 echo '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
 echo $mail_en ? ' checked="checked"' : '';
 echo '>';
-echo '</div>';
+echo ' Verstuur notificatie mails</label>';
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<div class="col-sm-12">';
+echo '<label>';
 echo '<input type="checkbox" name="verify"';
 echo ' value="1" required> ';
-echo 'Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" ';
+echo ' Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" ';
 echo 'Account Code ingevuld zijn.';
-echo '</div>';
+echo '</label>';
 echo '</div>';
 
 echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
