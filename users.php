@@ -1080,14 +1080,14 @@ if ($del)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post"">';
 
 	echo '<div class="form-group">';
-	echo '<div class="col-sm-12">';
+	echo '<label>';
 	echo '<input type="checkbox" name="verify"';
 	echo ' value="1"> ';
-	echo 'Ik ben wis en waarachtig zeker dat ik deze gebruiker wil verwijderen.';
-	echo '</div>';
+	echo ' Ik ben wis en waarachtig zeker dat ik deze gebruiker wil verwijderen.';
+	echo '</label>';
 	echo '</div>';
 
 	echo aphp('users', ['id' => $del], 'Annuleren', 'btn btn-default') . '&nbsp;';
