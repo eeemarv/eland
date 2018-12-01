@@ -724,11 +724,19 @@ div.jqplot-noData-container {
 
 /** **/
 
-div.pan-sub {
+div.pan-sub, div.pan-sab {
 	border-radius: 5px;
 	border: 1px solid #99a;
 	padding: 2px 5px;
-	margin: 5px 0;
+  margin: 5px 0;
+}
+
+div.pan-sub {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+div.pan-subw {
+  background: rgba(255,255,255,0.1)
 }
 
 /** **/
