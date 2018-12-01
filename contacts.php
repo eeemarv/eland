@@ -182,13 +182,13 @@ if ($edit || $add)
 		$user_id = false;
 	}
 
-	$user_id = ($uid) ? $uid : $user_id;
+	$user_id = $uid ? $uid : $user_id;
 
 	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id && $user_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
-		$err = ($edit) ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
+		$err = $edit ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
 		$app['alert']->error('Je hebt geen rechten om ' . $err);
 		cancel($uid);
 	}
@@ -433,15 +433,14 @@ if ($edit || $add)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	if ($s_admin && $add && !$uid)
 	{
 		$typeahead_ary = array('users_active', 'users_inactive', 'users_ip', 'users_im', 'users_extern');
 
 		echo '<div class="form-group">';
-		echo '<label for="letscode" class="col-sm-2 control-label">Voor</label>';
-		echo '<div class="col-sm-10">';
+		echo '<label for="letscode" class="control-label">Voor</label>';
 		echo '<div class="input-group">';
 		echo '<span class="input-group-addon" id="fcode_addon">';
 		echo '<span class="fa fa-user"></span></span>';
@@ -458,12 +457,10 @@ if ($edit || $add)
 		echo '" required>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
 	}
 
 	echo '<div class="form-group">';
-	echo '<label for="id_type_contact" class="col-sm-2 control-label">Type</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="id_type_contact" class="control-label">Type</label>';
 	echo '<select name="id_type_contact" id="id_type_contact" ';
 	echo 'class="form-control" required>';
 
@@ -483,20 +480,16 @@ if ($edit || $add)
 
 	echo "</select>";
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="value" class="col-sm-2 control-label">Waarde</label>';
-	echo '<div class="col-sm-10">';
-
+	echo '<label for="value" class="control-label">';
+	echo 'Waarde</label>';
 	echo '<div class="input-group">';
-
 	echo '<span class="input-group-addon" id="value_addon">';
 	echo '<i class="fa fa-';
 	echo $contacts_format[$abbrev]['fa'] ?? 'circle-o';
 	echo '"></i>';
 	echo '</span>';
-
 	echo '<input type="text" class="form-control" id="value" name="value" ';
 	echo 'value="';
 	echo $contact['value'];
@@ -509,17 +502,14 @@ if ($edit || $add)
 
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comments" class="col-sm-2 control-label">';
+	echo '<label for="comments" class="control-label">';
 	echo 'Commentaar</label>';
-	echo '<div class="col-sm-10">';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
 	echo 'value="';
 	echo $contact['comments'];
 	echo '" maxlength="50">';
-	echo '</div>';
 	echo '</div>';
 
 	echo $app['access_control']->get_radio_buttons(false, $contact['flag_public']);
@@ -544,6 +534,7 @@ if ($edit || $add)
 	{
 		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
 	}
+
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';

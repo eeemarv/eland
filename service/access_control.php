@@ -222,9 +222,9 @@ class access_control
 		}
 
 		$out = '<div class="form-group">';
-		$out .= '<label for="' . $name . '" class="col-sm-2 control-label">';
+		$out .= '<label for="' . $name . '" class="control-label">';
 		$out .= $label . '</label>';
-		$out .= '<div class="col-sm-10"';
+		$out .= '<div ';
 
 		if ($access_cache_id)
 		{
