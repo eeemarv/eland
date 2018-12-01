@@ -218,14 +218,17 @@ if ($add || $edit)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="groupname" class="col-sm-2 control-label">';
+	echo '<label for="groupname" class="control-label">';
 	echo 'Systeem Naam';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="groupname" name="groupname" ';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-share-alt"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="groupname" name="groupname" ';
 	echo 'value="';
 	echo $group['groupname'];
 	echo '" required maxlength="128">';
@@ -233,9 +236,11 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="apimethod" class="col-sm-2 control-label">';
+	echo '<label for="apimethod" class="control-label">';
 	echo 'API methode</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo 'API</span>';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
 
 	echo get_select_options([
@@ -245,88 +250,100 @@ if ($add || $edit)
 	], $group['apimethod']);
 
 	echo '</select>';
+	echo '</div>';
 	echo '<p>';
 	echo 'Het type connectie naar het andere Systeem. ';
 	echo '"Intern" is een technisch type dat alleen in eLAS gebruikt wordt. ';
 	echo 'In eLAND (hier) is dit type niet nodig.';
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="remoteapikey" class="col-sm-2 control-label">Remote API Key ';
+	echo '<label for="remoteapikey" class="control-label">';
+	echo 'Remote API Key ';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
 	echo 'value="';
 	echo $group['remoteapikey'];
 	echo '" maxlength="80">';
+	echo '</div>';
 	echo '<p>';
 	echo 'Dit is enkel in te vullen wanneer het ';
 	echo 'andere Systeem onder eLAS draait.';
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="localletscode" class="col-sm-2 control-label">';
+	echo '<label for="localletscode" class="control-label">';
 	echo 'Lokale Account Code</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-user"></span></span>';
 	echo '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
 	echo 'value="';
 	echo $group['localletscode'];
 	echo '" maxlength="20">';
+	echo '</div>';
 	echo '<p>';
 	echo 'De Account Code waarmee het andere ';
 	echo 'Systeem in dit Systeem bekend is.';
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="myremoteletscode" class="col-sm-2 control-label">';
+	echo '<label for="myremoteletscode" class="control-label">';
 	echo 'Remote Account Code';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="myremoteletscode" name="myremoteletscode" ';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-user"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="myremoteletscode" name="myremoteletscode" ';
 	echo 'value="';
 	echo $group['myremoteletscode'];
 	echo '" maxlength="20">';
+	echo '</div>';
 	echo '<p>';
 	echo 'De Account Code waarmee dit Systeem bij het andere Systeem bekend is. ';
 	echo 'Enkel in te vullen wanneer het andere Systeem draait op eLAS.';
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="url" class="col-sm-2 control-label">';
+	echo '<label for="url" class="control-label">';
 	echo 'URL ';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-link"></span></span>';
 	echo '<input type="url" class="form-control" id="url" name="url" ';
 	echo 'value="';
 	echo $group['url'];
 	echo '" maxlength="256">';
+	echo '</div>';
 	echo '<p>';
 	echo 'De URL van het andere Systeem, inclusief het protocol, http:// of https://';
 	echo '</p>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="presharedkey" class="col-sm-2 control-label">';
+	echo '<label for="presharedkey" class="control-label">';
 	echo 'Preshared Key';
 	echo '</label>';
-	echo '<div class="col-sm-10">';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon" id="name_addon">';
+	echo '<span class="fa fa-key"></span></span>';
 	echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
 	echo 'value="';
 	echo $group['presharedkey'];
 	echo '" maxlength="80">';
+	echo '</div>';
 	echo '<p>';
 	echo 'Enkel in te vullen wanneer het andere Systeem draait op eLAS.';
 	echo '</p>';
-	echo '</div>';
 	echo '</div>';
 
 	$btn = $edit ? 'primary' : 'success';

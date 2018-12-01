@@ -53,7 +53,8 @@ if ($add)
 	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<label for="name" class="control-label">';
+	echo 'Naam</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="name_addon">';
 	echo '<span class="fa fa-circle-o-notch"></span></span>';
@@ -65,8 +66,10 @@ if ($add)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="abbrev" class="control-label">Afkorting</label>';
-	echo '<input type="text" class="form-control" id="abbrev" name="abbrev" maxlength="11" ';
+	echo '<label for="abbrev" class="control-label">';
+	echo 'Afkorting</label>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="abbrev" name="abbrev" maxlength="11" ';
 	echo 'value="';
 	echo $tc['abbrev'] ?? '';
 	echo '" required>';
