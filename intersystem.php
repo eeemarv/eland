@@ -638,7 +638,7 @@ if (count($groups))
 
 		if ($g['apimethod'] == 'elassoap')
 		{
-			$user = $users_letscode[$g['localletscode']];
+			$user = $users_letscode[$g['localletscode']] ?? [];
 
 			if ($user)
 			{
