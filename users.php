@@ -64,28 +64,34 @@ if ($s_admin)
 			'lbl'		=> 'Commentaar',
 			'type'		=> 'text',
 			'string'	=> true,
+			'fa'		=> 'comment-o',
 		],
 		'accountrole'		=> [
 			'lbl'		=> 'Rechten',
 			'options'	=> 'role_ary',
 			'string'	=> true,
+			'fa'		=> 'hand-paper-o',
 		],
 		'status'			=> [
 			'lbl'		=> 'Status',
 			'options'	=> 'status_ary',
+			'fa'		=> 'star-o',
 		],
 		'admincomment'		=> [
 			'lbl'		=> 'Commentaar van de Admin',
 			'type'		=> 'text',
 			'string'	=> true,
+			'fa'		=> 'comment-o',
 		],
 		'minlimit'			=> [
 			'lbl'		=> 'Minimum Account Limiet',
 			'type'		=> 'number',
+			'fa'		=> 'arrow-down',
 		],
 		'maxlimit'			=> [
 			'lbl'		=> 'Maximum Account Limiet',
 			'type'		=> 'number',
+			'fa'		=> 'arrow-up',
 		],
 		'cron_saldo'		=> [
 			'lbl'	=> 'Periodieke Overzichts E-mail (aan/uit)',
@@ -4014,16 +4020,25 @@ if ($v_list)
 		$bulk_mail_cc = $post ? $bulk_mail_cc : true;
 
 		$inp =  '<div class="form-group">';
-		$inp .=  '<label for="%5$s" class="col-sm-2 control-label">%2$s</label>';
-		$inp .=  '<div class="col-sm-10">';
+		$inp .=  '<label for="%5$s" class="control-label">%2$s</label>';
+		$inp .= '<div class="input-group">';
+		$inp .= '<span class="input-group-addon">';
+		$inp .= '<span class="fa fa-%6$s"></span></span>';
 		$inp .=  '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
 		$inp .=  '</div>';
 		$inp .=  '</div>';
 
+		$checkbox = '<div class="form-group">';
+		$checkbox .= '<label for="%5$s" class="control-label">';
+		$checkbox .= '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
+		$checkbox .= ' %2$s</label></div>';
+
 		$acc_sel = '<div class="form-group">';
-		$acc_sel .= '<label for="%1$s" class="col-sm-2 control-label">';
+		$acc_sel .= '<label for="%1$s" class="control-label">';
 		$acc_sel .= '%2$s</label>';
-		$acc_sel .= '<div class="col-sm-10">';
+		$acc_sel .= '<div class="input-group">';
+		$acc_sel .= '<span class="input-group-addon">';
+		$acc_sel .= '<span class="fa fa-%4$s"></span></span>';
 		$acc_sel .= '<select name="%1$s" id="%1$s" class="form-control">';
 		$acc_sel .= '%3$s';
 		$acc_sel .= '</select>';
@@ -4032,10 +4047,17 @@ if ($v_list)
 
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
-		echo '<span class="btn btn-default" id="invert_selection">Selectie omkeren</span>&nbsp;';
-		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
-		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
-		echo '</div></div>';
+
+		echo '<span class="btn btn-default" id="invert_selection">';
+		echo 'Selectie omkeren</span>&nbsp;';
+		echo '<span class="btn btn-default" id="select_all">';
+		echo 'Selecteer alle</span>&nbsp;';
+		echo '<span class="btn btn-default" id="deselect_all">';
+		echo 'De-selecteer alle</span>';
+
+		echo '</div>';
+		echo '</div>';
+
 		echo '<h3>Bulk acties met geselecteerde gebruikers</h3>';
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
@@ -4052,7 +4074,10 @@ if ($v_list)
 
 		foreach ($edit_fields_tabs as $k => $t)
 		{
-			echo '<li><a href="#' . $k . '_tab" data-toggle="tab">' . $t['lbl'] . '</a></li>';
+			echo '<li>';
+			echo '<a href="#' . $k . '_tab" data-toggle="tab">';
+			echo $t['lbl'];
+			echo '</a></li>';
 		}
 
 		echo '</ul>';
@@ -4067,24 +4092,23 @@ if ($v_list)
 		echo '<form method="post">';
 
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
 		echo '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
 		echo 'placeholder="Onderwerp" ';
 		echo 'value="';
 		echo $bulk_mail_subject ?? '';
 		echo '" required>';
 		echo '</div>';
-		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<div class="col-sm-12">';
 		echo '<textarea name="bulk_mail_content" ';
-		echo 'class="form-control rich-edit" id="bulk_mail_content" rows="8" ';
-		echo 'data-template-vars="' . implode(',', array_keys($map_template_vars)) . '" ';
+		echo 'class="form-control rich-edit" ';
+		echo 'id="bulk_mail_content" rows="8" ';
+		echo 'data-template-vars="';
+		echo implode(',', array_keys($map_template_vars));
+		echo '" ';
 		echo 'required>';
 		echo $bulk_mail_content ?? '';
 		echo '</textarea>';
-		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
@@ -4109,9 +4133,9 @@ if ($v_list)
 		echo '<input type="submit" value="Zend test E-mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
 		echo '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 
-		echo '</div>';
 		echo $app['form_token']->get_hidden_input();
 		echo '</form>';
+		echo '</div>';
 
 		foreach($edit_fields_tabs as $k => $t)
 		{
@@ -4125,11 +4149,11 @@ if ($v_list)
 			if (isset($t['options']))
 			{
 				$options = $t['options'];
-				echo sprintf($acc_sel, $k, $t['lbl'], get_select_options($$options, 0));
+				echo sprintf($acc_sel, $k, $t['lbl'], get_select_options($$options, 0), $t['fa']);
 			}
 			else if (isset($t['type']) && $t['type'] == 'checkbox')
 			{
-				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'value="1"', $k);
+				echo sprintf($checkbox, $k, $t['lbl'], $t['type'], 'value="1"', $k);
 			}
 			else if (isset($t['access_control']))
 			{
@@ -4137,15 +4161,16 @@ if ($v_list)
 			}
 			else
 			{
-				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k);
+				echo sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k, $t['fa']);
 			}
 
 			echo '<div class="form-group">';
-			echo '<div class="col-sm-12">';
-			echo '<input type="checkbox" name="verify_' . $k . '"';
-			echo ' value="1" required> ';
+			echo '<label for="verify_' . $k . '" class="control-label">';
+			echo '<input type="checkbox" name="verify_' . $k . '" ';
+			echo 'id="verify_' . $k . '" ';
+			echo 'value="1" required> ';
 			echo 'Ik heb nagekeken dat de juiste gebruikers geselecteerd zijn en veld en ingevulde waarde nagekeken.';
-			echo '</div>';
+			echo '</label>';
 			echo '</div>';
 
 			echo '<input type="hidden" value="' . $k . '" name="bulk_field">';
