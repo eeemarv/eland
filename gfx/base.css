@@ -732,11 +732,11 @@ div.pan-sub, div.pan-sab {
 }
 
 div.pan-sub {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(22, 31, 168, 0.1);
 }
 
-div.pan-subw {
-  background: rgba(255,255,255,0.1)
+div.pan-sab {
+  background: rgba(255, 255, 255, 0.2)
 }
 
 /** **/

@@ -1799,15 +1799,17 @@ if ($add || $edit)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<form method="post" class="form-horizontal">';
+	echo '<form method="post">';
 
 	if ($s_admin)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="letscode" class="col-sm-2 control-label">';
+		echo '<label for="letscode" class="control-label">';
 		echo 'Account Code';
 		echo '</label>';
-		echo '<div class="col-sm-10">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-user"></span></span>';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
 		echo 'value="';
 		echo $user['letscode'] ?? '';
@@ -1819,8 +1821,11 @@ if ($add || $edit)
 	if ($username_edit)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="name" class="col-sm-2 control-label">Gebruikersnaam</label>';
-		echo '<div class="col-sm-10">';
+		echo '<label for="name" class="control-label">';
+		echo 'Gebruikersnaam</label>';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-user"></span></span>';
 		echo '<input type="text" class="form-control" id="name" name="name" ';
 		echo 'value="';
 		echo $user['name'] ?? '';
@@ -1832,16 +1837,20 @@ if ($add || $edit)
 	if ($fullname_edit)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="fullname" class="col-sm-2 control-label">Volledige Naam</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" id="fullname" name="fullname" ';
+		echo '<label for="fullname" class="control-label">';
+		echo 'Volledige Naam</label>';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-user"></span></span>';
+		echo '<input type="text" class="form-control" ';
+		echo 'id="fullname" name="fullname" ';
 		echo 'value="';
 		echo $user['fullname'] ?? '';
 		echo '" maxlength="100">';
+		echo '</div>';
 		echo '<p>';
 		echo 'Voornaam en Achternaam';
 		echo '</p>';
-		echo '</div>';
 		echo '</div>';
 	}
 
@@ -1853,9 +1862,13 @@ if ($add || $edit)
 	echo $app['access_control']->get_radio_buttons('users_fullname', $fullname_access, false, 'fullname_access', 'xs', 'Zichtbaarheid volledige naam');
 
 	echo '<div class="form-group">';
-	echo '<label for="postcode" class="col-sm-2 control-label">Postcode</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="text" class="form-control" id="postcode" name="postcode" ';
+	echo '<label for="postcode" class="control-label">';
+	echo 'Postcode</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-map-marker"></span></span>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="postcode" name="postcode" ';
 	echo 'value="';
 	echo $user['postcode'] ?? '';
 	echo '" required maxlength="6">';
@@ -1863,8 +1876,11 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="birthday" class="col-sm-2 control-label">Geboortedatum</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="birthday" class="control-label">';
+	echo 'Geboortedatum</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control" id="birthday" name="birthday" ';
 	echo 'value="';
 	echo isset($user['birthday']) && !empty($user['birtday']) ? $app['date_format']->get($user['birthday'], 'day') : '';
@@ -1890,17 +1906,19 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="hobbies" class="col-sm-2 control-label">Hobbies, interesses</label>';
-	echo '<div class="col-sm-10">';
-	echo '<textarea name="hobbies" id="hobbies" class="form-control" maxlength="500">';
+	echo '<label for="hobbies" class="control-label">';
+	echo 'Hobbies, interesses</label>';
+	echo '<textarea name="hobbies" id="hobbies" ';
+	echo 'class="form-control" maxlength="500">';
 	echo $user['hobbies'] ?? '';
 	echo '</textarea>';
 	echo '</div>';
-	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comments" class="col-sm-2 control-label">Commentaar</label>';
-	echo '<div class="col-sm-10">';
+	echo '<label for="comments" class="control-label">Commentaar</label>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-addon">';
+	echo '<span class="fa fa-comment-o"></span></span>';
 	echo '<input type="text" class="form-control" id="comments" name="comments" ';
 	echo 'value="';
 	echo $user['comments'] ?? '';
@@ -1911,33 +1929,40 @@ if ($add || $edit)
 	if ($s_admin)
 	{
 		echo '<div class="form-group">';
-		echo '<label for="accountrole" class="col-sm-2 control-label">Rechten / Rol</label>';
-		echo '<div class="col-sm-10">';
+		echo '<label for="accountrole" class="control-label">';
+		echo 'Rechten / Rol</label>';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-hand-paper-o"></span></span>';
 		echo '<select id="accountrole" name="accountrole" class="form-control">';
 		echo get_select_options($role_ary, $user['accountrole']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
 
-		echo '<div class="bg-danger pan-sub" id="presharedkey_panel">';
+		echo '<div class="pan-sub" id="presharedkey_panel">';
 		echo '<div class="form-group" id="presharedkey_formgroup">';
-		echo '<label for="presharedkey" class="col-sm-2 control-label">';
+		echo '<label for="presharedkey" class="control-label">';
 		echo 'Preshared Key</label>';
-		echo '<div class="col-sm-10">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-key"></span></span>';
 		echo '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
 		echo 'value="';
 		echo $user['presharedkey'] ?? '';
 		echo '" maxlength="80">';
+		echo '</div>';
 		echo '<p>Vul dit enkel in voor een interSysteem Account ';
 		echo 'van een Systeem op een eLAS-server.</p>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="status" class="col-sm-2 control-label">';
+		echo '<label for="status" class="control-label">';
 		echo 'Status</label>';
-		echo '<div class="col-sm-10">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-star-o"></span></span>';
 		echo '<select id="status" name="status" class="form-control">';
 		echo get_select_options($status_ary, $user['status']);
 		echo '</select>';
@@ -1949,56 +1974,57 @@ if ($add || $edit)
 			echo '<div id="activate" class="bg-success pan-sub">';
 
 			echo '<div class="form-group">';
-			echo '<label for="password" class="col-sm-2 control-label">';
+			echo '<label for="password" class="control-label">';
 			echo 'Paswoord</label>';
-			echo '<div class="col-sm-10 controls">';
 			echo '<div class="input-group">';
+			echo '<span class="input-group-addon">';
+			echo '<span class="fa fa-key"></span></span>';
 			echo '<input type="text" class="form-control" ';
 			echo 'id="password" name="password" ';
 			echo 'value="';
 			echo $password ?? '';
 			echo '" required>';
 			echo '<span class="input-group-btn">';
-			echo '<button class="btn btn-default" type="button" id="generate">';
+			echo '<button class="btn btn-default" ';
+			echo 'type="button" id="generate">';
 			echo 'Genereer</button>';
 			echo '</span>';
 			echo '</div>';
 			echo '</div>';
-			echo '</div>';
 
 			echo '<div class="form-group">';
-			echo '<label for="notify" class="col-sm-2 control-label">';
-			echo 'Notificatie Paswoord</label>';
-			echo '<div class="col-sm-10">';
+			echo '<label for="notify" class="control-label">';
 			echo '<input type="checkbox" name="notify" id="notify"';
 			echo ' checked="checked"';
-			echo '>';
-			echo '<p>';
-			echo 'Verstuur een E-mail met het paswoord naar de gebruiker, ';
-			echo 'enkel wanneer het account actief is.';
-			echo '</p>';
+			echo '> ';
+			echo 'Verstuur een E-mail met het ';
+			echo 'paswoord naar de gebruiker. ';
+			echo 'Dit kan enkel wanneer het account ';
+			echo 'de status actief heeft en ';
+			echo 'een E-mail adres is ingesteld.';
+			echo '</label>';
 			echo '</div>';
-			echo '</div>';
+
 			echo '</div>';
 		}
 
 		echo '<div class="form-group">';
-		echo '<label for="admincomment" class="col-sm-2 control-label">';
+		echo '<label for="admincomment" class="control-label">';
 		echo 'Commentaar van de admin</label>';
-		echo '<div class="col-sm-10">';
-		echo '<textarea name="admincomment" id="admincomment" class="form-control" maxlength="200">';
+		echo '<textarea name="admincomment" id="admincomment" ';
+		echo 'class="form-control" maxlength="200">';
 		echo $user['admincomment'] ?? '';
 		echo '</textarea>';
 		echo '</div>';
-		echo '</div>';
 
-		echo '<div class="bg-danger pan-sub">';
+		echo '<div class="pan-sub">';
 
 		echo '<h2>Limieten&nbsp;';
 
 		if ($user['minlimit'] === '' && $user['maxlimit'] === '')
 		{
-			echo '<button class="btn btn-default" title="Limieten instellen" data-toggle="collapse" ';
+			echo '<button class="btn btn-default" ';
+			echo 'title="Limieten instellen" data-toggle="collapse" ';
 			echo 'data-target="#limits_pan" type="button">Instellen</button>';
 		}
 
@@ -2012,23 +2038,33 @@ if ($add || $edit)
 		}
 
 		echo '>';
+
 		echo '<div class="form-group">';
-		echo '<label for="minlimit" class="col-sm-2 control-label">Minimum Account Limiet</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="number" class="form-control" id="minlimit" name="minlimit" ';
+		echo '<label for="minlimit" class="control-label">';
+		echo 'Minimum Account Limiet</label>';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-arrow-down"></span> ';
+		echo $app['config']->get('currency', $tschema);
+		echo '</span>';
+		echo '<input type="number" class="form-control" ';
+		echo 'id="minlimit" name="minlimit" ';
 		echo 'value="';
 		echo $user['minlimit'] ?? '';
 		echo '">';
-
-		echo '<p>Vul enkel in wanneer je een individueel afwijkende minimum limiet wil instellen ';
-		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
-		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
+		echo '</div>';
+		echo '<p>Vul enkel in wanneer je een individueel ';
+		echo 'afwijkende minimum limiet wil instellen ';
+		echo 'voor dit account. Als dit veld leeg is, ';
+		echo 'dan is de algemeen geldende ';
+		echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet');
+		echo ' ';
 		echo 'van toepassing. ';
 
 		if ($app['config']->get('minlimit', $tschema) === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen ';
-			echo 'geledende Minimum Systeemslimiet ingesteld.';
+			echo 'geledende Minimum Systeemslimiet ingesteld. ';
 		}
 		else
 		{
@@ -2036,13 +2072,13 @@ if ($add || $edit)
 			echo $app['config']->get('minlimit', $tschema);
 			echo ' ';
 			echo $app['config']->get('currency', $tschema);
-			echo '</strong>.';
+			echo '</strong>. ';
 		}
 
-		echo '</p>';
-
-		echo '<p>Dit veld wordt bij aanmaak gebruiker vooraf ingevuld met de "';
-		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Minimum Account Limiet') . '" ';
+		echo 'Dit veld wordt bij aanmaak van een ';
+		echo 'gebruiker vooraf ingevuld met de "';
+		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Minimum Account Limiet');
+		echo '" ';
 		echo 'die gedefiniëerd is in de instellingen.';
 
 		if ($app['config']->get('preset_minlimit', $tschema) !== '')
@@ -2054,39 +2090,49 @@ if ($add || $edit)
 
 		echo '</p>';
 		echo '</div>';
-		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="maxlimit" class="col-sm-2 control-label">Maximum Account Limiet</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="number" class="form-control" id="maxlimit" name="maxlimit" ';
+		echo '<label for="maxlimit" class="control-label">';
+		echo 'Maximum Account Limiet</label>';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-addon">';
+		echo '<span class="fa fa-arrow-up"></span> ';
+		echo $app['config']->get('currency', $tschema);
+		echo '</span>';
+		echo '<input type="number" class="form-control" ';
+		echo 'id="maxlimit" name="maxlimit" ';
 		echo 'value="';
 		echo $user['maxlimit'] ?? '';
 		echo '">';
+		echo '</div>';
 
-		echo '<p>Vul enkel in wanneer je een individueel afwijkende maximum limiet wil instellen ';
-		echo 'voor dit account. Als dit veld leeg is, dan is de algemeen geldende ';
-		echo aphp('config', ['active_tab' => 'balance'], 'Maximum Systeemslimiet') . ' ';
+		echo '<p>Vul enkel in wanneer je een individueel ';
+		echo 'afwijkende maximum limiet wil instellen ';
+		echo 'voor dit account. Als dit veld leeg is, ';
+		echo 'dan is de algemeen geldende ';
+		echo aphp('config', ['active_tab' => 'balance'], 'Maximum Systeemslimiet');
+		echo ' ';
 		echo 'van toepassing. ';
 
 		if ($app['config']->get('maxlimit', $tschema) === '')
 		{
 			echo 'Er is momenteel <strong>geen</strong> algemeen ';
-			echo 'geledende Maximum Systeemslimiet ingesteld.';
+			echo 'geledende Maximum Systeemslimiet ingesteld. ';
 		}
 		else
 		{
-			echo 'De algemeen geldende Maximum Systeemslimiet bedraagt <strong>';
+			echo 'De algemeen geldende Maximum ';
+			echo 'Systeemslimiet bedraagt <strong>';
 			echo $app['config']->get('maxlimit', $tschema);
 			echo ' ';
 			echo $app['config']->get('currency', $tschema);
-			echo '</strong>.';
+			echo '</strong>. ';
 		}
 
-		echo '</p>';
-
-		echo '<p>Dit veld wordt bij aanmaak gebruiker vooraf ingevuld wanneer "';
-		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Maximum Account Limiet') . '" ';
+		echo 'Dit veld wordt bij aanmaak van een gebruiker ';
+		echo 'vooraf ingevuld wanneer "';
+		echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Maximum Account Limiet');
+		echo '" ';
 		echo 'is ingevuld in de instellingen.';
 
 		if ($app['config']->get('preset_maxlimit', $tschema) !== '')
@@ -2099,19 +2145,8 @@ if ($add || $edit)
 		echo '</p>';
 
 		echo '</div>';
-		echo '</div>';
 	}
 
-	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="cron_saldo" class="col-sm-2 control-label">';
-	echo 'Periodieke Overzichts E-mail</label>';
-	echo '<div class="col-sm-10">';
-	echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
-	echo $user['cron_saldo'] ? ' checked="checked"' : '';
-	echo '>';
 	echo '</div>';
 	echo '</div>';
 
@@ -2152,21 +2187,21 @@ if ($add || $edit)
 		echo $add ? 'nadat de gebruiker gecreëerd is' : '';
 		echo '.</small></p>';
 
-		echo '<ul class="list-group">';
+//		echo '<ul class="list-group">';
 
 		foreach ($contact as $key => $c)
 		{
 			$name = 'contact[' . $key . '][value]';
 
-			echo '<li class="list-group-item">';
+//			echo '<li class="list-group-item">';
+			echo '<div class="pan-sab">';
 
 			echo '<div class="form-group">';
 			echo '<label for="';
 			echo $name;
-			echo '" class="col-sm-2 control-label">';
+			echo '" class="control-label">';
 			echo $contacts_format[$c['abbrev']]['lbl'] ?? $c['abbrev'];
 			echo '</label>';
-			echo '<div class="col-sm-10">';
 			echo '<div class="input-group">';
 			echo '<span class="input-group-addon">';
 			echo '<i class="fa fa-';
@@ -2190,7 +2225,6 @@ if ($add || $edit)
 			echo $contacts_format[$c['abbrev']]['explain'] ?? '';
 			echo '</p>';
 			echo '</div>';
-			echo '</div>';
 
 			if (!isset($c['flag_public']))
 			{
@@ -2203,12 +2237,22 @@ if ($add || $edit)
 			echo '<input type="hidden" name="contact['. $key . '][name]" value="' . $c['name'] . '">';
 			echo '<input type="hidden" name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
 
-			echo '</li>';
+//			echo '</li>';
+			echo '</div>';
 		}
 
-		echo '</ul>';
+//		echo '</ul>';
 		echo '</div>';
 	}
+
+	echo '<div class="form-group">';
+	echo '<label for="cron_saldo" class="control-label">';
+	echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
+	echo $user['cron_saldo'] ? ' checked="checked"' : '';
+	echo '>	';
+	echo 'Periodieke Overzichts E-mail';
+	echo '</label>';
+	echo '</div>';
 
 	$canc = $edit ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
 	$btn = $edit ? 'primary' : 'success';
