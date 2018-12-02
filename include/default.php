@@ -190,17 +190,11 @@ $app['queue.mail'] = function ($app){
 
 // tasks
 
-$app['task.cleanup_cache'] = function ($app){
-	return new task\cleanup_cache($app['cache'], $app['schedule']);
-};
-
 $app['task.cleanup_image_files'] = function ($app){
-	return new task\cleanup_image_files($app['cache'], $app['db'], $app['monolog'],
-		$app['s3'], $app['groups'], $app['schedule']);
-};
-
-$app['task.cleanup_logs'] = function ($app){
-	return new task\cleanup_logs($app['db'], $app['schedule']);
+	return new task\cleanup_image_files($app['cache'],
+		$app['db'], $app['monolog'],
+		$app['s3'], $app['groups'],
+		$app['schedule']);
 };
 
 $app['task.get_elas_interlets_domains'] = function ($app){
