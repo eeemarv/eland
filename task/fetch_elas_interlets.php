@@ -12,18 +12,17 @@ use service\schedule;
 
 class fetch_elas_interlets extends task
 {
-	private $cache;
-	private $redis;
-	private $typeahead;
-	private $monolog;
-	private $client;
-	private $url;
-	private $domain;
-	private $now;
-	private $now_gmdate;
-	private $last_fetch;
-	private $apikeys_fails;
-
+	protected $cache;
+	protected $redis;
+	protected $typeahead;
+	protected $monolog;
+	protected $client;
+	protected $url;
+	protected $domain;
+	protected $now;
+	protected $now_gmdate;
+	protected $last_fetch;
+	protected $apikeys_fails;
 
 	public function __construct(cache $cache, redis $redis, typeahead $typeahead, Logger $monolog, schedule $schedule)
 	{
@@ -215,7 +214,7 @@ class fetch_elas_interlets extends task
 	*
 	*/
 
-	private function update_cache()
+	protected function update_cache()
 	{
 		$this->cache->set('elas_interlets_last_fetch', $this->last_fetch);
 		$this->cache->set('elas_interlets_apikeys_fails', $this->apikeys_fails);
@@ -226,7 +225,7 @@ class fetch_elas_interlets extends task
 	 *
 	 */
 
-	private function fetch_msgs()
+	protected function fetch_msgs()
 	{
 		$msgs = [];
 
@@ -387,7 +386,7 @@ class fetch_elas_interlets extends task
 	*
 	*/
 
-	private function fetch_users()
+	protected function fetch_users()
 	{
 		$crawler = $this->client->request('GET', $this->url . '/rendermembers.php');
 

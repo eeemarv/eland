@@ -11,9 +11,9 @@ use service\schedule;
 
 class get_elas_interlets_domains extends task
 {
-	private $cache;
-	private $db;
-	private $groups;
+	protected $cache;
+	protected $db;
+	protected $groups;
 
 	public function __construct(db $db, cache $cache, schedule $schedule, groups $groups)
 	{

@@ -14,12 +14,12 @@ use service\schedule;
 
 class cleanup_image_files extends task
 {
-	private $days = 365;
-	private $cache;
-	private $db;
-	private $monolog;
-	private $s3;
-	private $groups;
+	protected $days = 365;
+	protected $cache;
+	protected $db;
+	protected $monolog;
+	protected $s3;
+	protected $groups;
 
 	public function __construct(cache $cache, db $db, Logger $monolog, s3 $s3, groups $groups, schedule $schedule)
 	{
@@ -137,7 +137,7 @@ class cleanup_image_files extends task
 		}
 	}
 
-	private function table_exists(string $table, string $schema)
+	protected function table_exists(string $table, string $schema)
 	{
 		return $this->db->fetchColumn('
 			select 1

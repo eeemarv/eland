@@ -9,7 +9,7 @@ use service\schedule;
 
 class cleanup_cache extends task
 {
-	private $cache;
+	protected $cache;
 
 	public function __construct(cache $cache, schedule $schedule)
 	{

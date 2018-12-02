@@ -9,7 +9,7 @@ use service\schedule;
 
 class cleanup_logs extends task
 {
-	private $db;
+	protected $db;
 
 	public function __construct(db $db, schedule $schedule)
 	{
