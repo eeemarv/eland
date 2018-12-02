@@ -4,20 +4,20 @@ namespace task;
 
 use Doctrine\DBAL\Connection as db;
 use service\cache;
-use model\task;
 use service\groups;
 
-use service\schedule;
-
-class get_elas_interlets_domains extends task
+class get_elas_intersystem_domains
 {
 	protected $cache;
 	protected $db;
 	protected $groups;
 
-	public function __construct(db $db, cache $cache, schedule $schedule, groups $groups)
+	public function __construct(
+		db $db,
+		cache $cache,
+		groups $groups
+	)
 	{
-		parent::__construct($schedule);
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->groups = $groups;
@@ -63,10 +63,5 @@ class get_elas_interlets_domains extends task
 		$this->cache->set('elas_interlets_domains', $domains);
 
 		return;
-	}
-
-	function get_interval()
-	{
-		return 900;
 	}
 }

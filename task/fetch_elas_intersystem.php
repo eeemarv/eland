@@ -4,13 +4,10 @@ namespace task;
 
 use service\cache;
 use Predis\Client as redis;
-use model\task;
 use service\typeahead;
 use Monolog\Logger;
 
-use service\schedule;
-
-class fetch_elas_interlets extends task
+class fetch_elas_intersystem
 {
 	protected $cache;
 	protected $redis;
@@ -24,18 +21,18 @@ class fetch_elas_interlets extends task
 	protected $last_fetch;
 	protected $apikeys_fails;
 
-	public function __construct(cache $cache, redis $redis, typeahead $typeahead, Logger $monolog, schedule $schedule)
+	public function __construct(
+		cache $cache,
+		redis $redis,
+		typeahead $typeahead,
+		Logger $monolog
+	)
 	{
-		parent::__construct($schedule);
 		$this->cache = $cache;
 		$this->redis = $redis;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
 	}
-
-	/**
-	*
-	*/
 
 	function process()
 	{
@@ -485,14 +482,5 @@ class fetch_elas_interlets extends task
 		$this->redis->expire($redis_key, 86400); // 1 day
 
 		error_log($this->domain . ' typeahead data fetched of ' . count($users) . ' users');
-	}
-
-	/**
-	 *
-	 */
-
-	function get_interval()
-	{
-		return 900;
 	}
 }

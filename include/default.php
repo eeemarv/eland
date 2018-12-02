@@ -188,25 +188,25 @@ $app['queue.mail'] = function ($app){
 		$app['email_validate']);
 };
 
-// tasks
+// tasks for background processes
 
 $app['task.cleanup_images'] = function ($app){
-	return new task\cleanup_image_files(
+	return new task\cleanup_images(
 		$app['cache'],
 		$app['db'], $app['monolog'],
 		$app['s3'], $app['groups']);
 };
 
-$app['task.get_elas_interlets_domains'] = function ($app){
-	return new task\get_elas_interlets_domains(
+$app['task.get_elas_intersystem_domains'] = function ($app){
+	return new task\get_elas_intersystem_domains(
 		$app['db'], $app['cache'],
-		$app['schedule'], $app['groups']);
+		$app['groups']);
 };
 
-$app['task.fetch_elas_interlets'] = function ($app){
-	return new task\fetch_elas_interlets(
+$app['task.fetch_elas_intersystem'] = function ($app){
+	return new task\fetch_elas_intersystem(
 		$app['cache'], $app['predis'], $app['typeahead'],
-		$app['monolog'], $app['schedule']);
+		$app['monolog']);
 };
 
 // schema tasks (tasks applied to every group seperate)
