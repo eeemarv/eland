@@ -402,15 +402,18 @@ include __DIR__ . '/include/header.php';
 
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
-echo '<button class="btn btn-default" title="Toon invul-hulp" data-toggle="collapse" ';
+echo '<button class="btn btn-default" ';
+echo 'title="Toon invul-hulp" data-toggle="collapse" ';
 echo 'data-target="#help" type="button">';
 echo '<i class="fa fa-question"></i>';
 echo ' Invul-hulp</button>';
 echo '</div>';
 echo '<div class="panel-heading collapse" id="help">';
 
-echo '<p>Met deze invul-hulp kan je snel alle bedragen van de massa-transactie invullen. ';
-echo 'De bedragen kan je nadien nog individueel aanpassen alvorens de massa transactie uit te voeren. ';
+echo '<p>Met deze invul-hulp kan je snel alle ';
+echo 'bedragen van de massa-transactie invullen. ';
+echo 'De bedragen kan je nadien nog individueel ';
+echo 'aanpassen alvorens de massa transactie uit te voeren. ';
 echo '</p>';
 
 echo '<form class="form" id="fill_in_aid">';
@@ -438,7 +441,8 @@ echo '<h4>Variabel deel</h4>';
 
 //
 echo '<div class="form-group">';
-echo '<label for="fixed" class="control-label">Over periode</label>';
+echo '<label for="fixed" class="control-label">';
+echo 'Over periode</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo 'dagen</span>';
@@ -460,7 +464,8 @@ echo '<span class="input-group-addon">&permil;</span>';
 echo '<input type="number" ';
 echo 'class="form-control margin-bottom" id="var_balance">';
 echo '</div>';
-echo '<p>Berekend op gewogen gemiddelde van saldo. Kan ook negatief zijn!</p>';
+echo '<p>Berekend op gewogen gemiddelde van saldo. ';
+echo 'Kan ook negatief zijn!</p>';
 echo '</div>';
 
 echo '<div class="col-sm-6">';
@@ -471,7 +476,8 @@ echo ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
 echo '</div>';
-echo '<p>De basis waartegenover berekend wordt. Kan ook afwijkend van nul zijn.</p>';
+echo '<p>De basis waartegenover berekend wordt. ';
+echo 'Kan ook afwijkend van nul zijn.</p>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -491,9 +497,12 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. Account Codes';
+echo 'excl. ';
+echo '<i class="fa fa-user"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="var_ex_code_in">';
+echo '<input type="text" class="form-control" ';
+echo 'id="var_ex_code_in" ';
+echo 'placeholder="Account Codes">';
 echo '</div>';
 echo '<p>Exclusief tegenpartijen: ';
 echo 'Account Codes gescheiden door komma\'s</p>';
@@ -516,9 +525,12 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo 'excl. Account Codes';
+echo 'excl. ';
+echo '<i class="fa fa-user"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="var_ex_code_out">';
+echo '<input type="text" class="form-control" ';
+echo 'id="var_ex_code_out" ';
+echo 'placeholder="Account Codes">';
 echo '</div>';
 echo '<p>Exclusief tegenpartijen: ';
 echo 'Account Codes gescheiden door komma\'s</p>';
@@ -539,7 +551,8 @@ echo $app['config']->get('currency', $tschema);
 echo ': min';
 echo '</span>';
 
-echo '<input type="number" class="form-control margin-bottom" id="var_min">';
+echo '<input type="number" ';
+echo 'class="form-control margin-bottom" id="var_min">';
 echo '</div>';
 echo '</div>';
 
@@ -611,7 +624,10 @@ echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '">';
+echo '<input type="text" class="form-control" ';
+echo 'id="q" name="q" value="';
+echo $q;
+echo '">';
 echo '</div>';
 echo '</div>';
 echo '</div>';
@@ -640,7 +656,8 @@ echo '<input type="hidden" value="" id="combined-filter">';
 echo '<input type="hidden" value="';
 echo $hsh;
 echo '" name="hsh" id="hsh">';
-echo '<input type="hidden" value="" name="selected_users" id="selected_users">';
+echo '<input type="hidden" value="" ';
+echo 'name="selected_users" id="selected_users">';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -670,7 +687,8 @@ echo '</div>';
 
 echo '</div>';
 
-echo '<table class="table table-bordered table-striped table-hover panel-body footable" ';
+echo '<table class="table table-bordered table-striped ';
+echo 'table-hover panel-body footable" ';
 echo 'data-filter="#combined-filter" data-filter-minimum="1" ';
 echo 'data-minlimit="';
 echo $group_minlimit;
@@ -716,7 +734,8 @@ foreach($users as $user_id => $user)
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
-	echo '<input type="number" name="amount[' . $user_id . ']" class="form-control" ';
+	echo '<input type="number" name="amount[' . $user_id . ']" ';
+	echo 'class="form-control" ';
 	echo 'value="';
 	echo $amount[$user_id] ?? '';
 	echo '" ';
@@ -777,14 +796,17 @@ echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
-echo '<input type="text" class="form-control" id="to_letscode" name="to_letscode" ';
+echo '<input type="text" class="form-control" ';
+echo 'id="to_letscode" name="to_letscode" ';
 echo 'value="';
 echo $to_letscode;
 echo '" ';
 echo 'data-typeahead-source="from_letscode">';
 echo '</div>';
-echo '<p>Gebruik dit voor een "Veel naar één" transactie. Bijvoorbeeld, een ledenbijdrage. ';
-echo 'Alle ingevulde bedragen hierboven gaan naar dit Account.</p>';
+echo '<p>Gebruik dit voor een "Veel naar één" transactie. ';
+echo 'Bijvoorbeeld, een ledenbijdrage. ';
+echo 'Alle ingevulde bedragen hierboven ';
+echo 'gaan naar dit Account.</p>';
 echo '</div>';
 
 echo '<div class="form-group">';
@@ -811,15 +833,17 @@ echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label>';
-echo '<input type="checkbox" name="verify"';
-echo ' value="1" required> ';
-echo ' Ik heb nagekeken dat de juiste bedragen en de juiste "Van" of "Aan" ';
+echo '<input type="checkbox" name="verify" ';
+echo 'value="1" required> ';
+echo 'Ik heb nagekeken dat de juiste ';
+echo 'bedragen en de juiste "Van" of "Aan" ';
 echo 'Account Code ingevuld zijn.';
 echo '</label>';
 echo '</div>';
 
 echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-echo '<input type="submit" value="Massa transactie uitvoeren" name="zend" class="btn btn-success">';
+echo '<input type="submit" value="Massa transactie uitvoeren" ';
+echo 'name="zend" class="btn btn-success">';
 echo $app['form_token']->get_hidden_input();
 
 echo '</div>';
@@ -827,7 +851,9 @@ echo '</div>';
 
 echo '</div>';
 
-echo '<input type="hidden" value="' . $transid . '" name="transid">';
+echo '<input type="hidden" value="';
+echo $transid;
+echo '" name="transid">';
 
 echo '</form>';
 
