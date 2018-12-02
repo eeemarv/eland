@@ -1,2 +1,2 @@
 web: vendor/bin/heroku-php-apache2
-worker: php worker.php
+worker: php process/worker.php
