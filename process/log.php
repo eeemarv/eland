@@ -25,7 +25,7 @@ if (!isset($boot['log']))
 $boot['log']++;
 $app['cache']->set('boot', $boot);
 
-error_log('process/log started .. ' . $boot['log']);
+error_log('..process/log started .. ' . $boot['log']);
 
 $loop_count = 1;
 

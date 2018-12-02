@@ -34,7 +34,11 @@ while (true)
 	sleep(7200);
 
 	$app['cache']->cleanup();
-	error_log('process/cleanup_cache .. ' . $boot['cleanup_cache'] . ' .. ' . $loop_count);
+
+	error_log('..process/cleanup_cache .. ' .
+		$boot['cleanup_cache'] .
+		' .. ' .
+		$loop_count);
 
 	$loop_count++;
 }

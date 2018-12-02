@@ -17,33 +17,28 @@ if (!count($boot))
 	$boot = ['count' => 0];
 }
 
-if (!isset($boot['geocode']))
+if (!isset($boot['cleanup_images']))
 {
-	$boot['geocode'] = $boot['count'];
+	$boot['cleanup_images'] = $boot['count'];
 }
 
-$boot['geocode']++;
+$boot['cleanup_images']++;
 $app['cache']->set('boot', $boot);
 
-error_log('process/geocode started .. ' . $boot['geocode']);
+error_log('process/cleanup_images started .. ' . $boot['cleanup_images']);
 
 $loop_count = 1;
 
 while (true)
 {
-	sleep(120);
+	sleep(900);
 
-	$record = $app['queue']->get(['geocode']);
+	$app['task.cleanup_images']->process();
 
-	if (count($record))
+	if ($loop_count % 100 === 0)
 	{
-		$app['queue.geocode']->process($record['data']);
-	}
-
-	if ($loop_count % 5000 === 0)
-	{
-		error_log('..process/geocode.. ' .
-			$boot['geocode'] .
+		error_log('..process/cleanup_images.. ' .
+			$boot['cleanup_images'] .
 			' .. ' .
 			$loop_count);
 	}

@@ -2,7 +2,6 @@
 
 namespace task;
 
-use model\task;
 use Predis\Client as Redis;
 use service\cache;
 use Doctrine\DBAL\Connection as db;
@@ -10,9 +9,7 @@ use Monolog\Logger;
 use service\s3;
 use service\groups;
 
-use service\schedule;
-
-class cleanup_image_files extends task
+class cleanup_images
 {
 	protected $days = 365;
 	protected $cache;
@@ -21,9 +18,14 @@ class cleanup_image_files extends task
 	protected $s3;
 	protected $groups;
 
-	public function __construct(cache $cache, db $db, Logger $monolog, s3 $s3, groups $groups, schedule $schedule)
+	public function __construct(
+		cache $cache,
+		db $db,
+		Logger $monolog,
+		s3 $s3,
+		groups $groups
+	)
 	{
-		parent::__construct($schedule);
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->monolog = $monolog;
@@ -152,10 +154,5 @@ class cleanup_image_files extends task
 			where  n.nspname = \'' . $schema . '\'
 			and    c.relname = \'' . $table . '\'
 			and    c.relkind = \'r\'') ? true : false;
-	}
-
-	public function get_interval()
-	{
-		return 900;
 	}
 }

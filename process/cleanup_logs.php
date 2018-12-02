@@ -40,7 +40,10 @@ while (true)
 	$app['db']->executeQuery('delete from xdb.logs
 		where ts < ?', [$treshold]);
 
-	error_log('cleanup_logs .. ' . $boot['cleanup_logs'] . ' .. ' . $loop_count);
+	error_log('..process/cleanup_logs .. ' .
+		$boot['cleanup_logs'] .
+		' .. ' .
+		$loop_count);
 
 	$loop_count++;
 }
