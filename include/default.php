@@ -55,27 +55,6 @@ $app->extend('monolog', function($monolog, $app) {
 	$handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
 	$monolog->pushHandler($handler);
 
-	$monolog->pushProcessor(function ($record) use ($app){
-
-		$record['extra']['schema'] = $app['this_group']->get_schema();
-
-		if (isset($app['s_ary_user']))
-		{
-			$record['extra']['letscode'] = $app['s_ary_user']['letscode'] ?? '';
-			$record['extra']['user_id'] = $app['s_ary_user']['id'] ?? '';
-			$record['extra']['username'] = $app['s_ary_user']['name'] ?? '';
-		}
-
-		if (isset($app['s_schema']))
-		{
-			$record['extra']['user_schema'] = $app['s_schema'];
-		}
-
-		$record['extra']['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
-
-		return $record;
-	});
-
 	return $monolog;
 });
 
