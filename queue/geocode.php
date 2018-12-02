@@ -13,13 +13,13 @@ use service\geocode as geocode_service;
 
 class geocode extends queue_model implements queue_interface
 {
-	private $queue;
-	private $monolog;
-	private $cache;
-	private $db;
-	private $user_cache;
+	protected $queue;
+	protected $monolog;
+	protected $cache;
+	protected $db;
+	protected $user_cache;
 
-	private $geocode_service;
+	protected $geocode_service;
 
 	public function __construct(db $db, cache $cache, queue $queue,
 		Logger $monolog, user_cache $user_cache, geocode_service $geocode_service)
@@ -94,6 +94,27 @@ class geocode extends queue_model implements queue_interface
 		return;
 	}
 
+	public function queue(array $data):void
+	{
+		if (!isset($data['schema']))
+		{
+			$this->monolog->debug('no schema set for geocode task');
+			return;
+		}
+		if (!isset($data['uid']))
+		{
+			$this->monolog->debug('no uid set for geocode task', ['schema' => $data['schema']]);
+			return;
+		}
+		if (!isset($data['adr']))
+		{
+			$this->monolog->debug('no adr set for geocode task', ['schema' => $data['schema']]);
+			return;
+		}
+		$data['adr'] = trim($data['adr']);
+		$this->queue->set('geocode', $data);
+	}
+
 	public function run($schema):void
 	{
 		$log_ary = [];
@@ -115,7 +136,7 @@ class geocode extends queue_model implements queue_interface
 				'schema'	=> $schema,
 			];
 
-			$this->queue->set('geocode', $data);
+			$this->queue($data);
 			$log_ary[] = link_user($row['id_user'], $schema, false, true) . ': ' . $data['adr'];
 		}
 
