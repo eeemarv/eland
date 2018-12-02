@@ -62,7 +62,7 @@ class mail extends queue_model implements queue_interface
 	/**
 	 *
 	 */
-	public function process(array $data)
+	public function process(array $data):void
 	{
 		if (!isset($data['schema']))
 		{
@@ -336,7 +336,7 @@ class mail extends queue_model implements queue_interface
 			$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
 	}
 
-	public function get_interval()
+	public function get_interval():int
 	{
 		return 5;
 	}

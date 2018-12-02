@@ -48,14 +48,14 @@ class queue
 		$this->db->insert('xdb.queue', $insert);
 	}
 
-	public function get(array $omit_topics = []):array
+	public function get(array $topics = []):array
 	{
 		$sql_where = $sql_params = $sql_types = [];
 
-		if (count($omit_topics))
+		if (count($topics))
 		{
-			$sql_where[] = 'topic not in (?)';
-			$sql_params[] = $omit_topics;
+			$sql_where[] = 'topic in (?)';
+			$sql_params[] = $topics;
 			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
 		}
 

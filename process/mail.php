@@ -17,15 +17,15 @@ if (!count($boot))
 	$boot = ['count' => 0];
 }
 
-if (!isset($boot['log']))
+if (!isset($boot['mail']))
 {
-	$boot['log'] = $boot['count'];
+	$boot['mail'] = $boot['count'];
 }
 
-$boot['log']++;
+$boot['mail']++;
 $app['cache']->set('boot', $boot);
 
-error_log('process/log started .. ' . $boot['log']);
+error_log('process/mail started .. ' . $boot['mail']);
 
 $loop_count = 1;
 
@@ -33,11 +33,16 @@ while (true)
 {
 	sleep(5);
 
-	$app['log_db']->update();
+	$record = $app['queue']->get(['mail']);
+
+	if (count($record))
+	{
+		$app['queue.mail']->process($record['data']);
+	}
 
 	if ($loop_count % 10000 === 0)
 	{
-		error_log('..process/log.. ' . $boot['log'] . ' .. ' . $loop_count);
+		error_log('..process/mail.. ' . $boot['mail'] . ' .. ' . $loop_count);
 	}
 
 	$loop_count++;

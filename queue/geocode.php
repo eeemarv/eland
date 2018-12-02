@@ -21,7 +21,7 @@ class geocode extends queue_model implements queue_interface
 
 	private $geocode_service;
 
-	public function __construct(db $db, cache $cache, queue $queue, 
+	public function __construct(db $db, cache $cache, queue $queue,
 		Logger $monolog, user_cache $user_cache, geocode_service $geocode_service)
 	{
 		$this->queue = $queue;
@@ -34,7 +34,7 @@ class geocode extends queue_model implements queue_interface
 		parent::__construct();
 	}
 
-	public function process(array $data)
+	public function process(array $data):void
 	{
 		$adr = trim($data['adr']);
 		$uid = $data['uid'];
@@ -85,7 +85,7 @@ class geocode extends queue_model implements queue_interface
 
 				$this->monolog->info('(cron) ' . $log . ' ' . $log_user, ['schema' => $sch]);
 
-				return;	
+				return;
 		}
 
 		$log = 'Geocode return NULL for: ' . $adr;
@@ -94,32 +94,7 @@ class geocode extends queue_model implements queue_interface
 		return;
 	}
 
-	public function queue(array $data)
-	{
-		if (!isset($data['schema']))
-		{
-			$this->monolog->debug('no schema set for geocode task');
-			return;
-		}
-
-		if (!isset($data['uid']))
-		{
-			$this->monolog->debug('no uid set for geocode task', ['schema' => $data['schema']]);
-			return;
-		}
-
-		if (!isset($data['adr']))
-		{
-			$this->monolog->debug('no adr set for geocode task', ['schema' => $data['schema']]);
-			return;
-		}
-
-		$data['adr'] = trim($data['adr']);
-
-		$this->queue->set('geocode', $data);
-	}
-
-	public function run($schema)
+	public function run($schema):void
 	{
 		$log_ary = [];
 
@@ -140,10 +115,8 @@ class geocode extends queue_model implements queue_interface
 				'schema'	=> $schema,
 			];
 
-			if ($this->queue($data) !== false)
-			{
-				$log_ary[] = link_user($row['id_user'], $schema, false, true) . ': ' . $data['adr'];
-			}
+			$this->queue->set('geocode', $data);
+			$log_ary[] = link_user($row['id_user'], $schema, false, true) . ': ' . $data['adr'];
 		}
 
 		if (count($log_ary))
@@ -152,7 +125,7 @@ class geocode extends queue_model implements queue_interface
 		}
 	}
 
-	public function get_interval()
+	public function get_interval():int
 	{
 		return 120;
 	}

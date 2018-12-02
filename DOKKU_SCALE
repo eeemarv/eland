@@ -1,3 +1,5 @@
 web=1
 worker=1
 log=1
+mail=1
+geocode=1
