@@ -280,12 +280,12 @@ if ($post && $img && $images && !$s_guest)
 			continue;
 		}
 
-		if ($size > (200 * 1024))
+		if ($size > (400 * 1024))
 		{
 			$ret_ary[] = [
 				'name'	=> $name,
 				'size'	=> $size,
-				'error' => 'te groot bestand',
+				'error' => 'Te groot bestand',
 			];
 
 			continue;

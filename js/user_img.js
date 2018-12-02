@@ -6,6 +6,8 @@ $(document).ready(function () {
 	$('#fileupload').fileupload({
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
+		imageMaxWidth: 400,
+		imageMaxHeight: 400,
 		imageOrientation: true
 	}).on('fileuploadadd', function (e, data) {
 		$('#img_plus').removeClass('fa-plus').addClass('fa-spinner fa-spin');

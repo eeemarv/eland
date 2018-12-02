@@ -218,7 +218,7 @@ if ($post && $img && $id )
 	$tmp_name = $image['tmp_name'];
 	$type = $image['type'];
 
-	if ($size > 200 * 1024)
+	if ($size > 400 * 1024)
 	{
 		echo json_encode(['error' => 'Het bestand is te groot.']);
 		exit;
