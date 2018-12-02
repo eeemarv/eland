@@ -560,7 +560,9 @@ function aphp(
 	$attr = false,
 	$sch = false):string
 {
-	$out = '<a href="' .  generate_url($entity, $params, $sch) . '"';
+	$out = '<a href="';
+	$out .= generate_url($entity, $params, $sch);
+	$out .= '"';
 	$out .= $class ? ' class="' . $class . '"' : '';
 	$out .= $title ? ' title="' . $title . '"' : '';
 	if (is_array($attr))
@@ -585,11 +587,6 @@ function aphp(
 function generate_url(string $entity, $params = [], $sch = false):string
 {
 	global $rootpath, $app;
-
-	if ($app['alert']->is_set())
-	{
-		$params['a'] = '1';
-	}
 
 	$params = array_merge($params, get_session_query_param($sch));
 

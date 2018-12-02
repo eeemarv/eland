@@ -8,7 +8,6 @@ use service\this_group;
 
 class alert
 {
-	protected $send_once;
 	protected $monolog;
 	protected $session;
 	protected $this_group;
@@ -94,14 +93,5 @@ class alert
 		}
 
 		return $out;
-	}
-
-	public function is_set():bool
-	{
-		$is_set = (!isset($this->send_once) && $this->flashbag->has('alert')) ? true : false;
-
-		$this->send_once = true;
-
-		return $is_set;
 	}
 }
