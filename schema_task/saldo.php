@@ -57,7 +57,7 @@ class saldo extends schema_task
 		$this->date_format = $date_format;
 		$this->interlets_groups = $interlets_groups;
 		$this->config = $config;
-		$this->mail_addr_user;
+		$this->mail_addr_user = $mail_addr_user;
 	}
 
 	function process()
