@@ -1,9 +1,5 @@
 <?php
 
-use Symfony\Component\Finder\Finder;
-use util\queue_container;
-use util\task_container;
-
 if (php_sapi_name() !== 'cli')
 {
 	echo '-- cli only --';
@@ -21,23 +17,21 @@ if (!count($boot))
 	$boot = ['count' => 0];
 }
 
-$boot['count']++;
+if (!isset($boot['log']))
+{
+	$boot['log'] = $boot['count'];
+}
+
+$boot['log']++;
 $app['cache']->set('boot', $boot);
 
-echo 'worker started .. ' . $boot['count'] . "\n";
-
-error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
-error_log('schemas: ' . json_encode($app['groups']->get_schemas()));
-error_log('hosts: ' . json_encode($app['groups']->get_hosts()));
-
-$queue = new queue_container($app, 'queue');
-$task = new task_container($app, 'task');
-$schema_task = new task_container($app, 'schema_task');
+error_log('process/log started .. ' . $boot['log']);
 
 $loop_count = 1;
 
 while (true)
 {
+/*
 	$monitor = $app['predis']->get('monitor_service_worker');
 
 	if (isset($monitor) && $monitor !== '1')
@@ -50,7 +44,7 @@ while (true)
 	}
 
 	$now = time();
-	$monitor[$boot['count']] = $now;
+	$monitor[$boot['log']] = $now;
 
 	if (max(array_keys($monitor)) !== $boot['count'])
 	{
@@ -59,27 +53,16 @@ while (true)
 		sleep(300);
 		continue;
 	}
+*/
+	$app['log_db']->update();
 
-	sleep(1);
+	sleep(5);
 
-	if ($queue->should_run())
+	if ($loop_count % 10000 === 0)
 	{
-		$queue->run();
+		error_log('..process/log.. ' . $boot['log'] . ' .. ' . $loop_count);
 	}
-	else if ($task->should_run())
-	{
-		$task->run();
-	}
-	else if ($schema_task->should_run())
-	{
-		$schema_task->run();
-	}
-
-	if ($loop_count % 1000 === 0)
-	{
-		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
-	}
-
+/*
 	if ($loop_count % 10 === 0)
 	{
 		$half_hour_ago = $now - 1800;
@@ -95,6 +78,7 @@ while (true)
 		$app['predis']->set('monitor_service_worker', json_encode($monitor));
 		$app['predis']->expire('monitor_service_worker', 900);
 	}
+*/
 
 	$loop_count++;
 }
