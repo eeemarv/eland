@@ -5,3 +5,4 @@ mail=1
 geocode=1
 cleanup_cache=1
 cleanup_logs=1
+fetch_elas_intersystem=1

@@ -29,7 +29,6 @@ error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
 error_log('schemas: ' . json_encode($app['groups']->get_schemas()));
 error_log('hosts: ' . json_encode($app['groups']->get_hosts()));
 
-$task = new task_container($app, 'task');
 $schema_task = new task_container($app, 'schema_task');
 
 $loop_count = 1;
@@ -58,37 +57,30 @@ while (true)
 		continue;
 	}
 
-	sleep(1);
+	sleep(60);
 
-	if ($task->should_run())
-	{
-		$task->run();
-	}
-	else if ($schema_task->should_run())
+	if ($schema_task->should_run())
 	{
 		$schema_task->run();
 	}
 
 	if ($loop_count % 1000 === 0)
 	{
-		error_log('..worker.. ' . $boot['count'] . ' .. ' . $loop_count);
+		error_log('..process/worker.. ' . $boot['count'] . ' .. ' . $loop_count);
 	}
 
-	if ($loop_count % 10 === 0)
+	$day_ago = $now - 86400;
+
+	foreach ($monitor as $worker => $time)
 	{
-		$half_hour_ago = $now - 1800;
-
-		foreach ($monitor as $worker => $time)
+		if ($time < $half_hour_ago)
 		{
-			if ($time < $half_hour_ago)
-			{
-				unset($monitor['worker']);
-			}
+			unset($monitor[$worker]);
 		}
-
-		$app['predis']->set('monitor_service_worker', json_encode($monitor));
-		$app['predis']->expire('monitor_service_worker', 900);
 	}
+
+	$app['predis']->set('monitor_service_worker', json_encode($monitor));
+	$app['predis']->expire('monitor_service_worker', 900);
 
 	$loop_count++;
 }
