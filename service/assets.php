@@ -99,20 +99,12 @@ class assets
 	protected $include_css_print = [];
 	protected $include_js = [];
 
-	/**
-	 *
-	 */
-
 	public function __construct(string $rootpath)
 	{
 		$this->rootpath = $rootpath;
 	}
 
-	/*
-	 *
-	 */
-
-	public function add($asset_s)
+	public function add($asset_s):void
 	{
 		$asset_ary = is_array($asset_s) ? $asset_s : [$asset_s];
 
@@ -162,13 +154,7 @@ class assets
 				$this->include_css[] = $pre . $asset_name . '?v=' . $this->version;
 			}
 		}
-
-		return $this;
 	}
-
-	/*
-	*
-	*/
 
 	public function get_js():string
 	{
@@ -181,10 +167,6 @@ class assets
 
 		return $out;
 	}
-
-	/*
-	*
-	*/
 
 	public function get_css():string
 	{
@@ -203,20 +185,12 @@ class assets
 		return $out;
 	}
 
-	/**
-	 *
-	 */
-
-	public function get_version_param()
+	public function get_version_param():string
 	{
 		return '?v=' . $this->version;
 	}
 
-	/*
-	 *
-	 */
-
-	public function get_css_print()
+	public function get_css_print():string
 	{
 		return $this->include_css_print;
 	}
