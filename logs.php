@@ -259,18 +259,27 @@ echo '<tbody>';
 foreach($rows as $value)
 {
 	echo '<tr>';
-	echo '<td>' . $app['date_format']->get($value['ts'], 'sec') .'</td>';
-	echo '<td>' . $value['type'] . '</td>';
-	echo '<td>' . $value['ip'] . '</td>';
+	echo '<td>';
+	echo $app['date_format']->get($value['ts'], 'sec');
+	echo '</td>';
+	echo '<td>';
+	echo $value['type'];
+	echo '</td>';
+	echo '<td>';
+	echo $value['ip'];
+	echo '</td>';
 	echo '<td>';
 
-	if (isset($value['user_schema']) && isset($value['user_id']) && ctype_digit((string) $value['user_id']))
+	if (isset($value['user_schema'])
+		&& isset($value['user_id'])
+		&& ctype_digit((string) $value['user_id'])
+		&& !empty($value['user_schema']))
 	{
 		echo link_user($value['user_id'], $value['user_schema']);
 	}
 	else
 	{
-		echo 'geen';
+		echo '<i> ** geen ** </i>';
 	}
 
 	echo '</td>';
