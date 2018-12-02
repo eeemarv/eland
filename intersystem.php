@@ -752,7 +752,8 @@ function get_schemas_groups():string
 	$out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
 	$out .= 'Zie <a href="https://eland.letsa.net/elas-intersysteem-koppeling-maken.html">hier</a> ';
 	$out .= 'voor de procedure.</h3>';
-	$out .= '<p><small>Voor het aanmaken van interSysteem verbindingen in deze eLAND-server zie onder!</small></p>';
+	$out .= '<p>Voor het aanmaken van interSysteem verbindingen ';
+	$out .= 'in deze eLAND-server zie onder!</p>';
 	$out .= '</div>';
 	$out .= '<ul>';
 	$out .= '<li> Kies \'elassoap\' als API methode.</li>';

@@ -296,8 +296,8 @@ if ($edit)
 	echo $app['typeahead']->get('doc_map_names');
 	echo '">';
 	echo '</div>';
-	echo '<p><small>Optioneel. Creëer een nieuwe map ';
-	echo 'of selecteer een bestaande.</small></p>';
+	echo '<p>Optioneel. Creëer een nieuwe map ';
+	echo 'of selecteer een bestaande.</p>';
 	echo '</div>';
 
 	echo aphp('docs', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
@@ -582,7 +582,8 @@ if ($add)
 	echo $app['typeahead']->get('doc_map_names');
 	echo '">';
 	echo '</div>';
-	echo '<p><small>Optioneel. Creëer een nieuwe map of selecteer een bestaande.</small></p>';
+	echo '<p>Optioneel. Creëer een nieuwe map of ';
+	echo 'selecteer een bestaande.</p>';
 	echo '</div>';
 
 	$map_context = $map ? ['map' => $map] : [];

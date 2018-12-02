@@ -884,7 +884,7 @@ foreach ($tab_panes as $id => $pane)
 
 			if (isset($input['explain_top']))
 			{
-				echo '<p><small>' . $input['explain_top'] . '</small></p>';
+				echo '<p>' . $input['explain_top'] . '</p>';
 			}
 
 			echo '<div class="row">';
@@ -1021,7 +1021,7 @@ foreach ($tab_panes as $id => $pane)
 
 		if (isset($input['explain']))
 		{
-			echo '<p><small>' . $input['explain'] . '</small></p>';
+			echo '<p>' . $input['explain'] . '</p>';
 		}
 
 		echo '</li>';

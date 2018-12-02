@@ -229,8 +229,8 @@ if ($bottom_text)
 	echo $bottom_text;
 }
 
-echo '<p><small>Leden: indien mogelijk, login en gebruik het Support formulier. ';
+echo '<p>Leden: indien mogelijk, login en gebruik het Support formulier. ';
 echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';
-echo 'aanvragen met je E-mail adres vanuit de login-pagina!</i></small></p>';
+echo 'aanvragen met je E-mail adres vanuit de login-pagina!</i></p>';
 
 include __DIR__ . '/include/footer.php';

@@ -2188,10 +2188,11 @@ if ($add || $edit)
 		echo '<div class="bg-warning pan-sub">';
 		echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
-		echo '<p><small>Meer contacten kunnen toegevoegd worden vanuit de profielpagina met de knop ';
+		echo '<p>Meer contacten kunnen toegevoegd worden ';
+		echo 'vanuit de profielpagina met de knop ';
 		echo 'Toevoegen bij de contactinfo ';
 		echo $add ? 'nadat de gebruiker gecreëerd is' : '';
-		echo '.</small></p>';
+		echo '.</p>';
 
 //		echo '<ul class="list-group">';
 

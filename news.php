@@ -215,7 +215,7 @@ if ($add || $edit)
 	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
 	echo 'required>';
 	echo '</div>';
-	echo '<p><small>Wanneer gaat dit door?</small></p>';
+	echo '<p>Wanneer gaat dit door?</p>';
 	echo '</div>';
 
 	echo '<div class="form-group">';
