@@ -1165,7 +1165,7 @@ if (($edit || $add))
 
 	$app['assets']->add(['fileupload', 'msg_edit.js', 'access_input_cache.js']);
 
-	$h1 = ($add) ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
+	$h1 = $add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
 
 	include __DIR__ . '/include/header.php';
@@ -1271,7 +1271,7 @@ if (($edit || $add))
 	echo 'Per (uur, stuk, ...)</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
-	echo 'eenheid';
+	echo '<span class="fa fa-hourglass-half"></span>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" ';
 	echo 'id="units" name="units" ';
