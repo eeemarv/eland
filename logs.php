@@ -264,7 +264,7 @@ foreach($rows as $value)
 	echo '<td>' . $value['ip'] . '</td>';
 	echo '<td>';
 
-	if (isset($value['user_id']) && ctype_digit((string) $value['user_id']))
+	if (isset($value['user_schema']) && isset($value['user_id']) && ctype_digit((string) $value['user_id']))
 	{
 		echo link_user($value['user_id'], $value['user_schema']);
 	}
