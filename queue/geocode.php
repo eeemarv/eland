@@ -2,8 +2,7 @@
 
 namespace queue;
 
-use model\queue as queue_model;
-use model\queue_interface;
+use queue\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
 use service\queue;
@@ -11,7 +10,7 @@ use service\user_cache;
 use Monolog\Logger;
 use service\geocode as geocode_service;
 
-class geocode extends queue_model implements queue_interface
+class geocode implements queue_interface
 {
 	protected $queue;
 	protected $monolog;
@@ -30,8 +29,6 @@ class geocode extends queue_model implements queue_interface
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 		$this->geocode_service = $geocode_service;
-
-		parent::__construct();
 	}
 
 	public function process(array $data):void

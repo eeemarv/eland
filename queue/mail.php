@@ -2,8 +2,7 @@
 
 namespace queue;
 
-use model\queue as queue_model;
-use model\queue_interface;
+use queue\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use service\queue;
 use Monolog\Logger;
@@ -13,7 +12,7 @@ use service\mail_addr_system;
 use service\token;
 use service\email_validate;
 
-class mail extends queue_model implements queue_interface
+class mail implements queue_interface
 {
 	protected $converter;
 	protected $mailer;
@@ -55,8 +54,6 @@ class mail extends queue_model implements queue_interface
 		$converter_config = $this->converter->getConfig();
 		$converter_config->setOption('strip_tags', true);
 		$converter_config->setOption('remove_nodes', 'img');
-
-		parent::__construct();
 	}
 
 	/**
