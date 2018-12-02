@@ -25,7 +25,7 @@ if (!isset($boot['geocode']))
 $boot['geocode']++;
 $app['cache']->set('boot', $boot);
 
-error_log('process/geocode started .. ' . $boot['geo']);
+error_log('process/geocode started .. ' . $boot['geocode']);
 
 $loop_count = 1;
 
