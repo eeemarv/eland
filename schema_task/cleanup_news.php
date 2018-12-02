@@ -30,7 +30,10 @@ class cleanup_news extends schema_task
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
-		$news = $this->db->fetchAll('select id, headline from ' . $this->schema . '.news where itemdate < ? and sticky = \'f\'', [$now]);
+		$news = $this->db->fetchAll('select id, headline
+			from ' . $this->schema . '.news
+			where itemdate < ?
+				and sticky = \'f\'', [$now]);
 
 		foreach ($news as $n)
 		{

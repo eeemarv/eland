@@ -45,7 +45,9 @@ class geocode extends schema_task
 		$log_ary = [];
 
 		$st = $this->db->prepare('select c.value, c.id_user
-			from ' . $this->schema . '.contact c, ' . $this->schema . '.type_contact tc, ' . $this->schema . '.users u
+			from ' . $this->schema . '.contact c, ' .
+				$this->schema . '.type_contact tc, ' .
+				$this->schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
 				and c.id_user = u.id
@@ -84,13 +86,14 @@ class geocode extends schema_task
 
 		if (count($log_ary))
 		{
-			$this->monolog->info('Addresses queued for geocoding: ' . implode(', ', $log_ary),
+			$this->monolog->info('Addresses queued for geocoding: ' .
+				implode(', ', $log_ary),
 				['schema' => $this->schema]);
 		}
 	}
 
 	public function get_interval()
 	{
-		return 900;
+		return 1800;
 	}
 }

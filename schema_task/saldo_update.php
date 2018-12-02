@@ -76,8 +76,11 @@ class saldo_update extends schema_task
 				continue;
 			}
 
-			$this->db->update($this->schema . '.users', ['saldo' => $calculated], ['id' => $id]);
-			$m = 'User id ' . $id . ' balance updated, old: ' . $balance . ', new: ' . $calculated;
+			$this->db->update($this->schema . '.users',
+				['saldo' => $calculated], ['id' => $id]);
+
+			$m = 'User id ' . $id . ' balance updated, old: ' .
+				$balance . ', new: ' . $calculated;
 			$this->monolog->info('(cron) ' . $m, ['schema' => $this->schema]);
 		}
 	}

@@ -51,7 +51,9 @@ class geocode implements queue_interface
 
 		$user = $this->user_cache->get($uid, $sch);
 
-		$log_user = 'user: ' . $sch . '.' . $user['letscode'] . ' ' . $user['name'] . ' (' . $uid . ')';
+		$log_user = 'user: ' . $sch . '.' .
+			$user['letscode'] . ' ' .
+			$user['name'] . ' (' . $uid . ')';
 
 		$geo_status_key = 'geo_status_' . $adr;
 
@@ -74,19 +76,22 @@ class geocode implements queue_interface
 
 		if (count($coords))
 		{
-				$this->cache->set($key, $coords);
-				$this->cache->del($geo_status_key);
-				$this->cache->del('geo_sleep');
+			$this->cache->set($key, $coords);
+			$this->cache->del($geo_status_key);
+			$this->cache->del('geo_sleep');
 
-				$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $coords);
+			$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $coords);
 
-				$this->monolog->info('(cron) ' . $log . ' ' . $log_user, ['schema' => $sch]);
+			$this->monolog->info('(cron) ' .
+				$log . ' ' . $log_user,
+				['schema' => $sch]);
 
-				return;
+			return;
 		}
 
 		$log = 'Geocode return NULL for: ' . $adr;
-		$this->monolog->info('cron geocode: ' . $log . ' ' . $log_user, ['schema' => $sch]);
+		$this->monolog->info('cron geocode: ' . $log .
+			' ' . $log_user, ['schema' => $sch]);
 
 		return;
 	}
