@@ -73,7 +73,7 @@ while (true)
 
 	foreach ($monitor as $worker => $time)
 	{
-		if ($time < $half_hour_ago)
+		if ($time < $day_ago)
 		{
 			unset($monitor[$worker]);
 		}
