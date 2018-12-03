@@ -173,11 +173,13 @@ $tab_panes = [
 			'systemname' => [
 				'lbl'		=> 'Systeemsnaam',
 				'required'	=> true,
+				'addon_fa'	=> 'share-alt',
 			],
 			'systemtag' => [
 				'lbl'		=> 'Tag',
 				'explain'	=> 'Prefix tussen haken [tag] in onderwerp van alle E-mail-berichten',
 				'required'	=> true,
+				'addon_fa'	=> 'tag',
 				'attr'		=> ['maxlength' => 30],
 			],
 		],
@@ -189,6 +191,7 @@ $tab_panes = [
 			'currency'	=> [
 				'lbl'		=> 'Naam van Munt (meervoud)',
 				'required'	=> true,
+				'addon_fa'	=> 'money',
 			],
 
 			'currencyratio'	=> [
@@ -196,8 +199,9 @@ $tab_panes = [
 				'lbl'		=> 'Aantal per uur',
 				'attr'		=> ['max' => 240, 'min' => 1],
 				'type'		=> 'number',
+				'addon_fa'	=> 'clock-o',
 				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
-					Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat zij
+					Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat de Systemen
 					een gemeenschappelijke tijdbasis hebben.',
 			],
 		],
@@ -210,13 +214,15 @@ $tab_panes = [
 				'lbl'	=> 'Algemeen admin/beheerder',
 				'attr' 	=> ['minlength' => 7],
 				'type'	=> 'email',
+				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
-				'add_btn_text' => 'Extra E-mail Adres',
+				'add_btn_text' 	=> 'Extra E-mail Adres',
 			],
 			'newsadmin'	=> [
 				'lbl'	=> 'Nieuwsbeheerder',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
+				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
 				'add_btn_text'	=> 'Extra E-mail Adres',
 			],
@@ -224,6 +230,7 @@ $tab_panes = [
 				'lbl'	=> 'Support / Helpdesk',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
+				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
 				'add_btn_text'	=> 'Extra E-mail Adres',
 			],
@@ -394,7 +401,7 @@ $tab_panes = [
 		'inputs'	=> [
 
 			'li_1'	=> [
-				'inline'	=> '%1$s E-mail functionaliteit aan: het systeem verstuurt E-mails.',
+				'inline'	=> '%1$s E-mail functionaliteit aan: het Systeem verstuurt E-mails.',
 				'inputs'	=> [
 					'mailenabled'	=> [
 						'type'	=> 'checkbox',
@@ -438,11 +445,13 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $landing_page_options,
 				'required'	=> true,
+				'addon_fa'	=> 'plane',
 			],
 
 			'homepage_url'	=> [
 				'lbl'		=> 'Website url',
 				'type'		=> 'url',
+				'addon_fa'	=> 'link',
 				'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
 			],
 
@@ -450,13 +459,15 @@ $tab_panes = [
 				'lbl'		=> 'Datum- en tijdweergave',
 				'type'		=> 'select',
 				'options'	=> $app['date_format']->get_options(),
+				'addon_fa'	=> 'calendar',
 			],
 
 			'css'	=> [
 				'lbl'		=> 'Stijl (css)',
 				'type' 		=> 'url',
-				'explain'	=> 'Url van extra stijlblad (css-bestand). Laat leeg wanneer niet gebruikt.',
+				'explain'	=> 'Url van extra stijlblad (css-bestand). Laat dit veld leeg wanneer het niet gebruikt wordt.',
 				'attr'		=> ['maxlength'	=> 100],
+				'addon_fa'	=> 'link',
 			],
 		],
 	],
@@ -958,11 +969,19 @@ foreach ($tab_panes as $id => $pane)
 				echo '</label>';
 			}
 
-			if (isset($input['addon']))
+			if (isset($input['addon']) || isset($input['addon_fa']))
 			{
 				echo '<div class="input-group">';
 				echo '<span class="input-group-addon">';
-				echo $input['addon'];
+				echo $input['addon'] ?? '';
+
+				if (isset($input['addon_fa']))
+				{
+					echo '<i class="fa fa-';
+					echo $input['addon_fa'];
+					echo '"></i>';
+				}
+
 				echo '</span>';
 			}
 
@@ -1022,7 +1041,7 @@ foreach ($tab_panes as $id => $pane)
 				echo '>';
 			}
 
-			if (isset($input['addon']))
+			if (isset($input['addon']) || isset($input['addon_fa']))
 			{
 				echo '</div>';
 			}
