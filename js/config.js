@@ -45,7 +45,6 @@ $(document).ready(function(){
 
 				$cloned_group.find('label').remove();
 				$cloned_group.find('input').attr('value','');
-				$cloned_group.find('div').addClass('col-sm-offset-3');
 
 				$cloned_input = $cloned_group.find('input');
 
