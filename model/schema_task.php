@@ -15,7 +15,11 @@ abstract class schema_task extends task implements task_interface
 	protected $this_group;
 	protected $schema;
 
-	public function __construct(schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(
+		schedule $schedule,
+		groups $groups,
+		this_group $this_group
+	)
 	{
 		parent::__construct($schedule);
 
@@ -23,7 +27,7 @@ abstract class schema_task extends task implements task_interface
 		$this->this_group = $this_group;
 	}
 
-	public function should_run()
+	public function should_run():bool
 	{
 		$this->schedule->set_time();
 
@@ -49,7 +53,7 @@ abstract class schema_task extends task implements task_interface
 		return false;
 	}
 
-	public function run()
+	public function run():void
 	{
 		$this->this_group->force($this->schema);
 		parent::run();

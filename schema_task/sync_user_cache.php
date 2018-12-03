@@ -23,7 +23,7 @@ class sync_user_cache extends schema_task
 		$this->user_cache = $user_cache;
 	}
 
-	function process()
+	function process():void
 	{
 		$user_ids = [];
 
@@ -42,7 +42,12 @@ class sync_user_cache extends schema_task
 		}
 	}
 
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return true;
+	}
+
+	public function get_interval():int
 	{
 		return 43200;
 	}

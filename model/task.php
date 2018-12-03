@@ -15,7 +15,7 @@ abstract class task extends job implements task_interface
 		$this->schedule = $schedule;
 	}
 
-	public function should_run()
+	public function should_run():bool
 	{
 		if (!$this->is_enabled())
 		{
@@ -28,24 +28,23 @@ abstract class task extends job implements task_interface
 			->should_run();
 	}
 
-	public function run()
+	public function run():void
 	{
 		error_log('>> ' . $this->schedule->get_id());
 
 		$this->process();
-		return $this;
 	}
 
-	public function process()
+	public function process():void
 	{
 	}
 
-	public function is_enabled()
+	public function is_enabled():bool
 	{
-		return true;
+		return false;
 	}
 
-	public function get_interval()
+	public function get_interval():int
 	{
 		return 86400;
 	}

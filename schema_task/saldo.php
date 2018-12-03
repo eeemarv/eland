@@ -60,7 +60,7 @@ class saldo extends schema_task
 		$this->mail_addr_user = $mail_addr_user;
 	}
 
-	function process()
+	function process():void
 	{
 
 		// vars
@@ -684,13 +684,15 @@ class saldo extends schema_task
 				['schema' => $this->schema]);
 		}
 
-		return true;
+		return;
 	}
 
-	/**
-	 *
-	 */
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return $this->config->get('saldofreqdays', $this->schema) ? true : false;
+	}
+
+	public function get_interval():int
 	{
 		if (isset($this->schema))
 		{

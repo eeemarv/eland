@@ -38,7 +38,7 @@ class user_exp_msgs extends schema_task
 		$this->mail_addr_user = $mail_addr_user;
 	}
 
-	function process()
+	function process():void
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
@@ -93,12 +93,12 @@ class user_exp_msgs extends schema_task
 			where validity < ?', [$now]);
 	}
 
-	public function is_enabled()
+	public function is_enabled():bool
 	{
 		return $this->config->get('msgexpwarnenabled', $this->schema) ? true : false;
 	}
 
-	public function get_interval()
+	public function get_interval():int
 	{
 		return 86400;
 	}

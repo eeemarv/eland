@@ -26,7 +26,7 @@ class cleanup_news extends schema_task
 		$this->monolog = $monolog;
 	}
 
-	public function process()
+	public function process():void
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
@@ -44,7 +44,12 @@ class cleanup_news extends schema_task
 		}
 	}
 
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return true;
+	}
+
+	public function get_interval():int
 	{
 		return 86400;
 	}

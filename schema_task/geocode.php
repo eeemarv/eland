@@ -34,7 +34,7 @@ class geocode extends schema_task
 		$this->geocode_queue = $geocode_queue;
 	}
 
-	public function process()
+	public function process():void
 	{
 		if (getenv('GEO_BLOCK') === '1')
 		{
@@ -55,7 +55,7 @@ class geocode extends schema_task
 
 		$st->execute();
 
-		while (($row = $st->fetch()) && count($log_ary) < 20)
+		while ($row = $st->fetch())
 		{
 			$data = [
 				'adr'		=> trim($row['value']),
@@ -92,7 +92,12 @@ class geocode extends schema_task
 		}
 	}
 
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return true;
+	}
+
+	public function get_interval():int
 	{
 		return 86400;
 	}

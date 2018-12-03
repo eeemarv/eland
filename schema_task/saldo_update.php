@@ -28,7 +28,7 @@ class saldo_update extends schema_task
 		$this->monolog = $monolog;
 	}
 
-	function process()
+	function process():void
 	{
 		$user_balances = $min = $plus = [];
 
@@ -85,7 +85,12 @@ class saldo_update extends schema_task
 		}
 	}
 
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return true;
+	}
+
+	public function get_interval():int
 	{
 		return 86400;
 	}

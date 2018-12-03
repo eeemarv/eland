@@ -26,7 +26,7 @@ class cleanup_messages extends schema_task
 		$this->config = $config;
 	}
 
-	function process()
+	function process():void
 	{
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config->get('msgexpcleanupdays', $this->schema) * 86400);
@@ -171,7 +171,12 @@ class cleanup_messages extends schema_task
 		}
 	}
 
-	public function get_interval()
+	public function is_enabled():bool
+	{
+		return true;
+	}
+
+	public function get_interval():int
 	{
 		return 86400;
 	}
