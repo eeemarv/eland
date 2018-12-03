@@ -238,7 +238,7 @@ $tab_panes = [
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
 				'explain_top'	=> 'Krjgt E-mail berichten
-					van het Support- en Contactformulier.',
+					van het Help- en Contactformulier.',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'addon_fa'		=> 'envelope-o',
