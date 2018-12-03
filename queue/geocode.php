@@ -68,7 +68,8 @@ class geocode implements queue_interface
 
 		if (getenv('GEO_BLOCK') === '1')
 		{
-			error_log('geo coding is blocked. not processing: ' . json_encode($data));
+			error_log('geo coding is blocked. not processing: ' .
+				json_encode($data));
 			return;
 		}
 

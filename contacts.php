@@ -167,13 +167,15 @@ if ($edit || $add)
 			from ' . $tschema . '.contact
 			where id = ?', [$edit])))
 		{
-			$app['alert']->error('Dit contact heeft geen eigenaar of bestaat niet.');
+			$app['alert']->error('Dit contact heeft geen eigenaar
+				of bestaat niet.');
 			cancel();
 		}
 
 		if ($uid && $uid != $user_id)
 		{
-			$app['alert']->error('uid in url is niet de eigenaar van contact.');
+			$app['alert']->error('uid in url is niet
+				de eigenaar van contact.');
 			cancel();
 		}
 	}
@@ -227,11 +229,11 @@ if ($edit || $add)
 			'id_user'				=> $user_id,
 		);
 
-		$mail_type_id = $app['db']->fetchColumn('select id
+		$abbrev_type = $app['db']->fetchColumn('select abbrev
 			from ' . $tschema . '.type_contact
-			where abbrev = \'mail\'');
+			where id = ?', array($contact['id_type_contact']));
 
-		if ($contact['id_type_contact'] == $mail_type_id && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
+		if ($abbrev_type === 'mail' && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
 		{
 			$errors[] = 'Geen geldig E-mail adres';
 		}
@@ -251,9 +253,7 @@ if ($edit || $add)
 			$errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
 		}
 
-		if(!$app['db']->fetchColumn('select abbrev
-			from ' . $tschema . '.type_contact
-			where id = ?', array($contact['id_type_contact'])))
+		if(!$abbrev_type)
 		{
 			$errors[] = 'Contacttype bestaat niet!';
 		}
@@ -264,6 +264,10 @@ if ($edit || $add)
 		{
 			$errors[] = $access_error;
 		}
+
+		$mail_type_id = $app['db']->fetchColumn('select id
+			from ' . $tschema . '.type_contact
+			where abbrev = \'mail\'');
 
 		if ($edit)
 		{
@@ -281,7 +285,8 @@ if ($edit || $add)
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
-				$app['alert']->warning('Waarschuwing: de gebruiker heeft geen E-mail adres.');
+				$app['alert']->warning('Waarschuwing: de gebruiker heeft
+					geen E-mail adres.');
 			}
 		}
 
@@ -300,8 +305,10 @@ if ($edit || $add)
 
 			if ($mail_count && $s_admin)
 			{
-				$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
-				$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
+				$warning = 'Omdat deze gebruikers niet meer ';
+				$warning .= 'een uniek E-mail adres hebben zullen zij ';
+				$warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
+				$warning .= 'of kunnen inloggen met ';
 				$warning .= 'E-mail adres. Zie ' . aphp('status', [], 'Status');
 
 				if ($mail_count == 1)
@@ -312,23 +319,36 @@ if ($edit || $add)
 				else if ($mail_count > 1)
 				{
 					$warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
-					$warning_2 .= ' bestaat al ' . $mail_count . ' maal onder de actieve gebruikers.';
+					$warning_2 .= ' bestaat al ' . $mail_count;
+					$warning_2 .= ' maal onder de actieve gebruikers.';
 				}
 
 				$app['alert']->warning($warning_2 . ' ' . $warning);
 			}
 			else if ($mail_count)
 			{
-				$errors[] = 'Dit E-mail adres komt reeds voor onder de actieve gebruikers.';
+				$errors[] = 'Dit E-mail adres komt reeds voor onder
+					de actieve gebruikers.';
 			}
-
 		}
 
 		if(!count($errors))
 		{
+			if ($abbrev_type === 'adr')
+			{
+				$queue_data = [
+					'adr'		=> $contact['value'],
+					'uid'		=> $contact['id_user'],
+					'schema'	=> $tschema,
+				];
+
+				$app['queue.geocode']->queue($queue_data);
+			}
+
 			if ($edit)
 			{
-				if ($app['db']->update($tschema . '.contact', $contact, array('id' => $edit)))
+				if ($app['db']->update($tschema . '.contact',
+					$contact, array('id' => $edit)))
 				{
 					$app['alert']->success('Contact aangepast.');
 					cancel($uid);
