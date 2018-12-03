@@ -763,7 +763,8 @@ foreach ($tab_panes as $id => $pane)
 	echo '<li role="presentation"';
 	echo $id === $active_tab ? ' class="active"' : '';
 	echo '>';
-	echo '<a href="#' . $id . '" aria-controls="' . $id . '" role="tab" data-toggle="tab">';
+	echo '<a href="#' . $id . '" aria-controls="';
+	echo $id . '" role="tab" data-toggle="tab">';
 	echo $pane['lbl'];
 	echo '</a>';
 	echo '</li>';
@@ -780,7 +781,8 @@ foreach ($tab_panes as $id => $pane)
 	$active = $id === $active_tab ? ' active' : '';
 
 	echo '<div role="tabpanel" ';
-	echo 'class="tab-pane' . $active . '" id="' . $id . '">';
+	echo 'class="tab-pane' . $active;
+	echo '" id="' . $id . '">';
 
 	echo '<form method="post">';
 
@@ -822,6 +824,7 @@ foreach ($tab_panes as $id => $pane)
 		if (isset($input['inline']))
 		{
 			$input_ary = [];
+			$id_for_label = '';
 
 			if (isset($input['inputs']))
 			{
@@ -830,6 +833,12 @@ foreach ($tab_panes as $id => $pane)
 					$str = '<input type="';
 					$str .= $inline_input['type'] ?? 'text';
 					$str .= '" name="' . $inline_name . '"';
+
+					if (!$id_for_label)
+					{
+						$id_for_label = 'inline_id_' . $inline_name;
+						$str .= ' id="' . $id_for_label . '"';
+					}
 
 					if ($inline_input['type'] == 'checkbox')
 					{
@@ -858,7 +867,21 @@ foreach ($tab_panes as $id => $pane)
 				}
 			}
 
-			echo '<p>' . vsprintf($input['inline'], $input_ary) . '</p>';
+			echo '<p>';
+
+			if ($id_for_label)
+			{
+				echo '<label for="' . $id_for_label . '">';
+			}
+
+			echo vsprintf($input['inline'], $input_ary);
+
+			if ($id_for_label)
+			{
+				echo '</label>';
+			}
+
+			echo '</p>';
 		}
 		else if (isset($input['type']) && $input['type'] === 'sortable')
 		{
