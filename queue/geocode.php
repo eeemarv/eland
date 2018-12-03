@@ -122,7 +122,9 @@ class geocode implements queue_interface
 		$log_ary = [];
 
 		$st = $this->db->prepare('select c.value, c.id_user
-			from ' . $schema . '.contact c, ' . $schema . '.type_contact tc, ' . $schema . '.users u
+			from ' . $schema . '.contact c, ' .
+				$schema . '.type_contact tc, ' .
+				$schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
 				and c.id_user = u.id

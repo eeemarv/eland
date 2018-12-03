@@ -94,6 +94,6 @@ class geocode extends schema_task
 
 	public function get_interval()
 	{
-		return 1800;
+		return 86400;
 	}
 }
