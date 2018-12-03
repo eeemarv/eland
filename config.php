@@ -198,7 +198,7 @@ $tab_panes = [
 				'type'		=> 'number',
 				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
 					Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat zij
-					een gemeenschappelijke tijdbasis kunnen hebben.',
+					een gemeenschappelijke tijdbasis hebben.',
 			],
 		],
 	],
