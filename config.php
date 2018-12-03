@@ -784,7 +784,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '<form method="post">';
 
-	echo '<div class="panel panel-default">';
+	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading"><h4>';
 	echo $pane['lbl_pane'] ?? $pane['lbl'];
 	echo '</h4></div>';
@@ -798,7 +798,7 @@ foreach ($tab_panes as $id => $pane)
 			continue;
 		}
 
-		echo '<li class="list-group-item">';
+		echo '<li class="list-group-item bg-info">';
 
 		if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 		{
@@ -1029,7 +1029,7 @@ foreach ($tab_panes as $id => $pane)
 
 	echo '</ul>';
 
-	echo '<div class="panel-footer">';
+	echo '<div class="panel-heading">';
 
 	echo '<input type="hidden" name="active_tab" value="' . $id . '">';
 	echo '<input type="submit" class="btn btn-primary" value="Aanpassen" name="' . $id . '_submit">';
