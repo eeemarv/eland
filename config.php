@@ -209,9 +209,15 @@ $tab_panes = [
 
 	'mailaddresses'	=> [
 		'lbl'		=> 'E-Mail Adressen',
+		'explain'	=> 'Er moet minstens één E-mail adres voor elk
+			type ingesteld zijn.
+			Maak het vakje leeg om een E-mail
+			adres te verwijderen.',
 		'inputs'	=> [
 			'admin'	=> [
 				'lbl'	=> 'Algemeen admin/beheerder',
+				'explain_top'	=> 'Krjgt algemene E-mail notificaties
+					van het Systeem',
 				'attr' 	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'addon_fa'		=> 'envelope-o',
@@ -219,7 +225,10 @@ $tab_panes = [
 				'add_btn_text' 	=> 'Extra E-mail Adres',
 			],
 			'newsadmin'	=> [
-				'lbl'	=> 'Nieuwsbeheerder',
+				'lbl'	=> 'Nieuws beheerder',
+				'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
+					gepost door een gewoon lid, goedgekeurd of
+					verwijderd dient te worden',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'addon_fa'		=> 'envelope-o',
@@ -228,6 +237,8 @@ $tab_panes = [
 			],
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
+				'explain_top'	=> 'Krjgt E-mail berichten
+					van het Support- en Contactformulier.',
 				'attr'	=> ['minlength' => 7],
 				'type'	=> 'email',
 				'addon_fa'		=> 'envelope-o',
@@ -800,7 +811,16 @@ foreach ($tab_panes as $id => $pane)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading"><h4>';
 	echo $pane['lbl_pane'] ?? $pane['lbl'];
-	echo '</h4></div>';
+	echo '</h4>';
+
+	if (isset($pane['explain']))
+	{
+		echo '<p>';
+		echo $pane['explain'];
+		echo '</p>';
+	}
+
+	echo '</div>';
 
 	echo '<ul class="list-group">';
 
@@ -967,6 +987,13 @@ foreach ($tab_panes as $id => $pane)
 				echo '<label class="control-label">';
 				echo $input['lbl'];
 				echo '</label>';
+			}
+
+			if (isset($input['explain_top']))
+			{
+				echo '<p>';
+				echo $input['explain_top'];
+				echo '</p>';
 			}
 
 			if (isset($input['addon']) || isset($input['addon_fa']))
