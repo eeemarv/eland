@@ -1117,7 +1117,8 @@ if ($add || $edit)
 {
 	if ($add && !$s_admin)
 	{
-		$app['alert']->error('Je hebt geen rechten om een gebruiker toe te voegen.');
+		$app['alert']->error('Je hebt geen rechten om
+			een gebruiker toe te voegen.');
 		cancel();
 	}
 
@@ -1125,7 +1126,8 @@ if ($add || $edit)
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
-		$app['alert']->error('Je hebt geen rechten om deze gebruiker aan te passen.');
+		$app['alert']->error('Je hebt geen rechten om
+			deze gebruiker aan te passen.');
 		cancel($edit);
 	}
 
@@ -1484,6 +1486,15 @@ if ($add || $edit)
 							continue;
 						}
 
+						if ($value['abbrev'] === 'adr')
+						{
+							$app['queue.geocode']->queue([
+								'adr'		=> $value['value'],
+								'uid'		=> $id,
+								'schema'	=> $tschema,
+							]);
+						}
+
 						$insert = [
 							'value'				=> trim($value['value']),
 							'flag_public'		=> $value['flag_public'],
@@ -1602,6 +1613,15 @@ if ($add || $edit)
 								&& $stored_contact['flag_public'] == $value['flag_public'])
 							{
 								continue;
+							}
+
+							if ($value['abbrev'] === 'adr')
+							{
+								$app['queue.geocode']->queue([
+									'adr'		=> $value['value'],
+									'uid'		=> $edit,
+									'schema'	=> $tschema,
+								]);
 							}
 
 							if (!isset($stored_contact))

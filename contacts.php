@@ -336,13 +336,11 @@ if ($edit || $add)
 		{
 			if ($abbrev_type === 'adr')
 			{
-				$queue_data = [
+				$app['queue.geocode']->queue([
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
 					'schema'	=> $tschema,
-				];
-
-				$app['queue.geocode']->queue($queue_data);
+				]);
 			}
 
 			if ($edit)
