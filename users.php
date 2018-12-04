@@ -4335,7 +4335,7 @@ function get_contacts(array $contacts, string $abbrev):string
 		end($contacts);
 		$end = key($contacts);
 
-		$format = '%1$s';
+		$tpl = '%1$s';
 
 		if ($abbrev === 'mail')
 		{
