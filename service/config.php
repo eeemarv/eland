@@ -84,7 +84,9 @@ class config
 		}
 		else
 		{
-			$value = $this->db->fetchColumn('select value from ' . $schema . '.config where setting = ?', [$key]);
+			$value = $this->db->fetchColumn('select value
+				from ' . $schema . '.config
+				where setting = ?', [$key]);
 
 			if (!$s_guest && !$s_master)
 			{

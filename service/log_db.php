@@ -20,7 +20,7 @@ class log_db
 	*
 	*/
 
-	public function update($count = 500)
+	public function update(int $count = 500):void
 	{
 		for ($i = 0; $i < $count; $i++)
 		{

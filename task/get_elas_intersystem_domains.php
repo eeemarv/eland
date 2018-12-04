@@ -23,7 +23,7 @@ class get_elas_intersystem_domains
 		$this->groups = $groups;
 	}
 
-	function process()
+	function process():void
 	{
 		$elas_interlets_domains = $this->cache->get('elas_interlets_domains');
 

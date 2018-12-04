@@ -75,9 +75,13 @@ class cache
 		{
 			$this->db->beginTransaction();
 
-			if ($this->db->fetchColumn('select id from xdb.cache where id = ?', [$id]))
+			if ($this->db->fetchColumn('select id
+				from xdb.cache
+				where id = ?', [$id]))
 			{
-				$this->db->update('xdb.cache', ['data' => $data], ['id' => $id]);
+				$this->db->update('xdb.cache',
+					['data' => $data],
+					['id' => $id]);
 			}
 			else
 			{
@@ -229,7 +233,8 @@ class cache
 	public function cleanup()
 	{
 		$this->db->executeQuery('delete from xdb.cache
-			where expires < timezone(\'utc\'::text, now()) and expires is not null');
+			where expires < timezone(\'utc\'::text, now())
+				and expires is not null');
 
 		return;
 	}

@@ -80,7 +80,8 @@ class cleanup_messages extends schema_task
 
 			if (count($ids) == 1)
 			{
-				$this->db->delete($this->schema . '.messages', ['id_user' => $ids[0]]);
+				$this->db->delete($this->schema . '.messages',
+					['id_user' => $ids[0]]);
 			}
 			else if (count($ids) > 1)
 			{

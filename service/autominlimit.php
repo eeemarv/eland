@@ -154,7 +154,9 @@ class autominlimit
 			'minlimit' => $new_minlimit,
 		], $this->schema);
 
-		$this->db->update($this->schema . '.users', ['minlimit' => $new_minlimit], ['id' => $to_id]);
+		$this->db->update($this->schema . '.users',
+			['minlimit' => $new_minlimit],
+			['id' => $to_id]);
 
 		$this->user_cache->clear($to_id, $this->schema);
 

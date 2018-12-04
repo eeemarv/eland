@@ -29,19 +29,19 @@ class this_group
 		}
 	}
 
-	public function force($schema)
+	public function force($schema):void
 	{
 		$this->schema = $schema;
 		$this->host = $this->groups->get_host($schema);
 		$this->db->exec('set search_path to ' . $schema);
 	}
 
-	public function get_schema()
+	public function get_schema():string
 	{
 		return $this->schema;
 	}
 
-	public function get_host()
+	public function get_host():string
 	{
 		return $this->host;
 	}

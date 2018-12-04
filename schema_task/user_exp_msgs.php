@@ -47,11 +47,12 @@ class user_exp_msgs extends schema_task
 		$group_vars = $this->template_vars->get($this->schema);
 
 		$warn_messages  = $this->db->fetchAll('select m.*
-			from ' . $this->schema . '.messages m, ' . $this->schema . '.users u
-				where m.exp_user_warn = \'f\'
-					and u.id = m.id_user
-					and u.status in (1, 2)
-					and m.validity < ?', [$now]);
+			from ' . $this->schema . '.messages m, ' .
+				$this->schema . '.users u
+			where m.exp_user_warn = \'f\'
+				and u.id = m.id_user
+				and u.status in (1, 2)
+				and m.validity < ?', [$now]);
 
 		foreach ($warn_messages as $msg)
 		{

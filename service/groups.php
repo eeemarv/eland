@@ -17,8 +17,11 @@ class groups
 
 		$this->overall_domain = getenv('OVERALL_DOMAIN');
 
-		$schemas_db = $this->db->fetchAll('select schema_name from information_schema.schemata') ?: [];
-		$schemas_db = array_map(function($row){ return $row['schema_name']; }, $schemas_db);
+		$schemas_db = $this->db->fetchAll('select schema_name
+			from information_schema.schemata') ?: [];
+
+		$schemas_db = array_map(function($row){
+			return $row['schema_name']; }, $schemas_db);
 
 		foreach ($schemas_db as $s)
 		{
@@ -42,27 +45,27 @@ class groups
 		}
 	}
 
-	public function get_schemas()
+	public function get_schemas():array
 	{
 		return $this->schemas;
 	}
 
-	public function get_hosts()
+	public function get_hosts():array
 	{
 		return $this->hosts;
 	}
 
-	public function get_schema($host)
+	public function get_schema($host):?string
 	{
-		return $this->schemas[$host] ?? false;
+		return $this->schemas[$host] ?? null;
 	}
 
-	public function get_host($schema)
+	public function get_host($schema):?string
 	{
-		return $this->hosts[$schema] ?? false;
+		return $this->hosts[$schema] ?? null;
 	}
 
-	public function count()
+	public function count():int
 	{
 		return count($this->schemas);
 	}

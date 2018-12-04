@@ -24,7 +24,8 @@ class elas_db_upgrade
 					break;
 
 				case 30001:
-					$query = "ALTER TABLE transactions ALTER COLUMN transid TYPE character varying(200)";
+					$query = 'alter table transactions
+						alter column transid type character varying(200)';
 					exec($query);
 					break;
 
@@ -33,7 +34,10 @@ class elas_db_upgrade
 					break;
 
 				case 31002:
-					$query = "INSERT INTO config (category,setting,value,description,default) VALUES('system','ets_enabled','0', '', 0)";
+					$query = "insert into config
+						(category,setting,value,description,default)
+						values('system','ets_enabled','0', '', 0)";
+
 					$this->db->insert('config', [
 						'category' 		=> 'system',
 						'setting'		=> 'ets_enabled',
@@ -50,7 +54,9 @@ class elas_db_upgrade
 					break;
 
 			}
-			$this->db->update('parameters', ['value' => $version], ['parameter' => 'schemaversion']);
+			$this->db->update('parameters',
+				['value' => $version],
+				['parameter' => 'schemaversion']);
 			$this->db->commit();
 			return true;
 		}

@@ -27,7 +27,8 @@ class sync_user_cache extends schema_task
 	{
 		$user_ids = [];
 
-		$rs = $this->db->prepare('select id from ' . $this->schema . '.users');
+		$rs = $this->db->prepare('select id
+			from ' . $this->schema . '.users');
 
 		$rs->execute();
 
