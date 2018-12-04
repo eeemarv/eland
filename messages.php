@@ -1743,7 +1743,9 @@ if ($filter_en)
 {
 	if (!$uid)
 	{
-		if (isset($filter['fcode']) && $filter['fcode']);
+		if (isset($filter['fcode'])
+			&& $filter['fcode']
+			&& !empty($filter['fcode']))
 		{
 			[$fcode] = explode(' ', trim($filter['fcode']));
 			$fcode = trim($fcode);
