@@ -7,7 +7,7 @@ class password_strength
 	{
 	}
 
-	public function get($password, $username = '')
+	public function get(string $password, string $username = ''):int
 	{
 
         $password = str_replace($username, '', $password);

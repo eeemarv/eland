@@ -24,13 +24,13 @@ class schedule
 		$this->tasks = $this->cache->get('tasks');
 	}
 
-	public function set_time(int $time = 0)
+	public function set_time(int $time):self
 	{
 		$this->time = $time ? $time : time();
 		return $this;
 	}
 
-	public function get_time()
+	public function get_time():int
 	{
 		if (!isset($this->time))
 		{
@@ -40,29 +40,29 @@ class schedule
 		return $this->time();
 	}
 
-	public function set_id(string $id)
+	public function set_id(string $id):self
 	{
 		$this->id = $id;
 		return $this;
 	}
 
-	public function get_id()
+	public function get_id():string
 	{
 		return $this->id;
 	}
 
-	public function set_interval(int $interval = 0)
+	public function set_interval(int $interval):self
 	{
 		$this->interval = $interval;
 		return $this;
 	}
 
-	public function get_interval()
+	public function get_interval():int
 	{
 		return $this->interval;
 	}
 
-	public function should_run()
+	public function should_run():bool
 	{
 		if (!isset($this->tasks[$this->id]) || !$this->tasks[$this->id])
 		{

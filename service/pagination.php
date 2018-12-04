@@ -31,7 +31,12 @@ class pagination
 	{
 	}
 
-	public function init($entity = '', $row_count = 0, $params = [], $inline = false):void
+	public function init(
+		string $entity,
+		int $row_count,
+		array $params = [],
+		bool $inline = false
+	):void
 	{
 		$this->out = '';
 		$this->limit = $params['limit'] ?: 25;
@@ -142,7 +147,7 @@ class pagination
 		return $this->out;
 	}
 
-	protected function get_link($page, $text = '')
+	protected function get_link($page, $text = ''):string
 	{
 		$params = $this->params;
 		$params['start'] = $page * $this->limit;

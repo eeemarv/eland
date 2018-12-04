@@ -15,7 +15,12 @@ class email_validate
 	protected $cache;
 	protected $monolog;
 
-	public function __construct(cache $cache, xdb $xdb, token $token, monolog $monolog)
+	public function __construct(
+		cache $cache,
+		xdb $xdb,
+		token $token,
+		monolog $monolog
+	)
 	{
 		$this->cache = $cache;
 		$this->xdb = $xdb;
@@ -23,7 +28,7 @@ class email_validate
 		$this->monolog = $monolog;
 	}
 
-	public function get_token($email, $schema, $source)
+	public function get_token(string $email, string $schema, string $source):string
 	{
 		$token = $this->token->gen();
 
@@ -38,7 +43,7 @@ class email_validate
 		return $token;
 	}
 
-	public function validate($token)
+	public function validate(string $token):void
 	{
 		$cache_key = 'email_validate_token_' . $token;
 
@@ -49,16 +54,19 @@ class email_validate
 			return;
 		}
 
-		$this->xdb->set('email_validated', $data['email'], $data, $data['schema']);
+		$this->xdb->set('email_validated',
+			$data['email'], $data, $data['schema']);
 
-		$this->monolog->debug('email ' . $data['email'] . ' validated from ' . $data['source'],
+		$this->monolog->debug('email ' . $data['email'] .
+			' validated from ' . $data['source'],
 			['schema' => $data['schema']]);
 
 		$this->cache->del($cache_key);
 	}
 
-	public function is_validated($email, $schema)
+	public function is_validated(string $email, string $schema):bool
 	{
-		return $this->xdb->get('email_validated', $email, $schema) ? true : false;
+		return $this->xdb->get('email_validated',
+			$email, $schema) ? true : false;
 	}
 }

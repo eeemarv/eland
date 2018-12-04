@@ -19,7 +19,7 @@ class geocode
         $this->geocoder->setLimit(1);
     }
 
-    public function getCoordinates(string $adress)
+    public function getCoordinates(string $adress):array
     {
         try
         {

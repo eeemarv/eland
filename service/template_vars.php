@@ -13,7 +13,7 @@ class template_vars
 		$this->config = $config;
 	}
 
-	public function get($schema)
+	public function get(string $schema):array
 	{
 		$return = [
 			'tag'				=> $this->config->get('systemtag', $schema),

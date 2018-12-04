@@ -16,7 +16,7 @@ class token
 		$this->set_len();
 	}
 
-	protected function set_len()
+	protected function set_len():self
 	{
 		$this->chars_h = str_repeat('-', $this->hyphen_chance) . $this->chars;
 		$this->chars_len = strlen($this->chars) - 1;
@@ -25,14 +25,14 @@ class token
 		return $this;
 	}
 
-	public function set_length(int $length)
+	public function set_length(int $length):self
 	{
 		$this->length = $length;
 
 		return $this;
 	}
 
-	public function set_hyphen_chance(int $hyphen_chance)
+	public function set_hyphen_chance(int $hyphen_chance):self
 	{
 		$this->hyphen_chance = $hyphen_chance;
 
@@ -41,7 +41,7 @@ class token
 		return $this;
 	}
 
-	public function set_chars(string $chars)
+	public function set_chars(string $chars):self
 	{
 		$this->chars = $chars;
 
@@ -50,7 +50,7 @@ class token
 		return $this;
 	}
 
-	public function gen()
+	public function gen():string
 	{
 		$token = '';
 		$ch = '-';

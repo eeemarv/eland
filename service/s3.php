@@ -56,7 +56,10 @@ class s3
 		'md'		=> 'text/markdown',
 	];
 
-	public function __construct(string $img_bucket, string $doc_bucket)
+	public function __construct(
+		string $img_bucket,
+		string $doc_bucket
+	)
 	{
 		$this->img_bucket = $img_bucket;
 		$this->doc_bucket = $doc_bucket;
@@ -68,12 +71,12 @@ class s3
 		]);
 	}
 
-	public function img_exists(string $filename)
+	public function img_exists(string $filename):bool
 	{
 		return $this->client->doesObjectExist($this->img_bucket, $filename);
 	}
 
-	public function doc_exists(string $filename)
+	public function doc_exists(string $filename):bool
 	{
 		return $this->client->doesObjectExist($this->doc_bucket, $filename);
 	}

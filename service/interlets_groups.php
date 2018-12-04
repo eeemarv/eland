@@ -35,7 +35,7 @@ class interlets_groups
 	 *
 	 */
 
-	public function get_eland_accounts_schemas($schema)
+	public function get_eland_accounts_schemas(string $schema):array
 	{
 		$ret = json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);
 
@@ -53,10 +53,9 @@ class interlets_groups
 	*
 	*/
 
-	public function clear_cache(string $s_schema)
+	public function clear_cache(string $s_schema):void
 	{
 		$this->clear_elas_cache($s_schema);
-
 		$this->clear_eland_cache();
 	}
 
@@ -64,7 +63,7 @@ class interlets_groups
 	 *
 	 */
 
-	public function clear_elas_cache(string $s_schema)
+	public function clear_elas_cache(string $s_schema):void
 	{
 		$this->redis->del($s_schema . '_elas_interlets_groups');
 	}
@@ -73,7 +72,7 @@ class interlets_groups
 	 *
 	 */
 
-	public function clear_eland_cache()
+	public function clear_eland_cache():void
 	{
 		foreach ($this->groups->get_schemas() as $s)
 		{
@@ -85,7 +84,7 @@ class interlets_groups
 	 *
 	 */
 
-	public function get_eland(string $s_schema, bool $refresh = false)
+	public function get_eland(string $s_schema, bool $refresh = false):array
 	{
 		if (!$s_schema)
 		{
@@ -179,7 +178,7 @@ class interlets_groups
 	 *
 	 */
 
-	public function get_elas(string $s_schema)
+	public function get_elas(string $s_schema):array
 	{
 		if (!$s_schema)
 		{
