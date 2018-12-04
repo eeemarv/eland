@@ -551,11 +551,13 @@ if ($edit || $add)
 
 	if ($add)
 	{
-		echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-success">';
+		echo '<input type="submit" value="Opslaan" ';
+		echo 'name="zend" class="btn btn-success">';
 	}
 	else
 	{
-		echo '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
+		echo '<input type="submit" value="Aanpassen" ';
+		echo 'name="zend" class="btn btn-primary">';
 	}
 
 	echo $app['form_token']->get_hidden_input();
@@ -603,7 +605,9 @@ if ($uid)
 		echo '<div class="row">';
 		echo '<div class="col-md-12">';
 
-		echo '<h3><i class="fa fa-map-marker"></i> Contactinfo van ';
+		echo '<h3>';
+		echo '<i class="fa fa-map-marker"></i>';
+		echo ' Contactinfo van ';
 		echo link_user($user, $tschema);
 		echo ' ';
 		echo $top_buttons;
@@ -627,7 +631,8 @@ if ($uid)
 
 	echo '<div class="panel panel-danger">';
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-hover table-striped table-bordered footable" ';
+	echo '<table class="table table-hover ';
+	echo 'table-striped table-bordered footable" ';
 	echo 'data-sort="false">';
 
 	echo '<thead>';
@@ -640,7 +645,8 @@ if ($uid)
 	if ($s_admin || $s_owner)
 	{
 		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
-		echo '<th data-sort-ignore="true" data-hide="phone, tablet">Verwijderen</th>';
+		echo '<th data-sort-ignore="true" ';
+		echo 'data-hide="phone, tablet">Verwijderen</th>';
 	}
 
 	echo '</tr>';
@@ -651,12 +657,16 @@ if ($uid)
 	foreach ($contacts as $c)
 	{
 		echo '<tr>';
-		echo '<td>' . $c['abbrev'] . '</td>';
+		echo '<td>';
+		echo $c['abbrev'];
+		echo '</td>';
 
 		if (($c['flag_public'] < $access_level) && !$s_owner)
 		{
-			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
-			echo '<td><span class="btn btn-default btn-xs">verborgen</span></td>';
+			echo '<td><span class="btn btn-default btn-xs">';
+			echo 'verborgen</span></td>';
+			echo '<td><span class="btn btn-default btn-xs">';
+			echo 'verborgen</span></td>';
 		}
 		else if ($s_owner || $s_admin)
 		{
@@ -674,10 +684,29 @@ if ($uid)
 			echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) : '';
 			echo '</td>';
 		}
-		else if ($c['abbrev'] == 'mail')
+		else if ($c['abbrev'] === 'mail')
 		{
-			echo '<td><a href="mailto:' . $c['value'] . '">' . $c['value'] . '</a></td>';
-			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
+			echo '<td>';
+			echo '<a href="mailto:';
+			echo $c['value'] . '">';
+			echo $c['value'];
+			echo '</a>';
+			echo '</td>';
+			echo '<td>';
+			echo htmlspecialchars($c['comments'], ENT_QUOTES);
+			echo '</td>';
+		}
+		else if ($c['abbrev'] === 'web')
+		{
+			echo '<td>';
+			echo '<a href="';
+			echo $c['value'] . '">';
+			echo $c['value'];
+			echo '</a>';
+			echo '</td>';
+			echo '<td>';
+			echo htmlspecialchars($c['comments'], ENT_QUOTES);
+			echo '</td>';
 		}
 		else
 		{
