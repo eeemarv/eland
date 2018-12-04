@@ -62,10 +62,7 @@ if ($step == 1)
 		{
 			$currentversion++;
 
-			if($app['elas_db_upgrade']->run($currentversion))
-			{
-				$doneversion = $currentversion;
-			}
+			$app['elas_db_upgrade']->run($currentversion, $tschema);
 		}
 
 		$m = 'Upgraded database from schema version ' .
