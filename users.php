@@ -3547,7 +3547,8 @@ if ($v_list || $v_extended || $v_tiles)
 
 if ($v_list)
 {
-	echo '<div class="panel panel-info collapse" id="columns_show">';
+	echo '<div class="panel panel-info collapse" ';
+	echo 'id="columns_show">';
 	echo '<div class="panel-heading">';
 	echo '<h2>Weergave kolommen</h2>';
 
@@ -3583,14 +3584,20 @@ if ($v_list)
 			echo '<div class="form-group">';
 			echo '<label for="p_activity_days" ';
 			echo 'class="control-label">';
-			echo 'In periode (dagen)';
+			echo 'In periode';
 			echo '</label>';
+			echo '<div class="input-group">';
+			echo '<span class="input-group-addon">';
+			echo 'dagen';
+			echo '</span>';
 			echo '<input type="number" ';
 			echo 'id="p_activity_days" ';
 			echo 'name="sh[p][activity_days]" ';
 			echo 'value="';
-			echo $activity_days . '" ';
+			echo $activity_days;
+			echo '" ';
 			echo 'size="4" min="1" class="form-control">';
+			echo '</div>';
 			echo '</div>';
 
 			$typeahead_ary = ['users_active'];
@@ -3607,12 +3614,17 @@ if ($v_list)
 			echo 'class="control-label">';
 			echo 'Exclusief tegenpartij';
 			echo '</label>';
+			echo '<div class="input-group">';
+			echo '<span class="input-group-addon">';
+			echo '<i class="fa fa-user"></i>';
+			echo '</span>';
 			echo '<input type="text" ';
 			echo 'name="sh[p][activity_filter_letscode]" ';
 			echo 'id="p_activity_filter_letscode" ';
 			echo 'value="';
 			echo $activity_filter_letscode;
 			echo '" ';
+			echo 'placeholder="Account Code" ';
 			echo 'class="form-control" ';
 			echo 'data-newuserdays="';
 			echo $app['config']->get('newuserdays', $tschema);
@@ -3620,7 +3632,7 @@ if ($v_list)
 			echo 'data-typeahead="';
 			echo $app['typeahead']->get($typeahead_ary);
 			echo '">';
-			echo '<p>Account Code</p>';
+			echo '</div>';
 			echo '</div>';
 
 			foreach ($ary as $a_type => $a_ary)
@@ -3667,22 +3679,45 @@ if ($v_list)
 			echo '" ';
 			echo 'value="1"';
 			echo isset($show_columns[$group][$key]) ? ' checked="checked"' : '';
-			echo '> ' . $lbl;
-			echo $key === 'adr' ? ', split door teken: <input type="text" name="sh[p][adr_split]" size="1" value="' . $adr_split . '">' : '';
+			echo '> ';
+			echo $lbl;
+
+			if ($key === 'adr')
+			{
+				echo ', split door teken: ';
+				echo '<input type="text" ';
+				echo 'name="sh[p][adr_split]" ';
+				echo 'size="1" value="';
+				echo $adr_split;
+				echo '">';
+			}
 
 			if ($key === 'saldo_date')
 			{
-				echo '<input type="text" name="sh[p][saldo_date]" ';
+				echo '<div class="input-group">';
+				echo '<span class="input-group-addon">';
+				echo '<i class="fa fa-calendar"></i>';
+				echo '</span>';
+				echo '<input type="text" ';
+				echo 'class="form-control" ';
+				echo 'name="sh[p][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
-				echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+				echo 'data-date-format="';
+				echo $app['date_format']->datepicker_format();
+				echo '" ';
 				echo 'data-date-language="nl" ';
 				echo 'data-date-today-highlight="true" ';
 				echo 'data-date-autoclose="true" ';
 				echo 'data-date-enable-on-readonly="false" ';
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
-				echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
-				echo 'value="' . $saldo_date . '">';
+				echo 'placeholder="';
+				echo $app['date_format']->datepicker_placeholder();
+				echo '" ';
+				echo 'value="';
+				echo $saldo_date;
+				echo '">';
+				echo '</div>';
 
 				$columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
 			}
@@ -3695,7 +3730,9 @@ if ($v_list)
 	echo '</div>';
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
-	echo '<input type="submit" name="show" class="btn btn-default" value="Pas weergave kolommen aan">';
+	echo '<input type="submit" name="show" ';
+	echo 'class="btn btn-default" ';
+	echo 'value="Pas weergave kolommen aan">';
 	echo '</div>';
 	echo '</div>';
 	echo '</div>';
