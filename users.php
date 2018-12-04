@@ -4324,7 +4324,7 @@ else if ($v_tiles)
 
 include __DIR__ . '/include/footer.php';
 
-function get_contacts(array $contacts, $abbrev = null):string
+function get_contacts(array $contacts, string $abbrev):string
 {
 	global $access_level;
 
@@ -4335,13 +4335,22 @@ function get_contacts(array $contacts, $abbrev = null):string
 		end($contacts);
 		$end = key($contacts);
 
-		$f = $abbrev === 'mail' ? '<a href="mailto:%1$s">%1$s</a>' : '%1$s';
+		$format = '%1$s';
+
+		if ($abbrev === 'mail')
+		{
+			$tpl = '<a href="mailto:%1$s">%1$s</a>';
+		}
+		else if ($abbrev === 'web')
+		{
+			$tpl = '<a href="%1$s">%1$s</a>';
+		}
 
 		foreach ($contacts as $key => $contact)
 		{
 			if ($contact[1] >= $access_level)
 			{
-				$ret .= sprintf($f, htmlspecialchars($contact[0], ENT_QUOTES));
+				$ret .= sprintf($tpl, htmlspecialchars($contact[0], ENT_QUOTES));
 
 				if ($key === $end)
 				{

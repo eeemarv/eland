@@ -744,7 +744,9 @@ if ($uid)
 		echo '<div class="user_map" id="map" data-markers="';
 		echo $app['distance']->get_to_data();
 		echo '" ';
-		echo 'data-token="' . $app['mapbox_token'] . '"></div>';
+		echo 'data-token="';
+		echo $app['mapbox_token'];
+		echo '"></div>';
 		echo '</div>';
 	}
 
