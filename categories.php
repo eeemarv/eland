@@ -116,8 +116,10 @@ if ($add)
 	echo '</select>';
 	echo '</div>';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Toevoegen" class="btn btn-success">';
+	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" value="Toevoegen" ';
+	echo 'class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -165,11 +167,13 @@ if ($edit)
 		}
 		else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
 		{
-			$app['alert']->error('Hoofdcategoriën kunnen geen berichten bevatten.');
+			$app['alert']->error('Hoofdcategoriën kunnen
+				geen berichten bevatten.');
 		}
 		else if ($cat['leafnote'] && $child_count_ary[$edit])
 		{
-			$app['alert']->error('Subcategoriën kunnen geen categoriën bevatten.');
+			$app['alert']->error('Subcategoriën kunnen
+				geen categoriën bevatten.');
 		}
 		else if ($token_error = $app['form_token']->get_error())
 		{
@@ -230,11 +234,13 @@ if ($edit)
 	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<label for="name" class="control-label">';
+	echo 'Naam</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-clone"></span></span>';
-	echo '<input type="text" class="form-control" id="name" name="name" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="name" name="name" ';
 	echo 'value="';
 	echo $cat["name"] ?? '';
 	echo '" required>';
@@ -249,8 +255,10 @@ if ($edit)
 	echo '</select>';
 	echo '</div>';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary">';
+	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" value="Opslaan" ';
+	echo 'name="zend" class="btn btn-primary">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -297,8 +305,10 @@ if ($del)
 	echo " moet verwijderd worden?</strong></font></p>";
 	echo '<form method="post">';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" value="Verwijderen" ';
+	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 	echo '</form>';
 
@@ -335,7 +345,8 @@ include __DIR__ . '/include/header.php';
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
+echo '<table class="table table-striped table-hover ';
+echo 'table-bordered footable" data-sort="false">';
 echo '<tr>';
 echo '<thead>';
 echo '<th>Categorie</th>';
@@ -346,6 +357,17 @@ echo '</tr>';
 echo '</thead>';
 
 echo '<tbody>';
+
+http://x.e.loc/messages.php?f%5Bq%5D=&f%5Bcid%5D=5&f%5Btype%5D%5Boffer%5D=on&f%5Bvalid%5D%5Byes%5D=on&f%5Bvalid%5D%5Bno%5D=on&f%5Bustatus%5D%5Bactive%5D=on&f%5Bustatus%5D%5Bnew%5D=on&f%5Bustatus%5D%5Bleaving%5D=on&f%5Bfcode%5D=&f%5Bs%5D=Toon&view=list&orderby=m.cdate&asc=0&limit=25&r=admin&u=1
+
+$messages_param_ary = [
+	'f'	=> [
+		's'		=> '1',
+		'valid'	=> ['yes' => 'on', 'no' => 'on'],
+		'ustatus'	=> ['active' => 'on', 'new' => 'on', 'leaving' => 'on'],
+	],
+	'view'	=> $view_messages,
+];
 
 foreach($cats as $cat)
 {
@@ -374,14 +396,48 @@ foreach($cats as $cat)
 		echo '</td>';
 	}
 
-	echo '<td>' . (($count_wanted) ?: '') . '</td>';
-	echo '<td>' . (($count_offers) ?: '') . '</td>';
+	echo '<td>';
+
+	if ($count_wanted)
+	{
+		$param_ary = array_merge_recursive($messages_param_ary, [
+			'f'	=> [
+				'cid'	=> $cat['id'],
+				'type'	=> [
+					'want'	=> 'on',
+				],
+			],
+		]);
+
+		echo aphp('messages', $param_ary, $count_wanted);
+	}
+
+	echo '</td>';
+	echo '<td>';
+
+	if ($count_offers)
+	{
+		$param_ary = array_merge_recursive($messages_param_ary, [
+			'f'	=> [
+				'cid'	=> $cat['id'],
+				'type'	=> [
+					'offer'	=> 'on',
+				],
+			],
+		]);
+
+		echo aphp('messages', $param_ary, $count_offers);
+	}
+
+	echo '</td>';
 
 	echo '<td>';
+
 	if (!$count)
 	{
 		echo aphp('categories', ['del' => $cat['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	}
+
 	echo '</td>';
 	echo '</tr>';
 }
@@ -390,8 +446,10 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-echo '<p><ul><li>Categorieën met berichten of hoofdcategorieën met subcategorieën kan je niet verwijderen.';
-echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></li></ul></p>';
+echo '<p><ul><li>Categorieën met berichten ';
+echo 'of hoofdcategorieën met subcategorieën kan je niet verwijderen.</li>';
+echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></ul>';
+echo '</p>';
 
 include __DIR__ . '/include/footer.php';
 

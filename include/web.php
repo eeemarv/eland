@@ -538,9 +538,12 @@ function btn_item_nav(string $url, bool $next, bool $down):string
 function btn_filter():string
 {
 	$ret = '<div class="pull-right">';
-	$ret .= '&nbsp;<button class="btn btn-default hidden-xs" title="Filters" ';
+	$ret .= '&nbsp;<button class="btn btn-default hidden-xs" ';
+	$ret .= 'title="Filters" ';
 	$ret .= 'data-toggle="collapse" data-target="#filter"';
-	$ret .= '><i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> Filters</span></button>';
+	$ret .= '><i class="fa fa-caret-down"></i>';
+	$ret .= '<span class="hidden-xs hidden-sm"> ';
+	$ret .= 'Filters</span></button>';
 	$ret .= '</div>';
 	return $ret;
 }
