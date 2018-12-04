@@ -1089,10 +1089,11 @@ if ($del)
 	echo '<form method="post"">';
 
 	echo '<div class="form-group">';
-	echo '<label>';
+	echo '<label for="id_verify">';
 	echo '<input type="checkbox" name="verify"';
-	echo ' value="1"> ';
-	echo ' Ik ben wis en waarachtig zeker dat ik deze gebruiker wil verwijderen.';
+	echo ' value="1" id="id_verify"> ';
+	echo ' Ik ben wis en waarachtig zeker dat ';
+	echo 'ik deze gebruiker wil verwijderen.';
 	echo '</label>';
 	echo '</div>';
 
@@ -3580,10 +3581,14 @@ if ($v_list)
 			echo '<h3>Transacties/activiteit</h3>';
 
 			echo '<div class="form-group">';
-			echo '<label for="activity_days" class="control-label">';
+			echo '<label for="p_activity_days" ';
+			echo 'class="control-label">';
 			echo 'In periode (dagen)';
 			echo '</label>';
-			echo '<input type="number" name="sh[p][activity_days]" value="';
+			echo '<input type="number" ';
+			echo 'id="p_activity_days" ';
+			echo 'name="sh[p][activity_days]" ';
+			echo 'value="';
 			echo $activity_days . '" ';
 			echo 'size="4" min="1" class="form-control">';
 			echo '</div>';
@@ -3598,10 +3603,13 @@ if ($v_list)
 			}
 
 			echo '<div class="form-group">';
-			echo '<label for="activity_filter_letscode" class="control-label">';
+			echo '<label for="p_activity_filter_letscode" ';
+			echo 'class="control-label">';
 			echo 'Exclusief tegenpartij';
 			echo '</label>';
-			echo '<input type="text" name="sh[p][activity_filter_letscode]" ';
+			echo '<input type="text" ';
+			echo 'name="sh[p][activity_filter_letscode]" ';
+			echo 'id="p_activity_filter_letscode" ';
 			echo 'value="';
 			echo $activity_filter_letscode;
 			echo '" ';
@@ -3619,9 +3627,14 @@ if ($v_list)
 			{
 				foreach($a_ary as $key => $lbl)
 				{
+					$checkbox_id = 'id_' . $group . '_' . $a_type . '_' . $key;
+
 					echo '<div class="checkbox">';
-					echo '<label>';
+					echo '<label for="';
+					echo $checkbox_id;
+					echo '">';
 					echo '<input type="checkbox" ';
+					echo 'id="' . $checkout_id . '" ';
 					echo 'name="sh[' . $group . '][' . $a_type . '][' . $key . ']" ';
 					echo 'value="1"';
 					echo isset($show_columns[$group][$a_type][$key]) ? ' checked="checked"' : '';
@@ -3642,9 +3655,17 @@ if ($v_list)
 
 		foreach ($ary as $key => $lbl)
 		{
+			$checkbox_id = 'id_' . $group . '_' . $key;
+
 			echo '<div class="checkbox">';
-			echo '<label>';
-			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" value="1"';
+			echo '<label for="';
+			echo $checkbox_id;
+			echo '">';
+			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" ';
+			echo 'id="';
+			echo $checkbox_id;
+			echo '" ';
+			echo 'value="1"';
 			echo isset($show_columns[$group][$key]) ? ' checked="checked"' : '';
 			echo '> ' . $lbl;
 			echo $key === 'adr' ? ', split door teken: <input type="text" name="sh[p][adr_split]" size="1" value="' . $adr_split . '">' : '';
