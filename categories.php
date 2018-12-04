@@ -95,11 +95,13 @@ if ($add)
 	echo '<form  method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="name" class="control-label">Naam</label>';
+	echo '<label for="name" class="control-label">';
+	echo 'Naam</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
 	echo '<span class="fa fa-clone"></span></span>';
-	echo '<input type="text" class="form-control" id="name" name="name" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="name" name="name" ';
 	echo 'value="';
 	echo $cat['name'] ?? '';
 	echo '" required maxlength="40">';
