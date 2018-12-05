@@ -97,7 +97,6 @@ class queue
 				where topic = ?', [$topic]);
 		}
 
-		return $this->db->fetchColumn('select count(*)
-			from xdb.queue');
+		return $this->db->fetchColumn('select count(*) from xdb.queue');
 	}
 }
