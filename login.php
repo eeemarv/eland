@@ -27,47 +27,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if ($monitor)
 {
-	try
-	{
-		$app['db']->fetchColumn('select min(id) from ' . $tschema . '.users');
-	}
-	catch(Exception $e)
-	{
-		echo 'db fail';
-		error_log('db_fail: ' . $e->getMessage());
-		throw $e;
-		exit;
-	}
-	try
-	{
-		$app['predis']->incr('eland_monitor');
-		$app['predis']->expire('eland_monitor', 400);
-		$monitor_count = $app['predis']->get('eland_monitor');
-
-		if ($monitor_count > 2)
-		{
-			$monitor_service_worker = $app['predis']->get('monitor_service_worker');
-
-			if ($monitor_service_worker)
-			{
-				error_log('monitor worker: ' . $monitor_service_worker);
-			}
-			else
-			{
-				http_response_code(503);
-				echo 'web service is up but service worker is down';
-				exit;
-			}
-		}
-	}
-	catch(Exception $e)
-	{
-		echo 'redis fail';
-		error_log('redis_fail: ' . $e->getMessage());
-		throw $e;
-		exit;
-	}
-
+	$app['monitor_process']->monitor();
 	exit;
 }
 

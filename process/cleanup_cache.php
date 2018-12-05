@@ -10,35 +10,15 @@ $rootpath = '../';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../include/default.php';
 
-$boot = $app['cache']->get('boot');
-
-if (!count($boot))
-{
-	$boot = ['count' => 0];
-}
-
-if (!isset($boot['cleanup_cache']))
-{
-	$boot['cleanup_cache'] = $boot['count'];
-}
-
-$boot['cleanup_cache']++;
-$app['cache']->set('boot', $boot);
-
-error_log('process/cleanup_cache started .. ' . $boot['cleanup_cache']);
-
-$loop_count = 1;
+$app['monitor_process']->boot();
 
 while (true)
 {
-	sleep(7200);
+	if (!$app['monitor_process']->wait_most_recent(7200))
+	{
+		continue;
+	}
 
 	$app['cache']->cleanup();
-
-	error_log('..process/cleanup_cache .. ' .
-		$boot['cleanup_cache'] .
-		' .. ' .
-		$loop_count);
-
-	$loop_count++;
+	$app['monitor_process']->periodic_log(1);
 }

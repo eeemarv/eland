@@ -396,6 +396,14 @@ $app['schedule'] = function ($app){
 	);
 };
 
+$app['monitor_process'] = function ($app) {
+	return new service\monitor_process(
+		$app['db'],
+		$app['predis'],
+		$app['cache']
+	);
+};
+
 // queue
 
 $app['queue.geocode'] = function ($app){

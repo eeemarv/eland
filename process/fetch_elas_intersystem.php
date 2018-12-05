@@ -10,43 +10,19 @@ $rootpath = '../';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../include/default.php';
 
-$boot = $app['cache']->get('boot');
-
-if (!count($boot))
-{
-	$boot = ['count' => 0];
-}
-
-if (!isset($boot['fetch_elas_intersystem']))
-{
-	$boot['fetch_elas_intersystem'] = $boot['count'];
-}
-
-$boot['fetch_elas_intersystem']++;
-$app['cache']->set('boot', $boot);
-
-error_log('process/fetch_elas_intersystem started .. ' .
-	$boot['fetch_elas_intersystem']);
-
-$loop_count = 1;
+$app['monitor_process']->boot();
 
 while (true)
 {
-	sleep(450);
+	if (!$app['monitor_process']->wait_most_recent(450))
+	{
+		continue;
+	}
 
 	$app['task.get_elas_intersystem_domains']->process();
 
 	sleep(450);
 
 	$app['task.fetch_elas_intersystem']->process();
-
-	if ($loop_count % 100 === 0)
-	{
-		error_log('..process/fetch_elas_intersystem.. ' .
-			$boot['fetch_elas_intersystem'] .
-			' .. ' .
-			$loop_count);
-	}
-
-	$loop_count++;
+	$app['monitor_process']->periodic_log(100);
 }
