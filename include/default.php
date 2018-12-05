@@ -90,7 +90,10 @@ $app['s3_img_url'] = $app['s3_protocol'] . $app['s3_img'] . '/';
 $app['s3_doc_url'] = $app['s3_protocol'] . $app['s3_doc'] . '/';
 
 $app['s3'] = function($app){
-	return new service\s3($app['s3_img'], $app['s3_doc']);
+	return new service\s3(
+		$app['s3_img'],
+		$app['s3_doc']
+	);
 };
 
 /*
@@ -102,11 +105,17 @@ setlocale(LC_TIME, 'nl_NL.UTF-8');
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['typeahead'] = function($app){
-	return new service\typeahead($app['predis'], $app['monolog']);
+	return new service\typeahead(
+		$app['predis'],
+		$app['monolog']
+	);
 };
 
 $app['log_db'] = function($app){
-	return new service\log_db($app['db'], $app['predis']);
+	return new service\log_db(
+		$app['db'],
+		$app['predis']
+	);
 };
 
 /**
@@ -114,59 +123,99 @@ $app['log_db'] = function($app){
  */
 
 $app['groups'] = function ($app){
-	return new service\groups($app['db']);
+	return new service\groups(
+		$app['db']
+	);
 };
 
 $app['template_vars'] = function ($app){
-	return new service\template_vars($app['config']);
+	return new service\template_vars(
+		$app['config']
+	);
 };
 
 $app['this_group'] = function($app){
-	return new service\this_group($app['groups'], $app['db'], $app['predis']);
+	return new service\this_group(
+		$app['groups'],
+		$app['db'],
+		$app['predis']
+	);
 };
 
 $app['xdb'] = function ($app){
-	return new service\xdb($app['db'], $app['monolog']);
+	return new service\xdb(
+		$app['db'],
+		$app['monolog']
+	);
 };
 
 $app['cache'] = function ($app){
-	return new service\cache($app['db'], $app['predis'], $app['monolog']);
+	return new service\cache(
+		$app['db'],
+		$app['predis'],
+		$app['monolog']
+	);
 };
 
 $app['queue'] = function ($app){
-	return new service\queue($app['db'], $app['monolog']);
+	return new service\queue(
+		$app['db'],
+		$app['monolog']
+	);
 };
 
 $app['date_format'] = function($app){
-	return new service\date_format($app['config'], $app['this_group']);
+	return new service\date_format(
+		$app['config'],
+		$app['this_group']
+	);
 };
 
 $app['mail_addr_system'] = function ($app){
-	return new service\mail_addr_system($app['monolog'], $app['config']);
+	return new service\mail_addr_system(
+		$app['monolog'],
+		$app['config']
+	);
 };
 
 $app['mail_addr_user'] = function ($app){
-	return new service\mail_addr_user($app['db'], $app['monolog']);
+	return new service\mail_addr_user(
+		$app['db'],
+		$app['monolog']
+	);
 };
 
 $app['interlets_groups'] = function ($app){
-	return new service\interlets_groups($app['db'], $app['predis'],
+	return new service\interlets_groups(
+		$app['db'],
+		$app['predis'],
 		$app['groups'],
-		$app['config'], $app['protocol']);
+		$app['config'],
+		$app['protocol']
+	);
 };
 
 $app['distance'] = function ($app){
-	return new service\distance($app['db'], $app['cache']);
+	return new service\distance(
+		$app['db'],
+		$app['cache']
+	);
 };
 
 $app['config'] = function ($app){
-	return new service\config($app['db'], $app['xdb'],
-		$app['predis']);
+	return new service\config(
+		$app['db'],
+		$app['xdb'],
+		$app['predis']
+	);
 };
 
 $app['user_cache'] = function ($app){
-	return new service\user_cache($app['db'], $app['xdb'],
-		$app['predis']);
+	return new service\user_cache(
+		$app['db'],
+		$app['xdb'],
+		$app['predis']
+	);
 };
 
 $app['token'] = function ($app){
@@ -174,18 +223,32 @@ $app['token'] = function ($app){
 };
 
 $app['email_validate'] = function ($app){
-	return new service\email_validate($app['cache'], $app['xdb'],
-		$app['token'], $app['monolog']);
+	return new service\email_validate(
+		$app['cache'],
+		$app['xdb'],
+		$app['token'],
+		$app['monolog']
+	);
 };
 
+$app['url'] = function($app){
+	return new service\url(
+		$app['this_group'],
+		$app['groups'],
+		$app['rootpath'],
+		$app['protocol']
+	);
+};
 
 // queue
 
 $app['queue.mail'] = function ($app){
 	return new queue\mail($app['queue'], $app['monolog'],
 		$app['twig'],
-		$app['config'], $app['mail_addr_system'],
-		$app['email_validate']);
+		$app['config'],
+		$app['mail_addr_system'],
+		$app['email_validate']
+	);
 };
 
 // tasks for background processes
@@ -193,87 +256,157 @@ $app['queue.mail'] = function ($app){
 $app['task.cleanup_images'] = function ($app){
 	return new task\cleanup_images(
 		$app['cache'],
-		$app['db'], $app['monolog'],
-		$app['s3'], $app['groups']);
+		$app['db'],
+		$app['monolog'],
+		$app['s3'],
+		$app['groups']
+	);
 };
 
 $app['task.get_elas_intersystem_domains'] = function ($app){
 	return new task\get_elas_intersystem_domains(
-		$app['db'], $app['cache'],
-		$app['groups']);
+		$app['db'],
+		$app['cache'],
+		$app['groups']
+	);
 };
 
 $app['task.fetch_elas_intersystem'] = function ($app){
 	return new task\fetch_elas_intersystem(
-		$app['cache'], $app['predis'], $app['typeahead'],
-		$app['monolog']);
+		$app['cache'],
+		$app['predis'],
+		$app['typeahead'],
+		$app['monolog']
+	);
 };
 
 // schema tasks (tasks applied to every group seperate)
 
 $app['schema_task.cleanup_messages'] = function ($app){
-	return new schema_task\cleanup_messages($app['db'], $app['monolog'],
-		$app['schedule'], $app['groups'], $app['this_group'], $app['config']);
+	return new schema_task\cleanup_messages(
+		$app['db'],
+		$app['monolog'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group'],
+		$app['config']
+	);
 };
 
 $app['schema_task.cleanup_news'] = function ($app){
-	return new schema_task\cleanup_news($app['db'], $app['xdb'], $app['monolog'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+	return new schema_task\cleanup_news(
+		$app['db'],
+		$app['xdb'],
+		$app['monolog'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group']
+	);
 };
 
 $app['schema_task.geocode'] = function ($app){
-	return new schema_task\geocode($app['db'], $app['cache'],
-		$app['monolog'], $app['queue.geocode'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+	return new schema_task\geocode(
+		$app['db'],
+		$app['cache'],
+		$app['monolog'],
+		$app['queue.geocode'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group']
+	);
 };
 
 $app['schema_task.saldo_update'] = function ($app){
-	return new schema_task\saldo_update($app['db'], $app['monolog'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+	return new schema_task\saldo_update(
+		$app['db'],
+		$app['monolog'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group']
+	);
 };
 
 $app['schema_task.sync_user_cache'] = function ($app){
-	return new schema_task\sync_user_cache($app['db'], $app['user_cache'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+	return new schema_task\sync_user_cache(
+		$app['db'],
+		$app['user_cache'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group']
+	);
 };
 
 $app['schema_task.user_exp_msgs'] = function ($app){
-	return new schema_task\user_exp_msgs($app['db'], $app['queue.mail'],
+	return new schema_task\user_exp_msgs(
+		$app['db'],
+		$app['queue.mail'],
 		$app['protocol'],
-		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['config'], $app['template_vars'], $app['user_cache'],
-		$app['mail_addr_user']);
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group'],
+		$app['config'],
+		$app['template_vars'],
+		$app['user_cache'],
+		$app['mail_addr_user']
+	);
 };
 
 $app['schema_task.saldo'] = function ($app){
 	return new schema_task\saldo(
-		$app['db'], $app['xdb'], $app['predis'], $app['cache'],
-		$app['monolog'], $app['queue.mail'],
-		$app['s3_img_url'], $app['s3_doc_url'], $app['protocol'],
-		$app['date_format'], $app['distance'],
-		$app['schedule'], $app['groups'], $app['this_group'],
-		$app['interlets_groups'], $app['config'],
+		$app['db'],
+		$app['xdb'],
+		$app['predis'],
+		$app['cache'],
+		$app['monolog'],
+		$app['queue.mail'],
+		$app['s3_img_url'],
+		$app['s3_doc_url'],
+		$app['protocol'],
+		$app['date_format'],
+		$app['distance'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group'],
+		$app['interlets_groups'],
+		$app['config'],
 		$app['mail_addr_user']
 	);
 };
 
 $app['schema_task.interlets_fetch'] = function ($app){
-	return new schema_task\interlets_fetch($app['predis'], $app['db'], $app['xdb'], $app['cache'],
-		$app['typeahead'], $app['monolog'],
-		$app['schedule'], $app['groups'], $app['this_group']);
+	return new schema_task\interlets_fetch(
+		$app['predis'],
+		$app['db'],
+		$app['xdb'],
+		$app['cache'],
+		$app['typeahead'],
+		$app['monolog'],
+		$app['schedule'],
+		$app['groups'],
+		$app['this_group']
+	);
 };
 
 //
 
 $app['schedule'] = function ($app){
-	return new service\schedule($app['cache'], $app['predis']);
+	return new service\schedule(
+		$app['cache'],
+		$app['predis']
+	);
 };
 
 // queue
 
 $app['queue.geocode'] = function ($app){
-	return new queue\geocode($app['db'], $app['cache'],
-		$app['queue'], $app['monolog'], $app['user_cache'], $app['geocode']);
+	return new queue\geocode(
+		$app['db'],
+		$app['cache'],
+		$app['queue'],
+		$app['monolog'],
+		$app['user_cache'],
+		$app['geocode']
+	);
 };
 
 $app['geocode'] = function($app){
