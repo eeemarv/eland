@@ -150,7 +150,7 @@ class geocode implements queue_interface
 			['value' => 'queue'],
 			2592000);  // 30 days
 
-		$this->queue->queue($data);
+		$this->queue($data);
 
 		$log = 'Queued for Geocoding: ';
 		$log .= link_user($row['id_user'], $data['schema'], false, true);
