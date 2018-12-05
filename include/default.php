@@ -294,8 +294,8 @@ function link_user($user, string $sch, $link = true, $show_id = false, $field = 
 	}
 
 	$user = is_array($user) ? $user : $app['user_cache']->get($user, $sch);
-	$str = ($field) ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
-	$str = ($str == '' || $str == ' ') ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
+	$str = $field ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
+	$str = trim($str) === '' ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
 
 	if ($link)
 	{
