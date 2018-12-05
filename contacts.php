@@ -336,7 +336,7 @@ if ($edit || $add)
 		{
 			if ($abbrev_type === 'adr')
 			{
-				$app['queue.geocode']->queue([
+				$app['queue.geocode']->cond_queue([
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
 					'schema'	=> $tschema,

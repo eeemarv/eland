@@ -305,7 +305,7 @@ else if ($step == 7)
 
 	while ($row = $rs->fetch())
 	{
-		$app['queue.geocode']->queue([
+		$app['queue.geocode']->cond_queue([
 			'adr'		=> $row['value'],
 			'uid'		=> $row['id_user'],
 			'schema'	=> $tschema,

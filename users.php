@@ -1489,7 +1489,7 @@ if ($add || $edit)
 
 						if ($value['abbrev'] === 'adr')
 						{
-							$app['queue.geocode']->queue([
+							$app['queue.geocode']->cond_queue([
 								'adr'		=> $value['value'],
 								'uid'		=> $id,
 								'schema'	=> $tschema,
@@ -1618,7 +1618,7 @@ if ($add || $edit)
 
 							if ($value['abbrev'] === 'adr')
 							{
-								$app['queue.geocode']->queue([
+								$app['queue.geocode']->cond_queue([
 									'adr'		=> $value['value'],
 									'uid'		=> $edit,
 									'schema'	=> $tschema,

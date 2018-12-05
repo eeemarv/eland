@@ -24,8 +24,15 @@ class geocode extends schema_task
 
 	protected $geocode_queue;
 
-	public function __construct(db $db, cache $cache, Logger $monolog, geocode_queue $geocode_queue,
-		schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(
+		db $db,
+		cache $cache,
+		Logger $monolog,
+		geocode_queue $geocode_queue,
+		schedule $schedule,
+		groups $groups,
+		this_group $this_group
+	)
 	{
 		parent::__construct($schedule, $groups, $this_group);
 		$this->monolog = $monolog;
@@ -66,7 +73,6 @@ class geocode extends schema_task
 			$key = 'geo_' . $data['adr'];
 			$status_key = 'geo_status_' . $data['adr'];
 
-
 			if ($this->cache->exists($key))
 			{
 				continue;
@@ -79,9 +85,15 @@ class geocode extends schema_task
 
 			$this->geocode_queue->queue($data);
 
-			$log_ary[] = link_user($row['id_user'], $this->schema, false, true) . ': ' . $data['adr'];
+			$log = link_user($row['id_user'], $this->schema, false, true);
+			$log .= ': ';
+			$log .= $data['adr'];
 
-			$this->cache->set($status_key, ['value' => 'queue'], 2592000);  // 30 days
+			$log_ary[] = $log;
+
+			$this->cache->set($status_key,
+				['value' => 'queue'],
+				2592000);  // 30 days
 		}
 
 		if (count($log_ary))
