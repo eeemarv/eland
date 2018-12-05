@@ -9,13 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 $app->register(new Silex\Provider\SessionServiceProvider(), [
 	'session.storage.handler'	=> function ($app) {
 		return new Predis\Session\Handler(
-			$app['predis'], ['gc_maxlifetime' => 172800]
+			$app['predis'],
+			['gc_maxlifetime' => 172800]
 		);
 	},
 	'session.storage.options'	=> [
 		'name'						=> 'eland',
 		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
-		'cookie_lifetime'			=> 172800,
 	],
 ]);
 
