@@ -1090,7 +1090,7 @@ if ($add)
 
 	echo '<ul>';
 
-	echo get_valuation();
+	echo get_valuation($tschema);
 
 	echo '<li id="info_remote_amount_unknown" ';
 	echo 'class="hidden">De omrekening ';
@@ -1611,7 +1611,9 @@ if ($id)
 			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
 			{
 				echo '<a href="';
-				echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+				echo generate_url('transactions',
+					['id' => $inter_transaction['id']],
+					$inter_schema);
 				echo '">';
 			}
 
@@ -1702,7 +1704,9 @@ if ($id)
 			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
 			{
 				echo '<a href="';
-				echo generate_url('transactions', ['id' => $inter_transaction['id']], $inter_schema);
+				echo generate_url('transactions',
+					['id' => $inter_transaction['id']],
+					$inter_schema);
 				echo '">';
 			}
 
@@ -2276,8 +2280,13 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$h_params['orderby'] = $key_orderby;
 		$h_params['asc'] = $data['asc'];
 
-		echo '<a href="' . generate_url('transactions', $h_params) . '">';
-		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '<a href="';
+		echo generate_url('transactions', $h_params);
+		echo '">';
+		echo $data['lbl'];
+		echo '&nbsp;<i class="fa fa-sort';
+		echo $data['indicator'];
+		echo '"></i>';
 		echo '</a>';
 	}
 	echo '</th>';
@@ -2448,12 +2457,12 @@ if ($inline)
 }
 else
 {
-	echo get_valuation();
+	echo get_valuation($tschema);
 
 	include __DIR__ . '/include/footer.php';
 }
 
-function cancel($id = null)
+function cancel(int $id = 0):void
 {
 	$params = [];
 
@@ -2466,19 +2475,15 @@ function cancel($id = null)
 	exit;
 }
 
-function get_valuation():string
+function get_valuation(string $schema):string
 {
-	global $app;
-
-	$tschema = $app['this_group']->get_schema();
-
 	$out = '';
 
-	if ($app['config']->get('template_lets', $tschema)
-		&& $app['config']->get('currencyratio', $tschema) > 0)
+	if ($app['config']->get('template_lets', $schema)
+		&& $app['config']->get('currencyratio', $schema) > 0)
 	{
 		$out .= '<li id="info_ratio">Valuatie: <span class="num">';
-		$out .= $app['config']->get('currencyratio', $tschema);
+		$out .= $app['config']->get('currencyratio', $schema);
 		$out .= '</span> per uur</li>';
 	}
 

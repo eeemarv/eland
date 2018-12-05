@@ -1156,8 +1156,13 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$th_params['orderby'] = $key_orderby;
 		$th_params['asc'] = $data['asc'];
 
-		echo '<a href="' . generate_url('contacts', $th_params) . '">';
-		echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '<a href="';
+		echo generate_url('contacts', $th_params);
+		echo '">';
+		echo $data['lbl'];
+		echo '&nbsp;<i class="fa fa-sort';
+		echo $data['indicator'];
+		echo '"></i>';
 		echo '</a>';
 	}
 	echo '</th>';
@@ -1171,7 +1176,9 @@ echo '<tbody>';
 foreach ($contacts as $c)
 {
 	echo '<tr>';
-	echo '<td>' . $c['abbrev'] . '</td>';
+	echo '<td>';
+	echo $c['abbrev'];
+	echo '</td>';
 
 	echo '<td>';
 	echo isset($c['value']) ? aphp('contacts', ['edit' => $c['id']], $c['value']) : '';
@@ -1180,9 +1187,16 @@ foreach ($contacts as $c)
 	echo link_user($c['id_user'], $tschema);
 	echo '</td>';
 	echo '<td>';
-	echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id']], $c['comments']) : '';
+
+	if (isset($c['comments']))
+	{
+		echo aphp('contacts', ['edit' => $c['id']], $c['comments']);
+	}
+
 	echo '</td>';
-	echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
+	echo '<td>';
+	echo $app['access_control']->get_label($c['flag_public']);
+	echo '</td>';
 
 	echo '<td>';
 	echo aphp('contacts', ['del' => $c['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
@@ -1201,7 +1215,7 @@ echo $app['pagination']->get();
 
 include __DIR__ . '/include/footer.php';
 
-function cancel($uid = false)
+function cancel(int $uid = 0):void
 {
 	if ($uid)
 	{

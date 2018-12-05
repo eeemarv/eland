@@ -335,15 +335,8 @@ echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</
 
 include __DIR__ . '/include/footer.php';
 
-function cancel($id = '')
+function cancel()
 {
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('type_contact', $params));
+	header('Location: ' . generate_url('type_contact'));
 	exit;
 }

@@ -718,13 +718,13 @@ if ($post)
 	if (!count($posted_configs))
 	{
 		$app['alert']->warning('Geen gewijzigde waarden.');
-		cancel();
+		cancel($active_tab);
 	}
 
 	if (count($errors))
 	{
 		$app['alert']->error($errors);
-		cancel();
+		cancel($active_tab);
 	}
 
 	$execute_post_actions = [];
@@ -767,7 +767,7 @@ if ($post)
 		$app['alert']->success('De instelling is aangepast.');
 	}
 
-	cancel();
+	cancel($active_tab);
 }
 
 $app['assets']->add(['sortable', 'summernote', 'rich_edit.js', 'config.js']);
@@ -951,7 +951,11 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="panel-body">';
 			echo '<ul id="list_active" class="list-group">';
 
-			echo get_sortable_items($input['ary'], $v_options, $active, 'bg-success');
+			echo get_sortable_items_str(
+				$input['ary'],
+				$v_options,
+				$active,
+				'bg-success');
 
 			echo '</ul>';
 			echo '</div>';
@@ -966,7 +970,11 @@ foreach ($tab_panes as $id => $pane)
 			echo '<div class="panel-body">';
 			echo '<ul id="list_inactive" class="list-group">';
 
-			echo get_sortable_items($input['ary'], $v_options, $inactive, 'bg-danger');
+			echo get_sortable_items_str(
+				$input['ary'],
+				$v_options,
+				$inactive,
+				'bg-danger');
 
 			echo '</ul';
 			echo '</div>';
@@ -1118,16 +1126,21 @@ echo '</div>';
 
 include __DIR__ . '/include/footer.php';
 
-function cancel()
+function cancel(string $active_tab):void
 {
-	global $active_tab;
-
 	header('Location: ' . generate_url('config', ['active_tab' => $active_tab]));
 	exit;
 }
 
-function get_sortable_items($input_ary, $v_options, $items, $class)
+function get_sortable_items_str(
+	array $input_ary,
+	array $v_options,
+	array $items,
+	string $class
+):string
 {
+	$out = '';
+
 	foreach ($items as $a)
 	{
 		$options = $input_ary[$a];
@@ -1140,17 +1153,19 @@ function get_sortable_items($input_ary, $v_options, $items, $class)
 		{
 			$lbl = reset($options);
 			$option = key($options);
-			echo '<li class="list-group-item ' . $class . '" ';
-			echo 'data-block="';
-			echo $a;
-			echo '" ';
-			echo 'data-option="';
-			echo $option;
-			echo '" >';
-			echo '<span class="lbl">';
-			echo $lbl;
-			echo '</span>';
-			echo '</li>';
+			$out .= '<li class="list-group-item ';
+			$out .= $class;
+			$out .= '" ';
+			$out .= 'data-block="';
+			$out .= $a;
+			$out .= '" ';
+			$out .= 'data-option="';
+			$out .= $option;
+			$out .= '" >';
+			$out .= '<span class="lbl">';
+			$out .= $lbl;
+			$out .= '</span>';
+			$out .= '</li>';
 
 			continue;
 		}
@@ -1166,32 +1181,43 @@ function get_sortable_items($input_ary, $v_options, $items, $class)
 			$option = key($options);
 		}
 
-		echo '<li class="list-group-item ' . $class . '" ';
-		echo 'data-block="' . $a . '" ';
-		echo 'data-option="' . $option . '">';
-		echo '<span class="lbl">';
-		echo $lbl;
-		echo '</span>';
-		echo '&nbsp;&nbsp;';
-		echo '<button type="button" class="btn btn-default ';
-		echo 'dropdown-toggle" ';
-		echo 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-		echo ' <span class="caret"></span>';
-		echo '</button>';
-		echo '<ul class="dropdown-menu">';
+		$out .= '<li class="list-group-item ';
+		$out .= $class;
+		$out .= '" ';
+		$out .= 'data-block="';
+		$out .= $a;
+		$out .= '" ';
+		$out .= 'data-option="';
+		$out .= $option;
+		$out .= '">';
+		$out .= '<span class="lbl">';
+		$out .= $lbl;
+		$out .= '</span>';
+		$out .= '&nbsp;&nbsp;';
+		$out .= '<button type="button" class="btn btn-default ';
+		$out .= 'dropdown-toggle" ';
+		$out .= 'data-toggle="dropdown" aria-haspopup="true" ';
+		$out .= 'aria-expanded="false">';
+		$out .= ' <span class="caret"></span>';
+		$out .= '</button>';
+		$out .= '<ul class="dropdown-menu">';
 
 		foreach ($options as $k => $lbl)
 		{
-			echo '<li><a href="#" data-o="' . $k . '">';
-			echo $lbl;
-			echo '</a></li>';
+			$out .= '<li><a href="#" data-o="';
+			$out .= $k;
+			$out .= '">';
+			$out .= $lbl;
+			$out .= '</a></li>';
 		}
 
-		echo '</ul></li>';
+		$out .= '</ul></li>';
 	}
 
 	for($i = 0; $i < 5; $i++)
 	{
-		echo '<li class="list-group-item"></li>';
+		$out .= '<li class="list-group-item"></li>';
 	}
+
+	return $out;
 }

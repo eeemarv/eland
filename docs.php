@@ -885,11 +885,11 @@ else if (!count($maps))
 
 include __DIR__ . '/include/footer.php';
 
-function cancel($map = false)
+function cancel(string $map = ''):void
 {
 	$params = [];
 
-	if ($map ?? false)
+	if ($map)
 	{
 		$params['map'] = $map;
 	}

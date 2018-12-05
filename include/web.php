@@ -400,7 +400,8 @@ if ($page_access != 'anonymous'
 	&& !$s_group_self
 	&& !$eland_interlets_groups[$app['this_group']->get_schema()])
 {
-	header('Location: ' . generate_url('messages', ['view' => $view_messages], $s_schema));
+	header('Location: ' .
+		generate_url('messages', ['view' => $view_messages], $s_schema));
 	exit;
 }
 
@@ -568,6 +569,7 @@ function aphp(
 	$out .= '"';
 	$out .= $class ? ' class="' . $class . '"' : '';
 	$out .= $title ? ' title="' . $title . '"' : '';
+
 	if (is_array($attr))
 	{
 		foreach ($attr as $name => $val)

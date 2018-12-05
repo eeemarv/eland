@@ -108,17 +108,21 @@ if ($add)
 
 	include __DIR__ . '/include/header.php';
 
+	echo get_apikey_explain();
+
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
 
 	echo '<form method="post">';
 
 	echo '<div class="form-group">';
-	echo '<label for="apikey" class="control-label">Apikey</label>';
+	echo '<label for="apikey" class="control-label">';
+	echo 'Apikey</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="name_addon">';
 	echo '<span class="fa fa-key"></span></span>';
-	echo '<input type="text" class="form-control" id="apikey" name="apikey" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="apikey" name="apikey" ';
 	echo 'value="';
 	echo $key;
 	echo '" required readonly>';
@@ -126,11 +130,13 @@ if ($add)
 	echo '</div>';
 
 	echo '<div class="form-group">';
-	echo '<label for="comment" class="control-label">Commentaar</label>';
+	echo '<label for="comment" class="control-label">';
+	echo 'Commentaar</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="name_addon">';
 	echo '<span class="fa fa-comment-o"></span></span>';
-	echo '<input type="text" class="form-control" id="comment" name="comment" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="comment" name="comment" ';
 	echo 'value="';
 	echo $apikey['comment'];
 	echo '">';
@@ -138,18 +144,14 @@ if ($add)
 	echo '</div>';
 
 	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Opslaan" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
 	echo '</div>';
 	echo '</div>';
-
-	echo '<ul><li>Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen met Systemen die ';
-	echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere Systemen op deze ';
-	echo 'eLAND-server ';
-	echo 'moet je geen apikey aanmaken.</li></ul>';
 
 	include __DIR__ . '/include/footer.php';
 	exit;
@@ -165,12 +167,7 @@ $fa = 'key';
 
 include __DIR__ . '/include/header.php';
 
-echo '<p>';
-echo 'Apikeys zijn enkel nodig voor het leggen van interSysteem verbindingen naar andere Systemen die ';
-echo 'eLAS draaien. Voor het leggen van interSysteem verbindingen naar andere Systemen op ';
-echo 'deze eLAND-server ';
-echo 'moet je geen Apikey aanmaken.';
-echo '</p>';
+echo get_apikey_explain();
 
 echo '<div class="panel panel-default printview">';
 
@@ -211,15 +208,25 @@ echo '</div></div>';
 
 include __DIR__ . '/include/footer.php';
 
-function cancel($id = '')
+function cancel():void
 {
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('apikeys', $params));
+	header('Location: ' . generate_url('apikeys'));
 	exit;
+}
+
+function get_apikey_explain():string
+{
+	$out = '<p>';
+	$out .= '<ul>';
+	$out .= '<li>';
+	$out .= 'Apikeys zijn enkel nodig voor het leggen van ';
+	$out .= 'interSysteem verbindingen naar andere Systemen die ';
+	$out .= 'eLAS draaien.</li>';
+	$out .= '<li>Voor het leggen van interSysteem ';
+	$out .= 'verbindingen naar andere Systemen op ';
+	$out .= 'deze eLAND-server ';
+	$out .= 'moet je geen Apikey aanmaken.';
+	$out .= '</li></ul>';
+	$out .= '</p>';
+	return $out;
 }

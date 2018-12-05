@@ -1042,7 +1042,7 @@ function get_schemas_groups():string
 	return $out;
 }
 
-function cancel($id = null)
+function cancel(int $id = 0):void
 {
 	$params = [];
 

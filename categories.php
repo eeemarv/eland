@@ -453,15 +453,8 @@ echo '</p>';
 
 include __DIR__ . '/include/footer.php';
 
-function cancel($id = '')
+function cancel():void
 {
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('categories', $params));
+	header('Location: ' . generate_url('categories'));
 	exit;
 }

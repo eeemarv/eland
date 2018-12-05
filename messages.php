@@ -488,8 +488,12 @@ if ($img_del == 'all' && $id)
 		echo '<img src="' . $a_img . '" class="img-rounded">';
 
 		echo '<div class="caption">';
-        echo '<span class="btn btn-danger" data-img-del="' . $img_id . '" ';
-        echo 'data-url="' . generate_url('messages', ['img_del' => $img_id]) . '" role="button">';
+		echo '<span class="btn btn-danger" data-img-del="';
+		echo $img_id;
+		echo '" ';
+		echo 'data-url="';
+		echo generate_url('messages', ['img_del' => $img_id]);
+		echo '" role="button">';
         echo '<i class="fa fa-times"></i> ';
         echo 'Verwijderen</span>';
 		echo '</div>';
@@ -2320,8 +2324,13 @@ if ($v_list)
 			$th_params['orderby'] = $key_orderby;
 			$th_params['asc'] = $data['asc'];
 
-			echo '<a href="' . generate_url('messages', $th_params) . '">';
-			echo $data['lbl'] . '&nbsp;<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+			echo '<a href="';
+			echo generate_url('messages', $th_params);
+			echo '">';
+			echo $data['lbl'];
+			echo '&nbsp;<i class="fa fa-sort';
+			echo $data['indicator'];
+			echo '"></i>';
 			echo '</a>';
 		}
 		echo '</th>';
@@ -2412,8 +2421,12 @@ else if ($v_extended)
 		if (isset($imgs[$msg['id']]))
 		{
 			echo '<div class="media-left">';
-			echo '<a href="' . generate_url('messages', ['id' => $msg['id']]) . '">';
-			echo '<img class="media-object" src="' . $app['s3_img_url'] . $imgs[$msg['id']] . '" width="150">';
+			echo '<a href="';
+			echo generate_url('messages', ['id' => $msg['id']]);
+			echo '">';
+			echo '<img class="media-object" src="';
+			echo $app['s3_img_url'] . $imgs[$msg['id']];
+			echo '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}
@@ -2421,7 +2434,12 @@ else if ($v_extended)
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
 		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
-		echo $exp ? ' <small><span class="text-danger">Vervallen</span></small>' : '';
+
+		if ($exp)
+		{
+			echo ' <small><span class="text-danger">Vervallen</span></small>';
+		}
+
 		echo '</h3>';
 
 		echo htmlspecialchars($msg['Description'], ENT_QUOTES);
@@ -2433,7 +2451,7 @@ else if ($v_extended)
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i> ';
 		echo link_user($msg['id_user'], $tschema);
-		echo ($msg['postcode']) ? ', postcode: ' . $msg['postcode'] : '';
+		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
 		if ($s_admin || $sf_owner)
 		{

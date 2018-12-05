@@ -243,9 +243,14 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		$th_params['orderby'] = $key_orderby;
 		$th_params['asc'] = $data['asc'];
 
-		echo '<a href="' . generate_url('logs', $th_params) . '">';
-		echo $data['lbl'] . '&nbsp;';
-		echo '<i class="fa fa-sort' . $data['indicator'] . '"></i>';
+		echo '<a href="';
+		echo generate_url('logs', $th_params);
+		echo '">';
+		echo $data['lbl'];
+		echo '&nbsp;';
+		echo '<i class="fa fa-sort';
+		echo $data['indicator'];
+		echo '"></i>';
 		echo '</a>';
 	}
 	echo '</th>';

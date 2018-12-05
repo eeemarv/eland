@@ -66,13 +66,6 @@ class pagination
 		$this->out .= '<div class="row print-hide"><div class="col-md-12">';
 		$this->out .= '<ul class="pagination">';
 
-/*
-		if ($this->page)
-		{
-			$this->out .= $this->get_link($this->page - 1, '&#9668;');
-		}
-*/
-
 		$min_adjacent = $this->page - $this->adjacent_num;
 		$max_adjacent = $this->page + $this->adjacent_num;
 
@@ -93,13 +86,6 @@ class pagination
 		{
 			$this->out .= $this->get_link($this->page_num - 1);
 		}
-
-/*
-		if ($this->page < $this->page_num - 1)
-		{
-			$this->out .= $this->get_link($this->page + 1, '&#9658;');
-		}
-*/
 
 		$this->out .= '</ul>';
 
@@ -147,21 +133,21 @@ class pagination
 		return $this->out;
 	}
 
-	protected function get_link($page, $text = ''):string
+	protected function get_link(int $page):string
 	{
 		$params = $this->params;
 		$params['start'] = $page * $this->limit;
 		$params['limit'] = $this->limit;
 
-		$pag_link = '<li';
-		$pag_link .= $page == $this->page ? ' class="active"' : '';
-		$pag_link .= '>';
-		$pag_link .= '<a href="';
-		$pag_link .= generate_url($this->entity, $params);
-		$pag_link .= '">';
-		$pag_link .= $text === '' ? $page + 1 : $text;
-		$pag_link .= '</a></li>';
+		$out = '<li';
+		$out .= $page == $this->page ? ' class="active"' : '';
+		$out .= '>';
+		$out .= '<a href="';
+		$out .= generate_url($this->entity, $params);
+		$out .= '">';
+		$out .= $page + 1;
+		$out .= '</a></li>';
 
-		return $pag_link;
+		return $out;
 	}
 }

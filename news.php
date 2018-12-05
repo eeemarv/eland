@@ -800,7 +800,7 @@ if (!$inline)
 	include __DIR__ . '/include/footer.php';
 }
 
-function cancel($id = '')
+function cancel(int $id = 0):void
 {
 	global $view_news;
 

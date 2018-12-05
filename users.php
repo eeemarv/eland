@@ -2574,7 +2574,9 @@ if ($id)
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
 		echo '<input id="fileupload" type="file" name="image" ';
-		echo 'data-url="' . generate_url('users', ['img' => 1, 'id' => $id]) . '" ';
+		echo 'data-url="';
+		echo generate_url('users', ['img' => 1, 'id' => $id]);
+		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" data-image-max-width="400" ';
@@ -2583,7 +2585,8 @@ if ($id)
 
 		echo aphp('users', ['img_del' => 1, 'id' => $id], 'Foto verwijderen', 'btn btn-danger', false, 'times', false, $attr);
 
-		echo '<p class="text-warning">Je foto moet in het jpg/jpeg formaat zijn. ';
+		echo '<p class="text-warning">';
+		echo 'Je foto moet in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook een foto hierheen verslepen.</p>';
 		echo '</div>';
 	}
@@ -3535,7 +3538,9 @@ if ($v_map)
 
 if ($v_list || $v_extended || $v_tiles)
 {
-	echo '<form method="get" action="' . generate_url('users', $params) . '">';
+	echo '<form method="get" action="';
+	echo generate_url('users', $params);
+	echo '">';
 
 	$params_plus = array_merge($params, get_session_query_param());
 
@@ -3985,13 +3990,13 @@ if ($v_list)
 
 					[$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
 
-					echo get_contacts([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
+					echo get_contacts_str([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
 					echo '</td><td>';
-					echo get_contacts([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
+					echo get_contacts_str([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
 				}
 				else if (isset($contacts[$id][$key]))
 				{
-					echo get_contacts($contacts[$id][$key], $key);
+					echo get_contacts_str($contacts[$id][$key], $key);
 				}
 				else
 				{
@@ -4382,7 +4387,7 @@ else if ($v_tiles)
 
 include __DIR__ . '/include/footer.php';
 
-function get_contacts(array $contacts, string $abbrev):string
+function get_contacts_str(array $contacts, string $abbrev):string
 {
 	global $access_level;
 
@@ -4433,7 +4438,7 @@ function get_contacts(array $contacts, string $abbrev):string
 	return $ret;
 }
 
-function cancel($id = null)
+function cancel(int $id = 0):void
 {
 	global $view_users;
 
@@ -4461,7 +4466,7 @@ function get_dd(string $str):string
 	return $out;
 }
 
-function send_activation_mail($password, $user)
+function send_activation_mail(string $password, array $user):void
 {
 	global $app;
 

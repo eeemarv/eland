@@ -150,7 +150,10 @@ if($post && isset($_POST['zend']))
 			'vars'		=> $vars,
 		]);
 
-		$app['alert']->success('Open je E-mailbox en klik de link aan die we je zonden om je bericht te bevestigen.');
+		$app['alert']->success('Open je E-mailbox en klik
+			de link aan die we je zonden om je
+			bericht te bevestigen.');
+
 		header('Location: ' . generate_url('contact'));
 		exit;
 	}
@@ -167,11 +170,15 @@ else
 
 if (!$app['config']->get('mailenabled', $tschema))
 {
-	$app['alert']->warning('E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+	$app['alert']->warning('E-mail functies zijn
+		uitgeschakeld door de beheerder.
+		Je kan dit formulier niet gebruiken');
 }
 else if (!$app['config']->get('support', $tschema))
 {
-	$app['alert']->warning('Er is geen support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+	$app['alert']->warning('Er is geen support E-mail adres
+		ingesteld door de beheerder.
+		Je kan dit formulier niet gebruiken.');
 }
 
 $h1 = 'Contact';
@@ -203,18 +210,21 @@ echo $email;
 echo '" required>';
 echo '</div>';
 echo '<p>';
-echo 'Er wordt een validatielink die je moet aanklikken naar je E-mailbox verstuurd.';
+echo 'Er wordt een validatielink die je moet ';
+echo 'aanklikken naar je E-mailbox verstuurd.';
 echo '</p>';
 echo '</div>';
 
 echo '<div class="form-group">';
 echo '<label for="message">Je Bericht</label>';
-echo '<textarea name="message" id="message" class="form-control" rows="4">';
+echo '<textarea name="message" id="message" ';
+echo 'class="form-control" rows="4">';
 echo $message;
 echo '</textarea>';
 echo '</div>';
 
-echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
+echo '<input type="submit" name="zend" ';
+echo 'value="Verzenden" class="btn btn-default">';
 echo $app['form_token']->get_hidden_input();
 
 echo '</form>';
@@ -229,8 +239,11 @@ if ($bottom_text)
 	echo $bottom_text;
 }
 
-echo '<p>Leden: indien mogelijk, login en gebruik het Support formulier. ';
-echo '<i>Als je je paswoord kwijt bent kan je altijd zelf een nieuw paswoord ';
-echo 'aanvragen met je E-mail adres vanuit de login-pagina!</i></p>';
+echo '<p>Leden: indien mogelijk, login en ';
+echo 'gebruik het Support formulier. ';
+echo '<i>Als je je paswoord kwijt bent ';
+echo 'kan je altijd zelf een nieuw paswoord ';
+echo 'aanvragen met je E-mail adres ';
+echo 'vanuit de login-pagina!</i></p>';
 
 include __DIR__ . '/include/footer.php';

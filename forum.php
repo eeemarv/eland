@@ -417,7 +417,10 @@ if ($topic)
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('forum', [], '', 'btn btn-default', 'Forum onderwerpen', 'comments');
+	$top_buttons_right .= aphp('forum', [], '',
+		'btn btn-default',
+		'Forum onderwerpen',
+		'comments');
 	$top_buttons_right .= '</span>';
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);

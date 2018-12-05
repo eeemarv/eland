@@ -1002,7 +1002,7 @@ function mail_mass_transaction($mail_ary)
 	return true;
 }
 
-function cancel()
+function cancel():void
 {
 	header('Location: ' . generate_url('mass_transaction'));
 	exit;
