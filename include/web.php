@@ -31,7 +31,10 @@ $app['assets'] = function($app){
 	return new service\assets($app['rootpath']);
 };
 
-$app['assets']->add(['jquery', 'bootstrap', 'fontawesome', 'footable', 'autocomplete', 'base.css', 'print.css', 'base.js']);
+$app['assets']->add([
+	'jquery', 'bootstrap', 'fontawesome',
+	'footable', 'autocomplete', 'base.css',
+	'print.css', 'base.js']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 
@@ -79,7 +82,6 @@ $access_ary = [
 ];
 
 $allowed_interlets_landing_pages = [
-//	'index'			=> true,
 	'messages'		=> true,
 	'users'			=> true,
 	'transactions'	=> true,
@@ -310,7 +312,8 @@ if (!isset($page_access))
 
 if (getenv('WEBSITE_MAINTENANCE'))
 {
-	echo $app['twig']->render('website_maintenance.html.twig', ['message' =>  getenv('WEBSITE_MAINTENANCE')]);
+	echo $app['twig']->render('website_maintenance.html.twig',
+		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
 	exit;
 }
 
@@ -419,7 +422,10 @@ if ($page_access != 'anonymous' && !$s_admin
 $app['xdb']->set_user($s_schema, ctype_digit((string) $s_id) ? $s_id : 0);
 
 $app['form_token'] = function ($app){
-	return new service\form_token($app['predis'], $app['script_name']);
+	return new service\form_token(
+		$app['predis'],
+		$app['script_name']
+	);
 };
 
 /* view (global for all groups) */
