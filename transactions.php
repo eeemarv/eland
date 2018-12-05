@@ -2477,6 +2477,8 @@ function cancel(int $id = 0):void
 
 function get_valuation(string $schema):string
 {
+	global $app;
+
 	$out = '';
 
 	if ($app['config']->get('template_lets', $schema)

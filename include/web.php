@@ -554,7 +554,7 @@ function btn_filter():string
  */
 
 function aphp(
-	string $entity = '',
+	string $entity,
 	array $params = [],
 	string $label = '*link*',
 	$class = false,

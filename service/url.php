@@ -4,39 +4,104 @@ namespace service;
 
 use service\this_group;
 use service\groups;
-use service\alert;
 
 class url
 {
 	protected $this_group;
 	protected $groups;
-	protected $alert;
 	protected $rootpath;
 
-	public function __construct(this_group $this_group, groups $groups, alert $alert,
-		string $rootpath, string $protocol, array $s_user_params_own_group, string $s_id,
-		string $s_schema)
+	public function __construct(
+		this_group $this_group,
+		groups $groups,
+		string $rootpath,
+		string $protocol
+	)
 	{
 		$this->this_group = $this_group;
 		$this->groups = $groups;
-		$this->alert = $alert;
+		$this->protocol = $protocol;
 		$this->rootpath = $rootpath;
 	}
 
-	public function get($entity = 'messages', $params = [], $sch = false)
+
+	/**
+	 * get link with schema and role required.
+	 */
+
+	public function get_link(
+		string $route,
+		array $params,
+		string $label,
+		array $attr = [],
+		array $extra = []
+	):string
 	{
-		if ($this->alert->is_set())
+		$out = '<a href="';
+		$out .= $this->get($route, $params);
+		$out .= '"';
+
+		foreach ($attr as $name => $val)
 		{
-			$params['a'] = '1';
+			$out .= ' ' . $name . '="' . $val . '"';
 		}
 
-		$params = array_merge($params, $this->get_session_query_param($sch));
+		$out .= '>';
+
+		if (count($extra))
+		{
+			if (isset($extra['fa']))
+			{
+				$out .= '<i class="fa fa-' . $extra['fa'] .'"></i>';
+			}
+
+			if ($label)
+			{
+				if (isset($extra['collapse']))
+				{
+					$out .= '<span class="hidden-xs hidden-sm"> ';
+					$out .= htmlspecialchars($label, ENT_QUOTES);
+					$out .= '</span>';
+				}
+				else
+				{
+					$out .= ' ';
+					$out .= htmlspecialchars($label, ENT_QUOTES);
+				}
+			}
+		}
+		else
+		{
+			$out .= htmlspecialchars($label, ENT_QUOTES);
+		}
+
+		$out .= '</a>';
+
+		return $out;
+	}
+
+	public function get(
+		string $route,
+		array $params
+	):string
+	{
+		if (!isset($params['schema']))
+		{
+			throw \Exception('no schema set for route ' .
+				$route . ' with params ' . json_encode($params));
+		}
+
+		if (!isset($params['access']))
+		{
+			throw \Exception('no access set for route ' .
+				$route . ' with params ' . json_encode($params));
+		}
 
 		$params = http_build_query($params);
 
-		$params = ($params) ? '?' . $params : '';
+		$params = $params ? '?' . $params : '';
 
-		$path = ($sch) ? $this->protocol . $this->groups->get_host($sch) . '/' : $this->rootpath;
+		$path = $sch ? $app['protocol'] . $app['groups']->get_host($schema) . '/' : $rootpath;
 
 		return $path . $entity . '.php' . $params;
 	}
