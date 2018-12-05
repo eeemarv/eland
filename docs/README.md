@@ -21,7 +21,7 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 De code is open source en te vinden op [Github](https://github.com/eeemarv/eland).
 Vanaf [rubriek "Dokku"](dokku.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdbank of [LETSysteem](https://manual.letsa.net/nl/1.3.html). Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
+Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank of [LETSysteem](https://manual.letsa.net/nl/1.3.html). Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
 
 eLAND is een persoonlijk en onafhankelijk project.
 

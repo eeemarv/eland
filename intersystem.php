@@ -465,7 +465,7 @@ if ($id)
 		{
 			echo ' <span class="btn btn-danger btn-xs">';
 			echo '<i class="fa fa-exclamation-triangle"></i> ';
-			echo 'Niet geconfigureerd als Tijdbank</span>';
+			echo 'Niet geconfigureerd als Tijdsbank</span>';
 		}
 
 		if (!$app['config']->get('interlets_en', $group_schema))
@@ -626,7 +626,7 @@ echo '<p>';
 echo 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
 echo 'je eigen Systeem en een ander Systeem dat draait op eLAS of eLAND software.';
 echo 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
-echo 'op tijd. Ze zijn dus Tijdbanken en dienen zo ';
+echo 'op tijd. Ze zijn dus Tijdsbanken en dienen zo ';
 echo 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
 echo 'Wanneer je deze pagina kan zien is dit reeds het geval.';
 echo '</p>';
@@ -697,15 +697,19 @@ if (count($groups))
 
 			if (!$app['config']->get('template_lets', $g['schema']))
 			{
-				echo ' <span class="label label-danger" title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
-				echo '<i class="fa fa-exclamation-triangle"></i> geen Tijdbank</span>';
+				echo ' <span class="label label-danger" ';
+				echo 'title="Dit Systeem is niet geconfigureerd als Tijdsbank.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> ';
+				echo 'geen Tijdsbank</span>';
 			}
 
 			if (!$app['config']->get('interlets_en', $g['schema']))
 			{
 				echo ' <span class="label label-danger" ';
-				echo 'title="InterSysteem-mogelijkheid is niet ingeschakeld in de configuratie van dit systeem.">';
-				echo '<i class="fa fa-exclamation-triangle"></i> geen interSysteem</span>';
+				echo 'title="InterSysteem-mogelijkheid is niet ';
+				echo 'ingeschakeld in de configuratie van dit systeem.">';
+				echo '<i class="fa fa-exclamation-triangle"></i> ';
+				echo 'geen interSysteem</span>';
 			}
 		}
 
@@ -775,14 +779,14 @@ function get_schemas_groups():string
 	$out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
 	$out .= '</div>';
 	$out .= '<ul>';
-	$out .= '<li> Je kan een ander Tijdbank-Systeem dat dezelfde eLAND-server gebruikt ';
+	$out .= '<li> Je kan een ander Tijdsbank-Systeem dat dezelfde eLAND-server gebruikt ';
 	$out .= 'op vereenvoudigde manier verbinding leggen zonder ';
 	$out .= 'het uitwisselen van Api Key, Preshared Key en Remote Account Code. ';
 	$out .= '</li>';
 	$out .= '<li> ';
 	$out .= 'Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
 	$out .= 'waarmee je een interSysteem verbinding wil opzetten. ';
-	$out .= 'En verifiëer of zij ook een Tijdbank Systeem hebben en of zij geïnteresseerd zijn.</li>';
+	$out .= 'En verifiëer of zij ook een Tijdsbank-Systeem hebben en of zij geïnteresseerd zijn.</li>';
 	$out .= '<li> Voor het leggen van een InterSysteem-verbinding, kijk in de tabel hieronder. ';
 	$out .= 'Maak het interSysteem aan door op \'Creëer\' in ';
 	$out .= 'kolom \'lok.interSysteem\' te klikken en vervolgens op Toevoegen. ';
@@ -863,7 +867,8 @@ function get_schemas_groups():string
 	$out .= '<h3>Systemen op deze eLAND server</h3>';
 	$out .= '</div>';
 
-	$out .= '<table class="table table-bordered table-hover table-striped footable">';
+	$out .= '<table class="table table-bordered ';
+	$out .= 'table-hover table-striped footable">';
 	$out .= '<thead>';
 	$out .= '<tr>';
 	$out .= '<th data-sort-initial="true">Systeem Naam</th>';
@@ -898,14 +903,18 @@ function get_schemas_groups():string
 
 		if (!$app['config']->get('template_lets', $s))
 		{
-			$out .= ' <span class="label label-danger" title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
+			$out .= ' <span class="label label-danger" ';
+			$out .= 'title="Dit Systeem is niet ';
+			$out .= 'geconfigureerd als Tijdsbank.">';
 			$out .= '<i class="fa fa-exclamation-triangle">';
 			$out .= '</i></span>';
 		}
 
 		if (!$app['config']->get('interlets_en', $s))
 		{
-			$out .= ' <span class="label label-danger" title="interSysteem is niet ingeschakeld in de configuratie">';
+			$out .= ' <span class="label label-danger" ';
+			$out .= 'title="interSysteem is niet ';
+			$out .= 'ingeschakeld in de configuratie">';
 			$out .= '<i class="fa fa-exclamation-triangle">';
 			$out .= '</i></span>';
 		}
