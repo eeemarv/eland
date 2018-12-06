@@ -5,20 +5,22 @@ namespace schema_task;
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use service\user_cache;
-
 use service\schedule;
 use service\groups;
-use service\this_group;
 
 class sync_user_cache extends schema_task
 {
 	protected $db;
 	protected $user_cache;
 
-	public function __construct(db $db, user_cache $user_cache,
-		schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(
+		db $db,
+		user_cache $user_cache,
+		schedule $schedule,
+		groups $groups
+	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 	}

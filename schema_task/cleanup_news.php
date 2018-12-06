@@ -9,7 +9,6 @@ use service\xdb;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 
 class cleanup_news extends schema_task
 {
@@ -17,10 +16,15 @@ class cleanup_news extends schema_task
 	protected $xdb;
 	protected $monolog;
 
-	public function __construct(db $db, xdb $xdb, Logger $monolog,
-		schedule $schedule, groups $groups, this_group $this_group)
+	public function __construct(
+		db $db,
+		xdb $xdb,
+		Logger $monolog,
+		schedule $schedule,
+		groups $groups
+	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->monolog = $monolog;

@@ -8,7 +8,6 @@ use Monolog\Logger;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 use service\config;
 
 class cleanup_messages extends schema_task
@@ -17,10 +16,15 @@ class cleanup_messages extends schema_task
 	protected $monolog;
 	protected $config;
 
-	public function __construct(db $db, Logger $monolog, schedule $schedule,
-		groups $groups, this_group $this_group, config $config)
+	public function __construct(
+		db $db,
+		Logger $monolog,
+		schedule $schedule,
+		groups $groups,
+		config $config
+	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->config = $config;

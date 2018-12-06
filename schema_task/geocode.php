@@ -10,7 +10,6 @@ use queue\geocode as geocode_queue;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 
 class geocode extends schema_task
 {
@@ -18,10 +17,8 @@ class geocode extends schema_task
 	protected $monolog;
 	protected $cache;
 	protected $db;
-
 	protected $curl;
 	protected $geocoder;
-
 	protected $geocode_queue;
 
 	public function __construct(
@@ -30,11 +27,10 @@ class geocode extends schema_task
 		Logger $monolog,
 		geocode_queue $geocode_queue,
 		schedule $schedule,
-		groups $groups,
-		this_group $this_group
+		groups $groups
 	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->monolog = $monolog;
 		$this->cache = $cache;
 		$this->db = $db;

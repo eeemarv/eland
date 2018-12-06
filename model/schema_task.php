@@ -7,24 +7,20 @@ use model\task;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 
 abstract class schema_task extends task implements task_interface
 {
 	protected $groups;
-	protected $this_group;
 	protected $schema;
 
 	public function __construct(
 		schedule $schedule,
-		groups $groups,
-		this_group $this_group
+		groups $groups
 	)
 	{
 		parent::__construct($schedule);
 
 		$this->groups = $groups;
-		$this->this_group = $this_group;
 	}
 
 	public function should_run():bool
@@ -51,11 +47,5 @@ abstract class schema_task extends task implements task_interface
 		}
 
 		return false;
-	}
-
-	public function run():void
-	{
-		$this->this_group->force($this->schema);
-		parent::run();
 	}
 }

@@ -14,7 +14,6 @@ use service\distance;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 use service\interlets_groups;
 use service\config;
 use service\mail_addr_user;
@@ -36,15 +35,26 @@ class saldo extends schema_task
 	protected $config;
 	protected $mail_addr_user;
 
-	public function __construct(db $db, xdb $xdb, Redis $redis, cache $cache,
-		Logger $monolog, mail $mail,
-		string $s3_img_url, string $s3_doc_url, string $protocol,
-		date_format $date_format, distance $distance, schedule $schedule,
-		groups $groups, this_group $this_group,
+	public function __construct(
+		db $db,
+		xdb $xdb,
+		Redis $redis,
+		cache $cache,
+		Logger $monolog,
+		mail $mail,
+		string $s3_img_url,
+		string $s3_doc_url,
+		string $protocol,
+		date_format $date_format,
+		distance $distance,
+		schedule $schedule,
+		groups $groups,
 		interlets_groups $interlets_groups,
-		config $config, mail_addr_user $mail_addr_user)
+		config $config,
+		mail_addr_user $mail_addr_user
+	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->redis = $redis;

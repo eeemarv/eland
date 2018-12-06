@@ -29,13 +29,6 @@ class this_group
 		}
 	}
 
-	public function force($schema):void
-	{
-		$this->schema = $schema;
-		$this->host = $this->groups->get_host($schema);
-		$this->db->exec('set search_path to ' . $schema);
-	}
-
 	public function get_schema():string
 	{
 		return $this->schema ?? '';

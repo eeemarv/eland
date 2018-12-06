@@ -288,7 +288,6 @@ $app['schema_task.cleanup_messages'] = function ($app){
 		$app['monolog'],
 		$app['schedule'],
 		$app['groups'],
-		$app['this_group'],
 		$app['config']
 	);
 };
@@ -299,8 +298,7 @@ $app['schema_task.cleanup_news'] = function ($app){
 		$app['xdb'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups'],
-		$app['this_group']
+		$app['groups']
 	);
 };
 
@@ -311,8 +309,7 @@ $app['schema_task.geocode'] = function ($app){
 		$app['monolog'],
 		$app['queue.geocode'],
 		$app['schedule'],
-		$app['groups'],
-		$app['this_group']
+		$app['groups']
 	);
 };
 
@@ -321,8 +318,7 @@ $app['schema_task.saldo_update'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups'],
-		$app['this_group']
+		$app['groups']
 	);
 };
 
@@ -331,8 +327,7 @@ $app['schema_task.sync_user_cache'] = function ($app){
 		$app['db'],
 		$app['user_cache'],
 		$app['schedule'],
-		$app['groups'],
-		$app['this_group']
+		$app['groups']
 	);
 };
 
@@ -343,7 +338,6 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 		$app['protocol'],
 		$app['schedule'],
 		$app['groups'],
-		$app['this_group'],
 		$app['config'],
 		$app['template_vars'],
 		$app['user_cache'],
@@ -366,7 +360,6 @@ $app['schema_task.saldo'] = function ($app){
 		$app['distance'],
 		$app['schedule'],
 		$app['groups'],
-		$app['this_group'],
 		$app['interlets_groups'],
 		$app['config'],
 		$app['mail_addr_user']
@@ -382,8 +375,7 @@ $app['schema_task.interlets_fetch'] = function ($app){
 		$app['typeahead'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups'],
-		$app['this_group']
+		$app['groups']
 	);
 };
 

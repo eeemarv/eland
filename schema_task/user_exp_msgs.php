@@ -8,7 +8,6 @@ use queue\mail;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 use service\config;
 use service\template_vars;
 use service\user_cache;
@@ -23,12 +22,19 @@ class user_exp_msgs extends schema_task
 	protected $user_cache;
 	protected $mail_addr_user;
 
-	public function __construct(db $db, mail $mail, string $protocol,
-		schedule $schedule, groups $groups, this_group $this_group, config $config,
-		template_vars $template_vars, user_cache $user_cache,
-		mail_addr_user $mail_addr_user)
+	public function __construct(
+		db $db,
+		mail $mail,
+		string $protocol,
+		schedule $schedule,
+		groups $groups,
+		config $config,
+		template_vars $template_vars,
+		user_cache $user_cache,
+		mail_addr_user $mail_addr_user
+	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->mail = $mail;
 		$this->protocol = $protocol;

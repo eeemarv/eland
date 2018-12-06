@@ -8,7 +8,6 @@ use Monolog\Logger;
 
 use service\schedule;
 use service\groups;
-use service\this_group;
 
 class saldo_update extends schema_task
 {
@@ -19,11 +18,10 @@ class saldo_update extends schema_task
 		db $db,
 		Logger $monolog,
 		schedule $schedule,
-		groups $groups,
-		this_group $this_group
+		groups $groups
 	)
 	{
-		parent::__construct($schedule, $groups, $this_group);
+		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->monolog = $monolog;
 	}
