@@ -38,11 +38,11 @@ class this_group
 
 	public function get_schema():string
 	{
-		return $this->schema;
+		return $this->schema ?? '';
 	}
 
 	public function get_host():string
 	{
-		return $this->host;
+		return $this->host ?? '';
 	}
 }
