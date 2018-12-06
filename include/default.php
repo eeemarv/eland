@@ -63,11 +63,19 @@ $app->extend('monolog', function($monolog, $app) {
 			$record['extra']['user_id'] = $app['s_ary_user']['id'] ?? '';
 			$record['extra']['username'] = $app['s_ary_user']['name'] ?? '';
 		}
+
 		if (isset($app['s_schema']))
 		{
 			$record['extra']['user_schema'] = $app['s_schema'];
 		}
-		$record['extra']['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
+
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
+
+		if ($ip)
+		{
+			$record['extra']['ip'] = $ip;
+		}
+
 		return $record;
 	});
 
