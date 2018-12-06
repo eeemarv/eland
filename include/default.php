@@ -136,9 +136,7 @@ $app['template_vars'] = function ($app){
 
 $app['this_group'] = function($app){
 	return new service\this_group(
-		$app['groups'],
-		$app['db'],
-		$app['predis']
+		$app['groups']
 	);
 };
 
