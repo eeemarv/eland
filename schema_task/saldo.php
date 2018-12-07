@@ -641,7 +641,8 @@ class saldo extends schema_task
 			if (!count($to))
 			{
 				$this->monolog->info('No periodic mail queued for user ' .
-				link_user($id, $this->schema, false), ['schema' => $this->schema]);
+				link_user($id, $this->schema, false) . ' because no email address.',
+				['schema' => $this->schema]);
 
 				continue;
 			}
