@@ -75,7 +75,7 @@ class typeahead
 
 	public function invalidate_thumbprint(string $name = 'users_active', $group_domain = false, $new_thumbprint = false)
 	{
-		$group_domain = ($group_domain) ?: $_SERVER['SERVER_NAME'];
+		$group_domain = $group_domain ?: $_SERVER['SERVER_NAME'];
 
 		$key = $group_domain . '_typeahead_thumbprint_' . $name;
 

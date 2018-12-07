@@ -85,6 +85,18 @@ $(document).ready(function(){
 					return user.value;
 				};
 
+			} else if (rec['name'] == 'exists') {
+
+				templates = {
+					header: '<h3>Reeds bestaande</h3><p>Niet selecteren!</p>',
+					suggestion: function (data) {
+						return '<p>' + data.existing + '</p>';
+					}
+				};
+
+				tokenizer = Bloodhound.tokenizers.whitespace;
+				templates = {};
+				displayKey = false;
 			} else {
 				filter = false;
 				tokenizer = Bloodhound.tokenizers.whitespace;
