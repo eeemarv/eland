@@ -30,9 +30,8 @@ $(document).ready(function () {
 
 		$(this)
 			.attr({
-			'download': filename,
-				'href': csvData,
-				'target': '_blank'
+				'download': filename,
+				'href': csvData
 		});
 	}
 

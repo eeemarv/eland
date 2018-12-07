@@ -4,7 +4,7 @@ namespace service;
 
 class assets
 {
-	protected $version = '25';
+	protected $version = '26';
 
 	protected $asset_ary = [
 		'bootstrap' => [
