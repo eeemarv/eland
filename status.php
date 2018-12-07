@@ -138,7 +138,7 @@ if ($unvalid_mail || $empty_letscode || $empty_name)
 $no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
 	from ' . $tschema . '.users u
 	where status in (1, 2)
-		and not exists (select 1 from messages m where m.id_user = u.id)');
+		and not exists (select 1 from ' . $tschema . '.messages m where m.id_user = u.id)');
 
 if (count($no_msgs_users))
 {
@@ -162,14 +162,20 @@ if ($status_msgs)
 
 		if (count($non_unique_mail) == 1)
 		{
-			echo 'Een E-mail adres komt meer dan eens voor onder de actieve accounts ';
+			echo 'Een E-mail adres komt meer dan ';
+			echo 'eens voor onder de actieve accounts ';
 			echo 'in dit Systeem. ';
-			echo 'Gebruikers met dit E-mail adres kunnen niet inloggen met E-mail adres. ';
+			echo 'Gebruikers met dit E-mail adres ';
+			echo 'kunnen niet inloggen met E-mail adres. ';
 		}
 		else
 		{
-			echo 'Meerdere E-mail adressen komen meer dan eens voor onder de actieve Accounts in dit Systeem. ';
-			echo 'Gebruikers met een E-mail adres dat meer dan eens voorkomt, kunnen niet inloggen met E-mail adres.';
+			echo 'Meerdere E-mail adressen komen meer ';
+			echo 'dan eens voor onder de actieve ';
+			echo 'Accounts in dit Systeem. ';
+			echo 'Gebruikers met een E-mail adres ';
+			echo 'dat meer dan eens voorkomt, ';
+			echo 'kunnen niet inloggen met E-mail adres.';
 		}
 
 		echo '<ul>';
@@ -200,15 +206,21 @@ if ($status_msgs)
 
 		if (count($non_unique_letscode) == 1)
 		{
-			echo 'Een Account Code komt meer dan eens voor in dit Systeem. ';
-			echo 'Actieve gebruikers met deze accounts kunnen niet inloggen met Account Code ';
-			echo 'en kunnen geen transacties doen of transacties ontvangen. ';
+			echo 'Een Account Code komt meer ';
+			echo 'dan eens voor in dit Systeem. ';
+			echo 'Actieve gebruikers met deze ';
+			echo 'accounts kunnen niet inloggen met Account Code ';
+			echo 'en kunnen geen transacties ';
+			echo 'doen of transacties ontvangen. ';
 		}
 		else
 		{
-			echo 'Meerdere Account Codes komen meer dan eens voor in dit Systeem. ';
-			echo 'Gebruikers met deze accounts kunnen niet inloggen met de Account Code ';
-			echo 'en kunnen geen transacties doen of transacties ontvangen.';
+			echo 'Meerdere Account Codes komen ';
+			echo 'meer dan eens voor in dit Systeem. ';
+			echo 'Gebruikers met deze accounts ';
+			echo 'kunnen niet inloggen met de Account Code ';
+			echo 'en kunnen geen transacties ';
+			echo 'doen of transacties ontvangen.';
 		}
 
 		echo '<ul>';
@@ -237,8 +249,11 @@ if ($status_msgs)
 
 		if (count($non_unique_name) == 1)
 		{
-			echo 'Een gebruikersnaam komt meer dan eens voor in dit Systeem. ';
-			echo 'Actieve gebruikers met deze gebruikersnaam kunnen niet inloggen met gebruikersnaam. ';
+			echo 'Een gebruikersnaam komt meer ';
+			echo 'dan eens voor in dit Systeem. ';
+			echo 'Actieve gebruikers met deze ';
+			echo 'gebruikersnaam kunnen niet ';
+			echo 'inloggen met gebruikersnaam. ';
 		}
 		else
 		{
@@ -271,11 +286,15 @@ if ($status_msgs)
 		echo '<li class="list-group-item">';
 		if (count($unvalid_mail) == 1)
 		{
-			echo 'Dit Systeem bevat een fout geformateerd E-mail adres. Pas het aan of verwijder het!';
+			echo 'Dit Systeem bevat een fout ';
+			echo 'geformateerd E-mail adres. ';
+			echo 'Pas het aan of verwijder het!';
 		}
 		else
 		{
-			echo 'Dit Systeem bevat fout geformateerde E-mail adressen. Verwijder deze of pas deze aan!';
+			echo 'Dit Systeem bevat fout geformateerde ';
+			echo 'E-mail adressen. ';
+			echo 'Verwijder deze of pas deze aan!';
 		}
 
 		echo '<ul>';
