@@ -45,7 +45,7 @@ class log_db
 			$user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 
 			$insert = [
-				'schema'		=> $log['context']['schema'] ?? $log['extra']['schema'],
+				'schema'		=> $log['context']['schema'] ?? '',
 				'user_id'		=> $user_id,
 				'user_schema'	=> $log['extra']['user_schema'] ?? '',
 				'letscode'		=> $log['context']['letscode'] ?? $log['extra']['letscode'] ?? '',
