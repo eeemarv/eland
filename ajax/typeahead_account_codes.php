@@ -5,7 +5,7 @@ require_once __DIR__ . '/../include/web.php';
 
 $tschema = $app['this_group']->get_schema();
 
-$usernames = [];
+$account_codes = [];
 
 $st = $app['db']->prepare('select letscode
 	from ' . $tschema . '.users
@@ -14,18 +14,13 @@ $st->execute();
 
 while ($row = $st->fetch())
 {
-	if (empty($row['letscode']))
-	{
-		continue;
-	}
-
-	$usernames[] = $row['letscode'];
+	$account_codes[] = $row['letscode'];
 }
 
-$usernames = json_encode($usernames);
+$account_codes = json_encode($account_codes);
 
-$app['typeahead']->invalidate_thumbprint('account_codes', false, crc32($usernames));
+$app['typeahead']->invalidate_thumbprint('account_codes', false, crc32($account_codes));
 
 header('Content-type: application/json');
 
-echo $usernames;
+echo $account_codes;

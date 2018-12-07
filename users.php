@@ -1814,7 +1814,8 @@ if ($add || $edit)
 	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
 
 	$app['assets']->add(['datepicker', 'generate_password.js',
-		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js']);
+		'generate_password_onload.js', 'user_edit.js', 'access_input_cache.js',
+		'typeahead', 'typeahead.js']);
 
 	$h1 = 'Gebruiker ';
 	$h1 .= $edit ? 'aanpassen: ' . link_user($user, $tschema) : 'toevoegen';
@@ -1840,7 +1841,10 @@ if ($add || $edit)
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
 		echo 'value="';
 		echo $user['letscode'] ?? '';
-		echo '" required maxlength="20">';
+		echo '" required maxlength="20" ';
+		echo 'data-typeahead="';
+		echo $app['typeahead']->get('account_codes');
+		echo '">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1856,7 +1860,10 @@ if ($add || $edit)
 		echo '<input type="text" class="form-control" id="name" name="name" ';
 		echo 'value="';
 		echo $user['name'] ?? '';
-		echo '" required maxlength="50">';
+		echo '" required maxlength="50" ';
+		echo 'data-typeahead="';
+		echo $app['typeahead']->get('usernames');
+		echo '">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -2824,7 +2831,9 @@ if ($id)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	echo '<h3>Saldo: <span class="label label-info">' . $user['saldo'] . '</span> ';
+	echo '<h3>Saldo: <span class="label label-info">';
+	echo $user['saldo'];
+	echo '</span> ';
 	echo $app['config']->get('currency', $tschema);
 	echo '</h3>';
 	echo '</div></div>';
@@ -2832,8 +2841,12 @@ if ($id)
 	echo '<div class="row print-hide">';
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
-	echo 'data-user-id="' . $id . '" ';
-	echo 'data-days="' . $tdays . '"></div>';
+	echo 'data-user-id="';
+	echo $id;
+	echo '" ';
+	echo 'data-days="';
+	echo $tdays;
+	echo '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
 	echo '<div id="donutdiv" data-height="480px" data-width="960px"></div>';

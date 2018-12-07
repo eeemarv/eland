@@ -14,11 +14,6 @@ $st->execute();
 
 while ($row = $st->fetch())
 {
-	if (empty($row['name']))
-	{
-		continue;
-	}
-
 	$usernames[] = $row['name'];
 }
 
