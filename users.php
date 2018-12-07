@@ -3651,7 +3651,9 @@ if ($v_list)
 					echo $checkbox_id;
 					echo '">';
 					echo '<input type="checkbox" ';
-					echo 'id="' . $checkout_id . '" ';
+					echo 'id="';
+					echo $checkbox_id;
+					echo '" ';
 					echo 'name="sh[' . $group . '][' . $a_type . '][' . $key . ']" ';
 					echo 'value="1"';
 					echo isset($show_columns[$group][$a_type][$key]) ? ' checked="checked"' : '';
