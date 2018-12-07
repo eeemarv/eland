@@ -790,7 +790,6 @@ if ($add)
 		];
 
 		$group_id = 'self';
-		$to_schema_table = '';
 
 		if ($tus)
 		{
@@ -801,51 +800,92 @@ if ($add)
 				$group_id = $app['db']->fetchColumn('select id
 					from ' . $tschema . '.letsgroups
 					where url = ?', [$app['protocol'] . $host_from_tus]);
-				$to_schema_table = $tus . '.';
+
+				if ($mid)
+				{
+					$row = $app['db']->fetchAssoc('select
+							m.content, m.amount, m.id_user,
+							u.letscode, u.name
+						from ' . $tus . '.messages m,
+							'. $tus . '.users u
+						where u.id = m.id_user
+							and u.status in (1, 2)
+							and m.id = ?', [$mid]);
+
+					if ($row)
+					{
+						$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+						$transaction['description'] =  substr($row['content'], 0, 60);
+						$amount = $row['amount'];
+						$amount = ($app['config']->get('currencyratio', $tschema) * $amount) / $app['config']->get('currencyratio', $tus);
+						$transaction['amount'] = round($amount);
+					}
+				}
+				else if ($tuid)
+				{
+					$to_user = $app['user_cache']->get($tuid, $tus);
+
+					if (in_array($to_user['status'], [1, 2]))
+					{
+						$transaction['letscode_to'] = link_user($tuid, $tus, false);
+					}
+				}
 			}
 		}
-
-		if ($mid && !($tus xor $host_from_tus))
+		else if ($mid)
 		{
 			$row = $app['db']->fetchAssoc('select
-					m.content, m.amount, m.id_user, u.letscode, u.name, u.status
-				from ' . $to_schema_table . 'messages m,
-					'. $to_schema_table . 'users u
+					m.content, m.amount, m.id_user,
+					u.letscode, u.name, u.status
+				from ' . $tschema . '.messages m,
+					'. $tschema . '.users u
 				where u.id = m.id_user
 					and m.id = ?', [$mid]);
 
-			if (($s_admin && !$tus) || $row['status'] == 1 || $row['status'] == 2)
+			if ($row)
 			{
-				$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
-				$transaction['description'] =  substr('#m.' . $to_schema_table . $mid . ' ' . $row['content'], 0, 60);
-				$amount = $row['amount'];
-				if ($tus)
+				if ($row['status'] === 1 || $row['status'] === 2)
 				{
-					$amount = round(($app['config']->get('currencyratio', $tschema) * $amount) / $app['config']->get('currencyratio', $tus));
+					$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+					$transaction['description'] =  substr($row['content'], 0, 60);
+					$transaction['amount'] = $row['amount'];
 				}
-				$transaction['amount'] = $amount;
-				$tuid = $row['tuid'];
+
+				if ($s_id == $row['id_user'])
+				{
+					if ($s_admin)
+					{
+						$transaction['letscode_from'] = '';
+					}
+					else
+					{
+						$transaction['letscode_to'] = '';
+						$transaction['description'] = '';
+						$transaction['amount'] = '';
+					}
+				}
 			}
 		}
 		else if ($tuid)
 		{
-			$to_user = $app['user_cache']->get($tuid, ((isset($host_from_tus)) ? $tus : $tschema));
+			$to_user = $app['user_cache']->get($tuid, $tschema);
 
-			if (($s_admin && !$tus) || $to_user['status'] == 1 || $to_user['status'] == 2)
+			if (in_array($to_user['status'], [1, 2]) || $s_admin)
 			{
-				$transaction['letscode_to'] = $to_user['letscode'] . ' ' . $to_user['name'];
+				$transaction['letscode_to'] = link_user($tuid, $tschema, false);
 			}
-		}
 
-		if ($fuid && $s_admin && ($fuid != $tuid))
-		{
-			$from_user = $app['user_cache']->get($fuid, $tschema);
-			$transaction['letscode_from'] = $from_user['letscode'] . ' ' . $from_user['name'];
-		}
-
-		if ($tuid == $s_id && !$fuid && $tus != $tschema)
-		{
-			$transaction['letscode_from'] = '';
+			if ($tuid == $s_id)
+			{
+				if ($s_admin)
+				{
+					$transaction['letscode_from'] = '';
+				}
+				else
+				{
+					$transaction['letscode_to'] = '';
+				}
+			}
 		}
 	}
 
@@ -1069,7 +1109,6 @@ if ($add)
 	echo '</ul>';
 
 	echo '</div>';
-
 
 	echo '<div class="form-group">';
 	echo '<label for="amount" class="control-label">';
