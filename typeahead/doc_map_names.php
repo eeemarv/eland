@@ -4,6 +4,13 @@ $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
 $tschema = $app['this_group']->get_schema();
+$schema = $_GET['schema'] ?? '';
+
+if ($schema !== $tschema || !$schema)
+{
+	http_response_code(404);
+	exit;
+}
 
 $map_names = [];
 
@@ -25,7 +32,11 @@ while ($row = $st->fetch())
 
 $map_names = json_encode($map_names);
 
-$app['typeahead']->invalidate_thumbprint('doc_map_names', false, crc32($map_names));
+$params = [
+	'schema'	=> $schema,
+];
+
+$app['typeahead']->set_thumbprint('doc_map_names', $params, crc32($map_names));
 
 header('Content-type: application/json');
 

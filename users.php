@@ -1717,7 +1717,8 @@ if ($add || $edit)
 
 		if ($s_admin)
 		{
-			$contact = $app['db']->fetchAll('select name, abbrev, \'\' as value, 0 as id
+			$contact = $app['db']->fetchAll('select name, abbrev,
+				\'\' as value, 0 as id
 				from ' . $tschema . '.type_contact
 				where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 		}
@@ -1848,10 +1849,16 @@ if ($add || $edit)
 		echo $user['letscode'] ?? '';
 		echo '" required maxlength="20" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get('account_codes');
+		echo $app['typeahead']->get([['account_codes', [
+			'schema'	=> $tschema,
+			'except'	=> $edit ?: 0,
+		]]]);
 		echo '" ';
-		echo 'data-typeahead-not-head="Al in gebruik"';
-		echo '>';
+		echo 'data-typeahead-render="';
+		echo htmlspecialchars(json_encode([
+			'not_head'	=> 'Al in Gebruik',
+		]));
+		echo '">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1869,10 +1876,16 @@ if ($add || $edit)
 		echo $user['name'] ?? '';
 		echo '" required maxlength="50" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get('usernames?except=' . $edit);
+		echo $app['typeahead']->get([['usernames', [
+			'schema'	=> $tschema,
+			'except'	=> $edit ?: 0,
+		]]]);
 		echo '" ';
-		echo 'data-typeahead-not-head="Al in gebruik"';
-		echo '>';
+		echo 'data-typeahead-render="';
+		echo htmlspecialchars(json_encode([
+			'not_head'	=> 'Al in Gebruik',
+		]));
+		echo '">';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -3627,14 +3640,33 @@ if ($v_list)
 			echo '</div>';
 			echo '</div>';
 
-			$typeahead_ary = ['users_active'];
+			$typeahead_ary = [];
 
-			if ($s_admin)
+			if ($s_guest)
 			{
-				$typeahead_ary = array_merge($typeahead_ary, [
-					'users_extern', 'users_inactive', 'users_im', 'users_ip'
-				]);
+				$typeahead_status_ary = ['active'];
 			}
+			else if ($s_user)
+			{
+				$typeahead_status_ary = ['active', 'extern'];
+			}
+			else if ($s_admin)
+			{
+				$typeahead_status_ary = ['active', 'extern',
+					'inactive', 'im', 'ip'];
+			}
+
+			foreach ($typeahead_status_ary as $t_stat)
+			{
+				$typeahead_ary[] = [
+					'accounts', [
+						'status'	=> $t_stat,
+						'schema'	=> $tschema,
+					],
+				];
+			}
+
+			$typeahead = $app['typeahead']->get($typeahead_ary);
 
 			echo '<div class="form-group">';
 			echo '<label for="p_activity_filter_letscode" ';
@@ -3657,7 +3689,7 @@ if ($v_list)
 			echo $app['config']->get('newuserdays', $tschema);
 			echo '" ';
 			echo 'data-typeahead="';
-			echo $app['typeahead']->get($typeahead_ary);
+			echo $typeahead;
 			echo '">';
 			echo '</div>';
 			echo '</div>';

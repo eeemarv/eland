@@ -162,7 +162,7 @@ echo 'Type</span>';
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get('log_types');
+echo $app['typeahead']->get([['log_types', ['schema' => $tschema]]]);
 echo '" ';
 echo 'name="type" id="type" placeholder="Type" ';
 echo 'value="';
@@ -171,9 +171,17 @@ echo '">';
 echo '</div>';
 echo '</div>';
 
-$typeahead_users_ary = ['users_active', 'users_extern',
-	'users_inactive', 'users_im', 'users_ip'];
+$typeahead_ary = [];
 
+foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
+{
+	$typeahead_ary[] = [
+		'accounts', [
+			'status'	=> $t_stat,
+			'schema'	=> $tschema,
+		],
+	];
+}
 echo '<div class="col-sm-3">';
 echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon" id="code_addon">';
@@ -182,7 +190,7 @@ echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="code_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get($typeahead_users_ary);
+echo $app['typeahead']->get($typeahead_ary);
 echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $tschema);

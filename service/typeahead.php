@@ -9,47 +9,28 @@ class typeahead
 {
 	protected $redis;
 	protected $monolog;
-	protected $version;
 	protected $ttl = 5184000; // 60 days
 
 	public function __construct(Redis $redis, Logger $monolog)
 	{
 		$this->redis = $redis;
 		$this->monolog = $monolog;
-		$this->version = getenv('TYPEAHEAD_VERSION') ?: '';
 	}
 
-	public function get($name_ary, $group_domain = false, $group_id = false)
+	public function get(array $identifiers):string
 	{
 		$out = [];
 
-		if (!is_array($name_ary))
+		foreach($identifiers as $identifier)
 		{
-			$name_ary = [$name_ary];
-		}
-
-		foreach($name_ary as $name)
-		{
-			$users_en = strpos($name, 'users_') === false ? false : true;
+			$name = $identifier[0];
+			$params = $identifier[1];
 
 			$rec = [
-				'thumbprint'	=> $this->get_thumbprint($name, $group_domain),
-				'name'			=> $users_en ? 'users' : $name,
+				'thumbprint'	=> $this->get_thumbprint($name, $params),
+				'name'			=> $name,
+				'params'		=> $params,
 			];
-
-			if ($users_en)
-			{
-				$params = [
-					'status'	=> str_replace('users_', '', $name)
-				];
-
-				if ($group_id)
-				{
-					$params['group_id']	= $group_id;
-				}
-
-				$rec['params'] = $params;
-			}
 
 			$out[] = $rec;
 		}
@@ -57,46 +38,70 @@ class typeahead
 		return htmlspecialchars(json_encode($out));
 	}
 
-	protected function get_thumbprint(string $name, $group_domain = false)
+	protected function get_thumbprint_key(string $name, array $params):string
 	{
-		$group_domain = $group_domain ?: $_SERVER['SERVER_NAME'];
+//		$params = ksort($params);
+		$key = 'typeahead_thumbprint_';
+		$key .= $name;
+		$key .= '_';
+		$key .= http_build_query($params);
+		return $key;
+	}
 
-		$key = $group_domain . '_typeahead_thumbprint_' . $name;
+	protected function get_thumbprint(string $name, array $params):string
+	{
+		$key = $this->get_thumbprint_key($name, $params);
 
 		$thumbprint = $this->redis->get($key);
 
 		if (!$thumbprint)
 		{
-			return 'renew-' . crc32(microtime());
+			$thumbprint = 'renew-' . crc32(microtime());
+			$this->monolog->debug('typeahead thumbrint ' .
+				$thumbprint . ' for ' . $key);
 		}
 
-		return $this->version . $thumbprint;
+		return $thumbprint;
 	}
 
-	public function invalidate_thumbprint(string $name = 'users_active', $group_domain = false, $new_thumbprint = false)
+	public function delete_thumbprint(
+		string $name,
+		string $params
+	):void
 	{
-		$group_domain = $group_domain ?: $_SERVER['SERVER_NAME'];
+		$key = $this->get_thumbprint_key($name, $params);
+		$this->redis->del($key);
+		$this->monolog->debug('typeahead delete thumbprint for '
+			. $key, $this->get_log_params($params));
+	}
 
-		$key = $group_domain . '_typeahead_thumbprint_' . $name;
-
-		if ($new_thumbprint)
+	protected function get_log_params(array $params):array
+	{
+		if (isset($params['schema']))
 		{
-			if ($new_thumbprint != $this->redis->get($key))
-			{
-				$this->redis->set($key, $new_thumbprint);
-
-				$this->monolog->debug('typeahead: new typeahead thumbprint ' . $new_thumbprint .
-					' for ' . $group_domain . ' : ' . $name);
-			}
-
-			$this->redis->expire($key, $this->ttl);
+			return ['schema' => $params['schema']];
 		}
-		else
+
+		return [];
+	}
+
+	public function set_thumbprint(
+		string $name,
+		array $params,
+		string $new_thumbprint
+	):void
+	{
+		$key = $this->get_thumbprint_key($name, $params);
+
+		if ($new_thumbprint !== $this->redis->get($key))
 		{
-			$this->redis->del($key);
+			$this->redis->set($key, $new_thumbprint);
 
-			$this->monolog->debug('typeahead: typeahead thumbprint deleted for ' .
-				$group_domain . ' : ' . $name);
+			$this->monolog->debug('typeahead: new thumbprint ' .
+				$new_thumbprint .
+				' for ' . $key);
 		}
+
+		$this->redis->expire($key, $this->ttl);
 	}
 }

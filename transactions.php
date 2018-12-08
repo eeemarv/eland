@@ -994,31 +994,45 @@ if ($add)
 
 		foreach ($groups as $l)
 		{
-			echo '<option value="' . $l['id'] . '" ';
+			echo '<option value="';
+			echo $l['id'];
+			echo '" ';
 
 			if ($l['id'] == 'self')
 			{
 				echo 'id="group_self" ';
 
+				$typeahead_status_ary = $typeahead_ary = [];
+
 				if ($s_admin)
 				{
-					$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
-				}
-				else
-				{
-					$typeahead = 'users_active';
+					$typeahead_status_ary = ['inactive', 'ip', 'im'];
 				}
 
-				$typeahead = $app['typeahead']->get($typeahead);
+				$typeahead_status_ary[] = 'active';
+
+				foreach ($typeahead_status_ary as $t_stat)
+				{
+					$typeahead_ary[] = [
+						'accounts', [
+							'status'	=> $t_stat,
+							'schema'	=> $tschema,
+						],
+					];
+				}
+
+				$typeahead = $app['typeahead']->get($typeahead_ary);
 
 				$sch = $tschema;
 			}
 			else
 			{
+				$typeahead = $app['typeahead']->get([['intersystem_accounts', [
+						'schema'	=> $tschema,
+						'group_id'	=> $l['id'],
+				]]]);
+
 				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
-
-				$typeahead = $app['typeahead']->get('users_active', $domain, $l['id']);
-
 				$sch = $app['groups']->get_schema($domain);
 			}
 
@@ -1039,7 +1053,7 @@ if ($add)
 			}
 
 			echo ' data-typeahead="' . $typeahead . '"';
-			echo $l['id'] == $group_id ? ' selected="selected"' : '';
+			echo $l['id'] === $group_id ? ' selected="selected"' : '';
 			echo '>';
 			echo htmlspecialchars($l['groupname'], ENT_QUOTES);
 			echo $l['id'] === 'self' ? ' (eigen Systeem)' : ' (interSysteem)';
@@ -1052,18 +1066,29 @@ if ($add)
 	}
 	else
 	{
+		$typeahead_status_ary = $typeahead_ary = [];
+
 		if ($s_admin)
 		{
-			$typeahead = ['users_active', 'users_inactive', 'users_ip', 'users_im'];
+			$typeahead_status_ary = ['inactive', 'ip', 'im'];
 		}
-		else
+
+		$typeahead_status_ary[] = 'active';
+
+		foreach ($typeahead_status_ary as $t_stat)
 		{
-			$typeahead = 'users_active';
+			$typeahead_ary[] = [
+				'accounts', [
+					'status'	=> $t_stat,
+					'schema'	=> $tschema,
+				],
+			];
 		}
 
-		$typeahead = $app['typeahead']->get($typeahead);
+		$typeahead = $app['typeahead']->get($typeahead_ary);
 
-		echo '<input type="hidden" id="group_id" name="group_id" value="self">';
+		echo '<input type="hidden" id="group_id" ';
+		echo 'name="group_id" value="self">';
 	}
 
 	echo '<div class="form-group">';
@@ -2124,24 +2149,38 @@ if (!$inline)
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
+	$typeahead_ary = [];
+
 	if ($s_guest)
 	{
-		$typeahead_name_ary = ['users_active'];
+		$typeahead_status_ary = ['active'];
 	}
 	else if ($s_user)
 	{
-		$typeahead_name_ary = ['users_active', 'users_extern'];
+		$typeahead_status_ary = ['active', 'extern'];
 	}
 	else if ($s_admin)
 	{
-		$typeahead_name_ary = ['users_active', 'users_extern',
-			'users_inactive', 'users_im', 'users_ip'];
+		$typeahead_status_ary = ['active', 'extern',
+			'inactive', 'im', 'ip'];
 	}
+
+	foreach ($typeahead_status_ary as $t_stat)
+	{
+		$typeahead_ary[] = [
+			'accounts', [
+				'status'	=> $t_stat,
+				'schema'	=> $tschema,
+			],
+		];
+	}
+
+	$typeahead = $app['typeahead']->get($typeahead_ary);
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get($typeahead_name_ary);
+	echo $typeahead;
 	echo '" ';
 	echo 'data-newuserdays="';
 	echo $app['config']->get('newuserdays', $tschema);

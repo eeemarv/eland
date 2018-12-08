@@ -24,9 +24,9 @@ $(document).ready(function(){
 				params = [];
 			}
 
-			$.extend(params, session_params, render_params);
+			$.extend(params, session_params);
 
-			if (rec['name'] == 'users'){
+			if (rec['name'] === 'accounts' || rec['name'] === 'intersystem_accounts'){
 
 				var filter = function(users){
 					return $.map(users, function(user){
@@ -86,20 +86,24 @@ $(document).ready(function(){
 					return user.value;
 				};
 
+				var hint = true;
+
 			} else {
 				filter = false;
 				tokenizer = Bloodhound.tokenizers.whitespace;
 				displayKey = false;
 
-				if (rec.hasOwnProperty('not_head')){
+				if (render_params.hasOwnProperty('not_head')){
 					templates = {
-						header: '<h3 class="typeahead-not">' + not_head + '</h3>',
+						header: '<h3 class="typeahead-not">' + render_params.not_head + '</h3>',
 						suggestion: function (data) {
 							return '<p class="typeahead-not">' + data + '</p>';
 						}
 					};
+					hint = false;
 				} else {
 					templates = {};
+					hint = true;
 				}
 			}
 
@@ -115,7 +119,8 @@ $(document).ready(function(){
 					queryTokenizer: Bloodhound.tokenizers.whitespace
 				}),
 				templates: templates,
-				displayKey: displayKey
+				displayKey: displayKey,
+				hint: hint
 			});
 		}
 

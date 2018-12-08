@@ -1192,7 +1192,10 @@ if (($edit || $add))
 		echo '<input type="text" class="form-control" ';
 		echo 'id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get('users_active');
+		echo $app['typeahead']->get([['accounts', [
+			'status'	=> 'active',
+			'schema'	=> $tschema,
+		]]]);
 		echo '" ';
 		echo 'data-newuserdays="';
 		echo $app['config']->get('newuserdays', $tschema);
@@ -2216,7 +2219,12 @@ if (!$inline)
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
-	echo 'data-typeahead="' . $app['typeahead']->get('users_active') . '" ';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get([['accounts', [
+		'status'	=> 'active',
+		'schema'	=> $tschema,
+	]]]);
+	echo '" ';
 	echo 'data-newuserdays="';
 	echo $app['config']->get('newuserdays', $tschema);
 	echo '" ';
@@ -2228,7 +2236,9 @@ if (!$inline)
 	echo '</div>';
 
 	echo '<div class="col-sm-2">';
-	echo '<input type="submit" id="filter_submit" value="Toon" class="btn btn-default btn-block" name="f[s]">';
+	echo '<input type="submit" id="filter_submit" ';
+	echo 'value="Toon" class="btn btn-default btn-block" ';
+	echo 'name="f[s]">';
 	echo '</div>';
 
 	echo '</div>';

@@ -80,7 +80,9 @@ if ($map_edit)
 
 			$app['alert']->success('Map naam aangepast.');
 
-			$app['typeahead']->invalidate_thumbprint('doc_map_names');
+			$app['typeahead']->delete_thumbprint('doc_map_names', [
+				'schema' => $tschema,
+			]);
 
 			cancel($map_edit);
 		}
@@ -108,7 +110,7 @@ if ($map_edit)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="map_name" name="map_name" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get('doc_map_names');
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
 	echo '" ';
 	echo 'value="';
 	echo $map_name;
@@ -210,7 +212,9 @@ if ($edit)
 
 			$app['xdb']->set('doc', $edit, $update, $tschema);
 
-			$app['typeahead']->invalidate_thumbprint('doc_map_names');
+			$app['typeahead']->delete_thumbprint('doc_map_names', [
+				'schema' => $tschema,
+			]);
 
 			$app['alert']->success('Document aangepast');
 
@@ -293,7 +297,7 @@ if ($edit)
 	echo $map_name;
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get('doc_map_names');
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map ';
@@ -350,7 +354,9 @@ if ($confirm_del && $del)
 			{
 				$app['xdb']->del('doc', $doc['map_id'], $tschema);
 
-				$app['typeahead']->invalidate_thumbprint('doc_map_names');
+				$app['typeahead']->delete_thumbprint('doc_map_names', [
+					'schema' => $tschema,
+				]);
 
 				unset($doc['map_id']);
 			}
@@ -493,7 +499,9 @@ if ($submit)
 
 					$app['xdb']->set('doc', $map_id, $map, $tschema);
 
-					$app['typeahead']->invalidate_thumbprint('doc_map_names');
+					$app['typeahead']->delete_thumbprint('doc_map_names', [
+						'schema' => $tschema,
+					]);
 				}
 
 				$doc['map_id'] = $map_id;
@@ -579,7 +587,7 @@ if ($add)
 	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get('doc_map_names');
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map of ';

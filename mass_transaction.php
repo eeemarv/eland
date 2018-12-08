@@ -662,6 +662,18 @@ echo 'name="selected_users" id="selected_users">';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
+$typeahead_ary = [];
+
+foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
+{
+	$typeahead_ary[] = [
+		'accounts', [
+			'status'	=> $t_stat,
+			'schema'	=> $tschema,
+		],
+	];
+}
+
 echo '<div class="form-group">';
 echo '<label for="from_letscode" class="control-label">';
 echo 'Van Account Code';
@@ -678,11 +690,12 @@ echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $tschema);
 echo '" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get(['users_active', 'users_inactive', 'users_ip', 'users_im']);
+echo $app['typeahead']->get($typeahead_ary);
 echo '">';
 echo '</div>';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
-echo 'Alle ingevulde bedragen hieronder worden van dit Account gehaald.</p>';
+echo 'Alle ingevulde bedragen hieronder ';
+echo 'worden van dit Account gehaald.</p>';
 echo '</div>';
 
 echo '</div>';

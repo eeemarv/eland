@@ -455,7 +455,17 @@ if ($edit || $add)
 
 	if ($s_admin && $add && !$uid)
 	{
-		$typeahead_ary = array('users_active', 'users_inactive', 'users_ip', 'users_im', 'users_extern');
+		$typeahead_ary = [];
+
+		foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
+		{
+			$typeahead_ary[] = [
+				'accounts', [
+					'status'	=> $t_stat,
+					'schema'	=> $tschema,
+				],
+			];
+		}
 
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="control-label">Voor</label>';
@@ -978,7 +988,7 @@ $csv_en = true;
 $top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
-$filtered = ($panel_collapse) ? false : true;
+$filtered = $panel_collapse ? false : true;
 
 $app['assets']->add(['typeahead', 'typeahead.js']);
 
@@ -1076,21 +1086,36 @@ echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon" id="fcode_addon">Van ';
 echo '<span class="fa fa-user"></span></span>';
 
-$typeahead_name_ary = array('users_active', 'users_inactive', 'users_ip', 'users_im', 'users_extern');
+$typeahead_ary = [];
+
+foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
+{
+	$typeahead_ary[] = [
+		'accounts', [
+			'status'	=> $t_stat,
+			'schema'	=> $tschema,
+		],
+	];
+}
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
-echo 'data-typeahead="' . $app['typeahead']->get($typeahead_name_ary) . '" ';
+echo 'data-typeahead="';
+echo $app['typeahead']->get($typeahead_ary);
+echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $tschema);
 echo '" ';
 echo 'name="letscode" id="letscode" placeholder="Account Code" ';
-echo 'value="' . $letscode . '">';
+echo 'value="';
+echo $letscode;
+echo '">';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="col-sm-2">';
-echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+echo '<input type="submit" value="Toon" ';
+echo 'class="btn btn-default btn-block">';
 echo '</div>';
 
 echo '</div>';

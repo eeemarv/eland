@@ -5,6 +5,14 @@ require_once __DIR__ . '/../include/web.php';
 
 $tschema = $app['this_group']->get_schema();
 
+$schema = $_GET['schema'] ?? '';
+
+if ($schema !== $tschema || !$schema)
+{
+	http_response_code(404);
+	exit;
+}
+
 $log_types = [];
 
 $st = $app['db']->prepare('select distinct type
@@ -23,7 +31,11 @@ while ($row = $st->fetch())
 
 $log_types = json_encode($log_types);
 
-$app['typeahead']->invalidate_thumbprint('log_types', false, crc32($log_types), 345600); // 4 days
+$params = [
+	'schema'	=> $schema,
+];
+
+$app['typeahead']->set_thumbprint('log_types', $params, crc32($log_types), 345600); // 4 days
 
 header('Content-type: application/json');
 

@@ -385,9 +385,12 @@ class fetch_elas_intersystem
 
 	protected function fetch_users()
 	{
-		$crawler = $this->client->request('GET', $this->url . '/rendermembers.php');
+		$crawler = $this->client->request('GET',
+			$this->url . '/rendermembers.php');
 
-		$status_code = $this->client->getResponse()->getStatus();
+		$status_code = $this->client
+			->getResponse()
+			->getStatus();
 
 		$users = [];
 
@@ -470,8 +473,15 @@ class fetch_elas_intersystem
 			});
 		}
 
+/*
 		$thumbprint = crc32(json_encode($users));
-		$this->typeahead->invalidate_thumbprint('users_active', $this->domain, $thumbprint);
+
+		$this->typeahead->set_thumbprint('intersystem_accounts', [
+			'schema'	=> $sch,
+			'group_id'	=> $group_id,
+		],
+		$thumbprint);
+*/
 
 		$this->cache->set($this->domain . '_typeahead_data', $users);
 

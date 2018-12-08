@@ -4,6 +4,13 @@ $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
 $tschema = $app['this_group']->get_schema();
+$schema = $_GET['schema'] ?? '';
+
+if ($schema !== $tschema || !$schema)
+{
+	http_response_code(404);
+	exit;
+}
 
 $group_id = $_GET['group_id'] ?? 'self';
 $status = $_GET['status'] ?? 'active';
@@ -76,7 +83,9 @@ if ($app['groups']->get_schema($group['domain']))
 {
 	$remote_schema = $app['groups']->get_schema($group['domain']);
 
-	if ($app['db']->fetchColumn('select id from ' . $remote_schema . '.letsgroups where url = ?', [$app['base_url']]))
+	if ($app['db']->fetchColumn('select id
+		from ' . $remote_schema . '.letsgroups
+		where url = ?', [$app['base_url']]))
 	{
 		$active_users = users_to_json($remote_schema);
 
