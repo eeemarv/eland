@@ -1002,14 +1002,16 @@ if ($add)
 			{
 				echo 'id="group_self" ';
 
-				$typeahead_status_ary = $typeahead_ary = [];
+				$typeahead_ary = [];
 
 				if ($s_admin)
 				{
-					$typeahead_status_ary = ['inactive', 'ip', 'im'];
+					$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 				}
-
-				$typeahead_status_ary[] = 'active';
+				else if ($s_user)
+				{
+					$typeahead_status_ary = ['active'];
+				}
 
 				foreach ($typeahead_status_ary as $t_stat)
 				{
@@ -1066,14 +1068,16 @@ if ($add)
 	}
 	else
 	{
-		$typeahead_status_ary = $typeahead_ary = [];
+		$typeahead_ary = [];
 
 		if ($s_admin)
 		{
-			$typeahead_status_ary = ['inactive', 'ip', 'im'];
+			$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 		}
-
-		$typeahead_status_ary[] = 'active';
+		else if ($s_user)
+		{
+			$typeahead_status_ary = ['active'];
+		}
 
 		foreach ($typeahead_status_ary as $t_stat)
 		{
