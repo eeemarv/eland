@@ -110,9 +110,9 @@ $(document).ready(function(){
 			datasets.push({data: new Bloodhound({
 					prefetch: {
 						url: './typeahead/' + rec.name + '.php?' + $.param(params),
-						cache: true,
-						ttl: 2592000000,	//30 days
-						thumbprint: rec.thumbprint,
+//						cache: true,
+//						ttl: 2592000000,	//30 days
+//						thumbprint: rec.thumbprint,
 						filter: filter
 					},
 					datumTokenizer: tokenizer,

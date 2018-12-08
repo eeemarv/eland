@@ -1857,9 +1857,12 @@ if ($add || $edit)
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
 			'not_head'	=> 'Al in Gebruik',
+			'exists_id'	=> 'account_code_exists',
 		]));
 		echo '">';
 		echo '</div>';
+		echo '<span class="help-block hidden" id="account_code_exists">';
+		echo 'Deze Account Code bestaat al.</span>';
 		echo '</div>';
 	}
 
@@ -1884,9 +1887,12 @@ if ($add || $edit)
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
 			'not_head'	=> 'Al in Gebruik',
+			'exists_id'	=> 'username_exists',
 		]));
 		echo '">';
 		echo '</div>';
+		echo '<span id="username_exists" class="help-block hidden">';
+		echo 'Deze Gebruikersnaam bestaat reeds.</span>';
 		echo '</div>';
 	}
 
