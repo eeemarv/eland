@@ -1378,7 +1378,7 @@ if ($edit)
 		{
 			echo link_user($inter_transaction['id_from'],
 				$inter_schema,
-				$s_inter_schema_check[$inter_schema]);
+				isset($s_inter_schema_check[$inter_schema]));
 		}
 		else
 		{
@@ -1410,7 +1410,7 @@ if ($edit)
 		{
 			echo link_user($inter_transaction['id_to'],
 				$inter_schema,
-				$s_inter_schema_check[$inter_schema]);
+				isset($s_inter_schema_check[$inter_schema]));
 		}
 		else
 		{
@@ -2140,7 +2140,8 @@ if (!$inline)
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="';
-	echo $q . '" name="q" placeholder="Zoekterm">';
+	echo $q;
+	echo '" name="q" placeholder="Zoekterm">';
 	echo '</div>';
 	echo '</div>';
 

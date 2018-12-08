@@ -40,7 +40,7 @@ class typeahead
 
 	protected function get_thumbprint_key(string $name, array $params):string
 	{
-//		$params = ksort($params);
+		ksort($params);
 		$key = 'typeahead_thumbprint_';
 		$key .= $name;
 		$key .= '_';
@@ -57,8 +57,10 @@ class typeahead
 		if (!$thumbprint)
 		{
 			$thumbprint = 'renew-' . crc32(microtime());
-			$this->monolog->debug('typeahead thumbrint ' .
-				$thumbprint . ' for ' . $key);
+			$this->monolog->debug('typeahead thumbprint ' .
+				$thumbprint . ' for ' . $key,
+				$this->get_log_params($params)
+			);
 		}
 
 		return $thumbprint;
@@ -99,7 +101,9 @@ class typeahead
 
 			$this->monolog->debug('typeahead: new thumbprint ' .
 				$new_thumbprint .
-				' for ' . $key);
+				' for ' . $key,
+				$this->get_log_params($params)
+			);
 		}
 
 		$this->redis->expire($key, $this->ttl);

@@ -526,8 +526,8 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		if ($bulk_field == 'status')
 		{
-			$app['typeahead']->invalidate_thumbprint('users_active');
-			$app['typeahead']->invalidate_thumbprint('users_extern');
+//			$app['typeahead']->invalidate_thumbprint('users_active');
+//			$app['typeahead']->invalidate_thumbprint('users_extern');
 		}
 
 		$app['monolog']->info('bulk: Set ' . $bulk_field .
@@ -1059,11 +1059,11 @@ if ($del)
 
 		if ($user['status'] == 1 || $user['status'] == 2)
 		{
-			$app['typeahead']->invalidate_thumbprint('users_active');
+//			$app['typeahead']->invalidate_thumbprint('users_active');
 		}
 		else if ($user['status'] == 7)
 		{
-			$app['typeahead']->invalidate_thumbprint('users_extern');
+//			$app['typeahead']->invalidate_thumbprint('users_extern');
 		}
 
 		$app['interlets_groups']->clear_cache($s_schema);
@@ -1531,12 +1531,12 @@ if ($add || $edit)
 
 					if ($user['status'] == 2 | $user['status'] == 1)
 					{
-						$app['typeahead']->invalidate_thumbprint('users_active');
+//						$app['typeahead']->invalidate_thumbprint('users_active');
 					}
 
 					if ($user['status'] == 7)
 					{
-						$app['typeahead']->invalidate_thumbprint('users_extern');
+//						$app['typeahead']->invalidate_thumbprint('users_extern');
 					}
 
 					$app['interlets_groups']->clear_cache($s_schema);
@@ -1675,13 +1675,13 @@ if ($add || $edit)
 							|| $user_stored['status'] == 1
 							|| $user_stored['status'] == 2)
 						{
-							$app['typeahead']->invalidate_thumbprint('users_active');
+//							$app['typeahead']->invalidate_thumbprint('users_active');
 						}
 
 						if ($user['status'] == 7
 							|| $user_stored['status'] == 7)
 						{
-							$app['typeahead']->invalidate_thumbprint('users_extern');
+//							$app['typeahead']->invalidate_thumbprint('users_extern');
 						}
 
 						$app['interlets_groups']->clear_cache($s_schema);

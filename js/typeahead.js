@@ -112,7 +112,7 @@ $(document).ready(function(){
 						url: './typeahead/' + rec.name + '.php?' + $.param(params),
 //						cache: true,
 //						ttl: 2592000000,	//30 days
-//						thumbprint: rec.thumbprint,
+						thumbprint: rec.thumbprint,
 						filter: filter
 					},
 					datumTokenizer: tokenizer,
