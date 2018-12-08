@@ -10,6 +10,8 @@ $(document).ready(function(){
 
 		var datasets = [];
 		var data = $(this).data('typeahead');
+		var not_head = $(this).data('typeahead-not-head');
+		var not_except = $(this).data('typeahead-not-except');
 		var newuserdays = $(this).data('newuserdays');
 		var treshold = now - (newuserdays * 86400);
 
@@ -85,18 +87,18 @@ $(document).ready(function(){
 					return user.value;
 				};
 
-			} else if (rec['name'] == 'exists') {
+			} else if (not_head) {
 
 				templates = {
-					header: '<h3>Reeds bestaande</h3><p>Niet selecteren!</p>',
+					header: '<h3 class="typeahead-not">' + not_head + '</h3>',
 					suggestion: function (data) {
-						return '<p>' + data.existing + '</p>';
+						return '<p class="typeahead-not">' + data + '</p>';
 					}
 				};
 
 				tokenizer = Bloodhound.tokenizers.whitespace;
-				templates = {};
 				displayKey = false;
+				filter = false;
 			} else {
 				filter = false;
 				tokenizer = Bloodhound.tokenizers.whitespace;

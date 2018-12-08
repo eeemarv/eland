@@ -1810,6 +1810,11 @@ if ($add || $edit)
 		}
 	}
 
+	if ($edit)
+	{
+		$edit_user_cached = $app['user_cache']->get($edit, $tschema);
+	}
+
 	array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
 	array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
 
@@ -1844,7 +1849,9 @@ if ($add || $edit)
 		echo '" required maxlength="20" ';
 		echo 'data-typeahead="';
 		echo $app['typeahead']->get('account_codes');
-		echo '">';
+		echo '" ';
+		echo 'data-typeahead-not-head="Al in gebruik"';
+		echo '>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -1862,8 +1869,10 @@ if ($add || $edit)
 		echo $user['name'] ?? '';
 		echo '" required maxlength="50" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get('usernames');
-		echo '">';
+		echo $app['typeahead']->get('usernames?except=' . $edit);
+		echo '" ';
+		echo 'data-typeahead-not-head="Al in gebruik"';
+		echo '>';
 		echo '</div>';
 		echo '</div>';
 	}

@@ -26,7 +26,8 @@ span.twitter-typeahead .tt-dropdown-menu {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
 }
-span.twitter-typeahead .tt-suggestion {
+span.twitter-typeahead .tt-suggestion,
+span.twitter-typeahead .typeahead-not {
   display: block;
   padding: 3px 20px;
   clear: both;
@@ -35,6 +36,13 @@ span.twitter-typeahead .tt-suggestion {
   color: #333333;
   white-space: nowrap;
 }
+
+span.twitter-typeahead .typeahead-not {
+  color: rgb(83, 0, 0);
+  background-color: rgb(255, 56, 56);
+  margin: 0;
+}
+
 span.twitter-typeahead .tt-suggestion.tt-cursor,
 span.twitter-typeahead .tt-suggestion:hover,
 span.twitter-typeahead .tt-suggestion:focus {
