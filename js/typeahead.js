@@ -93,7 +93,7 @@ $(document).ready(function(){
 				tokenizer = Bloodhound.tokenizers.whitespace;
 				displayKey = false;
 
-				if (render_params.hasOwnProperty('not_head')){
+				if (render_params && render_params.hasOwnProperty('not_head')){
 					templates = {
 						header: '<h3 class="typeahead-not">' + render_params.not_head + '</h3>',
 						suggestion: function (data) {
