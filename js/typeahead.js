@@ -10,8 +10,7 @@ $(document).ready(function(){
 
 		var datasets = [];
 		var data = $(this).data('typeahead');
-		var not_head = $(this).data('typeahead-not-head');
-		var not_except = $(this).data('typeahead-not-except');
+		var render_params = $(this).data('typeahead-render');
 		var newuserdays = $(this).data('newuserdays');
 		var treshold = now - (newuserdays * 86400);
 
@@ -25,7 +24,7 @@ $(document).ready(function(){
 				params = [];
 			}
 
-			$.extend(params, session_params);
+			$.extend(params, session_params, render_params);
 
 			if (rec['name'] == 'users'){
 
@@ -87,28 +86,26 @@ $(document).ready(function(){
 					return user.value;
 				};
 
-			} else if (not_head) {
-
-				templates = {
-					header: '<h3 class="typeahead-not">' + not_head + '</h3>',
-					suggestion: function (data) {
-						return '<p class="typeahead-not">' + data + '</p>';
-					}
-				};
-
-				tokenizer = Bloodhound.tokenizers.whitespace;
-				displayKey = false;
-				filter = false;
 			} else {
 				filter = false;
 				tokenizer = Bloodhound.tokenizers.whitespace;
-				templates = {};
 				displayKey = false;
+
+				if (rec.hasOwnProperty('not_head')){
+					templates = {
+						header: '<h3 class="typeahead-not">' + not_head + '</h3>',
+						suggestion: function (data) {
+							return '<p class="typeahead-not">' + data + '</p>';
+						}
+					};
+				} else {
+					templates = {};
+				}
 			}
 
 			datasets.push({data: new Bloodhound({
 					prefetch: {
-						url: './ajax/typeahead_' + rec.name + '.php?' + $.param(params),
+						url: './typeahead/' + rec.name + '.php?' + $.param(params),
 						cache: true,
 						ttl: 2592000000,	//30 days
 						thumbprint: rec.thumbprint,
