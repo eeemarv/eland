@@ -64,9 +64,6 @@ $(document).ready(function(){
 						});
 
 						if (results_ary.length){
-							console.log(results_ary);
-							console.log(results_ary[0]);
-							console.log($this_input.val());
 
 							if (lower_case_val === results_ary[0].toLowerCase()) {
 								$exists_msg.removeClass('hidden');
@@ -96,21 +93,8 @@ $(document).ready(function(){
 
 				$this_input.keyup(render_exists);
 
-				render_exists();
+				window.setTimeout(render_exists, 800);
 
-	/*
-				$(this).keyup(function(){
-					console.log('keyup');
-					if ($.inArray($.trim($(this).val()), ['002', '009']) === -1){
-						$input_container.removeClass('has-error');
-						$span_help_block.hide();
-					} else {
-						$input_container.addClass('has-error');
-						$span_help_block.removeClass('hidden');
-						$span_help_block.show();
-					}
-				});
-*/
 				continue;
 			}
 
