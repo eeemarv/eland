@@ -21,6 +21,8 @@ if (!$remote_schema)
 
 if (!isset($eland_interlets_groups[$remote_schema]))
 {
+	$app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
+		$remote_schema . ' not valid', ['schema' => $tschema]);
 	http_response_code(404);
 	exit;
 }

@@ -42,6 +42,8 @@ $accounts = $app['cache']->get($domain . '_typeahead_data', false);
 
 if (!$accounts)
 {
+	$app['monolog']->debug('typeahead/elas_intersystem_accounts: empty for id ' .
+		$group_id . ', url: ' . $group['url'], ['schema' => $tschema]);
 	http_response_code(404);
 	exit;
 }
