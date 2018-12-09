@@ -68,7 +68,7 @@ class typeahead
 
 	public function delete_thumbprint(
 		string $name,
-		string $params
+		array $params
 	):void
 	{
 		$key = $this->get_thumbprint_key($name, $params);
