@@ -1893,7 +1893,7 @@ if ($add || $edit)
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
 			'exists_check'	=> 10,
-			'exists_omit'	=> $user['letscode'] ?? '',
+			'exists_omit'	=> $edit_user_cached['letscode'] ?? '',
 		]));
 		echo '">';
 		echo '</div>';
@@ -1929,7 +1929,7 @@ if ($add || $edit)
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
 			'exists_check'	=> 10,
-			'exists_omit'	=> $user['name'] ?? '',
+			'exists_omit'	=> $edit_user_cached['name'] ?? '',
 		]));
 		echo '">';
 		echo '</div>';
