@@ -1888,19 +1888,23 @@ if ($add || $edit)
 		echo 'data-typeahead="';
 		echo $app['typeahead']->get([['account_codes', [
 			'schema'	=> $tschema,
-			'except'	=> $edit ?: 0,
 		]]]);
 		echo '" ';
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
-			'not_head'	=> 'Al in Gebruik',
-			'exists_id'	=> 'account_code_exists',
+			'exists_check'	=> 10,
+			'exists_omit'	=> $user['letscode'] ?? '',
 		]));
 		echo '">';
 		echo '</div>';
-		echo '<span class="help-block hidden" ';
-		echo 'id="account_code_exists">';
-		echo 'Deze Account Code bestaat al!</span>';
+		echo '<span class="help-block hidden exists_query_results">';
+		echo 'Reeds gebruikt: ';
+		echo '<span class="query_results">';
+		echo '</span>';
+		echo '</span>';
+		echo '<span class="help-block hidden exists_msg">';
+		echo 'Deze Account Code bestaat al!';
+		echo '</span>';
 		echo '</div>';
 	}
 
@@ -1920,18 +1924,22 @@ if ($add || $edit)
 		echo 'data-typeahead="';
 		echo $app['typeahead']->get([['usernames', [
 			'schema'	=> $tschema,
-			'except'	=> $edit ?: 0,
 		]]]);
 		echo '" ';
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
-			'not_head'	=> 'Al in Gebruik',
-			'exists_id'	=> 'username_exists',
+			'exists_check'	=> 10,
+			'exists_omit'	=> $user['name'] ?? '',
 		]));
 		echo '">';
 		echo '</div>';
+		echo '<span class="help-block hidden exists_query_results">';
+		echo 'Reeds gebruikt: ';
+		echo '<span class="query_results">';
+		echo '</span>';
+		echo '</span>';
 		echo '<span id="username_exists" ';
-		echo 'class="help-block hidden">';
+		echo 'class="help-block hidden exists_msg">';
 		echo 'Deze Gebruikersnaam bestaat reeds!</span>';
 		echo '</div>';
 	}

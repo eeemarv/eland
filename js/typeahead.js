@@ -26,6 +26,88 @@ $(document).ready(function(){
 
 			$.extend(params, session_params);
 
+			if (render_params
+				&& render_params.hasOwnProperty('exists_check')){
+
+				var $input_container = $(this).parent().parent();
+				var $exists_msg = $input_container.find('span.exists_msg');
+				var $exists_query_results = $input_container.find('span.exists_query_results');
+				var $query_results = $exists_query_results.find('span.query_results');
+
+				if (render_params.hasOwnProperty('exists_omit')){
+					var exists_omit = render_params.exists_omit;
+				} else {
+					exists_omit = '';
+				}
+
+				var exists_engine = new Bloodhound({
+					prefetch: {
+						url: './typeahead/' + rec.name + '.php?' + $.param(params),
+						cache: false,
+//						ttl: 2592000000,	//30 days
+						thumbprint: rec.thumbprint,
+						filter: filter
+					},
+					datumTokenizer: Bloodhound.tokenizers.whitespace,
+					queryTokenizer: Bloodhound.tokenizers.whitespace
+				});
+
+				var $this_input = $(this);
+
+				$(this).keyup(function(){
+					exists_engine.search($this_input.val(), function(results_ary){
+
+						results_ary = $.grep(results_ary, function (item){
+							return item !== exists_omit;
+						});
+
+						if (results_ary.length){
+							console.log(results_ary);
+							console.log(results_ary[0]);
+							console.log($this_input.val());
+
+							if ($this_input.val() === results_ary[0]) {
+								$exists_msg.removeClass('hidden');
+								$exists_msg.show();
+								$input_container.addClass('has-error');
+							} else {
+								$exists_msg.hide();
+								$input_container.removeClass('has-error');
+							}
+
+							$exists_query_results.removeClass('hidden');
+							$exists_query_results.show();
+
+							$query_results.text(results_ary
+								.slice(0, render_params.exists_check)
+								.join(', ') +
+								(results_ary.length > render_params.exists_check ?
+									',...' : '')
+							);
+						} else {
+							$exists_query_results.hide();
+							$exists_msg.hide();
+							$input_container.removeClass('has-error');
+						}
+					});
+				});
+
+	/*
+				$(this).keyup(function(){
+					console.log('keyup');
+					if ($.inArray($.trim($(this).val()), ['002', '009']) === -1){
+						$input_container.removeClass('has-error');
+						$span_help_block.hide();
+					} else {
+						$input_container.addClass('has-error');
+						$span_help_block.removeClass('hidden');
+						$span_help_block.show();
+					}
+				});
+*/
+				continue;
+			}
+
 			if (rec['name'] === 'accounts' || rec['name'] === 'intersystem_accounts'){
 
 				var filter = function(users){
@@ -92,19 +174,8 @@ $(document).ready(function(){
 				filter = false;
 				tokenizer = Bloodhound.tokenizers.whitespace;
 				displayKey = false;
-
-				if (render_params && render_params.hasOwnProperty('not_head')){
-					templates = {
-						header: '<h3 class="typeahead-not">' + render_params.not_head + '</h3>',
-						suggestion: function (data) {
-							return '<p class="typeahead-not">' + data + '</p>';
-						}
-					};
-					hint = false;
-				} else {
-					templates = {};
-					hint = true;
-				}
+				templates = {};
+				hint = true;
 			}
 
 			datasets.push({data: new Bloodhound({
@@ -141,22 +212,6 @@ $(document).ready(function(){
 
 		if ($(this).prop('tagName').toLowerCase() == 'input'){
 			$(this).typeahead.apply($(this), args);
-
-			if (render_params && render_params.hasOwnProperty('exists_id')){
-				var $input_container = $(this).parent().parent().parent();
-				var $span_help_block = $input_container.find('span#' + render_params.exists_id);
-				$(this).keyup(function(){
-					console.log('keyup');
-					if ($.inArray($.trim($(this).val()), ['002', '009']) === -1){
-						$input_container.removeClass('has-error');
-						$span_help_block.hide();
-					} else {
-						$input_container.addClass('has-error');
-						$span_help_block.removeClass('hidden');
-						$span_help_block.show();
-					}
-				});
-			}
 		}
 	});
 
