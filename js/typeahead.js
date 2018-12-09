@@ -98,7 +98,9 @@ $(document).ready(function(){
 				continue;
 			}
 
-			if (rec['name'] === 'accounts' || rec['name'] === 'intersystem_accounts'){
+			if (rec['name'] === 'accounts'
+				|| rec['name'] === 'elas_intersystem_accounts'
+				|| rec['name'] === 'eland_intersystem_accounts'){
 
 				var filter = function(users){
 					return $.map(users, function(user){

@@ -91,11 +91,16 @@ class fetch_elas_intersystem
 
 		foreach ($elas_interlets_domains as $domain => $ary)
 		{
-			foreach ($ary as $sch => $apikey)
+			foreach ($ary as $sch => $sch_ary)
 			{
+				if (!isset($sch_ary['remoteapikey']))
+				{
+					continue;
+				}
+
 				if (!isset($apikeys_ignore[$apikey]))
 				{
-					$apikeys[$domain] = $apikey;
+					$apikeys[$domain] = $sch_ary['remoteapikey'];
 					continue;
 				}
 			}

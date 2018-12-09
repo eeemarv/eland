@@ -902,22 +902,26 @@ if ($add)
 
 	if (count($eland_interlets_groups))
 	{
-		$urls = [];
+		$eland_urls = [];
 
-		foreach ($eland_interlets_groups as $h)
+		foreach ($eland_interlets_groups as $remote_eland_schema => $host)
 		{
-			$urls[] = $app['protocol'] . $h;
+			$eland_url = $app['protocol'] . $host;
+			$eland_urls[] = $eland_url;
+			$map_eland_schema_url[$eland_url] = $remote_eland_schema;
 		}
 
-		$eland_groups = $app['db']->executeQuery('select id, groupname, url
+		$eland_groups = $app['db']->executeQuery('select id,
+				groupname, url
 			from ' . $tschema . '.letsgroups
 			where apimethod <> \'internal\'
 				and url in (?)',
-				[$urls],
+				[$eland_urls],
 				[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
 		foreach ($eland_groups as $g)
 		{
+			$g['remote_schema'] = $map_eland_schema_url[$g['url']];
 			$groups[] = $g;
 		}
 	}
@@ -931,7 +935,7 @@ if ($add)
 			$ids[] = $key;
 		}
 
-		$elas_groups = $app['db']->executeQuery('select id, groupname, url
+		$elas_groups = $app['db']->executeQuery('select id, groupname
 			from ' . $tschema . '.letsgroups
 			where apimethod <> \'internal\'
 				and id in (?)',
@@ -1025,33 +1029,45 @@ if ($add)
 
 				$typeahead = $app['typeahead']->get($typeahead_ary);
 
-				$sch = $tschema;
+				$config_schema = $tschema;
+			}
+			else if (isset($l['remote_schema']))
+			{
+				$remote_schema = $l['remote_schema'];
+
+				$typeahead = $app['typeahead']->get([[
+					'eland_intersystem_accounts', [
+					'schema'		=> $tschema,
+					'remote_schema'	=> $remote_schema,
+				]]]);
+
+				$config_schema = $remote_schema;
 			}
 			else
 			{
-				$typeahead = $app['typeahead']->get([['intersystem_accounts', [
-						'schema'	=> $tschema,
-						'group_id'	=> $l['id'],
+				$typeahead = $app['typeahead']->get([[
+					'elas_intersystem_accounts', [
+					'schema'	=> $tschema,
+					'group_id'	=> $l['id'],
 				]]]);
 
-				$domain = strtolower(parse_url($l['url'], PHP_URL_HOST));
-				$sch = $app['groups']->get_schema($domain);
+				unset($config_schema);
 			}
 
-			if ($sch)
+			if (isset($config_schema))
 			{
 				echo ' data-newuserdays="';
-				echo $app['config']->get('newuserdays', $sch) . '"';
+				echo $app['config']->get('newuserdays', $config_schema) . '"';
 				echo ' data-minlimit="';
-				echo $app['config']->get('minlimit', $sch) . '"';
+				echo $app['config']->get('minlimit', $config_schema) . '"';
 				echo ' data-maxlimit="';
-				echo $app['config']->get('maxlimit', $sch) . '"';
+				echo $app['config']->get('maxlimit', $config_schema) . '"';
 				echo ' data-currency="';
-				echo $app['config']->get('currency', $sch) . '"';
+				echo $app['config']->get('currency', $config_schema) . '"';
 				echo ' data-currencyratio="';
-				echo $app['config']->get('currencyratio', $sch) . '"';
+				echo $app['config']->get('currencyratio', $config_schema) . '"';
 				echo ' data-balance-equilibrium="';
-				echo $app['config']->get('balance_equilibrium', $sch) . '"';
+				echo $app['config']->get('balance_equilibrium', $config_schema) . '"';
 			}
 
 			echo ' data-typeahead="' . $typeahead . '"';
@@ -1372,7 +1388,8 @@ if ($edit)
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+		echo '<span class="btn btn-default btn-xs">';
+		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
 		{
@@ -2219,7 +2236,8 @@ if (!$inline)
 	echo 'placeholder="Account Code" ';
 	echo 'aria-describedby="tcode_addon" ';
 	echo 'name="tcode" value="';
-	echo $tcode . '">';
+	echo $tcode;
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
@@ -2237,7 +2255,9 @@ if (!$inline)
 	echo 'id="fdate" name="fdate" ';
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="';
+	echo $app['date_format']->datepicker_format();
+	echo '" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';

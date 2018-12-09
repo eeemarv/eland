@@ -31,7 +31,7 @@ class get_elas_intersystem_domains
 
 		foreach ($this->groups->get_schemas() as $sch)
 		{
-			$groups = $this->db->fetchAll('select url, remoteapikey
+			$groups = $this->db->fetchAll('select url, remoteapikey, id
 				from ' . $sch . '.letsgroups
 				where apimethod = \'elassoap\'
 					and remoteapikey is not null
@@ -51,7 +51,10 @@ class get_elas_intersystem_domains
 					continue;
 				}
 
-				$domains[$domain][$sch] = trim($group['remoteapikey']);
+				$domains[$domain][$sch] = [
+					'remoteapikey'	=> trim($group['remoteapikey']),
+					'group_id'		=> $group['id'],
+				];
 			}
 		}
 
