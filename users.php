@@ -527,8 +527,8 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 
 		if ($bulk_field == 'status')
 		{
-//			$app['typeahead']->invalidate_thumbprint('users_active');
-//			$app['typeahead']->invalidate_thumbprint('users_extern');
+			delete_thumbprint('active');
+			delete_thumbprint('extern');
 		}
 
 		$app['monolog']->info('bulk: Set ' . $bulk_field .
@@ -1072,11 +1072,11 @@ if ($del)
 
 		if ($user['status'] == 1 || $user['status'] == 2)
 		{
-//			$app['typeahead']->invalidate_thumbprint('users_active');
+			delete_thumbprint('active');
 		}
 		else if ($user['status'] == 7)
 		{
-//			$app['typeahead']->invalidate_thumbprint('users_extern');
+			delete_thumbprint('extern');
 		}
 
 		$app['interlets_groups']->clear_cache($s_schema);
@@ -1556,12 +1556,12 @@ if ($add || $edit)
 
 					if ($user['status'] == 2 | $user['status'] == 1)
 					{
-//						$app['typeahead']->invalidate_thumbprint('users_active');
+						delete_thumbprint('active');
 					}
 
 					if ($user['status'] == 7)
 					{
-//						$app['typeahead']->invalidate_thumbprint('users_extern');
+						delete_thumbprint('extern');
 					}
 
 					$app['interlets_groups']->clear_cache($s_schema);
@@ -1705,13 +1705,13 @@ if ($add || $edit)
 							|| $user_stored['status'] == 1
 							|| $user_stored['status'] == 2)
 						{
-//							$app['typeahead']->invalidate_thumbprint('users_active');
+							delete_thumbprint('active');
 						}
 
 						if ($user['status'] == 7
 							|| $user_stored['status'] == 7)
 						{
-//							$app['typeahead']->invalidate_thumbprint('users_extern');
+							delete_thumbprint('extern');
 						}
 
 						$app['interlets_groups']->clear_cache($s_schema);
@@ -4671,4 +4671,29 @@ function send_activation_mail(string $password, array $user):void
 		'template'	=> 'user_activation',
 		'vars'		=> $vars,
 	]);
+}
+
+function delete_thumbprint(string $status):void
+{
+	global $app, $eland_interlets_groups;
+
+	$tschema = $app['this_group']->get_schema();
+
+	$app['typeahead']->delete_thumbprint('accounts', [
+		'schema'	=> $tschema,
+		'status'	=> $status,
+	]);
+
+	if ($status !== 'active')
+	{
+		return;
+	}
+
+	foreach ($eland_interlets_groups as $remote_schema => $h)
+	{
+		$app['typeahead']->delete_thumbprint('eland_intersystem_accounts', [
+			'schema'		=> $tschema,
+			'remote_schema'	=> $remote_schema,
+		]);
+	}
 }

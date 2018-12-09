@@ -43,8 +43,8 @@ $(document).ready(function(){
 				var exists_engine = new Bloodhound({
 					prefetch: {
 						url: './typeahead/' + rec.name + '.php?' + $.param(params),
-						cache: false,
-//						ttl: 2592000000,	//30 days
+						cache: true,
+						ttl: 172800000, // 2 days
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},
@@ -173,8 +173,8 @@ $(document).ready(function(){
 			datasets.push({data: new Bloodhound({
 					prefetch: {
 						url: './typeahead/' + rec.name + '.php?' + $.param(params),
-						cache: false,
-//						ttl: 2592000000,	//30 days
+						cache: true,
+						ttl: 172800000,	// 2 days
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},
