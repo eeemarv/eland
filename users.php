@@ -1937,7 +1937,13 @@ if ($add || $edit)
 	echo 'id="postcode" name="postcode" ';
 	echo 'value="';
 	echo $user['postcode'] ?? '';
-	echo '" required maxlength="6">';
+	echo '" ';
+	echo 'required maxlength="6" ';
+	echo 'data-typeahead="';
+	echo $app['typeahead']->get([['postcodes', [
+		'schema'	=> $tschema,
+	]]]);
+	echo '">';
 	echo '</div>';
 	echo '</div>';
 
