@@ -11,6 +11,10 @@ $(document).ready(function(){
 		var lat = 0;
 		var lng = 0;
 
+		if (!markers){
+			return;
+		}
+
 		$.each(markers, function(index, marker){
 			lat = lat + marker.lat;
 			lng = lng + marker.lng;
