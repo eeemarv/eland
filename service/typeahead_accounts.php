@@ -130,7 +130,7 @@ class typeahead_accounts
 			];
 
 			$this->typeahead->set_thumbprint(
-				'intersystem_accounts',
+				'elas_intersystem_accounts',
 				$params,
 				$new_thumbprint
 			);

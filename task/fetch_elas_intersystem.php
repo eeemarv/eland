@@ -20,6 +20,7 @@ class fetch_elas_intersystem
 	protected $now_gmdate;
 	protected $last_fetch;
 	protected $apikeys_fails;
+	protected $elas_domains;
 
 	public function __construct(
 		cache $cache,
@@ -39,7 +40,7 @@ class fetch_elas_intersystem
 		$this->now = time();
 		$this->now_gmdate = gmdate('Y-m-d H:i:s', $this->now);
 
-		$elas_interlets_domains = $this->cache->get('elas_interlets_domains');
+		$this->elas_domains = $this->cache->get('elas_interlets_domains');
 
 		$this->last_fetch = $this->cache->get('elas_interlets_last_fetch');
 
@@ -67,7 +68,7 @@ class fetch_elas_intersystem
 			unset($this->apikeys_fails[$apikey]);
 		}
 
-		$diff = array_diff_key($elas_interlets_domains, $this->last_fetch['users'] ?? []);
+		$diff = array_diff_key($this->elas_domains, $this->last_fetch['users'] ?? []);
 
 		if (count($diff))
 		{
@@ -84,12 +85,12 @@ class fetch_elas_intersystem
 			}
 		}
 
-		$this->last_fetch['users'] = array_intersect_key($this->last_fetch['users'] ?? [], $elas_interlets_domains);
-		$this->last_fetch['msgs'] = array_intersect_key($this->last_fetch['msgs'] ?? [], $elas_interlets_domains);
+		$this->last_fetch['users'] = array_intersect_key($this->last_fetch['users'] ?? [], $this->elas_domains);
+		$this->last_fetch['msgs'] = array_intersect_key($this->last_fetch['msgs'] ?? [], $this->elas_domains);
 
 		$apikeys = [];
 
-		foreach ($elas_interlets_domains as $domain => $ary)
+		foreach ($this->elas_domains as $domain => $ary)
 		{
 			foreach ($ary as $sch => $sch_ary)
 			{
@@ -478,15 +479,26 @@ class fetch_elas_intersystem
 			});
 		}
 
-/*
-		$thumbprint = crc32(json_encode($users));
+		$new_thumbprint = crc32(json_encode($users));
 
-		$this->typeahead->set_thumbprint('intersystem_accounts', [
-			'schema'	=> $sch,
-			'group_id'	=> $group_id,
-		],
-		$thumbprint);
-*/
+		foreach($this->elas_domains[$this->domain] as $schema => $ary)
+		{
+			if (!isset($ary['group_id']))
+			{
+				continue;
+			}
+
+			$params = [
+				'schema'	=> $schema,
+				'group_id'	=> $ary['group_id'],
+			];
+
+			$this->typeahead->set_thumbprint(
+				'elas_intersystem_accounts',
+				$params,
+				$new_thumbprint
+			);
+		}
 
 		$this->cache->set($this->domain . '_typeahead_data', $users);
 
