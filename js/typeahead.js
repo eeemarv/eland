@@ -35,7 +35,7 @@ $(document).ready(function(){
 				var $query_results = $exists_query_results.find('span.query_results');
 
 				if (render_params.hasOwnProperty('exists_omit')){
-					var exists_omit = render_params.exists_omit;
+					var exists_omit = render_params.exists_omit.toLowerCase();
 				} else {
 					exists_omit = '';
 				}
@@ -54,11 +54,13 @@ $(document).ready(function(){
 
 				var $this_input = $(this);
 
-				$(this).keyup(function(){
-					exists_engine.search($this_input.val(), function(results_ary){
+				function render_exists(){
+					var lower_case_val = $this_input.val().toLowerCase();
+
+					exists_engine.search(lower_case_val, function(results_ary){
 
 						results_ary = $.grep(results_ary, function (item){
-							return item !== exists_omit;
+							return item.toLowerCase() !== exists_omit;
 						});
 
 						if (results_ary.length){
@@ -66,7 +68,7 @@ $(document).ready(function(){
 							console.log(results_ary[0]);
 							console.log($this_input.val());
 
-							if ($this_input.val() === results_ary[0]) {
+							if (lower_case_val === results_ary[0].toLowerCase()) {
 								$exists_msg.removeClass('hidden');
 								$exists_msg.show();
 								$input_container.addClass('has-error');
@@ -82,7 +84,7 @@ $(document).ready(function(){
 								.slice(0, render_params.exists_check)
 								.join(', ') +
 								(results_ary.length > render_params.exists_check ?
-									',...' : '')
+									', ...' : '')
 							);
 						} else {
 							$exists_query_results.hide();
@@ -90,7 +92,11 @@ $(document).ready(function(){
 							$input_container.removeClass('has-error');
 						}
 					});
-				});
+				}
+
+				$this_input.keyup(render_exists);
+
+				render_exists();
 
 	/*
 				$(this).keyup(function(){
