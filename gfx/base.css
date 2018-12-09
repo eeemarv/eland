@@ -38,6 +38,7 @@ span.twitter-typeahead .typeahead-not {
 }
 
 span.twitter-typeahead .typeahead-not {
+  font-weight: bold;
   color: rgb(83, 0, 0);
   background-color: rgb(255, 56, 56);
   margin: 0;

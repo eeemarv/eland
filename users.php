@@ -1844,7 +1844,8 @@ if ($add || $edit)
 		echo '<div class="input-group">';
 		echo '<span class="input-group-addon">';
 		echo '<span class="fa fa-user"></span></span>';
-		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+		echo '<input type="text" class="form-control" ';
+		echo 'id="letscode" name="letscode" ';
 		echo 'value="';
 		echo $user['letscode'] ?? '';
 		echo '" required maxlength="20" ';
@@ -1861,8 +1862,9 @@ if ($add || $edit)
 		]));
 		echo '">';
 		echo '</div>';
-		echo '<span class="help-block hidden" id="account_code_exists">';
-		echo 'Deze Account Code bestaat al.</span>';
+		echo '<span class="help-block hidden" ';
+		echo 'id="account_code_exists">';
+		echo 'Deze Account Code bestaat al!</span>';
 		echo '</div>';
 	}
 
@@ -1874,7 +1876,8 @@ if ($add || $edit)
 		echo '<div class="input-group">';
 		echo '<span class="input-group-addon">';
 		echo '<span class="fa fa-user"></span></span>';
-		echo '<input type="text" class="form-control" id="name" name="name" ';
+		echo '<input type="text" class="form-control" ';
+		echo 'id="name" name="name" ';
 		echo 'value="';
 		echo $user['name'] ?? '';
 		echo '" required maxlength="50" ';
@@ -1891,8 +1894,9 @@ if ($add || $edit)
 		]));
 		echo '">';
 		echo '</div>';
-		echo '<span id="username_exists" class="help-block hidden">';
-		echo 'Deze Gebruikersnaam bestaat reeds.</span>';
+		echo '<span id="username_exists" ';
+		echo 'class="help-block hidden">';
+		echo 'Deze Gebruikersnaam bestaat reeds!</span>';
 		echo '</div>';
 	}
 

@@ -112,7 +112,7 @@ $(document).ready(function(){
 						url: './typeahead/' + rec.name + '.php?' + $.param(params),
 						cache: false,
 //						ttl: 2592000000,	//30 days
-//						thumbprint: rec.thumbprint,
+						thumbprint: rec.thumbprint,
 						filter: filter
 					},
 					datumTokenizer: tokenizer,
@@ -141,6 +141,22 @@ $(document).ready(function(){
 
 		if ($(this).prop('tagName').toLowerCase() == 'input'){
 			$(this).typeahead.apply($(this), args);
+
+			if (render_params && render_params.hasOwnProperty('exists_id')){
+				var $input_container = $(this).parent().parent().parent();
+				var $span_help_block = $input_container.find('span#' + render_params.exists_id);
+				$(this).keyup(function(){
+					console.log('keyup');
+					if ($.inArray($.trim($(this).val()), ['002', '009']) === -1){
+						$input_container.removeClass('has-error');
+						$span_help_block.hide();
+					} else {
+						$input_container.addClass('has-error');
+						$span_help_block.removeClass('hidden');
+						$span_help_block.show();
+					}
+				});
+			}
 		}
 	});
 
