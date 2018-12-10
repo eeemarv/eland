@@ -146,7 +146,7 @@ class mail implements queue_interface
 			}
 		}
 
-		if (!isset($data['to']))
+		if (!isset($data['to']) || !is_array($data['to']) || !count($data['to']))
 		{
 			$this->monolog->error('mail queue process: mail without "to" ' .
 				json_encode($data),
@@ -312,17 +312,18 @@ class mail implements queue_interface
 
 			unset($data['to'][$email_to]);
 
-			$error = $this->queue->set('mail', $val_data, $priority);
+			$this->queue->set('mail', $val_data, $priority);
 
-			if (!$error)
-			{
+			$this->monolog->info('mail: Mail in queue with validate token ' . $validate_token .
+				', subject: ' .
+				($data['subject'] ?? '(template)') . ', from : ' .
+				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+				$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
+		}
 
-				$this->monolog->info('mail: Mail in queue with validate token ' . $validate_token .
-					', subject: ' .
-					($data['subject'] ?? '(template)') . ', from : ' .
-					json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-					$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
-			}
+		if (!isset($data['to']) || !$data['to'])
+		{
+			return;
 		}
 
 		$this->queue->set('mail', $data, $priority);
