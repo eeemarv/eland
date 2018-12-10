@@ -174,7 +174,7 @@ if ($user_mail_submit && $id && $post)
 		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
 		'template'	=> 'user',
 		'vars'		=> $vars,
-	], 600);
+	], 8000);
 
 	if ($user_mail_cc)
 	{
@@ -183,7 +183,7 @@ if ($user_mail_submit && $id && $post)
 			'to' 		=> $app['mail_addr_user']->get($s_id, $s_schema),
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
-		], 600);
+		], 8000);
 	}
 
 	$app['alert']->success('E-mail verzonden.');
@@ -676,7 +676,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
 			'reply_to' 	=> $app['mail_addr_user']->get($s_id, $tschema),
-		]);
+		], random_int(5000, 6000));
 
 		$alert_msg_users[] = link_user($sel_user, $tschema);
 
@@ -743,7 +743,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'to' 		=> $app['mail_addr_user']->get($s_id, $tschema),
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
-		]);
+		], 8000);
 
 		$app['monolog']->debug('#bulk mail', ['schema' => $tschema]);
 
@@ -828,7 +828,7 @@ if ($pw)
 							'reply_to'	=> $app['mail_addr_system']->get_support($tschema),
 							'template'	=> 'password_reset',
 							'vars'		=> $vars,
-						]);
+						], 8000);
 
 						$app['alert']->success('Notificatie mail verzonden');
 					}
@@ -4648,7 +4648,7 @@ function send_activation_mail(string $password, array $user):void
 		'to' 		=> $app['mail_addr_system']->get_admin($tschema),
 		'vars'		=> $vars,
 		'template'	=> 'admin_user_activation',
-	]);
+	], 5000);
 
 	$vars = [
 		'group'		=> [
@@ -4669,7 +4669,7 @@ function send_activation_mail(string $password, array $user):void
 		'reply_to' 	=> $app['mail_addr_system']->get_support($tschema),
 		'template'	=> 'user_activation',
 		'vars'		=> $vars,
-	]);
+	], 5000);
 }
 
 function delete_thumbprint(string $status):void

@@ -498,7 +498,7 @@ if ($add)
 					'to' 			=> $app['mail_addr_system']->get_admin($tschema),
 					'subject' 		=> $subject,
 					'text' 			=> $text,
-				]);
+				], 9000);
 
 				$app['alert']->error('De lokale commit van de interSysteem transactie is niet geslaagd. ' . $contact_admin);
 				cancel();

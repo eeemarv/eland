@@ -166,7 +166,7 @@ if ($token)
 			'to' 			=> $app['mail_addr_system']->get_admin($tschema),
 			'vars'			=> $vars,
 			'template'		=> 'admin_registration',
-		]);
+		], 8000);
 
 		$map_template_vars = [
 			'voornaam' 			=> 'first_name',
@@ -185,7 +185,7 @@ if ($token)
 			'reply_to'				=> $app['mail_addr_system']->get_admin($tschema),
 			'template_from_config'	=> 'registration_success_mail',
 			'vars'		=> $vars,
-		], 1000);
+		], 8500);
 
 		$app['alert']->success('Inschrijving voltooid.');
 
@@ -294,7 +294,7 @@ if ($submit)
 			'to' 		=> [$reg['email']],
 			'vars'		=> $vars,
 			'template'	=> 'registration_confirm',
-		], 1000);
+		], 10000);
 
 		$app['alert']->warning('Open je E-mailbox en klik op de bevestigingslink in de E-mail die we naar je gestuurd hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');

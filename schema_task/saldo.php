@@ -674,7 +674,7 @@ class saldo extends schema_task
 					'url_login'		=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
 					'account_edit_url'	=> $base_url . '/users.php?edit=' . $id,
 				]),
-			], random_int(50, 500));
+			], random_int(0, 5000));
 
 			$log_str = $users[$id]['letscode'] . ' ' . $users[$id]['name'];
 			$log_str .= ' (' . $id . ' to: ' . json_encode($to) . ' )';

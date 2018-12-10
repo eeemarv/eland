@@ -591,7 +591,7 @@ if ($mail && $post && $id)
 		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
 		'template'	=> 'message',
 		'vars'		=> $vars,
-	], 600);
+	], 8500);
 
 
 	if ($cc)
@@ -601,7 +601,7 @@ if ($mail && $post && $id)
 			'to'		=> $app['mail_addr_user']->get($s_id, $s_schema),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
-		], 600);
+		], 8000);
 	}
 
 	$app['alert']->success('Mail verzonden.');

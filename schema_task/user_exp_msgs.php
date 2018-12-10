@@ -93,7 +93,8 @@ class user_exp_msgs extends schema_task
 				'to' 		=> $this->mail_addr_user->get($msg['id_user'], $this->schema),
 				'schema' 	=> $this->schema,
 				'template' 	=> 'user_exp_msgs',
-				'vars' 		=> $vars]);
+				'vars' 		=> $vars],
+			random_int(0, 5000));
 		}
 
 		$this->db->executeUpdate('update ' . $this->schema . '.messages

@@ -69,12 +69,12 @@ if (isset($_POST['zend']))
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
 				'to'		=> $app['mail_addr_user']->get($s_id, $tschema),
-			]);
+			], 8500);
 
 			$email_ary['reply_to'] = $app['mail_addr_user']->get($s_id, $tschema);
 		}
 
-		$app['queue.mail']->queue($email_ary);
+		$app['queue.mail']->queue($email_ary, 8000);
 
 		$app['alert']->success('De Support E-mail is verzonden.');
 		redirect_default_page();

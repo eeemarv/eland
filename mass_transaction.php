@@ -902,11 +902,11 @@ function mail_mass_transaction($mail_ary)
 
 	$from_many_bool = is_array($mail_ary['from']) ? true : false;
 
-	$many_ary = ($from_many_bool) ? $mail_ary['from'] : $mail_ary['to'];
+	$many_ary = $from_many_bool ? $mail_ary['from'] : $mail_ary['to'];
 
 	$many_user_ids = array_keys($many_ary);
 
-	$one_user_id = ($from_many_bool) ? $mail_ary['to'] : $mail_ary['from'];
+	$one_user_id = $from_many_bool ? $mail_ary['to'] : $mail_ary['from'];
 
 	$common_vars = [
 		'group'		=> [
@@ -961,7 +961,7 @@ function mail_mass_transaction($mail_ary)
 			'to'		=> $app['mail_addr_user']->get($user_id, $tschema),
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
-		]);
+		], random_int(0, 5000));
 	}
 
 	$total = 0;
@@ -1011,7 +1011,7 @@ function mail_mass_transaction($mail_ary)
 		'text' 		=> $text,
 		'template'	=> 'admin_mass_transaction',
 		'vars'		=> $vars,
-	]);
+	], 8000);
 
 	return true;
 }

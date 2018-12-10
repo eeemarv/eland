@@ -104,7 +104,7 @@ function mail_mailtype_interlets_transaction($transaction)
 		'reply_to' 	=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
-	]);
+	], 9000);
 
 	$vars['copy'] = true;
 
@@ -114,7 +114,7 @@ function mail_mailtype_interlets_transaction($transaction)
 		'cc' 		=> $app['mail_addr_system']->get_admin($tschema),
 		'template'	=> 'mailtype_interlets_transaction',
 		'vars'		=> $vars,
-	]);
+	], 9000);
 }
 
 /*
@@ -172,7 +172,7 @@ function mail_transaction($transaction, $remote_schema = null)
 				'user' 			=> $userfrom,
 				'url_login'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
 			]),
-		]);
+		], 9000);
 	}
 
 	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto['status'] == 2))
@@ -185,6 +185,6 @@ function mail_transaction($transaction, $remote_schema = null)
 				'user'		=> $userto,
 				'url_login'	=> $base_url . '/login.php?login=' . $userto['letscode'],
 			]),
-		]);
+		], 9000);
 	}
 }

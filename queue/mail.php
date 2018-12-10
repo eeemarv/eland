@@ -213,7 +213,7 @@ class mail implements queue_interface
 		$this->mailer->getTransport()->stop();
 	}
 
-	public function queue(array $data, int $priority = 100):void
+	public function queue(array $data, int $priority = 10000):void
 	{
 		if (!isset($data['schema']))
 		{
