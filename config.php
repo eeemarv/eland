@@ -111,13 +111,23 @@ $tab_panes = [
 				'addon'	=> $currency,
 				'lbl'	=> 'Preset Minimum Account Limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze Minimum Account Limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende Minimum Account Limiet hebben van de Minimum Systeemslimiet. Deze instelling is ook nuttig wanneer de Automatische Minimum Limiet gebruikt wordt. Dit veld kan leeg gelaten worden.',
+				'explain'	=> 'Bij aanmaak van een nieuw Account wordt
+					deze Minimum Account Limiet vooraf ingevuld in het
+					aanmaakformulier. Dit heeft enkel zin wanneer instappende
+					leden een afwijkende Minimum Account Limiet hebben van
+					de Minimum Systeemslimiet. Deze instelling is ook nuttig
+					wanneer de Automatische Minimum Limiet gebruikt wordt.
+					Dit veld kan leeg gelaten worden.',
 			],
 			'preset_maxlimit'	=> [
 				'addon'	=> $currency,
 				'lbl'	=> 'Preset Maximum Account Limiet',
 				'type'	=> 'number',
-				'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze Maximum Account Limiet vooraf ingevuld in het aanmaakformulier. Dit heeft enkel zin wanneer instappende leden een afwijkende Maximum Account Limiet hebben van de Maximum Systeemslimiet. Dit veld kan leeg gelaten worden.',
+				'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze
+					Maximum Account Limiet vooraf ingevuld in het aanmaakformulier.
+					Dit heeft enkel zin wanneer instappende leden een afwijkende
+					Maximum Account Limiet hebben van de Maximum Systeemslimiet.
+					Dit veld kan leeg gelaten worden.',
 
 			],
 			'balance_equilibrium'	=> [
@@ -125,7 +135,8 @@ $tab_panes = [
 				'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
 				'type'		=> 'number',
 				'required'	=> true,
-				'explain' 	=> 'Het saldo van leden met status uitstapper kan enkel bewegen in de richting van deze instelling.'
+				'explain' 	=> 'Het saldo van leden met status uitstapper
+					kan enkel bewegen in de richting van deze instelling.'
 			],
 
 		],
@@ -138,7 +149,8 @@ $tab_panes = [
 			'msgs_days_default'	=> [
 				'addon'	=> 'dagen',
 				'lbl'	=> 'Standaard geldigheidsduur',
-				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
+				'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt
+					deze waarde standaard ingevuld in het formulier.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 1, 'max' => 1460],
 			],
@@ -157,7 +169,9 @@ $tab_panes = [
 			],
 
 			'li_2'	=> [
-				'inline' => '%1$s Mail een notificatie naar de eigenaar van een vraag of aanbod bericht op het moment dat het vervalt.',
+				'inline' => '%1$s Mail een notificatie naar de eigenaar
+					van een vraag of aanbod bericht op het moment dat
+					het vervalt.',
 				'inputs'	=> [
 					'msgexpwarnenabled'	=> [
 						'type'	=> 'checkbox',
@@ -177,7 +191,8 @@ $tab_panes = [
 			],
 			'systemtag' => [
 				'lbl'		=> 'Tag',
-				'explain'	=> 'Prefix tussen haken [tag] in onderwerp van alle E-mail-berichten',
+				'explain'	=> 'Prefix tussen haken [tag] in onderwerp
+					van alle E-mail-berichten',
 				'required'	=> true,
 				'addon_fa'	=> 'tag',
 				'attr'		=> ['maxlength' => 30],
@@ -253,7 +268,8 @@ $tab_panes = [
 		'lbl_pane'	=> 'Periodieke Overzichts E-mail',
 		'inputs' => [
 			'li_1'	=> [
-				'inline' => 'Verstuur de Periodieke Overzichts E-mail om de %1$s dagen',
+				'inline' => 'Verstuur de Periodieke Overzichts E-mail
+					om de %1$s dagen',
 				'inputs' => [
 					'saldofreqdays'	=> [
 						'type'		=> 'number',
@@ -261,7 +277,8 @@ $tab_panes = [
 						'required'	=> true,
 					],
 				],
-				'explain' => 'Noot: Leden kunnen steeds ontvangst van de Periodieke Overzichts E-mail aan- of afzetten in hun profielinstellingen.',
+				'explain' => 'Noot: Leden kunnen steeds ontvangst van de Periodieke
+					Overzichts E-mail aan- of afzetten in hun profielinstellingen.',
 			],
 
 			'periodic_mail_block_ary' => [
@@ -388,7 +405,7 @@ $tab_panes = [
 			],
 
 			'li_2' => [
-				'inline' => '%1$s Leden kunnen zelf de Gebruikersnaam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf hun Gebruikersnaam aanpassen.',
 				'inputs' => [
 					'users_can_edit_username' => [
 						'type'	=> 'checkbox',
@@ -397,7 +414,7 @@ $tab_panes = [
 			],
 
 			'li_3' => [
-				'inline' => '%1$s Leden kunnen zelf het veld Volledige Naam aanpassen.',
+				'inline' => '%1$s Leden kunnen zelf hun Volledige Naam aanpassen.',
 				'inputs' => [
 					'users_can_edit_fullname' => [
 						'type'	=> 'checkbox',
