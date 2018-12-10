@@ -249,7 +249,9 @@ $app['url'] = function($app){
 // queue
 
 $app['queue.mail'] = function ($app){
-	return new queue\mail($app['queue'], $app['monolog'],
+	return new queue\mail(
+		$app['queue'],
+		$app['monolog'],
 		$app['twig'],
 		$app['config'],
 		$app['mail_addr_system'],

@@ -628,6 +628,7 @@ class saldo extends schema_task
 			'interlets'				=> $interlets,
 			'block_options'			=> $block_options,
 			'blocks_sorted'			=> $blocks_sorted,
+			'support_url'			=> $base_url . '/support.php?src=p',
 		];
 
 	// queue mail

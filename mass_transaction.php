@@ -918,6 +918,7 @@ function mail_mass_transaction($mail_ary)
 		'description'			=> $mail_ary['description'],
 		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',
 		'from_many'				=> $from_many_bool,
+		'support_url'			=> $app['base_url'] . '/support.php?src=p',
 	];
 
 	$from_user_id = $to_user_id = $one_user_id;

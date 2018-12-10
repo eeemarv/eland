@@ -86,6 +86,7 @@ class user_exp_msgs extends schema_task
 				'url_extend' 	=> $url_extend,
 				'url_msg_add'	=> $base_url . '/messages.php?add=1',
 				'group'			=> $group_vars,
+				'support_url'	=> $base_url . '/support.php?src=p',
 			];
 
 			$this->mail->queue([

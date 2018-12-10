@@ -581,7 +581,8 @@ if ($mail && $post && $id)
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
-		'login_url'		=> $app['base_url'].'/login.php',
+		'login_url'		=> $app['base_url'] . '/login.php',
+		'support_url'	=> $app['base_url'] . '/support.php?src=p',
 	];
 
 	$app['queue.mail']->queue([

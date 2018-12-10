@@ -81,10 +81,11 @@ function mail_mailtype_interlets_transaction($transaction)
 	$to_user = $transaction['real_to'];
 
 	$vars = [
-		'copy'		=> false,
-		'from_user' => $from_user,
-		'to_user'	=> $to_user,
-		'to_group'	=> $to_group,
+		'support_url'	=> $app['base_url'] . '/support.php?src=p',
+		'copy'			=> false,
+		'from_user' 	=> $from_user,
+		'to_user'		=> $to_user,
+		'to_group'		=> $to_group,
 		'amount'			=> $transaction['amount'],
 		'amount_hours'		=> round($transaction['amount'] / $app['config']->get('currencyratio', $tschema), 4),
 		'transid'			=> $transaction['transid'],
@@ -141,9 +142,10 @@ function mail_transaction($transaction, $remote_schema = null)
 	$url = isset($remote_schema) ? $app['protocol'] . $app['groups']->get_host($sch) : $app['base_url'];
 
 	$vars = [
-		'from_user' => $from_user,
-		'to_user'	=> $to_user,
-		'interlets'	=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
+		'support_url'	=> $url . '/support.php?src=p',
+		'from_user' 	=> $from_user,
+		'to_user'		=> $to_user,
+		'interlets'		=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
 		'amount'			=> $transaction['amount'],
 		'transid'			=> $transaction['transid'],
 		'description'		=> $transaction['description'],

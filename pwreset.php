@@ -40,9 +40,10 @@ if ($token)
 						'currency'	=> $app['config']->get('currency', $tschema),
 						'support'	=> explode(',', $app['config']->get('support', $tschema)),
 					],
-					'password'	=> $password,
-					'user'		=> $user,
-					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+					'password'		=> $password,
+					'user'			=> $user,
+					'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+					'support_url'	=> $app['base_url'] . '/support.php?src=p',
 				];
 
 				$app['queue.mail']->queue([

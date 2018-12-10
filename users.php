@@ -164,7 +164,8 @@ if ($user_mail_submit && $id && $post)
 		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
-		'login_url'		=> $app['base_url'].'/login.php',
+		'login_url'		=> $app['base_url'] . '/login.php',
+		'support_url'	=> $app['base_url'] . '/support.php?src=p',
 	];
 
 	$app['queue.mail']->queue([
@@ -818,6 +819,7 @@ if ($pw)
 							'user'			=> $user,
 							'password'		=> $password,
 							'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+							'support_url'	=> $app['base_url'] . '/support.php?src=p',
 						];
 
 						$app['queue.mail']->queue([
@@ -4659,9 +4661,10 @@ function send_activation_mail(string $password, array $user):void
 			'support'	=> explode(',', $app['config']->get('support', $tschema)),
 			'currency'	=> $app['config']->get('currency', $tschema),
 		],
-		'user'		=> $user,
-		'password'	=> $password,
-		'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+		'user'			=> $user,
+		'password'		=> $password,
+		'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+		'support_url'	=> $app['base_url'] . '/support.php?src=p',
 	];
 
 	$app['queue.mail']->queue([
