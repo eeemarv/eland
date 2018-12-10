@@ -675,7 +675,9 @@ class saldo extends schema_task
 				]),
 			], random_int(50, 500));
 
-			$log_to[] = $users[$id]['letscode'] . ' ' . $users[$id]['name'] . ' (' . $id . ')';
+			$log_str = $users[$id]['letscode'] . ' ' . $users[$id]['name'];
+			$log_str .= ' (' . $id . ' to: ' . json_encode($to) . ' )';
+			$log_to[] = $log_str;
 		}
 
 		$this->monolog->debug('x-saldomail, schema: ' .
@@ -686,7 +688,7 @@ class saldo extends schema_task
 
 		if (count($log_to))
 		{
-			$this->monolog->info('Saldomail queued, to: ' .
+			$this->monolog->info('Saldomail queued: ' .
 				implode(', ', $log_to), ['schema' => $this->schema]);
 		}
 		else
