@@ -14,12 +14,12 @@
 
 {% block accountinfo %}
 
-<h4>Je account</h4>
+<h4>Je Account</h4>
 
 <ul>
-<li>Je code: <strong>{{ user.letscode }}</strong></li>
-<li>Je gebruikersnaam: <strong>{{ user.name }}</strong></li>
-<li>Je saldo bedraagt momenteel <strong>{{ user.saldo }}</strong> {{ group.currency }}</li>
+<li>Account Code: <strong>{{ user.letscode }}</strong></li>
+<li>Gebruikersnaam: <strong>{{ user.name }}</strong></li>
+<li>Saldo: <strong>{{ user.saldo }}</strong> {{ group.currency }}</li>
 {% if user.minlimit != '' and user.minlimit != -999999999 %}
 <li>Minimum limiet: <strong>{{ user.minlimit }}</strong> {{ group.currency }}</li>
 {% endif %}
@@ -34,12 +34,8 @@
 {% block support %}
 
 <h4>Support</h4>
-<p>Als je een vraag of probleem hebt, kan je mailen naar
-<ul></ul>
-{% for mail in group.support %}
-<li><a href="mailto:{{ mail }}?subject=Support">{{ mail }}</a></li>
-{% endfor %}
-</p>
+<p>Gebruik het <a href="{{ support_url }}">Help/Supportformulier</a>
+als je een vraag of probleem hebt.</p>
 {% endblock support %}
 {% block unsubscribe %}{% endblock unsubscribe %}
 {% block footer %}{% endblock footer %}

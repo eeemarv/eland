@@ -11,9 +11,9 @@
 Je account
 ----------
 
-Je code: {{ user.letscode }}
-Je gebruikersnaam: {{ user.name }}
-Je saldo bedraagt momenteel {{ user.saldo }} {{ group.currency }}
+Account Code: {{ user.letscode }}
+Gebruikersnaam: {{ user.name }}
+Saldo: {{ user.saldo }} {{ group.currency }}
 {% if user.minlimit != '' and user.minlimit != 999999999 %}
 Minimum limiet: {{ user.minlimit }} {{ group.currency }}
 {% endif %}
@@ -32,11 +32,10 @@ Login: {{ url_login }}
 Support
 -------
 
-Als je een vraag of probleem hebt, kan je E-mailen naar
+Gebruik het Help/Supportformulier
+als je een vraag of probleem hebt:
 
-{% for mail in group.support %}
-{{ mail }}
-{% endfor %}
+{{ support_url }}
 
 {% endautoescape %}
 {% endblock support %}
