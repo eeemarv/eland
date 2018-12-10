@@ -188,7 +188,7 @@ class mail implements queue_interface
 			if ($this->mailer->send($message, $failed_recipients))
 			{
 				$this->monolog->info('mail queue process: sent ' .
-					implode(', ', $data['to']) . ' subject: ' . $data['subject'],
+					json_encode($data['to']) . ' subject: ' . $data['subject'],
 					['schema' => $sch]);
 			}
 			else
