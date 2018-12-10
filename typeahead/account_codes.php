@@ -1,6 +1,6 @@
 <?php
 $rootpath = '../';
-$page_access = 'admin';
+$page_access = 'user';
 require_once __DIR__ . '/../include/web.php';
 
 $tschema = $app['this_group']->get_schema();
