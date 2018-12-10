@@ -1977,7 +1977,7 @@ if ($add || $edit)
 		false,
 		'fullname_access',
 		'xs',
-		'Zichtbaarheid volledige naam'
+		'Zichtbaarheid Volledige Naam'
 	);
 
 	echo '<div class="form-group">';
@@ -2290,13 +2290,9 @@ if ($add || $edit)
 		echo '</p>';
 
 		echo '</div>';
-	}
+		echo '</div>';
+		echo '</div>';
 
-	echo '</div>';
-	echo '</div>';
-
-	if ($s_admin)
-	{
 		$contacts_format = [
 			'adr'	=> [
 				'fa'		=> 'map-marker',
