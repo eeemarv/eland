@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Templating\PhpEngine;
+use Symfony\Component\Templating\TemplateNameParser;
+use Symfony\Component\Templating\Loader\FilesystemLoader;
+
 $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
@@ -40,6 +44,17 @@ $app->extend('twig', function($twig, $app) {
 
 	return $twig;
 });
+
+$app['tpl'] = function(){
+
+    $loader = new FilesystemLoader([
+        __DIR__ . '/../tpl/%name%'
+	]);
+
+    $tpl = new PhpEngine(new TemplateNameParser(), $loader);
+
+    return $tpl;
+};
 
 $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
