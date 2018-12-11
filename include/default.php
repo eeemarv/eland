@@ -58,6 +58,7 @@ $app['tpl'] = function($app){
 
 	$tpl->set(new SlotsHelper());
 	$tpl->set(new config_helper($app['config'], $app['this_group']));
+	$tpl->set(new date_format_helper($app['date_format']));
 	$tpl->addGlobal('s3_img', getenv('S3_IMG'));
 	$tpl->addGlobal('s3_doc', getenv('S3_DOC'));
 
