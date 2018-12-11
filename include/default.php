@@ -3,6 +3,9 @@
 use Symfony\Component\Templating\PhpEngine;
 use Symfony\Component\Templating\TemplateNameParser;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
+use Symfony\Component\Templating\Helper\SlotsHelper;
+use tpl_helper\config_helper;
+use tpl_helper\date_format_helper;
 
 $app = new util\app();
 
@@ -45,13 +48,18 @@ $app->extend('twig', function($twig, $app) {
 	return $twig;
 });
 
-$app['tpl'] = function(){
+$app['tpl'] = function($app){
 
     $loader = new FilesystemLoader([
         __DIR__ . '/../tpl/%name%'
 	]);
 
-    $tpl = new PhpEngine(new TemplateNameParser(), $loader);
+	$tpl = new PhpEngine(new TemplateNameParser(), $loader);
+
+	$tpl->set(new SlotsHelper());
+	$tpl->set(new config_helper($app['config'], $app['this_group']));
+	$tpl->addGlobal('s3_img', getenv('S3_IMG'));
+	$tpl->addGlobal('s3_doc', getenv('S3_DOC'));
 
     return $tpl;
 };

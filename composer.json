@@ -52,7 +52,8 @@
 			"queue\\": "queue/",
 			"task\\": "task/",
 			"schema_task\\": "schema_task/",
-			"util\\": "util/"
+			"util\\": "util/",
+			"tpl_helper\\": "tpl_helper/"
         }
     },
 	"scripts": {
