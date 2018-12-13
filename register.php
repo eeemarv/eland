@@ -116,7 +116,11 @@ if ($token)
 				'email'			=> $data['email'],
 			];
 
-			$app['xdb']->set('email_validated', $data['email'], $ev_data, $tschema);
+			$app['xdb']->set(
+				'email_validated',
+				$data['email'],
+				$ev_data,
+				$tschema);
 
 			if ($data['gsm'] || $data['tel'])
 			{
@@ -152,10 +156,7 @@ if ($token)
 		}
 
 		$vars = [
-			'group'	=> [
-				'name'	=> $app['config']->get('systemname', $tschema),
-				'tag'	=> $app['config']->get('systemtag', $tschema),
-			],
+			'group'	=> $app['template_vars']->get($tschema),
 			'user'	=> $user,
 			'email'	=> $data['email'],
 			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
@@ -253,7 +254,8 @@ if ($submit)
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))
 	{
-		$app['alert']->error('Er bestaat reeds een inschrijving met dit E-mail adres.');
+		$app['alert']->error('Er bestaat reeds een inschrijving
+			met dit E-mail adres.');
 	}
 	else if (!$reg['first_name'])
 	{
@@ -282,10 +284,7 @@ if ($submit)
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
-			'group'		=> [
-				'name'	=> $app['config']->get('systemname', $tschema),
-				'tag'	=> $app['config']->get('systemtag', $tschema),
-			],
+			'group'			=> $app['template_vars']->get($tschema),
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
 
@@ -296,7 +295,9 @@ if ($submit)
 			'template'	=> 'registration_confirm',
 		], 10000);
 
-		$app['alert']->warning('Open je E-mailbox en klik op de bevestigingslink in de E-mail die we naar je gestuurd hebben om je inschrijving te voltooien.');
+		$app['alert']->warning('Open je E-mailbox en klik op de
+			bevestigingslink in de E-mail die we naar je gestuurd
+			hebben om je inschrijving te voltooien.');
 		header('Location: ' . $rootpath . 'login.php');
 		exit;
 	}

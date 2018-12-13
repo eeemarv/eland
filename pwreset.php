@@ -34,12 +34,7 @@ if ($token)
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [
-					'group'		=> [
-						'name'		=> $app['config']->get('systemname', $tschema),
-						'tag'		=> $app['config']->get('systemtag', $tschema),
-						'currency'	=> $app['config']->get('currency', $tschema),
-						'support'	=> explode(',', $app['config']->get('support', $tschema)),
-					],
+					'group'			=> $app['template_vars']->get($tschema),
 					'password'		=> $password,
 					'user'			=> $user,
 					'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
@@ -151,12 +146,7 @@ if (isset($_POST['zend']))
 				$app['predis']->expire($key, 3600);
 
 				$vars = [
-					'group'		=> [
-						'name'		=> $app['config']->get('systemname', $tschema),
-						'tag'		=> $app['config']->get('systemtag', $tschema),
-						'currency'	=> $app['config']->get('currency', $tschema),
-						'support'	=> explode(',', $app['config']->get('support', $tschema)),
-					],
+					'group'		=> $app['template_vars']->get($tschema),
 					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,
 					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],

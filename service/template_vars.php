@@ -19,7 +19,7 @@ class template_vars
 			'tag'				=> $this->config->get('systemtag', $schema),
 			'name'				=> $this->config->get('systemname', $schema),
 			'currency'			=> $this->config->get('currency', $schema),
-			'support'			=> explode(',', $this->config->get('support', $schema)),
+			'currencyratio'		=> $this->config->get('currencyratio', $schema),
 			'admin'				=> $this->config->get('admin', $schema),
 			'msgexpcleanupdays'	=> $this->config->get('msgexpcleanupdays', $schema),
 		];

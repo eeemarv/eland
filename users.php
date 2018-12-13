@@ -152,10 +152,7 @@ if ($user_mail_submit && $id && $post)
 			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
 
 	$vars = [
-		'group'		=> [
-			'tag'	=> $app['config']->get('systemtag', $tschema),
-			'name'	=> $app['config']->get('systemname', $tschema),
-		],
+		'group'			=> $app['template_vars']->get($tschema),
 		'to_user'		=> link_user($user, $tschema, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
@@ -810,12 +807,7 @@ if ($pw)
 					if ($to)
 					{
 						$vars = [
-							'group'		=> [
-								'name'		=> $app['config']->get('systemname', $tschema),
-								'tag'		=> $app['config']->get('systemtag', $tschema),
-								'support'	=> explode(',', $app['config']->get('support', $tschema)),
-								'currency'	=> $app['config']->get('currency', $tschema),
-							],
+							'group'			=> $app['template_vars']->get($tschema),
 							'user'			=> $user,
 							'password'		=> $password,
 							'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
@@ -4635,10 +4627,7 @@ function send_activation_mail(string $password, array $user):void
 	$tschema = $app['this_group']->get_schema();
 
 	$vars = [
-		'group'		=> [
-			'name'	=> $app['config']->get('systemname', $tschema),
-			'tag'	=> $app['config']->get('systemtag', $tschema),
-		],
+		'group'			=> $app['template_vars']->get($tschema),
 		'user'			=> link_user($user, $tschema, false),
 		'user_mail'		=> $user['mail'],
 	];
@@ -4651,12 +4640,7 @@ function send_activation_mail(string $password, array $user):void
 	], 5000);
 
 	$vars = [
-		'group'		=> [
-			'name'		=> $app['config']->get('systemname', $tschema),
-			'tag'		=> $app['config']->get('systemtag', $tschema),
-			'support'	=> explode(',', $app['config']->get('support', $tschema)),
-			'currency'	=> $app['config']->get('currency', $tschema),
-		],
+		'group'			=> $app['template_vars']->get($tschema),
 		'user'			=> $user,
 		'password'		=> $password,
 		'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],

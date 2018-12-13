@@ -39,10 +39,7 @@ if ($token)
 			'ip'			=> $data['ip'],
 			'browser'		=> $data['browser'],
 			'email'			=> $data['email'],
-			'group'			=> [
-				'name' =>	$app['config']->get('systemname', $tschema),
-				'tag' => 	$app['config']->get('systemtag', $tschema),
-			],
+			'group'			=> $app['template_vars']->get($tschema),
 		];
 
 		$app['queue.mail']->queue([
@@ -135,10 +132,7 @@ if($post && isset($_POST['zend']))
 			$html, ['schema' => $tschema]);
 
 		$vars = [
-			'group' => [
-				'tag'	=> $app['config']->get('systemtag', $tschema),
-				'name'	=> $app['config']->get('systemname', $tschema),
-			],
+			'group' 		=> $app['template_vars']->get($tschema),
 			'contact_url'	=> $app['base_url'] . '/contact.php',
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
 		];

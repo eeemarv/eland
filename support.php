@@ -41,10 +41,7 @@ if (isset($_POST['zend']))
 		$email = $app['mail_addr_user']->get($s_id, $tschema);
 
 		$vars = [
-			'group'	=> [
-				'name'		=> $app['config']->get('systemname', $tschema),
-				'tag'		=> $app['config']->get('systemtag', $tschema),
-			],
+			'group'	=> $app['template_vars']->get($tschema),
 			'user'	=> [
 				'text'			=> link_user($s_id, $tschema, false),
 				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,

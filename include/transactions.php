@@ -86,16 +86,11 @@ function mail_mailtype_interlets_transaction($transaction)
 		'from_user' 	=> $from_user,
 		'to_user'		=> $to_user,
 		'to_group'		=> $to_group,
-		'amount'			=> $transaction['amount'],
-		'amount_hours'		=> round($transaction['amount'] / $app['config']->get('currencyratio', $tschema), 4),
-		'transid'			=> $transaction['transid'],
-		'description'		=> $transaction['description'],
-		'group'				=> [
-			'name'			=> $app['config']->get('systemname', $tschema),
-			'tag'			=> $app['config']->get('systemtag', $tschema),
-			'currency'		=> $app['config']->get('currency', $tschema),
-			'currencyratio'	=> $app['config']->get('currencyratio', $tschema),
-		],
+		'amount'		=> $transaction['amount'],
+		'amount_hours'	=> round($transaction['amount'] / $app['config']->get('currencyratio', $tschema), 4),
+		'transid'		=> $transaction['transid'],
+		'description'	=> $transaction['description'],
+		'group'			=> $app['template_vars']->get($tschema),
 	];
 
 	$app['queue.mail']->queue([
@@ -142,20 +137,15 @@ function mail_transaction($transaction, $remote_schema = null)
 	$url = isset($remote_schema) ? $app['protocol'] . $app['groups']->get_host($sch) : $app['base_url'];
 
 	$vars = [
-		'support_url'	=> $url . '/support.php?src=p',
-		'from_user' 	=> $from_user,
-		'to_user'		=> $to_user,
-		'interlets'		=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
+		'support_url'		=> $url . '/support.php?src=p',
+		'from_user' 		=> $from_user,
+		'to_user'			=> $to_user,
+		'interlets'			=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
 		'amount'			=> $transaction['amount'],
 		'transid'			=> $transaction['transid'],
 		'description'		=> $transaction['description'],
 		'transaction_url'	=> $url . '/transactions.php?id=' . $transaction['id'],
-		'group'				=> [
-			'name'			=> $app['config']->get('systemname', $sch),
-			'tag'			=> $app['config']->get('systemtag', $sch),
-			'currency'		=> $app['config']->get('currency', $sch),
-			'support'		=> explode(',', $app['config']->get('support', $sch)),
-		],
+		'group'				=> $app['template_vars']->get($sch),
 	];
 
 	$t_schema = $remote_schema ? $remote_schema . '.' : '';

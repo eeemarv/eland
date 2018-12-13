@@ -123,11 +123,8 @@ if ($add && $submit && !count($errors))
 		if(!$s_admin)
 		{
 			$vars = [
-				'group'		=> [
-					'name'	=> $app['config']->get('systemname', $tschema),
-					'tag'	=> $app['config']->get('systemtag', $tschema),
-				],
-				'news'	=> $news,
+				'group'		=> $app['template_vars']->get($tschema),
+				'news'		=> $news,
 				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,
 			];
 

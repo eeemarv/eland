@@ -568,10 +568,7 @@ if ($mail && $post && $id)
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
 	$vars = [
-		'group'		=> [
-			'tag'	=> $app['config']->get('systemtag', $tschema),
-			'name'	=> $app['config']->get('systemname', $tschema),
-		],
+		'group'			=> $app['template_vars']->get($tschema),
 		'to_user'		=> link_user($user, $tschema, false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
