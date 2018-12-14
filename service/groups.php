@@ -54,6 +54,11 @@ class groups
 				continue;
 			}
 
+			if (strpos($schema, 'pg_') === 0)
+			{
+				continue;
+			}
+
 			$system = $env_schemas_systems[$schema] ?? $schema;
 			$host = $schema . '.' . $this->overall_domain;
 
