@@ -36,7 +36,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 		'debug'		=> getenv('DEBUG'),
 	],
 	'twig.form.templates'	=> [
-		'bootstrap_3_horizontal_layout.html.twig',
+		'bootstrap_3_layout.html.twig',
 	],
 ]);
 
