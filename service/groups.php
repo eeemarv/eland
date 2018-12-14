@@ -89,4 +89,24 @@ class groups
 	{
 		return count($this->schemas);
 	}
+
+	public function get_schema_from_system(string $system):?string
+	{
+		return $this->systems_schemas[$system] ?: null;
+	}
+
+	public function get_system_from_schema(string $schema):?string
+	{
+		return $this->schemas_systems[$schema] ?: null;
+	}
+
+	public function get_schemas_systems():array
+	{
+		return $this->schemas_systems;
+	}
+
+	public function get_systems_schemas():array
+	{
+		return $this->systems_schemas;
+	}
 }
