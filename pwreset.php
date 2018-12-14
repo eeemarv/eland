@@ -181,6 +181,7 @@ if (isset($_POST['zend']))
 }
 
 $h1 = 'Paswoord vergeten';
+$fa = 'key';
 
 require_once __DIR__ . '/include/header.php';
 
