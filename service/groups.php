@@ -63,35 +63,6 @@ class groups
 			$this->systems_schemas[$system] = $schema;
 			$this->schemas_systems[$schema] = $system;
 		}
-
-/*
-		$schemas_db = $this->db->fetchAll('select schema_name
-			from information_schema.schemata') ?: [];
-
-		$schemas_db = array_map(function($row){
-			return $row['schema_name']; }, $schemas_db);
-
-		foreach ($schemas_db as $s)
-		{
-			$up_s = strtoupper($s);
-			$env = getenv('SCHEMA_' . $up_s);
-			$h = $s;
-			if (!$env && strpos($s, 'lets') === 0)
-			{
-				$h = substr($s, 4);
-				$env = getenv('SCHEMA_' . strtoupper($h));
-			}
-			if (!$env)
-			{
-				continue;
-			}
-
-			$h .= '.' . $this->overall_domain;
-
-			$this->schemas[$h] = $s;
-			$this->hosts[$s] = $h;
-		}
-*/
 	}
 
 	public function get_schemas():array
