@@ -67,6 +67,25 @@ $app['tpl'] = function($app){
     return $tpl;
 };
 
+$app->register(new Silex\Provider\LocaleServiceProvider());
+
+$app->register(new Silex\Provider\TranslationServiceProvider(), [
+    'locale_fallbacks' 	=> ['nl'],
+    'locale'			=> 'nl',
+]);
+
+$app->extend('translator', function($translator, $app) {
+
+	$translator->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+
+	$trans_dir = __DIR__ . '/../translation/';
+
+//	$translator->addResource('yaml', $trans_dir . 'en.yaml', 'en');
+	$translator->addResource('yaml', $trans_dir . 'nl.yaml', 'nl');
+
+	return $translator;
+});
+
 $app->register(new Silex\Provider\MonologServiceProvider(), []);
 
 $app->extend('monolog', function($monolog, $app) {
