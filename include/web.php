@@ -97,6 +97,7 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
 
 /** **/
 
+
 if (!$app['this_group']->get_schema())
 {
 	http_response_code(404);
@@ -104,6 +105,7 @@ if (!$app['this_group']->get_schema())
 	echo $app['twig']->render('404.html.twig');
 	exit;
 }
+
 
 /** user **/
 

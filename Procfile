@@ -1,4 +1,5 @@
-web: vendor/bin/heroku-php-apache2
+test: php -S 0.0.0.0:$PORT
+web: $(composer config bin-dir)/heroku-php-apache2 web/
 worker: php process/worker.php
 log: php process/log.php
 mail: php process/mail.php
