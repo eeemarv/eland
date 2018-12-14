@@ -55,7 +55,7 @@ class groups
 			}
 
 			$system = self::TEMP_ALT[$schema] ?? $schema;
-			$host = $schema . '.' . $this->overall_domain;
+			$host = $system . '.' . $this->overall_domain;
 
 			$this->schemas[$host] = $schema;
 			$this->hosts[$schema] = $host;
