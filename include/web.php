@@ -6,19 +6,6 @@ require_once __DIR__ . '/default.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-$app->register(new Silex\Provider\SessionServiceProvider(), [
-	'session.storage.handler'	=> function ($app) {
-		return new Predis\Session\Handler(
-			$app['predis'],
-			['gc_maxlifetime' => 172800]
-		);
-	},
-	'session.storage.options'	=> [
-		'name'						=> 'eland',
-		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
-	],
-]);
-
 $app['page_access'] = $page_access;
 
 $header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
@@ -26,10 +13,6 @@ $header_allow_origin .= $app['s3_protocol'] . $app['s3_doc'];
 
 header('Cache-Control: private, no-cache');
 header('Access-Control-Allow-Origin: ' . $header_allow_origin);
-
-$app['assets'] = function($app){
-	return new service\assets($app['rootpath']);
-};
 
 $app['assets']->add([
 	'jquery', 'bootstrap', 'fontawesome',
@@ -111,37 +94,6 @@ if ($redirect = getenv('REDIRECT_' . $key_host_env))
 	header('Location: ' . $app['protocol'] . $redirect . $_SERVER['REQUEST_URI']);
 	exit;
 }
-
-/* */
-
-$app['alert'] = function ($app){
-	return new service\alert($app['monolog'], $app['session'],
-		$app['this_group']);
-};
-
-$app['pagination'] = function (){
-	return new service\pagination();
-};
-
-$app['password_strength'] = function ($app){
-	return new service\password_strength();
-};
-
-$app['user'] = function ($app){
-	return new service\user($app['this_group'], $app['monolog'],
-		$app['session'], $app['page_access']);
-};
-
-$app['autominlimit'] = function ($app){
-	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
-		$app['this_group'], $app['config'], $app['user_cache']);
-};
-
-// init
-
-$app['elas_db_upgrade'] = function ($app){
-	return new service\elas_db_upgrade($app['db']);
-};
 
 /** **/
 
@@ -421,13 +373,6 @@ if ($page_access != 'anonymous' && !$s_admin
 
 $app['xdb']->set_user($s_schema, ctype_digit((string) $s_id) ? $s_id : 0);
 
-$app['form_token'] = function ($app){
-	return new service\form_token(
-		$app['predis'],
-		$app['script_name']
-	);
-};
-
 /* view (global for all groups) */
 
 $inline = isset($_GET['inline']) ? true : false;
@@ -519,10 +464,6 @@ if (isset($_GET['welcome']) && $s_guest)
 
 	$app['alert']->info($msg);
 }
-
-$app['access_control'] = function($app){
-	return new service\access_control($app['this_group'], $app['config']);
-};
 
 /**************** FUNCTIONS ***************/
 

@@ -467,6 +467,67 @@ $app['geocode'] = function($app){
 };
 
 /**
+ * web
+ */
+
+$app->register(new Silex\Provider\SessionServiceProvider(), [
+	'session.storage.handler'	=> function ($app) {
+		return new Predis\Session\Handler(
+			$app['predis'],
+			['gc_maxlifetime' => 172800]
+		);
+	},
+	'session.storage.options'	=> [
+		'name'						=> 'eland',
+		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
+	],
+]);
+
+$app['assets'] = function($app){
+	return new service\assets($app['rootpath']);
+};
+
+$app['alert'] = function ($app){
+	return new service\alert($app['monolog'], $app['session'],
+		$app['this_group']);
+};
+
+$app['pagination'] = function (){
+	return new service\pagination();
+};
+
+$app['password_strength'] = function ($app){
+	return new service\password_strength();
+};
+
+$app['user'] = function ($app){
+	return new service\user($app['this_group'], $app['monolog'],
+		$app['session'], $app['page_access']);
+};
+
+$app['autominlimit'] = function ($app){
+	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
+		$app['this_group'], $app['config'], $app['user_cache']);
+};
+
+// init
+
+$app['elas_db_upgrade'] = function ($app){
+	return new service\elas_db_upgrade($app['db']);
+};
+
+$app['form_token'] = function ($app){
+	return new service\form_token(
+		$app['predis'],
+		$app['script_name']
+	);
+};
+
+$app['access_control'] = function($app){
+	return new service\access_control($app['this_group'], $app['config']);
+};
+
+/**
  * functions
  */
 
