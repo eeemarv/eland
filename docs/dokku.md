@@ -123,12 +123,9 @@ The Domain of a request-hosting form can be set with:
 
 ## Redirects
 
-* `REDIRECT_fromdomain=to.domain.net`
+* `APP_REDIRECT={"from.domain.net":"to.domain.net"}`
 
-domain of the hosting form and redirects is formatted the same way as the schema subdomains.
-
-* Dots are replaced by double underscore `__`
-* all characters should be uppercase in the environment variable.
+Permanent redirects can be set JSON format.
 
 ## Other environment vars
 
