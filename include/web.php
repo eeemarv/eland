@@ -85,19 +85,14 @@ if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
 }
 
 /*
- * permanent redirects (in json format)
+ * permanent redirects
  */
 
-if ($app_redirect = getenv('APP_REDIRECT'))
+if ($app_redirect = getenv('APP_REDIRECT_' . $key_host_env))
 {
-	$app_redirect = json_decode($app_redirect, true);
-
-	if (isset($app_redirect[$_SERVER['SERVER_NAME']]))
-	{
-		header('HTTP/1.1 301 Moved Permanently');
-		header('Location: ' . $app['protocol'] . $app_redirect[$_SERVER['SERVER_NAME']] . $_SERVER['REQUEST_URI']);
-		exit;
-	}
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $app['protocol'] . $app_redirect . $_SERVER['REQUEST_URI']);
+	exit;
 }
 
 /** **/

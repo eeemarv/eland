@@ -121,11 +121,12 @@ The Domain of a request-hosting form can be set with:
 
 * `HOSTING_FORM_domain=1`
 
-## Redirects
+## Permanent Redirects
 
-* `APP_REDIRECT={"from.domain.net":"to.domain.net"}`
+* `APP_REDIRECT_FROM__DOMAIN__NET=to.domain.net`
 
-Permanent redirects can be set JSON format.
+Redirects from.domain.net to to.domain.net
+A double underscore in the key represents a dot in the domain.
 
 ## Other environment vars
 
