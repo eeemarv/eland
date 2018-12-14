@@ -25,21 +25,16 @@ class groups
 		'pg_catalog'			=> true,
 	];
 
+	const TEMP_ALT = [
+		'letsdurme'			=> 'durme',
+		'letsdendermonde'	=> 'dendermonde',
+	];
+
 	public function __construct(db $db)
 	{
 		$this->db = $db;
 
 		$this->overall_domain = getenv('OVERALL_DOMAIN');
-
-		$link_system_schema = getenv('APP_LINK_SYSTEM_SCHEMA');
-		$link_system_schema = explode(',', $link_system_schema);
-		$env_schemas_systems = [];
-
-		foreach($link_system_schema as $entry)
-		{
-			[$system, $schema] = explode(':', $entry);
-			$env_schemas_systems[$schema] = $system;
-		}
 
 		$rs = $this->db->prepare('select schema_name
 			from information_schema.schemata');
@@ -59,7 +54,7 @@ class groups
 				continue;
 			}
 
-			$system = $env_schemas_systems[$schema] ?? $schema;
+			$system = self::TEMP_ALT[$schema] ?? $schema;
 			$host = $schema . '.' . $this->overall_domain;
 
 			$this->schemas[$host] = $schema;
