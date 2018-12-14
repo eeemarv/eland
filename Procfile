@@ -1,4 +1,4 @@
-dev: php -S 0.0.0.0:$PORT /web
+dev: php -S 0.0.0.0:$PORT -t /web
 web: vendor/bin/heroku-php-apache2
 worker: php process/worker.php
 log: php process/log.php
