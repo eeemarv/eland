@@ -133,7 +133,7 @@ domain of the hosting form and redirects is formatted the same way as the schema
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
-* `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
+* `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all Systems.
 
 ## Postgres
 

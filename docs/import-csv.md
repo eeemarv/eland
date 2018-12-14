@@ -14,7 +14,7 @@ create schema public;
 alter schema public rename to abc;
 ```
 
-(abc = your letsgroup name; use the same name as the subdomain for convenience.)
+(abc = your System name; use the same name as the subdomain for convenience.)
 
 ## Import users
 
@@ -42,9 +42,9 @@ Check the order of the columns.
 ## Import contacts
 
 The cvs export from eLAS does not contain user ids.
-We have to use the letscode to link the contacts to the users.
+We have to use the letscode (Account Code) to link the contacts to the users.
 
-Add a column to the contact table to store the letscode:
+Add a column to the contact table to store the letscode (Account Code):
 
 ```sql
 alter table abc.contact add column letscode character varying(20) default '';
@@ -101,7 +101,7 @@ When all contact types are present, you can link the contact types:
 update contact c set id_type_contact = tc.id from type_contact tc where c.abbrev = tc.abbrev;
 ```
 
-Afterwards, the letscode and abbrev columns can be removed from the contact table:
+Afterwards, the letscode (Account Code) and abbrev columns can be removed from the contact table:
 
 ```sql
 alter table abc.contact drop column abbrev;
