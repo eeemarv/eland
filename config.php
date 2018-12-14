@@ -99,13 +99,17 @@ $tab_panes = [
 				'addon'	=> $currency,
 				'lbl'	=> 'Minimum Systeemslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Minimum Limiet die geldt voor alle Accounts, behalve voor die Accounts waarbij een Minimum Account Limiet ingesteld is. Kan leeg gelaten worden.',
+				'explain'	=> 'Minimum Limiet die geldt voor alle Accounts,
+					behalve voor die Accounts waarbij een Minimum Account
+					Limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'maxlimit'	=> [
 				'addon'	=> $currency,
 				'lbl'	=> 'Maximum Systeemslimiet',
 				'type'	=> 'number',
-				'explain'	=> 'Maximum Limiet die geldt voor alle Accounts, behalve voor die Accounts waarbij een Maximum Account Limiet ingesteld is. Kan leeg gelaten worden.',
+				'explain'	=> 'Maximum Limiet die geldt voor alle Accounts,
+					behalve voor die Accounts waarbij een Maximum Account
+					Limiet ingesteld is. Kan leeg gelaten worden.',
 			],
 			'preset_minlimit'	=> [
 				'addon'	=> $currency,
