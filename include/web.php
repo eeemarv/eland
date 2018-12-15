@@ -179,7 +179,7 @@ else if (!isset($logins[$s_schema]))
 		redirect_login();
 	}
 }
-else if ($logins[$s_schema] !== $app['s_id'] || !$app['s_id'])
+else if ($logins[$s_schema] != $app['s_id'] || !$app['s_id'])
 {
 	$app['s_id'] = $logins[$s_schema];
 
