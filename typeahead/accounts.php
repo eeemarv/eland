@@ -24,7 +24,7 @@ if ($s_guest && $status !== 'active')
 	exit;
 }
 
-if(!$s_admin && !in_array($status, ['active', 'extern']))
+if(!$app['s_admin'] && !in_array($status, ['active', 'extern']))
 {
 	http_response_code(403);
 	exit;

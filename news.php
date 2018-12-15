@@ -101,8 +101,8 @@ if ($add || $edit)
 
 if ($add && $submit && !count($errors))
 {
-	$news['approved'] = $s_admin ? 't' : 'f';
-	$news['published'] = $s_admin ? 't' : 'f';
+	$news['approved'] = $app['s_admin'] ? 't' : 'f';
+	$news['published'] = $app['s_admin'] ? 't' : 'f';
 	$news['id_user'] = $s_master ? 0 : $app['s_id'];
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
@@ -116,7 +116,7 @@ if ($add && $submit && !count($errors))
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
-		if(!$s_admin)
+		if(!$app['s_admin'])
 		{
 			$vars = [
 				'group'		=> $app['template_vars']->get($app['tschema']),
@@ -401,7 +401,7 @@ require_once __DIR__ . '/include/web.php';
 $show_visibility = ($s_user
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
-	|| $s_admin ? true : false;
+	|| $app['s_admin'];
 
 $news_access_ary = $no_access_ary = [];
 
@@ -418,7 +418,7 @@ foreach ($rows as $row)
 
 $query = 'select * from ' . $app['tschema'] . '.news';
 
-if(!$s_admin)
+if(!$app['s_admin'])
 {
 	$query .= ' where approved = \'t\'';
 }
@@ -467,7 +467,7 @@ if ($id)
 
 	$news_item = $news[$id];
 
-	if (!$s_admin && !$news_item['approved'])
+	if (!$app['s_admin'] && !$news_item['approved'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
@@ -500,7 +500,7 @@ if ($id)
 
 	$top_buttons = '';
 
-	if($s_admin)
+	if($app['s_admin'])
 	{
 		$top_buttons .= aphp('news', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
 		$top_buttons .= aphp('news', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
@@ -565,7 +565,7 @@ if ($id)
 	echo link_user($news_item['id_user'], $app['tschema']);
 	echo '</dd>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<dt>Goedgekeurd</dt>';
 		echo '<dd>';
@@ -602,9 +602,15 @@ $params = [
 	'view'	=> $view,
 ];
 
-if(($s_user || $s_admin) && !$inline)
+if(($s_user || $app['s_admin']) && !$inline)
 {
-	$top_buttons .= aphp('news', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
+	$top_buttons .= aphp('news',
+		['add' => 1],
+		'Toevoegen',
+		'btn btn-success',
+		'Nieuws toevoegen',
+		'plus',
+		true);
 }
 
 if ($inline)
@@ -619,7 +625,7 @@ else
 
 	$v_params = $params;
 
-	$csv_en = $s_admin && $v_list;
+	$csv_en = $app['s_admin'] && $v_list;
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 
@@ -664,7 +670,7 @@ if ($v_list)
 		echo '<tr>';
 		echo '<th>Titel</th>';
 		echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
-		echo $s_admin ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+		echo $app['s_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
 		echo $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
 		echo '</tr>';
 		echo '</thead>';
@@ -684,7 +690,7 @@ if ($v_list)
 
 		echo $app['date_format']->get_td($n['itemdate'], 'day');
 
-		if ($s_admin && !$inline)
+		if ($app['s_admin'] && !$inline)
 		{
 			echo '<td>';
 			echo $n['approved'] ? 'Ja' : 'Nee';
@@ -766,7 +772,7 @@ else if ($v_extended)
 		echo '<p><i class="fa fa-user"></i> ';
 		echo link_user($n['id_user'], $app['tschema']);
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 			if (!$n['approved'])

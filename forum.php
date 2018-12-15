@@ -12,7 +12,7 @@ $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
 $submit = isset($_POST['zend']) ? true : false;
 
-if (!($s_user || $s_admin))
+if (!($s_user || $app['s_admin']))
 {
 	if ($del)
 	{
@@ -61,7 +61,7 @@ if ($del || $edit)
 		&& $app['s_group_self']
 		&& !$s_guest;
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$str = ($forum_post['parent_id']) ? 'deze reactie' : 'dit onderwerp';
 
@@ -339,7 +339,7 @@ if ($topic)
 	$show_visibility = ($s_user
 		&& $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']))
-		|| $s_admin ? true : false;
+		|| $app['s_admin'] ? true : false;
 
 	$forum_posts = [];
 
@@ -408,7 +408,7 @@ if ($topic)
 
 	$next = count($rows) ? reset($rows)['eland_id'] : false;
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('forum', ['edit' => $topic], 'Onderwerp aanpassen', 'btn btn-primary', 'Onderwerp aanpassen', 'pencil', true);
 		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
@@ -461,7 +461,7 @@ if ($topic)
 		echo ' @' . $app['date_format']->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
-		if ($s_admin || $s_owner)
+		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
 			echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
@@ -475,7 +475,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	if ($s_user || $s_admin)
+	if ($s_user || $app['s_admin'])
 	{
 		echo '<h3>Reactie toevoegen</h3>';
 
@@ -537,17 +537,17 @@ if (count($rows))
 	}
 }
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $s_user)
 {
 	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
 }
 
-$csv_en = $s_admin;
+$csv_en = $app['s_admin'];
 
 $show_visibility = (!$s_guest
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
-	|| $s_admin ? true : false;
+	|| $app['s_admin'];
 
 $h1 = 'Forum';
 

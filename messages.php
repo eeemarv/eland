@@ -44,7 +44,7 @@ if (!$post)
 /*
  * bulk actions (set access or validity)
  */
-if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_admin || $s_user))
+if ($app['is_http_post'] && (($extend_submit && $extend) || ($access_submit && $access)) & ($app['s_admin'] || $s_user))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -72,7 +72,7 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 
 	foreach ($rows as $row)
 	{
-		if (!$s_admin
+		if (!$app['s_admin']
 			&& $s_user
 			&& ($row['id_user'] !== $app['s_id']))
 		{
@@ -211,7 +211,7 @@ if ($id || $edit || $del)
 
 if ($id && $extend)
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
 		cancel($id);
@@ -244,7 +244,7 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
 
 	if ($id)
 	{
-		if (!$s_owner && !$s_admin)
+		if (!$s_owner && !$app['s_admin'])
 		{
 			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
 		}
@@ -401,7 +401,7 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
 
 if ($img_del == 'all' && $id && $post)
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
@@ -432,7 +432,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 		&& $msg['id_user'] === $app['s_id']
 		&& $msg['id_user'];
 
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		echo json_encode(['error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.']);
 		exit;
@@ -450,7 +450,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 
 if ($img_del == 'all' && $id)
 {
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
 		cancel($id);
@@ -483,7 +483,7 @@ if ($img_del == 'all' && $id)
 
 	include __DIR__ . '/include/header.php';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo 'Gebruiker: ';
 		echo link_user($message['id_user'], $app['tschema']);
@@ -547,7 +547,7 @@ if ($mail && $app['is_http_post'] && $id)
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
-	if (!$s_admin && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
@@ -627,7 +627,7 @@ if ($mail && $app['is_http_post'] && $id)
  */
 if ($del)
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
 		cancel($del);
@@ -729,13 +729,13 @@ if ($del)
  */
 if (($edit || $add))
 {
-	if (!($s_admin || $s_user) && $add)
+	if (!($app['s_admin'] || $s_user) && $add)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
 		cancel();
 	}
 
-	if (!($s_admin || $s_owner) && $edit)
+	if (!($app['s_admin'] || $s_owner) && $edit)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
 		cancel($edit);
@@ -753,7 +753,7 @@ if (($edit || $add))
 		$vtime = time() + ((int) $validity * 86400);
 		$vtime =  gmdate('Y-m-d H:i:s', $vtime);
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
@@ -773,7 +773,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> $s_admin ? (int) $user['id'] : (($s_master) ? 0 : $app['s_id']),
+			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($s_master) ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -1144,7 +1144,7 @@ if (($edit || $add))
 			'local'			=> 0,
 		];
 
-		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : (($s_master) ? 0 : $app['s_id']);
+		$uid = (isset($_GET['uid']) && $app['s_admin']) ? $_GET['uid'] : (($s_master) ? 0 : $app['s_id']);
 
 		if ($s_master)
 		{
@@ -1176,7 +1176,7 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
@@ -1193,7 +1193,7 @@ if (($edit || $add))
 
 	echo '<form method="post">';
 
-	if($s_admin)
+	if($app['s_admin'])
 	{
 		echo '<div class="form-group">';
 		echo '<label for="user_letscode" class="control-label">';
@@ -1466,21 +1466,21 @@ if ($id)
 
 	$app['assets']->add(['leaflet', 'jssor', 'msg.js']);
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$app['assets']->add(['fileupload', 'msg_img.js']);
 	}
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
 		$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($s_admin || (!$s_owner
-		&& $user['status'] != 7
-		&& !($s_guest && $app['s_group_self']))))
+		&& ($app['s_admin'] || (!$s_owner
+			&& $user['status'] != 7
+			&& !($s_guest && $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1540,7 +1540,7 @@ if ($id)
 
 	echo '</div>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
@@ -1616,7 +1616,7 @@ if ($id)
 	echo '<dt>Geldig tot</dt>';
 	echo '<dd>' . $app['date_format']->get($message['validity'], 'day') . '</dd>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<dt>Verlengen</dt>';
 		echo '<dd>' . aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
@@ -2067,7 +2067,7 @@ while ($row = $st->fetch())
 	$cat_params[$row['id']]['view'] = $view_messages;
 }
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $s_user)
 {
 	if (!$inline)
 	{
@@ -2076,7 +2076,7 @@ if ($s_admin || $s_user)
 
 	if ($uid)
 	{
-		if ($s_admin && !$s_owner)
+		if ($app['s_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
 			$str .= link_user($uid, $app['tschema'], false);
@@ -2382,7 +2382,7 @@ if ($v_list)
 
 		echo '<td>';
 
-		if (!$inline && ($s_admin || $s_owner))
+		if (!$inline && ($app['s_admin'] || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
@@ -2487,7 +2487,7 @@ else if ($v_extended)
 		echo link_user($msg['id_user'], $app['tschema']);
 		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
-		if ($s_admin || $sf_owner)
+		if ($app['s_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 			echo aphp('messages', ['edit' => $msg['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
@@ -2512,7 +2512,7 @@ if ($inline)
 }
 else if ($v_list)
 {
-	if (($s_admin || $s_owner) && count($messages))
+	if (($app['s_admin'] || $s_owner) && count($messages))
 	{
 		$extend_options = [
 			'7'		=> '1 week',

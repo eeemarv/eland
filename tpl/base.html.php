@@ -29,14 +29,14 @@ echo '</head>';
 echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
 echo '" class="';
-echo $s_admin ? 'admin' : ($s_guest ? 'guest' : 'member');
+echo $app['s_admin'] ? 'admin' : ($s_guest ? 'guest' : 'member');
 echo '">';
 
 echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
 echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
-echo $s_admin ? ' bg-info' : '';
+echo $app['s_admin'] ? ' bg-info' : '';
 echo $s_guest ? ' bg-warning' : '';
 echo '">';
 echo '<div class="container-fluid">';
@@ -227,7 +227,7 @@ if (!$app['s_anonymous'])
 	echo '</ul>';
 	echo '</li>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$menu = [
 			'status'			=> ['exclamation-triangle', 'Status'],
@@ -358,7 +358,7 @@ else
 {
 	$menu = [
 		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
-		'users'			=> ['users', $s_admin ? 'Gebruikers' : 'Leden', ['status' => 'active', 'view' => $view_users]],
+		'users'			=> ['users', $app['s_admin'] ? 'Gebruikers' : 'Leden', ['status' => 'active', 'view' => $view_users]],
 		'transactions'	=> ['exchange', 'Transacties', []],
 		'news'			=> ['calendar-o', 'Nieuws', ['view' => $view_news]],
 	];
@@ -370,7 +370,7 @@ else
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}
 
-	if ($s_user || $s_admin)
+	if ($s_user || $app['s_admin'])
 	{
 		$menu['support'] = ['ambulance', 'Probleem melden', []];
 	}

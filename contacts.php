@@ -46,7 +46,7 @@ if ($del)
 		&& $user_id === $app['s_id']
 		&& $user_id;
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je hebt geen rechten om het contact te verwijderen.');
 		cancel($uid);
@@ -192,7 +192,7 @@ if ($edit || $add)
 		&& $user_id == $app['s_id']
 		&& $user_id;
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$err = $edit ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
 		$app['alert']->error('Je hebt geen rechten om ' . $err);
@@ -206,7 +206,7 @@ if ($edit || $add)
 			$errors[] = $error_token;
 		}
 
-		if ($s_admin && $add && !$uid)
+		if ($app['s_admin'] && $add && !$uid)
 		{
 			$letscode = $_POST['letscode'];
 			[$letscode] = explode(' ', trim($letscode));
@@ -307,7 +307,7 @@ if ($edit || $add)
 					and u.id <> ?
 					and c.value = ?', array($user_id, $contact['value']));
 
-			if ($mail_count && $s_admin)
+			if ($mail_count && $app['s_admin'])
 			{
 				$warning = 'Omdat deze gebruikers niet meer ';
 				$warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -412,7 +412,7 @@ if ($edit || $add)
 		$contact['id_type_contact'] = $row['id'];
 	}
 
-	if ($s_admin && $add && !$uid)
+	if ($app['s_admin'] && $add && !$uid)
 	{
 		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
@@ -448,7 +448,7 @@ if ($edit || $add)
 	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
 
 	$h1 = $edit ? 'Contact aanpassen' : 'Contact toevoegen';
-	if (!(($s_owner && !$s_admin) || ($s_admin && $add && !$uid)))
+	if (!(($s_owner && !$app['s_admin']) || ($app['s_admin'] && $add && !$uid)))
 	{
 		$h1 .=  ' voor ' . link_user($user_id, $app['tschema']);
 	}
@@ -460,7 +460,7 @@ if ($edit || $add)
 
 	echo '<form method="post">';
 
-	if ($s_admin && $add && !$uid)
+	if ($app['s_admin'] && $add && !$uid)
 	{
 		$typeahead_ary = [];
 
@@ -607,7 +607,7 @@ if ($uid)
 
 	$user = $app['user_cache']->get($uid, $app['tschema']);
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 	}
@@ -662,7 +662,7 @@ if ($uid)
 	echo '<th>Waarde</th>';
 	echo '<th data-hide="phone, tablet">Commentaar</th>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 		echo '<th data-sort-ignore="true" ';
@@ -688,7 +688,7 @@ if ($uid)
 			echo '<td><span class="btn btn-default btn-xs">';
 			echo 'verborgen</span></td>';
 		}
-		else if ($s_owner || $s_admin)
+		else if ($s_owner || $app['s_admin'])
 		{
 			echo '<td>';
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
@@ -743,7 +743,7 @@ if ($uid)
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 
-		if ($s_admin || $s_owner)
+		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
 
@@ -787,7 +787,7 @@ if ($uid)
  *
  */
 
-if (!$s_admin)
+if (!$app['s_admin'])
 {
 	$app['alert']->error('Je hebt geen toegang tot deze pagina.');
 	redirect_default_page();

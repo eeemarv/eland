@@ -320,10 +320,10 @@ switch ($app['s_accountrole'])
 
 $access_level = $access_ary[$app['s_accountrole']];
 
-$app['s_admin'] = $s_admin = $app['s_accountrole'] === 'admin';
+$app['s_admin'] = $app['s_accountrole'] === 'admin';
 $s_user = $app['s_accountrole'] === 'user';
 $s_guest = $app['s_accountrole'] === 'guest';
-$app['s_anonymous'] = !($s_admin || $s_user || $s_guest);
+$app['s_anonymous'] = !($app['s_admin'] || $s_user || $s_guest);
 
 $errors = [];
 
@@ -359,7 +359,7 @@ if ($page_access != 'anonymous'
 	exit;
 }
 
-if ($page_access != 'anonymous' && !$s_admin
+if ($page_access != 'anonymous' && !$app['s_admin']
 	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');

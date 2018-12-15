@@ -15,7 +15,7 @@ $add = isset($_GET['add']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
-if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] || $map_edit) & !$s_admin)
+if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] || $map_edit) & !$app['s_admin'])
 {
 	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
@@ -720,7 +720,7 @@ if (!$map)
 	}
 }
 
-if ($s_admin)
+if ($app['s_admin'])
 {
 	$add_buttom_params = ['add' => 1];
 
@@ -737,7 +737,7 @@ if ($s_admin)
 	}
 }
 
-$csv_en = $s_admin;
+$csv_en = $app['s_admin'];
 
 $h1 = aphp('docs', [], 'Documenten');
 $h1 .= $map ? ': map "' . $map_name . '"' : '';
@@ -777,7 +777,7 @@ if (!$map && count($maps))
 
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Map</th>';
-	echo ($s_admin) ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
+	echo $app['s_admin'] ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
 	echo '</tr>';
 
 	echo '</thead>';
@@ -794,7 +794,7 @@ if (!$map && count($maps))
 			echo aphp('docs', ['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
 			echo '</td>';
 
-			if ($s_admin)
+			if ($app['s_admin'])
 			{
 				echo '<td>';
 				echo aphp('docs', ['map_edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
@@ -817,7 +817,7 @@ if (count($docs))
 	$show_visibility = ($s_user
 		&& $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']))
-		|| $s_admin ? true : false;
+		|| $app['s_admin'] ? true : false;
 
 	echo '<div class="panel panel-default printview">';
 
@@ -839,7 +839,7 @@ if (count($docs))
 		echo 'Zichtbaarheid</th>';
 	}
 
-	echo $s_admin ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+	echo $app['s_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 	echo '</tr>';
 
 	echo '</thead>';
@@ -863,7 +863,7 @@ if (count($docs))
 			echo '<td>' . $app['access_control']->get_label($d['access']) . '</td>';
 		}
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			echo '<td>';
 			echo aphp('docs', ['edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');

@@ -172,7 +172,7 @@ if ($add)
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}
 
-		if (!$s_admin && !count($errors))
+		if (!$app['s_admin'] && !count($errors))
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
@@ -205,7 +205,7 @@ if ($add)
 			$errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
 		}
 
-		if (!$s_admin && !count($errors))
+		if (!$app['s_admin'] && !count($errors))
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
@@ -238,7 +238,7 @@ if ($add)
 		}
 
 		if($group_id == 'self'
-			&& !$s_admin
+			&& !$app['s_admin']
 			&& !($touser['status'] == '1' || $touser['status'] == '2')
 			&& !count($errors))
 		{
@@ -276,7 +276,7 @@ if ($add)
 			$errors[] = $error_token;
 		}
 
-		$contact_admin = $s_admin ? '' : ' Contacteer een admin.';
+		$contact_admin = $app['s_admin'] ? '' : ' Contacteer een admin.';
 
 		if (isset($group['url']))
 		{
@@ -768,7 +768,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = $s_admin || $s_master ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
+		$transaction['letscode_from'] = $app['s_admin'] || $s_master ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
 	}
 	else
 	{
@@ -852,7 +852,7 @@ if ($add)
 
 				if ($app['s_id'] === $row['id_user'])
 				{
-					if ($s_admin)
+					if ($app['s_admin'])
 					{
 						$transaction['letscode_from'] = '';
 					}
@@ -869,14 +869,14 @@ if ($add)
 		{
 			$to_user = $app['user_cache']->get($tuid, $app['tschema']);
 
-			if (in_array($to_user['status'], [1, 2]) || $s_admin)
+			if (in_array($to_user['status'], [1, 2]) || $app['s_admin'])
 			{
 				$transaction['letscode_to'] = link_user($tuid, $app['tschema'], false);
 			}
 
 			if ($tuid === $app['s_id'])
 			{
-				if ($s_admin)
+				if ($app['s_admin'])
 				{
 					$transaction['letscode_from'] = '';
 				}
@@ -960,7 +960,7 @@ if ($add)
 	echo '<form  method="post" autocomplete="off">';
 
 	echo '<div class="form-group"';
-	echo $s_admin ? '' : ' disabled" ';
+	echo $app['s_admin'] ? '' : ' disabled" ';
 	echo '>';
 	echo '<label for="letscode_from" class="control-label">';
 	echo 'Van Account Code';
@@ -977,7 +977,7 @@ if ($add)
 	echo 'value="';
 	echo $transaction['letscode_from'];
 	echo '" required';
-	echo $s_admin ? '' : ' disabled';
+	echo $app['s_admin'] ? '' : ' disabled';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -1007,7 +1007,7 @@ if ($add)
 
 				$typeahead_ary = [];
 
-				if ($s_admin)
+				if ($app['s_admin'])
 				{
 					$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 				}
@@ -1085,7 +1085,7 @@ if ($add)
 	{
 		$typeahead_ary = [];
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 		}
@@ -1182,7 +1182,7 @@ if ($add)
 	echo 'Systeem zich niet op dezelfde ';
 	echo 'eLAND-server bevindt.</li>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<li id="info_admin_limit">';
 		echo 'Admins kunnen over en onder limieten gaan';
@@ -1303,7 +1303,7 @@ if ($id || $edit)
 
 if ($edit)
 {
-	if (!$s_admin)
+	if (!$app['s_admin'])
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
 		cancel($edit);
@@ -1387,7 +1387,7 @@ if ($edit)
 	{
 		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
@@ -1420,7 +1420,7 @@ if ($edit)
 	{
 		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
@@ -1514,7 +1514,7 @@ if ($id)
 		order by id desc
 		limit 1', [$id]);
 
-	if ($s_admin && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
+	if ($app['s_admin'] && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
 	{
 		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);
 	}
@@ -1560,7 +1560,7 @@ if ($id)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
@@ -1595,7 +1595,7 @@ if ($id)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
@@ -1740,7 +1740,7 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+			echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 			echo ')';
 		}
 
@@ -1765,7 +1765,7 @@ if ($id)
 			echo 'Het interSysteem Account van het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+			echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 			echo ')';
 		}
 		else
@@ -2080,7 +2080,7 @@ else
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $s_user)
 {
 	if ($uid)
 	{
@@ -2092,12 +2092,12 @@ if ($s_admin || $s_user)
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1], 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 			}
-			else if ($s_admin)
+			else if ($app['s_admin'])
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1, 'fuid' => $uid], 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
 			}
 
-			if ($s_admin || ($s_user && !$s_owner))
+			if ($app['s_admin'] || ($s_user && !$s_owner))
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1, 'tuid' => $uid], 'Transactie naar ' . $user_str, 'btn btn-warning', 'Transactie naar ' . $user_str, 'exchange', true);
 			}
@@ -2114,7 +2114,7 @@ if ($s_admin || $s_user)
 	}
 }
 
-$csv_en = $s_admin;
+$csv_en = $app['s_admin'];
 
 $filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
 
@@ -2188,7 +2188,7 @@ if (!$inline)
 	{
 		$typeahead_status_ary = ['active', 'extern'];
 	}
-	else if ($s_admin)
+	else if ($app['s_admin'])
 	{
 		$typeahead_status_ary = ['active', 'extern',
 			'inactive', 'im', 'ip'];

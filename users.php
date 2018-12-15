@@ -35,7 +35,7 @@ require_once __DIR__ . '/include/web.php';
  */
 $bulk_field_submit = $bulk_submit = false;
 
-if ($s_admin)
+if ($app['s_admin'])
 {
 	$edit_fields_tabs = [
 		'fullname_access'	=> [
@@ -112,14 +112,14 @@ if ($s_admin)
  * mail to user
  */
 
-if ($user_mail_submit && $id && $post)
+if ($user_mail_submit && $id && $app['is_http_post'])
 {
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
 	$user_mail_cc = $_POST['user_mail_cc'] ?? false;
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
-	if (!$s_admin && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten
 			om een E-mail bericht naar een niet-actieve
@@ -203,7 +203,7 @@ if ($app['is_http_post'] && $img && $id )
 		&& $app['s_id'] === $id
 		&& $id;
 
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		echo json_encode(['error' => 'Je hebt onvoldoende rechten voor deze actie.']);
 		exit;
@@ -321,7 +321,7 @@ if ($img_del && $id)
 		&& $app['s_id'] === $id
 		&& $id;
 
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
 		cancel($id);
@@ -355,7 +355,7 @@ if ($img_del && $id)
 
 	$h1 = 'Profielfoto ';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$h1 .= 'van ' . link_user($id, $app['tschema']) . ' ';
 	}
@@ -397,7 +397,7 @@ if ($img_del && $id)
  * bulk actions
  */
 
-if ($bulk_submit && $app['is_http_post'] && $s_admin)
+if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
 {
 	$verify = ($bulk_mail_submit || $bulk_mail_test) ? 'verify_mail' : 'verify_' . $bulk_field;
 	$verify = isset($_POST[$verify]) ? true : false;
@@ -475,7 +475,7 @@ if ($bulk_submit && $app['is_http_post'] && $s_admin)
  * bulk action: change a field for multiple users
  */
 
-if ($s_admin && !count($errors) && $bulk_field_submit && $post)
+if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $post)
 {
 	$users_log = '';
 
@@ -609,7 +609,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
  * bulk action: mail
  */
 
-if ($s_admin)
+if ($app['s_admin'])
 {
 	$map_template_vars = [
 		'naam' 					=> 'name',
@@ -621,7 +621,7 @@ if ($s_admin)
 	];
 }
 
-if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
+if ($app['s_admin'] && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
 {
 	if ($bulk_mail_test)
 	{
@@ -777,7 +777,7 @@ if ($pw)
 		&& $pw === $app['s_id']
 		&& $pw;
 
-	if (!$s_admin && !$s_owner)
+	if (!$app['s_admin'] && !$s_owner)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om het
 			paswoord aan te passen voor deze gebruiker.');
@@ -793,7 +793,7 @@ if ($pw)
 			$errors[] = 'Vul paswoord in!';
 		}
 
-		if (!$s_admin && $app['password_strength']->get($password) < 50)
+		if (!$app['s_admin'] && $app['password_strength']->get($password) < 50)
 		{
 			$errors[] = 'Te zwak paswoord.';
 		}
@@ -931,7 +931,7 @@ if ($pw)
 
 if ($del)
 {
-	if (!$s_admin)
+	if (!$app['s_admin'])
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten
 			om een gebruiker te verwijderen.');
@@ -1156,7 +1156,7 @@ if ($del)
 
 if ($add || $edit)
 {
-	if ($add && !$s_admin)
+	if ($add && !$app['s_admin'])
 	{
 		$app['alert']->error('Je hebt geen rechten om
 			een gebruiker toe te voegen.');
@@ -1169,14 +1169,14 @@ if ($add || $edit)
 		&& $app['s_id']
 		&& $edit === $app['s_id'];
 
-	if ($edit && !$s_admin && !$s_owner)
+	if ($edit && !$app['s_admin'] && !$s_owner)
 	{
 		$app['alert']->error('Je hebt geen rechten om
 			deze gebruiker aan te passen.');
 		cancel($edit);
 	}
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$username_edit = $fullname_edit = true;
 	}
@@ -1201,7 +1201,7 @@ if ($add || $edit)
 			'lang'			=> 'nl'
 		];
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			// hack eLAS compatibility (in eLAND limits can be null)
 			$minlimit = trim($_POST['minlimit']);
@@ -1400,7 +1400,7 @@ if ($add || $edit)
 			}
 		}
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			if (!$user['letscode'])
 			{
@@ -1469,7 +1469,7 @@ if ($add || $edit)
 				maximaal 500 tekens lang zijn.';
 		}
 
-		if ($s_admin && !$user_prefetch['adate'] && $user['status'] == 1)
+		if ($app['s_admin'] && !$user_prefetch['adate'] && $user['status'] == 1)
 		{
 			if (!$password)
 			{
@@ -1632,7 +1632,7 @@ if ($add || $edit)
 
 					$app['alert']->success('Gebruiker aangepast.');
 
-					if ($s_admin)
+					if ($app['s_admin'])
 					{
 						$stored_contacts = [];
 
@@ -1775,7 +1775,7 @@ if ($add || $edit)
 			$fullname_access = $user['fullname_access'];
 		}
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			$contact = $app['db']->fetchAll('select name, abbrev,
 				\'\' as value, 0 as id
@@ -1783,7 +1783,7 @@ if ($add || $edit)
 				where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 		}
 
-		if ($edit && $s_admin)
+		if ($edit && $app['s_admin'])
 		{
 			$contact_keys = [];
 
@@ -1813,7 +1813,7 @@ if ($add || $edit)
 				$contact[] = $row;
 			}
 		}
-		else if ($s_admin)
+		else if ($app['s_admin'])
 		{
 			$user = [
 				'minlimit'		=> $app['config']->get('preset_minlimit', $app['tschema']),
@@ -1891,7 +1891,7 @@ if ($add || $edit)
 
 	$h1 = 'Gebruiker ';
 	$h1 .= $edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen';
-	$h1 = ($s_owner && !$s_admin && $edit) ? 'Je profiel aanpassen' : $h1;
+	$h1 = ($s_owner && !$app['s_admin'] && $edit) ? 'Je profiel aanpassen' : $h1;
 	$fa = 'user';
 
 	include __DIR__ . '/include/header.php';
@@ -1901,7 +1901,7 @@ if ($add || $edit)
 
 	echo '<form method="post">';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="control-label">';
@@ -2081,7 +2081,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<div class="form-group">';
 		echo '<label for="accountrole" class="control-label">';
@@ -2126,7 +2126,7 @@ if ($add || $edit)
 		echo '</div>';
 		echo '</div>';
 
-		if (empty($user['adate']) && $s_admin)
+		if (empty($user['adate']) && $app['s_admin'])
 		{
 			echo '<div id="activate" class="bg-success pan-sub">';
 
@@ -2443,7 +2443,7 @@ if ($add || $edit)
 
 $st = [
 	'active'	=> [
-		'lbl'	=> $s_admin ? 'Actief' : 'Alle',
+		'lbl'	=> $app['s_admin'] ? 'Actief' : 'Alle',
 		'sql'	=> 'u.status in (1, 2)',
 		'st'	=> [1, 2],
 	],
@@ -2462,7 +2462,7 @@ $st = [
 	],
 ];
 
-if ($s_admin)
+if ($app['s_admin'])
 {
 	$st = $st + [
 		'inactive'	=> [
@@ -2520,13 +2520,13 @@ if ($id)
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
-	if (!$s_admin && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
 		cancel();
 	}
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$count_transactions = $app['db']->fetchColumn('select count(*)
 			from ' . $app['tschema'] . '.transactions
@@ -2550,7 +2550,7 @@ if ($id)
 	}
 	else
 	{
-		$and_status = ($s_admin) ? '' : ' and u.status in (1, 2) ';
+		$and_status = $app['s_admin'] ? '' : ' and u.status in (1, 2) ';
 	}
 
 	$next = $app['db']->fetchColumn('select id
@@ -2569,7 +2569,7 @@ if ($id)
 
 	$interlets_group_missing = false;
 
-	if ($s_admin && $user['accountrole'] === 'interlets'
+	if ($app['s_admin'] && $user['accountrole'] === 'interlets'
 		&& $app['config']->get('interlets_en', $app['tschema'])
 		&& $app['config']->get('template_lets', $app['tschema']))
 	{
@@ -2589,24 +2589,24 @@ if ($id)
 
 	$app['assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$app['assets']->add(['fileupload', 'user_img.js']);
 	}
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
-		$title = ($s_admin) ? 'Gebruiker' : 'Mijn gegevens';
+		$title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
 		$top_buttons .= aphp('users', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
 		$top_buttons .= aphp('users', ['pw' => $id], 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
 	}
 
-	if ($s_admin && !$count_transactions && !$s_owner)
+	if ($app['s_admin'] && !$count_transactions && !$s_owner)
 	{
 		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
 	}
 
-	if ($s_admin
+	if ($app['s_admin']
 		|| (!$s_owner && $user['status'] !== 7
 			&& !($s_guest && $app['s_group_self'])))
 	{
@@ -2664,7 +2664,7 @@ if ($id)
 	$h_status_ary = $status_ary;
 	$h_status_ary[3] = 'Instapper';
 
-	$h1 = $s_owner && !$s_admin ? 'Mijn gegevens: ' : '';
+	$h1 = $s_owner && !$app['s_admin'] ? 'Mijn gegevens: ' : '';
 	$h1 .= link_user($user, $app['tschema']);
 
 	if ($status != 1)
@@ -2673,7 +2673,7 @@ if ($id)
 		$h1 .= $h_status_ary[$status] . '</span></small>';
 	}
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		if ($interlets_group_missing)
 		{
@@ -2721,7 +2721,7 @@ if ($id)
 
 	echo '</div>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$attr = ['id'	=> 'btn_remove'];
 		if (!$user['PictureFile'])
@@ -2772,7 +2772,7 @@ if ($id)
 	echo 'Volledige naam';
 	echo '</dt>';
 
-	if ($s_admin || $s_owner || $app['access_control']->is_visible($fullname_access))
+	if ($app['s_admin'] || $s_owner || $app['access_control']->is_visible($fullname_access))
 	{
 		echo get_dd($user['fullname'] ?? '');
 	}
@@ -2783,7 +2783,7 @@ if ($id)
 		echo '</dd>';
 	}
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<dt>Zichtbaarheid Volledige Naam</dt>';
 		echo '<dd>';
@@ -2796,7 +2796,7 @@ if ($id)
 	echo '</dt>';
 	echo get_dd($user['postcode'] ?? '');
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<dt>';
 		echo 'Geboortedatum';
@@ -2821,7 +2821,7 @@ if ($id)
 	echo '</dt>';
 	echo get_dd($user['comments'] ?? '');
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<dt>';
 		echo 'Tijdstip aanmaak';
@@ -2908,7 +2908,7 @@ if ($id)
 		echo '</dd>';
 	}
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<dt>';
 		echo 'Periodieke Overzichts E-mail';
@@ -3096,7 +3096,7 @@ if ($v_list)
 		],
 	];
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$columns['u'] += [
 			'admincomment'	=> 'Admin commentaar',
@@ -3159,7 +3159,7 @@ if ($v_list)
 	}
 	else
 	{
-		if ($s_admin || $s_guest)
+		if ($app['s_admin'] || $s_guest)
 		{
 			$preset_columns = [
 				'u'	=> [
@@ -3224,7 +3224,7 @@ if ($v_list)
 		],
 	];
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$columns['u'] += [
 			'admincomment'	=> 'Admin commentaar',
@@ -3560,7 +3560,7 @@ else
 	}
 }
 
-if ($s_admin)
+if ($app['s_admin'])
 {
 	$csv_en = $v_list;
 
@@ -3614,7 +3614,7 @@ if ($v_list)
 	$app['assets']->add(['calc_sum.js', 'users_distance.js',
 		'datepicker', 'typeahead', 'typeahead.js']);
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$app['assets']->add(['summernote',
 			'table_sel.js', 'rich_edit.js']);
@@ -3712,7 +3712,7 @@ if ($v_map)
 
 		echo $hidden_count + $not_present_count + $not_geocoded_count;
 		echo ' ';
-		echo $s_admin ? 'gebruikers' : 'leden';
+		echo $app['s_admin'] ? 'gebruikers' : 'leden';
 		echo ' worden niet getoond in de kaart wegens: ';
 		echo '<ul>';
 		echo $hidden_count ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
@@ -3809,7 +3809,7 @@ if ($v_list)
 			{
 				$typeahead_status_ary = ['active', 'extern'];
 			}
-			else if ($s_admin)
+			else if ($app['s_admin'])
 			{
 				$typeahead_status_ary = ['active', 'extern',
 					'inactive', 'im', 'ip'];
@@ -4013,7 +4013,7 @@ if ($v_list)
 	echo 'data-filtering="true" data-filter-delay="0" ';
 	echo 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
 	echo 'data-empty="Er zijn geen ';
-	echo $s_admin ? 'gebruikers' : 'leden';
+	echo $app['s_admin'] ? 'gebruikers' : 'leden';
 	echo ' volgens de selectiecriteria" ';
 	echo 'data-sorting="true" ';
 	echo 'data-filter-placeholder="Zoeken" ';
@@ -4153,7 +4153,7 @@ if ($v_list)
 				echo isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
 				echo '>';
 
-				echo $s_admin && $first ? sprintf($checkbox, $id, isset($selected_users[$id]) ? ' checked="checked"' : '') : '';
+				echo $app['s_admin'] && $first ? sprintf($checkbox, $id, isset($selected_users[$id]) ? ' checked="checked"' : '') : '';
 				$first = false;
 
 				if (isset($link_user_keys[$key]))
@@ -4166,7 +4166,7 @@ if ($v_list)
 				}
 				else if ($key === 'fullname')
 				{
-					if ($s_admin || $u['fullname_access'] === 'interlets')
+					if ($app['s_admin'] || $u['fullname_access'] === 'interlets')
 					{
 						echo link_user($u, $app['tschema'], $status, false, $fullname);
 					}
@@ -4314,7 +4314,7 @@ if ($v_list)
 	echo '</span></p>';
 	echo '</div></div>';
 
-	if ($s_admin & isset($show_columns['u']))
+	if ($app['s_admin'] & isset($show_columns['u']))
 	{
 		$bulk_mail_cc = $app['is_http_post'] ? $bulk_mail_cc : true;
 
@@ -4530,13 +4530,14 @@ else if ($v_extended)
 		echo link_user($msg['id_user'], $app['tschema'], $status);
 		echo $msg['postcode'] ? ', postcode: ' . $u['postcode'] : '';
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			echo '<span class="inline-buttons pull-right">';
 			echo aphp('users', ['edit' => $u['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
 			echo aphp('users', ['del' => $u['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 			echo '</span>';
 		}
+
 		echo '</p>';
 		echo '</div>';
 
