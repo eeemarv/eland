@@ -140,9 +140,9 @@ if (!$s_id)
 
 			unset($get['u'], $get['s'], $get['r']);
 
-			$session_user = $app['user_cache']->get($s_id, $s_schema);
+			$app['session_user'] = $app['user_cache']->get($s_id, $s_schema);
 
-			$get['r'] = $session_user['accountrole'];
+			$get['r'] = $app['session_user']['accountrole'];
 			$get['u'] = $s_id;
 
 			if (!$s_group_self)
@@ -181,9 +181,9 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 
 		unset($get['u'], $get['s'], $get['r']);
 
-		$session_user = $app['user_cache']->get($s_id, $s_schema);
+		$app['session_user'] = $app['user_cache']->get($s_id, $s_schema);
 
-		$get['r'] = $session_user['accountrole'];
+		$get['r'] = $app['session_user']['accountrole'];
 		$get['u'] = $s_id;
 
 		if (!$s_group_self)
@@ -200,24 +200,24 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 }
 else if (ctype_digit((string) $s_id))
 {
-	$session_user = $app['user_cache']->get($s_id, $s_schema);
+	$app['session_user'] = $app['user_cache']->get($s_id, $s_schema);
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
 		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=';
-		$location .= $session_user['accountrole'] . '&u=' . $s_id;
+		$location .= $app['session_user']['accountrole'] . '&u=' . $s_id;
 		header('Location: ' . $location);
 		exit;
 	}
 
-	if ($access_ary[$session_user['accountrole']] > $access_ary[$s_accountrole])
+	if ($access_ary[$app['session_user']['accountrole']] > $access_ary[$s_accountrole])
 	{
-		$s_accountrole = $session_user['accountrole'];
+		$s_accountrole = $app['session_user']['accountrole'];
 
 		redirect_default_page();
 	}
 
-	if (!($session_user['status'] == 1 || $session_user['status'] == 2))
+	if (!($app['session_user']['status'] == 1 || $app['session_user']['status'] == 2))
 	{
 		$app['session']->invalidate();
 		redirect_login();
@@ -404,7 +404,7 @@ if ($view || $inline)
 
 if (!$s_anonymous)
 {
-	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
+	if ($s_master || $app['session_user']['accountrole'] == 'admin' || $app['session_user']['accountrole'] == 'user')
 	{
 		if (isset($logins[$app['tschema']]) && $s_group_self)
 		{
@@ -424,7 +424,7 @@ if (!$s_anonymous)
 
 /* some more vars */
 
-$app['s_ary_user'] = $session_user ?? [];
+$app['s_ary_user'] = $app['session_user'] ?? [];
 $app['s_schema'] = $s_schema;
 
 $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;

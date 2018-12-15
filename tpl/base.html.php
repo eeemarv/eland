@@ -310,11 +310,11 @@ if (!$s_anonymous)
 		echo '</li>';
 	}
 	else if ($s_group_self
-		&& ((isset($session_user) && $session_user['accountrole'] === 'admin')
+		&& ((isset($app['session_user']) && $app['session_user']['accountrole'] === 'admin')
 		|| $s_master))
 	{
 		echo '<li class="dropdown">';
-		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$admin_url = parse_url($app['request_uri'], PHP_URL_PATH);
 		$get_params = $_GET;
 		$get_params['r'] = 'admin';
 

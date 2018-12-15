@@ -310,7 +310,9 @@ if (!$s_anonymous)
 		echo '</li>';
 	}
 	else if ($s_group_self
-		&& ((isset($session_user) && $session_user['accountrole'] === 'admin')
+		&& ((isset($app['session_user'])
+			&& count($app['session_user'])
+			&& $app['session_user']['accountrole'] === 'admin')
 		|| $s_master))
 	{
 		echo '<li class="dropdown">';

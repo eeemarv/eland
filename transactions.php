@@ -890,7 +890,7 @@ if ($add)
 
 	$app['assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
 
-	$balance = $session_user['saldo'];
+	$balance = $app['session_user']['saldo'];
 
 	$groups = [];
 
