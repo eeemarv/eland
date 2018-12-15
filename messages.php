@@ -4,8 +4,6 @@ $page_access = 'guest';
 $allow_guest_post = true;
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
@@ -67,7 +65,7 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 	$validity_ary = [];
 
 	$rows = $app['db']->executeQuery('select id_user, id, content, validity
-		from ' . $tschema . '.messages
+		from ' . $app['tschema'] . '.messages
 		where id in (?)',
 		[$selected_msgs],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -95,7 +93,9 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 				'exp_user_warn'	=> 'f',
 			];
 
-			if (!$app['db']->update($tschema . '.messages', $m, ['id' => $id]))
+			if (!$app['db']->update($app['tschema'] . '.messages',
+				$m,
+				['id' => $id]))
 			{
 				$app['alert']->error('Fout: ' . $row['content'] . ' is niet verlengd.');
 				cancel();
@@ -135,7 +135,7 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 			{
 				foreach ($validity_ary as $id => $validity)
 				{
-					$app['db']->update($tschema . '.messages', $m, ['id' => $id]);
+					$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]);
 				}
 
 				$app['db']->commit();
@@ -174,7 +174,8 @@ if ($id || $edit || $del)
 	$message = $app['db']->fetchAssoc('select m.*,
 			c.id as cid,
 			c.fullname as catname
-		from ' . $tschema . '.messages m, ' . $tschema . '.categories c
+		from ' . $app['tschema'] . '.messages m, ' .
+			$app['tschema'] . '.categories c
 		where m.id = ?
 			and c.id = m.id_category', [$id]);
 
@@ -219,7 +220,7 @@ if ($id && $extend)
 		'exp_user_warn'	=> 'f',
 	];
 
-	if (!$app['db']->update($tschema . '.messages', $m, ['id' => $id]))
+	if (!$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]))
 	{
 		$app['alert']->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
 		cancel($id);
@@ -336,18 +337,19 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
 		if (!$id)
 		{
 			$id = $app['db']->fetchColumn('select max(id)
-				from ' . $tschema . '.messages');
+				from ' . $app['tschema'] . '.messages');
 			$id++;
 		}
 
-		$filename = $tschema . '_m_' . $id . '_';
+		$filename = $app['tschema'] . '_m_' . $id . '_';
 		$filename .= sha1($filename . microtime()) . '.jpg';
 
 		$err = $app['s3']->img_upload($filename, $tmpfile2);
 
 		if ($err)
 		{
-			$app['monolog']->error('Upload fail : ' . $err, ['schema' => $tschema]);
+			$app['monolog']->error('Upload fail : ' . $err,
+				['schema' => $app['tschema']]);
 
 			$ret_ary = [['error' => 'Opladen mislukt.']];
 			break;
@@ -356,17 +358,19 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
 		{
 			if ($insert_img)
 			{
-				$app['db']->insert($tschema . '.msgpictures', [
+				$app['db']->insert($app['tschema'] . '.msgpictures', [
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
 				$app['monolog']->info('Message-Picture ' .
-					$filename . ' uploaded and inserted in db.', ['schema' => $tschema]);
+					$filename . ' uploaded and inserted in db.',
+					['schema' => $app['tschema']]);
 			}
 			else
 			{
 				$app['monolog']->info('Message-Picture ' .
-					$filename . ' uploaded, not (yet) inserted in db.', ['schema' => $tschema]);
+					$filename . ' uploaded, not (yet) inserted in db.',
+					['schema' => $app['tschema']]);
 			}
 
 			unlink($tmpfile);
@@ -397,7 +401,7 @@ if ($img_del == 'all' && $id && $post)
 		$app['alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
-	$app['db']->delete($tschema . '.msgpictures', ['msgid' => $id]);
+	$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
 
 	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
 
@@ -410,7 +414,7 @@ if ($img_del == 'all' && $id && $post)
 if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 {
 	if (!($msg = $app['db']->fetchAssoc('select m.id_user, p."PictureFile"
-		from ' . $tschema . '.msgpictures p, ' . $tschema . '.messages m
+		from ' . $app['tschema'] . '.msgpictures p, ' . $app['tschema'] . '.messages m
 		where p.msgid = m.id
 			and p.id = ?', [$img_del])))
 	{
@@ -426,7 +430,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$app['db']->delete($tschema . '.msgpictures', ['id' => $img_del]);
+	$app['db']->delete($app['tschema'] . '.msgpictures', ['id' => $img_del]);
 
 	echo json_encode(['success' => true]);
 	exit;
@@ -447,7 +451,7 @@ if ($img_del == 'all' && $id)
 	$images = [];
 
 	$st = $app['db']->prepare('select id, "PictureFile"
-		from ' . $tschema . '.msgpictures
+		from ' . $app['tschema'] . '.msgpictures
 		where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
@@ -474,7 +478,7 @@ if ($img_del == 'all' && $id)
 	if ($s_admin)
 	{
 		echo 'Gebruiker: ';
-		echo link_user($message['id_user'], $tschema);
+		echo link_user($message['id_user'], $app['tschema']);
 	}
 
 	echo '<div class="row">';
@@ -533,7 +537,7 @@ if ($mail && $app['is_http_post'] && $id)
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];
 
-	$user = $app['user_cache']->get($message['id_user'], $tschema);
+	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
@@ -568,12 +572,12 @@ if ($mail && $app['is_http_post'] && $id)
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($tschema),
-		'to_user'		=> link_user($user, $tschema, false),
+		'group'			=> $app['template_vars']->get($app['tschema']),
+		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($session_user, $s_schema, false),
 		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $tschema),
+		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
 		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
@@ -583,8 +587,8 @@ if ($mail && $app['is_http_post'] && $id)
 	];
 
 	$app['queue.mail']->queue([
-		'schema'	=> $tschema,
-		'to'		=> $app['mail_addr_user']->get($user['id'], $tschema),
+		'schema'	=> $app['tschema'],
+		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
 		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
 		'template'	=> 'message',
 		'vars'		=> $vars,
@@ -594,7 +598,7 @@ if ($mail && $app['is_http_post'] && $id)
 	if ($cc)
 	{
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 			'to'		=> $app['mail_addr_user']->get($s_id, $s_schema),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
@@ -624,14 +628,14 @@ if ($del)
 			$app['alert']->error($error_token);
 		}
 
-		$app['db']->delete($tschema . '.msgpictures', ['msgid' => $del]);
+		$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $del]);
 
-		if ($app['db']->delete($tschema . '.messages', ['id' => $del]))
+		if ($app['db']->delete($app['tschema'] . '.messages', ['id' => $del]))
 		{
 			$column = 'stat_msgs_';
 			$column .= $message['msg_type'] ? 'offers' : 'wanted';
 
-			$app['db']->executeUpdate('update ' . $tschema . '.categories
+			$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
 				set ' . $column . ' = ' . $column . ' - 1
 				where id = ?', [$message['id_category']]);
 
@@ -657,7 +661,7 @@ if ($del)
 
 	echo '<dt>Wie</dt>';
 	echo '<dd>';
-	echo link_user($message['id_user'], $tschema);
+	echo link_user($message['id_user'], $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Categorie</dt>';
@@ -742,7 +746,7 @@ if (($edit || $add))
 			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
 			$user = $app['db']->fetchAssoc('select *
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where letscode = ?
 					and status in (1, 2)', [$user_letscode]);
 			if (!$user)
@@ -785,7 +789,7 @@ if (($edit || $add))
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
 			$err = 'De (richt)prijs in ';
-			$err .= $app['config']->get('currency', $tschema);
+			$err .= $app['config']->get('currency', $app['tschema']);
 			$err .= ' moet nul of een positief getal zijn.';
 			$errors[] = $err;
 		}
@@ -795,7 +799,7 @@ if (($edit || $add))
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
 		else if(!$app['db']->fetchColumn('select id
-			from ' . $tschema . '.categories
+			from ' . $app['tschema'] . '.categories
 			where id = ?', [$msg['id_category']]))
 		{
 			$errors[] = 'Categorie bestaat niet!';
@@ -822,7 +826,7 @@ if (($edit || $add))
 		}
 
 		if(!($app['db']->fetchColumn('select id
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where id = ? and status <> 0', [$msg['id_user']])))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
@@ -849,14 +853,14 @@ if (($edit || $add))
 				unset($msg['amount']);
 			}
 
-			if ($app['db']->insert($tschema . '.messages', $msg))
+			if ($app['db']->insert($app['tschema'] . '.messages', $msg))
 			{
-				$id = $app['db']->lastInsertId($tschema . '.messages_id_seq');
+				$id = $app['db']->lastInsertId($app['tschema'] . '.messages_id_seq');
 
 				$stat_column = 'stat_msgs_';
 				$stat_column .= $msg['msg_type'] ? 'offers' : 'wanted';
 
-				$app['db']->executeUpdate('update ' . $tschema . '.categories
+				$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
 					set ' . $stat_column . ' = ' . $stat_column . ' + 1
 					where id = ?', [$msg['id_category']]);
 
@@ -868,7 +872,7 @@ if (($edit || $add))
 
 						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
-						if ($sch != $tschema)
+						if ($sch != $app['tschema'])
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -887,24 +891,24 @@ if (($edit || $add))
 
 						if ($msgid == $id)
 						{
-							if ($app['db']->insert($tschema . '.msgpictures', [
+							if ($app['db']->insert($app['tschema'] . '.msgpictures', [
 								'"PictureFile"' => $img,
 								'msgid'			=> $id,
 							]))
 							{
 								$app['monolog']->info('message-picture ' . $img .
-									' inserted in db.', ['schema' => $tschema]);
+									' inserted in db.', ['schema' => $app['tschema']]);
 							}
 							else
 							{
 								$app['monolog']->error('error message-picture ' . $img .
-									' not inserted in db.', ['schema' => $tschema]);
+									' not inserted in db.', ['schema' => $app['tschema']]);
 							}
 
 							continue;
 						}
 
-						$new_filename = $tschema . '_m_' . $id . '_';
+						$new_filename = $app['tschema'] . '_m_' . $id . '_';
 						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
 						$err = $app['s3']->img_copy($img, $new_filename);
@@ -912,25 +916,25 @@ if (($edit || $add))
 						if (isset($err))
 						{
 							$app['monolog']->error('message-picture renaming and storing in db ' . $img .
-								' not succeeded. ' . $err, ['schema' => $tschema]);
+								' not succeeded. ' . $err, ['schema' => $app['tschema']]);
 						}
 						else
 						{
 							$app['monolog']->info('renamed ' . $img . ' to ' .
-								$new_filename, ['schema' => $tschema]);
+								$new_filename, ['schema' => $app['tschema']]);
 
-							if ($app['db']->insert($tschema . '.msgpictures', [
+							if ($app['db']->insert($app['tschema'] . '.msgpictures', [
 								'"PictureFile"'		=> $new_filename,
 								'msgid'				=> $id,
 							]))
 							{
 								$app['monolog']->info('message-picture ' . $new_filename .
-									' inserted in db.', ['schema' => $tschema]);
+									' inserted in db.', ['schema' => $app['tschema']]);
 							}
 							else
 							{
 								$app['monolog']->error('error: message-picture ' . $new_filename .
-									' not inserted in db.', ['schema' => $tschema]);
+									' not inserted in db.', ['schema' => $app['tschema']]);
 							}
 						}
 					}
@@ -968,21 +972,21 @@ if (($edit || $add))
 
 			try
 			{
-				$app['db']->update($tschema . '.messages', $msg, ['id' => $edit]);
+				$app['db']->update($app['tschema'] . '.messages', $msg, ['id' => $edit]);
 
 				if ($msg['msg_type'] != $message['msg_type'] || $msg['id_category'] != $message['id_category'])
 				{
 					$column = 'stat_msgs_';
 					$column .= ($message['msg_type']) ? 'offers' : 'wanted';
 
-					$app['db']->executeUpdate('update ' . $tschema . '.categories
+					$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
 						set ' . $column . ' = ' . $column . ' - 1
 						where id = ?', [$message['id_category']]);
 
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-					$app['db']->executeUpdate('update ' . $tschema . '.categories
+					$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
 						set ' . $column . ' = ' . $column . ' + 1
 						where id = ?', [$msg['id_category']]);
 				}
@@ -991,13 +995,13 @@ if (($edit || $add))
 				{
 					foreach ($deleted_images as $img)
 					{
-						if ($app['db']->delete($tschema . '.msgpictures', [
+						if ($app['db']->delete($app['tschema'] . '.msgpictures', [
 							'msgid'		=> $edit,
 							'"PictureFile"'	=> $img,
 						]))
 						{
 							$app['monolog']->info('message-picture ' . $img .
-								' deleted from db.', ['schema' => $tschema]);
+								' deleted from db.', ['schema' => $app['tschema']]);
 						}
 					}
 				}
@@ -1010,7 +1014,7 @@ if (($edit || $add))
 
 						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
-						if ($sch != $tschema)
+						if ($sch != $app['tschema'])
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -1032,18 +1036,18 @@ if (($edit || $add))
 							continue;
 						}
 
-						if ($app['db']->insert($tschema . '.msgpictures', [
+						if ($app['db']->insert($app['tschema'] . '.msgpictures', [
 							'"PictureFile"' => $img,
 							'msgid'			=> $edit,
 						]))
 						{
 							$app['monolog']->info('message-picture ' . $img .
-								' inserted in db.', ['schema' => $tschema]);
+								' inserted in db.', ['schema' => $app['tschema']]);
 						}
 						else
 						{
 							$app['monolog']->error('error message-picture ' . $img .
-								' not inserted in db.', ['schema' => $tschema]);
+								' not inserted in db.', ['schema' => $app['tschema']]);
 						}
 					}
 				}
@@ -1068,7 +1072,7 @@ if (($edit || $add))
 		$msg['description'] = $msg['"Description"'];
 
 		$images = $edit ? $app['db']->fetchAll('select *
-			from ' . $tschema . '.msgpictures
+			from ' . $app['tschema'] . '.msgpictures
 			where msgid = ?', [$edit]) : [];
 
 		if (count($deleted_images))
@@ -1097,7 +1101,7 @@ if (($edit || $add))
 	{
 		$msg =  $app['db']->fetchAssoc('select m.*,
 			m."Description" as description
-			from ' . $tschema . '.messages m
+			from ' . $app['tschema'] . '.messages m
 			where m.id = ?', [$edit]);
 
 		$msg['description'] = $msg['Description'];
@@ -1106,18 +1110,18 @@ if (($edit || $add))
 		$rev = round((strtotime($msg['validity']) - time()) / (86400));
 		$msg['validity'] = $rev < 1 ? 0 : $rev;
 
-		$user = $app['user_cache']->get($msg['id_user'], $tschema);
+		$user = $app['user_cache']->get($msg['id_user'], $app['tschema']);
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 
 		$images = $app['db']->fetchAll('select *
-			from ' . $tschema . '.msgpictures
+			from ' . $app['tschema'] . '.msgpictures
 			where msgid = ?', [$edit]);
 	}
 	else if ($add)
 	{
 		$msg = [
-			'validity'		=> $app['config']->get('msgs_days_default', $tschema),
+			'validity'		=> $app['config']->get('msgs_days_default', $app['tschema']),
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
@@ -1136,7 +1140,7 @@ if (($edit || $add))
 		}
 		else
 		{
-			$user = $app['user_cache']->get($uid, $tschema);
+			$user = $app['user_cache']->get($uid, $app['tschema']);
 
 			$user_letscode = $user['letscode'] . ' ' . $user['name'];
 		}
@@ -1147,7 +1151,7 @@ if (($edit || $add))
 	$cat_list = ['' => ''];
 
 	$rs = $app['db']->prepare('select id, fullname
-		from ' . $tschema . '.categories
+		from ' . $app['tschema'] . '.categories
 		where leafnote=1
 		order by fullname');
 
@@ -1192,11 +1196,11 @@ if (($edit || $add))
 		echo 'data-typeahead="';
 		echo $app['typeahead']->get([['accounts', [
 			'status'	=> 'active',
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 		]]]);
 		echo '" ';
 		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays', $tschema);
+		echo $app['config']->get('newuserdays', $app['tschema']);
 		echo '" ';
 		echo 'value="';
 		echo $user_letscode;
@@ -1261,7 +1265,7 @@ if (($edit || $add))
 	echo '</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
-	echo $app['config']->get('currency', $tschema);
+	echo $app['config']->get('currency', $app['tschema']);
 	echo '</span>';
 	echo '<input type="number" class="form-control" ';
 	echo 'id="amount" name="amount" min="0" ';
@@ -1394,16 +1398,16 @@ if ($id)
 {
 	$cc = ($post) ? $cc : 1;
 
-	$user = $app['user_cache']->get($message['id_user'], $tschema);
+	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
 	$to = $app['db']->fetchColumn('select c.value
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
-	$mail_to = $app['mail_addr_user']->get($user['id'], $tschema);
+	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
 	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mail_addr_user']->get($s_id, $s_schema) : [];
 
 	$balance = $user['saldo'];
@@ -1411,7 +1415,7 @@ if ($id)
 	$images = [];
 
 	$st = $app['db']->prepare('select id, "PictureFile"
-		from ' . $tschema . '.msgpictures
+		from ' . $app['tschema'] . '.msgpictures
 		where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
@@ -1424,14 +1428,14 @@ if ($id)
 	$and_local = ($s_guest) ? ' and local = \'f\' ' : '';
 
 	$prev = $app['db']->fetchColumn('select id
-		from ' . $tschema . '.messages
+		from ' . $app['tschema'] . '.messages
 		where id > ?
 		' . $and_local . '
 		order by id asc
 		limit 1', [$id]);
 
 	$next = $app['db']->fetchColumn('select id
-		from ' . $tschema . '.messages
+		from ' . $app['tschema'] . '.messages
 		where id < ?
 		' . $and_local . '
 		order by id desc
@@ -1440,8 +1444,8 @@ if ($id)
 	$title = $message['content'];
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
@@ -1468,7 +1472,7 @@ if ($id)
 
 			if (!$s_group_self)
 			{
-				$tus['tus'] = $tschema;
+				$tus['tus'] = $app['tschema'];
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
@@ -1575,17 +1579,17 @@ if ($id)
 	echo '</dt>';
 	echo '<dd>';
 	$units = $message['units'] ? ' per ' . $message['units'] : '';
-	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency', $tschema) . $units;
+	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency', $app['tschema']) . $units;
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
 	echo '</dt>';
 	echo '<dd>';
-	echo link_user($user, $tschema);
+	echo link_user($user, $app['tschema']);
 	echo ' (saldo: <span class="label label-info">';
 	echo $balance;
 	echo '</span> ';
-	echo $app['config']->get('currency', $tschema);
+	echo $app['config']->get('currency', $app['tschema']);
 	echo ')';
 	echo '</dd>';
 
@@ -1652,7 +1656,7 @@ if ($id)
 	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
-	echo  link_user($message['id_user'], $tschema);
+	echo  link_user($message['id_user'], $app['tschema']);
 	echo '</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1721,13 +1725,13 @@ $filter_en = isset($filter['s']);
 
 if ($uid)
 {
-	$user = $app['user_cache']->get($uid, $tschema);
+	$user = $app['user_cache']->get($uid, $app['tschema']);
 
 	$where_sql[] = 'u.id = ?';
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$filter['fcode'] = link_user($user, $tschema, false);
+	$filter['fcode'] = link_user($user, $app['tschema'], false);
 }
 
 if ($type)
@@ -1758,7 +1762,7 @@ if ($filter_en)
 			if ($fcode)
 			{
 				$fuid = $app['db']->fetchColumn('select id
-					from ' . $tschema . '.users
+					from ' . $app['tschema'] . '.users
 					where letscode = ?', [$fcode]);
 
 				if ($fuid)
@@ -1766,7 +1770,7 @@ if ($filter_en)
 					$where_sql[] = 'u.id = ?';
 					$params_sql[] = $fuid;
 
-					$filter['fcode'] = link_user($fuid, $tschema, false);
+					$filter['fcode'] = link_user($fuid, $app['tschema'], false);
 				}
 				else if ($fcode !== '')
 				{
@@ -1792,7 +1796,7 @@ if ($filter_en)
 		$cat_ary = [];
 
 		$st = $app['db']->prepare('select id
-			from ' . $tschema . '.categories
+			from ' . $app['tschema'] . '.categories
 			where id_parent = ?');
 		$st->bindValue(1, $filter['cid']);
 		$st->execute();
@@ -1904,14 +1908,14 @@ else
 }
 
 $query = 'select m.*, u.postcode
-	from ' . $tschema . '.messages m, ' .
-		$tschema . '.users u
+	from ' . $app['tschema'] . '.messages m, ' .
+		$app['tschema'] . '.users u
 		where m.id_user = u.id' . $where_sql . '
 	order by ' . $orderby . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(m.*)
-	from ' . $tschema . '.messages m, ' .
-		$tschema . '.users u
+	from ' . $app['tschema'] . '.messages m, ' .
+		$app['tschema'] . '.users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
 $query .= $asc ? 'asc ' : 'desc ';
@@ -1929,7 +1933,7 @@ if ($v_extended)
 	}
 
 	$_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
-		from ' . $tschema . '.msgpictures mp
+		from ' . $app['tschema'] . '.msgpictures mp
 		where msgid in (?)',
 		[$ids],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -2012,8 +2016,8 @@ $categories = $cat_params  = [];
 if ($uid)
 {
 	$st = $app['db']->executeQuery('select c.*
-		from ' . $tschema . '.categories c, ' .
-			$tschema . '.messages m
+		from ' . $app['tschema'] . '.categories c, ' .
+			$app['tschema'] . '.messages m
 		where m.id_category = c.id
 			and m.id_user = ?
 		order by c.fullname', [$uid]);
@@ -2021,7 +2025,7 @@ if ($uid)
 else
 {
 	$st = $app['db']->executeQuery('select *
-		from ' . $tschema . '.categories
+		from ' . $app['tschema'] . '.categories
 		order by fullname');
 }
 
@@ -2054,7 +2058,7 @@ if ($s_admin || $s_user)
 		if ($s_admin && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
-			$str .= link_user($uid, $tschema, false);
+			$str .= link_user($uid, $app['tschema'], false);
 			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
 		}
 
@@ -2082,7 +2086,7 @@ if ($uid)
 	{
 		$h1 = aphp('messages', ['uid' => $uid, 'view' => $view_messages], 'Vraag en aanbod');
 		$h1 .= ' van ';
-		$h1 .= link_user($uid, $tschema);
+		$h1 .= link_user($uid, $app['tschema']);
 	}
 }
 else if ($recent)
@@ -2220,11 +2224,11 @@ if (!$inline)
 	echo 'data-typeahead="';
 	echo $app['typeahead']->get([['accounts', [
 		'status'	=> 'active',
-		'schema'	=> $tschema,
+		'schema'	=> $app['tschema'],
 	]]]);
 	echo '" ';
 	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $tschema);
+	echo $app['config']->get('newuserdays', $app['tschema']);
 	echo '" ';
 	echo 'name="f[fcode]" id="fcode" placeholder="Account" ';
 	echo 'value="';
@@ -2374,7 +2378,7 @@ if ($v_list)
 		if (!$uid)
 		{
 			echo '<td>';
-			echo link_user($msg['id_user'], $tschema);
+			echo link_user($msg['id_user'], $app['tschema']);
 			echo '</td>';
 
 			echo '<td>';
@@ -2458,7 +2462,7 @@ else if ($v_extended)
 
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i> ';
-		echo link_user($msg['id_user'], $tschema);
+		echo link_user($msg['id_user'], $app['tschema']);
 		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
 		if ($s_admin || $sf_owner)
@@ -2514,8 +2518,8 @@ else if ($v_list)
 		echo '<ul class="nav nav-tabs" role="tablist">';
 		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
 
-		if ($app['config']->get('template_lets', $tschema)
-			&& $app['config']->get('interlets_en', $tschema))
+		if ($app['config']->get('template_lets', $app['tschema'])
+			&& $app['config']->get('interlets_en', $app['tschema']))
 		{
 			echo '<li>';
 			echo '<a href="#access_tab" data-toggle="tab">';
@@ -2548,8 +2552,8 @@ else if ($v_list)
 
 		echo '</div>';
 
-		if ($app['config']->get('template_lets', $tschema)
-			&& $app['config']->get('interlets_en', $tschema))
+		if ($app['config']->get('template_lets', $app['tschema'])
+			&& $app['config']->get('interlets_en', $app['tschema']))
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';

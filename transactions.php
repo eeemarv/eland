@@ -4,8 +4,6 @@ $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 require_once __DIR__ . '/include/transactions.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $orderby = $_GET['orderby'] ?? 'cdate';
 $asc = $_GET['asc'] ?? 0;
 $limit = $_GET['limit'] ?? 25;
@@ -29,9 +27,10 @@ $andor = $_GET['andor'] ?? 'and';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
 
-$currency = $app['config']->get('currency', $tschema);
-$intersystem_en = $app['config']->get('template_lets', $tschema)
-	&& $app['config']->get('interlets_en', $tschema);
+$currency = $app['config']->get('currency', $app['tschema']);
+
+$intersystem_en = $app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']);
 
 /**
  * add
@@ -46,7 +45,7 @@ if ($add)
 
 	$transaction = [];
 
-	$redis_transid_key = $tschema . '_transid_u_' . $s_id;
+	$redis_transid_key = $app['tschema'] . '_transid_u_' . $s_id;
 
 	if ($submit)
 	{
@@ -74,7 +73,7 @@ if ($add)
 		}
 
 		if ($app['db']->fetchColumn('select transid
-			from ' . $tschema . '.transactions
+			from ' . $app['tschema'] . '.transactions
 			where transid = ?', [$stored_transid]))
 		{
 			$errors[] = 'Een herinvoer van de transactie werd voorkomen.';
@@ -88,7 +87,7 @@ if ($add)
 		if ($group_id != 'self')
 		{
 			$group = $app['db']->fetchAssoc('select *
-				from ' . $tschema . '.letsgroups
+				from ' . $app['tschema'] . '.letsgroups
 				where id = ?', [$group_id]);
 
 			if (!isset($group))
@@ -104,20 +103,20 @@ if ($add)
 		if ($s_user && !$s_master)
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where id = ?', [$s_id]);
 		}
 		else
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where letscode = ?', [$letscode_from]);
 		}
 
 		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
 
 		$touser = $app['db']->fetchAssoc('select *
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = ?', [$letscode_touser]);
 
 		if(empty($fromuser))
@@ -177,7 +176,7 @@ if ($add)
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
-				$minlimit = $app['config']->get('minlimit', $tschema);
+				$minlimit = $app['config']->get('minlimit', $app['tschema']);
 
 				if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
 				{
@@ -210,7 +209,7 @@ if ($add)
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
-				$maxlimit = $app['config']->get('maxlimit', $tschema);
+				$maxlimit = $app['config']->get('maxlimit', $app['tschema']);
 
 				if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
 				{
@@ -248,14 +247,14 @@ if ($add)
 
 		if ($s_user && !count($errors))
 		{
-			$balance_eq = $app['config']->get('balance_equilibrium', $tschema);
+			$balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
 
 			if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
 			{
 				$err = 'Als Uitstapper kan je geen ';
 				$err .= $amount;
 				$err .= ' ';
-				$err .= $app['config']->get('currency', $tschema);
+				$err .= $app['config']->get('currency', $app['tschema']);
 				$err .= ' uitgeven.';
 				$errors[] = $err;
 			}
@@ -266,7 +265,7 @@ if ($add)
 				$err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
 				$err .= ' heeft de status \'Uitstapper\' en kan geen ';
 				$err .= $amount . ' ';
-				$err .= $app['config']->get('currency', $tschema);
+				$err .= $app['config']->get('currency', $app['tschema']);
 				$err .= ' ontvangen.';
 				$errors[] = $err;
 			}
@@ -356,7 +355,7 @@ if ($add)
 				$errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
 			}
 
-			$currencyratio = $app['config']->get('currencyratio', $tschema);
+			$currencyratio = $app['config']->get('currencyratio', $app['tschema']);
 
 			if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 			{
@@ -422,7 +421,7 @@ if ($add)
 			$result = $client->call('dopayment', [
 				'apikey' 		=> $group['remoteapikey'],
 				'from' 			=> $group['myremoteletscode'],
-				'real_from' 	=> link_user($fromuser, $tschema, false),
+				'real_from' 	=> link_user($fromuser, $app['tschema'], false),
 				'to' 			=> $letscode_to,
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
@@ -483,7 +482,7 @@ if ($add)
 
 			$app['monolog']->debug('insert transation: --  ' .
 				http_build_query($transaction) .
-				' --', ['schema' => $tschema]);
+				' --', ['schema' => $app['tschema']]);
 
 			$id = insert_transaction($transaction);
 
@@ -494,8 +493,8 @@ if ($add)
 				$text .= ' group:' . $group['groupname'];
 
 				$app['queue.mail']->queue([
-					'schema'		=> $tschema,
-					'to' 			=> $app['mail_addr_system']->get_admin($tschema),
+					'schema'		=> $app['tschema'],
+					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 					'subject' 		=> $subject,
 					'text' 			=> $text,
 				], 9000);
@@ -537,7 +536,7 @@ if ($add)
 			if (!$remote_group && !count($errors))
 			{
 				$err = 'Het andere Systeem heeft dit Systeem (';
-				$err .= $app['config']->get('systemname', $tschema);
+				$err .= $app['config']->get('systemname', $app['tschema']);
 				$err .= ') niet geconfigureerd als interSysteem.';
 				$errors[] = $err;
 			}
@@ -569,7 +568,7 @@ if ($add)
 			$remote_currency = $app['config']->get('currency', $remote_schema);
 			$remote_currencyratio = $app['config']->get('currencyratio', $remote_schema);
 			$remote_balance_eq = $app['config']->get('balance_equilibrium', $remote_schema);
-			$currencyratio = $app['config']->get('currencyratio', $tschema);
+			$currencyratio = $app['config']->get('currencyratio', $app['tschema']);
 
 			if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
 				&& !count($errors))
@@ -635,7 +634,7 @@ if ($add)
 				$err .= $remote_amount . ' ';
 				$err .= $remote_currency . ' uitgeven ';
 				$err .= '(' . $amount . ' ';
-				$err .= $app['config']->get('currency', $tschema);
+				$err .= $app['config']->get('currency', $app['tschema']);
 				$err .= ').';
 				$errors[] = $err;
 			}
@@ -682,7 +681,7 @@ if ($add)
 				$err .= 'en kan geen ' . $remote_amount . ' ';
 				$err .= $remote_currency . ' ontvangen (';
 				$err .= $amount . ' ';
-				$err .= $app['config']->get('currency', $tschema);
+				$err .= $app['config']->get('currency', $app['tschema']);
 				$err .= ').';
 				$errors[] = $err;
 			}
@@ -701,12 +700,12 @@ if ($add)
 
 				try
 				{
-					$app['db']->insert($tschema . '.transactions', $transaction);
-					$id = $app['db']->lastInsertId($tschema . '.transactions_id_seq');
-					$app['db']->executeUpdate('update ' . $tschema . '.users
+					$app['db']->insert($app['tschema'] . '.transactions', $transaction);
+					$id = $app['db']->lastInsertId($app['tschema'] . '.transactions_id_seq');
+					$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 						set saldo = saldo + ? where id = ?',
 						[$transaction['amount'], $transaction['id_to']]);
-					$app['db']->executeUpdate('update ' . $tschema . '.users
+					$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 						set saldo = saldo - ? where id = ?',
 						[$transaction['amount'], $transaction['id_from']]);
 
@@ -717,7 +716,7 @@ if ($add)
 					$transaction['amount'] = $remote_amount;
 					$transaction['id_from'] = $remote_interlets_account['id'];
 					$transaction['id_to'] = $to_remote_user['id'];
-					$transaction['real_from'] = link_user($fromuser['id'], $tschema, false);
+					$transaction['real_from'] = link_user($fromuser['id'], $app['tschema'], false);
 					unset($transaction['real_to']);
 
 					$app['db']->insert($remote_schema . '.transactions', $transaction);
@@ -741,8 +740,8 @@ if ($add)
 					exit;
 				}
 
-				$app['user_cache']->clear($fromuser['id'], $tschema);
-				$app['user_cache']->clear($touser['id'], $tschema);
+				$app['user_cache']->clear($fromuser['id'], $app['tschema']);
+				$app['user_cache']->clear($touser['id'], $app['tschema']);
 
 				$app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
 				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
@@ -751,9 +750,9 @@ if ($add)
 				mail_transaction($transaction, $remote_schema);
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-					$amount . ' from user: ' .  link_user($fromuser['id'], $tschema, false) .
-					' to user: ' . link_user($touser['id'], $tschema, false),
-					['schema' => $tschema]);
+					$amount . ' from user: ' .  link_user($fromuser['id'], $app['tschema'], false) .
+					' to user: ' . link_user($touser['id'], $app['tschema'], false),
+					['schema' => $app['tschema']]);
 
 				$app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
 					' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
@@ -769,7 +768,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, $tschema, false);
+		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, $app['tschema'], false);
 	}
 	else
 	{
@@ -782,7 +781,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $s_master ? '' : link_user($s_id, $tschema, false),
+			'letscode_from'	=> $s_master ? '' : link_user($s_id, $app['tschema'], false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -798,7 +797,7 @@ if ($add)
 				$host_from_tus = $app['groups']->get_host($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
-					from ' . $tschema . '.letsgroups
+					from ' . $app['tschema'] . '.letsgroups
 					where url = ?', [$app['protocol'] . $host_from_tus]);
 
 				if ($mid)
@@ -817,7 +816,7 @@ if ($add)
 						$transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
 						$transaction['description'] =  substr($row['content'], 0, 60);
 						$amount = $row['amount'];
-						$amount = ($app['config']->get('currencyratio', $tschema) * $amount) / $app['config']->get('currencyratio', $tus);
+						$amount = ($app['config']->get('currencyratio', $app['tschema']) * $amount) / $app['config']->get('currencyratio', $tus);
 						$transaction['amount'] = round($amount);
 					}
 				}
@@ -837,8 +836,8 @@ if ($add)
 			$row = $app['db']->fetchAssoc('select
 					m.content, m.amount, m.id_user,
 					u.letscode, u.name, u.status
-				from ' . $tschema . '.messages m,
-					'. $tschema . '.users u
+				from ' . $app['tschema'] . '.messages m,
+					'. $app['tschema'] . '.users u
 				where u.id = m.id_user
 					and m.id = ?', [$mid]);
 
@@ -868,11 +867,11 @@ if ($add)
 		}
 		else if ($tuid)
 		{
-			$to_user = $app['user_cache']->get($tuid, $tschema);
+			$to_user = $app['user_cache']->get($tuid, $app['tschema']);
 
 			if (in_array($to_user['status'], [1, 2]) || $s_admin)
 			{
-				$transaction['letscode_to'] = link_user($tuid, $tschema, false);
+				$transaction['letscode_to'] = link_user($tuid, $app['tschema'], false);
 			}
 
 			if ($tuid == $s_id)
@@ -896,7 +895,7 @@ if ($add)
 	$groups = [];
 
 	$groups[] = [
-		'groupname' => $app['config']->get('systemname', $tschema),
+		'groupname' => $app['config']->get('systemname', $app['tschema']),
 		'id'		=> 'self',
 	];
 
@@ -913,7 +912,7 @@ if ($add)
 
 		$eland_groups = $app['db']->executeQuery('select id,
 				groupname, url
-			from ' . $tschema . '.letsgroups
+			from ' . $app['tschema'] . '.letsgroups
 			where apimethod <> \'internal\'
 				and url in (?)',
 				[$eland_urls],
@@ -936,7 +935,7 @@ if ($add)
 		}
 
 		$elas_groups = $app['db']->executeQuery('select id, groupname
-			from ' . $tschema . '.letsgroups
+			from ' . $app['tschema'] . '.letsgroups
 			where apimethod <> \'internal\'
 				and id in (?)',
 				[$ids],
@@ -948,7 +947,7 @@ if ($add)
 		}
 	}
 
-	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio', $tschema) > 0 ? true : false;
+	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio', $app['tschema']) > 0 ? true : false;
 
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
@@ -1022,14 +1021,14 @@ if ($add)
 					$typeahead_ary[] = [
 						'accounts', [
 							'status'	=> $t_stat,
-							'schema'	=> $tschema,
+							'schema'	=> $app['tschema'],
 						],
 					];
 				}
 
 				$typeahead = $app['typeahead']->get($typeahead_ary);
 
-				$config_schema = $tschema;
+				$config_schema = $app['tschema'];
 			}
 			else if (isset($l['remote_schema']))
 			{
@@ -1037,7 +1036,7 @@ if ($add)
 
 				$typeahead = $app['typeahead']->get([[
 					'eland_intersystem_accounts', [
-					'schema'		=> $tschema,
+					'schema'		=> $app['tschema'],
 					'remote_schema'	=> $remote_schema,
 				]]]);
 
@@ -1047,7 +1046,7 @@ if ($add)
 			{
 				$typeahead = $app['typeahead']->get([[
 					'elas_intersystem_accounts', [
-					'schema'	=> $tschema,
+					'schema'	=> $app['tschema'],
 					'group_id'	=> $l['id'],
 				]]]);
 
@@ -1100,7 +1099,7 @@ if ($add)
 			$typeahead_ary[] = [
 				'accounts', [
 					'status'	=> $t_stat,
-					'schema'	=> $tschema,
+					'schema'	=> $app['tschema'],
 				],
 			];
 		}
@@ -1132,7 +1131,7 @@ if ($add)
 	}
 
 	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $tschema);
+	echo $app['config']->get('newuserdays', $app['tschema']);
 	echo '" ';
 	echo 'value="';
 	echo $transaction['letscode_to'];
@@ -1163,7 +1162,7 @@ if ($add)
 
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
-	echo $app['config']->get('currency', $tschema);
+	echo $app['config']->get('currency', $app['tschema']);
 	echo '</span>';
 	echo '<input type="number" class="form-control" ';
 	echo 'id="amount" name="amount" ';
@@ -1174,7 +1173,7 @@ if ($add)
 
 	echo '<ul>';
 
-	echo get_valuation($tschema);
+	echo get_valuation($app['tschema']);
 
 	echo '<li id="info_remote_amount_unknown" ';
 	echo 'class="hidden">De omrekening ';
@@ -1188,8 +1187,8 @@ if ($add)
 		echo '<li id="info_admin_limit">';
 		echo 'Admins kunnen over en onder limieten gaan';
 
-		if ($app['config']->get('interlets_en', $tschema)
-			&& $app['config']->get('template_lets', $tschema))
+		if ($app['config']->get('interlets_en', $app['tschema'])
+			&& $app['config']->get('template_lets', $app['tschema']))
 		{
 			echo ' in het eigen Systeem.';
 		}
@@ -1214,8 +1213,8 @@ if ($add)
 
 	echo '<ul>';
 
-	if ($app['config']->get('template_lets', $tschema)
-		&& $app['config']->get('currencyratio', $tschema) > 0)
+	if ($app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('currencyratio', $app['tschema']) > 0)
 	{
 		echo '<li id="info_ratio">Valuatie: <span class="num">';
 		echo '</span> per uur</li>';
@@ -1258,7 +1257,7 @@ if ($add)
  * interSystem accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($tschema);
+$interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
 
 $s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
 
@@ -1271,7 +1270,7 @@ if ($id || $edit)
 	$id = $edit ?: $id;
 
 	$transaction = $app['db']->fetchAssoc('select t.*
-		from ' . $tschema . '.transactions t
+		from ' . $app['tschema'] . '.transactions t
 		where t.id = ?', [$id]);
 
 	$inter_schema = false;
@@ -1336,16 +1335,20 @@ if ($edit)
 
 		if (!count($errors))
 		{
-			$app['db']->update($tschema . '.transactions', ['description' => $description], ['id' => $edit]);
+			$app['db']->update($app['tschema'] . '.transactions',
+				['description' => $description],
+				['id' => $edit]);
 
 			if ($inter_transaction)
 			{
-				$app['db']->update($inter_schema . '.transactions', ['description' => $description], ['id' => $inter_transaction['id']]);
+				$app['db']->update($inter_schema . '.transactions',
+					['description' => $description],
+					['id' => $inter_transaction['id']]);
 			}
 
 			$app['monolog']->info('Transaction description edited from "' . $transaction['description'] .
 				'" to "' . $description . '", transid: ' .
-				$transaction['transid'], ['schema' => $tschema]);
+				$transaction['transid'], ['schema' => $app['tschema']]);
 
 			$app['alert']->success('Omschrijving transactie aangepast.');
 
@@ -1383,7 +1386,7 @@ if ($edit)
 	{
 		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $tschema, $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
@@ -1408,7 +1411,7 @@ if ($edit)
 	{
 		echo '<dt>Van gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $tschema);
+		echo link_user($transaction['id_from'], $app['tschema']);
 		echo '</dd>';
 	}
 
@@ -1416,7 +1419,7 @@ if ($edit)
 	{
 		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $tschema, $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
@@ -1440,14 +1443,14 @@ if ($edit)
 	{
 		echo '<dt>Naar gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $tschema);
+		echo link_user($transaction['id_to'], $app['tschema']);
 		echo '</dd>';
 	}
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
 	echo $transaction['amount'] . ' ';
-	echo $app['config']->get('currency', $tschema);
+	echo $app['config']->get('currency', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Omschrijving</dt>';
@@ -1499,13 +1502,13 @@ if ($edit)
 if ($id)
 {
 	$next = $app['db']->fetchColumn('select id
-		from ' . $tschema . '.transactions
+		from ' . $app['tschema'] . '.transactions
 		where id > ?
 		order by id asc
 		limit 1', [$id]);
 
 	$prev = $app['db']->fetchColumn('select id
-		from ' . $tschema . '.transactions
+		from ' . $app['tschema'] . '.transactions
 		where id < ?
 		order by id desc
 		limit 1', [$id]);
@@ -1556,7 +1559,7 @@ if ($id)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $tschema, $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
@@ -1583,7 +1586,7 @@ if ($id)
 	{
 		echo '<dt>Van Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $tschema);
+		echo link_user($transaction['id_from'], $app['tschema']);
 		echo '</dd>';
 	}
 
@@ -1591,7 +1594,7 @@ if ($id)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $tschema, $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
 		echo '</dd>';
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
@@ -1618,14 +1621,14 @@ if ($id)
 	{
 		echo '<dt>Naar Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $tschema);
+		echo link_user($transaction['id_to'], $app['tschema']);
 		echo '</dd>';
 	}
 
 	echo '<dt>Waarde</dt>';
 	echo '<dd>';
 	echo $transaction['amount'] . ' ';
-	echo $app['config']->get('currency', $tschema);
+	echo $app['config']->get('currency', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Omschrijving</dt>';
@@ -1683,7 +1686,7 @@ if ($id)
 		}
 		else
 		{
-			echo link_user($transaction['id_from'], $tschema);
+			echo link_user($transaction['id_from'], $app['tschema']);
 		}
 
 		echo ')';
@@ -1719,7 +1722,7 @@ if ($id)
 			echo ' (';
 			echo $transaction['amount'];
 			echo ' ';
-			echo $app['config']->get('currency', $tschema);
+			echo $app['config']->get('currency', $app['tschema']);
 			echo ').';
 		}
 
@@ -1736,7 +1739,7 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'], $tschema, $s_admin);
+			echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
 			echo ')';
 		}
 
@@ -1761,7 +1764,7 @@ if ($id)
 			echo 'Het interSysteem Account van het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'], $tschema, $s_admin);
+			echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
 			echo ')';
 		}
 		else
@@ -1780,7 +1783,7 @@ if ($id)
 			echo 'in de eigen tijdsmunt ';
 			echo '(';
 			echo $transaction['amount'] . ' ';
-			echo $app['config']->get('currency', $tschema);
+			echo $app['config']->get('currency', $app['tschema']);
 			echo ') ';
 			echo 'met gelijke tijdswaarde als Tr-1.';
 		}
@@ -1814,7 +1817,7 @@ if ($id)
 		{
 			echo 'Het bestemmings Account in dit Systeem ';
 			echo '(';
-			echo link_user($transaction['id_to'], $tschema);
+			echo link_user($transaction['id_to'], $app['tschema']);
 			echo ').';
 		}
 		else
@@ -1858,14 +1861,14 @@ $params = [
 
 if ($uid)
 {
-	$user = $app['user_cache']->get($uid, $tschema);
+	$user = $app['user_cache']->get($uid, $app['tschema']);
 
 	$where_sql[] = 't.id_from = ? or t.id_to = ?';
 	$params_sql[] = $uid;
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$fcode = $tcode = link_user($user, $tschema, false);
+	$fcode = $tcode = link_user($user, $app['tschema'], false);
 	$andor = 'or';
 }
 
@@ -1883,7 +1886,7 @@ if (!$uid)
 		[$fcode] = explode(' ', trim($fcode));
 
 		$fuid = $app['db']->fetchColumn('select id
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = \'' . $fcode . '\'');
 
 		if ($fuid)
@@ -1894,7 +1897,7 @@ if (!$uid)
 			$where_code_sql[] = $fuid_sql;
 			$params_sql[] = $fuid;
 
-			$fcode = link_user($fuid, $tschema, false);
+			$fcode = link_user($fuid, $app['tschema'], false);
 		}
 		else if ($andor !== 'nor')
 		{
@@ -1909,7 +1912,7 @@ if (!$uid)
 		[$tcode] = explode(' ', trim($tcode));
 
 		$tuid = $app['db']->fetchColumn('select id
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = \'' . $tcode . '\'');
 
 		if ($tuid)
@@ -1920,7 +1923,7 @@ if (!$uid)
 			$where_code_sql[] = $tuid_sql;
 			$params_sql[] = $tuid;
 
-			$tcode = link_user($tuid, $tschema, false);
+			$tcode = link_user($tuid, $app['tschema'], false);
 		}
 		else if ($andor !== 'nor')
 		{
@@ -1985,7 +1988,7 @@ else
 }
 
 $query = 'select t.*
-	from ' . $tschema . '.transactions t ' .
+	from ' . $app['tschema'] . '.transactions t ' .
 	$where_sql . '
 	order by t.' . $orderby . ' ';
 $query .= $asc ? 'asc ' : 'desc ';
@@ -2027,7 +2030,7 @@ foreach ($transactions as $key => $t)
 
 
 $row_count = $app['db']->fetchColumn('select count(t.*)
-	from ' . $tschema . '.transactions t ' . $where_sql, $params_sql);
+	from ' . $app['tschema'] . '.transactions t ' . $where_sql, $params_sql);
 
 $app['pagination']->init('transactions', $row_count, $params, $inline);
 
@@ -2040,7 +2043,7 @@ $tableheader_ary = [
 	'description' => array_merge($asc_preset_ary, [
 		'lbl' => 'Omschrijving']),
 	'amount' => array_merge($asc_preset_ary, [
-		'lbl' => $app['config']->get('currency', $tschema)]),
+		'lbl' => $app['config']->get('currency', $app['tschema'])]),
 	'cdate'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Tijdstip',
 		'data_hide' => 'phone'])
@@ -2077,7 +2080,7 @@ if ($s_admin || $s_user)
 {
 	if ($uid)
 	{
-		$user_str = link_user($user, $tschema, false);
+		$user_str = link_user($user, $app['tschema'], false);
 
 		if ($user['status'] != 7)
 		{
@@ -2121,7 +2124,7 @@ if ($uid)
 	{
 		$h1 = aphp('transactions', ['uid' => $uid], 'Transacties');
 		$h1 .= ' van ';
-		$h1 .= link_user($uid, $tschema);
+		$h1 .= link_user($uid, $app['tschema']);
 	}
 }
 else
@@ -2192,7 +2195,7 @@ if (!$inline)
 		$typeahead_ary[] = [
 			'accounts', [
 				'status'	=> $t_stat,
-				'schema'	=> $tschema,
+				'schema'	=> $app['tschema'],
 			],
 		];
 	}
@@ -2205,7 +2208,7 @@ if (!$inline)
 	echo $typeahead;
 	echo '" ';
 	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $tschema);
+	echo $app['config']->get('newuserdays', $app['tschema']);
 	echo '" ';
 	echo 'name="fcode" id="fcode" placeholder="Account Code" ';
 	echo 'value="';
@@ -2444,7 +2447,7 @@ if ($uid)
 			}
 			else
 			{
-				echo link_user($t['id_to'], $tschema);
+				echo link_user($t['id_to'], $app['tschema']);
 			}
 		}
 		else
@@ -2468,7 +2471,7 @@ if ($uid)
 			}
 			else
 			{
-				echo link_user($t['id_from'], $tschema);
+				echo link_user($t['id_from'], $app['tschema']);
 			}
 		}
 
@@ -2516,7 +2519,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_from'], $tschema);
+			echo link_user($t['id_from'], $app['tschema']);
 		}
 
 		echo '</td>';
@@ -2542,7 +2545,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_to'], $tschema);
+			echo link_user($t['id_to'], $app['tschema']);
 		}
 
 		echo '</td>';
@@ -2560,7 +2563,7 @@ if ($inline)
 }
 else
 {
-	echo get_valuation($tschema);
+	echo get_valuation($app['tschema']);
 
 	include __DIR__ . '/include/footer.php';
 }

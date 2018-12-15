@@ -3,8 +3,6 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $days = $_GET['days'];
 
 if (!isset($days))
@@ -20,7 +18,7 @@ $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 $balance = [];
 
 $rs = $app['db']->prepare('select id, saldo
-	from ' . $tschema . '.users');
+	from ' . $app['tschema'] . '.users');
 
 $rs->execute();
 
@@ -33,7 +31,7 @@ $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
 $acc = array_map(function (){ return 0; }, $balance);
 
 $trans = $app['db']->fetchAll('select id_to, id_from, amount, date
-	from ' . $tschema . '.transactions
+	from ' . $app['tschema'] . '.transactions
 	where date >= ?
 	order by date desc', [$begin]);
 

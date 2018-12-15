@@ -4,8 +4,6 @@ $page_access = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 $monitor = $_GET['monitor'] ?? false;
@@ -17,7 +15,7 @@ if (!$location
 	|| $location == ''
 	|| $location == '/')
 {
-	$location = $app['config']->get('default_landing_page', $tschema);
+	$location = $app['config']->get('default_landing_page', $app['tschema']);
 	$param = 'view_' . $location;
 	$param = in_array($location, ['messages', 'users', 'news']) ? ['view' => $$param] : [];
 	$location .= '.php?' . http_build_query($param);
@@ -33,10 +31,10 @@ if ($monitor)
 
 if ($token)
 {
-	if($apikey = $app['predis']->get($tschema . '_token_' . $token))
+	if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $token))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$tschema] = 'elas';
+		$logins[$app['tschema']] = 'elas';
 		$app['session']->set('logins', $logins);
 
 		$param = 'welcome=1&r=guest&u=elas';
@@ -49,11 +47,12 @@ if ($token)
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
 			$app['xdb']->set('apikey_login', $apikey, [
 				'domain' => $domain_referrer
-			], $tschema);
+			], $app['tschema']);
 		}
 
 		$app['monolog']->info('eLAS guest login using token ' .
-			$token . ' succeeded. referrer: ' . $referrer, ['schema' => $tschema]);
+			$token . ' succeeded. referrer: ' . $referrer,
+			['schema' => $app['tschema']]);
 
 		$glue = strpos($location, '?') === false ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
@@ -82,7 +81,7 @@ if ($submit)
 		&& hash('sha512', $password) === $master_password)
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$tschema] = 'master';
+		$logins[$app['tschema']] = 'master';
 		$app['session']->set('logins', $logins);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
@@ -96,9 +95,9 @@ if ($submit)
 	if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
 	{
 		$count_email = $app['db']->fetchColumn('select count(c.*)
-			from ' . $tschema . '.contact c, ' .
-				$tschema . '.type_contact tc, ' .
-				$tschema . '.users u
+			from ' . $app['tschema'] . '.contact c, ' .
+				$app['tschema'] . '.type_contact tc, ' .
+				$app['tschema'] . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.id_user = u.id
@@ -108,9 +107,9 @@ if ($submit)
 		if ($count_email == 1)
 		{
 			$user_id = $app['db']->fetchColumn('select u.id
-				from ' . $tschema . '.contact c, ' .
-					$tschema . '.type_contact tc, ' .
-					$tschema . '.users u
+				from ' . $app['tschema'] . '.contact c, ' .
+					$app['tschema'] . '.type_contact tc, ' .
+					$app['tschema'] . '.users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
@@ -130,7 +129,7 @@ if ($submit)
 	if (!$user_id && !count($errors))
 	{
 		$count_letscode = $app['db']->fetchColumn('select count(u.*)
-			from ' . $tschema . '.users u
+			from ' . $app['tschema'] . '.users u
 			where lower(letscode) = ?', [$login]);
 
 		if ($count_letscode > 1)
@@ -144,7 +143,7 @@ if ($submit)
 		else if ($count_letscode == 1)
 		{
 			$user_id = $app['db']->fetchColumn('select id
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where lower(letscode) = ?', [$login]);
 		}
 	}
@@ -152,7 +151,7 @@ if ($submit)
 	if (!$user_id && !count($errors))
 	{
 		$count_name = $app['db']->fetchColumn('select count(u.*)
-			from ' . $tschema . '.users u
+			from ' . $app['tschema'] . '.users u
 			where lower(name) = ?', [$login]);
 
 		if ($count_name > 1)
@@ -166,7 +165,7 @@ if ($submit)
 		else if ($count_name == 1)
 		{
 			$user_id = $app['db']->fetchColumn('select id
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where lower(name) = ?', [$login]);
 		}
 	}
@@ -177,7 +176,7 @@ if ($submit)
 	}
 	else if ($user_id && !count($errors))
 	{
-		$user = $app['user_cache']->get($user_id, $tschema);
+		$user = $app['user_cache']->get($user_id, $app['tschema']);
 
 		if (!$user)
 		{
@@ -189,7 +188,7 @@ if ($submit)
 				'user_id'	=> $user['id'],
 				'letscode'	=> $user['letscode'],
 				'username'	=> $user['name'],
-				'schema' 	=> $tschema,
+				'schema' 	=> $app['tschema'],
 			];
 
 			$sha512 = hash('sha512', $password);
@@ -202,7 +201,7 @@ if ($submit)
 			}
 			else if ($user['password'] != $sha512)
 			{
-				$app['db']->update($tschema . '.users',
+				$app['db']->update($app['tschema'] . '.users',
 					['password' => hash('sha512', $password)],
 					['id' => $user['id']]);
 
@@ -222,7 +221,7 @@ if ($submit)
 	}
 
 	if (!count($errors)
-		&& $app['config']->get('maintenance', $tschema)
+		&& $app['config']->get('maintenance', $app['tschema'])
 		&& $user['accountrole'] != 'admin')
 	{
 		$errors[] = 'De website is in onderhoud, probeer later opnieuw';
@@ -231,23 +230,23 @@ if ($submit)
 	if (!count($errors))
 	{
 		$logins = $app['session']->get('logins');
-		$logins[$tschema] = $user['id'];
+		$logins[$app['tschema']] = $user['id'];
 		$app['session']->set('logins', $logins);
 
 		$s_id = $user['id'];
-		$s_schema = $tschema;
+		$s_schema = $app['tschema'];
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
 		$app['monolog']->info('User ' .
-			link_user($user, $tschema, false, true) .
+			link_user($user, $app['tschema'], false, true) .
 			' logged in, agent: ' . $browser, $log_ary);
 
-		$app['db']->update($tschema . '.users',
+		$app['db']->update($app['tschema'] . '.users',
 			['lastlogin' => gmdate('Y-m-d H:i:s')],
 			['id' => $user['id']]);
 
-		$app['user_cache']->clear($user['id'], $tschema);
+		$app['user_cache']->clear($user['id'], $app['tschema']);
 
 		$app['xdb']->set('login', $user['id'], [
 			'browser' => $browser, 'time' => time()
@@ -264,7 +263,7 @@ if ($submit)
 	$app['alert']->error($errors);
 }
 
-if($app['config']->get('maintenance', $tschema))
+if($app['config']->get('maintenance', $app['tschema']))
 {
 	$app['alert']->warning('De website is niet beschikbaar
 		wegens onderhoudswerken.  Enkel admins kunnen inloggen');

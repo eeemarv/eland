@@ -29,8 +29,6 @@ chdir(__DIR__);
 $page_access = 'anonymous';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 if ($step == 2 || $step == 3)
 {
 	error_log(' -- Sync the image files. --');
@@ -45,7 +43,7 @@ if ($step == 1)
 	$schemaversion = 31000;
 
 	$currentversion = $dbversion = $app['db']->fetchColumn('select value
-		from ' . $tschema . '.parameters
+		from ' . $app['tschema'] . '.parameters
 		where parameter = \'schemaversion\'');
 
 	if ($currentversion >= $schemaversion)
@@ -62,14 +60,14 @@ if ($step == 1)
 		{
 			$currentversion++;
 
-			$app['elas_db_upgrade']->run($currentversion, $tschema);
+			$app['elas_db_upgrade']->run($currentversion, $app['tschema']);
 		}
 
 		$m = 'Upgraded database from schema version ' .
 			$dbversion . ' to ' . $currentversion;
 
 		error_log(' -- ' . $m . ' -- ');
-		$app['monolog']->info('DB: ' . $m, ['schema' => $tschema]);
+		$app['monolog']->info('DB: ' . $m, ['schema' => $app['tschema']]);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=2');
@@ -80,7 +78,7 @@ else if ($step == 2)
 	$found = false;
 
 	$rs = $app['db']->prepare('select id, "PictureFile"
-		from ' . $tschema . '.users
+		from ' . $app['tschema'] . '.users
 		where "PictureFile" is not null
 		order by id asc
 		limit 50 offset ' . $start);
@@ -113,7 +111,7 @@ else if ($step == 2)
 
 		if (!$found)
 		{
-			$app['db']->update($tschema . '.users',
+			$app['db']->update($app['tschema'] . '.users',
 				['"PictureFile"' => null], ['id' => $user_id]);
 
 			error_log(' -- Profile image not present,
@@ -122,11 +120,11 @@ else if ($step == 2)
 			$app['monolog']->info('cron: Profile image file of user ' .
 				$user_id . ' was not found in bucket: deleted
 				from database. Deleted filename : ' .
-				$filename, ['schema' => $tschema]);
+				$filename, ['schema' => $app['tschema']]);
 		}
-		else if ($f_schema != $tschema)
+		else if ($f_schema !== $app['tschema'])
 		{
-			$new_filename = $tschema . '_u_' . $user_id .
+			$new_filename = $app['tschema'] . '_u_' . $user_id .
 				'_' . sha1(time() . $filename) . '.jpg';
 
 			$err = $app['s3']->img_copy($filename_bucket, $new_filename);
@@ -136,12 +134,12 @@ else if ($step == 2)
 				error_log(' -- error: ' . $err . ' -- ');
 
 				$app['monolog']->info('init: copy img error: ' .
-					$err, ['schema' => $tschema]);
+					$err, ['schema' => $app['tschema']]);
 
 				continue;
 			}
 
-			$app['db']->update($tschema . '.users',
+			$app['db']->update($app['tschema'] . '.users',
 				['"PictureFile"' => $new_filename],
 				['id' => $user_id]);
 
@@ -150,7 +148,7 @@ else if ($step == 2)
 
 			$app['monolog']->info('init: Profile image file renamed, Old: ' .
 				$filename . ' New: ' . $new_filename,
-				['schema' => $tschema]);
+				['schema' => $app['tschema']]);
 		}
 	}
 
@@ -169,7 +167,7 @@ else if ($step == 3)
 {
 
 	$message_images = $app['db']->fetchAll('select id, msgid, "PictureFile"
-		from ' . $tschema . '.msgpictures
+		from ' . $app['tschema'] . '.msgpictures
 		order by id asc
 		limit 50 offset ' . $start);
 
@@ -205,7 +203,7 @@ else if ($step == 3)
 
 		if (!$found)
 		{
-			$app['db']->delete($tschema . '.msgpictures',
+			$app['db']->delete($app['tschema'] . '.msgpictures',
 				['id' => $id]);
 
 			error_log(' -- Message image not present,
@@ -213,11 +211,11 @@ else if ($step == 3)
 
 			$app['monolog']->info('init: Image file of message ' . $msg_id .
 				' not found in bucket: deleted from database. Deleted : ' .
-				$filename . ' id: ' . $id, ['schema' => $tschema]);
+				$filename . ' id: ' . $id, ['schema' => $app['tschema']]);
 		}
-		else if ($f_schema != $tschema)
+		else if ($f_schema !== $app['tschema'])
 		{
-			$new_filename = $tschema . '_m_' .
+			$new_filename = $app['tschema'] . '_m_' .
 				$msg_id . '_' . sha1(time() .
 				$filename) . '.jpg';
 
@@ -228,18 +226,18 @@ else if ($step == 3)
 				error_log(' -- error: ' . $err . ' -- ');
 
 				$app['monolog']->info('init: copy img error: ' . $err,
-					['schema' => $tschema]);
+					['schema' => $app['tschema']]);
 				continue;
 			}
 
-			$app['db']->update($tschema . '.msgpictures',
+			$app['db']->update($app['tschema'] . '.msgpictures',
 				['"PictureFile"' => $new_filename], ['id' => $id]);
 
 			error_log('Profile image renamed, old: ' .
 				$filename . ' new: ' . $new_filename);
 
 			$app['monolog']->info('init: Message image file renamed, Old : ' .
-				$filename . ' New: ' . $new_filename, ['schema' => $tschema]);
+				$filename . ' New: ' . $new_filename, ['schema' => $app['tschema']]);
 
 		}
 	}
@@ -257,11 +255,11 @@ else if ($step == 4)
 	error_log('*** clear users cache ***');
 
 	$users = $app['db']->fetchAll('select id
-		from ' . $tschema . '.users');
+		from ' . $app['tschema'] . '.users');
 
 	foreach ($users as $u)
 	{
-		$app['predis']->del($tschema . '_user_' . $u['id']);
+		$app['predis']->del($app['tschema'] . '_user_' . $u['id']);
 	}
 
 	header('Location: ' . $rootpath . 'init.php?step=5');
@@ -270,7 +268,7 @@ else if ($step == 4)
 else if ($step == 5)
 {
 	$app['db']->executeQuery('delete from ' .
-		$tschema . '.tokens');
+		$app['tschema'] . '.tokens');
 
 	error_log('*** empty tokens table (is not used anymore) *** ');
 
@@ -280,7 +278,7 @@ else if ($step == 5)
 else if ($step == 6)
 {
 	$app['db']->executeQuery('delete from ' .
-		$tschema . '.city_distance');
+		$app['tschema'] . '.city_distance');
 
 	error_log('*** empty city_distance table (is not used anymore) *** ');
 
@@ -292,8 +290,8 @@ else if ($step == 7)
 	error_log('*** Queue for Geocoding, start: ' . $start . ' ***');
 
 	$rs = $app['db']->prepare('select c.id_user, c.value
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and tc.abbrev = \'adr\'
 		order by c.id_user asc
@@ -308,7 +306,7 @@ else if ($step == 7)
 		$app['queue.geocode']->cond_queue([
 			'adr'		=> $row['value'],
 			'uid'		=> $row['id_user'],
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 		]);
 
 		$more_geocoding = true;

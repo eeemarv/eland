@@ -4,8 +4,6 @@ $rootpath = '';
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $fa = 'files-o';
 
 $q = $_GET['q'] ?? '';
@@ -29,7 +27,7 @@ if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] ||
 
 if ($map_edit)
 {
-	$row = $app['xdb']->get('doc', $map_edit, $tschema);
+	$row = $app['xdb']->get('doc', $map_edit, $app['tschema']);
 
 	if ($row)
 	{
@@ -61,7 +59,7 @@ if ($map_edit)
 		if (!count($errors))
 		{
 
-			$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]);
@@ -76,12 +74,12 @@ if ($map_edit)
 		{
 			$app['xdb']->set('doc', $map_edit, [
 					'map_name' => $posted_map_name
-				], $tschema);
+				], $app['tschema']);
 
 			$app['alert']->success('Map naam aangepast.');
 
 			$app['typeahead']->delete_thumbprint('doc_map_names', [
-				'schema' => $tschema,
+				'schema' => $app['tschema'],
 			]);
 
 			cancel($map_edit);
@@ -110,7 +108,7 @@ if ($map_edit)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="map_name" name="map_name" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
 	echo '" ';
 	echo 'value="';
 	echo $map_name;
@@ -138,7 +136,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $app['xdb']->get('doc', $edit, $tschema);
+	$row = $app['xdb']->get('doc', $edit, $app['tschema']);
 
 	if ($row)
 	{
@@ -170,7 +168,7 @@ if ($edit)
 			if (strlen($map_name))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $tschema,
+					'agg_schema' => $app['tschema'],
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
 				if (count($rows))
@@ -182,9 +180,9 @@ if ($edit)
 				{
 					$map = ['map_name' => $map_name];
 
-					$mid = substr(sha1(microtime() . $tschema . $map_name), 0, 24);
+					$mid = substr(sha1(microtime() . $app['tschema'] . $map_name), 0, 24);
 
-					$app['xdb']->set('doc', $mid, $map, $tschema);
+					$app['xdb']->set('doc', $mid, $map, $app['tschema']);
 
 					$map['id'] = $mid;
 				}
@@ -201,19 +199,19 @@ if ($edit)
 					|| !strlen($map_name)))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $tschema,
+					'agg_schema' => $app['tschema'],
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
 				{
-					$app['xdb']->del('doc', $doc['map_id'], $tschema);
+					$app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
 				}
 			}
 
-			$app['xdb']->set('doc', $edit, $update, $tschema);
+			$app['xdb']->set('doc', $edit, $update, $app['tschema']);
 
 			$app['typeahead']->delete_thumbprint('doc_map_names', [
-				'schema' => $tschema,
+				'schema' => $app['tschema'],
 			]);
 
 			$app['alert']->success('Document aangepast');
@@ -229,7 +227,7 @@ if ($edit)
 		$map_id = $doc['map_id'];
 
 		$map = $app['xdb']->get('doc', $map_id,
-			$tschema)['data'];
+			$app['tschema'])['data'];
 	}
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
@@ -297,7 +295,7 @@ if ($edit)
 	echo $map_name;
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map ';
@@ -327,7 +325,7 @@ if ($confirm_del && $del)
 		cancel();
 	}
 
-	$row = $app['xdb']->get('doc', $del, $tschema);
+	$row = $app['xdb']->get('doc', $del, $app['tschema']);
 
 	if ($row)
 	{
@@ -341,28 +339,28 @@ if ($confirm_del && $del)
 		if ($err)
 		{
 			$app['monolog']->error('doc delete file fail: ' . $err,
-				['schema' => $tschema]);
+				['schema' => $app['tschema']]);
 		}
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
 			if (count($rows) < 2)
 			{
-				$app['xdb']->del('doc', $doc['map_id'], $tschema);
+				$app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
 
 				$app['typeahead']->delete_thumbprint('doc_map_names', [
-					'schema' => $tschema,
+					'schema' => $app['tschema'],
 				]);
 
 				unset($doc['map_id']);
 			}
 		}
 
-		$app['xdb']->del('doc', $del, $tschema);
+		$app['xdb']->del('doc', $del, $app['tschema']);
 
 		$app['alert']->success('Het document werd verwijderd.');
 
@@ -374,7 +372,7 @@ if ($confirm_del && $del)
 
 if ($del)
 {
-	$row = $app['xdb']->get('doc', $del, $tschema);
+	$row = $app['xdb']->get('doc', $del, $app['tschema']);
 
 	if ($row)
 	{
@@ -458,7 +456,7 @@ if ($submit)
 	{
 		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
-		$filename = $tschema . '_d_' . $doc_id . '.' . $ext;
+		$filename = $app['tschema'] . '_d_' . $doc_id . '.' . $ext;
 
 		$error = $app['s3']->doc_upload($filename, $tmpfile);
 
@@ -466,7 +464,7 @@ if ($submit)
 		{
 			$app['monolog']->error('doc upload fail: ' . $error);
 			$app['alert']->error('Bestand opladen mislukt.',
-				['schema' => $tschema]);
+				['schema' => $app['tschema']]);
 		}
 		else
 		{
@@ -481,7 +479,7 @@ if ($submit)
 
 			if (strlen($map_name))
 			{
-				$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+				$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -497,10 +495,10 @@ if ($submit)
 
 					$map = ['map_name' => $map_name];
 
-					$app['xdb']->set('doc', $map_id, $map, $tschema);
+					$app['xdb']->set('doc', $map_id, $map, $app['tschema']);
 
 					$app['typeahead']->delete_thumbprint('doc_map_names', [
-						'schema' => $tschema,
+						'schema' => $app['tschema'],
 					]);
 				}
 
@@ -514,7 +512,7 @@ if ($submit)
 				$doc['name'] = $name;
 			}
 
-			$app['xdb']->set('doc', $doc_id, $doc, $tschema);
+			$app['xdb']->set('doc', $doc_id, $doc, $app['tschema']);
 
 
 			$app['alert']->success('Het bestand is opgeladen.');
@@ -532,7 +530,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $app['xdb']->get('doc', $map, $tschema);
+		$row = $app['xdb']->get('doc', $map, $app['tschema']);
 
 		if ($row)
 		{
@@ -587,7 +585,7 @@ if ($add)
 	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $tschema]]]);
+	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map of ';
@@ -617,7 +615,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $app['xdb']->get('doc', $map, $tschema);
+	$row = $app['xdb']->get('doc', $map, $app['tschema']);
 
 	if ($row)
 	{
@@ -630,7 +628,7 @@ if ($map)
 		cancel();
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
 		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
@@ -656,7 +654,7 @@ if ($map)
 }
 else
 {
-	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -677,7 +675,7 @@ else
 		}
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
 		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
@@ -817,8 +815,8 @@ if (!$map && count($maps))
 if (count($docs))
 {
 	$show_visibility = ($s_user
-		&& $app['config']->get('template_lets', $tschema)
-		&& $app['config']->get('interlets_en', $tschema))
+		&& $app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('interlets_en', $app['tschema']))
 		|| $s_admin ? true : false;
 
 	echo '<div class="panel panel-default printview">';

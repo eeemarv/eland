@@ -17,9 +17,7 @@ if ($approve)
 
 	require_once __DIR__ . '/include/web.php';
 
-	$tschema = $app['this_group']->get_schema();
-
-	if ($app['db']->update($tschema . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
+	if ($app['db']->update($app['tschema'] . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
 		$app['alert']->success('Nieuwsbericht goedgekeurd');
 	}
@@ -38,8 +36,6 @@ if ($add || $edit)
 {
 	$page_access = 'user';
 	require_once __DIR__ . '/include/web.php';
-
-	$tschema = $app['this_group']->get_schema();
 
 	$news = [];
 
@@ -110,27 +106,27 @@ if ($add && $submit && !count($errors))
 	$news['id_user'] = $s_master ? 0 : $s_id;
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
-	if ($app['db']->insert($tschema . '.news', $news))
+	if ($app['db']->insert($app['tschema'] . '.news', $news))
 	{
-		$id = $app['db']->lastInsertId($tschema . '.news_id_seq');
+		$id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
 
 		$app['xdb']->set('news_access', $id, [
 			'access' => $_POST['access']
-		], $tschema);
+		], $app['tschema']);
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
 		if(!$s_admin)
 		{
 			$vars = [
-				'group'		=> $app['template_vars']->get($tschema),
+				'group'		=> $app['template_vars']->get($app['tschema']),
 				'news'		=> $news,
 				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,
 			];
 
 			$app['queue.mail']->queue([
-				'schema'	=> $tschema,
-				'to' 		=> $app['mail_addr_system']->get_newsadmin($tschema),
+				'schema'	=> $app['tschema'],
+				'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
 				'template'	=> 'admin_news_approve',
 				'vars'		=> $vars,
 			], 7000);
@@ -148,11 +144,11 @@ if ($add && $submit && !count($errors))
 
 if ($edit && $submit && !count($errors))
 {
-	if($app['db']->update($tschema . '.news', $news, ['id' => $edit]))
+	if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $edit]))
 	{
 		$app['xdb']->set('news_access', $edit, [
 			'access' => $_POST['access']
-		], $tschema);
+		], $app['tschema']);
 
 		$app['alert']->success('Nieuwsbericht aangepast.');
 		cancel($edit);
@@ -166,12 +162,12 @@ if ($edit && $submit && !count($errors))
 if ($edit)
 {
 	$news = $app['db']->fetchAssoc('select *
-		from ' . $tschema . '.news
+		from ' . $app['tschema'] . '.news
 		where id = ?', [$edit]);
 	[$news['itemdate']] = explode(' ', $news['itemdate']);
 
 	$news_access = $app['xdb']->get('news_access', $edit,
-		$tschema)['data']['access'];
+		$app['tschema'])['data']['access'];
 }
 
 if ($add && !$submit)
@@ -294,8 +290,6 @@ if ($del)
 	$page_access = 'admin';
 	require_once __DIR__ . '/include/web.php';
 
-	$tschema = $app['this_group']->get_schema();
-
 	if ($submit)
 	{
 		if ($error_token = $app['form_token']->get_error())
@@ -304,9 +298,9 @@ if ($del)
 			cancel();
 		}
 
-		if($app['db']->delete($tschema . '.news', ['id' => $del]))
+		if($app['db']->delete($app['tschema'] . '.news', ['id' => $del]))
 		{
-			$app['xdb']->del('news_access', $del, $tschema);
+			$app['xdb']->del('news_access', $del, $app['tschema']);
 
 			$app['alert']->success('Nieuwsbericht verwijderd.');
 			cancel();
@@ -316,11 +310,11 @@ if ($del)
 	}
 
 	$news = $app['db']->fetchAssoc('select n.*
-		from ' . $tschema . '.news n
+		from ' . $app['tschema'] . '.news n
 		where n.id = ?', [$del]);
 
 	$news_access = $app['xdb']->get('news_access', $del,
-		$tschema)['data']['access'];
+		$app['tschema'])['data']['access'];
 
 	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
 	$fa = 'calendar-o';
@@ -352,7 +346,7 @@ if ($del)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news['id_user'], $tschema);
+	echo link_user($news['id_user'], $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Goedgekeurd</dt>';
@@ -404,17 +398,15 @@ if ($del)
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $show_visibility = ($s_user
-	&& $app['config']->get('template_lets', $tschema)
-	&& $app['config']->get('interlets_en', $tschema))
+	&& $app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']))
 	|| $s_admin ? true : false;
 
 $news_access_ary = $no_access_ary = [];
 
 $rows = $app['xdb']->get_many([
-	'agg_schema' => $tschema,
+	'agg_schema' => $app['tschema'],
 	'agg_type' => 'news_access',
 ]);
 
@@ -424,7 +416,7 @@ foreach ($rows as $row)
 	$news_access_ary[$row['eland_id']] = $access;
 }
 
-$query = 'select * from ' . $tschema . '.news';
+$query = 'select * from ' . $app['tschema'] . '.news';
 
 if(!$s_admin)
 {
@@ -432,7 +424,7 @@ if(!$s_admin)
 }
 
 $query .= ' order by itemdate ';
-$query .= $app['config']->get('news_order_asc', $tschema) === '1' ? 'asc' : 'desc';
+$query .= $app['config']->get('news_order_asc', $app['tschema']) === '1' ? 'asc' : 'desc';
 
 $st = $app['db']->prepare($query);
 $st->execute();
@@ -446,7 +438,7 @@ while ($row = $st->fetch())
 	{
 		$app['xdb']->set('news_access', $news_id, [
 			'access' => 'interlets',
-		], $tschema);
+		], $app['tschema']);
 		$news[$k]['access'] = 'interlets';
 	}
 	else
@@ -570,7 +562,7 @@ if ($id)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news_item['id_user'], $tschema);
+	echo link_user($news_item['id_user'], $app['tschema']);
 	echo '</dd>';
 
 	if ($s_admin)
@@ -772,7 +764,7 @@ else if ($v_extended)
 
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i> ';
-		echo link_user($n['id_user'], $tschema);
+		echo link_user($n['id_user'], $app['tschema']);
 
 		if ($s_admin)
 		{

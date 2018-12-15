@@ -3,8 +3,6 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $edit = $_GET['edit'] ?? false;
 $del = $_GET['del'] ?? false;
 $add = isset($_GET['add']) ? true : false;
@@ -28,7 +26,7 @@ if ($add)
 
 		if (!$error)
 		{
-			if ($app['db']->insert($tschema . '.type_contact', $tc))
+			if ($app['db']->insert($app['tschema'] . '.type_contact', $tc))
 			{
 				$app['alert']->success('Contact type toegevoegd.');
 			}
@@ -90,7 +88,7 @@ if ($add)
 if ($edit)
 {
 	$tc_prefetch = $app['db']->fetchAssoc('select *
-		from ' . $tschema . '.type_contact
+		from ' . $app['tschema'] . '.type_contact
 		where id = ?', [$edit]);
 
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
@@ -119,7 +117,9 @@ if ($edit)
 
 		if (!$error)
 		{
-			if ($app['db']->update($tschema . '.type_contact', $tc, ['id' => $edit]))
+			if ($app['db']->update($app['tschema'] . '.type_contact',
+				$tc,
+				['id' => $edit]))
 			{
 				$app['alert']->success('Contact type aangepast.');
 
@@ -186,7 +186,7 @@ if ($edit)
 if ($del)
 {
 	$ct = $app['db']->fetchAssoc('select *
-		from ' . $tschema . '.type_contact
+		from ' . $app['tschema'] . '.type_contact
 		where id = ?', [$del]);
 
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
@@ -196,7 +196,7 @@ if ($del)
 	}
 
 	if ($app['db']->fetchColumn('select id
-		from ' . $tschema . '.contact
+		from ' . $app['tschema'] . '.contact
 		where id_type_contact = ?', [$del]))
 	{
 		$app['alert']->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
@@ -211,7 +211,7 @@ if ($del)
 			cancel();
 		}
 
-		if ($app['db']->delete($tschema . '.type_contact', ['id' => $del]))
+		if ($app['db']->delete($app['tschema'] . '.type_contact', ['id' => $del]))
 		{
 			$app['alert']->success('Contact type verwijderd.');
 		}
@@ -245,12 +245,12 @@ if ($del)
 }
 
 $types = $app['db']->fetchAll('select *
-	from ' . $tschema . '.type_contact tc');
+	from ' . $app['tschema'] . '.type_contact tc');
 
 $contact_count = [];
 
 $rs = $app['db']->prepare('select distinct id_type_contact, count(id)
-	from ' . $tschema . '.contact
+	from ' . $app['tschema'] . '.contact
 	group by id_type_contact');
 $rs->execute();
 
@@ -259,7 +259,13 @@ while($row = $rs->fetch())
 	$contact_count[$row['id_type_contact']] = $row['count'];
 }
 
-$top_buttons .= aphp('type_contact', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact type toevoegen', 'plus', true);
+$top_buttons .= aphp('type_contact',
+	['add' => 1],
+	'Toevoegen',
+	'btn btn-success',
+	'Contact type toevoegen',
+	'plus',
+	true);
 
 $h1 = 'Contact types';
 $fa = 'circle-o-notch';

@@ -5,13 +5,11 @@ set_time_limit(60);
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $export_ary = [
 	'users'		=> [
 		'label'		=> 'Gebruikers',
 		'sql'		=> 'select *
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			order by letscode',
 		'columns'	=> [
 			'letscode',
@@ -36,9 +34,9 @@ $export_ary = [
 	'contacts'	=> [
 		'label'	=> 'Contactgegevens',
 		'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
-			from ' . $tschema . '.contact c, ' .
-				$tschema . '.type_contact tc, ' .
-				$tschema . '.users u
+			from ' . $app['tschema'] . '.contact c, ' .
+				$app['tschema'] . '.type_contact tc, ' .
+				$app['tschema'] . '.users u
 			where c.id_type_contact = tc.id
 				and c.id_user = u.id',
 		'columns'	=> [
@@ -52,7 +50,7 @@ $export_ary = [
 	],
 	'categories'	=> [
 		'label'		=> 'Categorieën',
-		'sql'		=> 'select * from ' . $tschema . '.categories',
+		'sql'		=> 'select * from ' . $app['tschema'] . '.categories',
 		'columns'	=> [
 			'name',
 			'id_parent',
@@ -65,8 +63,8 @@ $export_ary = [
 	'messages'	=> [
 		'label'		=> 'Vraag en Aanbod',
 		'sql'		=> 'select m.*, u.name as username, u.letscode
-			from ' . $tschema . '.messages m, ' .
-				$tschema . '.users u
+			from ' . $app['tschema'] . '.messages m, ' .
+				$app['tschema'] . '.users u
 			where m.id_user = u.id
 				and validity > ?',
 		'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
@@ -85,9 +83,9 @@ $export_ary = [
 							concat(fu.letscode, \' \', fu.name) as from_user,
 							concat(tu.letscode, \' \', tu.name) as to_user,
 							t.cdate, t.real_from, t.real_to, t.amount
-						from ' . $tschema . '.transactions t, ' .
-							$tschema . '.users fu, ' .
-							$tschema . '.users tu
+						from ' . $app['tschema'] . '.transactions t, ' .
+							$app['tschema'] . '.users fu, ' .
+							$app['tschema'] . '.users tu
 						where t.id_to = tu.id
 							and t.id_from = fu.id
 						order by t.date desc',
@@ -111,9 +109,9 @@ foreach ($export_ary as $ex_key => $export)
 {
 	if (isset($_GET['db']) && function_exists('exec'))
 	{
-		$filename = $tschema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 4) . '.sql';
+		$filename = $app['tschema'] . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 4) . '.sql';
 
-		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $tschema . ' --no-owner --no-acl > ' . $filename);
+		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $app['tschema'] . ' --no-owner --no-acl > ' . $filename);
 
 		header('Content-disposition: attachment; filename=' . $filename);
 		header('Content-Type: application/force-download');
@@ -137,7 +135,7 @@ foreach ($export_ary as $ex_key => $export)
 
 		unlink($filename);
 
-		$app['monolog']->info('db downloaded', ['schema' => $tschema]);
+		$app['monolog']->info('db downloaded', ['schema' => $app['tschema']]);
 
 		exit;
 	}
@@ -180,7 +178,7 @@ foreach ($export_ary as $ex_key => $export)
 		echo $out;
 
 		$app['monolog']->info('csv ' . $ex_key . ' exported.',
-			['schema' => $tschema]);
+			['schema' => $app['tschema']]);
 
 		exit;
 	}

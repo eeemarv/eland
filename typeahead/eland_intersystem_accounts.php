@@ -3,11 +3,10 @@ $rootpath = '../';
 $page_access = 'user';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
 $schema = $_GET['schema'] ?? '';
 $remote_schema = $_GET['remote_schema'] ?? '';
 
-if ($schema !== $tschema || !$schema)
+if ($schema !== $app['tschema'] || !$schema)
 {
 	http_response_code(404);
 	exit;
@@ -22,7 +21,8 @@ if (!$remote_schema)
 if (!isset($eland_interlets_groups[$remote_schema]))
 {
 	$app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
-		$remote_schema . ' not valid', ['schema' => $tschema]);
+		$remote_schema . ' not valid',
+		['schema' => $app['tschema']]);
 	http_response_code(404);
 	exit;
 }

@@ -3,8 +3,6 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $q = $_GET['q'] ?? '';
 $code = $_GET['code'] ?? '';
 $type = $_GET['type'] ?? '';
@@ -26,7 +24,7 @@ $params = [
 
 $params_sql = $where_sql = [];
 
-$params_sql[] = $tschema;
+$params_sql[] = $app['tschema'];
 
 if ($code)
 {
@@ -162,7 +160,8 @@ echo 'Type</span>';
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get([['log_types', ['schema' => $tschema]]]);
+echo $app['typeahead']->get([['log_types',
+	['schema' => $app['tschema']]]]);
 echo '" ';
 echo 'name="type" id="type" placeholder="Type" ';
 echo 'value="';
@@ -178,7 +177,7 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -193,7 +192,7 @@ echo 'data-typeahead="';
 echo $app['typeahead']->get($typeahead_ary);
 echo '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $tschema);
+echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
 echo 'name="code" id="code" placeholder="Account Code" ';
 echo 'value="';

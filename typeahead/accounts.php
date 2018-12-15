@@ -3,11 +3,10 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
 $schema = $_GET['schema'] ?? '';
 $status = $_GET['status'] ?? '';
 
-if ($schema !== $tschema || !$schema)
+if ($schema !== $app['tschema'] || !$schema)
 {
 	http_response_code(404);
 	exit;
@@ -62,7 +61,7 @@ $fetched_users = $app['db']->fetchAll(
 		saldo as b,
 		minlimit as min,
 		maxlimit as max
-	from ' . $tschema . '.users
+	from ' . $app['tschema'] . '.users
 	where status ' . $status_sql . '
 	order by id asc'
 );

@@ -4,11 +4,9 @@ $page_access = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $token = $_GET['token'] ?? false;
 
-if (!$app['config']->get('contact_form_en', $tschema))
+if (!$app['config']->get('contact_form_en', $app['tschema']))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
 	redirect_login();
@@ -16,7 +14,7 @@ if (!$app['config']->get('contact_form_en', $tschema))
 
 if ($token)
 {
-	$key = $tschema . '_contact_' . $token;
+	$key = $app['tschema'] . '_contact_' . $token;
 	$data = $app['predis']->get($key);
 
 	if ($data)
@@ -31,7 +29,7 @@ if ($token)
 			'email'			=> $data['email'],
 		];
 
-		$app['xdb']->set('email_validated', $data['email'], $ev_data, $tschema);
+		$app['xdb']->set('email_validated', $data['email'], $ev_data, $app['tschema']);
 
 		$vars = [
 			'message'		=> $data['message'],
@@ -39,27 +37,27 @@ if ($token)
 			'ip'			=> $data['ip'],
 			'browser'		=> $data['browser'],
 			'email'			=> $data['email'],
-			'group'			=> $app['template_vars']->get($tschema),
+			'group'			=> $app['template_vars']->get($app['tschema']),
 		];
 
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 			'template'	=> 'contact_copy',
 			'vars'		=> $vars,
 			'to'		=> [$data['email']],
 		]);
 
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 			'template'	=> 'contact',
 			'vars'		=> $vars,
-			'to'		=> $app['mail_addr_system']->get_support($tschema),
+			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
 			'reply_to'	=> [$data['email']],
 		]);
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
-		$success_text = $app['config']->get('contact_form_success_text', $tschema);
+		$success_text = $app['config']->get('contact_form_success_text', $app['tschema']);
 
 		header('Location: ' . generate_url('contact'));
 		exit;
@@ -103,7 +101,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$errors[] = 'Geef een bericht in.';
 	}
 
-	if (!trim($app['config']->get('support', $tschema)))
+	if (!trim($app['config']->get('support', $app['tschema'])))
 	{
 		$errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
 	}
@@ -122,23 +120,23 @@ if($app['is_http_post'] && isset($_POST['zend']))
 			'ip'		=> $ip,
 		];
 
-		$token = substr(hash('sha512', $tschema . microtime()), 0, 10);
-		$key = $tschema . '_contact_' . $token;
+		$token = substr(hash('sha512', $app['tschema'] . microtime()), 0, 10);
+		$key = $app['tschema'] . '_contact_' . $token;
 		$app['predis']->set($key, json_encode($contact));
 		$app['predis']->expire($key, 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' .
 			$email . '(not confirmed yet) content: ' .
-			$html, ['schema' => $tschema]);
+			$html, ['schema' => $app['tschema']]);
 
 		$vars = [
-			'group' 		=> $app['template_vars']->get($tschema),
+			'group' 		=> $app['template_vars']->get($app['tschema']),
 			'contact_url'	=> $app['base_url'] . '/contact.php',
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
 		];
 
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 			'to' 		=> [$email],
 			'template'	=> 'contact_confirm',
 			'vars'		=> $vars,
@@ -162,13 +160,13 @@ else
 	$email = '';
 }
 
-if (!$app['config']->get('mailenabled', $tschema))
+if (!$app['config']->get('mailenabled', $app['tschema']))
 {
 	$app['alert']->warning('E-mail functies zijn
 		uitgeschakeld door de beheerder.
 		Je kan dit formulier niet gebruiken');
 }
-else if (!$app['config']->get('support', $tschema))
+else if (!$app['config']->get('support', $app['tschema']))
 {
 	$app['alert']->warning('Er is geen support E-mail adres
 		ingesteld door de beheerder.
@@ -180,7 +178,7 @@ $fa = 'comment-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = $app['config']->get('contact_form_top_text', $tschema);
+$top_text = $app['config']->get('contact_form_top_text', $app['tschema']);
 
 if ($top_text)
 {
@@ -226,7 +224,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = $app['config']->get('contact_form_bottom_text', $tschema);
+$bottom_text = $app['config']->get('contact_form_bottom_text', $app['tschema']);
 
 if ($bottom_text)
 {
