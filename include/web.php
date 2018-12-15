@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-$app['page_access'] = $page_access;
+$app['page_access'] = $app['page_access'];
 
 $header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
 $header_allow_origin .= $app['s3_protocol'] . $app['s3_doc'];
@@ -31,7 +31,7 @@ $app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name'])
 if ($app['script_name'] == 'index'
 	&& getenv('HOSTING_FORM_' . $app['env_server_name']))
 {
-	$page_access = 'anonymous';
+	$app['page_access'] = 'anonymous';
 	$hosting_form = true;
 	return;
 }
@@ -137,7 +137,7 @@ if (!count($app['s_logins']))
 
 if (!$app['s_id'])
 {
-	if ($page_access != 'anonymous')
+	if ($app['page_access'] != 'anonymous')
 	{
 		if (isset($app['s_logins'][$app['s_schema']])
 			&& ctype_digit((string) $app['s_logins'][$app['s_schema']]))
@@ -259,7 +259,7 @@ else
 
 /** page access **/
 
-if (!isset($page_access))
+if (!isset($app['page_access']))
 {
 	http_response_code(500);
 
@@ -271,7 +271,7 @@ switch ($app['s_accountrole'])
 {
 	case 'anonymous':
 
-		if ($page_access != 'anonymous')
+		if ($app['page_access'] != 'anonymous')
 		{
 			redirect_login();
 		}
@@ -280,7 +280,7 @@ switch ($app['s_accountrole'])
 
 	case 'guest':
 
-		if ($page_access != 'guest')
+		if ($app['page_access'] != 'guest')
 		{
 			redirect_default_page();
 		}
@@ -289,7 +289,7 @@ switch ($app['s_accountrole'])
 
 	case 'user':
 
-		if (!($page_access == 'user' || $page_access == 'guest'))
+		if (!($app['page_access'] == 'user' || $app['page_access'] == 'guest'))
 		{
 			redirect_default_page();
 		}
@@ -298,7 +298,7 @@ switch ($app['s_accountrole'])
 
 	case 'admin':
 
-		if ($page_access == 'anonymous')
+		if ($app['page_access'] == 'anonymous')
 		{
 			redirect_default_page();
 		}
@@ -349,7 +349,7 @@ if ($app['s_group_self'] && $app['s_guest'])
 $count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
 $app['count_interlets_groups'] = $count_interlets_groups;
 
-if ($page_access != 'anonymous'
+if ($app['page_access'] != 'anonymous'
 	&& !$app['s_group_self']
 	&& !$eland_interlets_groups[$app['tschema']])
 {
@@ -358,7 +358,7 @@ if ($page_access != 'anonymous'
 	exit;
 }
 
-if ($page_access != 'anonymous' && !$app['s_admin']
+if ($app['page_access'] != 'anonymous' && !$app['s_admin']
 	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');
