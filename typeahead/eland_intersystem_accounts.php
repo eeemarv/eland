@@ -18,7 +18,7 @@ if (!$remote_schema)
 	exit;
 }
 
-if (!isset($eland_interlets_groups[$remote_schema]))
+if (!isset($app['intersystem_ary']['eland'][$remote_schema]))
 {
 	$app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
 		$remote_schema . ' not valid',

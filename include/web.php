@@ -124,7 +124,6 @@ $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 /** access user **/
 
 $app['s_logins'] = $app['session']->get('logins') ?? [];
-
 $app['s_master'] = $app['s_elas_guest'] = false;
 
 if (!count($app['s_logins']))
@@ -179,7 +178,8 @@ else if (!isset($app['s_logins'][$app['s_schema']]))
 		redirect_login();
 	}
 }
-else if ($app['s_logins'][$app['s_schema']] != $app['s_id'] || !$app['s_id'])
+else if ($app['s_logins'][$app['s_schema']] != $app['s_id']
+	|| !$app['s_id'])
 {
 	$app['s_id'] = $app['s_logins'][$app['s_schema']];
 
@@ -330,39 +330,50 @@ $errors = [];
  * check access to interSystems
  **/
 
-$app['s_intersystems'] = [
-	'eland'	=> [],
+$app['intersystem_ary'] = [
 	'elas'	=> [],
+	'eland'	=> [],
 ];
 
 if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 {
-	$elas_interlets_groups = $app['interlets_groups']->get_elas($app['s_schema']);
-	$eland_interlets_groups = $app['interlets_groups']->get_eland($app['s_schema']);
+	$app['intersystem_ary'] = [
+		'elas'	=> $app['interlets_groups']->get_elas($app['s_schema']),
+		'eland'	=> $app['interlets_groups']->get_eland($app['s_schema']),
+	];
 }
 else
 {
-	$elas_interlets_groups = $eland_interlets_groups = [];
+	$app['intersystem_ary'] = [
+		'elas'	=> [],
+		'eland'	=> [],
+	];
 }
 
 if ($app['s_group_self'] && $app['s_guest'])
 {
-	$elas_interlets_groups = $eland_interlets_groups = [];
+	$app['intersystem_ary'] = [
+		'elas'	=> [],
+		'eland'	=> [],
+	];
 }
 
-$app['count_intersystems'] = count($eland_interlets_groups) + count($elas_interlets_groups);
+$app['count_intersystems'] = count($app['intersystem_ary']['eland']) + count($app['intersystem_ary']['elas']);
 
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_group_self']
-	&& !$eland_interlets_groups[$app['tschema']])
+	&& !$app['intersystem_ary']['eland'][$app['tschema']])
 {
 	header('Location: ' .
-		generate_url('messages', ['view' => $view_messages], $app['s_schema']));
+		generate_url('messages',
+			['view' => $view_messages],
+			$app['s_schema']));
 	exit;
 }
 
-if ($app['page_access'] != 'anonymous' && !$app['s_admin']
+if ($app['page_access'] != 'anonymous'
+	&& !$app['s_admin']
 	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');

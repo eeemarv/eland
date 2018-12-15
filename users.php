@@ -4732,7 +4732,7 @@ function send_activation_mail(string $password, array $user):void
 
 function delete_thumbprint(string $status):void
 {
-	global $app, $eland_interlets_groups;
+	global $app;
 
 	$app['typeahead']->delete_thumbprint('accounts', [
 		'schema'	=> $app['tschema'],
@@ -4744,7 +4744,7 @@ function delete_thumbprint(string $status):void
 		return;
 	}
 
-	foreach ($eland_interlets_groups as $remote_schema => $h)
+	foreach ($app['intersystem_ary']['eland'] as $remote_schema => $h)
 	{
 		$app['typeahead']->delete_thumbprint('eland_intersystem_accounts', [
 			'schema'		=> $app['tschema'],

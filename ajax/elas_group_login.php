@@ -19,7 +19,7 @@ if (!$group_id)
 	exit;
 }
 
-if (!isset($elas_interlets_groups[$group_id]))
+if (!isset($app['intersystem_ary']['elas'][$group_id]))
 {
 	echo json_encode(['error' => 'Er is geen interSysteem verbinding met dit Systeem.']);
 	exit;

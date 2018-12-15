@@ -144,9 +144,9 @@ if (!$app['s_anonymous']
 		echo $app['count_intersystems'] > 1 ? 'Gekoppelde interSystemen' : 'Gekoppeld interSysteem';
 		echo '</li>';
 
-		if (count($eland_interlets_groups))
+		if (count($app['intersystem_ary']['eland']))
 		{
-			foreach ($eland_interlets_groups as $sch => $h)
+			foreach ($app['intersystem_ary']['eland'] as $sch => $h)
 			{
 				echo '<li';
 
@@ -168,9 +168,9 @@ if (!$app['s_anonymous']
 			}
 		}
 
-		if (count($elas_interlets_groups))
+		if (count($app['intersystem_ary']['elas']))
 		{
-			foreach ($elas_interlets_groups as $grp_id => $grp)
+			foreach ($app['intersystem_ary']['elas'] as $grp_id => $grp)
 			{
 				echo '<li>';
 				echo '<a href="#" data-elas-group-id="';

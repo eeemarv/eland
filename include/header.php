@@ -32,7 +32,9 @@ echo '" class="';
 echo $app['s_admin'] ? 'admin' : ($app['s_guest'] ? 'guest' : 'member');
 echo '">';
 
-echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
+echo '<img src="/gfx/loading.gif';
+echo $app['assets']->get_version_param();
+echo '" ';
 echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
@@ -120,7 +122,8 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 		echo '>';
 
 		echo '<a href="';
-		echo $app['protocol'] . $app['groups']->get_host($login_schema);
+		echo $app['protocol'];
+		echo $app['groups']->get_host($login_schema);
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
@@ -143,9 +146,9 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 			: 'Gekoppeld interSysteem';
 		echo '</li>';
 
-		if (count($eland_interlets_groups))
+		if (count($app['intersystem_ary']['eland']))
 		{
-			foreach ($eland_interlets_groups as $sch => $h)
+			foreach ($app['intersystem_ary']['eland'] as $sch => $h)
 			{
 				echo '<li';
 
@@ -156,7 +159,9 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 				echo '>';
 
-				$page = isset($allowed_interlets_landing_pages[$app['script_name']]) ? $app['script_name'] : 'messages';
+				$page = isset($allowed_interlets_landing_pages[$app['script_name']])
+					? $app['script_name']
+					: 'messages';
 
 				echo '<a href="';
 				echo generate_url($page,  ['welcome' => 1], $sch);
@@ -167,9 +172,9 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 			}
 		}
 
-		if (count($elas_interlets_groups))
+		if (count($app['intersystem_ary']['elas']))
 		{
-			foreach ($elas_interlets_groups as $grp_id => $grp)
+			foreach ($app['intersystem_ary']['elas'] as $grp_id => $grp)
 			{
 				echo '<li>';
 				echo '<a href="#" data-elas-group-id="';

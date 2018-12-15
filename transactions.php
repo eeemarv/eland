@@ -899,11 +899,11 @@ if ($add)
 		'id'		=> 'self',
 	];
 
-	if (count($eland_interlets_groups))
+	if (count($app['intersystem_ary']['eland']))
 	{
 		$eland_urls = [];
 
-		foreach ($eland_interlets_groups as $remote_eland_schema => $host)
+		foreach ($app['intersystem_ary']['eland'] as $remote_eland_schema => $host)
 		{
 			$eland_url = $app['protocol'] . $host;
 			$eland_urls[] = $eland_url;
@@ -925,11 +925,11 @@ if ($add)
 		}
 	}
 
-	if (count($elas_interlets_groups))
+	if (count($app['intersystem_ary']['elas']))
 	{
 		$ids = [];
 
-		foreach ($elas_interlets_groups as $key => $name)
+		foreach ($app['intersystem_ary']['elas'] as $key => $name)
 		{
 			$ids[] = $key;
 		}
@@ -1259,7 +1259,7 @@ if ($add)
 
 $interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
 
-$s_inter_schema_check = array_merge($eland_interlets_groups,
+$s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
 	[$app['s_schema'] => true]);
 
 /**
@@ -1697,7 +1697,7 @@ if ($id)
 
 		if ($real_from)
 		{
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1710,7 +1710,7 @@ if ($id)
 			echo 'Systeem uitgedrukt ';
 			echo 'in de eigen tijdsmunt.';
 
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
@@ -1790,7 +1790,7 @@ if ($id)
 		}
 		else
 		{
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1804,7 +1804,7 @@ if ($id)
 			echo 'in de eigen tijdsmunt ';
 			echo 'met gelijke tijdswaarde als Tr-1.';
 
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
