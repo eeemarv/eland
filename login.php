@@ -229,8 +229,10 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$app['s_logins'] = $app['session']->get('logins');
-		$app['s_logins'][$app['tschema']] = $user['id'];
+		$app['s_logins'] = $app['session']->get('logins') ?? [];
+		$app['s_logins'] = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> $user['id'],
+		]);
 		$app['session']->set('logins', $app['s_logins']);
 
 		$app['s_id'] = $user['id'];
