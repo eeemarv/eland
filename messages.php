@@ -31,7 +31,7 @@ $access_submit = isset($_POST['access_submit']) ? true : false;
 
 $access = $app['access_control']->get_post_value();
 
-if ($post && $s_guest && ($add || $edit || $del || $img || $img_del || $images
+if ($app['is_http_post'] && $s_guest && ($add || $edit || $del || $img || $img_del || $images
 	|| $extend_submit || $access_submit || $extend || $access))
 {
 	$app['alert']->error('Geen toegang als gast tot deze actie');
@@ -46,7 +46,7 @@ if (!$post)
 /*
  * bulk actions (set access or validity)
  */
-if ($post & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_admin || $s_user))
+if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_admin || $s_user))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -232,7 +232,7 @@ if ($id && $extend)
 /**
  * post images
  */
-if ($post && $img && $images && !$s_guest)
+if ($app['is_http_post'] && $img && $images && !$s_guest)
 {
 	$ret_ary = [];
 
@@ -407,7 +407,7 @@ if ($img_del == 'all' && $id && $post)
 /*
  * delete an image
  */
-if ($img_del && $post && ctype_digit((string) $img_del))
+if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 {
 	if (!($msg = $app['db']->fetchAssoc('select m.id_user, p."PictureFile"
 		from ' . $tschema . '.msgpictures p, ' . $tschema . '.messages m
@@ -528,7 +528,7 @@ if ($img_del == 'all' && $id)
 /*
  * send email
  */
-if ($mail && $post && $id)
+if ($mail && $app['is_http_post'] && $id)
 {
 	$content = $_POST['content'];
 	$cc = $_POST['cc'];

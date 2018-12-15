@@ -23,9 +23,43 @@ $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'
 
 $app['base_url'] = $app['protocol'] . $_SERVER['SERVER_NAME'];
 
-$post = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
+$app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
+
+/*
+ * check if we are on the request hosting url.
+ */
+$key_host_env = str_replace('.', '__', strtoupper($_SERVER['SERVER_NAME']));
+
+if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
+{
+	$page_access = 'anonymous';
+	$hosting_form = true;
+	return;
+}
+
+/*
+ * permanent redirects
+ */
+
+if ($app_redirect = getenv('APP_REDIRECT_' . $key_host_env))
+{
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $app['protocol'] . $app_redirect . $_SERVER['REQUEST_URI']);
+	exit;
+}
+
+/** **/
+
+if (!$app['this_group']->get_schema())
+{
+	http_response_code(404);
+
+	echo $app['twig']->render('404.html.twig');
+	exit;
+}
+
 
 if (isset($_GET['ev']))
 {
@@ -71,39 +105,6 @@ $allowed_interlets_landing_pages = [
 	'news'			=> true,
 	'docs'			=> true,
 ];
-
-/*
- * check if we are on the request hosting url.
- */
-$key_host_env = str_replace('.', '__', strtoupper($_SERVER['SERVER_NAME']));
-
-if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
-{
-	$page_access = 'anonymous';
-	$hosting_form = true;
-	return;
-}
-
-/*
- * permanent redirects
- */
-
-if ($app_redirect = getenv('APP_REDIRECT_' . $key_host_env))
-{
-	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['protocol'] . $app_redirect . $_SERVER['REQUEST_URI']);
-	exit;
-}
-
-/** **/
-
-if (!$app['this_group']->get_schema())
-{
-	http_response_code(404);
-
-	echo $app['twig']->render('404.html.twig');
-	exit;
-}
 
 /** user **/
 

@@ -99,7 +99,7 @@ if ($s_admin)
 		],
 	];
 
-	if ($post && $bulk_field)
+	if ($app['is_http_post'] && $bulk_field)
 	{
 		if (isset($_POST[$bulk_field . '_bulk_submit']))
 		{
@@ -192,7 +192,7 @@ if ($user_mail_submit && $id && $post)
  * upload image
  */
 
-if ($post && $img && $id )
+if ($app['is_http_post'] && $img && $id )
 {
 	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
 
@@ -384,7 +384,7 @@ if ($img_del && $id)
  * bulk actions
  */
 
-if ($bulk_submit && $post && $s_admin)
+if ($bulk_submit && $app['is_http_post'] && $s_admin)
 {
 	$verify = ($bulk_mail_submit || $bulk_mail_test) ? 'verify_mail' : 'verify_' . $bulk_field;
 	$verify = isset($_POST[$verify]) ? true : false;
@@ -2477,7 +2477,7 @@ if ($id)
 {
 	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
 
-	$user_mail_cc = $post ? $user_mail_cc : 1;
+	$user_mail_cc = $app['is_http_post'] ? $user_mail_cc : 1;
 
 	$user = $app['user_cache']->get($id, $tschema);
 
@@ -4255,7 +4255,7 @@ if ($v_list)
 
 	if ($s_admin & isset($show_columns['u']))
 	{
-		$bulk_mail_cc = $post ? $bulk_mail_cc : true;
+		$bulk_mail_cc = $app['is_http_post'] ? $bulk_mail_cc : true;
 
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="control-label">%2$s</label>';

@@ -17,7 +17,7 @@ $add = isset($_GET['add']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
-if (($confirm_del || $submit || $add || $edit || $del || $post || $map_edit) & !$s_admin)
+if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] || $map_edit) & !$s_admin)
 {
 	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	cancel();
