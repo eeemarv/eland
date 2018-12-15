@@ -10,11 +10,21 @@ use tpl_helper\assets_helper;
 
 $app = new util\app();
 
+if(!isset($rootpath))
+{
+	$rootpath = './';
+}
+
+$app['rootpath'] = $rootpath;
+
 $app['debug'] = getenv('DEBUG');
-
 $app['route_class'] = 'util\route';
-
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+$app['overall_domain'] = getenv('OVERALL_DOMAIN');
+
+setlocale(LC_TIME, 'nl_NL.UTF-8');
+
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -127,13 +137,6 @@ $app->extend('monolog', function($monolog, $app) {
 	return $monolog;
 });
 
-if(!isset($rootpath))
-{
-	$rootpath = './';
-}
-
-$app['rootpath'] = $rootpath;
-
 $app['s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $app['s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
@@ -148,14 +151,6 @@ $app['s3'] = function($app){
 		$app['s3_doc']
 	);
 };
-
-/*
- * The locale must be installed in the OS for formatting dates.
- */
-
-setlocale(LC_TIME, 'nl_NL.UTF-8');
-
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['typeahead'] = function($app){
 	return new service\typeahead(
@@ -172,12 +167,13 @@ $app['log_db'] = function($app){
 };
 
 /**
- * Get all eland schemas and domains
+ * Get all schemas, systems and domains on this server
  */
 
 $app['groups'] = function ($app){
 	return new service\groups(
-		$app['db']
+		$app['db'],
+		$app['overall_domain']
 	);
 };
 

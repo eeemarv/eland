@@ -30,11 +30,10 @@ class groups
 		'letsdendermonde'	=> 'dendermonde',
 	];
 
-	public function __construct(db $db)
+	public function __construct(db $db, string $overall_domain)
 	{
 		$this->db = $db;
-
-		$this->overall_domain = getenv('OVERALL_DOMAIN');
+		$this->overall_domain = $overall_domain;
 
 		$rs = $this->db->prepare('select schema_name
 			from information_schema.schemata');
