@@ -110,11 +110,11 @@ $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = $p_schema ?: $app['this_group']->get_schema();
+$s_schema = $p_schema ?: $app['tschema'];
 $s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = $s_schema == $app['this_group']->get_schema() ? true : false;
+$s_group_self = $s_schema == $app['tschema'] ? true : false;
 
 /** access user **/
 
@@ -331,8 +331,8 @@ $errors = [];
  * check access to groups
  **/
 
-if ($app['config']->get('template_lets', $app['this_group']->get_schema())
-	&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+if ($app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']))
 {
 	$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
 	$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
@@ -352,7 +352,7 @@ $app['count_interlets_groups'] = $count_interlets_groups;
 
 if ($page_access != 'anonymous'
 	&& !$s_group_self
-	&& !$eland_interlets_groups[$app['this_group']->get_schema()])
+	&& !$eland_interlets_groups[$app['tschema']])
 {
 	header('Location: ' .
 		generate_url('messages', ['view' => $view_messages], $s_schema));
@@ -360,7 +360,7 @@ if ($page_access != 'anonymous'
 }
 
 if ($page_access != 'anonymous' && !$s_admin
-	&& $app['config']->get('maintenance', $app['this_group']->get_schema()))
+	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');
 	exit;
@@ -409,9 +409,9 @@ if (!$s_anonymous)
 {
 	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		if (isset($logins[$app['this_group']->get_schema()]) && $s_group_self)
+		if (isset($logins[$app['tschema']]) && $s_group_self)
 		{
-			$app['session']->set('role.' . $app['this_group']->get_schema(), $s_accountrole);
+			$app['session']->set('role.' . $app['tschema'], $s_accountrole);
 		}
 
 		$s_user_params_own_group = [
@@ -430,23 +430,23 @@ if (!$s_anonymous)
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
-$newusertreshold = time() - $app['config']->get('newuserdays', $app['this_group']->get_schema()) * 86400;
+$newusertreshold = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
 
 /** welcome message **/
 
 if (isset($_GET['welcome']) && $s_guest)
 {
 	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('systemname', $app['tschema']);
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('systemname', $app['tschema']);
 	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currency', $app['tschema']);
 	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currencyratio', $app['tschema']);
 	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currency', $app['tschema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($s_elas_guest)
@@ -622,7 +622,7 @@ function get_default_page():string
 		return $default_page;
 	}
 
-	$page = $app['config']->get('default_landing_page', $app['this_group']->get_schema());
+	$page = $app['config']->get('default_landing_page', $app['tschema']);
 
 	$param = [];
 
