@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-$app['page_access'] = $app['page_access'];
+$app['page_access'] = $page_access;
 
 $header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
 $header_allow_origin .= $app['s3_protocol'] . $app['s3_doc'];
