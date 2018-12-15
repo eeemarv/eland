@@ -20,12 +20,44 @@ $app['assets']->add([
 	'print.css', 'base.js']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
-
-$app['base_url'] = $app['protocol'] . $_SERVER['SERVER_NAME'];
-
-$post = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
+$app['server_name'] = $_SERVER['SERVER_NAME'];
+$app['base_url'] = $app['protocol'] . $app['server_name'];
+$app['request_uri'] = $_SERVER['REQUEST_URI'];
+$app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
+
+/*
+ * check if we are on the request hosting url.
+ */
+$app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
+
+if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $app['env_server_name']))
+{
+	$page_access = 'anonymous';
+	$hosting_form = true;
+	return;
+}
+
+/*
+ * permanent redirects
+ */
+
+if ($app_redirect = getenv('APP_REDIRECT_' . $app['env_server_name']))
+{
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ' . $app['protocol'] . $app_redirect . $app['request_uri']);
+	exit;
+}
+
+$app['tschema'] = $app['groups']->get_schema($app['server_name']);
+
+if (!$app['tschema'])
+{
+	http_response_code(404);
+	echo $app['twig']->render('404.html.twig');
+	exit;
+}
 
 if (isset($_GET['ev']))
 {
@@ -72,52 +104,17 @@ $allowed_interlets_landing_pages = [
 	'docs'			=> true,
 ];
 
-/*
- * check if we are on the request hosting url.
- */
-$key_host_env = str_replace('.', '__', strtoupper($_SERVER['SERVER_NAME']));
-
-if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
-{
-	$page_access = 'anonymous';
-	$hosting_form = true;
-	return;
-}
-
-/*
- * permanent redirects
- */
-
-if ($redirect = getenv('REDIRECT_' . $key_host_env))
-{
-	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['protocol'] . $redirect . $_SERVER['REQUEST_URI']);
-	exit;
-}
-
-/** **/
-
-
-if (!$app['this_group']->get_schema())
-{
-	http_response_code(404);
-
-	echo $app['twig']->render('404.html.twig');
-	exit;
-}
-
-
 /** user **/
 
 $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = $p_schema ?: $app['this_group']->get_schema();
+$s_schema = $p_schema ?: $app['tschema'];
 $s_id = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = $s_schema == $app['this_group']->get_schema() ? true : false;
+$s_group_self = $s_schema == $app['tschema'] ? true : false;
 
 /** access user **/
 
@@ -334,8 +331,8 @@ $errors = [];
  * check access to groups
  **/
 
-if ($app['config']->get('template_lets', $app['this_group']->get_schema())
-	&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+if ($app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']))
 {
 	$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
 	$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
@@ -355,7 +352,7 @@ $app['count_interlets_groups'] = $count_interlets_groups;
 
 if ($page_access != 'anonymous'
 	&& !$s_group_self
-	&& !$eland_interlets_groups[$app['this_group']->get_schema()])
+	&& !$eland_interlets_groups[$app['tschema']])
 {
 	header('Location: ' .
 		generate_url('messages', ['view' => $view_messages], $s_schema));
@@ -363,7 +360,7 @@ if ($page_access != 'anonymous'
 }
 
 if ($page_access != 'anonymous' && !$s_admin
-	&& $app['config']->get('maintenance', $app['this_group']->get_schema()))
+	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');
 	exit;
@@ -412,9 +409,9 @@ if (!$s_anonymous)
 {
 	if ($s_master || $session_user['accountrole'] == 'admin' || $session_user['accountrole'] == 'user')
 	{
-		if (isset($logins[$app['this_group']->get_schema()]) && $s_group_self)
+		if (isset($logins[$app['tschema']]) && $s_group_self)
 		{
-			$app['session']->set('role.' . $app['this_group']->get_schema(), $s_accountrole);
+			$app['session']->set('role.' . $app['tschema'], $s_accountrole);
 		}
 
 		$s_user_params_own_group = [
@@ -433,23 +430,23 @@ if (!$s_anonymous)
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
-$newusertreshold = time() - $app['config']->get('newuserdays', $app['this_group']->get_schema()) * 86400;
+$newusertreshold = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
 
 /** welcome message **/
 
 if (isset($_GET['welcome']) && $s_guest)
 {
 	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('systemname', $app['tschema']);
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('systemname', $app['tschema']);
 	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currency', $app['tschema']);
 	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currencyratio', $app['tschema']);
 	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['this_group']->get_schema());
+	$msg .= $app['config']->get('currency', $app['tschema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($s_elas_guest)
@@ -625,7 +622,7 @@ function get_default_page():string
 		return $default_page;
 	}
 
-	$page = $app['config']->get('default_landing_page', $app['this_group']->get_schema());
+	$page = $app['config']->get('default_landing_page', $app['tschema']);
 
 	$param = [];
 

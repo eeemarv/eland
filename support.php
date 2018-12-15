@@ -4,8 +4,6 @@ $page_access = 'user';
 
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 if (isset($_POST['zend']))
 {
 	$message = $_POST['message'] ?? '';
@@ -16,7 +14,7 @@ if (isset($_POST['zend']))
 		$errors[] = 'Het bericht is leeg.';
 	}
 
-	if (!trim($app['config']->get('support', $tschema)))
+	if (!trim($app['config']->get('support', $app['tschema'])))
 	{
 		$errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
 	}
@@ -34,16 +32,17 @@ if (isset($_POST['zend']))
 	if(!count($errors))
 	{
 		$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-			from ' . $tschema . '.contact c, ' . $tschema . '.type_contact tc
+			from ' . $app['tschema'] . '.contact c, ' .
+				$app['tschema'] . '.type_contact tc
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$s_id]);
 
-		$email = $app['mail_addr_user']->get($s_id, $tschema);
+		$email = $app['mail_addr_user']->get($s_id, $app['tschema']);
 
 		$vars = [
-			'group'	=> $app['template_vars']->get($tschema),
+			'group'	=> $app['template_vars']->get($app['tschema']),
 			'user'	=> [
-				'text'			=> link_user($s_id, $tschema, false),
+				'text'			=> link_user($s_id, $app['tschema'], false),
 				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,
 				'email'			=> $email,
 			],
@@ -53,8 +52,8 @@ if (isset($_POST['zend']))
 		];
 
 		$email_ary = [
-			'schema'	=> $tschema,
-			'to'		=> $app['mail_addr_system']->get_support($tschema),
+			'schema'	=> $app['tschema'],
+			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
 			'template'	=> 'support',
 			'vars'		=> $vars,
 		];
@@ -62,13 +61,13 @@ if (isset($_POST['zend']))
 		if ($email)
 		{
 			$app['queue.mail']->queue([
-				'schema'	=> $tschema,
+				'schema'	=> $app['tschema'],
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
-				'to'		=> $app['mail_addr_user']->get($s_id, $tschema),
+				'to'		=> $app['mail_addr_user']->get($s_id, $app['tschema']),
 			], 8500);
 
-			$email_ary['reply_to'] = $app['mail_addr_user']->get($s_id, $tschema);
+			$email_ary['reply_to'] = $app['mail_addr_user']->get($s_id, $app['tschema']);
 		}
 
 		$app['queue.mail']->queue($email_ary, 8000);
@@ -91,7 +90,7 @@ else
 	}
 	else
 	{
-		$email = $app['mail_addr_user']->get($s_id, $tschema);
+		$email = $app['mail_addr_user']->get($s_id, $app['tschema']);
 
 		if (!count($email))
 		{
@@ -100,11 +99,11 @@ else
 	}
 }
 
-if (!$app['config']->get('mailenabled', $tschema))
+if (!$app['config']->get('mailenabled', $app['tschema']))
 {
 	$app['alert']->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
 }
-else if (!$app['config']->get('support', $tschema))
+else if (!$app['config']->get('support', $app['tschema']))
 {
 	$app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }

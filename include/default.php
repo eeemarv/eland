@@ -10,11 +10,21 @@ use tpl_helper\assets_helper;
 
 $app = new util\app();
 
+if(!isset($rootpath))
+{
+	$rootpath = './';
+}
+
+$app['rootpath'] = $rootpath;
+
 $app['debug'] = getenv('DEBUG');
-
 $app['route_class'] = 'util\route';
-
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+$app['overall_domain'] = getenv('OVERALL_DOMAIN');
+
+setlocale(LC_TIME, 'nl_NL.UTF-8');
+
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -58,7 +68,7 @@ $app['tpl'] = function($app){
 	$tpl = new PhpEngine(new TemplateNameParser(), $loader);
 
 	$tpl->set(new SlotsHelper());
-	$tpl->set(new config_helper($app['config'], $app['this_group']));
+	$tpl->set(new config_helper($app['config']));
 	$tpl->set(new date_format_helper($app['date_format']));
 	$tpl->set(new assets_helper($app['assets']));
 	$tpl->addGlobal('s3_img', getenv('S3_IMG'));
@@ -127,13 +137,6 @@ $app->extend('monolog', function($monolog, $app) {
 	return $monolog;
 });
 
-if(!isset($rootpath))
-{
-	$rootpath = './';
-}
-
-$app['rootpath'] = $rootpath;
-
 $app['s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
 $app['s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
 
@@ -148,14 +151,6 @@ $app['s3'] = function($app){
 		$app['s3_doc']
 	);
 };
-
-/*
- * The locale must be installed in the OS for formatting dates.
- */
-
-setlocale(LC_TIME, 'nl_NL.UTF-8');
-
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
 $app['typeahead'] = function($app){
 	return new service\typeahead(
@@ -172,24 +167,19 @@ $app['log_db'] = function($app){
 };
 
 /**
- * Get all eland schemas and domains
+ * Get all schemas, systems and domains on this server
  */
 
 $app['groups'] = function ($app){
 	return new service\groups(
-		$app['db']
+		$app['db'],
+		$app['overall_domain']
 	);
 };
 
 $app['template_vars'] = function ($app){
 	return new service\template_vars(
 		$app['config']
-	);
-};
-
-$app['this_group'] = function($app){
-	return new service\this_group(
-		$app['groups']
 	);
 };
 
@@ -218,7 +208,7 @@ $app['queue'] = function ($app){
 $app['date_format'] = function($app){
 	return new service\date_format(
 		$app['config'],
-		$app['this_group']
+		$app['tschema']
 	);
 };
 
@@ -279,15 +269,6 @@ $app['email_validate'] = function ($app){
 		$app['xdb'],
 		$app['token'],
 		$app['monolog']
-	);
-};
-
-$app['url'] = function($app){
-	return new service\url(
-		$app['this_group'],
-		$app['groups'],
-		$app['rootpath'],
-		$app['protocol']
 	);
 };
 
@@ -488,8 +469,10 @@ $app['assets'] = function($app){
 };
 
 $app['alert'] = function ($app){
-	return new service\alert($app['monolog'], $app['session'],
-		$app['this_group']);
+	return new service\alert(
+		$app['monolog'],
+		$app['session'],
+		$app['tschema']);
 };
 
 $app['pagination'] = function (){
@@ -500,14 +483,13 @@ $app['password_strength'] = function ($app){
 	return new service\password_strength();
 };
 
-$app['user'] = function ($app){
-	return new service\user($app['this_group'], $app['monolog'],
-		$app['session'], $app['page_access']);
-};
-
 $app['autominlimit'] = function ($app){
-	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
-		$app['this_group'], $app['config'], $app['user_cache']);
+	return new service\autominlimit(
+		$app['monolog'],
+		$app['xdb'],
+		$app['db'],
+		$app['config'],
+		$app['user_cache']);
 };
 
 // init
@@ -524,7 +506,9 @@ $app['form_token'] = function ($app){
 };
 
 $app['access_control'] = function($app){
-	return new service\access_control($app['this_group'], $app['config']);
+	return new service\access_control(
+		$app['tschema'],
+		$app['config']);
 };
 
 /**

@@ -3,8 +3,6 @@ $rootpath = '../';
 $page_access = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: application/json');
@@ -68,7 +66,8 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen verbinding maken.';
 	echo json_encode(['error' => $m]);
-	$app['monolog']->error('elas-token: ' . $m . ' ' . $err, ['schema' => $tschema]);
+	$app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+		['schema' => $app['tschema']]);
 	exit;
 }
 
@@ -80,7 +79,8 @@ if ($err)
 {
 	$m = $err_group . ' Kan geen token krijgen voor dit interSysteem.';
 	echo json_encode(['error' => $m]);
-	$app['monolog']->error('elas-token: ' . $m . ' ' . $err, ['schema' => $tschema]);
+	$app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+		['schema' => $app['tschema']]);
 	exit;
 }
 

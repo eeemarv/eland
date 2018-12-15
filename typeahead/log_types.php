@@ -3,11 +3,9 @@ $rootpath = '../';
 $page_access = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $schema = $_GET['schema'] ?? '';
 
-if ($schema !== $tschema || !$schema)
+if ($schema !== $app['tschema'] || !$schema)
 {
 	http_response_code(404);
 	exit;
@@ -20,7 +18,7 @@ $st = $app['db']->prepare('select distinct type
 	where schema = ?
 	order by type asc');
 
-$st->bindValue(1, $tschema);
+$st->bindValue(1, $app['tschema']);
 
 $st->execute();
 

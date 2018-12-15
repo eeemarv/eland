@@ -3,11 +3,9 @@ $rootpath = '../';
 $page_access = 'user';
 require_once __DIR__ . '/../include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $schema = $_GET['schema'] ?? '';
 
-if ($schema !== $tschema || !$schema)
+if ($schema !== $app['tschema'] || !$schema)
 {
 	http_response_code(404);
 	exit;
@@ -16,7 +14,7 @@ if ($schema !== $tschema || !$schema)
 $usernames = [];
 
 $st = $app['db']->prepare('select name
-	from ' . $tschema . '.users
+	from ' . $app['tschema'] . '.users
 	order by name asc');
 
 $st->execute();

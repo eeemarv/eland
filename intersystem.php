@@ -3,8 +3,6 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
@@ -18,7 +16,7 @@ if ($id || $edit || $del)
 	$id = ($id) ?: (($edit) ?: $del);
 
 	$group = $app['db']->fetchAssoc('select *
-		from ' . $tschema . '.letsgroups
+		from ' . $app['tschema'] . '.letsgroups
 		where id = ?', [$id]);
 
 	if (!$group)
@@ -28,12 +26,12 @@ if ($id || $edit || $del)
 	}
 }
 
-if (!$app['config']->get('template_lets', $tschema))
+if (!$app['config']->get('template_lets', $app['tschema']))
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('interlets_en', $tschema))
+if (!$app['config']->get('interlets_en', $app['tschema']))
 {
 	redirect_default_page();
 }
@@ -118,7 +116,7 @@ if ($add || $edit)
 		if ($edit)
 		{
 			if ($app['db']->fetchColumn('select id
-				from ' . $tschema . '.letsgroups
+				from ' . $app['tschema'] . '.letsgroups
 				where url = ?
 					and id <> ?', [$group['url'], $edit]))
 			{
@@ -126,7 +124,7 @@ if ($add || $edit)
 			}
 
 			if ($app['db']->fetchColumn('select id
-				from ' . $tschema . '.letsgroups
+				from ' . $app['tschema'] . '.letsgroups
 				where localletscode = ?
 					and id <> ?', [$group['localletscode'], $edit]))
 			{
@@ -135,11 +133,13 @@ if ($add || $edit)
 
 			if (!count($errors))
 			{
-				if ($app['db']->update($tschema . '.letsgroups', $group, ['id' => $id]))
+				if ($app['db']->update($app['tschema'] . '.letsgroups',
+					$group,
+					['id' => $id]))
 				{
 					$app['alert']->success('InterSysteem aangepast.');
 
-					$app['interlets_groups']->clear_cache($tschema);
+					$app['interlets_groups']->clear_cache($app['tschema']);
 
 					cancel($edit);
 				}
@@ -150,14 +150,14 @@ if ($add || $edit)
 		else
 		{
 			if ($app['db']->fetchColumn('select id
-				from ' . $tschema . '.letsgroups
+				from ' . $app['tschema'] . '.letsgroups
 				where url = ?', [$group['url']]))
 			{
 				$errors[] = 'Er bestaat al een interSysteem met deze URL.';
 			}
 
 			if ($app['db']->fetchColumn('select id
-				from ' . $tschema . '.letsgroups
+				from ' . $app['tschema'] . '.letsgroups
 				where localletscode = ?', [$group['localletscode']]))
 			{
 				$errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
@@ -165,13 +165,13 @@ if ($add || $edit)
 
 			if (!count($errors))
 			{
-				if ($app['db']->insert($tschema . '.letsgroups', $group))
+				if ($app['db']->insert($app['tschema'] . '.letsgroups', $group))
 				{
 					$app['alert']->success('Intersysteem opgeslagen.');
 
-					$id = $app['db']->lastInsertId($tschema . '.letsgroups_id_seq');
+					$id = $app['db']->lastInsertId($app['tschema'] . '.letsgroups_id_seq');
 
-					$app['interlets_groups']->clear_cache($tschema);
+					$app['interlets_groups']->clear_cache($app['tschema']);
 
 					cancel($id);
 				}
@@ -377,11 +377,11 @@ if ($del)
 			cancel();
 		}
 
-		if($app['db']->delete($tschema . '.letsgroups', ['id' => $del]))
+		if($app['db']->delete($app['tschema'] . '.letsgroups', ['id' => $del]))
 		{
 			$app['alert']->success('InterSysteem verwijderd.');
 
-			$app['interlets_groups']->clear_cache($tschema);
+			$app['interlets_groups']->clear_cache($app['tschema']);
 
 			cancel();
 		}
@@ -433,7 +433,7 @@ if ($id)
 	else
 	{
 		$user = $app['db']->fetchAssoc('select *
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = ?', [$group['localletscode']]);
 	}
 
@@ -565,7 +565,7 @@ if ($id)
  */
 
 $groups = $app['db']->fetchAll('select *
-	from ' . $tschema . '.letsgroups');
+	from ' . $app['tschema'] . '.letsgroups');
 
 $letscodes = [];
 
@@ -589,7 +589,7 @@ foreach ($groups as $key => $g)
 	else if ($g['apimethod'] == 'internal')
 	{
 		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where status in (1, 2)');
 	}
 	else
@@ -601,7 +601,7 @@ foreach ($groups as $key => $g)
 $users_letscode = [];
 
 $interlets_users = $app['db']->executeQuery('select id, status, letscode, accountrole
-	from ' . $tschema . '.users
+	from ' . $app['tschema'] . '.users
 	where letscode in (?)',
 	[$letscodes],
 	[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -750,8 +750,6 @@ function get_schemas_groups():string
 {
 	global $app;
 
-	$tschema = $app['this_group']->get_schema();
-
 	$out = '<div class="panel panel-default"><div class="panel-heading">';
 	$out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
 	$out .= 'Zie <a href="https://eland.letsa.net/elas-intersysteem-koppeling-maken.html">hier</a> ';
@@ -813,7 +811,7 @@ function get_schemas_groups():string
 	$loc_letscode_ary = [];
 
 	$groups = $app['db']->executeQuery('select localletscode, url, id
-		from ' . $tschema . '.letsgroups
+		from ' . $app['tschema'] . '.letsgroups
 		where url in (?)',
 		[$url_ary],
 		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -826,7 +824,7 @@ function get_schemas_groups():string
 	}
 
 	$interlets_accounts = $app['db']->executeQuery('select id, letscode, status, accountrole
-		from ' . $tschema . '.users
+		from ' . $app['tschema'] . '.users
 		where letscode in (?)',
 		[$loc_letscode_ary],
 		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -929,7 +927,7 @@ function get_schemas_groups():string
 		$out .= $group_user_count_ary[$s];
 		$out .= '</td>';
 
-		if ($tschema == $s)
+		if ($app['tschema'] === $s)
 		{
 			$out .= '<td colspan="4">';
 			$out .= 'Eigen Systeem';

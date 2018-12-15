@@ -3,8 +3,6 @@
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $fa = 'comments-o';
 
 $topic = $_GET['t'] ?? false;
@@ -33,7 +31,7 @@ if (!($s_user || $s_admin))
 	}
 }
 
-if (!$app['config']->get('forum_en', $tschema))
+if (!$app['config']->get('forum_en', $app['tschema']))
 {
 	$app['alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_default_page();
@@ -43,7 +41,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$row = $app['xdb']->get('forum', $t, $tschema);
+	$row = $app['xdb']->get('forum', $t, $app['tschema']);
 
 	if ($row)
 	{
@@ -89,17 +87,17 @@ if ($submit)
 			cancel();
 		}
 
-		$app['xdb']->del('forum', $del, $tschema);
+		$app['xdb']->del('forum', $del, $app['tschema']);
 
 		if (!isset($forum_post['parent_id']))
 		{
 			$rows = $app['xdb']->get_many(['agg_type' => 'forum',
-				'agg_schema' => $tschema,
+				'agg_schema' => $app['tschema'],
 				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$app['xdb']->del('forum', $row['eland_id'], $tschema);
+				$app['xdb']->del('forum', $row['eland_id'], $app['tschema']);
 			}
 
 			$app['alert']->success('Het forum onderwerp is verwijderd.');
@@ -172,7 +170,7 @@ if ($submit)
 	}
 	else if ($edit)
 	{
-		$app['xdb']->set('forum', $edit, $forum_post, $tschema);
+		$app['xdb']->set('forum', $edit, $forum_post, $app['tschema']);
 
 		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
@@ -180,9 +178,9 @@ if ($submit)
 	}
 	else
 	{
-		$new_id = substr(sha1(microtime() . $tschema), 0, 24);
+		$new_id = substr(sha1(microtime() . $app['tschema']), 0, 24);
 
-		$app['xdb']->set('forum', $new_id, $forum_post, $tschema);
+		$app['xdb']->set('forum', $new_id, $forum_post, $app['tschema']);
 
 		$app['alert']->success(($topic ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
@@ -238,7 +236,7 @@ if ($add || $edit)
 
 	if ($topic)
 	{
-		$row = $app['xdb']->get('forum', $topic, $tschema);
+		$row = $app['xdb']->get('forum', $topic, $app['tschema']);
 
 		if ($row)
 		{
@@ -336,13 +334,13 @@ if ($add || $edit)
 if ($topic)
 {
 	$show_visibility = ($s_user
-		&& $app['config']->get('template_lets', $tschema)
-		&& $app['config']->get('interlets_en', $tschema))
+		&& $app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('interlets_en', $app['tschema']))
 		|| $s_admin ? true : false;
 
 	$forum_posts = [];
 
-	$row = $app['xdb']->get('forum', $topic, $tschema);
+	$row = $app['xdb']->get('forum', $topic, $app['tschema']);
 
 	if ($row)
 	{
@@ -367,7 +365,7 @@ if ($topic)
 
 	$forum_posts[] = $topic_post;
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'forum',
 		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
@@ -387,7 +385,7 @@ if ($topic)
 	}
 
 	$rows = $app['xdb']->get_many([
-		'agg_schema' => $tschema,
+		'agg_schema' => $app['tschema'],
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
 		'access' => $app['access_control']->get_visible_ary(),
@@ -396,7 +394,7 @@ if ($topic)
 	$prev = count($rows) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['xdb']->get_many([
-		'agg_schema' => $tschema,
+		'agg_schema' => $app['tschema'],
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
 		'access' => $app['access_control']->get_visible_ary(),
@@ -450,7 +448,7 @@ if ($topic)
 
 		echo '<div class="panel-footer">';
 		echo '<p>';
-		echo link_user((int) $p['uid'], $tschema);
+		echo link_user((int) $p['uid'], $app['tschema']);
 		echo ' @' . $app['date_format']->get($p['ts']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
@@ -508,7 +506,7 @@ if ($topic)
  * show topic list
  */
 
-$rows = $app['xdb']->get_many(['agg_schema' => $tschema,
+$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 	'agg_type' => 'forum',
 	'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc');
 
@@ -518,7 +516,7 @@ if (count($rows))
 
 	foreach ($rows as $row)
 	{
-		$replies = $app['xdb']->get_many(['agg_schema' => $tschema,
+		$replies = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 			'agg_type' => 'forum',
 			'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -538,8 +536,8 @@ if ($s_admin || $s_user)
 $csv_en = $s_admin;
 
 $show_visibility = (!$s_guest
-	&& $app['config']->get('template_lets', $tschema)
-	&& $app['config']->get('interlets_en', $tschema))
+	&& $app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']))
 	|| $s_admin ? true : false;
 
 $h1 = 'Forum';
@@ -629,7 +627,7 @@ foreach($forum_posts as $p)
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($p['uid'], $tschema);
+	echo link_user($p['uid'], $app['tschema']);
 	echo '</td>';
 
 	echo $app['date_format']->get_td($p['ts']);

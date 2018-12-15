@@ -3,8 +3,6 @@
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 if (isset($hosting_form))
 {
 	if (isset($_POST['zend']))

@@ -6,11 +6,9 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 
-$tschema = $app['this_group']->get_schema();
-
 if ($token)
 {
-	$data = $app['predis']->get($tschema . '_token_' . $token);
+	$data = $app['predis']->get($app['tschema'] . '_token_' . $token);
 	$data = json_decode($data, true);
 
 	$user_id = $data['user_id'];
@@ -28,13 +26,15 @@ if ($token)
 		{
 			if ($user_id)
 			{
-				$app['db']->update($tschema . '.users', ['password' => hash('sha512', $password)], ['id' => $user_id]);
-				$app['user_cache']->clear($user_id, $tschema);
-				$user = $app['user_cache']->get($user_id, $tschema);
+				$app['db']->update($app['tschema'] . '.users',
+					['password' => hash('sha512', $password)],
+					['id' => $user_id]);
+				$app['user_cache']->clear($user_id, $app['tschema']);
+				$user = $app['user_cache']->get($user_id, $app['tschema']);
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [
-					'group'			=> $app['template_vars']->get($tschema),
+					'group'			=> $app['template_vars']->get($app['tschema']),
 					'password'		=> $password,
 					'user'			=> $user,
 					'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
@@ -42,8 +42,8 @@ if ($token)
 				];
 
 				$app['queue.mail']->queue([
-					'schema'	=> $tschema,
-					'to' 		=> $app['mail_addr_user']->get($user_id, $tschema),
+					'schema'	=> $app['tschema'],
+					'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
 					'template'	=> 'password_reset',
 					'vars'		=> $vars,
 				]);
@@ -71,7 +71,7 @@ if ($token)
 			'email'			=> strtolower($email),
 		];
 
-		$app['xdb']->set('email_validated', $email, $ev_data, $tschema);
+		$app['xdb']->set('email_validated', $email, $ev_data, $app['tschema']);
 	}
 
 	$h1 = 'Nieuw paswoord ingeven.';
@@ -124,9 +124,9 @@ if (isset($_POST['zend']))
 	else if($email)
 	{
 		$user = $app['db']->fetchAll('select u.*
-			from ' . $tschema . '.contact c, ' .
-				$tschema . '.type_contact tc, ' .
-				$tschema . '.users u
+			from ' . $app['tschema'] . '.contact c, ' .
+				$app['tschema'] . '.type_contact tc, ' .
+				$app['tschema'] . '.users u
 			where c. value = ?
 				and tc.id = c.id_type_contact
 				and tc.abbrev = \'mail\'
@@ -139,21 +139,21 @@ if (isset($_POST['zend']))
 
 			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user['id'] . $tschema . time() . $email), 0, 12);
-				$key = $tschema . '_token_' . $token;
+				$token = substr(hash('sha512', $user['id'] . $app['tschema'] . time() . $email), 0, 12);
+				$key = $app['tschema'] . '_token_' . $token;
 
 				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
 				$app['predis']->expire($key, 3600);
 
 				$vars = [
-					'group'		=> $app['template_vars']->get($tschema),
+					'group'		=> $app['template_vars']->get($app['tschema']),
 					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'		=> $user,
 					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
 				$app['queue.mail']->queue([
-					'schema'	=> $tschema,
+					'schema'	=> $app['tschema'],
 					'to' 		=> [$email],
 					'template'	=> 'password_reset_confirm',
 					'vars'		=> $vars,
@@ -181,6 +181,7 @@ if (isset($_POST['zend']))
 }
 
 $h1 = 'Paswoord vergeten';
+$fa = 'key';
 
 require_once __DIR__ . '/include/header.php';
 

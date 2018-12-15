@@ -3,18 +3,16 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $del = $_GET['del'] ?? false;
 $add = $_GET['add'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
+$submit = isset($_POST['zend']);
 
-if (!$app['config']->get('template_lets', $tschema))
+if (!$app['config']->get('template_lets', $app['tschema']))
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('interlets_en', $tschema))
+if (!$app['config']->get('interlets_en', $app['tschema']))
 {
 	redirect_default_page();
 }
@@ -29,7 +27,8 @@ if ($del)
 			cancel();
 		}
 
-		if ($app['db']->delete($tschema . '.apikeys', ['id' => $del]))
+		if ($app['db']->delete($app['tschema'] . '.apikeys',
+			['id' => $del]))
 		{
 			$app['alert']->success('Apikey verwijderd.');
 			cancel();
@@ -37,7 +36,7 @@ if ($del)
 		$app['alert']->error('Apikey niet verwijderd.');
 	}
 	$apikey = $app['db']->fetchAssoc('select *
-		from ' . $tschema . '.apikeys
+		from ' . $app['tschema'] . '.apikeys
 		where id = ?', [$del]);
 
 	$h1 = 'Apikey verwijderen?';
@@ -91,7 +90,7 @@ if ($add)
 			'type'		=> 'interlets',
 		];
 
-		if($app['db']->insert($tschema . '.apikeys', $apikey))
+		if($app['db']->insert($app['tschema'] . '.apikeys', $apikey))
 		{
 			$app['alert']->success('Apikey opgeslagen.');
 			cancel();
@@ -99,7 +98,7 @@ if ($add)
 		$app['alert']->error('Apikey niet opgeslagen.');
 	}
 
-	$key = sha1($app['config']->get('systemname', $tschema) . microtime());
+	$key = sha1($app['config']->get('systemname', $app['tschema']) . microtime());
 
 	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true);
 
@@ -158,7 +157,7 @@ if ($add)
 }
 
 $apikeys = $app['db']->fetchAll('select *
-	from ' . $tschema . '.apikeys');
+	from ' . $app['tschema'] . '.apikeys');
 
 $top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
 

@@ -44,6 +44,7 @@ $(document).ready(function(){
 				var $cloned_group = $form_group.clone();
 
 				$cloned_group.find('label').remove();
+				$cloned_group.find('p').remove();
 				$cloned_group.find('input').attr('value','');
 
 				$cloned_input = $cloned_group.find('input');

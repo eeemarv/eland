@@ -4,26 +4,23 @@ namespace service;
 
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
-use service\this_group;
 
 class alert
 {
 	protected $monolog;
 	protected $session;
-	protected $this_group;
 	protected $flashbag;
 	protected $schema;
 
 	public function __construct(
 		Logger $monolog,
 		Session $session,
-		this_group $this_group
+		string $schema
 	)
 	{
 		$this->monolog = $monolog;
 		$this->session = $session;
-		$this->this_group = $this_group;
-		$this->schema = $this->this_group->get_schema();
+		$this->schema = $schema;
 		$this->flashbag = $this->session->getFlashBag();
 	}
 

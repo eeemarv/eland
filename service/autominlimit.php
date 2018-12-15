@@ -5,7 +5,6 @@ namespace service;
 use service\xdb;
 use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
-use service\this_group;
 use service\config;
 use service\user_cache;
 
@@ -14,7 +13,6 @@ class autominlimit
 	protected $monolog;
 	protected $xdb;
 	protected $db;
-	protected $this_group;
 	protected $config;
 	protected $user_cache;
 
@@ -25,22 +23,28 @@ class autominlimit
 	protected $group_minlimit;
 	protected $schema;
 
-	public function __construct(Logger $monolog, xdb $xdb, db $db,
-		this_group $this_group, config $config, user_cache $user_cache)
+	public function __construct(
+		Logger $monolog,
+		xdb $xdb,
+		db $db,
+		config $config,
+		user_cache $user_cache
+	)
 	{
 		$this->monolog = $monolog;
 		$this->xdb = $xdb;
 		$this->db = $db;
-		$this->this_group = $this_group;
 		$this->user_cache = $user_cache;
 		$this->config = $config;
 	}
 
-	public function init(string $schema = '')
+	public function init(string $schema):self
 	{
-		$this->schema = $schema === '' ? $this->this_group->get_schema() : $schema;
+		$this->schema = $schema;
 
-		$row = $this->xdb->get('setting', 'autominlimit', $this->schema);
+		$row = $this->xdb->get('setting',
+			'autominlimit',
+			$this->schema);
 
 		$a = $row['data'];
 
@@ -61,7 +65,11 @@ class autominlimit
 		return $this;
 	}
 
-	public function process(int $from_id, int $to_id, int $amount)
+	public function process(
+		int $from_id,
+		int $to_id,
+		int $amount
+	):void
 	{
 		if (!$this->enabled)
 		{
@@ -140,12 +148,18 @@ class autominlimit
 
 		if ($this->group_minlimit !== '' && $new_minlimit <= $this->group_minlimit)
 		{
-			$this->xdb->set('autominlimit', $to_id, ['minlimit' => '', 'erased' => true], $this->schema);
-			$this->db->update($this->schema . '.users', ['minlimit' => -999999999], ['id' => $to_id]);
+			$this->xdb->set('autominlimit',
+				$to_id,
+				['minlimit' => '', 'erased' => true],
+				$this->schema);
+			$this->db->update($this->schema . '.users',
+				['minlimit' => -999999999],
+				['id' => $to_id]);
 			$this->user_cache->clear($to_id, $this->schema);
 
 			$debug = 'autominlimit: minlimit reached group minlimit, ';
-			$debug .= 'individual minlimit erased for user ' . link_user($user, $this->schema, false);
+			$debug .= 'individual minlimit erased for user ';
+			$debug .= link_user($user, $this->schema, false);
 			$this->monolog->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
@@ -160,7 +174,8 @@ class autominlimit
 
 		$this->user_cache->clear($to_id, $this->schema);
 
-		$this->monolog->info('autominlimit: new minlimit : ' . $new_minlimit .
+		$this->monolog->info('autominlimit: new minlimit : ' .
+			$new_minlimit .
 			' for user ' . link_user($user, $this->schema, false, true),
 			['schema' => $this->schema]);
 

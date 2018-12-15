@@ -121,19 +121,17 @@ The Domain of a request-hosting form can be set with:
 
 * `HOSTING_FORM_domain=1`
 
-## Redirects
+## Permanent Redirects
 
-* `REDIRECT_fromdomain=to.domain.net`
+* `APP_REDIRECT_FROM__DOMAIN__NET=to.domain.net`
 
-domain of the hosting form and redirects is formatted the same way as the schema subdomains.
-
-* Dots are replaced by double underscore `__`
-* all characters should be uppercase in the environment variable.
+Redirects from.domain.net to to.domain.net
+A double underscore in the key represents a dot in the domain.
 
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
-* `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all letsgroups.
+* `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all Systems.
 
 ## Postgres
 

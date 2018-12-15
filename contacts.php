@@ -23,12 +23,10 @@ $page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
 
 require_once __DIR__ . '/include/web.php';
 
-$tschema = $app['this_group']->get_schema();
-
 if ($del)
 {
 	if (!($user_id = $app['db']->fetchColumn('select c.id_user
-		from ' . $tschema . '.contact c
+		from ' . $app['tschema'] . '.contact c
 		where c.id = ?', array($del))))
 	{
 		$app['alert']->error('Het contact bestaat niet.');
@@ -52,18 +50,18 @@ if ($del)
 	}
 
 	$contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c.id = ?
 			and tc.id = c.id_type_contact', array($del));
 
-	$owner = $app['user_cache']->get($contact['id_user'], $tschema);
+	$owner = $app['user_cache']->get($contact['id_user'], $app['tschema']);
 
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
 		if ($app['db']->fetchColumn('select count(c.*)
-			from ' . $tschema . '.contact c, ' .
-				$tschema . '.type_contact tc
+			from ' . $app['tschema'] . '.contact c, ' .
+				$app['tschema'] . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', array($user_id)) == 1)
@@ -82,7 +80,7 @@ if ($del)
 			cancel($uid);
 		}
 
-		if ($app['db']->delete($tschema . '.contact', array('id' => $del)))
+		if ($app['db']->delete($app['tschema'] . '.contact', array('id' => $del)))
 		{
 			$app['alert']->success('Contact verwijderd.');
 		}
@@ -94,8 +92,8 @@ if ($del)
 	}
 
 	$contact = $app['db']->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
-		from ' . $tschema . '.type_contact tc, ' .
-			$tschema . '.contact c
+		from ' . $app['tschema'] . '.type_contact tc, ' .
+			$app['tschema'] . '.contact c
 		where c.id_type_contact = tc.id
 			and c.id = ?', array($del));
 
@@ -113,7 +111,7 @@ if ($del)
 	{
 		echo '<dt>Gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($user_id, $tschema);
+		echo link_user($user_id, $app['tschema']);
 		echo '</dd>';
 	}
 	echo '<dt>Type</dt>';
@@ -164,7 +162,7 @@ if ($edit || $add)
 	if ($edit)
 	{
 		if (!($user_id = $app['db']->fetchColumn('select id_user
-			from ' . $tschema . '.contact
+			from ' . $app['tschema'] . '.contact
 			where id = ?', [$edit])))
 		{
 			$app['alert']->error('Dit contact heeft geen eigenaar
@@ -208,12 +206,12 @@ if ($edit || $add)
 			[$letscode] = explode(' ', trim($letscode));
 
 			$user_id = $app['db']->fetchColumn('select id
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where letscode = ?', [$letscode]);
 
 			if ($user_id)
 			{
-				$letscode = link_user($user_id, $tschema, false);
+				$letscode = link_user($user_id, $app['tschema'], false);
 			}
 			else
 			{
@@ -230,7 +228,7 @@ if ($edit || $add)
 		);
 
 		$abbrev_type = $app['db']->fetchColumn('select abbrev
-			from ' . $tschema . '.type_contact
+			from ' . $app['tschema'] . '.type_contact
 			where id = ?', array($contact['id_type_contact']));
 
 		if ($abbrev_type === 'mail' && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
@@ -266,19 +264,19 @@ if ($edit || $add)
 		}
 
 		$mail_type_id = $app['db']->fetchColumn('select id
-			from ' . $tschema . '.type_contact
+			from ' . $app['tschema'] . '.type_contact
 			where abbrev = \'mail\'');
 
 		if ($edit)
 		{
 			$count_mail = $app['db']->fetchColumn('select count(*)
-				from ' . $tschema . '.contact
+				from ' . $app['tschema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				array($user_id, $mail_type_id));
 
 			$mail_id = $app['db']->fetchColumn('select id
-				from ' . $tschema . '.contact
+				from ' . $app['tschema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				array($user_id, $mail_type_id));
@@ -293,9 +291,9 @@ if ($edit || $add)
 		if ($contact['id_type_contact'] == $mail_type_id)
 		{
 			$mail_count = $app['db']->fetchColumn('select count(c.*)
-				from ' . $tschema . '.contact c, ' .
-					$tschema . '.type_contact tc, ' .
-					$tschema . '.users u
+				from ' . $app['tschema'] . '.contact c, ' .
+					$app['tschema'] . '.type_contact tc, ' .
+					$app['tschema'] . '.users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
@@ -339,13 +337,13 @@ if ($edit || $add)
 				$app['queue.geocode']->cond_queue([
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
-					'schema'	=> $tschema,
+					'schema'	=> $app['tschema'],
 				]);
 			}
 
 			if ($edit)
 			{
-				if ($app['db']->update($tschema . '.contact',
+				if ($app['db']->update($app['tschema'] . '.contact',
 					$contact, array('id' => $edit)))
 				{
 					$app['alert']->success('Contact aangepast.');
@@ -358,7 +356,7 @@ if ($edit || $add)
 			}
 			else
 			{
-				if ($app['db']->insert($tschema . '.contact', $contact))
+				if ($app['db']->insert($app['tschema'] . '.contact', $contact))
 				{
 					$app['alert']->success('Contact opgeslagen.');
 					cancel($uid);
@@ -377,7 +375,7 @@ if ($edit || $add)
 	else if ($edit)
 	{
 		$contact = $app['db']->fetchAssoc('select *
-			from ' . $tschema . '.contact
+			from ' . $app['tschema'] . '.contact
 			where id = ?', array($edit));
 	}
 	else if ($add)
@@ -392,7 +390,7 @@ if ($edit || $add)
 	$tc = [];
 
 	$rs = $app['db']->prepare('select id, name, abbrev
-		from ' . $tschema . '.type_contact');
+		from ' . $app['tschema'] . '.type_contact');
 
 	$rs->execute();
 
@@ -444,7 +442,10 @@ if ($edit || $add)
 	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
 
 	$h1 = $edit ? 'Contact aanpassen' : 'Contact toevoegen';
-	$h1 .= (($s_owner && !$s_admin) || ($s_admin && $add && !$uid)) ? '' : ' voor ' . link_user($user_id, $tschema);
+	if (!(($s_owner && !$s_admin) || ($s_admin && $add && !$uid)))
+	{
+		$h1 .=  ' voor ' . link_user($user_id, $app['tschema']);
+	}
 
 	include __DIR__ . '/include/header.php';
 
@@ -462,7 +463,7 @@ if ($edit || $add)
 			$typeahead_ary[] = [
 				'accounts', [
 					'status'	=> $t_stat,
-					'schema'	=> $tschema,
+					'schema'	=> $app['tschema'],
 				],
 			];
 		}
@@ -477,7 +478,7 @@ if ($edit || $add)
 		echo $app['typeahead']->get($typeahead_ary);
 		echo '" ';
 		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays', $tschema);
+		echo $app['config']->get('newuserdays', $app['tschema']);
 		echo '" ';
 		echo 'placeholder="Account Code" ';
 		echo 'value="';
@@ -590,12 +591,12 @@ if ($uid)
 	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id && $uid) ? true : false;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', array($uid));
 
-	$user = $app['user_cache']->get($uid, $tschema);
+	$user = $app['user_cache']->get($uid, $app['tschema']);
 
 	if ($s_admin || $s_owner)
 	{
@@ -604,7 +605,7 @@ if ($uid)
 
 	if (!$inline)
 	{
-		$h1 = $s_owner ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user, $tschema);
+		$h1 = $s_owner ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user, $app['tschema']);
 		$fa = 'map-marker';
 
 		include __DIR__ . '/include/header.php';
@@ -618,7 +619,7 @@ if ($uid)
 		echo '<h3>';
 		echo '<i class="fa fa-map-marker"></i>';
 		echo ' Contactinfo van ';
-		echo link_user($user, $tschema);
+		echo link_user($user, $app['tschema']);
 		echo ' ';
 		echo $top_buttons;
 		echo '</h3>';
@@ -796,13 +797,13 @@ $params_sql = $where_sql = array();
 
 if ($uid)
 {
-	$user = $app['user_cache']->get($uid, $tschema);
+	$user = $app['user_cache']->get($uid, $app['tschema']);
 
 	$where_sql[] = 'c.id_user = ?';
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
 
-	$letscode = link_user($user, $tschema, false);
+	$letscode = link_user($user, $app['tschema'], false);
 }
 
 if (!$uid)
@@ -812,7 +813,7 @@ if (!$uid)
 		[$letscode] = explode(' ', trim($letscode));
 
 		$fuid = $app['db']->fetchColumn('select id
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = ?', [$letscode]);
 
 		if ($fuid)
@@ -820,7 +821,7 @@ if (!$uid)
 			$where_sql[] = 'c.id_user = ?';
 			$params_sql[] = $fuid;
 
-			$letscode = link_user($fuid, $tschema, false);
+			$letscode = link_user($fuid, $app['tschema'], false);
 		}
 		else
 		{
@@ -911,7 +912,7 @@ $user_table_sql = '';
 
 if ($ustatus != 'all' || $orderby == 'u.letscode')
 {
-	$user_table_sql = ', ' . $tschema . '.users u ';
+	$user_table_sql = ', ' . $app['tschema'] . '.users u ';
 	$where_sql[] = 'u.id = c.id_user';
 }
 
@@ -925,13 +926,13 @@ else
 }
 
 $query = 'select c.*, tc.abbrev
-	from ' . $tschema . '.contact c, ' .
-		$tschema . '.type_contact tc' . $user_table_sql . '
+	from ' . $app['tschema'] . '.contact c, ' .
+		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql;
 
 $row_count = $app['db']->fetchColumn('select count(c.*)
-	from ' . $tschema . '.contact c, ' .
-		$tschema . '.type_contact tc' . $user_table_sql . '
+	from ' . $app['tschema'] . '.contact c, ' .
+		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
 $query .= ' order by ' . $orderby . ' ';
@@ -974,7 +975,7 @@ unset($tableheader_ary['c.id']);
 $abbrev_ary = array();
 
 $rs = $app['db']->prepare('select abbrev
-	from ' . $tschema . '.type_contact');
+	from ' . $app['tschema'] . '.type_contact');
 
 $rs->execute();
 
@@ -1037,8 +1038,8 @@ $access_options = [
 	'interlets'	=> 'interSysteem',
 ];
 
-if (!$app['config']->get('template_lets', $tschema)
-	|| !$app['config']->get('interlets_en', $tschema))
+if (!$app['config']->get('template_lets', $app['tschema'])
+	|| !$app['config']->get('interlets_en', $app['tschema']))
 {
 	unset($access_options['interlets']);
 }
@@ -1093,7 +1094,7 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -1104,7 +1105,7 @@ echo 'data-typeahead="';
 echo $app['typeahead']->get($typeahead_ary);
 echo '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $tschema);
+echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
 echo 'name="letscode" id="letscode" placeholder="Account Code" ';
 echo 'value="';
@@ -1209,13 +1210,15 @@ foreach ($contacts as $c)
 	echo isset($c['value']) ? aphp('contacts', ['edit' => $c['id']], $c['value']) : '';
 	echo '</td>';
 	echo '<td>';
-	echo link_user($c['id_user'], $tschema);
+	echo link_user($c['id_user'], $app['tschema']);
 	echo '</td>';
 	echo '<td>';
 
 	if (isset($c['comments']))
 	{
-		echo aphp('contacts', ['edit' => $c['id']], $c['comments']);
+		echo aphp('contacts',
+			['edit' => $c['id']],
+			$c['comments']);
 	}
 
 	echo '</td>';
@@ -1224,7 +1227,13 @@ foreach ($contacts as $c)
 	echo '</td>';
 
 	echo '<td>';
-	echo aphp('contacts', ['del' => $c['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	echo aphp('contacts',
+		['del' => $c['id']],
+		'Verwijderen',
+		'btn btn-danger btn-xs',
+		false,
+		'times'
+	);
 	echo '</td>';
 
 	echo '</tr>';

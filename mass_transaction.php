@@ -4,8 +4,6 @@ $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 require_once __DIR__ . '/include/transactions.php';
 
-$tschema = $app['this_group']->get_schema();
-
 $q = $_POST['q'] ?? ($_GET['q'] ?? '');
 $hsh = $_POST['hsh'] ?? ($_GET['hsh'] ?? '096024');
 $selected_users = $_POST['selected_users'] ?? '';
@@ -13,7 +11,7 @@ $selected_users = ltrim($selected_users, '.');
 $selected_users = explode('.', $selected_users);
 $selected_users = array_combine($selected_users, $selected_users);
 
-$submit = isset($_POST['zend']) ? true : false;
+$submit = isset($_POST['zend']);
 
 $st = [
 	'active'	=> [
@@ -79,7 +77,7 @@ $rs = $app['db']->prepare(
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
 		postcode
-	from ' . $tschema . '.users
+	from ' . $app['tschema'] . '.users
 	where status IN (0, 1, 2, 5, 6)
 	order by letscode');
 
@@ -135,7 +133,7 @@ if ($submit)
 		$letscode = $to_one ? $to_letscode : $from_letscode;
 
 		$one_uid = $app['db']->fetchColumn('select id
-			from ' . $tschema . '.users
+			from ' . $app['tschema'] . '.users
 			where letscode = ?', [$letscode]);
 
 		if (!$one_uid)
@@ -191,7 +189,7 @@ if ($submit)
 	}
 
 	if ($app['db']->fetchColumn('select id
-		from ' . $tschema . '.transactions
+		from ' . $app['tschema'] . '.transactions
 		where transid = ?', [$transid]))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
@@ -250,7 +248,7 @@ if ($submit)
 				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
 				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
 				$alert_success .= '  met bedrag ' . $amo .' ';
-				$alert_success .= $app['config']->get('currency', $tschema);
+				$alert_success .= $app['config']->get('currency', $app['tschema']);
 				$alert_success .= ' uitgevoerd.<br>';
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
@@ -266,7 +264,7 @@ if ($submit)
 					'creator'		=> $s_master ? 0 : $s_id,
 				];
 
-				$app['db']->insert($tschema . '.transactions', $trans);
+				$app['db']->insert($app['tschema'] . '.transactions', $trans);
 
 				$mail_ary[$many_field][$many_uid] = [
 					'amount'	=> $amo,
@@ -275,7 +273,7 @@ if ($submit)
 
 				$transid_ary[] = $transid;
 
-				$app['db']->executeUpdate('update ' . $tschema . '.users
+				$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
 					where id = ?', [$amo, $many_uid]);
 
@@ -286,7 +284,7 @@ if ($submit)
 				$transactions[] = $trans;
 			}
 
-			$app['db']->executeUpdate('update ' . $tschema . '.users
+			$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
 				where id = ?', [$total, $one_uid]);
 
@@ -299,7 +297,7 @@ if ($submit)
 			throw $e;
 		}
 
-		$app['autominlimit']->init();
+		$app['autominlimit']->init($app['tschema']);
 
 		foreach($transactions as $t)
 		{
@@ -310,29 +308,29 @@ if ($submit)
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($tschema . '_user_' . $t['id_from']);
+				$app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
 			}
 
-			$app['predis']->del($tschema . '_user_' . $t['id_to']);
+			$app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
 		}
 		else
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($tschema . '_user_' . $t['id_to']);
+				$app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
 			}
 
-			$app['predis']->del($tschema . '_user_' . $t['id_from']);
+			$app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total . ' ';
-		$alert_success .= $app['config']->get('currency', $tschema);
+		$alert_success .= $app['config']->get('currency', $app['tschema']);
 		$app['alert']->success($alert_success);
 
 		$log_one = $users[$one_uid]['letscode'] . ' ';
 		$log_one .= $users[$one_uid]['name'];
 		$log_one .= '(Total amount: ' . $total . ' ';
-		$log_one .= $app['config']->get('currency', $tschema);
+		$log_one .= $app['config']->get('currency', $app['tschema']);
 		$log_one .= ')';
 
 		$log_many = rtrim($log_many, ', ');
@@ -341,7 +339,7 @@ if ($submit)
 		$log_str .= ' to ';
 		$log_str .= $to_one ? $log_one : $log_many;
 
-		$app['monolog']->info('trans: ' . $log_str, ['schema' => $tschema]);
+		$app['monolog']->info('trans: ' . $log_str, ['schema' => $app['tschema']]);
 
 		if ($s_master)
 		{
@@ -374,7 +372,7 @@ $transid = generate_transid();
 if ($to_letscode)
 {
 	if ($to_name = $app['db']->fetchColumn('select name
-		from ' . $tschema . '.users
+		from ' . $app['tschema'] . '.users
 		where letscode = ?', [$to_letscode]))
 	{
 		$to_letscode .= ' ' . $to_name;
@@ -383,15 +381,15 @@ if ($to_letscode)
 if ($from_letscode)
 {
 	if ($from_name = $app['db']->fetchColumn('select name
-		from ' . $tschema . '.users
+		from ' . $app['tschema'] . '.users
 		where letscode = ?', [$from_letscode]))
 	{
 		$from_letscode .= ' ' . $from_name;
 	}
 }
 
-$group_minlimit = $app['config']->get('minlimit', $tschema);
-$group_maxlimit = $app['config']->get('maxlimit', $tschema);
+$group_minlimit = $app['config']->get('minlimit', $app['tschema']);
+$group_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
 
 $app['assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
 
@@ -425,7 +423,7 @@ echo '<label for="fixed" class="control-label">';
 echo 'Vast bedrag</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $tschema);
+echo $app['config']->get('currency', $app['tschema']);
 echo '</span>';
 echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
@@ -471,7 +469,7 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $tschema);
+echo $app['config']->get('currency', $app['tschema']);
 echo ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
@@ -547,7 +545,7 @@ echo '<div class="col-sm-6">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $tschema);
+echo $app['config']->get('currency', $app['tschema']);
 echo ': min';
 echo '</span>';
 
@@ -559,7 +557,7 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $tschema);
+echo $app['config']->get('currency', $app['tschema']);
 echo ': max';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_max">';
@@ -577,26 +575,26 @@ echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo ' Respecteer minimum limieten</label>';
 echo '</div>';
 
-if ($app['config']->get('minlimit', $tschema) !== ''
-	|| $app['config']->get('maxlimit', $tschema) !== '')
+if ($app['config']->get('minlimit', $app['tschema']) !== ''
+	|| $app['config']->get('maxlimit', $app['tschema']) !== '')
 {
 	echo '<ul>';
 
-	if ($app['config']->get('minlimit', $tschema) !== '')
+	if ($app['config']->get('minlimit', $app['tschema']) !== '')
 	{
 		echo '<li>Minimum Systeemslimiet: ';
-		echo $app['config']->get('minlimit', $tschema);
+		echo $app['config']->get('minlimit', $app['tschema']);
 		echo ' ';
-		echo $app['config']->get('currency', $tschema);
+		echo $app['config']->get('currency', $app['tschema']);
 		echo '</li>';
 	}
 
-	if ($app['config']->get('maxlimit', $tschema) !== '')
+	if ($app['config']->get('maxlimit', $app['tschema']) !== '')
 	{
 		echo '<li>Maximum Systeemslimiet: ';
-		echo $app['config']->get('maxlimit', $tschema);
+		echo $app['config']->get('maxlimit', $app['tschema']);
 		echo ' ';
-		echo $app['config']->get('currency', $tschema);
+		echo $app['config']->get('currency', $app['tschema']);
 		echo '</li>';
 	}
 
@@ -669,7 +667,7 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -687,7 +685,7 @@ echo 'value="';
 echo $from_letscode;
 echo '" ';
 echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $tschema);
+echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
 echo 'data-typeahead="';
 echo $app['typeahead']->get($typeahead_ary);
@@ -739,11 +737,11 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo link_user($user, $tschema, true, false, 'letscode');
+	echo link_user($user, $app['tschema'], true, false, 'letscode');
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($user, $tschema, true, false, 'name');
+	echo link_user($user, $app['tschema'], true, false, 'name');
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
@@ -796,7 +794,7 @@ echo '<label for="total" class="control-label">Totaal';
 echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $tschema);
+echo $app['config']->get('currency', $app['tschema']);
 echo '</span>';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';
@@ -879,9 +877,7 @@ function mail_mass_transaction($mail_ary)
 {
 	global $app, $s_id;
 
-	$tschema = $app['this_group']->get_schema();
-
-	if (!$app['config']->get('mailenabled', $tschema))
+	if (!$app['config']->get('mailenabled', $app['tschema']))
 	{
 		$app['alert']->warning('Mail functions are not enabled. ');
 		return;
@@ -890,7 +886,7 @@ function mail_mass_transaction($mail_ary)
 	$trans_map = [];
 
 	$trans = $app['db']->executeQuery('select id, transid
-		from ' . $tschema . '.transactions
+		from ' . $app['tschema'] . '.transactions
 		where transid in (?)',
 		[$mail_ary['transid_ary']],
 		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -910,10 +906,10 @@ function mail_mass_transaction($mail_ary)
 
 	$common_vars = [
 		'group'		=> [
-			'name'			=> $app['config']->get('systemname', $tschema),
-			'tag'			=> $app['config']->get('systemtag', $tschema),
-			'support'		=> explode(',', $app['config']->get('support', $tschema)),
-			'currency'		=> $app['config']->get('currency', $tschema),
+			'name'			=> $app['config']->get('systemname', $app['tschema']),
+			'tag'			=> $app['config']->get('systemtag', $app['tschema']),
+			'support'		=> explode(',', $app['config']->get('support', $app['tschema'])),
+			'currency'		=> $app['config']->get('currency', $app['tschema']),
 		],
 		'description'			=> $mail_ary['description'],
 		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',
@@ -926,7 +922,7 @@ function mail_mass_transaction($mail_ary)
 	$users = $app['db']->executeQuery('select u.id,
 			u.saldo, u.status, u.minlimit, u.maxlimit,
 			u.name, u.letscode
-		from ' . $tschema . '.users u
+		from ' . $app['tschema'] . '.users u
 		where u.status in (1, 2)
 			and u.id in (?)',
 		[$many_user_ids],
@@ -948,8 +944,8 @@ function mail_mass_transaction($mail_ary)
 		$vars = array_merge($common_vars, [
 			'amount' 			=> $many_ary[$user_id]['amount'],
 			'transid' 			=> $many_ary[$user_id]['transid'],
-			'from_user' 		=> link_user($from_user_id, $tschema, false),
-			'to_user'			=> link_user($to_user_id, $tschema, false),
+			'from_user' 		=> link_user($from_user_id, $app['tschema'], false),
+			'to_user'			=> link_user($to_user_id, $app['tschema'], false),
 			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
 			'user'				=> $user,
 			'interlets'			=> false,
@@ -957,8 +953,8 @@ function mail_mass_transaction($mail_ary)
 		]);
 
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
-			'to'		=> $app['mail_addr_user']->get($user_id, $tschema),
+			'schema'	=> $app['tschema'],
+			'to'		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
 			'template'	=> 'transaction',
 			'vars'		=> $vars,
 		], random_int(0, 5000));
@@ -969,7 +965,7 @@ function mail_mass_transaction($mail_ary)
 	$users = [];
 
 	$user_ids = $app['db']->executeQuery('select u.id
-		from ' . $tschema . '.users u
+		from ' . $app['tschema'] . '.users u
 		where u.id in (?)',
 		[$many_user_ids],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -980,14 +976,14 @@ function mail_mass_transaction($mail_ary)
 
 		$users[] = [
 			'url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
-			'text'		=> link_user($user_id, $tschema, false),
+			'text'		=> link_user($user_id, $app['tschema'], false),
 			'amount'	=> $many_ary[$user_id]['amount'],
 			'id'		=> $user_id,
 		];
 
 		$total += $many_ary[$user_id]['amount'];
 
-		$text .= link_user($user_id, $tschema, false) . $t . $t . $many_ary[$user_id]['amount'];
+		$text .= link_user($user_id, $app['tschema'], false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
 	}
 
@@ -995,17 +991,17 @@ function mail_mass_transaction($mail_ary)
 		'users'		=> $users,
 		'user'		=> [
 			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
-			'text'	=> link_user($one_user_id, $tschema, false),
+			'text'	=> link_user($one_user_id, $app['tschema'], false),
 		],
 		'total'		=> $total,
 	]);
 
 	$app['queue.mail']->queue([
-		'schema'	=> $tschema,
+		'schema'	=> $app['tschema'],
 		'to' 		=> array_merge(
-			$app['mail_addr_system']->get_support($tschema),
-			$app['mail_addr_user']->get($s_id, $tschema),
-			$app['mail_addr_user']->get($one_user_id, $tschema)
+			$app['mail_addr_system']->get_support($app['tschema']),
+			$app['mail_addr_user']->get($s_id, $app['tschema']),
+			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
 		'subject' 	=> $subject,
 		'text' 		=> $text,

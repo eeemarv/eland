@@ -1,6 +1,6 @@
 <?php
 
-if ($css = $app['config']->get('css', $app['this_group']->get_schema()))
+if ($css = $app['config']->get('css', $app['tschema']))
 {
 	$app['assets']->add($css);
 }
@@ -10,7 +10,7 @@ echo '<html lang="nl">';
 echo '<head>';
 
 echo '<title>';
-echo $app['config']->get('systemname', $app['this_group']->get_schema());
+echo $app['config']->get('systemname', $app['tschema']);
 echo '</title>';
 
 echo $app['assets']->get_css();
@@ -55,7 +55,7 @@ if (!$s_anonymous)
 	echo '</button>';
 }
 
-$homepage_url = $app['config']->get('homepage_url', $app['this_group']->get_schema());
+$homepage_url = $app['config']->get('homepage_url', $app['tschema']);
 
 if (!$homepage_url)
 {
@@ -71,7 +71,7 @@ echo '</a>';
 echo '<a href="';
 echo $homepage_url;
 echo '" class="navbar-brand">';
-echo $app['config']->get('systemname', $app['this_group']->get_schema());
+echo $app['config']->get('systemname', $app['tschema']);
 echo '</a>';
 echo '</div>';
 
@@ -104,7 +104,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	foreach ($logins as $login_schema => $login_id)
 	{
 		$class = $s_schema === $login_schema && count($logins) > 1 ? ' class="active-group"' : '';
-		$class = $login_schema === $app['this_group']->get_schema() && $login_schema === $s_schema ? ' class="active"' : $class;
+		$class = $login_schema === $app['tschema'] && $login_schema === $s_schema ? ' class="active"' : $class;
 
 		echo '<li';
 		echo $class;
@@ -138,7 +138,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 			{
 				echo '<li';
 
-				if ($app['this_group']->get_schema() === $sch)
+				if ($app['tschema'] === $sch)
 				{
 					echo ' class="active"';
 				}
@@ -243,8 +243,8 @@ if (!$s_anonymous)
 			'logs'				=> ['history', 'Logs'],
 		];
 
-		if (!$app['config']->get('template_lets', $app['this_group']->get_schema())
-			|| !$app['config']->get('interlets_en', $app['this_group']->get_schema()))
+		if (!$app['config']->get('template_lets', $app['tschema'])
+			|| !$app['config']->get('interlets_en', $app['tschema']))
 		{
 			unset($menu['intersystem'], $menu['apikeys']);
 		}
@@ -268,7 +268,7 @@ if (!$s_anonymous)
 
 		if ($page_access == 'admin')
 		{
-			$user_url = $app['config']->get('default_landing_page', $app['this_group']->get_schema());
+			$user_url = $app['config']->get('default_landing_page', $app['tschema']);
 			$user_url .= '.php';
 
 			$u_param = 'view_' . $user_url;
@@ -293,8 +293,8 @@ if (!$s_anonymous)
 		echo ' Leden modus</a>';
 		echo '</li>';
 
-		if ($app['config']->get('template_lets', $app['this_group']->get_schema())
-			&& $app['config']->get('interlets_en', $app['this_group']->get_schema()))
+		if ($app['config']->get('template_lets', $app['tschema'])
+			&& $app['config']->get('interlets_en', $app['tschema']))
 		{
 			$u_param['r'] = 'guest';
 
@@ -343,12 +343,12 @@ if ($s_anonymous)
 		'login'			=> ['sign-in', 'Login', []],
 	];
 
-	if ($app['config']->get('contact_form_en', $app['this_group']->get_schema()))
+	if ($app['config']->get('contact_form_en', $app['tschema']))
 	{
 		$menu['contact'] = ['comment-o', 'Contact', []];
 	}
 
-	if ($app['config']->get('registration_en', $app['this_group']->get_schema()))
+	if ($app['config']->get('registration_en', $app['tschema']))
 	{
 		$menu['register'] = ['check-square-o', 'Inschrijven', []];
 	}
@@ -364,7 +364,7 @@ else
 
 	$menu['docs'] = ['files-o', 'Documenten', []];
 
-	if ($app['config']->get('forum_en', $app['this_group']->get_schema()))
+	if ($app['config']->get('forum_en', $app['tschema']))
 	{
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}

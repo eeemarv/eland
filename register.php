@@ -7,14 +7,12 @@ require_once __DIR__ . '/include/web.php';
 $submit = isset($_POST['zend']) ? true : false;
 $token = $_GET['token'] ?? false;
 
-$tschema = $app['this_group']->get_schema();
-
 if ($s_id)
 {
 	redirect_default_page();
 }
 
-if (!$app['config']->get('registration_en', $tschema))
+if (!$app['config']->get('registration_en', $app['tschema']))
 {
 	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
 	redirect_login();
@@ -22,7 +20,7 @@ if (!$app['config']->get('registration_en', $tschema))
 
 if ($token)
 {
-	$key = $tschema;
+	$key = $app['tschema'];
 	$key .= '_register_' . $token;
 
 	if ($data = $app['predis']->get($key))
@@ -44,22 +42,22 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $tschema . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000), 0, 4));
 				}
 			}
 
 			if (!$app['db']->fetchColumn('select name
-				from ' . $tschema . '.users
+				from ' . $app['tschema'] . '.users
 				where name = ?', [$name]))
 			{
 				break;
 			}
 		}
 
-		$minlimit = $app['config']->get('preset_minlimit', $tschema);
+		$minlimit = $app['config']->get('preset_minlimit', $app['tschema']);
 		$minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-		$maxlimit = $app['config']->get('preset_maxlimit', $tschema);
+		$maxlimit = $app['config']->get('preset_maxlimit', $app['tschema']);
 		$maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
 		$user = [
@@ -82,14 +80,14 @@ if ($token)
 
 		try
 		{
-			$app['db']->insert($tschema . '.users', $user);
+			$app['db']->insert($app['tschema'] . '.users', $user);
 
-			$user_id = $app['db']->lastInsertId($tschema . '.users_id_seq');
+			$user_id = $app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
 
 			$tc = [];
 
 			$rs = $app['db']->prepare('select abbrev, id
-				from ' . $tschema . '.type_contact');
+				from ' . $app['tschema'] . '.type_contact');
 
 			$rs->execute();
 
@@ -107,7 +105,7 @@ if ($token)
 				'id_type_contact'	=> $tc['mail'],
 			];
 
-			$app['db']->insert($tschema . '.contact', $mail);
+			$app['db']->insert($app['tschema'] . '.contact', $mail);
 
 			$ev_data = [
 				'token'			=> $token,
@@ -120,7 +118,7 @@ if ($token)
 				'email_validated',
 				$data['email'],
 				$ev_data,
-				$tschema);
+				$app['tschema']);
 
 			if ($data['gsm'] || $data['tel'])
 			{
@@ -133,7 +131,7 @@ if ($token)
 						'id_type_contact'	=> $tc['gsm'],
 					];
 
-					$app['db']->insert($tschema . '.contact', $gsm);
+					$app['db']->insert($app['tschema'] . '.contact', $gsm);
 				}
 
 				if ($data['tel'])
@@ -144,7 +142,7 @@ if ($token)
 						'value'				=> $data['tel'],
 						'id_type_contact'	=> $tc['tel'],
 					];
-					$app['db']->insert($tschema . '.contact', $tel);
+					$app['db']->insert($app['tschema'] . '.contact', $tel);
 				}
 			}
 			$app['db']->commit();
@@ -156,15 +154,15 @@ if ($token)
 		}
 
 		$vars = [
-			'group'	=> $app['template_vars']->get($tschema),
+			'group'	=> $app['template_vars']->get($app['tschema']),
 			'user'	=> $user,
 			'email'	=> $data['email'],
 			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
 		];
 
 		$app['queue.mail']->queue([
-			'schema'		=> $tschema,
-			'to' 			=> $app['mail_addr_system']->get_admin($tschema),
+			'schema'		=> $app['tschema'],
+			'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'vars'			=> $vars,
 			'template'		=> 'admin_registration',
 		], 8000);
@@ -181,9 +179,9 @@ if ($token)
 		}
 
 		$app['queue.mail']->queue([
-			'schema'				=> $tschema,
+			'schema'				=> $app['tschema'],
 			'to' 					=> [$data['email']],
-			'reply_to'				=> $app['mail_addr_system']->get_admin($tschema),
+			'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'template_from_config'	=> 'registration_success_mail',
 			'vars'		=> $vars,
 		], 8500);
@@ -192,7 +190,7 @@ if ($token)
 
 		require_once __DIR__ . '/include/header.php';
 
-		$registration_success_text = $app['config']->get('registration_success_text', $tschema);
+		$registration_success_text = $app['config']->get('registration_success_text', $app['tschema']);
 
 		if ($registration_success_text)
 		{
@@ -237,7 +235,7 @@ if ($submit)
 	];
 
 	$app['monolog']->info('Registration request for ' .
-		$reg['email'], ['schema' => $tschema]);
+		$reg['email'], ['schema' => $app['tschema']]);
 
 	if(!$reg['email'])
 	{
@@ -248,8 +246,8 @@ if ($submit)
 		$app['alert']->error('Geen geldig E-mail adres.');
 	}
 	else if ($app['db']->fetchColumn('select c.id_user
-		from ' . $tschema . '.contact c, ' .
-			$tschema . '.type_contact tc
+		from ' . $app['tschema'] . '.contact c, ' .
+			$app['tschema'] . '.type_contact tc
 		where c. value = ?
 			AND tc.id = c.id_type_contact
 			AND tc.abbrev = \'mail\'', [$reg['email']]))
@@ -275,21 +273,21 @@ if ($submit)
 	}
 	else
 	{
-		$token = substr(hash('sha512', $tschema . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
-		$key = $tschema . '_register_' . $token;
+		$token = substr(hash('sha512', $app['tschema'] . microtime() . $reg['email'] . $reg['first_name']), 0, 10);
+		$key = $app['tschema'] . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
 		$app['predis']->expire($key, 604800); // 1 week
-		$key = $tschema . '_register_email_' . $email;
+		$key = $app['tschema'] . '_register_email_' . $email;
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
-			'group'			=> $app['template_vars']->get($tschema),
+			'group'			=> $app['template_vars']->get($app['tschema']),
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
 
 		$app['queue.mail']->queue([
-			'schema'	=> $tschema,
+			'schema'	=> $app['tschema'],
 			'to' 		=> [$reg['email']],
 			'vars'		=> $vars,
 			'template'	=> 'registration_confirm',
@@ -308,7 +306,7 @@ $fa = 'check-square-o';
 
 require_once __DIR__ . '/include/header.php';
 
-$top_text = $app['config']->get('registration_top_text', $tschema);
+$top_text = $app['config']->get('registration_top_text', $app['tschema']);
 
 if ($top_text)
 {
@@ -406,7 +404,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = $app['config']->get('registration_bottom_text', $tschema);
+$bottom_text = $app['config']->get('registration_bottom_text', $app['tschema']);
 
 if ($bottom_text)
 {
