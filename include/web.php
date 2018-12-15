@@ -56,6 +56,13 @@ if (!$app['tschema'])
 	exit;
 }
 
+if (getenv('WEBSITE_MAINTENANCE'))
+{
+	echo $app['twig']->render('website_maintenance.html.twig',
+		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
+	exit;
+}
+
 if (isset($_GET['ev']))
 {
 	$app['email_validate']->validate($_GET['ev']);
@@ -102,6 +109,8 @@ $allowed_interlets_landing_pages = [
 ];
 
 /** user **/
+
+$app['session_user'] = [];
 
 $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
@@ -255,13 +264,6 @@ if (!isset($page_access))
 	http_response_code(500);
 
 	echo $app['twig']->render('500.html.twig');
-	exit;
-}
-
-if (getenv('WEBSITE_MAINTENANCE'))
-{
-	echo $app['twig']->render('website_maintenance.html.twig',
-		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
 	exit;
 }
 
@@ -424,9 +426,7 @@ if (!$s_anonymous)
 
 /* some more vars */
 
-$app['s_ary_user'] = $app['session_user'] ?? [];
 $app['s_schema'] = $s_schema;
-
 $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
 
 /** welcome message **/
