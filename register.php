@@ -296,7 +296,7 @@ if ($submit)
 		$app['alert']->warning('Open je E-mailbox en klik op de
 			bevestigingslink in de E-mail die we naar je gestuurd
 			hebben om je inschrijving te voltooien.');
-		header('Location: ' . $rootpath . 'login.php');
+		header('Location: ' . $app['rootpath'] . 'login.php');
 		exit;
 	}
 }

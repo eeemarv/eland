@@ -1627,8 +1627,12 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="contacts" ';
-	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
-	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
+	echo 'data-url="' . $app['rootpath'];
+	echo 'contacts.php?inline=1&uid=';
+	echo $message['id_user'];
+	echo '&';
+	echo http_build_query(get_session_query_param());
+	echo '"></div>';
 
 // response form
 

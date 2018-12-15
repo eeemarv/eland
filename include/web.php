@@ -3,9 +3,6 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 $app['page_access'] = $page_access;
 
 $header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
@@ -138,7 +135,7 @@ if (!$s_id)
 		{
 			$s_id = $logins[$s_schema];
 
-			$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+			$location = parse_url($app['request_uri'], PHP_URL_PATH);
 			$get = $_GET;
 
 			unset($get['u'], $get['s'], $get['r']);
@@ -179,7 +176,7 @@ else if ($logins[$s_schema] != $s_id || !$s_id)
 
 	if (ctype_digit((string) $s_id))
 	{
-		$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		$location = parse_url($app['request_uri'], PHP_URL_PATH);
 		$get = $_GET;
 
 		unset($get['u'], $get['s'], $get['r']);
@@ -537,7 +534,7 @@ function aphp(
  */
 function generate_url(string $entity, $params = [], $sch = false):string
 {
-	global $rootpath, $app;
+	global $app;
 
 	$params = array_merge($params, get_session_query_param($sch));
 
@@ -545,7 +542,7 @@ function generate_url(string $entity, $params = [], $sch = false):string
 
 	$params = $params ? '?' . $params : '';
 
-	$path = $sch ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $rootpath;
+	$path = $sch ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $app['rootpath'];
 
 	return $path . $entity . '.php' . $params;
 }
@@ -652,13 +649,13 @@ function get_default_page():string
  */
 function redirect_login()
 {
-	global $rootpath;
-	$location = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+	global $app;
+	$location = parse_url($app['request_uri'], PHP_URL_PATH);
 	$get = $_GET;
 	unset($get['u'], $get['s'], $get['r']);
 	$query_string = http_build_query($get);
 	$location .= ($query_string == '') ? '' : '?' . $query_string;
-	header('Location: ' . $rootpath . 'login.php?location=' . urlencode($location));
+	header('Location: ' . $app['rootpath'] . 'login.php?location=' . urlencode($location));
 	exit;
 }
 

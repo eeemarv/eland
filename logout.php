@@ -16,5 +16,5 @@ $app['monolog']->info('user logged out',
 	['schema' => $app['tschema']]);
 
 header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-header('Location: ' . $rootpath . 'login.php');
+header('Location: ' . $app['rootpath'] . 'login.php');
 exit;

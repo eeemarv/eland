@@ -517,7 +517,7 @@ $app['access_control'] = function($app){
 
 function link_user($user, string $sch, $link = true, $show_id = false, $field = ''):string
 {
-	global $rootpath, $app;
+	global $app;
 
 	if (!$user)
 	{

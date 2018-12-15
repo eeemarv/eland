@@ -2683,7 +2683,7 @@ if ($id)
 	$user_img = $show_img ? '' : ' style="display:none;"';
 	$no_user_img = $show_img ? ' style="display:none;"' : '';
 
-	$img_src = $user['PictureFile'] ? $app['s3_img_url'] . $user['PictureFile'] : $rootpath . 'gfx/1.gif';
+	$img_src = $user['PictureFile'] ? $app['s3_img_url'] . $user['PictureFile'] : $app['rootpath'] . 'gfx/1.gif';
 	echo '<img id="user_img"';
 	echo $user_img;
 	echo ' class="img-rounded img-responsive center-block" ';
@@ -2897,7 +2897,7 @@ if ($id)
 	echo '</div></div></div></div>';
 
 	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
-	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $id;
+	echo 'data-url="' . $app['rootpath'] . 'contacts.php?inline=1&uid=' . $id;
 	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
 
 	// response form
@@ -2986,7 +2986,8 @@ if ($id)
 	echo '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';
-	echo '<div id="donutdiv" data-height="480px" data-width="960px"></div>';
+	echo '<div id="donutdiv" data-height="480px" ';
+	echo 'data-width="960px"></div>';
 	echo '<h4>Interacties laatste jaar</h4>';
 	echo '</div>';
 	echo '</div>';
@@ -2995,13 +2996,23 @@ if ($id)
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
 		echo '<div id="messages" ';
-		echo 'data-url="' . $rootpath . 'messages.php?inline=1&uid=' . $id;
-		echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
+		echo 'data-url="';
+		echo $app['rootpath'];
+		echo 'messages.php?inline=1&uid=';
+		echo $id;
+		echo '&';
+		echo http_build_query(get_session_query_param());
+		echo '" class="print-hide"></div>';
 	}
 
 	echo '<div id="transactions" ';
-	echo 'data-url="' . $rootpath . 'transactions.php?inline=1&uid=' . $id;
-	echo '&' . http_build_query(get_session_query_param()) . '" class="print-hide"></div>';
+	echo 'data-url="';
+	echo $app['rootpath'];
+	echo 'transactions.php?inline=1&uid=';
+	echo $id;
+	echo '&';
+	echo http_build_query(get_session_query_param());
+	echo '" class="print-hide"></div>';
 
 	include __DIR__ . '/include/footer.php';
 	exit;

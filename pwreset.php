@@ -48,7 +48,7 @@ if ($token)
 					'vars'		=> $vars,
 				]);
 
-				header('Location: ' . $rootpath . 'login.php');
+				header('Location: ' . $app['rootpath'] . 'login.php');
 				exit;
 			}
 
