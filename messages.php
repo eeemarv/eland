@@ -691,7 +691,7 @@ if ($del)
 	echo $message['validity'];
 	echo '</dd>';
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -787,7 +787,7 @@ if (($edit || $add))
 		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
 		$uploaded_images = $_POST['uploaded_images'] ?? [];
 
-		if ($count_interlets_groups)
+		if ($app['count_intersystems'])
 		{
 			$access_error = $app['access_control']->get_post_error();
 
@@ -1372,7 +1372,7 @@ if (($edit || $add))
 	echo 'verslepen.</p>';
 	echo '</div>';
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
@@ -1634,7 +1634,7 @@ if ($id)
 		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs') . '</dd>';
 	}
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -2025,7 +2025,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$app['s_guest'] && $count_interlets_groups)
+if (!$app['s_guest'] && $app['count_intersystems'])
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2428,9 +2428,11 @@ if ($v_list)
 		echo $app['date_format']->get($msg['validity'], 'day');
 		echo '</td>';
 
-		if (!$app['s_guest'] && $count_interlets_groups)
+		if (!$app['s_guest'] && $app['count_intersystems'])
 		{
-			echo '<td>' . $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
+			echo '<td>';
+			echo $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets');
+			echo '</td>';
 		}
 
 		echo '</tr>';

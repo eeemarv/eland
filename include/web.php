@@ -327,8 +327,13 @@ $app['s_anonymous'] = !($app['s_admin'] || $app['s_user'] || $app['s_guest']);
 $errors = [];
 
 /**
- * check access to groups
+ * check access to interSystems
  **/
+
+$app['s_intersystems'] = [
+	'eland'	=> [],
+	'elas'	=> [],
+];
 
 if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
@@ -346,8 +351,7 @@ if ($app['s_group_self'] && $app['s_guest'])
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
 
-$count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets_groups);
-$app['count_interlets_groups'] = $count_interlets_groups;
+$app['count_intersystems'] = count($eland_interlets_groups) + count($elas_interlets_groups);
 
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_group_self']

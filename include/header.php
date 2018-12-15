@@ -78,7 +78,7 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$app['s_anonymous'] && ($count_interlets_groups + count($app['s_logins'])) > 1)
+if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -134,11 +134,13 @@ if (!$app['s_anonymous'] && ($count_interlets_groups + count($app['s_logins'])) 
 		echo '</li>';
 	}
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<li class="divider"></li>';
 		echo '<li class="dropdown-header">';
-		echo $count_interlets_groups > 1 ? 'Gekoppelde interSystemen' : 'Gekoppeld interSysteem';
+		echo $app['count_intersystems'] > 1
+			? 'Gekoppelde interSystemen'
+			: 'Gekoppeld interSysteem';
 		echo '</li>';
 
 		if (count($eland_interlets_groups))
