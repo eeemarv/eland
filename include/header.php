@@ -103,8 +103,8 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 
 	foreach ($logins as $login_schema => $login_id)
 	{
-		$class = $s_schema === $login_schema && count($logins) > 1 ? ' class="active-group"' : '';
-		$class = $login_schema === $app['tschema'] && $login_schema === $s_schema ? ' class="active"' : $class;
+		$class = $app['s_schema'] === $login_schema && count($logins) > 1 ? ' class="active-group"' : '';
+		$class = $login_schema === $app['tschema'] && $login_schema === $app['s_schema'] ? ' class="active"' : $class;
 
 		echo '<li';
 		echo $class;
@@ -188,30 +188,30 @@ if (!$s_anonymous)
 	{
 		echo 'eLAS gast login';
 	}
-	else if ($s_schema && $app['s_id'])
+	else if ($app['s_schema'] && $app['s_id'])
 	{
-		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo link_user($app['s_id'], $s_schema, false);
+		echo $s_group_self ? '' : $app['s_schema'] . '.';
+		echo link_user($app['s_id'], $app['s_schema'], false);
 	}
 
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($s_schema && !$s_master && !$s_guest)
+	if ($app['s_schema'] && !$s_master && !$s_guest)
 	{
 		echo '<li><a href="';
-		echo generate_url('users', ['id' => $app['s_id']], $s_schema);
+		echo generate_url('users', ['id' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-user"></i> Mijn gegevens';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('messages', ['uid' => $app['s_id']], $s_schema);
+		echo generate_url('messages', ['uid' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('transactions', ['uid' => $app['s_id']], $s_schema);
+		echo generate_url('transactions', ['uid' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-exchange"></i> Mijn transacties';
 		echo '</a></li>';
@@ -220,7 +220,7 @@ if (!$s_anonymous)
 	}
 
 	echo '<li><a href="';
-	echo generate_url('logout', [], $s_schema) . '">';
+	echo generate_url('logout', [], $app['s_schema']) . '">';
 	echo '<i class="fa fa-sign-out"></i> Uitloggen';
 	echo '</a></li>';
 

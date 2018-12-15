@@ -7,7 +7,7 @@ $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: application/json');
 
-if (!$s_schema || $s_elas_guest)
+if (!$app['s_schema'] || $s_elas_guest)
 {
 	echo json_encode(['error' => 'Onvoldoende rechten.']);
 	exit;
@@ -26,7 +26,7 @@ if (!isset($elas_interlets_groups[$group_id]))
 }
 
 $group = $app['db']->fetchAssoc('select *
-	from ' . $s_schema . '.letsgroups
+	from ' . $app['s_schema'] . '.letsgroups
 	where id = ?', [$group_id]);
 
 if (!$group)

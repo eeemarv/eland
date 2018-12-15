@@ -1259,7 +1259,8 @@ if ($add)
 
 $interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
 
-$s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
+$s_inter_schema_check = array_merge($eland_interlets_groups,
+	[$app['s_schema'] => true]);
 
 /**
  * show a transaction
@@ -2318,7 +2319,7 @@ if (!$inline)
 
 	if (!$s_group_self)
 	{
-		$params_form['s'] = $s_schema;
+		$params_form['s'] = $app['s_schema'];
 	}
 
 	foreach ($params_form as $name => $value)

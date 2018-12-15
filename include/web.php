@@ -116,11 +116,11 @@ $p_role = $_GET['r'] ?? 'anonymous';
 $p_user = $_GET['u'] ?? false;
 $p_schema = $_GET['s'] ?? false;
 
-$s_schema = $p_schema ?: $app['tschema'];
+$app['s_schema'] = $p_schema ?: $app['tschema'];
 $app['s_id'] = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = $s_schema == $app['tschema'] ? true : false;
+$s_group_self = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
 
@@ -140,23 +140,24 @@ if (!$app['s_id'])
 {
 	if ($page_access != 'anonymous')
 	{
-		if (isset($logins[$s_schema]) && ctype_digit((string) $logins[$s_schema]))
+		if (isset($logins[$app['s_schema']])
+			&& ctype_digit((string) $logins[$app['s_schema']]))
 		{
-			$app['s_id'] = $logins[$s_schema];
+			$app['s_id'] = $logins[$app['s_schema']];
 
 			$location = parse_url($app['request_uri'], PHP_URL_PATH);
 			$get = $_GET;
 
 			unset($get['u'], $get['s'], $get['r']);
 
-			$app['session_user'] = $app['user_cache']->get($app['s_id'], $s_schema);
+			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
 			$get['r'] = $app['session_user']['accountrole'];
 			$get['u'] = $app['s_id'];
 
 			if (!$s_group_self)
 			{
-				$get['s'] = $s_schema;
+				$get['s'] = $app['s_schema'];
 			}
 
 			$get = http_build_query($get);
@@ -172,16 +173,16 @@ if (!$app['s_id'])
 		redirect_login();
 	}
 }
-else if (!isset($logins[$s_schema]))
+else if (!isset($logins[$app['s_schema']]))
 {
 	if ($s_accountrole != 'anonymous')
 	{
 		redirect_login();
 	}
 }
-else if ($logins[$s_schema] != $app['s_id'] || !$app['s_id'])
+else if ($logins[$app['s_schema']] != $app['s_id'] || !$app['s_id'])
 {
-	$app['s_id'] = $logins[$s_schema];
+	$app['s_id'] = $logins[$app['s_schema']];
 
 	if (ctype_digit((string) $app['s_id']))
 	{
@@ -190,14 +191,14 @@ else if ($logins[$s_schema] != $app['s_id'] || !$app['s_id'])
 
 		unset($get['u'], $get['s'], $get['r']);
 
-		$app['session_user'] = $app['user_cache']->get($app['s_id'], $s_schema);
+		$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
 		$get['r'] = $app['session_user']['accountrole'];
 		$get['u'] = $app['s_id'];
 
 		if (!$s_group_self)
 		{
-			$get['s'] = $s_schema;
+			$get['s'] = $app['s_schema'];
 		}
 
 		$get = http_build_query($get);
@@ -209,11 +210,11 @@ else if ($logins[$s_schema] != $app['s_id'] || !$app['s_id'])
 }
 else if (ctype_digit((string) $app['s_id']))
 {
-	$app['session_user'] = $app['user_cache']->get($app['s_id'], $s_schema);
+	$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=';
+		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=';
 		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
 		header('Location: ' . $location);
 		exit;
@@ -245,7 +246,7 @@ else if ($app['s_id'] == 'master')
 {
 	if (!$s_group_self && $s_accountrole != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($s_schema) . '/messages.php?r=admin&u=master';
+		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -333,8 +334,8 @@ $errors = [];
 if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 {
-	$elas_interlets_groups = $app['interlets_groups']->get_elas($s_schema);
-	$eland_interlets_groups = $app['interlets_groups']->get_eland($s_schema);
+	$elas_interlets_groups = $app['interlets_groups']->get_elas($app['s_schema']);
+	$eland_interlets_groups = $app['interlets_groups']->get_eland($app['s_schema']);
 }
 else
 {
@@ -354,7 +355,7 @@ if ($page_access != 'anonymous'
 	&& !$eland_interlets_groups[$app['tschema']])
 {
 	header('Location: ' .
-		generate_url('messages', ['view' => $view_messages], $s_schema));
+		generate_url('messages', ['view' => $view_messages], $app['s_schema']));
 	exit;
 }
 
@@ -369,7 +370,7 @@ if ($page_access != 'anonymous' && !$s_admin
   *
   */
 
-$app['xdb']->set_user($s_schema, ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
+$app['xdb']->set_user($app['s_schema'], ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
 
 /* view (global for all groups) */
 
@@ -414,7 +415,7 @@ if (!$s_anonymous)
 		}
 
 		$s_user_params_own_group = [
-			'r' => $app['session']->get('role.' . $s_schema),
+			'r' => $app['session']->get('role.' . $app['s_schema']),
 			'u'	=> $app['s_id'],
 		];
 	}
@@ -424,9 +425,8 @@ if (!$s_anonymous)
 	}
 }
 
-/* some more vars */
+/* */
 
-$app['s_schema'] = $s_schema;
 $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
 
 /** welcome message **/
@@ -553,19 +553,19 @@ function generate_url(string $entity, $params = [], $sch = false):string
 function get_session_query_param($sch = false):array
 {
 	global $p_role, $p_user, $p_schema, $access_level;
-	global $s_user_params_own_group, $s_schema, $app;
+	global $s_user_params_own_group, $app;
 	static $ary;
 
 	if ($sch)
 	{
-		if ($sch == $s_schema)
+		if ($sch === $app['s_schema'])
 		{
 			return  $s_user_params_own_group;
 		}
 
-		if ($s_schema)
+		if ($app['s_schema'])
 		{
-			$param_ary = ['r' => 'guest', 'u' => $app['s_id'], 's' => $s_schema];
+			$param_ary = ['r' => 'guest', 'u' => $app['s_id'], 's' => $app['s_schema']];
 
 			return $param_ary;
 		}
@@ -597,11 +597,11 @@ function get_session_query_param($sch = false):array
 function redirect_default_page()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $app, $s_accountrole, $s_schema;
+	global $app, $s_accountrole;
 
 	$access_level = $access_session;
 
-	$p_schema = $s_schema;
+	$p_schema = $app['s_schema'];
 	$p_user = $app['s_id'];
 	$p_role = $s_accountrole;
 

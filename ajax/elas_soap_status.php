@@ -8,7 +8,7 @@ $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: text/plain');
 
-if (!$s_schema)
+if (!$app['s_schema'])
 {
 	echo 'Onvoldoende rechten.';
 	exit;
@@ -21,7 +21,7 @@ if (!$group_id)
 }
 
 $group = $app['db']->fetchAssoc('select *
-	from ' . $s_schema . '.letsgroups
+	from ' . $app['s_schema'] . '.letsgroups
 	where id = ?', [$group_id]);
 
 if (!$group)

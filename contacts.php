@@ -685,7 +685,7 @@ if ($uid)
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -725,7 +725,7 @@ if ($uid)
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();

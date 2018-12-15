@@ -121,19 +121,23 @@ if ($user_mail_submit && $id && $post)
 
 	if (!$s_admin && !in_array($user['status'], [1, 2]))
 	{
-		$app['alert']->error('Je hebt geen rechten om een E-mail bericht naar een niet-actieve gebruiker te sturen');
+		$app['alert']->error('Je hebt geen rechten
+			om een E-mail bericht naar een niet-actieve
+			gebruiker te sturen');
 		cancel($id);
 	}
 
 	if ($s_master)
 	{
-		$app['alert']->error('Het master account kan geen E-mail berichten versturen.');
+		$app['alert']->error('Het master account kan
+			geen E-mail berichten versturen.');
 		cancel($id);
 	}
 
-	if (!$s_schema)
+	if (!$app['s_schema'])
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een E-mail bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende
+			rechten om een E-mail bericht te versturen.');
 		cancel($id);
 	}
 
@@ -144,7 +148,8 @@ if ($user_mail_submit && $id && $post)
 	}
 
 	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+		from ' . $app['s_schema'] . '.contact c, ' .
+			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
@@ -154,10 +159,10 @@ if ($user_mail_submit && $id && $post)
 		'group'			=> $app['template_vars']->get($app['tschema']),
 		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($app['session_user'], $s_schema, false),
+		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
 		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
+		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $app['s_schema']),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
 		'login_url'		=> $app['base_url'] . '/login.php',
@@ -167,7 +172,7 @@ if ($user_mail_submit && $id && $post)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
+		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 		'template'	=> 'user',
 		'vars'		=> $vars,
 	], 8000);
@@ -176,7 +181,7 @@ if ($user_mail_submit && $id && $post)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
+			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
 		], 8000);
@@ -543,7 +548,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			' for users ' . $users_log,
 			['schema' => $app['tschema']]);
 
-		$app['interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
@@ -593,7 +598,7 @@ if ($s_admin && !count($errors) && $bulk_field_submit && $post)
 			$users_log,
 			['schema' => $app['tschema']]);
 
-		$app['interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
@@ -1096,7 +1101,7 @@ if ($del)
 			delete_thumbprint('extern');
 		}
 
-		$app['interlets_groups']->clear_cache($s_schema);
+		$app['interlets_groups']->clear_cache($app['s_schema']);
 
 		cancel();
 	}
@@ -1585,7 +1590,7 @@ if ($add || $edit)
 						delete_thumbprint('extern');
 					}
 
-					$app['interlets_groups']->clear_cache($s_schema);
+					$app['interlets_groups']->clear_cache($app['s_schema']);
 
 					cancel($id);
 				}
@@ -1736,7 +1741,7 @@ if ($add || $edit)
 							delete_thumbprint('extern');
 						}
 
-						$app['interlets_groups']->clear_cache($s_schema);
+						$app['interlets_groups']->clear_cache($app['s_schema']);
 					}
 					cancel($edit);
 				}
@@ -2527,7 +2532,7 @@ if ($id)
 	}
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $s_schema) : [];
+	$mail_from = $app['s_schema'] && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -2610,7 +2615,7 @@ if ($id)
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
 				'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
-				'exchange', true, false, $s_schema);
+				'exchange', true, false, $app['s_schema']);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -2937,7 +2942,7 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> ';
 	echo 'Stuur een bericht naar ';
@@ -3365,11 +3370,11 @@ if ($v_list)
 
 	if (isset($show_columns['d']) && !$s_master)
 	{
-		if (($s_guest && $s_schema && !$s_elas_guest) || !isset($contacts[$app['s_id']]['adr']))
+		if (($s_guest && $app['s_schema'] && !$s_elas_guest) || !isset($contacts[$app['s_id']]['adr']))
 		{
 			$my_adr = $app['db']->fetchColumn('select c.value
-				from ' . $s_schema . '.contact c, ' .
-					$s_schema . '.type_contact tc
+				from ' . $app['s_schema'] . '.contact c, ' .
+					$app['s_schema'] . '.type_contact tc
 				where c.id_user = ?
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'', [$app['s_id']]);
@@ -3530,10 +3535,10 @@ else
 
 		if (!$s_master)
 		{
-			if ($s_guest && $s_schema && !$s_elas_guest)
+			if ($s_guest && $app['s_schema'] && !$s_elas_guest)
 			{
 				$my_adr = $app['db']->fetchColumn('select c.value
-					from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+					from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
 					where c.id_user = ?
 						and c.id_type_contact = tc.id
 						and tc.abbrev = \'adr\'', [$app['s_id']]);

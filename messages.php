@@ -555,13 +555,15 @@ if ($mail && $app['is_http_post'] && $id)
 
 	if ($s_master)
 	{
-		$app['alert']->error('Het master account kan geen berichten versturen.');
+		$app['alert']->error('Het master account
+			kan geen berichten versturen.');
 		cancel();
 	}
 
-	if (!$s_schema)
+	if (!$app['s_schema'])
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een E-mail bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende rechten
+			om een E-mail bericht te versturen.');
 		cancel();
 	}
 
@@ -572,10 +574,12 @@ if ($mail && $app['is_http_post'] && $id)
 	}
 
 	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+		from ' . $app['s_schema'] . '.contact c, ' .
+			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $app['s_id']]);
+			and c.id_type_contact = tc.id',
+			[$access_ary[$user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
@@ -583,10 +587,10 @@ if ($mail && $app['is_http_post'] && $id)
 		'group'			=> $app['template_vars']->get($app['tschema']),
 		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($app['session_user'], $s_schema, false),
+		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
 		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
+		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $app['s_schema']),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
@@ -597,7 +601,7 @@ if ($mail && $app['is_http_post'] && $id)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
+		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 		'template'	=> 'message',
 		'vars'		=> $vars,
 	], 8500);
@@ -607,7 +611,7 @@ if ($mail && $app['is_http_post'] && $id)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
+			'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
 		], 8000);
@@ -1416,7 +1420,9 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mail_addr_user']->get($app['s_id'], $s_schema) : [];
+	$mail_from = $app['s_schema']
+		&& !$s_master
+		&& !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
 
 	$balance = $user['saldo'];
 
@@ -1485,7 +1491,7 @@ if ($id)
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
 				'btn btn-warning', 'Transactie voor dit aanbod',
-				'exchange', true, false, $s_schema);
+				'exchange', true, false, $app['s_schema']);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -1665,7 +1671,7 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
 	echo  link_user($message['id_user'], $app['tschema']);
@@ -2269,7 +2275,7 @@ if (!$inline)
 
 	if (!$s_group_self)
 	{
-		$params_form['s'] = $s_schema;
+		$params_form['s'] = $app['s_schema'];
 	}
 
 	foreach ($params_form as $name => $value)

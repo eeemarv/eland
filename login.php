@@ -234,7 +234,7 @@ if ($submit)
 		$app['session']->set('logins', $logins);
 
 		$app['s_id'] = $user['id'];
-		$s_schema = $app['tschema'];
+		$app['s_schema'] = $app['tschema'];
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
@@ -250,7 +250,7 @@ if ($submit)
 
 		$app['xdb']->set('login', $user['id'], [
 			'browser' => $browser, 'time' => time()
-		], $s_schema);
+		], $app['s_schema']);
 
 		$app['alert']->success('Je bent ingelogd.');
 
