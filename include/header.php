@@ -184,7 +184,7 @@ if (!$s_anonymous)
 	{
 		echo 'Master';
 	}
-	else if ($s_elas_guest)
+	else if ($app['s_elas_guest'])
 	{
 		echo 'eLAS gast login';
 	}

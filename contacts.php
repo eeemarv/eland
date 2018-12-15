@@ -692,7 +692,7 @@ if ($uid)
 		{
 			echo '<td>';
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
-			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
+			if ($c['abbrev'] == 'adr' && !$app['s_elas_guest'] && !$s_master)
 			{
 				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))
@@ -732,7 +732,7 @@ if ($uid)
 		{
 			echo '<td>';
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
-			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
+			if ($c['abbrev'] == 'adr' && !$app['s_elas_guest'] && !$s_master)
 			{
 				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))

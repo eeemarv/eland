@@ -2535,7 +2535,7 @@ if ($id)
 	}
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = $app['s_schema'] && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
+	$mail_from = $app['s_schema'] && !$s_master && !$app['s_elas_guest'] ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -2925,7 +2925,7 @@ if ($id)
 
 	// response form
 
-	if ($s_elas_guest)
+	if ($app['s_elas_guest'])
 	{
 		$placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
 	}
@@ -3113,7 +3113,7 @@ if ($v_list)
 		$columns['c'][$tc['abbrev']] = $tc['name'];
 	}
 
-	if (!$s_elas_guest)
+	if (!$app['s_elas_guest'])
 	{
 		$columns['d'] = [
 			'distance'	=> 'Afstand',
@@ -3147,7 +3147,7 @@ if ($v_list)
 	];
 
 	$session_users_columns_key = 'users_columns_' . $app['s_accountrole'];
-	$session_users_columns_key .= $s_elas_guest ? '_elas' : '';
+	$session_users_columns_key .= $app['s_elas_guest'] ? '_elas' : '';
 
 	if (isset($_GET['sh']))
 	{
@@ -3190,7 +3190,7 @@ if ($v_list)
 			];
 		}
 
-		if ($s_elas_guest)
+		if ($app['s_elas_guest'])
 		{
 			unset($columns['d']['distance']);
 		}
@@ -3241,7 +3241,7 @@ if ($v_list)
 		$columns['c'][$tc['abbrev']] = $tc['name'];
 	}
 
-	if (!$s_elas_guest)
+	if (!$app['s_elas_guest'])
 	{
 		$columns['d'] = [
 			'distance'	=> 'Afstand',
@@ -3374,7 +3374,7 @@ if ($v_list)
 
 	if (isset($show_columns['d']) && !$s_master)
 	{
-		if (($s_guest && $app['s_schema'] && !$s_elas_guest) || !isset($contacts[$app['s_id']]['adr']))
+		if (($s_guest && $app['s_schema'] && !$app['s_elas_guest']) || !isset($contacts[$app['s_id']]['adr']))
 		{
 			$my_adr = $app['db']->fetchColumn('select c.value
 				from ' . $app['s_schema'] . '.contact c, ' .
@@ -3539,7 +3539,7 @@ else
 
 		if (!$s_master)
 		{
-			if ($s_guest && $app['s_schema'] && !$s_elas_guest)
+			if ($s_guest && $app['s_schema'] && !$app['s_elas_guest'])
 			{
 				$my_adr = $app['db']->fetchColumn('select c.value
 					from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc

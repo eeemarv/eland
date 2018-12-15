@@ -1422,7 +1422,7 @@ if ($id)
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
 	$mail_from = $app['s_schema']
 		&& !$s_master
-		&& !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
+		&& !$app['s_elas_guest'] ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
 
 	$balance = $user['saldo'];
 
@@ -1650,7 +1650,7 @@ if ($id)
 
 // response form
 
-	if ($s_elas_guest)
+	if ($app['s_elas_guest'])
 	{
 		$placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
 	}

@@ -126,7 +126,7 @@ $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 $logins = $app['session']->get('logins') ?? [];
 
-$s_master = $s_elas_guest = false;
+$s_master = $app['s_elas_guest'] = false;
 
 if (!count($logins))
 {
@@ -240,7 +240,7 @@ else if ($app['s_id'] == 'elas')
 		redirect_login();
 	}
 
-	$s_elas_guest = true;
+	$app['s_elas_guest'] = true;
 }
 else if ($app['s_id'] == 'master')
 {
@@ -446,7 +446,7 @@ if (isset($_GET['welcome']) && $s_guest)
 	$msg .= $app['config']->get('currency', $app['tschema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
-	if ($s_elas_guest)
+	if ($app['s_elas_guest'])
 	{
 		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
 		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';

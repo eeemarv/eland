@@ -7,7 +7,7 @@ $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: application/json');
 
-if (!$app['s_schema'] || $s_elas_guest)
+if (!$app['s_schema'] || $app['s_elas_guest'])
 {
 	echo json_encode(['error' => 'Onvoldoende rechten.']);
 	exit;
