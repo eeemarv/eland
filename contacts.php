@@ -877,7 +877,7 @@ switch ($ustatus)
 {
 	case 'new':
 		$where_sql[] = 'u.adate > ? and u.status = 1';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		$params['ustatus'] = 'new';
 		break;
 	case 'leaving':

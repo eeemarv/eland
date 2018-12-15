@@ -427,7 +427,7 @@ if (!$s_anonymous)
 $app['s_ary_user'] = $session_user ?? [];
 $app['s_schema'] = $s_schema;
 
-$newusertreshold = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
+$app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
 
 /** welcome message **/
 

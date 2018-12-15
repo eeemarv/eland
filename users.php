@@ -2431,7 +2431,7 @@ $st = [
 	'new'		=> [
 		'lbl'	=> 'Instappers',
 		'sql'	=> 'u.status = 1 and u.adate > ?',
-		'sql_bind'	=> gmdate('Y-m-d H:i:s', $newusertreshold),
+		'sql_bind'	=> gmdate('Y-m-d H:i:s', $app['new_user_treshold']),
 		'cl'	=> 'success',
 		'st'	=> 3,
 	],
@@ -2636,7 +2636,7 @@ if ($id)
 	$top_buttons_right .= '</span>';
 
 	$status = $user['status'];
-	$status = ($newusertreshold < strtotime($user['adate']) && $status == 1) ? 3 : $status;
+	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
 
 	$h_status_ary = $status_ary;
 	$h_status_ary[3] = 'Instapper';
@@ -4114,7 +4114,7 @@ if ($v_list)
 	{
 		$id = $u['id'];
 
-		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 
 		$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
 
@@ -4467,7 +4467,7 @@ else if ($v_extended)
 {
 	foreach ($users as $u)
 	{
-		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 
 		$class = (isset($st_class_ary[$row_stat])) ? ' bg-' . $st_class_ary[$row_stat] : '';
 
@@ -4540,7 +4540,7 @@ else if ($v_tiles)
 
 	foreach ($users as $u)
 	{
-		$row_stat = ($u['status'] == 1 && $newusertreshold < strtotime($u['adate'])) ? 3 : $u['status'];
+		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 		$class = $st_class_ary[$row_stat] ?? false;
 		$class = $class ? ' class="bg-' . $class . '"' : '';
 

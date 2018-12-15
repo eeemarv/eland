@@ -726,7 +726,7 @@ echo '<tbody>';
 foreach($users as $user_id => $user)
 {
 	$status_key = $status_ary[$user['status']];
-	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($user['adate'])) ? 'new' : $status_key;
+	$status_key = ($status_key == 'active' && $app['new_user_treshold'] < strtotime($user['adate'])) ? 'new' : $status_key;
 
 	$hsh = $st[$status_key]['hsh'] ?: '';
 	$hsh .= $status_key == 'leaving' || $status_key == 'new' ? $st['active']['hsh'] : '';

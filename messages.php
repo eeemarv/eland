@@ -1854,7 +1854,7 @@ if ($filter_en)
 		if (isset($filter['ustatus']['new']))
 		{
 			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		}
 
 		if (isset($filter['ustatus']['leaving']))
@@ -1865,7 +1865,7 @@ if ($filter_en)
 		if (isset($filter['ustatus']['active']))
 		{
 			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		}
 
 		if (count($ustatus_sql))
