@@ -111,7 +111,7 @@ foreach ($export_ary as $ex_key => $export)
 {
 	if (isset($_GET['db']) && function_exists('exec'))
 	{
-		$filename = $tschema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 8) . '.sql';
+		$filename = $tschema . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 4) . '.sql';
 
 		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $tschema . ' --no-owner --no-acl > ' . $filename);
 
