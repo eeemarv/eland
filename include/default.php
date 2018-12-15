@@ -183,12 +183,6 @@ $app['template_vars'] = function ($app){
 	);
 };
 
-$app['this_group'] = function($app){
-	return new service\this_group(
-		$app['groups']
-	);
-};
-
 $app['xdb'] = function ($app){
 	return new service\xdb(
 		$app['db'],
@@ -214,7 +208,7 @@ $app['queue'] = function ($app){
 $app['date_format'] = function($app){
 	return new service\date_format(
 		$app['config'],
-		$app['this_group']
+		$app['tschema']
 	);
 };
 
@@ -275,15 +269,6 @@ $app['email_validate'] = function ($app){
 		$app['xdb'],
 		$app['token'],
 		$app['monolog']
-	);
-};
-
-$app['url'] = function($app){
-	return new service\url(
-		$app['this_group'],
-		$app['groups'],
-		$app['rootpath'],
-		$app['protocol']
 	);
 };
 
@@ -484,8 +469,10 @@ $app['assets'] = function($app){
 };
 
 $app['alert'] = function ($app){
-	return new service\alert($app['monolog'], $app['session'],
-		$app['this_group']);
+	return new service\alert(
+		$app['monolog'],
+		$app['session'],
+		$app['tschema']);
 };
 
 $app['pagination'] = function (){
@@ -496,14 +483,13 @@ $app['password_strength'] = function ($app){
 	return new service\password_strength();
 };
 
-$app['user'] = function ($app){
-	return new service\user($app['this_group'], $app['monolog'],
-		$app['session'], $app['page_access']);
-};
-
 $app['autominlimit'] = function ($app){
-	return new service\autominlimit($app['monolog'], $app['xdb'], $app['db'],
-		$app['this_group'], $app['config'], $app['user_cache']);
+	return new service\autominlimit(
+		$app['monolog'],
+		$app['xdb'],
+		$app['db'],
+		$app['config'],
+		$app['user_cache']);
 };
 
 // init
@@ -520,7 +506,9 @@ $app['form_token'] = function ($app){
 };
 
 $app['access_control'] = function($app){
-	return new service\access_control($app['this_group'], $app['config']);
+	return new service\access_control(
+		$app['tschema'],
+		$app['config']);
 };
 
 /**

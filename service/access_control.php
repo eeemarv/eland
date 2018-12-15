@@ -2,7 +2,6 @@
 
 namespace service;
 
-use service\this_group;
 use service\config;
 
 class access_control
@@ -47,10 +46,10 @@ class access_control
 		'interlets' => 'interlets',
 	];
 
-	public function __construct(this_group $this_group, config $config)
+	public function __construct(string $schema, config $config)
 	{
 		$this->config = $config;
-		$this->schema = $this_group->get_schema();
+		$this->schema = $schema;
 
 		if (!$this->config->get('template_lets', $this->schema)
 			|| !$this->config->get('interlets_en', $this->schema))

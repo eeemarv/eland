@@ -9,8 +9,7 @@ class config_helper extends Helper
     protected $config;
 
     public function __construct(
-        config $config,
-        this_group $this_group
+        config $config
     )
     {
         $this->config = $config;

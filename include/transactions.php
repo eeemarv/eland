@@ -49,8 +49,10 @@ function insert_transaction($transaction)
 	$app['user_cache']->clear($transaction['id_to'], $app['tschema']);
 	$app['user_cache']->clear($transaction['id_from'], $app['tschema']);
 
-	$app['autominlimit']->init()
-		->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
+	$app['autominlimit']->init($app['tschema'])
+		->process($transaction['id_from'],
+		$transaction['id_to'],
+		$transaction['amount']);
 
 	$app['monolog']->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 		$transaction['amount'] . ' ' .

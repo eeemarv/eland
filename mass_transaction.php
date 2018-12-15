@@ -297,7 +297,7 @@ if ($submit)
 			throw $e;
 		}
 
-		$app['autominlimit']->init();
+		$app['autominlimit']->init($app['tschema']);
 
 		foreach($transactions as $t)
 		{

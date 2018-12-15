@@ -724,7 +724,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			$template_vars[$key] = '{{ ' . $key . ' }}';
 		}
 
-		$replace = $app['protocol'] . $app['this_group']->get_host() . '/users.php?';
+		$replace = $app['protocol'] . $app['groups']->get_host($app['tschema']) . '/users.php?';
 
 		$out = str_replace('./users.php?', $replace, $alert_msg);
 		$out .= '<br><br>';

@@ -759,7 +759,7 @@ if ($add)
 					$remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
 					$to_remote_user['name'], ['schema' => $remote_schema]);
 
-				$app['autominlimit']->init()
+				$app['autominlimit']->init($app['tschema'])
 					->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 				$app['alert']->success('InterSysteem transactie uitgevoerd.');
