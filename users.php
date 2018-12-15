@@ -3146,7 +3146,7 @@ if ($v_list)
 		'saldo_date'				=> '.',
 	];
 
-	$session_users_columns_key = 'users_columns_' . $s_accountrole;
+	$session_users_columns_key = 'users_columns_' . $app['s_accountrole'];
 	$session_users_columns_key .= $s_elas_guest ? '_elas' : '';
 
 	if (isset($_GET['sh']))

@@ -118,7 +118,7 @@ $p_schema = $_GET['s'] ?? false;
 
 $app['s_schema'] = $p_schema ?: $app['tschema'];
 $app['s_id'] = $p_user;
-$s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
+$app['s_accountrole'] = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
 $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
@@ -130,7 +130,7 @@ $s_master = $s_elas_guest = false;
 
 if (!count($logins))
 {
-	if ($s_accountrole != 'anonymous')
+	if ($app['s_accountrole'] != 'anonymous')
 	{
 		redirect_login();
 	}
@@ -168,14 +168,14 @@ if (!$app['s_id'])
 		redirect_login();
 	}
 
-	if ($s_accountrole != 'anonymous')
+	if ($app['s_accountrole'] != 'anonymous')
 	{
 		redirect_login();
 	}
 }
 else if (!isset($logins[$app['s_schema']]))
 {
-	if ($s_accountrole != 'anonymous')
+	if ($app['s_accountrole'] != 'anonymous')
 	{
 		redirect_login();
 	}
@@ -212,7 +212,7 @@ else if (ctype_digit((string) $app['s_id']))
 {
 	$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
-	if (!$app['s_group_self'] && $s_accountrole != 'guest')
+	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
 		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=';
 		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
@@ -220,9 +220,9 @@ else if (ctype_digit((string) $app['s_id']))
 		exit;
 	}
 
-	if ($access_ary[$app['session_user']['accountrole']] > $access_ary[$s_accountrole])
+	if ($access_ary[$app['session_user']['accountrole']] > $access_ary[$app['s_accountrole']])
 	{
-		$s_accountrole = $app['session_user']['accountrole'];
+		$app['s_accountrole'] = $app['session_user']['accountrole'];
 
 		redirect_default_page();
 	}
@@ -235,7 +235,7 @@ else if (ctype_digit((string) $app['s_id']))
 }
 else if ($app['s_id'] == 'elas')
 {
-	if ($s_accountrole != 'guest' || !$app['s_group_self'])
+	if ($app['s_accountrole'] != 'guest' || !$app['s_group_self'])
 	{
 		redirect_login();
 	}
@@ -244,7 +244,7 @@ else if ($app['s_id'] == 'elas')
 }
 else if ($app['s_id'] == 'master')
 {
-	if (!$app['s_group_self'] && $s_accountrole != 'guest')
+	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
 		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
@@ -268,7 +268,7 @@ if (!isset($page_access))
 	exit;
 }
 
-switch ($s_accountrole)
+switch ($app['s_accountrole'])
 {
 	case 'anonymous':
 
@@ -318,11 +318,11 @@ switch ($s_accountrole)
  * some vars
  **/
 
-$access_level = $access_ary[$s_accountrole];
+$access_level = $access_ary[$app['s_accountrole']];
 
-$app['s_admin'] = $s_admin = $s_accountrole === 'admin';
-$s_user = $s_accountrole === 'user';
-$s_guest = $s_accountrole === 'guest';
+$app['s_admin'] = $s_admin = $app['s_accountrole'] === 'admin';
+$s_user = $app['s_accountrole'] === 'user';
+$s_guest = $app['s_accountrole'] === 'guest';
 $s_anonymous = !($s_admin || $s_user || $s_guest);
 
 $errors = [];
@@ -411,7 +411,7 @@ if (!$s_anonymous)
 	{
 		if (isset($logins[$app['tschema']]) && $app['s_group_self'])
 		{
-			$app['session']->set('role.' . $app['tschema'], $s_accountrole);
+			$app['session']->set('role.' . $app['tschema'], $app['s_accountrole']);
 		}
 
 		$s_user_params_own_group = [
@@ -597,13 +597,13 @@ function get_session_query_param($sch = false):array
 function redirect_default_page()
 {
 	global $p_role, $p_user, $p_schema, $access_level, $access_session;
-	global $app, $s_accountrole;
+	global $app;
 
 	$access_level = $access_session;
 
 	$p_schema = $app['s_schema'];
 	$p_user = $app['s_id'];
-	$p_role = $s_accountrole;
+	$p_role = $app['s_accountrole'];
 
 	header('Location: ' . get_default_page());
 	exit;

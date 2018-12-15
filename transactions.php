@@ -2314,7 +2314,7 @@ if (!$inline)
 	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
 	unset($params_form['start']);
 
-	$params_form['r'] = $s_accountrole;
+	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
 
 	if (!$app['s_group_self'])

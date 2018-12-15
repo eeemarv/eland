@@ -2270,7 +2270,7 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['f'], $params_form['start']);
 
-	$params_form['r'] = $s_accountrole;
+	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
 
 	if (!$app['s_group_self'])
