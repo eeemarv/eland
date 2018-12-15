@@ -20,9 +20,9 @@ $app['assets']->add([
 	'print.css', 'base.js']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
-
-$app['base_url'] = $app['protocol'] . $_SERVER['SERVER_NAME'];
-
+$app['server_name'] = $_SERVER['SERVER_NAME'];
+$app['base_url'] = $app['protocol'] . $app['server_name'];
+$app['request_uri'] = $_SERVER['REQUEST_URI'];
 $app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
@@ -30,9 +30,9 @@ $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 /*
  * check if we are on the request hosting url.
  */
-$key_host_env = str_replace('.', '__', strtoupper($_SERVER['SERVER_NAME']));
+$app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
 
-if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
+if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $app['env_server_name']))
 {
 	$page_access = 'anonymous';
 	$hosting_form = true;
@@ -43,23 +43,21 @@ if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $key_host_env))
  * permanent redirects
  */
 
-if ($app_redirect = getenv('APP_REDIRECT_' . $key_host_env))
+if ($app_redirect = getenv('APP_REDIRECT_' . $app['env_server_name']))
 {
 	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['protocol'] . $app_redirect . $_SERVER['REQUEST_URI']);
+	header('Location: ' . $app['protocol'] . $app_redirect . $app['request_uri']);
 	exit;
 }
 
-/** **/
+$app['tschema'] = $app['groups']->get_schema($app['server_name']);
 
-if (!$app['this_group']->get_schema())
+if (!$app['tschema'])
 {
 	http_response_code(404);
-
 	echo $app['twig']->render('404.html.twig');
 	exit;
 }
-
 
 if (isset($_GET['ev']))
 {

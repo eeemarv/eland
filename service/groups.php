@@ -74,14 +74,14 @@ class groups
 		return $this->hosts;
 	}
 
-	public function get_schema(string $host):?string
+	public function get_schema(string $host):string
 	{
-		return $this->schemas[$host] ?? null;
+		return $this->schemas[$host] ?? '';
 	}
 
-	public function get_host(string $schema):?string
+	public function get_host(string $schema):string
 	{
-		return $this->hosts[$schema] ?? null;
+		return $this->hosts[$schema] ?? '';
 	}
 
 	public function count():int
@@ -89,14 +89,14 @@ class groups
 		return count($this->schemas);
 	}
 
-	public function get_schema_from_system(string $system):?string
+	public function get_schema_from_system(string $system):string
 	{
-		return $this->systems_schemas[$system] ?: null;
+		return $this->systems_schemas[$system] ?? '';
 	}
 
-	public function get_system_from_schema(string $schema):?string
+	public function get_system_from_schema(string $schema):string
 	{
-		return $this->schemas_systems[$schema] ?: null;
+		return $this->schemas_systems[$schema] ?? '';
 	}
 
 	public function get_schemas_systems():array

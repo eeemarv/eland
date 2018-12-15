@@ -23,7 +23,7 @@ if (!$location
 	$location .= '.php?' . http_build_query($param);
 }
 
-$submit = isset($_POST['zend']) ? true : false;
+$submit = isset($_POST['zend']);
 
 if ($monitor)
 {
@@ -43,7 +43,7 @@ if ($token)
 
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
-		if ($referrer != 'unknown')
+		if ($referrer !== 'unknown')
 		{
 			// record logins to link the apikeys to domains and groups
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
@@ -55,7 +55,7 @@ if ($token)
 		$app['monolog']->info('eLAS guest login using token ' .
 			$token . ' succeeded. referrer: ' . $referrer, ['schema' => $tschema]);
 
-		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		$glue = strpos($location, '?') === false ? '?' : '&';
 		header('Location: ' . $location . $glue . $param);
 		exit;
 	}
@@ -77,14 +77,16 @@ if ($submit)
 
 	$master_password = getenv('MASTER_PASSWORD');
 
-	if ($login == 'master' && hash('sha512', $password) == $master_password)
+	if ($login == 'master'
+		&& $master_password
+		&& hash('sha512', $password) === $master_password)
 	{
 		$logins = $app['session']->get('logins');
 		$logins[$tschema] = 'master';
 		$app['session']->set('logins', $logins);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
-		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		$glue = strpos($location, '?') === false ? '?' : '&';
 		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
 		exit;
 	}
@@ -117,8 +119,10 @@ if ($submit)
 		}
 		else
 		{
-			$err = 'Je kan dit E-mail adres niet gebruiken om in te loggen want het is niet ';
-			$err .= 'uniek aanwezig in dit Systeem. Gebruik je Account Code of Gebruikersnaam.';
+			$err = 'Je kan dit E-mail adres niet gebruiken ';
+			$err .= 'om in te loggen want het is niet ';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik ';
+			$err .= 'je Account Code of Gebruikersnaam.';
 			$errors[] = $err;
 		}
 	}
@@ -131,8 +135,10 @@ if ($submit)
 
 		if ($count_letscode > 1)
 		{
-			$err = 'Je kan deze Account Code niet gebruiken om in te loggen want deze is niet ';
-			$err .= 'uniek aanwezig in dit Systeem. Gebruik je E-mail adres of gebruikersnaam.';
+			$err = 'Je kan deze Account Code niet gebruiken ';
+			$err .= 'om in te loggen want deze is niet ';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik ';
+			$err .= 'je E-mail adres of gebruikersnaam.';
 			$errors[] = $err;
 		}
 		else if ($count_letscode == 1)
@@ -151,8 +157,10 @@ if ($submit)
 
 		if ($count_name > 1)
 		{
-			$err = 'Je kan deze gebruikersnaam niet gebruiken om in te loggen want deze is niet ';
-			$err .= 'uniek aanwezig in dit Systeem. Gebruik je E-mail adres of Account Code.';
+			$err = 'Je kan deze gebruikersnaam niet gebruiken ';
+			$err .= 'om in te loggen want deze is niet ';
+			$err .= 'uniek aanwezig in dit Systeem. Gebruik ';
+			$err .= 'je E-mail adres of Account Code.';
 			$errors[] = $err;
 		}
 		else if ($count_name == 1)
@@ -194,7 +202,10 @@ if ($submit)
 			}
 			else if ($user['password'] != $sha512)
 			{
-				$app['db']->update($tschema . '.users', ['password' => hash('sha512', $password)], ['id' => $user['id']]);
+				$app['db']->update($tschema . '.users',
+					['password' => hash('sha512', $password)],
+					['id' => $user['id']]);
+
 				$app['monolog']->info('Password encryption updated to sha512', $log_ary);
 			}
 		}
@@ -228,10 +239,14 @@ if ($submit)
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
-		$app['monolog']->info('User ' . link_user($user, $tschema, false, true) .
+		$app['monolog']->info('User ' .
+			link_user($user, $tschema, false, true) .
 			' logged in, agent: ' . $browser, $log_ary);
 
-		$app['db']->update($tschema . '.users', ['lastlogin' => gmdate('Y-m-d H:i:s')], ['id' => $user['id']]);
+		$app['db']->update($tschema . '.users',
+			['lastlogin' => gmdate('Y-m-d H:i:s')],
+			['id' => $user['id']]);
+
 		$app['user_cache']->clear($user['id'], $tschema);
 
 		$app['xdb']->set('login', $user['id'], [
@@ -240,7 +255,7 @@ if ($submit)
 
 		$app['alert']->success('Je bent ingelogd.');
 
-		$glue = (strpos($location, '?') === false) ? '?' : '&';
+		$glue = strpos($location, '?') === false ? '?' : '&';
 
 		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
 		exit;
@@ -251,7 +266,8 @@ if ($submit)
 
 if($app['config']->get('maintenance', $tschema))
 {
-	$app['alert']->warning('De website is niet beschikbaar wegens onderhoudswerken.  Enkel admins kunnen inloggen');
+	$app['alert']->warning('De website is niet beschikbaar
+		wegens onderhoudswerken.  Enkel admins kunnen inloggen');
 }
 
 $h1 = 'Login';
@@ -289,7 +305,8 @@ if(empty($token))
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-key"></i>';
 	echo '</span>';
-    echo '<input type="password" class="form-control" id="password" name="password" ';
+	echo '<input type="password" class="form-control" ';
+	echo 'id="password" name="password" ';
 	echo 'value="" required>';
     echo '</div>';
 	echo '<p>';
@@ -297,7 +314,8 @@ if(empty($token))
 	echo '</p>';
 	echo '</div>';
 
-	echo '<input type="submit" class="btn btn-default" value="Inloggen" name="zend">';
+	echo '<input type="submit" class="btn btn-default" ';
+	echo 'value="Inloggen" name="zend">';
 
 	echo '</form>';
 
