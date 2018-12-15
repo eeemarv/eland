@@ -261,7 +261,7 @@ if ($submit)
 					'date' 			=> $cdate,
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
-					'creator'		=> $s_master ? 0 : $s_id,
+					'creator'		=> $s_master ? 0 : $app['s_id'],
 				];
 
 				$app['db']->insert($app['tschema'] . '.transactions', $trans);
@@ -875,7 +875,7 @@ include __DIR__ . '/include/footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $s_id;
+	global $app;
 
 	if (!$app['config']->get('mailenabled', $app['tschema']))
 	{
@@ -1000,7 +1000,7 @@ function mail_mass_transaction($mail_ary)
 		'schema'	=> $app['tschema'],
 		'to' 		=> array_merge(
 			$app['mail_addr_system']->get_support($app['tschema']),
-			$app['mail_addr_user']->get($s_id, $app['tschema']),
+			$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
 		'subject' 	=> $subject,

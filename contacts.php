@@ -41,7 +41,7 @@ if ($del)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id && $user_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $user_id === $app['s_id'] && $user_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -184,7 +184,7 @@ if ($edit || $add)
 
 	$user_id = $uid ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id && $user_id) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $user_id == $app['s_id'] && $user_id) ? true : false;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -588,7 +588,7 @@ if ($edit || $add)
 
 if ($uid)
 {
-	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id && $uid) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $uid === $app['s_id'] && $uid) ? true : false;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
 		from ' . $app['tschema'] . '.contact c, ' .
@@ -685,7 +685,7 @@ if ($uid)
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $s_schema)
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -725,7 +725,7 @@ if ($uid)
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
 			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
 			{
-				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $s_schema)
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -784,7 +784,7 @@ if (!$s_admin)
 	redirect_default_page();
 }
 
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = (!$s_guest && $s_group_self && $app['s_id'] === $uid && $app['s_id'] && $uid) ? true : false;
 
 $params = array(
 	'orderby'	=> $orderby,
@@ -1127,13 +1127,15 @@ unset($params_form['letscode'], $params_form['ustatus']);
 unset($params_form['start']);
 
 $params_form['r'] = 'admin';
-$params_form['u'] = $s_id;
+$params_form['u'] = $app['s_id'];
 
 foreach ($params_form as $name => $value)
 {
 	if (isset($value))
 	{
-		echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+		echo '<input name="' . $name;
+		echo '" value="' . $value;
+		echo '" type="hidden">';
 	}
 }
 

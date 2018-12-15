@@ -207,7 +207,7 @@ echo '</div>';
 
 echo '</div>';
 
-$params_form = ['r' => 'admin', 'u' => $s_id];
+$params_form = ['r' => 'admin', 'u' => $app['s_id']];
 
 foreach ($params_form as $name => $value)
 {

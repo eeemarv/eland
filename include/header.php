@@ -188,10 +188,10 @@ if (!$s_anonymous)
 	{
 		echo 'eLAS gast login';
 	}
-	else if ($s_schema && $s_id)
+	else if ($s_schema && $app['s_id'])
 	{
 		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo link_user($s_id, $s_schema, false);
+		echo link_user($app['s_id'], $s_schema, false);
 	}
 
 	echo '<span class="caret"></span></a>';
@@ -199,19 +199,19 @@ if (!$s_anonymous)
 	if ($s_schema && !$s_master && !$s_guest)
 	{
 		echo '<li><a href="';
-		echo generate_url('users', ['id' => $s_id], $s_schema);
+		echo generate_url('users', ['id' => $app['s_id']], $s_schema);
 		echo '">';
 		echo '<i class="fa fa-user"></i> Mijn gegevens';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('messages', ['uid' => $s_id], $s_schema);
+		echo generate_url('messages', ['uid' => $app['s_id']], $s_schema);
 		echo '">';
 		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('transactions', ['uid' => $s_id], $s_schema);
+		echo generate_url('transactions', ['uid' => $app['s_id']], $s_schema);
 		echo '">';
 		echo '<i class="fa fa-exchange"></i> Mijn transacties';
 		echo '</a></li>';

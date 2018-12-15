@@ -2,8 +2,8 @@
 
 function generate_transid()
 {
-	global $s_id;
-	return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $_SERVER['SERVER_NAME'];
+	global $app;
+	return substr(sha1($app['s_id'] . microtime()), 0, 12) . '_' . $app['s_id'] . '@' . $_SERVER['SERVER_NAME'];
 }
 
 function sign_transaction($transaction, $sharedsecret)
@@ -23,9 +23,9 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-	global $app, $s_id, $s_master;
+	global $app, $s_master;
 
-	$transaction['creator'] = $s_master ? 0 : ($s_id ? $s_id : 0);
+	$transaction['creator'] = $s_master ? 0 : ($app['s_id'] ? $app['s_id'] : 0);
     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
 
 	$app['db']->beginTransaction();

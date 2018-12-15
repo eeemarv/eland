@@ -72,7 +72,9 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 
 	foreach ($rows as $row)
 	{
-		if (!$s_admin && $s_user && ($row['id_user'] != $s_id))
+		if (!$s_admin
+			&& $s_user
+			&& ($row['id_user'] !== $app['s_id']))
 		{
 			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')';
 			cancel();
@@ -185,7 +187,10 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $message['id_user'] && $message['id_user']) ? true : false;
+	$s_owner = !$s_guest
+		&& $s_group_self
+		&& $app['s_id'] === $message['id_user']
+		&& $message['id_user'];
 
 	if ($message['local'] && $s_guest)
 	{
@@ -422,7 +427,10 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $msg['id_user'] == $s_id && $msg['id_user']) ? true : false;
+	$s_owner = !$s_guest
+		&& $s_group_self
+		&& $msg['id_user'] === $app['s_id']
+		&& $msg['id_user'];
 
 	if (!($s_owner || $s_admin))
 	{
@@ -567,7 +575,7 @@ if ($mail && $app['is_http_post'] && $id)
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
+			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
@@ -589,7 +597,7 @@ if ($mail && $app['is_http_post'] && $id)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
+		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
 		'template'	=> 'message',
 		'vars'		=> $vars,
 	], 8500);
@@ -599,7 +607,7 @@ if ($mail && $app['is_http_post'] && $id)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_user']->get($s_id, $s_schema),
+			'to'		=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
 		], 8000);
@@ -761,7 +769,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> ($s_admin) ? (int) $user['id'] : (($s_master) ? 0 : $s_id),
+			'id_user'		=> $s_admin ? (int) $user['id'] : (($s_master) ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -1125,14 +1133,14 @@ if (($edit || $add))
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
-			'id_user'		=> $s_master ? 0 : $s_id,
+			'id_user'		=> $s_master ? 0 : $app['s_id'],
 			'id_category'	=> '',
 			'amount'		=> '',
 			'units'			=> '',
 			'local'			=> 0,
 		];
 
-		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : (($s_master) ? 0 : $s_id);
+		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : (($s_master) ? 0 : $app['s_id']);
 
 		if ($s_master)
 		{
@@ -1408,7 +1416,7 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mail_addr_user']->get($s_id, $s_schema) : [];
+	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mail_addr_user']->get($app['s_id'], $s_schema) : [];
 
 	$balance = $user['saldo'];
 
@@ -1710,7 +1718,10 @@ if (!($view || $inline))
 	cancel();
 }
 
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = !$s_guest
+	&& $s_group_self
+	&& $app['s_id'] === $uid
+	&& $app['s_id'] && $uid;
 
 $v_list = ($view === 'list' || $inline) && !$recent ? true : false;
 $v_extended = $view === 'extended' && !$inline || $recent ? true : false;
@@ -2254,7 +2265,7 @@ if (!$inline)
 	unset($params_form['f'], $params_form['start']);
 
 	$params_form['r'] = $s_accountrole;
-	$params_form['u'] = $s_id;
+	$params_form['u'] = $app['s_id'];
 
 	if (!$s_group_self)
 	{
@@ -2423,7 +2434,8 @@ else if ($v_extended)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
-		$sf_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
+		$sf_owner = $s_group_self
+			&& $msg['id_user'] === $app['s_id'];
 
 		$exp = strtotime($msg['validity']) < $time;
 

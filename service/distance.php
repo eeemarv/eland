@@ -25,7 +25,10 @@ class distance
 		$this->cache = $cache;
 	}
 
-	public function set_from_geo(string $adr = '', string $s_id = '', string $s_schema = '')
+	public function set_from_geo(
+		string $adr = '',
+		string $s_id = '',
+		string $s_schema = ''):self
 	{
 		if ($this->geo)
 		{

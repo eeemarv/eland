@@ -233,7 +233,7 @@ if ($submit)
 		$logins[$app['tschema']] = $user['id'];
 		$app['session']->set('logins', $logins);
 
-		$s_id = $user['id'];
+		$app['s_id'] = $user['id'];
 		$s_schema = $app['tschema'];
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];

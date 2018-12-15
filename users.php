@@ -147,7 +147,8 @@ if ($user_mail_submit && $id && $post)
 		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
+			and c.id_type_contact = tc.id',
+			[$access_ary[$user['accountrole']], $app['s_id']]);
 
 	$vars = [
 		'group'			=> $app['template_vars']->get($app['tschema']),
@@ -166,7 +167,7 @@ if ($user_mail_submit && $id && $post)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
+		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
 		'template'	=> 'user',
 		'vars'		=> $vars,
 	], 8000);
@@ -175,7 +176,7 @@ if ($user_mail_submit && $id && $post)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($s_id, $s_schema),
+			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $s_schema),
 			'template' 	=> 'user_copy',
 			'vars'		=> $vars,
 		], 8000);
@@ -192,7 +193,10 @@ if ($user_mail_submit && $id && $post)
 
 if ($app['is_http_post'] && $img && $id )
 {
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
+	$s_owner = !$s_guest
+		&& $s_group_self
+		&& $app['s_id'] === $id
+		&& $id;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -307,7 +311,10 @@ if ($app['is_http_post'] && $img && $id )
 
 if ($img_del && $id)
 {
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
+	$s_owner = !$s_guest
+		&& $s_group_self
+		&& $app['s_id'] === $id
+		&& $id;
 
 	if (!($s_owner || $s_admin))
 	{
@@ -613,8 +620,8 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 {
 	if ($bulk_mail_test)
 	{
-		$sel_ary = [$s_id => true];
-		$user_ids = [$s_id];
+		$sel_ary = [$app['s_id'] => true];
+		$user_ids = [$app['s_id']];
 	}
 	else
 	{
@@ -677,7 +684,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 			'to' 		=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
 			'subject' 	=> $bulk_mail_subject,
 			'html' 		=> $html,
-			'reply_to' 	=> $app['mail_addr_user']->get($s_id, $app['tschema']),
+			'reply_to' 	=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 		], random_int(5000, 6000));
 
 		$alert_msg_users[] = link_user($sel_user, $app['tschema']);
@@ -742,7 +749,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($s_id, $app['tschema']),
+			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
 			'html' 		=> $html,
 		], 8000);
@@ -760,7 +767,7 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 if ($pw)
 {
-	$s_owner = (!$s_guest && $s_group_self && $pw == $s_id && $pw) ? true : false;
+	$s_owner = (!$s_guest && $s_group_self && $pw == $app['s_id'] && $pw) ? true : false;
 
 	if (!$s_admin && !$s_owner)
 	{
@@ -923,7 +930,7 @@ if ($del)
 		cancel($del);
 	}
 
-	if ($s_id == $del)
+	if ($app['s_id'] == $del)
 	{
 		$app['alert']->error('Je kan jezelf niet verwijderen.');
 		cancel($del);
@@ -1148,7 +1155,11 @@ if ($add || $edit)
 		cancel();
 	}
 
-	$s_owner =  (!$s_guest && $s_group_self && $edit && $s_id && $edit == $s_id && $edit) ? true : false;
+	$s_owner =  !$s_guest
+		&& $s_group_self
+		&& $edit
+		&& $app['s_id']
+		&& $edit === $app['s_id'];
 
 	if ($edit && !$s_admin && !$s_owner)
 	{
@@ -1483,7 +1494,7 @@ if ($add || $edit)
 
 			if ($add)
 			{
-				$user['creator'] = ($s_master) ? 0 : $s_id;
+				$user['creator'] = $s_master ? 0 : $app['s_id'];
 
 				$user['cdate'] = gmdate('Y-m-d H:i:s');
 
@@ -2492,7 +2503,10 @@ $st_class_ary = [
 
 if ($id)
 {
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $id && $id) ? true : false;
+	$s_owner = !$s_guest
+		&& $s_group_self
+		&& $app['s_id'] === $id
+		&& $id;
 
 	$user_mail_cc = $app['is_http_post'] ? $user_mail_cc : 1;
 
@@ -2513,7 +2527,7 @@ if ($id)
 	}
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($s_id, $s_schema) : [];
+	$mail_from = $s_schema && !$s_master && !$s_elas_guest ? $app['mail_addr_user']->get($app['s_id'], $s_schema) : [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -3351,18 +3365,18 @@ if ($v_list)
 
 	if (isset($show_columns['d']) && !$s_master)
 	{
-		if (($s_guest && $s_schema && !$s_elas_guest) || !isset($contacts[$s_id]['adr']))
+		if (($s_guest && $s_schema && !$s_elas_guest) || !isset($contacts[$app['s_id']]['adr']))
 		{
 			$my_adr = $app['db']->fetchColumn('select c.value
 				from ' . $s_schema . '.contact c, ' .
 					$s_schema . '.type_contact tc
 				where c.id_user = ?
 					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', [$s_id]);
+					and tc.abbrev = \'adr\'', [$app['s_id']]);
 		}
 		else if (!$s_guest)
 		{
-			$my_adr = trim($contacts[$s_id]['adr'][0][0]);
+			$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 		}
 
 		if (isset($my_adr))
@@ -3522,11 +3536,11 @@ else
 					from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 					where c.id_user = ?
 						and c.id_type_contact = tc.id
-						and tc.abbrev = \'adr\'', [$s_id]);
+						and tc.abbrev = \'adr\'', [$app['s_id']]);
 			}
 			else if (!$s_guest)
 			{
-				$my_adr = trim($contacts[$s_id]['adr'][0][0]);
+				$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 			}
 
 			if (isset($my_adr))

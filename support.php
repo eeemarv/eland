@@ -35,15 +35,15 @@ if (isset($_POST['zend']))
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc
 			where c.id_user = ?
-				and c.id_type_contact = tc.id', [$s_id]);
+				and c.id_type_contact = tc.id', [$app['s_id']]);
 
-		$email = $app['mail_addr_user']->get($s_id, $app['tschema']);
+		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 
 		$vars = [
 			'group'	=> $app['template_vars']->get($app['tschema']),
 			'user'	=> [
-				'text'			=> link_user($s_id, $app['tschema'], false),
-				'url'			=> $app['base_url'] . '/users.php?id=' . $s_id,
+				'text'			=> link_user($app['s_id'], $app['tschema'], false),
+				'url'			=> $app['base_url'] . '/users.php?id=' . $app['s_id'],
 				'email'			=> $email,
 			],
 			'contacts'		=> $contacts,
@@ -64,10 +64,10 @@ if (isset($_POST['zend']))
 				'schema'	=> $app['tschema'],
 				'template'	=> 'support_copy',
 				'vars'		=> $vars,
-				'to'		=> $app['mail_addr_user']->get($s_id, $app['tschema']),
+				'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			], 8500);
 
-			$email_ary['reply_to'] = $app['mail_addr_user']->get($s_id, $app['tschema']);
+			$email_ary['reply_to'] = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 		}
 
 		$app['queue.mail']->queue($email_ary, 8000);
@@ -90,7 +90,7 @@ else
 	}
 	else
 	{
-		$email = $app['mail_addr_user']->get($s_id, $app['tschema']);
+		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 
 		if (!count($email))
 		{

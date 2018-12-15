@@ -45,7 +45,7 @@ if ($add)
 
 	$transaction = [];
 
-	$redis_transid_key = $app['tschema'] . '_transid_u_' . $s_id;
+	$redis_transid_key = $app['tschema'] . '_transid_u_' . $app['s_id'];
 
 	if ($submit)
 	{
@@ -104,7 +104,7 @@ if ($add)
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
 				from ' . $app['tschema'] . '.users
-				where id = ?', [$s_id]);
+				where id = ?', [$app['s_id']]);
 		}
 		else
 		{
@@ -692,7 +692,7 @@ if ($add)
 			}
 			else
 			{
-				$transaction['creator'] = ($s_master) ? 0 : $s_id;
+				$transaction['creator'] = $s_master ? 0 : $app['s_id'];
 				$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 				$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
@@ -768,7 +768,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, $app['tschema'], false);
+		$transaction['letscode_from'] = $s_admin || $s_master ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
 	}
 	else
 	{
@@ -781,7 +781,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $s_master ? '' : link_user($s_id, $app['tschema'], false),
+			'letscode_from'	=> $s_master ? '' : link_user($app['s_id'], $app['tschema'], false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -850,7 +850,7 @@ if ($add)
 					$transaction['amount'] = $row['amount'];
 				}
 
-				if ($s_id == $row['id_user'])
+				if ($app['s_id'] === $row['id_user'])
 				{
 					if ($s_admin)
 					{
@@ -874,7 +874,7 @@ if ($add)
 				$transaction['letscode_to'] = link_user($tuid, $app['tschema'], false);
 			}
 
-			if ($tuid == $s_id)
+			if ($tuid === $app['s_id'])
 			{
 				if ($s_admin)
 				{
@@ -1848,7 +1848,10 @@ if ($id)
 /**
  * list
  */
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $uid) ? true : false;
+$s_owner = !$s_guest
+	&& $s_group_self
+	&& $app['s_id'] === $uid
+	&& $uid;
 
 $params_sql = $where_sql = $where_code_sql = [];
 
@@ -2311,7 +2314,7 @@ if (!$inline)
 	unset($params_form['start']);
 
 	$params_form['r'] = $s_accountrole;
-	$params_form['u'] = $s_id;
+	$params_form['u'] = $app['s_id'];
 
 	if (!$s_group_self)
 	{
