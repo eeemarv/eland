@@ -68,7 +68,7 @@ $app['tpl'] = function($app){
 	$tpl = new PhpEngine(new TemplateNameParser(), $loader);
 
 	$tpl->set(new SlotsHelper());
-	$tpl->set(new config_helper($app['config'], $app['this_group']));
+	$tpl->set(new config_helper($app['config']));
 	$tpl->set(new date_format_helper($app['date_format']));
 	$tpl->set(new assets_helper($app['assets']));
 	$tpl->addGlobal('s3_img', getenv('S3_IMG'));
