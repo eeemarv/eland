@@ -323,7 +323,7 @@ $access_level = $access_ary[$app['s_accountrole']];
 $app['s_admin'] = $s_admin = $app['s_accountrole'] === 'admin';
 $s_user = $app['s_accountrole'] === 'user';
 $s_guest = $app['s_accountrole'] === 'guest';
-$s_anonymous = !($s_admin || $s_user || $s_guest);
+$app['s_anonymous'] = !($s_admin || $s_user || $s_guest);
 
 $errors = [];
 
@@ -405,7 +405,7 @@ if ($view || $inline)
  * remember adapted role in own group (for links to own group)
  */
 
-if (!$s_anonymous)
+if (!$app['s_anonymous'])
 {
 	if ($s_master || $app['session_user']['accountrole'] == 'admin' || $app['session_user']['accountrole'] == 'user')
 	{

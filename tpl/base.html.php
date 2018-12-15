@@ -43,7 +43,7 @@ echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
 
-if (!$s_anonymous)
+if (!$app['s_anonymous'])
 {
 	echo '<button type="button" class="navbar-toggle collapsed" ';
 	echo 'data-toggle="collapse" data-target="#navbar-collapse-1" ';
@@ -78,7 +78,7 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
+if (!$app['s_anonymous'] && ($count_interlets_groups + count($logins)) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -174,7 +174,7 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	echo '</li>';
 }
 
-if (!$s_anonymous)
+if (!$app['s_anonymous'])
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
@@ -338,7 +338,7 @@ echo '<div class="swiper-container">';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
-if ($s_anonymous)
+if ($app['s_anonymous'])
 {
 	$menu = [
 		'login'			=> ['sign-in', 'Login', []],
