@@ -100,7 +100,7 @@ if ($add)
 			}
 		}
 
-		if ($s_user && !$app['s_master'])
+		if ($app['s_user'] && !$app['s_master'])
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
 				from ' . $app['tschema'] . '.users
@@ -245,7 +245,7 @@ if ($add)
 			$errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
 		}
 
-		if ($s_user && !count($errors))
+		if ($app['s_user'] && !count($errors))
 		{
 			$balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
 
@@ -1011,7 +1011,7 @@ if ($add)
 				{
 					$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 				}
-				else if ($s_user)
+				else if ($app['s_user'])
 				{
 					$typeahead_status_ary = ['active'];
 				}
@@ -1089,7 +1089,7 @@ if ($add)
 		{
 			$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 		}
-		else if ($s_user)
+		else if ($app['s_user'])
 		{
 			$typeahead_status_ary = ['active'];
 		}
@@ -2080,7 +2080,7 @@ else
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
-if ($app['s_admin'] || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
 	if ($uid)
 	{
@@ -2097,7 +2097,7 @@ if ($app['s_admin'] || $s_user)
 				$top_buttons .= aphp('transactions', ['add' => 1, 'fuid' => $uid], 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
 			}
 
-			if ($app['s_admin'] || ($s_user && !$s_owner))
+			if ($app['s_admin'] || ($app['s_user'] && !$s_owner))
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1, 'tuid' => $uid], 'Transactie naar ' . $user_str, 'btn btn-warning', 'Transactie naar ' . $user_str, 'exchange', true);
 			}
@@ -2184,7 +2184,7 @@ if (!$inline)
 	{
 		$typeahead_status_ary = ['active'];
 	}
-	else if ($s_user)
+	else if ($app['s_user'])
 	{
 		$typeahead_status_ary = ['active', 'extern'];
 	}

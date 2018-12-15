@@ -319,9 +319,9 @@ switch ($app['s_accountrole'])
 $access_level = $access_ary[$app['s_accountrole']];
 
 $app['s_admin'] = $app['s_accountrole'] === 'admin';
-$s_user = $app['s_accountrole'] === 'user';
+$app['s_user'] = $app['s_accountrole'] === 'user';
 $app['s_guest'] = $app['s_accountrole'] === 'guest';
-$app['s_anonymous'] = !($app['s_admin'] || $s_user || $app['s_guest']);
+$app['s_anonymous'] = !($app['s_admin'] || $app['s_user'] || $app['s_guest']);
 
 $errors = [];
 
@@ -364,11 +364,8 @@ if ($page_access != 'anonymous' && !$app['s_admin']
 	exit;
 }
 
- /**
-  *
-  */
-
-$app['xdb']->set_user($app['s_schema'], ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
+$app['xdb']->set_user($app['s_schema'],
+	ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
 
 /* view (global for all groups) */
 

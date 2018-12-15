@@ -814,7 +814,7 @@ if (!$map && count($maps))
 
 if (count($docs))
 {
-	$show_visibility = ($s_user
+	$show_visibility = ($app['s_user']
 		&& $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']))
 		|| $app['s_admin'] ? true : false;

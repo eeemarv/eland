@@ -371,7 +371,7 @@ else
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}
 
-	if ($s_user || $app['s_admin'])
+	if ($app['s_user'] || $app['s_admin'])
 	{
 		$menu['support'] = ['ambulance', 'Probleem melden', []];
 	}

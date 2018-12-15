@@ -46,7 +46,10 @@ if (!$app['is_http_post'])
 /*
  * bulk actions (set access or validity)
  */
-if ($app['is_http_post'] && (($extend_submit && $extend) || ($access_submit && $access)) & ($app['s_admin'] || $s_user))
+if ($app['is_http_post']
+	&& (($extend_submit && $extend)
+		|| ($access_submit && $access))
+	& ($app['s_admin'] || $app['s_user']))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -75,7 +78,7 @@ if ($app['is_http_post'] && (($extend_submit && $extend) || ($access_submit && $
 	foreach ($rows as $row)
 	{
 		if (!$app['s_admin']
-			&& $s_user
+			&& $app['s_user']
 			&& ($row['id_user'] !== $app['s_id']))
 		{
 			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')';
@@ -731,7 +734,7 @@ if ($del)
  */
 if (($edit || $add))
 {
-	if (!($app['s_admin'] || $s_user) && $add)
+	if (!($app['s_admin'] || $app['s_user']) && $add)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
 		cancel();
@@ -2074,7 +2077,7 @@ while ($row = $st->fetch())
 	$cat_params[$row['id']]['view'] = $view_messages;
 }
 
-if ($app['s_admin'] || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
 	if (!$inline)
 	{

@@ -254,7 +254,7 @@ if ($add || $edit)
 	echo ' Behoud na datum</label>';
 	echo '</div>';
 
-	if ($s_user)
+	if ($app['s_user'])
 	{
 		$omit_access = 'admin';
 	}
@@ -398,7 +398,7 @@ if ($del)
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$show_visibility = ($s_user
+$show_visibility = ($app['s_user']
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 	|| $app['s_admin'];
@@ -602,7 +602,7 @@ $params = [
 	'view'	=> $view,
 ];
 
-if(($s_user || $app['s_admin']) && !$inline)
+if(($app['s_user'] || $app['s_admin']) && !$inline)
 {
 	$top_buttons .= aphp('news',
 		['add' => 1],

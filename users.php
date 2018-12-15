@@ -3813,7 +3813,7 @@ if ($v_list)
 			{
 				$typeahead_status_ary = ['active'];
 			}
-			else if ($s_user)
+			else if ($app['s_user'])
 			{
 				$typeahead_status_ary = ['active', 'extern'];
 			}
@@ -4178,7 +4178,7 @@ if ($v_list)
 					{
 						echo link_user($u, $app['tschema'], $status, false, $fullname);
 					}
-					else if ($s_user && $u['fullname_access'] !== 'admin')
+					else if ($app['s_user'] && $u['fullname_access'] !== 'admin')
 					{
 						echo link_user($u, $app['tschema'], $status, false, $key);
 					}

@@ -12,7 +12,7 @@ $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
 $submit = isset($_POST['zend']) ? true : false;
 
-if (!($s_user || $app['s_admin']))
+if (!($app['s_user'] || $app['s_admin']))
 {
 	if ($del)
 	{
@@ -296,7 +296,7 @@ if ($add || $edit)
 			$forum_post['access'] = false;
 		}
 
-		if ($s_user)
+		if ($app['s_user'])
 		{
 			$omit_access = 'admin';
 			$forum_post['access'] = ($forum_post['access']) ?: 1;
@@ -336,7 +336,7 @@ if ($add || $edit)
 
 if ($topic)
 {
-	$show_visibility = ($s_user
+	$show_visibility = ($app['s_user']
 		&& $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']))
 		|| $app['s_admin'] ? true : false;
@@ -475,7 +475,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	if ($s_user || $app['s_admin'])
+	if ($app['s_user'] || $app['s_admin'])
 	{
 		echo '<h3>Reactie toevoegen</h3>';
 
@@ -537,9 +537,15 @@ if (count($rows))
 	}
 }
 
-if ($app['s_admin'] || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
-	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
+	$top_buttons .= aphp('forum',
+		['add' => 1],
+		'Onderwerp Toevoegen',
+		'btn btn-success',
+		'Onderwerp toevoegen',
+		'plus',
+		true);
 }
 
 $csv_en = $app['s_admin'];
