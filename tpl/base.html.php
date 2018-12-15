@@ -29,7 +29,7 @@ echo '</head>';
 echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
 echo '" class="';
-echo $app['s_admin'] ? 'admin' : ($s_guest ? 'guest' : 'member');
+echo $app['s_admin'] ? 'admin' : ($app['s_guest'] ? 'guest' : 'member');
 echo '">';
 
 echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
@@ -37,7 +37,7 @@ echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
 echo $app['s_admin'] ? ' bg-info' : '';
-echo $s_guest ? ' bg-warning' : '';
+echo $app['s_guest'] ? ' bg-warning' : '';
 echo '">';
 echo '<div class="container-fluid">';
 
@@ -196,7 +196,7 @@ if (!$app['s_anonymous'])
 
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($app['s_schema'] && !$app['s_master'] && !$s_guest)
+	if ($app['s_schema'] && !$app['s_master'] && !$app['s_guest'])
 	{
 		echo '<li><a href="';
 		echo generate_url('users', ['id' => $app['s_id']], $app['s_schema']);

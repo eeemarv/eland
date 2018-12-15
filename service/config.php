@@ -58,7 +58,7 @@ class config
 
 	public function get(string $key, string $schema):string
 	{
-		global $app, $s_guest;
+		global $app;
 
 		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
 		{
@@ -88,7 +88,7 @@ class config
 				from ' . $schema . '.config
 				where setting = ?', [$key]);
 
-			if (!$s_guest && !$app['s_master'])
+			if (!$app['s_guest'] && !$app['s_master'])
 			{
 				$this->xdb->set('setting', $key, ['value' => $value], $schema);
 			}

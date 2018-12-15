@@ -320,8 +320,8 @@ $access_level = $access_ary[$app['s_accountrole']];
 
 $app['s_admin'] = $app['s_accountrole'] === 'admin';
 $s_user = $app['s_accountrole'] === 'user';
-$s_guest = $app['s_accountrole'] === 'guest';
-$app['s_anonymous'] = !($app['s_admin'] || $s_user || $s_guest);
+$app['s_guest'] = $app['s_accountrole'] === 'guest';
+$app['s_anonymous'] = !($app['s_admin'] || $s_user || $app['s_guest']);
 
 $errors = [];
 
@@ -340,7 +340,7 @@ else
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
 
-if ($app['s_group_self'] && $s_guest)
+if ($app['s_group_self'] && $app['s_guest'])
 {
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
@@ -432,7 +432,7 @@ $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['ts
 
 /** welcome message **/
 
-if (isset($_GET['welcome']) && $s_guest)
+if (isset($_GET['welcome']) && $app['s_guest'])
 {
 	$msg = '<strong>Welkom bij ';
 	$msg .= $app['config']->get('systemname', $app['tschema']);

@@ -29,8 +29,10 @@ $access_submit = isset($_POST['access_submit']) ? true : false;
 
 $access = $app['access_control']->get_post_value();
 
-if ($app['is_http_post'] && $s_guest && ($add || $edit || $del || $img || $img_del || $images
-	|| $extend_submit || $access_submit || $extend || $access))
+if ($app['is_http_post']
+	&& $app['s_guest']
+	&& ($add || $edit || $del || $img || $img_del || $images
+		|| $extend_submit || $access_submit || $extend || $access))
 {
 	$app['alert']->error('Geen toegang als gast tot deze actie');
 	cancel($id);
@@ -187,12 +189,12 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $app['s_id'] === $message['id_user']
 		&& $message['id_user'];
 
-	if ($message['local'] && $s_guest)
+	if ($message['local'] && $app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit bericht.');
 		cancel();
@@ -238,7 +240,7 @@ if ($id && $extend)
 /**
  * post images
  */
-if ($app['is_http_post'] && $img && $images && !$s_guest)
+if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
 {
 	$ret_ary = [];
 
@@ -427,7 +429,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $msg['id_user'] === $app['s_id']
 		&& $msg['id_user'];
@@ -1444,7 +1446,7 @@ if ($id)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
-	$and_local = ($s_guest) ? ' and local = \'f\' ' : '';
+	$and_local = ($app['s_guest']) ? ' and local = \'f\' ' : '';
 
 	$prev = $app['db']->fetchColumn('select id
 		from ' . $app['tschema'] . '.messages
@@ -1485,7 +1487,7 @@ if ($id)
 	if ($message['msg_type'] == 1
 		&& ($app['s_admin'] || (!$s_owner
 			&& $user['status'] != 7
-			&& !($s_guest && $app['s_group_self']))))
+			&& !($app['s_guest'] && $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1729,7 +1731,7 @@ if (!($view || $inline))
 	cancel();
 }
 
-$s_owner = !$s_guest
+$s_owner = !$app['s_guest']
 	&& $app['s_group_self']
 	&& $app['s_id'] === $uid
 	&& $app['s_id'] && $uid;
@@ -1919,7 +1921,7 @@ else
 
 $params['f'] = $filter;
 
-if ($s_guest)
+if ($app['s_guest'])
 {
 	$where_sql[] = 'm.local = \'f\'';
 }
@@ -2020,7 +2022,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$s_guest && $count_interlets_groups)
+if (!$app['s_guest'] && $count_interlets_groups)
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2423,7 +2425,7 @@ if ($v_list)
 		echo $app['date_format']->get($msg['validity'], 'day');
 		echo '</td>';
 
-		if (!$s_guest && $count_interlets_groups)
+		if (!$app['s_guest'] && $count_interlets_groups)
 		{
 			echo '<td>' . $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
 		}

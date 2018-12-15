@@ -18,7 +18,7 @@ if (!$status)
 	exit;
 }
 
-if ($s_guest && $status !== 'active')
+if ($app['s_guest'] && $status !== 'active')
 {
 	http_response_code(403);
 	exit;

@@ -198,7 +198,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 
 if ($app['is_http_post'] && $img && $id )
 {
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
@@ -316,7 +316,7 @@ if ($app['is_http_post'] && $img && $id )
 
 if ($img_del && $id)
 {
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
@@ -775,7 +775,7 @@ if ($app['s_admin']
 
 if ($pw)
 {
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $pw === $app['s_id']
 		&& $pw;
@@ -1166,7 +1166,7 @@ if ($add || $edit)
 		cancel();
 	}
 
-	$s_owner =  !$s_guest
+	$s_owner =  !$app['s_guest']
 		&& $app['s_group_self']
 		&& $edit
 		&& $app['s_id']
@@ -2514,7 +2514,7 @@ $st_class_ary = [
 
 if ($id)
 {
-	$s_owner = !$s_guest
+	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
@@ -2615,7 +2615,7 @@ if ($id)
 
 	if ($app['s_admin']
 		|| (!$s_owner && $user['status'] !== 7
-			&& !($s_guest && $app['s_group_self'])))
+			&& !($app['s_guest'] && $app['s_group_self'])))
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 
@@ -3166,7 +3166,7 @@ if ($v_list)
 	}
 	else
 	{
-		if ($app['s_admin'] || $s_guest)
+		if ($app['s_admin'] || $app['s_guest'])
 		{
 			$preset_columns = [
 				'u'	=> [
@@ -3381,7 +3381,8 @@ if ($v_list)
 
 	if (isset($show_columns['d']) && !$app['s_master'])
 	{
-		if (($s_guest && $app['s_schema'] && !$app['s_elas_guest']) || !isset($contacts[$app['s_id']]['adr']))
+		if (($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+			|| !isset($contacts[$app['s_id']]['adr']))
 		{
 			$my_adr = $app['db']->fetchColumn('select c.value
 				from ' . $app['s_schema'] . '.contact c, ' .
@@ -3390,7 +3391,7 @@ if ($v_list)
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'', [$app['s_id']]);
 		}
-		else if (!$s_guest)
+		else if (!$app['s_guest'])
 		{
 			$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 		}
@@ -3546,7 +3547,7 @@ else
 
 		if (!$app['s_master'])
 		{
-			if ($s_guest && $app['s_schema'] && !$app['s_elas_guest'])
+			if ($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
 			{
 				$my_adr = $app['db']->fetchColumn('select c.value
 					from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
@@ -3554,7 +3555,7 @@ else
 						and c.id_type_contact = tc.id
 						and tc.abbrev = \'adr\'', [$app['s_id']]);
 			}
-			else if (!$s_guest)
+			else if (!$app['s_guest'])
 			{
 				$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 			}
@@ -3808,7 +3809,7 @@ if ($v_list)
 
 			$typeahead_ary = [];
 
-			if ($s_guest)
+			if ($app['s_guest'])
 			{
 				$typeahead_status_ary = ['active'];
 			}

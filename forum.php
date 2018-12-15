@@ -59,7 +59,7 @@ if ($del || $edit)
 	$s_owner = $forum_post['uid']
 		&& $forum_post['uid'] === $app['s_id']
 		&& $app['s_group_self']
-		&& !$s_guest;
+		&& !$app['s_guest'];
 
 	if (!($app['s_admin'] || $s_owner))
 	{
@@ -361,7 +361,7 @@ if ($topic)
 	$s_owner = $topic_post['uid']
 		&& $topic_post['uid'] === $app['s_id']
 		&& $app['s_group_self']
-		&& !$s_guest;
+		&& !$app['s_guest'];
 
 	if (!$app['access_control']->is_visible($topic_post['access']) && !$s_owner)
 	{
@@ -445,7 +445,7 @@ if ($topic)
 		$s_owner = $p['uid']
 			&& $p['uid'] === $app['s_id']
 			&& $app['s_group_self']
-			&& !$s_guest;
+			&& !$app['s_guest'];
 
 		$pid = $p['id'];
 
@@ -544,7 +544,7 @@ if ($app['s_admin'] || $s_user)
 
 $csv_en = $app['s_admin'];
 
-$show_visibility = (!$s_guest
+$show_visibility = (!$app['s_guest']
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 	|| $app['s_admin'];
@@ -624,7 +624,7 @@ foreach($forum_posts as $p)
 	$s_owner = $p['uid']
 		&& $app['s_id'] === $p['uid']
 		&& $app['s_group_self']
-		&& !$s_guest;
+		&& !$app['s_guest'];
 
 	$pid = $p['id'];
 

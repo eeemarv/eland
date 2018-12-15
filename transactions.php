@@ -37,7 +37,7 @@ $intersystem_en = $app['config']->get('template_lets', $app['tschema'])
  */
 if ($add)
 {
-	if ($s_guest)
+	if ($app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
 		cancel();
@@ -1849,7 +1849,7 @@ if ($id)
 /**
  * list
  */
-$s_owner = !$s_guest
+$s_owner = !$app['s_guest']
 	&& $app['s_group_self']
 	&& $app['s_id'] === $uid
 	&& $uid;
@@ -2180,7 +2180,7 @@ if (!$inline)
 
 	$typeahead_ary = [];
 
-	if ($s_guest)
+	if ($app['s_guest'])
 	{
 		$typeahead_status_ary = ['active'];
 	}
