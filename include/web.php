@@ -28,7 +28,8 @@ $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
  */
 $app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
 
-if ($app['script_name'] == 'index' && getenv('HOSTING_FORM_' . $app['env_server_name']))
+if ($app['script_name'] == 'index'
+	&& getenv('HOSTING_FORM_' . $app['env_server_name']))
 {
 	$page_access = 'anonymous';
 	$hosting_form = true;
@@ -122,11 +123,11 @@ $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
 
-$logins = $app['session']->get('logins') ?? [];
+$app['s_logins'] = $app['session']->get('logins') ?? [];
 
 $app['s_master'] = $app['s_elas_guest'] = false;
 
-if (!count($logins))
+if (!count($app['s_logins']))
 {
 	if ($app['s_accountrole'] != 'anonymous')
 	{
@@ -138,10 +139,10 @@ if (!$app['s_id'])
 {
 	if ($page_access != 'anonymous')
 	{
-		if (isset($logins[$app['s_schema']])
-			&& ctype_digit((string) $logins[$app['s_schema']]))
+		if (isset($app['s_logins'][$app['s_schema']])
+			&& ctype_digit((string) $app['s_logins'][$app['s_schema']]))
 		{
-			$app['s_id'] = $logins[$app['s_schema']];
+			$app['s_id'] = $app['s_logins'][$app['s_schema']];
 
 			$location = parse_url($app['request_uri'], PHP_URL_PATH);
 			$get = $_GET;
@@ -171,16 +172,16 @@ if (!$app['s_id'])
 		redirect_login();
 	}
 }
-else if (!isset($logins[$app['s_schema']]))
+else if (!isset($app['s_logins'][$app['s_schema']]))
 {
 	if ($app['s_accountrole'] != 'anonymous')
 	{
 		redirect_login();
 	}
 }
-else if ($logins[$app['s_schema']] != $app['s_id'] || !$app['s_id'])
+else if ($app['s_logins'][$app['s_schema']] != $app['s_id'] || !$app['s_id'])
 {
-	$app['s_id'] = $logins[$app['s_schema']];
+	$app['s_id'] = $app['s_logins'][$app['s_schema']];
 
 	if (ctype_digit((string) $app['s_id']))
 	{
@@ -406,7 +407,8 @@ if (!$app['s_anonymous'])
 		|| $app['session_user']['accountrole'] == 'admin'
 		|| $app['session_user']['accountrole'] == 'user')
 	{
-		if (isset($logins[$app['tschema']]) && $app['s_group_self'])
+		if (isset($app['s_logins'][$app['tschema']])
+			&& $app['s_group_self'])
 		{
 			$app['session']->set('role.' . $app['tschema'],
 				$app['s_accountrole']);

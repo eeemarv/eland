@@ -78,7 +78,8 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$app['s_anonymous'] && ($count_interlets_groups + count($logins)) > 1)
+if (!$app['s_anonymous']
+	&& ($count_interlets_groups + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -90,21 +91,30 @@ if (!$app['s_anonymous'] && ($count_interlets_groups + count($logins)) > 1)
 	echo '<ul class="dropdown-menu" role="menu">';
 	echo '<li class="dropdown-header">';
 
-	if (count($logins) === 1 && current($logins) === 'eLAS')
+	if (count($app['s_logins']) === 1
+		&& current($app['s_logins']) === 'eLAS')
 	{
 		echo 'eLAS Gast Login';
 	}
 	else
 	{
-		echo count($logins) > 1 ? 'Eigen Systemen' : 'Eigen Systeem';
+		echo count($app['s_logins']) > 1
+			? 'Eigen Systemen'
+			: 'Eigen Systeem';
 	}
 
 	echo '</li>';
 
-	foreach ($logins as $login_schema => $login_id)
+	foreach ($app['s_logins'] as $login_schema => $login_id)
 	{
-		$class = $app['s_schema'] === $login_schema && count($logins) > 1 ? ' class="active-group"' : '';
-		$class = $login_schema === $app['tschema'] && $login_schema === $app['s_schema'] ? ' class="active"' : $class;
+		$class = $app['s_schema'] === $login_schema
+			&& count($app['s_logins']) > 1
+				? ' class="active-group"'
+				: '';
+		$class = $login_schema === $app['tschema']
+			&& $login_schema === $app['s_schema']
+				? ' class="active"'
+				: $class;
 
 		echo '<li';
 		echo $class;
@@ -115,7 +125,9 @@ if (!$app['s_anonymous'] && ($count_interlets_groups + count($logins)) > 1)
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
-		echo $login_id == 'elas' ? 'guest' : $app['session']->get('role.' . $login_schema);
+		echo $login_id == 'elas'
+			? 'guest'
+			: $app['session']->get('role.' . $login_schema);
 		echo '&u=';
 		echo $login_id;
 		echo '">';

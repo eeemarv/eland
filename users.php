@@ -4446,7 +4446,9 @@ if ($v_list)
 
 		foreach($edit_fields_tabs as $k => $t)
 		{
-			echo '<div role="tabpanel" class="tab-pane" id="' . $k . '_tab"';
+			echo '<div role="tabpanel" class="tab-pane" id="';
+			echo $k;
+			echo '_tab"';
 			echo isset($t['access_control']) ? ' data-access-control="true"' : '';
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';

@@ -3,9 +3,9 @@
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$logins = $app['session']->get('logins') ?? [];
+$app['s_logins'] = $app['session']->get('logins') ?? [];
 
-foreach($logins as $sch => $uid)
+foreach($app['s_logins'] as $sch => $uid)
 {
 	$app['xdb']->set('logout', $uid, ['time' => time()], $sch);
 }
