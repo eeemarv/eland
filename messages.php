@@ -36,7 +36,7 @@ if ($app['is_http_post'] && $s_guest && ($add || $edit || $del || $img || $img_d
 	cancel($id);
 }
 
-if (!$post)
+if (!$app['is_http_post'])
 {
 	$extend = $_GET['extend'] ?? false;
 }
@@ -399,7 +399,7 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
  * Delete all images
  */
 
-if ($img_del == 'all' && $id && $post)
+if ($img_del == 'all' && $id && $app['is_http_post'])
 {
 	if (!($s_owner || $app['s_admin']))
 	{
@@ -1408,7 +1408,7 @@ if (($edit || $add))
  */
 if ($id)
 {
-	$cc = ($post) ? $cc : 1;
+	$cc = $app['is_http_post'] ? $cc : 1;
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 

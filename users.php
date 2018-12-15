@@ -343,7 +343,7 @@ if ($img_del && $id)
 		cancel($id);
 	}
 
-	if ($post)
+	if ($app['is_http_post'])
 	{
 		$app['db']->update($app['tschema'] . '.users',
 			['"PictureFile"' => ''],
@@ -475,7 +475,7 @@ if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
  * bulk action: change a field for multiple users
  */
 
-if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $post)
+if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_post'])
 {
 	$users_log = '';
 
@@ -621,7 +621,10 @@ if ($app['s_admin'])
 	];
 }
 
-if ($app['s_admin'] && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $post)
+if ($app['s_admin']
+	&& !count($errors)
+	&& ($bulk_mail_submit || $bulk_mail_test)
+	&& $app['is_http_post'])
 {
 	if ($bulk_mail_test)
 	{
