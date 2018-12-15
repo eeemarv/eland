@@ -19,7 +19,7 @@ if (isset($_POST['zend']))
 		$errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
 	}
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		$errors[] = 'Het master account kan geen E-mail berichten versturen.';
 	}
@@ -84,7 +84,7 @@ else
 {
 	$message = '';
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		$app['alert']->warning('Het master account kan geen E-mail berichten versturen.');
 	}

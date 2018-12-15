@@ -180,7 +180,7 @@ if (!$app['s_anonymous'])
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		echo 'Master';
 	}
@@ -196,7 +196,7 @@ if (!$app['s_anonymous'])
 
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($app['s_schema'] && !$s_master && !$s_guest)
+	if ($app['s_schema'] && !$app['s_master'] && !$s_guest)
 	{
 		echo '<li><a href="';
 		echo generate_url('users', ['id' => $app['s_id']], $app['s_schema']);
@@ -312,7 +312,7 @@ if (!$app['s_anonymous'])
 	else if ($app['s_group_self']
 		&& ((isset($app['session_user'])
 			&& $app['session_user']['accountrole'] === 'admin')
-		|| $s_master))
+		|| $app['s_master']))
 	{
 		echo '<li class="dropdown">';
 		$admin_url = parse_url($app['request_uri'], PHP_URL_PATH);

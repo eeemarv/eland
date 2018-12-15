@@ -40,7 +40,7 @@ if ($add)
 		if (!count($errors))
 		{
 			$cat['cdate'] = date('Y-m-d H:i:s');
-			$cat['id_creator'] = $s_master ? 0 : $app['s_id'];
+			$cat['id_creator'] = $app['s_master'] ? 0 : $app['s_id'];
 			$cat['fullname'] = '';
 
 			if ($cat['leafnote'])

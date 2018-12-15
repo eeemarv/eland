@@ -127,7 +127,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		cancel($id);
 	}
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		$app['alert']->error('Het master account kan
 			geen E-mail berichten versturen.');
@@ -433,7 +433,7 @@ if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
 			$errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
 		}
 
-		if ($s_master)
+		if ($app['s_master'])
 		{
 			$errors[] = 'Het master account kan geen E-mail berichten verzenden.';
 		}
@@ -1505,7 +1505,7 @@ if ($add || $edit)
 
 			if ($add)
 			{
-				$user['creator'] = $s_master ? 0 : $app['s_id'];
+				$user['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 
 				$user['cdate'] = gmdate('Y-m-d H:i:s');
 
@@ -2538,7 +2538,11 @@ if ($id)
 	}
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = $app['s_schema'] && !$s_master && !$app['s_elas_guest'] ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
+	$mail_from = $app['s_schema']
+		&& !$app['s_master']
+		&& !$app['s_elas_guest']
+			? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+			: [];
 
 	$sql_bind = [$user['letscode']];
 
@@ -3355,7 +3359,7 @@ if ($v_list)
 		}
 	}
 
-	if (isset($show_columns['c']) || (isset($show_columns['d']) && !$s_master))
+	if (isset($show_columns['c']) || (isset($show_columns['d']) && !$app['s_master']))
 	{
 		$c_ary = $app['db']->fetchAll('select tc.abbrev,
 				c.id_user, c.value, c.flag_public
@@ -3375,7 +3379,7 @@ if ($v_list)
 		}
 	}
 
-	if (isset($show_columns['d']) && !$s_master)
+	if (isset($show_columns['d']) && !$app['s_master'])
 	{
 		if (($s_guest && $app['s_schema'] && !$app['s_elas_guest']) || !isset($contacts[$app['s_id']]['adr']))
 		{
@@ -3540,7 +3544,7 @@ else
 			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
 		}
 
-		if (!$s_master)
+		if (!$app['s_master'])
 		{
 			if ($s_guest && $app['s_schema'] && !$app['s_elas_guest'])
 			{

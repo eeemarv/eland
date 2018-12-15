@@ -553,7 +553,7 @@ if ($mail && $app['is_http_post'] && $id)
 		cancel();
 	}
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		$app['alert']->error('Het master account
 			kan geen berichten versturen.');
@@ -773,7 +773,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($s_master) ? 0 : $app['s_id']),
+			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($app['s_master']) ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -1137,16 +1137,18 @@ if (($edit || $add))
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
-			'id_user'		=> $s_master ? 0 : $app['s_id'],
+			'id_user'		=> $app['s_master'] ? 0 : $app['s_id'],
 			'id_category'	=> '',
 			'amount'		=> '',
 			'units'			=> '',
 			'local'			=> 0,
 		];
 
-		$uid = (isset($_GET['uid']) && $app['s_admin']) ? $_GET['uid'] : (($s_master) ? 0 : $app['s_id']);
+		$uid = (isset($_GET['uid'])
+			&& $app['s_admin']) ? $_GET['uid'] :
+				(($app['s_master']) ? 0 : $app['s_id']);
 
-		if ($s_master)
+		if ($app['s_master'])
 		{
 			$user_letscode = '';
 		}
@@ -1420,9 +1422,12 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
+
 	$mail_from = $app['s_schema']
-		&& !$s_master
-		&& !$app['s_elas_guest'] ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema']) : [];
+		&& !$app['s_master']
+		&& !$app['s_elas_guest']
+			? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+			: [];
 
 	$balance = $user['saldo'];
 

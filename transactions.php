@@ -100,7 +100,7 @@ if ($add)
 			}
 		}
 
-		if ($s_user && !$s_master)
+		if ($s_user && !$app['s_master'])
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
 				from ' . $app['tschema'] . '.users
@@ -692,7 +692,7 @@ if ($add)
 			}
 			else
 			{
-				$transaction['creator'] = $s_master ? 0 : $app['s_id'];
+				$transaction['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 				$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 				$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
@@ -768,7 +768,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = $app['s_admin'] || $s_master ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
+		$transaction['letscode_from'] = $app['s_admin'] || $app['s_master'] ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
 	}
 	else
 	{
@@ -781,7 +781,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $s_master ? '' : link_user($app['s_id'], $app['tschema'], false),
+			'letscode_from'	=> $app['s_master'] ? '' : link_user($app['s_id'], $app['tschema'], false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',

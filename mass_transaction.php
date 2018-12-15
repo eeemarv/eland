@@ -261,7 +261,7 @@ if ($submit)
 					'date' 			=> $cdate,
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
-					'creator'		=> $s_master ? 0 : $app['s_id'],
+					'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
 				];
 
 				$app['db']->insert($app['tschema'] . '.transactions', $trans);
@@ -341,7 +341,7 @@ if ($submit)
 
 		$app['monolog']->info('trans: ' . $log_str, ['schema' => $app['tschema']]);
 
-		if ($s_master)
+		if ($app['s_master'])
 		{
 			$app['alert']->warning('Master account: geen mails verzonden.');
 		}

@@ -21,7 +21,6 @@ $app['server_name'] = $_SERVER['SERVER_NAME'];
 $app['base_url'] = $app['protocol'] . $app['server_name'];
 $app['request_uri'] = $_SERVER['REQUEST_URI'];
 $app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
-
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
@@ -119,14 +118,13 @@ $p_schema = $_GET['s'] ?? false;
 $app['s_schema'] = $p_schema ?: $app['tschema'];
 $app['s_id'] = $p_user;
 $app['s_accountrole'] = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
-
 $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
 
 $logins = $app['session']->get('logins') ?? [];
 
-$s_master = $app['s_elas_guest'] = false;
+$app['s_master'] = $app['s_elas_guest'] = false;
 
 if (!count($logins))
 {
@@ -251,7 +249,7 @@ else if ($app['s_id'] == 'master')
 		exit;
 	}
 
-	$s_master = true;
+	$app['s_master'] = true;
 }
 else
 {
@@ -407,11 +405,14 @@ if ($view || $inline)
 
 if (!$app['s_anonymous'])
 {
-	if ($s_master || $app['session_user']['accountrole'] == 'admin' || $app['session_user']['accountrole'] == 'user')
+	if ($app['s_master']
+		|| $app['session_user']['accountrole'] == 'admin'
+		|| $app['session_user']['accountrole'] == 'user')
 	{
 		if (isset($logins[$app['tschema']]) && $app['s_group_self'])
 		{
-			$app['session']->set('role.' . $app['tschema'], $app['s_accountrole']);
+			$app['session']->set('role.' . $app['tschema'],
+				$app['s_accountrole']);
 		}
 
 		$s_user_params_own_group = [

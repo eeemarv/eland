@@ -23,9 +23,9 @@ function sign_transaction($transaction, $sharedsecret)
 
 function insert_transaction($transaction)
 {
-	global $app, $s_master;
+	global $app;
 
-	$transaction['creator'] = $s_master ? 0 : ($app['s_id'] ? $app['s_id'] : 0);
+	$transaction['creator'] = $app['s_master'] ? 0 : ($app['s_id'] ? $app['s_id'] : 0);
     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
 
 	$app['db']->beginTransaction();

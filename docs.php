@@ -472,7 +472,7 @@ if ($submit)
 				'filename'		=> $filename,
 				'org_filename'	=> $file,
 				'access'		=> $_POST['access'],
-				'user_id'		=> $s_master ? 0 : $app['s_id'],
+				'user_id'		=> $app['s_master'] ? 0 : $app['s_id'],
 			];
 
 			$map_name = trim($_POST['map_name']);

@@ -139,7 +139,7 @@ if ($submit)
 
 	if (!$edit)
 	{
-		$forum_post['uid'] = $s_master ? 0 : $app['s_id'];
+		$forum_post['uid'] = $app['s_master'] ? 0 : $app['s_id'];
 	}
 
  	if (!($topic || $forum_post['subject']))
