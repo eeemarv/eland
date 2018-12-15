@@ -188,7 +188,7 @@ if ($id || $edit || $del)
 	}
 
 	$s_owner = !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $app['s_id'] === $message['id_user']
 		&& $message['id_user'];
 
@@ -428,7 +428,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 	}
 
 	$s_owner = !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $msg['id_user'] === $app['s_id']
 		&& $msg['id_user'];
 
@@ -589,8 +589,8 @@ if ($mail && $app['is_http_post'] && $id)
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $app['s_schema']),
+		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
+		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
@@ -1480,11 +1480,11 @@ if ($id)
 	if ($message['msg_type'] == 1
 		&& ($s_admin || (!$s_owner
 		&& $user['status'] != 7
-		&& !($s_guest && $s_group_self))))
+		&& !($s_guest && $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
-			if (!$s_group_self)
+			if (!$app['s_group_self'])
 			{
 				$tus['tus'] = $app['tschema'];
 			}
@@ -1725,7 +1725,7 @@ if (!($view || $inline))
 }
 
 $s_owner = !$s_guest
-	&& $s_group_self
+	&& $app['s_group_self']
 	&& $app['s_id'] === $uid
 	&& $app['s_id'] && $uid;
 
@@ -2273,7 +2273,7 @@ if (!$inline)
 	$params_form['r'] = $s_accountrole;
 	$params_form['u'] = $app['s_id'];
 
-	if (!$s_group_self)
+	if (!$app['s_group_self'])
 	{
 		$params_form['s'] = $app['s_schema'];
 	}
@@ -2440,7 +2440,7 @@ else if ($v_extended)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
-		$sf_owner = $s_group_self
+		$sf_owner = $app['s_group_self']
 			&& $msg['id_user'] === $app['s_id'];
 
 		$exp = strtotime($msg['validity']) < $time;

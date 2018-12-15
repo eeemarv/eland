@@ -120,7 +120,7 @@ $app['s_schema'] = $p_schema ?: $app['tschema'];
 $app['s_id'] = $p_user;
 $s_accountrole = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
 
-$s_group_self = $app['s_schema'] === $app['tschema'];
+$app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
 
@@ -155,7 +155,7 @@ if (!$app['s_id'])
 			$get['r'] = $app['session_user']['accountrole'];
 			$get['u'] = $app['s_id'];
 
-			if (!$s_group_self)
+			if (!$app['s_group_self'])
 			{
 				$get['s'] = $app['s_schema'];
 			}
@@ -196,7 +196,7 @@ else if ($logins[$app['s_schema']] != $app['s_id'] || !$app['s_id'])
 		$get['r'] = $app['session_user']['accountrole'];
 		$get['u'] = $app['s_id'];
 
-		if (!$s_group_self)
+		if (!$app['s_group_self'])
 		{
 			$get['s'] = $app['s_schema'];
 		}
@@ -212,7 +212,7 @@ else if (ctype_digit((string) $app['s_id']))
 {
 	$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
-	if (!$s_group_self && $s_accountrole != 'guest')
+	if (!$app['s_group_self'] && $s_accountrole != 'guest')
 	{
 		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=';
 		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
@@ -235,7 +235,7 @@ else if (ctype_digit((string) $app['s_id']))
 }
 else if ($app['s_id'] == 'elas')
 {
-	if ($s_accountrole != 'guest' || !$s_group_self)
+	if ($s_accountrole != 'guest' || !$app['s_group_self'])
 	{
 		redirect_login();
 	}
@@ -244,7 +244,7 @@ else if ($app['s_id'] == 'elas')
 }
 else if ($app['s_id'] == 'master')
 {
-	if (!$s_group_self && $s_accountrole != 'guest')
+	if (!$app['s_group_self'] && $s_accountrole != 'guest')
 	{
 		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
@@ -342,7 +342,7 @@ else
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
 
-if ($s_group_self && $s_guest)
+if ($app['s_group_self'] && $s_guest)
 {
 	$elas_interlets_groups = $eland_interlets_groups = [];
 }
@@ -351,7 +351,7 @@ $count_interlets_groups = count($eland_interlets_groups) + count($elas_interlets
 $app['count_interlets_groups'] = $count_interlets_groups;
 
 if ($page_access != 'anonymous'
-	&& !$s_group_self
+	&& !$app['s_group_self']
 	&& !$eland_interlets_groups[$app['tschema']])
 {
 	header('Location: ' .
@@ -409,7 +409,7 @@ if (!$s_anonymous)
 {
 	if ($s_master || $app['session_user']['accountrole'] == 'admin' || $app['session_user']['accountrole'] == 'user')
 	{
-		if (isset($logins[$app['tschema']]) && $s_group_self)
+		if (isset($logins[$app['tschema']]) && $app['s_group_self'])
 		{
 			$app['session']->set('role.' . $app['tschema'], $s_accountrole);
 		}

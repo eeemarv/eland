@@ -41,7 +41,10 @@ if ($del)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id === $app['s_id'] && $user_id) ? true : false;
+	$s_owner = !$s_guest
+		&& $app['s_group_self']
+		&& $user_id === $app['s_id']
+		&& $user_id;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -184,7 +187,10 @@ if ($edit || $add)
 
 	$user_id = $uid ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id == $app['s_id'] && $user_id) ? true : false;
+	$s_owner = !$s_guest
+		&& $app['s_group_self']
+		&& $user_id == $app['s_id']
+		&& $user_id;
 
 	if (!($s_admin || $s_owner))
 	{
@@ -588,7 +594,10 @@ if ($edit || $add)
 
 if ($uid)
 {
-	$s_owner = (!$s_guest && $s_group_self && $uid === $app['s_id'] && $uid) ? true : false;
+	$s_owner = !$s_guest
+		&& $app['s_group_self']
+		&& $uid === $app['s_id']
+		&& $uid;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
 		from ' . $app['tschema'] . '.contact c, ' .
@@ -784,7 +793,10 @@ if (!$s_admin)
 	redirect_default_page();
 }
 
-$s_owner = (!$s_guest && $s_group_self && $app['s_id'] === $uid && $app['s_id'] && $uid) ? true : false;
+$s_owner = !$s_guest
+	&& $app['s_group_self']
+	&& $app['s_id'] === $uid
+	&& $app['s_id'] && $uid;
 
 $params = array(
 	'orderby'	=> $orderby,

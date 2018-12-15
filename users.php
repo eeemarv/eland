@@ -161,8 +161,8 @@ if ($user_mail_submit && $id && $post)
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $app['s_schema']),
+		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
+		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
 		'login_url'		=> $app['base_url'] . '/login.php',
@@ -199,7 +199,7 @@ if ($user_mail_submit && $id && $post)
 if ($app['is_http_post'] && $img && $id )
 {
 	$s_owner = !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
 
@@ -317,7 +317,7 @@ if ($app['is_http_post'] && $img && $id )
 if ($img_del && $id)
 {
 	$s_owner = !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
 
@@ -772,7 +772,10 @@ if ($s_admin && !count($errors) && ($bulk_mail_submit || $bulk_mail_test) && $po
 
 if ($pw)
 {
-	$s_owner = (!$s_guest && $s_group_self && $pw == $app['s_id'] && $pw) ? true : false;
+	$s_owner = !$s_guest
+		&& $app['s_group_self']
+		&& $pw === $app['s_id']
+		&& $pw;
 
 	if (!$s_admin && !$s_owner)
 	{
@@ -1161,7 +1164,7 @@ if ($add || $edit)
 	}
 
 	$s_owner =  !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $edit
 		&& $app['s_id']
 		&& $edit === $app['s_id'];
@@ -2509,7 +2512,7 @@ $st_class_ary = [
 if ($id)
 {
 	$s_owner = !$s_guest
-		&& $s_group_self
+		&& $app['s_group_self']
 		&& $app['s_id'] === $id
 		&& $id;
 
@@ -2604,11 +2607,12 @@ if ($id)
 	}
 
 	if ($s_admin
-		|| (!$s_owner && $user['status'] != 7 && !($s_guest && $s_group_self)))
+		|| (!$s_owner && $user['status'] !== 7
+			&& !($s_guest && $app['s_group_self'])))
 	{
 			$tus = ['add' => 1, 'tuid' => $id];
 
-			if (!$s_group_self)
+			if (!$app['s_group_self'])
 			{
 				$tus['tus'] = $app['tschema'];
 			}

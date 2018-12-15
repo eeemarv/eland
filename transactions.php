@@ -1850,7 +1850,7 @@ if ($id)
  * list
  */
 $s_owner = !$s_guest
-	&& $s_group_self
+	&& $app['s_group_self']
 	&& $app['s_id'] === $uid
 	&& $uid;
 
@@ -2317,7 +2317,7 @@ if (!$inline)
 	$params_form['r'] = $s_accountrole;
 	$params_form['u'] = $app['s_id'];
 
-	if (!$s_group_self)
+	if (!$app['s_group_self'])
 	{
 		$params_form['s'] = $app['s_schema'];
 	}
