@@ -15,7 +15,6 @@ $start = $_GET['start'] ?? 0;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
-$inline = isset($_GET['inline']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 
 $page_access = ($del || $add || $edit) ? 'user' : 'guest';
@@ -612,7 +611,7 @@ if ($uid)
 		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 	}
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		$h1 = $s_owner ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user, $app['tschema']);
 		$fa = 'map-marker';
@@ -642,7 +641,7 @@ if ($uid)
 		echo '<p>Er is geen contactinfo voor deze gebruiker.</p>';
 		echo '</div></div>';
 
-		if (!$inline)
+		if (!$app['p_inline'])
 		{
 			include __DIR__ . '/include/footer.php';
 		}
@@ -762,7 +761,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($app['distance']->get_to_geo() && $inline)
+	if ($app['distance']->get_to_geo() && $app['p_inline'])
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-markers="';
@@ -778,7 +777,7 @@ if ($uid)
 
 	echo '</div>';
 
-	if ($inline)
+	if ($app['p_inline'])
 	{
 		exit;
 	}
@@ -957,7 +956,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('contacts', $row_count, $params, $inline);
+$app['pagination']->init('contacts', $row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,

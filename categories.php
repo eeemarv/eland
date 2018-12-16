@@ -356,15 +356,12 @@ echo '</thead>';
 
 echo '<tbody>';
 
-http://x.e.loc/messages.php?f%5Bq%5D=&f%5Bcid%5D=5&f%5Btype%5D%5Boffer%5D=on&f%5Bvalid%5D%5Byes%5D=on&f%5Bvalid%5D%5Bno%5D=on&f%5Bustatus%5D%5Bactive%5D=on&f%5Bustatus%5D%5Bnew%5D=on&f%5Bustatus%5D%5Bleaving%5D=on&f%5Bfcode%5D=&f%5Bs%5D=Toon&view=list&orderby=m.cdate&asc=0&limit=25&r=admin&u=1
-
 $messages_param_ary = [
 	'f'	=> [
 		's'		=> '1',
 		'valid'	=> ['yes' => 'on', 'no' => 'on'],
 		'ustatus'	=> ['active' => 'on', 'new' => 'on', 'leaving' => 'on'],
 	],
-	'view'	=> $view_messages,
 ];
 
 foreach($cats as $cat)
@@ -433,7 +430,12 @@ foreach($cats as $cat)
 
 	if (!$count)
 	{
-		echo aphp('categories', ['del' => $cat['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+		echo aphp('categories',
+			['del' => $cat['id']],
+			'Verwijderen',
+			'btn btn-danger btn-xs',
+			false,
+			'times');
 	}
 
 	echo '</td>';

@@ -86,7 +86,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('logs', $row_count, $params, $inline);
+$app['pagination']->init('logs', $row_count, $params);
 
 $asc_preset_ary = [
 	'asc'	=> 0,

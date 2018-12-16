@@ -518,7 +518,7 @@ if ($id)
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('news', ['view' => $view_news], '', 'btn btn-default', 'Lijst', 'calendar-o');
+	$top_buttons_right .= aphp('news', [], '', 'btn btn-default', 'Lijst', 'calendar-o');
 	$top_buttons_right .= '</span>';
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
@@ -590,19 +590,17 @@ if ($id)
  * show all newsitems
  */
 
-if (!($view || $inline))
+if (!($app['p_view'] || $app['p_inline']))
 {
 	cancel();
 }
 
-$v_list = ($view == 'list' || $inline) ? true : false;
-$v_extended = ($view == 'extended' && !$inline) ? true : false;
+$v_list = $app['p_view'] === 'list' || $app['p_inline'];
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
 
-$params = [
-	'view'	=> $view,
-];
+$params = [];
 
-if(($app['s_user'] || $app['s_admin']) && !$inline)
+if(($app['s_user'] || $app['s_admin']) && !$app['p_inline'])
 {
 	$top_buttons .= aphp('news',
 		['add' => 1],
@@ -613,10 +611,15 @@ if(($app['s_user'] || $app['s_admin']) && !$inline)
 		true);
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '<h3>';
-	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar-o');
+	echo aphp('news',
+		[],
+		'Nieuws',
+		false,
+		false,
+		'calendar-o');
 	echo '</h3>';
 }
 else
@@ -651,7 +654,7 @@ if (!count($news))
 	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
 	echo '</div></div>';
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -664,7 +667,7 @@ if ($v_list)
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered footable csv">';
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		echo '<thead>';
 		echo '<tr>';
@@ -690,7 +693,7 @@ if ($v_list)
 
 		echo $app['date_format']->get_td($n['itemdate'], 'day');
 
-		if ($app['s_admin'] && !$inline)
+		if ($app['s_admin'] && !$app['p_inline'])
 		{
 			echo '<td>';
 			echo $n['approved'] ? 'Ja' : 'Nee';
@@ -790,16 +793,14 @@ else if ($v_extended)
 	}
 }
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	include __DIR__ . '/include/footer.php';
 }
 
 function cancel(int $id = 0):void
 {
-	global $view_news;
-
-	$params = ['view' => $view_news];
+	$params = [];
 
 	if ($id)
 	{

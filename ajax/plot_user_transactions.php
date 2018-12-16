@@ -21,7 +21,8 @@ if (!$user)
 
 $groups = $_groups = $transactions = $users = $_users  = [];
 
-$groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, url
+$groups = $app['db']->fetchAll('select id,
+		groupname as n, localletscode as c, url
 	from ' . $app['tschema'] . '.letsgroups');
 
 foreach ($groups as $g)
@@ -66,7 +67,7 @@ foreach ($trans as $t)
 	{
 		$group = $_groups[$t['letscode']];
 
-		if ($sch = $app['groups']->get_schema($group['domain']))
+		if ($group['domain'] && $sch = $app['groups']->get_schema($group['domain']))
 		{
 			[$code, $name] = explode(' ', $real);
 		}

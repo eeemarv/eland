@@ -369,10 +369,10 @@ if ($app['s_anonymous'])
 else
 {
 	$menu = [
-		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
-		'users'			=> ['users', $app['s_admin'] ? 'Gebruikers' : 'Leden', ['status' => 'active', 'view' => $view_users]],
+		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', []],
+		'users'			=> ['users', $app['s_admin'] ? 'Gebruikers' : 'Leden', ['status' => 'active']],
 		'transactions'	=> ['exchange', 'Transacties', []],
-		'news'			=> ['calendar-o', 'Nieuws', ['view' => $view_news]],
+		'news'			=> ['calendar-o', 'Nieuws', []],
 	];
 
 	$menu['docs'] = ['files-o', 'Documenten', []];

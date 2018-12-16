@@ -2429,10 +2429,12 @@ if ($add || $edit)
 	echo '</label>';
 	echo '</div>';
 
-	$canc = $edit ? ['id' => $edit] : ['status' => 'active', 'view' => $view_users];
+	$canc = $edit ? ['id' => $edit] : ['status' => 'active'];
 	$btn = $edit ? 'primary' : 'success';
 	echo aphp('users', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Opslaan" class="btn btn-';
+	echo $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -2665,7 +2667,7 @@ if ($id)
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
 	$top_buttons_right .= aphp(
 		'users',
-		['status' => $link ? $link : 'active', 'view' => $view_users],
+		['status' => $link ? $link : 'active'],
 		'', 'btn btn-default', 'Lijst', 'users');
 	$top_buttons_right .= '</span>';
 
@@ -3056,15 +3058,15 @@ if ($id)
  * List all users
  */
 
-if (!$view)
+if (!$app['p_view'])
 {
 	cancel();
 }
 
-$v_list = $view === 'list';
-$v_extended = $view === 'extended';
-$v_tiles = $view === 'tiles';
-$v_map = $view === 'map';
+$v_list = $app['p_view'] === 'list';
+$v_extended = $app['p_view'] === 'extended';
+$v_tiles = $app['p_view'] === 'tiles';
+$v_map = $app['p_view'] === 'map';
 
 $sql_bind = [];
 $params = [];
@@ -3081,7 +3083,6 @@ if (isset($st[$status]['sql_bind']))
 
 $params = [
 	'status'	=> $status,
-	'view'		=> $view,
 ];
 
 $ref_geo = [];
@@ -3905,7 +3906,8 @@ if ($v_list)
 			echo '<label for="';
 			echo $checkbox_id;
 			echo '">';
-			echo '<input type="checkbox" name="sh[' . $group . '][' . $key . ']" ';
+			echo '<input type="checkbox" name="sh[';
+			echo $group . '][' . $key . ']" ';
 			echo 'id="';
 			echo $checkbox_id;
 			echo '" ';
@@ -4278,7 +4280,6 @@ if ($v_list)
 				if (isset($msgs_count[$id][$key]))
 				{
 					echo aphp('messages', [
-						'view' 	=> $view_messages,
 						'uid' 	=> $id,
 						'type' 	=> $key,
 					], $msgs_count[$id][$key]);
@@ -4670,8 +4671,6 @@ function get_contacts_str(array $contacts, string $abbrev):string
 
 function cancel(int $id = 0):void
 {
-	global $view_users;
-
 	$params = [];
 
 	if ($id)
@@ -4681,7 +4680,6 @@ function cancel(int $id = 0):void
 	else
 	{
 		$params['status'] = 'active';
-		$params['view'] = $view_users;
 	}
 
 	header('Location: ' . generate_url('users', $params));

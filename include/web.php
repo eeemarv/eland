@@ -327,13 +327,8 @@ $app['s_anonymous'] = !($app['s_admin'] || $app['s_user'] || $app['s_guest']);
 $errors = [];
 
 /**
- * check access to interSystems
+ * Load interSystems
  **/
-
-$app['intersystem_ary'] = [
-	'elas'	=> [],
-	'eland'	=> [],
-];
 
 if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
@@ -367,7 +362,7 @@ if ($app['page_access'] != 'anonymous'
 {
 	header('Location: ' .
 		generate_url('messages',
-			['view' => $view_messages],
+			[],
 			$app['s_schema']));
 	exit;
 }
@@ -383,34 +378,66 @@ if ($app['page_access'] != 'anonymous'
 $app['xdb']->set_user($app['s_schema'],
 	ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
 
-/* view (global for all groups) */
+/* view (global for all systems) */
 
-$inline = isset($_GET['inline']) ? true : false;
+$app['p_inline'] = isset($_GET['inline']) ? true : false;
+$app['p_view'] = $_GET['view'] ?? false;
 
-$view = $_GET['view'] ?? false;
+$app['s_view'] = $app['session']->get('view') ?? [
+	'users'		=> 'list',
+	'messages'	=> 'extended',
+	'news'		=> 'extended',
+];
 
-$view_users = $app['session']->get('view.users') ?? 'list';
-$view_messages = $app['session']->get('view.messages') ?? 'extended';
-$view_news = $app['session']->get('view.news') ?? 'extended';
-
-if ($view || $inline)
+if ($app['script_name'] === 'users'
+	&& $app['p_view'] !== $app['s_view']['users'])
 {
-	if ($app['script_name'] == 'users' && $view != $view_users)
+	if ($app['p_view'])
 	{
-		$view = $view_users = $view ?: $view_users;
-		$app['session']->set('view.users', $view_users);
+		$app['s_view'] = array_merge($app['s_view'], [
+			'users'	=> $app['p_view'],
+		]);
+
+		$app['session']->set('view', $app['s_view']);
 	}
-	else if ($app['script_name'] == 'messages' && $view != $view_messages)
+	else
 	{
-		$view = $view_messages = $view ?: $view_messages;
-		$app['session']->set('view.messages', $view);
-	}
-	else if ($app['script_name'] == 'news' && $view != $view_news)
-	{
-		$view = $view_news = $view ?: $view_news;
-		$app['session']->set('view.news', $view);
+		$app['p_view'] = $app['s_view']['users'];
 	}
 }
+else if ($app['script_name'] === 'messages'
+	&& $app['p_view'] !== $app['s_view']['messages'])
+{
+	if ($app['p_view'])
+	{
+		$app['s_view'] = array_merge($app['s_view'], [
+			'messages'	=> $app['p_view'],
+		]);
+
+		$app['session']->set('view', $app['s_view']);
+	}
+	else
+	{
+		$app['p_view'] = $app['s_view']['messages'];
+	}
+}
+else if ($app['script_name'] === 'news'
+	&& $app['p_view'] !== $app['s_view']['news'])
+{
+	if ($app['p_view'])
+	{
+		$app['s_view'] = array_merge($app['s_view'], [
+			'news'		=> $app['p_view'],
+		]);
+
+		$app['session']->set('view', $app['s_view']);
+	}
+	else
+	{
+		$app['p_view'] = $app['s_view']['news'];
+	}
+}
+
 
 /**
  * remember adapted role in own group (for links to own group)
@@ -626,35 +653,11 @@ function redirect_default_page()
 
 function get_default_page():string
 {
-	global $view_messages, $view_users, $view_news, $app;
-	static $default_page;
-
-	if (isset($default_page))
-	{
-		return $default_page;
-	}
+	global $app;
 
 	$page = $app['config']->get('default_landing_page', $app['tschema']);
 
-	$param = [];
-
-	switch ($page)
-	{
-		case 'messages':
-		case 'users':
-		case 'news':
-
-			$view_param = 'view_' . $page;
-			$param['view'] = $$view_param;
-
-			break;
-
-		default:
-
-			break;
-	}
-
-	$default_page = generate_url($page, $param);
+	$default_page = generate_url($page, []);
 
 	return $default_page;
 }

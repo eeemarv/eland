@@ -1511,7 +1511,7 @@ if ($id)
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('messages', ['view' => $view_messages], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
+	$top_buttons_right .= aphp('messages', [], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
 	$top_buttons_right .= '</span>';
 
 	$h1 = $ow_type_uc;
@@ -1525,7 +1525,7 @@ if ($id)
 	{
 		echo '<p>Categorie: ';
 		echo '<a href="';
-		echo generate_url('messages', ['cid' => $message['cid'], 'view' => $view_messages]);
+		echo generate_url('messages', ['cid' => $message['cid']]);
 		echo '">';
 		echo $message['catname'];
 		echo '</a></p>';
@@ -1729,7 +1729,7 @@ if ($id)
  * list messages
  */
 
-if (!($view || $inline))
+if (!($app['p_view'] || $app['p_inline']))
 {
 	cancel();
 }
@@ -1739,12 +1739,11 @@ $s_owner = !$app['s_guest']
 	&& $app['s_id'] === $uid
 	&& $app['s_id'] && $uid;
 
-$v_list = ($view === 'list' || $inline) && !$recent ? true : false;
-$v_extended = $view === 'extended' && !$inline || $recent ? true : false;
-$v_map = $view === 'map' && !($inline || $recent) ? true : false;
+$v_list = ($app['p_view'] === 'list' || $app['p_inline']) && !$recent;
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'] || $recent;
+$v_map = $app['p_view'] === 'map' && !($app['p_inline'] || $recent);
 
 $params = [
-	'view'		=> $view,
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
 	'limit'		=> $limit,
@@ -1980,7 +1979,7 @@ if ($v_extended)
 	}
 }
 
-$app['pagination']->init('messages', $row_count, $params, $inline);
+$app['pagination']->init('messages', $row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2074,12 +2073,11 @@ while ($row = $st->fetch())
 
 	$cat_params[$row['id']] = $params;
 	$cat_params[$row['id']]['cid'] = $row['id'];
-	$cat_params[$row['id']]['view'] = $view_messages;
 }
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 	}
@@ -2093,9 +2091,15 @@ if ($app['s_admin'] || $app['s_user'])
 			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
 		}
 
-		if (!$inline)
+		if (!$app['p_inline'])
 		{
-			$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
+			$top_buttons .= aphp('messages',
+				[],
+				'Lijst',
+				'btn btn-default',
+				'Lijst alle vraag en aanbod',
+				'newspaper-o',
+				true);
 		}
 	}
 }
@@ -2109,20 +2113,20 @@ $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
 if ($uid)
 {
-	if ($s_owner && !$inline)
+	if ($s_owner && !$app['p_inline'])
 	{
 		$h1 = 'Mijn vraag en aanbod';
 	}
 	else
 	{
-		$h1 = aphp('messages', ['uid' => $uid, 'view' => $view_messages], 'Vraag en aanbod');
+		$h1 = aphp('messages', ['uid' => $uid], 'Vraag en aanbod');
 		$h1 .= ' van ';
 		$h1 .= link_user($uid, $app['tschema']);
 	}
 }
 else if ($recent)
 {
-	$h1 = aphp('messages', ['view' => $view_messages], 'Recent Vraag en aanbod');
+	$h1 = aphp('messages', [], 'Recent Vraag en aanbod');
 }
 else
 {
@@ -2134,7 +2138,7 @@ $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	$v_params = $params;
 
@@ -2302,7 +2306,7 @@ if (!$inline)
 	echo '</div>';
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
@@ -2331,7 +2335,7 @@ if (!count($messages))
 		echo $app['pagination']->get();
 	}
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -2392,7 +2396,7 @@ if ($v_list)
 
 		echo '<td>';
 
-		if (!$inline && ($app['s_admin'] || $s_owner))
+		if (!$app['p_inline'] && ($app['s_admin'] || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
@@ -2518,7 +2522,7 @@ if (!$recent)
 	echo $app['pagination']->get();
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '</div></div>';
 }
@@ -2616,7 +2620,7 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
-	global $uid, $view_messages;
+	global $uid;
 
 	if ($id)
 	{
@@ -2624,7 +2628,7 @@ function cancel($id = null)
 	}
 	else
 	{
-		$params = ['view' => $view_messages];
+		$params = [];
 
 		if ($uid)
 		{
