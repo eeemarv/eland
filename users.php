@@ -1452,7 +1452,7 @@ if ($add || $edit)
 
 		if ($user['birthday'])
 		{
-			$user['birthday'] = $app['date_format']->reverse($user['birthday']);
+			$user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['tschema']);
 
 			if ($user['birthday'] === false)
 			{
@@ -2046,15 +2046,20 @@ if ($add || $edit)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="birthday" name="birthday" ';
 	echo 'value="';
-	echo isset($user['birthday']) && !empty($user['birtday']) ? $app['date_format']->get($user['birthday'], 'day') : '';
+
+	if (isset($user['birthday']) && !empty($user['birtday']))
+	{
+		echo $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
+	}
+
 	echo '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format();
+	echo $app['date_format']->datepicker_format($app['tschema']);
 	echo '" ';
 	echo 'data-date-default-view="2" ';
 	echo 'data-date-end-date="';
-	echo $app['date_format']->get(false, 'day');
+	echo $app['date_format']->get('', 'day', $app['tschema']);
 	echo '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-start-view="2" ';
@@ -2063,7 +2068,7 @@ if ($add || $edit)
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
 	echo 'placeholder="';
-	echo $app['date_format']->datepicker_placeholder();
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
 	echo '">';
 	echo '</div>';
 	echo '</div>';
@@ -2818,7 +2823,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			echo ($app['date_format']->get($user['birthday'], 'day'));
+			echo ($app['date_format']->get($user['birthday'], 'day', $app['tschema']));
 		}
 		else
 		{
@@ -2844,7 +2849,7 @@ if ($id)
 
 		if (isset($user['cdate']))
 		{
-			echo get_dd($app['date_format']->get($user['cdate']));
+			echo get_dd($app['date_format']->get($user['cdate'], 'min', $app['tschema']));
 		}
 		else
 		{
@@ -2857,7 +2862,7 @@ if ($id)
 
 		if (isset($user['adate']))
 		{
-			echo get_dd($app['date_format']->get($user['adate']));
+			echo get_dd($app['date_format']->get($user['adate'], 'min', $app['tschema']));
 		}
 		else
 		{
@@ -2870,7 +2875,7 @@ if ($id)
 
 		if (isset($user['lastlogin']))
 		{
-			echo get_dd($app['date_format']->get($user['lastlogin']));
+			echo get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['tschema']));
 		}
 		else
 		{
@@ -3315,12 +3320,12 @@ if ($v_list)
 	{
 		if ($saldo_date)
 		{
-			$saldo_date_rev = $app['date_format']->reverse($saldo_date);
+			$saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['tschema']);
 		}
 
 		if ($saldo_date_rev === false || $saldo_date == '')
 		{
-			$saldo_date = $app['date_format']->get(false, 'day');
+			$saldo_date = $app['date_format']->get('', 'day', $app['tschema']);
 
 			array_walk($users, function(&$user, $user_id){
 				$user['saldo_date'] = $user['saldo'];
@@ -3939,7 +3944,7 @@ if ($v_list)
 				echo 'name="sh[p][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
 				echo 'data-date-format="';
-				echo $app['date_format']->datepicker_format();
+				echo $app['date_format']->datepicker_format($app['tschema']);
 				echo '" ';
 				echo 'data-date-language="nl" ';
 				echo 'data-date-today-highlight="true" ';
@@ -3948,7 +3953,7 @@ if ($v_list)
 				echo 'data-date-end-date="0d" ';
 				echo 'data-date-orientation="bottom" ';
 				echo 'placeholder="';
-				echo $app['date_format']->datepicker_placeholder();
+				echo $app['date_format']->datepicker_placeholder($app['tschema']);
 				echo '" ';
 				echo 'value="';
 				echo $saldo_date;
@@ -4178,7 +4183,14 @@ if ($v_list)
 				}
 				else if (isset($date_keys[$key]))
 				{
-					echo $u[$key] ? $app['date_format']->get($u[$key], 'day') : '&nbsp;';
+					if ($u[$key])
+					{
+						echo $app['date_format']->get($u[$key], 'day', $app['tschema']);
+					}
+					else
+					{
+						echo '&nbsp;';
+					}
 				}
 				else if ($key === 'fullname')
 				{
@@ -4293,7 +4305,7 @@ if ($v_list)
 
 		if (isset($show_columns['a']))
 		{
-			$from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day');
+			$from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day', $app['tschema']);
 
 			foreach($show_columns['a'] as $a_key => $a_ary)
 			{

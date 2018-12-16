@@ -58,7 +58,7 @@ if ($add || $edit)
 
 		if ($news['itemdate'])
 		{
-			$news['itemdate'] = $app['date_format']->reverse($news['itemdate']);
+			$news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
 
 			if ($news['itemdate'] === false)
 			{
@@ -199,13 +199,19 @@ if ($add || $edit)
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="';
+	echo $app['date_format']->datepicker_format($app['tschema']);
+	echo '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'value="' . $app['date_format']->get($news['itemdate'], 'day') . '" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
+	echo 'value="';
+	echo $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+	echo '" ';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '" ';
 	echo 'required>';
 	echo '</div>';
 	echo '<p>Wanneer gaat dit door?</p>';
@@ -249,7 +255,7 @@ if ($add || $edit)
 	echo '<label for="sticky" class="control-label">';
 	echo '<input type="checkbox" id="sticky" name="sticky" ';
 	echo 'value="1"';
-	echo  ($news['sticky'] == 't') ? ' checked="checked"' : '';
+	echo  $news['sticky'] === 't' ? ' checked="checked"' : '';
 	echo '>';
 	echo ' Behoud na datum</label>';
 	echo '</div>';
@@ -336,12 +342,30 @@ if ($del)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo $itemdate ? $app['date_format']->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
+
+	if ($itemdate)
+	{
+		echo $app['date_format']->get($itemdate, 'day', $app['tschema']);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
-	echo $news['location'] ? htmlspecialchars($news['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+
+	if ($new['location'])
+	{
+		echo htmlspecialchars($news['location'], ENT_QUOTES);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
@@ -552,12 +576,30 @@ if ($id)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo $news_item['itemdate'] ? $app['date_format']->get($news_item['itemdate'], 'day') : '<i class="fa fa-times"></i>';
+
+	if ($news['itemdate'])
+	{
+		echo $app['date_format']->get($news_item['itemdate'], 'day', $app['tschema']);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
-	echo $news_item['location'] ? htmlspecialchars($news_item['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+
+	if ($news_item['location'])
+	{
+		echo htmlspecialchars($news_item['location'], ENT_QUOTES);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
@@ -691,7 +733,7 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
-		echo $app['date_format']->get_td($n['itemdate'], 'day');
+		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
 
 		if ($app['s_admin'] && !$app['p_inline'])
 		{
@@ -746,7 +788,7 @@ else if ($v_extended)
 			echo 'Agendadatum';
 			echo '</dt>';
 			echo '<dd>';
-			echo $app['date_format']->get($n['itemdate'], 'day');
+			echo $app['date_format']->get($n['itemdate'], 'day', $app['tschema']);
 
 			if ($n['sticky'])
 			{

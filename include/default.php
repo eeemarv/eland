@@ -207,8 +207,7 @@ $app['queue'] = function ($app){
 
 $app['date_format'] = function($app){
 	return new service\date_format(
-		$app['config'],
-		$app['tschema']
+		$app['config']
 	);
 };
 

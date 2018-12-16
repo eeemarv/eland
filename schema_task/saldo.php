@@ -405,7 +405,8 @@ class saldo extends schema_task
 				$row['url'] = $base_url . '/news.php?id=' . $row['id'];
 				$row['user'] = $row['letscode'] . ' ' . $row['name'];
 				$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
-				$row['itemdate_formatted'] = $this->date_format->get($row['itemdate'], 'day');
+				$row['itemdate_formatted'] =
+					$this->date_format->get($row['itemdate'], 'day', $this->schema);
 
 				$news[] = $row;
 			}

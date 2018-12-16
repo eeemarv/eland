@@ -194,7 +194,7 @@ foreach($apikeys as $a)
 	echo $a['comment'];
 	echo '</td>';
 	echo '<td>' . $a['apikey'] . '</td>';
-	echo $app['date_format']->get_td($a['created']);
+	echo $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
 	echo '<td>';
 	echo aphp('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 	echo '</td>';

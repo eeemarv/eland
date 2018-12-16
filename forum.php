@@ -458,7 +458,8 @@ if ($topic)
 		echo '<div class="panel-footer">';
 		echo '<p>';
 		echo link_user((int) $p['uid'], $app['tschema']);
-		echo ' @' . $app['date_format']->get($p['ts']);
+		echo ' @';
+		echo $app['date_format']->get($p['ts'], 'min', $app['tschema']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($app['s_admin'] || $s_owner)
@@ -648,11 +649,13 @@ foreach($forum_posts as $p)
 	echo link_user($p['uid'], $app['tschema']);
 	echo '</td>';
 
-	echo $app['date_format']->get_td($p['ts']);
+	echo $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);
 
 	if ($show_visibility)
 	{
-		echo '<td>' . $app['access_control']->get_label($p['access']) . '</td>';
+		echo '<td>';
+		echo $app['access_control']->get_label($p['access']);
+		echo '</td>';
 	}
 
 	echo '</tr>';

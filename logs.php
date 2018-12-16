@@ -272,7 +272,7 @@ foreach($rows as $value)
 {
 	echo '<tr>';
 	echo '<td>';
-	echo $app['date_format']->get($value['ts'], 'sec');
+	echo $app['date_format']->get($value['ts'], 'sec', $app['tschema']);
 	echo '</td>';
 	echo '<td>';
 	echo $value['type'];

@@ -1375,7 +1375,7 @@ if ($edit)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Transactie ID</dt>';
@@ -1548,7 +1548,7 @@ if ($id)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Transactie ID</dt>';
@@ -1952,7 +1952,7 @@ $where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
-	$fdate_sql = $app['date_format']->reverse($fdate);
+	$fdate_sql = $app['date_format']->reverse($fdate, $app['tschema']);
 
 	if ($fdate_sql === false)
 	{
@@ -1968,7 +1968,7 @@ if ($fdate)
 
 if ($tdate)
 {
-	$tdate_sql = $app['date_format']->reverse($tdate);
+	$tdate_sql = $app['date_format']->reverse($tdate, $app['tschema']);
 
 	if ($tdate_sql === false)
 	{
@@ -2263,7 +2263,7 @@ if (!$inline)
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format();
+	echo $app['date_format']->datepicker_format($app['tschema']);
 	echo '" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="0d" ';
@@ -2273,8 +2273,8 @@ if (!$inline)
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
 	echo 'placeholder="';
-	echo $app['date_format']->datepicker_placeholder() . '"';
-	echo '>';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '">';
 
 	echo '</div>';
 	echo '</div>';
@@ -2290,28 +2290,33 @@ if (!$inline)
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format() . '" ';
+	echo $app['date_format']->datepicker_format($app['tschema']);
+	echo '" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
-	echo '>';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '">';
 
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="col-sm-2">';
-	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+	echo '<input type="submit" value="Toon" ';
+	echo 'class="btn btn-default btn-block">';
 	echo '</div>';
 
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
-	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
+	unset($params_form['q'], $params_form['fcode']);
+	unset($params_form['andor'], $params_form['tcode']);
+	unset($params_form['fdate'], $params_form['tdate']);
+	unset($params_form['uid']);
 	unset($params_form['start']);
 
 	$params_form['r'] = $app['s_accountrole'];
@@ -2326,8 +2331,11 @@ if (!$inline)
 	{
 		if (isset($value))
 		{
-			echo '<input name="' . $name . '" value="';
-			echo $value . '" type="hidden">';
+			echo '<input name="';
+			echo $name;
+			echo '" value="';
+			echo $value;
+			echo '" type="hidden">';
 		}
 	}
 
@@ -2424,7 +2432,7 @@ if ($uid)
 		echo '</span></td>';
 
 		echo '<td>';
-		echo $app['date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
 		echo '</td>';
 
 		echo '<td>';
@@ -2499,7 +2507,7 @@ else
 		echo '</td>';
 
 		echo '<td>';
-		echo $app['date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
 		echo '</td>';
 
 		echo '<td>';

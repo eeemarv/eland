@@ -1621,17 +1621,25 @@ if ($id)
 	echo '<dd>' . $user['postcode'] . '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
-	echo '<dd>' . $app['date_format']->get($message['cdate'], 'day') . '</dd>';
+	echo '<dd>';
+	echo $app['date_format']->get($message['cdate'], 'day', $app['tschema']);
+	echo '</dd>';
 
 	echo '<dt>Geldig tot</dt>';
-	echo '<dd>' . $app['date_format']->get($message['validity'], 'day') . '</dd>';
+	echo '<dd>';
+	echo $app['date_format']->get($message['validity'], 'day', $app['tschema']);
+	echo '</dd>';
 
 	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<dt>Verlengen</dt>';
-		echo '<dd>' . aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs') . '</dd>';
+		echo '<dd>';
+		echo aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs');
+		echo '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs');
+		echo '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs');
+		echo '</dd>';
 	}
 
 	if ($app['count_intersystems'])
@@ -2429,7 +2437,7 @@ if ($v_list)
 		}
 
 		echo '<td>';
-		echo $app['date_format']->get($msg['validity'], 'day');
+		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
 		echo '</td>';
 
 		if (!$app['s_guest'] && $app['count_intersystems'])

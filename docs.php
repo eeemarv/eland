@@ -856,7 +856,9 @@ if (count($docs))
 		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';
-		echo '<td>' . $app['date_format']->get($d['ts']) . '</td>';
+		echo '<td>';
+		echo $app['date_format']->get($d['ts'], 'min', $app['tschema']);
+		echo '</td>';
 
 		if ($show_visibility)
 		{
