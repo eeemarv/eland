@@ -129,7 +129,7 @@ class access_control
 	 *
 	 */
 
-	public function get_label($access = 'admin', $size = 'xs')
+	public function get_label($access = 'admin')
 	{
 		if (isset($this->acc_ary_search[$access]))
 		{
