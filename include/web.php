@@ -112,13 +112,13 @@ $allowed_interlets_landing_pages = [
 
 $app['session_user'] = [];
 
-$p_role = $_GET['r'] ?? 'anonymous';
-$p_user = $_GET['u'] ?? false;
-$p_schema = $_GET['s'] ?? false;
+$app['p_role'] = $_GET['r'] ?? 'anonymous';
+$app['p_user'] = $_GET['u'] ?? false;
+$app['p_schema'] = $_GET['s'] ?? false;
 
-$app['s_schema'] = $p_schema ?: $app['tschema'];
-$app['s_id'] = $p_user;
-$app['s_accountrole'] = isset($access_ary[$p_role]) ? $p_role : 'anonymous';
+$app['s_schema'] = $app['p_schema'] ?: $app['tschema'];
+$app['s_id'] = $app['p_user'];
+$app['s_accountrole'] = isset($access_ary[$app['p_role']]) ? $app['p_role'] : 'anonymous';
 $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
@@ -594,7 +594,6 @@ function generate_url(string $entity, $params = [], $sch = false):string
  */
 function get_session_query_param($sch = false):array
 {
-	global $p_role, $p_user, $p_schema;
 	global $app;
 	static $ary;
 
@@ -626,14 +625,14 @@ function get_session_query_param($sch = false):array
 
 	$ary = [];
 
-	if ($p_role != 'anonymous')
+	if ($app['p_role'] != 'anonymous')
 	{
-		$ary['r'] = $p_role;
-		$ary['u'] = $p_user;
+		$ary['r'] = $app['p_role'];
+		$ary['u'] = $app['p_user'];
 
-		if ($app['s_access_level'] === 2 && $p_schema)
+		if ($app['s_access_level'] === 2 && $app['p_schema'])
 		{
-			$ary['s'] = $p_schema;
+			$ary['s'] = $app['p_schema'];
 		}
 	}
 
@@ -642,14 +641,11 @@ function get_session_query_param($sch = false):array
 
 function redirect_default_page()
 {
-	global $p_role, $p_user, $p_schema, $access_session;
 	global $app;
 
-	$app['s_access_level'] = $access_session;
-
-	$p_schema = $app['s_schema'];
-	$p_user = $app['s_id'];
-	$p_role = $app['s_accountrole'];
+	$app['p_schema'] = $app['s_schema'];
+	$app['p_user'] = $app['s_id'];
+	$app['p_role'] = $app['s_accountrole'];
 
 	header('Location: ' . get_default_page());
 	exit;
