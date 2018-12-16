@@ -10,14 +10,14 @@ class s3
 	protected $doc_bucket;
 	protected $client;
 
-	protected $img_types = [
+	const IMG_TYPES = [
 		'jpg'	=> 'image/jpeg',
 		'jpeg'	=> 'image/jpeg',
 		'png'	=> 'image/png',
 		'gif'	=> 'image/gif',
 	];
 
-	protected $doc_types = [
+	const DOC_TYPES = [
 		'docx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 		'docm'		=> 'application/vnd.ms-word.document.macroEnabled.12',
 		'dotx'		=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
@@ -85,7 +85,7 @@ class s3
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-		$content_type = $this->img_types[$ext] ?? false;
+		$content_type = self::IMG_TYPES[$ext] ?? false;
 
 		if (!$content_type)
 		{
@@ -113,7 +113,7 @@ class s3
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-		$content_type = $this->doc_types[$ext] ?? false;
+		$content_type = self::DOC_TYPES[$ext] ?? false;
 
 		if (!$content_type)
 		{
