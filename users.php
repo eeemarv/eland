@@ -3656,7 +3656,7 @@ if ($v_map)
 
 		if ($adr)
 		{
-			if ($adr[1] >= $access_level)
+			if ($adr[1] >= $app['s_access_level'])
 			{
 				$geo = $app['cache']->get('geo_' . $adr[0]);
 
@@ -4244,7 +4244,7 @@ if ($v_list)
 
 			if (isset($adr_ary[1]))
 			{
-				if ($adr_ary[1] >= $access_level)
+				if ($adr_ary[1] >= $app['s_access_level'])
 				{
 					if (count($adr_ary) && $adr_ary[0])
 					{
@@ -4620,7 +4620,7 @@ include __DIR__ . '/include/footer.php';
 
 function get_contacts_str(array $contacts, string $abbrev):string
 {
-	global $access_level;
+	global $app;
 
 	$ret = '';
 
@@ -4642,7 +4642,7 @@ function get_contacts_str(array $contacts, string $abbrev):string
 
 		foreach ($contacts as $key => $contact)
 		{
-			if ($contact[1] >= $access_level)
+			if ($contact[1] >= $app['s_access_level'])
 			{
 				$ret .= sprintf($tpl, htmlspecialchars($contact[0], ENT_QUOTES));
 

@@ -317,7 +317,7 @@ switch ($app['s_accountrole'])
  * some vars
  **/
 
-$access_level = $access_ary[$app['s_accountrole']];
+$app['s_access_level'] = $access_ary[$app['s_accountrole']];
 
 $app['s_admin'] = $app['s_accountrole'] === 'admin';
 $app['s_user'] = $app['s_accountrole'] === 'user';
@@ -594,7 +594,7 @@ function generate_url(string $entity, $params = [], $sch = false):string
  */
 function get_session_query_param($sch = false):array
 {
-	global $p_role, $p_user, $p_schema, $access_level;
+	global $p_role, $p_user, $p_schema;
 	global $app;
 	static $ary;
 
@@ -631,7 +631,7 @@ function get_session_query_param($sch = false):array
 		$ary['r'] = $p_role;
 		$ary['u'] = $p_user;
 
-		if ($access_level == 2 && $p_schema)
+		if ($app['s_access_level'] === 2 && $p_schema)
 		{
 			$ary['s'] = $p_schema;
 		}
@@ -642,10 +642,10 @@ function get_session_query_param($sch = false):array
 
 function redirect_default_page()
 {
-	global $p_role, $p_user, $p_schema, $access_level, $access_session;
+	global $p_role, $p_user, $p_schema, $access_session;
 	global $app;
 
-	$access_level = $access_session;
+	$app['s_access_level'] = $access_session;
 
 	$p_schema = $app['s_schema'];
 	$p_user = $app['s_id'];

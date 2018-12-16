@@ -680,7 +680,7 @@ if ($uid)
 		echo $c['abbrev'];
 		echo '</td>';
 
-		if (($c['flag_public'] < $access_level) && !$s_owner)
+		if (($c['flag_public'] < $app['s_access_level']) && !$s_owner)
 		{
 			echo '<td><span class="btn btn-default btn-xs">';
 			echo 'verborgen</span></td>';

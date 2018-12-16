@@ -508,7 +508,8 @@ $app['form_token'] = function ($app){
 $app['access_control'] = function($app){
 	return new service\access_control(
 		$app['tschema'],
-		$app['config']);
+		$app['config'],
+		$app['s_access_level']);
 };
 
 /**
