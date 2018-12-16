@@ -456,14 +456,14 @@ if (!$app['s_anonymous'])
 				$app['s_accountrole']);
 		}
 
-		$s_user_params_own_group = [
+		$app['s_user_params_own_system'] = [
 			'r' => $app['session']->get('role.' . $app['s_schema']),
 			'u'	=> $app['s_id'],
 		];
 	}
 	else
 	{
-		$s_user_params_own_group = [];
+		$app['s_user_params_own_system'] = [];
 	}
 }
 
@@ -595,19 +595,23 @@ function generate_url(string $entity, $params = [], $sch = false):string
 function get_session_query_param($sch = false):array
 {
 	global $p_role, $p_user, $p_schema, $access_level;
-	global $s_user_params_own_group, $app;
+	global $app;
 	static $ary;
 
 	if ($sch)
 	{
 		if ($sch === $app['s_schema'])
 		{
-			return  $s_user_params_own_group;
+			return  $app['s_user_params_own_system'];
 		}
 
 		if ($app['s_schema'])
 		{
-			$param_ary = ['r' => 'guest', 'u' => $app['s_id'], 's' => $app['s_schema']];
+			$param_ary = [
+				'r' => 'guest',
+				'u' => $app['s_id'],
+				's' => $app['s_schema']
+			];
 
 			return $param_ary;
 		}
