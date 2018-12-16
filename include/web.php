@@ -1,5 +1,7 @@
 <?php
 
+use util\cnst;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
@@ -75,39 +77,6 @@ if (isset($_GET['ev']))
 $top_right = '';
 $top_buttons = '';
 
-$role_ary = [
-	'admin'		=> 'Admin',
-	'user'		=> 'User',
-	//'guest'		=> 'Guest', //is not a primary role, but a speudo role
-	'interlets'	=> 'InterSysteem',
-];
-
-$status_ary = [
-	0	=> 'Gedesactiveerd',
-	1	=> 'Actief',
-	2	=> 'Uitstapper',
-	//3	=> 'Instapper',    // not used in selector
-	//4 => 'Secretariaat, // not used
-	5	=> 'Info-pakket',
-	6	=> 'Info-moment',
-	7	=> 'Extern',
-];
-
-$access_ary = [
-	'admin'		=> 0,
-	'user'		=> 1,
-	'guest'		=> 2,
-	'anonymous'	=> 3,
-];
-
-$allowed_interlets_landing_pages = [
-	'messages'		=> true,
-	'users'			=> true,
-	'transactions'	=> true,
-	'news'			=> true,
-	'docs'			=> true,
-];
-
 /** user **/
 
 $app['session_user'] = [];
@@ -118,7 +87,9 @@ $app['p_schema'] = $_GET['s'] ?? false;
 
 $app['s_schema'] = $app['p_schema'] ?: $app['tschema'];
 $app['s_id'] = $app['p_user'];
-$app['s_accountrole'] = isset($access_ary[$app['p_role']]) ? $app['p_role'] : 'anonymous';
+$app['s_accountrole'] = isset(cnst::ACCESS_ARY[$app['p_role']])
+	? $app['p_role']
+	: 'anonymous';
 $app['s_group_self'] = $app['s_schema'] === $app['tschema'];
 
 /** access user **/
@@ -219,7 +190,7 @@ else if (ctype_digit((string) $app['s_id']))
 		exit;
 	}
 
-	if ($access_ary[$app['session_user']['accountrole']] > $access_ary[$app['s_accountrole']])
+	if (cnst::ACCESS_ARY[$app['session_user']['accountrole']] > cnst::ACCESS_ARY[$app['s_accountrole']])
 	{
 		$app['s_accountrole'] = $app['session_user']['accountrole'];
 
@@ -317,7 +288,7 @@ switch ($app['s_accountrole'])
  * some vars
  **/
 
-$app['s_access_level'] = $access_ary[$app['s_accountrole']];
+$app['s_access_level'] = cnst::ACCESS_ARY[$app['s_accountrole']];
 
 $app['s_admin'] = $app['s_accountrole'] === 'admin';
 $app['s_user'] = $app['s_accountrole'] === 'user';
@@ -574,7 +545,7 @@ function aphp(
 /**
  * generate url
  */
-function generate_url(string $entity, $params = [], $sch = false):string
+function generate_url(string $entity, array $params = [], $sch = false):string
 {
 	global $app;
 

@@ -584,7 +584,7 @@ if ($mail && $app['is_http_post'] && $id)
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[$access_ary[$user['accountrole']], $app['s_id']]);
+			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 

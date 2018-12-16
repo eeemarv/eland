@@ -159,7 +159,7 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 				echo '>';
 
-				$page = isset($allowed_interlets_landing_pages[$app['script_name']])
+				$page = isset(\util\cnst::INTERSYSTEM_LANDING_PAGES[$app['script_name']])
 					? $app['script_name']
 					: 'messages';
 

@@ -1,5 +1,7 @@
 <?php
 
+use util\cnst;
+
 $q = $_GET['q'] ?? '';
 $status = $_GET['status'] ?? false;
 $id = $_GET['id'] ?? false;
@@ -70,13 +72,13 @@ if ($app['s_admin'])
 		],
 		'accountrole'		=> [
 			'lbl'		=> 'Rechten',
-			'options'	=> 'role_ary',
+			'options'	=> cnst::ROLE_ARY,
 			'string'	=> true,
 			'fa'		=> 'hand-paper-o',
 		],
 		'status'			=> [
 			'lbl'		=> 'Status',
-			'options'	=> 'status_ary',
+			'options'	=> cnst::STATUS_ARY,
 			'fa'		=> 'star-o',
 		],
 		'admincomment'		=> [
@@ -157,7 +159,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[$access_ary[$user['accountrole']], $app['s_id']]);
+			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
 
 	$vars = [
 		'group'			=> $app['template_vars']->get($app['tschema']),
@@ -675,7 +677,7 @@ if ($app['s_admin']
 
 		foreach ($map_template_vars as $key => $val)
 		{
-			$template_vars[$key] = ($key == 'status') ? $status_ary[$sel_user['status']] : $sel_user[$val];
+			$template_vars[$key] = ($key == 'status') ? cnst::STATUS_ARY[$sel_user['status']] : $sel_user[$val];
 		}
 
 		try
@@ -2098,7 +2100,7 @@ if ($add || $edit)
 		echo '<span class="fa fa-hand-paper-o"></span></span>';
 		echo '<select id="accountrole" name="accountrole" ';
 		echo 'class="form-control">';
-		echo get_select_options($role_ary, $user['accountrole']);
+		echo get_select_options(cnst::ROLE_ARY, $user['accountrole']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -2128,7 +2130,7 @@ if ($add || $edit)
 		echo '<span class="input-group-addon">';
 		echo '<span class="fa fa-star-o"></span></span>';
 		echo '<select id="status" name="status" class="form-control">';
-		echo get_select_options($status_ary, $user['status']);
+		echo get_select_options(cnst::STATUS_ARY, $user['status']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -2674,7 +2676,7 @@ if ($id)
 	$status = $user['status'];
 	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
 
-	$h_status_ary = $status_ary;
+	$h_status_ary = cnst::STATUS_ARY;
 	$h_status_ary[3] = 'Instapper';
 
 	$h1 = $s_owner && !$app['s_admin'] ? 'Mijn gegevens: ' : '';
@@ -2883,7 +2885,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Status';
 		echo '</dt>';
-		echo get_dd($status_ary[$user['status']]);
+		echo get_dd(cnst::STATUS_ARY[$user['status']]);
 
 		echo '<dt>';
 		echo 'Commentaar van de admin';
@@ -4463,7 +4465,11 @@ if ($v_list)
 			if (isset($t['options']))
 			{
 				$options = $t['options'];
-				echo sprintf($acc_sel, $k, $t['lbl'], get_select_options($$options, 0), $t['fa']);
+				echo sprintf($acc_sel,
+					$k,
+					$t['lbl'],
+					get_select_options($options, 0),
+					$t['fa']);
 			}
 			else if (isset($t['type']) && $t['type'] == 'checkbox')
 			{

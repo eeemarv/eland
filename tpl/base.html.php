@@ -157,7 +157,7 @@ if (!$app['s_anonymous']
 
 				echo '>';
 
-				$page = isset($allowed_interlets_landing_pages[$app['script_name']]) ? $app['script_name'] : 'messages';
+				$page = isset(\util\cnst::INTERSYSTEM_LANDING_PAGES[$app['script_name']]) ? $app['script_name'] : 'messages';
 
 				echo '<a href="';
 				echo generate_url($page,  ['welcome' => 1], $sch);
