@@ -37,9 +37,6 @@ $c_system_admin->assert('_locale', 'nl')
     ->assert('id', '\d+')
     ->assert('view', 'extended|list|map|tiles');
 
-$c_system_user->assert('access', 'u');
-$c_system_admin->assert('access', '[ua]');
-
 $c_system->match('/login', function (string $system) use ($app) {
     echo $system;
     $page_access = 'anonymous';
