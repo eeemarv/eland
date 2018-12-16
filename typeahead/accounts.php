@@ -18,13 +18,13 @@ if (!$status)
 	exit;
 }
 
-if ($s_guest && $status !== 'active')
+if ($app['s_guest'] && $status !== 'active')
 {
 	http_response_code(403);
 	exit;
 }
 
-if(!$s_admin && !in_array($status, ['active', 'extern']))
+if(!$app['s_admin'] && !in_array($status, ['active', 'extern']))
 {
 	http_response_code(403);
 	exit;

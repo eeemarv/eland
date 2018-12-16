@@ -29,14 +29,16 @@ $access_submit = isset($_POST['access_submit']) ? true : false;
 
 $access = $app['access_control']->get_post_value();
 
-if ($app['is_http_post'] && $s_guest && ($add || $edit || $del || $img || $img_del || $images
-	|| $extend_submit || $access_submit || $extend || $access))
+if ($app['is_http_post']
+	&& $app['s_guest']
+	&& ($add || $edit || $del || $img || $img_del || $images
+		|| $extend_submit || $access_submit || $extend || $access))
 {
 	$app['alert']->error('Geen toegang als gast tot deze actie');
 	cancel($id);
 }
 
-if (!$post)
+if (!$app['is_http_post'])
 {
 	$extend = $_GET['extend'] ?? false;
 }
@@ -44,7 +46,10 @@ if (!$post)
 /*
  * bulk actions (set access or validity)
  */
-if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $access)) & ($s_admin || $s_user))
+if ($app['is_http_post']
+	&& (($extend_submit && $extend)
+		|| ($access_submit && $access))
+	& ($app['s_admin'] || $app['s_user']))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -72,7 +77,9 @@ if ($app['is_http_post'] & (($extend_submit && $extend) || ($access_submit && $a
 
 	foreach ($rows as $row)
 	{
-		if (!$s_admin && $s_user && ($row['id_user'] != $s_id))
+		if (!$app['s_admin']
+			&& $app['s_user']
+			&& ($row['id_user'] !== $app['s_id']))
 		{
 			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')';
 			cancel();
@@ -185,9 +192,12 @@ if ($id || $edit || $del)
 		cancel();
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $s_id == $message['id_user'] && $message['id_user']) ? true : false;
+	$s_owner = !$app['s_guest']
+		&& $app['s_group_self']
+		&& $app['s_id'] === $message['id_user']
+		&& $message['id_user'];
 
-	if ($message['local'] && $s_guest)
+	if ($message['local'] && $app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit bericht.');
 		cancel();
@@ -206,7 +216,7 @@ if ($id || $edit || $del)
 
 if ($id && $extend)
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
 		cancel($id);
@@ -233,13 +243,13 @@ if ($id && $extend)
 /**
  * post images
  */
-if ($app['is_http_post'] && $img && $images && !$s_guest)
+if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
 {
 	$ret_ary = [];
 
 	if ($id)
 	{
-		if (!$s_owner && !$s_admin)
+		if (!$s_owner && !$app['s_admin'])
 		{
 			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
 		}
@@ -394,9 +404,9 @@ if ($app['is_http_post'] && $img && $images && !$s_guest)
  * Delete all images
  */
 
-if ($img_del == 'all' && $id && $post)
+if ($img_del == 'all' && $id && $app['is_http_post'])
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
@@ -422,9 +432,12 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 		exit;
 	}
 
-	$s_owner = (!$s_guest && $s_group_self && $msg['id_user'] == $s_id && $msg['id_user']) ? true : false;
+	$s_owner = !$app['s_guest']
+		&& $app['s_group_self']
+		&& $msg['id_user'] === $app['s_id']
+		&& $msg['id_user'];
 
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		echo json_encode(['error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.']);
 		exit;
@@ -442,7 +455,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 
 if ($img_del == 'all' && $id)
 {
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
 		cancel($id);
@@ -475,7 +488,7 @@ if ($img_del == 'all' && $id)
 
 	include __DIR__ . '/include/header.php';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo 'Gebruiker: ';
 		echo link_user($message['id_user'], $app['tschema']);
@@ -539,21 +552,23 @@ if ($mail && $app['is_http_post'] && $id)
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
-	if (!$s_admin && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
 	}
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
-		$app['alert']->error('Het master account kan geen berichten versturen.');
+		$app['alert']->error('Het master account
+			kan geen berichten versturen.');
 		cancel();
 	}
 
-	if (!$s_schema)
+	if (!$app['s_schema'])
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een E-mail bericht te versturen.');
+		$app['alert']->error('Je hebt onvoldoende rechten
+			om een E-mail bericht te versturen.');
 		cancel();
 	}
 
@@ -564,10 +579,12 @@ if ($mail && $app['is_http_post'] && $id)
 	}
 
 	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-		from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+		from ' . $app['s_schema'] . '.contact c, ' .
+			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
-			and c.id_type_contact = tc.id', [$access_ary[$user['accountrole']], $s_id]);
+			and c.id_type_contact = tc.id',
+			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
@@ -575,10 +592,10 @@ if ($mail && $app['is_http_post'] && $id)
 		'group'			=> $app['template_vars']->get($app['tschema']),
 		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($session_user, $s_schema, false),
-		'from_username'	=> $session_user['name'],
-		'to_group'		=> $s_group_self ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $s_group_self ? '' : $app['config']->get('systemname', $s_schema),
+		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
+		'from_username'	=> $app['session_user']['name'],
+		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
+		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
 		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
@@ -589,7 +606,7 @@ if ($mail && $app['is_http_post'] && $id)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($s_id, $s_schema),
+		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 		'template'	=> 'message',
 		'vars'		=> $vars,
 	], 8500);
@@ -599,7 +616,7 @@ if ($mail && $app['is_http_post'] && $id)
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_user']->get($s_id, $s_schema),
+			'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
 			'template'	=> 'message_copy',
 			'vars'		=> $vars,
 		], 8000);
@@ -615,7 +632,7 @@ if ($mail && $app['is_http_post'] && $id)
  */
 if ($del)
 {
-	if (!($s_owner || $s_admin))
+	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
 		cancel($del);
@@ -674,7 +691,7 @@ if ($del)
 	echo $message['validity'];
 	echo '</dd>';
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -717,13 +734,13 @@ if ($del)
  */
 if (($edit || $add))
 {
-	if (!($s_admin || $s_user) && $add)
+	if (!($app['s_admin'] || $app['s_user']) && $add)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
 		cancel();
 	}
 
-	if (!($s_admin || $s_owner) && $edit)
+	if (!($app['s_admin'] || $s_owner) && $edit)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
 		cancel($edit);
@@ -741,7 +758,7 @@ if (($edit || $add))
 		$vtime = time() + ((int) $validity * 86400);
 		$vtime =  gmdate('Y-m-d H:i:s', $vtime);
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
@@ -761,7 +778,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> ($s_admin) ? (int) $user['id'] : (($s_master) ? 0 : $s_id),
+			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($app['s_master']) ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -770,7 +787,7 @@ if (($edit || $add))
 		$deleted_images = isset($_POST['deleted_images']) && $edit ? $_POST['deleted_images'] : [];
 		$uploaded_images = $_POST['uploaded_images'] ?? [];
 
-		if ($count_interlets_groups)
+		if ($app['count_intersystems'])
 		{
 			$access_error = $app['access_control']->get_post_error();
 
@@ -1125,16 +1142,18 @@ if (($edit || $add))
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
-			'id_user'		=> $s_master ? 0 : $s_id,
+			'id_user'		=> $app['s_master'] ? 0 : $app['s_id'],
 			'id_category'	=> '',
 			'amount'		=> '',
 			'units'			=> '',
 			'local'			=> 0,
 		];
 
-		$uid = (isset($_GET['uid']) && $s_admin) ? $_GET['uid'] : (($s_master) ? 0 : $s_id);
+		$uid = (isset($_GET['uid'])
+			&& $app['s_admin']) ? $_GET['uid'] :
+				(($app['s_master']) ? 0 : $app['s_id']);
 
-		if ($s_master)
+		if ($app['s_master'])
 		{
 			$user_letscode = '';
 		}
@@ -1164,7 +1183,7 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
@@ -1181,7 +1200,7 @@ if (($edit || $add))
 
 	echo '<form method="post">';
 
-	if($s_admin)
+	if($app['s_admin'])
 	{
 		echo '<div class="form-group">';
 		echo '<label for="user_letscode" class="control-label">';
@@ -1353,7 +1372,7 @@ if (($edit || $add))
 	echo 'verslepen.</p>';
 	echo '</div>';
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
 
@@ -1396,7 +1415,7 @@ if (($edit || $add))
  */
 if ($id)
 {
-	$cc = ($post) ? $cc : 1;
+	$cc = $app['is_http_post'] ? $cc : 1;
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
@@ -1408,7 +1427,12 @@ if ($id)
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-	$mail_from = ($s_schema && !$s_master && !$s_elas_guest) ? $app['mail_addr_user']->get($s_id, $s_schema) : [];
+
+	$mail_from = $app['s_schema']
+		&& !$app['s_master']
+		&& !$app['s_elas_guest']
+			? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+			: [];
 
 	$balance = $user['saldo'];
 
@@ -1425,7 +1449,7 @@ if ($id)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
-	$and_local = ($s_guest) ? ' and local = \'f\' ' : '';
+	$and_local = ($app['s_guest']) ? ' and local = \'f\' ' : '';
 
 	$prev = $app['db']->fetchColumn('select id
 		from ' . $app['tschema'] . '.messages
@@ -1452,32 +1476,32 @@ if ($id)
 
 	$app['assets']->add(['leaflet', 'jssor', 'msg.js']);
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$app['assets']->add(['fileupload', 'msg_img.js']);
 	}
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
 		$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($s_admin || (!$s_owner
-		&& $user['status'] != 7
-		&& !($s_guest && $s_group_self))))
+		&& ($app['s_admin'] || (!$s_owner
+			&& $user['status'] != 7
+			&& !($app['s_guest'] && $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
-			if (!$s_group_self)
+			if (!$app['s_group_self'])
 			{
 				$tus['tus'] = $app['tschema'];
 			}
 
 			$top_buttons .= aphp('transactions', $tus, 'Transactie',
 				'btn btn-warning', 'Transactie voor dit aanbod',
-				'exchange', true, false, $s_schema);
+				'exchange', true, false, $app['s_schema']);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -1487,7 +1511,7 @@ if ($id)
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('messages', ['view' => $view_messages], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
+	$top_buttons_right .= aphp('messages', [], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
 	$top_buttons_right .= '</span>';
 
 	$h1 = $ow_type_uc;
@@ -1501,7 +1525,7 @@ if ($id)
 	{
 		echo '<p>Categorie: ';
 		echo '<a href="';
-		echo generate_url('messages', ['cid' => $message['cid'], 'view' => $view_messages]);
+		echo generate_url('messages', ['cid' => $message['cid']]);
 		echo '">';
 		echo $message['catname'];
 		echo '</a></p>';
@@ -1526,7 +1550,7 @@ if ($id)
 
 	echo '</div>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
@@ -1597,20 +1621,28 @@ if ($id)
 	echo '<dd>' . $user['postcode'] . '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
-	echo '<dd>' . $app['date_format']->get($message['cdate'], 'day') . '</dd>';
+	echo '<dd>';
+	echo $app['date_format']->get($message['cdate'], 'day', $app['tschema']);
+	echo '</dd>';
 
 	echo '<dt>Geldig tot</dt>';
-	echo '<dd>' . $app['date_format']->get($message['validity'], 'day') . '</dd>';
+	echo '<dd>';
+	echo $app['date_format']->get($message['validity'], 'day', $app['tschema']);
+	echo '</dd>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<dt>Verlengen</dt>';
-		echo '<dd>' . aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs') . '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs') . '</dd>';
+		echo '<dd>';
+		echo aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs');
+		echo '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs');
+		echo '&nbsp;';
+		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs');
+		echo '</dd>';
 	}
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -1627,12 +1659,16 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="contacts" ';
-	echo 'data-url="' . $rootpath . 'contacts.php?inline=1&uid=' . $message['id_user'];
-	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
+	echo 'data-url="' . $app['rootpath'];
+	echo 'contacts.php?inline=1&uid=';
+	echo $message['id_user'];
+	echo '&';
+	echo http_build_query(get_session_query_param());
+	echo '"></div>';
 
 // response form
 
-	if ($s_elas_guest)
+	if ($app['s_elas_guest'])
 	{
 		$placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
 	}
@@ -1653,7 +1689,7 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!$s_schema || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
 	echo  link_user($message['id_user'], $app['tschema']);
@@ -1701,19 +1737,21 @@ if ($id)
  * list messages
  */
 
-if (!($view || $inline))
+if (!($app['p_view'] || $app['p_inline']))
 {
 	cancel();
 }
 
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = !$app['s_guest']
+	&& $app['s_group_self']
+	&& $app['s_id'] === $uid
+	&& $app['s_id'] && $uid;
 
-$v_list = ($view === 'list' || $inline) && !$recent ? true : false;
-$v_extended = $view === 'extended' && !$inline || $recent ? true : false;
-$v_map = $view === 'map' && !($inline || $recent) ? true : false;
+$v_list = ($app['p_view'] === 'list' || $app['p_inline']) && !$recent;
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'] || $recent;
+$v_map = $app['p_view'] === 'map' && !($app['p_inline'] || $recent);
 
 $params = [
-	'view'		=> $view,
 	'orderby'	=> $orderby,
 	'asc'		=> $asc,
 	'limit'		=> $limit,
@@ -1850,7 +1888,7 @@ if ($filter_en)
 		if (isset($filter['ustatus']['new']))
 		{
 			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		}
 
 		if (isset($filter['ustatus']['leaving']))
@@ -1861,7 +1899,7 @@ if ($filter_en)
 		if (isset($filter['ustatus']['active']))
 		{
 			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		}
 
 		if (count($ustatus_sql))
@@ -1893,7 +1931,7 @@ else
 
 $params['f'] = $filter;
 
-if ($s_guest)
+if ($app['s_guest'])
 {
 	$where_sql[] = 'm.local = \'f\'';
 }
@@ -1949,7 +1987,7 @@ if ($v_extended)
 	}
 }
 
-$app['pagination']->init('messages', $row_count, $params, $inline);
+$app['pagination']->init('messages', $row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -1994,7 +2032,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$s_guest && $count_interlets_groups)
+if (!$app['s_guest'] && $app['count_intersystems'])
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2043,28 +2081,33 @@ while ($row = $st->fetch())
 
 	$cat_params[$row['id']] = $params;
 	$cat_params[$row['id']]['cid'] = $row['id'];
-	$cat_params[$row['id']]['view'] = $view_messages;
 }
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
 	}
 
 	if ($uid)
 	{
-		if ($s_admin && !$s_owner)
+		if ($app['s_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
 			$str .= link_user($uid, $app['tschema'], false);
 			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
 		}
 
-		if (!$inline)
+		if (!$app['p_inline'])
 		{
-			$top_buttons .= aphp('messages', ['view' => $view_messages], 'Lijst', 'btn btn-default', 'Lijst alle vraag en aanbod', 'newspaper-o', true);
+			$top_buttons .= aphp('messages',
+				[],
+				'Lijst',
+				'btn btn-default',
+				'Lijst alle vraag en aanbod',
+				'newspaper-o',
+				true);
 		}
 	}
 }
@@ -2078,20 +2121,20 @@ $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
 if ($uid)
 {
-	if ($s_owner && !$inline)
+	if ($s_owner && !$app['p_inline'])
 	{
 		$h1 = 'Mijn vraag en aanbod';
 	}
 	else
 	{
-		$h1 = aphp('messages', ['uid' => $uid, 'view' => $view_messages], 'Vraag en aanbod');
+		$h1 = aphp('messages', ['uid' => $uid], 'Vraag en aanbod');
 		$h1 .= ' van ';
 		$h1 .= link_user($uid, $app['tschema']);
 	}
 }
 else if ($recent)
 {
-	$h1 = aphp('messages', ['view' => $view_messages], 'Recent Vraag en aanbod');
+	$h1 = aphp('messages', [], 'Recent Vraag en aanbod');
 }
 else
 {
@@ -2103,7 +2146,7 @@ $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	$v_params = $params;
 
@@ -2249,12 +2292,12 @@ if (!$inline)
 	$params_form = $params;
 	unset($params_form['f'], $params_form['start']);
 
-	$params_form['r'] = $s_accountrole;
-	$params_form['u'] = $s_id;
+	$params_form['r'] = $app['s_accountrole'];
+	$params_form['u'] = $app['s_id'];
 
-	if (!$s_group_self)
+	if (!$app['s_group_self'])
 	{
-		$params_form['s'] = $s_schema;
+		$params_form['s'] = $app['s_schema'];
 	}
 
 	foreach ($params_form as $name => $value)
@@ -2271,7 +2314,7 @@ if (!$inline)
 	echo '</div>';
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
@@ -2300,7 +2343,7 @@ if (!count($messages))
 		echo $app['pagination']->get();
 	}
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -2361,7 +2404,7 @@ if ($v_list)
 
 		echo '<td>';
 
-		if (!$inline && ($s_admin || $s_owner))
+		if (!$app['p_inline'] && ($app['s_admin'] || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
@@ -2394,12 +2437,14 @@ if ($v_list)
 		}
 
 		echo '<td>';
-		echo $app['date_format']->get($msg['validity'], 'day');
+		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
 		echo '</td>';
 
-		if (!$s_guest && $count_interlets_groups)
+		if (!$app['s_guest'] && $app['count_intersystems'])
 		{
-			echo '<td>' . $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets') . '</td>';
+			echo '<td>';
+			echo $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets');
+			echo '</td>';
 		}
 
 		echo '</tr>';
@@ -2419,7 +2464,8 @@ else if ($v_extended)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
-		$sf_owner = ($s_group_self && $msg['id_user'] == $s_id) ? true : false;
+		$sf_owner = $app['s_group_self']
+			&& $msg['id_user'] === $app['s_id'];
 
 		$exp = strtotime($msg['validity']) < $time;
 
@@ -2465,7 +2511,7 @@ else if ($v_extended)
 		echo link_user($msg['id_user'], $app['tschema']);
 		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
-		if ($s_admin || $sf_owner)
+		if ($app['s_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 			echo aphp('messages', ['edit' => $msg['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
@@ -2484,13 +2530,13 @@ if (!$recent)
 	echo $app['pagination']->get();
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '</div></div>';
 }
 else if ($v_list)
 {
-	if (($s_admin || $s_owner) && count($messages))
+	if (($app['s_admin'] || $s_owner) && count($messages))
 	{
 		$extend_options = [
 			'7'		=> '1 week',
@@ -2582,7 +2628,7 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
-	global $uid, $view_messages;
+	global $uid;
 
 	if ($id)
 	{
@@ -2590,7 +2636,7 @@ function cancel($id = null)
 	}
 	else
 	{
-		$params = ['view' => $view_messages];
+		$params = [];
 
 		if ($uid)
 		{

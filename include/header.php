@@ -29,21 +29,23 @@ echo '</head>';
 echo '<body data-session-params="';
 echo htmlspecialchars(json_encode(get_session_query_param()));
 echo '" class="';
-echo $s_admin ? 'admin' : ($s_guest ? 'guest' : 'member');
+echo $app['s_admin'] ? 'admin' : ($app['s_guest'] ? 'guest' : 'member');
 echo '">';
 
-echo '<img src="/gfx/loading.gif' . $app['assets']->get_version_param() . '" ';
+echo '<img src="/gfx/loading.gif';
+echo $app['assets']->get_version_param();
+echo '" ';
 echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
-echo $s_admin ? ' bg-info' : '';
-echo $s_guest ? ' bg-warning' : '';
+echo $app['s_admin'] ? ' bg-info' : '';
+echo $app['s_guest'] ? ' bg-warning' : '';
 echo '">';
 echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
 
-if (!$s_anonymous)
+if (!$app['s_anonymous'])
 {
 	echo '<button type="button" class="navbar-toggle collapsed" ';
 	echo 'data-toggle="collapse" data-target="#navbar-collapse-1" ';
@@ -78,7 +80,7 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
+if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -90,28 +92,38 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	echo '<ul class="dropdown-menu" role="menu">';
 	echo '<li class="dropdown-header">';
 
-	if (count($logins) === 1 && current($logins) === 'eLAS')
+	if (count($app['s_logins']) === 1
+		&& current($app['s_logins']) === 'eLAS')
 	{
 		echo 'eLAS Gast Login';
 	}
 	else
 	{
-		echo count($logins) > 1 ? 'Eigen Systemen' : 'Eigen Systeem';
+		echo count($app['s_logins']) > 1
+			? 'Eigen Systemen'
+			: 'Eigen Systeem';
 	}
 
 	echo '</li>';
 
-	foreach ($logins as $login_schema => $login_id)
+	foreach ($app['s_logins'] as $login_schema => $login_id)
 	{
-		$class = $s_schema === $login_schema && count($logins) > 1 ? ' class="active-group"' : '';
-		$class = $login_schema === $app['tschema'] && $login_schema === $s_schema ? ' class="active"' : $class;
+		$class = $app['s_schema'] === $login_schema
+			&& count($app['s_logins']) > 1
+				? ' class="active-group"'
+				: '';
+		$class = $login_schema === $app['tschema']
+			&& $login_schema === $app['s_schema']
+				? ' class="active"'
+				: $class;
 
 		echo '<li';
 		echo $class;
 		echo '>';
 
 		echo '<a href="';
-		echo $app['protocol'] . $app['groups']->get_host($login_schema);
+		echo $app['protocol'];
+		echo $app['groups']->get_host($login_schema);
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
@@ -125,16 +137,18 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 		echo '</li>';
 	}
 
-	if ($count_interlets_groups)
+	if ($app['count_intersystems'])
 	{
 		echo '<li class="divider"></li>';
 		echo '<li class="dropdown-header">';
-		echo $count_interlets_groups > 1 ? 'Gekoppelde interSystemen' : 'Gekoppeld interSysteem';
+		echo $app['count_intersystems'] > 1
+			? 'Gekoppelde interSystemen'
+			: 'Gekoppeld interSysteem';
 		echo '</li>';
 
-		if (count($eland_interlets_groups))
+		if (count($app['intersystem_ary']['eland']))
 		{
-			foreach ($eland_interlets_groups as $sch => $h)
+			foreach ($app['intersystem_ary']['eland'] as $sch => $h)
 			{
 				echo '<li';
 
@@ -145,7 +159,9 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 
 				echo '>';
 
-				$page = isset($allowed_interlets_landing_pages[$app['script_name']]) ? $app['script_name'] : 'messages';
+				$page = isset(\util\cnst::INTERSYSTEM_LANDING_PAGES[$app['script_name']])
+					? $app['script_name']
+					: 'messages';
 
 				echo '<a href="';
 				echo generate_url($page,  ['welcome' => 1], $sch);
@@ -156,9 +172,9 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 			}
 		}
 
-		if (count($elas_interlets_groups))
+		if (count($app['intersystem_ary']['elas']))
 		{
-			foreach ($elas_interlets_groups as $grp_id => $grp)
+			foreach ($app['intersystem_ary']['elas'] as $grp_id => $grp)
 			{
 				echo '<li>';
 				echo '<a href="#" data-elas-group-id="';
@@ -174,44 +190,44 @@ if (!$s_anonymous && ($count_interlets_groups + count($logins)) > 1)
 	echo '</li>';
 }
 
-if (!$s_anonymous)
+if (!$app['s_anonymous'])
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 
-	if ($s_master)
+	if ($app['s_master'])
 	{
 		echo 'Master';
 	}
-	else if ($s_elas_guest)
+	else if ($app['s_elas_guest'])
 	{
 		echo 'eLAS gast login';
 	}
-	else if ($s_schema && $s_id)
+	else if ($app['s_schema'] && $app['s_id'])
 	{
-		echo ($s_group_self) ? '' : $s_schema . '.';
-		echo link_user($s_id, $s_schema, false);
+		echo $app['s_group_self'] ? '' : $app['s_schema'] . '.';
+		echo link_user($app['s_id'], $app['s_schema'], false);
 	}
 
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
-	if ($s_schema && !$s_master && !$s_guest)
+	if ($app['s_schema'] && !$app['s_master'] && !$app['s_guest'])
 	{
 		echo '<li><a href="';
-		echo generate_url('users', ['id' => $s_id], $s_schema);
+		echo generate_url('users', ['id' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-user"></i> Mijn gegevens';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('messages', ['uid' => $s_id], $s_schema);
+		echo generate_url('messages', ['uid' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('transactions', ['uid' => $s_id], $s_schema);
+		echo generate_url('transactions', ['uid' => $app['s_id']], $app['s_schema']);
 		echo '">';
 		echo '<i class="fa fa-exchange"></i> Mijn transacties';
 		echo '</a></li>';
@@ -220,14 +236,14 @@ if (!$s_anonymous)
 	}
 
 	echo '<li><a href="';
-	echo generate_url('logout', [], $s_schema) . '">';
+	echo generate_url('logout', [], $app['s_schema']) . '">';
 	echo '<i class="fa fa-sign-out"></i> Uitloggen';
 	echo '</a></li>';
 
 	echo '</ul>';
 	echo '</li>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		$menu = [
 			'status'			=> ['exclamation-triangle', 'Status'],
@@ -309,9 +325,11 @@ if (!$s_anonymous)
 		echo '</ul>';
 		echo '</li>';
 	}
-	else if ($s_group_self
-		&& ((isset($session_user) && $session_user['accountrole'] === 'admin')
-		|| $s_master))
+	else if ($app['s_group_self']
+		&& ((isset($app['session_user'])
+			&& count($app['session_user'])
+			&& $app['session_user']['accountrole'] === 'admin')
+		|| $app['s_master']))
 	{
 		echo '<li class="dropdown">';
 		$admin_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -337,7 +355,7 @@ echo '<div class="swiper-container">';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
-if ($s_anonymous)
+if ($app['s_anonymous'])
 {
 	$menu = [
 		'login'			=> ['sign-in', 'Login', []],
@@ -356,10 +374,10 @@ if ($s_anonymous)
 else
 {
 	$menu = [
-		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', ['view' => $view_messages]],
-		'users'			=> ['users', $s_admin ? 'Gebruikers' : 'Leden', ['status' => 'active', 'view' => $view_users]],
+		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', []],
+		'users'			=> ['users', $app['s_admin'] ? 'Gebruikers' : 'Leden', ['status' => 'active']],
 		'transactions'	=> ['exchange', 'Transacties', []],
-		'news'			=> ['calendar-o', 'Nieuws', ['view' => $view_news]],
+		'news'			=> ['calendar-o', 'Nieuws', []],
 	];
 
 	$menu['docs'] = ['files-o', 'Documenten', []];
@@ -369,7 +387,7 @@ else
 		$menu['forum'] = ['comments-o', 'Forum', []];
 	}
 
-	if ($s_user || $s_admin)
+	if ($app['s_user'] || $app['s_admin'])
 	{
 		$menu['support'] = ['ambulance', 'Probleem melden', []];
 	}

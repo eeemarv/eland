@@ -31,10 +31,6 @@ class interlets_groups
 		$this->app_protocol = $app_protocol;
 	}
 
-	/*
-	 *
-	 */
-
 	public function get_eland_accounts_schemas(string $schema):array
 	{
 		$ret = json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);

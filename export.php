@@ -186,7 +186,7 @@ foreach ($export_ary as $ex_key => $export)
 	$buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
 	$buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom">';
 	$buttons .= '<input type="hidden" value="admin" name="r">';
-	$buttons .= '<input type="hidden" value="' . $s_id . '" name="u">';
+	$buttons .= '<input type="hidden" value="' . $app['s_id'] . '" name="u">';
 	$buttons .= '</form>';
 }
 
@@ -209,7 +209,7 @@ if (function_exists('exec'))
 	echo '<input type="submit" value="Download" name="db" class="btn btn-default margin-bottom">';
 	echo '<input type="hidden" value="admin" name="r">';
 	echo '<input type="hidden" value="';
-	echo $s_id;
+	echo $app['s_id'];
 	echo '" name="u">';
 	echo '</form>';
 

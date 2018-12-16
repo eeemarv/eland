@@ -70,7 +70,7 @@ if ($step == 1)
 		$app['monolog']->info('DB: ' . $m, ['schema' => $app['tschema']]);
 	}
 
-	header('Location: ' . $rootpath . 'init.php?step=2');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=2');
 	exit;
 }
 else if ($step == 2)
@@ -156,11 +156,11 @@ else if ($step == 2)
 	{
 		error_log(' found img ');
 		$start += 50;
-		header('Location: ' . $rootpath . 'init.php?step=2&start=' . $start);
+		header('Location: ' . $app['rootpath'] . 'init.php?step=2&start=' . $start);
 		exit;
 	}
 
-	header('Location: ' . $rootpath . 'init.php?step=3');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=3');
 	exit;
 }
 else if ($step == 3)
@@ -174,7 +174,7 @@ else if ($step == 3)
 	if (!count($message_images))
 	{
 		error_log(' to step 4 ');
-		header('Location: ' . $rootpath . 'init.php?step=4');
+		header('Location: ' . $app['rootpath'] . 'init.php?step=4');
 		exit;
 	}
 
@@ -246,7 +246,7 @@ else if ($step == 3)
 
 	$start += 50;
 
-	header('Location: ' . $rootpath . 'init.php?step=3&start=' . $start);
+	header('Location: ' . $app['rootpath'] . 'init.php?step=3&start=' . $start);
 	exit;
 }
 else if ($step == 4)
@@ -262,7 +262,7 @@ else if ($step == 4)
 		$app['predis']->del($app['tschema'] . '_user_' . $u['id']);
 	}
 
-	header('Location: ' . $rootpath . 'init.php?step=5');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=5');
 	exit;
 }
 else if ($step == 5)
@@ -272,7 +272,7 @@ else if ($step == 5)
 
 	error_log('*** empty tokens table (is not used anymore) *** ');
 
-	header('Location: ' . $rootpath . 'init.php?step=6');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=6');
 	exit;
 }
 else if ($step == 6)
@@ -282,7 +282,7 @@ else if ($step == 6)
 
 	error_log('*** empty city_distance table (is not used anymore) *** ');
 
-	header('Location: ' . $rootpath . 'init.php?step=7');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=7');
 	exit;
 }
 else if ($step == 7)
@@ -315,7 +315,7 @@ else if ($step == 7)
 	if ($more_geocoding)
 	{
 		$start += 20;
-		header('Location: ' . $rootpath . 'init.php?step=7&start=' . $start);
+		header('Location: ' . $app['rootpath'] . 'init.php?step=7&start=' . $start);
 		exit;
 	}
 

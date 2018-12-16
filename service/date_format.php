@@ -10,27 +10,37 @@ class date_format
 		'%Y-%m-%d %H:%M:%S' => [
 			'day'	=> '%Y-%m-%d',
 			'min'	=> '%Y-%m-%d %H:%M',
+			'sec'	=> '%Y-%m-%d %H:%M:%S',
 		],
 		'%d-%m-%Y %H:%M:%S' => [
 			'day'	=> '%d-%m-%Y',
 			'min'	=> '%d-%m-%Y %H:%M',
+			'sec'	=> '%d-%m-%Y %H:%M:%S',
 		],
 		'%e %b %Y, %H:%M:%S' => [
 			'day'	=> '%e %b %Y',
 			'min'	=> '%e %b %Y, %H:%M',
+			'sec'	=> '%e %b %Y, %H:%M:%S',
 		],
 		'%a %e %b %Y, %H:%M:%S' => [
 			'day'	=> '%a %e %b %Y',
 			'min'	=> '%a %e %b %Y, %H:%M',
+			'sec'	=> '%a %e %b %Y, %H:%M:%S',
 		],
 		'%e %B %Y, %H:%M:%S'	=> [
 			'day'	=> '%e %B %Y',
 			'min'	=> '%e %B %Y, %H:%M',
+			'sec'	=> '%e %B %Y, %H:%M:%S',
 		],
 	];
 
-	protected $format;
-	protected $format_ary = [];
+	const NEW_FORMAT_KEY = [   // todo
+		'technical' 		=> '%Y-%m-%d %H:%M:%S',
+		'numerical' 		=> '%d-%m-%Y %H:%M:%S',
+		'month_abbrev'		=> '%e %b %Y, %H:%M:%S',
+		'month_full'		=> '%e %B %Y, %H:%M:%S',
+		'weekday_included'	=> '%a %e %b %Y, %H:%M:%S',
+	];
 
 	const MONTHS_TRANS = [
 		['jan', 'januari'], ['feb', 'februari'], ['mrt', 'maart'],
@@ -39,46 +49,55 @@ class date_format
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
 	];
 
-	public function __construct(config $config, string $schema)
+	public function __construct(config $config)
 	{
 		$this->config = $config;
-		$this->schema = $schema;
-
-		$this->format = $this->config->get('date_format', $this->schema);
-
-		if (!$this->format)
-		{
-			$this->format = '%e %b %Y, %H:%M:%S';
-		}
-
-		$sec = $this->format;
-
-		if (!isset(self::FORMATS[$sec]))
-		{
-			$sec = '%e %b %Y, %H:%M:%S';
-		}
-
-		$this->format_ary = self::FORMATS[$sec];
-		$this->format_ary['sec'] = $sec;
 	}
 
-	public function datepicker_format()
+	protected function get_format(
+		string $schema,
+		string $precision
+	):string
+	{
+		$format = $this->config->get('date_format', $schema);
+
+		if (!$format || !isset(self::FORMATS[$format]))
+		{
+			throw \Exception('No valid date format in date_format: ' . $format);
+//			return self::FORMATS['%e %b %Y, %H:%M:%S'];
+		}
+
+		if (!isset(self::FORMATS[$format][$precision]))
+		{
+			throw \Exception('No valid precision in date_format: ' . $precision);
+		}
+
+		return self::FORMATS[$format][$precision];
+	}
+
+
+	public function datepicker_format(string $schema):string
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'yyyy', 'M', 'MM', 'D', 'DD'];
+		$format = $this->get_format($schema, 'day');
 
-		return trim(str_replace($search, $replace, $this->format_ary['day']));
+		return trim(str_replace($search, $replace, $format));
 	}
 
-	public function datepicker_placeholder()
+	public function datepicker_placeholder(string $schema):string
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', '(wd)', '(weekdag)'];
+		$format = $this->get_format($schema, 'day');
 
-		return trim(str_replace($search, $replace, $this->format_ary['day']));
+		return trim(str_replace($search, $replace, $format));
 	}
 
-	public function reverse(string $from_datepicker)
+	public function reverse(
+		string $from_datepicker,
+		string $schema
+	):string
 	{
 		$from_datepicker = trim($from_datepicker);
 
@@ -95,7 +114,7 @@ class date_format
 
 		$str = str_replace($months_search, $months_replace, $from_datepicker);
 
-		$format = $this->format_ary['day'];
+		$format = $this->get_format($schema, 'day');
 
 		$map = [
 			'%e' => '%d', '%d' => '%d', '%m' => '%m',
@@ -152,7 +171,7 @@ class date_format
 
 		if (!isset($parts['%m']) || !isset($parts['%d']) || !isset($parts['%Y']))
 		{
-			return false;
+			return '';
 		}
 
 		$time = mktime(12, 0, 0, $parts['%m'], $parts['%d'], $parts['%Y']);
@@ -160,7 +179,7 @@ class date_format
 		return gmdate('Y-m-d H:i:s', $time);
 	}
 
-	public function get_options()
+	public function get_options():array
 	{
 		$options = [];
 
@@ -182,85 +201,53 @@ class date_format
 		return false;
 	}
 
-	public function get_from_unix(int $unix, string $precision = 'min'):string
+	public function get_from_unix(
+		int $unix,
+		string $precision,
+		string $schema
+	):string
 	{
-		if (isset($this->format_ary))
-		{
-			return strftime($this->format_ary[$precision], $unix);
-		}
+		$format = $this->get_format($schema, $precision);
 
-		if (!isset($format_ary))
-		{
-			$format = $this->config->get('date_format', $this->schema);
-
-			if (!$format)
-			{
-				$format = '%e %b %Y, %H:%M:%S';
-			}
-
-			$sec = $format;
-
-			if (!isset(self::FORMATS[$sec]))
-			{
-				$sec = '%e %b %Y, %H:%M:%S';
-			}
-
-			$format_ary = self::FORMATS[$sec];
-			$format_ary['sec'] = $sec;
-		}
-
-		return strftime($format_ary[$precision], $unix);
+		return strftime($format, $unix);
 	}
 
-	/**
-	 * to do: get schema for static method version
-	 */
-
-	public function get(string $ts, string $precision = 'min'):string
+	public function get(
+		string $ts,
+		string $precision,
+		string $schema
+	):string
 	{
-		static $format_ary, $format;
-
 		if (!$ts)
 		{
 			return '';
 		}
 
-		return $this->get_from_unix(strtotime($ts . ' UTC'), $precision);
+		return $this->get_from_unix(strtotime($ts . ' UTC'), $precision, $schema);
 	}
 
-	public function twig_get($environment, $context, $ts = false, $precision = 'min')
+	public function twig_get(
+		$environment,
+		$context,
+		string $ts,
+		string $precision,
+		string $schema
+	):string
 	{
-		static $format_ary, $format;
-
-		$time = strtotime($ts . ' UTC');
-
-		if (!isset($format_ary))
-		{
-			$format = $this->config->get('date_format');
-
-			if (!$format)
-			{
-				$format = '%e %b %Y, %H:%M:%S';
-			}
-
-			$sec = $format;
-
-			if (!isset(self::FORMATS[$sec]))
-			{
-				$sec = '%e %b %Y, %H:%M:%S';
-			}
-
-			$format_ary = self::FORMATS[$sec];
-			$format_ary['sec'] = $sec;
-		}
-
-		return strftime($format_ary[$precision], $time);
+		return $this->get($ts, $precision, $schema);
 	}
 
-	public function get_td($ts = false, $precision = 'min')
+	public function get_td(
+		string $ts,
+		string $precision,
+		string $schema):string
 	{
 		$time = strtotime($ts . ' UTC');
 
-		return '<td data-value="' . $time . '">' . strftime($this->format_ary[$precision], $time) . '</td>';
+		$out = '<td data-value="' . $time . '">';
+		$out .= $this->get_from_unix($time, $precision, $schema);
+		$out .= '</td>';
+
+		return $out;
 	}
 }

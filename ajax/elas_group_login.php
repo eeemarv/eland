@@ -7,7 +7,7 @@ $group_id = $_GET['group_id'] ?? false;
 
 header('Content-type: application/json');
 
-if (!$s_schema || $s_elas_guest)
+if (!$app['s_schema'] || $app['s_elas_guest'])
 {
 	echo json_encode(['error' => 'Onvoldoende rechten.']);
 	exit;
@@ -19,14 +19,14 @@ if (!$group_id)
 	exit;
 }
 
-if (!isset($elas_interlets_groups[$group_id]))
+if (!isset($app['intersystem_ary']['elas'][$group_id]))
 {
 	echo json_encode(['error' => 'Er is geen interSysteem verbinding met dit Systeem.']);
 	exit;
 }
 
 $group = $app['db']->fetchAssoc('select *
-	from ' . $s_schema . '.letsgroups
+	from ' . $app['s_schema'] . '.letsgroups
 	where id = ?', [$group_id]);
 
 if (!$group)

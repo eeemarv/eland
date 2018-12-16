@@ -86,7 +86,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('logs', $row_count, $params, $inline);
+$app['pagination']->init('logs', $row_count, $params);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -207,7 +207,7 @@ echo '</div>';
 
 echo '</div>';
 
-$params_form = ['r' => 'admin', 'u' => $s_id];
+$params_form = ['r' => 'admin', 'u' => $app['s_id']];
 
 foreach ($params_form as $name => $value)
 {
@@ -272,7 +272,7 @@ foreach($rows as $value)
 {
 	echo '<tr>';
 	echo '<td>';
-	echo $app['date_format']->get($value['ts'], 'sec');
+	echo $app['date_format']->get($value['ts'], 'sec', $app['tschema']);
 	echo '</td>';
 	echo '<td>';
 	echo $value['type'];

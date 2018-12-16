@@ -526,7 +526,7 @@ foreach ($tab_panes as $pane)
 	}
 }
 
-if ($post)
+if ($app['is_http_post'])
 {
 	if (!isset($_POST[$active_tab . '_submit']))
 	{

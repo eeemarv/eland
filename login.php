@@ -33,9 +33,9 @@ if ($token)
 {
 	if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $token))
 	{
-		$logins = $app['session']->get('logins');
-		$logins[$app['tschema']] = 'elas';
-		$app['session']->set('logins', $logins);
+		$app['s_logins'] = $app['session']->get('logins');
+		$app['s_logins'][$app['tschema']] = 'elas';
+		$app['session']->set('logins', $app['s_logins']);
 
 		$param = 'welcome=1&r=guest&u=elas';
 
@@ -80,9 +80,9 @@ if ($submit)
 		&& $master_password
 		&& hash('sha512', $password) === $master_password)
 	{
-		$logins = $app['session']->get('logins');
-		$logins[$app['tschema']] = 'master';
-		$app['session']->set('logins', $logins);
+		$app['s_logins'] = $app['session']->get('logins');
+		$app['s_logins'][$app['tschema']] = 'master';
+		$app['session']->set('logins', $app['s_logins']);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
 		$glue = strpos($location, '?') === false ? '?' : '&';
@@ -229,12 +229,14 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$logins = $app['session']->get('logins');
-		$logins[$app['tschema']] = $user['id'];
-		$app['session']->set('logins', $logins);
+		$app['s_logins'] = $app['session']->get('logins') ?? [];
+		$app['s_logins'] = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> $user['id'],
+		]);
+		$app['session']->set('logins', $app['s_logins']);
 
-		$s_id = $user['id'];
-		$s_schema = $app['tschema'];
+		$app['s_id'] = $user['id'];
+		$app['s_schema'] = $app['tschema'];
 
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
@@ -250,7 +252,7 @@ if ($submit)
 
 		$app['xdb']->set('login', $user['id'], [
 			'browser' => $browser, 'time' => time()
-		], $s_schema);
+		], $app['s_schema']);
 
 		$app['alert']->success('Je bent ingelogd.');
 

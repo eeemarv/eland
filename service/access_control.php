@@ -8,6 +8,7 @@ class access_control
 {
 	protected $config;
 	protected $schema;
+	protected $access_level;
 	protected $type_template;
 
 	protected $acc_ary = [
@@ -46,10 +47,15 @@ class access_control
 		'interlets' => 'interlets',
 	];
 
-	public function __construct(string $schema, config $config)
+	public function __construct(
+		string $schema,
+		config $config,
+		string $access_level
+	)
 	{
 		$this->config = $config;
 		$this->schema = $schema;
+		$this->access_level = $access_level;
 
 		if (!$this->config->get('template_lets', $this->schema)
 			|| !$this->config->get('interlets_en', $this->schema))
@@ -65,11 +71,9 @@ class access_control
 
 	public function is_visible($role_or_level)
 	{
-		global $access_level;
-
 		$level = $this->get_level($role_or_level);
 
-		return $level >= $access_level;
+		return $level >= $this->access_level;
 	}
 
 	/**
@@ -125,7 +129,7 @@ class access_control
 	 *
 	 */
 
-	public function get_label($access = 'admin', $size = 'xs')
+	public function get_label($access = 'admin')
 	{
 		if (isset($this->acc_ary_search[$access]))
 		{

@@ -12,7 +12,7 @@ $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
 $submit = isset($_POST['zend']) ? true : false;
 
-if (!($s_user || $s_admin))
+if (!($app['s_user'] || $app['s_admin']))
 {
 	if ($del)
 	{
@@ -56,9 +56,12 @@ if ($del || $edit)
 		cancel();
 	}
 
-	$s_owner = ($forum_post['uid'] && $forum_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
+	$s_owner = $forum_post['uid']
+		&& $forum_post['uid'] === $app['s_id']
+		&& $app['s_group_self']
+		&& !$app['s_guest'];
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$str = ($forum_post['parent_id']) ? 'deze reactie' : 'dit onderwerp';
 
@@ -136,7 +139,7 @@ if ($submit)
 
 	if (!$edit)
 	{
-		$forum_post['uid'] = ($s_master) ? 0 : $s_id;
+		$forum_post['uid'] = $app['s_master'] ? 0 : $app['s_id'];
 	}
 
  	if (!($topic || $forum_post['subject']))
@@ -293,7 +296,7 @@ if ($add || $edit)
 			$forum_post['access'] = false;
 		}
 
-		if ($s_user)
+		if ($app['s_user'])
 		{
 			$omit_access = 'admin';
 			$forum_post['access'] = ($forum_post['access']) ?: 1;
@@ -333,10 +336,10 @@ if ($add || $edit)
 
 if ($topic)
 {
-	$show_visibility = ($s_user
+	$show_visibility = ($app['s_user']
 		&& $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']))
-		|| $s_admin ? true : false;
+		|| $app['s_admin'] ? true : false;
 
 	$forum_posts = [];
 
@@ -355,7 +358,10 @@ if ($topic)
 
 	$topic_post['id'] = $topic;
 
-	$s_owner = ($topic_post['uid'] && $topic_post['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
+	$s_owner = $topic_post['uid']
+		&& $topic_post['uid'] === $app['s_id']
+		&& $app['s_group_self']
+		&& !$app['s_guest'];
 
 	if (!$app['access_control']->is_visible($topic_post['access']) && !$s_owner)
 	{
@@ -402,7 +408,7 @@ if ($topic)
 
 	$next = count($rows) ? reset($rows)['eland_id'] : false;
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('forum', ['edit' => $topic], 'Onderwerp aanpassen', 'btn btn-primary', 'Onderwerp aanpassen', 'pencil', true);
 		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
@@ -436,7 +442,10 @@ if ($topic)
 
 	foreach ($forum_posts as $p)
 	{
-		$s_owner = ($p['uid'] && $p['uid'] == $s_id && $s_group_self && !$s_guest) ? true : false;
+		$s_owner = $p['uid']
+			&& $p['uid'] === $app['s_id']
+			&& $app['s_group_self']
+			&& !$app['s_guest'];
 
 		$pid = $p['id'];
 
@@ -449,10 +458,11 @@ if ($topic)
 		echo '<div class="panel-footer">';
 		echo '<p>';
 		echo link_user((int) $p['uid'], $app['tschema']);
-		echo ' @' . $app['date_format']->get($p['ts']);
+		echo ' @';
+		echo $app['date_format']->get($p['ts'], 'min', $app['tschema']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
-		if ($s_admin || $s_owner)
+		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
 			echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
@@ -466,7 +476,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	if ($s_user || $s_admin)
+	if ($app['s_user'] || $app['s_admin'])
 	{
 		echo '<h3>Reactie toevoegen</h3>';
 
@@ -528,17 +538,23 @@ if (count($rows))
 	}
 }
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
-	$top_buttons .= aphp('forum', ['add' => 1], 'Onderwerp Toevoegen', 'btn btn-success', 'Onderwerp toevoegen', 'plus', true);
+	$top_buttons .= aphp('forum',
+		['add' => 1],
+		'Onderwerp Toevoegen',
+		'btn btn-success',
+		'Onderwerp toevoegen',
+		'plus',
+		true);
 }
 
-$csv_en = $s_admin;
+$csv_en = $app['s_admin'];
 
-$show_visibility = (!$s_guest
+$show_visibility = (!$app['s_guest']
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
-	|| $s_admin ? true : false;
+	|| $app['s_admin'];
 
 $h1 = 'Forum';
 
@@ -612,7 +628,10 @@ foreach($forum_posts as $p)
 		continue;
 	}
 
-	$s_owner = ($p['uid'] && $s_id == $p['uid'] && $s_group_self && !$s_guest) ? true : false;
+	$s_owner = $p['uid']
+		&& $app['s_id'] === $p['uid']
+		&& $app['s_group_self']
+		&& !$app['s_guest'];
 
 	$pid = $p['id'];
 
@@ -630,11 +649,13 @@ foreach($forum_posts as $p)
 	echo link_user($p['uid'], $app['tschema']);
 	echo '</td>';
 
-	echo $app['date_format']->get_td($p['ts']);
+	echo $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);
 
 	if ($show_visibility)
 	{
-		echo '<td>' . $app['access_control']->get_label($p['access']) . '</td>';
+		echo '<td>';
+		echo $app['access_control']->get_label($p['access']);
+		echo '</td>';
 	}
 
 	echo '</tr>';

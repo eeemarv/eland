@@ -15,7 +15,6 @@ $start = $_GET['start'] ?? 0;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
-$inline = isset($_GET['inline']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 
 $page_access = ($del || $add || $edit) ? 'user' : 'guest';
@@ -41,9 +40,12 @@ if ($del)
 
 	$user_id = ($uid) ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id && $user_id) ? true : false;
+	$s_owner = !$app['s_guest']
+		&& $app['s_group_self']
+		&& $user_id === $app['s_id']
+		&& $user_id;
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je hebt geen rechten om het contact te verwijderen.');
 		cancel($uid);
@@ -184,9 +186,12 @@ if ($edit || $add)
 
 	$user_id = $uid ? $uid : $user_id;
 
-	$s_owner = (!$s_guest && $s_group_self && $user_id == $s_id && $user_id) ? true : false;
+	$s_owner = !$app['s_guest']
+		&& $app['s_group_self']
+		&& $user_id == $app['s_id']
+		&& $user_id;
 
-	if (!($s_admin || $s_owner))
+	if (!($app['s_admin'] || $s_owner))
 	{
 		$err = $edit ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
 		$app['alert']->error('Je hebt geen rechten om ' . $err);
@@ -200,7 +205,7 @@ if ($edit || $add)
 			$errors[] = $error_token;
 		}
 
-		if ($s_admin && $add && !$uid)
+		if ($app['s_admin'] && $add && !$uid)
 		{
 			$letscode = $_POST['letscode'];
 			[$letscode] = explode(' ', trim($letscode));
@@ -301,7 +306,7 @@ if ($edit || $add)
 					and u.id <> ?
 					and c.value = ?', array($user_id, $contact['value']));
 
-			if ($mail_count && $s_admin)
+			if ($mail_count && $app['s_admin'])
 			{
 				$warning = 'Omdat deze gebruikers niet meer ';
 				$warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -406,7 +411,7 @@ if ($edit || $add)
 		$contact['id_type_contact'] = $row['id'];
 	}
 
-	if ($s_admin && $add && !$uid)
+	if ($app['s_admin'] && $add && !$uid)
 	{
 		$app['assets']->add(['typeahead', 'typeahead.js']);
 	}
@@ -442,7 +447,7 @@ if ($edit || $add)
 	$abbrev = $tc[$contact['id_type_contact']]['abbrev'];
 
 	$h1 = $edit ? 'Contact aanpassen' : 'Contact toevoegen';
-	if (!(($s_owner && !$s_admin) || ($s_admin && $add && !$uid)))
+	if (!(($s_owner && !$app['s_admin']) || ($app['s_admin'] && $add && !$uid)))
 	{
 		$h1 .=  ' voor ' . link_user($user_id, $app['tschema']);
 	}
@@ -454,7 +459,7 @@ if ($edit || $add)
 
 	echo '<form method="post">';
 
-	if ($s_admin && $add && !$uid)
+	if ($app['s_admin'] && $add && !$uid)
 	{
 		$typeahead_ary = [];
 
@@ -588,7 +593,10 @@ if ($edit || $add)
 
 if ($uid)
 {
-	$s_owner = (!$s_guest && $s_group_self && $uid == $s_id && $uid) ? true : false;
+	$s_owner = !$app['s_guest']
+		&& $app['s_group_self']
+		&& $uid === $app['s_id']
+		&& $uid;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
 		from ' . $app['tschema'] . '.contact c, ' .
@@ -598,12 +606,12 @@ if ($uid)
 
 	$user = $app['user_cache']->get($uid, $app['tschema']);
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
 	}
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		$h1 = $s_owner ? 'Mijn contacten' : 'Contacten Gebruiker ' . link_user($user, $app['tschema']);
 		$fa = 'map-marker';
@@ -633,7 +641,7 @@ if ($uid)
 		echo '<p>Er is geen contactinfo voor deze gebruiker.</p>';
 		echo '</div></div>';
 
-		if (!$inline)
+		if (!$app['p_inline'])
 		{
 			include __DIR__ . '/include/footer.php';
 		}
@@ -653,7 +661,7 @@ if ($uid)
 	echo '<th>Waarde</th>';
 	echo '<th data-hide="phone, tablet">Commentaar</th>';
 
-	if ($s_admin || $s_owner)
+	if ($app['s_admin'] || $s_owner)
 	{
 		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 		echo '<th data-sort-ignore="true" ';
@@ -672,20 +680,22 @@ if ($uid)
 		echo $c['abbrev'];
 		echo '</td>';
 
-		if (($c['flag_public'] < $access_level) && !$s_owner)
+		if (($c['flag_public'] < $app['s_access_level']) && !$s_owner)
 		{
 			echo '<td><span class="btn btn-default btn-xs">';
 			echo 'verborgen</span></td>';
 			echo '<td><span class="btn btn-default btn-xs">';
 			echo 'verborgen</span></td>';
 		}
-		else if ($s_owner || $s_admin)
+		else if ($s_owner || $app['s_admin'])
 		{
 			echo '<td>';
 			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
-			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
+			if ($c['abbrev'] == 'adr'
+				&& !$app['s_elas_guest']
+				&& !$app['s_master'])
 			{
-				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -723,9 +733,11 @@ if ($uid)
 		{
 			echo '<td>';
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
-			if ($c['abbrev'] == 'adr' && !$s_elas_guest && !$s_master)
+			if ($c['abbrev'] == 'adr'
+				&& !$app['s_elas_guest']
+				&& !$app['s_master'])
 			{
-				echo $app['distance']->set_from_geo('', $s_id, $s_schema)
+				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 					->set_to_geo(trim($c['value']))
 					->calc()
 					->format_parenthesis();
@@ -734,7 +746,7 @@ if ($uid)
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 
-		if ($s_admin || $s_owner)
+		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
 
@@ -749,7 +761,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($app['distance']->get_to_geo() && $inline)
+	if ($app['distance']->get_to_geo() && $app['p_inline'])
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-markers="';
@@ -765,7 +777,7 @@ if ($uid)
 
 	echo '</div>';
 
-	if ($inline)
+	if ($app['p_inline'])
 	{
 		exit;
 	}
@@ -778,13 +790,16 @@ if ($uid)
  *
  */
 
-if (!$s_admin)
+if (!$app['s_admin'])
 {
 	$app['alert']->error('Je hebt geen toegang tot deze pagina.');
 	redirect_default_page();
 }
 
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $s_id && $uid) ? true : false;
+$s_owner = !$app['s_guest']
+	&& $app['s_group_self']
+	&& $app['s_id'] === $uid
+	&& $app['s_id'] && $uid;
 
 $params = array(
 	'orderby'	=> $orderby,
@@ -877,7 +892,7 @@ switch ($ustatus)
 {
 	case 'new':
 		$where_sql[] = 'u.adate > ? and u.status = 1';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $newusertreshold);
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
 		$params['ustatus'] = 'new';
 		break;
 	case 'leaving':
@@ -941,7 +956,7 @@ $query .= ' limit ' . $limit . ' offset ' . $start;
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('contacts', $row_count, $params, $inline);
+$app['pagination']->init('contacts', $row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = array(
 	'asc'	=> 0,
@@ -1127,13 +1142,15 @@ unset($params_form['letscode'], $params_form['ustatus']);
 unset($params_form['start']);
 
 $params_form['r'] = 'admin';
-$params_form['u'] = $s_id;
+$params_form['u'] = $app['s_id'];
 
 foreach ($params_form as $name => $value)
 {
 	if (isset($value))
 	{
-		echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+		echo '<input name="' . $name;
+		echo '" value="' . $value;
+		echo '" type="hidden">';
 	}
 }
 

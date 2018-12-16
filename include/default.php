@@ -112,11 +112,11 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
-		if (isset($app['s_ary_user']))
+		if (isset($app['session_user']) && count($app['session_user']))
 		{
-			$record['extra']['letscode'] = $app['s_ary_user']['letscode'] ?? '';
-			$record['extra']['user_id'] = $app['s_ary_user']['id'] ?? '';
-			$record['extra']['username'] = $app['s_ary_user']['name'] ?? '';
+			$record['extra']['letscode'] = $app['session_user']['letscode'] ?? '';
+			$record['extra']['user_id'] = $app['session_user']['id'] ?? '';
+			$record['extra']['username'] = $app['session_user']['name'] ?? '';
 		}
 
 		if (isset($app['s_schema']))
@@ -207,8 +207,7 @@ $app['queue'] = function ($app){
 
 $app['date_format'] = function($app){
 	return new service\date_format(
-		$app['config'],
-		$app['tschema']
+		$app['config']
 	);
 };
 
@@ -508,7 +507,8 @@ $app['form_token'] = function ($app){
 $app['access_control'] = function($app){
 	return new service\access_control(
 		$app['tschema'],
-		$app['config']);
+		$app['config'],
+		$app['s_access_level']);
 };
 
 /**
@@ -517,7 +517,7 @@ $app['access_control'] = function($app){
 
 function link_user($user, string $sch, $link = true, $show_id = false, $field = ''):string
 {
-	global $rootpath, $app;
+	global $app;
 
 	if (!$user)
 	{

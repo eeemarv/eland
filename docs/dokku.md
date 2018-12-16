@@ -4,7 +4,7 @@ eLAND installs on a VPS with Dokku.
 
 See the [Dokku installation guide](http://dokku.viewdocs.io/dokku/getting-started/installation).
 
-* Install Dokku on a VPS with a fresh Ubuntu 16.04,
+* Install Dokku on a VPS with a fresh Ubuntu 18.04,
 
 * Domains: don't set a global domain, but set a domain for the app with a wildchart
 
@@ -34,17 +34,11 @@ sudo service nginx reload
 
 A CNAME record with wildcard should point to the Dokku app url.
 
-## Match subdomains and database schemas (groups)
+## Subdomains (systems) match schemas
 
-Set a config var for each subdomain to the name of the schema in the database
+The subdomain part of the url matches the database schema name.
 
-```shell
-
-dokku config:set appname SCHEMA_FLUPKESUBDOMAIN=flupkeschema
-
-```
-
-Above example couples domain flupkesubdomain.my-domain.com to database schema flupkeschema.
+`flupke.my-domain.com` matches to database schema `flupke`.
 
 Set the overall domain with:
 
@@ -61,10 +55,8 @@ See [file include/default.php](includes/default.php) for which libraries are to 
 The buckets should have the same name as the url.
 
 ```shell
-
 dokku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net
 dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
-
 ```
 
 Create CNAME records to these buckets
@@ -103,7 +95,6 @@ You need to set up CORS configuration on bucket S3_RES for the fonts of footable
 * `MAIL_FROM_ADDRESS`: a mail address when a reply-to address has been set.
 * `MAIL_NOREPLY_ADDRESS`: a notification mail you can not reply to
 * `MAIL_HOSTER_ADDRESS`: used for the request-hosting form.
-* `MAIL_NOTIFY_ADDRESS`: mail system notifications.
 
 Mail is sent only from `MAIL_FROM_ADDRESS` and `MAIL_NOREPLY_ADDRESS`.
 These addresses should be set up for DKIM in the mailserver.

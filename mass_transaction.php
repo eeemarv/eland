@@ -261,7 +261,7 @@ if ($submit)
 					'date' 			=> $cdate,
 					'cdate' 		=> $cdate,
 					'transid'		=> $transid,
-					'creator'		=> $s_master ? 0 : $s_id,
+					'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
 				];
 
 				$app['db']->insert($app['tschema'] . '.transactions', $trans);
@@ -341,7 +341,7 @@ if ($submit)
 
 		$app['monolog']->info('trans: ' . $log_str, ['schema' => $app['tschema']]);
 
-		if ($s_master)
+		if ($app['s_master'])
 		{
 			$app['alert']->warning('Master account: geen mails verzonden.');
 		}
@@ -726,7 +726,7 @@ echo '<tbody>';
 foreach($users as $user_id => $user)
 {
 	$status_key = $status_ary[$user['status']];
-	$status_key = ($status_key == 'active' && $newusertreshold < strtotime($user['adate'])) ? 'new' : $status_key;
+	$status_key = ($status_key == 'active' && $app['new_user_treshold'] < strtotime($user['adate'])) ? 'new' : $status_key;
 
 	$hsh = $st[$status_key]['hsh'] ?: '';
 	$hsh .= $status_key == 'leaving' || $status_key == 'new' ? $st['active']['hsh'] : '';
@@ -875,7 +875,7 @@ include __DIR__ . '/include/footer.php';
  */
 function mail_mass_transaction($mail_ary)
 {
-	global $app, $s_id;
+	global $app;
 
 	if (!$app['config']->get('mailenabled', $app['tschema']))
 	{
@@ -1000,7 +1000,7 @@ function mail_mass_transaction($mail_ary)
 		'schema'	=> $app['tschema'],
 		'to' 		=> array_merge(
 			$app['mail_addr_system']->get_support($app['tschema']),
-			$app['mail_addr_user']->get($s_id, $app['tschema']),
+			$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
 		'subject' 	=> $subject,

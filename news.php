@@ -58,7 +58,7 @@ if ($add || $edit)
 
 		if ($news['itemdate'])
 		{
-			$news['itemdate'] = $app['date_format']->reverse($news['itemdate']);
+			$news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
 
 			if ($news['itemdate'] === false)
 			{
@@ -101,9 +101,9 @@ if ($add || $edit)
 
 if ($add && $submit && !count($errors))
 {
-	$news['approved'] = $s_admin ? 't' : 'f';
-	$news['published'] = $s_admin ? 't' : 'f';
-	$news['id_user'] = $s_master ? 0 : $s_id;
+	$news['approved'] = $app['s_admin'] ? 't' : 'f';
+	$news['published'] = $app['s_admin'] ? 't' : 'f';
+	$news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
 	if ($app['db']->insert($app['tschema'] . '.news', $news))
@@ -116,7 +116,7 @@ if ($add && $submit && !count($errors))
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
-		if(!$s_admin)
+		if(!$app['s_admin'])
 		{
 			$vars = [
 				'group'		=> $app['template_vars']->get($app['tschema']),
@@ -199,13 +199,19 @@ if ($add || $edit)
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
-	echo 'data-date-format="' . $app['date_format']->datepicker_format() . '" ';
+	echo 'data-date-format="';
+	echo $app['date_format']->datepicker_format($app['tschema']);
+	echo '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'value="' . $app['date_format']->get($news['itemdate'], 'day') . '" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '" ';
+	echo 'value="';
+	echo $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+	echo '" ';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '" ';
 	echo 'required>';
 	echo '</div>';
 	echo '<p>Wanneer gaat dit door?</p>';
@@ -249,12 +255,12 @@ if ($add || $edit)
 	echo '<label for="sticky" class="control-label">';
 	echo '<input type="checkbox" id="sticky" name="sticky" ';
 	echo 'value="1"';
-	echo  ($news['sticky'] == 't') ? ' checked="checked"' : '';
+	echo  $news['sticky'] === 't' ? ' checked="checked"' : '';
 	echo '>';
 	echo ' Behoud na datum</label>';
 	echo '</div>';
 
-	if ($s_user)
+	if ($app['s_user'])
 	{
 		$omit_access = 'admin';
 	}
@@ -336,12 +342,30 @@ if ($del)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo $itemdate ? $app['date_format']->get($itemdate, 'day') : '<i class="fa fa-times"></i>';
+
+	if ($itemdate)
+	{
+		echo $app['date_format']->get($itemdate, 'day', $app['tschema']);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
-	echo $news['location'] ? htmlspecialchars($news['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+
+	if ($new['location'])
+	{
+		echo htmlspecialchars($news['location'], ENT_QUOTES);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
@@ -398,10 +422,10 @@ if ($del)
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$show_visibility = ($s_user
+$show_visibility = ($app['s_user']
 	&& $app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
-	|| $s_admin ? true : false;
+	|| $app['s_admin'];
 
 $news_access_ary = $no_access_ary = [];
 
@@ -418,7 +442,7 @@ foreach ($rows as $row)
 
 $query = 'select * from ' . $app['tschema'] . '.news';
 
-if(!$s_admin)
+if(!$app['s_admin'])
 {
 	$query .= ' where approved = \'t\'';
 }
@@ -467,7 +491,7 @@ if ($id)
 
 	$news_item = $news[$id];
 
-	if (!$s_admin && !$news_item['approved'])
+	if (!$app['s_admin'] && !$news_item['approved'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		cancel();
@@ -500,7 +524,7 @@ if ($id)
 
 	$top_buttons = '';
 
-	if($s_admin)
+	if($app['s_admin'])
 	{
 		$top_buttons .= aphp('news', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
 		$top_buttons .= aphp('news', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
@@ -518,7 +542,7 @@ if ($id)
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('news', ['view' => $view_news], '', 'btn btn-default', 'Lijst', 'calendar-o');
+	$top_buttons_right .= aphp('news', [], '', 'btn btn-default', 'Lijst', 'calendar-o');
 	$top_buttons_right .= '</span>';
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
@@ -552,12 +576,30 @@ if ($id)
 	echo '<dt>Agendadatum</dt>';
 
 	echo '<dd>';
-	echo $news_item['itemdate'] ? $app['date_format']->get($news_item['itemdate'], 'day') : '<i class="fa fa-times"></i>';
+
+	if ($news['itemdate'])
+	{
+		echo $app['date_format']->get($news_item['itemdate'], 'day', $app['tschema']);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
-	echo $news_item['location'] ? htmlspecialchars($news_item['location'], ENT_QUOTES) : '<i class="fa fa-times"></i>';
+
+	if ($news_item['location'])
+	{
+		echo htmlspecialchars($news_item['location'], ENT_QUOTES);
+	}
+	else
+	{
+		echo '<i class="fa fa-times"></i>';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
@@ -565,7 +607,7 @@ if ($id)
 	echo link_user($news_item['id_user'], $app['tschema']);
 	echo '</dd>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<dt>Goedgekeurd</dt>';
 		echo '<dd>';
@@ -590,27 +632,36 @@ if ($id)
  * show all newsitems
  */
 
-if (!($view || $inline))
+if (!($app['p_view'] || $app['p_inline']))
 {
 	cancel();
 }
 
-$v_list = ($view == 'list' || $inline) ? true : false;
-$v_extended = ($view == 'extended' && !$inline) ? true : false;
+$v_list = $app['p_view'] === 'list' || $app['p_inline'];
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
 
-$params = [
-	'view'	=> $view,
-];
+$params = [];
 
-if(($s_user || $s_admin) && !$inline)
+if(($app['s_user'] || $app['s_admin']) && !$app['p_inline'])
 {
-	$top_buttons .= aphp('news', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Nieuws toevoegen', 'plus', true);
+	$top_buttons .= aphp('news',
+		['add' => 1],
+		'Toevoegen',
+		'btn btn-success',
+		'Nieuws toevoegen',
+		'plus',
+		true);
 }
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '<h3>';
-	echo aphp('news', ['view' => $view_news], 'Nieuws', false, false, 'calendar-o');
+	echo aphp('news',
+		[],
+		'Nieuws',
+		false,
+		false,
+		'calendar-o');
 	echo '</h3>';
 }
 else
@@ -619,7 +670,7 @@ else
 
 	$v_params = $params;
 
-	$csv_en = $s_admin && $v_list;
+	$csv_en = $app['s_admin'] && $v_list;
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 
@@ -645,7 +696,7 @@ if (!count($news))
 	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
 	echo '</div></div>';
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -658,13 +709,13 @@ if ($v_list)
 	echo '<div class="table-responsive">';
 	echo '<table class="table table-striped table-hover table-bordered footable csv">';
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		echo '<thead>';
 		echo '<tr>';
 		echo '<th>Titel</th>';
 		echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
-		echo $s_admin ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+		echo $app['s_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
 		echo $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
 		echo '</tr>';
 		echo '</thead>';
@@ -682,9 +733,9 @@ if ($v_list)
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
 		echo '</td>';
 
-		echo $app['date_format']->get_td($n['itemdate'], 'day');
+		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
 
-		if ($s_admin && !$inline)
+		if ($app['s_admin'] && !$app['p_inline'])
 		{
 			echo '<td>';
 			echo $n['approved'] ? 'Ja' : 'Nee';
@@ -737,7 +788,7 @@ else if ($v_extended)
 			echo 'Agendadatum';
 			echo '</dt>';
 			echo '<dd>';
-			echo $app['date_format']->get($n['itemdate'], 'day');
+			echo $app['date_format']->get($n['itemdate'], 'day', $app['tschema']);
 
 			if ($n['sticky'])
 			{
@@ -766,7 +817,7 @@ else if ($v_extended)
 		echo '<p><i class="fa fa-user"></i> ';
 		echo link_user($n['id_user'], $app['tschema']);
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 			if (!$n['approved'])
@@ -784,16 +835,14 @@ else if ($v_extended)
 	}
 }
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	include __DIR__ . '/include/footer.php';
 }
 
 function cancel(int $id = 0):void
 {
-	global $view_news;
-
-	$params = ['view' => $view_news];
+	$params = [];
 
 	if ($id)
 	{

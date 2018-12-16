@@ -64,7 +64,7 @@ if (isset($hosting_form))
 
 			$mailer->send($msg);
 
-			header('Location: ' . $rootpath . '?form_ok=1');
+			header('Location: ' . $app['rootpath'] . '?form_ok=1');
 		}
 	}
 

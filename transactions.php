@@ -37,7 +37,7 @@ $intersystem_en = $app['config']->get('template_lets', $app['tschema'])
  */
 if ($add)
 {
-	if ($s_guest)
+	if ($app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
 		cancel();
@@ -45,7 +45,7 @@ if ($add)
 
 	$transaction = [];
 
-	$redis_transid_key = $app['tschema'] . '_transid_u_' . $s_id;
+	$redis_transid_key = $app['tschema'] . '_transid_u_' . $app['s_id'];
 
 	if ($submit)
 	{
@@ -100,11 +100,11 @@ if ($add)
 			}
 		}
 
-		if ($s_user && !$s_master)
+		if ($app['s_user'] && !$app['s_master'])
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
 				from ' . $app['tschema'] . '.users
-				where id = ?', [$s_id]);
+				where id = ?', [$app['s_id']]);
 		}
 		else
 		{
@@ -172,7 +172,7 @@ if ($add)
 			$errors[] = 'Het bedrag is geen geldig getal';
 		}
 
-		if (!$s_admin && !count($errors))
+		if (!$app['s_admin'] && !count($errors))
 		{
 			if ($fromuser['minlimit'] === -999999999)
 			{
@@ -205,7 +205,7 @@ if ($add)
 			$errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
 		}
 
-		if (!$s_admin && !count($errors))
+		if (!$app['s_admin'] && !count($errors))
 		{
 			if ($touser['maxlimit'] === 999999999)
 			{
@@ -238,14 +238,14 @@ if ($add)
 		}
 
 		if($group_id == 'self'
-			&& !$s_admin
+			&& !$app['s_admin']
 			&& !($touser['status'] == '1' || $touser['status'] == '2')
 			&& !count($errors))
 		{
 			$errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
 		}
 
-		if ($s_user && !count($errors))
+		if ($app['s_user'] && !count($errors))
 		{
 			$balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
 
@@ -276,7 +276,7 @@ if ($add)
 			$errors[] = $error_token;
 		}
 
-		$contact_admin = $s_admin ? '' : ' Contacteer een admin.';
+		$contact_admin = $app['s_admin'] ? '' : ' Contacteer een admin.';
 
 		if (isset($group['url']))
 		{
@@ -692,7 +692,7 @@ if ($add)
 			}
 			else
 			{
-				$transaction['creator'] = ($s_master) ? 0 : $s_id;
+				$transaction['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 				$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 				$transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
@@ -768,7 +768,7 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = ($s_admin || $s_master) ? $_POST['letscode_from'] : link_user($s_id, $app['tschema'], false);
+		$transaction['letscode_from'] = $app['s_admin'] || $app['s_master'] ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
 	}
 	else
 	{
@@ -781,7 +781,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $s_master ? '' : link_user($s_id, $app['tschema'], false),
+			'letscode_from'	=> $app['s_master'] ? '' : link_user($app['s_id'], $app['tschema'], false),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -850,9 +850,9 @@ if ($add)
 					$transaction['amount'] = $row['amount'];
 				}
 
-				if ($s_id == $row['id_user'])
+				if ($app['s_id'] === $row['id_user'])
 				{
-					if ($s_admin)
+					if ($app['s_admin'])
 					{
 						$transaction['letscode_from'] = '';
 					}
@@ -869,14 +869,14 @@ if ($add)
 		{
 			$to_user = $app['user_cache']->get($tuid, $app['tschema']);
 
-			if (in_array($to_user['status'], [1, 2]) || $s_admin)
+			if (in_array($to_user['status'], [1, 2]) || $app['s_admin'])
 			{
 				$transaction['letscode_to'] = link_user($tuid, $app['tschema'], false);
 			}
 
-			if ($tuid == $s_id)
+			if ($tuid === $app['s_id'])
 			{
-				if ($s_admin)
+				if ($app['s_admin'])
 				{
 					$transaction['letscode_from'] = '';
 				}
@@ -890,7 +890,7 @@ if ($add)
 
 	$app['assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
 
-	$balance = $session_user['saldo'];
+	$balance = $app['session_user']['saldo'];
 
 	$groups = [];
 
@@ -899,11 +899,11 @@ if ($add)
 		'id'		=> 'self',
 	];
 
-	if (count($eland_interlets_groups))
+	if (count($app['intersystem_ary']['eland']))
 	{
 		$eland_urls = [];
 
-		foreach ($eland_interlets_groups as $remote_eland_schema => $host)
+		foreach ($app['intersystem_ary']['eland'] as $remote_eland_schema => $host)
 		{
 			$eland_url = $app['protocol'] . $host;
 			$eland_urls[] = $eland_url;
@@ -925,11 +925,11 @@ if ($add)
 		}
 	}
 
-	if (count($elas_interlets_groups))
+	if (count($app['intersystem_ary']['elas']))
 	{
 		$ids = [];
 
-		foreach ($elas_interlets_groups as $key => $name)
+		foreach ($app['intersystem_ary']['elas'] as $key => $name)
 		{
 			$ids[] = $key;
 		}
@@ -960,7 +960,7 @@ if ($add)
 	echo '<form  method="post" autocomplete="off">';
 
 	echo '<div class="form-group"';
-	echo $s_admin ? '' : ' disabled" ';
+	echo $app['s_admin'] ? '' : ' disabled" ';
 	echo '>';
 	echo '<label for="letscode_from" class="control-label">';
 	echo 'Van Account Code';
@@ -977,7 +977,7 @@ if ($add)
 	echo 'value="';
 	echo $transaction['letscode_from'];
 	echo '" required';
-	echo $s_admin ? '' : ' disabled';
+	echo $app['s_admin'] ? '' : ' disabled';
 	echo '>';
 	echo '</div>';
 	echo '</div>';
@@ -1007,11 +1007,11 @@ if ($add)
 
 				$typeahead_ary = [];
 
-				if ($s_admin)
+				if ($app['s_admin'])
 				{
 					$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 				}
-				else if ($s_user)
+				else if ($app['s_user'])
 				{
 					$typeahead_status_ary = ['active'];
 				}
@@ -1085,11 +1085,11 @@ if ($add)
 	{
 		$typeahead_ary = [];
 
-		if ($s_admin)
+		if ($app['s_admin'])
 		{
 			$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
 		}
-		else if ($s_user)
+		else if ($app['s_user'])
 		{
 			$typeahead_status_ary = ['active'];
 		}
@@ -1182,7 +1182,7 @@ if ($add)
 	echo 'Systeem zich niet op dezelfde ';
 	echo 'eLAND-server bevindt.</li>';
 
-	if ($s_admin)
+	if ($app['s_admin'])
 	{
 		echo '<li id="info_admin_limit">';
 		echo 'Admins kunnen over en onder limieten gaan';
@@ -1259,7 +1259,8 @@ if ($add)
 
 $interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
 
-$s_inter_schema_check = array_merge($eland_interlets_groups, [$s_schema => true]);
+$s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
+	[$app['s_schema'] => true]);
 
 /**
  * show a transaction
@@ -1302,7 +1303,7 @@ if ($id || $edit)
 
 if ($edit)
 {
-	if (!$s_admin)
+	if (!$app['s_admin'])
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
 		cancel($edit);
@@ -1374,7 +1375,7 @@ if ($edit)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Transactie ID</dt>';
@@ -1386,7 +1387,7 @@ if ($edit)
 	{
 		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
@@ -1419,7 +1420,7 @@ if ($edit)
 	{
 		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
@@ -1513,7 +1514,7 @@ if ($id)
 		order by id desc
 		limit 1', [$id]);
 
-	if ($s_admin && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
+	if ($app['s_admin'] && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
 	{
 		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);
 	}
@@ -1547,7 +1548,7 @@ if ($id)
 
 	echo '<dt>Tijdstip</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($transaction['cdate']);
+	echo $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
 	echo '</dd>';
 
 	echo '<dt>Transactie ID</dt>';
@@ -1559,7 +1560,7 @@ if ($id)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
@@ -1594,7 +1595,7 @@ if ($id)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 		echo '</dd>';
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
@@ -1696,7 +1697,7 @@ if ($id)
 
 		if ($real_from)
 		{
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1709,7 +1710,7 @@ if ($id)
 			echo 'Systeem uitgedrukt ';
 			echo 'in de eigen tijdsmunt.';
 
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
@@ -1739,7 +1740,7 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'], $app['tschema'], $s_admin);
+			echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
 			echo ')';
 		}
 
@@ -1764,7 +1765,7 @@ if ($id)
 			echo 'Het interSysteem Account van het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'], $app['tschema'], $s_admin);
+			echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
 			echo ')';
 		}
 		else
@@ -1789,7 +1790,7 @@ if ($id)
 		}
 		else
 		{
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1803,7 +1804,7 @@ if ($id)
 			echo 'in de eigen tijdsmunt ';
 			echo 'met gelijke tijdswaarde als Tr-1.';
 
-			if ($inter_transaction && isset($eland_interlets_groups[$inter_schema]))
+			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
@@ -1848,7 +1849,10 @@ if ($id)
 /**
  * list
  */
-$s_owner = (!$s_guest && $s_group_self && $s_id == $uid && $uid) ? true : false;
+$s_owner = !$app['s_guest']
+	&& $app['s_group_self']
+	&& $app['s_id'] === $uid
+	&& $uid;
 
 $params_sql = $where_sql = $where_code_sql = [];
 
@@ -1948,7 +1952,7 @@ $where_sql = array_merge($where_sql, $where_code_sql);
 
 if ($fdate)
 {
-	$fdate_sql = $app['date_format']->reverse($fdate);
+	$fdate_sql = $app['date_format']->reverse($fdate, $app['tschema']);
 
 	if ($fdate_sql === false)
 	{
@@ -1964,7 +1968,7 @@ if ($fdate)
 
 if ($tdate)
 {
-	$tdate_sql = $app['date_format']->reverse($tdate);
+	$tdate_sql = $app['date_format']->reverse($tdate, $app['tschema']);
 
 	if ($tdate_sql === false)
 	{
@@ -2076,7 +2080,7 @@ else
 $tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
 $tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
 
-if ($s_admin || $s_user)
+if ($app['s_admin'] || $app['s_user'])
 {
 	if ($uid)
 	{
@@ -2088,12 +2092,12 @@ if ($s_admin || $s_user)
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1], 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
 			}
-			else if ($s_admin)
+			else if ($app['s_admin'])
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1, 'fuid' => $uid], 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
 			}
 
-			if ($s_admin || ($s_user && !$s_owner))
+			if ($app['s_admin'] || ($app['s_user'] && !$s_owner))
 			{
 				$top_buttons .= aphp('transactions', ['add' => 1, 'tuid' => $uid], 'Transactie naar ' . $user_str, 'btn btn-warning', 'Transactie naar ' . $user_str, 'exchange', true);
 			}
@@ -2110,7 +2114,7 @@ if ($s_admin || $s_user)
 	}
 }
 
-$csv_en = $s_admin;
+$csv_en = $app['s_admin'];
 
 $filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
 
@@ -2176,15 +2180,15 @@ if (!$inline)
 
 	$typeahead_ary = [];
 
-	if ($s_guest)
+	if ($app['s_guest'])
 	{
 		$typeahead_status_ary = ['active'];
 	}
-	else if ($s_user)
+	else if ($app['s_user'])
 	{
 		$typeahead_status_ary = ['active', 'extern'];
 	}
-	else if ($s_admin)
+	else if ($app['s_admin'])
 	{
 		$typeahead_status_ary = ['active', 'extern',
 			'inactive', 'im', 'ip'];
@@ -2259,7 +2263,7 @@ if (!$inline)
 	echo 'value="' . $fdate . '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format();
+	echo $app['date_format']->datepicker_format($app['tschema']);
 	echo '" ';
 	echo 'data-date-default-view-date="-1y" ';
 	echo 'data-date-end-date="0d" ';
@@ -2269,8 +2273,8 @@ if (!$inline)
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
 	echo 'placeholder="';
-	echo $app['date_format']->datepicker_placeholder() . '"';
-	echo '>';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '">';
 
 	echo '</div>';
 	echo '</div>';
@@ -2286,44 +2290,52 @@ if (!$inline)
 	echo 'value="' . $tdate . '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format() . '" ';
+	echo $app['date_format']->datepicker_format($app['tschema']);
+	echo '" ';
 	echo 'data-date-end-date="0d" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-immediate-updates="true" ';
 	echo 'data-date-orientation="bottom" ';
-	echo 'placeholder="' . $app['date_format']->datepicker_placeholder() . '"';
-	echo '>';
+	echo 'placeholder="';
+	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo '">';
 
 	echo '</div>';
 	echo '</div>';
 
 	echo '<div class="col-sm-2">';
-	echo '<input type="submit" value="Toon" class="btn btn-default btn-block">';
+	echo '<input type="submit" value="Toon" ';
+	echo 'class="btn btn-default btn-block">';
 	echo '</div>';
 
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['q'], $params_form['fcode'], $params_form['andor'], $params_form['tcode']);
-	unset($params_form['fdate'], $params_form['tdate'], $params_form['uid']);
+	unset($params_form['q'], $params_form['fcode']);
+	unset($params_form['andor'], $params_form['tcode']);
+	unset($params_form['fdate'], $params_form['tdate']);
+	unset($params_form['uid']);
 	unset($params_form['start']);
 
-	$params_form['r'] = $s_accountrole;
-	$params_form['u'] = $s_id;
+	$params_form['r'] = $app['s_accountrole'];
+	$params_form['u'] = $app['s_id'];
 
-	if (!$s_group_self)
+	if (!$app['s_group_self'])
 	{
-		$params_form['s'] = $s_schema;
+		$params_form['s'] = $app['s_schema'];
 	}
 
 	foreach ($params_form as $name => $value)
 	{
 		if (isset($value))
 		{
-			echo '<input name="' . $name . '" value="';
-			echo $value . '" type="hidden">';
+			echo '<input name="';
+			echo $name;
+			echo '" value="';
+			echo $value;
+			echo '" type="hidden">';
 		}
 	}
 
@@ -2420,7 +2432,7 @@ if ($uid)
 		echo '</span></td>';
 
 		echo '<td>';
-		echo $app['date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
 		echo '</td>';
 
 		echo '<td>';
@@ -2495,7 +2507,7 @@ else
 		echo '</td>';
 
 		echo '<td>';
-		echo $app['date_format']->get($t['cdate']);
+		echo $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
 		echo '</td>';
 
 		echo '<td>';

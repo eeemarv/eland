@@ -21,7 +21,8 @@ if (!$user)
 
 $groups = $_groups = $transactions = $users = $_users  = [];
 
-$groups = $app['db']->fetchAll('select id, groupname as n, localletscode as c, url
+$groups = $app['db']->fetchAll('select id,
+		groupname as n, localletscode as c, url
 	from ' . $app['tschema'] . '.letsgroups');
 
 foreach ($groups as $g)
@@ -46,7 +47,9 @@ $query = 'select t.id, t.amount, t.id_from, t.id_to,
 		and t.date >= ?
 		and t.date <= ?
 	order by t.date DESC';
-$trans = $app['db']->fetchAll($query, [$user_id, $user_id, $user_id, $begin_date, $end_date]);
+
+$trans = $app['db']->fetchAll($query,
+	[$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
 $begin_date = strtotime($begin_date);
 $end_date = strtotime($end_date);
@@ -59,14 +62,13 @@ foreach ($trans as $t)
 	$balance += $t['amount'] * $mul;
 
 	$name = $t['name'];
-	$real = $t['real_from'] ? $t['real_from'] : null;
-	$real = $t['real_to'] ? $t['real_to'] : null;
+	$real = $t['real_from'] ?? $t['real_to'] ?? null;
 
-	if ($real)
+	if (isset($real))
 	{
-		$group = $_groups[$t['letscode']];
+		$group = $_groups[$t['letscode']] ?? [];
 
-		if ($sch = $app['groups']->get_schema($group['domain']))
+		if (isset($group['domain']) && $sch = $app['groups']->get_schema($group['domain']))
 		{
 			[$code, $name] = explode(' ', $real);
 		}

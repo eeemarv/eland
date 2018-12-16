@@ -7,7 +7,7 @@ require_once __DIR__ . '/include/web.php';
 $submit = isset($_POST['zend']) ? true : false;
 $token = $_GET['token'] ?? false;
 
-if ($s_id)
+if ($app['s_id'])
 {
 	redirect_default_page();
 }
@@ -296,7 +296,7 @@ if ($submit)
 		$app['alert']->warning('Open je E-mailbox en klik op de
 			bevestigingslink in de E-mail die we naar je gestuurd
 			hebben om je inschrijving te voltooien.');
-		header('Location: ' . $rootpath . 'login.php');
+		header('Location: ' . $app['rootpath'] . 'login.php');
 		exit;
 	}
 }
