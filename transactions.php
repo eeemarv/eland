@@ -18,7 +18,6 @@ $tuid = $_GET['tuid'] ?? false;
 $tus = $_GET['tus'] ?? false;
 $fuid = $_GET['fuid'] ?? false;
 $uid = $_GET['uid'] ?? false;
-$inline = isset($_GET['inline']) ? true : false;
 
 $q = $_GET['q'] ?? '';
 $fcode = $_GET['fcode'] ?? '';
@@ -26,6 +25,7 @@ $tcode = $_GET['tcode'] ?? '';
 $andor = $_GET['andor'] ?? 'and';
 $fdate = $_GET['fdate'] ?? '';
 $tdate = $_GET['tdate'] ?? '';
+$filter = $_GET['f'] ?? [];
 
 $currency = $app['config']->get('currency', $app['tschema']);
 
@@ -2040,7 +2040,7 @@ $row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
 $row_count = $row['count'];
 $amount_sum = $row['sum'];
 
-$app['pagination']->init('transactions', $row_count, $params, $inline);
+$app['pagination']->init('transactions', $row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2107,7 +2107,7 @@ if ($app['s_admin'] || $app['s_user'])
 			}
 		}
 
-		if (!$inline)
+		if (!$app['p_inline'])
 		{
 			$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 		}
@@ -2120,11 +2120,16 @@ if ($app['s_admin'] || $app['s_user'])
 
 $csv_en = $app['s_admin'];
 
-$filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
+$filtered =
+	(isset($filter['q']) && $filter['q'] !== '')
+	|| (isset($filter['fcode']) && $filter['fcode'] !== '')
+	|| (isset($filter['tcode']) && $filter['tcode'] !== '')
+	|| (isset($filter['fdate']) && $filter['fdate'] !== '')
+	|| (isset($filter['tdate']) && $filter['tdate'] !== '');
 
 if ($uid)
 {
-	if ($s_owner && !$inline)
+	if ($s_owner && !$app['p_inline'])
 	{
 		$h1 = 'Mijn transacties';
 	}
@@ -2143,7 +2148,7 @@ else
 
 $fa = 'exchange';
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	$h1 .= btn_filter();
 
@@ -2285,7 +2290,7 @@ if (!$inline)
 
 	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
+	echo '<span class="input-group-addon" id="tdate_addon">Tot ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'aria-describedby="tdate_addon" ';
@@ -2371,7 +2376,7 @@ if (!count($transactions))
 	echo '</div></div>';
 	echo $app['pagination']->get();
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -2573,7 +2578,7 @@ echo '</table></div></div>';
 
 echo $app['pagination']->get();
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '</div></div>';
 }
