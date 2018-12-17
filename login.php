@@ -80,8 +80,10 @@ if ($submit)
 		&& $master_password
 		&& hash('sha512', $password) === $master_password)
 	{
-		$app['s_logins'] = $app['session']->get('logins');
-		$app['s_logins'][$app['tschema']] = 'master';
+		$app['s_logins'] = $app['session']->get('logins') ?? [];
+		$app['s_logins'] = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> 'master',
+		]);
 		$app['session']->set('logins', $app['s_logins']);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
