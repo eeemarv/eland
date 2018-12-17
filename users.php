@@ -217,7 +217,7 @@ if ($app['is_http_post'] && $img && $id )
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
-	$image = ($_FILES['image']) ?: null;
+	$image = $_FILES['image'] ?: null;
 
 	if (!$image)
 	{
@@ -374,7 +374,7 @@ if ($img_del && $id)
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
 	echo '<img src="';
-	echo $app['s3_img_url'] . $file;
+	echo $app['s3_url'] . $file;
 	echo '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
@@ -2726,16 +2726,26 @@ if ($id)
 	$user_img = $show_img ? '' : ' style="display:none;"';
 	$no_user_img = $show_img ? ' style="display:none;"' : '';
 
-	$img_src = $user['PictureFile'] ? $app['s3_img_url'] . $user['PictureFile'] : $app['rootpath'] . 'gfx/1.gif';
 	echo '<img id="user_img"';
 	echo $user_img;
 	echo ' class="img-rounded img-responsive center-block" ';
 	echo 'src="';
-	echo $img_src;
-	echo '" ';
-	echo 'data-bucket-url="' . $app['s3_img_url'] . '"></img>';
 
-	echo '<div id="no_user_img"' . $no_user_img . '>';
+	if ($user['PictureFile'])
+	{
+		echo $app['s3_url'] . $user['PictureFile'];
+	}
+	else
+	{
+		echo $app['rootpath'] . 'gfx/1.gif';
+	}
+
+	echo '" ';
+	echo 'data-bucket-url="' . $app['s3_url'] . '"></img>';
+
+	echo '<div id="no_user_img"';
+	echo $no_user_img;
+	echo '>';
 	echo '<i class="fa fa-user fa-5x text-muted"></i>';
 	echo '<br>Geen profielfoto</div>';
 
@@ -2799,7 +2809,8 @@ if ($id)
 	else
 	{
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">verborgen</span>';
+		echo '<span class="btn btn-default btn-xs">';
+		echo 'verborgen</span>';
 		echo '</dd>';
 	}
 
@@ -4540,7 +4551,9 @@ else if ($v_extended)
 			echo '<a href="';
 			echo generate_url('users', ['id' => $u['id']]);
 			echo '">';
-			echo '<img class="media-object" src="' . $app['s3_img_url'] . $u['PictureFile'] . '" width="150">';
+			echo '<img class="media-object" ';
+			echo 'src="' . $app['s3_url'] . $u['PictureFile'];
+			echo '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}
@@ -4610,7 +4623,9 @@ else if ($v_tiles)
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
-			echo '<img src="' . $app['s3_img_url'] . $u['PictureFile'] . '" class="img-rounded">';
+			echo '<img src="';
+			echo $app['s3_url'] . $u['PictureFile'];
+			echo '" class="img-rounded">';
 		}
 		else
 		{

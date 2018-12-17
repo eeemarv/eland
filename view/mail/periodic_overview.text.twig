@@ -7,8 +7,8 @@
 {% for b in blocks_sorted %}
 
 {% if b == 'messages' %}
-    {{ m.messages(messages, group, new_message_url, messages_url, 
-        s3_img, validate_param) }}
+    {{ m.messages(messages, group, new_message_url, messages_url,
+        s3_url, validate_param) }}
 {% elseif b == 'interlets' %}
     {{ m.interlets(interlets, url_login, validate_param) }}
 {% elseif b == 'forum' %}
@@ -36,4 +36,3 @@
 {{ m.unsubscribe(account_edit_url, validate_param) }}
 {% endautoescape %}
 {% endblock unsubscribe %}
-

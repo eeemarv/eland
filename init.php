@@ -102,7 +102,7 @@ else if ($step == 2)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if ($app['s3']->img_exists($filename_bucket))
+			if ($app['s3']->exists($filename_bucket))
 			{
 				$found = true;
 				break;
@@ -127,7 +127,7 @@ else if ($step == 2)
 			$new_filename = $app['tschema'] . '_u_' . $user_id .
 				'_' . sha1(time() . $filename) . '.jpg';
 
-			$err = $app['s3']->img_copy($filename_bucket, $new_filename);
+			$err = $app['s3']->copy($filename_bucket, $new_filename);
 
 			if ($err)
 			{
@@ -194,7 +194,7 @@ else if ($step == 3)
 		{
 			$filename_bucket = $filename_no_ext . '.' . $extension;
 
-			if ($app['s3']->img_exists($filename_bucket))
+			if ($app['s3']->exists($filename_bucket))
 			{
 				$found = true;
 				break;
@@ -219,7 +219,7 @@ else if ($step == 3)
 				$msg_id . '_' . sha1(time() .
 				$filename) . '.jpg';
 
-			$err = $app['s3']->img_copy($filename_bucket, $new_filename);
+			$err = $app['s3']->copy($filename_bucket, $new_filename);
 
 			if ($err)
 			{

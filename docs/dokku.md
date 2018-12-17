@@ -50,20 +50,13 @@ dokku config:set appname OVERALL_DOMAIN=my-domain.com
 
 ## AWS S3
 
-Create a IAM user on AWS with access only to S3. Then create 2 buckets in your region for images and documents
-See [file include/default.php](includes/default.php) for which libraries are to be uploaded.
-The buckets should have the same name as the url.
+Create a IAM user on AWS with access only to S3.
+Then create a bucket in your region and set the environment variables.
 
 ```shell
-dokku config:set S3_IMG=img.letsa.net S3_DOC=doc.letsa.net
+dokku config:set AWS_S3_BUCKET=bucket_name AWS_S3_REGION=eu-central-1
 dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
 ```
-
-Create CNAME records to these buckets
-
-img.letsa.net CNAME record for img.letsa.net.s3-eu-central-1.amazonaws.com
-
-See [the AWS S3 docs](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
 
 ## Email
 

@@ -43,7 +43,7 @@ class cleanup_images
 
 		$time_treshold = time() - (84600 * $this->days);
 
-		$object = $this->s3->find_img($marker);
+		$object = $this->s3->find_next($marker);
 
 		if (!$object)
 		{
@@ -69,7 +69,13 @@ class cleanup_images
 			return;
 		}
 
-		[$sch, $type, $id, $hash] = explode('_', $object['Key']);
+		[$sch, $type, $id] = explode('_', $object['Key']);
+
+		if (!in_array($type, ['u', 'm']))
+		{
+			error_log('type not in (u, m) (no delete) ' . $object['Key']);
+			return;
+		}
 
 		if (!$this->groups->get_host($sch))
 		{
@@ -91,12 +97,6 @@ class cleanup_images
 			return;
 		}
 
-		if (!in_array($type, ['u', 'm']))
-		{
-			error_log('-> unknown type u, m (no delete)');
-			return;
-		}
-
 		if ($type == 'u' && ctype_digit((string) $id))
 		{
 			$user = $this->db->fetchAssoc('select id, "PictureFile"
@@ -107,7 +107,7 @@ class cleanup_images
 			{
 				$del_str = '->User does not exist.';
 			}
-			else if ($user['PictureFile'] != $object['Key'])
+			else if ($user['PictureFile'] !== $object['Key'])
 			{
 				$del_str = '->does not match db key ' . $user['PictureFile'];
 			}
@@ -117,7 +117,7 @@ class cleanup_images
 				return;
 			}
 		}
-		else if ($type == 'm' && ctype_digit((string) $id))
+		else if ($type === 'm' && ctype_digit((string) $id))
 		{
 			$msgpict = $this->db->fetchAssoc('select *
 				from ' . $sch . '.msgpictures
@@ -136,23 +136,22 @@ class cleanup_images
 		}
 
 		error_log(' -- delete img --');
-		$this->s3->img_del($object['Key']);
+		$this->s3->del($object['Key']);
 
 		if ($del_str)
 		{
-			$this->monolog->info('(cron) image file ' . $object['Key'] .
+			$this->monolog->info('cleanup_images: ' . $object['Key'] .
 				' deleted ' . $del_str, ['schema' => $sch]);
 		}
 	}
 
 	protected function table_exists(string $table, string $schema):bool
 	{
-		return $this->db->fetchColumn('
-			select 1
-			from   pg_catalog.pg_class c
-			join   pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-			where  n.nspname = \'' . $schema . '\'
-			and    c.relname = \'' . $table . '\'
-			and    c.relkind = \'r\'') ? true : false;
+		return $this->db->fetchColumn('select 1
+			from pg_catalog.pg_class c
+				join pg_catalog.pg_namespace n on n.oid = c.relnamespace
+			where n.nspname = \'' . $schema . '\'
+				and c.relname = \'' . $table . '\'
+				and c.relkind = \'r\'') ? true : false;
 	}
 }

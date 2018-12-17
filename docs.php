@@ -249,7 +249,7 @@ if ($edit)
 	echo '<span class="fa fa-file-o"></span></span>';
 	echo '<input type="text" class="form-control" id="location" ';
 	echo 'name="location" value="';
-	echo $app['s3_doc_url'] . $doc['filename'];
+	echo $app['s3_url'] . $doc['filename'];
 	echo '" readonly>';
 	echo '</div>';
 	echo '</div>';
@@ -334,7 +334,7 @@ if ($confirm_del && $del)
 
 	if ($doc)
 	{
-		$err = $app['s3']->doc_del($doc['filename']);
+		$err = $app['s3']->del($doc['filename']);
 
 		if ($err)
 		{
@@ -391,7 +391,7 @@ if ($del)
 
 		echo '<p>';
 		echo '<a href="';
-		echo $app['s3_doc_url'] . $doc['filename'];
+		echo $app['s3_url'] . $doc['filename'];
 		echo '" target="_self">';
 		echo $doc['name'] ?? $doc['org_filename'];
 		echo '</a>';
@@ -852,7 +852,9 @@ if (count($docs))
 		echo '<tr>';
 
 		echo '<td>';
-		echo '<a href="' . $app['s3_doc_url'] . $d['filename'] . '" target="_self">';
+		echo '<a href="';
+		echo $app['s3_url'] . $d['filename'];
+		echo '" target="_self">';
 		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
 		echo '</a>';
 		echo '</td>';

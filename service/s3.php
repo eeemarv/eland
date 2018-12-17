@@ -6,6 +6,8 @@ use Aws\S3\S3Client;
 
 class s3
 {
+	protected $bucket;
+	protected $region;
 	protected $img_bucket;
 	protected $doc_bucket;
 	protected $client;
@@ -57,31 +59,29 @@ class s3
 	];
 
 	public function __construct(
-		string $img_bucket,
-		string $doc_bucket
+		string $bucket,
+		string $region
 	)
 	{
-		$this->img_bucket = $img_bucket;
-		$this->doc_bucket = $doc_bucket;
+		$this->bucket = $bucket;
+		$this->region = $region;
 
 		$this->client = S3Client::factory([
 			'signature'	=> 'v4',
-			'region'	=> 'eu-central-1',
+			'region'	=> $this->region,
 			'version'	=> '2006-03-01',
 		]);
 	}
 
-	public function img_exists(string $filename):bool
+	public function exists(string $filename):bool
 	{
-		return $this->client->doesObjectExist($this->img_bucket, $filename);
+		return $this->client->doesObjectExist($this->bucket, $filename);
 	}
 
-	public function doc_exists(string $filename):bool
-	{
-		return $this->client->doesObjectExist($this->doc_bucket, $filename);
-	}
-
-	public function img_upload(string $filename, string $tmpfile)
+	public function img_upload(
+		string $filename,
+		string $tmpfile
+	):string
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -94,22 +94,25 @@ class s3
 
 		try {
 
-			$this->client->upload($this->img_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+			$this->client->upload($this->bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> $content_type,
 				],
 			]);
-
-			return;
 		}
 		catch(Exception $e)
 		{
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
+
+		return '';
 	}
 
-	public function doc_upload(string $filename, string $tmpfile)
+	public function doc_upload(
+		string $filename,
+		string $tmpfile
+	):string
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -129,7 +132,7 @@ class s3
 
 		try
 		{
-			$this->client->upload($this->doc_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+			$this->client->upload($this->bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> $content_type,
@@ -140,30 +143,22 @@ class s3
 		{
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
+
+		return '';
 	}
 
-	public function img_copy(string $source, string $destination)
-	{
-		return $this->copy($this->img_bucket, $source, $destination);
-	}
-
-	public function doc_copy(string $source, string $destination)
-	{
-		return $this->copy($this->doc_bucket, $source, $destination);
-	}
-
-	public function copy(string $bucket, string $source, string $destination)
+	public function copy(string $source, string $destination)
 	{
 		try
 		{
 			$result = $this->client->getObject([
-				'Bucket' => $bucket,
+				'Bucket' => $this->bucket,
 				'Key'    => $source,
 			]);
 
 			$this->client->copyObject([
-				'Bucket'		=> $bucket,
-				'CopySource'	=> $bucket . '/' . $source,
+				'Bucket'		=> $this->bucket,
+				'CopySource'	=> $this->bucket . '/' . $source,
 				'Key'			=> $destination,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',
@@ -172,53 +167,34 @@ class s3
 		}
 		catch (Exception $e)
 		{
-			return 'Kopiëren mislukt: ' . $e->getMessage();
+			error_log('s3 copy : ' . $e->getMessage());
 		}
+
+		return;
 	}
 
-	public function img_del(string $filename)
-	{
-		return $this->del($this->img_bucket, $filename);
-	}
-
-	public function doc_del(string $filename)
-	{
-		return $this->del($this->doc_bucket, $filename);
-	}
-
-	public function del(string $bucket, string $filename)
+	public function del(string $filename):void
 	{
 		try
 		{
 			$this->client->deleteObject([
-				'Bucket'	=> $bucket,
+				'Bucket'	=> $this->bucket,
 				'Key'		=> $filename,
 			]);
 		}
 		catch (Exception $e)
 		{
-			return 'Verwijderen mislukt: ' . $e->getMessage();
+			error_log('s3 del: ' . $e->getMessage());
 		}
 	}
 
-	public function img_list(string $marker = '0')
+	public function list(int $num = 10, string $marker = '0'):array
 	{
-		return $this->bucket_list($this->img_bucket, $marker);
-	}
-
-	public function doc_list(string $marker = '0')
-	{
-		return $this->bucket_list($this->doc_bucket, $marker);
-	}
-
-	public function bucket_list(string $bucket, $marker = '0')
-	{
-		$params = ['Bucket'	=> $bucket];
-
-		if ($marker)
-		{
-			$params['Marker'] = $marker;
-		}
+		$params = [
+			'Bucket'	=> $this->bucket,
+			'Marker'	=> $marker,
+			'MaxKeys'	=> $num,
+		];
 
 		try
 		{
@@ -228,26 +204,14 @@ class s3
 		}
 		catch (Exception $e)
 		{
-			echo $e->getMessage() . "\n\r\n\r";
+			error_log('s3 list: ' . $e->getMessage());
 		}
+
+		return [];
 	}
 
-	public function find_img(string $marker = '0')
+	public function find_next(string $marker):array
 	{
-		$params = [
-			'Bucket'	=> $this->img_bucket,
-			'Marker'	=> $marker,
-			'MaxKeys'	=> 1,
-		];
-
-		try
-		{
-			return $this->client->getIterator('ListObjects', $params)->current();
-		}
-		catch (Exception $e)
-		{
-			echo $e->getMessage() . "\n\r\n\r";
-			return [];
-		}
+		return $this->list(1, $marker)->current();
 	}
 }

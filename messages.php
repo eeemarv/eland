@@ -498,11 +498,13 @@ if ($img_del == 'all' && $id)
 
 	foreach ($images as $img_id => $file)
 	{
-		$a_img = $app['s3_img_url'] . $file;
+		$a_img = $app['s3_url'] . $file;
 
 		echo '<div class="col-xs-6 col-md-3">';
 		echo '<div class="thumbnail">';
-		echo '<img src="' . $a_img . '" class="img-rounded">';
+		echo '<img src="';
+		echo $app['s3_url'] . $file;
+		echo '" class="img-rounded">';
 
 		echo '<div class="caption">';
 		echo '<span class="btn btn-danger" data-img-del="';
@@ -928,7 +930,7 @@ if (($edit || $add))
 						$new_filename = $app['tschema'] . '_m_' . $id . '_';
 						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
-						$err = $app['s3']->img_copy($img, $new_filename);
+						$err = $app['s3']->copy($img, $new_filename);
 
 						if (isset($err))
 						{
@@ -1314,9 +1316,10 @@ if (($edit || $add))
 	echo 'Afbeeldingen</label>';
 	echo '<div class="row">';
 
-	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
+	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
+	echo 'id="thumbnail_model" ';
 	echo 'data-s3-url="';
-	echo $app['s3_img_url'];
+	echo $app['s3_url'];
 	echo '">';
 	echo '<div class="thumbnail">';
 	echo '<img src="" alt="afbeelding">';
@@ -1333,7 +1336,7 @@ if (($edit || $add))
 		echo '<div class="col-sm-3 col-md-2 thumbnail-col">';
 		echo '<div class="thumbnail">';
 		echo '<img src="';
-		echo $app['s3_img_url'] . $img['PictureFile'];
+		echo $app['s3_url'] . $img['PictureFile'];
 		echo '" alt="afbeelding">';
 		echo '<div class="caption">';
 
@@ -1544,7 +1547,7 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="images_con" ';
-	echo 'data-bucket-url="' . $app['s3_img_url'] . '" ';
+	echo 'data-bucket-url="' . $app['s3_url'] . '" ';
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 
@@ -2483,7 +2486,7 @@ else if ($v_extended)
 			echo generate_url('messages', ['id' => $msg['id']]);
 			echo '">';
 			echo '<img class="media-object" src="';
-			echo $app['s3_img_url'] . $imgs[$msg['id']];
+			echo $app['s3_url'] . $imgs[$msg['id']];
 			echo '" width="150">';
 			echo '</a>';
 			echo '</div>';
