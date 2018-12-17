@@ -2033,8 +2033,12 @@ foreach ($transactions as $key => $t)
 }
 
 
-$row_count = $app['db']->fetchColumn('select count(t.*)
-	from ' . $app['tschema'] . '.transactions t ' . $where_sql, $params_sql);
+$row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
+	from ' . $app['tschema'] . '.transactions t ' .
+	$where_sql, $params_sql);
+
+$row_count = $row['count'];
+$amount_sum = $row['sum'];
 
 $app['pagination']->init('transactions', $row_count, $params, $inline);
 
@@ -2575,7 +2579,16 @@ if ($inline)
 }
 else
 {
+	echo '<ul>';
+	echo '<li>';
+	echo 'Totaal: ';
+	echo '<strong>';
+	echo $amount_sum;
+	echo '</strong> ';
+	echo $app['config']->get('currency', $app['tschema']);
+	echo '</li>';
 	echo get_valuation($app['tschema']);
+	echo '</ul>';
 
 	include __DIR__ . '/include/footer.php';
 }
@@ -2604,7 +2617,9 @@ function get_valuation(string $schema):string
 	{
 		$out .= '<li id="info_ratio">Valuatie: <span class="num">';
 		$out .= $app['config']->get('currencyratio', $schema);
-		$out .= '</span> per uur</li>';
+		$out .= '</span> ';
+		$out .= $app['config']->get('currency', $schema);
+		$out .= ' per uur</li>';
 	}
 
 	return $out;

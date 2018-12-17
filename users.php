@@ -3046,7 +3046,6 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
 		echo '<div id="messages" ';
@@ -4027,7 +4026,7 @@ if ($v_list || $v_extended || $v_tiles)
 	{
 		$nav_params['status'] = $k;
 		echo '<li';
-		echo ($status == $k) ? ' class="active"' : '';
+		echo $status === $k ? ' class="active"' : '';
 		echo '>';
 		$class = (isset($tab['cl'])) ? 'bg-' . $tab['cl'] : false;
 		echo aphp('users', $nav_params, $tab['lbl'], $class) . '</li>';
