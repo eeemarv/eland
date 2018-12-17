@@ -188,7 +188,7 @@ class s3
 		}
 	}
 
-	public function list(int $num = 10, string $marker = '0'):array
+	public function list(int $num = 10, string $marker = '0')
 	{
 		$params = [
 			'Bucket'	=> $this->bucket,
@@ -210,7 +210,7 @@ class s3
 		return [];
 	}
 
-	public function find_next(string $marker):array
+	public function find_next(string $marker)
 	{
 		return $this->list(1, $marker)->current();
 	}
