@@ -882,7 +882,11 @@ if ($add)
 		}
 	}
 
-	$app['assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
+	$app['assets']->add([
+		'typeahead',
+		'typeahead.js',
+		'transaction_add.js'
+	]);
 
 	$balance = $app['session_user']['saldo'];
 
@@ -1926,10 +1930,11 @@ if (isset($filter['q']) && $filter['q'])
 if (isset($filter['fcode']) && $filter['fcode'])
 {
 	[$fcode] = explode(' ', trim($filter['fcode']));
+	$fcode = trim($fcode);
 
 	$fuid = $app['db']->fetchColumn('select id
 		from ' . $app['tschema'] . '.users
-		where letscode = \'' . $fcode . '\'');
+		where letscode = ?', [$fcode]);
 
 	if ($fuid)
 	{

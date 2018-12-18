@@ -16,7 +16,6 @@ $asc = $_GET['asc'] ?? 0;
 $recent = isset($_GET['recent']) ? true : false;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
-$filter = $_GET['f'] ?? [];
 $img = isset($_GET['img']) ? true : false;
 $insert_img = isset($_GET['insert_img']) ? true : false;
 $img_del = $_GET['img_del'] ?? false;
@@ -26,6 +25,8 @@ $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_
 $extend_submit = isset($_POST['extend_submit']) ? true : false;
 $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']) ? true : false;
+
+$filter = $_GET['f'] ?? [];
 
 $access = $app['access_control']->get_post_value();
 
@@ -1751,7 +1752,7 @@ $s_owner = !$app['s_guest']
 	&& $app['s_id'] && $uid;
 
 $v_list = ($app['p_view'] === 'list' || $app['p_inline']) && !$recent;
-$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'] || $recent;
+$v_extended = $app['p_view'] === 'extended' && (!$app['p_inline'] || $recent);
 $v_map = $app['p_view'] === 'map' && !($app['p_inline'] || $recent);
 
 $params = [
@@ -1762,19 +1763,23 @@ $params = [
 ];
 
 $params_sql = $where_sql = $ustatus_sql = [];
-$filter_en = isset($filter['s']);
 
-if ($uid)
+//$filter_en = isset($filter['s']);
+
+if (isset($filter['uid']) && $filter['uid'])
 {
 	$user = $app['user_cache']->get($uid, $app['tschema']);
-
+/**
 	$where_sql[] = 'u.id = ?';
 	$params_sql[] = $uid;
 	$params['uid'] = $uid;
+*/
 
 	$filter['fcode'] = link_user($user, $app['tschema'], false);
+	$params['f']['uid'] = $filter['uid'];
 }
 
+/**
 if ($type)
 {
 	if ($type === 'wants')
@@ -1788,131 +1793,139 @@ if ($type)
 		$filter['type']['offer'] = 'on';
 	}
 }
+*/
 
-if ($filter_en)
+if (isset($filter['q']) && $filter['q'])
 {
-	if (!$uid)
+	$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params['f']['q'] = $filter['q'];
+}
+
+if (isset($filter['fcode'])
+	&& $filter['fcode']
+	&& !empty($filter['fcode']))
+{
+	[$fcode] = explode(' ', trim($filter['fcode']));
+	$fcode = trim($fcode);
+
+	$fuid = $app['db']->fetchColumn('select id
+		from ' . $app['tschema'] . '.users
+		where letscode = ?', [$fcode]);
+
+	if ($fuid)
 	{
-		if (isset($filter['fcode'])
-			&& $filter['fcode']
-			&& !empty($filter['fcode']))
-		{
-			[$fcode] = explode(' ', trim($filter['fcode']));
-			$fcode = trim($fcode);
+		$where_sql[] = 'u.id = ?';
+		$params_sql[] = $fuid;
 
-			if ($fcode)
-			{
-				$fuid = $app['db']->fetchColumn('select id
-					from ' . $app['tschema'] . '.users
-					where letscode = ?', [$fcode]);
-
-				if ($fuid)
-				{
-					$where_sql[] = 'u.id = ?';
-					$params_sql[] = $fuid;
-
-					$filter['fcode'] = link_user($fuid, $app['tschema'], false);
-				}
-				else if ($fcode !== '')
-				{
-					$where_sql[] = '1 = 2';
-				}
-			}
-			else
-			{
-				$filter['fcode'] = '';
-			}
-		}
-	}
-
-	if (isset($filter['q']) && $filter['q'])
-	{
-		$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
-		$params_sql[] = '%' . $filter['q'] . '%';
-		$params_sql[] = '%' . $filter['q'] . '%';
-	}
-
-	if (isset($filter['cid']) && $filter['cid'])
-	{
-		$cat_ary = [];
-
-		$st = $app['db']->prepare('select id
-			from ' . $app['tschema'] . '.categories
-			where id_parent = ?');
-		$st->bindValue(1, $filter['cid']);
-		$st->execute();
-
-		while ($row = $st->fetch())
-		{
-			$cat_ary[] = $row['id'];
-		}
-
-		if (count($cat_ary))
-		{
-			$where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
-		}
-		else
-		{
-			$where_sql[] = 'm.id_category = ?';
-			$params_sql[] = $filter['cid'];
-		}
-	}
-
-	if (isset($filter['valid']) && count($filter['valid']) !== 2)
-	{
-		if (isset($filter['valid']['yes']))
-		{
-			$where_sql[] = 'm.validity >= now()';
-		}
-		else if (isset($filter['valid']['no']))
-		{
-			$where_sql[] = 'm.validity < now()';
-		}
-	}
-
-	if (isset($filter['type']) && count($filter['type']) !== 2)
-	{
-		if (isset($filter['type']['want']))
-		{
-			$where_sql[] = 'm.msg_type = 0';
-		}
-		else if (isset($filter['type']['offer']))
-		{
-			$where_sql[] = 'm.msg_type = 1';
-		}
-	}
-
-	if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
-	{
-		$where_sql[] = 'u.status in (1, 2)';
+		$fcode = link_user($fuid, $app['tschema'], false);
+		$params['f']['fcode'] = $fcode;
 	}
 	else
 	{
-		if (isset($filter['ustatus']['new']))
-		{
-			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-		}
+		$where_sql[] = '1 = 2';
+	}
+}
 
-		if (isset($filter['ustatus']['leaving']))
-		{
-			$ustatus_sql[] = 'u.status = 2';
-		}
+if (isset($filter['cid']) && $filter['cid'])
+{
+	$cat_ary = [];
 
-		if (isset($filter['ustatus']['active']))
-		{
-			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-		}
+	$st = $app['db']->prepare('select id
+		from ' . $app['tschema'] . '.categories
+		where id_parent = ?');
+	$st->bindValue(1, $filter['cid']);
+	$st->execute();
 
-		if (count($ustatus_sql))
-		{
-			$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
-		}
+	while ($row = $st->fetch())
+	{
+		$cat_ary[] = $row['id'];
+	}
+
+	if (count($cat_ary))
+	{
+		$where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
+	}
+	else
+	{
+		$where_sql[] = 'm.id_category = ?';
+		$params_sql[] = $filter['cid'];
+	}
+
+	$params['f']['cid'] = $filter['cid'];
+}
+
+if (isset($filter['valid']) && count($filter['valid']) !== 2)
+{
+	if (isset($filter['valid']['yes']))
+	{
+		$where_sql[] = 'm.validity >= now()';
+		$params['f']['valid']['yes'] = 'on';
+	}
+	else if (isset($filter['valid']['no']))
+	{
+		$where_sql[] = 'm.validity < now()';
+		$params['f']['valid']['no'] = 'on';
+	}
+}
+
+if (isset($filter['type']) && count($filter['type']) !== 2)
+{
+	if (isset($filter['type']['want']))
+	{
+		$where_sql[] = 'm.msg_type = 0';
+		$params['f']['type']['want'] = 'on';
+	}
+	else if (isset($filter['type']['offer']))
+	{
+		$where_sql[] = 'm.msg_type = 1';
+		$params['f']['type']['offer'] = 'on';
 	}
 }
 else
 {
+	$params['f']['type'] = [
+		'want'	=> 'on',
+		'offer'	=> 'on',
+	];
+}
+
+if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
+{
+	$where_sql[] = 'u.status in (1, 2)';
+	$params['f']['ustatus'] = [
+		'new' 		=> 'on',
+		'leaving'	=> 'on',
+		'active'	=> 'on',
+	];
+}
+else
+{
+	if (isset($filter['ustatus']['new']))
+	{
+		$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+	}
+
+	if (isset($filter['ustatus']['leaving']))
+	{
+		$ustatus_sql[] = 'u.status = 2';
+	}
+
+	if (isset($filter['ustatus']['active']))
+	{
+		$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+	}
+
+	if (count($ustatus_sql))
+	{
+		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+	}
+}
+
+/*
 	if ($type !== 'wants')
 	{
 		$filter['type']['offer'] = 'on';
@@ -1930,9 +1943,9 @@ else
 		'yes'	=> 'on',
 		'no'	=> 'on',
 	];
-}
+*/
 
-$params['f'] = $filter;
+//$params['f'] = $filter;
 
 if ($app['s_guest'])
 {
@@ -2494,7 +2507,11 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
+		echo aphp(
+			'messages',
+			['id' => $msg['id']],
+			$type_str . ': ' . $msg['content']
+		);
 
 		if ($exp)
 		{
