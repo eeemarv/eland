@@ -195,7 +195,7 @@ if ($id || $edit || $del)
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $message['id_user']
+		&& $app['s_id'] == $message['id_user']
 		&& $message['id_user'];
 
 	if ($message['local'] && $app['s_guest'])
@@ -219,7 +219,8 @@ if ($id && $extend)
 {
 	if (!($s_owner || $app['s_admin']))
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om ' .
+			$ow_type_this . ' te verlengen.');
 		cancel($id);
 	}
 
@@ -252,7 +253,9 @@ if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
 	{
 		if (!$s_owner && !$app['s_admin'])
 		{
-			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
+			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten
+				om een afbeelding op te laden voor
+				dit vraag of aanbod bericht.'];
 		}
 	}
 
@@ -1487,8 +1490,20 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
-		$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
+		$top_buttons .= aphp('messages',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			$ow_type_uc . ' aanpassen',
+			'pencil',
+			true);
+		$top_buttons .= aphp('messages',
+			['del' => $id],
+			'Verwijderen',
+			'btn btn-danger',
+			$ow_type_uc . ' verwijderen',
+			'times',
+			true);
 	}
 
 	if ($message['msg_type'] == 1
@@ -2534,8 +2549,21 @@ else if ($v_extended)
 		if ($app['s_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
-			echo aphp('messages', ['edit' => $msg['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('messages', ['del' => $msg['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp(
+				'messages',
+				['edit' => $msg['id']],
+				'Aanpassen', 'btn btn-primary btn-xs',
+				false,
+				'pencil'
+			);
+			echo aphp(
+				'messages',
+				['del' => $msg['id']],
+				'Verwijderen',
+				'btn btn-danger btn-xs',
+				false,
+				'times'
+			);
 			echo '</span>';
 		}
 		echo '</p>';
@@ -2571,9 +2599,12 @@ else if ($v_list)
 
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
-		echo '<span class="btn btn-default" id="invert_selection">Selectie omkeren</span>&nbsp;';
-		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
-		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
+		echo '<span class="btn btn-default" id="invert_selection">';
+		echo 'Selectie omkeren</span>&nbsp;';
+		echo '<span class="btn btn-default" id="select_all">';
+		echo 'Selecteer alle</span>&nbsp;';
+		echo '<span class="btn btn-default" id="deselect_all">';
+		echo 'De-selecteer alle</span>';
 		echo '</div></div>';
 
 		echo '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
@@ -2582,7 +2613,8 @@ else if ($v_list)
 		echo '<div class="panel-heading">';
 
 		echo '<ul class="nav nav-tabs" role="tablist">';
-		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
+		echo '<li class="active"><a href="#extend_tab" ';
+		echo 'data-toggle="tab">Verlengen</a></li>';
 
 		if ($app['config']->get('template_lets', $app['tschema'])
 			&& $app['config']->get('interlets_en', $app['tschema']))
@@ -2602,7 +2634,8 @@ else if ($v_list)
 		echo '<form method="post" class="form-horizontal">';
 
 		echo '<div class="form-group">';
-		echo '<label for="extend" class="col-sm-2 control-label">Verlengen met</label>';
+		echo '<label for="extend" class="col-sm-2 control-label">';
+		echo 'Verlengen met</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select name="extend" id="extend" class="form-control">';
 		echo get_select_options($extend_options, '30');
@@ -2610,7 +2643,8 @@ else if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
+		echo '<input type="submit" value="Verlengen" ';
+		echo 'name="extend_submit" class="btn btn-primary">';
 
 		echo $app['form_token']->get_hidden_input();
 
@@ -2625,7 +2659,8 @@ else if ($v_list)
 			echo '<h3>Zichtbaarheid instellen</h3>';
 			echo '<form method="post" class="form-horizontal">';
 			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
-			echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
+			echo '<input type="submit" value="Aanpassen" ';
+			echo 'name="access_submit" class="btn btn-primary">';
 			echo $app['form_token']->get_hidden_input();
 			echo '</form>';
 			echo '</div>';
