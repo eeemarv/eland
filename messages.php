@@ -13,7 +13,6 @@ $type = $_GET['type'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 $orderby = $_GET['orderby'] ?? 'm.cdate';
 $asc = $_GET['asc'] ?? 0;
-$recent = isset($_GET['recent']) ? true : false;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
 $img = isset($_GET['img']) ? true : false;
@@ -412,12 +411,14 @@ if ($img_del == 'all' && $id && $app['is_http_post'])
 {
 	if (!($s_owner || $app['s_admin']))
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
+		$app['alert']->error('Je hebt onvoldoende rechten
+			om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
 	$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
 
-	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
+	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this .
+		' zijn verwijderd.');
 
 	cancel($id);
 }
@@ -742,13 +743,15 @@ if (($edit || $add))
 {
 	if (!($app['s_admin'] || $app['s_user']) && $add)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om
+			een vraag of aanbod toe te voegen.');
 		cancel();
 	}
 
 	if (!($app['s_admin'] || $s_owner) && $edit)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om ' .
+			$ow_type_this . ' aan te passen.');
 		cancel($edit);
 	}
 
@@ -784,7 +787,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($app['s_master']) ? 0 : $app['s_id']),
+			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : ($app['s_master'] ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -1353,9 +1356,11 @@ if (($edit || $add))
 
 	echo '</div>';
 
+	$upload_img_param['form_token'] = $app['form_token']->get();
+
 	$upload_img_param = [
-		'img'	=> 1,
-		'form_token' => $upload_img_param['form_token'] = $app['form_token']->get(),
+		'img'			=> 1,
+		'form_token' 	=> $upload_img_param['form_token'],
 	];
 
 	if ($edit)
@@ -1507,9 +1512,11 @@ if ($id)
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($app['s_admin'] || (!$s_owner
-			&& $user['status'] != 7
-			&& !($app['s_guest'] && $app['s_group_self']))))
+		&& ($app['s_admin']
+			|| (!$s_owner
+				&& $user['status'] != 7
+				&& !($app['s_guest']
+				&& $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1557,9 +1564,11 @@ if ($id)
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 
-	echo '<div id="no_images" class="text-center center-body" style="display: none;">';
+	echo '<div id="no_images" ';
+	echo 'class="text-center center-body" style="display: none;">';
 	echo '<i class="fa fa-image fa-5x"></i> ';
-	echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '</p>';
+	echo '<p>Er zijn geen afbeeldingen voor ';
+	echo $ow_type_this . '</p>';
 	echo '</div>';
 
 	echo '<div id="images_con" ';
@@ -1571,21 +1580,35 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
+		echo '<div class="panel-footer">';
+		echo '<span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
 		echo 'data-url="';
-		echo generate_url('messages', ['img' => 1, 'id' => $id, 'insert_img' => 1]);
+		echo generate_url('messages', [
+			'img' => 1,
+			'id' => $id,
+			'insert_img' => 1,
+		]);
 		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
 
-		echo aphp('messages', ['img_del' => 'all', 'id' => $id], 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
-			['id' => 'btn_remove', 'style' => 'display:none;']);
+		echo aphp(
+			'messages',
+			['img_del' => 'all', 'id' => $id],
+			'Afbeeldingen verwijderen',
+			'btn btn-danger',
+			false,
+			'times',
+			false,
+			['id' => 'btn_remove', 'style' => 'display:none;']
+		);
 
-		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+		echo '<p class="text-warning">';
+		echo 'Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 		echo '</div>';
 	}
@@ -1621,8 +1644,18 @@ if ($id)
 	echo '(Richt)prijs';
 	echo '</dt>';
 	echo '<dd>';
-	$units = $message['units'] ? ' per ' . $message['units'] : '';
-	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency', $app['tschema']) . $units;
+
+	if (empty($message['amount']))
+	{
+		echo 'niet opgegeven.';
+	}
+	else
+	{
+		echo $message['amount'] . ' ';
+		echo $app['config']->get('currency', $app['tschema']);
+		echo $message['units'] ? ' per ' . $message['units'] : '';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
@@ -1637,7 +1670,9 @@ if ($id)
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';
-	echo '<dd>' . $user['postcode'] . '</dd>';
+	echo '<dd>';
+	echo $user['postcode'];
+	echo '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
 	echo '<dd>';
@@ -1766,9 +1801,9 @@ $s_owner = !$app['s_guest']
 	&& $app['s_id'] === $uid
 	&& $app['s_id'] && $uid;
 
-$v_list = ($app['p_view'] === 'list' || $app['p_inline']) && !$recent;
-$v_extended = $app['p_view'] === 'extended' && (!$app['p_inline'] || $recent);
-$v_map = $app['p_view'] === 'map' && !($app['p_inline'] || $recent);
+$v_list = $app['p_view'] === 'list' || $app['p_inline'];
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
+$v_map = $app['p_view'] === 'map' && !$app['p_inline'];
 
 $params = [
 	'orderby'	=> $orderby,
@@ -1871,7 +1906,15 @@ if (isset($filter['cid']) && $filter['cid'])
 	$params['f']['cid'] = $filter['cid'];
 }
 
-if (isset($filter['valid']) && count($filter['valid']) !== 2)
+if (isset($filter['valid'])
+	&& count($filter['valid']) === 2)
+{
+	$params['f']['valid'] = [
+		'yes'	=> 'on',
+		'no'	=> 'on',
+	];
+}
+else
 {
 	if (isset($filter['valid']['yes']))
 	{
@@ -1885,7 +1928,7 @@ if (isset($filter['valid']) && count($filter['valid']) !== 2)
 	}
 }
 
-if (isset($filter['type']) && count($filter['type']) !== 2)
+if (isset($filter['type']) && count($filter['type']) === 2)
 {
 	if (isset($filter['type']['want']))
 	{
@@ -2103,6 +2146,7 @@ while ($row = $st->fetch())
 	$cats[$row['id']] = ($row['id_parent']) ? ' . . . . . ' : '';
 	$cats[$row['id']] .= $row['name'];
 	$count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
+
 	if ($row['id_parent'] && $count_msgs)
 	{
 		$cats[$row['id']] .= ' (' . $count_msgs . ')';
@@ -2118,7 +2162,15 @@ if ($app['s_admin'] || $app['s_user'])
 {
 	if (!$app['p_inline'])
 	{
-		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
+		$top_buttons .= aphp(
+			'messages',
+			['add' => 1],
+			'Toevoegen',
+			'btn btn-success',
+			'Vraag of aanbod toevoegen',
+			'plus',
+			true
+		);
 	}
 
 	if ($uid)
@@ -2127,7 +2179,16 @@ if ($app['s_admin'] || $app['s_user'])
 		{
 			$str = 'Vraag of aanbod voor ';
 			$str .= link_user($uid, $app['tschema'], false);
-			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
+
+			$top_buttons .= aphp(
+				'messages',
+				['add' => 1, 'uid' => $uid],
+				$str,
+				'btn btn-success',
+				$str,
+				'plus',
+				true
+			);
 		}
 
 		if (!$app['p_inline'])
@@ -2162,10 +2223,6 @@ if ($uid)
 		$h1 .= ' van ';
 		$h1 .= link_user($uid, $app['tschema']);
 	}
-}
-else if ($recent)
-{
-	$h1 = aphp('messages', [], 'Recent Vraag en aanbod');
 }
 else
 {
@@ -2352,14 +2409,13 @@ if ($app['p_inline'])
 
 	echo '<h3><i class="fa fa-newspaper-o"></i> ';
 	echo $h1;
-	echo $recent ? '' : '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo '<span class="inline-buttons">';
+	echo $top_buttons;
+	echo '</span>';
 	echo '</h3>';
 }
 
-if (!$recent)
-{
-	echo $app['pagination']->get();
-}
+echo $app['pagination']->get();
 
 if (!count($messages))
 {
@@ -2369,10 +2425,7 @@ if (!count($messages))
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 
-	if (!$recent)
-	{
-		echo $app['pagination']->get();
-	}
+	echo $app['pagination']->get();
 
 	if (!$app['p_inline'])
 	{
@@ -2573,10 +2626,7 @@ else if ($v_extended)
 	}
 }
 
-if (!$recent)
-{
-	echo $app['pagination']->get();
-}
+echo $app['pagination']->get();
 
 if ($app['p_inline'])
 {
