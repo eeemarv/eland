@@ -2561,7 +2561,9 @@ if ($id)
 
 	if ($link && isset($st[$link]))
 	{
-		$and_status = isset($st[$link]['sql']) ? ' and ' . $st[$link]['sql'] : '';
+		$and_status = isset($st[$link]['sql'])
+			? ' and ' . $st[$link]['sql']
+			: '';
 
 		if (isset($st[$link]['sql_bind']))
 		{
@@ -2607,7 +2609,9 @@ if ($id)
 		$interlets_group_id = false;
 	}
 
-	$app['assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
+	$app['assets']->add(['leaflet',
+		'jqplot', 'user.js',
+		'plot_user_transactions.js']);
 
 	if ($app['s_admin'] || $s_owner)
 	{
@@ -2617,13 +2621,34 @@ if ($id)
 	if ($app['s_admin'] || $s_owner)
 	{
 		$title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
-		$top_buttons .= aphp('users', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
-		$top_buttons .= aphp('users', ['pw' => $id], 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
+
+		$top_buttons .= aphp(
+			'users',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			$title . ' aanpassen',
+			'pencil',
+			true);
+		$top_buttons .= aphp(
+			'users',
+			['pw' => $id],
+			'Paswoord aanpassen',
+			'btn btn-info',
+			'Paswoord aanpassen',
+			'key',
+			true);
 	}
 
 	if ($app['s_admin'] && !$count_transactions && !$s_owner)
 	{
-		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
+		$top_buttons .= aphp('users',
+			['del' => $id],
+			'Verwijderen',
+			'btn btn-danger',
+			'Gebruiker verwijderen',
+			'times',
+			true);
 	}
 
 	if ($app['s_admin']
@@ -2690,7 +2715,8 @@ if ($id)
 	if ($status != 1)
 	{
 		$h1 .= ' <small><span class="text-' . $st_class_ary[$status] . '">';
-		$h1 .= $h_status_ary[$status] . '</span></small>';
+		$h1 .= $h_status_ary[$status];
+		$h1 .= '</span></small>';
 	}
 
 	if ($app['s_admin'])
@@ -2719,7 +2745,8 @@ if ($id)
 	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default">';
-	echo '<div class="panel-body text-center center-block" id="img_user">';
+	echo '<div class="panel-body text-center ';
+	echo 'center-block" id="img_user">';
 
 	$show_img = $user['PictureFile'] ? true : false;
 
@@ -2802,7 +2829,9 @@ if ($id)
 	echo 'Volledige naam';
 	echo '</dt>';
 
-	if ($app['s_admin'] || $s_owner || $app['access_control']->is_visible($fullname_access))
+	if ($app['s_admin']
+		|| $s_owner
+		|| $app['access_control']->is_visible($fullname_access))
 	{
 		echo get_dd($user['fullname'] ?? '');
 	}
@@ -2816,7 +2845,9 @@ if ($id)
 
 	if ($app['s_admin'])
 	{
-		echo '<dt>Zichtbaarheid Volledige Naam</dt>';
+		echo '<dt>';
+		echo 'Zichtbaarheid Volledige Naam';
+		echo '</dt>';
 		echo '<dd>';
 		echo $app['access_control']->get_label($fullname_access);
 		echo '</dd>';
@@ -2944,15 +2975,18 @@ if ($id)
 		echo '<dt>';
 		echo 'Periodieke Overzichts E-mail';
 		echo '</dt>';
-		echo (($user['cron_saldo']) ? 'Aan' : 'Uit');
+		echo $user['cron_saldo'] ? 'Aan' : 'Uit';
 		echo '</dl>';
 	}
 
 	echo '</div></div></div></div>';
 
-	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
-	echo 'data-url="' . $app['rootpath'] . 'contacts.php?inline=1&uid=' . $id;
-	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
+	echo '<div id="contacts" ';
+	echo 'data-url="' . $app['rootpath'];
+	echo 'contacts.php?inline=1&uid=' . $id;
+	echo '&';
+	echo http_build_query(get_session_query_param());
+	echo '"></div>';
 
 	// response form
 
@@ -3061,7 +3095,7 @@ if ($id)
 	echo '<div id="transactions" ';
 	echo 'data-url="';
 	echo $app['rootpath'];
-	echo 'transactions.php?inline=1&uid=';
+	echo 'transactions.php?inline=1&f[uid]=';
 	echo $id;
 	echo '&';
 	echo http_build_query(get_session_query_param());
@@ -3594,7 +3628,15 @@ if ($app['s_admin'])
 {
 	$csv_en = $v_list;
 
-	$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
+	$top_buttons .= aphp(
+		'users',
+		['add' => 1],
+		'Toevoegen',
+		'btn btn-success',
+		'Gebruiker toevoegen',
+		'plus',
+		true
+	);
 
 	if ($v_list)
 	{

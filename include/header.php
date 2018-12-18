@@ -127,7 +127,9 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
-		echo $login_id == 'elas' ? 'guest' : $app['session']->get('role.' . $login_schema);
+		echo $login_id === 'elas'
+			? 'guest'
+			: $app['session']->get('role.' . $login_schema);
 		echo '&u=';
 		echo $login_id;
 		echo '">';
@@ -193,7 +195,9 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 if (!$app['s_anonymous'])
 {
 	echo '<li class="dropdown">';
-	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">';
+	echo '<a href="#" class="dropdown-toggle" ';
+	echo 'data-toggle="dropdown" role="button" ';
+	echo 'aria-expanded="false">';
 	echo '<span class="fa fa-user"></span> ';
 
 	if ($app['s_master'])
@@ -227,7 +231,11 @@ if (!$app['s_anonymous'])
 		echo '</a></li>';
 
 		echo '<li><a href="';
-		echo generate_url('transactions', ['uid' => $app['s_id']], $app['s_schema']);
+		echo generate_url(
+			'transactions',
+			['f' => ['uid' => $app['s_id']]],
+			$app['s_schema']
+		);
 		echo '">';
 		echo '<i class="fa fa-exchange"></i> Mijn transacties';
 		echo '</a></li>';
