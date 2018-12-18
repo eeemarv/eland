@@ -3085,7 +3085,7 @@ if ($id)
 		echo '<div id="messages" ';
 		echo 'data-url="';
 		echo $app['rootpath'];
-		echo 'messages.php?inline=1&uid=';
+		echo 'messages.php?inline=1&f[uid]=';
 		echo $id;
 		echo '&';
 		echo http_build_query(get_session_query_param());

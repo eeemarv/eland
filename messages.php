@@ -1158,6 +1158,7 @@ if (($edit || $add))
 			'local'			=> 0,
 		];
 
+	// checkthis
 		$uid = (isset($_GET['uid'])
 			&& $app['s_admin']) ? $_GET['uid'] :
 				(($app['s_master']) ? 0 : $app['s_id']);
@@ -1551,7 +1552,7 @@ if ($id)
 	{
 		echo '<p>Categorie: ';
 		echo '<a href="';
-		echo generate_url('messages', ['cid' => $message['cid']]);
+		echo generate_url('messages', ['f' => ['cid' => $message['cid']]]);
 		echo '">';
 		echo $message['catname'];
 		echo '</a></p>';
@@ -1798,8 +1799,9 @@ if (!($app['p_view'] || $app['p_inline']))
 
 $s_owner = !$app['s_guest']
 	&& $app['s_group_self']
-	&& $app['s_id'] === $uid
-	&& $app['s_id'] && $uid;
+	&& isset($filter['uid'])
+	&& $app['s_id'] == $filter['uid']
+	&& $app['s_id'];
 
 $v_list = $app['p_view'] === 'list' || $app['p_inline'];
 $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
@@ -1814,38 +1816,21 @@ $params = [
 
 $params_sql = $where_sql = $ustatus_sql = [];
 
-//$filter_en = isset($filter['s']);
-
-if (isset($filter['uid']) && $filter['uid'])
+if (isset($filter['uid'])
+	&& $filter['uid']
+	&& !isset($filter['s']))
 {
-	$user = $app['user_cache']->get($uid, $app['tschema']);
-/**
-	$where_sql[] = 'u.id = ?';
-	$params_sql[] = $uid;
-	$params['uid'] = $uid;
-*/
-
+	$user = $app['user_cache']->get($filter['uid'], $app['tschema']);
 	$filter['fcode'] = link_user($user, $app['tschema'], false);
+}
+
+if (isset($filter['uid']))
+{
 	$params['f']['uid'] = $filter['uid'];
 }
 
-/**
-if ($type)
-{
-	if ($type === 'wants')
-	{
-		$where_sql[] = 'm.msg_type = 0';
-		$filter['type']['want'] = 'on';
-	}
-	else if ($type === 'offers')
-	{
-		$where_sql[] = 'm.msg_type = 1';
-		$filter['type']['offer'] = 'on';
-	}
-}
-*/
-
-if (isset($filter['q']) && $filter['q'])
+if (isset($filter['q'])
+	&& $filter['q'])
 {
 	$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
 	$params_sql[] = '%' . $filter['q'] . '%';
@@ -1854,8 +1839,7 @@ if (isset($filter['q']) && $filter['q'])
 }
 
 if (isset($filter['fcode'])
-	&& $filter['fcode']
-	&& !empty($filter['fcode']))
+	&& $filter['fcode'])
 {
 	[$fcode] = explode(' ', trim($filter['fcode']));
 	$fcode = trim($fcode);
@@ -1878,7 +1862,8 @@ if (isset($filter['fcode'])
 	}
 }
 
-if (isset($filter['cid']) && $filter['cid'])
+if (isset($filter['cid'])
+	&& $filter['cid'])
 {
 	$cat_ary = [];
 
@@ -1906,104 +1891,117 @@ if (isset($filter['cid']) && $filter['cid'])
 	$params['f']['cid'] = $filter['cid'];
 }
 
-if (isset($filter['valid'])
-	&& count($filter['valid']) === 2)
+if (!isset($filter['s']))
 {
-	$params['f']['valid'] = [
+	$filter['valid'] = [
 		'yes'	=> 'on',
 		'no'	=> 'on',
 	];
 }
-else
+
+if (isset($filter['valid']))
 {
-	if (isset($filter['valid']['yes']))
+	if (count($filter['valid']) === 2)
 	{
-		$where_sql[] = 'm.validity >= now()';
-		$params['f']['valid']['yes'] = 'on';
+		$params['f']['valid'] = [
+			'yes'	=> 'on',
+			'no'	=> 'on',
+		];
 	}
-	else if (isset($filter['valid']['no']))
+	else
 	{
-		$where_sql[] = 'm.validity < now()';
-		$params['f']['valid']['no'] = 'on';
+		if (isset($filter['valid']['yes']))
+		{
+			$where_sql[] = 'm.validity >= now()';
+			$params['f']['valid']['yes'] = 'on';
+		}
+		else if (isset($filter['valid']['no']))
+		{
+			$where_sql[] = 'm.validity < now()';
+			$params['f']['valid']['no'] = 'on';
+		}
 	}
 }
 
-if (isset($filter['type']) && count($filter['type']) === 2)
+if (!isset($filter['s']))
 {
-	if (isset($filter['type']['want']))
-	{
-		$where_sql[] = 'm.msg_type = 0';
-		$params['f']['type']['want'] = 'on';
-	}
-	else if (isset($filter['type']['offer']))
-	{
-		$where_sql[] = 'm.msg_type = 1';
-		$params['f']['type']['offer'] = 'on';
-	}
-}
-else
-{
-	$params['f']['type'] = [
+	$filter['type'] = [
 		'want'	=> 'on',
 		'offer'	=> 'on',
 	];
 }
 
-if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
+if (isset($filter['type']))
 {
-	$where_sql[] = 'u.status in (1, 2)';
-	$params['f']['ustatus'] = [
-		'new' 		=> 'on',
+	if (count($filter['type']) === 2)
+	{
+		$params['f']['type'] = [
+			'want'	=> 'on',
+			'offer'	=> 'on',
+		];
+	}
+	else
+	{
+		if (isset($filter['type']['want']))
+		{
+			$where_sql[] = 'm.msg_type = 0';
+			$params['f']['type']['want'] = 'on';
+		}
+		else if (isset($filter['type']['offer']))
+		{
+			$where_sql[] = 'm.msg_type = 1';
+			$params['f']['type']['offer'] = 'on';
+		}
+	}
+}
+
+if (!isset($filter['s']))
+{
+	$filter['ustatus'] = [
+		'new'		=> 'on',
 		'leaving'	=> 'on',
 		'active'	=> 'on',
 	];
 }
-else
+
+if (isset($filter['ustatus']))
 {
-	if (isset($filter['ustatus']['new']))
+	if (count($filter['ustatus']) === 3)
 	{
-		$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+		$params['f']['ustatus'] = [
+			'new'		=> 'on',
+			'leaving'	=> 'on',
+			'active'	=> 'on',
+		];
 	}
-
-	if (isset($filter['ustatus']['leaving']))
+	else
 	{
-		$ustatus_sql[] = 'u.status = 2';
-	}
+		if (isset($filter['ustatus']['new']))
+		{
+			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+			$params['f']['ustatus']['new'] = 'on';
+		}
 
-	if (isset($filter['ustatus']['active']))
-	{
-		$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-	}
+		if (isset($filter['ustatus']['leaving']))
+		{
+			$ustatus_sql[] = 'u.status = 2';
+			$params['f']['ustatus']['leaving'] = 'on';
+		}
 
-	if (count($ustatus_sql))
-	{
-		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+		if (isset($filter['ustatus']['active']))
+		{
+			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+			$params['f']['ustatus']['active'] = 'on';
+		}
+
+		if (count($ustatus_sql))
+		{
+			$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+		}
 	}
 }
-
-/*
-	if ($type !== 'wants')
-	{
-		$filter['type']['offer'] = 'on';
-	}
-	if ($type !== 'offers')
-	{
-		$filter['type']['want'] = 'on';
-	}
-	$filter['ustatus'] = [
-		'active' 	=> 'on',
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-	];
-	$filter['valid'] = [
-		'yes'	=> 'on',
-		'no'	=> 'on',
-	];
-*/
-
-//$params['f'] = $filter;
 
 if ($app['s_guest'])
 {
@@ -2075,7 +2073,7 @@ $tableheader_ary = [
 		'lbl' => 'Wat']),
 ];
 
-if (!$uid)
+if (!isset($filter['uid']))
 {
 	$tableheader_ary += [
 		'u.name'	=> array_merge($asc_preset_ary, [
@@ -2125,14 +2123,14 @@ $cats = ['' => '-- alle categorieën --'];
 
 $categories = $cat_params  = [];
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	$st = $app['db']->executeQuery('select c.*
 		from ' . $app['tschema'] . '.categories c, ' .
 			$app['tschema'] . '.messages m
 		where m.id_category = c.id
 			and m.id_user = ?
-		order by c.fullname', [$uid]);
+		order by c.fullname', [$filter['uid']]);
 }
 else
 {
@@ -2143,7 +2141,7 @@ else
 
 while ($row = $st->fetch())
 {
-	$cats[$row['id']] = ($row['id_parent']) ? ' . . . . . ' : '';
+	$cats[$row['id']] = $row['id_parent'] ? ' . . ' : '';
 	$cats[$row['id']] .= $row['name'];
 	$count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
 
@@ -2155,12 +2153,12 @@ while ($row = $st->fetch())
 	$categories[$row['id']] = $row['fullname'];
 
 	$cat_params[$row['id']] = $params;
-	$cat_params[$row['id']]['cid'] = $row['id'];
+	$cat_params[$row['id']]['f']['cid'] = $row['id'];
 }
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$app['p_inline'])
+	if (!$app['p_inline'] && $s_owner)
 	{
 		$top_buttons .= aphp(
 			'messages',
@@ -2173,16 +2171,16 @@ if ($app['s_admin'] || $app['s_user'])
 		);
 	}
 
-	if ($uid)
+	if (isset($filter['uid']))
 	{
 		if ($app['s_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
-			$str .= link_user($uid, $app['tschema'], false);
+			$str .= link_user($filter['uid'], $app['tschema'], false);
 
 			$top_buttons .= aphp(
 				'messages',
-				['add' => 1, 'uid' => $uid],
+				['add' => 1, 'uid' => $filter['uid']],
 				$str,
 				'btn btn-success',
 				$str,
@@ -2190,28 +2188,19 @@ if ($app['s_admin'] || $app['s_user'])
 				true
 			);
 		}
-
-		if (!$app['p_inline'])
-		{
-			$top_buttons .= aphp('messages',
-				[],
-				'Lijst',
-				'btn btn-default',
-				'Lijst alle vraag en aanbod',
-				'newspaper-o',
-				true);
-		}
 	}
 }
 
-$filter_panel_open = (($filter['fcode'] ?? false) && !$uid)
+$csv_en = $app['s_admin'] && $v_list;
+
+$filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
 	|| count($filter['type']) !== 2
 	|| count($filter['valid']) !== 2
 	|| count($filter['ustatus']) !== 3;
 
 $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	if ($s_owner && !$app['p_inline'])
 	{
@@ -2219,9 +2208,11 @@ if ($uid)
 	}
 	else
 	{
-		$h1 = aphp('messages', ['uid' => $uid], 'Vraag en aanbod');
+		$h1 = aphp('messages',
+			['f' => ['uid' => $filter['uid']]],
+			'Vraag en aanbod');
 		$h1 .= ' van ';
-		$h1 .= link_user($uid, $app['tschema']);
+		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
 }
 else
@@ -2229,7 +2220,11 @@ else
 	$h1 = 'Vraag en aanbod';
 }
 
-$h1 .= isset($filter['cid']) && $filter['cid'] ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
+if (isset($filter['cid']) && $filter['cid'])
+{
+	$h1 .= ', categorie "' . $categories[$filter['cid']] . '"';
+}
+
 $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
@@ -2242,11 +2237,25 @@ if (!$app['p_inline'])
 
 	$active = $v_list ? ' active' : '';
 	$v_params['view'] = 'list';
-	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$top_buttons_right .= aphp(
+		'messages',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'lijst',
+		'align-justify'
+	);
 
 	$active = $v_extended ? ' active' : '';
 	$v_params['view'] = 'extended';
-	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$top_buttons_right .= aphp(
+		'messages',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'Lijst met omschrijvingen',
+		'th-list'
+	);
 
 	$top_buttons_right .= '</span>';
 
@@ -2353,10 +2362,12 @@ if (!$app['p_inline'])
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
+
 	echo $app['typeahead']->get([['accounts', [
 		'status'	=> 'active',
 		'schema'	=> $app['tschema'],
 	]]]);
+
 	echo '" ';
 	echo 'data-newuserdays="';
 	echo $app['config']->get('newuserdays', $app['tschema']);
@@ -2392,7 +2403,8 @@ if (!$app['p_inline'])
 	{
 		if (isset($value))
 		{
-			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+			echo '<input name="' . $name . '" ';
+			echo 'value="' . $value . '" type="hidden">';
 		}
 	}
 
@@ -2420,7 +2432,7 @@ echo $app['pagination']->get();
 if (!count($messages))
 {
 	echo '<br>';
-	echo '<div class="panel panel-info">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
@@ -2439,7 +2451,8 @@ if ($v_list)
 	echo '<div class="panel panel-info printview">';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-bordered table-hover footable csv" ';
+	echo '<table class="table table-striped ';
+	echo 'table-bordered table-hover footable csv" ';
 	echo 'id="msgs" data-sort="false">';
 
 	echo '<thead>';
@@ -2452,8 +2465,14 @@ if ($v_list)
 	foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		echo '<th';
-		echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+
+		if (isset($data['data_hide']))
+		{
+			echo ' data-hide="' . $data['data_hide'] . '"';
+		}
+
 		echo '>';
+
 		if (isset($data['no_sort']))
 		{
 			echo $data['lbl'];
@@ -2495,14 +2514,14 @@ if ($v_list)
 			echo '>&nbsp;';
 		}
 
-		echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+		echo $msg['msg_type'] ? 'Aanbod' : 'Vraag';
 		echo '</td>';
 
 		echo '<td>';
 		echo aphp('messages', ['id' => $msg['id']], $msg['content']);
 		echo '</td>';
 
-		if (!$uid)
+		if (!isset($filter['uid']))
 		{
 			echo '<td>';
 			echo link_user($msg['id_user'], $app['tschema']);
@@ -2583,7 +2602,8 @@ else if ($v_extended)
 
 		if ($exp)
 		{
-			echo ' <small><span class="text-danger">Vervallen</span></small>';
+			echo ' <small><span class="text-danger">';
+			echo 'Vervallen</span></small>';
 		}
 
 		echo '</h3>';
@@ -2733,20 +2753,9 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
-	global $uid;
-
 	if ($id)
 	{
 		$params = ['id' => $id];
-	}
-	else
-	{
-		$params = [];
-
-		if ($uid)
-		{
-			$params['uid'] = $uid;
-		}
 	}
 
 	header('Location: ' . generate_url('messages', $params));
