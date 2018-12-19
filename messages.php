@@ -439,7 +439,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $msg['id_user'] === $app['s_id']
+		&& $msg['id_user'] == $app['s_id']
 		&& $msg['id_user'];
 
 	if (!($s_owner || $app['s_admin']))
