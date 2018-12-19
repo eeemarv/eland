@@ -2158,7 +2158,8 @@ while ($row = $st->fetch())
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$app['p_inline'] && $s_owner)
+	if (!$app['p_inline']
+		&& ($s_owner || !isset($filter['uid'])))
 	{
 		$top_buttons .= aphp(
 			'messages',
