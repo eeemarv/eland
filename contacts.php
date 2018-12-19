@@ -960,15 +960,15 @@ $app['pagination']->init(
 );
 
 $asc_preset_ary = [
-	'asc'	=> 0,
+	'asc'		=> 0,
 	'indicator' => '',
 ];
 
 $tableheader_ary = [
-	'tc.abbrev' => array_merge($asc_preset_ary, [
-		'lbl' => 'Type']),
-	'c.value' => array_merge($asc_preset_ary, [
-		'lbl' => 'Waarde']),
+	'tc.abbrev' 	=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'Type']),
+	'c.value'		=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'Waarde']),
 	'u.letscode'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Gebruiker']),
 	'c.comments'	=> array_merge($asc_preset_ary, [
@@ -977,7 +977,7 @@ $tableheader_ary = [
 	'c.flag_public' => array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Zichtbaar',
 		'data_hide'	=> 'phone, tablet']),
-	'del' => array_merge($asc_preset_ary, [
+	'del' 			=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Verwijderen',
 		'data_hide'	=> 'phone, tablet',
 		'no_sort'	=> true]),
@@ -1206,7 +1206,8 @@ if (!count($contacts))
 
 echo '<div class="panel panel-danger">';
 echo '<div class="table-responsive">';
-echo '<table class="table table-hover table-striped table-bordered footable csv" ';
+echo '<table class="table table-hover ';
+echo 'table-striped table-bordered footable csv" ';
 echo 'data-sort="false">';
 
 echo '<thead>';
@@ -1217,16 +1218,24 @@ $th_params = $params;
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+
+	if (isset($data['data_hide']))
+	{
+		echo ' data-hide="' . $data['data_hide'] . '"';
+	}
+
 	echo '>';
+
 	if (isset($data['no_sort']))
 	{
 		echo $data['lbl'];
 	}
 	else
 	{
-		$th_params['orderby'] = $key_orderby;
-		$th_params['asc'] = $data['asc'];
+		$th_params['sort'] = [
+			'orderby'	=> $key_orderby,
+			'asc'		=> $data['asc'],
+		];
 
 		echo '<a href="';
 		echo generate_url('contacts', $th_params);
@@ -1237,6 +1246,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		echo '"></i>';
 		echo '</a>';
 	}
+
 	echo '</th>';
 }
 
@@ -1253,10 +1263,17 @@ foreach ($contacts as $c)
 	echo '</td>';
 
 	echo '<td>';
-	echo isset($c['value']) ? aphp('contacts', ['edit' => $c['id']], $c['value']) : '';
+
+	if (isset($c['value']))
+	{
+		echo aphp('contacts', ['edit' => $c['id']], $c['value']);
+	}
+
 	echo '</td>';
 	echo '<td>';
+
 	echo link_user($c['id_user'], $app['tschema']);
+
 	echo '</td>';
 	echo '<td>';
 

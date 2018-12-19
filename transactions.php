@@ -2214,7 +2214,11 @@ if (!$app['p_inline'])
 {
 	$h1 .= btn_filter();
 
-	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js']);
+	$app['assets']->add([
+		'datepicker',
+		'typeahead',
+		'typeahead.js',
+	]);
 
 	include __DIR__ . '/include/header.php';
 
