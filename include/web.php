@@ -407,12 +407,6 @@ else if ($app['script_name'] === 'news'
 	}
 }
 
-/** */
-
-$app['p_filter'] = $_GET['f'] ?? [];
-$app['p_sort'] = $_GET['s'] ?? [];
-$app['p_pagination'] = $_GET['p'] ?? [];
-
 /**
  * remember adapted role in own group (for links to own group)
  */
