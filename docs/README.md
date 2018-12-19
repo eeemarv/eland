@@ -21,17 +21,16 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 De code is open source en te vinden op [Github](https://github.com/eeemarv/eland).
 Vanaf [rubriek "Dokku"](dokku.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank of [LETSysteem](https://manual.letsa.net/nl/1.3.html). Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
+Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
 
 eLAND is een persoonlijk en onafhankelijk project.
 
 Melden van bugs en feature requests kan je doen op [Github](https://github.com/eeemarv/eland/issues). Zie daar ook voor aankondigingen.
 
-## LETS (Wat is het?)
+## Roadmap
 
-LETS is een concept van gemeenschapsmunt dat in 1982/1983 werd ontwikkeld door Michael Linton. Ik maakte een vertaling naar het Nederlands van Linton's referentiewerk [the LETSystem Design Manual](https://manual.letsa.net/nl/1.3.html)
-
-eLAND zal in de toekomst compatibel worden met het ["MultiLETS" concept zoals uiteengezet in de Manual](http://manual.letsa.net/nl/2.2.html).
+Er zal gewerkt worden om eLAND geschikt te maken voor het [LETSysteem](https://manual.letsa.net/nl/1.3.html), [MultiLETS](http://manual.letsa.net/nl/2.2.html) en [Open Money](http://openmoney.editme.com/) (Zie ook [hier](https://openmoney.org/)). Dit zijn concepten van de Canadees Michael Linton.
+The LETSystem, het LETSysteem of kortweg "LETS" is wereldwijd het best gekende concept van Persoonlijk Geld (Personal Money) en wederzijds krediet. Het werd door Linton gelanceerd in 1983. Ik maakte [een vertaling naar het Nederlands](https://manual.letsa.net/nl) van Linton's referentiewerk the LETSystem Design Manual.
 
 Maarten Vandekeybus [("eeemarv" op Github)](https://github.com/eeemarv)
 
