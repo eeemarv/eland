@@ -9,12 +9,7 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $uid = $_GET['uid'] ?? false;
-$type = $_GET['type'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
-$orderby = $_GET['orderby'] ?? 'm.cdate';
-$asc = $_GET['asc'] ?? 0;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
 $img = isset($_GET['img']) ? true : false;
 $insert_img = isset($_GET['insert_img']) ? true : false;
 $img_del = $_GET['img_del'] ?? false;
@@ -26,6 +21,8 @@ $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']) ? true : false;
 
 $filter = $_GET['f'] ?? [];
+$sort = $_GET['sort'] ?? [];
+$pag = $_GET['p'] ?? [];
 
 $access = $app['access_control']->get_post_value();
 
@@ -1808,10 +1805,14 @@ $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
 $v_map = $app['p_view'] === 'map' && !$app['p_inline'];
 
 $params = [
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'm.cdate',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
 ];
 
 $params_sql = $where_sql = $ustatus_sql = [];
@@ -2021,15 +2022,16 @@ $query = 'select m.*, u.postcode
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 		where m.id_user = u.id' . $where_sql . '
-	order by ' . $orderby . ' ';
+	order by ' . $params['sort']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(m.*)
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $messages = $app['db']->fetchAll($query, $params_sql);
 
@@ -2114,8 +2116,10 @@ if (!$app['s_guest'] && $app['count_intersystems'])
 	];
 }
 
-$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc']
+	= $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator']
+	= $params['sort']['asc'] ? '-asc' : '-desc';
 
 unset($tableheader_ary['m.cdate']);
 
@@ -2260,7 +2264,8 @@ if (!$app['p_inline'])
 
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add(['msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
+	$app['assets']->add(['msgs.js',
+		'table_sel.js', 'typeahead', 'typeahead.js']);
 
 	include __DIR__ . '/include/header.php';
 
@@ -2390,7 +2395,9 @@ if (!$app['p_inline'])
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['f'], $params_form['start']);
+	unset($params_form['f']);
+	unset($params_form['uid']);
+	unset($params_form['p']['start']);
 
 	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
@@ -2400,13 +2407,15 @@ if (!$app['p_inline'])
 		$params_form['s'] = $app['s_schema'];
 	}
 
-	foreach ($params_form as $name => $value)
+	$params_form = http_build_query($params_form, 'prefix', '&');
+	$params_form = urldecode($params_form);
+	$params_form = explode('&', $params_form);
+
+	foreach ($params_form as $param)
 	{
-		if (isset($value))
-		{
-			echo '<input name="' . $name . '" ';
-			echo 'value="' . $value . '" type="hidden">';
-		}
+		[$name, $value] = explode('=', $param);
+		echo '<input name="' . $name . '" ';
+		echo 'value="' . $value . '" type="hidden">';
 	}
 
 	echo '</form>';
@@ -2480,8 +2489,10 @@ if ($v_list)
 		}
 		else
 		{
-			$th_params['orderby'] = $key_orderby;
-			$th_params['asc'] = $data['asc'];
+			$th_params['sort'] = [
+				'orderby'	=> $key_orderby,
+				'asc' 		=> $data['asc'],
+			];
 
 			echo '<a href="';
 			echo generate_url('messages', $th_params);
@@ -2503,7 +2514,7 @@ if ($v_list)
 	foreach($messages as $msg)
 	{
 		echo '<tr';
-		echo (strtotime($msg['validity']) < time()) ? ' class="danger"' : '';
+		echo strtotime($msg['validity']) < time() ? ' class="danger"' : '';
 		echo '>';
 
 		echo '<td>';

@@ -4,13 +4,6 @@ $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 require_once __DIR__ . '/include/transactions.php';
 
-/*
-$orderby = $_GET['orderby'] ?? 'cdate';
-$asc = $_GET['asc'] ?? 0;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
-*/
-
 $id = $_GET['id'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $edit = $_GET['edit'] ?? false;
@@ -2402,7 +2395,7 @@ if (!$app['p_inline'])
 
 	if (!$app['s_group_self'])
 	{
-		$params_form['sort'] = $app['s_schema'];
+		$params_form['s'] = $app['s_schema'];
 	}
 
 	$params_form = http_build_query($params_form, 'prefix', '&');
