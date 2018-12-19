@@ -56,7 +56,8 @@ if ($add)
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon" id="name_addon">';
 	echo '<span class="fa fa-circle-o-notch"></span></span>';
-	echo '<input type="text" class="form-control" id="name" name="name" maxlength="20" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="name" name="name" maxlength="20" ';
 	echo 'value="';
 	echo $tc['name'] ?? '';
 	echo '" required>';
@@ -74,7 +75,8 @@ if ($add)
 	echo '</div>';
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-success">';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Opslaan" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -172,7 +174,8 @@ if ($edit)
 	echo '</div>';
 
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-primary">';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Opslaan" class="btn btn-primary">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -199,7 +202,9 @@ if ($del)
 		from ' . $app['tschema'] . '.contact
 		where id_type_contact = ?', [$del]))
 	{
-		$app['alert']->warning('Er is ten minste één contact van dit contact type, dus kan het conact type niet verwijderd worden.');
+		$app['alert']->warning('Er is ten minste één contact
+			van dit contact type, dus kan het contact type
+			niet verwijderd worden.');
 		cancel();
 	}
 
@@ -233,7 +238,8 @@ if ($del)
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
 	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo '<input type="submit" value="Verwijderen" ';
+	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
@@ -275,7 +281,8 @@ include __DIR__ . '/include/header.php';
 echo '<div class="panel panel-default printview">';
 
 echo '<div class="table-responsive">';
-echo '<table class="table table-striped table-hover table-bordered footable" data-sort="false">';
+echo '<table class="table table-striped table-hover ';
+echo 'table-bordered footable" data-sort="false">';
 echo '<tr>';
 echo '<thead>';
 echo '<th>Naam</th>';
@@ -296,11 +303,29 @@ foreach($types as $t)
 	echo '<tr>';
 
 	echo '<td>';
-	echo ($protected) ? htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*' : aphp('type_contact', ['edit' => $t['id']], $t['abbrev']);
+
+	if ($protected)
+	{
+		echo htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*';
+	}
+	else
+	{
+		echo aphp('type_contact', ['edit' => $t['id']], $t['abbrev']);
+	}
+
 	echo '</td>';
 
 	echo '<td>';
-	echo ($protected) ? htmlspecialchars($t['name'],ENT_QUOTES) . '*' : aphp('type_contact', ['edit' => $t['id']], $t['name']);
+
+	if ($protected)
+	{
+		echo htmlspecialchars($t['name'],ENT_QUOTES) . '*';
+	}
+	else
+	{
+		echo aphp('type_contact', ['edit' => $t['id']], $t['name']);
+	}
+
 	echo '</td>';
 
 	echo '<td>';
@@ -311,7 +336,14 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo aphp('type_contact', ['del' => $t['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+		echo aphp(
+			'type_contact',
+			['del' => $t['id']],
+			'Verwijderen',
+			'btn btn-danger btn-xs',
+			false,
+			'times'
+		);
 	}
 
 	echo '</td>';
@@ -320,7 +352,11 @@ foreach($types as $t)
 
 	if ($count)
 	{
-		echo aphp('contacts', ['abbrev' => $t['abbrev']], $count);
+		echo aphp(
+			'contacts',
+			['f' => ['abbrev' => $t['abbrev']]],
+			$count
+		);
 	}
 	else
 	{
@@ -337,7 +373,8 @@ echo '</table>';
 echo '</div></div>';
 
 echo '<p>Kunnen niet verwijderd worden: ';
-echo 'contact types waarvan contacten bestaan en beschermde contact types (*).</p>';
+echo 'contact types waarvan contacten ';
+echo 'bestaan en beschermde contact types (*).</p>';
 
 include __DIR__ . '/include/footer.php';
 

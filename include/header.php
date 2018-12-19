@@ -225,11 +225,13 @@ if (!$app['s_anonymous'])
 		echo '</a></li>';
 
 		echo '<li><a href="';
+
 		echo generate_url(
 			'messages',
 			['f' => ['uid' => $app['s_id']]],
 			$app['s_schema']
 		);
+
 		echo '">';
 		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
 		echo '</a></li>';

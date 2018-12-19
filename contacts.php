@@ -20,7 +20,7 @@ if ($del)
 {
 	if (!($user_id = $app['db']->fetchColumn('select c.id_user
 		from ' . $app['tschema'] . '.contact c
-		where c.id = ?', array($del))))
+		where c.id = ?', [$del])))
 	{
 		$app['alert']->error('Het contact bestaat niet.');
 		cancel();
@@ -32,7 +32,7 @@ if ($del)
 		cancel();
 	}
 
-	$user_id = ($uid) ? $uid : $user_id;
+	$user_id = $uid ? $uid : $user_id;
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
@@ -49,7 +49,7 @@ if ($del)
 		from ' . $app['tschema'] . '.contact c, ' .
 			$app['tschema'] . '.type_contact tc
 		where c.id = ?
-			and tc.id = c.id_type_contact', array($del));
+			and tc.id = c.id_type_contact', [$del]);
 
 	$owner = $app['user_cache']->get($contact['id_user'], $app['tschema']);
 
@@ -60,7 +60,7 @@ if ($del)
 				$app['tschema'] . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
-				and tc.abbrev = \'mail\'', array($user_id)) == 1)
+				and tc.abbrev = \'mail\'', [$user_id]) == 1)
 		{
 			$err = $s_owner ? 'je enige E-mail adres' : 'het enige E-mail adres van een actieve gebruiker';
 			$app['alert']->warning('Waarschuwing: dit is ' . $err);
@@ -76,7 +76,7 @@ if ($del)
 			cancel($uid);
 		}
 
-		if ($app['db']->delete($app['tschema'] . '.contact', array('id' => $del)))
+		if ($app['db']->delete($app['tschema'] . '.contact', ['id' => $del]))
 		{
 			$app['alert']->success('Contact verwijderd.');
 		}
@@ -91,7 +91,7 @@ if ($del)
 		from ' . $app['tschema'] . '.type_contact tc, ' .
 			$app['tschema'] . '.contact c
 		where c.id_type_contact = tc.id
-			and c.id = ?', array($del));
+			and c.id = ?', [$del]);
 
 	$h1 = 'Contact verwijderen?';
 
@@ -218,19 +218,20 @@ if ($edit || $add)
 			}
 		}
 
-		$contact = array(
+		$contact = [
 			'id_type_contact'		=> $_POST['id_type_contact'],
 			'value'					=> trim($_POST['value']),
 			'comments' 				=> trim($_POST['comments']),
 			'flag_public'			=> $app['access_control']->get_post_value(),
 			'id_user'				=> $user_id,
-		);
+		];
 
 		$abbrev_type = $app['db']->fetchColumn('select abbrev
 			from ' . $app['tschema'] . '.type_contact
-			where id = ?', array($contact['id_type_contact']));
+			where id = ?', [$contact['id_type_contact']]);
 
-		if ($abbrev_type === 'mail' && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
+		if ($abbrev_type === 'mail'
+			&& !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
 		{
 			$errors[] = 'Geen geldig E-mail adres';
 		}
@@ -272,13 +273,13 @@ if ($edit || $add)
 				from ' . $app['tschema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
-				array($user_id, $mail_type_id));
+				[$user_id, $mail_type_id]);
 
 			$mail_id = $app['db']->fetchColumn('select id
 				from ' . $app['tschema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
-				array($user_id, $mail_type_id));
+				[$user_id, $mail_type_id]);
 
 			if ($edit == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
 			{
@@ -298,7 +299,7 @@ if ($edit || $add)
 					and c.id_user = u.id
 					and u.status in (1, 2)
 					and u.id <> ?
-					and c.value = ?', array($user_id, $contact['value']));
+					and c.value = ?', [$user_id, $contact['value']]);
 
 			if ($mail_count && $app['s_admin'])
 			{
@@ -343,7 +344,7 @@ if ($edit || $add)
 			if ($edit)
 			{
 				if ($app['db']->update($app['tschema'] . '.contact',
-					$contact, array('id' => $edit)))
+					$contact, ['id' => $edit]))
 				{
 					$app['alert']->success('Contact aangepast.');
 					cancel($uid);
@@ -375,15 +376,15 @@ if ($edit || $add)
 	{
 		$contact = $app['db']->fetchAssoc('select *
 			from ' . $app['tschema'] . '.contact
-			where id = ?', array($edit));
+			where id = ?', [$edit]);
 	}
 	else if ($add)
 	{
-		$contact = array(
+		$contact = [
 			'value'				=> '',
 			'comments'			=> '',
 			'flag_public'		=> false,
-		);
+		];
 	}
 
 	$tc = [];
@@ -596,7 +597,7 @@ if ($uid)
 		from ' . $app['tschema'] . '.contact c, ' .
 			$app['tschema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
-			and c.id_user = ?', array($uid));
+			and c.id_user = ?', [$uid]);
 
 	$user = $app['user_cache']->get($uid, $app['tschema']);
 
@@ -806,7 +807,7 @@ $params = [
 	],
 ];
 
-$params_sql = $where_sql = array();
+$params_sql = $where_sql = [];
 
 if (isset($filter['uid']))
 {
@@ -827,15 +828,12 @@ if (isset($filter['code']) && $filter['code'])
 	{
 		$where_sql[] = 'c.id_user = ?';
 		$params_sql[] = $fuid;
-
-		$code = link_user($fuid, $app['tschema'], false);
+		$params['f']['code'] = link_user($fuid, $app['tschema'], false);
 	}
 	else
 	{
 		$where_sql[] = '1 = 2';
 	}
-
-	$params['f']['code'] = $code;
 }
 
 if (isset($filter['q']) && $filter['q'])
@@ -867,16 +865,18 @@ if (isset($filter['access']) && $filter['access'] != 'all')
 			$acc = 2;
 			break;
 		default:
-			$access = 'all';
+			$filter['access'] = 'all';
 			break;
 	}
 
-	if ($filter['access'] != 'all')
+	if ($filter['access'] !== 'all')
 	{
 		$where_sql[] = 'c.flag_public = ?';
 		$params_sql[] = $acc;
-		$params['f']['access'] = $acc;
+
 	}
+
+	$params['f']['access'] = $filter['access'];
 }
 
 if (isset($filter['ustatus']) && $filter['ustatus'])
@@ -886,33 +886,27 @@ if (isset($filter['ustatus']) && $filter['ustatus'])
 		case 'new':
 			$where_sql[] = 'u.adate > ? and u.status = 1';
 			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-			$params['ustatus'] = 'new';
 			break;
 		case 'leaving':
 			$where_sql[] = 'u.status = 2';
-			$params['ustatus'] = 'leaving';
 			break;
 		case 'active':
 			$where_sql[] = 'u.status in (1, 2)';
-			$params['ustatus'] = 'active';
 			break;
 		case 'inactive':
 			$where_sql[] = 'u.status = 0';
-			$params['ustatus'] = 'inactive';
 			break;
 		case 'ip':
 			$where_sql[] = 'u.status = 5';
-			$params['ustatus'] = 'ip';
 			break;
 		case 'im':
 			$where_sql[] = 'u.status = 6';
-			$params['ustatus'] = 'im';
 			break;
 		case 'extern':
 			$where_sql[] = 'u.status = 7';
-			$params['ustatus'] = 'extern';
 			break;
 		default:
+			$filter['ustatus'] = 'all';
 			break;
 
 		$params['f']['ustatus'] = $filter['ustatus'];
@@ -925,7 +919,7 @@ else
 
 $user_table_sql = '';
 
-if ($params['f']['ustatus'] != 'all'
+if ($params['f']['ustatus'] !== 'all'
 	|| $params['sort']['orderby'] === 'u.letscode')
 {
 	$user_table_sql = ', ' . $app['tschema'] . '.users u ';
@@ -958,31 +952,36 @@ $query .= ' offset ' . $params['p']['start'];
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('contacts', $row_count, $params, $app['p_inline']);
+$app['pagination']->init(
+	'contacts',
+	$row_count,
+	$params,
+	$app['p_inline']
+);
 
-$asc_preset_ary = array(
+$asc_preset_ary = [
 	'asc'	=> 0,
 	'indicator' => '',
-);
+];
 
-$tableheader_ary = array(
-	'tc.abbrev' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Type')),
-	'c.value' => array_merge($asc_preset_ary, array(
-		'lbl' => 'Waarde')),
-	'u.letscode'	=> array_merge($asc_preset_ary, array(
-		'lbl' 		=> 'Gebruiker')),
-	'c.comments'	=> array_merge($asc_preset_ary, array(
+$tableheader_ary = [
+	'tc.abbrev' => array_merge($asc_preset_ary, [
+		'lbl' => 'Type']),
+	'c.value' => array_merge($asc_preset_ary, [
+		'lbl' => 'Waarde']),
+	'u.letscode'	=> array_merge($asc_preset_ary, [
+		'lbl' 		=> 'Gebruiker']),
+	'c.comments'	=> array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Commentaar',
-		'data_hide'	=> 'phone,tablet')),
-	'c.flag_public' => array_merge($asc_preset_ary, array(
+		'data_hide'	=> 'phone,tablet']),
+	'c.flag_public' => array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Zichtbaar',
-		'data_hide'	=> 'phone, tablet')),
-	'del' => array_merge($asc_preset_ary, array(
+		'data_hide'	=> 'phone, tablet']),
+	'del' => array_merge($asc_preset_ary, [
 		'lbl' 		=> 'Verwijderen',
 		'data_hide'	=> 'phone, tablet',
-		'no_sort'	=> true)),
-);
+		'no_sort'	=> true]),
+];
 
 $tableheader_ary[$params['sort']['orderby']]['asc']
 	= $params['sort']['asc'] ? 0 : 1;
@@ -991,7 +990,7 @@ $tableheader_ary[$params['sort']['orderby']]['indicator']
 
 unset($tableheader_ary['c.id']);
 
-$abbrev_ary = array();
+$abbrev_ary = [];
 
 $rs = $app['db']->prepare('select abbrev
 	from ' . $app['tschema'] . '.type_contact');
@@ -1015,8 +1014,16 @@ $top_buttons .= aphp(
 	true
 );
 
-$panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
-$filtered = $panel_collapse ? false : true;
+$filtered = !isset($filter['uid']) && (
+	(isset($filter['q']) && $filter['q'] !== '')
+	|| (isset($filter['abbrev']) && $filter['abbrev'] !== '')
+	|| (isset($filter['code']) && $filter['code'] !== '')
+	|| (isset($filter['ustatus'])
+		&& !in_array($filter['ustatus'], ['all', '']))
+	|| (isset($filter['access'])
+		&& !in_array($filter['access'], ['all', ''])));
+
+$panel_collapse = !$filtered;
 
 $app['assets']->add(['typeahead', 'typeahead.js']);
 
@@ -1079,7 +1086,7 @@ echo '<span class="input-group-addon">';
 echo 'Zichtbaar';
 echo '</span>';
 echo '<select class="form-control" id="access" name="f[access]">';
-echo get_select_options($access_options, $filter['access']);
+echo get_select_options($access_options, $filter['access'] ?? 'all');
 echo '</select>';
 echo '</div>';
 echo '</div>';
@@ -1088,7 +1095,7 @@ echo '</div>';
 
 echo '<div class="row">';
 
-$user_status_options = array(
+$user_status_options = [
 	'all'		=> 'Alle',
 	'active'	=> 'Actief',
 	'new'		=> 'Enkel instappers',
@@ -1097,7 +1104,7 @@ $user_status_options = array(
 	'ip'		=> 'Info-pakket',
 	'im'		=> 'Info-moment',
 	'extern'	=> 'Extern',
-);
+];
 
 echo '<div class="col-sm-5">';
 echo '<div class="input-group margin-bottom">';
@@ -1105,7 +1112,8 @@ echo '<span class="input-group-addon">';
 echo 'Status ';
 echo '<i class="fa fa-user"></i>';
 echo '</span>';
-echo '<select class="form-control" id="ustatus" name="f[ustatus]">';
+echo '<select class="form-control" ';
+echo 'id="ustatus" name="f[ustatus]">';
 echo get_select_options($user_status_options, $filter['ustatus'] ?? 'all');
 echo '</select>';
 echo '</div>';
@@ -1113,7 +1121,7 @@ echo '</div>';
 
 echo '<div class="col-sm-5">';
 echo '<div class="input-group margin-bottom">';
-echo '<span class="input-group-addon" id="fcode_addon">Van ';
+echo '<span class="input-group-addon" id="code_addon">Van ';
 echo '<span class="fa fa-user"></span></span>';
 
 $typeahead_ary = [];
@@ -1151,21 +1159,28 @@ echo '</div>';
 echo '</div>';
 
 $params_form = $params;
-unset($params_form['access'], $params_form['q'], $params_form['abbrev']);
-unset($params_form['letscode'], $params_form['ustatus']);
-unset($params_form['start']);
+unset($params_form['f']);
+unset($params_form['uid']);
+unset($params_form['p']['start']);
 
 $params_form['r'] = 'admin';
 $params_form['u'] = $app['s_id'];
 
-foreach ($params_form as $name => $value)
+$params_form = http_build_query($params_form, 'prefix', '&');
+$params_form = urldecode($params_form);
+$params_form = explode('&', $params_form);
+
+foreach ($params_form as $param)
 {
-	if (isset($value))
+	[$name, $value] = explode('=', $param);
+
+	if (!isset($value) || $value === '')
 	{
-		echo '<input name="' . $name;
-		echo '" value="' . $value;
-		echo '" type="hidden">';
+		continue;
 	}
+
+	echo '<input name="' . $name . '" ';
+	echo 'value="' . $value . '" type="hidden">';
 }
 
 echo '</form>';
@@ -1178,7 +1193,7 @@ echo $app['pagination']->get();
 if (!count($contacts))
 {
 	echo '<br>';
-	echo '<div class="panel panel-danger">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';

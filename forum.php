@@ -516,7 +516,8 @@ if ($topic)
  * show topic list
  */
 
-$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+$rows = $app['xdb']->get_many([
+	'agg_schema' => $app['tschema'],
 	'agg_type' => 'forum',
 	'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc');
 

@@ -123,6 +123,12 @@ class pagination
 			foreach ($action_params as $param)
 			{
 				[$name, $value] = explode('=', $param);
+
+				if (!isset($value) || $value === '')
+				{
+					continue;
+				}
+
 				$this->out .= '<input name="' . $name . '" ';
 				$this->out .= 'value="' . $value . '" type="hidden">';
 			}

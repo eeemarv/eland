@@ -2414,6 +2414,12 @@ if (!$app['p_inline'])
 	foreach ($params_form as $param)
 	{
 		[$name, $value] = explode('=', $param);
+
+		if (!isset($value) || $value === '')
+		{
+			continue;
+		}
+
 		echo '<input name="' . $name . '" ';
 		echo 'value="' . $value . '" type="hidden">';
 	}
