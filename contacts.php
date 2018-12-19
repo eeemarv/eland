@@ -589,7 +589,7 @@ if ($uid)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $uid === $app['s_id']
+		&& $uid == $app['s_id']
 		&& $uid;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
@@ -792,7 +792,7 @@ if (!$app['s_admin'])
 
 $s_owner = !$app['s_guest']
 	&& $app['s_group_self']
-	&& $app['s_id'] === $uid
+	&& $app['s_id'] == $uid
 	&& $app['s_id'] && $uid;
 
 $params = [

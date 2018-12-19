@@ -206,7 +206,7 @@ if ($app['is_http_post'] && $img && $id )
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	if (!($s_owner || $app['s_admin']))
@@ -324,7 +324,7 @@ if ($img_del && $id)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	if (!($s_owner || $app['s_admin']))
@@ -783,7 +783,7 @@ if ($pw)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $pw === $app['s_id']
+		&& $pw == $app['s_id']
 		&& $pw;
 
 	if (!$app['s_admin'] && !$s_owner)
@@ -1176,7 +1176,7 @@ if ($add || $edit)
 		&& $app['s_group_self']
 		&& $edit
 		&& $app['s_id']
-		&& $edit === $app['s_id'];
+		&& $edit == $app['s_id'];
 
 	if ($edit && !$app['s_admin'] && !$s_owner)
 	{
@@ -2529,7 +2529,7 @@ if ($id)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	$user_mail_cc = $app['is_http_post'] ? $user_mail_cc : 1;
@@ -3011,7 +3011,10 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = !$app['s_schema']
+		|| !count($mail_to)
+		|| !count($mail_from)
+		|| $s_owner;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> ';
 	echo 'Stuur een bericht naar ';
