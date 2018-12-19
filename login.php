@@ -16,7 +16,7 @@ if (!$location
 	|| $location == '/')
 {
 	$location = $app['config']->get('default_landing_page', $app['tschema']);
-	$location .= '.php?' . http_build_query($param);
+	$location .= '.php';
 }
 
 $submit = isset($_POST['zend']);
