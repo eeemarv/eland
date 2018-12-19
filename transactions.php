@@ -1900,7 +1900,7 @@ if ($id)
 $s_owner = !$app['s_guest']
 	&& $app['s_group_self']
 	&& isset($filter['uid'])
-	&& $app['s_id'] === $filter['uid'];
+	&& $app['s_id'] == $filter['uid'];
 
 $params_sql = $where_sql = $where_code_sql = [];
 

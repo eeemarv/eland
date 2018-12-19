@@ -57,7 +57,7 @@ if ($del || $edit)
 	}
 
 	$s_owner = $forum_post['uid']
-		&& $forum_post['uid'] === $app['s_id']
+		&& $forum_post['uid'] == $app['s_id']
 		&& $app['s_group_self']
 		&& !$app['s_guest'];
 
@@ -359,7 +359,7 @@ if ($topic)
 	$topic_post['id'] = $topic;
 
 	$s_owner = $topic_post['uid']
-		&& $topic_post['uid'] === $app['s_id']
+		&& $topic_post['uid'] == $app['s_id']
 		&& $app['s_group_self']
 		&& !$app['s_guest'];
 
@@ -443,7 +443,7 @@ if ($topic)
 	foreach ($forum_posts as $p)
 	{
 		$s_owner = $p['uid']
-			&& $p['uid'] === $app['s_id']
+			&& $p['uid'] == $app['s_id']
 			&& $app['s_group_self']
 			&& !$app['s_guest'];
 
@@ -629,7 +629,7 @@ foreach($forum_posts as $p)
 	}
 
 	$s_owner = $p['uid']
-		&& $app['s_id'] === $p['uid']
+		&& $app['s_id'] == $p['uid']
 		&& $app['s_group_self']
 		&& !$app['s_guest'];
 
