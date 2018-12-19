@@ -227,7 +227,8 @@ else
 
 /** page access **/
 
-if (!isset($app['page_access']))
+if (!isset($app['page_access'])
+	|| !in_array($app['page_access'], ['anonymous', 'guest', 'user', 'admin']))
 {
 	http_response_code(500);
 

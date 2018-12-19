@@ -4,10 +4,12 @@ $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 require_once __DIR__ . '/include/transactions.php';
 
+/*
 $orderby = $_GET['orderby'] ?? 'cdate';
 $asc = $_GET['asc'] ?? 0;
 $limit = $_GET['limit'] ?? 25;
 $start = $_GET['start'] ?? 0;
+*/
 
 $id = $_GET['id'] ?? false;
 $add = isset($_GET['add']) ? true : false;
@@ -20,6 +22,8 @@ $tus = $_GET['tus'] ?? false;
 $fuid = $_GET['fuid'] ?? false;
 
 $filter = $_GET['f'] ?? [];
+$pag = $_GET['p'] ?? [];
+$sort = $_GET['sort'] ?? [];
 
 $currency = $app['config']->get('currency', $app['tschema']);
 
@@ -1905,10 +1909,14 @@ $s_owner = !$app['s_guest']
 $params_sql = $where_sql = $where_code_sql = [];
 
 $params = [
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'cdate',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
 ];
 
 if (isset($filter['uid']))
@@ -2032,9 +2040,10 @@ else
 $query = 'select t.*
 	from ' . $app['tschema'] . '.transactions t ' .
 	$where_sql . '
-	order by t.' . $orderby . ' ';
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+	order by t.' . $params['sort']['orderby'] . ' ';
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $transactions = $app['db']->fetchAll($query, $params_sql);
 
@@ -2123,8 +2132,10 @@ else
 	];
 }
 
-$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc']
+	= $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator']
+	= $params['sort']['asc'] ? '-asc' : '-desc';
 
 if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 {
@@ -2384,26 +2395,25 @@ if (!$app['p_inline'])
 	$params_form = $params;
 	unset($params_form['f']);
 	unset($params_form['uid']);
-	unset($params_form['start']);
+	unset($params_form['p']['start']);
 
 	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
 
 	if (!$app['s_group_self'])
 	{
-		$params_form['s'] = $app['s_schema'];
+		$params_form['sort'] = $app['s_schema'];
 	}
 
-	foreach ($params_form as $name => $value)
+	$params_form = http_build_query($params_form, 'prefix', '&');
+	$params_form = urldecode($params_form);
+	$params_form = explode('&', $params_form);
+
+	foreach ($params_form as $param)
 	{
-		if (isset($value))
-		{
-			echo '<input name="';
-			echo $name;
-			echo '" value="';
-			echo $value;
-			echo '" type="hidden">';
-		}
+		[$name, $value] = explode('=', $param);
+		echo '<input name="' . $name . '" ';
+		echo 'value="' . $value . '" type="hidden">';
 	}
 
 	echo '</form>';
@@ -2471,8 +2481,10 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		$h_params = $params;
 
-		$h_params['orderby'] = $key_orderby;
-		$h_params['asc'] = $data['asc'];
+		$h_params['sort'] = [
+			'orderby' 	=> $key_orderby,
+			'asc'		=> $data['asc'],
+		];
 
 		echo '<a href="';
 		echo generate_url('transactions', $h_params);
