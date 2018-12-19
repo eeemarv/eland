@@ -1,7 +1,6 @@
 <?php
 
 $uid = $_GET['uid'] ?? false;
-$abbrev = $_GET['abbrev'] ?? '';
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
@@ -12,7 +11,7 @@ $pag = $_GET['p'] ?? [];
 $sort = $_GET['sort'] ?? [];
 
 $page_access = $del || $add || $edit ? 'user' : 'guest';
-$page_access = $abbrev || !$uid ? 'admin' : $page_access;
+$page_access = $uid ? $page_access : 'admin';
 
 require_once __DIR__ . '/include/web.php';
 
