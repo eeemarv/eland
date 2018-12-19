@@ -2,23 +2,17 @@
 
 $uid = $_GET['uid'] ?? false;
 $abbrev = $_GET['abbrev'] ?? '';
-$q = $_GET['q'] ?? '';
-$letscode = $_GET['letscode'] ?? '';
-$access = $_GET['access'] ?? 'all';
-$ustatus = $_GET['ustatus'] ?? 'all';
-
-$orderby = $_GET['orderby'] ?? 'c.id';
-$asc = $_GET['asc'] ?? 0;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
-
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 
-$page_access = ($del || $add || $edit) ? 'user' : 'guest';
-$page_access = ($abbrev || !$uid) ? 'admin' : $page_access;
+$filter = $_GET['f'] ?? [];
+$pag = $_GET['p'] ?? [];
+$sort = $_GET['sort'] ?? [];
+
+$page_access = $del || $add || $edit ? 'user' : 'guest';
+$page_access = $abbrev || !$uid ? 'admin' : $page_access;
 
 require_once __DIR__ . '/include/web.php';
 
@@ -42,7 +36,7 @@ if ($del)
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $user_id === $app['s_id']
+		&& $user_id == $app['s_id']
 		&& $user_id;
 
 	if (!($app['s_admin'] || $s_owner))
@@ -801,70 +795,67 @@ $s_owner = !$app['s_guest']
 	&& $app['s_id'] === $uid
 	&& $app['s_id'] && $uid;
 
-$params = array(
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
-);
+$params = [
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'c.id',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
+];
 
 $params_sql = $where_sql = array();
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	$user = $app['user_cache']->get($uid, $app['tschema']);
-
-	$where_sql[] = 'c.id_user = ?';
-	$params_sql[] = $uid;
-	$params['uid'] = $uid;
-
-	$letscode = link_user($user, $app['tschema'], false);
+	$params['f']['uid'] = $filter['uid'];
+	$filter['code'] = link_user($user, $app['tschema'], false);
 }
 
-if (!$uid)
+if (isset($filter['code']) && $filter['code'])
 {
-	if ($letscode)
+	[$code] = explode(' ', trim($filter['code']));
+
+	$fuid = $app['db']->fetchColumn('select id
+		from ' . $app['tschema'] . '.users
+		where letscode = ?', [$code]);
+
+	if ($fuid)
 	{
-		[$letscode] = explode(' ', trim($letscode));
+		$where_sql[] = 'c.id_user = ?';
+		$params_sql[] = $fuid;
 
-		$fuid = $app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.users
-			where letscode = ?', [$letscode]);
-
-		if ($fuid)
-		{
-			$where_sql[] = 'c.id_user = ?';
-			$params_sql[] = $fuid;
-
-			$letscode = link_user($fuid, $app['tschema'], false);
-		}
-		else
-		{
-			$where_sql[] = '1 = 2';
-		}
-
-		$params['letscode'] = $letscode;
+		$code = link_user($fuid, $app['tschema'], false);
 	}
+	else
+	{
+		$where_sql[] = '1 = 2';
+	}
+
+	$params['f']['code'] = $code;
 }
 
-if ($q)
+if (isset($filter['q']) && $filter['q'])
 {
 	$where_sql[] = '(c.value ilike ? or c.comments ilike ?)';
-	$params_sql[] = '%' . $q . '%';
-	$params_sql[] = '%' . $q . '%';
-	$params['q'] = $q;
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params['f']['q'] = $filter['q'];
 }
 
-if ($abbrev)
+if (isset($filter['abbrev']) && $filter['abbrev'])
 {
 	$where_sql[] = 'tc.abbrev = ?';
-	$params_sql[] = $abbrev;
-	$params['abbrev'] = $abbrev;
+	$params_sql[] = $filter['abbrev'];
+	$params['f']['abbrev'] = $filter['abbrev'];
 }
 
-if ($access != 'all')
+if (isset($filter['access']) && $filter['access'] != 'all')
 {
-	switch ($access)
+	switch ($filter['access'])
 	{
 		case 'admin':
 			$acc = 0;
@@ -880,52 +871,62 @@ if ($access != 'all')
 			break;
 	}
 
-	if ($access != 'all')
+	if ($filter['access'] != 'all')
 	{
 		$where_sql[] = 'c.flag_public = ?';
 		$params_sql[] = $acc;
-		$params['access'] = $acc;
+		$params['f']['access'] = $acc;
 	}
 }
 
-switch ($ustatus)
+if (isset($filter['ustatus']) && $filter['ustatus'])
 {
-	case 'new':
-		$where_sql[] = 'u.adate > ? and u.status = 1';
-		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-		$params['ustatus'] = 'new';
-		break;
-	case 'leaving':
-		$where_sql[] = 'u.status = 2';
-		$params['ustatus'] = 'leaving';
-		break;
-	case 'active':
-		$where_sql[] = 'u.status in (1, 2)';
-		$params['ustatus'] = 'active';
-		break;
-	case 'inactive':
-		$where_sql[] = 'u.status = 0';
-		$params['ustatus'] = 'inactive';
-		break;
-	case 'ip':
-		$where_sql[] = 'u.status = 5';
-		$params['ustatus'] = 'ip';
-		break;
-	case 'im':
-		$where_sql[] = 'u.status = 6';
-		$params['ustatus'] = 'im';
-		break;
-	case 'extern':
-		$where_sql[] = 'u.status = 7';
-		$params['ustatus'] = 'extern';
-		break;
-	default:
-		break;
+	switch ($filter['ustatus'])
+	{
+		case 'new':
+			$where_sql[] = 'u.adate > ? and u.status = 1';
+			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+			$params['ustatus'] = 'new';
+			break;
+		case 'leaving':
+			$where_sql[] = 'u.status = 2';
+			$params['ustatus'] = 'leaving';
+			break;
+		case 'active':
+			$where_sql[] = 'u.status in (1, 2)';
+			$params['ustatus'] = 'active';
+			break;
+		case 'inactive':
+			$where_sql[] = 'u.status = 0';
+			$params['ustatus'] = 'inactive';
+			break;
+		case 'ip':
+			$where_sql[] = 'u.status = 5';
+			$params['ustatus'] = 'ip';
+			break;
+		case 'im':
+			$where_sql[] = 'u.status = 6';
+			$params['ustatus'] = 'im';
+			break;
+		case 'extern':
+			$where_sql[] = 'u.status = 7';
+			$params['ustatus'] = 'extern';
+			break;
+		default:
+			break;
+
+		$params['f']['ustatus'] = $filter['ustatus'];
+	}
+}
+else
+{
+	$params['f']['ustatus'] = 'all';
 }
 
 $user_table_sql = '';
 
-if ($ustatus != 'all' || $orderby == 'u.letscode')
+if ($params['f']['ustatus'] != 'all'
+	|| $params['sort']['orderby'] === 'u.letscode')
 {
 	$user_table_sql = ', ' . $app['tschema'] . '.users u ';
 	$where_sql[] = 'u.id = c.id_user';
@@ -950,9 +951,10 @@ $row_count = $app['db']->fetchColumn('select count(c.*)
 		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
-$query .= ' order by ' . $orderby . ' ';
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+$query .= ' order by ' . $params['sort']['orderby'] . ' ';
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
@@ -982,8 +984,10 @@ $tableheader_ary = array(
 		'no_sort'	=> true)),
 );
 
-$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc']
+	= $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator']
+	= $params['sort']['asc'] ? '-asc' : '-desc';
 
 unset($tableheader_ary['c.id']);
 
@@ -1001,7 +1005,15 @@ while($row = $rs->fetch())
 
 $csv_en = true;
 
-$top_buttons .= aphp('contacts', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+$top_buttons .= aphp(
+	'contacts',
+	['add' => 1],
+	'Toevoegen',
+	'btn btn-success',
+	'Contact toevoegen',
+	'plus',
+	true
+);
 
 $panel_collapse = ($q || $abbrev || $access != 'all' || $letscode || $ustatus != 'all') ? false : true;
 $filtered = $panel_collapse ? false : true;
@@ -1031,7 +1043,9 @@ echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-search"></i>';
 echo '</span>';
-echo '<input type="text" class="form-control" id="q" value="' . $q . '" name="q" placeholder="Zoeken">';
+echo '<input type="text" class="form-control" id="q" value="';
+echo $filter['q'] ?? '';
+echo '" name="f[q]" placeholder="Zoeken">';
 echo '</div>';
 echo '</div>';
 
@@ -1040,8 +1054,8 @@ echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon">';
 echo 'Type';
 echo '</span>';
-echo '<select class="form-control" id="abbrev" name="abbrev">';
-echo get_select_options(array_merge(['' => ''], $abbrev_ary), $abbrev);
+echo '<select class="form-control" id="abbrev" name="f[abbrev]">';
+echo get_select_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
 echo '</select>';
 echo '</div>';
 echo '</div>';
@@ -1064,8 +1078,8 @@ echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon">';
 echo 'Zichtbaar';
 echo '</span>';
-echo '<select class="form-control" id="access" name="access">';
-echo get_select_options($access_options, $access);
+echo '<select class="form-control" id="access" name="f[access]">';
+echo get_select_options($access_options, $filter['access']);
 echo '</select>';
 echo '</div>';
 echo '</div>';
@@ -1091,8 +1105,8 @@ echo '<span class="input-group-addon">';
 echo 'Status ';
 echo '<i class="fa fa-user"></i>';
 echo '</span>';
-echo '<select class="form-control" id="ustatus" name="ustatus">';
-echo get_select_options($user_status_options, $ustatus);
+echo '<select class="form-control" id="ustatus" name="f[ustatus]">';
+echo get_select_options($user_status_options, $filter['ustatus'] ?? 'all');
 echo '</select>';
 echo '</div>';
 echo '</div>';
@@ -1122,9 +1136,9 @@ echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
-echo 'name="letscode" id="letscode" placeholder="Account Code" ';
+echo 'name="f[code]" id="code" placeholder="Account Code" ';
 echo 'value="';
-echo $letscode;
+echo $filter['code'] ?? '';
 echo '">';
 echo '</div>';
 echo '</div>';
