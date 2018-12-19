@@ -691,7 +691,7 @@ else
 
 if (!count($news))
 {
-	echo '<div class="panel panel-warning">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
 	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
 	echo '</div></div>';
