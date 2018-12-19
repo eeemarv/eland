@@ -82,13 +82,11 @@ class access_control
 
 	public function get_visible_ary()
 	{
-		global $access_level;
-
 		$ary = [];
 
 		foreach ($this->acc_ary_search as $lvl => $role)
 		{
-			if ($access_level <= $lvl)
+			if ($this->access_level <= $lvl)
 			{
 				$ary[] = $role;
 			}

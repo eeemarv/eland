@@ -631,7 +631,8 @@ if ($map)
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
-		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['access_control']->get_visible_ary()],
+		'order by event_time asc');
 
 	$docs = [];
 
@@ -678,7 +679,8 @@ else
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
-		'access' => $app['access_control']->get_visible_ary()], 'order by event_time asc');
+		'access' => $app['access_control']->get_visible_ary()],
+		'order by event_time asc');
 
 	$docs = [];
 
