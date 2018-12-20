@@ -183,7 +183,7 @@ if ($token)
 			'to' 					=> [$data['email']],
 			'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'template_from_config'	=> 'registration_success_mail',
-			'vars'		=> $vars,
+			'vars'					=> $vars,
 		], 8500);
 
 		$app['alert']->success('Inschrijving voltooid.');

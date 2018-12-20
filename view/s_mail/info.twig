@@ -1,0 +1,67 @@
+{% extends 'mail/base.twig' %}
+
+{%- block text_account_info -%}
+{%- autoescape false -%}
+
+{{- 'your_account_info.title'|trans|underline -}}
+
+{{- 'your_account_info.code'|trans({'%code%': user.letscode}) -}}
+{{- 'your_account_into.username'|trans({'%username%': user.name}) -}}
+{{- 'your_account_info.balance'|trans('%balance%': user.saldo, '%currency%': config('currency', schema)) -}}
+{%- if user.min_limit is defined -%}
+{{- 'your_account_info.min_limit'|trans('%min_limit%': user.min_limit, '%currency%': config('currency', schema)) -}}
+{%- endif -%}
+{%- if user.max_limit is defined -%}
+{{- 'your_account_info.max_limit'|trans('%max_limit%': user.max_limit, '%currency%': config('currency', schema)) -}}
+{%- endif -%}
+{# if status == 'leaving' #}
+
+{{- 'your_account_info.login'|trans('%login%': path('login', {'schema': schema, 'code': user.letscode})) -}}
+
+{%- endautoescape -%}
+{%- endblock text_account_info -%}
+
+{%- block text_support -%}
+{%- autoescape false -%}
+
+{{- 'mail.support.title'|trans|underline -}}
+
+Als je een vraag of probleem hebt, kan je mailen naar
+
+{%- for mail in config('support', schema)|split(',') -%}
+{{- mail -}}
+{%- endfor -%}
+
+{%- endautoescape -%}
+{%- endblock text_support -%}
+
+{%- block html_accountinfo -%}
+    <h4>Je account</h4>
+
+    <ul>
+    <li>Je code: <strong>{{- user.letscode -}}</strong></li>
+    <li>Je gebruikersnaam: <strong>{{- user.name -}}</strong></li>
+    <li>Je saldo bedraagt momenteel <strong>{{- user.saldo -}}</strong> {{- config('currency', schema) -}}</li>
+    {%- if user.minlimit != '' and user.minlimit != -999999999 -%}
+    <li>Minimum limiet: <strong>{{- user.minlimit -}}</strong>&nbsp;{{- config('currency', schema) -}}</li>
+    {%- endif -%}
+    {%- if user.maxlimit != '' and user.maxlimit != 999999999 -%}
+    <li>Maximum limiet: <strong>{{- user.maxlimit -}}</strong>&nbsp;{{- config('currency', schema) -}}</li>
+    {%- endif -%}
+    <li>Status:&nbsp;<strong>{%- if user.status == 1 -%}Actief{%- elseif user.status == 2 -%}Uitstapper{%- endif -%}</strong></li>
+    <li><a href="{{- url_login -}}">Login</a></li>
+
+    </ul>
+{%- endblock html_accountinfo -%}
+
+
+{%- block html_support -%}
+    <h4>{{- 'mail.support.title'|trans -}}</h4>
+    <p>Als je een vraag of probleem hebt, kan je mailen naar
+    <ul></ul>
+    {%- for mail in config('support', schema)|split(',') -%}
+    <li><a href="mailto:{{- mail -}}?subject=Support">{{- mail -}}</a></li>
+    {%- endfor -%}
+    </p>
+{%- endblock html_support -%}
+
