@@ -2321,7 +2321,7 @@ if (!$app['p_inline'])
 		'offer'		=> 'Aanbod',
 	];
 
-	echo '<div class="col-md-3">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($offerwant_options, 'type', $filter);
@@ -2329,12 +2329,15 @@ if (!$app['p_inline'])
 	echo '</div>';
 	echo '</div>';
 
+	echo '</div>';
+	echo '<div class="row">';
+
 	$valid_options = [
 		'yes'		=> 'Geldig',
 		'no'		=> 'Vervallen',
 	];
 
-	echo '<div class="col-md-3">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($valid_options, 'valid', $filter);
@@ -2342,13 +2345,16 @@ if (!$app['p_inline'])
 	echo '</div>';
 	echo '</div>';
 
+	echo '</div>';
+	echo '<div class="row">';
+
 	$user_status_options = [
 		'active'	=> 'Niet in- of uitstappers',
 		'new'		=> 'Instappers',
 		'leaving'	=> 'Uitstappers',
 	];
 
-	echo '<div class="col-md-6">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($user_status_options, 'ustatus', $filter);
@@ -2780,26 +2786,35 @@ function cancel($id = null)
 	exit;
 }
 
-function get_checkbox_filter(array $checkbox_ary, string $filter_id, array $filter_ary):string
+function get_checkbox_filter(
+	array $checkbox_ary,
+	string $filter_id,
+	array $filter_ary):string
 {
 	$out = '';
 
 	foreach ($checkbox_ary as $key => $label)
 	{
-		$out .= '<span class="input-group-addon">';
-		$out .= '<label class="col-xs-12">';
-		$out .= '<input type="checkbox" name="f[' . $filter_id . '][' . $key . ']"';
+		$id = 'f_' . $filter_id . '_' . $key;
+		$out .= '<label class="checkbox-inline" for="' . $id . '">';
+		$out .= '<input type="checkbox" id="' . $id . '" ';
+		$out .= 'name="f[' . $filter_id . '][' . $key . ']"';
 		$out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
 		$out .= '>&nbsp;';
+		$out .= '<span class="btn btn-default">';
 		$out .= $label;
-		$out .= '</label>';
 		$out .= '</span>';
+		$out .= '</label>';
 	}
 
 	return $out;
 }
 
-function get_radio(array $radio_ary, string $name, string $selected, bool $required):string
+function get_radio(
+	array $radio_ary,
+	string $name,
+	string $selected,
+	bool $required):string
 {
 	$out = '';
 
