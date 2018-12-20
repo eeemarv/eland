@@ -2927,7 +2927,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Rechten / rol';
 		echo '</dt>';
-		echo get_dd($user['accountrole']);
+		echo get_dd(cnst::ROLE_ARY[$user['accountrole']]);
 
 		echo '<dt>';
 		echo 'Status';
