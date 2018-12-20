@@ -1840,7 +1840,7 @@ if (isset($filter['q'])
 }
 
 if (isset($filter['fcode'])
-	&& $filter['fcode'])
+	&& $filter['fcode'] !== '')
 {
 	[$fcode] = explode(' ', trim($filter['fcode']));
 	$fcode = trim($fcode);
@@ -1900,27 +1900,29 @@ if (!isset($filter['s']))
 	];
 }
 
-if (isset($filter['valid']))
+if (isset($filter['valid'])
+	&& count($filter['valid']) === 2)
 {
-	if (count($filter['valid']) === 2)
+	$params['f']['valid'] = [
+		'yes'	=> 'on',
+		'no'	=> 'on',
+	];
+}
+else if (!isset($filter['valid']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['valid']['yes']))
 	{
-		$params['f']['valid'] = [
-			'yes'	=> 'on',
-			'no'	=> 'on',
-		];
+		$where_sql[] = 'm.validity >= now()';
+		$params['f']['valid']['yes'] = 'on';
 	}
-	else
+	else if (isset($filter['valid']['no']))
 	{
-		if (isset($filter['valid']['yes']))
-		{
-			$where_sql[] = 'm.validity >= now()';
-			$params['f']['valid']['yes'] = 'on';
-		}
-		else if (isset($filter['valid']['no']))
-		{
-			$where_sql[] = 'm.validity < now()';
-			$params['f']['valid']['no'] = 'on';
-		}
+		$where_sql[] = 'm.validity < now()';
+		$params['f']['valid']['no'] = 'on';
 	}
 }
 
@@ -1932,27 +1934,28 @@ if (!isset($filter['s']))
 	];
 }
 
-if (isset($filter['type']))
+if (isset($filter['type']) && count($filter['type']) === 2)
 {
-	if (count($filter['type']) === 2)
+	$params['f']['type'] = [
+		'want'	=> 'on',
+		'offer'	=> 'on',
+	];
+}
+else if (!isset($filter['type']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['type']['want']))
 	{
-		$params['f']['type'] = [
-			'want'	=> 'on',
-			'offer'	=> 'on',
-		];
+		$where_sql[] = 'm.msg_type = 0';
+		$params['f']['type']['want'] = 'on';
 	}
-	else
+	else if (isset($filter['type']['offer']))
 	{
-		if (isset($filter['type']['want']))
-		{
-			$where_sql[] = 'm.msg_type = 0';
-			$params['f']['type']['want'] = 'on';
-		}
-		else if (isset($filter['type']['offer']))
-		{
-			$where_sql[] = 'm.msg_type = 1';
-			$params['f']['type']['offer'] = 'on';
-		}
+		$where_sql[] = 'm.msg_type = 1';
+		$params['f']['type']['offer'] = 'on';
 	}
 }
 
@@ -1965,43 +1968,53 @@ if (!isset($filter['s']))
 	];
 }
 
-if (isset($filter['ustatus']))
+if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
 {
-	if (count($filter['ustatus']) === 3)
+	$params['f']['ustatus'] = [
+		'new'		=> 'on',
+		'leaving'	=> 'on',
+		'active'	=> 'on',
+	];
+}
+else if (!isset($filter['ustatus']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['ustatus']['new']))
 	{
-		$params['f']['ustatus'] = [
-			'new'		=> 'on',
-			'leaving'	=> 'on',
-			'active'	=> 'on',
-		];
+		$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+		$params['f']['ustatus']['new'] = 'on';
 	}
-	else
+
+	if (isset($filter['ustatus']['leaving']))
 	{
-		if (isset($filter['ustatus']['new']))
-		{
-			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-			$params['f']['ustatus']['new'] = 'on';
-		}
-
-		if (isset($filter['ustatus']['leaving']))
-		{
-			$ustatus_sql[] = 'u.status = 2';
-			$params['f']['ustatus']['leaving'] = 'on';
-		}
-
-		if (isset($filter['ustatus']['active']))
-		{
-			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-			$params['f']['ustatus']['active'] = 'on';
-		}
-
-		if (count($ustatus_sql))
-		{
-			$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
-		}
+		$ustatus_sql[] = 'u.status = 2';
+		$params['f']['ustatus']['leaving'] = 'on';
 	}
+
+	if (isset($filter['ustatus']['active']))
+	{
+		$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+		$params['f']['ustatus']['active'] = 'on';
+	}
+
+	if (count($ustatus_sql))
+	{
+		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+	}
+}
+
+if (isset($filter['s']))
+{
+	$params['f']['s'] = '1';
+}
+else
+{
+	unset($params['f']);
 }
 
 if ($app['s_guest'])
