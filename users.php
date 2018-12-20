@@ -206,7 +206,7 @@ if ($app['is_http_post'] && $img && $id )
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	if (!($s_owner || $app['s_admin']))
@@ -217,7 +217,7 @@ if ($app['is_http_post'] && $img && $id )
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
-	$image = ($_FILES['image']) ?: null;
+	$image = $_FILES['image'] ?: null;
 
 	if (!$image)
 	{
@@ -324,7 +324,7 @@ if ($img_del && $id)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	if (!($s_owner || $app['s_admin']))
@@ -374,7 +374,7 @@ if ($img_del && $id)
 	echo '<div class="col-xs-6">';
 	echo '<div class="thumbnail">';
 	echo '<img src="';
-	echo $app['s3_img_url'] . $file;
+	echo $app['s3_url'] . $file;
 	echo '" class="img-rounded">';
 	echo '</div>';
 	echo '</div>';
@@ -783,7 +783,7 @@ if ($pw)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $pw === $app['s_id']
+		&& $pw == $app['s_id']
 		&& $pw;
 
 	if (!$app['s_admin'] && !$s_owner)
@@ -1176,7 +1176,7 @@ if ($add || $edit)
 		&& $app['s_group_self']
 		&& $edit
 		&& $app['s_id']
-		&& $edit === $app['s_id'];
+		&& $edit == $app['s_id'];
 
 	if ($edit && !$app['s_admin'] && !$s_owner)
 	{
@@ -2529,7 +2529,7 @@ if ($id)
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $id
+		&& $app['s_id'] == $id
 		&& $id;
 
 	$user_mail_cc = $app['is_http_post'] ? $user_mail_cc : 1;
@@ -2561,7 +2561,9 @@ if ($id)
 
 	if ($link && isset($st[$link]))
 	{
-		$and_status = isset($st[$link]['sql']) ? ' and ' . $st[$link]['sql'] : '';
+		$and_status = isset($st[$link]['sql'])
+			? ' and ' . $st[$link]['sql']
+			: '';
 
 		if (isset($st[$link]['sql_bind']))
 		{
@@ -2607,7 +2609,9 @@ if ($id)
 		$interlets_group_id = false;
 	}
 
-	$app['assets']->add(['leaflet', 'jqplot', 'user.js', 'plot_user_transactions.js']);
+	$app['assets']->add(['leaflet',
+		'jqplot', 'user.js',
+		'plot_user_transactions.js']);
 
 	if ($app['s_admin'] || $s_owner)
 	{
@@ -2617,13 +2621,34 @@ if ($id)
 	if ($app['s_admin'] || $s_owner)
 	{
 		$title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
-		$top_buttons .= aphp('users', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $title . ' aanpassen', 'pencil', true);
-		$top_buttons .= aphp('users', ['pw' => $id], 'Paswoord aanpassen', 'btn btn-info', 'Paswoord aanpassen', 'key', true);
+
+		$top_buttons .= aphp(
+			'users',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			$title . ' aanpassen',
+			'pencil',
+			true);
+		$top_buttons .= aphp(
+			'users',
+			['pw' => $id],
+			'Paswoord aanpassen',
+			'btn btn-info',
+			'Paswoord aanpassen',
+			'key',
+			true);
 	}
 
 	if ($app['s_admin'] && !$count_transactions && !$s_owner)
 	{
-		$top_buttons .= aphp('users', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Gebruiker verwijderen', 'times', true);
+		$top_buttons .= aphp('users',
+			['del' => $id],
+			'Verwijderen',
+			'btn btn-danger',
+			'Gebruiker verwijderen',
+			'times',
+			true);
 	}
 
 	if ($app['s_admin']
@@ -2690,7 +2715,8 @@ if ($id)
 	if ($status != 1)
 	{
 		$h1 .= ' <small><span class="text-' . $st_class_ary[$status] . '">';
-		$h1 .= $h_status_ary[$status] . '</span></small>';
+		$h1 .= $h_status_ary[$status];
+		$h1 .= '</span></small>';
 	}
 
 	if ($app['s_admin'])
@@ -2719,23 +2745,34 @@ if ($id)
 	echo '<div class="col-md-6">';
 
 	echo '<div class="panel panel-default">';
-	echo '<div class="panel-body text-center center-block" id="img_user">';
+	echo '<div class="panel-body text-center ';
+	echo 'center-block" id="img_user">';
 
 	$show_img = $user['PictureFile'] ? true : false;
 
 	$user_img = $show_img ? '' : ' style="display:none;"';
 	$no_user_img = $show_img ? ' style="display:none;"' : '';
 
-	$img_src = $user['PictureFile'] ? $app['s3_img_url'] . $user['PictureFile'] : $app['rootpath'] . 'gfx/1.gif';
 	echo '<img id="user_img"';
 	echo $user_img;
 	echo ' class="img-rounded img-responsive center-block" ';
 	echo 'src="';
-	echo $img_src;
-	echo '" ';
-	echo 'data-bucket-url="' . $app['s3_img_url'] . '"></img>';
 
-	echo '<div id="no_user_img"' . $no_user_img . '>';
+	if ($user['PictureFile'])
+	{
+		echo $app['s3_url'] . $user['PictureFile'];
+	}
+	else
+	{
+		echo $app['rootpath'] . 'gfx/1.gif';
+	}
+
+	echo '" ';
+	echo 'data-bucket-url="' . $app['s3_url'] . '"></img>';
+
+	echo '<div id="no_user_img"';
+	echo $no_user_img;
+	echo '>';
 	echo '<i class="fa fa-user fa-5x text-muted"></i>';
 	echo '<br>Geen profielfoto</div>';
 
@@ -2792,20 +2829,25 @@ if ($id)
 	echo 'Volledige naam';
 	echo '</dt>';
 
-	if ($app['s_admin'] || $s_owner || $app['access_control']->is_visible($fullname_access))
+	if ($app['s_admin']
+		|| $s_owner
+		|| $app['access_control']->is_visible($fullname_access))
 	{
 		echo get_dd($user['fullname'] ?? '');
 	}
 	else
 	{
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">verborgen</span>';
+		echo '<span class="btn btn-default btn-xs">';
+		echo 'verborgen</span>';
 		echo '</dd>';
 	}
 
 	if ($app['s_admin'])
 	{
-		echo '<dt>Zichtbaarheid Volledige Naam</dt>';
+		echo '<dt>';
+		echo 'Zichtbaarheid Volledige Naam';
+		echo '</dt>';
 		echo '<dd>';
 		echo $app['access_control']->get_label($fullname_access);
 		echo '</dd>';
@@ -2885,7 +2927,7 @@ if ($id)
 		echo '<dt>';
 		echo 'Rechten / rol';
 		echo '</dt>';
-		echo get_dd($user['accountrole']);
+		echo get_dd(cnst::ROLE_ARY[$user['accountrole']]);
 
 		echo '<dt>';
 		echo 'Status';
@@ -2933,15 +2975,18 @@ if ($id)
 		echo '<dt>';
 		echo 'Periodieke Overzichts E-mail';
 		echo '</dt>';
-		echo (($user['cron_saldo']) ? 'Aan' : 'Uit');
+		echo $user['cron_saldo'] ? 'Aan' : 'Uit';
 		echo '</dl>';
 	}
 
 	echo '</div></div></div></div>';
 
-	echo '<div id="contacts" '; //data-uid="' . $id . '" ';
-	echo 'data-url="' . $app['rootpath'] . 'contacts.php?inline=1&uid=' . $id;
-	echo '&' . http_build_query(get_session_query_param()) . '"></div>';
+	echo '<div id="contacts" ';
+	echo 'data-url="' . $app['rootpath'];
+	echo 'contacts.php?inline=1&uid=' . $id;
+	echo '&';
+	echo http_build_query(get_session_query_param());
+	echo '"></div>';
 
 	// response form
 
@@ -2966,7 +3011,10 @@ if ($id)
 		$placeholder = '';
 	}
 
-	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
+	$disabled = !$app['s_schema']
+		|| !count($mail_to)
+		|| !count($mail_from)
+		|| $s_owner;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> ';
 	echo 'Stuur een bericht naar ';
@@ -3035,13 +3083,12 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-
 	if ($user['status'] == 1 || $user['status'] == 2)
 	{
 		echo '<div id="messages" ';
 		echo 'data-url="';
 		echo $app['rootpath'];
-		echo 'messages.php?inline=1&uid=';
+		echo 'messages.php?inline=1&f[uid]=';
 		echo $id;
 		echo '&';
 		echo http_build_query(get_session_query_param());
@@ -3051,7 +3098,7 @@ if ($id)
 	echo '<div id="transactions" ';
 	echo 'data-url="';
 	echo $app['rootpath'];
-	echo 'transactions.php?inline=1&uid=';
+	echo 'transactions.php?inline=1&f[uid]=';
 	echo $id;
 	echo '&';
 	echo http_build_query(get_session_query_param());
@@ -3584,7 +3631,15 @@ if ($app['s_admin'])
 {
 	$csv_en = $v_list;
 
-	$top_buttons .= aphp('users', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Gebruiker toevoegen', 'plus', true);
+	$top_buttons .= aphp(
+		'users',
+		['add' => 1],
+		'Toevoegen',
+		'btn btn-success',
+		'Gebruiker toevoegen',
+		'plus',
+		true
+	);
 
 	if ($v_list)
 	{
@@ -4016,7 +4071,7 @@ if ($v_list || $v_extended || $v_tiles)
 	{
 		$nav_params['status'] = $k;
 		echo '<li';
-		echo ($status == $k) ? ' class="active"' : '';
+		echo $status === $k ? ' class="active"' : '';
 		echo '>';
 		$class = (isset($tab['cl'])) ? 'bg-' . $tab['cl'] : false;
 		echo aphp('users', $nav_params, $tab['lbl'], $class) . '</li>';
@@ -4540,7 +4595,9 @@ else if ($v_extended)
 			echo '<a href="';
 			echo generate_url('users', ['id' => $u['id']]);
 			echo '">';
-			echo '<img class="media-object" src="' . $app['s3_img_url'] . $u['PictureFile'] . '" width="150">';
+			echo '<img class="media-object" ';
+			echo 'src="' . $app['s3_url'] . $u['PictureFile'];
+			echo '" width="150">';
 			echo '</a>';
 			echo '</div>';
 		}
@@ -4610,7 +4667,9 @@ else if ($v_tiles)
 
 		if (isset($u['PictureFile']) && $u['PictureFile'] != '')
 		{
-			echo '<img src="' . $app['s3_img_url'] . $u['PictureFile'] . '" class="img-rounded">';
+			echo '<img src="';
+			echo $app['s3_url'] . $u['PictureFile'];
+			echo '" class="img-rounded">';
 		}
 		else
 		{

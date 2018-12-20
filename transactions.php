@@ -4,10 +4,6 @@ $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 require_once __DIR__ . '/include/transactions.php';
 
-$orderby = $_GET['orderby'] ?? 'cdate';
-$asc = $_GET['asc'] ?? 0;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
 $id = $_GET['id'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $edit = $_GET['edit'] ?? false;
@@ -17,15 +13,10 @@ $mid = $_GET['mid'] ?? false;
 $tuid = $_GET['tuid'] ?? false;
 $tus = $_GET['tus'] ?? false;
 $fuid = $_GET['fuid'] ?? false;
-$uid = $_GET['uid'] ?? false;
-$inline = isset($_GET['inline']) ? true : false;
 
-$q = $_GET['q'] ?? '';
-$fcode = $_GET['fcode'] ?? '';
-$tcode = $_GET['tcode'] ?? '';
-$andor = $_GET['andor'] ?? 'and';
-$fdate = $_GET['fdate'] ?? '';
-$tdate = $_GET['tdate'] ?? '';
+$filter = $_GET['f'] ?? [];
+$pag = $_GET['p'] ?? [];
+$sort = $_GET['sort'] ?? [];
 
 $currency = $app['config']->get('currency', $app['tschema']);
 
@@ -888,7 +879,11 @@ if ($add)
 		}
 	}
 
-	$app['assets']->add(['typeahead', 'typeahead.js', 'transaction_add.js']);
+	$app['assets']->add([
+		'typeahead',
+		'typeahead.js',
+		'transaction_add.js'
+	]);
 
 	$balance = $app['session_user']['saldo'];
 
@@ -1127,7 +1122,9 @@ if ($add)
 	}
 	else
 	{
-		echo 'data-typeahead="' . $typeahead . '" ';
+		echo 'data-typeahead="';
+		echo $typeahead;
+		echo '" ';
 	}
 
 	echo 'data-newuserdays="';
@@ -1140,7 +1137,8 @@ if ($add)
 
 	echo '<ul class="account-info">';
 
-	echo '<li>Dit veld geeft autosuggesties door Naam of Account Code te typen. ';
+	echo '<li>Dit veld geeft autosuggesties door ';
+	echo 'Naam of Account Code te typen. ';
 
 	if (count($groups) > 1)
 	{
@@ -1240,10 +1238,15 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Overschrijven" class="btn btn-success">';
+	echo aphp('transactions', [], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Overschrijven" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
-	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
+	echo '<input type="hidden" name="transid" ';
+	echo 'value="';
+	echo $transaction['transid'];
+	echo '">';
 
 	echo '</form>';
 	echo '</div>';
@@ -1305,13 +1308,16 @@ if ($edit)
 {
 	if (!$app['s_admin'])
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een omschrijving van een transactie aan te passen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om
+			een omschrijving van een transactie aan te passen.');
 		cancel($edit);
 	}
 
 	if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
 	{
-		$app['alert']->error('De omschrijving van een transactie naar een interSysteem dat draait op eLAS kan niet aangepast worden.');
+		$app['alert']->error('De omschrijving van een transactie
+			naar een interSysteem dat draait op eLAS kan
+			niet aangepast worden.');
 		cancel($edit);
 	}
 
@@ -1476,20 +1482,33 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default');
+	echo '&nbsp;';
+	echo '<input type="submit" name="zend" ';
+	echo 'value="Aanpassen" class="btn btn-primary">';
 	echo $app['form_token']->get_hidden_input();
-	echo '<input type="hidden" name="transid" value="' . $transaction['transid'] . '">';
+	echo '<input type="hidden" name="transid" ';
+	echo 'value="';
+	echo $transaction['transid'];
+	echo '">';
 
 	echo '</form>';
 	echo '</div>';
 	echo '</div>';
 
 	echo '<ul><i>';
-	echo '<li>Omdat dat transacties binnen het netwerk zichtbaar zijn voor iedereen kan ';
-	echo 'de omschrijving aangepast worden door admins in het geval deze ongewenste informatie bevat (bvb. een opmerking die beledigend is).</li>';
-	echo '<li>Pas de omschrijving van een transactie enkel aan wanneer het echt noodzakelijk is! Dit om verwarring te vermijden.</li>';
-	echo '<li>Transacties kunnen nooit ongedaan gemaakt worden. Doe een tegenboeking bij vergissing.</li>';
+	echo '<li>Omdat dat transacties binnen het netwerk ';
+	echo 'zichtbaar zijn voor iedereen kan ';
+	echo 'de omschrijving aangepast worden door ';
+	echo 'admins in het geval deze ongewenste ';
+	echo 'informatie bevat (bvb. een opmerking ';
+	echo 'die beledigend is).</li>';
+	echo '<li>Pas de omschrijving van een transactie ';
+	echo 'enkel aan wanneer het echt noodzakelijk is! ';
+	echo 'Dit om verwarring te vermijden.</li>';
+	echo '<li>Transacties kunnen nooit ongedaan ';
+	echo 'gemaakt worden. Doe een tegenboeking ';
+	echo 'bij vergissing.</li>';
 	echo '</i></ul>';
 
 	include __DIR__ . '/include/footer.php';
@@ -1514,9 +1533,19 @@ if ($id)
 		order by id desc
 		limit 1', [$id]);
 
-	if ($app['s_admin'] && ($inter_transaction || !($transaction['real_from'] || $transaction['real_to'])))
+	if ($app['s_admin']
+		&& ($inter_transaction
+			|| !($transaction['real_from']
+				|| $transaction['real_to'])))
 	{
-		$top_buttons .= aphp('transactions', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Omschrijving aanpassen', 'pencil', true);
+		$top_buttons .= aphp(
+			'transactions',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			'Omschrijving aanpassen',
+			'pencil',
+			true);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -1526,7 +1555,14 @@ if ($id)
 
 	$top_buttons_right .= btn_item_nav($next_url, true, false);
 	$top_buttons_right .= btn_item_nav($prev_url, false, true);
-	$top_buttons_right .= aphp('transactions', [], '', 'btn btn-default', 'Transactielijst', 'exchange');
+	$top_buttons_right .= aphp(
+		'transactions',
+		[],
+		'',
+		'btn btn-default',
+		'Transactielijst',
+		'exchange'
+	);
 	$top_buttons_right .= '</span>';
 
 	$h1 = 'Transactie';
@@ -1697,7 +1733,8 @@ if ($id)
 
 		if ($real_from)
 		{
-			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
+			if ($inter_transaction
+				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1710,7 +1747,8 @@ if ($id)
 			echo 'Systeem uitgedrukt ';
 			echo 'in de eigen tijdsmunt.';
 
-			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
+			if ($inter_transaction
+				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
@@ -1740,7 +1778,9 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
+			echo link_user($transaction['id_to'],
+				$app['tschema'],
+				$app['s_admin']);
 			echo ')';
 		}
 
@@ -1762,10 +1802,13 @@ if ($id)
 
 		if ($real_from)
 		{
-			echo 'Het interSysteem Account van het andere Systeem in dit ';
+			echo 'Het interSysteem Account van ';
+			echo 'het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
+			echo link_user($transaction['id_from'],
+				$app['tschema'],
+				$app['s_admin']);
 			echo ')';
 		}
 		else
@@ -1790,7 +1833,8 @@ if ($id)
 		}
 		else
 		{
-			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
+			if ($inter_transaction
+				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '<a href="';
 				echo generate_url('transactions',
@@ -1804,7 +1848,8 @@ if ($id)
 			echo 'in de eigen tijdsmunt ';
 			echo 'met gelijke tijdswaarde als Tr-1.';
 
-			if ($inter_transaction && isset($app['intersystem_ary']['eland'][$inter_schema]))
+			if ($inter_transaction
+				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo '</a>';
 			}
@@ -1851,108 +1896,101 @@ if ($id)
  */
 $s_owner = !$app['s_guest']
 	&& $app['s_group_self']
-	&& $app['s_id'] === $uid
-	&& $uid;
+	&& isset($filter['uid'])
+	&& $app['s_id'] == $filter['uid'];
 
 $params_sql = $where_sql = $where_code_sql = [];
 
 $params = [
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'cdate',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
 ];
 
-if ($uid)
+if (isset($filter['uid']))
 {
-	$user = $app['user_cache']->get($uid, $app['tschema']);
-
-	$where_sql[] = 't.id_from = ? or t.id_to = ?';
-	$params_sql[] = $uid;
-	$params_sql[] = $uid;
-	$params['uid'] = $uid;
-
-	$fcode = $tcode = link_user($user, $app['tschema'], false);
-	$andor = 'or';
+	$user = $app['user_cache']->get($filter['uid'], $app['tschema']);
+ 	$filter['fcode'] = link_user($user, $app['tschema'], false);
+	$filter['tcode'] = $filter['fcode'];
+	$filter['andor'] = 'or';
+	$params['f']['uid'] = $filter['uid'];
 }
 
-if ($q)
+if (isset($filter['q']) && $filter['q'])
 {
 	$where_sql[] = 't.description ilike ?';
-	$params_sql[] = '%' . $q . '%';
-	$params['q'] = $q;
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params['f']['q'] = $filter['q'];
 }
 
-if (!$uid)
+if (isset($filter['fcode']) && $filter['fcode'])
 {
-	if ($fcode)
+	[$fcode] = explode(' ', trim($filter['fcode']));
+	$fcode = trim($fcode);
+
+	$fuid = $app['db']->fetchColumn('select id
+		from ' . $app['tschema'] . '.users
+		where letscode = ?', [$fcode]);
+
+	if ($fuid)
 	{
-		[$fcode] = explode(' ', trim($fcode));
+		$fuid_sql = 't.id_from ';
+		$fuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
+		$fuid_sql .= ' ?';
+		$where_code_sql[] = $fuid_sql;
+		$params_sql[] = $fuid;
 
-		$fuid = $app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.users
-			where letscode = \'' . $fcode . '\'');
-
-		if ($fuid)
-		{
-			$fuid_sql = 't.id_from ';
-			$fuid_sql .= $andor === 'nor' ? '<>' : '=';
-			$fuid_sql .= ' ?';
-			$where_code_sql[] = $fuid_sql;
-			$params_sql[] = $fuid;
-
-			$fcode = link_user($fuid, $app['tschema'], false);
-		}
-		else if ($andor !== 'nor')
-		{
-			$where_code_sql[] = '1 = 2';
-		}
-
-		$params['fcode'] = $fcode;
+		$fcode = link_user($fuid, $app['tschema'], false);
+	}
+	else if ($filter['andor'] !== 'nor')
+	{
+		$where_code_sql[] = '1 = 2';
 	}
 
-	if ($tcode)
+	$params['f']['fcode'] = $fcode;
+}
+
+if (isset($filter['tcode']) && $filter['tcode'])
+{
+	[$tcode] = explode(' ', trim($filter['tcode']));
+
+	$tuid = $app['db']->fetchColumn('select id
+		from ' . $app['tschema'] . '.users
+		where letscode = \'' . $tcode . '\'');
+
+	if ($tuid)
 	{
-		[$tcode] = explode(' ', trim($tcode));
+		$tuid_sql = 't.id_to ';
+		$tuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
+		$tuid_sql .= ' ?';
+		$where_code_sql[] = $tuid_sql;
+		$params_sql[] = $tuid;
 
-		$tuid = $app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.users
-			where letscode = \'' . $tcode . '\'');
-
-		if ($tuid)
-		{
-			$tuid_sql = 't.id_to ';
-			$tuid_sql .= $andor === 'nor' ? '<>' : '=';
-			$tuid_sql .= ' ?';
-			$where_code_sql[] = $tuid_sql;
-			$params_sql[] = $tuid;
-
-			$tcode = link_user($tuid, $app['tschema'], false);
-		}
-		else if ($andor !== 'nor')
-		{
-			$where_code_sql[] = '1 = 2';
-		}
-
-		$params['tcode'] = $tcode;
+		$tcode = link_user($tuid, $app['tschema'], false);
+	}
+	else if ($filter['andor'] !== 'nor')
+	{
+		$where_code_sql[] = '1 = 2';
 	}
 
-	if (count($where_code_sql) > 1)
-	{
-		if ($andor === 'or')
-		{
-			$where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
-		}
+	$params['f']['tcode'] = $tcode;
+}
 
-		$params['andor'] = $andor;
-	}
+if (count($where_code_sql) > 1 && $filter['andor'] === 'or')
+{
+	$where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
 }
 
 $where_sql = array_merge($where_sql, $where_code_sql);
 
-if ($fdate)
+if (isset($filter['fdate']) && $filter['fdate'])
 {
-	$fdate_sql = $app['date_format']->reverse($fdate, $app['tschema']);
+	$fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['tschema']);
 
 	if ($fdate_sql === false)
 	{
@@ -1962,13 +2000,13 @@ if ($fdate)
 	{
 		$where_sql[] = 't.date >= ?';
 		$params_sql[] = $fdate_sql;
-		$params['fdate'] = $fdate;
+		$params['f']['fdate'] = $fdate = $filter['fdate'];
 	}
 }
 
-if ($tdate)
+if (isset($filter['tdate']) && $filter['tdate'])
 {
-	$tdate_sql = $app['date_format']->reverse($tdate, $app['tschema']);
+	$tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['tschema']);
 
 	if ($tdate_sql === false)
 	{
@@ -1978,13 +2016,14 @@ if ($tdate)
 	{
 		$where_sql[] = 't.date <= ?';
 		$params_sql[] = $tdate_sql;
-		$params['tdate'] = $tdate;
+		$params['f']['tdate'] = $tdate = $filter['tdate'];
 	}
 }
 
 if (count($where_sql))
 {
 	$where_sql = ' where ' . implode(' and ', $where_sql) . ' ';
+	$params['f']['andor'] = $filter['andor'];
 }
 else
 {
@@ -1994,9 +2033,10 @@ else
 $query = 'select t.*
 	from ' . $app['tschema'] . '.transactions t ' .
 	$where_sql . '
-	order by t.' . $orderby . ' ';
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+	order by t.' . $params['sort']['orderby'] . ' ';
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $transactions = $app['db']->fetchAll($query, $params_sql);
 
@@ -2032,11 +2072,19 @@ foreach ($transactions as $key => $t)
 	}
 }
 
+$row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
+	from ' . $app['tschema'] . '.transactions t ' .
+	$where_sql, $params_sql);
 
-$row_count = $app['db']->fetchColumn('select count(t.*)
-	from ' . $app['tschema'] . '.transactions t ' . $where_sql, $params_sql);
+$row_count = $row['count'];
+$amount_sum = $row['sum'];
 
-$app['pagination']->init('transactions', $row_count, $params, $inline);
+$app['pagination']->init(
+	'transactions',
+	$row_count,
+	$params,
+	$app['p_inline']
+);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2053,7 +2101,7 @@ $tableheader_ary = [
 		'data_hide' => 'phone'])
 ];
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	$tableheader_ary['user'] = array_merge($asc_preset_ary, [
 		'lbl'			=> 'Tegenpartij',
@@ -2077,12 +2125,14 @@ else
 	];
 }
 
-$tableheader_ary[$orderby]['asc'] = ($asc) ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = ($asc) ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc']
+	= $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator']
+	= $params['sort']['asc'] ? '-asc' : '-desc';
 
-if ($app['s_admin'] || $app['s_user'])
+if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 {
-	if ($uid)
+	if (isset($filter['uid']))
 	{
 		$user_str = link_user($user, $app['tschema'], false);
 
@@ -2090,45 +2140,66 @@ if ($app['s_admin'] || $app['s_user'])
 		{
 			if ($s_owner)
 			{
-				$top_buttons .= aphp('transactions', ['add' => 1], 'Transactie toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
+				$top_buttons .= aphp(
+					'transactions',
+					['add' => 1],
+					'Toevoegen',
+					'btn btn-success',
+					'Transactie toevoegen',
+					'plus',
+					true
+				);
 			}
-			else if ($app['s_admin'])
+			else
 			{
-				$top_buttons .= aphp('transactions', ['add' => 1, 'fuid' => $uid], 'Transactie van ' . $user_str, 'btn btn-success', 'Transactie van ' . $user_str, 'plus', true);
+				$top_buttons .= aphp(
+					'transactions',
+					['add' => 1, 'tuid' => $user['id']],
+					'Transactie naar ' . $user_str,
+					'btn btn-warning',
+					'Transactie naar ' . $user_str, 'exchange',
+					true);
 			}
-
-			if ($app['s_admin'] || ($app['s_user'] && !$s_owner))
-			{
-				$top_buttons .= aphp('transactions', ['add' => 1, 'tuid' => $uid], 'Transactie naar ' . $user_str, 'btn btn-warning', 'Transactie naar ' . $user_str, 'exchange', true);
-			}
-		}
-
-		if (!$inline)
-		{
-			$top_buttons .= aphp('transactions', [], 'Lijst', 'btn btn-default', 'Transactielijst', 'exchange', true);
 		}
 	}
 	else
 	{
-		$top_buttons .= aphp('transactions', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Transactie toevoegen', 'plus', true);
+		$top_buttons .= aphp(
+			'transactions',
+			['add' => 1],
+			'Toevoegen',
+			'btn btn-success',
+			'Transactie toevoegen',
+			'plus',
+			true
+		);
 	}
 }
 
 $csv_en = $app['s_admin'];
 
-$filtered = ($q || $fcode || $tcode || $fdate || $tdate) ? true : false;
+$filtered = !isset($filter['uid']) && (
+	(isset($filter['q']) && $filter['q'] !== '')
+	|| (isset($filter['fcode']) && $filter['fcode'] !== '')
+	|| (isset($filter['tcode']) && $filter['tcode'] !== '')
+	|| (isset($filter['fdate']) && $filter['fdate'] !== '')
+	|| (isset($filter['tdate']) && $filter['tdate'] !== ''));
 
-if ($uid)
+if (isset($filter['uid']))
 {
-	if ($s_owner && !$inline)
+	if ($s_owner && !$app['p_inline'])
 	{
 		$h1 = 'Mijn transacties';
 	}
 	else
 	{
-		$h1 = aphp('transactions', ['uid' => $uid], 'Transacties');
+		$h1 = aphp(
+			'transactions',
+			['f' => ['uid' => $filter['uid']]],
+			'Transacties'
+		);
 		$h1 .= ' van ';
-		$h1 .= link_user($uid, $app['tschema']);
+		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
 }
 else
@@ -2139,18 +2210,20 @@ else
 
 $fa = 'exchange';
 
-if (!$inline)
+if (!$app['p_inline'])
 {
 	$h1 .= btn_filter();
 
-	$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js']);
+	$app['assets']->add([
+		'datepicker',
+		'typeahead',
+		'typeahead.js',
+	]);
 
 	include __DIR__ . '/include/header.php';
 
-	$panel_collapse = ($filtered && !$uid) ? '' : ' collapse';
-
 	echo '<div class="panel panel-info';
-	echo $panel_collapse;
+	echo $filtered ? '' : ' collapse';
 	echo '" id="filter">';
 	echo '<div class="panel-heading">';
 
@@ -2164,8 +2237,8 @@ if (!$inline)
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
 	echo '<input type="text" class="form-control" id="q" value="';
-	echo $q;
-	echo '" name="q" placeholder="Zoekterm">';
+	echo $filter['q'] ?? '';
+	echo '" name="f[q]" placeholder="Zoekterm">';
 	echo '</div>';
 	echo '</div>';
 
@@ -2194,11 +2267,11 @@ if (!$inline)
 			'inactive', 'im', 'ip'];
 	}
 
-	foreach ($typeahead_status_ary as $t_stat)
+	foreach ($typeahead_status_ary as $t_status)
 	{
 		$typeahead_ary[] = [
 			'accounts', [
-				'status'	=> $t_stat,
+				'status'	=> $t_status,
 				'schema'	=> $app['tschema'],
 			],
 		];
@@ -2214,9 +2287,9 @@ if (!$inline)
 	echo 'data-newuserdays="';
 	echo $app['config']->get('newuserdays', $app['tschema']);
 	echo '" ';
-	echo 'name="fcode" id="fcode" placeholder="Account Code" ';
+	echo 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
 	echo 'value="';
-	echo $fcode;
+	echo $fcode ?? '';
 	echo '">';
 
 	echo '</div>';
@@ -2229,8 +2302,8 @@ if (!$inline)
 	];
 
 	echo '<div class="col-sm-2">';
-	echo '<select class="form-control margin-bottom" name="andor">';
-	echo get_select_options($andor_options, $andor);
+	echo '<select class="form-control margin-bottom" name="f[andor]">';
+	echo get_select_options($andor_options, $filter['andor'] ?? 'and');
 	echo '</select>';
 	echo '</div>';
 
@@ -2242,8 +2315,8 @@ if (!$inline)
 	echo 'data-typeahead-source="fcode" ';
 	echo 'placeholder="Account Code" ';
 	echo 'aria-describedby="tcode_addon" ';
-	echo 'name="tcode" value="';
-	echo $tcode;
+	echo 'name="f[tcode]" value="';
+	echo $tcode ?? '';
 	echo '">';
 	echo '</div>';
 	echo '</div>';
@@ -2259,8 +2332,10 @@ if (!$inline)
 	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'aria-describedby="fdate_addon" ';
 
-	echo 'id="fdate" name="fdate" ';
-	echo 'value="' . $fdate . '" ';
+	echo 'id="fdate" name="f[fdate]" ';
+	echo 'value="';
+	echo $fdate ?? '';
+	echo '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
 	echo $app['date_format']->datepicker_format($app['tschema']);
@@ -2281,13 +2356,15 @@ if (!$inline)
 
 	echo '<div class="col-sm-5">';
 	echo '<div class="input-group margin-bottom">';
-	echo '<span class="input-group-addon" id="tdate_addon">Tot en met ';
+	echo '<span class="input-group-addon" id="tdate_addon">Tot ';
 	echo '<span class="fa fa-calendar"></span></span>';
 	echo '<input type="text" class="form-control margin-bottom" ';
 	echo 'aria-describedby="tdate_addon" ';
 
-	echo 'id="tdate" name="tdate" ';
-	echo 'value="' . $tdate . '" ';
+	echo 'id="tdate" name="f[tdate]" ';
+	echo 'value="';
+	echo $tdate ?? '';
+	echo '" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
 	echo $app['date_format']->datepicker_format($app['tschema']);
@@ -2313,11 +2390,9 @@ if (!$inline)
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['q'], $params_form['fcode']);
-	unset($params_form['andor'], $params_form['tcode']);
-	unset($params_form['fdate'], $params_form['tdate']);
+	unset($params_form['f']);
 	unset($params_form['uid']);
-	unset($params_form['start']);
+	unset($params_form['p']['start']);
 
 	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
@@ -2327,16 +2402,21 @@ if (!$inline)
 		$params_form['s'] = $app['s_schema'];
 	}
 
-	foreach ($params_form as $name => $value)
+	$params_form = http_build_query($params_form, 'prefix', '&');
+	$params_form = urldecode($params_form);
+	$params_form = explode('&', $params_form);
+
+	foreach ($params_form as $param)
 	{
-		if (isset($value))
+		[$name, $value] = explode('=', $param);
+
+		if (!isset($value) || $value === '')
 		{
-			echo '<input name="';
-			echo $name;
-			echo '" value="';
-			echo $value;
-			echo '" type="hidden">';
+			continue;
 		}
+
+		echo '<input name="' . $name . '" ';
+		echo 'value="' . $value . '" type="hidden">';
 	}
 
 	echo '</form>';
@@ -2352,7 +2432,8 @@ else
 	echo '<h3><i class="fa fa-exchange"></i> ';
 	echo $h1;
 	echo '<span class="inline-buttons">';
-	echo $top_buttons . '</span>';
+	echo $top_buttons;
+	echo '</span>';
 	echo '</h3>';
 }
 
@@ -2361,13 +2442,13 @@ echo $app['pagination']->get();
 if (!count($transactions))
 {
 	echo '<br>';
-	echo '<div class="panel panel-primary">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 	echo $app['pagination']->get();
 
-	if (!$inline)
+	if (!$app['p_inline'])
 	{
 		include __DIR__ . '/include/footer.php';
 	}
@@ -2385,8 +2466,16 @@ echo '<tr>';
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo isset($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+
+	if (isset($data['data_hide']))
+	{
+		echo ' data-hide="';
+		echo $data['data_hide'];
+		echo '"';
+	}
+
 	echo '>';
+
 	if (isset($data['no_sort']))
 	{
 		echo $data['lbl'];
@@ -2395,8 +2484,10 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		$h_params = $params;
 
-		$h_params['orderby'] = $key_orderby;
-		$h_params['asc'] = $data['asc'];
+		$h_params['sort'] = [
+			'orderby' 	=> $key_orderby,
+			'asc'		=> $data['asc'],
+		];
 
 		echo '<a href="';
 		echo generate_url('transactions', $h_params);
@@ -2407,6 +2498,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		echo '"></i>';
 		echo '</a>';
 	}
+
 	echo '</th>';
 }
 
@@ -2414,12 +2506,17 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	foreach($transactions as $t)
 	{
 		echo '<tr';
-		echo $intersystem_en && ($t['real_to'] || $t['real_from']) ? ' class="warning"' : '';
+
+		if ($intersystem_en && ($t['real_to'] || $t['real_from']))
+		{
+			echo ' class="warning"';
+		}
+
 		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
@@ -2427,7 +2524,7 @@ if ($uid)
 
 		echo '<td>';
 		echo '<span class="text-';
-		echo $t['id_from'] == $uid ? 'danger">-' : 'success">+';
+		echo $t['id_from'] === $filter['uid'] ? 'danger">-' : 'success">+';
 		echo $t['amount'];
 		echo '</span></td>';
 
@@ -2437,7 +2534,7 @@ if ($uid)
 
 		echo '<td>';
 
-		if ($t['id_from'] == $uid)
+		if ($t['id_from'] === $filter['uid'])
 		{
 			if ($t['real_to'])
 			{
@@ -2466,7 +2563,8 @@ if ($uid)
 		{
 			if ($t['real_from'])
 			{
-				echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+				echo '<span class="btn btn-default btn-xs">';
+				echo '<i class="fa fa-share-alt"></i></span> ';
 
 				if (isset($t['inter_transaction']))
 				{
@@ -2496,7 +2594,12 @@ else
 	foreach($transactions as $t)
 	{
 		echo '<tr';
-		echo $intersystem_en && ($t['real_to'] || $t['real_from']) ? ' class="warning"' : '';
+
+		if ($intersystem_en && ($t['real_to'] || $t['real_from']))
+		{
+			echo ' class="warning"';
+		}
+
 		echo '>';
 		echo '<td>';
 		echo aphp('transactions', ['id' => $t['id']], $t['description']);
@@ -2514,7 +2617,8 @@ else
 
 		if ($t['real_from'])
 		{
-			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+			echo '<span class="btn btn-default btn-xs">';
+			echo '<i class="fa fa-share-alt"></i></span> ';
 
 			if (isset($t['inter_transaction']))
 			{
@@ -2540,7 +2644,8 @@ else
 
 		if ($t['real_to'])
 		{
-			echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+			echo '<span class="btn btn-default btn-xs">';
+			echo '<i class="fa fa-share-alt"></i></span> ';
 
 			if (isset($t['inter_transaction']))
 			{
@@ -2565,17 +2670,27 @@ else
 		echo '</tr>';
 	}
 }
+
 echo '</table></div></div>';
 
 echo $app['pagination']->get();
 
-if ($inline)
+if ($app['p_inline'])
 {
 	echo '</div></div>';
 }
 else
 {
+	echo '<ul>';
+	echo '<li>';
+	echo 'Totaal: ';
+	echo '<strong>';
+	echo $amount_sum;
+	echo '</strong> ';
+	echo $app['config']->get('currency', $app['tschema']);
+	echo '</li>';
 	echo get_valuation($app['tschema']);
+	echo '</ul>';
 
 	include __DIR__ . '/include/footer.php';
 }
@@ -2604,7 +2719,9 @@ function get_valuation(string $schema):string
 	{
 		$out .= '<li id="info_ratio">Valuatie: <span class="num">';
 		$out .= $app['config']->get('currencyratio', $schema);
-		$out .= '</span> per uur</li>';
+		$out .= '</span> ';
+		$out .= $app['config']->get('currency', $schema);
+		$out .= ' per uur</li>';
 	}
 
 	return $out;

@@ -21,6 +21,9 @@ $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 $app['overall_domain'] = getenv('OVERALL_DOMAIN');
+$app['s3_bucket'] = getenv('AWS_S3_BUCKET');
+$app['s3_region'] = getenv('AWS_S3_REGION');
+$app['s3_url'] = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
 
 setlocale(LC_TIME, 'nl_NL.UTF-8');
 
@@ -53,8 +56,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 $app->extend('twig', function($twig, $app) {
 
 	$twig->addExtension(new service\twig_extension($app));
-	$twig->addGlobal('s3_img', getenv('S3_IMG'));
-	$twig->addGlobal('s3_doc', getenv('S3_DOC'));
+	$twig->addGlobal('s3_url', $app['s3_url']);
 
 	return $twig;
 });
@@ -71,8 +73,7 @@ $app['tpl'] = function($app){
 	$tpl->set(new config_helper($app['config']));
 	$tpl->set(new date_format_helper($app['date_format']));
 	$tpl->set(new assets_helper($app['assets']));
-	$tpl->addGlobal('s3_img', getenv('S3_IMG'));
-	$tpl->addGlobal('s3_doc', getenv('S3_DOC'));
+	$tpl->addGlobal('s3_url', $app['s3_url']);
 
     return $tpl;
 };
@@ -137,18 +138,10 @@ $app->extend('monolog', function($monolog, $app) {
 	return $monolog;
 });
 
-$app['s3_img'] = getenv('S3_IMG') ?: die('Environment variable S3_IMG S3 bucket for images not defined.');
-$app['s3_doc'] = getenv('S3_DOC') ?: die('Environment variable S3_DOC S3 bucket for documents not defined.');
-
-$app['s3_protocol'] = 'http://';
-
-$app['s3_img_url'] = $app['s3_protocol'] . $app['s3_img'] . '/';
-$app['s3_doc_url'] = $app['s3_protocol'] . $app['s3_doc'] . '/';
-
 $app['s3'] = function($app){
 	return new service\s3(
-		$app['s3_img'],
-		$app['s3_doc']
+		$app['s3_bucket'],
+		$app['s3_region']
 	);
 };
 
@@ -386,8 +379,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['cache'],
 		$app['monolog'],
 		$app['queue.mail'],
-		$app['s3_img_url'],
-		$app['s3_doc_url'],
+		$app['s3_url'],
 		$app['protocol'],
 		$app['date_format'],
 		$app['distance'],

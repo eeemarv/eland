@@ -7,11 +7,8 @@ require_once __DIR__ . '/default.php';
 
 $app['page_access'] = $page_access;
 
-$header_allow_origin = $app['s3_protocol'] . $app['s3_img'] . ', ';
-$header_allow_origin .= $app['s3_protocol'] . $app['s3_doc'];
-
 header('Cache-Control: private, no-cache');
-header('Access-Control-Allow-Origin: ' . $header_allow_origin);
+header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') . ', http://img.letsa.net');
 
 $app['assets']->add([
 	'jquery', 'bootstrap', 'fontawesome',
@@ -230,7 +227,8 @@ else
 
 /** page access **/
 
-if (!isset($app['page_access']))
+if (!isset($app['page_access'])
+	|| !in_array($app['page_access'], ['anonymous', 'guest', 'user', 'admin']))
 {
 	http_response_code(500);
 
@@ -408,7 +406,6 @@ else if ($app['script_name'] === 'news'
 		$app['p_view'] = $app['s_view']['news'];
 	}
 }
-
 
 /**
  * remember adapted role in own group (for links to own group)

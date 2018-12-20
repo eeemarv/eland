@@ -9,14 +9,7 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $uid = $_GET['uid'] ?? false;
-$type = $_GET['type'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
-$orderby = $_GET['orderby'] ?? 'm.cdate';
-$asc = $_GET['asc'] ?? 0;
-$recent = isset($_GET['recent']) ? true : false;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
-$filter = $_GET['f'] ?? [];
 $img = isset($_GET['img']) ? true : false;
 $insert_img = isset($_GET['insert_img']) ? true : false;
 $img_del = $_GET['img_del'] ?? false;
@@ -26,6 +19,10 @@ $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_
 $extend_submit = isset($_POST['extend_submit']) ? true : false;
 $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']) ? true : false;
+
+$filter = $_GET['f'] ?? [];
+$sort = $_GET['sort'] ?? [];
+$pag = $_GET['p'] ?? [];
 
 $access = $app['access_control']->get_post_value();
 
@@ -194,7 +191,7 @@ if ($id || $edit || $del)
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $app['s_id'] === $message['id_user']
+		&& $app['s_id'] == $message['id_user']
 		&& $message['id_user'];
 
 	if ($message['local'] && $app['s_guest'])
@@ -218,7 +215,8 @@ if ($id && $extend)
 {
 	if (!($s_owner || $app['s_admin']))
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verlengen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om ' .
+			$ow_type_this . ' te verlengen.');
 		cancel($id);
 	}
 
@@ -251,7 +249,9 @@ if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
 	{
 		if (!$s_owner && !$app['s_admin'])
 		{
-			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten om een afbeelding op te laden voor dit vraag of aanbod bericht.'];
+			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten
+				om een afbeelding op te laden voor
+				dit vraag of aanbod bericht.'];
 		}
 	}
 
@@ -408,12 +408,14 @@ if ($img_del == 'all' && $id && $app['is_http_post'])
 {
 	if (!($s_owner || $app['s_admin']))
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om afbeeldingen te verwijderen voor ' . $ow_type_this);
+		$app['alert']->error('Je hebt onvoldoende rechten
+			om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
 	$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
 
-	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this . ' zijn verwijderd.');
+	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this .
+		' zijn verwijderd.');
 
 	cancel($id);
 }
@@ -434,7 +436,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 
 	$s_owner = !$app['s_guest']
 		&& $app['s_group_self']
-		&& $msg['id_user'] === $app['s_id']
+		&& $msg['id_user'] == $app['s_id']
 		&& $msg['id_user'];
 
 	if (!($s_owner || $app['s_admin']))
@@ -498,11 +500,13 @@ if ($img_del == 'all' && $id)
 
 	foreach ($images as $img_id => $file)
 	{
-		$a_img = $app['s3_img_url'] . $file;
+		$a_img = $app['s3_url'] . $file;
 
 		echo '<div class="col-xs-6 col-md-3">';
 		echo '<div class="thumbnail">';
-		echo '<img src="' . $a_img . '" class="img-rounded">';
+		echo '<img src="';
+		echo $app['s3_url'] . $file;
+		echo '" class="img-rounded">';
 
 		echo '<div class="caption">';
 		echo '<span class="btn btn-danger" data-img-del="';
@@ -736,13 +740,15 @@ if (($edit || $add))
 {
 	if (!($app['s_admin'] || $app['s_user']) && $add)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om een vraag of aanbod toe te voegen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om
+			een vraag of aanbod toe te voegen.');
 		cancel();
 	}
 
 	if (!($app['s_admin'] || $s_owner) && $edit)
 	{
-		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' aan te passen.');
+		$app['alert']->error('Je hebt onvoldoende rechten om ' .
+			$ow_type_this . ' aan te passen.');
 		cancel($edit);
 	}
 
@@ -778,7 +784,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : (($app['s_master']) ? 0 : $app['s_id']),
+			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : ($app['s_master'] ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -928,7 +934,7 @@ if (($edit || $add))
 						$new_filename = $app['tschema'] . '_m_' . $id . '_';
 						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
-						$err = $app['s3']->img_copy($img, $new_filename);
+						$err = $app['s3']->copy($img, $new_filename);
 
 						if (isset($err))
 						{
@@ -1149,6 +1155,7 @@ if (($edit || $add))
 			'local'			=> 0,
 		];
 
+	// checkthis
 		$uid = (isset($_GET['uid'])
 			&& $app['s_admin']) ? $_GET['uid'] :
 				(($app['s_master']) ? 0 : $app['s_id']);
@@ -1314,9 +1321,10 @@ if (($edit || $add))
 	echo 'Afbeeldingen</label>';
 	echo '<div class="row">';
 
-	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" id="thumbnail_model" ';
+	echo '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
+	echo 'id="thumbnail_model" ';
 	echo 'data-s3-url="';
-	echo $app['s3_img_url'];
+	echo $app['s3_url'];
 	echo '">';
 	echo '<div class="thumbnail">';
 	echo '<img src="" alt="afbeelding">';
@@ -1333,7 +1341,7 @@ if (($edit || $add))
 		echo '<div class="col-sm-3 col-md-2 thumbnail-col">';
 		echo '<div class="thumbnail">';
 		echo '<img src="';
-		echo $app['s3_img_url'] . $img['PictureFile'];
+		echo $app['s3_url'] . $img['PictureFile'];
 		echo '" alt="afbeelding">';
 		echo '<div class="caption">';
 
@@ -1346,9 +1354,11 @@ if (($edit || $add))
 
 	echo '</div>';
 
+	$upload_img_param['form_token'] = $app['form_token']->get();
+
 	$upload_img_param = [
-		'img'	=> 1,
-		'form_token' => $upload_img_param['form_token'] = $app['form_token']->get(),
+		'img'			=> 1,
+		'form_token' 	=> $upload_img_param['form_token'],
 	];
 
 	if ($edit)
@@ -1483,14 +1493,28 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('messages', ['edit' => $id], 'Aanpassen', 'btn btn-primary', $ow_type_uc . ' aanpassen', 'pencil', true);
-		$top_buttons .= aphp('messages', ['del' => $id], 'Verwijderen', 'btn btn-danger', $ow_type_uc . ' verwijderen', 'times', true);
+		$top_buttons .= aphp('messages',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			$ow_type_uc . ' aanpassen',
+			'pencil',
+			true);
+		$top_buttons .= aphp('messages',
+			['del' => $id],
+			'Verwijderen',
+			'btn btn-danger',
+			$ow_type_uc . ' verwijderen',
+			'times',
+			true);
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($app['s_admin'] || (!$s_owner
-			&& $user['status'] != 7
-			&& !($app['s_guest'] && $app['s_group_self']))))
+		&& ($app['s_admin']
+			|| (!$s_owner
+				&& $user['status'] != 7
+				&& !($app['s_guest']
+				&& $app['s_group_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
@@ -1525,7 +1549,7 @@ if ($id)
 	{
 		echo '<p>Categorie: ';
 		echo '<a href="';
-		echo generate_url('messages', ['cid' => $message['cid']]);
+		echo generate_url('messages', ['f' => ['cid' => $message['cid']]]);
 		echo '">';
 		echo $message['catname'];
 		echo '</a></p>';
@@ -1538,13 +1562,15 @@ if ($id)
 	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 
-	echo '<div id="no_images" class="text-center center-body" style="display: none;">';
+	echo '<div id="no_images" ';
+	echo 'class="text-center center-body" style="display: none;">';
 	echo '<i class="fa fa-image fa-5x"></i> ';
-	echo '<p>Er zijn geen afbeeldingen voor ' . $ow_type_this . '</p>';
+	echo '<p>Er zijn geen afbeeldingen voor ';
+	echo $ow_type_this . '</p>';
 	echo '</div>';
 
 	echo '<div id="images_con" ';
-	echo 'data-bucket-url="' . $app['s3_img_url'] . '" ';
+	echo 'data-bucket-url="' . $app['s3_url'] . '" ';
 	echo 'data-images="' . implode(',', $images) . '">';
 	echo '</div>';
 
@@ -1552,21 +1578,35 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		echo '<div class="panel-footer"><span class="btn btn-success fileinput-button">';
+		echo '<div class="panel-footer">';
+		echo '<span class="btn btn-success fileinput-button">';
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
 		echo 'data-url="';
-		echo generate_url('messages', ['img' => 1, 'id' => $id, 'insert_img' => 1]);
+		echo generate_url('messages', [
+			'img' => 1,
+			'id' => $id,
+			'insert_img' => 1,
+		]);
 		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
 
-		echo aphp('messages', ['img_del' => 'all', 'id' => $id], 'Afbeeldingen verwijderen', 'btn btn-danger', false, 'times', false,
-			['id' => 'btn_remove', 'style' => 'display:none;']);
+		echo aphp(
+			'messages',
+			['img_del' => 'all', 'id' => $id],
+			'Afbeeldingen verwijderen',
+			'btn btn-danger',
+			false,
+			'times',
+			false,
+			['id' => 'btn_remove', 'style' => 'display:none;']
+		);
 
-		echo '<p class="text-warning">Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+		echo '<p class="text-warning">';
+		echo 'Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
 		echo 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 		echo '</div>';
 	}
@@ -1602,8 +1642,18 @@ if ($id)
 	echo '(Richt)prijs';
 	echo '</dt>';
 	echo '<dd>';
-	$units = $message['units'] ? ' per ' . $message['units'] : '';
-	echo empty($message['amount']) ? 'niet opgegeven.' : $message['amount'] . ' ' . $app['config']->get('currency', $app['tschema']) . $units;
+
+	if (empty($message['amount']))
+	{
+		echo 'niet opgegeven.';
+	}
+	else
+	{
+		echo $message['amount'] . ' ';
+		echo $app['config']->get('currency', $app['tschema']);
+		echo $message['units'] ? ' per ' . $message['units'] : '';
+	}
+
 	echo '</dd>';
 
 	echo '<dt>Van gebruiker: ';
@@ -1618,7 +1668,9 @@ if ($id)
 	echo '</dd>';
 
 	echo '<dt>Plaats</dt>';
-	echo '<dd>' . $user['postcode'] . '</dd>';
+	echo '<dd>';
+	echo $user['postcode'];
+	echo '</dd>';
 
 	echo '<dt>Aangemaakt op</dt>';
 	echo '<dd>';
@@ -1744,192 +1796,226 @@ if (!($app['p_view'] || $app['p_inline']))
 
 $s_owner = !$app['s_guest']
 	&& $app['s_group_self']
-	&& $app['s_id'] === $uid
-	&& $app['s_id'] && $uid;
+	&& isset($filter['uid'])
+	&& $app['s_id'] == $filter['uid']
+	&& $app['s_id'];
 
-$v_list = ($app['p_view'] === 'list' || $app['p_inline']) && !$recent;
-$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'] || $recent;
-$v_map = $app['p_view'] === 'map' && !($app['p_inline'] || $recent);
+$v_list = $app['p_view'] === 'list' || $app['p_inline'];
+$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
+$v_map = $app['p_view'] === 'map' && !$app['p_inline'];
 
 $params = [
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'm.cdate',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
 ];
 
 $params_sql = $where_sql = $ustatus_sql = [];
-$filter_en = isset($filter['s']);
 
-if ($uid)
+if (isset($filter['uid'])
+	&& $filter['uid']
+	&& !isset($filter['s']))
 {
-	$user = $app['user_cache']->get($uid, $app['tschema']);
-
-	$where_sql[] = 'u.id = ?';
-	$params_sql[] = $uid;
-	$params['uid'] = $uid;
-
+	$user = $app['user_cache']->get($filter['uid'], $app['tschema']);
 	$filter['fcode'] = link_user($user, $app['tschema'], false);
 }
 
-if ($type)
+if (isset($filter['uid']))
 {
-	if ($type === 'wants')
-	{
-		$where_sql[] = 'm.msg_type = 0';
-		$filter['type']['want'] = 'on';
-	}
-	else if ($type === 'offers')
-	{
-		$where_sql[] = 'm.msg_type = 1';
-		$filter['type']['offer'] = 'on';
-	}
+	$params['f']['uid'] = $filter['uid'];
 }
 
-if ($filter_en)
+if (isset($filter['q'])
+	&& $filter['q'])
 {
-	if (!$uid)
+	$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params['f']['q'] = $filter['q'];
+}
+
+if (isset($filter['fcode'])
+	&& $filter['fcode'] !== '')
+{
+	[$fcode] = explode(' ', trim($filter['fcode']));
+	$fcode = trim($fcode);
+
+	$fuid = $app['db']->fetchColumn('select id
+		from ' . $app['tschema'] . '.users
+		where letscode = ?', [$fcode]);
+
+	if ($fuid)
 	{
-		if (isset($filter['fcode'])
-			&& $filter['fcode']
-			&& !empty($filter['fcode']))
-		{
-			[$fcode] = explode(' ', trim($filter['fcode']));
-			$fcode = trim($fcode);
+		$where_sql[] = 'u.id = ?';
+		$params_sql[] = $fuid;
 
-			if ($fcode)
-			{
-				$fuid = $app['db']->fetchColumn('select id
-					from ' . $app['tschema'] . '.users
-					where letscode = ?', [$fcode]);
-
-				if ($fuid)
-				{
-					$where_sql[] = 'u.id = ?';
-					$params_sql[] = $fuid;
-
-					$filter['fcode'] = link_user($fuid, $app['tschema'], false);
-				}
-				else if ($fcode !== '')
-				{
-					$where_sql[] = '1 = 2';
-				}
-			}
-			else
-			{
-				$filter['fcode'] = '';
-			}
-		}
-	}
-
-	if (isset($filter['q']) && $filter['q'])
-	{
-		$where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
-		$params_sql[] = '%' . $filter['q'] . '%';
-		$params_sql[] = '%' . $filter['q'] . '%';
-	}
-
-	if (isset($filter['cid']) && $filter['cid'])
-	{
-		$cat_ary = [];
-
-		$st = $app['db']->prepare('select id
-			from ' . $app['tschema'] . '.categories
-			where id_parent = ?');
-		$st->bindValue(1, $filter['cid']);
-		$st->execute();
-
-		while ($row = $st->fetch())
-		{
-			$cat_ary[] = $row['id'];
-		}
-
-		if (count($cat_ary))
-		{
-			$where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
-		}
-		else
-		{
-			$where_sql[] = 'm.id_category = ?';
-			$params_sql[] = $filter['cid'];
-		}
-	}
-
-	if (isset($filter['valid']) && count($filter['valid']) !== 2)
-	{
-		if (isset($filter['valid']['yes']))
-		{
-			$where_sql[] = 'm.validity >= now()';
-		}
-		else if (isset($filter['valid']['no']))
-		{
-			$where_sql[] = 'm.validity < now()';
-		}
-	}
-
-	if (isset($filter['type']) && count($filter['type']) !== 2)
-	{
-		if (isset($filter['type']['want']))
-		{
-			$where_sql[] = 'm.msg_type = 0';
-		}
-		else if (isset($filter['type']['offer']))
-		{
-			$where_sql[] = 'm.msg_type = 1';
-		}
-	}
-
-	if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
-	{
-		$where_sql[] = 'u.status in (1, 2)';
+		$fcode = link_user($fuid, $app['tschema'], false);
+		$params['f']['fcode'] = $fcode;
 	}
 	else
 	{
-		if (isset($filter['ustatus']['new']))
-		{
-			$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-		}
-
-		if (isset($filter['ustatus']['leaving']))
-		{
-			$ustatus_sql[] = 'u.status = 2';
-		}
-
-		if (isset($filter['ustatus']['active']))
-		{
-			$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-			$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
-		}
-
-		if (count($ustatus_sql))
-		{
-			$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
-		}
+		$where_sql[] = '1 = 2';
 	}
 }
-else
+
+if (isset($filter['cid'])
+	&& $filter['cid'])
 {
-	if ($type !== 'wants')
+	$cat_ary = [];
+
+	$st = $app['db']->prepare('select id
+		from ' . $app['tschema'] . '.categories
+		where id_parent = ?');
+	$st->bindValue(1, $filter['cid']);
+	$st->execute();
+
+	while ($row = $st->fetch())
 	{
-		$filter['type']['offer'] = 'on';
+		$cat_ary[] = $row['id'];
 	}
-	if ($type !== 'offers')
+
+	if (count($cat_ary))
 	{
-		$filter['type']['want'] = 'on';
+		$where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
 	}
-	$filter['ustatus'] = [
-		'active' 	=> 'on',
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-	];
+	else
+	{
+		$where_sql[] = 'm.id_category = ?';
+		$params_sql[] = $filter['cid'];
+	}
+
+	$params['f']['cid'] = $filter['cid'];
+}
+
+if (!isset($filter['s']))
+{
 	$filter['valid'] = [
 		'yes'	=> 'on',
 		'no'	=> 'on',
 	];
 }
 
-$params['f'] = $filter;
+if (isset($filter['valid'])
+	&& count($filter['valid']) === 2)
+{
+	$params['f']['valid'] = [
+		'yes'	=> 'on',
+		'no'	=> 'on',
+	];
+}
+else if (!isset($filter['valid']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['valid']['yes']))
+	{
+		$where_sql[] = 'm.validity >= now()';
+		$params['f']['valid']['yes'] = 'on';
+	}
+	else if (isset($filter['valid']['no']))
+	{
+		$where_sql[] = 'm.validity < now()';
+		$params['f']['valid']['no'] = 'on';
+	}
+}
+
+if (!isset($filter['s']))
+{
+	$filter['type'] = [
+		'want'	=> 'on',
+		'offer'	=> 'on',
+	];
+}
+
+if (isset($filter['type']) && count($filter['type']) === 2)
+{
+	$params['f']['type'] = [
+		'want'	=> 'on',
+		'offer'	=> 'on',
+	];
+}
+else if (!isset($filter['type']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['type']['want']))
+	{
+		$where_sql[] = 'm.msg_type = 0';
+		$params['f']['type']['want'] = 'on';
+	}
+	else if (isset($filter['type']['offer']))
+	{
+		$where_sql[] = 'm.msg_type = 1';
+		$params['f']['type']['offer'] = 'on';
+	}
+}
+
+if (!isset($filter['s']))
+{
+	$filter['ustatus'] = [
+		'new'		=> 'on',
+		'leaving'	=> 'on',
+		'active'	=> 'on',
+	];
+}
+
+if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
+{
+	$params['f']['ustatus'] = [
+		'new'		=> 'on',
+		'leaving'	=> 'on',
+		'active'	=> 'on',
+	];
+}
+else if (!isset($filter['ustatus']))
+{
+	$where_sql[] = '1 = 2';
+}
+else
+{
+	if (isset($filter['ustatus']['new']))
+	{
+		$ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+		$params['f']['ustatus']['new'] = 'on';
+	}
+
+	if (isset($filter['ustatus']['leaving']))
+	{
+		$ustatus_sql[] = 'u.status = 2';
+		$params['f']['ustatus']['leaving'] = 'on';
+	}
+
+	if (isset($filter['ustatus']['active']))
+	{
+		$ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+		$params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+		$params['f']['ustatus']['active'] = 'on';
+	}
+
+	if (count($ustatus_sql))
+	{
+		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+	}
+}
+
+if (isset($filter['s']))
+{
+	$params['f']['s'] = '1';
+}
+else
+{
+	unset($params['f']);
+}
 
 if ($app['s_guest'])
 {
@@ -1949,15 +2035,16 @@ $query = 'select m.*, u.postcode
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 		where m.id_user = u.id' . $where_sql . '
-	order by ' . $orderby . ' ';
+	order by ' . $params['sort']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(m.*)
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $messages = $app['db']->fetchAll($query, $params_sql);
 
@@ -2001,7 +2088,7 @@ $tableheader_ary = [
 		'lbl' => 'Wat']),
 ];
 
-if (!$uid)
+if (!isset($filter['uid']))
 {
 	$tableheader_ary += [
 		'u.name'	=> array_merge($asc_preset_ary, [
@@ -2042,8 +2129,10 @@ if (!$app['s_guest'] && $app['count_intersystems'])
 	];
 }
 
-$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc']
+	= $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator']
+	= $params['sort']['asc'] ? '-asc' : '-desc';
 
 unset($tableheader_ary['m.cdate']);
 
@@ -2051,14 +2140,14 @@ $cats = ['' => '-- alle categorieën --'];
 
 $categories = $cat_params  = [];
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	$st = $app['db']->executeQuery('select c.*
 		from ' . $app['tschema'] . '.categories c, ' .
 			$app['tschema'] . '.messages m
 		where m.id_category = c.id
 			and m.id_user = ?
-		order by c.fullname', [$uid]);
+		order by c.fullname', [$filter['uid']]);
 }
 else
 {
@@ -2069,9 +2158,10 @@ else
 
 while ($row = $st->fetch())
 {
-	$cats[$row['id']] = ($row['id_parent']) ? ' . . . . . ' : '';
+	$cats[$row['id']] = $row['id_parent'] ? ' . . ' : '';
 	$cats[$row['id']] .= $row['name'];
 	$count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
+
 	if ($row['id_parent'] && $count_msgs)
 	{
 		$cats[$row['id']] .= ' (' . $count_msgs . ')';
@@ -2080,46 +2170,55 @@ while ($row = $st->fetch())
 	$categories[$row['id']] = $row['fullname'];
 
 	$cat_params[$row['id']] = $params;
-	$cat_params[$row['id']]['cid'] = $row['id'];
+	$cat_params[$row['id']]['f']['cid'] = $row['id'];
 }
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$app['p_inline'])
+	if (!$app['p_inline']
+		&& ($s_owner || !isset($filter['uid'])))
 	{
-		$top_buttons .= aphp('messages', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Vraag of aanbod toevoegen', 'plus', true);
+		$top_buttons .= aphp(
+			'messages',
+			['add' => 1],
+			'Toevoegen',
+			'btn btn-success',
+			'Vraag of aanbod toevoegen',
+			'plus',
+			true
+		);
 	}
 
-	if ($uid)
+	if (isset($filter['uid']))
 	{
 		if ($app['s_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
-			$str .= link_user($uid, $app['tschema'], false);
-			$top_buttons .= aphp('messages', ['add' => 1, 'uid' => $uid], $str, 'btn btn-success', $str, 'plus', true);
-		}
+			$str .= link_user($filter['uid'], $app['tschema'], false);
 
-		if (!$app['p_inline'])
-		{
-			$top_buttons .= aphp('messages',
-				[],
-				'Lijst',
-				'btn btn-default',
-				'Lijst alle vraag en aanbod',
-				'newspaper-o',
-				true);
+			$top_buttons .= aphp(
+				'messages',
+				['add' => 1, 'uid' => $filter['uid']],
+				$str,
+				'btn btn-success',
+				$str,
+				'plus',
+				true
+			);
 		}
 	}
 }
 
-$filter_panel_open = (($filter['fcode'] ?? false) && !$uid)
+$csv_en = $app['s_admin'] && $v_list;
+
+$filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
 	|| count($filter['type']) !== 2
 	|| count($filter['valid']) !== 2
 	|| count($filter['ustatus']) !== 3;
 
 $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
-if ($uid)
+if (isset($filter['uid']))
 {
 	if ($s_owner && !$app['p_inline'])
 	{
@@ -2127,21 +2226,23 @@ if ($uid)
 	}
 	else
 	{
-		$h1 = aphp('messages', ['uid' => $uid], 'Vraag en aanbod');
+		$h1 = aphp('messages',
+			['f' => ['uid' => $filter['uid']]],
+			'Vraag en aanbod');
 		$h1 .= ' van ';
-		$h1 .= link_user($uid, $app['tschema']);
+		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
-}
-else if ($recent)
-{
-	$h1 = aphp('messages', [], 'Recent Vraag en aanbod');
 }
 else
 {
 	$h1 = 'Vraag en aanbod';
 }
 
-$h1 .= isset($filter['cid']) && $filter['cid'] ? ', categorie "' . $categories[$filter['cid']] . '"' : '';
+if (isset($filter['cid']) && $filter['cid'])
+{
+	$h1 .= ', categorie "' . $categories[$filter['cid']] . '"';
+}
+
 $h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
 
 $fa = 'newspaper-o';
@@ -2154,15 +2255,30 @@ if (!$app['p_inline'])
 
 	$active = $v_list ? ' active' : '';
 	$v_params['view'] = 'list';
-	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$top_buttons_right .= aphp(
+		'messages',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'lijst',
+		'align-justify'
+	);
 
 	$active = $v_extended ? ' active' : '';
 	$v_params['view'] = 'extended';
-	$top_buttons_right .= aphp('messages', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$top_buttons_right .= aphp(
+		'messages',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'Lijst met omschrijvingen',
+		'th-list'
+	);
 
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add(['msgs.js', 'table_sel.js', 'typeahead', 'typeahead.js']);
+	$app['assets']->add(['msgs.js',
+		'table_sel.js', 'typeahead', 'typeahead.js']);
 
 	include __DIR__ . '/include/header.php';
 
@@ -2218,7 +2334,7 @@ if (!$app['p_inline'])
 		'offer'		=> 'Aanbod',
 	];
 
-	echo '<div class="col-md-3">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($offerwant_options, 'type', $filter);
@@ -2226,12 +2342,15 @@ if (!$app['p_inline'])
 	echo '</div>';
 	echo '</div>';
 
+	echo '</div>';
+	echo '<div class="row">';
+
 	$valid_options = [
 		'yes'		=> 'Geldig',
 		'no'		=> 'Vervallen',
 	];
 
-	echo '<div class="col-md-3">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($valid_options, 'valid', $filter);
@@ -2239,13 +2358,16 @@ if (!$app['p_inline'])
 	echo '</div>';
 	echo '</div>';
 
+	echo '</div>';
+	echo '<div class="row">';
+
 	$user_status_options = [
 		'active'	=> 'Niet in- of uitstappers',
 		'new'		=> 'Instappers',
 		'leaving'	=> 'Uitstappers',
 	];
 
-	echo '<div class="col-md-6">';
+	echo '<div class="col-md-12">';
 	echo '<div class="input-group margin-bottom">';
 
 	echo get_checkbox_filter($user_status_options, 'ustatus', $filter);
@@ -2265,10 +2387,12 @@ if (!$app['p_inline'])
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
+
 	echo $app['typeahead']->get([['accounts', [
 		'status'	=> 'active',
 		'schema'	=> $app['tschema'],
 	]]]);
+
 	echo '" ';
 	echo 'data-newuserdays="';
 	echo $app['config']->get('newuserdays', $app['tschema']);
@@ -2290,7 +2414,9 @@ if (!$app['p_inline'])
 	echo '</div>';
 
 	$params_form = $params;
-	unset($params_form['f'], $params_form['start']);
+	unset($params_form['f']);
+	unset($params_form['uid']);
+	unset($params_form['p']['start']);
 
 	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
@@ -2300,12 +2426,21 @@ if (!$app['p_inline'])
 		$params_form['s'] = $app['s_schema'];
 	}
 
-	foreach ($params_form as $name => $value)
+	$params_form = http_build_query($params_form, 'prefix', '&');
+	$params_form = urldecode($params_form);
+	$params_form = explode('&', $params_form);
+
+	foreach ($params_form as $param)
 	{
-		if (isset($value))
+		[$name, $value] = explode('=', $param);
+
+		if (!isset($value) || $value === '')
 		{
-			echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+			continue;
 		}
+
+		echo '<input name="' . $name . '" ';
+		echo 'value="' . $value . '" type="hidden">';
 	}
 
 	echo '</form>';
@@ -2321,27 +2456,23 @@ if ($app['p_inline'])
 
 	echo '<h3><i class="fa fa-newspaper-o"></i> ';
 	echo $h1;
-	echo $recent ? '' : '<span class="inline-buttons">' . $top_buttons . '</span>';
+	echo '<span class="inline-buttons">';
+	echo $top_buttons;
+	echo '</span>';
 	echo '</h3>';
 }
 
-if (!$recent)
-{
-	echo $app['pagination']->get();
-}
+echo $app['pagination']->get();
 
 if (!count($messages))
 {
 	echo '<br>';
-	echo '<div class="panel panel-info">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-body">';
 	echo '<p>Er zijn geen resultaten.</p>';
 	echo '</div></div>';
 
-	if (!$recent)
-	{
-		echo $app['pagination']->get();
-	}
+	echo $app['pagination']->get();
 
 	if (!$app['p_inline'])
 	{
@@ -2355,7 +2486,8 @@ if ($v_list)
 	echo '<div class="panel panel-info printview">';
 
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-bordered table-hover footable csv" ';
+	echo '<table class="table table-striped ';
+	echo 'table-bordered table-hover footable csv" ';
 	echo 'id="msgs" data-sort="false">';
 
 	echo '<thead>';
@@ -2368,16 +2500,24 @@ if ($v_list)
 	foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		echo '<th';
-		echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+
+		if (isset($data['data_hide']))
+		{
+			echo ' data-hide="' . $data['data_hide'] . '"';
+		}
+
 		echo '>';
+
 		if (isset($data['no_sort']))
 		{
 			echo $data['lbl'];
 		}
 		else
 		{
-			$th_params['orderby'] = $key_orderby;
-			$th_params['asc'] = $data['asc'];
+			$th_params['sort'] = [
+				'orderby'	=> $key_orderby,
+				'asc' 		=> $data['asc'],
+			];
 
 			echo '<a href="';
 			echo generate_url('messages', $th_params);
@@ -2399,7 +2539,7 @@ if ($v_list)
 	foreach($messages as $msg)
 	{
 		echo '<tr';
-		echo (strtotime($msg['validity']) < time()) ? ' class="danger"' : '';
+		echo strtotime($msg['validity']) < time() ? ' class="danger"' : '';
 		echo '>';
 
 		echo '<td>';
@@ -2411,14 +2551,14 @@ if ($v_list)
 			echo '>&nbsp;';
 		}
 
-		echo ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+		echo $msg['msg_type'] ? 'Aanbod' : 'Vraag';
 		echo '</td>';
 
 		echo '<td>';
 		echo aphp('messages', ['id' => $msg['id']], $msg['content']);
 		echo '</td>';
 
-		if (!$uid)
+		if (!isset($filter['uid']))
 		{
 			echo '<td>';
 			echo link_user($msg['id_user'], $app['tschema']);
@@ -2483,7 +2623,7 @@ else if ($v_extended)
 			echo generate_url('messages', ['id' => $msg['id']]);
 			echo '">';
 			echo '<img class="media-object" src="';
-			echo $app['s3_img_url'] . $imgs[$msg['id']];
+			echo $app['s3_url'] . $imgs[$msg['id']];
 			echo '" width="150">';
 			echo '</a>';
 			echo '</div>';
@@ -2491,11 +2631,16 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo aphp('messages', ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
+		echo aphp(
+			'messages',
+			['id' => $msg['id']],
+			$type_str . ': ' . $msg['content']
+		);
 
 		if ($exp)
 		{
-			echo ' <small><span class="text-danger">Vervallen</span></small>';
+			echo ' <small><span class="text-danger">';
+			echo 'Vervallen</span></small>';
 		}
 
 		echo '</h3>';
@@ -2514,8 +2659,21 @@ else if ($v_extended)
 		if ($app['s_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
-			echo aphp('messages', ['edit' => $msg['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('messages', ['del' => $msg['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo aphp(
+				'messages',
+				['edit' => $msg['id']],
+				'Aanpassen', 'btn btn-primary btn-xs',
+				false,
+				'pencil'
+			);
+			echo aphp(
+				'messages',
+				['del' => $msg['id']],
+				'Verwijderen',
+				'btn btn-danger btn-xs',
+				false,
+				'times'
+			);
 			echo '</span>';
 		}
 		echo '</p>';
@@ -2525,10 +2683,7 @@ else if ($v_extended)
 	}
 }
 
-if (!$recent)
-{
-	echo $app['pagination']->get();
-}
+echo $app['pagination']->get();
 
 if ($app['p_inline'])
 {
@@ -2551,9 +2706,12 @@ else if ($v_list)
 
 		echo '<div class="panel panel-default" id="actions">';
 		echo '<div class="panel-heading">';
-		echo '<span class="btn btn-default" id="invert_selection">Selectie omkeren</span>&nbsp;';
-		echo '<span class="btn btn-default" id="select_all">Selecteer alle</span>&nbsp;';
-		echo '<span class="btn btn-default" id="deselect_all">De-selecteer alle</span>';
+		echo '<span class="btn btn-default" id="invert_selection">';
+		echo 'Selectie omkeren</span>&nbsp;';
+		echo '<span class="btn btn-default" id="select_all">';
+		echo 'Selecteer alle</span>&nbsp;';
+		echo '<span class="btn btn-default" id="deselect_all">';
+		echo 'De-selecteer alle</span>';
 		echo '</div></div>';
 
 		echo '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
@@ -2562,7 +2720,8 @@ else if ($v_list)
 		echo '<div class="panel-heading">';
 
 		echo '<ul class="nav nav-tabs" role="tablist">';
-		echo '<li class="active"><a href="#extend_tab" data-toggle="tab">Verlengen</a></li>';
+		echo '<li class="active"><a href="#extend_tab" ';
+		echo 'data-toggle="tab">Verlengen</a></li>';
 
 		if ($app['config']->get('template_lets', $app['tschema'])
 			&& $app['config']->get('interlets_en', $app['tschema']))
@@ -2582,7 +2741,8 @@ else if ($v_list)
 		echo '<form method="post" class="form-horizontal">';
 
 		echo '<div class="form-group">';
-		echo '<label for="extend" class="col-sm-2 control-label">Verlengen met</label>';
+		echo '<label for="extend" class="col-sm-2 control-label">';
+		echo 'Verlengen met</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select name="extend" id="extend" class="form-control">';
 		echo get_select_options($extend_options, '30');
@@ -2590,7 +2750,8 @@ else if ($v_list)
 		echo '</div>';
 		echo '</div>';
 
-		echo '<input type="submit" value="Verlengen" name="extend_submit" class="btn btn-primary">';
+		echo '<input type="submit" value="Verlengen" ';
+		echo 'name="extend_submit" class="btn btn-primary">';
 
 		echo $app['form_token']->get_hidden_input();
 
@@ -2605,7 +2766,8 @@ else if ($v_list)
 			echo '<h3>Zichtbaarheid instellen</h3>';
 			echo '<form method="post" class="form-horizontal">';
 			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
-			echo '<input type="submit" value="Aanpassen" name="access_submit" class="btn btn-primary">';
+			echo '<input type="submit" value="Aanpassen" ';
+			echo 'name="access_submit" class="btn btn-primary">';
 			echo $app['form_token']->get_hidden_input();
 			echo '</form>';
 			echo '</div>';
@@ -2628,46 +2790,44 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
-	global $uid;
-
 	if ($id)
 	{
 		$params = ['id' => $id];
-	}
-	else
-	{
-		$params = [];
-
-		if ($uid)
-		{
-			$params['uid'] = $uid;
-		}
 	}
 
 	header('Location: ' . generate_url('messages', $params));
 	exit;
 }
 
-function get_checkbox_filter(array $checkbox_ary, string $filter_id, array $filter_ary):string
+function get_checkbox_filter(
+	array $checkbox_ary,
+	string $filter_id,
+	array $filter_ary):string
 {
 	$out = '';
 
 	foreach ($checkbox_ary as $key => $label)
 	{
-		$out .= '<span class="input-group-addon">';
-		$out .= '<label class="col-xs-12">';
-		$out .= '<input type="checkbox" name="f[' . $filter_id . '][' . $key . ']"';
+		$id = 'f_' . $filter_id . '_' . $key;
+		$out .= '<label class="checkbox-inline" for="' . $id . '">';
+		$out .= '<input type="checkbox" id="' . $id . '" ';
+		$out .= 'name="f[' . $filter_id . '][' . $key . ']"';
 		$out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
 		$out .= '>&nbsp;';
+		$out .= '<span class="btn btn-default">';
 		$out .= $label;
-		$out .= '</label>';
 		$out .= '</span>';
+		$out .= '</label>';
 	}
 
 	return $out;
 }
 
-function get_radio(array $radio_ary, string $name, string $selected, bool $required):string
+function get_radio(
+	array $radio_ary,
+	string $name,
+	string $selected,
+	bool $required):string
 {
 	$out = '';
 

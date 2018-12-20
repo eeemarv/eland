@@ -16,9 +16,7 @@ if (!$location
 	|| $location == '/')
 {
 	$location = $app['config']->get('default_landing_page', $app['tschema']);
-	$param = 'view_' . $location;
-	$param = in_array($location, ['messages', 'users', 'news']) ? ['view' => $$param] : [];
-	$location .= '.php?' . http_build_query($param);
+	$location .= '.php';
 }
 
 $submit = isset($_POST['zend']);
@@ -33,8 +31,10 @@ if ($token)
 {
 	if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $token))
 	{
-		$app['s_logins'] = $app['session']->get('logins');
-		$app['s_logins'][$app['tschema']] = 'elas';
+		$app['s_logins'] = $app['session']->get('logins') ?? [];
+		$app['s_logins'] = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> 'elas',
+		]);
 		$app['session']->set('logins', $app['s_logins']);
 
 		$param = 'welcome=1&r=guest&u=elas';
@@ -80,8 +80,10 @@ if ($submit)
 		&& $master_password
 		&& hash('sha512', $password) === $master_password)
 	{
-		$app['s_logins'] = $app['session']->get('logins');
-		$app['s_logins'][$app['tschema']] = 'master';
+		$app['s_logins'] = $app['session']->get('logins') ?? [];
+		$app['s_logins'] = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> 'master',
+		]);
 		$app['session']->set('logins', $app['s_logins']);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');

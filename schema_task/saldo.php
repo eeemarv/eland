@@ -26,8 +26,7 @@ class saldo extends schema_task
 	protected $cache;
 	protected $monolog;
 	protected $mail;
-	protected $s3_img_url;
-	protected $s3_doc_url;
+	protected $s3_url;
 	protected $protocol;
 	protected $date_format;
 	protected $distance;
@@ -42,8 +41,7 @@ class saldo extends schema_task
 		cache $cache,
 		Logger $monolog,
 		mail $mail,
-		string $s3_img_url,
-		string $s3_doc_url,
+		string $s3_url,
 		string $protocol,
 		date_format $date_format,
 		distance $distance,
@@ -61,8 +59,7 @@ class saldo extends schema_task
 		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
-		$this->s3_img_url = $s3_img_url;
-		$this->s3_doc_url = $s3_doc_url;
+		$this->s3_url = $s3_url;
 		$this->protocol = $protocol;
 		$this->date_format = $date_format;
 		$this->interlets_groups = $interlets_groups;
@@ -591,7 +588,7 @@ class saldo extends schema_task
 
 					$docs[] = [
 						'name'			=> $data['name'] ?? $data['org_filename'],
-						'url'			=> $this->s3_doc_url . $data['filename'],
+						'url'			=> $this->s3_url . $data['filename'],
 						'ts'			=> $row['ts'],
 					];
 
@@ -611,7 +608,7 @@ class saldo extends schema_task
 				'saldofreqdays'		=> $this->config->get('saldofreqdays', $this->schema),
 			],
 
-			's3_img'				=> $this->s3_img_url,
+			's3_url'				=> $this->s3_url,
 			'new_users'				=> $new_users,
 			'leaving_users'			=> $leaving_users,
 			'news'					=> $news,

@@ -676,11 +676,25 @@ else
 
 	$active = $v_list ? ' active' : '';
 	$v_params['view'] = 'list';
-	$top_buttons_right .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'lijst', 'align-justify');
+	$top_buttons_right .= aphp(
+		'news',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'lijst',
+		'align-justify'
+	);
 
 	$active = $v_extended ? ' active' : '';
 	$v_params['view'] = 'extended';
-	$top_buttons_right .= aphp('news', $v_params, '', 'btn btn-default' . $active, 'Lijst met omschrijvingen', 'th-list');
+	$top_buttons_right .= aphp(
+		'news',
+		$v_params,
+		'',
+		'btn btn-default' . $active,
+		'Lijst met omschrijvingen',
+		'th-list'
+	);
 
 	$top_buttons_right .= '</span>';
 
@@ -691,7 +705,7 @@ else
 
 if (!count($news))
 {
-	echo '<div class="panel panel-warning">';
+	echo '<div class="panel panel-default">';
 	echo '<div class="panel-heading">';
 	echo '<p>Er zijn momenteel geen nieuwsberichten.</p>';
 	echo '</div></div>';
@@ -707,14 +721,16 @@ if ($v_list)
 {
 	echo '<div class="panel panel-warning printview">';
 	echo '<div class="table-responsive">';
-	echo '<table class="table table-striped table-hover table-bordered footable csv">';
+	echo '<table class="table table-striped ';
+	echo 'table-hover table-bordered footable csv">';
 
 	if (!$app['p_inline'])
 	{
 		echo '<thead>';
 		echo '<tr>';
 		echo '<th>Titel</th>';
-		echo '<th data-hide="phone" data-sort-initial="descending">Agendadatum</th>';
+		echo '<th data-hide="phone" ';
+		echo 'data-sort-initial="descending">Agendadatum</th>';
 		echo $app['s_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
 		echo $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
 		echo '</tr>';

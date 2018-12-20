@@ -39,8 +39,8 @@ class pagination
 	):void
 	{
 		$this->out = '';
-		$this->limit = $params['limit'] ?: 25;
-		$this->start = $params['start'] ?: 0;
+		$this->limit = $params['p']['limit'] ?? 25;
+		$this->start = $params['p']['start'] ?? 0;
 		$this->row_count = $row_count;
 		$this->entity = $entity;
 		$this->params = $params;
@@ -63,7 +63,8 @@ class pagination
 			return $this->out;
 		}
 
-		$this->out .= '<div class="row print-hide"><div class="col-md-12">';
+		$this->out .= '<div class="row print-hide">';
+		$this->out .= '<div class="col-md-12">';
 		$this->out .= '<ul class="pagination">';
 
 		$min_adjacent = $this->page - $this->adjacent_num;
@@ -102,16 +103,17 @@ class pagination
 		if (!$this->inline)
 		{
 			$this->out .= '<div>';
-			$this->out .= '<form action="' . $this->entity . '.php">';
+			$this->out .= '<form action="';
+			$this->out .= $this->entity . '.php">';
 
 			$this->out .= 'Per pagina: ';
-			$this->out .= '<select name="limit" onchange="this.form.submit();">';
+			$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
 			$this->out .= get_select_options($this->limit_options, $this->limit);
 			$this->out .= '</select>';
 
 			$action_params = $this->params;
-			unset($action_params['limit']);
-			$action_params['start'] = 0;
+			unset($action_params['p']['limit']);
+			$action_params['p']['start'] = 0;
 			$action_params = array_merge($action_params,  get_session_query_param());
 
 			$action_params = http_build_query($action_params, 'prefix', '&');
@@ -121,7 +123,14 @@ class pagination
 			foreach ($action_params as $param)
 			{
 				[$name, $value] = explode('=', $param);
-				$this->out .= '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+
+				if (!isset($value) || $value === '')
+				{
+					continue;
+				}
+
+				$this->out .= '<input name="' . $name . '" ';
+				$this->out .= 'value="' . $value . '" type="hidden">';
 			}
 
 			$this->out .= '</form>';
@@ -136,8 +145,11 @@ class pagination
 	protected function get_link(int $page):string
 	{
 		$params = $this->params;
-		$params['start'] = $page * $this->limit;
-		$params['limit'] = $this->limit;
+
+		$params['p'] = [
+			'start'	=> $page * $this->limit,
+			'limit'	=> $this->limit,
+		];
 
 		$out = '<li';
 		$out .= $page == $this->page ? ' class="active"' : '';
