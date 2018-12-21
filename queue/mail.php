@@ -67,6 +67,8 @@ class mail implements queue_interface
 			return;
 		}
 
+		$data['vars']['schema'] = $schema;
+
 		$template = $this->twig->load('s_mail/' . $data['template'] . '.twig');
 		$subject = $template->renderBlock('subject', $data['vars']);
 		$text = $template->renderBlock('text_body', $data['vars']);
@@ -234,28 +236,22 @@ class mail implements queue_interface
 				if (!$this->email_validate->is_validated($email, $schema))
 				{
 					$token = $this->email_validate->get_token($email, $schema, $data['template']);
+					$val_data = $data;
+					$val_data['to'] = [$email => $name];
+					$val_data['validate_param'] = '&ev=' . $token;
+					unset($data['to'][$email]);
 
-					$validate_ary[$email] = $token;
+					$this->queue->set('mail', $val_data, $priority);
+
+					$this->monolog->info('mail in queue with validate token ' .
+						$validate_token .
+						', template: ' . $data['template'] . ', from : ' .
+						json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+						$reply_log .
+						' priority: ' . $priority,
+						['schema' => $schema]);
 				}
 			}
-		}
-
-		foreach ($validate_ary as $email_to => $validate_token)
-		{
-			$val_data = $data;
-
-			$val_data['to'] = [$email_to => $data['to'][$email]];
-			$val_data['vars']['validate_param'] = '&ev=' . $validate_token;
-
-			unset($data['to'][$email_to]);
-
-			$this->queue->set('mail', $val_data, $priority);
-
-			$this->monolog->info('mail: Mail in queue with validate token ' .
-				$validate_token .
-				', template: ' . $data['template'] . ', from : ' .
-				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-				$reply_log . ' priority: ' . $priority, ['schema' => $schema]);
 		}
 
 		if (!isset($data['to']) || !$data['to'])
@@ -268,7 +264,8 @@ class mail implements queue_interface
 		$this->monolog->info('mail: Mail in queue, template: ' .
 			$data['template'] . ', from : ' .
 			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-			$reply_log . ' priority: ' . $priority, ['schema' => $schema]);
+			$reply_log . ' priority: ' . $priority,
+			['schema' => $schema]);
 	}
 
 	protected function has_data_error(array $data, string $log_prefix):bool
@@ -334,70 +331,5 @@ class mail implements queue_interface
 		}
 
 		return false;
-	}
-}
-
-/*
-<?php
-
-namespace mail;
-
-use Twig_Environment as Twig;
-use exception\method_call_order_exception;
-
-class mail_template
-{
-	private $twig;
-
-	private $template;
-	private $vars;
-
-	public function __construct(Twig $twig)
-	{
-		$this->twig = $twig;
-	}
-
-	public function set_template(string $template):mail_template
-	{
-		if (isset($this->template))
-		{
-			throw new method_call_order_exception(sprintf(
-				'method clear() needs to be called first in %', __CLASS__));
-		}
-
-		$this->template = $this->twig->load('mail/' . $template . '.twig');
-		return $this;
-	}
-
-	public function set_vars(array $vars):mail_template
-	{
-		if (isset($this->vars))
-		{
-			throw new method_call_order_exception(sprintf(
-				'method clear() needs to be called first in %', __CLASS__));
-		}
-
-		$this->vars = $vars;
-		return $this;
-	}
-
-	public function get_subject():string
-	{
-		return $this->template->renderBlock('subject', $this->vars);
-	}
-
-	public function get_text():string
-	{
-		return $this->template->renderBlock('text_body', $this->vars);
-	}
-
-	public function get_html():string
-	{
-		return $this->template->renderBlock('html_body', $this->vars);
-	}
-
-	public function clear()
-	{
-		unset($this->template, $this->vars);
 	}
 }
