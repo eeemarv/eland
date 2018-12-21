@@ -1,0 +1,30 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block body %}
+{% autoescape false %}
+
+{% if interlets %}
+Notificatie interSysteem transactie
+--------------------------------
+{% else %}
+Notificatie transactie
+----------------------
+{% endif %}
+
+Van
+{{ from_user }}
+
+Aan
+{{ to_user }}
+
+Aantal
+{{ amount }} {{ group.currency }}
+
+Omschrijving
+{{ description }}
+
+Link
+{{ transaction_url }}
+
+{% endautoescape %}
+{% endblock body %}
