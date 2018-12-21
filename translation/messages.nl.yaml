@@ -697,17 +697,20 @@ mail:
       Deze link blijft 4 uur geldig. Gelieve deze
       mail te negeren wanneer je niet zelf een aanvraag
       tot hosting hebt gedaan via onze website.
-  confirm_contact:
-    subject: Bevestiging van je bericht gevraagd
+  contact_confirm:
+    subject: Bevestig je bericht aan %system_name%
+    html_msg: >-
+      %link_open%Klik hier om je bericht
+      in het contactformulier te bevestigen.%link_close%
+    text_msg: >-
+      Klik op de link hieronder om je bericht in het
+      contactformulier te bevestigen.
     explain: >-
-      Bevestig je bericht in het contactformulier door
-      op de link hieronder te klikken.
-    expiration: >-
       Deze link blijft 4 uur geldig. Gelieve deze mail te
       negeren wanneer je niet zelf een bericht hebt verstuurd
-      via ons contactformulier.
-  confirm_register:
-    subject: Bevestiging van je registratie gevraagd
+      via %link_open%het contactformulier van %system_name%%link_close%.
+  register_confirm:
+    subject: Bevestiging van je registratie bij %system_name%
     explain: >-
       Bevestig je registratie door op de link hieronder
       te klikken.

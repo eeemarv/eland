@@ -55,9 +55,8 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
 
-	$twig->addExtension(new service\twig_extension($app));
+	$twig->addExtension(new \twig\extension());
 	$twig->addGlobal('s3_url', $app['s3_url']);
-
 	return $twig;
 });
 
@@ -91,8 +90,8 @@ $app->extend('translator', function($translator, $app) {
 
 	$trans_dir = __DIR__ . '/../translation/';
 
-//	$translator->addResource('yaml', $trans_dir . 'en.yaml', 'en');
-	$translator->addResource('yaml', $trans_dir . 'nl.yaml', 'nl');
+//	$translator->addResource('yaml', $trans_dir . 'messages.en.yaml', 'en');
+	$translator->addResource('yaml', $trans_dir . 'messages.nl.yaml', 'nl');
 
 	return $translator;
 });

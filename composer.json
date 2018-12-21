@@ -53,7 +53,8 @@
 			"task\\": "task/",
 			"schema_task\\": "schema_task/",
 			"util\\": "util/",
-			"tpl_helper\\": "tpl_helper/"
+			"tpl_helper\\": "tpl_helper/",
+			"twig\\": "twig/"
         }
     },
 	"scripts": {

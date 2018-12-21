@@ -64,7 +64,6 @@ class date_format
 		if (!$format || !isset(self::FORMATS[$format]))
 		{
 			throw \Exception('No valid date format in date_format: ' . $format);
-//			return self::FORMATS['%e %b %Y, %H:%M:%S'];
 		}
 
 		if (!isset(self::FORMATS[$format][$precision]))

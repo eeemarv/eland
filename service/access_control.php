@@ -127,7 +127,9 @@ class access_control
 	 *
 	 */
 
-	public function get_label($access = 'admin')
+	public function get_label(
+		$access = 'admin'
+	)
 	{
 		if (isset($this->acc_ary_search[$access]))
 		{
@@ -148,7 +150,9 @@ class access_control
 	 *
 	 */
 
-	public function get_post_value($name = 'access')
+	public function get_post_value(
+		$name = 'access'
+	)
 	{
 		if (!isset($_POST[$name]))
 		{
@@ -163,7 +167,9 @@ class access_control
 		return false;
 	}
 
-	public function get_post_error($name = 'access')
+	public function get_post_error(
+		$name = 'access'
+	)
 	{
 		if ($this->acc_ary[$_POST[$name]])
 		{
@@ -173,7 +179,14 @@ class access_control
 		return 'Kies een zichtbaarheid.';
 	}
 
-	public function get_radio_buttons($access_cache_id = false, $value = false, $omit_access = false, $name = 'access', $size = 'xs', $label = 'Zichtbaarheid')
+	public function get_radio_buttons(
+		$access_cache_id = false,
+		$value = false,
+		$omit_access = false,
+		$name = 'access',
+		$size = 'xs',
+		$label = 'Zichtbaarheid'
+	)
 	{
 		$acc_ary = $this->acc_ary;
 

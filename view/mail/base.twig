@@ -4,11 +4,7 @@
 {%- endblock subject -%}
 
 {%- block text_body -%}
-    {%- block text_noreply_pretext -%}
-        {%- if no_reply is defined -%}
-        ** {{- 'mail.no_reply'|trans -}} **
-        {%- endif -%}
-    {%- endblock text_noreply_pretext -%}
+    {%- block text_noreply_pretext -%}{%- endblock text_pretext -%}
     {%- block text_content -%}{%- endblock -%}
     {%- block text_account_info -%}{%- endblock -%}
     {%- block text_support -%}{%- endblock -%}
@@ -29,19 +25,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
     <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
-    {%- block html_noreply_pretext -%}
-        {%- if no_reply is defined -%}
-        <p><i>{{-'mail.no_reply'|trans -}}</i></p>
-        {%- endif -%}
-    {%- endblock html_noreply_pretext -%}
+    {%- block html_pretext -%}{%- endblock -%}
     {%- block html_content -%}{%- endblock -%}
     {%- block html_account_info -%}{%- endblock -%}
     {%- block html_support -%}{%- endblock -%}
     {%- block html_unsubscribe -%}{%- endblock -%}
     {%- block html_footer -%}
         {%- if schema is defined %}
-        <br/>
-        <p>{{- 'mail.footer'|trans({'%systemname%': config('systemname', schema)}) -}}</p>
+            <br/>
+            <p>
+                {{- 'mail.footer'|trans({'%systemname%': config('systemname', schema)}) -}}
+            </p>
         {%- endif -%}
     {%- endblock html_footer -%}
     </body>

@@ -1,0 +1,42 @@
+{%- extends 'mail/base.html.twig' -%}
+
+{%- block subject_line -%}
+    {{- 'mail.contact_confirm.subject'|trans({
+        '%system_name%': config('systemname', schema)}) -}}
+{%- endblock subject_line %}
+
+{%- block html_body -%}
+
+<p>
+    {{- 'mail.contact_confirm.html_msg'|trans({
+        '%link_open%': '<a href="' ~ confirm_url ~ '">',
+        '%link_close%': '</a>'
+    }) -}}
+</p>
+
+<p>
+    {{- 'mail.contact_confirm.explain'|trans({
+        '%system_name%': config('systemname', schema),
+        '%link_open%': '<a href="' ~ contact_url ~ '">',
+        '%link_close%': '</a>'
+    }) -}}
+</p>
+{%- endblock html_body -%}
+
+{% block text_body %}
+{% autoescape false %}
+
+{{ 'mail.contact_confirm.text_msg'|trans }}
+
+{{ confirm_url }}
+
+{{ 'mail.contact_confirm.explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%link_open%': '',
+    '%link_close%': ''
+}) }}
+
+{{ contact_url }}
+
+{% endautoescape %}
+{% endblock text_body %}
