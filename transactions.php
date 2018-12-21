@@ -2524,7 +2524,16 @@ if (isset($filter['uid']))
 
 		echo '<td>';
 		echo '<span class="text-';
-		echo $t['id_from'] === $filter['uid'] ? 'danger">-' : 'success">+';
+
+		if ($t['id_from'] == $filter['uid'])
+		{
+			echo 'danger">-';
+		}
+		else
+		{
+			echo 'success">+';
+		}
+
 		echo $t['amount'];
 		echo '</span></td>';
 
@@ -2534,7 +2543,7 @@ if (isset($filter['uid']))
 
 		echo '<td>';
 
-		if ($t['id_from'] === $filter['uid'])
+		if ($t['id_from'] == $filter['uid'])
 		{
 			if ($t['real_to'])
 			{
