@@ -69,7 +69,7 @@ class mail implements queue_interface
 
 		$data['vars']['schema'] = $schema;
 
-		$template = $this->twig->load('s_mail/' . $data['template'] . '.twig');
+		$template = $this->twig->load('mail/' . $data['template'] . '.twig');
 		$subject = $template->renderBlock('subject', $data['vars']);
 		$text = $template->renderBlock('text_body', $data['vars']);
 		$html = $template->renderBlock('html_body', $data['vars']);

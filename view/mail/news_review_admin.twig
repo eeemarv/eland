@@ -1,6 +1,8 @@
 {%- extends 'mail/base.twig' -%}
 
-{%- block subject_line -%}{{- 'mail.news_review_admin.subject'|trans({'%name%': news.headline|e})|raw -}}{%- endblock -%}
+{%- block subject_line -%}
+    {{- 'mail.news_review_admin.subject'|trans({'%name%': news.headline|e})|raw -}}
+{%- endblock -%}
 
 {%- block text_noreply_pretext -%}{%- endblock -%}
 {%- block text_content -%}
@@ -11,7 +13,12 @@
 
 {%- block html_noreply_pretext -%} {%- endblock -%}
 {%- block html_content -%}
-    <p>{{- 'mail.news_review_admin.message'|trans({'%name%':news.headline|e})|raw -}}</p>
-    <p><a href="{{- url('news_show', {'schema': schema, 'access': 'a', 'news': news.id}) -}}">"{{- news.headline -}}"</a></p>     
+    <p>
+        {{- 'mail.news_review_admin.message'|trans({'%name%':news.headline|e})|raw -}}
+    </p>
+    <p>
+        <a href="{{- url('news_show', {'schema': schema, 'access': 'a', 'news': news.id}) -}}">
+            {{- news.headline -}}
+        </a>
+    </p>
 {%- endblock html_content -%}
-

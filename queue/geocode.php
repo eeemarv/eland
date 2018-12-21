@@ -184,9 +184,4 @@ class geocode implements queue_interface
 
 		return true;
 	}
-
-	public function get_interval():int
-	{
-		return 120;
-	}
 }

@@ -679,7 +679,7 @@ form:
 
 mail:
   no_reply: >-
-    Dit is een automatische mail. Niet beantwoorden a.u.b.
+    Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.
   footer: '%systemname%'
   confirm:
     subject: Bevestiging gevraagd
