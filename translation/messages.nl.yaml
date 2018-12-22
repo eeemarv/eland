@@ -89,83 +89,83 @@ label:
   accept: Akkoord
   access: Toegang
   access_explain: Wie kan dit zien?
+  account_code: Account Code
   activated: Geactiveerd
   activity: Activiteit
-  admin_comment: Admin commentaar
+  admin_comment: Admin Commentaar
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
-  balance_on_date: Saldo op datum
-  balance_sum: "Totaal saldo: %balance_sum%"
+  balance_on_date: Saldo op Datum
+  balance_sum: "Totaal Saldo: %balance_sum%"
   code: Code
   columns: Kolommen
   comment: Commentaar
   contact_details: Contacten
   content: Inhoud
   created: Gecreëerd
-  currency_or_group_name: Naam van de munt of groep
   description: Omschrijving
   date: Datum
   email: Email
   email_confirmation_explain: >-
     We sturen je een bevestigings-link om je
     email adres te valideren.
-  email_letscode_username: Je email adres, LETScode of gebruikersnaam
-  email_code_username: Je email adres, code of gebruikersnaam
   event_date: Agendadatum
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
   first_name: Voornaam
   from: Van
   from_date: Vanaf
-  full_name: Volledige naam
+  full_name: Volledige Naam
   hobbies_interests: Hobbies/interesses
   in: In
-  keep_after_date: Behoud na datum
-  last_login: Laatste login
+  keep_after_date: Behoud na Datum
+  last_login: Laatste Login
   last_name: Achternaam
-  letscode: LETScode
+  link: Link
   location: Plaats
   location_explain: Waar?
   map: Map
   max: Max
-  maximum_limit: Maximum limiet
+  maximum_limit: Maximum Limiet
   menu: Menu
   message: Bericht
   min: Min
-  minimum_limit: Minimum limiet
+  minimum_limit: Minimum Limiet
   modified: Aangepast
   mobile: GSM
   name: Naam
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
   out: Uit
-  parsed_address: Ontleed adres
+  parsed_address: Ontleed Adres
   password: Paswoord
-  period_days: Periode in dagen
-  periodic_mail: Periodieke overzichtsmail
+  period_days: Periode in Dagen
+  periodic_mail: Periodieke Overzichts E-mail
   postcode: Postcode
   role: Rol
-  save_password: Bewaar paswoord
+  save_password: Bewaar Paswoord
   slug: Slak
   slug_explain: >-
     De "Slak" is het laatste gedeelte van de URL.
-    Deze kan uit kleine letters, cijfers en ingesloten koppeltekens bestaan.
-    Gebruik minstens 4 tekens en "index" voor de thuispagina.
-  split_by_char: split door teken
+    Deze kan uit kleine letters, cijfers en
+    ingesloten koppeltekens bestaan. Gebruik minstens
+    4 tekens en "index" voor de thuispagina.
+  split_by_char: Split door Teken
   subject: Onderwerp
+  system_name: Naam van het Systeem
   telephone: Telefoon
   time: Tijdstip
   title: Titel
   to: Naar
   total: Totaal
-  to_date: Tot en met
+  to_date: Tot
   transactions: Transacties
-  transaction_id: Transactie id
+  transaction_id: Transactie Id
   username: Gebruikersnaam
   wants: Vraag
-  your_email: Je email adres
-  your_message: Je bericht
+  your_email: Je E-Mail adres
+  your_message: Je Bericht
 
 btn:
   add: Toevoegen
@@ -176,11 +176,11 @@ btn:
   filter: Filter
   generate: Genereer
   login: Login
-  password_reset: Reset paswoord
+  password_reset: Reset Paswoord
   register: Inschrijven
   send: Verzenden
   show: Toon
-  show_columns: Toon kolommen
+  show_columns: Toon Kolommen
 
 user_type:
   active: Actief
@@ -679,7 +679,7 @@ form:
 
 mail:
   no_reply: >-
-    Dit is een automatisch gegenereerde mail. Niet beantwoorden a.u.b.
+    Dit is een automatische mail. Niet beantwoorden a.u.b.
   footer: '%systemname%'
   confirm:
     subject: Bevestiging gevraagd
@@ -687,16 +687,16 @@ mail:
       Bevestig je email adres door op de link hieronder
       te klikken
     expiration: >-
-      Deze link blijft 4 uur geldig.
+      Deze link blijft 24 uur geldig.
   confirm_hosting_request:
     subject: Bevestig je aanvraag voor hosting
     explain: >-
       Bevestig je aanvraag voor eLAND-hosting door
       op de link hieronder te klikken.
     expiration: >-
-      Deze link blijft 4 uur geldig. Gelieve deze
-      mail te negeren wanneer je niet zelf een aanvraag
-      tot hosting hebt gedaan via onze website.
+      Gelieve deze E-mail te negeren wanneer
+      je niet zelf een aanvraag tot hosting
+      hebt gedaan via onze website.
   contact_confirm:
     subject: Bevestig je bericht aan %system_name%
     html_msg: >-
@@ -706,18 +706,26 @@ mail:
       Klik op de link hieronder om je bericht in het
       contactformulier te bevestigen.
     explain: >-
-      Deze link blijft 4 uur geldig. Gelieve deze mail te
-      negeren wanneer je niet zelf een bericht hebt verstuurd
-      via %link_open%het contactformulier van %system_name%%link_close%.
+      Gelieve deze mail te negeren wanneer je niet
+      zelf een bericht hebt verstuurd
+      via %link_open%het contactformulier
+      van %system_name%%link_close%.
   register_confirm:
     subject: Bevestiging van je registratie bij %system_name%
     explain: >-
       Bevestig je registratie door op de link hieronder
       te klikken.
     expiration: >-
-      Deze link blijft 4 uur geldig. Gelieve deze mail te
+      Deze link blijft 24 uur geldig. Gelieve deze mail te
       negeren wanneer je niet zelf ons registratieformulier
       hebt ingevuld.
+  transaction:
+    subject: Transactie van %from_account% naar %to_account%
+    title: Notificatie Transactie
+    link: "%open_link%Link naar de Transactie%close_link%"
+  transaction_intersystem:
+    subject: Intersysteem Transactie van %from_account% naar %to_account%
+    title: Notificatie Intersysteem Transactie
   confirm_password_reset:
     subject: Paswoord reset link
     explain: >-

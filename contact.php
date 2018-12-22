@@ -130,7 +130,6 @@ if($app['is_http_post'] && isset($_POST['zend']))
 			$html, ['schema' => $app['tschema']]);
 
 		$vars = [
-			'group' 		=> $app['template_vars']->get($app['tschema']),
 			'contact_url'	=> $app['base_url'] . '/contact.php',
 			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
 		];
@@ -191,7 +190,9 @@ echo '<div class="panel-heading">';
 echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="mail">Je E-mail Adres</label>';
+echo '<label for="mail">';
+echo 'Je E-mail Adres';
+echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-envelope-o"></i>';

@@ -225,17 +225,6 @@ class date_format
 		return $this->get_from_unix(strtotime($ts . ' UTC'), $precision, $schema);
 	}
 
-	public function twig_get(
-		$environment,
-		$context,
-		string $ts,
-		string $precision,
-		string $schema
-	):string
-	{
-		return $this->get($ts, $precision, $schema);
-	}
-
 	public function get_td(
 		string $ts,
 		string $precision,

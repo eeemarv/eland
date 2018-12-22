@@ -1,3 +1,79 @@
-{% extends 'mail/base.subject.twig' %}
+{%- extends 'mail/base.twig' -%}
 
-{% block line %}{% if interlets %}InterSysteem transactie{% else %}Transactie{% endif %}, {{ amount|raw }} {{ group.currency|raw }} van {{ from_user|raw }} aan {{ to_user|raw }}{% endblock line %}
+{% block subject_line -%}
+    {{- 'mail.transaction.subject'|trans({
+        'from_account': account(from_user_id, schema),
+        'to_account': account(to_user_id, schema)
+    }) -}}
+{%- endblock subject_line -%}
+
+{% block html_body %}
+
+<h3>
+{%- block_html_title -%}
+    {{- 'mail.transaction.title'|trans -}}
+{%- block_html_title -%}
+</h3>
+
+<p>
+    {{- 'label.from'|trans -}}
+    <br>
+    <strong>
+        {{- account(from_user_id, schema) -}}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.to'|trans -}}
+    <br>
+    <strong>
+        {{- account(to_user_id, schema) -}}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.amount'|trans -}}
+    <br>
+    <strong>
+        {{- amount }} {{ config('currency', schema) }}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.description'|trans -}}
+    <br>
+    <strong>
+        {{- description -}}
+    </strong>
+</p>
+
+<p>{{- 'mail.transaction.html_link'|trans({
+    '%open_link%': '<a href="' ~ transaction_url ~ '">',
+    '%close_link%': '</a>'
+}) -}}
+</p>
+
+{%- endblock html_body -%}
+
+{% block text_body %}
+{% autoescape false %}
+
+{{ 'mail.transaction.title'|trans|underline }}
+
+{{ 'label.from'|trans }}
+{{ account(from_user_id, schema) }}
+
+{{ 'label.to'|trans }}
+{{ account(to_user_id, schema) }}
+
+{{ 'label.amount'|trans }}
+{{ amount }} {{ config('currency', schema) }}
+
+{{ 'label.description'|trans }}
+{{ description }}
+
+{{ 'label.link'|trans }}
+{{ transaction_url }}
+
+{% endautoescape %}
+{% endblock text_body %}

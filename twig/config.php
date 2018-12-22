@@ -2,11 +2,13 @@
 
 namespace twig;
 
+use service\config as cnfg;
+
 class config
 {
 	private $config;
 
-	public function __construct(\service\config $config)
+	public function __construct(cnfg $config)
 	{
 		$this->config = $config;
 	}

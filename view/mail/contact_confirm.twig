@@ -1,4 +1,4 @@
-{%- extends 'mail/base.html.twig' -%}
+{%- extends 'mail/base.twig' -%}
 
 {%- block subject_line -%}
     {{- 'mail.contact_confirm.subject'|trans({
@@ -11,7 +11,7 @@
     {{- 'mail.contact_confirm.html_msg'|trans({
         '%link_open%': '<a href="' ~ confirm_url ~ '">',
         '%link_close%': '</a>'
-    }) -}}
+    })|raw -}}
 </p>
 
 <p>
@@ -19,7 +19,11 @@
         '%system_name%': config('systemname', schema),
         '%link_open%': '<a href="' ~ contact_url ~ '">',
         '%link_close%': '</a>'
-    }) -}}
+    })|raw -}}
+</p>
+
+<p>
+    {{- 'mail.confirm.expiration'|trans -}}
 </p>
 {%- endblock html_body -%}
 
@@ -37,6 +41,8 @@
 }) }}
 
 {{ contact_url }}
+
+{{ 'mail.confirm.expiration'|trans }}
 
 {% endautoescape %}
 {% endblock text_body %}
