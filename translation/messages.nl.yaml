@@ -698,8 +698,10 @@ mail:
     explain: >-
       Bevestig je email adres door op de link hieronder
       te klikken
-    expiration: >-
+    expiration_1_day: >-
       Deze link blijft 24 uur geldig.
+    expiration_1_week: >-
+      Deze link blijft 1 week geldig.
   confirm_hosting_request:
     subject: Bevestig je aanvraag voor hosting
     explain: >-
@@ -723,6 +725,18 @@ mail:
       zelf een bericht hebt verstuurd
       via %link_open%het contactformulier
       van %system_name%%link_close%.
+  register_confirm:
+    subject: Bevestig je registratie bij %system_name%
+    html_msg: >-
+      %link_open%Klik hier om je registratie
+      te bevestigen.%link_close%
+    text_msg: >-
+      Klik op de link hieronder om je registratie
+      te bevestigen.
+    explain: >-
+      Gelieve deze mail te negeren wanneer je niet
+      zelf %link_open%het registratieformulier
+      van %system_name%%link_close% hebt ingevuld.
   contact_copy:
     subject: >-
       Kopie van je bericht aan %system_name%
@@ -734,15 +748,6 @@ mail:
       Dit bericht werd ingegeven in het
       contactformulier van %link_open%%system_name%%link_close%.
       Gebruik "Reply" om het eventueel te beantwoorden.
-  register_confirm:
-    subject: Bevestiging van je registratie bij %system_name%
-    explain: >-
-      Bevestig je registratie door op de link hieronder
-      te klikken.
-    expiration: >-
-      Deze link blijft 24 uur geldig. Gelieve deze mail te
-      negeren wanneer je niet zelf ons registratieformulier
-      hebt ingevuld.
   transaction:
     subject: Transactie van %from_account% naar %to_account%
     title: Notificatie Transactie

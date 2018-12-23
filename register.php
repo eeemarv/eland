@@ -154,7 +154,6 @@ if ($token)
 		}
 
 		$vars = [
-			'group'	=> $app['template_vars']->get($app['tschema']),
 			'user'	=> $user,
 			'email'	=> $data['email'],
 			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
@@ -226,12 +225,12 @@ if ($token)
 if ($submit)
 {
 	$reg = [
-		'email'			=> $_POST['email'],
-		'first_name'	=> $_POST['first_name'],
-		'last_name'		=> $_POST['last_name'],
-		'postcode'		=> $_POST['postcode'],
-		'tel'			=> $_POST['tel'],
-		'gsm'			=> $_POST['gsm'],
+		'email'			=> $_POST['email'] ?? '',
+		'first_name'	=> $_POST['first_name'] ?? '',
+		'last_name'		=> $_POST['last_name'] ?? '',
+		'postcode'		=> $_POST['postcode'] ?? '',
+		'tel'			=> $_POST['tel'] ?? '',
+		'gsm'			=> $_POST['gsm'] ?? '',
 	];
 
 	$app['monolog']->info('Registration request for ' .
@@ -282,7 +281,7 @@ if ($submit)
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
-			'group'			=> $app['template_vars']->get($app['tschema']),
+			'register_url'	=> $app['base_url'] . '/register.php',
 			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
 		];
 
@@ -290,10 +289,10 @@ if ($submit)
 			'schema'	=> $app['tschema'],
 			'to' 		=> [$reg['email']],
 			'vars'		=> $vars,
-			'template'	=> 'registration_confirm',
+			'template'	=> 'register_confirm',
 		], 10000);
 
-		$app['alert']->warning('Open je E-mailbox en klik op de
+		$app['alert']->success('Open je E-mailbox en klik op de
 			bevestigingslink in de E-mail die we naar je gestuurd
 			hebben om je inschrijving te voltooien.');
 		header('Location: ' . $app['rootpath'] . 'login.php');
