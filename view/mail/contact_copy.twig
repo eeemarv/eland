@@ -26,10 +26,12 @@
     <p>
         {{- message -}}
     </p>
+    <hr>
 {%- endblock %}
 
 {% block text_content %}
 {% autoescape false %}
+
 {{ 'mail.contact_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
 }) }}
@@ -37,5 +39,6 @@
 
 {{ message }}
 
+- - - - - -
 {% endautoescape %}
 {% endblock -%}

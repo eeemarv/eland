@@ -74,74 +74,6 @@ class mail implements queue_interface
 		$text = $template->renderBlock('text_body', $data['vars']);
 		$html = $template->renderBlock('html_body', $data['vars']);
 
-/*
-		if (isset($data['vars']))
-		{
-			$template_subject = $this->twig->loadTemplate('mail/' . $data['template'] . '.subject.twig');
-			$template_html = $this->twig->loadTemplate('mail/' . $data['template'] . '.html.twig');
-			$template_text = $this->twig->loadTemplate('mail/' . $data['template'] . '.text.twig');
-
-			$data['subject']  = $template_subject->render($data['vars']);
-			$data['text'] = $template_text->render($data['vars']);
-			$data['html'] = $template_html->render($data['vars']);
-		}
-		else if (isset($data['template_from_config']) && isset($data['vars']))
-		{
-			$template = $this->config->get($data['template_from_config'], $schema);
-
-			if (!$template)
-			{
-				$this->monolog->error('mail queue process: no template set in config. ' .
-					json_encode($data),
-					['schema' => $schema]);
-				return;
-			}
-
-			try
-			{
-				$template_subject = $this->twig->loadTemplate('mail/' . $data['template_from_config'] . '.subject.twig');
-				$template_html = $this->twig->createTemplate($template);
-
-				$data['subject']  = $template_subject->render($data['vars']);
-				$data['text'] = $this->converter->convert($data['html']);
-				$data['html'] = $template_html->render($data['vars']);
-			}
-			catch (Exception $e)
-			{
-				$this->monolog->error('mail queue process, config template err: ' .
-					$e->getMessage() . ' ::: ' .
-					json_encode($data),
-					['schema' => $schema]);
-				return;
-			}
-		}
-		else
-		{
-			if (!isset($data['subject']))
-			{
-				$this->monolog->error('mail queue process: mail without subject' .
-					json_encode($data),
-					['schema' => $schema]);
-				return;
-			}
-
-			if (!isset($data['text']))
-			{
-				if (isset($data['html']))
-				{
-					$data['text'] = $this->converter->convert($data['html']);
-				}
-				else
-				{
-					$this->monolog->error('mail queue process: mail without body content. ' .
-						json_encode($data),
-						['schema' => $schema]);
-					return;
-				}
-			}
-		}
-*/
-
 		$message = (new \Swift_Message())
 			->setSubject($subject)
 			->setBody($text)
@@ -163,8 +95,8 @@ class mail implements queue_interface
 		{
 			if ($this->mailer->send($message, $failed_recipients))
 			{
-				$this->monolog->info('mail queue process: sent ' .
-					json_encode($data['to']) . ' subject: ' . $data['subject'],
+				$this->monolog->info('mail queue process, sent to ' .
+					json_encode($data['to']) . ' subject: ' . $subject,
 					['schema' => $schema]);
 			}
 			else

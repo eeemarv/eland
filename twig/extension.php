@@ -25,6 +25,7 @@ class extension extends \Twig_Extension
 			new \Twig_Function('datepicker_placeholder', 'twig\\date_format::datepicker_placeholder'),
 			new \Twig_Function('config', 'twig\\config::get'),
 			new \Twig_Function('account', 'twig\\account::get'),
+			new \Twig_Function('base_url', 'twig\\base_url::get'),
 		];
 	}
 

@@ -11,7 +11,7 @@
 <hr>
 <p>
     {{- 'mail.contact.explain'|trans({
-        '%link_open%': '<a href="' ~ base_url ~ '">',
+        '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -24,15 +24,15 @@
 
 {{ message }}
 
-- - - - - - -
-{{- 'mail.contact.explain'|trans({
+- - - - - -
+{{ 'mail.contact.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
-})|raw -}}
+})|raw }}
 
-{{ base_url }}
-{%- include 'mail/include/sender_info.text.twig' -%}
+{{ base_url(schema) }}
+{% include 'mail/include/sender_info.text.twig' %}
 {% endautoescape %}
 {% endblock text_content %}
 

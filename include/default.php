@@ -67,6 +67,12 @@ $app->extend('twig', function($twig, $app) {
 		twig\account::class => function() use ($app){
 			return new twig\account($app['user_cache']);
 		},
+		twig\base_url::class => function() use ($app){
+			return new twig\base_url(
+				$app['groups'],
+				$app['protocol']
+			);
+		},
 /*
 		twig\distance::class => function() use ($app){
 			return new twig\distance(

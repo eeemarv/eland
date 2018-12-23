@@ -6,7 +6,7 @@ use service\user_cache;
 
 class account
 {
-	private $config;
+	protected $user_cache;
 
 	public function __construct(user_cache $user_cache)
 	{
@@ -15,7 +15,7 @@ class account
 
 	public function get(int $id, string $schema)
 	{
-		$user = $this->user_cache($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 		return htmlspecialchars($user['letscode'] . ' ' . $user['name']);
 	}
 }

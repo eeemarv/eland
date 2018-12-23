@@ -12,7 +12,9 @@
     {%- block text_footer -%}
         {%- if schema is defined %}
 
-{{ 'mail.footer'|trans({'%systemname%': config('systemname', schema)}) -}}
+{{ 'mail.footer'|trans({
+    '%system_name%': config('systemname', schema)
+}) -}}
         {%- endif -%}
     {%- endblock text_footer -%}
 {%- endblock text_body -%}
@@ -32,9 +34,10 @@
     {%- block html_unsubscribe -%}{%- endblock -%}
     {%- block html_footer -%}
         {%- if schema is defined %}
-            <br/>
             <p>
-                {{- 'mail.footer'|trans({'%systemname%': config('systemname', schema)}) -}}
+                {{- 'mail.footer'|trans({
+                    '%system_name%': config('systemname', schema)
+                }) -}}
             </p>
         {%- endif -%}
     {%- endblock html_footer -%}

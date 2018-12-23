@@ -710,7 +710,8 @@ mail:
       je niet zelf een aanvraag tot hosting
       hebt gedaan via onze website.
   contact_confirm:
-    subject: Bevestig je bericht aan %system_name%
+    subject: >-
+      Bevestig je bericht aan %system_name%
     html_msg: >-
       %link_open%Klik hier om je bericht
       in het contactformulier te bevestigen.%link_close%
@@ -723,8 +724,10 @@ mail:
       via %link_open%het contactformulier
       van %system_name%%link_close%.
   contact_copy:
-    subject: Kopie van je bericht aan %system_name%
-    explain: Dit bericht heb je verzonden aan %system_name%
+    subject: >-
+      Kopie van je bericht aan %system_name%
+    explain: >-
+      Het bericht hieronder heb je verzonden aan %system_name%
   contact:
     subject: Bericht van het contactformulier
     explain: >-

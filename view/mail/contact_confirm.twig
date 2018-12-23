@@ -15,15 +15,15 @@
 </p>
 
 <p>
+    {{- 'mail.confirm.expiration'|trans -}}
+</p>
+
+<p>
     {{- 'mail.contact_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
         '%link_open%': '<a href="' ~ contact_url ~ '">',
         '%link_close%': '</a>'
     })|raw -}}
-</p>
-
-<p>
-    {{- 'mail.confirm.expiration'|trans -}}
 </p>
 {%- endblock html_content -%}
 
@@ -34,6 +34,8 @@
 
 {{ confirm_url }}
 
+{{ 'mail.confirm.expiration'|trans }}
+
 {{ 'mail.contact_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
@@ -41,8 +43,6 @@
 }) }}
 
 {{ contact_url }}
-
-{{ 'mail.confirm.expiration'|trans }}
 
 {% endautoescape %}
 {% endblock text_content %}
