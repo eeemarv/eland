@@ -153,9 +153,11 @@ if ($token)
 			throw $e;
 		}
 
+		$user['id'] = $user_id;
+
 		$vars = [
-			'user'	=> $user,
-			'email'	=> $data['email'],
+			'user'		=> $user,
+			'email'		=> $data['email'],
 			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
 		];
 
@@ -163,7 +165,7 @@ if ($token)
 			'schema'		=> $app['tschema'],
 			'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'vars'			=> $vars,
-			'template'		=> 'admin_registration',
+			'template'		=> 'register_admin',
 		], 8000);
 
 		$map_template_vars = [

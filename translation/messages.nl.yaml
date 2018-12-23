@@ -106,7 +106,7 @@ label:
   created: Gecreëerd
   description: Omschrijving
   date: Datum
-  email: Email
+  email: E-mail
   email_confirmation_explain: >-
     We sturen je een bevestigings-link om je
     email adres te valideren.
@@ -737,9 +737,12 @@ mail:
       Gelieve deze mail te negeren wanneer je niet
       zelf %link_open%het registratieformulier
       van %system_name%%link_close% hebt ingevuld.
-  register_confirm:
+  register_admin:
     subject: "Nieuwe Inschrijving: %full_name%"
     title: Notificatie Nieuwe Inschrijving
+    msg: >-
+      De volgende persoon schreef zich
+      in via de website
   contact_copy:
     subject: >-
       Kopie van je bericht aan %system_name%

@@ -1,0 +1,38 @@
+{% extends 'mail/base.twig' %}
+
+{% block subject_line -%}
+    {{- 'mail.register_admin.subject'|trans({
+        '%full_name%': user.fullname
+    }) -}}
+{% endblock subject_line %}
+
+{% block html_content %}
+<h3>
+    {{- 'mail.register_admin.title'|trans -}}
+</h3>
+<p>
+    {{- 'mail.register_admin.msg'|trans -}}:
+<br />
+<br />
+    {{- 'label.full_name'|trans -}}: {{ user.fullname -}}
+<br />
+    {{- 'label.postcode'|trans -}}: {{ user.postcode -}}
+<br />
+    {{- 'label.email'|trans -}}: {{ email -}}
+<br />
+<a href="{{ user_url -}}">{{- 'label.link'|trans -}}</a>
+</p>
+{% endblock html_content %}
+
+{% block text_content %}
+
+{{ 'mail.register_admin.title'|trans|underline }}
+
+{{ 'mail.register_admin.msg'|trans }}:
+
+{{ 'label.full_name'|trans }}: {{ user.fullname }}
+{{ 'label.postcode'|trans }}: {{ user.postcode }}
+{{ 'label.email'|trans }}: {{ email }}
+{{ 'label.link'|trans }}: {{ user_url }}
+
+{% endblock text_content %}
