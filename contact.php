@@ -35,9 +35,8 @@ if ($token)
 			'message'		=> $data['message'],
 			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			'ip'			=> $data['ip'],
-			'browser'		=> $data['browser'],
+			'agent'			=> $data['agent'],
 			'email'			=> $data['email'],
-			'group'			=> $app['template_vars']->get($app['tschema']),
 		];
 
 		$app['queue.mail']->queue([
@@ -71,7 +70,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 	$email = trim(strtolower($_POST['email']));
 	$message = trim($_POST['message']);
 
-	$browser = $_SERVER['HTTP_USER_AGENT'];
+	$agent = $_SERVER['HTTP_USER_AGENT'];
 
 	if (isset($_SERVER['HTTP_CLIENT_IP']))
 	{
@@ -116,7 +115,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$contact = [
 			'message' 	=> $message,
 			'email'		=> $email,
-			'browser'	=> $browser,
+			'agent'		=> $agent,
 			'ip'		=> $ip,
 		];
 

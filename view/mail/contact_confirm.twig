@@ -5,7 +5,7 @@
         '%system_name%': config('systemname', schema)}) -}}
 {%- endblock subject_line %}
 
-{%- block html_body -%}
+{%- block html_content -%}
 
 <p>
     {{- 'mail.contact_confirm.html_msg'|trans({
@@ -25,9 +25,9 @@
 <p>
     {{- 'mail.confirm.expiration'|trans -}}
 </p>
-{%- endblock html_body -%}
+{%- endblock html_content -%}
 
-{% block text_body %}
+{% block text_content %}
 {% autoescape false %}
 
 {{ 'mail.contact_confirm.text_msg'|trans }}
@@ -45,4 +45,4 @@
 {{ 'mail.confirm.expiration'|trans }}
 
 {% endautoescape %}
-{% endblock text_body %}
+{% endblock text_content %}

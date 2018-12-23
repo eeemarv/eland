@@ -1,0 +1,41 @@
+{% extends 'mail/base.twig' %}
+
+{% block subject_line -%}
+    {{- 'mail.contact_copy.subject'|trans({
+        '%system_name%': config('systemname', schema)
+    }) -}}
+{%- endblock -%}
+
+{% block html_pretext -%}
+    {%- include 'mail/include/no_reply.html.twig' -%}
+{%- endblock -%}
+
+{% block text_pretext %}
+{% autoescape false %}
+{% include 'mail/include/no_reply.text.twig' %}
+{% endautoescape %}
+{% endblock %}
+
+{% block html_content -%}
+    <p>
+        {{- 'mail.contact_copy.explain'|trans({
+            '%system_name%': config('systemname', schema)
+        }) -}}
+    </p>
+    <hr>
+    <p>
+        {{- message -}}
+    </p>
+{%- endblock %}
+
+{% block text_content %}
+{% autoescape false %}
+{{ 'mail.contact_copy.explain'|trans({
+    '%system_name%': config('systemname', schema)
+}) }}
+- - - - - -
+
+{{ message }}
+
+{% endautoescape %}
+{% endblock -%}

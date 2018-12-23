@@ -679,8 +679,20 @@ form:
 
 mail:
   no_reply: >-
+    Niet beantwoorden a.u.b.
+  no_reply_auto: >-
     Dit is een automatische mail. Niet beantwoorden a.u.b.
-  footer: '%systemname%'
+  sender_info:
+    email: "E-mail: %email%"
+    ip: "IP: %ip%"
+    agent: "Agent: %agent%"
+  support_subscribed: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Support E-mail
+    adres in de %link_open%instellingen%link_close%.
+  email_validated: >-
+    Het E-mail adres werd gevalideerd.
+  footer: "%system_name%"
   confirm:
     subject: Bevestiging gevraagd
     explain: >-
@@ -710,6 +722,15 @@ mail:
       zelf een bericht hebt verstuurd
       via %link_open%het contactformulier
       van %system_name%%link_close%.
+  contact_copy:
+    subject: Kopie van je bericht aan %system_name%
+    explain: Dit bericht heb je verzonden aan %system_name%
+  contact:
+    subject: Bericht van het contactformulier
+    explain: >-
+      Dit bericht werd ingegeven in het
+      contactformulier van %link_open%%system_name%%link_close%.
+      Gebruik "Reply" om het eventueel te beantwoorden.
   register_confirm:
     subject: Bevestiging van je registratie bij %system_name%
     explain: >-
@@ -736,9 +757,6 @@ mail:
       hebt aangevraagd op onze website.
   contact_admin:
     subject: Bericht van contactformulier
-  sender_info:
-    ip: "ip: %ip%"
-    agent: "agent: %agent%"
   hosting_request:
     subject: Aanvraag hosting voor %group_name%
   news_review_admin:

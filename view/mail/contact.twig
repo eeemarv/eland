@@ -1,0 +1,55 @@
+{% extends 'mail/base.twig' %}
+
+{% block subject_line -%}
+    {{- 'mail.contact.subject'|trans -}}
+{%- endblock -%}
+
+{% block html_content -%}
+<p>
+    {{- message -}}
+</p>
+<hr>
+<p>
+    {{- 'mail.contact.explain'|trans({
+        '%link_open%': '<a href="' ~ base_url ~ '">',
+        '%link_close%': '</a>',
+        '%system_name%': config('systemname', schema)
+    })|raw -}}
+</p>
+{%- include 'mail/include/sender_info.html.twig' -%}
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ message }}
+
+- - - - - - -
+{{- 'mail.contact.explain'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config('systemname', schema)
+})|raw -}}
+
+{{ base_url }}
+{%- include 'mail/include/sender_info.text.twig' -%}
+{% endautoescape %}
+{% endblock text_content %}
+
+{% block html_unsubscribe -%}
+<p>
+    {{- 'mail.support_subscribed'|trans({
+        '%link_open%': '<a href="' ~ config_url ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{{ 'mail.support_subscribed'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+}) }}
+
+{{ config_url }}
+{% endblock text_unsubscribe %}
