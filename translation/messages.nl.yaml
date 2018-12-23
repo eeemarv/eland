@@ -737,6 +737,9 @@ mail:
       Gelieve deze mail te negeren wanneer je niet
       zelf %link_open%het registratieformulier
       van %system_name%%link_close% hebt ingevuld.
+  register_confirm:
+    subject: "Nieuwe Inschrijving: %full_name%"
+    title: Notificatie Nieuwe Inschrijving
   contact_copy:
     subject: >-
       Kopie van je bericht aan %system_name%

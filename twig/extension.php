@@ -24,8 +24,14 @@ class extension extends \Twig_Extension
 			new \Twig_Function('datepicker_format', 'twig\\date_format::datepicker_format'),
 			new \Twig_Function('datepicker_placeholder', 'twig\\date_format::datepicker_placeholder'),
 			new \Twig_Function('config', 'twig\\config::get'),
-			new \Twig_Function('account', 'twig\\account::get'),
 			new \Twig_Function('base_url', 'twig\\base_url::get'),
+			new \Twig_Function('account', 'twig\\account::get'),
+			new \Twig_Function('user_fullname', 'twig\\account::get_fullname'),
+			new \Twig_Function('username', 'twig\\account::get_name'),
+			new \Twig_Function('account_code', 'twig\\account::get_code'),
+			new \Twig_Function('account_balance', 'twig\\account::get_balance'),
+			new \Twig_Function('account_min', 'twig\\account::get_min'),
+			new \Twig_Function('account_max', 'twig\\account::get_max'),
 		];
 	}
 

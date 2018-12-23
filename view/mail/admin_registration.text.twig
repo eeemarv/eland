@@ -1,0 +1,24 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block body %}
+{% autoescape false %}
+
+Notificatie nieuwe inschrijving
+-------------------------------
+
+De volgende persoon schreef zich in via de website:
+
+Volledige naam: {{ user.fullname }}
+
+Postcode: {{ user.postcode }}
+
+E-mail: {{ email }}
+
+Link: {{ user_url }}
+
+{% endautoescape %}
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}
