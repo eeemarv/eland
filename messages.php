@@ -2012,10 +2012,6 @@ if (isset($filter['s']))
 {
 	$params['f']['s'] = '1';
 }
-else
-{
-	unset($params['f']);
-}
 
 if ($app['s_guest'])
 {
