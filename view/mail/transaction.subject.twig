@@ -7,12 +7,10 @@
     }) -}}
 {%- endblock subject_line -%}
 
-{% block html_body %}
+{% block html_content %}
 
 <h3>
-{%- block_html_title -%}
     {{- 'mail.transaction.title'|trans -}}
-{%- block_html_title -%}
 </h3>
 
 <p>
@@ -53,9 +51,9 @@
 }) -}}
 </p>
 
-{%- endblock html_body -%}
+{%- endblock html_content -%}
 
-{% block text_body %}
+{% block text_content %}
 {% autoescape false %}
 
 {{ 'mail.transaction.title'|trans|underline }}
@@ -76,4 +74,4 @@
 {{ transaction_url }}
 
 {% endautoescape %}
-{% endblock text_body %}
+{% endblock text_content %}

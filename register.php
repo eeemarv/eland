@@ -179,11 +179,16 @@ if ($token)
 			$vars[$k] = $data[$v];
 		}
 
+		$vars['subject'] = $app['translator']->trans('mail.register_success.subject', [
+			'%system_name%'	=> $app['config']->get('systemname', $app['tschema']),
+		]);
+
 		$app['queue.mail']->queue([
 			'schema'				=> $app['tschema'],
 			'to' 					=> [$data['email']],
 			'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
-			'template_from_config'	=> 'registration_success_mail',
+			'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['tschema']),
+			'template'				=> 'skeleton',
 			'vars'					=> $vars,
 		], 8500);
 

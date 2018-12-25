@@ -743,6 +743,8 @@ mail:
     msg: >-
       De volgende persoon schreef zich
       in via de website
+  register_success:
+    subject: Je inschrijving bij %system_name%
   contact_copy:
     subject: >-
       Kopie van je bericht aan %system_name%
