@@ -69,6 +69,24 @@ class mail implements queue_interface
 
 		$data['vars']['schema'] = $schema;
 
+		if (isset($data['pre_html_template']))
+		{
+			try
+			{
+				$pre_html_template = $this->twig->createTemplate($data['pre_html_template']);
+				$data['vars']['html'] = $pre_html_template->render($data['vars']);
+				$data['vars']['text'] = $this->converter->convert($data['vars']['html']);
+			}
+			catch (\Exception $e)
+			{
+				$this->monolog->error('Mail Queue Process, Pre HTML template err: ' .
+					$e->getMessage() . ' ::: ' .
+					json_encode($data),
+					['schema' => $sch]);
+				return;
+			}
+		}
+
 		$template = $this->twig->load('mail/' . $data['template'] . '.twig');
 		$subject = $template->renderBlock('subject', $data['vars']);
 		$text = $template->renderBlock('text_body', $data['vars']);
@@ -108,7 +126,7 @@ class mail implements queue_interface
 					['schema' => $schema]);
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$err = $e->getMessage();
 			$this->monolog->error('mail queue process: ' . $err . ' | ' .
