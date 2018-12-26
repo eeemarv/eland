@@ -738,7 +738,8 @@ mail:
       zelf %link_open%het registratieformulier
       van %system_name%%link_close% hebt ingevuld.
   register_admin:
-    subject: "Nieuwe Inschrijving: %full_name%"
+    subject: >-
+      "Nieuwe Inschrijving: %full_name%"
     title: Notificatie Nieuwe Inschrijving
     msg: >-
       De volgende persoon schreef zich
@@ -756,13 +757,34 @@ mail:
       Dit bericht werd ingegeven in het
       contactformulier van %link_open%%system_name%%link_close%.
       Gebruik "Reply" om het eventueel te beantwoorden.
+  news_admin_approve:
+    subject: >-
+      Een Nieuwsbericht wacht op goedkeuring
+    title: >-
+      Moderatie Nieuwsbericht
+    message: >-
+      Een lid gaf een nieuwsbericht in met de
+      titel "%subject%". Dit bericht wacht op
+      goedkeuring.
+    action: >-
+      Ga naar het nieuwsbericht om het goed te
+      keuren of eventueel te verwijderen.
+    subscribed: >-
+      Je ontvangt dit bericht omdat je E-mail
+      adres vermeld staat als Nieuws Admin E-mail
+      adres in de %link_open%instellingen%link_close%.
   transaction:
-    subject: Transactie van %from_account% naar %to_account%
-    title: Notificatie Transactie
-    link: "%open_link%Link naar de Transactie%close_link%"
+    subject: >-
+      Transactie van %from_account% naar %to_account%
+    title: >-
+      Notificatie Transactie
+    link: >-
+      "%open_link%Link naar de Transactie%close_link%"
   transaction_intersystem:
-    subject: Intersysteem Transactie van %from_account% naar %to_account%
-    title: Notificatie Intersysteem Transactie
+    subject: >-
+      Intersysteem Transactie van %from_account% naar %to_account%
+    title: >-
+      Notificatie Intersysteem Transactie
   confirm_password_reset:
     subject: Paswoord reset link
     explain: >-

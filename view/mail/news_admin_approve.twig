@@ -1,0 +1,59 @@
+{% extends 'mail/base.twig' %}
+
+{% block subject_line -%}
+    {{- 'mail.news_admin_approve.subject'|trans -}}
+{%- endblock subject_line %}
+
+{% block html_content %}
+
+<h3>
+    {{- 'mail.news_admin_approve.title'|trans -}}
+</h3>
+
+<p>
+    {{- 'mail.news_admin_approve.message'|trans({
+        '%subject%': news.headline
+    }) -}}
+</p>
+
+<p>
+    <a href="{{ news_url }}">
+        {{- 'mail.news_admin_approve.action'|trans -}}
+    </a>
+</p>
+
+{% endblock html_content %}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'mail.news_admin_approve.title'|trans|underline }}
+
+{{ 'mail.news_admin_approve.message'|trans({
+    '%subject%': news.headline
+}) }}
+
+{{ 'mail.news_admin_approve.action'|trans }}
+
+{{ news_url }}
+
+{% endautoescape %}
+{% endblock text_content %}
+
+{% block html_unsubscribe -%}
+<p>
+    {{- 'mail.news_admin_approve.subscribed'|trans({
+        '%link_open%': '<a href="' ~ config_url ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{{ 'mail.news_admin_approve.subscribed'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+}) }}
+
+{{ config_url }}
+{% endblock text_unsubscribe %}

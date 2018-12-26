@@ -89,7 +89,7 @@ if (isset($app['app_hoster_contact']))
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	if ($_GET['form_ok'])
+	if (isset($_GET['form_ok']))
 	{
 		echo '<br><div class="panel panel-success">';
 		echo '<div class="panel-heading">';
@@ -137,7 +137,7 @@ if (isset($app['app_hoster_contact']))
 		echo '<input type="email" class="form-control" ';
 		echo 'id="mail" name="mail" ';
 		echo 'value="';
-		echo $mail;
+		echo $mail ?? '';
 		echo '" required>';
 		echo '<p>Privacy: uw E-mail adres wordt voor ';
 		echo 'geen ander doel gebruikt dan u terug te kunnen ';
@@ -151,7 +151,7 @@ if (isset($app['app_hoster_contact']))
 		echo '<textarea name="message" ';
 		echo 'class="form-control" ';
 		echo 'id="message" rows="6" required>';
-		echo $message;
+		echo $message ?? '';
 		echo '</textarea>';
 		echo '</div>';
 

@@ -119,15 +119,15 @@ if ($add && $submit && !count($errors))
 		if(!$app['s_admin'])
 		{
 			$vars = [
-				'group'		=> $app['template_vars']->get($app['tschema']),
-				'news'		=> $news,
-				'news_url'	=> $app['base_url'] . '/news.php?id=' . $id,
+				'news'			=> $news,
+				'news_url'		=> $app['base_url'] . '/news.php?id=' . $id,
+				'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			];
 
 			$app['queue.mail']->queue([
 				'schema'	=> $app['tschema'],
 				'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
-				'template'	=> 'admin_news_approve',
+				'template'	=> 'news_admin_approve',
 				'vars'		=> $vars,
 			], 7000);
 
