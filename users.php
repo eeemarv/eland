@@ -839,10 +839,9 @@ if ($pw)
 					if ($to)
 					{
 						$vars = [
-							'group'			=> $app['template_vars']->get($app['tschema']),
 							'user'			=> $user,
 							'password'		=> $password,
-							'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+							'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 							'support_url'	=> $app['base_url'] . '/support.php?src=p',
 						];
 

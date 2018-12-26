@@ -1,0 +1,9 @@
+{{ 'label.your_account'|trans|underline }}
+
+{{ 'label.login'|trans }}: {{ login_url }}
+
+{{ 'label.account_code'|trans }}: {{ user.letscode }}
+
+{{ 'label.username'|trans }}: {{ user.name }}
+
+{{ 'label.balance'|trans }}: {{ user.saldo }} {{ config('currency', schema) }}

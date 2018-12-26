@@ -125,6 +125,7 @@ label:
   link: Link
   location: Plaats
   location_explain: Waar?
+  login: Login
   map: Map
   max: Max
   maximum_limit: Maximum Limiet
@@ -164,6 +165,7 @@ label:
   transaction_id: Transactie Id
   username: Gebruikersnaam
   wants: Vraag
+  your_account: Je Account
   your_email: Je E-Mail adres
   your_message: Je Bericht
 
@@ -773,6 +775,15 @@ mail:
       Je ontvangt dit bericht omdat je E-mail
       adres vermeld staat als Nieuws Admin E-mail
       adres in de %link_open%instellingen%link_close%.
+  password_reset:
+    subject: >-
+      Nieuw Paswoord voor je Account
+    title: >-
+      Notificatie Nieuw Paswoord
+    message: >-
+      Er werd een nieuw paswoord
+      voor je account ingesteld.
+
   transaction:
     subject: >-
       Transactie van %from_account% naar %to_account%
