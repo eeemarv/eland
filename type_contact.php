@@ -380,6 +380,6 @@ include __DIR__ . '/include/footer.php';
 
 function cancel()
 {
-	header('Location: ' . generate_url('type_contact'));
+	header('Location: ' . generate_url('type_contact', []));
 	exit;
 }

@@ -209,7 +209,7 @@ include __DIR__ . '/include/footer.php';
 
 function cancel():void
 {
-	header('Location: ' . generate_url('apikeys'));
+	header('Location: ' . generate_url('apikeys', []));
 	exit;
 }
 

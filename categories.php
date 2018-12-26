@@ -455,6 +455,6 @@ include __DIR__ . '/include/footer.php';
 
 function cancel():void
 {
-	header('Location: ' . generate_url('categories'));
+	header('Location: ' . generate_url('categories', []));
 	exit;
 }

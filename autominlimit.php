@@ -154,6 +154,6 @@ include __DIR__ . '/include/footer.php';
 
 function cancel()
 {
-	header('Location: ' . generate_url('autominlimit'));
+	header('Location: ' . generate_url('autominlimit', []));
 	exit;
 }
