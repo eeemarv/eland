@@ -23,15 +23,15 @@ $app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
- * check if we are on the request hosting url.
+ * check if we are on the contact url.
  */
 $app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
 
 if ($app['script_name'] == 'index'
-	&& getenv('HOSTING_FORM_' . $app['env_server_name']))
+	&& getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']))
 {
 	$app['page_access'] = 'anonymous';
-	$hosting_form = true;
+	$app['app_hoster_contact'] = getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']);
 	return;
 }
 
