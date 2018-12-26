@@ -1,0 +1,11 @@
+<h3>
+    {{- 'mail.support.title'|trans -}}
+</h3>
+
+<p>
+    {{ 'mail.support.explain'|trans({
+        '%link_open%': '<a href="' ~ support_url ~ '">',
+        '%link_close%': '</a>',
+        '%system_name%': config('system_name', schema)
+    }) }}.
+</p>

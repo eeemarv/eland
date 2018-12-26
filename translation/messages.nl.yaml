@@ -688,6 +688,11 @@ mail:
     email: "E-mail: %email%"
     ip: "IP: %ip%"
     agent: "Agent: %agent%"
+  support:
+    title: Support
+    explain: >-
+      Gebruik het %link_open%Help/Supportformulier
+      %link_close% als je een vraag of probleem hebt
   support_subscribed: >-
     Je ontvangt dit bericht omdat je E-mail
     adres vermeld staat als Support E-mail
@@ -783,7 +788,18 @@ mail:
     message: >-
       Er werd een nieuw paswoord
       voor je account ingesteld.
-
+  password_reset_confirm:
+    subject: Paswoord Reset Link
+    html_msg: >-
+      %link_open%Klik hier om je paswoord opnieuw in te stellen
+      voor je account bij %system_name%%link_close%.
+    text_msg: >-
+      Klik op de link hieronder om je paswoord opnieuw
+      in te stellen voor je account bij %system_name%.
+    explain: >-
+      Gelieve deze E-mail te negeren wanneer je niet
+      zelf hebt een paswoord reset hebt aangevraagd
+      op bij %link_open%%system_name%%link_close%.
   transaction:
     subject: >-
       Transactie van %from_account% naar %to_account%
@@ -796,14 +812,6 @@ mail:
       Intersysteem Transactie van %from_account% naar %to_account%
     title: >-
       Notificatie Intersysteem Transactie
-  confirm_password_reset:
-    subject: Paswoord reset link
-    explain: >-
-      Met deze link kan je opnieuw je paswoord instellen.
-    expiration: >-
-      Deze link blijft 4 uur geldig. Gelieve deze mail te
-      negeren wanneer je niet zelf hebt een paswoord reset
-      hebt aangevraagd op onze website.
   contact_admin:
     subject: Bericht van contactformulier
   hosting_request:
@@ -814,8 +822,6 @@ mail:
       Een nieuw nieuwsbericht met titel "%name%"
       werd ingegeven op de website. Ga naar het bericht
       om het (al dan niet) goed te keuren voor publicatie.
-
-  support: Support
   overview:
     offers_and_wants: >-
       Vraag en aanbod

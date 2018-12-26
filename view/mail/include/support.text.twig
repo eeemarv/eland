@@ -1,0 +1,9 @@
+{{ 'mail.support.title'|trans|underline }}
+
+{{ 'mail.support.explain'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config('system_name', schema)
+}) }}:
+
+{{ support_url }}
