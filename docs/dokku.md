@@ -83,11 +83,19 @@ and put the key in the environment variable `GOOGLE_GEO_API_KEY`
 
 The geocoding service can be blocked by setting `GEO_BLOCK` to 1.
 
-## Request hosting form
+## Hoster Contact Form
 
+The hoster can set up general contact forms to let
+people contact him/her:
 The Domain of a request-hosting form can be set with:
 
-* `HOSTING_FORM_domain=1`
+* `APP_HOSTER_CONTACT_domain=name@link`
+
+Where:
+
+* domain is the server name of the contact form. All uppercase and dots become double underline.
+* name: The name of the contact form or the context.
+* link: The link to bring the user back.
 
 ## Permanent Redirects
 
