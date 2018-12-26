@@ -2786,6 +2786,8 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
+	$params = [];
+
 	if ($id)
 	{
 		$params = ['id' => $id];

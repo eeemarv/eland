@@ -239,7 +239,7 @@ $th_params['start'] = 0;
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+	echo isset($data['data_hide']) ? ' data-hide="' . $data['data_hide'] . '"' : '';
 	echo '>';
 	if (isset($data['no_sort']))
 	{

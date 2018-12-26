@@ -1319,7 +1319,7 @@ function cancel(int $uid = 0):void
 	}
 	else
 	{
-		header('Location: ' . generate_url('contacts'));
+		header('Location: ' . generate_url('contacts', []));
 	}
 	exit;
 }
