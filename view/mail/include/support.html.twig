@@ -6,6 +6,6 @@
     {{ 'mail.support.explain'|trans({
         '%link_open%': '<a href="' ~ support_url ~ '">',
         '%link_close%': '</a>',
-        '%system_name%': config('system_name', schema)
-    }) }}.
+        '%system_name%': config('systemname', schema)
+    })|raw }}.
 </p>

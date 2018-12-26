@@ -1,9 +1,10 @@
+
 {{ 'mail.support.title'|trans|underline }}
 
 {{ 'mail.support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%system_name%': config('system_name', schema)
+    '%system_name%': config('systemname', schema)
 }) }}:
 
 {{ support_url }}
