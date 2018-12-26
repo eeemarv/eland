@@ -34,10 +34,9 @@ if ($token)
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [
-					'group'			=> $app['template_vars']->get($app['tschema']),
 					'password'		=> $password,
 					'user'			=> $user,
-					'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+					'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 					'support_url'	=> $app['base_url'] . '/support.php?src=p',
 				];
 
@@ -143,13 +142,12 @@ if (isset($_POST['zend']))
 				$key = $app['tschema'] . '_token_' . $token;
 
 				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
-				$app['predis']->expire($key, 3600);
+				$app['predis']->expire($key, 86400);
 
 				$vars = [
-					'group'		=> $app['template_vars']->get($app['tschema']),
-					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
-					'user'		=> $user,
-					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+					'confirm_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
+					'user'			=> $user,
+					'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
 				$app['queue.mail']->queue([
@@ -157,9 +155,9 @@ if (isset($_POST['zend']))
 					'to' 		=> [$email],
 					'template'	=> 'password_reset_confirm',
 					'vars'		=> $vars,
-				], 1000);
+				], 10000);
 
-				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
+				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
 				header('Location: login.php');
 				exit;

@@ -709,15 +709,6 @@ mail:
       Deze link blijft 24 uur geldig.
     expiration_1_week: >-
       Deze link blijft 1 week geldig.
-  confirm_hosting_request:
-    subject: Bevestig je aanvraag voor hosting
-    explain: >-
-      Bevestig je aanvraag voor eLAND-hosting door
-      op de link hieronder te klikken.
-    expiration: >-
-      Gelieve deze E-mail te negeren wanneer
-      je niet zelf een aanvraag tot hosting
-      hebt gedaan via onze website.
   contact_confirm:
     subject: >-
       Bevestig je bericht aan %system_name%
@@ -732,6 +723,17 @@ mail:
       zelf een bericht hebt verstuurd
       via %link_open%het contactformulier
       van %system_name%%link_close%.
+  contact_copy:
+    subject: >-
+      Kopie van je bericht aan %system_name%
+    explain: >-
+      Het bericht hieronder heb je verzonden aan %system_name%
+  contact:
+    subject: Bericht van het contactformulier
+    explain: >-
+      Dit bericht werd ingegeven in het
+      contactformulier van %link_open%%system_name%%link_close%.
+      Gebruik "Reply" om het eventueel te beantwoorden.
   register_confirm:
     subject: Bevestig je registratie bij %system_name%
     html_msg: >-
@@ -753,17 +755,6 @@ mail:
       in via de website
   register_success:
     subject: Je inschrijving bij %system_name%
-  contact_copy:
-    subject: >-
-      Kopie van je bericht aan %system_name%
-    explain: >-
-      Het bericht hieronder heb je verzonden aan %system_name%
-  contact:
-    subject: Bericht van het contactformulier
-    explain: >-
-      Dit bericht werd ingegeven in het
-      contactformulier van %link_open%%system_name%%link_close%.
-      Gebruik "Reply" om het eventueel te beantwoorden.
   news_admin_approve:
     subject: >-
       Een Nieuwsbericht wacht op goedkeuring
@@ -799,7 +790,7 @@ mail:
     explain: >-
       Gelieve deze E-mail te negeren wanneer je niet
       zelf hebt een paswoord reset hebt aangevraagd
-      op bij %link_open%%system_name%%link_close%.
+      bij %link_open%%system_name%%link_close%.
   transaction:
     subject: >-
       Transactie van %from_account% naar %to_account%
