@@ -1,7 +1,7 @@
 {%- extends 'mail/base.twig' -%}
 
 {% block subject_line -%}
-    {{- 'mail.transaction.subject'|trans({
+    {{- 'transaction.subject'|trans({
         'from_account': account(from_user_id, schema),
         'to_account': account(to_user_id, schema)
     }) -}}
@@ -10,7 +10,7 @@
 {% block html_content %}
 
 <h3>
-    {{- 'mail.transaction.title'|trans -}}
+    {{- 'transaction.title'|trans -}}
 </h3>
 
 <p>
@@ -45,7 +45,7 @@
     </strong>
 </p>
 
-<p>{{- 'mail.transaction.html_link'|trans({
+<p>{{- 'transaction.html_link'|trans({
     '%open_link%': '<a href="' ~ transaction_url ~ '">',
     '%close_link%': '</a>'
 }) -}}
@@ -56,7 +56,7 @@
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'mail.transaction.title'|trans|underline }}
+{{ 'transaction.title'|trans|underline }}
 
 {{ 'label.from'|trans }}
 {{ account(from_user_id, schema) }}

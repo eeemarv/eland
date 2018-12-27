@@ -1,7 +1,7 @@
 {% extends 'mail/base.twig' %}
 
 {% block subject_line -%}
-    {{- 'mail.contact.subject'|trans -}}
+    {{- 'contact.subject'|trans -}}
 {%- endblock -%}
 
 {% block html_content -%}
@@ -10,7 +10,7 @@
 </p>
 <hr />
 <p>
-    {{- 'mail.contact.explain'|trans({
+    {{- 'contact.explain'|trans({
         '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
@@ -25,7 +25,7 @@
 {{ message }}
 
 - - - - - -
-{{ 'mail.contact.explain'|trans({
+{{ 'contact.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
@@ -38,7 +38,7 @@
 
 {% block html_unsubscribe -%}
 <p>
-    {{- 'mail.support_subscribed'|trans({
+    {{- 'b.support_subscribed'|trans({
         '%link_open%': '<a href="' ~ config_url ~ '">',
         '%link_close%': '</a>',
     })|raw -}}
@@ -46,7 +46,7 @@
 {%- endblock html_unsubscribe %}
 
 {% block text_unsubscribe %}
-{{ 'mail.support_subscribed'|trans({
+{{ 'b.support_subscribed'|trans({
     '%link_open%': '',
     '%link_close%': '',
 }) }}

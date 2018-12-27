@@ -1,25 +1,25 @@
 {%- extends 'mail/base.twig' -%}
 
 {%- block subject_line -%}
-    {{- 'mail.contact_confirm.subject'|trans({
+    {{- 'contact_confirm.subject'|trans({
         '%system_name%': config('systemname', schema)}) -}}
 {%- endblock subject_line %}
 
 {%- block html_content -%}
 
 <p>
-    {{- 'mail.contact_confirm.html_msg'|trans({
+    {{- 'contact_confirm.html_msg'|trans({
         '%link_open%': '<a href="' ~ confirm_url ~ '">',
         '%link_close%': '</a>'
     })|raw -}}
 </p>
 
 <p>
-    {{- 'mail.confirm.expiration_1_day'|trans -}}
+    {{- 'expiration.1_day'|trans -}}
 </p>
 
 <p>
-    {{- 'mail.contact_confirm.explain'|trans({
+    {{- 'contact_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
         '%link_open%': '<a href="' ~ contact_url ~ '">',
         '%link_close%': '</a>'
@@ -30,13 +30,13 @@
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'mail.contact_confirm.text_msg'|trans }}
+{{ 'contact_confirm.text_msg'|trans }}
 
 {{ confirm_url }}
 
-{{ 'mail.confirm.expiration_1_day'|trans }}
+{{ 'expiration.1_day'|trans }}
 
-{{ 'mail.contact_confirm.explain'|trans({
+{{ 'contact_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''

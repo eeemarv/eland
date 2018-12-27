@@ -141,6 +141,7 @@ $app->extend('translator', function($translator, $app) {
 
 //	$translator->addResource('yaml', $trans_dir . 'messages.en.yaml', 'en');
 	$translator->addResource('yaml', $trans_dir . 'messages.nl.yaml', 'nl');
+	$translator->addResource('yaml', $trans_dir . 'mail.nl.yaml', 'nl', 'mail');
 
 	return $translator;
 });

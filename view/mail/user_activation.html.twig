@@ -1,0 +1,23 @@
+{% extends 'mail/base.html.twig' %}
+
+{% block pretext %}{% endblock pretext %}
+
+{% block body %}
+<p>Welkom bij {{ group.name }}.</p>
+
+<p>Er werd een rekening voor je aangemaakt.</p>
+
+<p>Surf naar {{ url_login }} en meld je aan met onderstaande gegevens:</p>
+
+<p>Login: <strong>{{ user.letscode }}</strong></p>
+
+<p>Paswoord: <strong>{{ password }}</strong></p>
+
+
+<p>Gebruikersgevens, vraag en aanbod kan je zelf online bewerken.</p>
+
+
+{% endblock body %}
+
+{% block unsubscribe %}{% endblock unsubscribe %}
+

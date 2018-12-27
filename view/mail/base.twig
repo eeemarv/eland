@@ -1,3 +1,5 @@
+{% trans_default_domain 'mail' %}
+
 {%- block subject -%}
     {%- if schema is defined -%}[{{- config('systemtag', schema) }}] {% endif -%}
     {%- block subject_line -%}{%- endblock -%}
@@ -12,7 +14,7 @@
     {%- block text_footer -%}
         {%- if schema is defined %}
 
-{{ 'mail.footer'|trans({
+{{ 'b.footer'|trans({
     '%system_name%': config('systemname', schema)
 }) -}}
         {%- endif -%}
@@ -35,7 +37,7 @@
     {%- block html_footer -%}
         {%- if schema is defined %}
             <p>
-                {{- 'mail.footer'|trans({
+                {{- 'b.footer'|trans({
                     '%system_name%': config('systemname', schema)
                 }) -}}
             </p>

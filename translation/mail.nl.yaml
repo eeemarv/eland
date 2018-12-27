@@ -1,0 +1,177 @@
+label:
+  account_code: Account Code
+  amount: Bedrag
+  balance: Saldo
+  email: E-mail
+  from: Van
+  full_name: Volledige Naam
+  link: Link
+  login: Login
+  postcode: Postcode
+  to: Naar
+  total: Totaal
+  username: Gebruikersnaam
+  your_account: Je Account
+  your_message: Je Bericht
+
+b:
+  no_reply: >-
+    Niet beantwoorden a.u.b.
+  no_reply_auto: >-
+    Dit is een automatische mail. Niet beantwoorden a.u.b.
+  sender_info:
+    email: "E-mail: %email%"
+    ip: "IP: %ip%"
+    agent: "Agent: %agent%"
+  support:
+    title: Support
+    explain: >-
+      Gebruik het %link_open%Help/Supportformulier
+      %link_close% als je een vraag of probleem hebt
+  support_subscribed: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Support E-mail
+    adres in de %link_open%instellingen%link_close%.
+  email_validated: >-
+    Het E-mail adres werd gevalideerd.
+  footer: "%system_name%"
+
+expiration:
+  1_day: >-
+    Deze link blijft 24 uur geldig.
+  1_week: >-
+    Deze link blijft 1 week geldig.
+
+contact_confirm:
+  subject: >-
+    Bevestig je bericht aan %system_name%
+  html_msg: >-
+    %link_open%Klik hier om je bericht
+    in het contactformulier te bevestigen.%link_close%
+  text_msg: >-
+    Klik op de link hieronder om je bericht in het
+    contactformulier te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf een bericht hebt verstuurd
+    via %link_open%het contactformulier
+    van %system_name%%link_close%.
+contact_copy:
+  subject: >-
+    Kopie van je bericht aan %system_name%
+  explain: >-
+    Het bericht hieronder heb je verzonden aan %system_name%
+contact:
+  subject: Bericht van het contactformulier
+  explain: >-
+    Dit bericht werd ingegeven in het
+    contactformulier van %link_open%%system_name%%link_close%.
+    Gebruik "Reply" om het eventueel te beantwoorden.
+register_confirm:
+  subject: Bevestig je registratie bij %system_name%
+  html_msg: >-
+    %link_open%Klik hier om je registratie
+    te bevestigen.%link_close%
+  text_msg: >-
+    Klik op de link hieronder om je registratie
+    te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf %link_open%het registratieformulier
+    van %system_name%%link_close% hebt ingevuld.
+register_admin:
+  subject: >-
+    "Nieuwe Inschrijving: %full_name%"
+  title: Notificatie Nieuwe Inschrijving
+  msg: >-
+    De volgende persoon schreef zich
+    in via de website
+register_success:
+  subject: Je inschrijving bij %system_name%
+news_admin_approve:
+  subject: >-
+    Een Nieuwsbericht wacht op goedkeuring
+  title: >-
+    Moderatie Nieuwsbericht
+  message: >-
+    Een lid gaf een nieuwsbericht in met de
+    titel "%subject%". Dit bericht wacht op
+    goedkeuring.
+  action: >-
+    Ga naar het nieuwsbericht om het goed te
+    keuren of eventueel te verwijderen.
+  subscribed: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Nieuws Admin E-mail
+    adres in de %link_open%instellingen%link_close%.
+password_reset:
+  subject: >-
+    Nieuw Paswoord voor je Account
+  title: >-
+    Notificatie Nieuw Paswoord
+  message: >-
+    Er werd een nieuw paswoord
+    voor je account ingesteld.
+password_reset_confirm:
+  subject: Paswoord Reset Link
+  html_msg: >-
+    %link_open%Klik hier om je paswoord opnieuw in te stellen
+    voor je account bij %system_name%%link_close%.
+  text_msg: >-
+    Klik op de link hieronder om je paswoord opnieuw
+    in te stellen voor je account bij %system_name%.
+  explain: >-
+    Gelieve deze E-mail te negeren wanneer je niet
+    zelf hebt een paswoord reset hebt aangevraagd
+    bij %link_open%%system_name%%link_close%.
+transaction:
+  subject: >-
+    Transactie van %from_account% naar %to_account%
+  title: >-
+    Notificatie Transactie
+  link: >-
+    "%open_link%Link naar de Transactie%close_link%"
+transaction_intersystem:
+  subject: >-
+    Intersysteem Transactie van %from_account% naar %to_account%
+  title: >-
+    Notificatie Intersysteem Transactie
+contact_admin:
+  subject: Bericht van contactformulier
+hosting_request:
+  subject: Aanvraag hosting voor %group_name%
+news_review_admin:
+  subject: Beoordeling nieuwsbericht "%name%"
+  message: >-
+    Een nieuw nieuwsbericht met titel "%name%"
+    werd ingegeven op de website. Ga naar het bericht
+    om het (al dan niet) goed te keuren voor publicatie.
+overview:
+  offers_and_wants: >-
+    Vraag en aanbod
+  offers_and_wants_explain: >-
+    Deze lijst bevat vraag en aanbod dat de afgelopen %saldofreqdays%
+    dagen online is geplaatst.
+  offers_and_wants_none: >-
+    Er werd geen nieuw vraag of aanbod online geplaatst.
+  interlets_offers_and_wants: >-
+    Recent interLETS vraag en aanbod
+  docs: >
+    Nieuwe documenten
+  docs_none: >-
+    Er zijn geen nieuwe documenten.
+  new_users: Nieuwe leden
+  new_users_none: >-
+    Momenteel zijn er geen nieuwe leden.
+  new_users_no_recent: >-
+    Er zijn geen nieuwe leden bijgekomen.
+  leaving_users: Uitstappers
+  leaving_users_none: >-
+    Momenteel zijn er geen uitstappende leden.
+  leaving_users_no_recent: >-
+    Er zijn geen extra uitstappende leden.
+  transactions: Recente transacties
+  transactions_explain: >-
+    Deze lijst toont de transacties van de laatste %saldofreqdays% dagen.
+  transactions_none: >-
+    Er zijn geen recente transacties.

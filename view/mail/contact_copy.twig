@@ -1,7 +1,7 @@
 {% extends 'mail/base.twig' %}
 
 {% block subject_line -%}
-    {{- 'mail.contact_copy.subject'|trans({
+    {{- 'contact_copy.subject'|trans({
         '%system_name%': config('systemname', schema)
     }) -}}
 {%- endblock -%}
@@ -18,7 +18,7 @@
 
 {% block html_content -%}
     <p>
-        {{- 'mail.contact_copy.explain'|trans({
+        {{- 'contact_copy.explain'|trans({
             '%system_name%': config('systemname', schema)
         }) -}}
     </p>
@@ -32,7 +32,7 @@
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'mail.contact_copy.explain'|trans({
+{{ 'contact_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
 }) }}
 - - - - - -
