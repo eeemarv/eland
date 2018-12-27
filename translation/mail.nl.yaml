@@ -7,6 +7,7 @@ label:
   full_name: Volledige Naam
   link: Link
   login: Login
+  password: Paswoord
   postcode: Postcode
   to: Naar
   total: Totaal

@@ -13,21 +13,32 @@
     '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
     '%link_close%': '</a>',
     '%system_name%': config('systemname', schema)
-}) -}}
+})|raw -}}
 </p>
 <p>
 {{- 'account_activation.login'|trans({
     '%base_url%': '<a href="' ~ base_url(schema) ~ '">' ~ base_url(schema) ~ '</a>',
 })|raw -}}
 </p>
+<p>
+{{- 'label.login'|trans -}}:&nbsp;<strong>{{- account_code -}}</strong>
+</p>
+<p>
+{{- 'label.password'|trans -}}:&nbsp;<strong>{{- password -}}</strong>
+</p>
+<p>
+{{- 'account_activation.change_profile'|trans -}}
+</p>
 {%- endblock html_content -%}
 
 {% block text_content %}
 {{ 'account_activation.welcome'|trans({
-    '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
-    '%link_close%': '</a>',
+    '%link_open%': '',
+    '%link_close%': '',
     '%system_name%': config('systemname', schema)
 }) }}
+
+{{ base_url(schema) }}
 
 {{ 'account_activation.login'|trans({
     '%base_url%': base_url(schema)
@@ -36,6 +47,8 @@
 {{ 'label.login'|trans }}: {{ account_code }}
 
 {{ 'label.password'|trans }}: {{ password }}
+
+{{ 'account_activation.change_profile'|trans }}
 {% endblock text_content %}
 
 {%- block html_support -%}
