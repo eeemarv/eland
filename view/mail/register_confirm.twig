@@ -6,6 +6,7 @@
 {%- endblock subject_line %}
 
 {%- block html_content -%}
+{%- trans_default_domain 'mail' -%}
 
 <p>
     {{- 'register_confirm.html_msg'|trans({

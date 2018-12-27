@@ -1,4 +1,5 @@
 {%- extends 'mail/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
     {{- 'transaction.subject'|trans({

@@ -1,25 +1,9 @@
-{% trans_default_domain 'mail' %}
+{%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
     {%- if schema is defined -%}[{{- config('systemtag', schema) }}] {% endif -%}
     {%- block subject_line -%}{%- endblock -%}
 {%- endblock subject -%}
-
-{%- block text_body -%}
-    {%- block text_pretext -%}{%- endblock -%}
-    {%- block text_content -%}{%- endblock -%}
-    {%- block text_account_info -%}{%- endblock -%}
-    {%- block text_support -%}{%- endblock -%}
-    {%- block text_unsubscribe -%}{%- endblock -%}
-    {%- block text_footer -%}
-        {%- if schema is defined %}
-
-{{ 'b.footer'|trans({
-    '%system_name%': config('systemname', schema)
-}) -}}
-        {%- endif -%}
-    {%- endblock text_footer -%}
-{%- endblock text_body -%}
 
 {%- block html_body -%}
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -45,3 +29,19 @@
     {%- endblock html_footer -%}
     </body>
 {%- endblock html_body -%}
+
+{%- block text_body -%}
+    {%- block text_pretext -%}{%- endblock -%}
+    {%- block text_content -%}{%- endblock -%}
+    {%- block text_account_info -%}{%- endblock -%}
+    {%- block text_support -%}{%- endblock -%}
+    {%- block text_unsubscribe -%}{%- endblock -%}
+    {%- block text_footer -%}
+        {%- if schema is defined %}
+
+{{ 'b.footer'|trans({
+    '%system_name%': config('systemname', schema)
+}) -}}
+        {%- endif -%}
+    {%- endblock text_footer -%}
+{%- endblock text_body -%}

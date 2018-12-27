@@ -125,8 +125,9 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$app['predis']->expire($key, 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' .
-			$email . '(not confirmed yet) content: ' .
-			$html, ['schema' => $app['tschema']]);
+			$email . ' ' .
+			json_encode($contact),
+			['schema' => $app['tschema']]);
 
 		$vars = [
 			'contact_url'	=> $app['base_url'] . '/contact.php',
