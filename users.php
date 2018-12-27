@@ -1103,13 +1103,26 @@ if ($del)
 
 		$app['alert']->success('De gebruiker is verwijderd.');
 
-		if ($user['status'] == 1 || $user['status'] == 2)
+		switch($user['status'])
 		{
-			delete_thumbprint('active');
-		}
-		else if ($user['status'] == 7)
-		{
-			delete_thumbprint('extern');
+			case 0:
+				delete_thumbprint('inactive');
+				break;
+			case 1:
+			case 2:
+				delete_thumbprint('active');
+				break;
+			case 5:
+				delete_thumbprint('im');
+				break;
+			case 6:
+				delete_thumbprint('ip');
+				break;
+			case 7:
+				delete_thumbprint('extern');
+				break;
+			default:
+				break;
 		}
 
 		$app['interlets_groups']->clear_cache($app['s_schema']);
