@@ -4775,23 +4775,23 @@ function send_activation_mail(string $password, array $user):void
 	global $app;
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($app['tschema']),
-		'user'			=> link_user($user, $app['tschema'], false),
+		'account_name'	=> link_user($user['id'], $app['tschema'], false),
+		'account_url'	=> $app['base_url'] . '/users.php?id=' . $user['id'],
 		'user_mail'		=> $user['mail'],
+		'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_system']->get_admin($app['tschema']),
 		'vars'		=> $vars,
-		'template'	=> 'admin_user_activation',
+		'template'	=> 'account_activation_admin',
 	], 5000);
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($app['tschema']),
-		'user'			=> $user,
+		'account_code'	=> $user['letscode'],
 		'password'		=> $password,
-		'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
+		'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 		'support_url'	=> $app['base_url'] . '/support.php?src=p',
 	];
 
@@ -4799,7 +4799,7 @@ function send_activation_mail(string $password, array $user):void
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
 		'reply_to' 	=> $app['mail_addr_system']->get_support($app['tschema']),
-		'template'	=> 'user_activation',
+		'template'	=> 'account_activation',
 		'vars'		=> $vars,
 	], 5000);
 }

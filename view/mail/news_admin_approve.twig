@@ -26,7 +26,6 @@
 {% endblock html_content %}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ 'news_admin_approve.title'|trans|underline }}
 
@@ -38,12 +37,11 @@
 
 {{ news_url }}
 
-{% endautoescape %}
 {% endblock text_content %}
 
 {% block html_unsubscribe -%}
 <p>
-    {{- 'news_admin_approve.subscribed'|trans({
+    {{- 'subscribed.news_admin'|trans({
         '%link_open%': '<a href="' ~ config_url ~ '">',
         '%link_close%': '</a>',
     })|raw -}}
@@ -51,7 +49,7 @@
 {%- endblock html_unsubscribe %}
 
 {% block text_unsubscribe %}
-{{ 'news_admin_approve.subscribed'|trans({
+{{ 'subscribed.news_admin'|trans({
     '%link_open%': '',
     '%link_close%': '',
 }) }}

@@ -12,9 +12,7 @@
 {%- endblock -%}
 
 {% block text_pretext %}
-{% autoescape false %}
 {% include 'mail/include/no_reply.text.twig' %}
-{% endautoescape %}
 {% endblock %}
 
 {% block html_content -%}
@@ -31,7 +29,6 @@
 {%- endblock %}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ 'contact_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
@@ -41,5 +38,4 @@
 {{ message }}
 
 - - - - - -
-{% endautoescape %}
 {% endblock -%}

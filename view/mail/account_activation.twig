@@ -1,0 +1,47 @@
+{% extends 'mail/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+{{- 'account_activation.subject'|trans({
+    '%system_name%': config('systemname', schema)
+}) -}}
+{%- endblock subject_line %}
+
+{% block html_content -%}
+<p>
+{{- 'account_activation.welcome'|trans({
+    '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+    '%link_close%': '</a>',
+    '%system_name%': config('systemname', schema)
+}) -}}
+</p>
+<p>
+{{- 'account_activation.login'|trans({
+    '%base_url%': '<a href="' ~ base_url(schema) ~ '">' ~ base_url(schema) ~ '</a>',
+})|raw -}}
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+{{ 'account_activation.welcome'|trans({
+    '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+    '%link_close%': '</a>',
+    '%system_name%': config('systemname', schema)
+}) }}
+
+{{ 'account_activation.login'|trans({
+    '%base_url%': base_url(schema)
+}) }}
+
+{{ 'label.login'|trans }}: {{ account_code }}
+
+{{ 'label.password'|trans }}: {{ password }}
+{% endblock text_content %}
+
+{%- block html_support -%}
+{%- include 'mail/include/support.html.twig' -%}
+{%- endblock -%}
+
+{% block text_support %}
+{% include 'mail/include/support.text.twig' %}
+{% endblock %}

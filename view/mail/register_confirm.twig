@@ -29,7 +29,6 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ 'register_confirm.text_msg'|trans }}
 
@@ -45,5 +44,4 @@
 
 {{ register_url }}
 
-{% endautoescape %}
 {% endblock text_content %}

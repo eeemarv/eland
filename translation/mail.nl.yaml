@@ -29,9 +29,7 @@ b:
       Gebruik het %link_open%Help/Supportformulier
       %link_close% als je een vraag of probleem hebt
   support_subscribed: >-
-    Je ontvangt dit bericht omdat je E-mail
-    adres vermeld staat als Support E-mail
-    adres in de %link_open%instellingen%link_close%.
+
   email_validated: >-
     Het E-mail adres werd gevalideerd.
   footer: "%system_name%"
@@ -41,6 +39,20 @@ expiration:
     Deze link blijft 24 uur geldig.
   1_week: >-
     Deze link blijft 1 week geldig.
+
+subscribed:
+  admin: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Admin E-mail
+    adres in de %link_open%instellingen%link_close%.
+  news_admin: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Nieuws Admin E-mail
+    adres in de %link_open%instellingen%link_close%.
+  support: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Support E-mail
+    adres in de %link_open%instellingen%link_close%.
 
 contact_confirm:
   subject: >-
@@ -100,10 +112,6 @@ news_admin_approve:
   action: >-
     Ga naar het nieuwsbericht om het goed te
     keuren of eventueel te verwijderen.
-  subscribed: >-
-    Je ontvangt dit bericht omdat je E-mail
-    adres vermeld staat als Nieuws Admin E-mail
-    adres in de %link_open%instellingen%link_close%.
 password_reset:
   subject: >-
     Nieuw Paswoord voor je Account
@@ -138,8 +146,6 @@ transaction_intersystem:
     Notificatie Intersysteem Transactie
 contact_admin:
   subject: Bericht van contactformulier
-hosting_request:
-  subject: Aanvraag hosting voor %group_name%
 news_review_admin:
   subject: Beoordeling nieuwsbericht "%name%"
   message: >-
@@ -175,3 +181,27 @@ overview:
     Deze lijst toont de transacties van de laatste %saldofreqdays% dagen.
   transactions_none: >-
     Er zijn geen recente transacties.
+account_activation:
+  subject: >-
+    Activatie van je Account bij %system_name%
+  welcome: >-
+    Welkom bij %link_open%%system_name%%link_close%.
+  login: >-
+    Surf naar %base_url% en meld je aan met
+    onderstaande gegevens.
+  change_profile: >-
+    Je gebruikersgegevens, je vraag en aanbod kan je
+    zelf online bewerken.
+account_activation_admin:
+  subject: >-
+    Activatie Account %account_name%
+  message: >-
+    Account %link_open%%account_name%%link_close%
+    werd geactiveerd.
+  email_sent:
+    Een E-mail met nieuw paswoord werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail met paswoord verzonden naar
+    de gebruiker omdat geen E-mail adres werd ingesteld
+    voor dit account.

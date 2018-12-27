@@ -55,7 +55,6 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ 'transaction.title'|trans|underline }}
 
@@ -74,5 +73,4 @@
 {{ 'label.link'|trans }}
 {{ transaction_url }}
 
-{% endautoescape %}
 {% endblock text_content %}

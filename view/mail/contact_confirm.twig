@@ -29,7 +29,6 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ 'contact_confirm.text_msg'|trans }}
 
@@ -45,5 +44,4 @@
 
 {{ contact_url }}
 
-{% endautoescape %}
 {% endblock text_content %}

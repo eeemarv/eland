@@ -2,7 +2,6 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block body %}
-{% autoescape false %}
 
 {% if interlets %}
 Notificatie interSysteem transactie
@@ -27,5 +26,4 @@ Omschrijving
 Link
 {{ transaction_url }}
 
-{% endautoescape %}
 {% endblock body %}

@@ -1,8 +1,0 @@
-{% extends 'mail/base.twig' %}
-{%- trans_default_domain 'mail' -%}
-
-{% block subject_line -%}
-{{- 'user_activation.subject'|trans({
-    '%system_name%': config('systemname', schema)
-}) -}}
-{%- endblock subject_line %}

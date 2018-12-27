@@ -21,7 +21,6 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
-{% autoescape false %}
 
 {{ message }}
 
@@ -34,7 +33,6 @@
 
 {{ base_url(schema) }}
 {% include 'mail/include/sender_info.text.twig' %}
-{% endautoescape %}
 {% endblock text_content %}
 
 {% block html_unsubscribe -%}

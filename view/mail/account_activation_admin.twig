@@ -1,0 +1,63 @@
+{%- extends 'mail/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject_line -%}
+{{- 'account_activation_admin.subject'|trans({
+    '%account_name%': account_name
+}) -}}
+{%- endblock subject_line %}
+
+{%- block html_content -%}
+<p>
+{{- 'account_activation_admin.message'|trans({
+    '%link_open%': '<a href="' ~ account_url ~ '">',
+    '%link_close%': '</a>',
+    '%account_name%': account_name,
+})|raw -}}
+</p>
+
+<p>
+{%- if user_mail -%}
+    {{- 'account_activation_admin.email_sent'|trans -}}
+{%- else -%}
+    {{- 'account_activation_admin.no_email_sent'|trans -}}
+{%- endif -%}
+</p>
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+{{ 'account_activation_admin.message'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%account_name%': account_name,
+}) }}
+
+{{ account_url }}
+
+{% if user_mail %}
+{{ 'account_activation_admin.email_sent'|trans }}
+{% else %}
+{{ 'account_activation_admin.no_email_sent'|trans }}
+{% endif %}
+{% endblock text_content %}
+
+{% block html_unsubscribe -%}
+<p>
+    {{- 'subscribed.admin'|trans({
+        '%link_open%': '<a href="' ~ config_url ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+
+{{ 'subscribed.admin'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+}) }}
+
+{{ config_url }}
+
+{% endblock text_unsubscribe %}
