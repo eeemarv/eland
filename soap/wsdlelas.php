@@ -191,6 +191,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		'id_to' 		=> $touser['id'],
 		'amount' 		=> $amount,
 		'letscode_to' 	=> $touser['letscode'],
+		'creator'		=> 0,
 	];
 
 	if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')

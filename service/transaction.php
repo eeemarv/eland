@@ -42,8 +42,6 @@ class transaction
 		string $schema
 	):string
 	{
-		global $app;
-
 		$amount = (float) $transaction['amount'];
 		$amount = $amount * 100;
 		$amount = round($amount);
@@ -57,9 +55,6 @@ class transaction
 
 	function insert(array $transaction, string $schema):int
 	{
-		global $app;
-
-		$transaction['creator'] = $app['s_master'] ? 0 : ($app['s_id'] ? $app['s_id'] : 0);
 		$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 
 		$this->db->beginTransaction();
