@@ -31,12 +31,12 @@ class transaction
 		$this->config = $config;
 	}
 
-	function generate_transid(string $s_id, string $server_name):string
+	public function generate_transid(string $s_id, string $server_name):string
 	{
 		return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $server_name;
 	}
 
-	function sign(
+	public function sign(
 		array $transaction,
 		string $shared_secret,
 		string $schema
@@ -53,7 +53,7 @@ class transaction
 		return $signature;
 	}
 
-	function insert(array $transaction, string $schema):int
+	public function insert(array $transaction, string $schema):int
 	{
 		$transaction['cdate'] = gmdate('Y-m-d H:i:s');
 

@@ -218,6 +218,16 @@ $app['transaction'] = function($app){
 	);
 };
 
+$app['mail_transaction'] = function($app){
+	return new service\mail_transaction(
+		$app['user_cache'],
+		$app['config'],
+		$app['mail_addr_system'],
+		$app['mail_addr_user'],
+		$app['queue.mail']
+	);
+};
+
 /**
  * Get all schemas, systems and domains on this server
  */
