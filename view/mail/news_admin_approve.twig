@@ -40,19 +40,9 @@
 {% endblock text_content %}
 
 {% block html_unsubscribe -%}
-<p>
-    {{- 'subscribed.news_admin'|trans({
-        '%link_open%': '<a href="' ~ config_url ~ '">',
-        '%link_close%': '</a>',
-    })|raw -}}
-</p>
+{%- include 'mail/unsubscribe/news_admin.html.twig' -%}
 {%- endblock html_unsubscribe %}
 
 {% block text_unsubscribe %}
-{{ 'subscribed.news_admin'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-}) }}
-
-{{ config_url }}
+{% include 'mail/unsubscribe/news_admin.text.twig' %}
 {% endblock text_unsubscribe %}

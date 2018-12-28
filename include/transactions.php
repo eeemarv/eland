@@ -151,7 +151,6 @@ function mail_transaction_____(array $transaction, $remote_schema = null)
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user' 			=> $userfrom,
-				'login_url'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
 			]),
 		], 9000);
 	}
@@ -166,7 +165,6 @@ function mail_transaction_____(array $transaction, $remote_schema = null)
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user'		=> $userto,
-				'login_url'	=> $base_url . '/login.php?login=' . $userto['letscode'],
 			]),
 		], 9000);
 	}

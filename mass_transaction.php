@@ -949,7 +949,6 @@ function mail_mass_transaction($mail_ary)
 			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
 			'user'				=> $user,
 			'interlets'			=> false,
-			'url_login'			=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 		]);
 
 		$app['queue.mail']->queue([

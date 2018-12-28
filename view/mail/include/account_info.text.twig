@@ -1,7 +1,7 @@
 {% trans_default_domain 'mail' %}
 {{ 'label.your_account'|trans|underline }}
 
-{{ 'label.login'|trans }}: {{ login_url }}
+{{ 'label.login'|trans }}: {{ mail_url('login', {'login': user.letscode}, schema) }}
 
 {{ 'label.account_code'|trans }}: {{ user.letscode }}
 

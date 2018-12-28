@@ -1,0 +1,9 @@
+{%- trans_default_domain 'mail' -%}
+<p>
+    {{- 'subscribed.admin'|trans({
+        '%link_open%': '<a href="'
+            ~ mail_url('config', {'active_tab': 'mailaddresses'}, schema)
+            ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>

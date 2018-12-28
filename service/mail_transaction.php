@@ -116,7 +116,6 @@ class mail_transaction
 				'template'	=> 'transaction',
 				'vars'		=> array_merge($vars, [
 					'user' 			=> $userfrom,
-					'login_url'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
 				]),
 			], 9000);
 		}
@@ -131,7 +130,6 @@ class mail_transaction
 				'template'	=> 'transaction',
 				'vars'		=> array_merge($vars, [
 					'user'		=> $userto,
-					'login_url'	=> $base_url . '/login.php?login=' . $userto['letscode'],
 				]),
 			], 9000);
 		}
@@ -169,7 +167,6 @@ class mail_transaction
 				'template'	=> 'transaction',
 				'vars'		=> array_merge($vars, [
 					'user' 			=> $from_user,
-					'login_url'		=> $app['base_url'] . '/login.php?login=' . $from_user['letscode'],
 				]),
 			], 9000);
 		}
@@ -184,7 +181,6 @@ class mail_transaction
 				'template'	=> 'transaction',
 				'vars'		=> array_merge($vars, [
 					'user'		=> $to_user,
-					'login_url'	=> $app['base_url'] . '/login.php?login=' . $to_user['letscode'],
 				]),
 			], 9000);
 		}

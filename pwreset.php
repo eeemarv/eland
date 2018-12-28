@@ -36,8 +36,6 @@ if ($token)
 				$vars = [
 					'password'		=> $password,
 					'user'			=> $user,
-					'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
-					'support_url'	=> $app['base_url'] . '/support.php?src=p',
 				];
 
 				$app['queue.mail']->queue([
@@ -147,7 +145,6 @@ if (isset($_POST['zend']))
 				$vars = [
 					'confirm_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
 					'user'			=> $user,
-					'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
 				];
 
 				$app['queue.mail']->queue([
