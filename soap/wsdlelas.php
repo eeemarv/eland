@@ -221,7 +221,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'FAILED';
 	}
 
-	$sigtest = sign_transaction($transaction, $fromuser['presharedkey']);
+	$sigtest = $app['transaction']->sign($transaction, $fromuser['presharedkey'], $app['tschema']);
 
 	if ($sigtest != $signature)
 	{
@@ -251,7 +251,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	unset($transaction['letscode_to']);
 
-	if($id = insert_transaction($transaction))
+	if($id = $app['transaction']->insert($transaction, $app['tschema']))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
 			' processed (success)',

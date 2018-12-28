@@ -55,6 +55,7 @@ if ($add)
 
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = gmdate('Y-m-d H:i:s');
+		$transaction['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 
 		$group_id = trim($_POST['group_id']);
 
@@ -284,7 +285,7 @@ if ($add)
 		}
 		else if ($group_id == 'self')
 		{
-			if ($id = insert_transaction($transaction))
+			if ($id = $app['transaction']->insert($transaction, $app['tschema']))
 			{
 				$transaction['id'] = $id;
 				mail_transaction($transaction);
@@ -299,7 +300,7 @@ if ($add)
 		}
 		else if ($group['apimethod'] == 'mail')
 		{
-			if ($id = insert_transaction($transaction))
+			if ($id = $app['transaction']->insert($transaction, $app['tschema']))
 			{
 				$transaction['id'] = $id;
 				$transaction['letscode_to'] = $letscode_to;
@@ -417,7 +418,7 @@ if ($add)
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
 				'transid' 		=> $trans['transid'],
-				'signature' 	=> sign_transaction($trans, trim($group['presharedkey'])),
+				'signature' 	=> $app['transaction']->sign($trans, trim($group['presharedkey']), $app['tschema']),
 			]);
 
 			$error = $client->getError();
@@ -475,7 +476,7 @@ if ($add)
 				http_build_query($transaction) .
 				' --', ['schema' => $app['tschema']]);
 
-			$id = insert_transaction($transaction);
+			$id = $app['transaction']->insert($transaction, $app['tschema']);
 
 			if (!$id)
 			{
@@ -776,7 +777,7 @@ if ($add)
 	{
 		//GET form
 
-		$transid = generate_transid();
+		$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
 
 		$app['predis']->set($redis_transid_key, $transid);
 		$app['predis']->expire($redis_transid_key, 3600);

@@ -279,7 +279,7 @@ if ($submit)
 
 				$total += $amo;
 
-				$transid = generate_transid();
+				$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
 
 				$transactions[] = $trans;
 			}
@@ -367,7 +367,7 @@ else
 	$mail_en = true;
 }
 
-$transid = generate_transid();
+$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
 
 if ($to_letscode)
 {

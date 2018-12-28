@@ -208,6 +208,16 @@ $app['log_db'] = function($app){
 	);
 };
 
+$app['transaction'] = function($app){
+	return new service\transaction(
+		$app['db'],
+		$app['monolog'],
+		$app['user_cache'],
+		$app['autominlimit'],
+		$app['config']
+	);
+};
+
 /**
  * Get all schemas, systems and domains on this server
  */
