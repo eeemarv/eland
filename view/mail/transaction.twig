@@ -77,3 +77,19 @@
 {{ transaction_url }}
 
 {% endblock text_content %}
+
+{% block html_account_info -%}
+{%- include 'mail/include/account_info.html.twig' -%}
+{% endblock -%}
+
+{% block text_account_info %}
+{% include 'mail/include/account_info.text.twig' %}
+{% endblock %}
+
+{%- block html_support -%}
+{%- include 'mail/include/support.html.twig' -%}
+{%- endblock -%}
+
+{% block text_support %}
+{% include 'mail/include/support.text.twig' %}
+{% endblock %}

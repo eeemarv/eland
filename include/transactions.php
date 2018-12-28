@@ -1,12 +1,12 @@
 <?php
 
-function generate_transid()
+function generate_transid():string
 {
 	global $app;
 	return substr(sha1($app['s_id'] . microtime()), 0, 12) . '_' . $app['s_id'] . '@' . $_SERVER['SERVER_NAME'];
 }
 
-function sign_transaction($transaction, $sharedsecret)
+function sign_transaction(array $transaction, string $sharedsecret):string
 {
 	global $app;
 
@@ -21,7 +21,7 @@ function sign_transaction($transaction, $sharedsecret)
 	return $signature;
 }
 
-function insert_transaction($transaction)
+function insert_transaction(array $transaction)
 {
 	global $app;
 
@@ -65,10 +65,7 @@ function insert_transaction($transaction)
 	return $id;
 }
 
-/*
- *
- */
-function mail_mailtype_interlets_transaction($transaction)
+function mail_mailtype_interlets_transaction(array $transaction):void
 {
 	global $app;
 
@@ -109,10 +106,7 @@ function mail_mailtype_interlets_transaction($transaction)
 	], 9000);
 }
 
-/*
- *
- */
-function mail_transaction($transaction, $remote_schema = null)
+function mail_transaction_____(array $transaction, $remote_schema = null)
 {
 	global $app;
 
@@ -137,7 +131,7 @@ function mail_transaction($transaction, $remote_schema = null)
 		'to_user'			=> $to_user,
 		'interlets'			=> ($userfrom['accountrole'] == 'interlets' || $userto['accountrole'] == 'interlets') ? true : false,
 		'amount'			=> $transaction['amount'],
-		'transid'			=> $transaction['transid'],
+		'trans_id'			=> $transaction['transid'],
 		'description'		=> $transaction['description'],
 		'transaction_url'	=> $url . '/transactions.php?id=' . $transaction['id'],
 		'group'				=> $app['template_vars']->get($sch),
@@ -147,7 +141,9 @@ function mail_transaction($transaction, $remote_schema = null)
 
 	$base_url = $app['protocol'] . $app['groups']->get_host($sch);
 
-	if ($userfrom['accountrole'] != 'interlets' && ($userfrom['status'] == 1 || $userfrom['status'] == 2))
+	if ($userfrom['accountrole'] != 'interlets'
+		&& ($userfrom['status'] == 1
+			|| $userfrom['status'] == 2))
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
@@ -155,12 +151,14 @@ function mail_transaction($transaction, $remote_schema = null)
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user' 			=> $userfrom,
-				'url_login'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
+				'login_url'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
 			]),
 		], 9000);
 	}
 
-	if ($userto['accountrole'] != 'interlets' && ($userto['status'] == 1 || $userto['status'] == 2))
+	if ($userto['accountrole'] != 'interlets'
+		&& ($userto['status'] == 1
+			|| $userto['status'] == 2))
 	{
 		$app['queue.mail']->queue([
 			'to' 		=> $app['mail_addr_user']->get($userto['id'], $sch),
@@ -168,7 +166,63 @@ function mail_transaction($transaction, $remote_schema = null)
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user'		=> $userto,
-				'url_login'	=> $base_url . '/login.php?login=' . $userto['letscode'],
+				'login_url'	=> $base_url . '/login.php?login=' . $userto['letscode'],
+			]),
+		], 9000);
+	}
+}
+
+/*
+ *
+ */
+function mail_transaction(array $transaction):void
+{
+	global $app;
+
+	$from_user_id = $transaction['id_from'];
+	$to_user_id = $transaction['id_to'];
+
+	$from_user = $app['user_cache']->get($from_user_id, $app['tschema']);
+	$to_user = $app['user_cache']->get($to_user_id, $app['tschema']);
+
+	$url = isset($remote_schema) ? $app['protocol'] . $app['groups']->get_host($sch) : $app['base_url'];
+
+	$vars = [
+		'support_url'		=> $url . '/support.php?src=p',
+		'from_user_id' 		=> $from_user_id,
+		'to_user_id'		=> $to_user_id,
+		'amount'			=> $transaction['amount'],
+		'trans_id'			=> $transaction['transid'],
+		'description'		=> $transaction['description'],
+		'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $transaction['id'],
+	];
+
+	if ($from_user['accountrole'] != 'interlets'
+		&& ($from_user['status'] == 1
+			|| $from_user['status'] == 2))
+	{
+		$app['queue.mail']->queue([
+			'schema'	=> $app['tschema'],
+			'to' 		=> $app['mail_addr_user']->get($from['id'], $app['tschema']),
+			'template'	=> 'transaction',
+			'vars'		=> array_merge($vars, [
+				'user' 			=> $from_user,
+				'login_url'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
+			]),
+		], 9000);
+	}
+
+	if ($to_user['accountrole'] != 'interlets'
+		&& ($to_user['status'] == 1
+			|| $to_user['status'] == 2))
+	{
+		$app['queue.mail']->queue([
+			'to' 		=> $app['mail_addr_user']->get($userto['id'], $sch),
+			'schema'	=> $app['tschema'],
+			'template'	=> 'transaction',
+			'vars'		=> array_merge($vars, [
+				'user'		=> $to_user,
+				'login_url'	=> $base_url . '/login.php?login=' . $userto['letscode'],
 			]),
 		], 9000);
 	}

@@ -257,6 +257,8 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 			' processed (success)',
 			['schema' => $app['tschema']]);
 		$transaction['id'] = $id;
+
+		// from eLAS interSystem
 		mail_transaction($transaction);
 
 		return 'SUCCESS';

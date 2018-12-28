@@ -505,6 +505,7 @@ if ($add)
 
 			$transaction['id'] = $id;
 
+			// to eLAS intersystem
 			mail_transaction($transaction);
 
 			$app['alert']->success('De interSysteem transactie werd verwerkt.');
@@ -746,6 +747,7 @@ if ($add)
 				$app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
 				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
 
+				// to eLAND interSystem
 				mail_transaction($trans_org);
 				mail_transaction($transaction, $remote_schema);
 
