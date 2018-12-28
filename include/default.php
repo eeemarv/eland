@@ -73,6 +73,12 @@ $app->extend('twig', function($twig, $app) {
 				$app['protocol']
 			);
 		},
+		twig\mail_url::class => function() use ($app){
+			return new twig\mail_url(
+				$app['groups'],
+				$app['protocol']
+			);
+		},
 /*
 		twig\distance::class => function() use ($app){
 			return new twig\distance(
