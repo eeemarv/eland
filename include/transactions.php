@@ -203,11 +203,11 @@ function mail_transaction(array $transaction):void
 	{
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($from['id'], $app['tschema']),
+			'to' 		=> $app['mail_addr_user']->get($from_user_id, $app['tschema']),
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user' 			=> $from_user,
-				'login_url'		=> $base_url . '/login.php?login=' . $userfrom['letscode'],
+				'login_url'		=> $app['base_url'] . '/login.php?login=' . $from_user['letscode'],
 			]),
 		], 9000);
 	}
@@ -217,12 +217,12 @@ function mail_transaction(array $transaction):void
 			|| $to_user['status'] == 2))
 	{
 		$app['queue.mail']->queue([
-			'to' 		=> $app['mail_addr_user']->get($userto['id'], $sch),
+			'to' 		=> $app['mail_addr_user']->get($to_user_id, $app['tschema']),
 			'schema'	=> $app['tschema'],
 			'template'	=> 'transaction',
 			'vars'		=> array_merge($vars, [
 				'user'		=> $to_user,
-				'login_url'	=> $base_url . '/login.php?login=' . $userto['letscode'],
+				'login_url'	=> $app['base_url'] . '/login.php?login=' . $to_user['letscode'],
 			]),
 		], 9000);
 	}

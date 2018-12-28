@@ -140,8 +140,6 @@ transaction:
     Transactie van %from_account% naar %to_account%
   title: >-
     Notificatie Transactie
-  link: >-
-    "%open_link%Link naar de Transactie%close_link%"
 transaction_intersystem_fail:
   subject: >-
     InterSysteem transactie gefaald

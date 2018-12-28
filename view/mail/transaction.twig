@@ -3,8 +3,8 @@
 
 {% block subject_line -%}
     {{- 'transaction.subject'|trans({
-        'from_account': account(from_user_id, schema),
-        'to_account': account(to_user_id, schema)
+        '%from_account%': account(from_user_id, schema),
+        '%to_account%': account(to_user_id, schema)
     }) -}}
 {%- endblock subject_line -%}
 
@@ -46,10 +46,10 @@
     </strong>
 </p>
 
-<p>{{- 'transaction.html_link'|trans({
-    '%open_link%': '<a href="' ~ transaction_url ~ '">',
-    '%close_link%': '</a>'
-})|raw -}}
+<p>
+<a href="{{- transaction_url -}}">
+{{- 'label.link'|trans -}}
+</a>
 </p>
 
 {%- endblock html_content -%}
@@ -70,11 +70,7 @@
 {{ 'label.description'|trans }}
 {{ description }}
 
-{{ 'label.link'|trans({
-    '%open_link%': '',
-    '%close_link%': ''
-}) }}
-{{ transaction_url }}
+{{ 'label.link'|trans }}: {{ transaction_url }}
 
 {% endblock text_content %}
 
