@@ -156,9 +156,10 @@ if ($token)
 		$user['id'] = $user_id;
 
 		$vars = [
-			'user'		=> $user,
-			'email'		=> $data['email'],
-			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
+			'user'			=> $user,
+			'email'			=> $data['email'],
+			'user_url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
+			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 		];
 
 		$app['queue.mail']->queue([

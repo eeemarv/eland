@@ -37,3 +37,21 @@
 {{ 'label.link'|trans }}: {{ user_url }}
 
 {% endblock text_content %}
+
+{% block html_unsubscribe -%}
+<p>
+    {{- 'subscribed.admin'|trans({
+        '%link_open%': '<a href="' ~ config_url ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{{ 'subscribed.admin'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+}) }}
+
+{{ config_url }}
+{% endblock text_unsubscribe %}

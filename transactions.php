@@ -479,18 +479,27 @@ if ($add)
 
 			if (!$id)
 			{
-				$subject = 'interSysteem FAILURE!';
-				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
-				$text .= ' group:' . $group['groupname'];
+				$vars = [
+					'remote_system_name'	=> $group['groupname'],
+					'real_to'				=> $transaction['real_to'],
+					'description'			=> $transaction['description'],
+					'amount'				=> $transaction['amount'],
+					'from_user_id'			=> $transaction['id_from'],
+					'to_user_id'			=> $transaction['id_to'],
+					'trans_id'				=> $transaction['trans_id'],
+					'config_url'			=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
+				];
 
 				$app['queue.mail']->queue([
 					'schema'		=> $app['tschema'],
 					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
-					'subject' 		=> $subject,
+					'template'		=> 'transaction_intersystem_fail',
 					'text' 			=> $text,
 				], 9000);
 
-				$app['alert']->error('De lokale commit van de interSysteem transactie is niet geslaagd. ' . $contact_admin);
+				$app['alert']->error('De lokale commit van de interSysteem
+					transactie is niet geslaagd. ' .
+					$contact_admin);
 				cancel();
 			}
 

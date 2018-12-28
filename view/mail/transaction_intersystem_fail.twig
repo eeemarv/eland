@@ -1,0 +1,105 @@
+{%- extends 'mail/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'transaction_intersystem_fail.subject'|trans -}}
+{%- endblock subject_line -%}
+
+{% block html_content %}
+
+<h3>
+    {{- 'transaction_intersystem_fail.title'|trans -}}
+</h3>
+
+<p>
+    {{- 'transaction_intersystem_fail.message'|trans({
+        '%remote_system_name%': remote_system_name,
+        '%trans_id%': trans_id
+    }) -}}
+</p>
+
+<p>
+    {{- 'label.from'|trans -}}
+    <br />
+    <strong>
+        {{- account(from_user_id, schema) -}}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.to'|trans -}}
+    <br />
+    <strong>
+        {{- account(to_user_id, schema) -}}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.destination'|trans -}}
+    <br />
+    <strong>
+    {{- real_to -}}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.amount'|trans -}}
+    <br />
+    <strong>
+        {{- amount }} {{ config('currency', schema) }}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.description'|trans -}}
+    <br />
+    <strong>
+        {{- description -}}
+    </strong>
+</p>
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+
+{{ 'transaction_intersystem_fail.title'|trans|underline }}
+
+{{ 'transaction_intersystem_fail.message'|trans({
+    '%remote_system_name%': remote_system_name,
+    '%trans_id%': trans_id
+}) }}
+
+{{ 'label.from'|trans }}
+{{ account(from_user_id, schema) }}
+
+{{ 'label.to'|trans }}
+{{ account(to_user_id, schema) }}
+
+{{ 'label.destination'|trans }}
+{{ real_to }}
+
+{{ 'label.amount'|trans }}
+{{ amount }} {{ config('currency', schema) }}
+
+{{ 'label.description'|trans }}
+{{ description }}
+
+{% endblock text_content %}
+
+{% block html_unsubscribe -%}
+<p>
+    {{- 'subscribed.admin'|trans({
+        '%link_open%': '<a href="' ~ config_url ~ '">',
+        '%link_close%': '</a>',
+    })|raw -}}
+</p>
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{{ 'subscribed.admin'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+}) }}
+
+{{ config_url }}
+{% endblock text_unsubscribe %}

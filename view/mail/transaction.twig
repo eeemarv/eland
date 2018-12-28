@@ -1,32 +1,79 @@
-{% extends 'mail/base.html.twig' %}
+{%- extends 'mail/base.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
-{% block body %}
+{% block subject_line -%}
+    {{- 'transaction.subject'|trans({
+        'from_account': account(from_user_id, schema),
+        'to_account': account(to_user_id, schema)
+    }) -}}
+{%- endblock subject_line -%}
 
-{% if interlets %}
-<h3>Notificatie interSysteem transactie</h3>
-{% else %}
-<h3>Notificatie transactie</h3>
-{% endif %}
+{% block html_content %}
 
-<p>Van<br>
-<strong>{{ from_user }}</strong></p>
+<h3>
+    {{- 'transaction.title'|trans -}}
+</h3>
 
-<p>Aan<br>
-<strong>{{ to_user }}</strong></p>
+<p>
+    {{- 'label.from'|trans -}}
+    <br />
+    <strong>
+        {{- account(from_user_id, schema) -}}
+    </strong>
+</p>
 
-<p>Aantal<br>
-<strong>{{ amount }} {{ group.currency }}</strong></p>
+<p>
+    {{- 'label.to'|trans -}}
+    <br />
+    <strong>
+        {{- account(to_user_id, schema) -}}
+    </strong>
+</p>
 
-<p>Omschrijving<br>
-<strong>{{ description }}</strong></p>
+<p>
+    {{- 'label.amount'|trans -}}
+    <br />
+    <strong>
+        {{- amount }} {{ config('currency', schema) }}
+    </strong>
+</p>
 
-{#
-<p>Transactie id<br>
-<strong>{{ transid }}</strong></p>
-#}
+<p>
+    {{- 'label.description'|trans -}}
+    <br />
+    <strong>
+        {{- description -}}
+    </strong>
+</p>
 
-<p>Link<br>
-<a href="{{ transaction_url }}">{{ transaction_url }}</a></p>
+<p>{{- 'transaction.html_link'|trans({
+    '%open_link%': '<a href="' ~ transaction_url ~ '">',
+    '%close_link%': '</a>'
+})|raw -}}
+</p>
 
-{% endblock body %}
+{%- endblock html_content -%}
+
+{% block text_content %}
+
+{{ 'transaction.title'|trans|underline }}
+
+{{ 'label.from'|trans }}
+{{ account(from_user_id, schema) }}
+
+{{ 'label.to'|trans }}
+{{ account(to_user_id, schema) }}
+
+{{ 'label.amount'|trans }}
+{{ amount }} {{ config('currency', schema) }}
+
+{{ 'label.description'|trans }}
+{{ description }}
+
+{{ 'label.link'|trans({
+    '%open_link%': '',
+    '%close_link%': ''
+}) }}
+{{ transaction_url }}
+
+{% endblock text_content %}

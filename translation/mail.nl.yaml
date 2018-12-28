@@ -2,6 +2,8 @@ label:
   account_code: Account Code
   amount: Bedrag
   balance: Saldo
+  description: Omschrijving
+  destination: Bestemming
   email: E-mail
   from: Van
   full_name: Volledige Naam
@@ -140,6 +142,16 @@ transaction:
     Notificatie Transactie
   link: >-
     "%open_link%Link naar de Transactie%close_link%"
+transaction_intersystem_fail:
+  subject: >-
+    InterSysteem transactie gefaald
+  title: >-
+    Waarschuwing
+  message: >-
+    De lokale commit van transactie
+    %trans_id% is niet gelukt.
+    Dit betekent dat er een onbalans is
+    met het externe systeem %remote_system_name%
 transaction_intersystem:
   subject: >-
     Intersysteem Transactie van %from_account% naar %to_account%
