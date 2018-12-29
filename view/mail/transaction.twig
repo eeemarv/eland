@@ -34,7 +34,7 @@
     {{- 'label.amount'|trans -}}
     <br />
     <strong>
-        {{- amount }} {{ config('currency', schema) }}
+        {{- transaction.amount }} {{ config('currency', schema) }}
     </strong>
 </p>
 
@@ -42,12 +42,13 @@
     {{- 'label.description'|trans -}}
     <br />
     <strong>
-        {{- description -}}
+        {{- transaction.description -}}
     </strong>
 </p>
 
 <p>
-<a href="{{- transaction_url -}}">
+<a href="{{- mail_url('transactions',
+    {'id': transaction.id}, schema) -}}">
 {{- 'label.link'|trans -}}
 </a>
 </p>
@@ -65,12 +66,13 @@
 {{ account(to_user_id, schema) }}
 
 {{ 'label.amount'|trans }}
-{{ amount }} {{ config('currency', schema) }}
+{{ transaction.amount }} {{ config('currency', schema) }}
 
 {{ 'label.description'|trans }}
-{{ description }}
+{{ transaction.description }}
 
-{{ 'label.link'|trans }}: {{ transaction_url }}
+{{ 'label.link'|trans }}: {{ mail_url('transactions',
+    {'id': transaction.id, schema}) }}
 
 {% endblock text_content %}
 

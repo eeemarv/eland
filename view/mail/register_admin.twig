@@ -21,7 +21,9 @@
 <br />
     {{- 'label.email'|trans -}}: {{ email -}}
 <br />
-<a href="{{ user_url -}}">{{- 'label.link'|trans -}}</a>
+<a href="{{ mail_url('users', {'id': user.id}, schema}) -}}">
+    {{- 'label.link'|trans -}}
+</a>
 </p>
 {% endblock html_content %}
 
@@ -34,7 +36,7 @@
 {{ 'label.full_name'|trans }}: {{ user.fullname }}
 {{ 'label.postcode'|trans }}: {{ user.postcode }}
 {{ 'label.email'|trans }}: {{ email }}
-{{ 'label.link'|trans }}: {{ user_url }}
+{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user.id}, schema) }}
 
 {% endblock text_content %}
 

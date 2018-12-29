@@ -143,7 +143,7 @@ if (isset($_POST['zend']))
 				$app['predis']->expire($key, 86400);
 
 				$vars = [
-					'confirm_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
+					'token'			=> $token,
 					'user'			=> $user,
 				];
 

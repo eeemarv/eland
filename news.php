@@ -116,12 +116,12 @@ if ($add && $submit && !count($errors))
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
+		$news['id'] = $id;
+
 		if(!$app['s_admin'])
 		{
 			$vars = [
 				'news'			=> $news,
-				'news_url'		=> $app['base_url'] . '/news.php?id=' . $id,
-				'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			];
 
 			$app['queue.mail']->queue([

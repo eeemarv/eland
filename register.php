@@ -153,13 +153,9 @@ if ($token)
 			throw $e;
 		}
 
-		$user['id'] = $user_id;
-
 		$vars = [
 			'user'			=> $user,
 			'email'			=> $data['email'],
-			'user_url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
-			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 		];
 
 		$app['queue.mail']->queue([
@@ -289,8 +285,7 @@ if ($submit)
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
-			'register_url'	=> $app['base_url'] . '/register.php',
-			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
+			'token'		=> $token,
 		];
 
 		$app['queue.mail']->queue([

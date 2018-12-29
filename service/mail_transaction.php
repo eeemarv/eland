@@ -135,7 +135,7 @@ class mail_transaction
 		}
 	}
 
-	public function mail_transaction(array $transaction):void
+	public function queue(array $transaction):void
 	{
 		global $app;
 
@@ -148,9 +148,9 @@ class mail_transaction
 		$url = isset($remote_schema) ? $app['protocol'] . $app['groups']->get_host($sch) : $app['base_url'];
 
 		$vars = [
-			'support_url'		=> $url . '/support.php?src=p',
 			'from_user_id' 		=> $from_user_id,
 			'to_user_id'		=> $to_user_id,
+			'transaction'		=> $transaction,
 			'amount'			=> $transaction['amount'],
 			'trans_id'			=> $transaction['transid'],
 			'description'		=> $transaction['description'],

@@ -18,7 +18,7 @@
 </p>
 
 <p>
-    <a href="{{ news_url }}">
+    <a href="{{- mail_url('news', {'id': news.id}, schema) -}}">
         {{- 'news_admin_approve.action'|trans -}}
     </a>
 </p>
@@ -35,7 +35,7 @@
 
 {{ 'news_admin_approve.action'|trans }}
 
-{{ news_url }}
+{{ mail_url('news', {'id': news.id}, schema) }}
 
 {% endblock text_content %}
 
