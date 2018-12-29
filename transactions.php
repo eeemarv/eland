@@ -482,19 +482,20 @@ if ($add)
 			{
 				$vars = [
 					'remote_system_name'	=> $group['groupname'],
+					'transaction'			=> $transaction,
 					'real_to'				=> $transaction['real_to'],
 					'description'			=> $transaction['description'],
 					'amount'				=> $transaction['amount'],
 					'from_user_id'			=> $transaction['id_from'],
 					'to_user_id'			=> $transaction['id_to'],
-					'trans_id'				=> $transaction['trans_id'],
+					'transid'				=> $transaction['trans_id'],
 					'config_url'			=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 				];
 
 				$app['queue.mail']->queue([
 					'schema'		=> $app['tschema'],
 					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
-					'template'		=> 'transaction_intersystem_fail',
+					'template'		=> 'transaction/intersystem_fail',
 					'text' 			=> $text,
 				], 9000);
 

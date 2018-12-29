@@ -14,7 +14,7 @@
 <p>
     {{- 'transaction_intersystem_fail.message'|trans({
         '%remote_system_name%': remote_system_name,
-        '%trans_id%': trans_id
+        '%trans_id%': transaction.transid
     }) -}}
 </p>
 
@@ -38,7 +38,7 @@
     {{- 'label.destination'|trans -}}
     <br />
     <strong>
-    {{- real_to -}}
+    {{- transaction.real_to -}}
     </strong>
 </p>
 
@@ -46,7 +46,7 @@
     {{- 'label.amount'|trans -}}
     <br />
     <strong>
-        {{- amount }} {{ config('currency', schema) }}
+        {{- transaction.amount }} {{ config('currency', schema) }}
     </strong>
 </p>
 
@@ -54,7 +54,7 @@
     {{- 'label.description'|trans -}}
     <br />
     <strong>
-        {{- description -}}
+        {{- transaction.description -}}
     </strong>
 </p>
 
@@ -66,7 +66,7 @@
 
 {{ 'transaction_intersystem_fail.message'|trans({
     '%remote_system_name%': remote_system_name,
-    '%trans_id%': trans_id
+    '%trans_id%': transaction.transid
 }) }}
 
 {{ 'label.from'|trans }}
@@ -76,30 +76,20 @@
 {{ account(to_user_id, schema) }}
 
 {{ 'label.destination'|trans }}
-{{ real_to }}
+{{ transaction.real_to }}
 
 {{ 'label.amount'|trans }}
-{{ amount }} {{ config('currency', schema) }}
+{{ transaction.amount }} {{ config('currency', schema) }}
 
 {{ 'label.description'|trans }}
-{{ description }}
+{{ transaction.description }}
 
 {% endblock text_content %}
 
 {% block html_unsubscribe -%}
-<p>
-    {{- 'subscribed.admin'|trans({
-        '%link_open%': '<a href="' ~ config_url ~ '">',
-        '%link_close%': '</a>',
-    })|raw -}}
-</p>
+{%- include 'mail/unsubscribe/admin.html.twig' -%}
 {%- endblock html_unsubscribe %}
 
 {% block text_unsubscribe %}
-{{ 'subscribed.admin'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-}) }}
-
-{{ config_url }}
+{% include 'mail/unsubscribe/admin.text.twig' %}
 {% endblock text_unsubscribe %}

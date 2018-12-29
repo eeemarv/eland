@@ -33,7 +33,6 @@ if ($token)
 
 		$vars = [
 			'message'		=> $data['message'],
-			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			'ip'			=> $data['ip'],
 			'agent'			=> $data['agent'],
 			'email'			=> $data['email'],
@@ -130,8 +129,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 			['schema' => $app['tschema']]);
 
 		$vars = [
-			'contact_url'	=> $app['base_url'] . '/contact.php',
-			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
+			'token'			=> $token,
 		];
 
 		$app['queue.mail']->queue([

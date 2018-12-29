@@ -36,19 +36,9 @@
 {% endblock text_content %}
 
 {% block html_unsubscribe -%}
-<p>
-    {{- 'b.support_subscribed'|trans({
-        '%link_open%': '<a href="' ~ config_url ~ '">',
-        '%link_close%': '</a>',
-    })|raw -}}
-</p>
+{%- include 'mail/unsubscribe/support.html.twig' -%}
 {%- endblock html_unsubscribe %}
 
 {% block text_unsubscribe %}
-{{ 'b.support_subscribed'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-}) }}
-
-{{ config_url }}
+{% include 'mail/unsubscribe/support.text.twig' %}
 {% endblock text_unsubscribe %}
