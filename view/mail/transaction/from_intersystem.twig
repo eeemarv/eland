@@ -1,0 +1,23 @@
+{%- extends 'mail/intersystem.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% set from_account = transaction.real_from
+    ~ ' ['
+    ~ from_fullname
+    ~ ']'
+%}
+
+{% block subject_line -%}
+    {{- 'transaction.subject'|trans({
+        '%from_account%': from_account,
+        '%to_account%': account(to_user_id, schema)
+    }) -}}
+{%- endblock subject_line -%}
+
+{%- block html_from -%}
+{{- from_account -}}
+{%- endblock -%}
+
+{% block text_from %}
+{{- to_account -}}
+{% endblock %}

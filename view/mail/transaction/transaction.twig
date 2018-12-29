@@ -11,14 +11,18 @@
 {% block html_content %}
 
 <h3>
+    {%- block html_title -%}
     {{- 'transaction.title'|trans -}}
+    {%- endblock -%}
 </h3>
 
 <p>
     {{- 'label.from'|trans -}}
     <br />
     <strong>
+        {%- block html_from -%}
         {{- account(from_user_id, schema) -}}
+        {%- endblock -%}
     </strong>
 </p>
 
@@ -26,7 +30,9 @@
     {{- 'label.to'|trans -}}
     <br />
     <strong>
+        {%- block html_to -%}
         {{- account(to_user_id, schema) -}}
+        {%- endblock -%}
     </strong>
 </p>
 
@@ -34,7 +40,10 @@
     {{- 'label.amount'|trans -}}
     <br />
     <strong>
-        {{- transaction.amount }} {{ config('currency', schema) }}
+        {%- block html_amount -%}
+        {{- transaction.amount -}}&nbsp;
+        {{- config('currency', schema) -}}
+        {%- endblock html_amount -%}
     </strong>
 </p>
 
@@ -57,16 +66,22 @@
 
 {% block text_content %}
 
-{{ 'transaction.title'|trans|underline }}
+{% block text_title %}{{ 'transaction.title'|trans|underline }}{% endblock %}
 
 {{ 'label.from'|trans }}
+{% block text_from %}
 {{ account(from_user_id, schema) }}
+{% endblock %}
 
 {{ 'label.to'|trans }}
+{% block text_to %}
 {{ account(to_user_id, schema) }}
+{% endblock %}
 
 {{ 'label.amount'|trans }}
+{% block text_amount %}
 {{ transaction.amount }} {{ config('currency', schema) }}
+{% endblock %}
 
 {{ 'label.description'|trans }}
 {{ transaction.description }}

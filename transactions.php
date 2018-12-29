@@ -288,7 +288,7 @@ if ($add)
 			if ($id = $app['transaction']->insert($transaction, $app['tschema']))
 			{
 				$transaction['id'] = $id;
-				mail_transaction($transaction);
+				$app['mail_transaction']->queue($transaction, $app['tschema']);
 				$app['alert']->success('Transactie opgeslagen');
 			}
 			else
@@ -305,7 +305,7 @@ if ($add)
 				$transaction['id'] = $id;
 				$transaction['letscode_to'] = $letscode_to;
 
-				mail_mailtype_interlets_transaction($transaction);
+				$app['mail_transaction']->queue_mail_type($transaction, $app['tschema']);
 
 				$app['alert']->success('InterSysteem transactie opgeslagen (verwerking per E-mail).');
 			}
@@ -508,7 +508,7 @@ if ($add)
 			$transaction['id'] = $id;
 
 			// to eLAS intersystem
-			mail_transaction($transaction);
+			$app['mail_transaction']->queue($transaction, $app['tschema']);
 
 			$app['alert']->success('De interSysteem transactie werd verwerkt.');
 			cancel();
@@ -750,8 +750,8 @@ if ($add)
 				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
 
 				// to eLAND interSystem
-				mail_transaction($trans_org);
-				mail_transaction($transaction, $remote_schema);
+				$app['mail_transaction']->queue($trans_org, $app['tschema']);
+				$app['mail_transaction']->queue($transaction, $remote_schema);
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
 					$amount . ' from user: ' .  link_user($fromuser['id'], $app['tschema'], false) .
