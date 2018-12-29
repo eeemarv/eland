@@ -87,7 +87,7 @@
 {{ transaction.description }}
 
 {{ 'label.link'|trans }}: {{ mail_url('transactions',
-    {'id': transaction.id, schema}) }}
+    {'id': transaction.id}, schema) }}
 
 {% endblock text_content %}
 
