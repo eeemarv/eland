@@ -1,0 +1,38 @@
+{% extends 'mail/transaction/to_intersystem.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+{{- 'transaction_to_intersystem_mail_type.subject'|trans{
+    '%system_name%': config('systemname', schema),
+    '%remote_system_name%': to_fullname
+} -}}
+{%- endblock subject_line -%}
+
+{%- block html_content_explain -%}
+<p>
+{{- 'to_intersystem_mail_type.explain'|trans -}}
+</p>
+{%- endblock html_content_explain -%}
+
+{% block text_content_explain %}
+
+{{ 'to_intersystem_mail_type.explain'|trans }}
+
+{% endblock text_content_explain %}
+
+{%- block html_trans_id -%}
+<p>
+{{- 'label.transaction_id'|trans -}}
+<br />
+<strong>
+{{- transaction.transid -}}
+</strong>
+</p>
+{%- endblock html_trans_id -%}
+
+{% block text_trans_id %}
+
+{{ 'label.transaction_id'|trans }}
+{{ transaction.transid }}
+
+{% endblock text_trans_id %}

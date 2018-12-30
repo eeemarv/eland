@@ -1,0 +1,41 @@
+{% extends 'mail/base.text.twig' %}
+
+{% block pretext %}{% if copy %}Dit is een kopie van de notificatie die naar {{ to_letsgroup|raw }} verstuurd werd. E-mail adres: {{ to_mail }}{% endif %}{% endblock pretext %}
+
+{% block body %}
+{% autoescape false %}
+
+Notificatie interSysteem transactie
+-----------------------------------
+
+Er werd een interSysteem transactie ingegeven in het Systeem van {{ group.name }}
+met de volgende gegevens:
+
+Van
+{{ from_user }}
+
+Aan
+{{ to_user }}
+
+Aantal
+{{ amount }} {{ group.currency }}
+ofwel
+{{ amount_hours }} uren ({{ group.currencyratio }} {{ group.currency }} = 1 uur)
+
+Omschrijving
+{{ description }}
+
+Transactie id
+{{ transid }}
+
+Je moet deze transactie in je eigen Systeem verder verwerken.
+Als dit niet mogelijk is, moet je het beheer van het andere Systeem
+verwittigen zodat ze de transactie aan hun kant annuleren.
+Je kan dit doen door een reply te sturen op dit bericht.
+
+{% endautoescape %}
+{% endblock body %}
+
+{% block accountinfo %}{% endblock accountinfo %}
+{% block support %}{% endblock support %}
+{% block unsubscribe %}{% endblock unsubscribe %}

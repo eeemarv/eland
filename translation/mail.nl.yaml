@@ -13,6 +13,7 @@ label:
   postcode: Postcode
   to: Naar
   total: Totaal
+  transaction_id: Transactie ID
   username: Gebruikersnaam
   your_account: Je Account
   your_message: Je Bericht
@@ -155,6 +156,17 @@ transaction_intersystem:
     Intersysteem Transactie van %from_account% naar %to_account%
   title: >-
     Notificatie Intersysteem Transactie
+transaction_to_intersystem_mail_type:
+  subject: >-
+    Actie gevraagd! Intersysteem transactie van %system_name% naar %remote_system_name%
+transaction_to_intersystem_mail_type_admin:
+  subject: >-
+    Kopie van bericht, interSysteem transactie van %system_name% naar %remote_system_name%
+  admin_explain: >-
+    Deze transactie werd ingegeven in je eigen systeem %system_name%
+    en ze moet verwerkt worden door de
+
+
 contact_admin:
   subject: Bericht van contactformulier
 news_review_admin:

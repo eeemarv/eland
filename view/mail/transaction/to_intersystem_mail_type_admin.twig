@@ -1,0 +1,27 @@
+{% extends 'mail/transaction/to_intersystem_mail_type_admin.subject.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+{{- 'transaction_to_intersystem_mail_type_admin.subject'|trans{
+    '%system_name%': config('systemname', schema),
+    '%remote_system_name%': to_fullname
+} -}}
+{%- endblock subject_line -%}
+
+
+
+
+
+
+
+
+
+
+
+{% block html_unsubscribe -%}
+{%- include 'mail/unsubscribe/admin.html.twig' -%}
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{% include 'mail/unsubscribe/admin.text.twig' %}
+{% endblock text_unsubscribe %}

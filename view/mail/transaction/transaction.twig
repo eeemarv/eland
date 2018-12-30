@@ -16,6 +16,8 @@
     {%- endblock -%}
 </h3>
 
+{%- block html_content_explain -%}{%- endblock -%}
+
 <p>
     {{- 'label.from'|trans -}}
     <br />
@@ -62,11 +64,14 @@
 </a>
 </p>
 
+{%- block html_trans_id -%}{%- endblock -%}
+
 {%- endblock html_content -%}
 
 {% block text_content %}
 
 {% block text_title %}{{ 'transaction.title'|trans|underline }}{% endblock %}
+{% block text_content_explain %}{% endblock %}
 
 {{ 'label.from'|trans }}
 {% block text_from %}
@@ -88,6 +93,8 @@
 
 {{ 'label.link'|trans }}: {{ mail_url('transactions',
     {'id': transaction.id}, schema) }}
+
+{% block text_trans_id %}{% endblock %}
 
 {% endblock text_content %}
 
