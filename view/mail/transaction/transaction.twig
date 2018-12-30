@@ -42,12 +42,12 @@
     {{- 'label.amount'|trans -}}
     <br />
     <strong>
-        {%- block html_amount -%}
         {{- transaction.amount -}}&nbsp;
         {{- config('currency', schema) -}}
-        {%- endblock html_amount -%}
     </strong>
 </p>
+
+{%- block html_amount_explain -%}{%- endblock -%}
 
 <p>
     {{- 'label.description'|trans -}}
@@ -84,9 +84,9 @@
 {% endblock %}
 
 {{ 'label.amount'|trans }}
-{% block text_amount %}
 {{ transaction.amount }} {{ config('currency', schema) }}
-{% endblock %}
+
+{% block text_amount_explain %}{% endblock %}
 
 {{ 'label.description'|trans }}
 {{ transaction.description }}

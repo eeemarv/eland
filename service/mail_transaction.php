@@ -36,41 +36,59 @@ class mail_transaction
 		string $schema
 	):void
 	{
-		global $app;
+		$dec_hours = $transaction['amount'] / $this->config->get('currencyratio', $schema);
+		$seconds = $dec_hours * 3600;
+		$hours = floor($dec_hours);
+		$seconds -= $hours * 3600;
+		$minutes = floor($seconds / 60);
+		$seconds -= $minutes * 60;
+		$seconds = round($seconds);
+		$dec_hours = round($dec_hours, 4);
 
-		$from_user = link_user($transaction['id_from'], $schema, false);
-		$to_group = link_user($transaction['id_to'], $schema, false);
+		$from_user_id = $transaction['id_from'];
+		$to_user_id = $transaction['id_to'];
 
-		$to_user = $transaction['real_to'];
+		$from_user = $this->user_cache->get($from_user_id, $schema);
+		$to_user = $this->user_cache->get($to_user_id, $schema);
 
 		$vars = [
-			'copy'			=> false,
-			'from_user' 	=> $from_user,
-			'to_user'		=> $to_user,
-			'to_group'		=> $to_group,
-			'amount'		=> $transaction['amount'],
-			'amount_hours'	=> round($transaction['amount'] / $this->config->get('currencyratio', $schema), 4),
-			'transid'		=> $transaction['transid'],
-			'description'	=> $transaction['description'],
+			'from_user_id' 	=> $from_user_id,
+			'to_user_id'	=> $to_user_id,
+			'to_fullname'	=> $to_user['fullname'],
+			'transaction'	=> $transaction,
+			'amount_time'	=> [
+				'dec_hours'	=> $dec_hours,
+				'hours'		=> $hours,
+				'minutes'	=> $minutes,
+				'seconds'	=> $seconds,
+			],
 		];
 
 		$this->mail->queue([
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_user->get($transaction['id_to'], $schema),
 			'reply_to' 	=> $this->mail_addr_system->get_admin($schema),
-			'template'	=> 'mailtype_interlets_transaction',
-			'vars'		=> $vars,
+			'template'	=> 'transaction/to_intersystem_mail_type',
+			'vars'		=> array_merge($vars, [
+				'user'	=> $to_user,
+			]),
 		], 9000);
-
-		$vars['copy'] = true;
 
 		$this->mail->queue([
 			'schema'	=> $schema,
-			'to' 		=> $this->mail_addr_user->get($transaction['id_from'], $schema),
-			'cc' 		=> $this->mail_addr_system->get_admin($schema),
-			'template'	=> 'mailtype_interlets_transaction',
+			'to' 		=> $this->mail_addr_system->get_admin($schema),
+			'template'	=> 'transaction/to_intersystem_mail_type_admin',
 			'vars'		=> $vars,
 		], 9000);
+
+		$this->mail->queue([
+			'schema'	=> $schema,
+			'to' 		=> $this->mail_addr_system->get_admin($schema),
+			'template'	=> 'transaction/to_intersystem_mail_type_user',
+			'vars'		=> array($vars, [
+				'user'	=> $from_user,
+			]),
+		], 9010);
 	}
 
 	public function queue(

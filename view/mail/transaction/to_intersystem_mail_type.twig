@@ -20,6 +20,48 @@
 
 {% endblock text_content_explain %}
 
+{%- block html_amount_explain -%}
+<p>
+{{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%amount%': transaction.amount,
+    '%currency%': config('currency', schema),
+    '%dec_hours%': amount_time.dec_hours,
+    '%to_user%': transaction.real_to
+}) -}}
+</p>
+<p>
+{{- 'transaction_to_intersystem_mail_type.amount_dec_explain'|trans({
+    '%dec_hours%': amount_time.dec_hours
+}) -}}
+</p>
+<p>
+{{ 'label.hours'|trans }}:&nbsp;<strong>{{- amount_time.hours -}}</strong>
+{{ 'label.minutes'|trans }}:&nbsp;<strong>{{- amount_time.minutes -}}</strong>
+{{ 'label.seconds'|trans }}:&nbsp;<strong>{{- amount_time.seconds -}}</strong>
+</p>
+{%- endblock html_amount_explain -%}
+
+{% block text_amount_explain %}
+
+{{ 'transaction_to_intersystem_mail_type.amount_explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%amount%': transaction.amount,
+    '%currency%': config('currency', schema),
+    '%dec_hours%': amount_time.dec_hours,
+    '%to_user%': transaction.real_to
+}) }}
+
+{{ 'transaction_to_intersystem_mail_type.amount_dec_explain'|trans({
+    '%dec_hours%': amount_time.dec_hours
+}) }}
+
+{{ 'label.hours'|trans }}: {{ amount_time.hours }}
+{{ 'label.minutes'|trans }}: {{ amount_time.minutes }}
+{{ 'label.seconds'|trans }}: {{ amount_time.seconds }}
+
+{% endblock text_amount_explain %}
+
 {%- block html_trans_id -%}
 <p>
 {{- 'label.transaction_id'|trans -}}

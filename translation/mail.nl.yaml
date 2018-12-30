@@ -7,10 +7,13 @@ label:
   email: E-mail
   from: Van
   full_name: Volledige Naam
+  hours: Uren
   link: Link
   login: Login
+  minutes: Minuten
   password: Paswoord
   postcode: Postcode
+  seconds: Seconden
   to: Naar
   total: Totaal
   transaction_id: Transactie ID
@@ -159,6 +162,18 @@ transaction_intersystem:
 transaction_to_intersystem_mail_type:
   subject: >-
     Actie gevraagd! Intersysteem transactie van %system_name% naar %remote_system_name%
+  explain: >-
+    Een interSysteem transactie werd ingegeven in systeem %system_name%.
+    Deze transactie dient verwerkt te worden in je eigen systeem.
+  amount_explain: >-
+    %system_name% is een op tijd gebaseerd muntsysteem.
+    %amount% %currency% komt overeen met %dec_hours% decimale uren.
+    Om je eigen systeem in balans te brengen met deze interSysteem
+    transactie dien je het equivalent van %dec_hours% decimale uren
+    in je eigen munteenheid over te maken aan %real_to%
+    van een interSysteem rekening in je systeem.
+  amount_dec_explain: >-
+    %dec_hours% decimale uren stemt overeen met
 transaction_to_intersystem_mail_type_admin:
   subject: >-
     Kopie van bericht, interSysteem transactie van %system_name% naar %remote_system_name%
