@@ -1,6 +1,6 @@
 # eLAND
 
-![eLAND](docs/img/eland-w200.png)
+![eLAND](docs/img/eland-c-800.png)
 
 Web Application for Community Currency Systems
 
