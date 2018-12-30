@@ -1,4 +1,4 @@
-{% extends 'mail/base.twig' %}
+{% extends 'mail/base_user.twig' %}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -51,10 +51,5 @@
 {{ 'account_activation.change_profile'|trans }}
 {% endblock text_content %}
 
-{%- block html_support -%}
-{%- include 'mail/include/support.html.twig' -%}
-{%- endblock -%}
-
-{% block text_support %}
-{% include 'mail/include/support.text.twig' %}
-{% endblock %}
+{%- block html_account_info -%}{%- endblock -%}
+{% block text_account_info %}{% endblock %}

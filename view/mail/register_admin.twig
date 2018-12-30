@@ -1,4 +1,4 @@
-{% extends 'mail/base.twig' %}
+{% extends 'mail/base_admin.twig' %}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -39,11 +39,3 @@
 {{ 'label.link'|trans }}: {{ mail_url('users', {'id': user.id}, schema) }}
 
 {% endblock text_content %}
-
-{% block html_unsubscribe -%}
-{%- include 'mail/unsubscribe/admin.html.twig' -%}
-{%- endblock html_unsubscribe %}
-
-{% block text_unsubscribe %}
-{% include 'mail/unsubscribe/admin.text.twig' %}
-{% endblock text_unsubscribe %}

@@ -1,4 +1,4 @@
-{%- extends 'mail/base.twig' -%}
+{%- extends 'mail/base_admin.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -85,11 +85,3 @@
 {{ transaction.description }}
 
 {% endblock text_content %}
-
-{% block html_unsubscribe -%}
-{%- include 'mail/unsubscribe/admin.html.twig' -%}
-{%- endblock html_unsubscribe %}
-
-{% block text_unsubscribe %}
-{% include 'mail/unsubscribe/admin.text.twig' %}
-{% endblock text_unsubscribe %}

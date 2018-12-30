@@ -1,4 +1,4 @@
-{%- extends 'mail/base.twig' -%}
+{%- extends 'mail/base_user.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -105,19 +105,3 @@
 {% block text_trans_id %}{% endblock %}
 
 {% endblock text_content %}
-
-{% block html_account_info -%}
-{%- include 'mail/include/account_info.html.twig' -%}
-{% endblock -%}
-
-{% block text_account_info %}
-{% include 'mail/include/account_info.text.twig' %}
-{% endblock %}
-
-{%- block html_support -%}
-{%- include 'mail/include/support.html.twig' -%}
-{%- endblock -%}
-
-{% block text_support %}
-{% include 'mail/include/support.text.twig' %}
-{% endblock %}
