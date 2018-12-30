@@ -110,7 +110,7 @@ register_admin:
     in via de website
 register_success:
   subject: Je inschrijving bij %system_name%
-news_admin_approve:
+news_approve_admin:
   subject: >-
     Een Nieuwsbericht wacht op goedkeuring
   title: >-

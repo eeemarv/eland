@@ -1,0 +1,40 @@
+{% extends 'mail/base/news_admin.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'news_approve_admin.subject'|trans -}}
+{%- endblock subject_line %}
+
+{% block html_content %}
+
+<h3>
+    {{- 'news_approve_admin.title'|trans -}}
+</h3>
+
+<p>
+    {{- 'news_approve_admin.message'|trans({
+        '%subject%': news.headline
+    }) -}}
+</p>
+
+<p>
+    <a href="{{- mail_url('news', {'id': news.id}, schema) -}}">
+        {{- 'news_approve_admin.action'|trans -}}
+    </a>
+</p>
+
+{% endblock html_content %}
+
+{% block text_content %}
+
+{{ 'news_approve_admin.title'|trans|underline }}
+
+{{ 'news_approve_admin.message'|trans({
+    '%subject%': news.headline
+}) }}
+
+{{ 'news_approve_admin.action'|trans }}
+
+{{ mail_url('news', {'id': news.id}, schema) }}
+
+{% endblock text_content %}

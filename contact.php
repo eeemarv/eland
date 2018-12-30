@@ -40,14 +40,14 @@ if ($token)
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'template'	=> 'contact_copy',
+			'template'	=> 'contact/copy',
 			'vars'		=> $vars,
 			'to'		=> [$data['email']],
 		]);
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'template'	=> 'contact',
+			'template'	=> 'contact/support',
 			'vars'		=> $vars,
 			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
 			'reply_to'	=> [$data['email']],
@@ -135,7 +135,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to' 		=> [$email],
-			'template'	=> 'contact_confirm',
+			'template'	=> 'contact/confirm',
 			'vars'		=> $vars,
 		]);
 

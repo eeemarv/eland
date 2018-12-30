@@ -1,4 +1,4 @@
-{% extends 'mail/base.twig' %}
+{% extends 'mail/base/no_reply.twig' %}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -6,14 +6,6 @@
         '%system_name%': config('systemname', schema)
     }) -}}
 {%- endblock -%}
-
-{% block html_pretext -%}
-    {%- include 'mail/include/no_reply.html.twig' -%}
-{%- endblock -%}
-
-{% block text_pretext %}
-{% include 'mail/include/no_reply.text.twig' %}
-{% endblock %}
 
 {% block html_content -%}
     <p>

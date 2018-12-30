@@ -162,7 +162,7 @@ if ($token)
 			'schema'		=> $app['tschema'],
 			'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'vars'			=> $vars,
-			'template'		=> 'register_admin',
+			'template'		=> 'register/admin',
 		], 8000);
 
 		$map_template_vars = [
@@ -292,7 +292,7 @@ if ($submit)
 			'schema'	=> $app['tschema'],
 			'to' 		=> [$reg['email']],
 			'vars'		=> $vars,
-			'template'	=> 'register_confirm',
+			'template'	=> 'register/confirm',
 		], 10000);
 
 		$app['alert']->success('Open je E-mailbox en klik op de
