@@ -4785,34 +4785,27 @@ function get_dd(string $str):string
 
 function send_activation_mail(string $password, array $user):void
 {
+	// array user must contain id and mail (if mail addres exists)
+
 	global $app;
 
 	$vars = [
-		'account_name'	=> link_user($user['id'], $app['tschema'], false),
-		'account_url'	=> $app['base_url'] . '/users.php?id=' . $user['id'],
-		'user_mail'		=> $user['mail'],
-		'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
+		'user'			=> $user,
+		'password'		=> $password,
 	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_system']->get_admin($app['tschema']),
 		'vars'		=> $vars,
-		'template'	=> 'account_activation_admin',
+		'template'	=> 'account_activation/admin',
 	], 5000);
-
-	$vars = [
-		'account_code'	=> $user['letscode'],
-		'password'		=> $password,
-		'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
-		'support_url'	=> $app['base_url'] . '/support.php?src=p',
-	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
 		'reply_to' 	=> $app['mail_addr_system']->get_support($app['tschema']),
-		'template'	=> 'account_activation',
+		'template'	=> 'account_activation/user',
 		'vars'		=> $vars,
 	], 5000);
 }

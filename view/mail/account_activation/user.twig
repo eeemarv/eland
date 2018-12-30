@@ -21,7 +21,7 @@
 })|raw -}}
 </p>
 <p>
-{{- 'label.login'|trans -}}:&nbsp;<strong>{{- account_code -}}</strong>
+{{- 'label.login'|trans -}}:&nbsp;<strong>{{- account_code(user.id, schema) -}}</strong>
 </p>
 <p>
 {{- 'label.password'|trans -}}:&nbsp;<strong>{{- password -}}</strong>
@@ -44,7 +44,7 @@
     '%base_url%': base_url(schema)
 }) }}
 
-{{ 'label.login'|trans }}: {{ account_code }}
+{{ 'label.login'|trans }}: {{ account_code(user.id, schema) }}
 
 {{ 'label.password'|trans }}: {{ password }}
 
