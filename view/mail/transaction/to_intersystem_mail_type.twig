@@ -2,32 +2,54 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-{{- 'transaction_to_intersystem_mail_type.subject'|trans{
+{{- 'transaction_to_intersystem_mail_type.subject'|trans({
     '%system_name%': config('systemname', schema),
     '%remote_system_name%': to_fullname
-} -}}
+}) -}}
 {%- endblock subject_line -%}
+
+{%- block html_pretext -%}{%- endblock -%}
+{% block text_pretext %}{% endblock %}
 
 {%- block html_content_explain -%}
 <p>
-{{- 'to_intersystem_mail_type.explain'|trans -}}
+{{- 'transaction_to_intersystem_mail_type.explain'|trans({
+    '%system_name%': config('systemname', schema)
+}) -}}
 </p>
 {%- endblock html_content_explain -%}
 
 {% block text_content_explain %}
 
-{{ 'to_intersystem_mail_type.explain'|trans }}
+{{ 'transaction_to_intersystem_mail_type.explain'|trans({
+    '%system_name%': config('systemname', schema)
+}) }}
 
 {% endblock text_content_explain %}
 
+{%- block html_from -%}
+{{- account(from_user_id, schema)
+    ~ ' ['
+    ~ config('systemname', schema)
+    ~ ']' -}}
+{%- endblock -%}
+
+{% block text_from %}
+{{ account(from_user_id, schema)
+    ~ ' ['
+    ~ config('systemname', schema)
+    ~ ']' }}
+{% endblock %}
+
 {%- block html_amount_explain -%}
+{%- block html_amount_time_explain -%}
 <p>
 {{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
     '%system_name%': config('systemname', schema),
     '%amount%': transaction.amount,
     '%currency%': config('currency', schema),
     '%dec_hours%': amount_time.dec_hours,
-    '%to_user%': transaction.real_to
+    '%to_account%': transaction.real_to
 }) -}}
 </p>
 <p>
@@ -35,26 +57,33 @@
     '%dec_hours%': amount_time.dec_hours
 }) -}}
 </p>
+{%- endblock html_amount_time_explain -%}
 <p>
 {{ 'label.hours'|trans }}:&nbsp;<strong>{{- amount_time.hours -}}</strong>
+</p>
+<p>
 {{ 'label.minutes'|trans }}:&nbsp;<strong>{{- amount_time.minutes -}}</strong>
+</p>
+<p>
 {{ 'label.seconds'|trans }}:&nbsp;<strong>{{- amount_time.seconds -}}</strong>
 </p>
 {%- endblock html_amount_explain -%}
 
 {% block text_amount_explain %}
+{% block text_amount_time_explain %}
 
 {{ 'transaction_to_intersystem_mail_type.amount_explain'|trans({
     '%system_name%': config('systemname', schema),
     '%amount%': transaction.amount,
     '%currency%': config('currency', schema),
     '%dec_hours%': amount_time.dec_hours,
-    '%to_user%': transaction.real_to
+    '%to_account%': transaction.real_to
 }) }}
 
 {{ 'transaction_to_intersystem_mail_type.amount_dec_explain'|trans({
     '%dec_hours%': amount_time.dec_hours
 }) }}
+{% endblock text_amount_time_explain %}
 
 {{ 'label.hours'|trans }}: {{ amount_time.hours }}
 {{ 'label.minutes'|trans }}: {{ amount_time.minutes }}
@@ -78,3 +107,14 @@
 {{ transaction.transid }}
 
 {% endblock text_trans_id %}
+
+{%- block html_account_info -%}{%- endblock -%}
+{% block text_account_info %}{% endblock %}
+
+{%- block html_support -%}
+{% include 'mail/include/support_reply_admin.html.twig' -%}
+{%- endblock -%}
+
+{% block text_support %}
+{% include 'mail/include/support_reply_admin.text.twig' %}
+{% endblock %}

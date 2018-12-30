@@ -8,7 +8,15 @@
     }) -}}
 {%- endblock subject_line -%}
 
-{% block html_content %}
+{% block html_pretext -%}
+{% include 'mail/include/no_reply_auto.html.twig' -%}
+{%- endblock html_pretext %}
+
+{% block text_pretext %}
+{% include 'mail/include/no_reply_auto.text.twig' %}
+{% endblock text_pretext %}
+
+{% block html_content -%}
 
 <h3>
     {%- block html_title -%}

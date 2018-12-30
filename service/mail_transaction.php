@@ -85,7 +85,7 @@ class mail_transaction
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type_user',
-			'vars'		=> array($vars, [
+			'vars'		=> array_merge($vars, [
 				'user'	=> $from_user,
 			]),
 		], 9010);

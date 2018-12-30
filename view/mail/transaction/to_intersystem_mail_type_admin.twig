@@ -1,22 +1,56 @@
-{% extends 'mail/transaction/to_intersystem_mail_type_admin.subject.twig' %}
+{% extends 'mail/transaction/to_intersystem_mail_type.twig' %}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-{{- 'transaction_to_intersystem_mail_type_admin.subject'|trans{
+{{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
     '%system_name%': config('systemname', schema),
     '%remote_system_name%': to_fullname
-} -}}
+}) -}}
 {%- endblock subject_line -%}
 
+{%- block html_pretext -%}
+{%- include 'mail/include/no_reply_auto.html.twig' -%}
+<p><i>
+{{- 'transaction_to_intersystem_mail_type_admin.explain'|trans({
+    '%remote_system_name%': to_fullname
+}) -}}
+</p></i>
+{%- endblock html_pretext -%}
 
+{% block text_pretext %}
+{% include 'mail/include/no_reply_auto.text.twig' %}
 
+{{ 'transaction_to_intersystem_mail_type_admin.explain'|trans({
+    '%remote_system_name%': to_fullname
+}) }}
 
+{% endblock text_pretext %}
 
+{%- block html_content_explain -%}{%- endblock -%}
+{% block text_content_explain %}{% endblock %}
 
+{%- block html_amount_time_explain -%}
+<p>
+{{- 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
+    '%amount%': transaction.amount,
+    '%currency%': config('currency', schema),
+    '%dec_hours%': amount_time.dec_hours
+}) -}}
+</p>
+{%- endblock html_amount_time_explain -%}
 
+{% block text_amount_time_explain %}
 
+{{ 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
+    '%amount%': transaction.amount,
+    '%currency%': config('currency', schema),
+    '%dec_hours%': amount_time.dec_hours
+}) }}
 
+{% endblock text_amount_time_explain %}
 
+{%- block html_support -%}{%- endblock -%}
+{% block text_support %}{% endblock %}
 
 {% block html_unsubscribe -%}
 {%- include 'mail/unsubscribe/admin.html.twig' -%}

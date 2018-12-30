@@ -35,6 +35,9 @@ b:
     explain: >-
       Gebruik het %link_open%Help/Supportformulier
       %link_close% als je een vraag of probleem hebt
+    reply_admin: >-
+      Een reply op dit bericht brengt je bij de
+      administratie van %system_name%
   support_subscribed: >-
 
   email_validated: >-
@@ -163,25 +166,27 @@ transaction_to_intersystem_mail_type:
   subject: >-
     Actie gevraagd! Intersysteem transactie van %system_name% naar %remote_system_name%
   explain: >-
-    Een interSysteem transactie werd ingegeven in systeem %system_name%.
-    Deze transactie dient verwerkt te worden in je eigen systeem.
+    Een interSysteem transactie werd ingegeven in Systeem %system_name%.
+    Deze transactie dient verwerkt te worden in je eigen Systeem.
   amount_explain: >-
     %system_name% is een op tijd gebaseerd muntsysteem.
-    %amount% %currency% komt overeen met %dec_hours% decimale uren.
-    Om je eigen systeem in balans te brengen met deze interSysteem
+    %amount% %currency% stemt overeen met %dec_hours% decimale uren.
+    Om je eigen Systeem in balans te brengen met deze interSysteem
     transactie dien je het equivalent van %dec_hours% decimale uren
-    in je eigen munteenheid over te maken aan %real_to%
-    van een interSysteem rekening in je systeem.
+    in je eigen munteenheid over te maken aan account %to_account%
+    vanuit een interSysteem rekening in je Systeem.
   amount_dec_explain: >-
     %dec_hours% decimale uren stemt overeen met
 transaction_to_intersystem_mail_type_admin:
   subject: >-
     Kopie van bericht, interSysteem transactie van %system_name% naar %remote_system_name%
-  admin_explain: >-
-    Deze transactie werd ingegeven in je eigen systeem %system_name%
-    en ze moet verwerkt worden door de
-
-
+  explain: >-
+    Dit is een kopie van het interSysteem bericht dat verstuurd werd naar
+    de administratie van %remote_system_name%. De administratie van dit andere
+    Systeem dient deze transactie te verwerken.
+  amount_time_explain: >-
+    %amount% %currency% stemt overeen met %dec_hours% decimale uren, wat
+    overeenstemt met
 contact_admin:
   subject: Bericht van contactformulier
 news_review_admin:
