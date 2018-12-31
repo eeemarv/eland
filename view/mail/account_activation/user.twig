@@ -10,14 +10,14 @@
 {% block html_content -%}
 <p>
 {{- 'account_activation.welcome'|trans({
-    '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+    '%link_open%': base_link_open(schema),
     '%link_close%': '</a>',
     '%system_name%': config('systemname', schema)
 })|raw -}}
 </p>
 <p>
 {{- 'account_activation.login'|trans({
-    '%base_url%': '<a href="' ~ base_url(schema) ~ '">' ~ base_url(schema) ~ '</a>',
+    '%base_url%': base_link_open(schema) ~ base_url(schema) ~ '</a>',
 })|raw -}}
 </p>
 <p>

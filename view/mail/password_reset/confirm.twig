@@ -9,9 +9,7 @@
 
 <p>
     {{- 'password_reset_confirm.html_msg'|trans({
-        '%link_open%': '<a href="'
-            ~ mail_url('pwreset', {'token': token}, schema)
-            ~ '">',
+        '%link_open%': mail_link_open('pwreset', {'token': token}, schema),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -24,7 +22,7 @@
 <p>
     {{- 'password_reset_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+        '%link_open%': base_link_open(schema),
         '%link_close%': '</a>'
     })|raw -}}
 </p>

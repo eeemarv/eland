@@ -10,9 +10,7 @@
 
 <p>
     {{- 'register_confirm.html_msg'|trans({
-        '%link_open%': '<a href="'
-            ~ mail_url('register', {'token': token}, schema)
-            ~ '">',
+        '%link_open%': mail_link_open('register', {'token': token}, schema),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -24,9 +22,7 @@
 <p>
     {{- 'register_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': '<a href="'
-            ~ mail_url('register', {}, schema)
-            ~ '">',
+        '%link_open%': mail_link_open('register', {}, schema),
         '%link_close%': '</a>'
     })|raw -}}
 </p>

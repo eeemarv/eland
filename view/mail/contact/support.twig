@@ -12,7 +12,7 @@
 <hr />
 <p>
     {{- 'contact_support.explain'|trans({
-        '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+        '%link_open%': base_link_open(schema),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}

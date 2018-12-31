@@ -35,4 +35,17 @@ class mail_url
 
 		return $out;
 	}
+
+	public function get_link_open(
+		string $route,
+		array $params,
+		string $schema
+	):string
+	{
+		$out = '<a href="';
+		$out .= $this->get($route, $params, $schema);
+		$out .= '">';
+
+		return $out;
+	}
 }

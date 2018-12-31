@@ -22,4 +22,13 @@ class base_url
 	{
 		return $this->protocol . $this->groups->get_host($schema);
 	}
+
+	public function get_link_open(string $schema)
+	{
+		$out = '<a href="';
+		$out .= $this->get($schema);
+		$out .= '">';
+
+		return $out;
+	}
 }
