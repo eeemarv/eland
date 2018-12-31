@@ -10,7 +10,7 @@
     {{- 'support.explain'|trans({
         '%link_open%': base_link_open(schema),
         '%link_close%': '</a>',
-        '%system_name%': config('systemname', schema)
+        '%system_name%': config('systemname', schema),
         '%account%': account(user.id, schema)
     })|raw -}}
 </p>
@@ -28,25 +28,24 @@
 <p>
     {{- message -}}
 </p>
+<hr />
 {%- endblock html_content -%}
 
 {% block text_content %}
 
 {{ 'support.explain'|trans({
-    '%link_open%': base_link_open(schema),
-    '%link_close%': '</a>',
-    '%system_name%': config('systemname', schema)
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config('systemname', schema),
     '%account%': account(user.id, schema)
 }) }}
-
 {% if can_reply %}
 {{ 'support.explain_reply'|trans }}
 {% else %}
 {{ 'support.explain_no_replay'|trans({
-    '%link_open%': ''
+    '%link_open%': '',
     '%link_close%': ''
 }) }}
-
 {{ mail_url('users', {'id': user.id}, schema) }}
 {%- endif -%}
 
@@ -54,4 +53,5 @@
 
 {{ message }}
 
+- - - - - -
 {% endblock text_content %}

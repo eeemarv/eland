@@ -179,7 +179,7 @@ support_copy:
     aan %system_name% via het help/supportformulier
 support:
   subject: >-
-    Bericht van het supportformulier
+    Bericht van het Supportformulier
   explain: >-
     Het bericht hieronder werd ingegeven in het
     supportformulier van %link_open%%system_name%%link_close% door
