@@ -89,8 +89,6 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
-contact_admin:
-  subject: Bericht van contactformulier
 contact_confirm:
   subject: >-
     Bevestig je bericht aan %system_name%
@@ -110,6 +108,7 @@ contact_copy:
     Kopie van je bericht aan %system_name%
   explain: >-
     Het bericht hieronder heb je verzonden aan %system_name%
+    via het contactformulier
 contact_support:
   subject: Bericht van het contactformulier
   explain: >-
@@ -171,6 +170,27 @@ register_confirm:
     van %system_name%%link_close% hebt ingevuld.
 register_success:
   subject: Je inschrijving bij %system_name%
+
+support_copy:
+  subject: >-
+    Kopie van je bericht aan %system_name%
+  explain: >-
+    Het bericht hieronder heb je verzonden
+    aan %system_name% via het help/supportformulier
+support:
+  subject: >-
+    Bericht van het supportformulier
+  explain: >-
+    Het bericht hieronder werd ingegeven in het
+    supportformulier van %link_open%%system_name%%link_close% door
+    gebruiker %account%.
+  explain_reply: >-
+    Je kan dit bericht eventueel direct beantwoorden (Reply).
+  explain_no_reply: >-
+    Omdat de gebruiker geen E-mail adres heeft ingesteld
+    voor haar/zijn account kan je dit bericht niet direct
+    beantwoorden. Kijk in het %link_open%account%link_close%
+    voor eventuele andere contactgegevens.
 
 transaction:
   subject: >-

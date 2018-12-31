@@ -7,30 +7,51 @@
 
 {% block html_content -%}
 <p>
-    {{- message -}}
-</p>
-<hr />
-<p>
     {{- 'support.explain'|trans({
         '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
+        '%account%': account(user.id, schema)
     })|raw -}}
 </p>
-{%- include 'mail/include/sender_info.html.twig' -%}
+<p>
+{%- if can_reply -%}
+    {{- 'support.explain_reply'|trans -}}
+{%- else -%}
+    {{- 'support.explain_no_replay'|trans({
+        '%link_open%': '<a href="' ~ mail_url('users', {'id': user.id}, schema) ~ '">',
+        '%link_close%': '</a>'
+    })|raw -}}
+{%- endif -%}
+</p>
+<hr />
+<p>
+    {{- message -}}
+</p>
 {%- endblock html_content -%}
 
 {% block text_content %}
 
-{{ message }}
+{{ 'support.explain'|trans({
+    '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
+    '%link_close%': '</a>',
+    '%system_name%': config('systemname', schema)
+    '%account%': account(user.id, schema)
+}) }}
+
+{% if can_reply %}
+{{ 'support.explain_reply'|trans }}
+{% else %}
+{{ 'support.explain_no_replay'|trans({
+    '%link_open%': ''
+    '%link_close%': ''
+}) }}
+
+{{ mail_url('users', {'id': user.id}, schema) }}
+{%- endif -%}
 
 - - - - - -
-{{ 'support.explain'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%system_name%': config('systemname', schema)
-})|raw }}
 
-{{ base_url(schema) }}
-{% include 'mail/include/sender_info.text.twig' %}
+{{ message }}
+
 {% endblock text_content %}

@@ -146,7 +146,22 @@ class mail implements queue_interface
 
 		$schema = $data['schema'];
 
-		if (isset($data['reply_to']) && is_array($data['reply_to']) && count($data['reply_to']))
+		if (isset($data['reply_to']))
+		{
+			if (is_array($data['reply_to']))
+			{
+				if (!count($data['reply_to']))
+				{
+					unset($data['reply_to']);
+				}
+			}
+			else
+			{
+				unset($data['reply_to']);
+			}
+		}
+
+		if (isset($data['reply_to']))
 		{
 			$data['from'] = $this->mail_addr_system->get_from($schema);
 		}
@@ -160,9 +175,19 @@ class mail implements queue_interface
 			return;
 		}
 
-		if (!(isset($data['cc']) && is_array($data['cc'] && count($data['cc']))))
+		if (isset($data['cc']))
 		{
-			unset($data['cc']);
+			if (is_array($data['cc']))
+			{
+				if (!count($data['cc']))
+				{
+					unset($data['cc']);
+				}
+			}
+			else
+			{
+				unset($data['cc']);
+			}
 		}
 
 		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';

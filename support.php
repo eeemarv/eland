@@ -37,40 +37,31 @@ if (isset($_POST['zend']))
 			where c.id_user = ?
 				and c.id_type_contact = tc.id', [$app['s_id']]);
 
-		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+		$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 
 		$vars = [
-			'group'	=> $app['template_vars']->get($app['tschema']),
-			'user'	=> [
-				'text'			=> link_user($app['s_id'], $app['tschema'], false),
-				'url'			=> $app['base_url'] . '/users.php?id=' . $app['s_id'],
-				'email'			=> $email,
-			],
-			'contacts'		=> $contacts,
-			'message'		=> $message,
-			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
+			'user'		=> $app['user_cache']->get($app['s_id'], $app['tschema']),
+			'can_reply'	=> count($user_email_ary) ? true : false,
+			'message'	=> $message,
 		];
 
-		$email_ary = [
-			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
-			'template'	=> 'support',
-			'vars'		=> $vars,
-		];
-
-		if ($email)
+		if (count($user_email_ary))
 		{
 			$app['queue.mail']->queue([
 				'schema'	=> $app['tschema'],
-				'template'	=> 'support_copy',
+				'template'	=> 'support/copy',
 				'vars'		=> $vars,
-				'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+				'to'		=> $user_email_ary,
 			], 8500);
-
-			$email_ary['reply_to'] = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 		}
 
-		$app['queue.mail']->queue($email_ary, 8000);
+		$app['queue.mail']->queue([
+			'schema'	=> $app['tschema'],
+			'template'	=> 'support/support',
+			'vars'		=> $vars,
+			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
+			'reply_to'	=> $user_email_ary,
+		], 8000);
 
 		$app['alert']->success('De Support E-mail is verzonden.');
 		redirect_default_page();
