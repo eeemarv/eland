@@ -552,13 +552,14 @@ if ($img_del == 'all' && $id)
 if ($mail && $app['is_http_post'] && $id)
 {
 	$content = $_POST['content'];
-	$cc = $_POST['cc'];
+	$cc = isset($_POST['cc']);
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
 	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
-		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['alert']->error('Je hebt geen rechten om een
+			bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
 	}
 
@@ -582,7 +583,16 @@ if ($mail && $app['is_http_post'] && $id)
 		cancel($id);
 	}
 
-	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+
+	if (!count($reply_ary))
+	{
+		$app['alert']->error('Fout: Je kan geen berichten naar een andere gebruiker
+			verzenden als er geen E-mail adres is ingesteld voor je eigen account.');
+		cancel($id);
+	}
+
+	$sender_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $app['s_schema'] . '.contact c, ' .
 			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
@@ -593,14 +603,13 @@ if ($mail && $app['is_http_post'] && $id)
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($app['tschema']),
+		'sender_contacts'	=> $sender_contacts,
 		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
 		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
 		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
-		'contacts'		=> $contacts,
 		'msg_text'		=> $content,
 		'message'		=> $message,
 	];
@@ -608,11 +617,10 @@ if ($mail && $app['is_http_post'] && $id)
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+		'reply_to'	=> $reply_ary,
 		'template'	=> 'message',
 		'vars'		=> $vars,
 	], 8500);
-
 
 	if ($cc)
 	{

@@ -121,7 +121,7 @@ if ($app['s_admin'])
 if ($user_mail_submit && $id && $app['is_http_post'])
 {
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
-	$user_mail_cc = $_POST['user_mail_cc'] ?? false;
+	$user_mail_cc = isset($_POST['user_mail_cc']);
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
@@ -153,7 +153,16 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		cancel($id);
 	}
 
-	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+
+	if (!count($reply_ary))
+	{
+		$app['alert']->error('Fout: Je kan geen berichten naar andere gebruikers
+			verzenden als er geen E-mail adres is ingesteld voor je eigen account.');
+		cancel($id);
+	}
+
+	$sender_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $app['s_schema'] . '.contact c, ' .
 			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
@@ -162,23 +171,20 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($app['tschema']),
+		'sender_contacts'	=> $sender_contacts,
 		'to_user'		=> link_user($user, $app['tschema'], false),
 		'to_username'	=> $user['name'],
 		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
 		'from_username'	=> $app['session_user']['name'],
 		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
 		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
-		'contacts'		=> $contacts,
 		'msg_text'		=> $user_mail_content,
-		'login_url'		=> $app['base_url'] . '/login.php',
-		'support_url'	=> $app['base_url'] . '/support.php?src=p',
 	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+		'reply_to'	=> $reply_to,
 		'template'	=> 'user',
 		'vars'		=> $vars,
 	], 8000);

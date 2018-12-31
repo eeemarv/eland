@@ -42,7 +42,8 @@ b:
 
   email_validated: >-
     Het E-mail adres werd gevalideerd.
-  footer: "%system_name%"
+  footer: >-
+    %link_open%%system_name%%link_close%
 
 expiration:
   1_day: >-
@@ -237,33 +238,52 @@ transaction_to_intersystem_mail_type_admin:
   amount_time_explain: >-
     %amount% %currency% stemt overeen met %dec_hours% decimale uren, wat
     overeenstemt met
+user_msg:
+  subject: >-
+    Bericht van %from_account%
+  explain: >-
+    Gebruiker %link_from_account_open%%from_account%%link_close%
+    van Systeem %link_system_open%%system_name%%link_close% zendt
+    je het bericht hieronder. Om te reageren kan
+    je deze E-mail gewoon beantwoorden of één van de contactgegevens
+    gebruiken onder het bericht.
+user_msg_copy: >-
+  subject: >-
+    Kopie van je bericht aan %to_account%
+  explain: >-
+    Dit is een kopie van het bericht dat je verstuurd hebt
+    naar %link_open%%to_account%%link_close% via de
+    webtoepassing.
 
 overview:
   offers_and_wants: >-
-    Vraag en aanbod
+    Vraag en Aanbod
   offers_and_wants_explain: >-
-    Deze lijst bevat vraag en aanbod dat de afgelopen %saldofreqdays%
+    Deze lijst bevat vraag en aanbod dat de afgelopen %days%
     dagen online is geplaatst.
   offers_and_wants_none: >-
     Er werd geen nieuw vraag of aanbod online geplaatst.
-  interlets_offers_and_wants: >-
-    Recent interLETS vraag en aanbod
+  intersystem_offers_and_wants: >-
+    Recent InterSysteem Vraag en Aanbod
   docs: >
-    Nieuwe documenten
+    Nieuwe Documenten
   docs_none: >-
     Er zijn geen nieuwe documenten.
-  new_users: Nieuwe leden
+  new_users: Nieuwe Leden
   new_users_none: >-
     Momenteel zijn er geen nieuwe leden.
   new_users_no_recent: >-
     Er zijn geen nieuwe leden bijgekomen.
-  leaving_users: Uitstappers
+  leaving_users: >-
+    Uitstappers
   leaving_users_none: >-
     Momenteel zijn er geen uitstappende leden.
   leaving_users_no_recent: >-
     Er zijn geen extra uitstappende leden.
-  transactions: Recente transacties
+  transactions: >-
+    Recente Transacties
   transactions_explain: >-
-    Deze lijst toont de transacties van de laatste %saldofreqdays% dagen.
+    Deze lijst toont de transacties van
+    de laatste %days% dagen.
   transactions_none: >-
     Er zijn geen recente transacties.

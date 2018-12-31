@@ -22,8 +22,10 @@
         {%- if schema is defined %}
             <p>
                 {{- 'b.footer'|trans({
+                    '%link_open%': base_link_open(schema),
+                    '%link_close%': '</a>',
                     '%system_name%': config('systemname', schema)
-                }) -}}
+                })|raw -}}
             </p>
         {%- endif -%}
     {%- endblock html_footer -%}
@@ -40,8 +42,11 @@
         {%- if schema is defined %}
 
 {{ 'b.footer'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
     '%system_name%': config('systemname', schema)
-}) -}}
-        {%- endif -%}
+}) }}
+{{ base_url(schema) }}
+        {% endif -%}
     {%- endblock text_footer -%}
 {%- endblock text_body -%}
