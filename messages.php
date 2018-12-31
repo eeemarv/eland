@@ -2758,7 +2758,7 @@ else if ($v_list)
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';
-			echo '<form method="post" class="form-horizontal">';
+			echo '<form method="post">';
 			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
 			echo '<input type="submit" value="Aanpassen" ';
 			echo 'name="access_submit" class="btn btn-primary">';

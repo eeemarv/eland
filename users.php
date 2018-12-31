@@ -2667,16 +2667,16 @@ if ($id)
 		|| (!$s_owner && $user['status'] !== 7
 			&& !($app['s_guest'] && $app['s_group_self'])))
 	{
-			$tus = ['add' => 1, 'tuid' => $id];
+		$tus = ['add' => 1, 'tuid' => $id];
 
-			if (!$app['s_group_self'])
-			{
-				$tus['tus'] = $app['tschema'];
-			}
+		if (!$app['s_group_self'])
+		{
+			$tus['tus'] = $app['tschema'];
+		}
 
-			$top_buttons .= aphp('transactions', $tus, 'Transactie',
-				'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
-				'exchange', true, false, $app['s_schema']);
+		$top_buttons .= aphp('transactions', $tus, 'Transactie',
+			'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
+			'exchange', true, false, $app['s_schema']);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -2793,6 +2793,7 @@ if ($id)
 	if ($app['s_admin'] || $s_owner)
 	{
 		$attr = ['id'	=> 'btn_remove'];
+
 		if (!$user['PictureFile'])
 		{
 			$attr['style'] = 'display:none;';
@@ -4060,7 +4061,8 @@ if ($v_list || $v_extended || $v_tiles)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="q" name="q" value="' . $q . '" ';
 	echo 'placeholder="Zoeken">';
 	echo '</div>';
 	echo '</div>';
