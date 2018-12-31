@@ -64,6 +64,33 @@ subscribed:
     adres vermeld staat als Support E-mail
     adres in de %link_open%instellingen%link_close%.
 
+account_activation:
+  subject: >-
+    Activatie van je Account bij %system_name%
+  welcome: >-
+    Welkom bij %link_open%%system_name%%link_close%.
+  login: >-
+    Surf naar %base_url% en meld je aan met
+    onderstaande gegevens.
+  change_profile: >-
+    Je gebruikersgegevens, je vraag en aanbod kan je
+    zelf online bewerken.
+account_activation_admin:
+  subject: >-
+    Activatie Account %account_name%
+  message: >-
+    Account %link_open%%account_name%%link_close%
+    werd geactiveerd.
+  email_sent:
+    Een E-mail met nieuw paswoord werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail met paswoord verzonden naar
+    de gebruiker omdat geen E-mail adres werd ingesteld
+    voor dit account.
+
+contact_admin:
+  subject: Bericht van contactformulier
 contact_confirm:
   subject: >-
     Bevestig je bericht aan %system_name%
@@ -83,46 +110,26 @@ contact_copy:
     Kopie van je bericht aan %system_name%
   explain: >-
     Het bericht hieronder heb je verzonden aan %system_name%
-contact:
+contact_support:
   subject: Bericht van het contactformulier
   explain: >-
     Dit bericht werd ingegeven in het
     contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
-register_confirm:
-  subject: Bevestig je registratie bij %system_name%
-  html_msg: >-
-    %link_open%Klik hier om je registratie
-    te bevestigen.%link_close%
-  text_msg: >-
-    Klik op de link hieronder om je registratie
-    te bevestigen.
-  explain: >-
-    Gelieve deze mail te negeren wanneer je niet
-    zelf %link_open%het registratieformulier
-    van %system_name%%link_close% hebt ingevuld.
-register_admin:
+
+news_review_admin:
   subject: >-
-    "Nieuwe Inschrijving: %full_name%"
-  title: Notificatie Nieuwe Inschrijving
-  msg: >-
-    De volgende persoon schreef zich
-    in via de website
-register_success:
-  subject: Je inschrijving bij %system_name%
-news_approve_admin:
-  subject: >-
-    Een Nieuwsbericht wacht op goedkeuring
+    Beoordeel Nieuwsbericht "%name%"
   title: >-
     Moderatie Nieuwsbericht
   message: >-
-    Een lid gaf een nieuwsbericht in met de
-    titel "%subject%". Dit bericht wacht op
-    goedkeuring.
+    Een nieuwsbericht met titel "%name%"
+    werd ingegeven in het Systeem.
   action: >-
-    Ga naar het nieuwsbericht om het goed te
-    keuren of eventueel te verwijderen.
-password_reset:
+    Ga naar het bericht om het (al dan niet)
+    goed te keuren voor publicatie.
+
+password_reset_user:
   subject: >-
     Nieuw Paswoord voor je Account
   title: >-
@@ -142,6 +149,29 @@ password_reset_confirm:
     Gelieve deze E-mail te negeren wanneer je niet
     zelf hebt een paswoord reset hebt aangevraagd
     bij %link_open%%system_name%%link_close%.
+
+register_admin:
+  subject: >-
+    "Nieuwe Inschrijving: %full_name%"
+  title: Notificatie Nieuwe Inschrijving
+  msg: >-
+    De volgende persoon schreef zich
+    in via de website
+register_confirm:
+  subject: Bevestig je registratie bij %system_name%
+  html_msg: >-
+    %link_open%Klik hier om je registratie
+    te bevestigen.%link_close%
+  text_msg: >-
+    Klik op de link hieronder om je registratie
+    te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf %link_open%het registratieformulier
+    van %system_name%%link_close% hebt ingevuld.
+register_success:
+  subject: Je inschrijving bij %system_name%
+
 transaction:
   subject: >-
     Transactie van %from_account% naar %to_account%
@@ -187,14 +217,7 @@ transaction_to_intersystem_mail_type_admin:
   amount_time_explain: >-
     %amount% %currency% stemt overeen met %dec_hours% decimale uren, wat
     overeenstemt met
-contact_admin:
-  subject: Bericht van contactformulier
-news_review_admin:
-  subject: Beoordeling nieuwsbericht "%name%"
-  message: >-
-    Een nieuw nieuwsbericht met titel "%name%"
-    werd ingegeven op de website. Ga naar het bericht
-    om het (al dan niet) goed te keuren voor publicatie.
+
 overview:
   offers_and_wants: >-
     Vraag en aanbod
@@ -224,27 +247,3 @@ overview:
     Deze lijst toont de transacties van de laatste %saldofreqdays% dagen.
   transactions_none: >-
     Er zijn geen recente transacties.
-account_activation:
-  subject: >-
-    Activatie van je Account bij %system_name%
-  welcome: >-
-    Welkom bij %link_open%%system_name%%link_close%.
-  login: >-
-    Surf naar %base_url% en meld je aan met
-    onderstaande gegevens.
-  change_profile: >-
-    Je gebruikersgegevens, je vraag en aanbod kan je
-    zelf online bewerken.
-account_activation_admin:
-  subject: >-
-    Activatie Account %account_name%
-  message: >-
-    Account %link_open%%account_name%%link_close%
-    werd geactiveerd.
-  email_sent:
-    Een E-mail met nieuw paswoord werd verzonden
-    naar de gebruiker.
-  no_email_sent:
-    Er werd GEEN E-mail met paswoord verzonden naar
-    de gebruiker omdat geen E-mail adres werd ingesteld
-    voor dit account.

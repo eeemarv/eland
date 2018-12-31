@@ -127,7 +127,7 @@ if ($add && $submit && !count($errors))
 			$app['queue.mail']->queue([
 				'schema'	=> $app['tschema'],
 				'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
-				'template'	=> 'news/approve_admin',
+				'template'	=> 'news/review_admin',
 				'vars'		=> $vars,
 			], 7000);
 

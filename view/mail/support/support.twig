@@ -2,7 +2,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {{- 'contact_support.subject'|trans -}}
+    {{- 'support.subject'|trans -}}
 {%- endblock -%}
 
 {% block html_content -%}
@@ -11,7 +11,7 @@
 </p>
 <hr />
 <p>
-    {{- 'contact_support.explain'|trans({
+    {{- 'support.explain'|trans({
         '%link_open%': '<a href="' ~ base_url(schema) ~ '">',
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
@@ -25,7 +25,7 @@
 {{ message }}
 
 - - - - - -
-{{ 'contact_support.explain'|trans({
+{{ 'support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
