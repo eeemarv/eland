@@ -4,8 +4,12 @@ $page_access = 'user';
 
 require_once __DIR__ . '/include/web.php';
 
+$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+$can_reply = count($user_email_ary) ? true : false;
+
 if (isset($_POST['zend']))
 {
+	$cc = isset($_POST['cc']);
 	$message = $_POST['message'] ?? '';
 	$message = trim($message);
 
@@ -31,21 +35,13 @@ if (isset($_POST['zend']))
 
 	if(!count($errors))
 	{
-		$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-			from ' . $app['tschema'] . '.contact c, ' .
-				$app['tschema'] . '.type_contact tc
-			where c.id_user = ?
-				and c.id_type_contact = tc.id', [$app['s_id']]);
-
-		$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
-
 		$vars = [
 			'user'		=> $app['user_cache']->get($app['s_id'], $app['tschema']),
-			'can_reply'	=> count($user_email_ary) ? true : false,
+			'can_reply'	=> $can_reply,
 			'message'	=> $message,
 		];
 
-		if (count($user_email_ary))
+		if ($cc && $can_reply)
 		{
 			$app['queue.mail']->queue([
 				'schema'	=> $app['tschema'],
@@ -81,13 +77,18 @@ else
 	}
 	else
 	{
-		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
-
-		if (!count($email))
+		if (!$can_reply)
 		{
 			$app['alert']->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
 		}
 	}
+
+	$cc = true;
+}
+
+if (!$can_reply)
+{
+	$cc = false;
 }
 
 if (!$app['config']->get('mailenabled', $app['tschema']))
@@ -114,6 +115,32 @@ echo '<label for="message">Je Bericht</label>';
 echo '<textarea name="message" class="form-control" id="message" rows="4">';
 echo $message;
 echo '</textarea>';
+echo '</div>';
+
+echo '<div class="form-group';
+echo $can_reply ? '' : ' checkbox disabled has-warning';
+echo '">';
+echo '<label for="cc" class="control-label">';
+echo '<input type="checkbox" name="cc" ';
+echo $can_reply ? '' : 'disabled ';
+echo 'id="cc" value="1"';
+echo $cc ? ' checked="checked"' : '';
+echo '> ';
+
+if ($can_reply)
+{
+	echo 'Stuur een kopie naar mijzelf.';
+}
+else
+{
+	echo 'Een kopie van je bericht naar ';
+	echo 'jezelf sturen is ';
+	echo 'niet mogelijk want er is ';
+	echo 'geen E-mail adres ingesteld voor ';
+	echo 'je account.';
+}
+
+echo '</label>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';

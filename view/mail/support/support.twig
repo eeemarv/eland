@@ -18,7 +18,7 @@
 {%- if can_reply -%}
     {{- 'support.explain_reply'|trans -}}
 {%- else -%}
-    {{- 'support.explain_no_replay'|trans({
+    {{- 'support.explain_no_reply'|trans({
         '%link_open%': mail_link_open('users', {'id': user.id}, schema),
         '%link_close%': '</a>'
     })|raw -}}
@@ -42,12 +42,12 @@
 {% if can_reply %}
 {{ 'support.explain_reply'|trans }}
 {% else %}
-{{ 'support.explain_no_replay'|trans({
+{{ 'support.explain_no_reply'|trans({
     '%link_open%': '',
     '%link_close%': ''
 }) }}
 {{ mail_url('users', {'id': user.id}, schema) }}
-{%- endif -%}
+{% endif %}
 
 - - - - - -
 
