@@ -77,7 +77,9 @@ if ($token)
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 
-	$app['assets']->add('generate_password.js');
+	$app['assets']->add([
+		'generate_password.js',
+	]);
 
 	require_once __DIR__ . '/include/header.php';
 

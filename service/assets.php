@@ -165,10 +165,8 @@ class assets
 		$this->cache->set(self::CACHE_HASH_KEY, $this->file_hash_ary);
 	}
 
-	public function add($asset_s):void
+	public function add(array $asset_ary):void
 	{
-		$asset_ary = is_array($asset_s) ? $asset_s : [$asset_s];
-
 		foreach($asset_ary as $asset_name)
 		{
 			if (isset(self::ASSETS_ARY[$asset_name]))
@@ -207,15 +205,26 @@ class assets
 			{
 				$include = $this->rootpath . 'gfx/' . $asset_name . '?';
 				$include .= $this->file_hash_ary[$asset_name];
-
-				if (strpos($asset_name, 'print') !== false)
-				{
-					$this->include_css_print[] = $include;
-					continue;
-				}
-
 				$this->include_css[] = $include;
 			}
+		}
+	}
+
+	public function add_print_css(array $asset_ary):void
+	{
+		foreach ($asset_ary as $asset_name)
+		{
+			$include = $this->rootpath . 'gfx/' . $asset_name . '?';
+			$include .= $this->file_hash_ary[$asset_name];
+			$this->include_css_print[] = $include;
+		}
+	}
+
+	public function add_external_css(array $asset_ary):void
+	{
+		foreach ($asset_ary as $asset_name)
+		{
+			$this->include_css[] = $asset_file;
 		}
 	}
 

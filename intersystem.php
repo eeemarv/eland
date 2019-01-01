@@ -443,7 +443,7 @@ if ($id)
 	$top_buttons_right .= aphp('intersystem', [], '', 'btn btn-default', 'Lijst Intersystemen', 'share-alt');
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add('elas_soap_status.js');
+	$app['assets']->add(['elas_soap_status.js']);
 
 	$h1 = 'InterSysteem: ';
 	$h1 .= $group['groupname'];

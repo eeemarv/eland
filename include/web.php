@@ -11,9 +11,16 @@ header('Cache-Control: private, no-cache');
 header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') . ', http://img.letsa.net');
 
 $app['assets']->add([
-	'jquery', 'bootstrap', 'fontawesome',
-	'footable', 'autocomplete', 'base.css',
-	'print.css', 'base.js']);
+	'jquery',
+	'bootstrap',
+	'fontawesome',
+	'footable',
+	'autocomplete',
+	'base.css',
+	'base.js',
+]);
+
+$app['assets']->add_print_css(['print.css']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 $app['server_name'] = $_SERVER['SERVER_NAME'];

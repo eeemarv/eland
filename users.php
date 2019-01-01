@@ -877,7 +877,9 @@ if ($pw)
 
 	$user = $app['user_cache']->get($pw, $app['tschema']);
 
-	$app['assets']->add('generate_password.js');
+	$app['assets']->add([
+		'generate_password.js',
+	]);
 
 	$h1 = 'Paswoord aanpassen';
 	$h1 .= $s_owner ? '' : ' voor ' . link_user($user, $app['tschema']);
@@ -2622,13 +2624,19 @@ if ($id)
 		$interlets_group_id = false;
 	}
 
-	$app['assets']->add(['leaflet',
-		'jqplot', 'user.js',
-		'plot_user_transactions.js']);
+	$app['assets']->add([
+		'leaflet',
+		'jqplot',
+		'user.js',
+		'plot_user_transactions.js',
+	]);
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$app['assets']->add(['fileupload', 'user_img.js']);
+		$app['assets']->add([
+			'fileupload',
+			'user_img.js',
+		]);
 	}
 
 	if ($app['s_admin'] || $s_owner)
@@ -3699,22 +3707,36 @@ $fa = 'users';
 
 if ($v_list)
 {
-	$app['assets']->add(['calc_sum.js', 'users_distance.js',
-		'datepicker', 'typeahead', 'typeahead.js']);
+	$app['assets']->add([
+		'calc_sum.js',
+		'users_distance.js',
+		'datepicker',
+		'typeahead',
+		'typeahead.js',
+	]);
 
 	if ($app['s_admin'])
 	{
-		$app['assets']->add(['summernote',
-			'table_sel.js', 'rich_edit.js']);
+		$app['assets']->add([
+			'summernote',
+			'table_sel.js',
+			'rich_edit.js',
+		]);
 	}
 }
 else if ($v_tiles)
 {
-	$app['assets']->add(['isotope', 'users_tiles.js']);
+	$app['assets']->add([
+		'isotope',
+		'users_tiles.js',
+	]);
 }
 else if ($v_map)
 {
-	$app['assets']->add(['leaflet', 'users_map.js']);
+	$app['assets']->add([
+		'leaflet',
+		'users_map.js',
+	]);
 }
 
 include __DIR__ . '/include/header.php';

@@ -2,7 +2,7 @@
 
 if ($css = $app['config']->get('css', $app['tschema']))
 {
-	$app['assets']->add($css);
+	$app['assets']->add([$css]);
 }
 
 echo '<!DOCTYPE html>';
@@ -431,7 +431,7 @@ if (($top_buttons_right ?? false) || ($csv_en ?? false))
 
 	if ($csv_en ?? false)
 	{
-		$app['assets']->add('csv.js');
+		$app['assets']->add(['csv.js']);
 
 		echo '<a href="#" class="csv btn btn-info btn-md" ';
 		echo 'title="Download CSV">';
