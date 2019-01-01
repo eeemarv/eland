@@ -257,6 +257,34 @@ user_msg_copy:
     Dit is een kopie van het bericht dat je verstuurd hebt aan
     %link_open%%to_account%%link_close% via de webtoepassing.
 
+message_msg:
+  subject_offer: >-
+    Reactie op je Aanbod "%message_title%"
+  subject_want: >-
+    Reactie op je Vraag "%message_title%"
+  explain_offer: >-
+    Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "%link_message_open%%message_title%%link_message_close%"
+  explain_want: >-
+    Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
+    stuurt je via de webtoepassing een reactie op je vraag
+    "%link_message_open%%message_title%%link_message_close%"
+message_msg_copy:
+  subject_offer: >-
+    Kopie van je Reactie op het Aanbod "%message_title%"
+  subject_want:
+    Kopie van je Reactie op de Vraag "%message_title%"
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %link_to_account_open%%to_account%%link_to_account_close%
+    op het aanbod "%link_message_open%%message_title%%link_message_close%".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %link_to_account_open%%to_account%%link_to_account_close%
+    op de vraag "%link_message_open%%message_title%%link_message_close%".
+
+
 overview:
   offers_and_wants: >-
     Vraag en Aanbod

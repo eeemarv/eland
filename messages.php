@@ -601,6 +601,8 @@ if ($mail && $app['is_http_post'] && $id)
 			[\util\cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
+	$message['offer'] = $message['type'] === 'offer';
+	$message['want'] = $message['want'] === 'want';
 
 	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
@@ -621,7 +623,7 @@ if ($mail && $app['is_http_post'] && $id)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
-		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
+		'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['tschema']),
 		'reply_to'	=> $reply_ary,
 		'template'	=> $mail_template,
 		'vars'		=> $vars,

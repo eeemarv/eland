@@ -4,7 +4,7 @@
 {% block subject_line -%}
     {{- 'user_msg_copy.subject'|trans({
         '%to_account%': account(to_user.id, schema)
-    })|raw -}}
+    }) -}}
 {%- endblock subject_line %}
 
 {% block html_explain -%}
