@@ -214,7 +214,7 @@ class assets
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$this->include_css[] = $asset_file;
+			$this->include_css[] = $asset_name;
 		}
 	}
 
