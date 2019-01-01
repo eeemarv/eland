@@ -2,11 +2,19 @@
 
 namespace service;
 
+use Symfony\Component\Finder\Finder;
+use service\cache;
+
 class assets
 {
+	protected $cache;
+	protected $file_hash_ary;
+	protected $rootpath;
 	protected $version = '27';
 
-	protected $asset_ary = [
+	const CACHE_HASH_KEY = 'assets_files_hashes';
+
+	const ASSETS_ARY = [
 		'bootstrap' => [
 			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
 			'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
@@ -99,9 +107,62 @@ class assets
 	protected $include_css_print = [];
 	protected $include_js = [];
 
-	public function __construct(string $rootpath)
+	public function __construct(
+		cache $cache,
+		string $rootpath
+	)
 	{
+		$this->cache = $cache;
 		$this->rootpath = $rootpath;
+
+		$this->file_hash_ary = $this->cache->get(self::CACHE_HASH_KEY);
+	}
+
+	public function write_file_hash_ary():void
+	{
+		$finder = new Finder();
+		$finder->files()
+			->in([
+				__DIR__ . '/../gfx',
+				__DIR__ . '/../js',
+			])
+			->name([
+				'*.js',
+				'*.css',
+			]);
+
+		error_log('+-----------------------+');
+		error_log('| Set hashes for assets |');
+		error_log('+-----------------------+');
+
+		$new_file_hash_ary = [];
+
+		foreach ($finder as $file)
+		{
+			$contents = $file->getContents();
+			$crc = crc32($contents);
+			$name = $file->getRelativePathname();
+
+			if (!isset($this->file_hash_ary[$name]))
+			{
+				$comment = 'NEW';
+			}
+			else if ($this->file_hash_ary[$name] !== $crc)
+			{
+				$comment = 'NEW hash, OLD: ' . $this->file_hash_ary[$name];
+			}
+			else
+			{
+				$comment = 'unchanged';
+			}
+
+			error_log($name . ' :: ' . $crc . ' ' . $comment);
+
+			$new_file_hash_ary[$name] = $crc;
+		}
+
+		$this->file_hash_ary = $new_file_hash_ary;
+		$this->cache->set(self::CACHE_HASH_KEY, $this->file_hash_ary);
 	}
 
 	public function add($asset_s):void
@@ -110,9 +171,9 @@ class assets
 
 		foreach($asset_ary as $asset_name)
 		{
-			if (isset($this->asset_ary[$asset_name]))
+			if (isset(self::ASSETS_ARY[$asset_name]))
 			{
-				$asset = $this->asset_ary[$asset_name];
+				$asset = self::ASSETS_ARY[$asset_name];
 
 				foreach ($asset as $k => $a)
 				{
@@ -136,22 +197,24 @@ class assets
 
 			$ext = strtolower(pathinfo($asset_name, PATHINFO_EXTENSION));
 
-			if ($ext == 'js')
+			if ($ext === 'js')
 			{
-				$pre = (in_array(substr($asset_name, 0, 2), ['ht', '//'])) ? '' : $this->rootpath . 'js/';
-				$this->include_js[] = $pre . $asset_name . '?v=' . $this->version;
+				$include = $this->rootpath . 'js/' . $asset_name . '?';
+				$include .= $this->file_hash_ary[$asset_name];
+				$this->include_js[] = $include;
 			}
-			else if ($ext == 'css')
+			else if ($ext === 'css')
 			{
-				$pre = (in_array(substr($asset_name, 0, 2), ['ht', '//'])) ? '' : $this->rootpath . 'gfx/';
+				$include = $this->rootpath . 'gfx/' . $asset_name . '?';
+				$include .= $this->file_hash_ary[$asset_name];
 
 				if (strpos($asset_name, 'print') !== false)
 				{
-					$this->include_css_print[] = $pre . $asset_name . '?v=' . $this->version;
+					$this->include_css_print[] = $include;
 					continue;
 				}
 
-				$this->include_css[] = $pre . $asset_name . '?v=' . $this->version;
+				$this->include_css[] = $include;
 			}
 		}
 	}
