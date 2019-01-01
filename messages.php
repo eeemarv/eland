@@ -554,9 +554,9 @@ if ($mail && $app['is_http_post'] && $id)
 	$content = $_POST['content'];
 	$cc = isset($_POST['cc']);
 
-	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+	$to_user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
-	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($to_user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten om een
 			bericht naar een niet-actieve gebruiker te sturen');
@@ -592,42 +592,51 @@ if ($mail && $app['is_http_post'] && $id)
 		cancel($id);
 	}
 
-	$sender_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $app['s_schema'] . '.contact c, ' .
 			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
+			[\util\cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 
+	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+
 	$vars = [
-		'sender_contacts'	=> $sender_contacts,
-		'to_user'		=> link_user($user, $app['tschema'], false),
-		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
-		'from_username'	=> $app['session_user']['name'],
-		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
-		'msg_text'		=> $content,
-		'message'		=> $message,
+		'from_contacts'		=> $from_contacts,
+		'from_user'			=> $from_user,
+		'from_schema'		=> $app['s_schema'],
+		'is_same_system'	=> $app['s_group_self'],
+		'to_user'			=> $to_user,
+		'to_schema'			=> $app['tschema'],
+		'msg_content'		=> $content,
+		'message'			=> $message,
 	];
+
+	$mail_template = $app['s_group_self']
+		? 'message_msg/msg'
+		: 'message_msg/msg_intersystem';
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
 		'reply_to'	=> $reply_ary,
-		'template'	=> 'message',
+		'template'	=> $mail_template,
 		'vars'		=> $vars,
 	], 8500);
 
 	if ($cc)
 	{
+		$mail_template = $app['s_group_self']
+			? 'message_msg/copy'
+			: 'message_msg/copy_intersystem';
+
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
-			'template'	=> 'message_copy',
+			'template'	=> $mail_template,
 			'vars'		=> $vars,
 		], 8000);
 	}

@@ -123,9 +123,9 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
 	$user_mail_cc = isset($_POST['user_mail_cc']);
 
-	$user = $app['user_cache']->get($id, $app['tschema']);
+	$to_user = $app['user_cache']->get($id, $app['tschema']);
 
-	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($to_user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten
 			om een E-mail bericht naar een niet-actieve
@@ -162,45 +162,53 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		cancel($id);
 	}
 
-	$sender_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $app['s_schema'] . '.contact c, ' .
 			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
+			[\util\cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
+
+	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
 	$vars = [
-		'sender_contacts'	=> $sender_contacts,
-		'to_user'		=> link_user($user, $app['tschema'], false),
-		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
-		'from_username'	=> $app['session_user']['name'],
-		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
-		'msg_text'		=> $user_mail_content,
+		'from_contacts'		=> $from_contacts,
+		'from_user'			=> $from_user,
+		'from_schema'		=> $app['s_schema'],
+		'to_user'			=> $to_user,
+		'to_schema'			=> $app['tschema'],
+		'is_same_system'	=> $app['s_group_self'],
+		'msg_content'		=> $user_mail_content,
 	];
+
+	$mail_template = $app['s_group_self']
+		? 'user_msg/msg'
+		: 'user_msg/msg_intersystem';
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
-		'reply_to'	=> $reply_to,
-		'template'	=> 'user',
+		'reply_to'	=> $reply_ary,
+		'template'	=> $mail_template,
 		'vars'		=> $vars,
 	], 8000);
 
 	if ($user_mail_cc)
 	{
+		$mail_template = $app['s_group_self']
+			? 'user_msg/copy'
+			: 'user_msg/copy_intersystem';
+
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
-			'template' 	=> 'user_copy',
+			'template' 	=> $mail_template,
 			'vars'		=> $vars,
 		], 8000);
 	}
 
-	$app['alert']->success('E-mail verzonden.');
-
+	$app['alert']->success('E-mail bericht verzonden.');
 	cancel($id);
 }
 

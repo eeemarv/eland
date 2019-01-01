@@ -65,6 +65,10 @@ subscribed:
     adres vermeld staat als Support E-mail
     adres in de %link_open%instellingen%link_close%.
 
+private_msg:
+  from_contacts: >-
+    Contactgegevens van %from_account%
+
 account_activation:
   subject: >-
     Activatie van je Account bij %system_name%
@@ -238,22 +242,20 @@ transaction_to_intersystem_mail_type_admin:
   amount_time_explain: >-
     %amount% %currency% stemt overeen met %dec_hours% decimale uren, wat
     overeenstemt met
+
 user_msg:
   subject: >-
     Bericht van %from_account%
   explain: >-
-    Gebruiker %link_from_account_open%%from_account%%link_close%
-    van Systeem %link_system_open%%system_name%%link_close% zendt
-    je het bericht hieronder. Om te reageren kan
-    je deze E-mail gewoon beantwoorden of één van de contactgegevens
-    gebruiken onder het bericht.
-user_msg_copy: >-
+    Gebruiker %link_open%%from_account%%link_close%
+    zendt je het bericht hieronder via de webtoepassing.
+    Om te reageren kan je deze E-mail beantwoorden (Reply).
+user_msg_copy:
   subject: >-
     Kopie van je bericht aan %to_account%
   explain: >-
-    Dit is een kopie van het bericht dat je verstuurd hebt
-    naar %link_open%%to_account%%link_close% via de
-    webtoepassing.
+    Dit is een kopie van het bericht dat je verstuurd hebt aan
+    %link_open%%to_account%%link_close% via de webtoepassing.
 
 overview:
   offers_and_wants: >-

@@ -1,0 +1,26 @@
+{% extends 'mail/base/no_reply.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block html_content -%}
+<p>
+    {%- block html_explain -%}{%- endblock -%}
+</p>
+<hr />
+<p>
+    {{- msg_content -}}
+</p>
+<hr />
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+
+{% block text_explain %}{% endblock %}
+
+- - - - - -
+
+{{ msg_content }}
+
+- - - - - -
+
+{% endblock text_content %}
