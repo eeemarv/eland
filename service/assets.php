@@ -64,12 +64,6 @@ class assets
 		'typeahead'		=> [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
 		],
-		'autocomplete'	=> [
-			'js'	=> [
-				'https://cdnjs.cloudflare.com/ajax/libs/algoliasearch/3.30.0/algoliasearch.min.js',
-				'https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.31.0/autocomplete.jquery.min.js',
-			],
-		],
 		'datepicker'	=> [
 			'js'	=>	[
 				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js',
@@ -93,10 +87,6 @@ class assets
 				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/lang/summernote-nl-NL.min.js',
 			],
 			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.css',
-		],
-		'swiper' => [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.jquery.min.js',
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.min.css',
 		],
 		'sortable' => [
 			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js',

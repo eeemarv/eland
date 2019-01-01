@@ -15,7 +15,6 @@ $app['assets']->add([
 	'bootstrap',
 	'fontawesome',
 	'footable',
-	'autocomplete',
 	'base.css',
 	'base.js',
 ]);
