@@ -69,6 +69,16 @@ private_msg:
   from_contacts: >-
     Contactgegevens van %from_account%
 
+reply:
+  user: >-
+    Je kan rechtstreeks reageren aan
+    %link_open%%from_account%%link_close%
+    door deze E-mail te beantwoorden (Reply).
+  user_intersystem: >-
+    Je kan rechtstreeks reageren aan
+    %from_account% [%from_system_name%]
+    door deze E-mail te beantwoorden (Reply).
+
 account_activation:
   subject: >-
     Activatie van je Account bij %system_name%
@@ -249,13 +259,28 @@ user_msg:
   explain: >-
     Gebruiker %link_open%%from_account%%link_close%
     zendt je het bericht hieronder via de webtoepassing.
-    Om te reageren kan je deze E-mail beantwoorden (Reply).
+    Je kan rechtstreeks reageren aan %from_account% door
+    deze E-mail te beantwoorden (Reply).
 user_msg_copy:
   subject: >-
     Kopie van je bericht aan %to_account%
   explain: >-
-    Dit is een kopie van het bericht dat je verstuurd hebt aan
-    %link_open%%to_account%%link_close% via de webtoepassing.
+    Dit is een kopie van het bericht dat je aan
+    %link_open%%to_account%%link_close%
+    verzonden hebt via de webtoepassing.
+user_msg_intersystem:
+  subject: >-
+    Bericht van %from_account% [%from_system_name%]
+  explain:
+    Gebruiker %from_account% van %from_system_name%
+    zendt je via de webtoepassing het bericht hieronder.
+user_msg_copy_intersystem:
+  subject: >-
+    Kopie van je bericht aan %to_account% [%to_system_name%]
+  explain: >-
+    Dit is een kopie van het bericht dat je aan
+    %to_account% van %to_system_name% verzonden hebt
+    via de webtoepassing.
 
 message_msg:
   subject_offer: >-
@@ -265,11 +290,11 @@ message_msg:
   explain_offer: >-
     Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
     stuurt je via de webtoepassing een reactie op je aanbod
-    "%link_message_open%%message_title%%link_message_close%"
+    "%link_message_open%%message_title%%link_message_close%".
   explain_want: >-
     Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
-    stuurt je via de webtoepassing een reactie op je vraag
-    "%link_message_open%%message_title%%link_message_close%"
+    zendt je via de webtoepassing een reactie op je vraag
+    "%link_message_open%%message_title%%link_message_close%".
 message_msg_copy:
   subject_offer: >-
     Kopie van je Reactie op het Aanbod "%message_title%"
@@ -283,6 +308,24 @@ message_msg_copy:
     Dit is een kopie van je reactie via de webtoepassing
     aan %link_to_account_open%%to_account%%link_to_account_close%
     op de vraag "%link_message_open%%message_title%%link_message_close%".
+message_msg_intersystem:
+  explain_offer: >-
+    Gebruiker %from_account% van %from_system_name%
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "%link_message_open%%message_title%%link_message_close%".
+  explain_want: >-
+    Gebruiker %from_account% van %from_system_name%
+    zendt je via de webtoepassing een reactie op je vraag
+    "%link_message_open%%message_title%%link_message_close%".
+message_msg_copy_intersystem:
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %to_account% van %to_system_name%
+    op het aanbod "%message_title%".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %to_account% van %to_system_name%
+    op de vraag "%message_title%".
 
 
 overview:

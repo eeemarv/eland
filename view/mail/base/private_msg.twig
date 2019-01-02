@@ -4,6 +4,13 @@
 {% block html_content -%}
 <p>
     {%- block html_explain -%}{%- endblock -%}
+    {%- block html_reply -%}&nbsp;
+        {{- 'reply.user'|trans({
+            '%from_account%': account(from_user.id, from_schema),
+            '%link_open%': mail_link_open('users', {'id': from_user.id}, from_schema),
+            '%link_close%': '</a>'
+        })|raw -}}
+    {%- endblock html_reply -%}
 </p>
 <hr />
 <p>
@@ -34,6 +41,13 @@
 
 {% block text_content %}
 {% block text_explain %}{% endblock %}
+{% block text_reply %}
+{{ 'reply.user'|trans({
+    '%from_account%': account(from_user.id, from_schema),
+    '%link_open%': '',
+    '%link_close%': ''
+})|raw }}
+{% endblock %}
 
 - - - - - -
 
