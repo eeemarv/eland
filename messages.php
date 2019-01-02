@@ -486,7 +486,7 @@ if ($img_del == 'all' && $id)
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
-	$app['assets']->add('msg_img_del.js');
+	$app['assets']->add(['msg_img_del.js']);
 
 	include __DIR__ . '/include/header.php';
 
@@ -1209,10 +1209,17 @@ if (($edit || $add))
 
 	if ($app['s_admin'])
 	{
-		$app['assets']->add(['typeahead', 'typeahead.js']);
+		$app['assets']->add([
+			'typeahead',
+			'typeahead.js',
+		]);
 	}
 
-	$app['assets']->add(['fileupload', 'msg_edit.js', 'access_input_cache.js']);
+	$app['assets']->add([
+		'fileupload',
+		'msg_edit.js',
+		'access_input_cache.js',
+	]);
 
 	$h1 = $add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
@@ -1501,11 +1508,18 @@ if ($id)
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
 
-	$app['assets']->add(['leaflet', 'jssor', 'msg.js']);
+	$app['assets']->add([
+		'leaflet',
+		'jssor',
+		'msg.js',
+	]);
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$app['assets']->add(['fileupload', 'msg_img.js']);
+		$app['assets']->add([
+			'fileupload',
+			'msg_img.js',
+		]);
 	}
 
 	if ($app['s_admin'] || $s_owner)
@@ -2290,8 +2304,12 @@ if (!$app['p_inline'])
 
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add(['msgs.js',
-		'table_sel.js', 'typeahead', 'typeahead.js']);
+	$app['assets']->add([
+		'msgs.js',
+		'table_sel.js',
+		'typeahead',
+		'typeahead.js',
+	]);
 
 	include __DIR__ . '/include/header.php';
 

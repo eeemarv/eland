@@ -177,7 +177,9 @@ if ($add && !$submit)
 
 if ($add || $edit)
 {
-	$app['assets']->add('datepicker');
+	$app['assets']->add([
+		'datepicker',
+	]);
 
 	$h1 = 'Nieuwsbericht ';
 	$h1 .= $add ? 'toevoegen' : 'aanpassen';

@@ -531,7 +531,10 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 ]);
 
 $app['assets'] = function($app){
-	return new service\assets($app['rootpath']);
+	return new service\assets(
+		$app['cache'],
+		$app['rootpath']
+	);
 };
 
 $app['alert'] = function ($app){
@@ -575,7 +578,8 @@ $app['access_control'] = function($app){
 	return new service\access_control(
 		$app['tschema'],
 		$app['config'],
-		$app['s_access_level']);
+		$app['s_access_level']
+	);
 };
 
 /**

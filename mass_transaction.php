@@ -391,7 +391,12 @@ if ($from_letscode)
 $group_minlimit = $app['config']->get('minlimit', $app['tschema']);
 $group_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
 
-$app['assets']->add(['typeahead', 'typeahead.js', 'mass_transaction.js', 'combined_filter.js']);
+$app['assets']->add([
+	'typeahead',
+	'typeahead.js',
+	'mass_transaction.js',
+	'combined_filter.js',
+]);
 
 $h1 = 'Massa transactie';
 $fa = 'exchange';

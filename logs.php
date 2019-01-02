@@ -125,7 +125,7 @@ $app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 $filtered = $q || $type || $code || $fdate || $tdate;
 
 $h1 = 'Logs';
-$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+$h1 .= $filtered ? ' <small>gefilterd</small>' : '';
 
 $fa = 'history';
 
