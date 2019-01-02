@@ -10,86 +10,113 @@ class assets
 	protected $cache;
 	protected $file_hash_ary;
 	protected $rootpath;
-	protected $version = '27';
+	protected $version = '28';
 
 	const CACHE_HASH_KEY = 'assets_files_hashes';
 
+	const PROTOCOL = 'https://';
+
 	const ASSETS_ARY = [
 		'bootstrap' => [
-			'css'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-			'js'	=> '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
+			'css'	=> [
+				'maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+			],
+			'js'	=> [
+				'maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
+			],
 		],
 		'fontawesome'	=> [
-			'css'	=> '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+			'css'	=> [
+				'maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+			],
 		],
 		'footable'	=> [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.sort.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.filter.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.sort.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/js/footable.filter.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/css/footable.core.min.css',
+			'css'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/jquery-footable/2.0.3/css/footable.core.min.css',
+			],
 		],
 		'jssor'		=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/jssor-slider/27.5.0/jssor.slider.min.js',
+			'js'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/jssor-slider/27.5.0/jssor.slider.min.js',
+			],
 		],
 		'jqplot'	=> [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/jquery.jqplot.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.donutRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.cursor.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.dateAxisRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasTextRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasAxisTickRenderer.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.highlighter.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/jquery.jqplot.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.donutRenderer.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.cursor.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.dateAxisRenderer.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasTextRenderer.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.canvasAxisTickRenderer.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.9/plugins/jqplot.highlighter.min.js',
 			],
 		],
 		'jquery'	=> [
-			'js'	=> '//code.jquery.com/jquery-3.3.1.min.js',
+			'js'	=> [
+				'code.jquery.com/jquery-3.3.1.min.js',
+			],
 		],
 		'fileupload'	=> [
 			'js'	=>	[
-
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/vendor/jquery.ui.widget.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.iframe-transport.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-process.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-image.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-validate.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/vendor/jquery.ui.widget.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.iframe-transport.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-process.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-image.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/js/jquery.fileupload-validate.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/css/jquery.fileupload.min.css',
+			'css'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.25.1/css/jquery.fileupload.min.css',
+			],
 		],
 		'typeahead'		=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
+			'js'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js',
+			]
 		],
 		'datepicker'	=> [
 			'js'	=>	[
-				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.nl.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.nl.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.min.css',
+			'css'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.min.css',
+			],
 		],
 		'isotope'	=> [
 			'js' => [
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js',
 			],
 		],
 		'leaflet'	=> [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js',
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css',
+			'js'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js',
+			],
+			'css'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css',
+			]
 		],
 		'summernote' => [
 			'js'	=> [
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.min.js',
-				'//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/lang/summernote-nl-NL.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/lang/summernote-nl-NL.min.js',
 			],
-			'css'	=> '//cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.css',
+			'css'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.css',
+			],
 		],
 		'sortable' => [
-			'js'	=> '//cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js',
+			'js'	=> [
+				'cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js',
+			],
 		],
 	];
 
@@ -163,21 +190,25 @@ class assets
 			{
 				$asset = self::ASSETS_ARY[$asset_name];
 
-				foreach ($asset as $k => $a)
+				foreach ($asset as $type => $ary)
 				{
-					if (is_array($a))
+					switch ($type)
 					{
-						foreach($a as $loc)
-						{
-							$var = 'include_' . $k;
-							$this->$var[] = $loc;
-						}
-
-						continue;
+						case 'js':
+							foreach ($ary as $loc)
+							{
+								$this->include_js[] = self::PROTOCOL . $loc;
+							}
+							break;
+						case 'css':
+							foreach ($ary as $loc)
+							{
+								$this->include_css[] = self::PROTOCOL . $loc;
+							}
+							break;
+						default:
+							break;
 					}
-
-					$var = 'include_' . $k;
-					$this->$var[] = $a;
 				}
 
 				continue;
@@ -185,17 +216,20 @@ class assets
 
 			$ext = strtolower(pathinfo($asset_name, PATHINFO_EXTENSION));
 
-			if ($ext === 'js')
+			switch ($ext)
 			{
-				$include = $this->rootpath . 'js/' . $asset_name . '?';
-				$include .= $this->file_hash_ary[$asset_name];
-				$this->include_js[] = $include;
-			}
-			else if ($ext === 'css')
-			{
-				$include = $this->rootpath . 'gfx/' . $asset_name . '?';
-				$include .= $this->file_hash_ary[$asset_name];
-				$this->include_css[] = $include;
+				case 'js':
+					$include = $this->rootpath . 'js/' . $asset_name . '?';
+					$include .= $this->file_hash_ary[$asset_name];
+					$this->include_js[] = $include;
+					break;
+				case 'css':
+					$include = $this->rootpath . 'gfx/' . $asset_name . '?';
+					$include .= $this->file_hash_ary[$asset_name];
+					$this->include_css[] = $include;
+					break;
+				default:
+					break;
 			}
 		}
 	}
