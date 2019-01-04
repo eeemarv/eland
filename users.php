@@ -436,7 +436,7 @@ if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
 	{
 		$bulk_mail_subject = $_POST['bulk_mail_subject'];
 		$bulk_mail_content = $_POST['bulk_mail_content'];
-		$bulk_mail_cc = $_POST['bulk_mail_cc'] ?? false;
+		$bulk_mail_cc = isset($_POST['bulk_mail_cc']);
 
 		if (!$bulk_mail_subject)
 		{
@@ -682,36 +682,23 @@ if ($app['s_admin']
 
 		unset($sel_ary[$sel_user['id']]);
 
-		$sel_user['minlimit'] = $sel_user['minlimit'] == -999999999 ? '' : $sel_user['minlimit'];
-		$sel_user['maxlimit'] = $sel_user['maxlimit'] == 999999999 ? '' : $sel_user['maxlimit'];
-
-		$template_vars = [];
+		$vars = [
+			'subject'	=> $bulk_mail_subject,
+		];
 
 		foreach ($map_template_vars as $key => $val)
 		{
-			$template_vars[$key] = $key === 'status' ? cnst::STATUS_ARY[$sel_user['status']] : $sel_user[$val];
-		}
-
-		try
-		{
-			$template = $app['twig']->createTemplate($bulk_mail_content);
-			$html = $template->render($template_vars);
-		}
-		catch (Exception $e)
-		{
-			$app['alert']->error('Fout in E-mail template: ' . $e->getMessage());
-			$sel_ary = [];
-
-			break;
+			$vars[$key] = $sel_user[$val];
 		}
 
 		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
-			'subject' 	=> $bulk_mail_subject,
-			'html' 		=> $html,
-			'reply_to' 	=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
-		], random_int(5000, 6000));
+			'schema'			=> $app['tschema'],
+			'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
+			'pre_html_template' => $bulk_mail_content,
+			'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+			'vars'				=> $vars,
+			'template'			=> 'skeleton',
+		], random_int(1000, 4000));
 
 		$alert_msg_users[] = link_user($sel_user, $app['tschema']);
 
@@ -748,9 +735,11 @@ if ($app['s_admin']
 		$app['alert']->warning($alert_warning);
 	}
 
-	if ($bulk_mail_submit && $count)
+	if ($bulk_mail_submit && $count && $bulk_mail_cc)
 	{
-		$template_vars = [];
+		$vars = [
+			'subject'	=> 'Kopie: ' . $bulk_mail_subject,
+		];
 
 		foreach ($map_template_vars as $key => $trans)
 		{
@@ -770,14 +759,12 @@ if ($app['s_admin']
 
 		$out .= '<hr><br>';
 
-		$template = $app['twig']->createTemplate($out . $bulk_mail_content);
-		$html = $template->render($template_vars);
-
 		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
-			'subject' 	=> 'kopie: ' . $bulk_mail_subject,
-			'html' 		=> $html,
+			'schema'			=> $app['tschema'],
+			'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+			'template'			=> 'skeleton',
+			'pre_html_template'	=> $out . $bulk_mail_content,
+			'vars'				=> $vars,
 		], 8000);
 
 		$app['monolog']->debug('#bulk mail',
