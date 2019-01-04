@@ -82,7 +82,7 @@ class mail implements queue_interface
 				$this->monolog->error('Mail Queue Process, Pre HTML template err: ' .
 					$e->getMessage() . ' ::: ' .
 					json_encode($data),
-					['schema' => $sch]);
+					['schema' => $schema]);
 				return;
 			}
 		}

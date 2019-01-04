@@ -602,7 +602,7 @@ if ($mail && $app['is_http_post'] && $id)
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
 	$message['offer'] = $message['type'] === 'offer';
-	$message['want'] = $message['want'] === 'want';
+	$message['want'] = $message['type'] === 'want';
 
 	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 

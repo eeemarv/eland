@@ -743,7 +743,7 @@ if ($app['s_admin']
 
 		foreach ($map_template_vars as $key => $trans)
 		{
-			$template_vars[$key] = '{{ ' . $key . ' }}';
+			$vars[$key] = '{{ ' . $key . ' }}';
 		}
 
 		$replace = $app['protocol'] . $app['groups']->get_host($app['tschema']) . '/users.php?';
