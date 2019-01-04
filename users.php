@@ -636,8 +636,6 @@ if ($app['s_admin'])
 		'volledige_naam'		=> 'fullname',
 		'saldo'					=> 'saldo',
 		'account_code'			=> 'letscode',
-		'min_account_limiet'	=> 'minlimit',
-		'max_account_limiet'	=> 'maxlimit',
 	];
 }
 
@@ -691,7 +689,7 @@ if ($app['s_admin']
 
 		foreach ($map_template_vars as $key => $val)
 		{
-			$template_vars[$key] = ($key == 'status') ? cnst::STATUS_ARY[$sel_user['status']] : $sel_user[$val];
+			$template_vars[$key] = $key === 'status' ? cnst::STATUS_ARY[$sel_user['status']] : $sel_user[$val];
 		}
 
 		try
