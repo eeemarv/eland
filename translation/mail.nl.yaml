@@ -327,6 +327,17 @@ message_msg_copy_intersystem:
     aan %to_account% van %to_system_name%
     op de vraag "%message_title%".
 
+mass_transaction_many_to_one:
+  subject: >-
+    Nieuwe Veel naar Eén Massa Transactie
+  title: >-
+    Notificatie Massa Transactie "Veel naar Eén"
+mass_transaction_one_to_many:
+  subject: >-
+    Nieuwe Eén naar Veel Massa Transactie
+  title: >-
+    Notificatie Massa Transactie "Eén naar Veel"
+
 
 overview:
   offers_and_wants: >-

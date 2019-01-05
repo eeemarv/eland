@@ -1,0 +1,60 @@
+{%- extends 'mail/base/no_reply_auto.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block html_content -%}
+
+<h3>
+    {%- block html_title -%}{%- endblock -%}
+</h3>
+
+{%- block html_before_many -%}{%- endblock -%}
+
+<ul>
+{%- for t in transactions -%}
+    <li>
+    {%- block html_account_many -%}
+    {{- mail_link_open('users', {'id': t.id_from}, schema)|raw -}}
+    {{- account(t.id_from, schema) -}}
+    {%- endblock -%}
+    </a>:&nbsp;
+    <strong>{{- t.amount -}}</strong>
+    &nbsp;
+    {{- config('currency', schema) -}}
+    </li>
+{%- endfor -%}
+</ul>
+
+{%- block html_after_many -%}{%- endblock -%}
+
+<p>
+{{- 'label.total'|trans -}}<br />
+<strong>{{- total_amount -}}</strong>&nbsp;
+{{- config('currency', schema) -}}
+</p>
+
+<p>
+{{- 'label.description'|trans -}}<br />
+<strong>{{- description -}}</strong>
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+
+
+{% block text_title %}{% endblock %}
+
+{% block text_before_many %}{% endblock %}
+
+{% for t in transactions %}
+{% block text_account_many %}{% endblock %}: {{ t.amount }} {{ config('currency', schema) }}
+{% endfor %}
+
+{% block text_after_many %}{% endblock %}
+
+{{ 'label.total'|trans }}
+{{ total_amount }} {{ config('currency', schema) }}
+
+{{ 'label.description'|trans }}
+{{ description }}
+
+{% endblock text_content %}

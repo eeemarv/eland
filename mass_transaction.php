@@ -206,23 +206,14 @@ if ($submit)
 	}
 	else
 	{
-		$transactions = $transid_ary = [];
+		$transactions = [];
 
 		$app['db']->beginTransaction();
 
 		$cdate = gmdate('Y-m-d H:i:s');
 
-		$one_field = $to_one ? 'to' : 'from';
-		$many_field = $to_one ? 'from' : 'to';
-
-		$mail_ary = [
-			$one_field 		=> $one_uid,
-			'description'	=> $description,
-			'date'			=> $cdate,
-		];
-
 		$alert_success = $log_many = '';
-		$total = 0;
+		$total_amount = 0;
 
 		try
 		{
@@ -240,8 +231,8 @@ if ($submit)
 				}
 
 				$many_user = $users[$many_uid];
-				$to_id = ($to_one) ? $one_uid : $many_uid;
-				$from_id = ($to_one) ? $many_uid : $one_uid;
+				$to_id = $to_one ? $one_uid : $many_uid;
+				$from_id = $to_one ? $many_uid : $one_uid;
 				$from_user = $users[$from_id];
 				$to_user = $users[$to_id];
 
@@ -253,7 +244,7 @@ if ($submit)
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
-				$trans = [
+				$transaction = [
 					'id_to' 		=> $to_id,
 					'id_from' 		=> $from_id,
 					'amount' 		=> $amo,
@@ -264,29 +255,23 @@ if ($submit)
 					'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
 				];
 
-				$app['db']->insert($app['tschema'] . '.transactions', $trans);
-
-				$mail_ary[$many_field][$many_uid] = [
-					'amount'	=> $amo,
-					'transid' 	=> $transid,
-				];
-
-				$transid_ary[] = $transid;
+				$app['db']->insert($app['tschema'] . '.transactions', $transaction);
+				$transaction['id'] = $app['db']->lastInsertId($app['tschema'] . '.transactions_id_seq');
 
 				$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
 					where id = ?', [$amo, $many_uid]);
 
-				$total += $amo;
+				$total_amount += $amo;
 
 				$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
 
-				$transactions[] = $trans;
+				$transactions[] = $transaction;
 			}
 
 			$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
 				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
-				where id = ?', [$total, $one_uid]);
+				where id = ?', [$total_amount, $one_uid]);
 
 			$app['db']->commit();
 		}
@@ -323,13 +308,13 @@ if ($submit)
 			$app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
 		}
 
-		$alert_success .= 'Totaal: ' . $total . ' ';
+		$alert_success .= 'Totaal: ' . $total_amount . ' ';
 		$alert_success .= $app['config']->get('currency', $app['tschema']);
 		$app['alert']->success($alert_success);
 
 		$log_one = $users[$one_uid]['letscode'] . ' ';
 		$log_one .= $users[$one_uid]['name'];
-		$log_one .= '(Total amount: ' . $total . ' ';
+		$log_one .= '(Total amount: ' . $total_amount . ' ';
 		$log_one .= $app['config']->get('currency', $app['tschema']);
 		$log_one .= ')';
 
@@ -347,16 +332,55 @@ if ($submit)
 		}
 		else if ($mail_en)
 		{
-			$mail_ary['transid_ary'] = $transid_ary;
-
-			if (mail_mass_transaction($mail_ary))
+			foreach ($transactions as $transaction)
 			{
-				$app['alert']->success('Notificatie mails verzonden.');
+				$user_id = $to_one ? $transaction['id_from'] : $transaction['id_to'];
+
+				$vars = [
+					'transaction'	=> $transaction,
+					'from_user_id'	=> $transaction['id_from'],
+					'to_user_id'	=> $transaction['id_to'],
+					'user'			=> $app['user_cache']->get($user_id, $app['tschema']),
+				];
+
+				$app['queue.mail']->queue([
+					'schema'	=> $app['tschema'],
+					'to'		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+					'template'	=> 'transaction/transaction',
+					'vars'		=> $vars,
+				], random_int(0, 5000));
+			}
+
+			$vars = [
+				'transactions'	=> $transactions,
+				'total_amount'	=> $total_amount,
+				'description'	=> $description,
+			];
+
+			if ($to_one)
+			{
+				$vars['to_user_id'] = $one_uid;
 			}
 			else
 			{
-				$app['alert']->error('Fout bij het verzenden van notificatie mails.');
+				$vars['from_user_id'] = $one_uid;
 			}
+
+			$mail_template = 'mass_transaction/';
+			$mail_template .= $to_one ? 'many_to_one' : 'one_to_many';
+
+			$app['queue.mail']->queue([
+				'schema'	=> $app['tschema'],
+				'to' 		=> array_merge(
+					$app['mail_addr_system']->get_admin($app['tschema']),
+					$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+					$app['mail_addr_user']->get($one_uid, $app['tschema'])
+				),
+				'template'	=> $mail_template,
+				'vars'		=> $vars,
+			], 8000);
+
+			$app['alert']->success('Notificatie mails verzonden.');
 		}
 
 		cancel();
@@ -388,8 +412,8 @@ if ($from_letscode)
 	}
 }
 
-$group_minlimit = $app['config']->get('minlimit', $app['tschema']);
-$group_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
+$system_minlimit = $app['config']->get('minlimit', $app['tschema']);
+$system_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
 
 $app['assets']->add([
 	'typeahead',
@@ -707,10 +731,10 @@ echo '<table class="table table-bordered table-striped ';
 echo 'table-hover panel-body footable" ';
 echo 'data-filter="#combined-filter" data-filter-minimum="1" ';
 echo 'data-minlimit="';
-echo $group_minlimit;
+echo $system_minlimit;
 echo '" ';
 echo 'data-maxlimit="';
-echo $group_maxlimit;
+echo $system_maxlimit;
 echo '"';
 echo '>';
 echo '<thead>';
@@ -767,8 +791,8 @@ foreach($users as $user_id => $user)
 
 	$balance = $user['saldo'];
 
-	$minlimit = $user['minlimit'] === '' ? $group_minlimit : $user['minlimit'];
-	$maxlimit = $user['maxlimit'] === '' ? $group_maxlimit : $user['maxlimit'];
+	$minlimit = $user['minlimit'] === '' ? $system_minlimit : $user['minlimit'];
+	$maxlimit = $user['maxlimit'] === '' ? $system_maxlimit : $user['maxlimit'];
 
 	if (($minlimit !== '' && $balance < $minlimit)
 		|| ($maxlimit !== '' && $balance > $maxlimit))
@@ -909,19 +933,6 @@ function mail_mass_transaction($mail_ary)
 
 	$one_user_id = $from_many_bool ? $mail_ary['to'] : $mail_ary['from'];
 
-	$common_vars = [
-		'group'		=> [
-			'name'			=> $app['config']->get('systemname', $app['tschema']),
-			'tag'			=> $app['config']->get('systemtag', $app['tschema']),
-			'support'		=> explode(',', $app['config']->get('support', $app['tschema'])),
-			'currency'		=> $app['config']->get('currency', $app['tschema']),
-		],
-		'description'			=> $mail_ary['description'],
-		'new_transaction_url'	=> $app['base_url'] . '/transactions.php?add=1',
-		'from_many'				=> $from_many_bool,
-		'support_url'			=> $app['base_url'] . '/support.php?src=p',
-	];
-
 	$from_user_id = $to_user_id = $one_user_id;
 
 	$users = $app['db']->executeQuery('select u.id,
@@ -946,25 +957,24 @@ function mail_mass_transaction($mail_ary)
 			$to_user_id = $user_id;
 		}
 
-		$vars = array_merge($common_vars, [
+		$vars = [
 			'amount' 			=> $many_ary[$user_id]['amount'],
 			'transid' 			=> $many_ary[$user_id]['transid'],
 			'from_user' 		=> link_user($from_user_id, $app['tschema'], false),
 			'to_user'			=> link_user($to_user_id, $app['tschema'], false),
 			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
 			'user'				=> $user,
-			'interlets'			=> false,
-		]);
+		];
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to'		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
-			'template'	=> 'transaction',
+			'template'	=> 'transaction/transaction',
 			'vars'		=> $vars,
 		], random_int(0, 5000));
 	}
 
-	$total = 0;
+	$total_amount = 0;
 
 	$users = [];
 
@@ -985,7 +995,7 @@ function mail_mass_transaction($mail_ary)
 			'id'		=> $user_id,
 		];
 
-		$total += $many_ary[$user_id]['amount'];
+		$total_amount += $many_ary[$user_id]['amount'];
 
 		$text .= link_user($user_id, $app['tschema'], false) . $t . $t . $many_ary[$user_id]['amount'];
 		$text .= ' ' . $currency . $r;
@@ -997,13 +1007,13 @@ function mail_mass_transaction($mail_ary)
 			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
 			'text'	=> link_user($one_user_id, $app['tschema'], false),
 		],
-		'total'		=> $total,
+		'total'		=> $total_amount,
 	]);
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> array_merge(
-			$app['mail_addr_system']->get_support($app['tschema']),
+			$app['mail_addr_system']->get_admin($app['tschema']),
 			$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
