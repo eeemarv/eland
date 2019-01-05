@@ -327,6 +327,36 @@ message_msg_copy_intersystem:
     aan %to_account% van %to_system_name%
     op de vraag "%message_title%".
 
+message_extend:
+  1_week: 1 week
+  2_weeks: 2 weken
+  4_weeks: 4 weken
+  2_months: 2 maanden
+  6_months: 6 maanden
+  1_year: 1 jaar
+  5_years: 5 jaren
+
+message_extend_offer:
+  subject: >-
+    Je aanbod "%message_title%" is vervallen
+  explain: >-
+    Je aanbod "%open_link%%message_title%%close_link%"
+    is vervallen en zal over %days% van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+message_extend_want:
+  subject: >-
+    Je vraag "%message_title%" is vervallen
+  explain: >-
+    Je vraag "%open_link%%message_title%%close_link%"
+    is vervallen en zal over %days% van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+
 mass_transaction_many_to_one:
   subject: >-
     Nieuwe Veel naar Eén Massa Transactie

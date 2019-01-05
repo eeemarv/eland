@@ -2,7 +2,6 @@
 
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
-require_once __DIR__ . '/include/transactions.php';
 
 $q = $_POST['q'] ?? ($_GET['q'] ?? '');
 $hsh = $_POST['hsh'] ?? ($_GET['hsh'] ?? '096024');

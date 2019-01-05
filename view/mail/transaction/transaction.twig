@@ -1,4 +1,4 @@
-{%- extends 'mail/base/user.twig' -%}
+{%- extends 'mail/base/user_no_reply_auto.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
@@ -7,14 +7,6 @@
         '%to_account%': account(to_user_id, schema)
     }) -}}
 {%- endblock subject_line -%}
-
-{% block html_pretext -%}
-{% include 'mail/include/no_reply_auto.html.twig' -%}
-{%- endblock html_pretext %}
-
-{% block text_pretext %}
-{% include 'mail/include/no_reply_auto.text.twig' %}
-{% endblock text_pretext %}
 
 {% block html_content -%}
 

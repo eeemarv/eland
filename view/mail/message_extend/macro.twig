@@ -1,0 +1,14 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html_extend_link(days, lang_key, message, schema) -%}
+<li>
+    {{- mail_link_open('messages', {'id': message.id, 'extend': days}, schema) -}}
+    {{- ('message_extend.' ~ lang_key)|trans -}}
+    </a>
+</li>
+{%- endmacro html_extend_link -%}
+
+{% macro text_extend_link(days, lang_key, message, schema) %}
+{{ ('message_extend.' ~ lang_key)|trans }}: {{ mail_link_open('messages', {'id': message.id, 'extend': days}, schema) }}
+
+{% endmacro text_extend_link %}

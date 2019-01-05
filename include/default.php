@@ -245,12 +245,6 @@ $app['groups'] = function ($app){
 	);
 };
 
-$app['template_vars'] = function ($app){
-	return new service\template_vars(
-		$app['config']
-	);
-};
-
 $app['xdb'] = function ($app){
 	return new service\xdb(
 		$app['db'],
@@ -436,11 +430,9 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs(
 		$app['db'],
 		$app['queue.mail'],
-		$app['protocol'],
 		$app['schedule'],
 		$app['groups'],
 		$app['config'],
-		$app['template_vars'],
 		$app['user_cache'],
 		$app['mail_addr_user']
 	);

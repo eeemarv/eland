@@ -2,12 +2,11 @@
 
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
-require_once __DIR__ . '/include/transactions.php';
 
 $id = $_GET['id'] ?? false;
-$add = isset($_GET['add']) ? true : false;
+$add = isset($_GET['add']);
 $edit = $_GET['edit'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
+$submit = isset($_POST['zend']);
 
 $mid = $_GET['mid'] ?? false;
 $tuid = $_GET['tuid'] ?? false;
