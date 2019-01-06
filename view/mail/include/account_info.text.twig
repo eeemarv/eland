@@ -1,10 +1,10 @@
 {% trans_default_domain 'mail' %}
-{{ 'label.your_account'|trans|underline }}
+{{ 'label.your_account'|trans|underline|raw }}
 
-{{ 'label.login'|trans }}: {{ mail_url('login', {'login': user.letscode}, schema) }}
+{{ 'label.login'|trans|raw }}: {{ mail_url('login', {'login': user.letscode}, schema)|raw }}
 
-{{ 'label.account_code'|trans }}: {{ user.letscode }}
+{{ 'label.account_code'|trans|raw }}: {{ user.letscode|raw }}
 
-{{ 'label.username'|trans }}: {{ user.name }}
+{{ 'label.username'|trans|raw }}: {{ user.name|raw }}
 
-{{ 'label.balance'|trans }}: {{ user.saldo }} {{ config('currency', schema) }}
+{{ 'label.balance'|trans|raw }}: {{ user.saldo|raw }} {{ config('currency', schema)|raw }}

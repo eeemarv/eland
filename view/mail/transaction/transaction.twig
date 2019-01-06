@@ -70,29 +70,29 @@
 
 {% block text_content %}
 
-{% block text_title %}{{ 'transaction.title'|trans|underline }}{% endblock %}
+{% block text_title %}{{ 'transaction.title'|trans|underline|raw }}{% endblock %}
 {% block text_content_explain %}{% endblock %}
 
-{{ 'label.from'|trans }}
+{{ 'label.from'|trans|raw }}
 {% block text_from %}
-{{ account(from_user_id, schema) }}
+{{ account(from_user_id, schema)|raw }}
 {% endblock %}
 
-{{ 'label.to'|trans }}
+{{ 'label.to'|trans|raw }}
 {% block text_to %}
-{{ account(to_user_id, schema) }}
+{{ account(to_user_id, schema)|raw }}
 {% endblock %}
 
-{{ 'label.amount'|trans }}
-{{ transaction.amount }} {{ config('currency', schema) }}
+{{ 'label.amount'|trans|raw }}
+{{ transaction.amount|raw }} {{ config('currency', schema)|raw }}
 
 {% block text_amount_explain %}{% endblock %}
 
-{{ 'label.description'|trans }}
-{{ transaction.description }}
+{{ 'label.description'|trans|raw }}
+{{ transaction.description|raw }}
 
-{{ 'label.link'|trans }}: {{ mail_url('transactions',
-    {'id': transaction.id}, schema) }}
+{{ 'label.link'|trans|raw }}: {{ mail_url('transactions',
+    {'id': transaction.id}, schema)|raw }}
 
 {% block text_trans_id %}{% endblock %}
 

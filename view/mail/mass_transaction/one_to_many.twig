@@ -34,10 +34,10 @@
 {% endblock text_title %}
 
 {% block text_before_many %}
-{{ 'label.from'|trans }}
-{{ account(from_user_id, schema) }}
+{{ 'label.from'|trans|raw }}
+{{ account(from_user_id, schema)|raw }}
 
-{{ 'label.to'|trans }}
+{{ 'label.to'|trans|raw }}
 {% endblock text_before_many %}
 
-{% block text_account_many %}{{ account(t.id_to, schema) }}{% endblock %}
+{% block text_account_many %}{{ account(t.id_to, schema)|raw }}{% endblock %}

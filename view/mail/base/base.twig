@@ -45,8 +45,8 @@
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
-}) }}
-{{ base_url(schema) }}
+})|raw }}
+{{ base_url(schema)|raw }}
         {% endif -%}
     {%- endblock text_footer -%}
 {%- endblock text_body -%}

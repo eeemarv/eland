@@ -2,7 +2,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {{- 'password_reset_user.subject'|trans -}}
+    {{- 'password_reset_user.subject'|trans|raw -}}
 {%- endblock %}
 
 {%- block html_content -%}
@@ -21,10 +21,10 @@
 
 {% block text_content %}
 
-{{ 'password_reset_user.title'|trans|underline }}
+{{ 'password_reset_user.title'|trans|underline|raw }}
 
-{{ 'password_reset_user.message'|trans }}
+{{ 'password_reset_user.message'|trans|raw }}
 
-{{ 'label.password'|trans }}: {{ password }}
+{{ 'label.password'|trans|raw }}: {{ password|raw }}
 
 {% endblock text_content %}

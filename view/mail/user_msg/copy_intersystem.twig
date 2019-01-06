@@ -5,7 +5,7 @@
     {{- 'user_msg_copy_intersystem.subject'|trans({
         '%to_account%': account(to_user.id, to_schema),
         '%to_system_name%': config('systemname', to_schema)
-    }) -}}
+    })|raw -}}
 {%- endblock subject_line %}
 
 {% block html_explain -%}
@@ -19,5 +19,5 @@
 {{ 'user_msg_copy_intersystem.explain'|trans({
     '%to_account%': account(to_user.id, to_schema),
     '%to_system_name%': config('systemname', to_schema)
-}) }}
+})|raw }}
 {% endblock text_explain %}

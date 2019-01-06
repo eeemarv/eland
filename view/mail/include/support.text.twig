@@ -1,11 +1,11 @@
 {% trans_default_domain 'mail' %}
 
-{{ 'b.support.title'|trans|underline }}
+{{ 'b.support.title'|trans|underline|raw }}
 
 {{ 'b.support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
-}) }}:
+})|raw }}:
 
-{{ mail_url('support', {}, schema) }}
+{{ mail_url('support', {}, schema)|raw }}

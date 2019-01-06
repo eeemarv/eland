@@ -30,18 +30,18 @@
 
 {% block text_content %}
 
-{{ 'contact_confirm.text_msg'|trans }}
+{{ 'contact_confirm.text_msg'|trans|raw }}
 
-{{ mail_url('contact', {'token': token}, schema) }}
+{{ mail_url('contact', {'token': token}, schema)|raw }}
 
-{{ 'expiration.1_day'|trans }}
+{{ 'expiration.1_day'|trans|raw }}
 
 {{ 'contact_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
-}) }}
+})|raw }}
 
-{{ mail_url('contact', {}, schema) }}
+{{ mail_url('contact', {}, schema)|raw }}
 
 {% endblock text_content %}

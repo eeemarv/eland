@@ -4,7 +4,7 @@
 {% block subject_line -%}
     {{- 'message_extend_offer.subject'|trans({
         '%message_title%': message.content
-    }) -}}
+    })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_explain -%}
@@ -13,7 +13,7 @@
     '%link_open%': mail_link_open('messages', {'id': message.id}, schema),
     '%link_close%': '</a>',
     '%days%': config('msgexpcleanupdays', schema)
-}) -}}
+})|raw -}}
 {%- endblock html_explain -%}
 
 {% block text_explain %}
@@ -22,5 +22,5 @@
     '%link_open%': '',
     '%link_close%': '',
     '%days%': config('msgexpcleanupdays', schema)
-}) }}
+})|raw }}
 {% endblock text_explain %}

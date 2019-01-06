@@ -340,7 +340,7 @@ message_extend_offer:
   subject: >-
     Je aanbod "%message_title%" is vervallen
   explain: >-
-    Je aanbod "%open_link%%message_title%%close_link%"
+    Je aanbod "%link_open%%message_title%%link_close%"
     is vervallen en zal over %days% van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.
@@ -350,7 +350,7 @@ message_extend_want:
   subject: >-
     Je vraag "%message_title%" is vervallen
   explain: >-
-    Je vraag "%open_link%%message_title%%close_link%"
+    Je vraag "%link_open%%message_title%%link_close%"
     is vervallen en zal over %days% van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.

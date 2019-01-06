@@ -32,17 +32,17 @@
 
 {{ 'password_reset_confirm.text_msg'|trans({
     '%system_name%': config('systemname', schema)
-}) }}
+})|raw }}
 
-{{ mail_url('pwreset', {'token': token}, schema) }}
+{{ mail_url('pwreset', {'token': token}, schema)|raw }}
 
-{{ 'expiration.1_day'|trans }}
+{{ 'expiration.1_day'|trans|raw }}
 
 {{ 'password_reset_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
-}) }}
+})|raw }}
 
 {{ base_url(schema) }}
 

@@ -8,7 +8,7 @@
             ~ ' ['
             ~ to_fullname
             ~ ']'
-    }) -}}
+    })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_to -%}
@@ -19,8 +19,8 @@
 {%- endblock -%}
 
 {% block text_to %}
-{{ transaction.real_to
+{{ (transaction.real_to
     ~ ' ['
     ~ to_fullname
-    ~ ']' }}
+    ~ ']')|raw }}
 {% endblock %}

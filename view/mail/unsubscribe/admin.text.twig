@@ -3,6 +3,6 @@
 {{ 'subscribed.admin'|trans({
     '%link_open%': '',
     '%link_close%': '',
-}) }}
+})|raw }}
 
-{{ mail_url('config', {'active_tab': 'mailaddresses'}, schema) }}
+{{ mail_url('config', {'active_tab': 'mailaddresses'}, schema)|raw }}

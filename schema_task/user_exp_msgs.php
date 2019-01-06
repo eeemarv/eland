@@ -50,7 +50,14 @@ class user_exp_msgs extends schema_task
 				and u.status in (1, 2)
 				and m.validity < ?', [$now]);
 
-		foreach ($warn_messages as $msg)
+		$warn_messages  = $this->db->fetchAll('select m.*
+			from ' . $this->schema . '.messages m, ' .
+				$this->schema . '.users u
+			where u.id = m.id_user
+				and u.status in (1, 2)
+			limit 1');
+
+		foreach ($warn_messages as $message)
 		{
 			$user = $this->user_cache->get($message['id_user'], $this->schema);
 
@@ -70,16 +77,21 @@ class user_exp_msgs extends schema_task
 			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
 
 			$this->mail->queue([
-				'to' 		=> $this->mail_addr_user->get($msg['id_user'], $this->schema),
+				'to' 		=> $this->mail_addr_user->get($message['id_user'], $this->schema),
 				'schema' 	=> $this->schema,
 				'template' 	=> $mail_template,
 				'vars' 		=> $vars
 			], random_int(0, 5000));
+
+			error_log($mail_template);
+			error_log(json_encode($vars));
 		}
 
+/*
 		$this->db->executeUpdate('update ' . $this->schema . '.messages
 			set exp_user_warn = \'t\'
 			where validity < ?', [$now]);
+*/
 	}
 
 	public function is_enabled():bool
@@ -89,6 +101,7 @@ class user_exp_msgs extends schema_task
 
 	public function get_interval():int
 	{
+		return 60;
 		return 86400;
 	}
 }

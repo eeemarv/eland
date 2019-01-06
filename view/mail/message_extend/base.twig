@@ -1,9 +1,9 @@
 {%- extends 'mail/base/user_no_reply_auto.twig' -%}
 {%- trans_default_domain 'mail' -%}
-{%- import 'mail/message_extend/macro.twig' as m -%}
+
 
 {% block html_content -%}
-
+{%- import 'mail/message_extend/macro.twig' as m -%}
 <p>
     {%- block html_explain -%}{%- endblock -%}
 </p>
@@ -23,13 +23,14 @@
 {% block text_content %}
 
 {% block text_explain %}{% endblock %}
+{% import 'mail/message_extend/macro.twig' as m %}
 
-{{ m.text_extend_link(7, '1_week', message, schema) }}
-{{ m.text_extend_link(14, '2_weeks', message, schema) }}
-{{ m.text_extend_link(28, '4_weeks', message, schema) }}
-{{ m.text_extend_link(60, '2_months', message, schema) }}
-{{ m.text_extend_link(180, '6_months', message, schema) }}
-{{ m.text_extend_link(365, '1_year', message, schema) }}
-{{ m.text_extend_link(1825, '5_years', message, schema) }}
+{{ m.text_extend_link(7, '1_week', message, schema)|raw }}
+{{ m.text_extend_link(14, '2_weeks', message, schema)|raw }}
+{{ m.text_extend_link(28, '4_weeks', message, schema)|raw }}
+{{ m.text_extend_link(60, '2_months', message, schema)|raw }}
+{{ m.text_extend_link(180, '6_months', message, schema)|raw }}
+{{ m.text_extend_link(365, '1_year', message, schema)|raw }}
+{{ m.text_extend_link(1825, '5_years', message, schema)|raw }}
 
 {% endblock text_content %}

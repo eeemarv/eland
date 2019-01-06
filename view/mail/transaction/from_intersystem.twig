@@ -8,7 +8,7 @@
             ~ from_fullname
             ~ ']',
         '%to_account%': account(to_user_id, schema)
-    }) -}}
+    })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_from -%}
@@ -19,8 +19,8 @@
 {%- endblock -%}
 
 {% block text_from %}
-{{ transaction.real_from
+{{ (transaction.real_from
     ~ ' ['
     ~ from_fullname
-    ~ ']' }}
+    ~ ']')|raw }}
 {% endblock %}

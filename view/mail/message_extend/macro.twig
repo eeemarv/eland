@@ -2,13 +2,12 @@
 
 {%- macro html_extend_link(days, lang_key, message, schema) -%}
 <li>
-    {{- mail_link_open('messages', {'id': message.id, 'extend': days}, schema) -}}
+    {{- mail_link_open('messages', {'id': message.id, 'extend': days}, schema)|raw -}}
     {{- ('message_extend.' ~ lang_key)|trans -}}
     </a>
 </li>
 {%- endmacro html_extend_link -%}
 
 {% macro text_extend_link(days, lang_key, message, schema) %}
-{{ ('message_extend.' ~ lang_key)|trans }}: {{ mail_link_open('messages', {'id': message.id, 'extend': days}, schema) }}
-
+{{ ('message_extend.' ~ lang_key)|trans|raw }}: {{ mail_url('messages', {'id': message.id, 'extend': days}, schema)|raw }}
 {% endmacro text_extend_link %}

@@ -1,7 +1,7 @@
 {% trans_default_domain 'mail' %}
 
-{{ 'b.support.title'|trans|underline }}
+{{ 'b.support.title'|trans|underline|raw }}
 
 {{ 'b.support.reply_admin'|trans({
     '%system_name%': config('systemname', schema)
-}) }}
+})|raw }}

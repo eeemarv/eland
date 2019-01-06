@@ -46,15 +46,15 @@
 {% block text_before_many %}{% endblock %}
 
 {% for t in transactions %}
-{% block text_account_many %}{% endblock %}: {{ t.amount }} {{ config('currency', schema) }}
+{% block text_account_many %}{% endblock %}: {{ t.amount|raw }} {{ config('currency', schema)|raw }}
 {% endfor %}
 
 {% block text_after_many %}{% endblock %}
 
 {{ 'label.total'|trans }}
-{{ total_amount }} {{ config('currency', schema) }}
+{{ total_amount|raw }} {{ config('currency', schema)|raw }}
 
-{{ 'label.description'|trans }}
-{{ description }}
+{{ 'label.description'|trans|raw }}
+{{ description|raw }}
 
 {% endblock text_content %}

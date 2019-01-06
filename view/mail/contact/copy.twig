@@ -24,10 +24,10 @@
 
 {{ 'contact_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
-}) }}
+})|raw }}
 - - - - - -
 
-{{ message }}
+{{ message|raw }}
 
 - - - - - -
 {% endblock -%}

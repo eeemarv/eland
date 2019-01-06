@@ -30,7 +30,7 @@ $schema_task = new task_container($app, 'schema_task');
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(120))
+	if (!$app['monitor_process']->wait_most_recent(5)) // 120
 	{
 		continue;
 	}

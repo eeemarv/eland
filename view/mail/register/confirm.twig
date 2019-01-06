@@ -30,18 +30,18 @@
 
 {% block text_content %}
 
-{{ 'register_confirm.text_msg'|trans }}
+{{ 'register_confirm.text_msg'|trans|raw }}
 
-{{ mail_url('register', {'token': token}, schema) }}
+{{ mail_url('register', {'token': token}, schema)|raw }}
 
-{{ 'expiration.1_week'|trans }}
+{{ 'expiration.1_week'|trans|raw }}
 
 {{ 'register_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
-}) }}
+})|raw }}
 
-{{ mail_url('register', {}, schema) }}
+{{ mail_url('register', {}, schema)|raw }}
 
 {% endblock text_content %}

@@ -38,20 +38,20 @@
     '%link_close%': '',
     '%system_name%': config('systemname', schema),
     '%account%': account(user.id, schema)
-}) }}
+})|raw }}
 {% if can_reply %}
-{{ 'support.explain_reply'|trans }}
+{{ 'support.explain_reply'|trans|raw }}
 {% else %}
 {{ 'support.explain_no_reply'|trans({
     '%link_open%': '',
     '%link_close%': ''
-}) }}
-{{ mail_url('users', {'id': user.id}, schema) }}
+})|raw }}
+{{ mail_url('users', {'id': user.id}, schema)|raw }}
 {% endif %}
 
 - - - - - -
 
-{{ message }}
+{{ message|raw }}
 
 - - - - - -
 {% endblock text_content %}

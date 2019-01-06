@@ -29,14 +29,14 @@
 
 {% block text_content %}
 
-{{ 'news_review_admin.title'|trans|underline }}
+{{ 'news_review_admin.title'|trans|underline|raw }}
 
 {{ 'news_review_admin.message'|trans({
     '%name%': news.headline
-}) }}
+})|raw }}
 
-{{ 'news_review_admin.action'|trans }}
+{{ 'news_review_admin.action'|trans|raw }}
 
-{{ mail_url('news', {'id': news.id}, schema) }}
+{{ mail_url('news', {'id': news.id}, schema)|raw }}
 
 {% endblock text_content %}
