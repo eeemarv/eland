@@ -50,13 +50,6 @@ class user_exp_msgs extends schema_task
 				and u.status in (1, 2)
 				and m.validity < ?', [$now]);
 
-		$warn_messages  = $this->db->fetchAll('select m.*
-			from ' . $this->schema . '.messages m, ' .
-				$this->schema . '.users u
-			where u.id = m.id_user
-				and u.status in (1, 2)
-			limit 1');
-
 		foreach ($warn_messages as $message)
 		{
 			$user = $this->user_cache->get($message['id_user'], $this->schema);
@@ -87,11 +80,9 @@ class user_exp_msgs extends schema_task
 			error_log(json_encode($vars));
 		}
 
-/*
 		$this->db->executeUpdate('update ' . $this->schema . '.messages
 			set exp_user_warn = \'t\'
 			where validity < ?', [$now]);
-*/
 	}
 
 	public function is_enabled():bool
