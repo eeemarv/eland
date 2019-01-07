@@ -7,18 +7,18 @@ require_once __DIR__ . '/include/web.php';
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
-$add = isset($_GET['add']) ? true : false;
+$add = isset($_GET['add']);
 $uid = $_GET['uid'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
-$img = isset($_GET['img']) ? true : false;
-$insert_img = isset($_GET['insert_img']) ? true : false;
+$submit = isset($_POST['zend']);
+$img = isset($_GET['img']);
+$insert_img = isset($_GET['insert_img']);
 $img_del = $_GET['img_del'] ?? false;
 $images = $_FILES['images'] ?? false;
-$mail = isset($_POST['mail']) ? true : false;
+$mail = isset($_POST['mail']);
 $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
-$extend_submit = isset($_POST['extend_submit']) ? true : false;
+$extend_submit = isset($_POST['extend_submit']);
 $extend = $_POST['extend'] ?? false;
-$access_submit = isset($_POST['access_submit']) ? true : false;
+$access_submit = isset($_POST['access_submit']);
 
 $filter = $_GET['f'] ?? [];
 $sort = $_GET['sort'] ?? [];
@@ -2508,8 +2508,6 @@ if ($v_list)
 	echo '<tr>';
 
 	$th_params = $params;
-
-	$th_params['start'] = 0;
 
 	foreach ($tableheader_ary as $key_orderby => $data)
 	{
