@@ -1,0 +1,43 @@
+{%- extends 'mail/base/user_no_reply_auto.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'periodic_overview.subject'|trans|raw -}}
+{%- endblock subject_line -%}
+
+{% block html_content -%}
+{% for b in blocks_sorted %}
+    {% if b == 'messages' %}
+        {{ m.messages(messages, group, new_message_url,
+            messages_url, s3_url, validate_param) }}
+    {% elseif b == 'interlets' %}
+        {{ m.interlets(interlets, url_login, validate_param) }}
+    {% elseif b == 'forum' %}
+        {{ m.forum(forum, forum_url, validate_param) }}
+    {% elseif b == 'news' %}
+        {{ m.news(news, block_options.news, news_url, validate_param) }}
+    {% elseif b == 'docs' %}
+        {{ m.docs(docs, validate_param) }}
+    {% elseif b == 'new_users' %}
+        {{ m.new_users(new_users, block_options.new_users, validate_param) }}
+    {% elseif b == 'leaving_users' %}
+        {{ m.leaving_users(leaving_users, block_options.leaving_users, validate_param) }}
+    {% elseif b == 'transactions' %}
+        {{ m.transactions(transactions, group,
+            new_transaction_url, transactions_url, validate_param) }}
+    {% endif %}
+{%- endfor -%}
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+
+{% endblock text_content %}
+
+{%- block html_unsubscribe -%}
+
+{%- endblock html_unsubscribe -%}
+
+{% block text_unsubscribe %}
+
+{% endblock text_unsubscribe %}
