@@ -94,14 +94,14 @@ class saldo extends schema_task
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
-		$forum = $interlets = $docs = [];
+		$forum = $intersystem = $docs = [];
 		$mailaddr = $mailaddr_public = $saldo_mail = [];
 
 	// get blocks
 
 		$forum_en = $this->config->get('forum_en', $this->schema) ? true : false;
-		$interlets_en = $this->config->get('interlets_en', $this->schema) ? true : false;
-		$interlets_en = $interlets_en && $this->config->get('template_lets', $this->schema) ? true : false;
+		$intersystem_en = $this->config->get('interlets_en', $this->schema) ? true : false;
+		$intersystem_en = $intersystem_en && $this->config->get('template_lets', $this->schema) ? true : false;
 
 		$blocks_sorted = $block_options = [];
 
@@ -118,7 +118,7 @@ class saldo extends schema_task
 				continue;
 			}
 
-			if ($block === 'interlets' && !$interlets_en)
+			if ($block === 'interlets' && !$intersystem_en)
 			{
 				continue;
 			}
@@ -272,7 +272,7 @@ class saldo extends schema_task
 
 			foreach ($eland_ary as $sch => $d)
 			{
-				$interlets_msgs = [];
+				$intersystem_msgs = [];
 
 				$rs = $this->db->prepare('select m.id, m.content,
 						m."Description" as description,
@@ -297,14 +297,14 @@ class saldo extends schema_task
 					$row['want'] = $row['type'] == 'want' ? true : false;
 					$row['user'] = $row['letscode'] . ' ' . $row['name'];
 
-					$interlets_msgs[] = $row;
+					$intersystem_msgs[] = $row;
 				}
 
-				if (count($interlets_msgs))
+				if (count($intersystem_msgs))
 				{
-					$interlets[] = [
+					$intersystem[] = [
 						'group'		=> $this->config->get('systemname', $sch),
-						'messages'	=> $interlets_msgs,
+						'messages'	=> $intersystem_msgs,
 					];
 				}
 			}
@@ -313,7 +313,7 @@ class saldo extends schema_task
 
 			foreach ($elas_ary as $group_id => $ary)
 			{
-				$interlets_msgs = [];
+				$intersystem_msgs = [];
 
 				$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
 
@@ -330,14 +330,14 @@ class saldo extends schema_task
 					$m['offer'] = $m['type'] == 'offer' ? true : false;
 					$m['want'] = $m['type'] == 'want' ? true : false;
 
-					$interlets_msgs[] = $m;
+					$intersystem_msgs[] = $m;
 				}
 
-				if (count($interlets_msgs))
+				if (count($intersystem_msgs))
 				{
-					$interlets[] = [
+					$intersystem[] = [
 						'group'		=> $ary['groupname'],
-						'messages'	=> $interlets_msgs,
+						'messages'	=> $intersystem_msgs,
 					];
 				}
 			}
@@ -600,33 +600,16 @@ class saldo extends schema_task
 	//
 
 		$vars = [
-			'group'		=> [
-				'name'				=> $this->config->get('systemname', $this->schema),
-				'tag'				=> $this->config->get('systemtag', $this->schema),
-				'currency'			=> $this->config->get('currency', $this->schema),
-				'support'			=> explode(',', $this->config->get('support', $this->schema)),
-				'saldofreqdays'		=> $this->config->get('saldofreqdays', $this->schema),
-			],
-
-			's3_url'				=> $this->s3_url,
 			'new_users'				=> $new_users,
 			'leaving_users'			=> $leaving_users,
 			'news'					=> $news,
-			'news_url'				=> $base_url . '/news.php?src=p',
 			'transactions'			=> $transactions,
-			'transactions_url'		=> $base_url . '/transactions.php?src=p',
-			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
 			'forum'					=> $forum,
-			'forum_url'				=> $base_url . '/forum.php?src=p',
 			'docs'					=> $docs,
-			'docs_url'				=> $base_url . '/docs.php?src=p',
 			'messages'				=> $messages,
-			'messages_url'			=> $base_url . '/messages.php?src=p',
-			'new_message_url'		=> $base_url . '/messages.php?add=1',
-			'interlets'				=> $interlets,
+			'intersystem'			=> $intersystem,
 			'block_options'			=> $block_options,
 			'blocks_sorted'			=> $blocks_sorted,
-			'support_url'			=> $base_url . '/support.php?src=p',
 		];
 
 	// queue mail
@@ -664,13 +647,11 @@ class saldo extends schema_task
 
 			$this->mail->queue([
 				'validate_email'	=> true,
-				'schema'	=> $this->schema,
-				'to'		=> $to,
-				'template'	=> 'periodic_overview',
-				'vars'		=> array_merge($vars, [
+				'schema'			=> $this->schema,
+				'to'				=> $to,
+				'template'			=> 'periodic_overview/periodic_overview',
+				'vars'				=> array_merge($vars, [
 					'user'			=> $users[$id],
-					'url_login'		=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
-					'account_edit_url'	=> $base_url . '/users.php?edit=' . $id,
 				]),
 			], random_int(0, 5000));
 

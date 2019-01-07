@@ -24,6 +24,8 @@ class extension extends \Twig_Extension
 			new \Twig_Function('datepicker_format', 'twig\\date_format::datepicker_format'),
 			new \Twig_Function('datepicker_placeholder', 'twig\\date_format::datepicker_placeholder'),
 			new \Twig_Function('config', 'twig\\config::get'),
+			new \Twig_Function('s3_url', 'twig\\s3_url::get'),
+			new \Twig_Function('s3_link_open', 'twig\\s3_url::get_link_open'),
 			new \Twig_Function('base_url', 'twig\\base_url::get'),
 			new \Twig_Function('base_link_open', 'twig\\base_url::get_link_open'),
 			new \Twig_Function('mail_url', 'twig\\mail_url::get'),

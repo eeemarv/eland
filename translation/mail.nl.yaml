@@ -369,14 +369,16 @@ mass_transaction_one_to_many:
     Notificatie Massa Transactie "Eén naar Veel"
 
 
-overview:
+periodic_overview:
+  subject: >-
+    Periodiek Overzicht
   offers_and_wants: >-
     Vraag en Aanbod
   offers_and_wants_explain: >-
     Deze lijst bevat vraag en aanbod dat de afgelopen %days%
-    dagen online is geplaatst.
+    dagen %link_open%online%link_close% is geplaatst.
   offers_and_wants_none: >-
-    Er werd geen nieuw vraag of aanbod online geplaatst.
+    Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
   intersystem_offers_and_wants: >-
     Recent InterSysteem Vraag en Aanbod
   docs: >

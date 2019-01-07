@@ -92,7 +92,6 @@ class user_exp_msgs extends schema_task
 
 	public function get_interval():int
 	{
-		return 60;
 		return 86400;
 	}
 }

@@ -79,6 +79,11 @@ $app->extend('twig', function($twig, $app) {
 				$app['protocol']
 			);
 		},
+		twig\s3_url::class => function() use ($app){
+			return new twig\s3_url(
+				$app['s3_url']
+			);
+		},
 /*
 		twig\distance::class => function() use ($app){
 			return new twig\distance(

@@ -6,32 +6,66 @@
 {%- endblock subject_line -%}
 
 {% block html_content -%}
-{% for b in blocks_sorted %}
-    {% if b == 'messages' %}
-        {{ m.messages(messages, group, new_message_url,
-            messages_url, s3_url, validate_param) }}
-    {% elseif b == 'interlets' %}
-        {{ m.interlets(interlets, url_login, validate_param) }}
-    {% elseif b == 'forum' %}
-        {{ m.forum(forum, forum_url, validate_param) }}
-    {% elseif b == 'news' %}
-        {{ m.news(news, block_options.news, news_url, validate_param) }}
-    {% elseif b == 'docs' %}
-        {{ m.docs(docs, validate_param) }}
-    {% elseif b == 'new_users' %}
-        {{ m.new_users(new_users, block_options.new_users, validate_param) }}
-    {% elseif b == 'leaving_users' %}
-        {{ m.leaving_users(leaving_users, block_options.leaving_users, validate_param) }}
-    {% elseif b == 'transactions' %}
-        {{ m.transactions(transactions, group,
-            new_transaction_url, transactions_url, validate_param) }}
-    {% endif %}
+{%- import 'mail/periodic_overview/macro/messages.twig' as m -%}
+{%- import 'mail/periodic_overview/macro/intersystem.twig' as i -%}
+{%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
+{%- import 'mail/periodic_overview/macro/news.twig' as n -%}
+{%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
+{%- import 'mail/periodic_overview/macro/users.twig' as u -%}
+{%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
+{%- for b in blocks_sorted -%}
+{%- if b == 'messages' -%}
+{{- m.html(messages, group, new_message_url,
+    messages_url, s3_url, validate_param) -}}
+{%- elseif b == 'intersystem' -%}
+    {{- i.html(intersystem, url_login, validate_param) -}}
+{%- elseif b == 'forum' -%}
+    {{- f.html(forum, forum_url, validate_param) -}}
+{%- elseif b == 'news' -%}
+    {{- n.html(news, block_options.news, news_url, validate_param) -}}
+{%- elseif b == 'docs' -%}
+    {{- d.html(docs, validate_param) -}}
+{%- elseif b == 'new_users' -%}
+    {{- u.html_new(new_users, block_options.new_users, validate_param) -}}
+{%- elseif b == 'leaving_users' -%}
+    {{- u.html_leaving(leaving_users, block_options.leaving_users, validate_param) -}}
+{%- elseif b == 'transactions' -%}
+    {{- t.html(transactions, group,
+        new_transaction_url, transactions_url, validate_param) -}}
+{%- endif -%}
+
 {%- endfor -%}
 
 {%- endblock html_content -%}
 
 {% block text_content %}
-
+{% import 'mail/periodic_overview/macro/messages.twig' as m %}
+{% import 'mail/periodic_overview/macro/intersystem.twig' as i %}
+{% import 'mail/periodic_overview/macro/forum.twig' as f %}
+{% import 'mail/periodic_overview/macro/news.twig' as n %}
+{% import 'mail/periodic_overview/macro/docs.twig' as d %}
+{% import 'mail/periodic_overview/macro/users.twig' as u %}
+{% import 'mail/periodic_overview/macro/transactions.twig' as t %}
+{% for b in blocks_sorted %}
+{% if b == 'messages' %}
+{{ m.text(messages, group, new_message_url,
+    messages_url, s3_url, validate_param) }}
+{% elseif b == 'intersystem' %}
+{{ i.text(intersystem, url_login, validate_param) }}
+{% elseif b == 'forum' %}
+{{ f.text(forum, forum_url, validate_param) }}
+{% elseif b == 'news' %}
+{{ n.text(news, block_options.news, news_url, validate_param) }}
+{% elseif b == 'docs' %}
+{{ d.text(docs, validate_param) }}
+{% elseif b == 'new_users' %}
+{{ u.text_new(new_users, block_options.new_users, validate_param) }}
+{% elseif b == 'leaving_users' %}
+{{ u.text_leaving(leaving_users, block_options.leaving_users, validate_param) }}
+{% elseif b == 'transactions' %}
+{{ t.text(transactions, group,
+    new_transaction_url, transactions_url, validate_param) }}
+{% endif %}
 {% endblock text_content %}
 
 {%- block html_unsubscribe -%}
