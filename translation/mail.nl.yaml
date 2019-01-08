@@ -11,13 +11,16 @@ label:
   link: Link
   login: Login
   minutes: Minuten
+  offer: Aanbod
   password: Paswoord
   postcode: Postcode
+  price: (Richt-)prijs
   seconds: Seconden
   to: Naar
   total: Totaal
   transaction_id: Transactie ID
   username: Gebruikersnaam
+  want: Vraag
   your_account: Je Account
   your_message: Je Bericht
 
@@ -368,38 +371,46 @@ mass_transaction_one_to_many:
   title: >-
     Notificatie Massa Transactie "Eén naar Veel"
 
-
 periodic_overview:
   subject: >-
     Periodiek Overzicht
-  offers_and_wants: >-
-    Vraag en Aanbod
-  offers_and_wants_explain: >-
-    Deze lijst bevat vraag en aanbod dat de afgelopen %days%
-    dagen %link_open%online%link_close% is geplaatst.
-  offers_and_wants_none: >-
-    Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
-  intersystem_offers_and_wants: >-
-    Recent InterSysteem Vraag en Aanbod
-  docs: >
-    Nieuwe Documenten
-  docs_none: >-
-    Er zijn geen nieuwe documenten.
-  new_users: Nieuwe Leden
-  new_users_none: >-
-    Momenteel zijn er geen nieuwe leden.
-  new_users_no_recent: >-
-    Er zijn geen nieuwe leden bijgekomen.
-  leaving_users: >-
-    Uitstappers
-  leaving_users_none: >-
-    Momenteel zijn er geen uitstappende leden.
-  leaving_users_no_recent: >-
-    Er zijn geen extra uitstappende leden.
-  transactions: >-
-    Recente Transacties
-  transactions_explain: >-
-    Deze lijst toont de transacties van
-    de laatste %days% dagen.
-  transactions_none: >-
-    Er zijn geen recente transacties.
+  ads:
+    title: >-
+      Recent Vraag en Aanbod
+    explain: >-
+      Deze lijst bevat vraag en aanbod dat de afgelopen %days%
+      dagen %link_open%online%link_close% is geplaatst.
+    none: >-
+      Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
+    add: >-
+      %link_open%Geef zelf je eigen Vraag of Aanbod in%link_close%.
+  intersystem_ads:
+    title: >-
+      Recent InterSysteem Vraag en Aanbod
+  docs:
+    title: >-
+      Nieuwe Documenten
+    none: >-
+      Er zijn geen nieuwe documenten.
+  new_users:
+    title: >-
+      Nieuwe Leden
+    none: >-
+      Momenteel zijn er geen nieuwe leden.
+    no_recent: >-
+      Er zijn geen nieuwe leden bijgekomen.
+  leaving_users:
+    title: >-
+      Uitstappers
+    none: >-
+      Momenteel zijn er geen uitstappende leden.
+    no_recent: >-
+      Er zijn geen extra uitstappende leden.
+  transactions:
+    title: >-
+      Recente Transacties
+    explain: >-
+      Deze lijst toont de transacties van
+      de laatste %days% dagen.
+    none: >-
+      Er zijn geen recente transacties.

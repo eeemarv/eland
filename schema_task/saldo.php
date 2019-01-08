@@ -83,15 +83,6 @@ class saldo extends schema_task
 
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
 
-		$msg_url = $base_url . '/messages.php?id=';
-		$msgs_url = $base_url . '/messages.php?src=p';
-		$news_url = $base_url . '/news.php?id=';
-		$user_url = $base_url . '/users.php?id=';
-		$login_url = $base_url . '/login.php?login=';
-		$new_message_url = $base_url . '/messages.php?add=1';
-		$new_transaction_url = $base_url . '/transactions.php?add=1';
-		$account_edit_url = $base_url . '/users.php?edit=';
-
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
 		$forum = $intersystem = $docs = [];
@@ -210,16 +201,6 @@ class saldo extends schema_task
 				$addr[$row['id']] = $row['value'];
 				$addr_public[$row['id']] = $row['flag_public'];
 				$users[$row['id']]['adr'] = $row['value'];
-
-				$geo = $this->cache->get('geo_' . $row['value']);
-
-				if (count($geo))
-				{
-					if (isset($geo['lat']) && isset($geo['lng']))
-					{
-						$users_geo[$row['id']] = $geo;
-					}
-				}
 			}
 
 		// fetch messages
@@ -248,17 +229,9 @@ class saldo extends schema_task
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
 				$row['images'] = $image_ary[$row['id']];
-				$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
 				$row['mail'] = $mailaddr[$uid] ?? '';
-				$row['user'] = $row['letscode'] . ' ' . $row['name'];
-				$row['user_url'] = $base_url . '/users.php?id=' . $uid;
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;
-
-				if (isset($users_geo[$uid]))
-				{
-					$row['geo'] = $users_geo[$uid];
-				}
 
 				$messages[] = $row;
 			}

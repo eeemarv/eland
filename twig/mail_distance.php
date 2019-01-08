@@ -7,17 +7,17 @@ use service\cache;
 
 class distance
 {
-	private $db;
-	private $cache;
+	protected $db;
+	protected $cache;
 
-	private $lat;
-	private $lng;
-	private $geo = false;
-	private $to_lat;
-	private $to_lng;
-	private $to_geo = false;
-	private $to;
-	private $dist;
+	protected $lat;
+	protected $lng;
+	protected $geo = false;
+	protected $to_lat;
+	protected $to_lng;
+	protected $to_geo = false;
+	protected $to;
+	protected $dist;
 
 	public function __construct(db $db, cache $cache)
 	{

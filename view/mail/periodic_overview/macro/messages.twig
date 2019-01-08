@@ -1,50 +1,104 @@
-{% macro html(messages, group, new_message_url, messages_url, s3_url, validate_param) -%}
-<h3><a href="{{ messages_url }}{{ validate_param }}">Vraag en aanbod</a></h3>
+{% macro html(messages, schema, email_token) -%}
+<h3>
+{{ 'periodic_overview.ads.title'|trans -}}
+</h3>
 {% if messages %}
-<p>Deze lijst bevat vraag en aanbod dat de afgelopen {{ group.saldofreqdays }} dagen online is geplaatst.</p>
+<p>
+{{- 'periodic_overview.ads.explain'|trans({
+	'%link_open%': mail_link_open('messages', {}, schema),
+	'%link_close%': '</a>',
+	'%days%': config('saldofreqdays', schema)
+})|raw -}}
+</p>
 <ul>
 {% for msg in messages %}
-<li><strong><a href="{{ msg.url }}{{ validate_param }}">{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }}</a></strong>
-<br>
-{% if msg.images|length %}<br><img src="{{ s3_url }}{{ msg.images.0 }}" height="200" alt="afbeelding"><br>{% endif %}
-{{ msg.description }}
-{% if msg.amount %}<br>(Richt-)prijs: {{ msg.amount }} {{ group.currency }}{% if msg.units %} per {{ msg.units }}{% endif %}{% endif %}
-<br>Ingegeven door: <a href="{{ msg.user_url }}{{ validate_param }}">{{ msg.user }}</a>
-{% if msg.addr %}<a href="https://www.google.be/maps/place/{{ msg.addr }}">adres</a>
-{% if msg.geo is defined and user.geo is defined %}{{ distance_p(user.geo, msg.geo) }}{% endif %} | {% endif %}
+<li>
+	<strong>
+		{{- mail_link_open('messages', {'id': msg.id, 'ev': email_token}, schema)|raw -}}
+			{%- if msg.offer -%}
+				{{- 'label.offer'|trans -}}
+			{%- else -%}
+				{{- 'label.want'|trans -}}
+			{%- endif -%}:&nbsp;
+			{{ msg.content -}}
+		</a>
+	</strong>
+<br />
+{%- if msg.images|length -%}
+	<br/>
+	<img src="{{- s3_url(msg.images.0) -}}" height="200" alt="afbeelding">
+	<br />
+{%- endif -%}
+{{- msg.description -}}
+<br />
+{{- mail_link_open('users', {'id', msg.id_user, 'ev': email_token}, schema)|raw -}}
+{{- account(msg.id_user, schema) -}}
+</a>
+{%- if msg.geo is defined and user.geo is defined -%}
+	{{- distance_p(user.geo, msg.geo) -}}{%- endif -%} | {% endif %}
 {% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
-{% for mail in msg.mail %}<a href="mailto:{{ mail }}?subject={{ msg.content|url_encode }}">E-mail</a>
-{% if not loop.last %}|{% endif %} {% endfor %}
-</li><br>
-
-{% endfor %}
+{%- for mail in msg.mail -%}
+	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
+	{{- 'label.email'|trans -}}
+	</a>
+{%- if not loop.last -%}|{%- endif -%}&nbsp;
+{%- endfor -%}
+</li>
+<br />
+{%- endfor -%}
 </ul>
 
-{% else %}
-<p>Er werd geen nieuw vraag of aanbod online geplaatst.</p>
-{% endif %}
+{%- else -%}
+<p>
+{{- trans('periodic_overview.ads.none') -}}
+</p>
+{%- endif -%}
 
-<p><a href="{{ new_message_url }}{{ validate_param }}">Geef zelf je eigen vraag of aanbod in.</a></p>
+<p>
+{{- 'periodic_overview.ads.add'|trans({
+	'%link_open%': mail_link_open('messages', {'add': '1', 'ev': email_token}, schema),
+	'%link_close%': '</a>'
+})|raw -}}
+</p>
 
-{% endmacro html %}
+{%- endmacro html -%}
 
-{% macro text(messages, group, new_message_url, messages_url, s3_url, validate_param) %}
+{% macro text(messages, schema, email_token) %}
 
-Recent Vraag en Aanbod
-----------------------
+{{ 'periodic_overview.ads.title'|trans|underline|raw }}
 
 {% if messages %}
-Deze lijst bevat vraag en aanbod dat de afgelopen {{ config('saldofreqdays', schema) }} dagen online is geplaatst.
+{{ 'periodic_overview.ads.explain'|trans({
+	'%link_open%': '',
+	'%link_close%': '',
+	'%days%': config('saldofreqdays', schema)
+})|raw }}
+
 {% for msg in messages %}
 
-{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} ({% if msg.images|length %}{{ msg.images|length }}{% else %}geen{% endif %} {% if msg.images|length == 1 %}afbeelding{% else %} afbeeldingen {% endif %})
-{{ msg.url }}{{ validate_param }}
-	Ingegeven door: {{ msg.user}}{{ validate_param }}
+{% if msg.offer -%}
+	{{- 'label.offer'|trans -}}
+{%- else -%}
+	{{- 'label.want'|trans -}}
+{%- endif -%}:&nbsp;
+{{- msg.content }}
+{{ mail_url('messages', {'id': msg.id, 'ev': email_token}, schema) }}
+{{ account(msg.id_user, schema) }}
+
 {% endfor %}
 {% else %}
-Er werd geen nieuw vraag of aanbod online geplaatst afgelopen {{ group.saldofreqdays }} dagen.
+{{ 'periodic_overview.ads.none'|trans({
+	'%link_open%': '',
+	'%link_close%': '',
+	'%days%': config('saldofreqdays', schema)
+})|raw }}
 {% endif %}
 
-Geef zelf je eigen vraag of aanbod in: {{ new_message_url }}{{ validate_param }}
+{{- 'periodic_overview.ads.add'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+})|raw -}}
 
-{% endmacro messages %}
+{{ mail_url('messages', {'add': '1', 'ev': email_token}, schema) }}
+
+{% endmacro text %}

@@ -48,8 +48,7 @@
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
-{{ m.text(messages, group, new_message_url,
-    messages_url, s3_url, validate_param) }}
+{{ m.text(messages, schema, validate_param) }}
 {% elseif b == 'intersystem' %}
 {{ i.text(intersystem, url_login, validate_param) }}
 {% elseif b == 'forum' %}
