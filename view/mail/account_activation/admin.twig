@@ -3,21 +3,21 @@
 
 {%- block subject_line -%}
 {{- 'account_activation_admin.subject'|trans({
-    '%account_name%': account(user.id, schema)
+    '%account_name%': account(user_id, schema)
 }) -}}
 {%- endblock subject_line %}
 
 {%- block html_content -%}
 <p>
 {{- 'account_activation_admin.message'|trans({
-    '%link_open%': mail_link_open('users', {'id': user.id}, schema),
+    '%link_open%': mail_link_open('users', {'id': user_id}, schema),
     '%link_close%': '</a>',
-    '%account_name%': account(user.id, schema),
+    '%account_name%': account(user_id, schema),
 })|raw -}}
 </p>
 
 <p>
-{%- if user.mail -%}
+{%- if user_email -%}
     {{- 'account_activation_admin.email_sent'|trans -}}
 {%- else -%}
     {{- 'account_activation_admin.no_email_sent'|trans -}}
@@ -30,12 +30,12 @@
 {{ 'account_activation_admin.message'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%account_name%': account(user.id, schema),
+    '%account_name%': account(user_id, schema),
 }) }}
 
-{{ mail_url('users', {'id': user.id}, schema) }}
+{{ mail_url('users', {'id': user_id}, schema) }}
 
-{% if user.mail %}
+{% if user_email %}
 {{ 'account_activation_admin.email_sent'|trans }}
 {% else %}
 {{ 'account_activation_admin.no_email_sent'|trans }}

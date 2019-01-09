@@ -838,10 +838,8 @@ if ($pw)
 					if ($to)
 					{
 						$vars = [
-							'user'			=> $user,
+							'user_id'		=> $pw,
 							'password'		=> $password,
-							'login_url'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
-							'support_url'	=> $app['base_url'] . '/support.php?src=p',
 						];
 
 						$app['queue.mail']->queue([
@@ -1581,16 +1579,25 @@ if ($add || $edit)
 
 					if ($user['status'] == 1)
 					{
-						if ($notify && $mailadr && $user['status'] == 1 && $password)
+						if ($notify && $password)
 						{
-							$user['mail'] = $mailadr;
-
 							if ($app['config']->get('mailenabled', $app['tschema']))
 							{
-								send_activation_mail($password, $user);
+								if ($mailadr)
+								{
+									send_activation_mail_user($id, $password);
+									$app['alert']->success('Een E-mail met paswoord is
+										naar de gebruiker verstuurd.');
+								}
+								else
+								{
+									$app['alert']->warning('Er is geen E-mail met paswoord
+										naar de gebruiker verstuurd want er is geen E-mail
+										adres ingesteld voor deze gebruiker.');
+								}
 
-								$app['alert']->success('Een E-mail met paswoord is
-									naar de gebruiker verstuurd.');
+								send_activation_mail_admin($id);
+
 							}
 							else
 							{
@@ -1725,19 +1732,27 @@ if ($add || $edit)
 								['id' => $value['id'], 'id_user' => $edit]);
 						}
 
-
 						if ($user['status'] == 1 && !$user_prefetch['adate'])
 						{
-							if ($notify && !empty($mailadr) && $password)
+							if ($notify && $password)
 							{
 								if ($app['config']->get('mailenabled', $app['tschema']))
 								{
-									$user['mail'] = $mailadr;
+									if ($mailadr)
+									{
+										send_activation_mail_user($edit, $password);
+										$app['alert']->success('E-mail met paswoord
+											naar de gebruiker verstuurd.');
+									}
+									else
+									{
+										$app['alert']->warning('Er werd geen E-mail
+											met passwoord naar de gebruiker verstuurd
+											want er is geen E-mail adres voor deze
+											gebruiker ingesteld.');
+									}
 
-									send_activation_mail($password, $user);
-
-									$app['alert']->success('E-mail met paswoord
-										naar de gebruiker verstuurd.');
+									send_activation_mail_admin($edit);
 								}
 								else
 								{
@@ -4806,31 +4821,38 @@ function get_dd(string $str):string
 	return $out;
 }
 
-function send_activation_mail(string $password, array $user):void
+function send_activation_mail_admin(
+	int $user_id
+):void
 {
-	// array user must contain id and mail (if mail addres exists)
-
 	global $app;
-
-	$vars = [
-		'user'			=> $user,
-		'password'		=> $password,
-	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_system']->get_admin($app['tschema']),
 		'vars'		=> $vars,
 		'template'	=> 'account_activation/admin',
+		'vars'		=> [
+			'user_id'		=> $user_id,
+			'user_email'	=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+		],
 	], 5000);
+}
+
+function send_activation_mail_user(int $user_id, string $password):void
+{
+	global $app;
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
-		'to' 		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
+		'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
 		'reply_to' 	=> $app['mail_addr_system']->get_support($app['tschema']),
 		'template'	=> 'account_activation/user',
-		'vars'		=> $vars,
-	], 5000);
+		'vars'		=> [
+			'user_id'	=> $user_id,
+			'password'	=> $password,
+		],
+	], 5100);
 }
 
 function delete_thumbprint(string $status):void
