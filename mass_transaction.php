@@ -339,7 +339,7 @@ if ($submit)
 					'transaction'	=> $transaction,
 					'from_user_id'	=> $transaction['id_from'],
 					'to_user_id'	=> $transaction['id_to'],
-					'user'			=> $app['user_cache']->get($user_id, $app['tschema']),
+					'user_id'		=> $user_id,
 				];
 
 				$app['queue.mail']->queue([
@@ -934,9 +934,7 @@ function mail_mass_transaction($mail_ary)
 
 	$from_user_id = $to_user_id = $one_user_id;
 
-	$users = $app['db']->executeQuery('select u.id,
-			u.saldo, u.status, u.minlimit, u.maxlimit,
-			u.name, u.letscode
+	$users = $app['db']->executeQuery('select u.id
 		from ' . $app['tschema'] . '.users u
 		where u.status in (1, 2)
 			and u.id in (?)',
@@ -959,10 +957,10 @@ function mail_mass_transaction($mail_ary)
 		$vars = [
 			'amount' 			=> $many_ary[$user_id]['amount'],
 			'transid' 			=> $many_ary[$user_id]['transid'],
-			'from_user' 		=> link_user($from_user_id, $app['tschema'], false),
-			'to_user'			=> link_user($to_user_id, $app['tschema'], false),
-			'transaction_url'	=> $app['base_url'] . '/transactions.php?id=' . $trans_map[$many_ary[$user_id]['transid']],
-			'user'				=> $user,
+			'from_user_id' 		=> $from_user_id,
+			'to_user_id'		=> $to_user_id,
+			'transaction_id'	=> $trans_map[$many_ary[$user_id]['transid']],
+			'user_id'			=> $user_id,
 		];
 
 		$app['queue.mail']->queue([
@@ -988,16 +986,11 @@ function mail_mass_transaction($mail_ary)
 		$user_id = $u['id'];
 
 		$users[] = [
-			'url'		=> $app['base_url'] . '/users.php?id=' . $user_id,
-			'text'		=> link_user($user_id, $app['tschema'], false),
 			'amount'	=> $many_ary[$user_id]['amount'],
 			'id'		=> $user_id,
 		];
 
 		$total_amount += $many_ary[$user_id]['amount'];
-
-		$text .= link_user($user_id, $app['tschema'], false) . $t . $t . $many_ary[$user_id]['amount'];
-		$text .= ' ' . $currency . $r;
 	}
 
 	$vars = array_merge($common_vars, [
@@ -1017,7 +1010,6 @@ function mail_mass_transaction($mail_ary)
 			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
 		'subject' 	=> $subject,
-		'text' 		=> $text,
 		'template'	=> 'admin_mass_transaction',
 		'vars'		=> $vars,
 	], 8000);

@@ -30,12 +30,11 @@ if ($token)
 					['password' => hash('sha512', $password)],
 					['id' => $user_id]);
 				$app['user_cache']->clear($user_id, $app['tschema']);
-				$user = $app['user_cache']->get($user_id, $app['tschema']);
 				$app['alert']->success('Paswoord opgeslagen.');
 
 				$vars = [
 					'password'		=> $password,
-					'user'			=> $user,
+					'user_id'		=> $user_id,
 				];
 
 				$app['queue.mail']->queue([
@@ -122,7 +121,7 @@ if (isset($_POST['zend']))
 	}
 	else if($email)
 	{
-		$user = $app['db']->fetchAll('select u.*
+		$user = $app['db']->fetchAll('select u.id
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc, ' .
 				$app['tschema'] . '.users u
@@ -138,15 +137,17 @@ if (isset($_POST['zend']))
 
 			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user['id'] . $app['tschema'] . time() . $email), 0, 12);
+				$user_id = $user['id'];
+
+				$token = substr(hash('sha512', $user_id . $app['tschema'] . time() . $email), 0, 12);
 				$key = $app['tschema'] . '_token_' . $token;
 
-				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
+				$app['predis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
 				$app['predis']->expire($key, 86400);
 
 				$vars = [
 					'token'			=> $token,
-					'user'			=> $user,
+					'user_id'		=> $user_id,
 				];
 
 				$app['queue.mail']->queue([

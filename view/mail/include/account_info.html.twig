@@ -5,24 +5,24 @@
 
 <ul>
 <li>
-    <a href="{{- mail_url('login', {'login': user.letscode}, schema) -}}">
+    <a href="{{- mail_url('login', {'login': account_code(user_id, schema)}, schema) -}}">
         {{- 'label.login'|trans -}}
     </a>
 </li>
 <li>
     {{- 'label.account_code'|trans -}}:&nbsp;
     <strong>
-        {{- user.letscode -}}
+        {{- account_code(user_id, schema) -}}
     </strong>
 </li>
 <li>{{- 'label.username'|trans -}}:&nbsp;
     <strong>
-        {{- user.name -}}
+        {{- username(user_id, schema) -}}
     </strong>
 </li>
 <li>{{- 'label.balance'|trans -}}:&nbsp;
     <strong>
-        {{- user.saldo -}}
+        {{- account_balance(user_id, schema) -}}
     </strong>&nbsp;
     {{- config('currency', schema) -}}
 </li>

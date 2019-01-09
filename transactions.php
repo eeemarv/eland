@@ -492,6 +492,7 @@ if ($add)
 					'schema'		=> $app['tschema'],
 					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 					'template'		=> 'transaction/intersystem_fail',
+					'vars'			=> $vars,
 				], 9000);
 
 				$app['alert']->error('De lokale commit van de interSysteem

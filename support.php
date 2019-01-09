@@ -36,7 +36,7 @@ if (isset($_POST['zend']))
 	if(!count($errors))
 	{
 		$vars = [
-			'user'		=> $app['user_cache']->get($app['s_id'], $app['tschema']),
+			'user_id'	=> $app['s_id'],
 			'can_reply'	=> $can_reply,
 			'message'	=> $message,
 		];
