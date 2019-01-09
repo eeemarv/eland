@@ -70,10 +70,11 @@ class user_exp_msgs extends schema_task
 			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
 
 			$this->mail->queue([
-				'to' 		=> $this->mail_addr_user->get($message['id_user'], $this->schema),
-				'schema' 	=> $this->schema,
-				'template' 	=> $mail_template,
-				'vars' 		=> $vars
+				'email_validate' 	=> true,
+				'to' 				=> $this->mail_addr_user->get($message['id_user'], $this->schema),
+				'schema' 			=> $this->schema,
+				'template' 			=> $mail_template,
+				'vars' 				=> $vars
 			], random_int(0, 5000));
 
 			error_log($mail_template);

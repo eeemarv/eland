@@ -34,9 +34,11 @@
 {{- mail_link_open('users', {'id', msg.id_user, 'ev': email_token}, schema)|raw -}}
 {{- account(msg.id_user, schema) -}}
 </a>
-{%- if msg.geo is defined and user.geo is defined -%}
-	{{- distance_p(user.geo, msg.geo) -}}{%- endif -%} | {% endif %}
-{% if msg.postcode %}postcode: {{ msg.postcode }} | {% endif %}
+{%- if msg.postcode -%}
+	{{- 'label.postcode'|trans -}}:&nbsp;
+		{{- msg.postcode -}}&nbsp;
+		|&nbsp;
+{%- endif -%}
 {%- for mail in msg.mail -%}
 	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
 	{{- 'label.email'|trans -}}

@@ -118,10 +118,10 @@ class saldo extends schema_task
 			$blocks_sorted[] = $block;
 		}
 
-	// fetch active users
+	// fetch all active users
 
 		$rs = $this->db->prepare('select u.id,
-				u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
+				u.name, u.saldo, u.status,
 				u.letscode, u.postcode, u.cron_saldo
 			from ' . $this->schema . '.users u
 			where u.status in (1, 2)');
@@ -208,8 +208,7 @@ class saldo extends schema_task
 			$rs = $this->db->prepare('select m.id, m.content,
 					m."Description" as description,
 					m.msg_type, m.id_user,
-					m.amount, m.units,
-					u.name, u.letscode, u.postcode
+					m.amount, m.units
 				from ' . $this->schema . '.messages m, ' .
 					$this->schema . '.users u
 				where m.id_user = u.id
@@ -249,16 +248,15 @@ class saldo extends schema_task
 
 				$rs = $this->db->prepare('select m.id, m.content,
 						m."Description" as description,
-						m.msg_type, m.id_user,
-						m.amount, m.units,
-						u.name, u.letscode, u.postcode
+						m.msg_type, m.id_user as user_id,
+						m.amount, m.units
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
 					where m.id_user = u.id
 						and m.local = \'f\'
-						and u.status IN (1, 2)
+						and u.status in (1, 2)
 						and m.cdate >= ?
-					order BY m.cdate DESC');
+					order by m.cdate DESC');
 
 				$rs->bindValue(1, $treshold_time);
 				$rs->execute();
@@ -276,8 +274,10 @@ class saldo extends schema_task
 				if (count($intersystem_msgs))
 				{
 					$intersystem[] = [
-						'group'		=> $this->config->get('systemname', $sch),
-						'messages'	=> $intersystem_msgs,
+						'eland_server'	=> true,
+						'elas'			=> false,
+						'schema'		=> $sch,
+						'messages'		=> $intersystem_msgs,
 					];
 				}
 			}
@@ -309,8 +309,10 @@ class saldo extends schema_task
 				if (count($intersystem_msgs))
 				{
 					$intersystem[] = [
-						'group'		=> $ary['groupname'],
-						'messages'	=> $intersystem_msgs,
+						'elas'			=> true,
+						'eland_server'	=> false,
+						'system_name'	=> $ary['groupname'],
+						'messages'		=> $intersystem_msgs,
 					];
 				}
 			}
@@ -537,6 +539,7 @@ class saldo extends schema_task
 							'subject'	=> $data['subject'],
 							'content'	=> $data['content'],
 							'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+							'id'		=> $row['eland_id'],
 							'ts'		=> $row['ts'],
 						];
 					}
@@ -561,7 +564,7 @@ class saldo extends schema_task
 
 					$docs[] = [
 						'name'			=> $data['name'] ?? $data['org_filename'],
-						'url'			=> $this->s3_url . $data['filename'],
+						'filename'		=> $data['filename'],
 						'ts'			=> $row['ts'],
 					];
 
@@ -619,7 +622,7 @@ class saldo extends schema_task
 			}
 
 			$this->mail->queue([
-				'validate_email'	=> true,
+				'email_validate'	=> true,
 				'schema'			=> $this->schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
