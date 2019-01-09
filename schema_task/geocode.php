@@ -9,7 +9,7 @@ use Monolog\Logger;
 use queue\geocode as geocode_queue;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 
 class geocode extends schema_task
 {
@@ -27,10 +27,10 @@ class geocode extends schema_task
 		Logger $monolog,
 		geocode_queue $geocode_queue,
 		schedule $schedule,
-		groups $groups
+		systems $systems
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->monolog = $monolog;
 		$this->cache = $cache;
 		$this->db = $db;

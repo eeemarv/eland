@@ -123,7 +123,7 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 		echo '<a href="';
 		echo $app['protocol'];
-		echo $app['groups']->get_host($login_schema);
+		echo $app['systems']->get_host($login_schema);
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';

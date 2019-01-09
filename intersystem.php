@@ -201,9 +201,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if ($app['groups']->get_host($add_schema))
+		if ($app['systems']->get_host($add_schema))
 		{
-			$group['url'] = $app['protocol'] . $app['groups']->get_host($add_schema);
+			$group['url'] = $app['protocol'] . $app['systems']->get_host($add_schema);
 			$group['groupname'] = $app['config']->get('systemname', $add_schema);
 			$group['localletscode'] = $app['config']->get('systemtag', $add_schema);
 		}
@@ -457,7 +457,7 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($group_schema = $app['groups']->get_schema($group['host']))
+	if ($group_schema = $app['systems']->get_schema($group['host']))
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span>';
 
@@ -575,9 +575,9 @@ foreach ($groups as $key => $g)
 
 	$letscodes[] = $g['localletscode'];
 
-	if ($app['groups']->get_schema($h))
+	if ($app['systems']->get_schema($h))
 	{
-		$s = $app['groups']->get_schema($h);
+		$s = $app['systems']->get_schema($h);
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
@@ -801,7 +801,7 @@ function get_schemas_groups():string
 
 	$url_ary = [];
 
-	foreach ($app['groups']->get_hosts() as $h)
+	foreach ($app['systems']->get_hosts() as $h)
 	{
 		$url_ary[] = $app['protocol'] . $h;
 	}
@@ -834,7 +834,7 @@ function get_schemas_groups():string
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($app['groups']->get_schemas() as $h => $s)
+	foreach ($app['systems']->get_schemas() as $h => $s)
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
@@ -883,7 +883,7 @@ function get_schemas_groups():string
 
 	$unavailable_explain = false;
 
-	foreach($app['groups']->get_schemas() as $h => $s)
+	foreach($app['systems']->get_schemas() as $h => $s)
 	{
 		$out .= '<tr';
 

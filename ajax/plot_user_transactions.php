@@ -68,7 +68,7 @@ foreach ($trans as $t)
 	{
 		$group = $_groups[$t['letscode']] ?? [];
 
-		if (isset($group['domain']) && $sch = $app['groups']->get_schema($group['domain']))
+		if (isset($group['domain']) && $sch = $app['systems']->get_schema($group['domain']))
 		{
 			[$code, $name] = explode(' ', $real);
 		}

@@ -6,28 +6,28 @@ use model\task_interface;
 use model\task;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 
 abstract class schema_task extends task implements task_interface
 {
-	protected $groups;
+	protected $systems;
 	protected $schema;
 
 	public function __construct(
 		schedule $schedule,
-		groups $groups
+		systems $systems
 	)
 	{
 		parent::__construct($schedule);
 
-		$this->groups = $groups;
+		$this->systems = $systems;
 	}
 
 	public function should_run():bool
 	{
 		$this->schedule->set_time();
 
-		foreach ($this->groups->get_schemas() as $schema)
+		foreach ($this->systems->get_schemas() as $schema)
 		{
 			$this->schema = $schema;
 

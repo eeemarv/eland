@@ -10,7 +10,7 @@ use Monolog\Logger;
 use queue\mail;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 use service\intersystems;
 use service\config;
 use service\mail_addr_user;
@@ -33,13 +33,13 @@ class saldo extends schema_task
 		Logger $monolog,
 		mail $mail,
 		schedule $schedule,
-		groups $groups,
+		systems $systems,
 		intersystems $intersystems,
 		config $config,
 		mail_addr_user $mail_addr_user
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->cache = $cache;

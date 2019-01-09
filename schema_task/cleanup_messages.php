@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 use service\config;
 
 class cleanup_messages extends schema_task
@@ -20,11 +20,11 @@ class cleanup_messages extends schema_task
 		db $db,
 		Logger $monolog,
 		schedule $schedule,
-		groups $groups,
+		systems $systems,
 		config $config
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->config = $config;

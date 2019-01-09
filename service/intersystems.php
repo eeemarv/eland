@@ -4,7 +4,7 @@ namespace service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as redis;
-use service\groups;
+use service\systems;
 use service\config;
 
 class intersystems
@@ -12,7 +12,7 @@ class intersystems
 	protected $ttl = 14400; // 4 hours
 	protected $redis;
 	protected $db;
-	protected $groups;
+	protected $systems;
 	protected $config;
 	protected $app_protocol;
 
@@ -22,11 +22,17 @@ class intersystems
 	protected $eland_accounts_schemas;
 	protected $ttl_eland_accounts_schemas = 86400; // 1 day
 
-	public function __construct(db $db, redis $redis, groups $groups, config $config, string $app_protocol)
+	public function __construct(
+		db $db,
+		redis $redis,
+		systems $systems,
+		config $config,
+		string $app_protocol
+	)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
-		$this->groups = $groups;
+		$this->systems = $systems;
 		$this->config = $config;
 		$this->app_protocol = $app_protocol;
 	}
@@ -71,7 +77,7 @@ class intersystems
 
 	public function clear_eland_cache():void
 	{
-		foreach ($this->groups->get_schemas() as $s)
+		foreach ($this->systems->get_schemas() as $s)
 		{
 			$this->redis->del($s . '_eland_interlets_groups');
 			$this->redis->del($s . '_eland_intersystems');
@@ -114,7 +120,7 @@ class intersystems
 		{
 			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
-			if ($s = $this->groups->get_schema($h))
+			if ($s = $this->systems->get_schema($h))
 			{
 				// ignore if the group is not LETS or not interLETS
 
@@ -141,13 +147,13 @@ class intersystems
 
 		$this->redis->expire($key_interlets_accounts, $this->ttl_eland_accounts_schemas);
 
-		$s_url = $this->app_protocol . $this->groups->get_host($s_schema);
+		$s_url = $this->app_protocol . $this->systems->get_host($s_schema);
 
 		$this->eland_ary = [];
 
 		foreach ($interlets_hosts as $h)
 		{
-			$s = $this->groups->get_schema($h);
+			$s = $this->systems->get_schema($h);
 
 			$url = $this->db->fetchColumn('select g.url
 				from ' . $s . '.letsgroups g, ' . $s . '.users u
@@ -213,7 +219,7 @@ class intersystems
 		{
 			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
 
-			if (!$this->groups->get_schema($h))
+			if (!$this->systems->get_schema($h))
 			{
 				$row['domain'] = $h;
 				$this->elas_ary[$row['id']] = $row;

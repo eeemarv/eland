@@ -52,7 +52,7 @@ if ($app_redirect = getenv('APP_REDIRECT_' . $app['env_server_name']))
 	exit;
 }
 
-$app['tschema'] = $app['groups']->get_schema($app['server_name']);
+$app['tschema'] = $app['systems']->get_schema($app['server_name']);
 
 if (!$app['tschema'])
 {
@@ -187,7 +187,7 @@ else if (ctype_digit((string) $app['s_id']))
 
 	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=';
+		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=';
 		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
 		header('Location: ' . $location);
 		exit;
@@ -219,7 +219,7 @@ else if ($app['s_id'] == 'master')
 {
 	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
+		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -558,7 +558,7 @@ function generate_url(string $entity, array $params = [], $sch = false):string
 
 	$params = $params ? '?' . $params : '';
 
-	$path = $sch ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $app['rootpath'];
+	$path = $sch ? $app['protocol'] . $app['systems']->get_host($sch) . '/' : $app['rootpath'];
 
 	return $path . $entity . '.php' . $params;
 }

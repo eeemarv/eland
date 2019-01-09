@@ -4,7 +4,7 @@ namespace service;
 
 use Doctrine\DBAL\Connection as db;
 
-class groups
+class systems
 {
 	protected $db;
 	protected $schemas = [];

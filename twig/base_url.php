@@ -2,25 +2,25 @@
 
 namespace twig;
 
-use service\groups;
+use service\systems;
 
 class base_url
 {
-	protected $groups;
+	protected $systems;
 	protected $protocol;
 
 	public function __construct(
-		groups $groups,
+		systems $systems,
 		string $protocol
 	)
 	{
-		$this->groups = $groups;
+		$this->systems = $systems;
 		$this->protocol = $protocol;
 	}
 
 	public function get(string $schema)
 	{
-		return $this->protocol . $this->groups->get_host($schema);
+		return $this->protocol . $this->systems->get_host($schema);
 	}
 
 	public function get_link_open(string $schema)

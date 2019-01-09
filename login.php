@@ -43,7 +43,7 @@ if ($token)
 
 		if ($referrer !== 'unknown')
 		{
-			// record logins to link the apikeys to domains and groups
+			// record logins to link the apikeys to domains and systems
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
 			$app['xdb']->set('apikey_login', $apikey, [
 				'domain' => $domain_referrer

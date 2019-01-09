@@ -69,13 +69,13 @@ $app->extend('twig', function($twig, $app) {
 		},
 		twig\base_url::class => function() use ($app){
 			return new twig\base_url(
-				$app['groups'],
+				$app['systems'],
 				$app['protocol']
 			);
 		},
 		twig\mail_url::class => function() use ($app){
 			return new twig\mail_url(
-				$app['groups'],
+				$app['systems'],
 				$app['protocol']
 			);
 		},
@@ -243,8 +243,8 @@ $app['mail_transaction'] = function($app){
  * Get all schemas, systems and domains on this server
  */
 
-$app['groups'] = function ($app){
-	return new service\groups(
+$app['systems'] = function ($app){
+	return new service\systems(
 		$app['db'],
 		$app['overall_domain']
 	);
@@ -296,7 +296,7 @@ $app['intersystems'] = function ($app){
 	return new service\intersystems(
 		$app['db'],
 		$app['predis'],
-		$app['groups'],
+		$app['systems'],
 		$app['config'],
 		$app['protocol']
 	);
@@ -359,7 +359,7 @@ $app['task.cleanup_images'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['s3'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -367,7 +367,7 @@ $app['task.get_elas_intersystem_domains'] = function ($app){
 	return new task\get_elas_intersystem_domains(
 		$app['db'],
 		$app['cache'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -387,7 +387,7 @@ $app['schema_task.cleanup_messages'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups'],
+		$app['systems'],
 		$app['config']
 	);
 };
@@ -398,7 +398,7 @@ $app['schema_task.cleanup_news'] = function ($app){
 		$app['xdb'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -409,7 +409,7 @@ $app['schema_task.geocode'] = function ($app){
 		$app['monolog'],
 		$app['queue.geocode'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -418,7 +418,7 @@ $app['schema_task.saldo_update'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -427,7 +427,7 @@ $app['schema_task.sync_user_cache'] = function ($app){
 		$app['db'],
 		$app['user_cache'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -436,7 +436,7 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 		$app['db'],
 		$app['queue.mail'],
 		$app['schedule'],
-		$app['groups'],
+		$app['systems'],
 		$app['config'],
 		$app['user_cache'],
 		$app['mail_addr_user']
@@ -451,7 +451,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['monolog'],
 		$app['queue.mail'],
 		$app['schedule'],
-		$app['groups'],
+		$app['systems'],
 		$app['intersystems'],
 		$app['config'],
 		$app['mail_addr_user']
@@ -467,7 +467,7 @@ $app['schema_task.interlets_fetch'] = function ($app){
 		$app['typeahead'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 

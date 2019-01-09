@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection as db;
 use queue\mail;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 use service\config;
 use service\user_cache;
 use service\mail_addr_user;
@@ -24,13 +24,13 @@ class user_exp_msgs extends schema_task
 		db $db,
 		mail $mail,
 		schedule $schedule,
-		groups $groups,
+		systems $systems,
 		config $config,
 		user_cache $user_cache,
 		mail_addr_user $mail_addr_user
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->mail = $mail;
 		$this->config = $config;

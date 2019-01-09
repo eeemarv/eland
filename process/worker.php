@@ -17,7 +17,7 @@ $app['monitor_process']->boot();
 
 error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
 error_log(' --- ');
-error_log('schemas: ' . json_encode($app['groups']->get_schemas()));
+error_log('schemas: ' . json_encode($app['systems']->get_schemas()));
 error_log(' --- ');
 
 $app['assets']->write_file_hash_ary();

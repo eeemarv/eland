@@ -331,7 +331,7 @@ if ($add)
 
 			cancel();
 		}
-		else if (!$app['groups']->get_schema($group_domain))
+		else if (!$app['systems']->get_schema($group_domain))
 		{
 			// The interSysteem group uses eLAS or is on another server
 
@@ -512,7 +512,7 @@ if ($add)
 		{
 			// the interSystem group is on the same server (eLAND)
 
-			$remote_schema = $app['groups']->get_schema($group_domain);
+			$remote_schema = $app['systems']->get_schema($group_domain);
 
 			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -791,9 +791,9 @@ if ($add)
 
 		if ($tus)
 		{
-			if ($app['groups']->get_host($tus))
+			if ($app['systems']->get_host($tus))
 			{
-				$host_from_tus = $app['groups']->get_host($tus);
+				$host_from_tus = $app['systems']->get_host($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
 					from ' . $app['tschema'] . '.letsgroups

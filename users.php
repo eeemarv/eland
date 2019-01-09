@@ -746,7 +746,7 @@ if ($app['s_admin']
 			$vars[$key] = '{{ ' . $key . ' }}';
 		}
 
-		$replace = $app['protocol'] . $app['groups']->get_host($app['tschema']) . '/users.php?';
+		$replace = $app['protocol'] . $app['systems']->get_host($app['tschema']) . '/users.php?';
 
 		$out = str_replace('./users.php?', $replace, $alert_msg);
 		$out .= '<br><br>';
@@ -1854,13 +1854,13 @@ if ($add || $edit)
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($group['url'] && ($remote_schema = $app['groups']->get_schema($group['url'])))
+					if ($group['url'] && ($remote_schema = $app['systems']->get_schema($group['url'])))
 					{
 						$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-						if ($app['groups']->get_schema($group['domain']))
+						if ($app['systems']->get_schema($group['domain']))
 						{
-							$remote_schema = $app['groups']->get_schema($group['domain']);
+							$remote_schema = $app['systems']->get_schema($group['domain']);
 
 							$admin_mail = $app['config']->get('admin', $remote_schema);
 

@@ -121,7 +121,7 @@ if (!$app['s_anonymous']
 		echo '>';
 
 		echo '<a href="';
-		echo $app['protocol'] . $app['groups']->get_host($login_schema);
+		echo $app['protocol'] . $app['systems']->get_host($login_schema);
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
