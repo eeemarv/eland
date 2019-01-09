@@ -4,13 +4,10 @@ namespace schema_task;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as Redis;
 use service\xdb;
 use service\cache;
 use Monolog\Logger;
 use queue\mail;
-use service\date_format;
-use service\distance;
 
 use service\schedule;
 use service\groups;
@@ -22,14 +19,9 @@ class saldo extends schema_task
 {
 	protected $db;
 	protected $xdb;
-	protected $redis;
 	protected $cache;
 	protected $monolog;
 	protected $mail;
-	protected $s3_url;
-	protected $protocol;
-	protected $date_format;
-	protected $distance;
 	protected $interlets_groups;
 	protected $config;
 	protected $mail_addr_user;
@@ -37,14 +29,9 @@ class saldo extends schema_task
 	public function __construct(
 		db $db,
 		xdb $xdb,
-		Redis $redis,
 		cache $cache,
 		Logger $monolog,
 		mail $mail,
-		string $s3_url,
-		string $protocol,
-		date_format $date_format,
-		distance $distance,
 		schedule $schedule,
 		groups $groups,
 		interlets_groups $interlets_groups,
@@ -55,13 +42,9 @@ class saldo extends schema_task
 		parent::__construct($schedule, $groups);
 		$this->db = $db;
 		$this->xdb = $xdb;
-		$this->redis = $redis;
 		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
-		$this->s3_url = $s3_url;
-		$this->protocol = $protocol;
-		$this->date_format = $date_format;
 		$this->interlets_groups = $interlets_groups;
 		$this->config = $config;
 		$this->mail_addr_user = $mail_addr_user;
@@ -71,15 +54,6 @@ class saldo extends schema_task
 	{
 
 		// vars
-
-		$host = $this->groups->get_host($this->schema);
-
-		if (!$host)
-		{
-			return;
-		}
-
-		$base_url = $this->protocol . $host;
 
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
 
@@ -332,15 +306,12 @@ class saldo extends schema_task
 				$news_access_ary[$row['eland_id']] = $row['data']['access'];
 			}
 
-			$query = 'select n.*, u.name, u.letscode
-				from ' . $this->schema . '.news n, ' .
-					$this->schema . '.users u
+			$query = 'select n.*
+				from ' . $this->schema . '.news n
 				where n.approved = \'t\'
-					and n.published = \'t\'
-					and n.id_user = u.id ';
+					and n.published = \'t\' ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
-
 			$query .= 'order by n.itemdate ';
 			$query .= $this->config->get('news_order_asc', $this->schema) === '1' ? 'asc' : 'desc';
 
@@ -374,12 +345,6 @@ class saldo extends schema_task
 					continue;
 				}
 
-				$row['url'] = $base_url . '/news.php?id=' . $row['id'];
-				$row['user'] = $row['letscode'] . ' ' . $row['name'];
-				$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
-				$row['itemdate_formatted'] =
-					$this->date_format->get($row['itemdate'], 'day', $this->schema);
-
 				$news[] = $row;
 			}
 		}
@@ -389,8 +354,7 @@ class saldo extends schema_task
 		if (isset($block_options['new_users']))
 		{
 
-			$rs = $this->db->prepare('select u.id, u.name,
-					u.letscode, u.postcode
+			$rs = $this->db->prepare('select u.id
 				from ' . $this->schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
@@ -403,10 +367,7 @@ class saldo extends schema_task
 
 			while ($row = $rs->fetch())
 			{
-				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-				$row['text'] = $row['letscode'] . ' ' . $row['name'];
-
-				$new_users[] = $row;
+				$new_users[] = $row['id'];
 			}
 		}
 
@@ -414,11 +375,14 @@ class saldo extends schema_task
 
 		if (isset($block_options['leaving_users']))
 		{
-			$query = 'select u.id, u.name, u.letscode, u.postcode
+			$query = 'select u.id
 				from ' . $this->schema . '.users u
 				where u.status = 2';
 
-			$query .= ($block_options['leaving_users'] == 'recent') ? ' and mdate > ?' : '';
+			if ($block_options['leaving_users'] === 'recent')
+			{
+				$query .= ' and mdate > ?';
+			}
 
 			$rs = $this->db->prepare($query);
 
@@ -431,10 +395,7 @@ class saldo extends schema_task
 
 			while ($row = $rs->fetch())
 			{
-				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-				$row['text'] = $row['letscode'] . ' ' . $row['name'];
-
-				$leaving_users[] = $row;
+				$leaving_users[] = $row['id'];
 			}
 		}
 
@@ -442,35 +403,16 @@ class saldo extends schema_task
 
 		if (isset($block_options['transactions']))
 		{
-			$rs = $this->db->prepare('select t.id_from, t.id_to,
-					t.real_from, t.real_to,
-					t.amount, t.cdate, t.description,
-					uf.name as from_name, uf.letscode as from_letscode,
-					ut.name as to_name, ut.letscode as to_letscode
-				from ' . $this->schema . '.transactions t, ' .
-					$this->schema . '.users uf, ' .
-					$this->schema . '.users ut
-				where t.id_from = uf.id
-					and t.id_to = ut.id
-					and t.cdate > ?');
+			$rs = $this->db->prepare('select t.*
+				from ' . $this->schema . '.transactions t
+				where t.cdate > ?');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
 			{
-				$transactions[] = [
-					'amount'	=> $row['amount'],
-					'description'	=> $row['description'],
-					'to_user'		=> $row['to_letscode'] . ' ' . $row['to_name'],
-					'to_user_url'	=> $base_url . '/users.php?id=' . $row['id_to'],
-					'from_user'		=> $row['from_letscode'] . ' ' . $row['from_name'],
-					'from_user_url'	=> $base_url . '/users.php?id=' . $row['id_from'],
-					'real_to'		=> $row['real_to'],
-					'real_from'		=> $row['real_from'],
-					'to_name'		=> $row['to_name'],
-					'from_name'		=> $row['from_name'],
-				];
+				$transactions[] = $row;
 			}
 		}
 
@@ -480,7 +422,6 @@ class saldo extends schema_task
 
 		if (isset($block_options['forum']))
 		{
-
 			// new topics
 
 			$rows = $this->xdb->get_many([
@@ -499,7 +440,7 @@ class saldo extends schema_task
 					$forum[] = [
 						'subject'	=> $data['subject'],
 						'content'	=> $data['content'],
-						'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+						'id'		=> $row['eland_id'],
 						'ts'		=> $row['ts'],
 					];
 
@@ -538,7 +479,6 @@ class saldo extends schema_task
 						$forum[] = [
 							'subject'	=> $data['subject'],
 							'content'	=> $data['content'],
-							'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
 							'id'		=> $row['eland_id'],
 							'ts'		=> $row['ts'],
 						];
@@ -567,8 +507,6 @@ class saldo extends schema_task
 						'filename'		=> $data['filename'],
 						'ts'			=> $row['ts'],
 					];
-
-					$forum_topics[$row['eland_id']] = true;
 				}
 			}
 		}
@@ -636,12 +574,6 @@ class saldo extends schema_task
 			$log_to[] = $log_str;
 		}
 
-		$this->monolog->debug('x-saldomail, schema: ' .
-			$this->schema . ' host:' . $host .
-			' pid: ' . getmypid() . ' uid: ' .
-			getmyuid() . ' inode: ' . getmyinode(),
-			['schema' => $this->schema]);
-
 		if (count($log_to))
 		{
 			$this->monolog->info('Saldomail queued: ' .
@@ -649,7 +581,7 @@ class saldo extends schema_task
 		}
 		else
 		{
-			$this->monolog->info('mail: no saldomail queued',
+			$this->monolog->info('Saldomail NOT queued (no users)',
 				['schema' => $this->schema]);
 		}
 

@@ -15,23 +15,21 @@
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
 {%- for b in blocks_sorted -%}
 {%- if b == 'messages' -%}
-{{- m.html(messages, group, new_message_url,
-    messages_url, s3_url, validate_param) -}}
+{{- m.html(messages, schema, email_token) -}}
 {%- elseif b == 'intersystem' -%}
-    {{- i.html(intersystem, url_login, validate_param) -}}
+    {{- i.html(intersystem, schema, email_token) -}}
 {%- elseif b == 'forum' -%}
-    {{- f.html(forum, forum_url, validate_param) -}}
+    {{- f.html(forum, schema, email_token) -}}
 {%- elseif b == 'news' -%}
-    {{- n.html(news, block_options.news, news_url, validate_param) -}}
+    {{- n.html(news, block_options.news, schema, email_token) -}}
 {%- elseif b == 'docs' -%}
-    {{- d.html(docs, validate_param) -}}
+    {{- d.html(docs, schema, email_token) -}}
 {%- elseif b == 'new_users' -%}
-    {{- u.html_new(new_users, block_options.new_users, validate_param) -}}
+    {{- u.html_new(new_users, block_options.new_users, schema, email_token) -}}
 {%- elseif b == 'leaving_users' -%}
-    {{- u.html_leaving(leaving_users, block_options.leaving_users, validate_param) -}}
+    {{- u.html_leaving(leaving_users, block_options.leaving_users, schema, email_token) -}}
 {%- elseif b == 'transactions' -%}
-    {{- t.html(transactions, group,
-        new_transaction_url, transactions_url, validate_param) -}}
+    {{- t.html(transactions, schema, email_token) -}}
 {%- endif -%}
 
 {%- endfor -%}
@@ -48,29 +46,39 @@
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
-{{ m.text(messages, schema, validate_param) }}
+{{ m.text(messages, schema, email_token) }}
 {% elseif b == 'intersystem' %}
-{{ i.text(intersystem, url_login, validate_param) }}
+{{ i.text(intersystem, schema, email_token) }}
 {% elseif b == 'forum' %}
-{{ f.text(forum, forum_url, validate_param) }}
+{{ f.text(forum, schema, email_token) }}
 {% elseif b == 'news' %}
-{{ n.text(news, block_options.news, news_url, validate_param) }}
+{{ n.text(news, block_options.news, schema, email_token) }}
 {% elseif b == 'docs' %}
-{{ d.text(docs, validate_param) }}
+{{ d.text(docs, schema, email_token) }}
 {% elseif b == 'new_users' %}
-{{ u.text_new(new_users, block_options.new_users, validate_param) }}
+{{ u.text_new(new_users, block_options.new_users, schema, email_token) }}
 {% elseif b == 'leaving_users' %}
-{{ u.text_leaving(leaving_users, block_options.leaving_users, validate_param) }}
+{{ u.text_leaving(leaving_users, block_options.leaving_users, schema, email_token) }}
 {% elseif b == 'transactions' %}
-{{ t.text(transactions, group,
-    new_transaction_url, transactions_url, validate_param) }}
+{{ t.text(transactions, schema, email_token) }}
 {% endif %}
 {% endblock text_content %}
 
 {%- block html_unsubscribe -%}
-
+<p>
+{{- 'periodic_overview.unsubscribe'|trans({
+    '%link_open%': mail_link_open('users', {'id', user.id, 'ev': email_token}, schema),
+    '%link_close%': '</a>'
+})|raw -}}
+</p>
 {%- endblock html_unsubscribe -%}
 
 {% block text_unsubscribe %}
 
+{{ 'periodic_overview.unsubscribe'|trans({
+    '%link_open%': '',
+    '%link_close%': ''
+})|raw }}
+
+{{ mail_url('users', {'id': user.id, 'ev': email_token}, schema) }}
 {% endblock text_unsubscribe %}

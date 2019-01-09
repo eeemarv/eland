@@ -1,17 +1,46 @@
-{% macro html(messages, schema, email_token) -%}
+
+{% macro interlets(interlets, url_login, validate_param) %}
+
+{% if interlets %}
+<h4>Recent interSysteem vraag en aanbod</h4>
+
+<p><a href="{{ url_login }}{{ validate_param }}">Log in</a> en ga via 'Systeem' in de navigatiebalk naar het betreffende interSysteem voor meer informatie.</p>
+
+{% for grp in interlets %}
+<h5>Systeem: {{ grp.group }}</h5>
+<ul>
+	{% for msg in grp.messages %}
+		<li>{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} <br>
+		Ingegeven door: {{ msg.user }} [{{ grp.group }}]</li><br>
+	{% endfor %}
+</ul>
+{% endfor %}
+
+{% endif %}
+
+{% endmacro interlets %}
+
+
+
+
+{% macro html(intersystem, schema, email_token) -%}
+{%- if intersystem -%}
 <h3>
-{{- 'periodic_overview.ads.title'|trans -}}
+{{- 'periodic_overview.intersystem.title'|trans -}}
 </h3>
-{% if messages %}
 <p>
-{{- 'periodic_overview.ads.explain'|trans({
-	'%link_open%': mail_link_open('messages', {'ev': email_token}, schema),
-	'%link_close%': '</a>',
-	'%days%': config('saldofreqdays', schema)
+{{- 'periodic_overview.intersystem.explain'|trans({
+	'%link_open%': mail_link_open('login', {'ev': email_token}, schema),
+	'%link_close%': '</a>'
 })|raw -}}
 </p>
 <ul>
-{% for msg in messages %}
+{% for system in intersystem %}
+<h5>
+{{- 'label.system'|trans -}}:&nbsp;{{ grp.group }}
+</h5>
+
+
 <li>
 	<strong>
 		{{- mail_link_open('messages', {'id': msg.id, 'ev': email_token}, schema)|raw -}}

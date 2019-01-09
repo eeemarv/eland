@@ -16,6 +16,7 @@ label:
   postcode: Postcode
   price: (Richt-)prijs
   seconds: Seconden
+  system: Systeem
   to: Naar
   total: Totaal
   transaction_id: Transactie ID
@@ -374,6 +375,10 @@ mass_transaction_one_to_many:
 periodic_overview:
   subject: >-
     Periodiek Overzicht
+  unsubscribe: >-
+    Je ontvangt deze E-mail omdat de optie
+    'Periodieke Overzichts E-mail' aangevinkt
+    staat in %link_open%je instellingen%link_close%
   ads:
     title: >-
       Recent Vraag en Aanbod
@@ -387,6 +392,9 @@ periodic_overview:
   intersystem_ads:
     title: >-
       Recent InterSysteem Vraag en Aanbod
+    explain: >-
+      %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
+      naar het betreffende InterSysteem.
   docs:
     title: >-
       Nieuwe Documenten
