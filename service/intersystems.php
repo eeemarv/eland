@@ -7,7 +7,7 @@ use Predis\Client as redis;
 use service\groups;
 use service\config;
 
-class interlets_groups
+class intersystems
 {
 	protected $ttl = 14400; // 4 hours
 	protected $redis;
@@ -62,6 +62,7 @@ class interlets_groups
 	public function clear_elas_cache(string $s_schema):void
 	{
 		$this->redis->del($s_schema . '_elas_interlets_groups');
+		$this->redis->del($s_schema . '_elas_intersystems');
 	}
 
 	/**
@@ -73,6 +74,7 @@ class interlets_groups
 		foreach ($this->groups->get_schemas() as $s)
 		{
 			$this->redis->del($s . '_eland_interlets_groups');
+			$this->redis->del($s . '_eland_intersystems');
 		}
 	}
 
@@ -87,7 +89,7 @@ class interlets_groups
 			return [];
 		}
 
-		$redis_key = $s_schema . '_eland_interlets_groups';
+		$redis_key = $s_schema . '_eland_intersystems';
 
 		if (!$refresh && $this->redis->exists($redis_key))
 		{
@@ -181,7 +183,7 @@ class interlets_groups
 			return [];
 		}
 
-		$redis_key = $s_schema . '_elas_interlets_groups';
+		$redis_key = $s_schema . '_elas_intersystems';
 
 		if ($this->redis->exists($redis_key))
 		{

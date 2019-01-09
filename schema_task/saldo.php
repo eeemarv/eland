@@ -11,7 +11,7 @@ use queue\mail;
 
 use service\schedule;
 use service\groups;
-use service\interlets_groups;
+use service\intersystems;
 use service\config;
 use service\mail_addr_user;
 
@@ -22,7 +22,7 @@ class saldo extends schema_task
 	protected $cache;
 	protected $monolog;
 	protected $mail;
-	protected $interlets_groups;
+	protected $intersystems;
 	protected $config;
 	protected $mail_addr_user;
 
@@ -34,7 +34,7 @@ class saldo extends schema_task
 		mail $mail,
 		schedule $schedule,
 		groups $groups,
-		interlets_groups $interlets_groups,
+		intersystems $intersystems,
 		config $config,
 		mail_addr_user $mail_addr_user
 	)
@@ -45,7 +45,7 @@ class saldo extends schema_task
 		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
-		$this->interlets_groups = $interlets_groups;
+		$this->intersystems = $intersystems;
 		$this->config = $config;
 		$this->mail_addr_user = $mail_addr_user;
 	}
@@ -214,7 +214,7 @@ class saldo extends schema_task
 
 		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
 		{
-			$eland_ary = $this->interlets_groups->get_eland($this->schema);
+			$eland_ary = $this->intersystems->get_eland($this->schema);
 
 			foreach ($eland_ary as $sch => $d)
 			{
@@ -256,7 +256,7 @@ class saldo extends schema_task
 				}
 			}
 
-			$elas_ary = $this->interlets_groups->get_elas($this->schema);
+			$elas_ary = $this->intersystems->get_elas($this->schema);
 
 			foreach ($elas_ary as $group_id => $ary)
 			{

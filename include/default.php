@@ -292,8 +292,8 @@ $app['mail_addr_user'] = function ($app){
 	);
 };
 
-$app['interlets_groups'] = function ($app){
-	return new service\interlets_groups(
+$app['intersystems'] = function ($app){
+	return new service\intersystems(
 		$app['db'],
 		$app['predis'],
 		$app['groups'],
@@ -452,7 +452,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['queue.mail'],
 		$app['schedule'],
 		$app['groups'],
-		$app['interlets_groups'],
+		$app['intersystems'],
 		$app['config'],
 		$app['mail_addr_user']
 	);

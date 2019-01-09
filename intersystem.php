@@ -139,7 +139,7 @@ if ($add || $edit)
 				{
 					$app['alert']->success('InterSysteem aangepast.');
 
-					$app['interlets_groups']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['tschema']);
 
 					cancel($edit);
 				}
@@ -171,7 +171,7 @@ if ($add || $edit)
 
 					$id = $app['db']->lastInsertId($app['tschema'] . '.letsgroups_id_seq');
 
-					$app['interlets_groups']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['tschema']);
 
 					cancel($id);
 				}
@@ -381,7 +381,7 @@ if ($del)
 		{
 			$app['alert']->success('InterSysteem verwijderd.');
 
-			$app['interlets_groups']->clear_cache($app['tschema']);
+			$app['intersystems']->clear_cache($app['tschema']);
 
 			cancel();
 		}

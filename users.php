@@ -568,7 +568,7 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 			' for users ' . $users_log,
 			['schema' => $app['tschema']]);
 
-		$app['interlets_groups']->clear_cache($app['s_schema']);
+		$app['intersystems']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
@@ -618,7 +618,7 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 			$users_log,
 			['schema' => $app['tschema']]);
 
-		$app['interlets_groups']->clear_cache($app['s_schema']);
+		$app['intersystems']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
 		cancel();
@@ -1126,7 +1126,7 @@ if ($del)
 				break;
 		}
 
-		$app['interlets_groups']->clear_cache($app['s_schema']);
+		$app['intersystems']->clear_cache($app['s_schema']);
 
 		cancel();
 	}
@@ -1615,7 +1615,7 @@ if ($add || $edit)
 						delete_thumbprint('extern');
 					}
 
-					$app['interlets_groups']->clear_cache($app['s_schema']);
+					$app['intersystems']->clear_cache($app['s_schema']);
 
 					cancel($id);
 				}
@@ -1766,7 +1766,7 @@ if ($add || $edit)
 							delete_thumbprint('extern');
 						}
 
-						$app['interlets_groups']->clear_cache($app['s_schema']);
+						$app['intersystems']->clear_cache($app['s_schema']);
 					}
 					cancel($edit);
 				}

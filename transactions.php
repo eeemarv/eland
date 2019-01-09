@@ -1316,7 +1316,7 @@ if ($add)
  * interSystem accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
+$interlets_accounts_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
 $s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
 	[$app['s_schema'] => true]);

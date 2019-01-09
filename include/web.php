@@ -309,8 +309,8 @@ if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 {
 	$app['intersystem_ary'] = [
-		'elas'	=> $app['interlets_groups']->get_elas($app['s_schema']),
-		'eland'	=> $app['interlets_groups']->get_eland($app['s_schema']),
+		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),
+		'eland'	=> $app['intersystems']->get_eland($app['s_schema']),
 	];
 }
 else
