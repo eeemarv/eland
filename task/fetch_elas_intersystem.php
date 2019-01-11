@@ -111,7 +111,7 @@ class fetch_elas_intersystem
 		}
 
 		error_log('-- apikeys --');
-		error_log($apikeys);
+		error_log(json_encode($apikeys));
 
 		$v_users = array_intersect_key($this->last_fetch['users'] ?? [], $apikeys);
 		$v_msgs = array_intersect_key($this->last_fetch['msgs'] ?? [], $apikeys);
