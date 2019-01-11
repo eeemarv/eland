@@ -58,6 +58,9 @@ class get_elas_intersystem_domains
 			}
 		}
 
+		error_log('-- get eLAS intersystem domains --');
+		error_log(json_encode($elas_interlets_domains));
+
 		if ($elas_interlets_domains == $domains)
 		{
 			return;
