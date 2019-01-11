@@ -66,6 +66,12 @@ class fetch_elas_intersystem
 			$apikeys_fails_cleanup[] = $apikey;
 		}
 
+		if (count($apikeys_ignore))
+		{
+			error_log('Apikeys ignored (failed previously):');
+			error_log(json_encode($apikeys_ignore));
+		}
+
 		foreach ($apikeys_fails_cleanup as $apikey)
 		{
 			unset($this->apikeys_fails[$apikey]);
@@ -99,10 +105,12 @@ class fetch_elas_intersystem
 			{
 				if (!isset($sch_ary['remoteapikey']))
 				{
+					error_log('Remote apikey is not set for domain ' . $domain .
+						' in schema ' . $sch);
 					continue;
 				}
 
-				if (!isset($apikeys_ignore[$apikey]))
+				if (!isset($apikeys_ignore[$sch_ary['remoteapikey']]))
 				{
 					$apikeys[$domain] = $sch_ary['remoteapikey'];
 					continue;
