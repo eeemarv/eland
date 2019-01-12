@@ -4083,7 +4083,8 @@ if ($v_list || $v_extended || $v_tiles)
 	echo '<span class="input-group-addon">';
 	echo '<i class="fa fa-search"></i>';
 	echo '</span>';
-	echo '<input type="text" class="form-control" id="q" name="q" value="' . $q . '" ';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="q" name="q" value="' . $q . '" ';
 	echo 'placeholder="Zoeken">';
 	echo '</div>';
 	echo '</div>';
@@ -4244,8 +4245,16 @@ if ($v_list)
 
 	$checkbox = '<input type="checkbox" name="sel_%1$s" value="1"%2$s>&nbsp;';
 
+	$can_link = $app['s_admin'];
+
 	foreach($users as $u)
 	{
+		if (($app['s_user'] || $app['s_guest'])
+			&& ($u['status'] === 1 || $u['status'] === 2))
+		{
+			$can_link = true;
+		}
+
 		$id = $u['id'];
 
 		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
@@ -4269,7 +4278,7 @@ if ($v_list)
 
 				if (isset($link_user_keys[$key]))
 				{
-					echo link_user($u, $app['tschema'], $status, false, $key);
+					echo link_user($u, $app['tschema'], $can_link, false, $key);
 				}
 				else if (isset($date_keys[$key]))
 				{
@@ -4286,11 +4295,11 @@ if ($v_list)
 				{
 					if ($app['s_admin'] || $u['fullname_access'] === 'interlets')
 					{
-						echo link_user($u, $app['tschema'], $status, false, $fullname);
+						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
 					}
 					else if ($app['s_user'] && $u['fullname_access'] !== 'admin')
 					{
-						echo link_user($u, $app['tschema'], $status, false, $key);
+						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
 					}
 					else
 					{
@@ -4300,7 +4309,7 @@ if ($v_list)
 				}
 				else
 				{
-					echo $u[$key];
+					echo htmlspecialchars($u[$key]);
 				}
 
 				echo '</td>';
@@ -4606,66 +4615,6 @@ if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
-	}
-}
-else if ($v_extended)
-{
-	foreach ($users as $u)
-	{
-		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
-
-		$class = (isset($st_class_ary[$row_stat])) ? ' bg-' . $st_class_ary[$row_stat] : '';
-
-		echo '<div class="panel panel-info printview">';
-		echo '<div class="panel-body';
-		echo $class;
-		echo '">';
-
-		echo '<div class="media">';
-
-		if ($u['PictureFile'])
-		{
-			echo '<div class="media-left">';
-			echo '<a href="';
-			echo generate_url('users', ['id' => $u['id']]);
-			echo '">';
-			echo '<img class="media-object" ';
-			echo 'src="' . $app['s3_url'] . $u['PictureFile'];
-			echo '" width="150">';
-			echo '</a>';
-			echo '</div>';
-		}
-		echo '<div class="media-body">';
-
-		echo '<h3 class="media-heading">';
-		echo link_user($u, $app['tschema'], $status);
-		echo '</h3>';
-
-		echo htmlspecialchars($u['hobbies'], ENT_QUOTES);
-		echo htmlspecialchars($u['postcode'], ENT_QUOTES);
-		echo '</div>';
-		echo '</div>';
-
-
-		echo '</div>';
-
-		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>';
-		echo link_user($msg['id_user'], $app['tschema'], $status);
-		echo $msg['postcode'] ? ', postcode: ' . $u['postcode'] : '';
-
-		if ($app['s_admin'])
-		{
-			echo '<span class="inline-buttons pull-right">';
-			echo aphp('users', ['edit' => $u['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('users', ['del' => $u['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-			echo '</span>';
-		}
-
-		echo '</p>';
-		echo '</div>';
-
 		echo '</div>';
 	}
 }
