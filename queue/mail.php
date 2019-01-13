@@ -333,9 +333,4 @@ class mail implements queue_interface
 			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
 			$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
 	}
-
-	public function get_interval():int
-	{
-		return 5;
-	}
 }
