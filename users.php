@@ -1469,7 +1469,7 @@ if ($add || $edit)
 		{
 			$user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['tschema']);
 
-			if ($user['birthday'] === false)
+			if ($user['birthday'] === '')
 			{
 				$errors[] = 'Fout in formaat geboortedag.';
 				$user['birthday'] = '';
@@ -3335,7 +3335,7 @@ if ($v_list)
 			$saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['tschema']);
 		}
 
-		if ($saldo_date_rev === false || $saldo_date == '')
+		if ($saldo_date_rev === '' || $saldo_date == '')
 		{
 			$saldo_date = $app['date_format']->get('', 'day', $app['tschema']);
 

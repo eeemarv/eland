@@ -60,7 +60,7 @@ if ($add || $edit)
 		{
 			$news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
 
-			if ($news['itemdate'] === false)
+			if ($news['itemdate'] === '')
 			{
 				$errors[] = 'Fout formaat in agendadatum.';
 
