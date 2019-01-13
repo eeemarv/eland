@@ -528,8 +528,22 @@ if ($id)
 
 	if($app['s_admin'])
 	{
-		$top_buttons .= aphp('news', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Nieuwsbericht aanpassen', 'pencil', true);
-		$top_buttons .= aphp('news', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Nieuwsbericht verwijderen', 'times', true);
+		$top_buttons .= aphp('news',
+			['edit' => $id],
+			'Aanpassen',
+			'btn btn-primary',
+			'Nieuwsbericht aanpassen',
+			'pencil',
+			true
+		);
+		$top_buttons .= aphp('news',
+			['del' => $id],
+			'Verwijderen',
+			'btn btn-danger',
+			'Nieuwsbericht verwijderen',
+			'times',
+			true
+		);
 
 		if (!$news_item['approved'])
 		{
@@ -579,7 +593,7 @@ if ($id)
 
 	echo '<dd>';
 
-	if ($news['itemdate'])
+	if ($news_item['itemdate'])
 	{
 		echo $app['date_format']->get($news_item['itemdate'], 'day', $app['tschema']);
 	}
