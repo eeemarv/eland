@@ -3227,10 +3227,16 @@ if ($v_list)
 	];
 
 	$columns['p'] = [
-		'adr_split'					=> '.',
-		'activity_days'				=> '.',
-		'activity_filter_letscode'	=> '.',
-		'saldo_date'				=> '.',
+		'c'	=> [
+			'adr_split'	=> '.',
+		],
+		'a'	=> [
+			'days'	=> '.',
+			'code'	=> '.',
+		],
+		'u'	=> [
+			'saldo_date'	=> '.',
+		],
 	];
 
 	$session_users_columns_key = 'users_columns_' . $app['s_accountrole'];
@@ -3285,11 +3291,11 @@ if ($v_list)
 		$show_columns = $app['session']->get($session_users_columns_key) ?? $preset_columns;
 	}
 
-	$adr_split = $show_columns['p']['adr_split'] ?? '';
-	$activity_days = $show_columns['p']['activity_days'] ?? 365;
+	$adr_split = $show_columns['p']['c']['adr_split'] ?? '';
+	$activity_days = $show_columns['p']['a']['days'] ?? 365;
 	$activity_days = $activity_days < 1 ? 365 : $activity_days;
-	$activity_filter_code = $show_columns['p']['activity_filter_code'] ?? '';
-	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
+	$activity_filter_code = $show_columns['p']['a']['code'] ?? '';
+	$saldo_date = $show_columns['p']['u']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
 
 	$users = $app['db']->fetchAll('select u.*
@@ -3844,7 +3850,7 @@ if ($v_list)
 			echo '</span>';
 			echo '<input type="number" ';
 			echo 'id="p_activity_days" ';
-			echo 'name="sh[p][activity_days]" ';
+			echo 'name="sh[p][a][days]" ';
 			echo 'value="';
 			echo $activity_days;
 			echo '" ';
@@ -3890,7 +3896,7 @@ if ($v_list)
 			echo '<i class="fa fa-user"></i>';
 			echo '</span>';
 			echo '<input type="text" ';
-			echo 'name="sh[p][activity_filter_code]" ';
+			echo 'name="sh[p][a][code]" ';
 			echo 'id="p_activity_filter_code" ';
 			echo 'value="';
 			echo $activity_filter_code;
@@ -3960,7 +3966,7 @@ if ($v_list)
 			{
 				echo ', split door teken: ';
 				echo '<input type="text" ';
-				echo 'name="sh[p][adr_split]" ';
+				echo 'name="sh[p][c][adr_split]" ';
 				echo 'size="1" value="';
 				echo $adr_split;
 				echo '">';
@@ -3974,7 +3980,7 @@ if ($v_list)
 				echo '</span>';
 				echo '<input type="text" ';
 				echo 'class="form-control" ';
-				echo 'name="sh[p][saldo_date]" ';
+				echo 'name="sh[p][u][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
 				echo 'data-date-format="';
 				echo $app['date_format']->datepicker_format($app['tschema']);
