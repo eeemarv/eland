@@ -4362,12 +4362,21 @@ if ($v_list)
 
 					if (isset($activity[$id][$a_key][$key]))
 					{
-						echo aphp('transactions', [
-							'fcode'	=> $key === 'in' ? '' : $u['letscode'],
-							'tcode'	=> $key === 'out' ? '' : $u['letscode'],
-							'andor'	=> $key === 'total' ? 'or' : 'and',
-							'fdate' => $from_date,
-						], $activity[$id][$a_key][$key]);
+						if ($code_only_activity_filter_code)
+						{
+							echo $activity[$id][$a_key][$key];
+						}
+						else
+						{
+							echo aphp('transactions', [
+								'f' => [
+									'fcode'	=> $key === 'in' ? '' : $u['letscode'],
+									'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+									'andor'	=> $key === 'total' ? 'or' : 'and',
+									'fdate' => $from_date,
+								],
+							], $activity[$id][$a_key][$key]);
+						}
 					}
 
 					echo '</td>';
