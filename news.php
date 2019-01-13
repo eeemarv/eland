@@ -19,11 +19,11 @@ if ($approve)
 
 	if ($app['db']->update($app['tschema'] . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
-		$app['alert']->success('Nieuwsbericht goedgekeurd');
+		$app['alert']->success('Nieuwsbericht goedgekeurd en gepubliceerd.');
 	}
 	else
 	{
-		$app['alert']->error('Goedkeuren nieuwsbericht mislukt.');
+		$app['alert']->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
 	}
 	cancel($approve);
 }
@@ -131,7 +131,7 @@ if ($add && $submit && !count($errors))
 				'vars'		=> $vars,
 			], 7000);
 
-			$app['alert']->success('Nieuwsbericht wacht op goedkeuring van een beheerder');
+			$app['alert']->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
 			cancel();
 		}
 		cancel($id);
@@ -192,6 +192,16 @@ if ($add || $edit)
 	echo '<form method="post">';
 
 	echo '<div class="form-group">';
+	echo '<label for="headline" class="control-label">';
+	echo 'Titel</label>';
+	echo '<input type="text" class="form-control" ';
+	echo 'id="headline" name="headline" ';
+	echo 'value="';
+	echo $news['headline'];
+	echo '" required maxlength="200">';
+	echo '</div>';
+
+	echo '<div class="form-group">';
 	echo '<label for="itemdate" class="control-label">';
 	echo 'Agenda datum</label>';
 	echo '<div class="input-group">';
@@ -240,16 +250,6 @@ if ($add || $edit)
 	echo $news['location'];
 	echo '" maxlength="128">';
 	echo '</div>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="headline" class="control-label">';
-	echo 'Titel</label>';
-	echo '<input type="text" class="form-control" ';
-	echo 'id="headline" name="headline" ';
-	echo 'value="';
-	echo $news['headline'];
-	echo '" required maxlength="200">';
 	echo '</div>';
 
 	echo '<div class="form-group">';
@@ -335,9 +335,9 @@ if ($del)
 
 	echo '<dl>';
 
-	echo '<dt>Bericht</dt>';
+	echo '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
 	echo '<dd>';
-	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
+	echo $news['approved'] ? 'Ja' : 'Nee';
 	echo '</dd>';
 
 	echo '<dt>Agendadatum</dt>';
@@ -355,7 +355,7 @@ if ($del)
 
 	echo '</dd>';
 
-	echo '<dt>Behoud na datum?</dt>';
+	echo '<dt>Behoud na Datum?</dt>';
 	echo '<dd>';
 	echo $news['sticky'] ? 'Ja' : 'Nee';
 	echo '</dd>';
@@ -374,19 +374,19 @@ if ($del)
 
 	echo '</dd>';
 
-	echo '<dt>Ingegeven door</dt>';
+	echo '<dt>Bericht/Details</dt>';
 	echo '<dd>';
-	echo link_user($news['id_user'], $app['tschema']);
-	echo '</dd>';
-
-	echo '<dt>Goedgekeurd</dt>';
-	echo '<dd>';
-	echo $news['approved'] ? 'Ja' : 'Nee';
+	echo nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
 	echo '</dd>';
 
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
 	echo $app['access_control']->get_label($news_access);
+	echo '</dd>';
+
+	echo '<dt>Ingegeven door</dt>';
+	echo '<dd>';
+	echo link_user($news['id_user'], $app['tschema']);
 	echo '</dd>';
 
 	echo '</dl>';
@@ -565,28 +565,20 @@ if ($id)
 
 	include __DIR__ . '/include/header.php';
 
-	if ($show_visibility)
-	{
-		echo '<p>Zichtbaarheid: ';
-		echo $app['access_control']->get_label($news_item['access']);
-		echo '</p>';
-	}
-
 	$background = $news_item['approved'] ? '' : ' bg-warning';
 
 	echo '<div class="panel panel-default printview">';
-	echo '<div class="panel-heading">';
-
-	echo '<p>Bericht</p>';
-	echo '</div>';
 	echo '<div class="panel-body' . $background . '">';
-	echo nl2br(htmlspecialchars($news_item['newsitem'],ENT_QUOTES));
-	echo '</div></div>';
-
-	echo '<div class="panel panel-default printview">';
-	echo '<div class="panel-heading">';
 
 	echo '<dl>';
+
+	if ($app['s_admin'])
+	{
+		echo '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
+		echo '<dd>';
+		echo $news_item['approved'] ? 'Ja' : 'Nee';
+		echo '</dd>';
+	}
 
 	echo '<dt>Agendadatum</dt>';
 
@@ -622,18 +614,23 @@ if ($id)
 
 	echo '</dd>';
 
+	echo '<dt>Bericht/Details</dt>';
+	echo '<dd>';
+	echo nl2br(htmlspecialchars($news_item['newsitem'],ENT_QUOTES));
+	echo '</dd>';
+
+	if ($show_visibility)
+	{
+		echo '<dt>Zichtbaarheid</dt>';
+		echo '<dd>';
+		echo $app['access_control']->get_label($news_item['access']);
+		echo '</dd>';
+	}
+
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
 	echo link_user($news_item['id_user'], $app['tschema']);
 	echo '</dd>';
-
-	if ($app['s_admin'])
-	{
-		echo '<dt>Goedgekeurd</dt>';
-		echo '<dd>';
-		echo $news_item['approved'] ? 'Ja' : 'Nee';
-		echo '</dd>';
-	}
 
 	echo '</dl>';
 
@@ -797,37 +794,75 @@ else if ($v_extended)
 
 		echo '<div class="media">';
 		echo '<div class="media-body">';
-		echo '<h3 class="media-heading">';
+		echo '<h2 class="media-heading">';
 		echo aphp('news', ['id' => $n['id']], $n['headline']);
-		echo '</h3>';
-		echo nl2br(htmlspecialchars($n['newsitem'],ENT_QUOTES));
+		echo '</h2>';
+
+		if (!$n['approved'])
+		{
+			echo '<p class="text-warning">';
+			echo '<strong>';
+			echo 'Dit nieuwsbericht wacht op goedkeuring en publicatie door een admin';
+			echo '</strong>';
+			echo '</p>';
+		}
 
 		echo '<dl>';
 
-		if ($n['location'])
-		{
-			echo '<dt>';
-			echo 'Locatie';
-			echo '</dt>';
-			echo '<dd>';
-			echo htmlspecialchars($n['location'], ENT_QUOTES);
-			echo '</dd>';
-		}
+		echo '<dt>';
+		echo 'Agendadatum';
+		echo '</dt>';
+		echo '<dd>';
 
 		if ($n['itemdate'])
 		{
-			echo '<dt>';
-			echo 'Agendadatum';
-			echo '</dt>';
-			echo '<dd>';
 			echo $app['date_format']->get($n['itemdate'], 'day', $app['tschema']);
+
+			echo '<br><i>';
 
 			if ($n['sticky'])
 			{
-				echo ' <i>(Nieuwsbericht blijft behouden na datum)</i>';
+				echo 'Dit nieuwsbericht blijft behouden na deze datum.';
 			}
-			echo '</dd>';
+			else
+			{
+				echo 'Dit nieuwsbericht wordt automatisch gewist na deze datum.';
+			}
+
+			echo '</i>';
+
 		}
+		else
+		{
+			echo '<i class="fa fa-times></i>';
+		}
+
+		echo '</dd>';
+
+		echo '<dt>';
+		echo 'Locatie';
+		echo '</dt>';
+		echo '<dd>';
+
+		if ($n['location'])
+		{
+			echo htmlspecialchars($n['location'], ENT_QUOTES);
+		}
+		else
+		{
+			echo '<i class="fa fa-times"></i>';
+		}
+
+		echo '</dd>';
+
+		echo '</dl>';
+
+		echo '<h4>Bericht/Details</h4>';
+		echo '<p>';
+		echo nl2br(htmlspecialchars($n['newsitem'],ENT_QUOTES));
+		echo '</p>';
+
+		echo '<dl>';
 
 		if ($show_visibility)
 		{
@@ -862,7 +897,6 @@ else if ($v_extended)
 		}
 		echo '</p>';
 		echo '</div>';
-
 		echo '</div>';
 	}
 }
