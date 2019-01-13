@@ -3139,7 +3139,6 @@ if (!$app['p_view'])
 }
 
 $v_list = $app['p_view'] === 'list';
-$v_extended = $app['p_view'] === 'extended';
 $v_tiles = $app['p_view'] === 'tiles';
 $v_map = $app['p_view'] === 'map';
 
@@ -3784,7 +3783,7 @@ if ($v_map)
 	echo '</div>';
 }
 
-if ($v_list || $v_extended || $v_tiles)
+if ($v_list || $v_tiles)
 {
 	echo '<form method="get" action="';
 	echo generate_url('users', $params);
@@ -4019,7 +4018,7 @@ if ($v_list)
 	echo '</div>';
 }
 
-if ($v_list || $v_extended || $v_tiles)
+if ($v_list || $v_tiles)
 {
 	echo '<br>';
 
