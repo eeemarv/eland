@@ -45,13 +45,16 @@ class geocode implements queue_interface
 
 		if (!$adr || !$uid || !$sch)
 		{
-			error_log('geocode 1');
+			$this->monolog->debug('geocoding process data missing: ' .
+				json_encode($data),
+				['schema' => $sch]);
 			return;
 		}
 
 		if ($this->cache->exists('geo_sleep'))
 		{
-			$this->monolog->debug('geocoding task is at sleep.', ['schema' => $sch]);
+			$this->monolog->debug('geocoding task is at sleep.',
+				['schema' => $sch]);
 			return;
 		}
 
@@ -62,11 +65,13 @@ class geocode implements queue_interface
 			$user['name'] . ' (' . $uid . ')';
 
 		$geo_status_key = 'geo_status_' . $adr;
-
 		$key = 'geo_' . $adr;
 
 		if (!$this->cache->exists($geo_status_key))
 		{
+			$this->monolog->debug('geocoding proces geo_status_key missing: ' .
+				$geo_status_key . ' for data ' . json_encode($data),
+				['schema' => $sch]);
 			return;
 		}
 
@@ -79,6 +84,7 @@ class geocode implements queue_interface
 			return;
 		}
 
+		// lat, lng
 		$coords = $this->geocode_service->getCoordinates($adr);
 
 		if (count($coords))
@@ -125,12 +131,12 @@ class geocode implements queue_interface
 			return;
 		}
 
+		$data['adr'] = trim($data['adr']);
+
 		$log_ary = [];
 
 		$key = 'geo_' . $data['adr'];
 		$status_key = 'geo_status_' . $data['adr'];
-
-		$log = json_encode($data);
 
 		if ($this->cache->exists($key))
 		{
