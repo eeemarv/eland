@@ -3288,71 +3288,9 @@ if ($v_list)
 	$adr_split = $show_columns['p']['adr_split'] ?? '';
 	$activity_days = $show_columns['p']['activity_days'] ?? 365;
 	$activity_days = $activity_days < 1 ? 365 : $activity_days;
-	$activity_filter_letscode = $show_columns['p']['activity_filter_letscode'] ?? '';
+	$activity_filter_code = $show_columns['p']['activity_filter_code'] ?? '';
 	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
-
-	$type_contact = $app['db']->fetchAll('select id, abbrev, name
-		from ' . $app['tschema'] . '.type_contact');
-
-	$columns = [
-		'u'		=> [
-			'letscode'		=> 'Code',
-			'name'			=> 'Naam',
-			'fullname'		=> 'Volledige naam',
-			'postcode'		=> 'Postcode',
-			'accountrole'	=> 'Rol',
-			'saldo'			=> 'Saldo',
-			'saldo_date'	=> 'Saldo op ',
-			'minlimit'		=> 'Min',
-			'maxlimit'		=> 'Max',
-			'comments'		=> 'Commentaar',
-			'hobbies'		=> 'Hobbies/interesses',
-		],
-	];
-
-	if ($app['s_admin'])
-	{
-		$columns['u'] += [
-			'admincomment'	=> 'Admin commentaar',
-			'cron_saldo'	=> 'Periodieke Overzichts E-mail',
-			'cdate'			=> 'Gecreëerd',
-			'mdate'			=> 'Aangepast',
-			'adate'			=> 'Geactiveerd',
-			'lastlogin'		=> 'Laatst ingelogd',
-		];
-	}
-
-	foreach ($type_contact as $tc)
-	{
-		$columns['c'][$tc['abbrev']] = $tc['name'];
-	}
-
-	if (!$app['s_elas_guest'])
-	{
-		$columns['d'] = [
-			'distance'	=> 'Afstand',
-		];
-	}
-
-	$columns['m'] = [
-		'wants'		=> 'Vraag',
-		'offers'	=> 'Aanbod',
-		'total'		=> 'Vraag en aanbod',
-	];
-
-	$columns['a'] = [
-		'trans'		=> [
-			'in'	=> 'Transacties in',
-			'out'	=> 'Transacties uit',
-			'total'	=> 'Transacties totaal',
-		],
-		'amount'	=> [
-			'in'	=> $app['config']->get('currency', $app['tschema']) . ' in',
-			'out'	=> $app['config']->get('currency', $app['tschema']) . ' uit',
-			'total'	=> $app['config']->get('currency', $app['tschema']) . ' totaal',
-		],
-	];
 
 	$users = $app['db']->fetchAll('select u.*
 		from ' . $app['tschema'] . '.users u
@@ -3541,13 +3479,13 @@ if ($v_list)
 		$ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
 		$sql_bind = [$ts];
 
-		$activity_filter_letscode = trim($activity_filter_letscode);
+		$activity_filter_code = trim($activity_filter_code);
 
-		if ($activity_filter_letscode)
+		if ($activity_filter_code)
 		{
-			[$code_only_activity_filter_letscode] = explode(' ', $activity_filter_letscode);
+			[$code_only_activity_filter_code] = explode(' ', $activity_filter_code);
 			$and = ' and u.letscode <> ? ';
-			$sql_bind[] = trim($code_only_activity_filter_letscode);
+			$sql_bind[] = trim($code_only_activity_filter_code);
 		}
 		else
 		{
@@ -3865,6 +3803,11 @@ if ($v_list)
 
 	foreach ($columns as $group => $ary)
 	{
+		if ($group === 'p')
+		{
+			continue;
+		}
+
 		if ($group === 'm' || $group === 'c')
 		{
 			echo '</div>';
@@ -3947,10 +3890,10 @@ if ($v_list)
 			echo '<i class="fa fa-user"></i>';
 			echo '</span>';
 			echo '<input type="text" ';
-			echo 'name="sh[p][activity_filter_letscode]" ';
-			echo 'id="p_activity_filter_letscode" ';
+			echo 'name="sh[p][activity_filter_code]" ';
+			echo 'id="p_activity_filter_code" ';
 			echo 'value="';
-			echo $activity_filter_letscode;
+			echo $activity_filter_code;
 			echo '" ';
 			echo 'placeholder="Account Code" ';
 			echo 'class="form-control" ';
