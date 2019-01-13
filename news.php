@@ -164,7 +164,6 @@ if ($edit)
 	$news = $app['db']->fetchAssoc('select *
 		from ' . $app['tschema'] . '.news
 		where id = ?', [$edit]);
-	[$news['itemdate']] = explode(' ', $news['itemdate']);
 
 	$news_access = $app['xdb']->get('news_access', $edit,
 		$app['tschema'])['data']['access'];
@@ -220,6 +219,15 @@ if ($add || $edit)
 	echo '</div>';
 
 	echo '<div class="form-group">';
+	echo '<label for="sticky" class="control-label">';
+	echo '<input type="checkbox" id="sticky" name="sticky" ';
+	echo 'value="1"';
+	echo  $news['sticky'] ? ' checked="checked"' : '';
+	echo '>';
+	echo ' Behoud na datum</label>';
+	echo '</div>';
+
+	echo '<div class="form-group">';
 	echo '<label for="location" class="control-label">';
 	echo 'Locatie</label>';
 	echo '<div class="input-group">';
@@ -251,15 +259,6 @@ if ($add || $edit)
 	echo 'class="form-control" rows="10" required>';
 	echo $news['newsitem'];
 	echo '</textarea>';
-	echo '</div>';
-
-	echo '<div class="form-group">';
-	echo '<label for="sticky" class="control-label">';
-	echo '<input type="checkbox" id="sticky" name="sticky" ';
-	echo 'value="1"';
-	echo  $news['sticky'] === 't' ? ' checked="checked"' : '';
-	echo '>';
-	echo ' Behoud na datum</label>';
 	echo '</div>';
 
 	if ($app['s_user'])
@@ -345,15 +344,20 @@ if ($del)
 
 	echo '<dd>';
 
-	if ($itemdate)
+	if ($news['itemdate'])
 	{
-		echo $app['date_format']->get($itemdate, 'day', $app['tschema']);
+		echo $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
 	}
 	else
 	{
 		echo '<i class="fa fa-times"></i>';
 	}
 
+	echo '</dd>';
+
+	echo '<dt>Behoud na datum?</dt>';
+	echo '<dd>';
+	echo $news['sticky'] ? 'Ja' : 'Nee';
 	echo '</dd>';
 
 	echo '<dt>Locatie</dt>';
@@ -378,11 +382,6 @@ if ($del)
 	echo '<dt>Goedgekeurd</dt>';
 	echo '<dd>';
 	echo $news['approved'] ? 'Ja' : 'Nee';
-	echo '</dd>';
-
-	echo '<dt>Behoud na datum?</dt>';
-	echo '<dd>';
-	echo $news['sticky'] ? 'Ja' : 'Nee';
 	echo '</dd>';
 
 	echo '<dt>Zichtbaarheid</dt>';
@@ -604,6 +603,11 @@ if ($id)
 
 	echo '</dd>';
 
+	echo '<dt>Behoud na datum?</dt>';
+	echo '<dd>';
+	echo $news_item['sticky'] ? 'Ja' : 'Nee';
+	echo '</dd>';
+
 	echo '<dt>Locatie</dt>';
 	echo '<dd>';
 
@@ -629,12 +633,8 @@ if ($id)
 		echo '<dd>';
 		echo $news_item['approved'] ? 'Ja' : 'Nee';
 		echo '</dd>';
-
-		echo '<dt>Behoud na datum?</dt>';
-		echo '<dd>';
-		echo $news_item['sticky'] ? 'Ja' : 'Nee';
-		echo '</dd>';
 	}
+
 	echo '</dl>';
 
 	echo '</div>';
