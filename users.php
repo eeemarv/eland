@@ -3214,8 +3214,8 @@ if ($v_list)
 
 	$message_type_filter = [
 		'wants'		=> ['want' => 'on'],
-		'offers'	=> ['offer'	=> 'on'],
-		'total'		=> ['want' => 'on', 'offer' => 'on'],
+		'offers'	=> ['offer' => 'on'],
+		'total'		=> '',
 	];
 
 	$columns['a'] = [
