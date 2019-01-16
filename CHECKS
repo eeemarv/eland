@@ -1,5 +1,2 @@
-WAIT=5
-TIMEOUT=5
-ATTEMPTS=5
 
 /checks.php Checks_OK
