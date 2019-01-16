@@ -3212,6 +3212,12 @@ if ($v_list)
 		'total'		=> 'Vraag en aanbod',
 	];
 
+	$message_type_filter = [
+		'wants'		=> ['want' => 'on'],
+		'offers'	=> ['offer'	=> 'on'],
+		'total'		=> ['want' => 'on', 'offer' => 'on'],
+	];
+
 	$columns['a'] = [
 		'trans'		=> [
 			'in'	=> 'Transacties in',
@@ -4341,8 +4347,10 @@ if ($v_list)
 				if (isset($msgs_count[$id][$key]))
 				{
 					echo aphp('messages', [
-						'uid' 	=> $id,
-						'type' 	=> $key,
+						'f'	=> [
+							'uid' 	=> $id,
+							'type' 	=> $message_type_filter[$key],
+						],
 					], $msgs_count[$id][$key]);
 				}
 

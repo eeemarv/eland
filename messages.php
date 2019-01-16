@@ -1816,7 +1816,6 @@ $s_owner = !$app['s_guest']
 
 $v_list = $app['p_view'] === 'list' || $app['p_inline'];
 $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
-$v_map = $app['p_view'] === 'map' && !$app['p_inline'];
 
 $params = [
 	'sort'	=> [
@@ -1906,95 +1905,46 @@ if (isset($filter['cid'])
 	$params['f']['cid'] = $filter['cid'];
 }
 
-if (!isset($filter['s']))
-{
-	$filter['valid'] = [
-		'yes'	=> 'on',
-		'no'	=> 'on',
-	];
-}
+$filter_valid = isset($filter['valid'])
+	&& (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
 
-if (isset($filter['valid'])
-	&& count($filter['valid']) === 2)
-{
-	$params['f']['valid'] = [
-		'yes'	=> 'on',
-		'no'	=> 'on',
-	];
-}
-else if (!isset($filter['valid']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_valid)
 {
 	if (isset($filter['valid']['yes']))
 	{
 		$where_sql[] = 'm.validity >= now()';
 		$params['f']['valid']['yes'] = 'on';
 	}
-	else if (isset($filter['valid']['no']))
+	else
 	{
 		$where_sql[] = 'm.validity < now()';
 		$params['f']['valid']['no'] = 'on';
 	}
 }
 
-if (!isset($filter['s']))
-{
-	$filter['type'] = [
-		'want'	=> 'on',
-		'offer'	=> 'on',
-	];
-}
+$filter_type = isset($filter['type'])
+	&& (isset($filter['type']['want']) xor isset($filter['type']['offer']));
 
-if (isset($filter['type']) && count($filter['type']) === 2)
-{
-	$params['f']['type'] = [
-		'want'	=> 'on',
-		'offer'	=> 'on',
-	];
-}
-else if (!isset($filter['type']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_type)
 {
 	if (isset($filter['type']['want']))
 	{
 		$where_sql[] = 'm.msg_type = 0';
 		$params['f']['type']['want'] = 'on';
 	}
-	else if (isset($filter['type']['offer']))
+	else
 	{
 		$where_sql[] = 'm.msg_type = 1';
 		$params['f']['type']['offer'] = 'on';
 	}
 }
 
-if (!isset($filter['s']))
-{
-	$filter['ustatus'] = [
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-		'active'	=> 'on',
-	];
-}
+$filter_ustatus = isset($filter['ustatus']) &&
+	!(isset($filter['ustatus']['new'])
+		&& isset($filter['ustatus']['leaving'])
+		&& isset($filter['ustatus']['active']));
 
-if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
-{
-	$params['f']['ustatus'] = [
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-		'active'	=> 'on',
-	];
-}
-else if (!isset($filter['ustatus']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_ustatus)
 {
 	if (isset($filter['ustatus']['new']))
 	{
@@ -2020,11 +1970,6 @@ else
 	{
 		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
 	}
-}
-
-if (isset($filter['s']))
-{
-	$params['f']['s'] = '1';
 }
 
 if ($app['s_guest'])
@@ -2222,9 +2167,9 @@ if ($app['s_admin'] || $app['s_user'])
 $csv_en = $app['s_admin'] && $v_list;
 
 $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
-	|| count($filter['type']) !== 2
-	|| count($filter['valid']) !== 2
-	|| count($filter['ustatus']) !== 3;
+	|| $filter_type
+	|| $filter_valid
+	|| $filter_ustatus;
 
 $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
