@@ -28,6 +28,9 @@ $app['request_uri'] = $_SERVER['REQUEST_URI'];
 $app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
+error_log($app['request_uri']);
+
+
 /*
  * check if we are on the request hosting url.
  */

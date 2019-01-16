@@ -4370,7 +4370,7 @@ if ($v_list)
 
 					if (isset($activity[$id][$a_key][$key]))
 					{
-						if ($code_only_activity_filter_code)
+						if (isset($code_only_activity_filter_code))
 						{
 							echo $activity[$id][$a_key][$key];
 						}
