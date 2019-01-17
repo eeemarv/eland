@@ -2604,24 +2604,24 @@ if ($id)
 		order by u.letscode desc
 		limit 1', $sql_bind);
 
-	$interlets_group_missing = false;
+	$intersystem_missing = false;
 
 	if ($app['s_admin'] && $user['accountrole'] === 'interlets'
 		&& $app['config']->get('interlets_en', $app['tschema'])
 		&& $app['config']->get('template_lets', $app['tschema']))
 	{
-		$interlets_group_id = $app['db']->fetchColumn('select id
+		$intersystem_id = $app['db']->fetchColumn('select id
 			from ' . $app['tschema'] . '.letsgroups
 			where localletscode = ?', [$user['letscode']]);
 
-		if (!$interlets_group_id)
+		if (!$intersystem_id)
 		{
-			$interlets_group_missing = true;
+			$intersystem_missing = true;
 		}
 	}
 	else
 	{
-		$interlets_group_id = false;
+		$intersystem_id = false;
 	}
 
 	$app['assets']->add([
@@ -2651,6 +2651,7 @@ if ($id)
 			$title . ' aanpassen',
 			'pencil',
 			true);
+
 		$top_buttons .= aphp(
 			'users',
 			['pw' => $id],
@@ -2676,16 +2677,16 @@ if ($id)
 		|| (!$s_owner && $user['status'] !== 7
 			&& !($app['s_guest'] && $app['s_group_self'])))
 	{
-			$tus = ['add' => 1, 'tuid' => $id];
+		$tus = ['add' => 1, 'tuid' => $id];
 
-			if (!$app['s_group_self'])
-			{
-				$tus['tus'] = $app['tschema'];
-			}
+		if (!$app['s_group_self'])
+		{
+			$tus['tus'] = $app['tschema'];
+		}
 
-			$top_buttons .= aphp('transactions', $tus, 'Transactie',
-				'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
-				'exchange', true, false, $app['s_schema']);
+		$top_buttons .= aphp('transactions', $tus, 'Transactie',
+			'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
+			'exchange', true, false, $app['s_schema']);
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -2742,16 +2743,16 @@ if ($id)
 
 	if ($app['s_admin'])
 	{
-		if ($interlets_group_missing)
+		if ($intersystem_missing)
 		{
 			$h1 .= ' <span class="label label-warning label-sm">';
 			$h1 .= '<i class="fa fa-exclamation-triangle"></i> ';
 			$h1 .= 'De interSysteem-verbinding ontbreekt</span>';
 		}
-		else if ($interlets_group_id)
+		else if ($intersystem_id)
 		{
 			$h1 .= ' ' . aphp('intersystem',
-				['id' => $interlets_group_id],
+				['id' => $intersystem_id],
 				'Gekoppeld interSysteem',
 				'btn btn-default',
 				'Gekoppelde interSysteem');
@@ -2886,7 +2887,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			echo ($app['date_format']->get($user['birthday'], 'day', $app['tschema']));
+			echo $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
 		}
 		else
 		{
@@ -3561,7 +3562,8 @@ else
 
 	if ($v_list || $v_map)
 	{
-		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
+		$c_ary = $app['db']->fetchAll('select tc.abbrev,
+			c.id_user, c.value, c.flag_public, c.id
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc
 			where tc.id = c.id_type_contact
@@ -3571,7 +3573,11 @@ else
 
 		foreach ($c_ary as $c)
 		{
-			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
+			$contacts[$c['id_user']][$c['abbrev']][] = [
+				$c['value'],
+				$c['flag_public'],
+				$c['id'],
+			];
 		}
 
 		if (!$app['s_master'])
@@ -3693,7 +3699,7 @@ include __DIR__ . '/include/header.php';
 if ($v_map)
 {
 	$lat_add = $lng_add = 0;
-	$data_users = [];
+	$data_users = $not_geocoded_ary = $not_present_ary = [];
 	$hidden_count = $not_geocoded_count = $not_present_count = 0;
 
 	foreach ($users as $user)
@@ -3723,6 +3729,11 @@ if ($v_map)
 				else
 				{
 					$not_geocoded_count++;
+					$not_geocoded_ary[] = [
+						'uid'	=> $user['id'],
+						'adr'	=> $adr[0],
+						'id'	=> $adr[2],
+					];
 				}
 			}
 			else
@@ -3733,10 +3744,13 @@ if ($v_map)
 		else
 		{
 			$not_present_count++;
+			$not_present_ary[] = $user['id'];
 		}
 	}
 
 	$shown_count = count($data_users);
+	$not_shown_count = $hidden_count + $not_present_count + $not_geocoded_count;
+	$total_count = $shown_count + $not_shown_count;
 
 	if (!count($ref_geo) && $shown_count)
 	{
@@ -3749,7 +3763,9 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" ';
-	echo 'data-users="' . htmlspecialchars($data_users) . '" ';
+	echo 'data-users="';
+	echo htmlspecialchars($data_users);
+	echo '" ';
 	echo 'data-lat="';
 	echo $ref_geo['lat'] ?? '';
 	echo '" ';
@@ -3764,28 +3780,113 @@ if ($v_map)
 	echo '</div>';
 
 	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading"><p>';
+	echo '<div class="panel-heading">';
+	echo '<p>';
 
-	if ($hidden_count || $not_present_count || $not_geocoded_count)
+	echo 'In dit kaartje wordt van elke gebruiker slechts het eerste ';
+	echo 'adres in de contacten getoond. ';
+
+	echo '</p>';
+
+	if ($not_shown_count > 0)
 	{
-
-		echo $hidden_count + $not_present_count + $not_geocoded_count;
-		echo ' ';
-		echo $app['s_admin'] ? 'gebruikers' : 'leden';
-		echo ' worden niet getoond in de kaart wegens: ';
+		echo '<p>';
+		echo 'Van in totaal ' . $total_count;
+		echo ' gebruikers worden ';
+		echo $not_shown_count;
+		echo ' adressen niet getoond wegens: ';
 		echo '<ul>';
-		echo $hidden_count ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
-		echo $not_present_count ? '<li>' . $not_present_count . ' geen adres gekend</li>' : '';
-		echo $not_geocoded_count ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
-		echo '</ul>';
+
+		if ($hidden_count)
+		{
+			echo '<li>';
+			echo '<strong>';
+			echo $hidden_count;
+			echo '</strong> ';
+			echo 'verborgen adres';
+			echo '</li>';
+		}
+
+		if ($not_present_count)
+		{
+			echo '<li>';
+			echo '<strong>';
+			echo $not_present_count;
+			echo '</strong> ';
+			echo 'geen adres gekend';
+			echo '</li>';
+		}
+
 		if ($not_geocoded_count)
 		{
-			echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer de coordinaten zijn opgezocht door de software ';
-			echo '(maximum één dag).';
+			echo '<li>';
+			echo '<strong>';
+			echo $not_geocoded_count;
+			echo '</strong> ';
+			echo 'coordinaten niet gekend.';
+			echo '</li>';
+		}
+
+		echo '</ul>';
+		echo '</p>';
+
+		if ($not_geocoded_count)
+		{
+			echo '<h4>';
+			echo 'Coördinaten niet gekend';
+			echo '</h4>';
+			echo '<p>';
+			echo 'Wanneer een adres aangepast is of net toegevoegd, ';
+			echo 'duurt het enige tijd eer de coordinaten zijn ';
+			echo 'opgezocht door de software ';
+			echo '(maximum één dag). ';
+			echo 'Het kan ook dat bepaalde adressen niet vertaalbaar zijn door ';
+			echo 'de "geocoding service".';
+			echo '</p>';
+
+			if ($app['s_admin'])
+			{
+				echo '<p>';
+				echo 'Hieronder de adressen die nog niet ';
+				echo 'vertaald zijn in coördinaten: ';
+				echo '<ul>';
+				foreach($not_geocoded_ary as $not_geocoded)
+				{
+					echo '<li>';
+					echo aphp('contacts',
+						['edit' => $not_geocoded['id'], 'uid' => $not_geocoded['uid']],
+						$not_geocoded['adr']);
+					echo ' gebruiker: ';
+					echo link_user($not_geocoded['uid'], $app['tschema']);
+					echo '</li>';
+				}
+				echo '</ul>';
+				echo '</p>';
+			}
+		}
+
+		if ($app['s_admin'] && $not_present_count)
+		{
+			echo '<h4>';
+			echo 'Gebruikers zonder adres';
+			echo '</h4>';
+
+			echo '<p>';
+			echo '<ul>';
+
+			foreach ($not_present_ary as $not_present_addres_uid)
+			{
+				echo '<li>';
+				echo link_user($not_present_addres_uid, $app['tschema']);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</p>';
 		}
 	}
 
-	echo '</p></div>';
+	echo '</div>';
 	echo '</div>';
 }
 

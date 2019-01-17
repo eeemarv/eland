@@ -602,7 +602,13 @@ if ($uid)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+		$top_buttons .= aphp('contacts',
+			['add' => 1, 'uid' => $uid],
+			'Toevoegen',
+			'btn btn-success',
+			'Contact toevoegen',
+			'plus',
+			true);
 	}
 
 	if (!$app['p_inline'])
@@ -684,7 +690,10 @@ if ($uid)
 		else if ($s_owner || $app['s_admin'])
 		{
 			echo '<td>';
-			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
+			echo  aphp('contacts',
+				['edit' => $c['id'], 'uid' => $uid],
+				$c['value']);
+
 			if ($c['abbrev'] == 'adr'
 				&& !$app['s_elas_guest']
 				&& !$app['s_master'])
@@ -694,6 +703,7 @@ if ($uid)
 					->calc()
 					->format_parenthesis();
 			}
+
 			echo '</td>';
 			echo '<td>';
 			echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) : '';
@@ -726,7 +736,9 @@ if ($uid)
 		else
 		{
 			echo '<td>';
+
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
+
 			if ($c['abbrev'] == 'adr'
 				&& !$app['s_elas_guest']
 				&& !$app['s_master'])
@@ -736,6 +748,7 @@ if ($uid)
 					->calc()
 					->format_parenthesis();
 			}
+
 			echo '</td>';
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
