@@ -69,9 +69,10 @@ class distance
 
 	public function set_to_geo(string $adr = ''):self
 	{
+		$adr = trim($adr);
+
 		if (!$adr)
 		{
-			$this->to_geo = false;
 			return $this;
 		}
 
@@ -86,12 +87,6 @@ class distance
 
 			$this->to_lat = deg2rad($geo['lat']);
 			$this->to_lng = deg2rad($geo['lng']);
-
-			$this->to_geo = true;
-		}
-		else
-		{
-			$this->to_geo = false;
 		}
 
 		return $this;
@@ -105,11 +100,6 @@ class distance
 	public function get_to_data():string
 	{
 		return htmlspecialchars(json_encode($this->to));
-	}
-
-	public function get_to_geo():bool
-	{
-		return $this->to_geo;
 	}
 
 	public function calc():self

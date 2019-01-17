@@ -694,14 +694,16 @@ if ($uid)
 				['edit' => $c['id'], 'uid' => $uid],
 				$c['value']);
 
-			if ($c['abbrev'] == 'adr'
-				&& !$app['s_elas_guest']
-				&& !$app['s_master'])
+			if ($c['abbrev'] == 'adr')
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
-					->set_to_geo(trim($c['value']))
-					->calc()
-					->format_parenthesis();
+				$app['distance']->set_to_geo($c['value']);
+
+				if (!$app['s_elas_guest'] && !$app['s_master'])
+				{
+					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+						->calc()
+						->format_parenthesis();
+				}
 			}
 
 			echo '</td>';
@@ -739,14 +741,16 @@ if ($uid)
 
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
 
-			if ($c['abbrev'] == 'adr'
-				&& !$app['s_elas_guest']
-				&& !$app['s_master'])
+			if ($c['abbrev'] == 'adr')
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
-					->set_to_geo(trim($c['value']))
-					->calc()
-					->format_parenthesis();
+				$app['distance']->set_to_geo($c['value']);
+
+				if (!$app['s_elas_guest'] && !$app['s_master'])
+				{
+					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+						->calc()
+						->format_parenthesis();
+				}
 			}
 
 			echo '</td>';
@@ -755,10 +759,19 @@ if ($uid)
 
 		if ($app['s_admin'] || $s_owner)
 		{
-			echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
+			echo '<td>';
+			echo $app['access_control']->get_label($c['flag_public']);
+			echo '</td>';
 
 			echo '<td>';
-			echo aphp('contacts', ['del' => $c['id'], 'uid' => $uid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+
+			echo aphp('contacts',
+				['del' => $c['id'], 'uid' => $uid],
+				'Verwijderen',
+				'btn btn-danger btn-xs',
+				false,
+				'times');
+
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -768,7 +781,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($app['distance']->get_to_geo() && $app['p_inline'])
+	if ($app['distance']->has_to_data() && $app['p_inline'])
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-markers="';
