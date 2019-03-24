@@ -5,6 +5,13 @@ set_time_limit(60);
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
+$db_elas = isset($_GET['db_elas']);
+$db_eland_aggs = !$db_elas && isset($_GET['db_eland_aggs']);
+$db_eland_events = !$db_eland_aggs && isset($_GET['db_eland_events']);
+$db_download = $db_elas || $db_eland_aggs || $db_eland_events;
+
+$exec_en = function_exists('exec');
+
 $export_ary = [
 	'users'		=> [
 		'label'		=> 'Gebruikers',
@@ -105,41 +112,75 @@ $export_ary = [
 $buttons = '';
 $r = "\r\n";
 
-foreach ($export_ary as $ex_key => $export)
+if ($exec_en && $db_download)
 {
-	if (isset($_GET['db']) && function_exists('exec'))
+	$filename = $app['tschema'] . '-';
+	$filename .= $db_elas ? 'elas-db' : 'eland-xdb';
+	$filename .= $db_eland_aggs ? '-aggs' : '';
+	$filename .= $db_eland_events ? '-events' : '';
+	$filename .= gmdate('-Y-m-d-H-i-s-');
+	$filename .= substr(sha1(microtime()), 0, 4);
+	$filename .= '.';
+	$filename .= $db_elas ? 'sql' : 'csv';
+
+	if ($db_elas)
 	{
-		$filename = $app['tschema'] . '-elas-db-' . date('Y-m-d-H-i-s') . '-' . substr(sha1(microtime()), 0, 4) . '.sql';
+		$exec = 'pg_dump --dbname=';
+		$exec .= getenv('DATABASE_URL');
+		$exec .= ' --schema=' . $app['tschema'];
+		$exec .= ' --no-owner --no-acl > ' . $filename;
+	}
+	else
+	{
+		$exec = 'psql -d ';
+		$exec .= getenv('DATABASE_URL');
+		$exec .= ' -c "\\copy ';
+		$exec .= '(select * ';
+		$exec .= 'from xdb.';
+		$exec .= $db_eland_aggs ? 'aggs' : 'events';
+		$exec .= ' where agg_schema = \'';
+		$exec .= $app['tschema'] . '\')';
+		$exec .= ' TO ' . $filename;
+		$exec .= ' with delimiter \',\' ';
+		$exec .= 'csv header;"';
+	}
 
-		exec('pg_dump --dbname=' . getenv('DATABASE_URL') .' --schema=' . $app['tschema'] . ' --no-owner --no-acl > ' . $filename);
+	exec($exec);
 
-		header('Content-disposition: attachment; filename=' . $filename);
-		header('Content-Type: application/force-download');
-		header('Content-Transfer-Encoding: binary');
-		header('Pragma: no-cache');
-		header('Expires: 0');
+	header('Content-disposition: attachment; filename=' . $filename);
+	header('Content-Type: application/force-download');
+	header('Content-Transfer-Encoding: binary');
+	header('Pragma: no-cache');
+	header('Expires: 0');
 
-		$handle = fopen($filename, 'rb');
+	$handle = fopen($filename, 'rb');
 
-		if (!$handle)
-		{
-			exit;
-		}
-
-		while (!feof($handle))
-		{
-		  echo fread($handle, 8192);
-		}
-
-		fclose($handle);
-
-		unlink($filename);
-
-		$app['monolog']->info('db downloaded', ['schema' => $app['tschema']]);
-
+	if (!$handle)
+	{
 		exit;
 	}
 
+	while (!feof($handle))
+	{
+		echo fread($handle, 8192);
+	}
+
+	fclose($handle);
+
+	unlink($filename);
+
+	$download_log = $db_elas ? 'elas db sql' : 'eland xdb csv ';
+	$download_log = $db_eland_aggs ? 'aggs' : '';
+	$download_log = $db_eland_events ? 'events' : '';
+
+	$app['monolog']->info($download_log . ' downloaded',
+		['schema' => $app['tschema']]);
+
+	exit;
+}
+
+foreach ($export_ary as $ex_key => $export)
+{
 	if (isset($_GET[$ex_key]))
 	{
 		$columns = $fields = [];
@@ -195,8 +236,7 @@ $fa = 'download';
 
 include __DIR__ . '/include/header.php';
 
-
-if (function_exists('exec'))
+if ($exec_en)
 {
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -206,7 +246,39 @@ if (function_exists('exec'))
 	echo '<div class="panel-heading">';
 
 	echo '<form>';
-	echo '<input type="submit" value="Download" name="db" class="btn btn-default margin-bottom">';
+	echo '<input type="submit" value="Download" name="db_elas" class="btn btn-default margin-bottom">';
+	echo '<input type="hidden" value="admin" name="r">';
+	echo '<input type="hidden" value="';
+	echo $app['s_id'];
+	echo '" name="u">';
+	echo '</form>';
+
+	echo '</div></div>';
+
+	echo '<div class="panel panel-info">';
+	echo '<div class="panel-heading">';
+	echo '<h3>eLAND extra data (CSV)';
+	echo '</h3>';
+	echo '</div>';
+	echo '<div class="panel-heading">';
+	echo '<p>';
+	echo 'Naast de eLAS database bevat eLAND nog ';
+	echo 'deze extra data die je hier kan downloaden ';
+	echo 'als csv-file. ';
+	echo '"Data" bevat de huidige staat en "Events" de ';
+	echo 'gebeurtenissen die de huidige staat veroorzaakt hebben.';
+	echo '</p>';
+	echo '</div>';
+	echo '<div class="panel-heading">';
+
+	echo '<form>';
+	echo '<input type="submit" value="Download Data" ';
+	echo 'name="db_eland_aggs" ';
+	echo 'class="btn btn-default margin-bottom">';
+	echo '&nbsp;';
+	echo '<input type="submit" value="Download Events" ';
+	echo 'name="db_eland_events" ';
+	echo 'class="btn btn-default margin-bottom">';
 	echo '<input type="hidden" value="admin" name="r">';
 	echo '<input type="hidden" value="';
 	echo $app['s_id'];
@@ -215,7 +287,6 @@ if (function_exists('exec'))
 
 	echo '</div></div>';
 }
-
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
