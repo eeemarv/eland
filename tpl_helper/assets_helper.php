@@ -30,11 +30,6 @@ class assets_helper extends Helper
         return $this->assets->get_css();
     }
 
-    public function get_css_print():string
-    {
-        return $this->assets->get_css_print();
-    }
-
     public function get_version_param():string
     {
         return $this->assets->get_version_param();

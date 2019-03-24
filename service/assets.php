@@ -285,9 +285,4 @@ class assets
 	{
 		return '?v=' . $this->version;
 	}
-
-	public function get_css_print():string
-	{
-		return $this->include_css_print;
-	}
 }
