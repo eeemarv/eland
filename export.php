@@ -170,8 +170,8 @@ if ($exec_en && $db_download)
 	unlink($filename);
 
 	$download_log = $db_elas ? 'elas db sql' : 'eland xdb csv ';
-	$download_log = $db_eland_aggs ? 'aggs' : '';
-	$download_log = $db_eland_events ? 'events' : '';
+	$download_log .= $db_eland_aggs ? 'aggs' : '';
+	$download_log .= $db_eland_events ? 'events' : '';
 
 	$app['monolog']->info($download_log . ' downloaded',
 		['schema' => $app['tschema']]);
