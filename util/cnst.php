@@ -36,4 +36,10 @@ class cnst
         'news'			=> true,
         'docs'			=> true,
     ];
+
+    const ELAS_CACHE_KEY = [
+        'last_fetch'        => 'elas_interlets_last_fetch',
+        'apikey_fails'      => 'elas_interlets_apikey_fails',
+        'domains'           => 'elas_interlets_domains',
+    ];
 }

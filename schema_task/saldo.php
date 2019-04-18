@@ -333,7 +333,7 @@ class saldo extends schema_task
 				else
 				{
 					$this->xdb->set('news_access',
-						$news_id,
+						$row['id'],
 						['access' => 'interlets'],
 						$this->schema);
 

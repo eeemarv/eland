@@ -5,6 +5,7 @@ namespace task;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
 use service\systems;
+use util\cnst;
 
 class get_elas_intersystem_domains
 {
@@ -25,7 +26,7 @@ class get_elas_intersystem_domains
 
 	function process():void
 	{
-		$elas_intersystem_domains = $this->cache->get('elas_interlets_domains');
+		$elas_intersystem_domains = $this->cache->get(cnst::ELAS_CACHE_KEY['domains']);
 
 		$domains = [];
 
@@ -63,8 +64,7 @@ class get_elas_intersystem_domains
 			return;
 		}
 
-		$this->cache->set('elas_interlets_domains', $domains);
-		$this->cache->set('elas_intersystem_domains', $domains);
+		$this->cache->set(cnst::ELAS_CACHE_KEY['domains'], $domains);
 
 		return;
 	}

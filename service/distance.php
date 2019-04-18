@@ -16,7 +16,7 @@ class distance
 	protected $to_lat;
 	protected $to_lng;
 	protected $to_geo = false;
-	protected $to;
+	protected $to = [];
 	protected $dist;
 
 	public function __construct(db $db, cache $cache)
@@ -67,11 +67,12 @@ class distance
 		return $this;
 	}
 
-	public function set_to_geo(string $adr = '')
+	public function set_to_geo(string $adr = ''):self
 	{
+		$adr = trim($adr);
+
 		if (!$adr)
 		{
-			$this->to_geo = false;
 			return $this;
 		}
 
@@ -86,28 +87,22 @@ class distance
 
 			$this->to_lat = deg2rad($geo['lat']);
 			$this->to_lng = deg2rad($geo['lng']);
-
-			$this->to_geo = true;
-		}
-		else
-		{
-			$this->to_geo = false;
 		}
 
 		return $this;
 	}
 
-	public function get_to_data()
+	public function has_to_data():bool
+	{
+		return count($this->to) > 0;
+	}
+
+	public function get_to_data():string
 	{
 		return htmlspecialchars(json_encode($this->to));
 	}
 
-	public function get_to_geo()
-	{
-		return $this->to_geo;
-	}
-
-	public function calc()
+	public function calc():self
 	{
 		if (!$this->geo || !$this->to_geo)
 		{
@@ -124,7 +119,7 @@ class distance
 		return $this;
 	}
 
-	public function format()
+	public function format():string
 	{
 		if (!$this->geo || !$this->to_geo)
 		{
@@ -144,7 +139,7 @@ class distance
 		return round($this->dist) . ' km';
 	}
 
-	public function format_parenthesis()
+	public function format_parenthesis():string
 	{
 		$p = $this->format();
 

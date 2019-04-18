@@ -32,15 +32,10 @@ sudo service nginx reload
 
 ## DNS
 
-A CNAME record with wildcard should point to the Dokku app url.
+An A record with wildcard should point to the Dokku app url.
+Subdomains (systems) match the schemas in the Postgres database.
 
-## Subdomains (systems) match schemas
-
-The subdomain part of the url matches the database schema name.
-
-`flupke.my-domain.com` matches to database schema `flupke`.
-
-Set the overall domain with:
+Set the overall domain:
 
 ```shell
 
@@ -97,17 +92,14 @@ Where:
 * name: The name of the contact form or the context.
 * link: The link to bring the user back.
 
-## Permanent Redirects
-
-* `APP_REDIRECT_FROM__DOMAIN__NET=to.domain.net`
-
-Redirects from.domain.net to to.domain.net
-A double underscore in the key represents a dot in the domain.
-
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
 * `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all Systems.
+
+## Permanent redirects
+
+Use the [dokku-redirect](https://github.com/dokku/dokku-redirect) plugin for redirects.
 
 ## Postgres
 

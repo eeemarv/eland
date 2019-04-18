@@ -2049,7 +2049,7 @@ if (isset($filter['fdate']) && $filter['fdate'])
 {
 	$fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['tschema']);
 
-	if ($fdate_sql === false)
+	if ($fdate_sql === '')
 	{
 		$app['alert']->warning('De begindatum is fout geformateerd.');
 	}
@@ -2065,7 +2065,7 @@ if (isset($filter['tdate']) && $filter['tdate'])
 {
 	$tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['tschema']);
 
-	if ($tdate_sql === false)
+	if ($tdate_sql === '')
 	{
 		$app['alert']->warning('De einddatum is fout geformateerd.');
 	}

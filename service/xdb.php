@@ -328,6 +328,6 @@ class xdb
 
 		$where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
 
-		return $this->db->fetchColumn('select count(*) from xdb.aggs' . $where, $sq_params);
+		return $this->db->fetchColumn('select count(*) from xdb.aggs' . $where, $sql_params);
 	}
 }

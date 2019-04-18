@@ -314,7 +314,7 @@ else if ($step == 7)
 
 	if ($more_geocoding)
 	{
-		$start += 20;
+		$start += 50;
 		header('Location: ' . $app['rootpath'] . 'init.php?step=7&start=' . $start);
 		exit;
 	}

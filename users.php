@@ -1465,7 +1465,7 @@ if ($add || $edit)
 		{
 			$user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['tschema']);
 
-			if ($user['birthday'] === false)
+			if ($user['birthday'] === '')
 			{
 				$errors[] = 'Fout in formaat geboortedag.';
 				$user['birthday'] = '';
@@ -2617,24 +2617,24 @@ if ($id)
 		order by u.letscode desc
 		limit 1', $sql_bind);
 
-	$interlets_group_missing = false;
+	$intersystem_missing = false;
 
 	if ($app['s_admin'] && $user['accountrole'] === 'interlets'
 		&& $app['config']->get('interlets_en', $app['tschema'])
 		&& $app['config']->get('template_lets', $app['tschema']))
 	{
-		$interlets_group_id = $app['db']->fetchColumn('select id
+		$intersystem_id = $app['db']->fetchColumn('select id
 			from ' . $app['tschema'] . '.letsgroups
 			where localletscode = ?', [$user['letscode']]);
 
-		if (!$interlets_group_id)
+		if (!$intersystem_id)
 		{
-			$interlets_group_missing = true;
+			$intersystem_missing = true;
 		}
 	}
 	else
 	{
-		$interlets_group_id = false;
+		$intersystem_id = false;
 	}
 
 	$app['assets']->add([
@@ -2664,6 +2664,7 @@ if ($id)
 			$title . ' aanpassen',
 			'pencil',
 			true);
+
 		$top_buttons .= aphp(
 			'users',
 			['pw' => $id],
@@ -2755,16 +2756,16 @@ if ($id)
 
 	if ($app['s_admin'])
 	{
-		if ($interlets_group_missing)
+		if ($intersystem_missing)
 		{
 			$h1 .= ' <span class="label label-warning label-sm">';
 			$h1 .= '<i class="fa fa-exclamation-triangle"></i> ';
 			$h1 .= 'De interSysteem-verbinding ontbreekt</span>';
 		}
-		else if ($interlets_group_id)
+		else if ($intersystem_id)
 		{
 			$h1 .= ' ' . aphp('intersystem',
-				['id' => $interlets_group_id],
+				['id' => $intersystem_id],
 				'Gekoppeld interSysteem',
 				'btn btn-default',
 				'Gekoppelde interSysteem');
@@ -2900,7 +2901,7 @@ if ($id)
 		echo '</dt>';
 		if (isset($user['birthday']))
 		{
-			echo ($app['date_format']->get($user['birthday'], 'day', $app['tschema']));
+			echo $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
 		}
 		else
 		{
@@ -3153,7 +3154,6 @@ if (!$app['p_view'])
 }
 
 $v_list = $app['p_view'] === 'list';
-$v_extended = $app['p_view'] === 'extended';
 $v_tiles = $app['p_view'] === 'tiles';
 $v_map = $app['p_view'] === 'map';
 
@@ -3227,6 +3227,12 @@ if ($v_list)
 		'total'		=> 'Vraag en aanbod',
 	];
 
+	$message_type_filter = [
+		'wants'		=> ['want' => 'on'],
+		'offers'	=> ['offer' => 'on'],
+		'total'		=> '',
+	];
+
 	$columns['a'] = [
 		'trans'		=> [
 			'in'	=> 'Transacties in',
@@ -3241,10 +3247,16 @@ if ($v_list)
 	];
 
 	$columns['p'] = [
-		'adr_split'					=> '.',
-		'activity_days'				=> '.',
-		'activity_filter_letscode'	=> '.',
-		'saldo_date'				=> '.',
+		'c'	=> [
+			'adr_split'	=> '.',
+		],
+		'a'	=> [
+			'days'	=> '.',
+			'code'	=> '.',
+		],
+		'u'	=> [
+			'saldo_date'	=> '.',
+		],
 	];
 
 	$session_users_columns_key = 'users_columns_' . $app['s_accountrole'];
@@ -3299,74 +3311,12 @@ if ($v_list)
 		$show_columns = $app['session']->get($session_users_columns_key) ?? $preset_columns;
 	}
 
-	$adr_split = $show_columns['p']['adr_split'] ?? '';
-	$activity_days = $show_columns['p']['activity_days'] ?? 365;
+	$adr_split = $show_columns['p']['c']['adr_split'] ?? '';
+	$activity_days = $show_columns['p']['a']['days'] ?? 365;
 	$activity_days = $activity_days < 1 ? 365 : $activity_days;
-	$activity_filter_letscode = $show_columns['p']['activity_filter_letscode'] ?? '';
-	$saldo_date = $show_columns['p']['saldo_date'] ?? '';
+	$activity_filter_code = $show_columns['p']['a']['code'] ?? '';
+	$saldo_date = $show_columns['p']['u']['saldo_date'] ?? '';
 	$saldo_date = trim($saldo_date);
-
-	$type_contact = $app['db']->fetchAll('select id, abbrev, name
-		from ' . $app['tschema'] . '.type_contact');
-
-	$columns = [
-		'u'		=> [
-			'letscode'		=> 'Code',
-			'name'			=> 'Naam',
-			'fullname'		=> 'Volledige naam',
-			'postcode'		=> 'Postcode',
-			'accountrole'	=> 'Rol',
-			'saldo'			=> 'Saldo',
-			'saldo_date'	=> 'Saldo op ',
-			'minlimit'		=> 'Min',
-			'maxlimit'		=> 'Max',
-			'comments'		=> 'Commentaar',
-			'hobbies'		=> 'Hobbies/interesses',
-		],
-	];
-
-	if ($app['s_admin'])
-	{
-		$columns['u'] += [
-			'admincomment'	=> 'Admin commentaar',
-			'cron_saldo'	=> 'Periodieke Overzichts E-mail',
-			'cdate'			=> 'Gecreëerd',
-			'mdate'			=> 'Aangepast',
-			'adate'			=> 'Geactiveerd',
-			'lastlogin'		=> 'Laatst ingelogd',
-		];
-	}
-
-	foreach ($type_contact as $tc)
-	{
-		$columns['c'][$tc['abbrev']] = $tc['name'];
-	}
-
-	if (!$app['s_elas_guest'])
-	{
-		$columns['d'] = [
-			'distance'	=> 'Afstand',
-		];
-	}
-
-	$columns['m'] = [
-		'wants'		=> 'Vraag',
-		'offers'	=> 'Aanbod',
-		'total'		=> 'Vraag en aanbod',
-	];
-
-	$columns['a'] = [
-		'trans'		=> [
-			'in'	=> 'Transacties in',
-			'out'	=> 'Transacties uit',
-			'total'	=> 'Transacties totaal',
-		],
-		'amount'	=> [
-			'in'	=> $app['config']->get('currency', $app['tschema']) . ' in',
-			'out'	=> $app['config']->get('currency', $app['tschema']) . ' uit',
-			'total'	=> $app['config']->get('currency', $app['tschema']) . ' totaal',
-		],
-	];
 
 	$users = $app['db']->fetchAll('select u.*
 		from ' . $app['tschema'] . '.users u
@@ -3405,7 +3355,7 @@ if ($v_list)
 			$saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['tschema']);
 		}
 
-		if ($saldo_date_rev === false || $saldo_date == '')
+		if ($saldo_date_rev === '' || $saldo_date == '')
 		{
 			$saldo_date = $app['date_format']->get('', 'day', $app['tschema']);
 
@@ -3555,13 +3505,13 @@ if ($v_list)
 		$ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
 		$sql_bind = [$ts];
 
-		$activity_filter_letscode = trim($activity_filter_letscode);
+		$activity_filter_code = trim($activity_filter_code);
 
-		if ($activity_filter_letscode)
+		if ($activity_filter_code)
 		{
-			[$code_only_activity_filter_letscode] = explode(' ', $activity_filter_letscode);
+			[$code_only_activity_filter_code] = explode(' ', $activity_filter_code);
 			$and = ' and u.letscode <> ? ';
-			$sql_bind[] = trim($code_only_activity_filter_letscode);
+			$sql_bind[] = trim($code_only_activity_filter_code);
 		}
 		else
 		{
@@ -3626,7 +3576,8 @@ else
 
 	if ($v_list || $v_map)
 	{
-		$c_ary = $app['db']->fetchAll('select tc.abbrev, c.id_user, c.value, c.flag_public
+		$c_ary = $app['db']->fetchAll('select tc.abbrev,
+			c.id_user, c.value, c.flag_public, c.id
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc
 			where tc.id = c.id_type_contact
@@ -3636,7 +3587,11 @@ else
 
 		foreach ($c_ary as $c)
 		{
-			$contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
+			$contacts[$c['id_user']][$c['abbrev']][] = [
+				$c['value'],
+				$c['flag_public'],
+				$c['id'],
+			];
 		}
 
 		if (!$app['s_master'])
@@ -3758,7 +3713,7 @@ include __DIR__ . '/include/header.php';
 if ($v_map)
 {
 	$lat_add = $lng_add = 0;
-	$data_users = [];
+	$data_users = $not_geocoded_ary = $not_present_ary = [];
 	$hidden_count = $not_geocoded_count = $not_present_count = 0;
 
 	foreach ($users as $user)
@@ -3788,6 +3743,11 @@ if ($v_map)
 				else
 				{
 					$not_geocoded_count++;
+					$not_geocoded_ary[] = [
+						'uid'	=> $user['id'],
+						'adr'	=> $adr[0],
+						'id'	=> $adr[2],
+					];
 				}
 			}
 			else
@@ -3798,10 +3758,13 @@ if ($v_map)
 		else
 		{
 			$not_present_count++;
+			$not_present_ary[] = $user['id'];
 		}
 	}
 
 	$shown_count = count($data_users);
+	$not_shown_count = $hidden_count + $not_present_count + $not_geocoded_count;
+	$total_count = $shown_count + $not_shown_count;
 
 	if (!count($ref_geo) && $shown_count)
 	{
@@ -3814,7 +3777,9 @@ if ($v_map)
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 	echo '<div class="users_map" id="map" ';
-	echo 'data-users="' . htmlspecialchars($data_users) . '" ';
+	echo 'data-users="';
+	echo htmlspecialchars($data_users);
+	echo '" ';
 	echo 'data-lat="';
 	echo $ref_geo['lat'] ?? '';
 	echo '" ';
@@ -3829,32 +3794,117 @@ if ($v_map)
 	echo '</div>';
 
 	echo '<div class="panel panel-default">';
-	echo '<div class="panel-heading"><p>';
+	echo '<div class="panel-heading">';
+	echo '<p>';
 
-	if ($hidden_count || $not_present_count || $not_geocoded_count)
+	echo 'In dit kaartje wordt van elke gebruiker slechts het eerste ';
+	echo 'adres in de contacten getoond. ';
+
+	echo '</p>';
+
+	if ($not_shown_count > 0)
 	{
-
-		echo $hidden_count + $not_present_count + $not_geocoded_count;
-		echo ' ';
-		echo $app['s_admin'] ? 'gebruikers' : 'leden';
-		echo ' worden niet getoond in de kaart wegens: ';
+		echo '<p>';
+		echo 'Van in totaal ' . $total_count;
+		echo ' gebruikers worden ';
+		echo $not_shown_count;
+		echo ' adressen niet getoond wegens: ';
 		echo '<ul>';
-		echo $hidden_count ? '<li>' . $hidden_count . ' verborgen adres</li>' : '';
-		echo $not_present_count ? '<li>' . $not_present_count . ' geen adres gekend</li>' : '';
-		echo $not_geocoded_count ? '<li>' . $not_geocoded_count . ' coordinaten nog niet opgezocht voor adres.</li>' : '';
-		echo '</ul>';
+
+		if ($hidden_count)
+		{
+			echo '<li>';
+			echo '<strong>';
+			echo $hidden_count;
+			echo '</strong> ';
+			echo 'verborgen adres';
+			echo '</li>';
+		}
+
+		if ($not_present_count)
+		{
+			echo '<li>';
+			echo '<strong>';
+			echo $not_present_count;
+			echo '</strong> ';
+			echo 'geen adres gekend';
+			echo '</li>';
+		}
+
 		if ($not_geocoded_count)
 		{
-			echo 'Wanneer een adres aangepast is of net toegevoegd, duurt het enige tijd eer de coordinaten zijn opgezocht door de software ';
-			echo '(maximum één dag).';
+			echo '<li>';
+			echo '<strong>';
+			echo $not_geocoded_count;
+			echo '</strong> ';
+			echo 'coordinaten niet gekend.';
+			echo '</li>';
+		}
+
+		echo '</ul>';
+		echo '</p>';
+
+		if ($not_geocoded_count)
+		{
+			echo '<h4>';
+			echo 'Coördinaten niet gekend';
+			echo '</h4>';
+			echo '<p>';
+			echo 'Wanneer een adres aangepast is of net toegevoegd, ';
+			echo 'duurt het enige tijd eer de coordinaten zijn ';
+			echo 'opgezocht door de software ';
+			echo '(maximum één dag). ';
+			echo 'Het kan ook dat bepaalde adressen niet vertaalbaar zijn door ';
+			echo 'de "geocoding service".';
+			echo '</p>';
+
+			if ($app['s_admin'])
+			{
+				echo '<p>';
+				echo 'Hieronder de adressen die nog niet ';
+				echo 'vertaald zijn in coördinaten: ';
+				echo '<ul>';
+				foreach($not_geocoded_ary as $not_geocoded)
+				{
+					echo '<li>';
+					echo aphp('contacts',
+						['edit' => $not_geocoded['id'], 'uid' => $not_geocoded['uid']],
+						$not_geocoded['adr']);
+					echo ' gebruiker: ';
+					echo link_user($not_geocoded['uid'], $app['tschema']);
+					echo '</li>';
+				}
+				echo '</ul>';
+				echo '</p>';
+			}
+		}
+
+		if ($app['s_admin'] && $not_present_count)
+		{
+			echo '<h4>';
+			echo 'Gebruikers zonder adres';
+			echo '</h4>';
+
+			echo '<p>';
+			echo '<ul>';
+
+			foreach ($not_present_ary as $not_present_addres_uid)
+			{
+				echo '<li>';
+				echo link_user($not_present_addres_uid, $app['tschema']);
+				echo '</li>';
+			}
+
+			echo '</ul>';
+			echo '</p>';
 		}
 	}
 
-	echo '</p></div>';
+	echo '</div>';
 	echo '</div>';
 }
 
-if ($v_list || $v_extended || $v_tiles)
+if ($v_list || $v_tiles)
 {
 	echo '<form method="get" action="';
 	echo generate_url('users', $params);
@@ -3879,6 +3929,11 @@ if ($v_list)
 
 	foreach ($columns as $group => $ary)
 	{
+		if ($group === 'p')
+		{
+			continue;
+		}
+
 		if ($group === 'm' || $group === 'c')
 		{
 			echo '</div>';
@@ -3915,7 +3970,7 @@ if ($v_list)
 			echo '</span>';
 			echo '<input type="number" ';
 			echo 'id="p_activity_days" ';
-			echo 'name="sh[p][activity_days]" ';
+			echo 'name="sh[p][a][days]" ';
 			echo 'value="';
 			echo $activity_days;
 			echo '" ';
@@ -3961,10 +4016,10 @@ if ($v_list)
 			echo '<i class="fa fa-user"></i>';
 			echo '</span>';
 			echo '<input type="text" ';
-			echo 'name="sh[p][activity_filter_letscode]" ';
-			echo 'id="p_activity_filter_letscode" ';
+			echo 'name="sh[p][a][code]" ';
+			echo 'id="p_activity_filter_code" ';
 			echo 'value="';
-			echo $activity_filter_letscode;
+			echo $activity_filter_code;
 			echo '" ';
 			echo 'placeholder="Account Code" ';
 			echo 'class="form-control" ';
@@ -4031,7 +4086,7 @@ if ($v_list)
 			{
 				echo ', split door teken: ';
 				echo '<input type="text" ';
-				echo 'name="sh[p][adr_split]" ';
+				echo 'name="sh[p][c][adr_split]" ';
 				echo 'size="1" value="';
 				echo $adr_split;
 				echo '">';
@@ -4045,7 +4100,7 @@ if ($v_list)
 				echo '</span>';
 				echo '<input type="text" ';
 				echo 'class="form-control" ';
-				echo 'name="sh[p][saldo_date]" ';
+				echo 'name="sh[p][u][saldo_date]" ';
 				echo 'data-provide="datepicker" ';
 				echo 'data-date-format="';
 				echo $app['date_format']->datepicker_format($app['tschema']);
@@ -4084,7 +4139,7 @@ if ($v_list)
 	echo '</div>';
 }
 
-if ($v_list || $v_extended || $v_tiles)
+if ($v_list || $v_tiles)
 {
 	echo '<br>';
 
@@ -4259,8 +4314,16 @@ if ($v_list)
 
 	$checkbox = '<input type="checkbox" name="sel_%1$s" value="1"%2$s>&nbsp;';
 
+	$can_link = $app['s_admin'];
+
 	foreach($users as $u)
 	{
+		if (($app['s_user'] || $app['s_guest'])
+			&& ($u['status'] === 1 || $u['status'] === 2))
+		{
+			$can_link = true;
+		}
+
 		$id = $u['id'];
 
 		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
@@ -4284,7 +4347,7 @@ if ($v_list)
 
 				if (isset($link_user_keys[$key]))
 				{
-					echo link_user($u, $app['tschema'], $status, false, $key);
+					echo link_user($u, $app['tschema'], $can_link, false, $key);
 				}
 				else if (isset($date_keys[$key]))
 				{
@@ -4301,11 +4364,11 @@ if ($v_list)
 				{
 					if ($app['s_admin'] || $u['fullname_access'] === 'interlets')
 					{
-						echo link_user($u, $app['tschema'], $status, false, $fullname);
+						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
 					}
 					else if ($app['s_user'] && $u['fullname_access'] !== 'admin')
 					{
-						echo link_user($u, $app['tschema'], $status, false, $key);
+						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
 					}
 					else
 					{
@@ -4315,7 +4378,7 @@ if ($v_list)
 				}
 				else
 				{
-					echo $u[$key];
+					echo htmlspecialchars($u[$key]);
 				}
 
 				echo '</td>';
@@ -4399,8 +4462,10 @@ if ($v_list)
 				if (isset($msgs_count[$id][$key]))
 				{
 					echo aphp('messages', [
-						'uid' 	=> $id,
-						'type' 	=> $key,
+						'f'	=> [
+							'uid' 	=> $id,
+							'type' 	=> $message_type_filter[$key],
+						],
 					], $msgs_count[$id][$key]);
 				}
 
@@ -4420,12 +4485,21 @@ if ($v_list)
 
 					if (isset($activity[$id][$a_key][$key]))
 					{
-						echo aphp('transactions', [
-							'fcode'	=> $key === 'in' ? '' : $u['letscode'],
-							'tcode'	=> $key === 'out' ? '' : $u['letscode'],
-							'andor'	=> $key === 'total' ? 'or' : 'and',
-							'fdate' => $from_date,
-						], $activity[$id][$a_key][$key]);
+						if (isset($code_only_activity_filter_code))
+						{
+							echo $activity[$id][$a_key][$key];
+						}
+						else
+						{
+							echo aphp('transactions', [
+								'f' => [
+									'fcode'	=> $key === 'in' ? '' : $u['letscode'],
+									'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+									'andor'	=> $key === 'total' ? 'or' : 'and',
+									'fdate' => $from_date,
+								],
+							], $activity[$id][$a_key][$key]);
+						}
 					}
 
 					echo '</td>';
@@ -4621,66 +4695,6 @@ if ($v_list)
 		echo '<div class="clearfix"></div>';
 		echo '</div>';
 		echo '</div>';
-		echo '</div>';
-	}
-}
-else if ($v_extended)
-{
-	foreach ($users as $u)
-	{
-		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
-
-		$class = (isset($st_class_ary[$row_stat])) ? ' bg-' . $st_class_ary[$row_stat] : '';
-
-		echo '<div class="panel panel-info printview">';
-		echo '<div class="panel-body';
-		echo $class;
-		echo '">';
-
-		echo '<div class="media">';
-
-		if ($u['PictureFile'])
-		{
-			echo '<div class="media-left">';
-			echo '<a href="';
-			echo generate_url('users', ['id' => $u['id']]);
-			echo '">';
-			echo '<img class="media-object" ';
-			echo 'src="' . $app['s3_url'] . $u['PictureFile'];
-			echo '" width="150">';
-			echo '</a>';
-			echo '</div>';
-		}
-		echo '<div class="media-body">';
-
-		echo '<h3 class="media-heading">';
-		echo link_user($u, $app['tschema'], $status);
-		echo '</h3>';
-
-		echo htmlspecialchars($u['hobbies'], ENT_QUOTES);
-		echo htmlspecialchars($u['postcode'], ENT_QUOTES);
-		echo '</div>';
-		echo '</div>';
-
-
-		echo '</div>';
-
-		echo '<div class="panel-footer">';
-		echo '<p><i class="fa fa-user"></i>';
-		echo link_user($msg['id_user'], $app['tschema'], $status);
-		echo $msg['postcode'] ? ', postcode: ' . $u['postcode'] : '';
-
-		if ($app['s_admin'])
-		{
-			echo '<span class="inline-buttons pull-right">';
-			echo aphp('users', ['edit' => $u['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('users', ['del' => $u['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-			echo '</span>';
-		}
-
-		echo '</p>';
-		echo '</div>';
-
 		echo '</div>';
 	}
 }
