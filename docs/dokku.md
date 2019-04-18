@@ -32,15 +32,10 @@ sudo service nginx reload
 
 ## DNS
 
-A CNAME record with wildcard should point to the Dokku app url.
+An A record with wildcard should point to the Dokku app url.
+Subdomains (systems) match the schemas in the Postgres database.
 
-## Subdomains (systems) match schemas
-
-The subdomain part of the url matches the database schema name.
-
-`flupke.my-domain.com` matches to database schema `flupke`.
-
-Set the overall domain with:
+Set the overall domain:
 
 ```shell
 
