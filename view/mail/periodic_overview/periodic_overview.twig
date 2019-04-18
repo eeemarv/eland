@@ -11,7 +11,8 @@
 {%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
 {%- import 'mail/periodic_overview/macro/news.twig' as n -%}
 {%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
-{%- import 'mail/periodic_overview/macro/users.twig' as u -%}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
 {%- for b in blocks_sorted -%}
 {%- if b == 'messages' -%}
@@ -25,9 +26,9 @@
 {%- elseif b == 'docs' -%}
     {{- d.html(docs) -}}
 {%- elseif b == 'new_users' -%}
-    {{- u.html_new(new_users, block_options.new_users, schema, email_token) -}}
+    {{- nu.html(new_users, block_options.new_users, schema, email_token) -}}
 {%- elseif b == 'leaving_users' -%}
-    {{- u.html_leaving(leaving_users, block_options.leaving_users, schema, email_token) -}}
+    {{- lu.html(leaving_users, block_options.leaving_users, schema, email_token) -}}
 {%- elseif b == 'transactions' -%}
     {{- t.html(transactions, schema, email_token) -}}
 {%- endif -%}
@@ -42,7 +43,8 @@
 {% import 'mail/periodic_overview/macro/forum.twig' as f %}
 {% import 'mail/periodic_overview/macro/news.twig' as n %}
 {% import 'mail/periodic_overview/macro/docs.twig' as d %}
-{% import 'mail/periodic_overview/macro/users.twig' as u %}
+{% import 'mail/periodic_overview/macro/new_users.twig' as nu %}
+{% import 'mail/periodic_overview/macro/leaving_users.twig' as lu %}
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
@@ -54,11 +56,11 @@
 {% elseif b == 'news' %}
 {{ n.text(news, block_options.news, schema, email_token) }}
 {% elseif b == 'docs' %}
-{{ d.text(docs, schema, email_token) }}
+{{ d.text(docs) }}
 {% elseif b == 'new_users' %}
-{{ u.text_new(new_users, block_options.new_users, schema, email_token) }}
+{{ nu.text(new_users, block_options.new_users, schema, email_token) }}
 {% elseif b == 'leaving_users' %}
-{{ u.text_leaving(leaving_users, block_options.leaving_users, schema, email_token) }}
+{{ lu.text(leaving_users, block_options.leaving_users, schema, email_token) }}
 {% elseif b == 'transactions' %}
 {{ t.text(transactions, schema, email_token) }}
 {% endif %}
