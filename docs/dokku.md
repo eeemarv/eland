@@ -89,13 +89,6 @@ The Domain of a request-hosting form can be set with:
 
 * `HOSTING_FORM_domain=1`
 
-## Permanent Redirects
-
-* `APP_REDIRECT_FROM__DOMAIN__NET=to.domain.net`
-
-Redirects from.domain.net to to.domain.net
-A double underscore in the key represents a dot in the domain.
-
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
