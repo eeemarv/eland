@@ -1,0 +1,37 @@
+{%- trans_default_domain 'mail' -%}
+
+{% macro html(docs) %}
+
+<h3>
+	{{- 'periodic_overview.docs.title'|trans -}}
+</h3>
+
+{%- if docs -%}
+<ul>
+	{%- for d in docs -%}
+		<li>
+			<a href="{{- d.url -}}">
+				{{- d.name -}}
+			</a>
+		</li>
+	{%- endfor -%}
+</ul>
+{%- else -%}
+<p>
+	{{- 'periodic_overview.docs.none'|trans -}}
+</p>
+{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(docs) %}
+
+{{ 'periodic_overview.docs.title'|trans|underline }}
+
+{% for d in docs %}
+* {{ d.name }} {{ d.url }}
+{% else %}
+{{ 'periodic_overview.docs.none'|trans }}
+{% endfor %}
+
+{% endmacro docs %}

@@ -15,7 +15,7 @@
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
 {%- for b in blocks_sorted -%}
 {%- if b == 'messages' -%}
-{{- m.html(messages, schema, email_token) -}}
+    {{- m.html(messages, schema, email_token) -}}
 {%- elseif b == 'intersystem' -%}
     {{- i.html(intersystem, schema, email_token) -}}
 {%- elseif b == 'forum' -%}
@@ -23,7 +23,7 @@
 {%- elseif b == 'news' -%}
     {{- n.html(news, block_options.news, schema, email_token) -}}
 {%- elseif b == 'docs' -%}
-    {{- d.html(docs, schema, email_token) -}}
+    {{- d.html(docs) -}}
 {%- elseif b == 'new_users' -%}
     {{- u.html_new(new_users, block_options.new_users, schema, email_token) -}}
 {%- elseif b == 'leaving_users' -%}
