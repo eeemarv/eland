@@ -94,6 +94,10 @@ The Domain of a request-hosting form can be set with:
 * `TIMEZONE`: defaults to 'Europe/Brussels'
 * `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all Systems.
 
+## Permanent redirects
+
+Use the [dokku-redirect](https://github.com/dokku/dokku-redirect) plugin for redirects.
+
 ## Postgres
 
 [Link a postgres database to the app.](https://github.com/dokku/dokku-postgres)
