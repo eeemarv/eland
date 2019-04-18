@@ -70,7 +70,7 @@ class mail_transaction
 			'reply_to' 	=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type',
 			'vars'		=> array_merge($vars, [
-				'user'	=> $to_user,
+				'user_id'	=> $to_user_id,
 			]),
 		], 9000);
 
@@ -86,7 +86,7 @@ class mail_transaction
 			'to' 		=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type_user',
 			'vars'		=> array_merge($vars, [
-				'user'	=> $from_user,
+				'user_id'	=> $from_user_id,
 			]),
 		], 9010);
 	}
@@ -120,7 +120,7 @@ class mail_transaction
 				'to' 		=> $this->mail_addr_user->get($from_user_id, $schema),
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [
-					'user' 			=> $from_user,
+					'user_id' 		=> $from_user_id,
 					'to_fullname'	=> $to_user['fullname'],
 				]),
 			], 9000);
@@ -138,7 +138,7 @@ class mail_transaction
 				'schema'	=> $schema,
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [
-					'user'			=> $to_user,
+					'user_id'		=> $to_user_id,
 					'from_fullname'	=> $from_user['fullname'],
 				]),
 			], 9000);
