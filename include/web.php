@@ -41,17 +41,6 @@ if ($app['script_name'] == 'index'
 	return;
 }
 
-/*
- * permanent redirects
- */
-
-if ($app_redirect = getenv('APP_REDIRECT_' . $app['env_server_name']))
-{
-	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['protocol'] . $app_redirect . $app['request_uri']);
-	exit;
-}
-
 $app['tschema'] = $app['groups']->get_schema($app['server_name']);
 
 if (!$app['tschema'])
