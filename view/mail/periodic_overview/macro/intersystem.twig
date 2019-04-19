@@ -63,7 +63,7 @@
 }) }}
 
 {% if i.eland_server %}
-\t{{ 'periodic_overview.intersystem.account'|trans({
+	{{ 'periodic_overview.intersystem.account'|trans({
 	'%account%': account(msg.user_id, i.schema),
 	'%system_name%': config('systemname', i.schema)
 }) }}

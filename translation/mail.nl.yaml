@@ -434,5 +434,9 @@ periodic_overview:
     explain: >-
       Deze lijst toont de transacties van
       de laatste %days% dagen.
+    amount_from_to: >-
+      %amount% %currency% van %from% naar %naar%
+    intersystem_account: >-
+      "%account% [%system_name%]"
     none: >-
       Er zijn geen recente transacties.

@@ -1,0 +1,66 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html(transactions, schema, email_token) -%}
+
+	<h3>
+		{{- mail_link_open('transactions', {'ev': email_token}, schema) -}}
+		{{- 'periodic_overview.transactions.title'|trans -}}
+		</a>
+	</h3>
+
+	{%- if transactions -%}
+	<ul>
+	{%- for tr in transactions -%}
+		<li>
+		{{- 'periodic_overview.transactions.amount_from_to'|trans({
+			'%amount%': tr.amount,
+			'%currency%': config('currency', schema),
+			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
+				'%account%': tr.real_from,
+				'%system_name%': account(tr.id_from, schema)
+			}) : account(tr.id_from, schema),
+			'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
+				'%account%': tr.real_to,
+				'%system_name%': account(tr.id_to, schema)
+			}) : account(tr.id_to, schema),
+		})|raw -}}
+		<br>
+		{{- tr.description -}}
+		</li>
+	{%- endfor -%}
+	</ul>
+	{%- else -%}
+	<p>
+	{{- 'periodic_overview.transactions.none'|trans -}}
+	</p>
+	{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(transactions, schema, email_token) %}
+
+{{ 'periodic_overview.transactions.title'|trans|underline }}
+
+{% if transactions %}
+{% for tr in transactions %}
+
+* {{ 'periodic_overview.transactions.amount_from_to'|trans({
+	'%amount%': tr.amount,
+	'%currency%': config('currency', schema),
+	'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
+		'%account%': tr.real_from,
+		'%system_name%': account(tr.id_from, schema)
+	}) : account(tr.id_from, schema),
+	'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
+		'%account%': tr.real_to,
+		'%system_name%': account(tr.id_to, schema)
+	}) : account(tr.id_to, schema),
+})|raw }}
+	{{ tr.description }}
+
+{% endfor %}
+{% else %}
+{{ 'periodic_overview.transactions.none'|trans }}
+{% endif %}
+
+{% endmacro text %}
