@@ -395,6 +395,12 @@ periodic_overview:
     explain: >-
       %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
       naar het betreffende InterSysteem.
+  forum:
+    title: >-
+      Forum
+    none: >-
+      Er zijn geen nieuwe berichten in
+      het %link_open%forum%link_close%.
   docs:
     title: >-
       Nieuwe Documenten
