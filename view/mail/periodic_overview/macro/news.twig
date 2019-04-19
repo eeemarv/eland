@@ -1,108 +1,94 @@
 {%- trans_default_domain 'mail' -%}
 
-{% macro html(forum, schema, email_token) -%}
+{%- macro html(news, option, schema, email_token) -%}
+
 <h3>
-{{- 'periodic_overview.ads.title'|trans -}}
-</h3>
-{% if messages %}
-<p>
-{{- 'periodic_overview.ads.explain'|trans({
-	'%link_open%': mail_link_open('messages', {'ev': email_token}, schema),
-	'%link_close%': '</a>',
-	'%days%': config('saldofreqdays', schema)
+{{- 'periodic_overview.news.title'|trans({
+	'%link_open%': mail_link_open('news', {'ev': email_token}, schema),
+	'%link_close%': '</a>'
 })|raw -}}
-</p>
+</h3>
+
+{%- if news -%}
 <ul>
-{% for msg in messages %}
+{%- for n in news -%}
 <li>
-	<strong>
-		{{- mail_link_open('messages', {'id': msg.id, 'ev': email_token}, schema)|raw -}}
-			{%- if msg.offer -%}
-				{{- 'label.offer'|trans -}}
-			{%- else -%}
-				{{- 'label.want'|trans -}}
-			{%- endif -%}:&nbsp;
-			{{ msg.content -}}
-		</a>
+{{- mail_link_open('news', {'id': n.id, 'ev': email_token}, schema) -}}
+<h4>
+{{- n.headline -}}
+</h4>
+</a><br /><br />
+{{- n.newsitem -}}<br /><br />
+{%- if n.location -%}
+	{{- 'label.location'|trans -}}:
+	&nbsp;<strong>
+	{{- n.location -}}
 	</strong>
-<br />
-{%- if msg.images|length -%}
-	<br/>
-	<img src="{{- s3_url(msg.images.0) -}}" height="200" alt="afbeelding">
 	<br />
 {%- endif -%}
-{{- msg.description -}}
-<br />
-{{- mail_link_open('users', {'id', msg.id_user, 'ev': email_token}, schema)|raw -}}
-{{- account(msg.id_user, schema) -}}
-</a>
-{%- if msg.postcode -%}
-	{{- 'label.postcode'|trans -}}:&nbsp;
-		{{- msg.postcode -}}&nbsp;
-		|&nbsp;
+{%- if n.itemdate -%}
+	{{- 'label.date'|trans -}}:
+	&nbsp;<strong>
+	{{ n.itemdate_formatted }}
+	</strong>
+	<br />
 {%- endif -%}
-{%- for mail in msg.mail -%}
-	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
-	{{- 'label.email'|trans -}}
-	</a>
-{%- if not loop.last -%}|{%- endif -%}&nbsp;
-{%- endfor -%}
+{{- 'periodic_overview.news.creator'|trans({
+	'%link_open%': mail_link_open('users', {'id': n.id_user, 'ev': email_token}, schema),
+	'%link_close%': '</a>',
+	'%account%': account(n.id_user, schema)
+})|raw -}}
 </li>
+<br />
 <br />
 {%- endfor -%}
 </ul>
-
 {%- else -%}
-<p>
-{{- trans('periodic_overview.ads.none') -}}
-</p>
+	<p>
+	{%- if option == 'recent' -%}
+		{{- 'periodic_overview.news.no_recent'|trans -}}
+	{%- else -%}
+		{{- 'periodic_overview.news.none'|trans -}}
+	{%- endif -%}
+	</p>
 {%- endif -%}
-
-<p>
-{{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': mail_link_open('messages', {'add': '1', 'ev': email_token}, schema),
-	'%link_close%': '</a>'
-})|raw -}}
-</p>
 
 {%- endmacro html -%}
 
-{% macro text(forum, schema, email_token) %}
+{% macro text(news, option, schema, email_token) %}
 
-{{ 'periodic_overview.ads.title'|trans|underline|raw }}
+{{- 'periodic_overview.news.title'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+})|underline }}
 
-{% if messages %}
-{{ 'periodic_overview.ads.explain'|trans({
+{% if news %}
+{% for n in news %}
+
+{{ n.headline|underline('.') }}
+
+{{ n.newsitem }}
+
+{% if n.location %}
+{{ 'label.location'|trans }}: {{ n.location }}
+{% endif %}
+{% if n.itemdate %}
+{{ 'label.date'|trans }}: {{ n.itemdate_formatted }}
+{% endif %}
+{{ 'periodic_overview.news.creator'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%days%': config('saldofreqdays', schema)
-})|raw }}
-
-{% for msg in messages %}
-
-{% if msg.offer -%}
-	{{- 'label.offer'|trans -}}
-{%- else -%}
-	{{- 'label.want'|trans -}}
-{%- endif -%}:&nbsp;
-{{- msg.content }}
-{{ mail_url('messages', {'id': msg.id, 'ev': email_token}, schema) }}
-{{ account(msg.id_user, schema) }}
+	'%account%': account(n.id_user, schema)
+}) }}
 
 {% endfor %}
 {% else %}
-{{ 'periodic_overview.ads.none'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%days%': config('saldofreqdays', schema)
-})|raw }}
+
+{% if option == 'recent' %}
+{{ 'periodic_overview.news.no_recent'|trans }}
+{% else %}
+{{ 'periodic_overview.news.none'|trans }}
 {% endif %}
-
-{{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
-})|raw -}}
-
-{{ mail_url('messages', {'add': '1', 'ev': email_token}, schema) }}
+{% endif %}
 
 {% endmacro text %}

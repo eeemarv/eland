@@ -2,6 +2,7 @@ label:
   account_code: Account Code
   amount: Bedrag
   balance: Saldo
+  date: Datum
   description: Omschrijving
   destination: Bestemming
   email: E-mail
@@ -9,6 +10,7 @@ label:
   full_name: Volledige Naam
   hours: Uren
   link: Link
+  location: Plaats
   login: Login
   minutes: Minuten
   offer: Aanbod
@@ -414,6 +416,15 @@ periodic_overview:
       Nieuwe Documenten
     none: >-
       Er zijn geen nieuwe documenten.
+  news:
+    title: >-
+      %link_open%Nieuws%link_close%
+    none: >-
+      Er zijn momenteel geen nieuwsberichten.
+    creator: >-
+      Ingegeven door %link_open%%account%%link_close%
+    no_recent: >-
+      Er zijn geen nieuwe nieuwsberichten.
   new_users:
     title: >-
       Nieuwe Leden

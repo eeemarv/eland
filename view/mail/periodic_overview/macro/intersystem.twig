@@ -68,7 +68,7 @@
 	'%system_name%': config('systemname', i.schema)
 }) }}
 {% else %}
-\t{{ 'periodic_overview.intersystem.account'|trans({
+	{{ 'periodic_overview.intersystem.account'|trans({
 	'%account%': msg.account,
 	'%system_name%': i.system_name
 }) }}
