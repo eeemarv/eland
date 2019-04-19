@@ -542,12 +542,6 @@ class saldo extends schema_task
 				continue;
 			}
 
-			if (isset($users_geo[$id]))
-			{
-				$users[$id]['geo'] = $users_geo[$id];
-			}
-
-			//
 			if ($users[$id]['minlimit'] === -999999999)
 			{
 				$users[$id]['minlimit'] = '';
