@@ -240,7 +240,6 @@ class saldo extends schema_task
 					$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 					$row['offer'] = $row['type'] == 'offer' ? true : false;
 					$row['want'] = $row['type'] == 'want' ? true : false;
-					$row['user'] = $row['letscode'] . ' ' . $row['name'];
 
 					$intersystem_msgs[] = $row;
 				}

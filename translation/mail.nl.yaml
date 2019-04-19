@@ -389,12 +389,20 @@ periodic_overview:
       Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
     add: >-
       %link_open%Geef zelf je eigen Vraag of Aanbod in%link_close%.
-  intersystem_ads:
+  intersystem:
     title: >-
       Recent InterSysteem Vraag en Aanbod
     explain: >-
       %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
       naar het betreffende InterSysteem.
+    system_name: >-
+      "Systeem: %name%"
+    account: >-
+      "Ingegeven door: %account% [%system_name%]"
+    offer: >-
+      "Aanbod: %msg%"
+    want: >-
+      "Vraag: %msg"
   forum:
     title: >-
       Forum

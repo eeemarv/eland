@@ -1,133 +1,79 @@
 {%- trans_default_domain 'mail' -%}
 
-{% macro interlets(interlets, url_login, validate_param) %}
+{%- macro html(intersystem, schema, email_token) -%}
 
-{% if interlets %}
-<h4>Recent interSysteem vraag en aanbod</h4>
-
-<p><a href="{{ url_login }}{{ validate_param }}">Log in</a> en ga via 'Systeem' in de navigatiebalk naar het betreffende interSysteem voor meer informatie.</p>
-
-{% for grp in interlets %}
-<h5>Systeem: {{ grp.group }}</h5>
-<ul>
-	{% for msg in grp.messages %}
-		<li>{% if msg.offer %}Aanbod{% else %}Vraag{% endif %}: {{ msg.content }} <br>
-		Ingegeven door: {{ msg.user }} [{{ grp.group }}]</li><br>
-	{% endfor %}
-</ul>
-{% endfor %}
-
-{% endif %}
-
-{% endmacro html %}
-
-{% macro html(intersystem, schema, email_token) -%}
 {%- if intersystem -%}
 <h3>
 {{- 'periodic_overview.intersystem.title'|trans -}}
 </h3>
-<p>
-{{- 'periodic_overview.intersystem.explain'|trans({
-	'%link_open%': mail_link_open('login', {'ev': email_token}, schema),
-	'%link_close%': '</a>'
-})|raw -}}
-</p>
-<ul>
-{% for system in intersystem %}
-<h5>
-{{- 'label.system'|trans -}}:&nbsp;{{ grp.group }}
-</h5>
-
-
-<li>
-	<strong>
-		{{- mail_link_open('messages', {'id': msg.id, 'ev': email_token}, schema)|raw -}}
-			{%- if msg.offer -%}
-				{{- 'label.offer'|trans -}}
-			{%- else -%}
-				{{- 'label.want'|trans -}}
-			{%- endif -%}:&nbsp;
-			{{ msg.content -}}
-		</a>
-	</strong>
-<br />
-{%- if msg.images|length -%}
-	<br/>
-	<img src="{{- s3_url(msg.images.0) -}}" height="200" alt="afbeelding">
-	<br />
-{%- endif -%}
-{{- msg.description -}}
-<br />
-{{- mail_link_open('users', {'id', msg.id_user, 'ev': email_token}, schema)|raw -}}
-{{- account(msg.id_user, schema) -}}
-</a>
-{%- if msg.postcode -%}
-	{{- 'label.postcode'|trans -}}:&nbsp;
-		{{- msg.postcode -}}&nbsp;
-		|&nbsp;
-{%- endif -%}
-{%- for mail in msg.mail -%}
-	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
-	{{- 'label.email'|trans -}}
-	</a>
-{%- if not loop.last -%}|{%- endif -%}&nbsp;
-{%- endfor -%}
-</li>
-<br />
-{%- endfor -%}
-</ul>
-
-{%- else -%}
-<p>
-{{- trans('periodic_overview.ads.none') -}}
-</p>
-{%- endif -%}
 
 <p>
-{{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': mail_link_open('messages', {'add': '1', 'ev': email_token}, schema),
-	'%link_close%': '</a>'
-})|raw -}}
+	{{- 'periodic_overview.intersystem.explain'|trans({
+		'%link_open%': mail_link_open('login', {'ev': email_token}, schema),
+		'%link_close%': '</a>'
+	})|raw -}}
 </p>
 
+{%- for i in intersystem -%}
+	<h4>
+		{{- 'periodic_overview.intersystem.system_name'|trans({
+			'%name%': i.system_name ?? config('systemname', i.schema),
+		}) -}}
+	</h4>
+	<ul>
+	{%- for msg if i.messages -%}
+		<li>
+		{{- ('periodic_overview.intersystem.' ~ msg.type)|trans({
+			'%msg%': msg.content
+		}) -}}
+		<br />
+		{%- if i.eland_server -%}
+		{{- 'periodic_overview.intersystem.account'|trans({
+			'%account%': account(msg.user_id, i.schema),
+			'%system_name%': config('systemname', i.schema)
+		}) -}}
+		{%- else -%}
+		{{- 'periodic_overview.intersystem.account'|trans({
+			'%account%': msg.account,
+			'%system_name%': i.system_name
+		}) -}}
+		{%- endif -%}
+		</li>
+		<br />
+	{%- endfor -%}
+	</ul>
 {%- endmacro html -%}
 
-{% macro text(messages, schema, email_token) %}
+{% macro text(intersystem, schema, email_token) %}
 
-{{ 'periodic_overview.ads.title'|trans|underline|raw }}
+{% if intersystem %}
 
-{% if messages %}
-{{ 'periodic_overview.ads.explain'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%days%': config('saldofreqdays', schema)
-})|raw }}
+{{ 'periodic_overview.intersystem.title'|trans|underline }}
 
-{% for msg in messages %}
+{% for i in intersystem %}
 
-{% if msg.offer -%}
-	{{- 'label.offer'|trans -}}
-{%- else -%}
-	{{- 'label.want'|trans -}}
-{%- endif -%}:&nbsp;
-{{- msg.content }}
-{{ mail_url('messages', {'id': msg.id, 'ev': email_token}, schema) }}
-{{ account(msg.id_user, schema) }}
+** {{ 'periodic_overview.intersystem.system_name'|trans({
+			'%name%': i.system_name ?? config('systemname', i.schema),
+}) }}
 
-{% endfor %}
+{% for msg if i.messages %}
+
+{{ ('periodic_overview.intersystem.' ~ msg.type)|trans({
+	'%msg%': msg.content
+}) }}
+
+{% if i.eland_server %}
+\t{{ 'periodic_overview.intersystem.account'|trans({
+	'%account%': account(msg.user_id, i.schema),
+	'%system_name%': config('systemname', i.schema)
+}) }}
 {% else %}
-{{ 'periodic_overview.ads.none'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%days%': config('saldofreqdays', schema)
-})|raw }}
+\t{{ 'periodic_overview.intersystem.account'|trans({
+	'%account%': msg.account,
+	'%system_name%': i.system_name
+}) }}
 {% endif %}
 
-{{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
-})|raw -}}
-
-{{ mail_url('messages', {'add': '1', 'ev': email_token}, schema) }}
+{% endfor %}
 
 {% endmacro text %}
