@@ -319,6 +319,25 @@ else if ($step == 7)
 		exit;
 	}
 
-	error_log('*** init finished ***');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=8');
+	exit;
+}
+else if ($step == 8)
+{
+	error_log('** Copy config **');
+
+	$config_ary = $this->db->fetchAll('select value, setting
+		from ' . $app['tschema'] . '.config');
+
+	foreach($config_ary as $rec)
+	{
+		if ($app['config']->exists($rec['setting'], $app['tschema']))
+		{
+			$app['config']->set($rec['setting'], $app['tschema'], $rec['value']);
+			error_log('Config value copied: ' . $rec['setting'] . ' ' . $rec['value']);
+		}
+	}
+
+	error_log('***  init finished ***');
 	exit;
 }
