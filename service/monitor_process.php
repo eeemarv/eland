@@ -160,6 +160,8 @@ class monitor_process
 
 				error_log('monitor_processes: ' . $monitor_processes);
 
+				$monitor_processes = json_decode($monitor_processes, true);
+
 				foreach (cnst::PROCESS_INTERVAL as $process_name => $process_interval)
 				{
 					if (!isset($monitor_processes[$process_name]))
