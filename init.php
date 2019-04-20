@@ -331,7 +331,7 @@ else if ($step == 8)
 
 	foreach($config_ary as $rec)
 	{
-		if ($app['config']->exists($rec['setting'], $app['tschema']))
+		if (!$app['config']->exists($rec['setting'], $app['tschema']))
 		{
 			$app['config']->set($rec['setting'], $app['tschema'], $rec['value']);
 			error_log('Config value copied: ' . $rec['setting'] . ' ' . $rec['value']);
