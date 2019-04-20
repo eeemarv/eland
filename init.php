@@ -326,7 +326,7 @@ else if ($step == 8)
 {
 	error_log('** Copy config **');
 
-	$config_ary = $this->db->fetchAll('select value, setting
+	$config_ary = $app['db']->fetchAll('select value, setting
 		from ' . $app['tschema'] . '.config');
 
 	foreach($config_ary as $rec)
