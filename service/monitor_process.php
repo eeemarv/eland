@@ -144,7 +144,7 @@ class monitor_process
 		try
 		{
 			$this->predis->incr('eland_monitor');
-			$this->predis->expire('eland_monitor', 400);
+			$this->predis->expire('eland_monitor', 300);
 			$monitor_count = $this->predis->get('eland_monitor');
 
 			if ($monitor_count > 2)
@@ -160,6 +160,34 @@ class monitor_process
 
 				error_log('monitor_processes: ' . $monitor_processes);
 
+				foreach (cnst::PROCESS_INTERVAL as $process_name => $process_interval)
+				{
+					if (!isset($monitor_processes[$process_name]))
+					{
+						http_response_code(503);
+						error_log('no time found for process: ' . $process_name);
+						exit;
+					}
+
+					$process_ary = $monitor_processes[$process_name];
+					$active = max(array_keys($process_ary));
+					$last = $process_ary[$active];
+
+					$process_monitor = $process_interval['monitor'];
+					$now = now();
+
+					if (($last + $process_monitor) < $now)
+					{
+						http_response_code(503);
+						echo ('Process down: ' . $process_name .
+							', max interval: ' . $process_monitor .
+							', last time: ' . $last .
+							', now: ' . $now);
+						exit;
+					}
+
+				}
+
 				echo 'Ok.';
 				exit;
 			}
@@ -170,26 +198,5 @@ class monitor_process
 			throw $e;
 			exit;
 		}
-	}
-
-	public function get_background_processes():array
-	{
-		$file_ary = file(__DIR__ . '/../Procfile');
-		$processes = [];
-
-		foreach ($file_ary as $line)
-		{
-			$process = strtok($line, ':');
-
-			if (in_array($process, ['', 'web', 'dev']))
-			{
-				continue;
-			}
-
-			error_log($process);
-			$processes[] = $process;
-		}
-
-		return $processes;
 	}
 }
